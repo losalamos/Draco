@@ -179,6 +179,9 @@ class OrdinateSet
 
     vector<double>
     compute_moment_to_discrete_weights(unsigned expansion_order) const;
+
+    vector<double>
+    compute_discrete_to_moment_weights(unsigned expansion_order) const;
     
   private:
 

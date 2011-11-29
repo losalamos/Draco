@@ -632,6 +632,169 @@ void OrdinateSet::create_set_from_3d_quadrature_for_3d_mesh()
 
 //---------------------------------------------------------------------------//
 vector<double>
+OrdinateSet::compute_discrete_to_moment_weights(unsigned expansion_order)
+    const
+{
+    vector<double> Result;
+
+    vector<Ordinate> const &ordinates = getOrdinates();
+    unsigned const number_of_ordinates_ = ordinates.size();
+
+    unsigned const number_of_moments =
+        QuadServices::compute_number_of_moments( dimension_,
+                                                 expansion_order);
+
+    //! \todo No capacity to specify Galerkin or SVD calculations
+    SP<Quadrature const > quadrature(getQuadrature());
+    
+    QuadServices qserv( quadrature,
+                        SN,
+                        expansion_order,
+                        getComparator() ); // SN is hardwired
+    
+    vector< double > D( qserv.getD() );
+    // does not include starting directions!
+    
+    // numOrdinates does not include starting directions.
+    unsigned numOrdinates( quadrature->getNumOrdinates() ); //
+
+    //! \todo This constructor should take a QuadServices object as an
+    //argument instead of a quadrature.  This way, the M and D matrices are
+    //only computed once (as a part of the qserv ctor).
+
+    Result.resize(number_of_moments*number_of_ordinates_);
+
+    // Result is a subset of D (only use the first number_of_moments rows of
+    // D).  We must also insert information for the starting direction
+    // ordinates, if any.  Columns that are assoicated with starting
+    // directions will contain zeros.
+
+    if (quadrature->dimensionality() == 1)
+    {
+        if (dimension_ == 1)
+        {
+
+            for( unsigned n=0; n<number_of_moments; ++n )
+            {
+                // ordinate counter that does not see starting directions
+                // used for indexing into M.
+                unsigned a = 0;
+                // ordinates in OrdinateSet (includes starting directions).
+                for( unsigned m=0; m<number_of_ordinates_; ++m )
+                {
+                    if( soft_equiv(ordinates[m].wt(),0.0) )
+                        // A starting direction
+                    {
+                        Result[m + number_of_ordinates_*n] = 0.0;
+                    }
+                    else
+                    {
+                        Result[m + number_of_ordinates_*n] = D[ a + n*numOrdinates ];
+                        a++;
+                    }
+                }
+            }
+        }
+        else if (dimension_ == 2)
+        {
+            throw invalid_argument("cannot generate 2D weights from 1D "
+                                   "quadrature");
+        }
+        else
+        {
+            Check(dimension_==3);
+            throw invalid_argument("cannot generate 3D weights from 1D "
+                                   "quadrature");
+        }
+    }
+    else if( quadrature->dimensionality() == 2)
+    {
+        if ( dimension_ == 1 )
+        {
+            for( unsigned n=0; n<number_of_moments; ++n )
+            {
+                // ordinate counter that does not see starting directions
+                // used for indexing into M.
+                unsigned a = 0;
+                // ordinates in OrdinateSet (includes starting directions).
+                for( unsigned m=0; m<number_of_ordinates_; ++m )
+                {
+                    if( soft_equiv(ordinates[m].wt(),0.0) )
+                        // A starting direction
+                    {
+                        Result[m + number_of_ordinates_*n] = 0.0;
+                    }
+                    else
+                    {
+                        Result[m + number_of_ordinates_*n] = 2.0*D[ a + n*numOrdinates ];
+                        a++;
+                    }
+                }
+            }
+        }
+        else if (dimension_==2)
+        {
+
+            for( unsigned n=0; n<number_of_moments; ++n )
+            {
+                // ordinate counter that does not see starting directions
+                // used for indexing into M.
+                unsigned a = 0 ;
+                // ordinates in OrdinateSet (includes starting directions).
+                for( unsigned m=0; m<number_of_ordinates_; ++m )
+                {
+                    if( soft_equiv(ordinates[m].wt(),0.0) )
+                        // A starting direction
+                    {
+                        Result[m + number_of_ordinates_*n] = 0.0;
+                    }
+                    else
+                    {
+                        Result[m + number_of_ordinates_*n] = D[ a + n*numOrdinates ];
+                        a++;
+                    }
+                }
+            }
+        }
+        else
+        {
+            Check(dimension_==3);
+            Check(number_of_ordinates_ == 2*numOrdinates);
+            throw invalid_argument("cannot generate 3D weights from 2D "
+                                   "quadrature");
+        }
+    }
+    else
+    {
+        Check(dimension_==3);
+        if (dimension_ == 1)
+        {
+            throw invalid_argument("sorry, not implemented: "
+                                   "1D weights from 3D quadrature");
+        }
+        else if (dimension_ == 2)
+        {
+            throw invalid_argument("sorry, not implemented: "
+                                   "2D weights from 3D quadrature");
+        }
+        else
+        {
+            Check(dimension_==3);
+            for( unsigned n=0; n<number_of_moments; ++n )
+            {
+                for( unsigned m=0; m<number_of_ordinates_; ++m )
+                {
+                    Result[m + number_of_ordinates_*n] = D[m + n*numOrdinates];
+                }
+            }
+        }
+    }
+
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+vector<double>
 OrdinateSet::compute_moment_to_discrete_weights(unsigned expansion_order)
     const
 {
