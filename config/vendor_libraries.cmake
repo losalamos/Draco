@@ -345,7 +345,7 @@ macro( SetupVendorLibrariesUnix )
       DESCRIPTION "A WYSIWYG 2D plotting tool."
       TYPE OPTIONAL
       PURPOSE "Required for bulding the plot2D component."
-)
+      )
 
    # CUDA ------------------------------------------------------------------
    find_package( CUDA QUIET )
@@ -360,7 +360,13 @@ macro( SetupVendorLibrariesUnix )
       set( HAVE_CUDA 1 )
       option( USE_CUDA "If CUDA is available, should we use it?" ON )
    endif()
-   
+   mark_as_advanced( 
+      CUDA_SDK_ROOT_DIR 
+      CUDA_VERBOSE_BUILD
+      CUDA_TOOLKIT_ROOT_DIR 
+      CUDA_BUILD_CUBIN
+      CUDA_BUILD_EMULATION
+      )
 
 endmacro()
 
