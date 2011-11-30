@@ -48,6 +48,7 @@ if( GRACE_FOUND )
    set(Grace_INCLUDE_DIRS ${Grace_INCLUDE_DIR})
    set(Grace_LIBRARIES    ${Grace_LIBRARY} ${Grace_BLAS_LIBRARY} CACHE
       FILEPATH "Grace libraries for linking."  )
+   mark_as_advanced( Grace_LIBRARIES )
    
 #   string( REPLACE "_dll.lib" ".dll" Grace_DLL ${Grace_LIBRARY} )
 #   string( REPLACE "_dll.lib" ".dll" Grace_BLAS_DLL ${Grace_BLAS_LIBRARY} )
