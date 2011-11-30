@@ -13,16 +13,16 @@ find_library(GANDOLF_LIBRARY
     PATHS
         ${GANDOLF_LIB_DIR}
         $ENV{GANDOLF_LIB_DIR}
-        ${VENDOR_DIR}/lib
-        ${VENDOR_DIR}/gandolf/lib
+#        ${VENDOR_DIR}/lib
+#        ${VENDOR_DIR}/gandolf/lib
 )
 find_library(GANDOLF_GFORTRAN_LIBRARY
     NAMES ${GANDOLF_GFORTRAN_NAME}
     PATHS
         ${GANDOLF_LIB_DIR}
         $ENV{GANDOLF_LIB_DIR}
-        ${VENDOR_DIR}/lib
-        ${VENDOR_DIR}/gandolf/lib
+#        ${VENDOR_DIR}/lib
+#        ${VENDOR_DIR}/gandolf/lib
 )
 
 mark_as_advanced( GANDOLF_LIBRARY GANDOLF_GFORTRAN_LIBRARY )
