@@ -15,22 +15,16 @@
 #include "viz/config.h"
 #include "Ensight_Stream.hh"
 #include "traits/Viz_Traits.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Check_Strings.hh"
 
 #include <sstream>
 #include <iostream>
-#include <fstream>
 #include <iomanip>
-#include <vector>
 #include <set>
 #include <map>
-#include <string>
-#include <algorithm>
 #include <cstring>
 #include <errno.h>
-#include <cstring>
 #include <cstdlib>
 #include <cstdlib>
 #include <sys/types.h>
