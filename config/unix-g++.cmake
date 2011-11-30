@@ -93,9 +93,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
    set( CMAKE_C_FLAGS                "-fPIC -Wcast-align -Wpointer-arith -Wall" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
-   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -march=k8 -DNDEBUG" )
+   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO " -g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -O3 -funroll-loops -march=k8" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO " -g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -O3 -funroll-loops" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
@@ -123,8 +123,8 @@ if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
 endif()
 
 if( ENABLE_OPENMP )
-  set( DRACO_C_FLAGS   "${DRACO_C_FLAGS} -fopenmp" )
-  set( DRACO_CXX_FLAGS "${DRACO_CXX_FLAGS} -fopenmp" )
+  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fopenmp" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
 
   # When compiling F90 that links in C++-based libraries, we will need
   # librt added to the link line.
@@ -140,26 +140,26 @@ if( ENABLE_OPENMP )
   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${librt_so_loc} )
 endif()
 
-option( ENABLE_C_CODECOVERAGE "Instrument for C/C++ code coverage analysis?" OFF )
-if( ENABLE_C_CODECOVERAGE )
-  find_program( COVERAGE_COMMAND gcov )
-  set( DRACO_C_FLAGS_DEBUG     "${DRACO_C_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-  set( DRACO_CXX_FLAGS_DEBUG   "${DRACO_C_FLAGS_DEBUG}")
-  set( CMAKE_LDFLAGS           "-fprofile-arcs -ftest-coverage" )
+# option( ENABLE_C_CODECOVERAGE "Instrument for C/C++ code coverage analysis?" OFF )
+# if( ENABLE_C_CODECOVERAGE )
+#   find_program( COVERAGE_COMMAND gcov )
+#   set( CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
+#   set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}")
+#   set( CMAKE_LDFLAGS           "-fprofile-arcs -ftest-coverage" )
 
-  # When compiling F90 that links in C++-based libraries, we will need
-  # libgcov added to the link line.
-  execute_process( 
-    COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcov.a
-    TIMEOUT 5
-    RESULT_VARIABLE tmp
-    OUTPUT_VARIABLE libgcov_a_loc
-    ERROR_VARIABLE err
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-  get_filename_component( libgcov_a_loc ${libgcov_a_loc} ABSOLUTE )
-  set( GCC_LIBRARIES ${GCC_LIBRARIES} ${libgcov_a_loc} )
-endif( ENABLE_C_CODECOVERAGE )
+#   # When compiling F90 that links in C++-based libraries, we will need
+#   # libgcov added to the link line.
+#   execute_process( 
+#     COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcov.a
+#     TIMEOUT 5
+#     RESULT_VARIABLE tmp
+#     OUTPUT_VARIABLE libgcov_a_loc
+#     ERROR_VARIABLE err
+#     OUTPUT_STRIP_TRAILING_WHITESPACE
+#     )
+#   get_filename_component( libgcov_a_loc ${libgcov_a_loc} ABSOLUTE )
+#   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${libgcov_a_loc} )
+# endif( ENABLE_C_CODECOVERAGE )
 
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection

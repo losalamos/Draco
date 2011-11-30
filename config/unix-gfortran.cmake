@@ -129,24 +129,24 @@ endforeach( lib ${f90_system_lib} )
 
 # Code Coverage options:
 
-option( ENABLE_Fortran_CODECOVERAGE
-  "Instrument for Fortran (gfortran) code coverage analysis?" OFF )
-if( ENABLE_Fortran_CODECOVERAGE )
-  find_program( COVERAGE_COMMAND gcov )
-  set( CMAKE_Fortran_FLAGS_DEBUG
-    "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-  set( CMAKE_Fortran_FLAGS_DEBUG   "${CMAKE_Fortran_FLAGS_DEBUG}")
-  set( CMAKE_LDFLAGS               "${CMAKE_LDFLAGS} -fprofile-arcs -ftest-coverage" )
-endif( ENABLE_Fortran_CODECOVERAGE )
+# option( ENABLE_Fortran_CODECOVERAGE
+#   "Instrument for Fortran (gfortran) code coverage analysis?" OFF )
+# if( ENABLE_Fortran_CODECOVERAGE )
+#   find_program( COVERAGE_COMMAND gcov )
+#   set( CMAKE_Fortran_FLAGS_DEBUG
+#     "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
+#   set( CMAKE_Fortran_FLAGS_DEBUG   "${CMAKE_Fortran_FLAGS_DEBUG}")
+#   set( CMAKE_LDFLAGS               "${CMAKE_LDFLAGS} -fprofile-arcs -ftest-coverage" )
+# endif( ENABLE_Fortran_CODECOVERAGE )
 
 # Profiling
 
-option( ENABLE_Fortran_PROFILING 
-  "Instrument for Fortran profiling with gprof"
-  OFF )
-if( ENABLE_Fortran_PROFILING )
-  set( CMAKE_Fortran_FLAGS   "${CMAKE_Fortran_FLAGS} -pg" )
-endif( ENABLE_Fortran_PROFILING )
+# option( ENABLE_Fortran_PROFILING 
+#   "Instrument for Fortran profiling with gprof"
+#   OFF )
+# if( ENABLE_Fortran_PROFILING )
+#   set( CMAKE_Fortran_FLAGS   "${CMAKE_Fortran_FLAGS} -pg" )
+# endif( ENABLE_Fortran_PROFILING )
 
 #------------------------------------------------------------------------------#
 # End config/unix-gfortran.cmake
