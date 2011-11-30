@@ -41,8 +41,6 @@ Processor_Group::Processor_Group(unsigned const stride)
     int flag;
     MPI_Initialized(&flag);
     Insist(flag, "Processor_Group created before MPI is initialized");
-    
-    Insist(stride > 1, "Energy group decomposition is temporarily unavailable");
 
     unsigned const number_of_processors = rtt_c4::nodes();
     unsigned const pid = rtt_c4::node();
