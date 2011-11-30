@@ -217,3 +217,19 @@ find_package_handle_standard_args( DRACO DEFAULT_MSG DRACO_FOUND )
 # Maintain consistency with all other variables.
 set(DRACO_FOUND ${DRACO_FOUND})
 
+
+# Find out if DRACO_C4 is SCALAR or MPI
+if( DRACO_FOUND )
+   if( EXISTS ${DRACO_DIR}/config/Dracoo-CMakeCache.txt )
+      # Read complete Draco CMakeCache.txt file and store in variable
+      file( READ ${DRACO_DIR}/config/Dracoo-CMakeCache.txt filedata )
+      # Convert string into lines by replacing EOL with semi-colon.
+      string( REGEX REPLACE "\n" ";" linedata ${filedata} )
+      # Loop over lines looking for DRACO_C4 
+      foreach( line ${filedata} )
+         if( "${line}" MATCHES "DRACO_C4" )
+            message("${line}")
+         endif()
+      endforeach()
+   endif()
+endif()
