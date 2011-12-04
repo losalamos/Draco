@@ -198,26 +198,15 @@ void topology_report(UnitTest &ut)
     std::string my_pname = rtt_c4::get_processor_name();
     size_t namelen = my_pname.size();
 
-    // Convert the std::string into a vector<char> for communication.
-    vector<char> charprocname(namelen);
-    std::copy( my_pname.begin(), my_pname.end(), charprocname.begin() );
-    
     // Create a container on IO proc to hold names of all nodes.    
-    vector< vector< char > > pnames(mpi_ranks); 
+    vector< std::string > procnames(mpi_ranks);
     
     // Gather names into pnames on IO proc.
-    rtt_c4::indeterminate_gatherv( charprocname, pnames );
-
+    rtt_c4::indeterminate_gatherv( my_pname, procnames );
+    
     // Look at the data found on the IO proc.
     if( my_mpi_rank == 0 )
     {
-        vector< string > procnames( mpi_ranks );
-        for( size_t i=0; i<mpi_ranks; ++i )
-        {
-            procnames[i].resize( pnames[i].size() );
-            std::copy( pnames[i].begin(), pnames[i].end(),
-                       procnames[i].begin() );
-        }
 
         if( procnames[my_mpi_rank].size() != namelen) ITFAILS;
 

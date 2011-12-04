@@ -54,6 +54,9 @@ template<class T>
 void indeterminate_gatherv(std::vector<T> &outgoing_data,
                            std::vector<std::vector<T> > &incoming_data);
 
+void indeterminate_gatherv(std::string &outgoing_data,
+                           std::vector<std::string> &incoming_data);
+
 } // end namespace rtt_c4
 
 #endif                          // c4_gatherv_hh

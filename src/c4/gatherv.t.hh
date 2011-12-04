@@ -30,6 +30,37 @@ using std::copy;
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
+void indeterminate_gatherv( std::string              & outgoing_data,
+                            std::vector<std::string> & incoming_data )
+{
+    // convert from string to vector<char>
+    std::vector<char> outgoing_data_vc( outgoing_data.size() );
+    std::copy( outgoing_data.begin(), outgoing_data.end(), outgoing_data_vc.begin() );
+
+    // create container for return value
+    std::vector< std::vector< char > > incoming_data_vvc( nodes() );
+    
+    // Call intederminate_gatherv(...) for vector<char>.
+    indeterminate_gatherv( outgoing_data_vc, incoming_data_vvc );
+
+    if( node() == 0 )
+    {
+        // Move data from vector<vector<char> > back to vector<string> format
+        incoming_data.resize( nodes() );
+        for( size_t i=0; i<static_cast<size_t>(nodes()); ++i )
+        {
+            size_t const len= incoming_data_vvc[i].size();
+            incoming_data[i].resize( len );
+            std::copy( incoming_data_vvc[i].begin(), incoming_data_vvc[i].end(), incoming_data[i].begin() );
+            Check( incoming_data[i].size() > 0 );
+        }
+    }
+    
+    return;
+}
+
+    
+//---------------------------------------------------------------------------//
 template<class T>
 void indeterminate_gatherv( vector<T>          & outgoing_data,
                             vector<vector<T> > & incoming_data )
@@ -166,6 +197,7 @@ void determinate_gatherv(vector<T>           &outgoing_data,
 
     return;
 }
+
 
 } // end namespace rtt_c4
 
