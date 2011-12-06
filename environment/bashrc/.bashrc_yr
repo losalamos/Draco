@@ -26,7 +26,7 @@ source /usr/share/modules/init/bash
 module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/yr-fe
 
-module load friendly-testing hpc-tools python graphics pgi/9.0-3 grace
+module load friendly-testing python graphics pgi/9.0-3 grace
 module load openmpi-pgi/1.4.3 totalview lapack BLACS SCALAPACK grace-draco
 module load gsl/1.14-pgi trilinos SuperLU_DIST hypre ParMetis ndi
 module load emacs cmake openmpi
