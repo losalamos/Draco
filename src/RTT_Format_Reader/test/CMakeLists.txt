@@ -39,7 +39,6 @@ add_dependencies( Lib_RTT_Format_Reader_test
    Lib_RTT_Format_Reader 
    Lib_RTT_Format_Reader
    Lib_mesh_element
-   Lib_c4
    Lib_dsxx)
 
 # ---------------------------------------------------------------------------- #
@@ -50,14 +49,11 @@ set(test_deps
    Lib_RTT_Format_Reader_test 
    Lib_RTT_Format_Reader
    Lib_mesh_element
-   Lib_c4 
    Lib_dsxx 
-   ${MPI_LIBRARIES}
    )
 
-add_parallel_tests(
+add_scalar_tests(
    SOURCES "${test_sources}"
-   PE_LIST "1"
    DEPS    "${test_deps}" )
 
 # ---------------------------------------------------------------------------- #

@@ -16,7 +16,7 @@
 #include "../CellDefs.hh"
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
-#include "c4/ParallelUnitTest.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 #include <iostream>
 #include <vector>
@@ -25,7 +25,6 @@
 
 using namespace std;
 using namespace rtt_dsxx;
-using namespace rtt_c4;
 
 using rtt_RTT_Format_Reader::RTT_Format_Reader;
 using rtt_dsxx::release;
@@ -1939,7 +1938,7 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
-        ParallelUnitTest ut( argc, argv, release );
+        ScalarUnitTest ut( argc, argv, release );
         runTest(ut);
     }
     catch( rtt_dsxx::assertion &err )
