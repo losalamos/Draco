@@ -22,6 +22,9 @@ using namespace std;
 
 template void Processor_Group::sum(vector<double> &values);
 
+template void Processor_Group::assemble_vector(vector<double> const &local,
+                                               vector<double> &global) const;
+
 } // end namespace rtt_c4
 
 #endif  //C4_MPI

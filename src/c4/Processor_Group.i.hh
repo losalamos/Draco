@@ -37,6 +37,26 @@ void Processor_Group::sum(std::vector<T> &x)
     Insist(status==0, "MPI_Allreduce failed");
 }
 
+//---------------------------------------------------------------------------//
+template<class T>
+void Processor_Group::assemble_vector(std::vector<T> const &local,
+                                      std::vector<T> &global) const
+{
+    global.resize(local.size()*size());
+    
+    int status = MPI_Allgather(const_cast<T*>(&local[0]),
+                               local.size(),
+                               rtt_c4::MPI_Traits<T>::element_type(),
+                               &global[0],
+                               local.size(),
+                               rtt_c4::MPI_Traits<T>::element_type(),
+                               comm_);
+
+    Insist(status==0, "MPI_Gather failed");
+
+    
+}
+
 } // end namespace rtt_c4
 
 #endif  // C4_MPI

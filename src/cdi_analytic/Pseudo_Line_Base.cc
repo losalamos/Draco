@@ -50,7 +50,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     edge_(number_of_edges),
     edge_factor_(number_of_edges)
 {
-    Require(continuum>=0.0);
+    Require(continuum!=SP<Expression>());
     Require(line_peak>=0.0);
     Require(line_width>=0.0);
     Require(edge_ratio>=0.0);

@@ -47,19 +47,24 @@ class Processor_Group
     //! Destructor.
     ~Processor_Group();
 
-    // MANIPULATORS
-
-    //! Sum a set of values over the group, returning the sum to all
-    //! processors. 
-    template<class T>
-    void sum(std::vector<T> &values);
-
     // ACCESSORS
 
     //! Get the number of processors in the group.
     unsigned size() const { return size_; }
 
     bool check_class_invariants() const { return true; }
+
+    // SERVICES
+
+    //! Sum a set of values over the group, returning the sum to all
+    //! processors. 
+    template<class T>
+    void sum(std::vector<T> &values);
+
+    //! Assemble a set of local vectors into global vectors.
+    template<class T>
+    void assemble_vector(std::vector<T> const &local_vector,
+                         std::vector<T> &global_vector) const;
 
   private:
 
