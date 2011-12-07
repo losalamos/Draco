@@ -189,35 +189,13 @@ class Timer
     int intervals() const { Require(! timer_on); return num_intervals; }
 
 #ifdef HAVE_PAPI
-    long long sum_L2_cache_misses() const 
-    {
-      return papi_counts_[0];
-    }
-
-    long long sum_L2_cache_hits() const 
-    {
-      return papi_counts_[1];
-    }
-
-    long long sum_floating_operations() const 
-    {
-      return papi_counts_[2];
-    }
+    long long sum_L2_cache_misses()     const { return papi_counts_[0]; }
+    long long sum_L2_cache_hits()       const { return papi_counts_[1]; }
+    long long sum_floating_operations() const { return papi_counts_[2]; }
 #else
-    long long sum_L2_cache_misses() const 
-    {
-      return 0;
-    }
-
-    long long sum_L2_cache_hits() const 
-    {
-      return 0;
-    }
-
-    long long sum_floating_operations() const 
-    {
-      return 0;
-    }
+    long long sum_L2_cache_misses()     const { return 0; }
+    long long sum_L2_cache_hits()       const { return 0; }
+    long long sum_floating_operations() const { return 0; }
 #endif
 
     inline void reset();
@@ -334,9 +312,7 @@ void Timer::reset()
     
 #ifdef HAVE_PAPI
     for (unsigned i=0; i<papi_num_counters_; ++i)
-      {
 	papi_counts_[i] = 0;
-      }
 #endif
 
     return;
@@ -355,9 +331,7 @@ void Timer::merge(Timer const &t)
     
 #ifdef HAVE_PAPI
     for (unsigned i=0; i<papi_num_counters_; ++i)
-      {
 	papi_counts_[i] += t.papi_counts_[i];
-      }
 #endif
 
     return;
@@ -376,7 +350,7 @@ inline std::ostream& operator<<( std::ostream &out, const Timer &t )
 } // end namespace rtt_c4
 
 
-#endif                          // __c4_Timer_hh__
+#endif // __c4_Timer_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of c4/Timer.hh

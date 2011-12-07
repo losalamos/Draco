@@ -101,10 +101,13 @@ void wall_clock_test()
         FAILMSG(msg.str());
     }
     t.start();
-    
-    for( int i = 0; i < 200000000; i++ )
-    { /* empty */
-    }
+
+    // do some work
+    std::cout << "\nDoing some work..." << std::endl;
+    size_t len(20000000);
+    std::vector<int> foo(len);
+    for( size_t i = 0; i < len; ++i )
+        foo[i] = i*3;
 
     double end = rtt_c4::wall_clock_time();
     t.stop();
@@ -167,7 +170,7 @@ void wall_clock_test()
     // Demonstrate print functions:
     //------------------------------------------------------//
 
-    cout << "\nDemonstration of the print() member function via the\n"
+    cout << "Demonstration of the print() member function via the\n"
          << "\toperator<<(ostream&,Timer&) overloaded operator.\n"
          << endl;
 
@@ -181,9 +184,8 @@ void wall_clock_test()
          << endl;
     
     t.start();
-    for( int i = 0; i < 200000000; i++ )
-    { /* empty */
-    }
+    for( size_t i = 0; i < len; ++i )
+        foo[i]=i*4.2;
     t.stop();
 
     t.print( cout, 6 );
