@@ -7,13 +7,6 @@
 
 project( c4_test CXX )
 
-if( EXISTS $ENV{PAPI_HOME} )
-    set( HAVE_PAPI 1 )
-    set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} )
-    set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so )
-endif()
-
-
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
@@ -45,13 +38,20 @@ add_dependencies( Lib_c4_test Lib_c4 )
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
+set( test_deps
+   Lib_dsxx
+   ${MPI_LIBRARIES} 
+   ${PAPI_LIBRARY}
+   ${omplib}
+)
+
 
 # This test has special arguments and special pass/fail criteria.
 set( special_test ${PROJECT_SOURCE_DIR}/phw.cc )
 add_parallel_tests( 
    SOURCES   "${special_test}" 
    PE_LIST   "1;2;4" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+   DEPS      "${test_deps}"
    TEST_ARGS "hello"
    PASS_REGEX "Hello"   
    FAIL_REGEX "cruel"
@@ -71,7 +71,7 @@ if( NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Catamount" )
    endif()
    add_scalar_tests(
       SOURCES   "${special_test}" 
-      DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+      DEPS      "${test_deps}"
       TEST_ARGS "${application_unit_test_args}"
       )
 endif()
@@ -81,7 +81,7 @@ list( REMOVE_ITEM test_sources ${special_test} )
 set( special_test ${PROJECT_SOURCE_DIR}/tstParallelUnitTest.cc )
 add_parallel_tests(
    SOURCES   "${special_test}" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}"
+   DEPS      "${test_deps}"
    PE_LIST   "1;2;4"
    TEST_ARGS "--version;--dummy; "
    PASS_REGEX "tstParallelUnitTest: version"
@@ -89,10 +89,11 @@ add_parallel_tests(
 list( REMOVE_ITEM test_sources ${special_test} )
 
 # The rest of the tests
+
 add_parallel_tests( 
    SOURCES   "${test_sources}" 
    PE_LIST   "1;2;4" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}"
+   DEPS      "${test_deps}"
    )
    
 

@@ -14,6 +14,7 @@
 #include "C4_sys_times.h"
 #include "Timer.hh"
 #include <iomanip>
+#include <cstdlib>
 
 namespace rtt_c4
 {
@@ -22,16 +23,15 @@ namespace rtt_c4
   using std::min;
 
 #ifdef HAVE_PAPI
-  /* static */
-  int Timer::papi_events_[papi_max_counters_] = 
-    { PAPI_L2_TCM, PAPI_L2_TCH, PAPI_FP_OPS };
+/* static */
+int Timer::papi_events_[papi_max_counters_] = {
+    PAPI_L2_TCM, PAPI_L2_TCH, PAPI_FP_OPS };
 
-  /* static */
-  unsigned Timer::papi_num_counters_ = 0;
+/* static */
+unsigned Timer::papi_num_counters_ = 0;
 
-  /* static */
-  long long Timer::papi_raw_counts_[papi_max_counters_] =
-    {0, 0, 0};
+/* static */
+long long Timer::papi_raw_counts_[papi_max_counters_] = {0, 0, 0};
 #endif
 
 //---------------------------------------------------------------------------//
@@ -56,61 +56,62 @@ Timer::Timer()
     // Initialize the PAPI library on construction of first timer
     static bool first_time = true;
     if (first_time)
-      {
-	int retval, EventSet = PAPI_NULL;
-	unsigned int native = 0x0;
-	PAPI_event_info_t info;
+    {
+        int retval;
+        // int EventSet = PAPI_NULL;
+        // unsigned int native = 0x0;
+        // PAPI_event_info_t info;
 	
 	/* Initialize the library */
 	retval = PAPI_library_init(PAPI_VER_CURRENT);
 	if (retval != PAPI_VER_CURRENT) {
-	  cout << "PAPI library init error!" << endl;
-	  exit(EXIT_FAILURE);
+            cout << "PAPI library init error!" << endl;
+            exit(EXIT_FAILURE);
 	}
 
 	if (PAPI_query_event(PAPI_FP_OPS) != PAPI_OK)
-	  {
+        {
 	    cout << "PAPI: No floating operations counter" << endl;
-	  }
+        }
 	else
-	  {
+        {
 	    cout << "PAPI: Floating operations are countable" << endl;
-	  }
+        }
 
 	if (PAPI_query_event(PAPI_L2_TCM) != PAPI_OK)
-	  {
+        {
 	    cout << "PAPI: No L2 cache miss counter" << endl;
-	  }
+        }
 	else
-	  {
+        {
 	    cout << "PAPI: L2 cache misses are countable" << endl;
-	  }
+        }
 
 	if (PAPI_query_event(PAPI_L2_TCH) != PAPI_OK)
-	  {
+        {
 	    cout << "PAPI: No cache hit counter" << endl;
-	  }
-		else
-	  {
+        }
+        else
+        {
 	    cout << "PAPI: L2 cache hits are countable" << endl;
-	  }
+        }
 
 	papi_num_counters_ = PAPI_num_counters();
 	cout << "PAPI: This system has " << papi_num_counters_
 	     << " hardware counters." << endl;
 
 	if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
-	  papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
+            papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
 
 	int result = PAPI_start_counters(papi_events_, papi_num_counters_);
 	if (result != PAPI_OK)
-	  {
+        {
 	    cout << "Failed to start hardware counteres with error "
 		 << result << endl;
-	  }
+        }
 
 	first_time = false;
-      }
+    }
 #endif
 
     reset();

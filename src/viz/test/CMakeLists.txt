@@ -44,7 +44,8 @@ add_dependencies( Lib_viz_test Lib_viz )
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
    add_scalar_tests(
       SOURCES "${test_sources}"
-      DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}"
+      DEPS    "Lib_dsxx" 
+# "Lib_c4;${MPI_LIBRARIES}"
       )
 endif()
 

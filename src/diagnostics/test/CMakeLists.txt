@@ -43,7 +43,7 @@ add_dependencies(      Lib_diagnostics_test Lib_diagnostics Lib_c4 )
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
 
 
 

@@ -37,9 +37,17 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
 endif()
 
 if( EXISTS $ENV{PAPI_HOME} )
-    set( HAVE_PAPI 1 )
-    set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} )
-    set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so )
+    set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
+    set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH 
+       "PAPI headers at this location" )
+    set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
+       "PAPI library." )
+    if( NOT EXISTS ${PAPI_LIBRARY} )
+       message( FATAL_ERROR "PAPI requested, but library not found.
+    If on Turing, set PAPI_LIBDIR to correct path (module file is
+    broken)." )
+    endif()
+    mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
 endif()
 
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )

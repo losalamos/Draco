@@ -45,4 +45,4 @@ add_dependencies( Lib_roots_test Lib_roots )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS "Lib_linear;Lib_c4;Lib_dsxx;${MPI_LIBRARIES}" )
+   DEPS "Lib_linear;Lib_dsxx" )

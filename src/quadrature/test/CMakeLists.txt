@@ -45,7 +45,8 @@ set( test_deps
    Lib_ode
    Lib_dsxx
    ${GSL_LIBRARIES}
-   ${MPI_LIBRARIES} )
+   ${MPI_LIBRARIES} 
+   ${PAPI_LIBRARY} )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
