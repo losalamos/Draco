@@ -185,7 +185,7 @@ void wall_clock_test()
     
     t.start();
     for( size_t i = 0; i < len; ++i )
-        foo[i]=i*4.2;
+        foo[i]=i*4;
     t.stop();
 
     t.print( cout, 6 );
