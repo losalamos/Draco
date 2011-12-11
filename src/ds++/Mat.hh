@@ -14,10 +14,10 @@
 #define rtt_ds_Mat_hh
 
 #include "Assert.hh"
-// #include "Allocators.hh"
 #include "Bounds.hh"
 #include "destroy.hh"
 #include <algorithm>
+#include <memory>
 
 namespace rtt_dsxx
 {
