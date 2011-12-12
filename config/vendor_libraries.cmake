@@ -246,6 +246,7 @@ macro( setupLAPACKLibrariesUnix )
             find_program( gcc_bin gcc )
          endif()
          if( EXISTS ${gcc_bin} )
+            mark_as_advanced(gcc_bin)
             execute_process(
                COMMAND ${gcc_bin} -print-file-name=libgfortran.so
                OUTPUT_VARIABLE LIBGFORTRAN_LOC 
@@ -317,27 +318,6 @@ macro( SetupVendorLibrariesUnix )
          TYPE REQUIRED
          PURPOSE "Required for bulding quadrature and rng components."
          )  
-
-   # Gandolf ------------------------------------------------------------------
-   find_package( Gandolf QUIET )
-   set_package_properties( Gandolf PROPERTIES
-      DESCRIPTION "Gandolf IPCRESS opacity file reader."
-      TYPE OPTIONAL
-      PURPOSE "Required for bulding the cdi_gandolf component."
-      )
-   set( GANDOLF_LIB_DIR "${GANDOLF_LIB_DIR}" CACHE PATH 
-      "Location of gandolf libraries." )
-   mark_as_advanced(GANDOLF_LIB_DIR)
-
-   # PCG ------------------------------------------------------------------
-   find_package( PCG QUIET )
-   set_package_properties( PCG PROPERTIES
-      DESCRIPTION "LANL Preconditioned Conjugate Gradient (PCG) solver."
-      TYPE OPTIONAL
-      PURPOSE "Required for bulding the pcgWrap component."
-)
-   set( PCG_LIB_DIR "${PCG_LIB_DIR}" CACHE PATH "Location of pcg libraries." )
-   mark_as_advanced(PCG_LIB_DIR)
 
    # GRACE ------------------------------------------------------------------
    find_package( Grace QUIET )
