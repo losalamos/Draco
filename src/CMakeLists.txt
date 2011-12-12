@@ -70,9 +70,6 @@ add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
 
-if( PCG_FOUND )
-  add_dir_if_exists( pcgWrap )    # needs ds++
-endif()
 if( GRACE_FOUND )
   add_dir_if_exists( plot2D )
 endif()
@@ -90,11 +87,7 @@ add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( special_functions ) # needs units, ds++
 add_dir_if_exists( timestep )     # needs c4, ds++
 add_dir_if_exists( viz )          # needs traits, ds++
-
 add_dir_if_exists( cdi_ipcress )
-if( GANDOLF_FOUND )
-   add_dir_if_exists( cdi_gandolf )  # needs cdi
-endif()
 
 # Level 4
 message(" ")

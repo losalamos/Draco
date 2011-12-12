@@ -539,12 +539,6 @@ the Draco packages that have external vendor requirements:
   <th class="draco"> Vendor </th> 
   <th class="draco"> Required or Optional </th> 
 </tr>
-<!-- rng -->
-<tr>
-<td class="draco"> <tt> rng </tt> </td>
-<td class="draco"> <a href="http://sprng.cs.fsu.edu">SPRNG</a> </td>
-<td class="draco"> required </td>
-</tr>
 <!-- lapack_wrap -->
 <tr>
 <td class="draco"> <tt> lapack_wrap </tt> </td>
@@ -563,22 +557,10 @@ the Draco packages that have external vendor requirements:
 <td class="draco"> <a href="http://www.mcs.anl.gov/mpi/index.html">MPI</a> </td>
 <td class="draco"> optional </td>
 </tr>
-<!-- pcgWrap -->
-<tr>
-<td class="draco"> <tt> pcgWrap </tt> </td>
-<td class="draco"> PCG, <a href="http://www.netlib.org">LAPACK, BLAS</a> </td>
-<td class="draco"> required </td>
-</tr>
 <!-- cdi_eospac -->
 <tr>
 <td class="draco"> <tt> cdi_eospac  </tt></td>
 <td class="draco"> <a href="http://laurel.lanl.gov/PROJECTS/DATA/eos/eos.shtml">eospac</a> </td>
-<td class="draco"> required </td>
-</tr>
-<!-- cdi_gandolf -->
-<tr>
-<td class="draco"> <tt> cdi_gandolf </tt> </td>
-<td class="draco"> <a href="http://laurel.lanl.gov/PROJECTS/DATA/atomic/atomdata.html">gandolf</a> </td>
 <td class="draco"> required </td>
 </tr>
 </table>

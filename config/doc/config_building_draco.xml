@@ -421,8 +421,7 @@
     <para>As mentioned before, some Draco packages also rely on external
     vendors. The vendor dependency can be optional or required. For example,
     c4 uses MPI; however, it can be compiled in a serial mode that does not
-    require MPI. On the other hand, rng requires the SPRNG library to be used
-    in an application. The following table lists the Draco pakcages that have
+    require MPI. The following table lists the Draco pakcages that have
     external vendor requitements:</para>
 
     <table>
@@ -440,13 +439,6 @@
         </thead>
 
         <tbody>
-          <row>
-            <entry>rng</entry>
-
-            <entry>SPRNG</entry>
-
-            <entry>required</entry>
-          </row>
 
           <row>
             <entry>lapack_wrap</entry>
@@ -473,9 +465,7 @@
           </row>
 
           <row>
-            <entry>pcgWrap</entry>
-
-            <entry>PCG, LAPACK, BLAS</entry>
+            <entry>LAPACK, BLAS</entry>
 
             <entry>required</entry>
           </row>
@@ -488,13 +478,6 @@
             <entry>required</entry>
           </row>
 
-          <row>
-            <entry>cdi_gandolf</entry>
-
-            <entry>gandolf</entry>
-
-            <entry>required</entry>
-          </row>
         </tbody>
       </tgroup>
     </table>
@@ -507,13 +490,12 @@
 
     <para>External clients must remember to include vendor libraries when
     loading Draco libraries. Returing to the mc package example, the rng
-    package uses SPRNG and the c4 package may use MPI; thus, the total link
+    package uses the c4 package may use MPI; thus, the total link
     line should be:</para>
 
-    <programlisting>-lrtt_mc -lrtt_viz_meshReaders -lrtt_traits -lrtt_rng -lrtt_c4 -lrtt_ds++ -llfg -lmpi</programlisting>
+    <programlisting>-lrtt_mc -lrtt_viz_meshReaders -lrtt_traits -lrtt_rng -lrtt_c4 -lrtt_ds++ -lmpi</programlisting>
 
-    <para>where l<markup>iblfg.a(so)</markup> is the SPRNG random number
-    library. The DBS automatically includes these vendor libraries; thus, if
+    The DBS automatically includes these vendor libraries; thus, if
     the Draco DBS is imported into client applications, these dependences wil
     be taken care of automatically. See section <link linkend="???">Importing
     the Draco Build System</link> for details.</para>
@@ -1017,25 +999,11 @@
     <programlisting>$VENDOR_LIB_DIR
 $VENDOR_INC_DIR</programlisting>
 
-    <para>For example, if SPRNG exists in /usr/local/sprng and we
-    define</para>
-
-    <programlisting>SPRNG_LIB_DIR=/usr/local/sprng/lib
-SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
-
     <para>then running configure with the following options,</para>
 
-    <programlisting>&gt; $DRACO/configure --with-sprng-ing --with-sprng-lib</programlisting>
+    <programlisting>&gt; $DRACO/configure</programlisting>
 
-    <para>will set the SPRNG include directory to <markup>$
-    SPRNG_INC_DIR</markup> and the SPRNG lib directory to
-    <markup>$SPRNG_LIB_DIR</markup>. Note that this is different from not
-    specifying any options for SPRNG. If <markup>--with-sprng-lib</markup> is
-    not placed on the configure line then no directory location will be set
-    for the SPRNG library as described <link linkend="???">above</link>. See
-    <link linkend="???">Example Builds</link> for more examples.</para>
-
-    <para>The following tables summarize the vendor options supported by
+        <para>The following tables summarize the vendor options supported by
     Draco:</para>
 
     <table>
@@ -1085,35 +1053,6 @@ SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
             <entry>location of MPI libraries</entry>
           </row>
 
-          <row>
-            <entry>SPRNG</entry>
-
-            <entry><markup>--with-sprng</markup></entry>
-
-            <entry>lfg</entry>
-
-            <entry>set SPRNG library</entry>
-          </row>
-
-          <row>
-            <entry>SPRNG</entry>
-
-            <entry><markup>--with-sprng-inc</markup></entry>
-
-            <entry><markup>$SPRNG_INC_DIR</markup></entry>
-
-            <entry>location of SPRNG header files</entry>
-          </row>
-
-          <row>
-            <entry>SPRNG</entry>
-
-            <entry><markup>--with-sprng-lib</markup></entry>
-
-            <entry><markup>$SPRNG_LIB_DIR</markup></entry>
-
-            <entry>location of SPRNG libraries</entry>
-          </row>
         </tbody>
       </tgroup>
     </table>
@@ -1176,26 +1115,6 @@ SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
           </row>
 
           <row>
-            <entry>GANDOLF</entry>
-
-            <entry><markup>--with-gandolf</markup></entry>
-
-            <entry>gandolf</entry>
-
-            <entry>name of GANDOLDF library (e.g.libgandolf)</entry>
-          </row>
-
-          <row>
-            <entry>GANDOLF</entry>
-
-            <entry><markup>--with-gandolf-lib</markup></entry>
-
-            <entry><markup>$GANDOLF_LIB_DIR</markup></entry>
-
-            <entry>location of GANDOLF library</entry>
-          </row>
-
-          <row>
             <entry>GRACE</entry>
 
             <entry><markup>--with-grace</markup></entry>
@@ -1223,26 +1142,6 @@ SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
             <entry><markup>$GRACE_LIB-DIR</markup></entry>
 
             <entry>location of GRACE library</entry>
-          </row>
-
-          <row>
-            <entry>PCG</entry>
-
-            <entry><markup>--with-pcg</markup></entry>
-
-            <entry>pcg</entry>
-
-            <entry>name of PCG library (e.g.libpcg)</entry>
-          </row>
-
-          <row>
-            <entry>PCG</entry>
-
-            <entry><markup>--with-pcg-lib</markup></entry>
-
-            <entry><markup>$PCG_LIB_DIR</markup></entry>
-
-            <entry>location of PCG library</entry>
           </row>
 
           <row>
@@ -1310,8 +1209,7 @@ SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
     </table>
 
     <para>The DBS automatically adds supporting libraries for these vendors
-    for each system. For example, on LINUX, the use of GANDOLF or EOSPAC
-    requires the addition of libg2c. All that is required for proper
+    for each system. All that is required for proper
     configuration is to tell Draco where the actual vendor libraries are
     installed.</para>
 
@@ -1379,14 +1277,10 @@ SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
 
 /  /netscratch/kellyt/draco/configure --prefix=/netscratch/kelly/draco/t \
    --with-c4=mpi --enable-debug --enable-shared --enable-shared \
-   --with-sprng-inc=/usr/projects/draco/vendors/sprng/include \
-   --with-sprng-lib=/usr/pojects/draco/vendors/sprng/Linux/lib \
    --with-mpi-inc=/usr/local/packages/mpich-1.2.5-LaheyFortran95Pro-6.le/include \
    --with-mpi-lib=/ust/local/packages/mpich-1.2.5-LaheyFortran95Pro-6.le/lib \
    --with-grace-inc=/usr/projects/draco/vendors/grace/Linux/include \
    --with-grace-lib=/usr/projects/draco/vendors/grace/Linux/lib \
-   --with-pcg-lib=/usr/projects/draco/vendors/grace/Linux/include \
-   --with-gandolf-lib=/usr/projects/atomic/gandolf/v3.6/lib/intel-linux \
    --with-eospac-lic=/usr/projects/data/eos/eospac/default/intel-linux/lib
 
 6. gmake check
@@ -1408,8 +1302,7 @@ SPRNG_INC_DIR=/usr/local/sprng/include</programlisting>
       <para>Configure and build all of Draco on the CCS-4 LINUX network. We
       have set the following:</para>
 
-      <programlisting>export SPRNG_INC_DIR=/codes/radtran/vendors/sprng/include
-export SPRNG_LIB_DIR=/codes/radtran/vendors/sprng/Linux/lib
+      <programlisting>
 export MPI_INC_DIR=/usr/local/mpich/include
 export MPI_LIB_DIR=/usr/local/mpich/lib</programlisting>
     </example>
@@ -1422,14 +1315,12 @@ export MPI_LIB_DIR=/usr/local/mpich/lib</programlisting>
 &gt; mkdir draco
 &gt; cd draco
 &gt; ../../draco/configure --prefix=/home/joe/draco-debug --with-c4=mpi
-  --with-mpi-inc --with-mpi-lib --with-sprng-inc --with-sprng-lib
+  --with-mpi-inc --with-mpi-lib 
   --with-lapack=atlas
   --with-lapack-lib=/codes/radtran/vendors/atlas/Linux/lib
-  --with-gandolf-lib=/codes/radrran/cendors/eospac/Linux/lib
   --with-eospac-lib=/codes/radrran/vendors/eospac/Linux/lib
   --with-grace-inc=/usr/local/grace/include
   --with-grace-lib=/usr/local/grace/lib
-  --with-pcg-lib=/codes/radtran/vendors/pcg/Linux/lib
 &gt; gmake nj=2</programlisting>
 
     <para>In this example, we have assumed that the developer is logged into a
@@ -1440,39 +1331,6 @@ export MPI_LIB_DIR=/usr/local/mpich/lib</programlisting>
 
     <programlisting>&gt; cd /home/joe/draco-debug/draco
 &gt; gmake check</programlisting>
-
-    <example>
-      <title>Example 2</title>
-
-      <para>A client wishes to use the cdi_gandolf package on Blue Mountain
-      (SGI IRIX64). We will compile an optimized version of Draco for this
-      exercise using the KCC compiler. Draco has been checked out into
-      <markup>/scratch/joe/drac</markup>o. The following packages sit under
-      <markup>/scratch/joe/draco/src</markup>:</para>
-
-      <programlisting>ds++/ cdi/ cdi/gandolf/</programlisting>
-
-      <para>We will install Draco in /scratch/joe/draco-cdi. Here are the
-      steps:</para>
-
-      <programlisting>&gt; cd /scrath/joe/draco-cdi
-&gt; mkdir draco
-&gt; cd draco
-&gt; ../../draco/configure --prefix=/scratch/joe/draco-cdi --with-opt=3
-  --with-dbc=0 --with-cxx-kcc
-  --with-gandolf-lib=/ust/projects/atomic/gandolf/v3.6/lib/sgi-64
-&gt; gmake nj=2
-&gt; cd draco/src/cdi_gandolf
-&gt; gmake check</programlisting>
-
-      <para>At the end of this configure/build we have checked the cdi_gandolf
-      package explicitly. Instead, assume we wished to manually run the
-      <markup>tGandolfOpacity</markup> unit test:</para>
-
-      <programlisting>&gt; cd /scratch/joe/draco-cdi/draco/src/cdi_gandolf/test
-&gt; gmake tGandolfOpacity
-&gt; ./tGandolfOpacity</programlisting>
-    </example>
 
     <example>
       <title>Example 3</title>
@@ -1492,14 +1350,10 @@ export MPI_LIB_DIR=/usr/local/mpich/lib</programlisting>
 &gt; cd draco
 &gt; ../../draco/configure --prefix+/scratch/joe/draco-mc --with-opt+3
   --with-dbc+1 --disable-debug --with-c4+mpi --enable-shrared
-  --with-sprng-inc=/usr/projects/jayenne/sprng/include
-  --with-srpng=lib=/ust/projects/jayenne/sprng/OSF1/lib
 &gt; gmake nj=8</programlisting>
 
       <para>This version of Draco will have DBC Require actibe. The C++
-      compiler is CXX, which is the default for Compaq Tru64. Notice that we
-      must provide the locations of the SPRNG libraries because mc depends on
-      rng which, in turn, depends on SPRNG.</para>
+      compiler is CXX, which is the default for Compaq Tru64.</para>
     </example>
   </section>
 </section>

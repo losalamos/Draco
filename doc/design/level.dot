@@ -26,7 +26,6 @@ digraph draco_level {
     /* level 1 */
     vdlopen    [shape=hexagon, color=green, label="dlopen"];
     veospac    [shape=hexagon, color=green, label="EOSPAC"];
-    vgandolf   [shape=hexagon, color=red  , label="GANDOLF"];
     vgrace     [shape=hexagon, color=green, label="XMGRACE"];
     vlapack    [shape=hexagon, color=green, label="LAPACK"];
     vmpi       [shape=hexagon, color=green, label="MPI"];
@@ -36,7 +35,6 @@ digraph draco_level {
     
     /* level 2 */
     vgsl       [shape=hexagon, color=green, label="GSL"];
-    vpcg       [shape=hexagon, color=red, label="PCG"];
 
     c4         [shape=box, color=blue, label="c4"];
     cdi        [shape=box, color=blue, label="cdi"];
@@ -54,7 +52,6 @@ digraph draco_level {
     /* level 3 */
     device    [shape=box, color=blue, label="device"];
     cdieos    [shape=box, color=blue, label="cdi_eospac"];
-    cdigan    [shape=box, color=red, label="cdi_gandolf"];
     cdiip     [shape=box, color=blue, label="cdi_ipcress"];
     diagnostics [shape=box, color=blue, label="diagnostics"];
     fit       [shape=box, color=blue, label="fit"];
@@ -62,7 +59,6 @@ digraph draco_level {
     min       [shape=box, color=blue, label="min"];
     norms     [shape=box, color=blue, label="norms"];
     parser    [shape=box, color=blue, label="parser"];
-    pcg       [shape=box, color=red, label="pcgWrap"];
     roots     [shape=box, color=blue, label="roots"];
     sf        [shape=box, color=blue, label="special_functions"];
     timestep  [shape=box, color=blue, label="timestep"];
@@ -75,10 +71,14 @@ digraph draco_level {
     
     /* dependencies */
     {rank=same; legend leg_vendor leg_draco leg_depre};
-    {rank=same; level1 dsxx vlapack vmpi veospac vgandolf vgrace vdlopen vgsl vdacs};
-    {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi vpcg ode linear};
-    {rank=same; level3 viz timestep cdieos cdigan pcg meshread parser sf};
+    {rank=same; level1 dsxx vlapack vmpi veospac vgrace vdlopen vgsl vdacs};
+    {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi ode linear};
+    {rank=same; level3 viz timestep cdieos meshread parser sf};
     {rank=same; level4 rttread quad};
+
+
+    leg_draco -> {leg_vendor} [color=green, style=dotted, label="test dependency only"];
+    leg_draco -> {leg_depre} [color=red, label="full dependency"];
     
     /* draco packages */
 
@@ -106,7 +106,6 @@ digraph draco_level {
     shlib       -> {vdlopen}     [color=green];
     traits      -> {dsxx}        [color=blue];
     units       -> {dsxx}        [color=blue];
-    vpcg        -> {vlapack}     [color=green];
     
     /* level 3 */
     device      -> {dsxx}        [color=blue];
@@ -114,8 +113,6 @@ digraph draco_level {
     device      -> {vdacs}       [color=green];
     cdieos      -> {cdi}         [color=blue];
     cdieos      -> {veospac}     [color=green]; 
-    cdigan      -> {cdi}         [color=blue]; 
-    cdigan      -> {vgandolf}    [color=red];
     cdiip       -> {cdi}         [color=blue];
     diagnostics -> {c4}          [color=blue];
     fit         -> {linear}      [color=blue];
@@ -123,11 +120,7 @@ digraph draco_level {
     min         -> {linear}      [color=blue];
     norms       -> {c4}          [color=blue];
     parser      -> {c4 units}    [color=blue];
-    pcg         -> {c4}          [color=blue style=dotted];
-    pcg         -> {dsxx}        [color=blue];
-    pcg         -> {vpcg}        [color=red];
     roots       -> {linear}      [color=blue];
-    roots       -> {c4}          [color=blue, style=dotted];
     sf          -> {units ode}   [color=blue];
     sf          -> {vgsl}        [color=green];
     timestep    -> {c4}          [color=blue];
