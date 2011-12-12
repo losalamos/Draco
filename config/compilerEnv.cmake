@@ -149,7 +149,7 @@ endmacro()
 #    CMAKE_Fortran_FLAGS_RELWITHDEBINFO
 #    CMAKE_Fortran_FLAGS_MINSIZEREL
 #    ENABLE_SINGLE_PRECISION - bool
-#    ABS_FLOAT_PRECISION     - string (config.h)
+#    DBS_FLOAT_PRECISION     - string (config.h)
 #    PRECISION_DOUBLE | PRECISION_SINGLE - bool
 # 
 #------------------------------------------------------------------------------#
@@ -189,10 +189,10 @@ endmacro()
   # option( ENABLE_SINGLE_PRECISION
     # "Compile the library with single precision floating point" ON )
   # if( ENABLE_SINGLE_PRECISION )
-    # set( ABS_FLOAT_PRECISION single )
+    # set( DBS_FLOAT_PRECISION single )
     # set( PRECISION_SINGLE ON )
   # else( ENABLE_SINGLE_PRECISION )
-    # set( ABS_FLOAT_PRECISION double )
+    # set( DBS_FLOAT_PRECISION double )
     # set( PRECISION_DOUBLE ON )
   # endif( ENABLE_SINGLE_PRECISION )
 
@@ -232,7 +232,7 @@ endmacro()
   
   # if( NOT QUIET )
     # message("ENABLE_SINGLE_PRECISION : ${ENABLE_SINGLE_PRECISION}")
-    # message("ABS_FLOAT_PRECISION     : ${ABS_FLOAT_PRECISION}")
+    # message("DBS_FLOAT_PRECISION     : ${DBS_FLOAT_PRECISION}")
     # message("PRECISION_SINGLE        : ${PRECISION_SINGLE}")
     # message("PRECISION_DOUBLE        : ${PRECISION_DOUBLE}")
     # message("ENABLE_OPENMP           : ${ENABLE_OMPENMP}")
