@@ -11,18 +11,19 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set prefix      /usr/projects/draco/vendors/gandolf/Linux64
-set libdir      $prefix/lib
+set version     2.8.7-rc1-Linux-i386
+set prefix      /usr/projects/draco/vendors/cmake-$version
+set bindir      $prefix/bin;
+set mandir      $prefix/man;
 
 # module whatis
-module-whatis   "Gandolf";
+module-whatis   "CMake $version";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tGandolf\n";
-   puts stderr "\tGANDOLF_LIB_DIR\t= $libdir";
+   puts stderr "\tCMake $version\n";
 }
 
 if { ![file exists $prefix] } {
@@ -31,4 +32,9 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-setenv GANDOLF_LIB_DIR $libdir
+# Converting clients to embedded info in module files, rather
+# than supporting client license files in the installation directory(s). 
+prepend-path    PATH            $bindir;
+prepend-path    MANPATH         $mandir;
+
+
