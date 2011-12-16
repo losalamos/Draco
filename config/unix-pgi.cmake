@@ -124,7 +124,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
 # -Mcache_align (breaks some tests in wedgehog)
 # -Msafeptr (breaks some array operations in MatRA).
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
 ENDIF()
 
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )

@@ -69,7 +69,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -inline-level=0 -ip -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -inline-level=1 -ip -fp -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -strict-ansi")

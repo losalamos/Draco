@@ -102,7 +102,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO " -g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -O3 -funroll-loops" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
