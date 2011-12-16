@@ -74,18 +74,6 @@ SET( CMAKE_Fortran_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops -march=k8 
 SET( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
 SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -ftree-vectorize -funroll-loops -march=k8 -DDEBUG" ) 
 
-if( ENABLE_SSE )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -msse2 -mfpmath=sse" ) #-mssse3?
-endif( ENABLE_SSE )
-
-# OpenMP directives
-if( ENABLE_OPENMP )
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fopenmp" ) 
-  # When the main exe is g++, we need the -fopenmp flag on the link line.
-  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fopenmp" )
-endif( ENABLE_OPENMP )
-
-
 # ------------------------------------------------------------
 # Find and save compiler libraries.  These may need to be used when
 # the main code is C++ that links to Fortran libraries.

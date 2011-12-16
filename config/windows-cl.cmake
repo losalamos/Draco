@@ -96,7 +96,7 @@ if( ${CMAKE_GENERATOR} STREQUAL "Visual Studio 8 2005" OR
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2" )
   endif()
 
-  if( ENABLE_OPENMP )
+  if( USE_OPENMP )
     # Is omp.h available?
     include (CheckIncludeFiles)
     check_include_files( omp.h HAVE_OMP_H )

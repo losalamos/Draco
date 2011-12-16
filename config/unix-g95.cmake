@@ -58,10 +58,6 @@ SET( CMAKE_Fortran_FLAGS_RELEASE
 SET( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
 SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -DDEBUG ${CMAKE_Fortran_FLAGS_RELEASE}" ) 
 
-if( ENABLE_SSE )
-  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -msse2 -mfpmath=sse" )
-endif( ENABLE_SSE )
-
 # Save g95 version value
 #
 execute_process( 
@@ -69,12 +65,6 @@ execute_process(
   OUTPUT_VARIABLE tmp )
 string( REGEX REPLACE "^(G95 [(].*)([0-9]+[)]).*" "\\1\\2"
   CMAKE_Fortran_COMPILER_VERSION "${tmp}" )
-
-# OpenMP directives
-#
-if( ENABLE_OPENMP )
-  message( STATUS "g95 does not support OpenMP directives. Defaulting to scalar build." )
-endif( ENABLE_OPENMP )
 
 #
 # During discovery of F95 compiler, also discover and make available:

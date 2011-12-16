@@ -66,14 +66,6 @@ string( REGEX REPLACE "^(G95 [(].*)([0-9]+[)]).*" "\\1\\2"
   CMAKE_Fortran_COMPILER_VERSION "${tmp}" )
 
 #
-# OpenMP directives
-#
-if( ENABLE_OPENMP )
-  #SET(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} /Qopenmp" ) 
-  message( STATUS "g95 does not support OpenMP directives. Defaulting to scalar build." )
-endif( ENABLE_OPENMP )
-      
-#
 # During discovery of F95 compiler, also discover and make available:
 #
 # ${CMAKE_Fortran_redist_dll}    

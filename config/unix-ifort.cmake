@@ -30,7 +30,7 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 set( CMAKE_Fortran_FLAGS 
   "-warn  -fpp -fPIC -implicitnone"
   ) #  -fp-model strict -prec-div -static
-if( ENABLE_OPENMP )
+if( USE_OPENMP )
    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -openmp -parallel" )
 endif()
 
@@ -84,9 +84,9 @@ string( REGEX REPLACE ".*([0-9]+[.][0-9][ ][0-9]+).*"
 # Order of libraries is important
 set( f90_system_lib 
    libifport.a libifcore.a libirc.a libsvml.a libimf.a )
-if( ENABLE_OPENMP )
+if( USE_OPENMP )
   set( f90_system_lib ${f90_system_lib};libiomp5.a )
-endif( ENABLE_OPENMP )
+endif( USE_OPENMP )
 
 # Static libraries from the /lib directory (useful for target_link_library command).
 set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL

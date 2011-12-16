@@ -137,42 +137,6 @@ if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
    endif()
 endif()
 
-# if( ENABLE_OPENMP )
-#   # When compiling F90 that links in C++-based libraries, we will need
-#   # librt added to the link line.
-#   execute_process( 
-#     COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=librt.so
-#     TIMEOUT 5
-#     RESULT_VARIABLE tmp
-#     OUTPUT_VARIABLE librt_so_loc
-#     ERROR_VARIABLE err
-#     OUTPUT_STRIP_TRAILING_WHITESPACE
-#     )
-#   get_filename_component( librt_so_loc ${librt_so_loc} ABSOLUTE )
-#   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${librt_so_loc} )
-# endif()
-
-# option( ENABLE_C_CODECOVERAGE "Instrument for C/C++ code coverage analysis?" OFF )
-# if( ENABLE_C_CODECOVERAGE )
-#   find_program( COVERAGE_COMMAND gcov )
-#   set( CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-#   set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG}")
-#   set( CMAKE_LDFLAGS           "-fprofile-arcs -ftest-coverage" )
-
-#   # When compiling F90 that links in C++-based libraries, we will need
-#   # libgcov added to the link line.
-#   execute_process( 
-#     COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcov.a
-#     TIMEOUT 5
-#     RESULT_VARIABLE tmp
-#     OUTPUT_VARIABLE libgcov_a_loc
-#     ERROR_VARIABLE err
-#     OUTPUT_STRIP_TRAILING_WHITESPACE
-#     )
-#   get_filename_component( libgcov_a_loc ${libgcov_a_loc} ABSOLUTE )
-#   set( GCC_LIBRARIES ${GCC_LIBRARIES} ${libgcov_a_loc} )
-# endif( ENABLE_C_CODECOVERAGE )
-
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
 ##---------------------------------------------------------------------------##

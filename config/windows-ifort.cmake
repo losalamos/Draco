@@ -47,23 +47,6 @@ endif( ENABLE_Fortran_CODECOVERAGE )
    if( MSVC_IDE )
      set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} /nologo" )
    endif( MSVC_IDE )
-   if( ENABLE_OPENMP )
-      option( ENABLE_THREAD_PROFILE "Use ifort OpenMP profiling directives?" OFF )
-      if( ENABLE_THREAD_PROFILE )
-         set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} /Qopenmp_profile /Qparallel" )
-      else( ENABLE_THREAD_PROFILE )
-         set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} /Qopenmp /Qparallel" )
-      endif( ENABLE_THREAD_PROFILE )
-   endif( ENABLE_OPENMP )
-   if( ENABLE_SSE )
-     set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} /arch:SSE2 /QaxSSSE3" )
-     # Before 2009-11-04: "/QxO /Qprec-sqrt"
-   endif( ENABLE_SSE )
-   if( ENABLE_Fortran_CODECOVERAGE )
-     # /Qprof_genx - instrument a code for profiling and gathers extra
-     #               information for code coverage tools.
-     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} /Qprof_genx" ) # /Qprof_use
-   endif( ENABLE_Fortran_CODECOVERAGE )
 
    # /MDd == resolve system calls with multi-threaded, dynamic link libraries (debug)
    # /debug:full (==/Zi)

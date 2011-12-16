@@ -56,51 +56,6 @@ SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O -mtune=opteron -g -DDEBUG" )
 # Remove -fPIC:
 set( CMAKE_SHARED_LIBRARY_Fortran_FLAGS "" )
 
-# OpenMP
-if( ENABLE_OPENMP )
-  SET( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -mp" ) 
-endif( ENABLE_OPENMP )
-
-# SSE
-if( ENABLE_SSE )
-  set(  CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -msse2" )
-endif( ENABLE_SSE )
-
-# Code Coverage
-# KT (209-03-03) Does not appear to work.
-#option( ENABLE_Fortran_CODECOVERAGE 
-#  "Instrument for C/C++ code coverage analysis?" OFF )
-#if( ENABLE_Fortran_CODECOVERAGE )
-#  find_program( COVERAGE_COMMAND gcov )
-#  set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-#  set( CMAKE_LDFLAGS             "-fprofile-arcs -ftest-coverage" )
-
-  # When compiling F90 that links in C++-based libraries, we will need
-  # libgcov added to the link line.
-#  execute_process( 
-#    COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcov.a
-#    TIMEOUT 5
-#    RESULT_VARIABLE tmp
-#    OUTPUT_VARIABLE libgcov_a_loc
-#    ERROR_VARIABLE err
-#    OUTPUT_STRIP_TRAILING_WHITESPACE
-#    )
-#  get_filename_component( libgcov_a_loc ${libgcov_a_loc} ABSOLUTE )
-#  set( GCC_LIBRARIES ${GCC_LIBRARIES} ${libgcov_a_loc} )
-# endif( ENABLE_Fortran_CODECOVERAGE )
-
-#----------------------------------------
-# During discovery of F95 compiler, 
-# also discover and make available:
-#----------------------------------------
-
-# ${CMAKE_Fortran_redist_dll}    
-#   - List of Fortran compiler libraries to be installed for release
-# ${CMAKE_Fortran_debug_dll}
-#   - List of Fortran compiler libraries to be installed for portable developer-only debug version
-# ${CMAKE_Fortran_compiler_libs} 
-#   - List of Fortran compiler libraries to be used with the target_link_libraries command (C main code that links with Fortran built library.)
-
 # ONLY non-debug versions are redistributable.
 set( f90_system_dll
   libpathfortran.so
@@ -154,21 +109,6 @@ if( EXISTS ${CMAKE_Fortran_libopenmp_lib_RELEASE} )
   find_package( Threads )
   list( APPEND CMAKE_Fortran_compiler_libs
     ${CMAKE_THREAD_LIBS_INIT} )
-    
-# This more elaborate checking doesn't appear to be needed yet.
-#  string( REGEX REPLACE "[.]a$" ".so"
-#    CMAKE_Fortran_libopenmp_so_RELEASE
-#    ${CMAKE_Fortran_libopenmp_lib_RELEASE})
-#  execute_process(
-#    COMMAND ldd ${CMAKE_Fortran_libopenmp_so_RELEASE}
-#    OUTPUT_VARIABLE tmp
-#    ERROR_VARIABLE err )
-#  string( REGEX REPLACE ".*libpthread.*[ =]+[>][ ]([/A-z0-9_.]+)[ (]+.*" "\\1"
-#    CMAKE_Fortran_libopenmp_so_RELEASE
-#    ${CMAKE_Fortran_libopenmp_so_RELEASE} )
-#  message("CMAKE_Fortran_libopenmp_so_RELEASE = ${CMAKE_Fortran_libopenmp_so_RELEASE}")
-#  list( APPEND CMAKE_Fortran_compiler_libs
-#    ${CMAKE_Fortran_libopenmp_so_RELEASE} )
 
 endif( EXISTS ${CMAKE_Fortran_libopenmp_lib_RELEASE} )
 
