@@ -11,6 +11,8 @@
 
 # Global
 
+include( FeatureSummary )
+
 # Library type to build
 # Linux: STATIC is a lib<XXX>.a
 #        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
@@ -37,6 +39,9 @@ if( EXISTS $ENV{PAPI_HOME} )
     broken)." )
     endif()
     mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
+
+    add_feature_info( HAVE_PAPI HAVE_PAPI 
+       "Provide PAPI hardware counters if available." )
 endif()
 
 
