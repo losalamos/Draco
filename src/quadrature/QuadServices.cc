@@ -375,7 +375,7 @@ std::vector< double > QuadServices::computeD_svd(void) const
     gsl_matrix_view gsl_M = gsl_matrix_view_array( &M[0], m, n );
     gsl_vector_view gsl_S = gsl_vector_view_array( &S[0], n );
     gsl_matrix_view gsl_V = gsl_matrix_view_array( &V[0], n, n );
-    gsl_matrix_view gsl_D = gsl_matrix_view_array( &D[0], n, m );
+    // gsl_matrix_view gsl_D = gsl_matrix_view_array( &D[0], n, m );
     
     // Singular Value Decomposition
     //
