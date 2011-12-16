@@ -36,3 +36,5 @@ if { ![file exists $prefix] } {
 
 setenv GSL_LIB_DIR $libdir
 setenv GSL_INC_DIR $incdir
+
+prepend-path LD_LIBRARY_PATH $libdir;
