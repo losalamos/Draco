@@ -69,30 +69,42 @@ set_property( CACHE DRACO_LIBRARY_TYPE
 #------------------------------------------------------------------------------#
 macro(dbsSetupCompilers)
 
-  # Bad platform
-  if( NOT WIN32 AND NOT UNIX)
-    message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
-  endif()  
-  
-  # shared or static libararies?
-  if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-     message(STATUS "Building static libraries.")
-     set( MD_or_MT "MD" )
-     set( DRACO_SHARED_LIBS 0 )
-  elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-     message(STATUS "Building shared libraries.")
-     set( MD_or_MT "MD" )
-     # This CPP symbol is used by config.h to signal if we are need to add 
-     # declspec(dllimport) or declspec(dllexport) for MSVC.
-     set( DRACO_SHARED_LIBS 1 )
-     mark_as_advanced(DRACO_SHARED_LIBS)
-  else()
-     message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
-  endif()
-  set( DRACO_SHARED_LIBS ${DRACO_SHARED_LIBS} CACHE STRING 
-	"This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
-  
-  set( gen_comp_env_set 1 )
+   # Bad platform
+   if( NOT WIN32 AND NOT UNIX)
+      message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
+   endif()  
+   
+   # shared or static libararies?
+   if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
+      message(STATUS "Building static libraries.")
+      set( MD_or_MT "MD" )
+      set( DRACO_SHARED_LIBS 0 )
+   elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
+      message(STATUS "Building shared libraries.")
+      set( MD_or_MT "MD" )
+      # This CPP symbol is used by config.h to signal if we are need to add 
+      # declspec(dllimport) or declspec(dllexport) for MSVC.
+      set( DRACO_SHARED_LIBS 1 )
+      mark_as_advanced(DRACO_SHARED_LIBS)
+   else()
+      message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
+   endif()
+   set( DRACO_SHARED_LIBS ${DRACO_SHARED_LIBS} CACHE STRING 
+      "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
+   
+   ##---------------------------------------------------------------------------##
+   ## Check for OpenMP
+   option( USE_OPENMP "Turn on OpenMP features?" ON )
+   
+   include( CheckIncludeFiles )
+   check_include_files( omp.h HAVE_OMP_H )
+   if( NOT HAVE_OMP_H )
+      set( USE_OPENMP OFF )
+   endif()   
+
+   ##---------------------------------------------------------------------------##
+
+   set( gen_comp_env_set 1 )
 endmacro()
 
 #------------------------------------------------------------------------------#
