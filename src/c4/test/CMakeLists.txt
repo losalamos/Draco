@@ -96,4 +96,15 @@ add_parallel_tests(
    DEPS      "${test_deps}"
    )
    
+# tstOMP should be run alone (not in paralle with other tests) because
+# it tries to use all available cores as OMP threads.
+set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
+   PROPERTIES APPEND
+      RUN_SERIAL
+   )
 
+ # RUN_SERIAL
+ #       Do not run this test in parallel with any other test.
+ #       Use this option in conjunction with the ctest_test PARALLEL_LEVEL
+ #       option to specify that this test should not be run in parallel with
+ #       any other tests.
