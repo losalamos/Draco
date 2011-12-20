@@ -79,6 +79,21 @@ string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
 string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
    DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
 
+# is this bullseye?
+execute_process(
+  COMMAND ${CMAKE_CXX_COMPILER} --version
+  ERROR_VARIABLE DBS_CXX_IS_BULLSEYE
+  )
+
+if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
+#   string( REGEX REPLACE "(BullseyeCoverage).*" "\\1"
+#      DBS_CXX_IS_BULLSEYE ${DBS_CXX_IS_BULLSEYE} )
+   set( DBS_CXX_IS_BULLSEYE "ON" )
+   set( DBS_CXX_IS_BULLSEYE ${DBS_CXX_IS_BULLSEYE} 
+      CACHE BOOL "Are we running Bullseye" )
+   mark_as_advanced( DBS_CXX_IS_BULLSEYE )
+endif()
+
 #
 # Compiler Flags
 # 
