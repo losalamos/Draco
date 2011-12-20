@@ -18,6 +18,11 @@ set( test_lib_sources
 file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
+# Bullseye doesn't like some OMP directives.
+if( DBS_CXX_IS_BULLSEYE )
+   list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/tstOMP.cc )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
@@ -43,8 +48,7 @@ set( test_deps
    ${MPI_LIBRARIES} 
    ${PAPI_LIBRARY}
    ${omplib}
-)
-
+   )
 
 # This test has special arguments and special pass/fail criteria.
 set( special_test ${PROJECT_SOURCE_DIR}/phw.cc )
@@ -96,12 +100,20 @@ add_parallel_tests(
    DEPS      "${test_deps}"
    )
    
-# tstOMP should be run alone (not in paralle with other tests) because
-# it tries to use all available cores as OMP threads.
-set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
-   PROPERTIES APPEND
+if( NOT DBS_CXX_IS_BULLSEYE )
+   # tstOMP should be run alone (not in paralle with other tests) because
+   # it tries to use all available cores as OMP threads.
+   # Also mark with 'nomemcheck' as valgrind can mess up the timing
+   # checks. 
+   set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
+      PROPERTIES 
+      LABELS "nomemcheck"
+      )
+   set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
+      PROPERTIES APPEND
       RUN_SERIAL
-   )
+      )
+endif()
 
  # RUN_SERIAL
  #       Do not run this test in parallel with any other test.
