@@ -51,8 +51,6 @@ set( GCC_LIBRARIES
   ${libstdcpp_so_loc}
   ${libgcc_s_so_loc}
   )
-#message(   "   - GNU C++  : ${libstdcpp_so_loc}" )
-#message(   "   -          : ${libgcc_s_so_loc}" )
 
 #
 # config.h settings
@@ -83,11 +81,10 @@ string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
 execute_process(
   COMMAND ${CMAKE_CXX_COMPILER} --version
   ERROR_VARIABLE DBS_CXX_IS_BULLSEYE
+  OUTPUT_VARIABLE tmp
   )
 
 if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
-#   string( REGEX REPLACE "(BullseyeCoverage).*" "\\1"
-#      DBS_CXX_IS_BULLSEYE ${DBS_CXX_IS_BULLSEYE} )
    set( DBS_CXX_IS_BULLSEYE "ON" )
    set( DBS_CXX_IS_BULLSEYE ${DBS_CXX_IS_BULLSEYE} 
       CACHE BOOL "Are we running Bullseye" )
