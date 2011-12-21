@@ -19,7 +19,7 @@ file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # Bullseye doesn't like some OMP directives.
-if( DBS_CXX_IS_BULLSEYE )
+if( DBS_CXX_IS_BULLSEYE OR ${CMAKE_CXX_COMPILER} MATCHES "[ps]pu-" )
    list( REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/tstOMP.cc )
 endif()
 
@@ -100,7 +100,9 @@ add_parallel_tests(
    DEPS      "${test_deps}"
    )
 
-if( NOT DBS_CXX_IS_BULLSEYE )
+if( DBS_CXX_IS_BULLSEYE OR ${CMAKE_CXX_COMPILER} MATCHES "[ps]pu-" )
+   # no-op
+else()
    # tstOMP should be run alone (not in paralle with other tests) because
    # it tries to use all available cores as OMP threads.
    # Also mark with 'nomemcheck' as valgrind can mess up the timing
