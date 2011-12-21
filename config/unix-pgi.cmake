@@ -102,7 +102,7 @@ string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" )
+   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs -mp" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
