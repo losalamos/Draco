@@ -244,13 +244,11 @@ macro( setupLAPACKLibrariesUnix )
          # BLAS_LIBRARIES
          set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
          set( LAPACK_FOUND ON )
-      elseif( ${SITE} MATCHES "tu*" )
+      else()
          if( EXISTS $ENV{LAPACK_LIB_DIR}/liblapack.a )
             # avoid picking /usr/lib64/liblapack.a
             set( LAPACK_lapack_LIBRARY $ENV{LAPACK_LIB_DIR}/liblapack.a )
          endif()
-         find_package( LAPACK ) 
-      else()
          find_package( LAPACK ) 
       endif()
 
@@ -410,7 +408,6 @@ macro( SetupVendorLibrariesWindows )
          "C4 communication mode (SCALAR or MPI)" )
       if( "${DRACO_C4}" STREQUAL "MPI"    OR 
             "${DRACO_C4}" STREQUAL "SCALAR" )
-         # message("")
       else()
          message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
       endif()
