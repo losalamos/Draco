@@ -213,6 +213,14 @@ macro( setupBLASLibrariesUnix )
          PURPOSE "Required for bulding the lapack_wrap component." 
          )
 
+      # If libcblas is also available at the same location, add it to
+      # the list.
+      if( EXISTS $ENV{LAPACK_LIB_DIR}/libcblas.a )
+         list( INSERT BLAS_LIBRARIES 0 $ENV{LAPACK_LIB_DIR}/libcblas.a )
+      endif()
+      set( BLAS_LIBRARIES "${BLAS_LIBRARIES}" CACHE FILEPATH 
+         "List of libraries associated with BLAS.")
+
    endif()
 
 endmacro()
@@ -231,61 +239,19 @@ endmacro()
 macro( setupLAPACKLibrariesUnix )
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
-      if( ${SITE}} MATCHES "frost" )
+      if( ${SITE} MATCHES "frost" )
          # We don't need mkl_lapack so just set LAPACK_LIBRARIES to
          # BLAS_LIBRARIES
          set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
          set( LAPACK_FOUND ON )
+      elseif( ${SITE} MATCHES "tu*" )
+         if( EXISTS $ENV{LAPACK_LIB_DIR}/liblapack.a )
+            # avoid picking /usr/lib64/liblapack.a
+            set( LAPACK_lapack_LIBRARY $ENV{LAPACK_LIB_DIR}/liblapack.a )
+         endif()
+         find_package( LAPACK ) 
       else()
-         # Jae's build of ATLAS requires (libgfortran|libifcore) and libm
-
-         # locate libgfortran.so on the current system
-         if( ${CMAKE_COMPILER_IS_GNUCC} )
-            set( gcc_bin ${CMAKE_C_COMPILER} )
-         else()
-            find_program( gcc_bin gcc )
-         endif()
-         if( EXISTS ${gcc_bin} )
-            mark_as_advanced(gcc_bin)
-            execute_process(
-               COMMAND ${gcc_bin} -print-file-name=libgfortran.so
-               OUTPUT_VARIABLE LIBGFORTRAN_LOC 
-               OUTPUT_STRIP_TRAILING_WHITESPACE )
-            if( "${LIBGFORTRAN_LOC}" STREQUAL "libgfortran.so" )
-               unset( LIBGFORTRAN_LOC )
-            else()
-               # obtain the path portion only (strip libgfortran.so)
-               get_filename_component( LIBGFORTRAN_LOC
-                  ${LIBGFORTRAN_LOC} PATH )
-               get_filename_component( LIBGFORTRAN_LOC
-                  ${LIBGFORTRAN_LOC} ABSOLUTE )
-            endif()
-         endif()
-         
-         # look for other required libraries
-         foreach( _library ifcore;gfortran;m)
-            # Don't search system first
-            find_library(LAPACK_${_library}_LIBRARY
-               NAMES ${_library}
-               PATHS $ENV{LAPACK_LIB_DIR}
-               NO_DEFAULT_PATH
-               )
-            # in case not found above, then search again including system locations.
-            find_library(LAPACK_${_library}_LIBRARY
-               NAMES ${_library}
-               PATHS 
-               /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 
-               ${LIBGFORTRAN_LOC}
-               ENV LD_LIBRARY_PATH
-               )
-            mark_as_advanced( LAPACK_${_library}_LIBRARY )
-            if( EXISTS ${LAPACK_${_library}_LIBRARY} )
-               list( APPEND LAPACK_atlas_extra_libs
-                  ${LAPACK_${_library}_LIBRARY} )
-            endif()
-         endforeach()
-         
-         find_package( LAPACK QUIET ) 
+         find_package( LAPACK ) 
       endif()
 
       if( LAPACK_FOUND )
