@@ -110,8 +110,8 @@ if( NOT DBS_CXX_IS_BULLSEYE )
       LABELS "nomemcheck"
       )
    set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
-      PROPERTIES APPEND
-      RUN_SERIAL
+      PROPERTIES 
+      RUN_SERIAL "ON"
       )
 endif()
 
