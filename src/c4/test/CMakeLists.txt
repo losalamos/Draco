@@ -99,20 +99,19 @@ add_parallel_tests(
    PE_LIST   "1;2;4" 
    DEPS      "${test_deps}"
    )
-   
+
 if( NOT DBS_CXX_IS_BULLSEYE )
    # tstOMP should be run alone (not in paralle with other tests) because
    # it tries to use all available cores as OMP threads.
    # Also mark with 'nomemcheck' as valgrind can mess up the timing
    # checks. 
-   set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
-      PROPERTIES 
-      LABELS "nomemcheck"
+   if( ${DRACO_C4} MATCHES MPI )
+      set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
+         PROPERTIES 
+         LABELS "nomemcheck"
+         RUN_SERIAL "ON"
       )
-   set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
-      PROPERTIES 
-      RUN_SERIAL "ON"
-      )
+   endif()
 endif()
 
  # RUN_SERIAL
