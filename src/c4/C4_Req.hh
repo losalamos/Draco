@@ -75,7 +75,7 @@ class C4_ReqRefRep {
 
     int inuse() const { 
 #ifdef C4_MPI
-      if(assigned) Check(r != MPI_REQUEST_NULL);
+      if(assigned) {Check(r != MPI_REQUEST_NULL);}
 #endif
       return assigned;
     }
