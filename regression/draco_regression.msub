@@ -41,7 +41,7 @@
 ### export PATH=${MPI_DIR}/bin:${QT_DIR}/bin:${GCC_DIR}/bin:/usr/local/bin:/opt/bin:/bin:/usr/bin
 
 # working directory
-WDIR=/scratch3/${USERNAME}/draco-regress/logs
+WDIR=/scratch/${USERNAME}/draco-regress/logs
 
 # Allow RW access for user and group:
 umask 0002
@@ -55,7 +55,7 @@ umask 0002
 
 echo cd $WDIR
 cd $WDIR
-export work_dir=/scratch3/${USERNAME}/draco-regress/draco/Release_gcc440
+export work_dir=/scratch/${USERNAME}/draco-regress/draco/Release_gcc440
 cmd="/usr/local/bin/ctest -VV -S /usr/projects/draco/regress/draco/regression/Draco_gcc440.cmake,Nightly"
 echo $cmd
 eval $cmd
@@ -67,7 +67,7 @@ make autodoc
 
 echo cd $WDIR
 cd $WDIR
-export work_dir=/scratch3/${USERNAME}/draco-regress/draco/Debug_gcc440
+export work_dir=/scratch/${USERNAME}/draco-regress/draco/Debug_gcc440
 cmd="/usr/local/bin/ctest -VV -S /global_scratch/regress/draco/regress/Draco_gcc440.cmake,Nightly,Debug"
 echo $cmd
 eval $cmd
@@ -78,7 +78,7 @@ make install
 
 echo cd $WDIR
 cd $WDIR
-export work_dir=/scratch3/${USERNAME}/draco-regress/draco/Coverage_gcc440
+export work_dir=/scratch/${USERNAME}/draco-regress/draco/Coverage_gcc440
 cmd="/usr/local/bin/ctest -VV -S /global_scratch/regress/draco/regress/Draco_gcc440.cmake,Nightly,Debug,Coverage"
 echo $cmd
 eval $cmd

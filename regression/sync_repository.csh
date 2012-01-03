@@ -7,14 +7,14 @@ setenv MYHOSTNAME `uname -n`
 source $HOME/.keychain/$MYHOSTNAME-csh
 
 # Setup directory structure
-if ( -d /scratch3/kellyt/cvsroot ) then
+if ( -d /usr/projects/jayenne/regress/cvsroot ) then
    :
 else
-   echo "install -d /scratch3/kellyt/cvsroot"
-   install -d /scratch3/kellyt/cvsroot
+   echo "install -d /usr/projects/jayenne/regress/cvsroot"
+   install -d /usr/projects/jayenne/regress/cvsroot
 endif
 
-cd  /scratch3/kellyt/cvsroot
+cd  /usr/projects/jayenne/regress/cvsroot
 # scp -r ccscs8:/ccs/codes/radtran/cvsroot/CVSROOT .
 # scp -r ccscs8:/ccs/codes/radtran/cvsroot/LOG .
 # scp -r ccscs8:/ccs/codes/radtran/cvsroot/bin .
