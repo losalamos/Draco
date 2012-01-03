@@ -224,29 +224,6 @@ Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return a string describing the opacity model.
- */
-Analytic_Odfmg_Opacity::std_string
-Analytic_Odfmg_Opacity::getDataDescriptor() const
-{
-    std_string descriptor;
-
-    if (reaction == rtt_cdi::TOTAL)
-        descriptor = "Analytic Odfmg Total";
-    else if (reaction == rtt_cdi::ABSORPTION)
-        descriptor = "Analytic Odfmg Absorption";
-    else if (reaction == rtt_cdi::SCATTERING)
-        descriptor = "Analytic Odfmg Scattering";
-    else
-    {
-        Insist (0, "Invalid analytic multigroup model opacity!");
-    }
-
-    return descriptor;
-}
-
-//---------------------------------------------------------------------------//
-/*!
  * \brief Return NULL string for the data filename.
  */
 Analytic_Odfmg_Opacity::std_string
