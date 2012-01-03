@@ -169,8 +169,10 @@ class IpcressMaterial
     size_t getFieldIndex( std::string const & fieldName ) const
     {
         Require( fieldName.size() > 0 );
-        std::vector< std::string >::const_iterator pos =
+        Remember(
+            std::vector< std::string >::const_iterator pos =
             find( fieldNames.begin(), fieldNames.end(), fieldName );
+            );
         Check( pos != fieldNames.end() );
         size_t fieldIndex = std::distance( fieldNames.begin(), 
             std::find( fieldNames.begin(), fieldNames.end(), fieldName ) );

@@ -353,7 +353,8 @@ void tstutilities(UnitTest &ut)
     }
 
     old_error_count = tokens.error_count();
-    double T = parse_temperature(tokens);
+    Remember( double T = )
+        parse_temperature(tokens);
     if (tokens.error_count()!=old_error_count)
     {
 	ut.failure("temperature NOT successfully parsed");
@@ -362,7 +363,7 @@ void tstutilities(UnitTest &ut)
     {
 	ut.passes("temperature successfully parsed");
     }
-    T = parse_temperature(tokens);
+    Remember(T=) parse_temperature(tokens);
     if (tokens.error_count()!=old_error_count)
     {
 	ut.failure("temperature NOT successfully parsed");
@@ -397,7 +398,7 @@ void tstutilities(UnitTest &ut)
     }
 
     // Try reading sequence of quantities with signs
-    T = parse_quantity(tokens, J, "energy");
+    Remember(T=) parse_quantity(tokens, J, "energy");
     if (tokens.error_count()!=old_error_count)
     {
 	ut.failure("second negative quantity NOT successfully parsed");

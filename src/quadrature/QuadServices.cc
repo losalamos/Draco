@@ -267,7 +267,8 @@ std::vector< double > QuadServices::computeD_morel(void) const
     // 3.4.1).
 
     // Store the LU decomposition in the matrix M.
-    int result = gsl_linalg_LU_decomp( &gsl_M.matrix, p, &signum );
+    Remember(int result = )
+        gsl_linalg_LU_decomp( &gsl_M.matrix, p, &signum );
     Check( result == 0 );
     Check( diagonal_not_zero( M, n, m ) );
 
@@ -275,7 +276,8 @@ std::vector< double > QuadServices::computeD_morel(void) const
     // storing the results in the matrix Dmatrix.  The inverse is computed by
     // solving the system (LU) x = b for each column of the identity matrix.
 
-    result = gsl_linalg_LU_invert( &gsl_M.matrix, p, &gsl_D.matrix );
+    Remember(result = )
+        gsl_linalg_LU_invert( &gsl_M.matrix, p, &gsl_D.matrix );
     Check( result == 0 );
 
     // Free the space reserved for the permutation matrix.
