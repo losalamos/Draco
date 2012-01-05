@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Odfmg_Opacity class definition.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -113,7 +113,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      */
     std::vector< std::vector< std::vector<double> > > getOpacity( 
         const std::vector<double>& targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const = 0;
 
     /*!
      * \brief Opacity accessor that returns a vector of 2-D vectors of
@@ -128,8 +128,7 @@ class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      */
     std::vector< std::vector< std::vector<double> > > getOpacity( 
         double targetTemperature,
-        const std::vector<double>& targetDensity ) const; 
-
+        const std::vector<double>& targetDensity ) const = 0; 
 
     //! Query to see if data is in tabular or functional form (false).
     bool data_in_tabular_form() const { return false; }

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Odfmg_Opacity class member definitions.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -115,45 +115,6 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(
     Check (reaction == rtt_cdi::ABSORPTION ||
            reaction == rtt_cdi::SCATTERING ||
            reaction == rtt_cdi::TOTAL);
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided vector of
- *     temperatures and a single density value.
- */
-std::vector< std::vector< std::vector<double> > >  Analytic_Odfmg_Opacity::getOpacity( 
-    const std::vector<double>& targetTemperature,
-    double targetDensity ) const
-{ 
-    std::vector< std::vector< std::vector<double> > > opacity( targetTemperature.size() );
-
-    for ( size_t i=0; i<targetTemperature.size(); ++i )
-    {
-        opacity[i] = getOpacity(targetTemperature[i], targetDensity);
-    }
-    return opacity;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided
- *     temperature and a vector of density values.
- */
-std::vector< std::vector< std::vector<double> > >  Analytic_Odfmg_Opacity::getOpacity( 
-    double targetTemperature,
-    const std::vector<double>& targetDensity ) const
-{ 
-    std::vector< std::vector< std::vector<double> > > opacity( targetDensity.size() );
-
-    //call our regular getOpacity function for every target density
-    for ( size_t i=0; i<targetDensity.size(); ++i )
-    {
-        opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
-    }
-    return opacity;
 }
 
 //---------------------------------------------------------------------------//

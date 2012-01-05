@@ -4,10 +4,24 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  Analytic_Odfmg_Opacity test.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
+
+#include "cdi_analytic_test.hh"
+#include "../nGray_Analytic_Odfmg_Opacity.hh"
+#include "../Analytic_Models.hh"
+#include "../Pseudo_Line_Analytic_Odfmg_Opacity.hh"
+#include "cdi/CDI.hh"
+#include "parser/Constant_Expression.hh"
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 #include <iostream>
 #include <vector>
@@ -16,19 +30,6 @@
 #include <typeinfo>
 #include <algorithm>
 #include <sstream>
-
-#include "cdi_analytic_test.hh"
-#include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
-#include "../nGray_Analytic_Odfmg_Opacity.hh"
-#include "../Analytic_Models.hh"
-#include "../Pseudo_Line_Analytic_Odfmg_Opacity.hh"
-#include "cdi/CDI.hh"
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "parser/Constant_Expression.hh"
-
 
 using namespace std;
 using namespace rtt_cdi_analytic;
