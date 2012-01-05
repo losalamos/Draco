@@ -25,22 +25,38 @@ namespace rtt_device
 //===========================================================================//
 /*!
  * \class GPU_Device
- * \brief
+ * \brief A wrapper for the CUDA environment.  
  *
- * Long description or discussion goes here.  Information about Doxygen
- * commands can be found at http://www.doxygen.org.
+ * This class encapsulates many features provided by the CUDA programming
+ * environment. It can query the hardware for available features, find and
+ * load .cubin files for GPU kernel execution, etc.
  *
  * \sa GPU_Device.cc for detailed descriptions.
  *
  * \par Code Sample:
  * \code
- *     cout << "Hello, world." << endl;
+ *     rtt_device::GPU_Device gpu;
+ *
+ *     // Create and then print a summary of the devices found.
+ *     std::ostringstream out;
+ *     size_t const numDev( gpu.numDevicesAvailable() );
+ *     out << "GPU device summary:\n\n"
+ *         << "   Number of devices found: " << numDev
+ *         << "\n" << endl;
+ *     for( size_t device=0; device<numDev; ++device )
+ *         gpu.printDeviceSummary( device, out );
+ *   
+ *   // Print the message to stdout
+ *   cout << out.str();
  * \endcode
  */
 /*! 
- * \example device/test/tstGPU_Device.cc
- *
- * Test of GPU_Device.
+ * \example device/test/tst_hello_rt_api
+ * Test of GPU_Device for CUDA runtime environment.
+ */
+/*! 
+ * \example device/test/tst_hello_driver_api
+ * Test of GPU_Device for CUDA driver environment.
  */
 //===========================================================================//
 
