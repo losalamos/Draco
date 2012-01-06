@@ -57,10 +57,28 @@
 # 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
 # 9. [optional] Run 'make help' for a list of targets.
 #
+# GUI
+#
+# If you prefer working in a GUI instead of using the command line,
+# run 'cmake-gui' and provide values for 'where is the source code'
+# and 'where to build the binaries'.  Press the 'configure' and
+# 'generate' buttons to generate Makefiles or project files. 
+#
+# Development Environments
+#
+# If you prefer working in XCode or Eclipse CDT, you should tell CMake
+# to generate project files instead of makefiles:
+#    cmake -G"Eclipse CDT4 - Unix Makefiles" ...
+#    cmake -G"XCode"
+#
+# Reference:
+#
 # CMake Tutorial: http://www.cmake.org/cmake/help/cmake_tutorial.html
 # CMake Wiki:     http://www.cmake.org/Wiki/CMake
 # CMake FAQ:      http://www.cmake.org/Wiki/CMake_FAQ
 # CMake Documentation: http://www.cmake.org/cmake/help/documentation.html
+# CMake version compatibility matrix: 
+#       http://www.cmake.org/Wiki/CMake_Version_Compatibility_Matrix
 #------------------------------------------------------------------------------#
 
 cmake_minimum_required( VERSION 2.8.6 FATAL_ERROR )
@@ -79,7 +97,7 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 2)
+set(DRACO_VERSION_MINOR 3)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )
