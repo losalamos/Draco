@@ -108,10 +108,13 @@ else()
    # Also mark with 'nomemcheck' as valgrind can mess up the timing
    # checks. 
    if( ${DRACO_C4} MATCHES MPI )
+      set_tests_properties( c4_tstOMP_1 
+         PROPERTIES 
+         RUN_SERIAL "ON"
+      )
       set_tests_properties( c4_tstOMP_1 c4_tstOMP_2 c4_tstOMP_4 
          PROPERTIES 
          LABELS "nomemcheck"
-         RUN_SERIAL "ON"
       )
    endif()
 endif()
