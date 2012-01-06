@@ -139,13 +139,31 @@ macro( setupMPILibrariesUnix )
       # Check flavor and add optional flags
       if( "${MPIEXEC}" MATCHES openmpi )
          set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." )
+         execute_process(
+            COMMAND ${MPIEXEC} --version
+            ERROR_VARIABLE  DBS_MPI_VER
+            )
+         string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
+            DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+         string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
+            DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+
          # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
          # This is required on Turning when running 'ctest -j16'.  See
          # notes in component_macros.cmake.
-         set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
-            STRING "extra mpirun flags (list)." FORCE)
-         set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
-            STRING "extra mpirun flags (string)." FORCE)
+        
+         # --bind-to-core added in OpenMPI-1.4
+         if( ${DBS_MPI_VER_MINOR} GREATER 3 )
+            set( MPIEXEC_POSTFLAGS --bind-to-none --bycore CACHE
+               STRING "extra mpirun flags (list)." FORCE)
+            set( MPIEXEC_POSTFLAGS_STRING "--bind-to-none --bycore" CACHE
+               STRING "extra mpirun flags (string)." FORCE)
+         else()
+            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
+               STRING "extra mpirun flags (list)." FORCE)
+            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
+               STRING "extra mpirun flags (string)." FORCE)
+         endif()
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       endif()
 
