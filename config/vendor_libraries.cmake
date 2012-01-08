@@ -154,10 +154,14 @@ macro( setupMPILibrariesUnix )
         
          # --bind-to-core added in OpenMPI-1.4
          if( ${DBS_MPI_VER_MINOR} GREATER 3 )
-            set( MPIEXEC_POSTFLAGS --bind-to-none --bycore CACHE
+            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
                STRING "extra mpirun flags (list)." FORCE)
-            set( MPIEXEC_POSTFLAGS_STRING "--bind-to-none --bycore" CACHE
+            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
                STRING "extra mpirun flags (string)." FORCE)
+            # set( MPIEXEC_POSTFLAGS --bind-to-none --bycore CACHE
+            #    STRING "extra mpirun flags (list)." FORCE)
+            # set( MPIEXEC_POSTFLAGS_STRING "--bind-to-none --bycore" CACHE
+            #    STRING "extra mpirun flags (string)." FORCE)
          else()
             set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
                STRING "extra mpirun flags (list)." FORCE)
