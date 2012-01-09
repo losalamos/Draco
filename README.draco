@@ -30,73 +30,131 @@ following code projects use/supply code to draco:
 
 Draco is governed by a board consisting of:
 
-      Jim Warsa  <warsa@lanl.gov>
-      Jon Dahl   <dahl@lanl.gov>
-      Rob Lowrie <lowrie@lanl.gov>
+      Jim Warsa           <warsa@lanl.gov>
+      Jon Dahl            <dahl@lanl.gov>
+      Rob Lowrie          <lowrie@lanl.gov>
+      Kelly (KT) Thompson <kgt@lanl.gov>
 
 A brief description of the packages in draco follows.
 
-Active Draco Package Synopsis
+Active Draco Component Synopsis
 =============================
 
-rng [draco/src/rng]: A random number generator package.  It uses the
-SPRNG (http://www.ncsa.uiuc.edu/Apps/SPRNG/) random number library.
-This is essentially a wrapper to the SPRNG library.
+RTT_Format_Reader:
 
-units [draco/src/units]: Provides units standardization for
-Draco. Contains Units class for representing arbitrary systems and
-converting quantities to SI units.
-
-radphys [draco/src/radphys]: Calculates parameters needed for
-radiation physics in arbitrary units. Uses the units package to
-represent units system.
-
-quadrature [draco/src/quadrature]: {Get access to quadrature data}
-Provides a creator class to generate quadrature objects.  Quadrature
-objects encapsulate discrete ordinates angular differencing methods
-and data.
+c4:
 
 cdi [draco/src/cdi]: {Get access to material data} The Common Data
 Interface specifies an common abstraction for objects and libraries
 that return material data (opacities, atomic cross sections,
 equation-of-state data, etc.)
 
-cdi_gandolf [draco/src/cdi_gandolf]: {Gray and M.G. Opacities} This
-class wraps the FORTRAN gandolf libraries (local copy at
-/radtran/vendors/gandolf).  The interface inherits from CDI/Opacity.hh
-and can be used as a stand alone package or as a plug-in to CDI.  To
-make this package available you must specify
---with-gandolf-lib=${path_to_libgandolf.a} when configuring.
+cdi_analytic:
 
 cdi_eospac [draco/src/cdi_eospac]: {Equation-of-State data} This class
 wraps the FORTRAN EOSPAC libraries (local copy at
-/radtran/vendors/eospac).  The interface inherits from CDI/EOS.hh and
-can be used as a stand alone package or as a plun-in to CDI.  To make
-the package available you must specify
---with-eospac-lib=${path_to_libeospac.a} when configuring.
+/ccs/codes/radtran/vendors/eospac).  The interface inherits from
+CDI/EOS.hh and can be used as a stand alone component or as a plun-in
+to CDI.  To make the component available you must set in your
+environment or in the CMakeCache.txt the variable EOSPAC_LIB_DIR to
+the path to libeospac.a
 
-lapack_wrap [draco/src/lapack_wrap]: BLAS and LAPACK functionality for
-C++.
+cdi_ipcress [draco/src/cdi_ipcress]: {Gray and M.G. Opacities} The
+classes in this component will read and parse opacity values from an
+IPCRESS file produced by TOPS.  The component presents this data
+through various accessors.  The interface inherits from CDI/Opacity.hh
+and can be used as a stand alone component or as a plug-in to CDI.
 
-Retired Draco Package Synopsis
+device: {Wrapper for heterogeneous device communication} The classes
+in this component provide access to DaCS and CUDA calls for use on
+heterogeneous architecture platforms (Roadrunner or GPU machines).
+
+diagnostics: CPP macros that are activated at compile time that can
+provide additional diagnostic verbosity during calculations.
+
+ds++: {Basic services} Smart pointers, Array containers, Assertion and
+Design-by-Contract, etc.
+
+fit: {Least squares fit}
+
+fpe_trap: {Catch IEEE floating point exceptions}
+
+lapack_wrap: BLAS and LAPACK functionality for C++.
+
+linear: Routines to solve small systems of linear equations.
+
+meshReaders: Read RTT format mesh files.
+
+mesh_element: Provide a description of unstructured mesh.  Used by
+meshReaders and RTT_Format_Reader.
+
+min: Optimizaiton routines. Find the minimum of a function.
+
+norms: Calculat norms for data sets.
+
+ode: Ordinary differential equation solvers.
+
+parser: Lexical file parser.
+
+plot2d: Generate GNU plot 2-dimensional plots.
+
+quadrature [draco/src/quadrature]: {Get access to quadrature data}
+Provides a creator class to generate quadrature objects.  Quadrature
+objects encapsulate discrete ordinates angular differencing methods
+and data. Also provide service functions that are commonly used with
+
+rng [draco/src/rng]: A random number generator component.  The primary
+set of functions provided by this component were derived from SPRNG
+(http://www.ncsa.uiuc.edu/Apps/SPRNG/) random number library.  A few
+additional random number generators are also provided.
+
+roots: Root solvers
+
+shared_lib: Dynamically load/unload shared object libraries via dl load
+
+special_functions: Specialized math functions like factorial and dirac delta.
+
+timestep: An object oriented class that encapsulates a time step controller.
+
+traits: A traits class used by viz.
+
+units [draco/src/units]: Provides units standardization for
+Draco. Contains Units class for representing arbitrary systems and
+converting quantities to SI units.
+
+viz: Generate Ensight files for data vizualization.
+
+
+Retired Draco Component Synopsis
 ==============================
 
+radphys [draco/src/radphys]: Calculates parameters needed for
+radiation physics in arbitrary units. Uses the units component to
+represent units system.
+
+cdi_gandolf [draco/src/cdi_gandolf]: {Gray and M.G. Opacities} This
+class wraps the FORTRAN gandolf libraries (local copy at
+/radtran/vendors/gandolf).  The interface inherits from CDI/Opacity.hh
+and can be used as a stand alone component or as a plug-in to CDI.  To
+make this component available you must specify
+--with-gandolf-lib=${path_to_libgandolf.a} when configuring.
+
 meshReaders_Services [meshReaders_Services-retired] : A post-process mesh
-package that built connectivity from mesh data read by meshReaders.
+component that built connectivity from mesh data read by meshReaders.
 
 stdheaders [stdheaders-retired] : Standard headers for compilers that
 didn't support std:: namespace.
 
-mc [mc-4_0_0]: A low-level Monte Carlo support package.  This package
+mc [mc-4_0_0]: A low-level Monte Carlo support component.  This component
 contains meshes and service classes that can be used for linear and
 non-linear Monte Carlo transport. Moved to CLUBIMC component library.
 
 imc [imc-4_0_0]: A Implicit Monte Carlo (imc) component library.  This
-package contains a set of components including particles, sources, and
+component contains a set of components including particles, sources, and
 tallies that can be used to build IMC codes. Moved to CLUBIMC
 component library.
 
-stopwatch [stopwatch-retired] : Overly complicated timer package.
+stopwatch [stopwatch-retired] : Overly complicated timer component.
 
 radphys [radphys-retired]: Radiation physics models for coefficients.
 

@@ -4,16 +4,19 @@ DRACO DEVELOPMENT
 
 Areas currently under development
 ----------------------------------------
-- Port to Dawn
-- Develop plan for supporting heterogeneous architectures.
-- Finish migration to CMake (plus CTest and CDash)
-  - demonstrate build support for all target hardware (HPC machines)
-  - retire autoconf and scons build files.
+[ ] Port to Dawn
+[ ] Develop plan for supporting heterogeneous architectures.
+    [x] Partially done with addition of DaCS, CUDA, OpenMP under MPI features.
+[x] Finish migration to CMake (plus CTest and CDash)
+    [x] demonstrate build support for all target hardware (HPC machines)
+    [x] retire autoconf and scons build files.
+[ ] Provide unit tests for Q3DTriChebyshevLegendre
+[ ] Examine memory leak in tstAbstract_Class_Parser.
+[x] Replace dependence on libgandolf with our own IPCRESS reader.
 
 Things planned for sometime in the future
 ----------------------------------------
-- Replace dependence on libgandolf with our own IPCRESS reader.
-- Retire unused classes (especially in ds++).
+[ ] Retire unused classes (especially in ds++).
 
 Bugs
 ----------------------------------------

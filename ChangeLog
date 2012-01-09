@@ -1,3 +1,275 @@
+2012-01-06  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-6_3_0.  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - clubimc-6_1_0
+	  - milagro-5_3_0
+	  - wedgehog-7_4_0
+	  - capsaicin-3_1_0
+
+	* Platforms:
+	  TU/HU/TY   Intel 10.0.023   OpenMPI-1.4.3
+	  CT/CI      PGI 10.9.0       MPICH2-5.2.0.7
+	  Roadrunner GCC-4.3.0        OpenMPI-1.4.3
+
+	* Summary of changes:
+	  - 227 files were changed, added or removed.
+	  - This release does not include the package plot2D.
+	  - pcgWrap and cdi_gandolf components have been retired.
+	  - cdi_ipcress provides a drop in replacement for cdi_gandolf and
+	    no longer requires libgandolf.
+	  - Introduce CUDA support.
+	  - Provide basic support for PAPI instrumentation.
+	  - Provide basic support for OpenMPI directives.
+
+	* Details per package:
+
+	Build System:
+	  - Require CMake-2.8.6 or later.
+	  - Begin using FeatureSumamry.cmake.
+	  - Revert to using CMake's version of FindBLAS and FindLAPACK
+	    instead of rolling our own.
+	  - Improve support for Apple OS/X builds (XCode).
+	  - Modify FindGSL.cmake to use system provided libraries on
+ 	    CT/CU.
+	  - Correct flags set for RELWITHDEBINFO build types.
+	  - Make optimizations more aggressive for PGI.
+
+	Developer Environment:
+	  - Retire modules for null, gandolf and pcg as these are no longer
+	    supported by Draco.
+	  - On CCS LAN, add module options for gcc-4.6.2, cmake-2.8.6 (default),
+	    cmake-2.8.7, git/1.7.7.2.
+	  - On HPC, add module for cmake-2.8.6 (default), cmake-2.8.7
+	  - When loading the gsl module, prefix LD_LIBRARY_PATH with
+	    GSL_LIB_DIR.
+	  - For RR3 and rr-dev, update path for atlas to point to
+	    /usr/projects/draco/vendors/lapack/rr-openmpi143-gfortran430-gcc430
+	    because /opt/Ptools/atlas/3.8.2 does not exist on RR3.
+	  - Provide .bashrc support for drawin.lanl.gov (CCS-7 GPU
+	    machine).
+	  - On CT/CI, use vendor provlided GSL instead of the version
+	    found at /usr/projects/draco/vendors.
+	  - On TU/HU/TY, set FC=ifort (Intel Fortran).
+	  - Provide a prototype .cshrc for HPC machines.
+	  - Update elisp to treat *.cu (CUDA) files as C++ for
+	    formatting purposes.
+	  - Update newmemo.cls to eliminate a space from the Phone/FAX and
+	    Symbol lines.
+	  - Update regression scripts so they use /scratch instead of
+	    /scratch3/ for HPC machines (/scratch3 is retired).
+	  - Clean up the regression scripts for testing on CT.
+
+	RTT_Format_Reader:
+	  - Update unit tests to use ScalarUnitTest in place of
+	    ParallelUnitTest.  This eliminates a needless dependency on
+	    c4.
+
+	c4:
+	  - Provide a new rtt_c4 function: get_processor_name() that uses
+	    MPI_Get_processor_name() if available or gethostname().
+	  - Adding long long to c4, changing rn_stream to uint64.
+	    Changing all references from uint64_t to unsigned long long in
+	    c4.
+
+            The reason for this is due to a standards clash best seen in
+	    MPI_Traits.hh. Although we'd like to insist on uint64_t (ANSI
+	    C 99), we are only guaranteed unsigned long long in the MPI
+	    standard. So fundamentally we have to pass using the trait
+	    from the following function in the MPI traits:
+
+            template<>
+            struct MPI_Traits<unsigned long long>
+            {
+               static MPI_Datatype element_type() {
+	                 return MPI_UNSIGNED_LONG_LONG; }
+            };
+
+            We can only rely on short <= int <= long <= long long --
+	    hopefully int64_t fits into one of those boxes in a parallel
+	    call.
+	  - Provide support for T=vector<char> and T=std::string when
+	    calling determinate_gatherv() or indeterminate_gatherv().  Add
+	    unit tests for these new features.
+	  - In C4_Req.hh, make a modification to eliminate a pervasive
+	    "missing braces" warning.
+	  - Move discovery of PAPI from CMakeLists.txt to
+	    config/compilerEnv.cmake.
+	  - Continue work started by Kent to provide support for PAPI
+	    profiling. This commit modifies Kent's work by storing PAPI
+	    build variables in the CMakeCache.txt.  Also, if PAPI is used,
+	    all unit tests that need c4 will now also link against the
+	    PAPI library.
+	  - Bug fix:  A logic error would produce invalid set values in
+	    c4/config.h if Draco was configured with default settings and
+	    then DRACO_C4 was manually changed to SCALAR.  This change
+	    makes SCALAR vs MPI settings exclusive.
+	  - Processor_Group.cc modified to allow decomposition in energy
+	    (Capsaicin) for Sn_Eigenvalue problems.
+	  - Modify the Timer class so that PAPI data is printed (if PAPI
+	    is available).
+	  - Provide a wrapper for "omp.h." and define USE_OPENMP in
+	    c4/config.h.
+	  - Add unit test tstOMP.cc to demonstrate the use OpenMP
+	    pragmas.
+
+	cdi:
+	  - Provide an additional enum value to distinguish between
+	    cdi_gandolf and cdi_ipcress.
+
+	cdi_analytic:
+	  - In Analytic_Odfmg_Opacity.hh, remove some dead code that was
+	    showing up in the code coverage analysis. This block of code
+	    exists in nGray_Analytic_Odfmg_Opacity.hh. Due to inheritance
+	    code design I don't think the copy found in
+	    Analytic_Odfmg_Opacity.hh could be called.
+	  - Remove redundant energy quadrature specification from opacity
+	    model inputs. Get decomposition in energy working again.
+
+	cdi_gandolf:
+	  - Retired. Replaced with cdi_ipcress.
+
+	cdi_ipcress:
+	  - New component for Draco-6_3_0. Replaces cdi_gandolf for
+	    reading IPCRESS files.  Does not require libgandolf.a.
+
+	device:
+	  - Provide a prototype GPU_Device class and unit test tests that
+	    demonstrate the runtime and the device API for CUDA.
+	  - Fix a build system logic error that was causing configure
+	    failures on superflytnt.  This system has libcuda.so available
+	    (triggering HAVE_CUDA=ON) but the full SDK (compiler, headers)
+	    is not available.  Logic updated to ensure that both libcuda
+	    and nvcc are available before trying to enable CUDA.
+	  - Also add option USE_CUDA that can be set to OFF in cases where
+	    the CUDA SDK is available, but the developer does not want to
+	    use GPU code.
+	  - In DACS_Device_Interface.cc, modify the signature of the
+	    funciton pointer to avoid confusion between C and C++ linkage.
+	    Here are the comments from DACS_Device_Interface.cc/hh:
+
+            // The definition in the source file does not have extern "C"
+	    // on it, but because it is the same f(int) as in the
+	    // declaration in the header, the language rules state that
+	    // the extern "C" from the declaration applies to it as
+	    // well. The definition for f is thus generated with C
+	    // linkage, that is, with the unmangled name
+	    // "f". (www.glenmccl.com/ansi028.htm).
+
+            // These functions will be generated with C linkage (no name
+	    // mangling).  However, the function pointer will still be
+	    // generated with C++ linkage in the .cc file and with C
+	    // linkage in this file (according to the ANSI standard). This
+	    // causes link errors with some compilers (PGI) because the
+	    // function signatures in the .cc and .hh files do not match.
+	    // The solution is to create and use a typdef for the extern
+	    // function pointer signature.
+
+	  - The GCC compiler makes assumptions about the function pointer
+	    signature and will do 'the right thing' with either
+	    implementation. Because this may come up again, I thought I
+	    would go ahead and make these changes that document and
+	    provide an example of the correct strict ANSI implimentation.
+
+	ds++:
+	  - In Endian.hh, added 2 new functions to rtt_dsxx namespace:
+
+            bool is_big_endian(void)
+            . Returns true if the current platform is a big endian machine
+	      (powerpc).
+
+            bool has_ieee_float_representation(void)
+            . Returns true if the platform supports IEEE floating point
+	      representation rules (some Cray machines do not)
+
+	quadrature:
+	  - In QuadServices.cc add some low-level services for converting
+	    between moment and discrete representations and for converting
+	    first-order moments to physical fluxes.
+
+	rng:
+	  - Adding long long to c4, changing rn_stream to uint64.
+
+	Corrected defects from TeamForge Tracker:
+	  - artf1836: cdi_gandof will SEGV if a bad key is provided.
+	  - artf1868: Provide support for library prefix other than rtt_.
+
+	Known defects:
+	  - Known defects are listed on LANL's TeamForge web server,
+	    tf.lanl.gov.  Here is a list of known defects:
+
+	  - artf22444: Regression reports fail to post from CT.
+	  - artf22544: c4/tstOMP fails on CT (This feature is not
+	    currently used by Capsaicin or Jayenne).
+	  - artf21614: Safe_Ptr has a design defect (This feature is not
+	    currently used by Capsaicin or Jayenne).
+          - artf20096: c4/tstComm_Dup fails for optimized builds on
+	    Cielito.
+
+	* Statistics:
+
+% tools/count_loc.sh
+
+Counting lines of source code --
+Directory:  /home/kellyt/draco
+Date     :  Mon Jan 9 10:13:18 MST 2012
+
+                 Total C++ source: 40418
+   C++ source in test directories: 22788
+      C++ contract specifications: 1549
+                     C++ comments: 42466
+             Total Fortran source: 0
+                 Fortran comments: 0
+              LaTeX Documentation: 15427
+                      HTML source: 0
+                        Text docs: 7589
+       Build system script source: 9958
+   Executable shell script source: 599
+           Executable Perl source: 1867
+                    Python source: 3870
+                    Expect source: 0
+                     Elisp source: 6696
+
+
+	% cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
+	% export COVFILE=`pwd`/CMake.cov
+	% export COVDIRCFG=`pwd`/covclass_cmake.cfg
+	% cd ../source/src; covdir -p
+
+Directory               Function Coverage           C/D Coverage
+------------------  ---------------------  ---------------------
+units/                  82 /    82 = 100%      58 /    58 = 100%
+traits/                 16 /    16 = 100%       0 /     0
+diagnostics/             8 /     8 = 100%       4 /     4 = 100%
+special_functions/      29 /    29 = 100%     190 /   198 =  95%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+cdi/                    39 /    39 = 100%      27 /    30 =  90%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+linear/                 16 /    16 = 100%     324 /   392 =  82%
+roots/                   8 /     8 = 100%     256 /   312 =  82%
+mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
+RTT_Format_Reader/     315 /   321 =  98%     273 /   356 =  76%
+ds++/                  632 /   651 =  97%     571 /   643 =  88%
+norms/                  25 /    26 =  96%      21 /    34 =  61%
+viz/                    24 /    25 =  96%     129 /   168 =  76%
+timestep/               59 /    62 =  95%     104 /   178 =  58%
+c4/                    177 /   189 =  93%     352 /   406 =  86%
+cdi_analytic/          130 /   140 =  92%     156 /   190 =  82%
+rng/                    62 /    67 =  92%      63 /    70 =  90%
+parser/                246 /   266 =  92%    1050 /  1351 =  77%
+quadrature/            167 /   188 =  88%     517 /   683 =  75%
+plot2D/                 22 /    29 =  75%      46 /    76 =  60%
+lapack_wrap/            11 /    16 =  68%       0 /     0
+------------------  ---------------------  ---------------------
+Total                 2230 /  2340 =  95%    4809 /  5999 =  80%
+
+
 2011-09-15  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* draco: Release draco-6_2_1.  This is a patch Draco release.

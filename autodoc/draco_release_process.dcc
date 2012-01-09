@@ -50,25 +50,25 @@ proccess of software release in the Draco code system.
 <ol>
 
 <li>The general release policy in Draco requires that all components be
-released with a common Draco version/tag number.  This tag should take the
-form <tt>draco-\#_\#_\#</tt> for packages.  This release number should be
-present in the top level CMakelists.txt file.  This version number will be
-automatically written to the ds++/Release.hh file and all other Draco
-components will point to this file.</li>
+    released with a common Draco version/tag number.  This tag should take the
+    form <tt>draco-\#_\#_\#</tt> for packages.  This release number should be
+    present in the top level CMakelists.txt file.  This version number will be
+    automatically written to the ds++/Release.hh file and all other Draco
+    components will point to this file.</li>
 
 <li>Before a release may be done the following requirements must all
-be met:
+    be met:
    <ul>
 
-      <li>Each component must pass its respective suite of regression
-      tests on all currently supported platforms. (As of August 2011
-      we support CCS-2 64-bit Linux, YellowRail/RedTail,
-      Turing/Hurricane/Typhoon, Cielito/Cielo and rr-dev/RoadRunner.)</li> 
+      <li>Each component must pass its respective suite of regression tests on
+          all currently supported platforms. (As of August 2011 we support
+          CCS-2 64-bit Linux, Turing/Hurricane/Typhoon, Cielito/Cielo and
+          rr-dev/RoadRunner.)</li>
 
       <li>Documentation must be fully up-to-date.</li>
 
       <li>Coverage must be checked to ensure that at least 90% of
-      non-diagnostic statements are exercised by the unit tests.</li>
+          non-diagnostic statements are exercised by the unit tests.</li>
 
       <li>Exceptions to the general release policy must be discussed,
           agreed to and fully documented.</li>
@@ -76,18 +76,17 @@ be met:
 </li>
 
 <li>Files under the Draco CVS repository should only have
-draco CVS tags (no 3rd party tags in our repository).</li>
+    draco CVS tags (no 3rd party tags in our repository).</li>
 
-<li>The number scheme for release tags is major_minor_bugfix.  The
-first digit only changes for a major release.  The second digit
-changes for minor changes in the code and the last digit is reserved
-for specific bug fixes.  
-   <ul>
+<li>The number scheme for release tags is major_minor_bugfix.  The first digit
+    only changes for a major release.  The second digit changes for minor
+    changes in the code and the last digit is reserved for specific bug fixes.
+    <ul>
       <li>Most of our releases will have a zero as the
           last digit.</li>
       <li>When moving to a new major release the minor and bugfix
           indices should be reset to zero.</li>
-   </ul>
+    </ul>
 
 <li>The build must be reproducible:
   <ul>
@@ -95,9 +94,9 @@ for specific bug fixes.
   </ul>
 </li>
 
-<li>Must provide a list of SF artifacts that are associated with this
-release (tasks and trackers).  This is done in the ChangeLog and for major
-releases in the Release memo.
+<li>Must provide a list of SF artifacts that are associated with this release
+    (tasks and trackers).  This is done in the ChangeLog and for major
+    releases in the Release memo.
 
 </ol>
 
