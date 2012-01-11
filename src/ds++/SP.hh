@@ -13,6 +13,7 @@
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
 
+#include <typeinfo>
 #include "Assert.hh"
 
 namespace rtt_dsxx
@@ -184,6 +185,8 @@ class SP
     bool operator!=(const SP<T> &sp_in) const { return p != sp_in.p; }
 };
 
+void incompatible(std::type_info const &X, std::type_info const &T);
+
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
@@ -268,7 +271,8 @@ SP<T>::SP(X *px_in)
     T *np = dynamic_cast<T *>(px_in);
 
     // check that we have made a successfull cast if px exists
-    Insist(np, "Incompatible dumb pointer conversion between X and SP<T>.");
+    if(!np)
+        incompatible(typeid(X), typeid(T));
 
     // assign the pointer and reference
     p = np;
@@ -315,8 +319,8 @@ SP<T>::SP(const SP<X> &spx_in)
 
     // make a pointer to T *
     T *np = dynamic_cast<T *>(spx_in.p);
-    Insist(spx_in.p ? np != 0 : true, 
-	   "Incompatible SP conversion between SP<X> and SP<T>.");
+    if (spx_in.p ? np == 0 : false)
+        incompatible(typeid(X), typeid(T));
 
     // assign the pointer and reference
     p = np;
@@ -387,7 +391,8 @@ SP<T>& SP<T>::operator=(X *px_in)
 
     // do a dynamic cast to ensure convertiblility between T* and X*
     T *np = dynamic_cast<T *>(px_in);
-    Insist(np, "Incompatible dumb pointer conversion between X and SP<T>.");
+    if (!np)
+        incompatible(typeid(X), typeid(T));
 
     // now assign this to np (using previously defined assignment operator)
     *this = np;
@@ -441,8 +446,8 @@ SP<T>& SP<T>::operator=(const SP<X> spx_in)
 
     // make a pointer to T *
     T *np = dynamic_cast<T *>(spx_in.p);
-    Insist(spx_in.p ? np != 0 : true, 
-	   "Incompatible SP conversion between SP<X> and SP<T>.");
+    if (spx_in.p ? np == 0 : false)
+        incompatible(typeid(X), typeid(T));
 
     // check to see if we are holding the same pointer (and np is not NULL);
     // to NULL pointers to the same type are defined to be equal by the
