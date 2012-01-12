@@ -83,12 +83,12 @@ re_tag_file = re.compile(r'string\s+pkg\_release\s+\=\s*\"(.*)\"', re.IGNORECASE
 def get_current_tag():
 
     # check to see if Release.cc exists
-    if not os.path.isfile('configure.ac'):
-        print ">>> No configure.ac ................. exiting"
+    if not os.path.isfile('CMakeLists.txt'):
+        print ">>> No CMakeLists.txt ................. exiting"
         sys.exit(1)
 
     # check the configure.in files for tags
-    tags = commands.getoutput('cvs status -v configure.ac')
+    tags = commands.getoutput('cvs status -v CMakeLists.txt')
 
     match = re_tag.findall(tags)
 

@@ -7,7 +7,7 @@
 ##---------------------------------------------------------------------------##
 ## determine the release tag of a package by examining all files in
 ## the package directory + Release.cc and presents a report; it
-## expects to find a configure.ac file in the directory
+## expects to find a CMakeLists.txt file in the directory
 ## Usage:
 ##       1) enter package directory
 ##       2) python ../../tools/find_tags_diff.py
@@ -78,12 +78,12 @@ rel_rev     = re.compile(r'\(revision:\s+([0-9]+\.[0-9]+)\s*\)', re.IGNORECASE)
 def get_current_tag():
 
     # check to see if Release.cc exists
-    if not os.path.isfile('configure.ac'):
-        print ">>> No configure.ac ................. exiting"
+    if not os.path.isfile('CMakeLists.txt'):
+        print ">>> No CMakeLists.txt ................. exiting"
         sys.exit(1)
 
-    # check the configure.in files for tags
-    tags = commands.getoutput('cvs status -v configure.ac')
+    # check the CMakeLists.txt files for tags
+    tags = commands.getoutput('cvs status -v CMakeLists.txt')
 
     match = re_tag.findall(tags)
 
@@ -112,7 +112,7 @@ def get_current_tag():
 
 def get_current_tag_revision(file):
 
-    # check the configure.in files for tags
+    # check the CMakeLists.txt files for tags
     tags = commands.getoutput('cvs status -v %s' % file)
 
     match = re_tag.findall(tags)

@@ -37,7 +37,7 @@ def get_dirs(homedir):
     for d in dirs:
         if os.path.isdir(d):
             os.chdir(d)
-            if os.path.isfile("Release.cc") or os.path.isfile("configure.ac"):
+            if os.path.isfile("Release.cc"):
                 rdirs.append(d)
             os.chdir(homedir)
 
@@ -105,12 +105,10 @@ for d in rdirs:
     pkg = os.path.basename(d)
 
     file  = d + "/Release.cc"
-    file2 = d + "/configure.ac"
     file3 = d + "/autodoc/" + pkg + ".dcc"
 
     # fix tag
     update_tag(file)
-    update_tag(file2)
     update_tag(file3)
     
 ###############################################################################
