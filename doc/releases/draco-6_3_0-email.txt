@@ -1,0 +1,49 @@
+Release of Draco-6_3_0
+
+Draco has been updated to version 6_3_0 and is tied to the release of
+Jayenne-6_1_0.  This release was completed on the following
+platfoms/toolsets: 
+
+Platform      Compiler          MPI              .
+TU/HU/TY      Intel 10.0.023    OpenMPI-1.4.3
+HU            PGI-9.0-3         OpenMPI-1.4.3
+CT/CI         PGI 10.9.0        MPICH2-5.2.0.7
+Roadrunner    GCC-4.3.0         OpenMPI-1.4.3
+
+Summary of changes:
+   
+ * The pcgWrap component has been retired.
+ * The cdi_gandolf component has been retired and replaced with the
+   new cdi_ipcress component. The new component can read IPCRESS
+   opacity files without linking to the gandolf library and provides
+   IPCRESS support for platforms where gandolf is not available
+   (CI/CT, Mac OS/X). 
+ * The build system has been updated to provide preliminary support
+   for CUDA/GPU and OpenMPI programming and software instrumentation
+   with the PAPI libraries. 
+ * Requires CMake-2.8.6 or newer. 
+   * Improved vendor library discover.
+   * Improved support for XCode and Eclipse/CDT.
+
+ * The c4 and rng libraries were updated to provide support for
+   int64_t (long long int) data types. 
+ * The c4 gatherv/scatterv routines were updated to provide support
+   for vector<char> and std::string. 
+ * device/GPU_Device has been provided as a prototype wrapper for CUDA
+   calls. 
+
+A more complete list of changes can be found in the ChangeLog. 
+
+Known issues:
+
+ * 4 source files score less than 50% for code coverage
+   (coder.lanl.gov/cdash). 
+ * A potential memory leak is reported in
+   parser/tstAbstract_Class_Parser. 
+ * tstOMP fails on CT/CI.
+
+Please direct your questions or concerns to myself or the Draco team
+(draco@lanl.gov). 
+
+
+
