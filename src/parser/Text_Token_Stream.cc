@@ -90,8 +90,10 @@ Text_Token_Stream::Text_Token_Stream(void)
 
 //-------------------------------------------------------------------------//
 /*!
- * The next token is scanned from the character stream, which is accessed via
- * the fill_character_buffer, error, and end functions.
+ *
+ * Scan the next token from the character stream. The character stream is
+ * accessed via the fill_character_buffer, error, and end functions, which are
+ * pure virtual functions. 
  */
 
 Token Text_Token_Stream::fill_()

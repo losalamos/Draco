@@ -3,7 +3,6 @@
  * \file   c4/Timer.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:56:11 2002
- * \brief  Timer member definitions.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -21,15 +20,18 @@ namespace rtt_c4
 
 #ifdef HAVE_PAPI
 
-    /* Initialize static non-const data members found in the Timer class */
+/* Initialize static non-const data members found in the Timer class */
 
-    /*static*/ int Timer::papi_events_[papi_max_counters_] = {
-        PAPI_L2_TCM, PAPI_L2_TCH, PAPI_FP_OPS };
+// Count up the total L2 cache misses and hits and the total number of
+// floating point operations. These allow us to report the percentage of cache
+// hits and the number of floating point operations per cache miss.
+int Timer::papi_events_[papi_max_counters_] = {
+    PAPI_L2_TCM, PAPI_L2_TCH, PAPI_FP_OPS };
 
-   /*static*/ unsigned Timer::papi_num_counters_ = 0;
+unsigned Timer::papi_num_counters_ = 0;
 
-   /*static*/ long long Timer::papi_raw_counts_[papi_max_counters_] = {
-        0, 0, 0};
+long long Timer::papi_raw_counts_[papi_max_counters_] = {
+    0, 0, 0};
 
 #endif
 
@@ -52,55 +54,41 @@ Timer::Timer()
       num_intervals( 0 )
 {
 #ifdef HAVE_PAPI
-    std::cout << "Creating a Timer object with PAPI counters enabled."
-              << std::endl;
     
-    // Initialize the PAPI library on construction of first timer
+    // Initialize the PAPI library on construction of first timer.
+    
     static bool first_time = true;
     if (first_time)
     {
-        int retval;
-        // int EventSet = PAPI_NULL;
-        // unsigned int native = 0x0;
-        // PAPI_event_info_t info;
-	
-	/* Initialize the library */
-	retval = PAPI_library_init(PAPI_VER_CURRENT);
-	if (retval != PAPI_VER_CURRENT) {
+	int retval = PAPI_library_init(PAPI_VER_CURRENT);
+	if (retval != PAPI_VER_CURRENT)
+        {
             std::cout << "PAPI library init error!" << std::endl;
             exit(EXIT_FAILURE);
 	}
-
+        
 	if (PAPI_query_event(PAPI_FP_OPS) != PAPI_OK)
         {
 	    std::cout << "PAPI: No floating operations counter" << std::endl;
-        }
-	else
-        {
-	    std::cout << "PAPI: Floating operations are countable" << std::endl;
         }
 
 	if (PAPI_query_event(PAPI_L2_TCM) != PAPI_OK)
         {
 	    std::cout << "PAPI: No L2 cache miss counter" << std::endl;
         }
-	else
-        {
-	    std::cout << "PAPI: L2 cache misses are countable" << std::endl;
-        }
 
 	if (PAPI_query_event(PAPI_L2_TCH) != PAPI_OK)
         {
 	    std::cout << "PAPI: No cache hit counter" << std::endl;
         }
-        else
-        {
-	    std::cout << "PAPI: L2 cache hits are countable" << std::endl;
-        }
 
 	papi_num_counters_ = PAPI_num_counters();
-	std::cout << "PAPI: This system has " << papi_num_counters_
-                  << " hardware counters.\n" << std::endl;
+        if (papi_num_counters<sizeof(papi_events_)/sizeof(int))
+        {
+            std::cout << "PAPI: This system has only " << papi_num_counters_
+                      << " hardware counters.\n" << std::endl;
+            std::cout << "Some performance statistics will not be available."
+                      << std:endl;
 
 	if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
             papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
@@ -110,6 +98,7 @@ Timer::Timer()
         {
 	    std::cout << "Failed to start hardware counters with error "
                       << result << std::endl;
+            exit(EXIT_FAILURE);
         }
 
 	first_time = false;

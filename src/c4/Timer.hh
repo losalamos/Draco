@@ -3,7 +3,7 @@
  * \file   c4/Timer.hh
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:35:07 2002
- * \brief  Timer class.
+ * \brief  Define class Timer, a POSIX standard timer.
  * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -30,6 +30,10 @@ namespace rtt_c4
  * The Timer class is used to calculate wall clock, user cpu, and system cpu
  * timings.  It uses the POSIX standard times function, so it should work
  * well on all (POSIX) systems.
+ *
+ * On systems where the PAPI performance tool is available, the Timer class
+ * also records some basic cache perfomance statistics. This is much less
+ * portable, but is also not as important.
  *
  * Usage:
  * \code
@@ -106,6 +110,7 @@ namespace rtt_c4
 // 0) original
 // 1) 2003/01/21 Added sum_* member functions (Lowrie).
 // 2) 2010/09/27 Added support for MSVC & CMake (KT).
+// 3) 2011/09/01 Added support for PAPI cache performance monitoring (KGB).
 // 
 //===========================================================================//
 

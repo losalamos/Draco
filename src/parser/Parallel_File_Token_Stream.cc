@@ -168,14 +168,23 @@ string Parallel_File_Token_Stream::location_() const
 void Parallel_File_Token_Stream::fill_character_buffer_()
 {
     using rtt_c4::broadcast;
-    
-    vector<char> comm_buffer(std::numeric_limits<signed char>::max()+1);
-    unsigned i = 1;    // first character is status character
+
+    // The first value in the communications buffer will be a status code,
+    // which if positive is the number of valid characters ini the
+    // buffer. This dictates the maximum size needed for the buffer to be the
+    // maximum positive character value, plus one (for the status code
+    // itself).
+    vector<char> comm_buffer(numeric_limits<signed char>::max()+1);
+
+    // i points to the current position in the communications buffer. We
+    // initialize it to 1 to reserve the first character for the status
+    // code. 
+    unsigned i = 1; 
     if (is_io_processor_)
     {
-        // Read up to numeric_limits<signed char>::max()+1 characters from the
+        // Read up to numeric_limits<signed char>::max() characters from the
         // input file.
-	while (i < static_cast<unsigned>(std::numeric_limits<signed char>::max()+1))
+	while (i < static_cast<unsigned>(numeric_limits<signed char>::max()+1))
 	{
 	    char const c = infile_.get();
 	    if (infile_.eof() || infile_.fail()) break;
@@ -187,7 +196,9 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
 	    // If there is an end or error condition, but one or more
 	    // characters were successfully read prior to encountering the
 	    // end or error condition, wait to transmit the end or error until
-	    // the next call to fill_character_buffer.  
+	    // the next call to fill_character_buffer.
+
+            // Set the status code to the number of valid characters read.
 	    comm_buffer[0] = static_cast<char>(i-1);
         }   
         else if (infile_.eof() && !infile_.bad())
@@ -219,13 +230,20 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
     }
     else
     {
+        // Set i to point to the end of the valid sequence of characters in
+        // the communications buffer.
 	i = 1 + comm_buffer[0];
 
+        // Make sure this is not past the end of the buffer. This should not
+        // be possible unless the data has somewhow become corrupted during
+        // transmission. 
 	if (i>static_cast<unsigned>(numeric_limits<signed char>::max()+1))
 	{
 	    throw runtime_error("interprocessor communications corrupted");
 	}
 
+        // Copy the transmitted characters into the local character buffer.
+        
         vector<char>::iterator first=comm_buffer.begin();
         vector<char>::iterator last=first+i;
 

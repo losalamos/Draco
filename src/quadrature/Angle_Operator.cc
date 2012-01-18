@@ -239,31 +239,6 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
 
     Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
 
-/*
-    for (unsigned i=0; i < number_of_ordinates; ++i)
-    {
-        std::cout << " ordinate " << i 
-                  << "     " << ordinates[i].mu()
-                  <<    "  " << ordinates[i].eta()
-                  <<    "  " << ordinates[i].xi()
-                  <<    "  " << ordinates[i].wt() 
-                  << std::endl;
-    }
-
-    for (unsigned i=0; i < number_of_levels_; ++i)
-    {
-        unsigned const ia=first_angles_[i];
-        
-        std::cout << " reflection angle for starting direction on level " << i
-                  << " out of " << first_angles_.size()
-                  << " is angle " << ia
-                  << " with mu = " << ordinates[ia].mu()
-                  << " xi = " << ordinates[ia].xi()
-                  << " wt = " << ordinates[ia].wt()
-                  << std::endl;
-    }
-*/
-
     Ensure(check_class_invariants());
 }
 
