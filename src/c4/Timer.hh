@@ -14,9 +14,10 @@
 #ifndef __c4_Timer_hh__
 #define __c4_Timer_hh__
 
+#include <iostream>
 #include "C4_Functions.hh"
 #include "ds++/Assert.hh"
-#include <iostream>
+#include <c4/config.h>
 
 namespace rtt_c4
 {

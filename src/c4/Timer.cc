@@ -9,7 +9,6 @@
 //---------------------------------------------------------------------------//
 
 #include <iostream>
-#include <c4/config.h>
 #include "C4_sys_times.h"
 #include "Timer.hh"
 #include <iomanip>
@@ -83,12 +82,13 @@ Timer::Timer()
         }
 
 	papi_num_counters_ = PAPI_num_counters();
-        if (papi_num_counters<sizeof(papi_events_)/sizeof(int))
+        if (papi_num_counters_<sizeof(papi_events_)/sizeof(int))
         {
             std::cout << "PAPI: This system has only " << papi_num_counters_
                       << " hardware counters.\n" << std::endl;
             std::cout << "Some performance statistics will not be available."
-                      << std:endl;
+                      << std::endl;
+	}
 
 	if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
             papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
