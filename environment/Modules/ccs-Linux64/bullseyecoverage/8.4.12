@@ -1,0 +1,53 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+# global control file
+if { [file exists $env(MODULESHOME)/etc/control] } {
+   source $env(MODULESHOME)/etc/control;
+}
+
+ conflict pgi intel
+ 
+setenv          _MODULES_bullseye   [module-info name];
+ 
+#====== end modulefile code =========
+
+
+# local variables
+set version     8.4.12;
+set compiler    gcc;
+set prefix      /ccs/codes/radtran/vendors/Linux64/BullseyeCoverage-8.4.12
+
+if { ![file exists $prefix] } {
+   puts stderr "\n[module-info name]: $prefix: No such file or directory.\n";
+   break;
+   exit 1;
+}
+set bindir      $prefix/bin;
+
+
+# module whatis
+module-whatis   "BullseyeCoverage $version";
+# module help
+proc ModulesHelp { } {   global version prefix incdir;
+
+   puts stderr "\tBullseyeCoverage $version";
+   puts stderr "\tCC\t= $bindir/gcc";
+   puts stderr "\tCXX\t= $bindir/g++";
+   puts stderr "\tF90\t= $bindir/gfortran";
+   puts stderr "\n\tUse cov01 --on to turn on coverage tracking.";
+   puts stderr "\tUse CoverageBrowser to view results.";
+}
+
+prepend-path   PATH  $bindir;
+
+## BUG: I would like to set the following variables
+#setenv CC            $bindir/gcc;
+#setenv CXX           $bindir/g++;
+#setenv F90           $bindir/gfortran;
+## bug when I unload bullseye, these varaibles are not reset to their
+## former values.
