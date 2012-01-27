@@ -399,7 +399,7 @@ endmacro()
 # Setup for Code Coverage and LOC metrics
 # ------------------------------------------------------------
 macro( setup_for_code_coverage )
-   if( "${sitename}" MATCHES "ccscs8" AND "$ENV{CXX}" MATCHES "g[+][+]" )
+   if( "${sitename}" MATCHES "ccscs[89]" AND "$ENV{CXX}" MATCHES "g[+][+]" )
       if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
          if(ENABLE_C_CODECOVERAGE)
 
@@ -448,7 +448,7 @@ endmacro( setup_for_code_coverage )
 # dyanmic analysis excludes tests with label "nomemcheck"
 # ------------------------------------------------------------
 macro(process_cc_or_da)
-   if( "${sitename}" MATCHES "ccscs8" AND "$ENV{CXX}" MATCHES "g[+][+]" )
+   if( "${sitename}" MATCHES "ccscs[89]" AND "$ENV{CXX}" MATCHES "g[+][+]" )
       if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
          if(ENABLE_C_CODECOVERAGE)
             message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
