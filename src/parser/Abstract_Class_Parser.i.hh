@@ -13,7 +13,7 @@
 #ifndef utils_Abstract_Class_Parser_i_hh
 #define utils_Abstract_Class_Parser_i_hh
 
-//---------------------------------------------------------------------------//
+//===========================================================================//
 /*
  * The following rather lengthy and clumsy declaration declares storage for
  * the parse functions.
@@ -35,9 +35,9 @@ Abstract_Class_Parser<Class,
 template<class Class,
          Parse_Table &get_parse_table(),
          SP<Class> &get_parsed_object()>
-vector<char const *> Abstract_Class_Parser<Class,
-                                           get_parse_table,
-                                           get_parsed_object>::keys_;
+vector<string> Abstract_Class_Parser<Class,
+                                     get_parse_table,
+                                     get_parsed_object>::keys_;
 
 //---------------------------------------------------------------------------//
 /*!
@@ -62,15 +62,11 @@ register_child(string const &keyword,
 
     unsigned const N = keys_.size();
     {
-        unsigned const n = keyword.size();
-        char *ptr = new char[n+1];
-        std::copy(keyword.begin(), keyword.end(), ptr);
-        ptr[n] = '\0';
-        keys_.push_back(ptr);
+        keys_.push_back(keyword);
     }
     map_.push_back(parse_function);
     
-    Keyword key = {keys_[N],
+    Keyword key = {keys_[N].c_str(),
                    parse_child_,
                    N,
                    ""};

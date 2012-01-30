@@ -87,6 +87,8 @@ class Abstract_Class_Parser
 
   private:
 
+    // TYPES
+
     // IMPLEMENTATION
 
     //! Parse the child type
@@ -98,7 +100,7 @@ class Abstract_Class_Parser
     static vector<Parse_Function*> map_;
 
     //! Keywords
-    static vector<char const *> keys_;
+    static vector<string> keys_;
 };
 
 #include "Abstract_Class_Parser.i.hh"
