@@ -107,7 +107,7 @@ proccess of software release in the Draco code system.
 \section draco_release_prepare Prerequisites for release
 
 The following checklist provides the basic procedure that should be
-followed when making a formal release of the Capsaicin libraries and
+followed when making a formal release of the Draco libraries and
 binaries. 
 
 - Determine what capabilities/bugs must be implemented/fixed for release.
@@ -200,7 +200,7 @@ changes.
    % cat changes_since_5_20_0.log | grep "Index:" &> files_changed_since_5_20_0.log  
 # Number of files changed is approximately:
    % cat files_changed_since_5_20_0.log | sort -u | wc -l
-   \endcode
+\endcode
 or
 \code
    % cvs -q log -NS -d"2010-01-29<now" > comments_since_5_20_0.log
