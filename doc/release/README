@@ -1,0 +1,5 @@
+How to build the documents:
+----------------------------
+cmake .
+make draco-release.pdf
+
