@@ -245,7 +245,6 @@ macro( add_scalar_tests test_sources )
 
    # What is the component name (always use Lib_${compname} as a dependency).
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
-   set( iarg "0" )
 
    # If the test directory does not provide its own library (e.g.:
    # libc4_test.a), then don't try to link against it!
@@ -295,6 +294,7 @@ macro( add_scalar_tests test_sources )
          register_scalar_test( ${compname}_${testname} 
             "${RUN_CMD}" ${testname} "" )
        else()
+          set( iarg "0" )
           foreach( cmdarg ${addscalartest_TEST_ARGS} ) 
              math( EXPR iarg "${iarg} + 1" )
              register_scalar_test( ${compname}_${testname}_arg${iarg} 
