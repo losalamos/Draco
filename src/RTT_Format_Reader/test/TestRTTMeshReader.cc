@@ -255,6 +255,11 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
     {
 	FAILMSG("Element Types not obtained.");
     }
+    // Check Element Defs.
+    if (mesh.get_element_defs().size()!=1)
+    {
+	FAILMSG("Element Defs not obtained.");
+    }
     // Check Unique Element Types.
     if (unique_element_types != mesh.get_unique_element_types())
     {

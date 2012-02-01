@@ -1272,7 +1272,10 @@ bool check_cell_defs(RTT_Format_Reader const & mesh,
             mesh.get_cell_defs_cell_def(0) );
         if( myCellDef.get_name()   == std::string("point") &&
             myCellDef.get_nnodes() == 1 &&
-            myCellDef.get_nsides() == 0 )
+            myCellDef.get_nsides() == 0 &&
+            myCellDef.get_all_side_types().size()==0  &&
+            myCellDef.get_all_sides().size()==0  &&
+            myCellDef.get_all_ordered_sides().size()==0)
         {
             ut.passes("mesh.get_cell_defs_cell_def() works.");
         }
