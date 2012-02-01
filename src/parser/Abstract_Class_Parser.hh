@@ -12,6 +12,7 @@
 #ifndef parser_Abstract_Class_Parser_hh
 #define parser_Abstract_Class_Parser_hh
 
+#include <cstring>
 #include "ds++/SP.hh"
 #include "Token_Stream.hh"
 #include "Parse_Table.hh"
@@ -21,6 +22,35 @@ namespace rtt_parser
 using std::string;
 using std::vector;
 using rtt_dsxx::SP;
+
+//===========================================================================//
+/*!
+ * \class Abstract_Class_Parser_Base
+ * \brief Template for parser that produces a class object.
+ *
+ * This class exists only to serve as a base for Abstract_Class_Parser,
+ * allowing all such parsers to share the same keyword table and ensuring that
+ * the keyword table is properly cleaned up when the program terminates.
+ */
+
+class Abstract_Class_Parser_Base
+{
+  protected:
+
+    // TYPES
+
+    class c_string_vector : public vector<char *>
+    {
+      public:
+
+        ~c_string_vector();
+    };
+
+    // DATA
+
+    //! Keywords
+    static c_string_vector keys_;
+};
 
 //===========================================================================//
 /*!
@@ -68,13 +98,15 @@ using rtt_dsxx::SP;
 template<class Abstract_Class,
          Parse_Table &get_parse_table(),
          SP<Abstract_Class> &get_parsed_object()>
-class Abstract_Class_Parser
+
+class Abstract_Class_Parser : private Abstract_Class_Parser_Base
 {
   public:
-
+    
     // TYPES
     
-    typedef SP<Abstract_Class> Parse_Function(Token_Stream&);
+    typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
+
 
     // STATIC
     
@@ -87,20 +119,15 @@ class Abstract_Class_Parser
 
   private:
 
-    // TYPES
-
     // IMPLEMENTATION
 
     //! Parse the child type
     static void parse_child_(Token_Stream &, int);
 
     // DATA
-
+    
     //! Map of child keywords to child creation functions
     static vector<Parse_Function*> map_;
-
-    //! Keywords
-    static vector<string> keys_;
 };
 
 #include "Abstract_Class_Parser.i.hh"

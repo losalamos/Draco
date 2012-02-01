@@ -28,17 +28,6 @@ Abstract_Class_Parser<Class,
                       get_parse_table,
                       get_parsed_object>::map_;
 
-/*
- * Likewise the following lengthy and clumsy declaration declares storage for
- * the corresponding child keywords.
- */
-template<class Class,
-         Parse_Table &get_parse_table(),
-         SP<Class> &get_parsed_object()>
-vector<string> Abstract_Class_Parser<Class,
-                                     get_parse_table,
-                                     get_parsed_object>::keys_;
-
 //---------------------------------------------------------------------------//
 /*!
  * This function allows a host code to register children of the abstract class
@@ -60,13 +49,14 @@ register_child(string const &keyword,
 {
     using namespace rtt_parser;
 
-    unsigned const N = keys_.size();
-    {
-        keys_.push_back(keyword);
-    }
+    char *cptr = new char[keyword.size()+1];
+    std::strcpy(cptr, keyword.c_str());
+    keys_.push_back(cptr);
+
+    unsigned const N = map_.size();
     map_.push_back(parse_function);
     
-    Keyword key = {keys_[N].c_str(),
+    Keyword key = {cptr,
                    parse_child_,
                    N,
                    ""};
@@ -112,7 +102,7 @@ Abstract_Class_Parser<Class,
                       get_parse_table,
                       get_parsed_object>::check_static_class_invariants()
 {
-    return map_.size() == keys_.size();
+    return true; // no significant invariant for now
 }
 
 
