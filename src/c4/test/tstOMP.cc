@@ -120,9 +120,9 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
     std::string procname = rtt_c4::get_processor_name();
 
     int nthreads(-1);
-    int tid(-1);
     
 #ifdef USE_OPENMP
+    int tid(-1);
 
     if( one_mpi_rank_per_node )
         nthreads = omp_get_max_threads();
@@ -150,7 +150,6 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
     }
 #else
     { // not OMP
-        tid = 0;
         nthreads = 1;
         std::cout << "OMP thread use is disabled."
                   << "\n   MPI node       : " << node()
