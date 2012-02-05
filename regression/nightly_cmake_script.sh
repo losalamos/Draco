@@ -15,6 +15,7 @@
 
 umask 0002
 unset http_proxy
+unset HTTP_PROXY
 export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux64
 
 (cd /home/regress/environment/Modules; cvs -q update -AdP)
@@ -23,13 +24,18 @@ if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f /home/regress/environment/Modules/init/bash; then
     source /home/regress/environment/Modules/init/bash
-    module load grace BLACS SCALAPACK SuperLU_DIST/2.4 gcc gsl 
-    module load lapack/atlas-3.8.3 ndi openmpi ParMetis/3.1.1 trilinos/10.4.0 cmake
-    module load valgrind hypre numdiff
+    module load gcc gsl 
+    module load lapack/atlas-3.8.3 openmpi cmake svn
+    module load valgrind numdiff
     module list
   fi
 fi
 module load valgrind
+module list
+
+echo " "
+echo "top -b -n 1"
+top -b -n 1 | head -n 15
 
 # Run the ctest (regression) script.  This script will take the following build steps: 
 # 1. cvs update
@@ -44,12 +50,13 @@ module load valgrind
 
 if test "`whoami`" == "regress"; then
     dashboard_type=Nightly
+    base_dir=/home/regress/cmake_draco
+    script_dir=/home/regress/cmake_draco
 else
     dashboard_type=Experimental
+    base_dir=/var/tmp/${HOME}/regress/cmake_draco
+    script_dir=${HOME}/draco
 fi
-
-base_dir=/home/regress/cmake_draco
-script_dir=/home/regress/cmake_draco
 
 # compiler
 comp=gcc
@@ -57,19 +64,22 @@ comp=gcc
 # Release build
 build_type=Release
 export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+mkdir -p ${work_dir}
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
 
 # Debug build
 build_type=Debug
 export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+mkdir -p ${work_dir}
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_type}
 
 # Coverage build
 build_type=Coverage
-module load bullseyecoverage
+module load bullseyecoverage/8.4.12
 CXX=`which g++`
 CC=`which gcc`
 export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
+mkdir -p ${work_dir}
 ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},Debug,${build_type}
 module unload bullseyecoverage
 
