@@ -394,6 +394,20 @@ macro( set_cvs_command projname )
          "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
    endif()
 endmacro()
+macro( set_svn_command projname )
+   if( EXISTS /ccs/codes/radtran/svn )
+      set( CTEST_CVS_COMMAND
+         /ccs/codes/radtran/vendors/Linux64/subversion-1.6.17/bin/svn )
+      set( CTEST_CVS_CHECKOUT
+         "${CTEST_CVS_COMMAND} checkout /ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
+   elseif( EXISTS /usr/projects/jayenne/regress/svn )
+      set( CTEST_CVS_CHECKOUT
+         "${CTEST_CVS_COMMAND} checkout /usr/projects/jayenne/regress/svn/jayenne/${projname}/trunk source" )
+   else()
+      set( CTEST_CVS_CHECKOUT
+         "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
+   endif()
+endmacro()
 
 # ------------------------------------------------------------
 # Setup for Code Coverage and LOC metrics
@@ -501,12 +515,12 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
    find_file( ${dep_pkg}_target_dir
       NAMES README.${dep_pkg}
       HINTS
+         # if DRACO_DIR is defined, use it.
+         $ENV{DRACO_DIR}
          # regress account on ccscs8
          /home/regress/cmake_draco/${CTEST_MODEL}_${compiler_short_name}/${CTEST_BUILD_CONFIGURATION}/target
          # Try a path parallel to the work_dir
          ${${dep_pkg}_work_dir}/target
-         # if DRACO_DIR is defined, use it.
-         $ENV{DRACO_DIR}
       )
    
    if( NOT EXISTS ${${dep_pkg}_target_dir} )
