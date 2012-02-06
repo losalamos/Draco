@@ -19,6 +19,7 @@
 
 #include "c4/config.h"
 #include "ds++/UnitTest.hh"
+#include "Timer.hh"
 #include <iostream>
 
 namespace rtt_c4
@@ -138,6 +139,9 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     //! Return number of processors that are to be used by this test.
     std::string nodes() const { return numProcs; }
+
+    //! Return whether problem computation times should be reported
+    bool reportTimingsI() const { return reportTimings; }
         
   private:
 
@@ -176,7 +180,12 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     //! Name of file for logging output of application execution
     std::string logFile;
-    
+
+    //! Should the times for each test be reported?
+    bool reportTimings;
+
+    //! Timer if timings are desired
+    Timer problemTimer;
 };
 
 } // end namespace rtt_c4

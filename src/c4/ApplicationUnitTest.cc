@@ -52,7 +52,8 @@ ApplicationUnitTest::ApplicationUnitTest(
       mpiCommand( constructMpiCommand( numProcs ) ),
       logExtension( buildLogExtension( numProcs ) ),
       listOfArgs( listOfArgs_ ),
-      logFile()
+      logFile(),
+      reportTimings(false)
 {
     using std::string;
 
@@ -83,8 +84,13 @@ ApplicationUnitTest::ApplicationUnitTest(
     // exit if command line contains "--version"
     
     for( int arg = 1; arg < argc; arg++ )
+    {
         if( string( argv[arg] ) == "--version" )
             throw rtt_dsxx::assertion( string( "Success" ) );
+
+        if (string(argv[arg]) == "--timings")
+            reportTimings = true;
+    }
 
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );
@@ -246,7 +252,14 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
     unixCommand << mpiCommand << " " << appArg << " > " << logFile;
     std::cout << "\nExecuting command from the shell: \n\t\""
               << unixCommand.str().c_str() << "\"\n" << std::endl;
+    if (reportTimings)
+    {
+        problemTimer.reset();
+        problemTimer.start();
+    }
     errorLevel = std::system( unixCommand.str().c_str() );
+    if (reportTimings)
+        problemTimer.stop();
 
     bool result(false);
     if( errorLevel == 0 )
@@ -263,7 +276,10 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
     }
     msg << "execution of " << testPath + applicationName << " :"
         << "\n\tArguments           : " << appArg
-        << "\n\tOutput Logfile      : " << logFile << "\n";
+        << "\n\tOutput Logfile      : " << logFile << std::endl;
+    if (reportTimings)
+        msg << "\tWall time           : " << problemTimer.sum_wall_clock()
+            << std::endl;
     out << msg.str() << std::endl;
     return result;
 }
