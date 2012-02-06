@@ -59,7 +59,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # Set the sitename, but strip any domain information
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  message( "sitename = ${sitename}")
+  # message( "sitename = ${sitename}")
   if( ${sitename} MATCHES "yr[a-d]+[0-9]+" )
      set( sitename "YellowRail" )
   elseif( ${sitename} MATCHES "tu[a-d]+[0-9]+" )
@@ -69,7 +69,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
   elseif( ${sitename} MATCHES "ct" )
      set( sitename "Cielito" )
   endif()
-  message( "sitename = ${sitename}")
+#  message( "sitename = ${sitename}")
   set( CTEST_SITE ${sitename} )
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
   set( CTEST_BINARY_DIRECTORY "${work_dir}/build"  )
@@ -360,12 +360,6 @@ CTEST_MEMORYCHECK_COMMAND         = ${CTEST_MEMORYCHECK_COMMAND}
 MEMORYCHECK_SUPPRESSIONS_FILE     = ${MEMORYCHECK_SUPPRESSIONS_FILE}
 CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}
 CTEST_CONFIGURE_COMMAND           = ${CTEST_CONFIGURE_COMMAND}
-beyedir          = ${beyedir}
-ENV{COVFILE}     = $ENV{COVFILE}
-ENV{COVDIRCFG}   = $ENV{COVDIRCFG}
-ENV{COVFNCFG}    = $ENV{COVFNCFG}
-ENV{COVCLASSCFG} = $ENV{COVCLASSCFG}
-ENV{COVSRCCFG}   = $ENV{COVSRCCFG}
 
 ")
   endif( NOT quiet_mode )
@@ -395,14 +389,27 @@ macro( set_cvs_command projname )
    endif()
 endmacro()
 macro( set_svn_command projname )
+   message("In set_sv_command()...")
+   unset( CTEST_CVS_COMMAND )
+   find_program( CTEST_SVN_COMMAND
+      NAMES svn
+      HINTS
+         "C:/Program Files (x86)/CollabNet Subversion"
+         "C:/Program Files (x86)/CollabNet/Subversion Client"
+      # NO_DEFAULT_PATH
+      )
+   set( CTEST_CVS_COMMAND ${CTEST_SVN_COMMAND} )
+   if( NOT EXISTS "${CTEST_CVS_COMMAND}" )
+      message( FATAL_ERROR "Cound not find svn executable." )
+   endif( NOT EXISTS "${CTEST_CVS_COMMAND}" )
+
    if( EXISTS /ccs/codes/radtran/svn )
-      set( CTEST_CVS_COMMAND
-         /ccs/codes/radtran/vendors/Linux64/subversion-1.6.17/bin/svn )
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout /ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
+         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
+      message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
    elseif( EXISTS /usr/projects/jayenne/regress/svn )
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout /usr/projects/jayenne/regress/svn/jayenne/${projname}/trunk source" )
+         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/jayenne/${projname}/trunk source" )
    else()
       set( CTEST_CVS_CHECKOUT
          "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
