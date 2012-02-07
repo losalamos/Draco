@@ -405,14 +405,14 @@ macro( set_svn_command projname )
 
    if( EXISTS /ccs/codes/radtran/svn )
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
+         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/jayenne/trunk/${projname} source" )
       message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
    elseif( EXISTS /usr/projects/jayenne/regress/svn )
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/jayenne/${projname}/trunk source" )
+         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/jayenne/trunk/${projname} source" )
    else()
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/jayenne/${projname}/trunk source" )
+         "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/jayenne/trunk/${projname} source" )
    endif()
 endmacro()
 
