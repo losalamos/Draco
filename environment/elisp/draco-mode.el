@@ -111,9 +111,9 @@ to anything else will generate errors."
 (define-key draco-mode-map "\C-csb"        'speedbar)
 
 ;; CVS
-(define-key draco-mode-map [(f9)]               'cvs-examine)
-(define-key draco-mode-map [(meta f9)]          'cvs-status)
-(define-key draco-mode-map [(control f9)]       'cvs-checkout)
+(define-key draco-mode-map [(f9)]               'svn-examine)
+(define-key draco-mode-map [(meta f9)]          'svn-status)
+(define-key draco-mode-map [(control f9)]       'svn-checkout)
 
 ;; Mouse commands
 (define-key draco-mode-map [(button3)]          'kill-region)

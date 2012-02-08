@@ -655,6 +655,8 @@ auto-mode-alist and set up some customizations for DRACO."
   (progn
 ;    (autoload 'cvs-examine "pcl-cvs" "CVS mode" t)
 ;    (require 'pcl-cvs)
+    (require 'psvn)
+    (setq svn-status-verbose nil)
 
     (defun draco-menu-extras-cvs () 
       "Submenu for inserting comments (context sensitive)."
