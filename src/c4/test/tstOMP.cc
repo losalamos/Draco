@@ -25,7 +25,6 @@
 #include <cmath>
 #include <numeric>
 #include <complex>
-#include <cstdio>
 #include <vector>
 #include <string>
 
@@ -248,14 +247,15 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
                       << "\t" << t2_omp_accumulate.wall_clock() << std::endl;
         }
         
-        if( omrpn )
-        {
-            if( t2_omp_accumulate.wall_clock()
-                < t2_serial_accumulate.wall_clock() )
-                PASSMSG( "OMP accumulate was faster than Serial accumulate.");
-            else
-                FAILMSG( "OMP accumulate was slower than Serial accumulate.");
-        }        
+        // if( omrpn )
+        // {
+        //     if( t2_omp_accumulate.wall_clock()
+        //         < t2_serial_accumulate.wall_clock() )
+        //         PASSMSG( "OMP accumulate was faster than Serial accumulate.");
+        //     else
+        //         FAILMSG( "OMP accumulate was slower than Serial accumulate.");
+        // } 
+        
     }
 #endif
     return;
@@ -296,6 +296,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
 
     // Use OMP threads
     Timer t;
+    std::ostringstream image1, image2;
     t.start();
 
 #pragma omp parallel for ordered schedule(dynamic)
@@ -318,8 +319,9 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
                 static const char charset[] = ".,c8M@jawrpogOQEPGJ";
                 c = charset[ n% (sizeof(charset)-1) ];
             }
-            std::putchar(c);
-            if(x+1 == width) std::puts("|");
+            // std::putchar(c);
+            image1 << c;
+            if(x+1 == width) image1 << "|\n"; //std::puts("|");
         }
     }
     t.stop();
@@ -351,21 +353,32 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
                 static const char charset[] = ".,c8M@jawrpogOQEPGJ";
                 c = charset[ n% (sizeof(charset)-1) ];
             }
-            std::putchar(c);
-            if(x+1 == width) std::puts("|");
+            // std::putchar(c);
+            image2 << c;
+            if(x+1 == width) image2 << "|\n"; //std::puts("|");
         }
     }
     t.stop();
     double const gen_time_serial = t.wall_clock();
 
+    if( image1.str() == image2.str() )
+    {
+        std::cout << image1.str() << std::endl;
+        PASSMSG("Scalar and OMP generated Mandelbrot images match.");
+    }
+    else
+    {
+        FAILMSG("Scalar and OMP generated Mandelbrot images do not match.");
+    }
+
     std::cout << "\nTime to generate Mandelbrot:"
               << "\n   Normal: " << gen_time_serial << " sec."
               << "\n   OMP   : " << gen_time_omp    << " sec." << std::endl;
 
-    if( gen_time_omp < gen_time_serial )
-        PASSMSG( "OMP generation of Mandelbrot image is faster.");
-    else
-        FAILMSG( "OMP generation of Mandelbrot image is slower.");
+    // if( gen_time_omp < gen_time_serial )
+    //     PASSMSG( "OMP generation of Mandelbrot image is faster.");
+    // else
+    //     FAILMSG( "OMP generation of Mandelbrot image is slower.");
     
     return;
 }
