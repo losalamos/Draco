@@ -107,13 +107,14 @@ macro(dbsSetupCompilers)
    
    ##---------------------------------------------------------------------------##
    ## Check for OpenMP
-   option( USE_OPENMP "Turn on OpenMP features?" ON )
    
+   set( USE_OPENMP OFF )
    include( CheckIncludeFiles )
    check_include_files( omp.h HAVE_OMP_H )
-   if( NOT HAVE_OMP_H )
-      set( USE_OPENMP OFF )
+   if( ${HAVE_OMP_H} )
+      set( USE_OPENMP ON )
    endif()   
+   option( USE_OPENMP "Turn on OpenMP features?" ${USE_OPENMP} )
 
    ##---------------------------------------------------------------------------##
 
