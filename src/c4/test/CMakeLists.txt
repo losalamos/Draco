@@ -117,6 +117,9 @@ else()
          LABELS "nomemcheck"
       )
    endif()
+  if( ${CMAKE_GENERATOR} MATCHES Xcode )
+     SET_TARGET_PROPERTIES( Ut_c4_tstOMP_exe PROPERTIES XCODE_ATTRIBUTE_ENABLE_OPENMP_SUPPORT YES )
+  endif()
 endif()
 
  # RUN_SERIAL
