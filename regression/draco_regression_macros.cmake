@@ -389,7 +389,7 @@ macro( set_cvs_command projname )
    endif()
 endmacro()
 macro( set_svn_command projname )
-   message("In set_sv_command()...")
+   message("In set_svn_command()...")
    unset( CTEST_CVS_COMMAND )
    find_program( CTEST_SVN_COMMAND
       NAMES svn
