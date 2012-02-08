@@ -121,6 +121,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+
+   # XCode needs this extra bit of help for OpenMP support
+   set( CMAKE_EXE_LINKER_FLAGS "-fopenmp" )
 endif()
 
 # Extra flags for gcc-4.6.2+
