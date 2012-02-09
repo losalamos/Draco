@@ -257,6 +257,8 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
         // } 
         
     }
+#else // SCALAR
+    PASSMSG("OMP is disabled.  No checks made.");
 #endif
     return;
 }
