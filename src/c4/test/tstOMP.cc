@@ -119,29 +119,43 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
     std::string procname = rtt_c4::get_processor_name();
 
 #ifdef USE_OPENMP
+
+    // Turn on the dynamic thread adjustment capability.
+    omp_set_dynamic(1);
+    int num_dynamic_threads = omp_get_dynamic();
+    
     int tid(-1);
-    int nthreads(-1);
+    int nthreads(-1),maxthreads(-1);
 
     if( one_mpi_rank_per_node )
-        nthreads = omp_get_max_threads();
+    {
+        maxthreads = omp_get_max_threads();
+        // nthreads   = omp_get_num_threads();
+    }
     else
     {
         // More than 1 MPI rank per node --> turn off OMP.
-        nthreads = 1;
-        omp_set_num_threads( nthreads );
+        maxthreads = 1;
+        omp_set_num_threads( maxthreads );
     }
-        
+
 #pragma omp parallel private(tid)
     {
+        nthreads = omp_get_num_threads();
         tid = omp_get_thread_num();
-        if( tid == nthreads-1 )
+
+        if( tid == 0 )
         {
             std::cout << "Using OMP threads."
                       << "\n   MPI node       : " << node()
                       << "\n   MPI max nodes  : " << nodes()
                       << "\n   OMP thread     : " << tid
-                      << "\n   OMP max threads: " << nthreads
+                      << "\n   OMP num threads: " << nthreads
+                      << "\n   OMP max threads: " << maxthreads
                       << "\n   procname(IO)   : " << procname
+                      << "\n   Dynamic theads : "
+                      << (num_dynamic_threads==0 ? std::string("OFF")
+                                                 : std::string("ON") )
                       << "\n" << std::endl;
         }
         if( tid < 0 || tid >= nthreads )  ITFAILS;
@@ -198,10 +212,6 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
         if( ! omrpn )
             omp_set_num_threads( 1 );
 
-        if( node() == 0 )
-            std::cout << "\nNow computing sum using " << omp_get_max_threads()
-                      << " OMP threads." << std::endl;
-        
         // Generate omp_result 
         std::vector<double> omp_result(N,0.0);
         double omp_sum(0.0);
@@ -209,7 +219,21 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
         Timer t1_omp_build;
         t1_omp_build.start();
 
+        int nthreads(-1);
+#pragma omp parallel
+        {
+            if( node() == 0 && omp_get_thread_num() == 0 )
+            {
+                nthreads = omp_get_num_threads();
+                std::cout << "\nNow computing sum using "
+                          << nthreads
+                          << " OMP threads." << std::endl;
+                
+            }
+        }
+
 #pragma omp parallel for shared(foo,bar)
+        
         for(int i=0;i<N;++i)
         {
             foo[i] = 99.00+i;
@@ -247,14 +271,14 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
                       << "\t" << t2_omp_accumulate.wall_clock() << std::endl;
         }
         
-        // if( omrpn )
-        // {
-        //     if( t2_omp_accumulate.wall_clock()
-        //         < t2_serial_accumulate.wall_clock() )
-        //         PASSMSG( "OMP accumulate was faster than Serial accumulate.");
-        //     else
-        //         FAILMSG( "OMP accumulate was slower than Serial accumulate.");
-        // } 
+        if( omrpn && nthreads > 4 )
+        {
+            if( t2_omp_accumulate.wall_clock()
+                < t2_serial_accumulate.wall_clock() )
+                PASSMSG( "OMP accumulate was faster than Serial accumulate.");
+            else
+                FAILMSG( "OMP accumulate was slower than Serial accumulate.");
+        } 
         
     }
 #else // SCALAR
@@ -283,10 +307,6 @@ int MandelbrotCalculate(complex c, int maxiter)
 
 void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
 {
-    if( rtt_c4::node() == 0 )
-        std::cout << "\nGenerating Mandelbrot image (OMP threads)...\n"
-                  << std::endl;
-    
     const int width  = 78;
     const int height = 44;
     const int num_pixels = width*height;
@@ -301,6 +321,18 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     std::ostringstream image1, image2;
     t.start();
 
+    int nthreads(-1);
+#pragma omp parallel
+        {
+            if( node() == 0 && omp_get_thread_num() == 0 )
+            {
+                nthreads = omp_get_num_threads();
+                std::cout << "\nNow Generating Mandelbrot image ("
+                          << nthreads << " OMP threads)...\n"
+                          << std::endl;
+            }
+        }
+        
 #pragma omp parallel for ordered schedule(dynamic)
     for( int pix=0; pix<num_pixels; ++pix)
     {
@@ -377,10 +409,13 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
               << "\n   Normal: " << gen_time_serial << " sec."
               << "\n   OMP   : " << gen_time_omp    << " sec." << std::endl;
 
-    // if( gen_time_omp < gen_time_serial )
-    //     PASSMSG( "OMP generation of Mandelbrot image is faster.");
-    // else
-    //     FAILMSG( "OMP generation of Mandelbrot image is slower.");
+    if( nthreads > 4 )
+    {
+        if( gen_time_omp < gen_time_serial )
+            PASSMSG( "OMP generation of Mandelbrot image is faster.");
+        else
+            FAILMSG( "OMP generation of Mandelbrot image is slower.");
+    }
     
     return;
 }
