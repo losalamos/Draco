@@ -322,6 +322,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     t.start();
 
     int nthreads(-1);
+#ifdef USE_OPENMP
 #pragma omp parallel
         {
             if( node() == 0 && omp_get_thread_num() == 0 )
@@ -358,6 +359,8 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
             if(x+1 == width) image1 << "|\n"; //std::puts("|");
         }
     }
+#endif // USE_OPENMP
+    
     t.stop();
     double const gen_time_omp = t.wall_clock();
 
