@@ -17,7 +17,7 @@ case tu*.localdomain:
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing hpc-tools
     module load intel-c intel-f openmpi-intel
-    module load gsl/1.14-intel
+    module load gsl/1.14-intel svn
     module load lapack/atlas-3.8.3-intel emacs 
     module load cmake numdiff git xshow papi/4.1.3
     # PGI keeps running out of tmp sapce
@@ -31,7 +31,7 @@ case yr*:
     source /usr/projects/crestone/dotfiles/Cshrc
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/yr-fe
-    module load lapack/atlas-3.8.3 
+    module load lapack/atlas-3.8.3 svn
     module load cmake numdiff git xshow
     module load gsl/1.14-pgi emacs
     # PGI keeps running out of tmp sapce
@@ -44,7 +44,7 @@ case ct*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/ct-fe
-   module load gsl/1.15
+   module load gsl/1.15 svn
    module load cmake/2.8.7 numdiff git xshow papi
    module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    breaksw
@@ -53,7 +53,7 @@ case rra[0-9][0-9][0-9]a*:
    source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/rr-dev-fe
-   module load hpc-tools friendly-testing cellsdk
+   module load hpc-tools friendly-testing cellsdk svn
    module unload pgi 
    module load cmake numdiff git xshow python
    breaksw
