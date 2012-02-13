@@ -42,10 +42,10 @@ proc ModulesHelp { } {
    puts stderr "\tMakefile variables:";
    puts stderr "\t\tCC\t= $bindir/icc";
    puts stderr "\t\tCXX\t= $bindir/icpc";
-#   puts stderr "\t\tFC\t= $f90bindir/ifort";
-#   puts stderr "\t\tF77\t= $f90bindir/ifort";
-#   puts stderr "\t\tF90\t= $f90bindir/ifort";
-#   puts stderr "\t\tF95\t= $f90bindir/ifort";
+   puts stderr "\t\tFC\t= $f90bindir/ifort";
+   puts stderr "\t\tF77\t= $f90bindir/ifort";
+   puts stderr "\t\tF90\t= $f90bindir/ifort";
+   puts stderr "\t\tF95\t= $f90bindir/ifort";
    puts stderr "\t\tINTEL_LICENSE_FILE\t= $licdir/license.dat";
 }
 
@@ -57,10 +57,10 @@ if { ![file exists $prefix] } {
 
 setenv          CC              $bindir/icc;
 setenv          CXX             $bindir/icpc;
-#setenv          F77             $f90bindir/ifort;
-#setenv          F90             $f90bindir/ifort;
-#setenv          FC              $f90bindir/ifort;
-#setenv          F95             $f90bindir/ifort;
+setenv          F77             $bindir/ifort;
+setenv          F90             $bindir/ifort;
+setenv          FC              $bindir/ifort;
+setenv          F95             $bindir/ifort;
 setenv          INTEL_LICENSE_FILE $licdir/license.dat;
 
 # Converting clients to embedded info in module files, rather
