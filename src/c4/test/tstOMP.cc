@@ -398,22 +398,24 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     t.stop();
     double const gen_time_serial = t.wall_clock();
 
+#ifdef USE_OPENMP
     if( image1.str() == image2.str() )
     {
-        std::cout << image1.str() << std::endl;
+        // std::cout << image1.str() << std::endl;
         PASSMSG("Scalar and OMP generated Mandelbrot images match.");
     }
     else
     {
         FAILMSG("Scalar and OMP generated Mandelbrot images do not match.");
     }
-
+#endif
+    
     std::cout << "\nTime to generate Mandelbrot:"
-              << "\n   Normal: " << gen_time_serial << " sec."
-              << "\n   OMP   : " << gen_time_omp    << " sec." << std::endl;
+              << "\n   Normal: " << gen_time_serial << " sec." << std::endl;
 
     if( nthreads > 4 )
     {
+        std::cout << "   OMP   : " << gen_time_omp    << " sec." << std::endl;
         if( gen_time_omp < gen_time_serial )
             PASSMSG( "OMP generation of Mandelbrot image is faster.");
         else
