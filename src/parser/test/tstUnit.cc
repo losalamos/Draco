@@ -180,6 +180,14 @@ void unit_test(UnitTest &ut)
         if (!is_compatible(t1, t2))
             ut.failure("failed to ignore conversion factor difference");
     }
+    if (soft_equiv(conversion_factor(J, CGS), erg.conv))
+    {
+        ut.passes("Conversion to CGS good");
+    }
+    else
+    {
+        ut.failure("Conversion to CGS NOT good");
+    }
 }
 
 //---------------------------------------------------------------------------//

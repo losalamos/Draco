@@ -51,7 +51,9 @@ void tstFile_Token_Stream()
 	}
 
 	tokens.report_semantic_error(token, "dummy error");
-	if (tokens.error_count()!=1)
+	tokens.check_semantics(false, "dummy error");
+	tokens.check_semantics(true, "dummy error");
+	if (tokens.error_count()!=2)
 	{
 	    FAILMSG("Dummy error NOT counted properly");
 	}
@@ -68,7 +70,7 @@ void tstFile_Token_Stream()
         {
             tokens.report_semantic_error(msg);
         }
-        if (tokens.error_count()!=2)
+        if (tokens.error_count()!=3)
         {
             FAILMSG("Dummy exception NOT reported properly");
         }
@@ -176,13 +178,31 @@ void tstFile_Token_Stream()
 	{
 	    PASSMSG("Syntax error correctly thrown and caught");
 	}
-	if (tokens.error_count()!=1)
+	try 
 	{
-	    FAILMSG("Syntax error NOT correctly counted");
+	    tokens.check_syntax(true, "dummy syntax error");  
+	    PASSMSG("Syntax error correctly checked");
+	}
+	catch (const Syntax_Error &msg)
+	{
+	    FAILMSG("Syntax error NOT correctly checked");
+	}
+	try 
+	{
+	    tokens.check_syntax(false, "dummy syntax error");  
+	    FAILMSG("Syntax error NOT correctly checked");
+	}
+	catch (const Syntax_Error &msg)
+	{
+	    PASSMSG("Syntax error correctly checked");
+	}
+	if (tokens.error_count()!=2)
+	{
+	    FAILMSG("Syntax errors NOT correctly counted");
 	}
 	else
 	{
-	    PASSMSG("Syntax error correctly counted");
+	    PASSMSG("Syntax errors correctly counted");
 	}
 
 	token = tokens.shift();

@@ -674,6 +674,57 @@ void tstutilities(UnitTest &ut)
         }
         
     }
+    {
+        String_Token_Stream string("true");
+        bool const b = parse_bool(string);
+        if (!b)
+        {
+            ut.failure("did NOT parse bool");
+        }
+        else
+        {        
+            ut.passes("parsed bool correctly");
+        }
+        
+    }
+    {
+        String_Token_Stream string("278 K");
+        double const T = parse_temperature(string);
+        if (soft_equiv(T, 278.))
+        {
+            ut.passes("parsed temperature correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse temperature correctly");
+        }
+        
+    }
+    {
+        String_Token_Stream string("0.0");
+        double const T = parse_nonnegative_real(string);
+        if (T==0.0)
+        {
+            ut.passes("parsed nonnegative real correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse nonnegative real correctly");
+        }
+        
+    }
+    {
+        String_Token_Stream string("5 cm");
+        double const T = parse_quantity(string, m, "length");
+        if (soft_equiv(T, 0.05))
+        {
+            ut.passes("parsed quantity correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse quantity correctly");
+        }
+    }
 }
 
 //---------------------------------------------------------------------------//
