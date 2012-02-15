@@ -325,6 +325,8 @@ macro( SetupVendorLibrariesUnix )
    if( CUDA_FOUND )
       set( HAVE_CUDA 1 )
       option( USE_CUDA "If CUDA is available, should we use it?" ON )
+      set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
+      # set( CUDA_NVCC_FLAGS "-arch=sm_20" )
    endif()
    mark_as_advanced( 
       CUDA_SDK_ROOT_DIR 
