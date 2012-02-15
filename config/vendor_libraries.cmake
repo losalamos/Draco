@@ -327,6 +327,7 @@ macro( SetupVendorLibrariesUnix )
       option( USE_CUDA "If CUDA is available, should we use it?" ON )
       set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
       # set( CUDA_NVCC_FLAGS "-arch=sm_20" )
+      set( cudalibs ${CUDA_CUDART_LIBRARY} )
    endif()
    mark_as_advanced( 
       CUDA_SDK_ROOT_DIR 
@@ -335,7 +336,6 @@ macro( SetupVendorLibrariesUnix )
       CUDA_BUILD_CUBIN
       CUDA_BUILD_EMULATION
       )
-
 endmacro()
 
 #------------------------------------------------------------------------------
