@@ -398,10 +398,14 @@ macro( add_parallel_tests )
            VS_KEYWORD  ${testname}
            FOLDER ${compname}
          )
+      get_target_property( target_source_list Lib_${compname} SOURCES )
+      if( NOT "${target_source_list}" MATCHES NOTFOUND )
+         set( complib Lib_${compname} )
+      endif()
       target_link_libraries( 
          Ut_${compname}_${testname}_exe 
          ${test_lib_target_name} 
-         Lib_${compname} 
+         ${complib}
          ${addparalleltest_DEPS}
          )
       # if( WIN32 )
