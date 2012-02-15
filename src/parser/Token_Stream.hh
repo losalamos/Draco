@@ -172,6 +172,47 @@ class Token_Stream
      * Message to be passed to the user.
      */
     virtual void report(std::string const &message) = 0;
+
+    //-----------------------------------------------------------------------//
+    /*! Check a syntax condition.
+     *
+     * By putting the check branch here, we improve coverage statistics for
+     * branch coverage. Making the function inline keeps the cost of doing so
+     * negligible.
+     *
+     * \param condition Condition to be checked. If false, the message is
+     * delivered in a stream-dependent manner, the stream's error counter is
+     * incremented, and a syntax exception is thrown.
+     *
+     * \param message Diagnostic message to be delivered if condition tests as
+     * false.
+     */
+    void check_syntax(bool const condition,
+                            char const *const message)
+    {
+        if (!condition)
+            report_syntax_error(message);
+    }
+
+    //-----------------------------------------------------------------------//
+    /*! Check a semantic condition.
+     *
+     * By putting the check branch here, we improve coverage statistics for
+     * branch coverage. Making the function inline keeps the cost of doing so
+     * negligible.
+     *
+     * \param condition Condition to be checked. If false, the message is
+     * delivered and the stream's error counter is incremented.
+     *
+     * \param message Diagnostic message to be delivered if condition tests as
+     * false.
+     */
+    void check_semantics(bool const condition,
+                              char const *const message)
+    {
+        if (!condition)
+            report_semantic_error(message);
+    }
     
 
     // ACCESSORS

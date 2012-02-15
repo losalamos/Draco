@@ -763,9 +763,17 @@ double parse_temperature(Token_Stream &tokens)
  * It is very common for transport researchers to specify a temperature in
  * units of energy, using Boltzmann's constant as the conversion factor.
  * This function is useful for parsers that accomodate this convention.
+ *
+ * This version of the function parses a temperature expression containing
+ * user-defined variables.
  * 
  * \param tokens
  * Token stream from which to parse the specification.
+ *
+ * \param number_of_variables Number of user-defined variables potentially
+ * present in the parsed expression.
+ *
+ * \param variable_map Map of variable names to variables indices.
  *
  * \return The parsed temperature.
  *
@@ -913,6 +921,11 @@ bool parse_bool(Token_Stream &tokens)
  * \param name
  * Name of the units expected for the quantity parsed, such as "length" or
  * "ergs/cm/sec/Hz". Used to generate diagnostic messages.
+ *
+ * \param number_of_variables Number of user-defined variables potentially
+ * present in the parsed expression.
+ *
+ * \param variable_map Map of variable names to variables indices.
  *
  * \return The parsed value, converted to the desired unit system. 
  */
