@@ -388,7 +388,8 @@ macro( set_cvs_command projname )
          "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
    endif()
 endmacro()
-macro( set_svn_command projname )
+##---------------------------------------------------------------------------##
+macro( set_svn_command svnpath )
    message("In set_svn_command()...")
    unset( CTEST_CVS_COMMAND )
    find_program( CTEST_SVN_COMMAND
@@ -405,14 +406,14 @@ macro( set_svn_command projname )
 
    if( EXISTS /ccs/codes/radtran/svn )
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/jayenne/trunk/${projname} source" )
+         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
       message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
    elseif( EXISTS /usr/projects/jayenne/regress/svn )
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/jayenne/trunk/${projname} source" )
+         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
    else()
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/jayenne/trunk/${projname} source" )
+         "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
    endif()
 endmacro()
 
