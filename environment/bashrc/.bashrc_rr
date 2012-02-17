@@ -18,7 +18,6 @@ ulimit -s unlimited
 _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
-
 #
 # MODULES
 #
@@ -32,9 +31,6 @@ module load gsl/1.14-gcc grace-draco lapack BLACS SCALAPACK
 module load trilinos SuperLU_DIST hypre ParMetis ndi emacs cmake openmpi
 module list
 
-# CVS
-export CVS_RSH=ssh
-export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
 export FC=pgf90
 
 ##---------------------------------------------------------------------------##

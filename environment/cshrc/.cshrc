@@ -73,7 +73,7 @@ set myhost=`echo $HOST | sed -e 's/[.].*//g'`
 alias btar 'tar --use-compress-program /usr/bin/bzip2'
 alias cd.. 'cd ..'
 alias cpuinfo 'cat /proc/cpuinfo'
-alias cvsup 'cvs -q update -AdP'
+#alias cvsup 'cvs -q update -AdP'
 alias df 'df -h'
 alias dirs 'dirs -v'
 alias dmesg 'dmesg -s 65536'
@@ -104,5 +104,5 @@ alias wmdstat 'watch -n 2 "cat /proc/mdstat"'
 alias xload 'xload -label ${myhost}'
 
 # CVS
-setenv CVS_RSH ssh
-setenv CVSROOT ccscs9:/ccs/codes/radtran/cvsroot
+#setenv CVS_RSH ssh
+#setenv CVSROOT ccscs9:/ccs/codes/radtran/cvsroot

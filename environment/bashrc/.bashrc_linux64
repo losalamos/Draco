@@ -35,11 +35,6 @@ module load BLACS SCALAPACK SuperLU_DIST/2.4 gsl hypre lapack ndi openmpi
 module load ParMetis/3.1.1 trilinos/10.6.4 totalview cmake numdiff git svn
 module list
 
-# CVS
-if test -d /ccs/codes/radtran/cvsroot; then
-  export CVSROOT=/ccs/codes/radtran/cvsroot
-fi
-
 #LaTeX
 vendordir=/ccs/codes/radtran/vendors
 if test -d ${vendordir}/environment/latex; then

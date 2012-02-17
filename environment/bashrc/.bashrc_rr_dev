@@ -29,10 +29,6 @@ module load hpc-tools friendly-testing python openmpi-gcc cmake svn
 module load cellsdk gsl/1.14-gcc lapack/atlas-3.8.2 git xshow numdiff
 module list
 
-# CVS
-export CVS_RSH=ssh
-export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
-
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_rr_dev
 ##---------------------------------------------------------------------------##

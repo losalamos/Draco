@@ -48,14 +48,6 @@ if test -n "$MODULESHOME"; then
     fi
     module list
 fi
-
-# CVS
-export CVS_RSH=ssh
-case ${target} in
-darwin) export CVSROOT=/ccs/codes/radtran/cvsroot ;;
-*)      export CVSROOT=ccscs8:/ccs/codes/radtran/cvsroot ;;
-esac    
-
 # Avoid printing trigraph chars to the screen (eg: ���)
 export LANG=EN_en
 

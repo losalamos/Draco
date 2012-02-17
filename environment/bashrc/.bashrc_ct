@@ -33,9 +33,6 @@ module use $DRACO_MODULE_DIR/ct-fe
 module load cmake git xshow numdiff gsl/1.15 svn
 module list
 
-# CVS
-export CVS_RSH=ssh
-export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
 export F90=pgf90
 
 ##---------------------------------------------------------------------------##

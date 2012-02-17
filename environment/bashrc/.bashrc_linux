@@ -35,14 +35,8 @@ if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
     source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-    module load cmake/2.8.2
     module list
   fi
-fi
-
-# CVS
-if test -d /ccs/codes/radtran/cvsroot; then
-  export CVSROOT=/ccs/codes/radtran/cvsroot
 fi
 
 #LaTeX
