@@ -23,23 +23,32 @@
 #   )
 
 # specialization for machines
-#if( "@CMAKE_SYSTEM@" MATCHES "OSF" )
-#  set( CTEST_CUSTOM_WARNING_EXCEPTION
-#    ${CTEST_CUSTOM_WARNING_EXCEPTION}
-#    "XdmfDOM"
-#    "XdmfExpr"
-#    )
-#endif( "@CMAKE_SYSTEM@" MATCHES "OSF" )
+# if( "@CMAKE_SYSTEM@" MATCHES "OSF" )
+#   set( CTEST_CUSTOM_WARNING_EXCEPTION
+#     ${CTEST_CUSTOM_WARNING_EXCEPTION}
+#     "XdmfDOM"
+#     "XdmfExpr"
+#     )
+# endif()
 
 # Exceptions 
-set( CTEST_CUSTOM_WARNING_EXCEPTION
-  ${CTEST_CUSTOM_WARNING_EXCEPTION}
-  "tcl8.4.5/[^/]+/../[^/]+/[^.]+.c[:\"]"
-  "Utilities/vtkmpeg2/"
-  "warning LNK44221blahblah"
-  "myspecial/path/to/something/"
-  "myvendorexception"
-  )
+# set( CTEST_CUSTOM_WARNING_EXCEPTION
+#   ${CTEST_CUSTOM_WARNING_EXCEPTION}
+#   "tcl8.4.5/[^/]+/../[^/]+/[^.]+.c[:\"]"
+#   "Utilities/vtkmpeg2/"
+#   "warning LNK44221blahblah"
+#   "myspecial/path/to/something/"
+#   "myvendorexception"
+#   )
+
+# specialization for machines
+if( APPLE )
+   set( CTEST_CUSTOM_WARNING_EXCEPTION
+      ${CTEST_CUSTOM_WARNING_EXCEPTION}
+      "has no symbols"
+      )
+endif()
+
 
 # specify maximum number of warnings to display
 #set( CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS "100" )
