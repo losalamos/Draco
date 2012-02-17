@@ -80,10 +80,16 @@ S-C-f5   Insert class documentation block
 C-Sh-f5  add-change-log-entry
 f6       Insert comment divider
 
-
-f9       CVS Examine
-S-f9     CVS status
-C-f9     CVS checkout
+f9       SVN examine
+         ? - toggle hide unknown
+         a - add file
+         E - Ediff with revision
+         U - svn update
+         c - commit file
+         f - open file
+         g - refresh screen
+         C-u g - refresh & show potential updates.
+         C-h m - list of all key bindings.
 
 f11      grep find
 C-f11    speedbar

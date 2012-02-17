@@ -1,8 +1,6 @@
 ## -*- Mode: sh -*-----------------------------------------------------------##
 ##
 ## file  : bash_functions.sh
-## author: Kelly Thompson
-## date  : 2 Dec 2004
 ##
 ## Summary: Misc bash functions useful during development of code.
 ##
@@ -44,10 +42,6 @@
 ##
 ## mpull <index>     - Pull index from Mercury (to HPSS/xfer) and then
 ##                     save it to the CWD.
-##
-## cuo <arg>         - Update all OPUS subdirectories using 
-##                     "cvs update -Adp".  With any optional argument,
-##                     only show changes.
 ##
 ## npwd              - function used to set the prompt under bash.
 ##
@@ -234,35 +228,6 @@ function fixperms()
 
 ##---------------------------------------------------------------------------##
 ## Usage:
-##    defmods = "(list of module name)..."
-##    loadandlistmodules
-##
-## Note:
-##    Must have environment $defmods set!
-##---------------------------------------------------------------------------##
-
-function loadandlistmodules()
-{
-    # Requires the following variables to be set:
-    #
-    # defmods="module1 module2 ..." // A list of modules
-
-    source ${MODULESHOME}/init/bash
-
-    module load ${defmods}
-    module list
-
-    # Setup the required stuff for modules to work under bash
-    if ! `module list &> /dev/null`; then
-       echo "********************************"
-       echo "*** WARNING: could not init  ***"
-       echo "***          module command. ***"
-       echo "********************************"
-    fi
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
 ##    findsymbol <symbol>
 ##
 ## Searches all .a and .so files in local directory for symbol
@@ -328,55 +293,55 @@ function pkgdepends()
 ##     <file1> via Mercury.
 ##---------------------------------------------------------------------------##
 
-function mpush()
-{
-    # Ensure that an argument was provided.  The argument must be the name
-    # of a file.
-    if test x$1 == x; then
-       echo "Error: no filename provided."
-       echo "Useage:"
-       echo "   mpush <filename>"
-       return
-    fi
+# function mpush()
+# {
+#     # Ensure that an argument was provided.  The argument must be the name
+#     # of a file.
+#     if test x$1 == x; then
+#        echo "Error: no filename provided."
+#        echo "Useage:"
+#        echo "   mpush <filename>"
+#        return
+#     fi
 
-    # Use psi or k5psi
-    psicmd='psi'
-    linux_release=`uname -r | sed -e 's/-.*//'`
-    case ${linux_release} in
-    2.6.*)
-      psicmd='k5psi'
-    ;;
-    esac
+#     # Use psi or k5psi
+#     psicmd='psi'
+#     linux_release=`uname -r | sed -e 's/-.*//'`
+#     case ${linux_release} in
+#     2.6.*)
+#       psicmd='k5psi'
+#     ;;
+#     esac
 
-    ticket_cache=`k5list | grep Ticket | sed -e 's/.*://'`
-    # time stamps in seconds
-    date_of_ticket=`date -r ${ticket_cache} +%s`
-    date_now=`date +%s`
-    eight_hours=28800
-    dotpeh=`expr $date_of_ticket + $eight_hours`
-    # Check for valid kerberose ticket.
-    if test ${dotpeh} -lt ${date_now}; then
-       # No ticket found
-       echo "Last update to Kerberose Ticket: ${date_of_ticket} sec."
-       echo "Should expire on               : ${dotpeh} sec."
-       echo "Currently                      : ${date_now} sec."
-       echo "No kerberose ticket found.  Let's get one..."
-       k5init -f
-    fi
+#     ticket_cache=`k5list | grep Ticket | sed -e 's/.*://'`
+#     # time stamps in seconds
+#     date_of_ticket=`date -r ${ticket_cache} +%s`
+#     date_now=`date +%s`
+#     eight_hours=28800
+#     dotpeh=`expr $date_of_ticket + $eight_hours`
+#     # Check for valid kerberose ticket.
+#     if test ${dotpeh} -lt ${date_now}; then
+#        # No ticket found
+#        echo "Last update to Kerberose Ticket: ${date_of_ticket} sec."
+#        echo "Should expire on               : ${dotpeh} sec."
+#        echo "Currently                      : ${date_now} sec."
+#        echo "No kerberose ticket found.  Let's get one..."
+#        k5init -f
+#     fi
 
-    # Process for each file (Store file to HPSS)
-    ${psicmd} store -d xfer $@
+#     # Process for each file (Store file to HPSS)
+#     ${psicmd} store -d xfer $@
 
-    # Push file via Mercury
-    xfiles=""
-    for file in $@; do
-       xfiles="${xfiles} xfer/${file}"
-    done
-    push ${xfiles}
+#     # Push file via Mercury
+#     xfiles=""
+#     for file in $@; do
+#        xfiles="${xfiles} xfer/${file}"
+#     done
+#     push ${xfiles}
 
-    echo "mpush: done."
-    echo " "
-}
+#     echo "mpush: done."
+#     echo " "
+# }
 
 
 
@@ -392,66 +357,45 @@ function mpush()
 ##     associated with the index number provided.
 ##---------------------------------------------------------------------------##
 
-function mpull()
-{
-    # If no arguments, then pull all available files
-    items=""
-    numitems=0
-    if test x$1 == x; then
-       echo "Pulling all available Mercury files to HPSS."
-       tmp=`status | sed -e 's/[A-Za-z:\s]*//g'`
-       for i in ${tmp}; do
-          items="${items} ${i}"
-          numitems="`expr ${numitems} + 1`" 
-       done
-    else
-       "Pulling item(s) $* from Mercury to HPSS."
-       items=$*
-       numitems=$#
-    fi
+# function mpull()
+# {
+#     # If no arguments, then pull all available files
+#     items=""
+#     numitems=0
+#     if test x$1 == x; then
+#        echo "Pulling all available Mercury files to HPSS."
+#        tmp=`status | sed -e 's/[A-Za-z:\s]*//g'`
+#        for i in ${tmp}; do
+#           items="${items} ${i}"
+#           numitems="`expr ${numitems} + 1`" 
+#        done
+#     else
+#        "Pulling item(s) $* from Mercury to HPSS."
+#        items=$*
+#        numitems=$#
+#     fi
 
-    # Pull from Mercury
-    echo "pull ${items} xfer"
-    pull ${items} xfer
+#     # Pull from Mercury
+#     echo "pull ${items} xfer"
+#     pull ${items} xfer
 
-    # Get a list of files located in the user's HPSS xfer directory
-    # sorted by time stamp.  Retrieve the most recent N files to the
-    # user's CWD.  N is the number of files pulled from Mercury.
-    i=1
-    xfiles=`psi ls -t xfer/*`
-    for file in ${xfiles}; do
-       echo "Item ${i}: psi get ${file}"
-       if test $i -eq $n; then
-          break
-       fi
-       psi get ${file}
-       i="`expr ${i} + 1`"
-    done
+#     # Get a list of files located in the user's HPSS xfer directory
+#     # sorted by time stamp.  Retrieve the most recent N files to the
+#     # user's CWD.  N is the number of files pulled from Mercury.
+#     i=1
+#     xfiles=`psi ls -t xfer/*`
+#     for file in ${xfiles}; do
+#        echo "Item ${i}: psi get ${file}"
+#        if test $i -eq $n; then
+#           break
+#        fi
+#        psi get ${file}
+#        i="`expr ${i} + 1`"
+#     done
 
-    echo "mpull: done."
-    echo " "
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    cd $OPUS; cuo
-##---------------------------------------------------------------------------##
-function cuo()
-{
-    if test x$1 == x; then
-       :
-    else
-       nq="-n1"
-    fi
-    for dir in `\ls -1`; do
-       if test -d $dir/CVS; then
-          echo "cd $dir; cvs ${nq} update -AdP"
-          cd $dir
-          cvs ${nq} update -AdP
-          cd ..
-       fi    
-    done
-}
+#     echo "mpull: done."
+#     echo " "
+# }
 
 ##---------------------------------------------------------------------------##
 ## Usage:
