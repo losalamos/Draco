@@ -399,7 +399,7 @@ macro( set_svn_command svnpath )
          "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
    else()
       set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout ssh+svn:/ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
+         "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
    endif()
 endmacro()
 
