@@ -21,7 +21,7 @@ case tu*.localdomain:
     module load lapack/atlas-3.8.3-intel emacs 
     module load cmake numdiff git xshow papi/4.1.3
     # PGI keeps running out of tmp sapce
-    setenv TMPDIR /scratch3/$USER/tmp
+    setenv TMPDIR /scratch/$USER/tmp
     if (! -d $TMPDIR ) then
        mkdir $TMPDIR
     endif
@@ -35,7 +35,7 @@ case yr*:
     module load cmake numdiff git xshow
     module load gsl/1.14-pgi emacs
     # PGI keeps running out of tmp sapce
-    setenv TMPDIR /scratch3/$USER/tmp
+    setenv TMPDIR /scratch/$USER/tmp
     if (! -d $TMPDIR ) then
        mkdir $TMPDIR
     endif
