@@ -40,12 +40,18 @@ add_dependencies( Lib_viz_test Lib_viz )
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-# No 'numdiff' on the cell for RR
-if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+# This test requires numdiff, so don't run it if it's not available.
+find_program( NUMDIFF
+              numdiff
+              HINTS ${VENDOR_DIR}
+            )
+
+#if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+if ( NOT ${NUMDIFF} MATCHES NOTFOUND )
    add_scalar_tests(
       SOURCES "${test_sources}"
       DEPS    "Lib_dsxx" 
-# "Lib_c4;${MPI_LIBRARIES}"
+    # "Lib_c4;${MPI_LIBRARIES}"
       )
 endif()
 

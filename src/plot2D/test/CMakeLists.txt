@@ -43,9 +43,22 @@ set( test_deps
    ${Grace_LIBRARY} 
    )
 
-add_scalar_tests(
-   SOURCES "${test_sources}"
-   DEPS    "${test_deps}" ) 
+# This test requires numdiff
+find_program( NUMDIFF
+              numdiff
+              HINTS ${VENDOR_DIR}
+            )
+if ( NOT ${NUMDIFF} MATCHES NOTFOUND )
+   add_scalar_tests(
+      SOURCES "${test_sources}"
+      DEPS    "${test_deps}" ) 
+   ##------------------------------------------------------------------------##
+   ## This test doesn't behave correctly under valgrind (the pause
+   ## doesn't work and that causes everything else to fail).
+   ##------------------------------------------------------------------------##
+   set_tests_properties( plot2D_tstPlot2D
+      PROPERTIES LABELS "nomemcheck" )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)
@@ -86,10 +99,4 @@ set_directory_properties(
    PROPERTIES
    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
 
-##---------------------------------------------------------------------------##
-## This test doesn't behave correctly under valgrind (the pause
-## doesn't work and that causes everything else to fail).
-##---------------------------------------------------------------------------##
 
-set_tests_properties( plot2D_tstPlot2D
-   PROPERTIES LABELS "nomemcheck" )
