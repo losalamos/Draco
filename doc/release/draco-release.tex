@@ -41,6 +41,7 @@
 \newcommand{\cdash}{\textsf{CDash}}
 \newcommand{\scons}{\textsf{SCons}}
 \newcommand{\cvs}{\textsf{CVS}}  
+\newcommand{\svn}{\textsf{SVN}}  
 \newcommand{\valgrind}{\textsf{valgrind}}  
 \newcommand{\make}{\textsf{Make}}
 \newcommand{\gpp}{\textsf{g++}}
@@ -189,9 +190,8 @@ an Object Oriented Design (OOD), enforce Design-by-Contract
 verification, enforces component level encapsulation and levelized
 dependency between components.  \draco\ is a software project that is
 continually evolving.  Many components that were once actively
-developed and used have been retired to the \cvs\ Attic.  New
-components are frequently added to meet today's programming
-requirements.
+developed and used have been retired.  New components are frequently
+added to meet today's programming requirements.
 
 Historically, the general release policy in \draco\ is to separate the
 package release number (e.g.: \texttt{c4-3\_1\_0}) from the
@@ -208,9 +208,9 @@ policy.  Adherence to these policies will expedite code reviews in the
 Deviations from policies described herein are allowed under special
 circumstances as judged by the \draco\ project team.  The
 \draco\ release procedure as described in \S~\ref{sec:procedures}
-utilizes the \cvs\ version control system.  Thus, \draco\ developers
-should peruse the \cvs\ manual~\cite{cvs} to become intimate with its
-controls and use.
+utilizes the \svn\ version control system.  Thus, \draco\ developers
+should peruse the \svn\ manual~\cite{svn-redbean} to become intimate
+with its controls and use.
 
 \section{Nomenclature}
 \label{sec:nomenclature}
@@ -337,11 +337,11 @@ The \draco\ release policies are:
   (\href{https://tf.lanl.gov/sf/tracker/do/listTrackers/projects.draco/tracker}{TeamForge})
   must be closed. 
 
-\item The major numbers on \draco\ numbered release tags should
-  correspond to the \cvs\ revision numbers.
+%\item The major numbers on \draco\ numbered release tags should
+%  correspond to the \cvs\ revision numbers.
 
 \item No non-\draco\ tags should exist in \draco\ components that sit
-  under the \texttt{draco/} directory in \texttt{\$CVSROOT}.
+  under the \texttt{draco/} directory in the \svn\ repository. 
 
 \item The file \texttt{Copyright.txt} must be updated to reflect the
   current Copyright dates.
@@ -388,7 +388,7 @@ In the above, $\langle\mathit{name}\rangle$ is the name \draco\ or the
 name of the \draco-client (e.g.: \capsaicin\ or \milagro), and
 $\langle\mathit{major}\rangle$ and $\langle\mathit{minor}\rangle$ are
 the major and minor release numbers, respectively. Bug fixes to a
-particular package release utilize \cvs\  branches.  A release of
+particular package release utilize \svn\  branches.  A release of
 such a branch is noted by $\langle\mathit{branch}\rangle$.  Release
 numbers are not decimal numbers.  For example, \texttt{draco-1\_32\_0}
 is the thirty-second minor revision of release~1 of \draco.  Most
@@ -405,7 +405,7 @@ When updating to a new major release, the minor release number should
 be reset to zero.  Thus, when moving from \texttt{draco-1\_109\_0} to
 release~2, the new release number should be \texttt{draco-2\_0\_0}.
 Additionally, we stated in \S~\ref{sec:policy} that the major release
-numbers in \draco\ package tags should correspond to the \cvs\ major
+numbers in \draco\ package tags should correspond to the \svn\ major
 revision number. 
 
 On a final note, \draco-client systems such as \capsaicin\ and
@@ -422,7 +422,7 @@ non-\draco\ tag.
 \subsection{Code Branches and Bug Fix Releases}
 \label{sec:code_branch}
 
-As alluded to in earlier sections, bugs are handled on \cvs\ branches
+As alluded to in earlier sections, bugs are handled on \svn\ branches
 that join at a particular release.  For example, consider a bug fix to
 \draco\ release \texttt{draco-1\_4\_0} when the current release of
 \draco\ is \texttt{draco-1\_6\_0}.  In this case, a branch is
@@ -430,7 +430,7 @@ generated at the \texttt{draco-1\_4\_0} release as illustrated in
 Figure~\ref{fig:branch}.
 \begin{figure}
   \centerline{\includegraphics[width=4in]{branch-example.png}}
-  \caption{Schematic of a bug-fix branch in \cvs\ .}
+  \caption{Schematic of a bug-fix branch in \svn\ .}
   \label{fig:branch}
 \end{figure}
 
@@ -494,12 +494,12 @@ The last release can be identified in a number of ways.  Start by
 examining the \texttt{ChangeLog}, the version numbers found in
 \texttt{CMakeLists.txt}, release notes and email notification from
 prior releases.  However, this process will rely primary on the
-\cvs\ tag values for the top level \texttt{CMakeLists.txt}.
+\svn\ tag values for the top level \texttt{CMakeLists.txt}.
 
 Ensure that the working copy of draco is at the \texttt{HEAD} of the
-\cvs\ repository by executing the command '\texttt{cvs -q update
-  -AdP}' from the \draco\ source directory.  Now examine the \cvs\ log
-for \texttt{CMakeLists.txt} as follows:
+\svn\ repository by executing the command '\texttt{svn update}' from
+the \draco\ source directory.  Now examine the \svn\ log for
+\texttt{CMakeLists.txt} as follows:
 %
 \lstset{language=ksh,
   showstringspaces=false,
@@ -510,21 +510,29 @@ for \texttt{CMakeLists.txt} as follows:
 }
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
   xrightmargin=1.0in]
-cd draco
-cvs log CMakeLists.txt | more
-
-   RCS file: /ccs/codes/radtran/cvsroot/draco/CMakeLists.txt,v
-   Working file: CMakeLists.txt
-   head: 1.31
-   symbolic names:
-        draco-6_3_0: 1.31
-        draco-6_2_1: 1.27
-        draco-6_2_0: 1.25
-        draco-6_1_0: 1.18
-        draco-6_0_0: 1.9
-        draco-5_21_0: 1.5
+cd /ccs/codes/radtran/svn/draco/tags
+ls
+        draco-6_3_0
+        draco-6_2_1
+        draco-6_2_0
+        draco-6_1_0
+        draco-6_0_0
+        draco-5_21_0
 ...
 \end{lstlisting}
+%% cvs log CMakeLists.txt | more
+
+%%    RCS file: /ccs/codes/radtran/cvsroot/draco/CMakeLists.txt,v
+%%    Working file: CMakeLists.txt
+%%    head: 1.31
+%%    symbolic names:
+%%         draco-6_3_0: 1.31
+%%         draco-6_2_1: 1.27
+%%         draco-6_2_0: 1.25
+%%         draco-6_1_0: 1.18
+%%         draco-6_0_0: 1.9
+%%         draco-5_21_0: 1.5
+
 %
 Take note of the list of {\it symbolic links}.  The largest value
 should correspond to the most recent \draco\ release.  In the example
@@ -606,11 +614,16 @@ A summary changes per component will be included in the
 it makes it a bit painful to extract information changes since the
 last release.  Here is the process that can provide this information.
 
+{\bf *** OUT OF DATE: NEEDS TO BE UPDATED FOR SVN ***}
+
 \begin{enumerate}
 \item Generate a list of files that have been modified since the last
   release and count the files.
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
   xrightmargin=1.0in]
+
+*** OUT OF DATE: NEEDS TO BE UPDATED FOR SVN ***
+
 cvs -q diff -N -c -r draco-6_3_0 | grep "Index: " > files_changed.log
 num_files_changed=`cat files_changed.log | sort -u | wc -l`
 echo $num_files_changed
@@ -638,8 +651,8 @@ grep "date: "  comments_since_last_release.log | \
 \end{enumerate}
 
 Record the number of files modified and the number of commits to the
-\texttt{ChangeLog}. Summarize the \cvs\ commit messages per component.
-If a \cvs\ commit message is confusing or incomplete the release
+\texttt{ChangeLog}. Summarize the \svn\ commit messages per component.
+If a \svn\ commit message is confusing or incomplete the release
 coordinator should contact the author to clarify the change.
 
 %%---------------------------------------------------------------------------%%
@@ -775,10 +788,10 @@ Total                 2230 /  2340 =  95%    4809 /  5999 =  80%
 \label{sec:update_tags}
 
 Now that the \texttt{ChangeLog} is complete, it is time to update the
-version information in the code and tag the \cvs\ repository.  The
+version information in the code and tag the \svn\ repository.  The
 version number as reported by \textsf{ds++}'s \texttt{Release()}
 function is recorded in the code at \texttt{CMakeLists.txt}.  Update
-the following two lines and commit the file to \cvs.
+the following two lines and commit the file to \svn.
 %
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
   xrightmargin=2.0in]
@@ -806,81 +819,84 @@ repository.  Use your discretion to determine what documents need to
 be updated.  For the \texttt{README.draco} file, the author list may
 needed to be updated.
 
-Before tagging the \cvs\ repository, ensure that all changes in your
+Before tagging the \svn\ repository, ensure that all changes in your
 local copy are checked in.  This is often done with a command similar
 to
 %
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
   xrightmargin=1.0in]
-cvs commit -m"Preparing for the release of draco-6_4_0"
-cvs -nq update 
+svn commit -m"Preparing for the release of draco-6_4_0"
+svn update 
 \end{lstlisting}
 %
 Assuming that the working directory is fully sychronized with the HEAD
-revision of the \cvs\ repository, we can tag the release.
+revision of the \svn\ repository, we can tag the release.
 %
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
   xrightmargin=2.0in]
-cvs tag 'draco-6_4_0'
+svn copy file:///ccs/codes/radtran/svn/draco/trunk file:///ccs/codes/radtran/svn/draco/tags/draco-6_4_0 -m "Tagging the draco-6_4_0 release."
 \end{lstlisting}
+% cvs tag 'draco-6_4_0'
 
-\subsubsection{Moving a tag}
-If a file needs to be updated later in the release process, the
-symbolic tag can be moved on a file by file basis using a command
-similar to
-%
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
-  xrightmargin=2.0in]
-cvs tag -r 1.6 -F draco-6_4_0 myfile.cc
-\end{lstlisting}
-% 
-In this example, the `1.6` is the current version of the modified file
-as reported by '\texttt{cvs log myfile.cc}.'
+%% \subsubsection{Moving a tag}
+%% If a file needs to be updated later in the release process, the
+%% symbolic tag can be moved on a file by file basis using a command
+%% similar to
+%% %
+%% \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
+%%   xrightmargin=2.0in]
+%% cvs tag -r 1.6 -F draco-6_4_0 myfile.cc
+%% \end{lstlisting}
+%% % 
+%% In this example, the `1.6` is the current version of the modified file
+%% as reported by '\texttt{cvs log myfile.cc}.'
 
-\subsubsection{Major \cvs\ tag numbers}
-When producing a \textit{major} release, the first digit of the
-\cvs\ tag should also be moved. This can be accomplished as follows
-%
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
-  xrightmargin=2.0in]
-cvs commit -r 6.0
-\end{lstlisting}
-%
-This command will commit any changes to the source and will update the
-revision numbers of all files to '6.0.'  This step should precede the
-tagging command.
+%% \subsubsection{Major \cvs\ tag numbers}
+%% When producing a \textit{major} release, the first digit of the
+%% \cvs\ tag should also be moved. This can be accomplished as follows
+%% %
+%% \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
+%%   xrightmargin=2.0in]
+%% cvs commit -r 6.0
+%% \end{lstlisting}
+%% %
+%% This command will commit any changes to the source and will update the
+%% revision numbers of all files to '6.0.'  This step should precede the
+%% tagging command.
 
 \subsubsection{Bug Fixes}
 
 As mentioned in the policy section, bug fixes are handled on
-\cvs\ branches.  To generate such a branch the following
-\cvs\ commands are used:
+\svn\ branches.  To generate such a branch the following
+\svn\ commands are used:
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
   xrightmargin=2.0in]
-cvs -q checkout -r draco-1_4_0 draco
-cvs tag -b draco-1_4_1
+svn copy file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_0 file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_1 -m "Creating the a branch for a patch to Draco-1_4_0."
 \end{lstlisting}
+%cvs -q checkout -r draco-1_4_0 draco
+%cvs tag -b draco-1_4_1
 This creates a branch to \draco\ release~1.4.  If the bug fix is
 required in a \draco\ release, \draco\ should be re-released with the
 appropriate branch number.  Branches are used for bug fixes only.
 
-Additional fixes of bugs on this branch should be tagged using
-\texttt{cvs tag draco-1\_9\_2}.  Thus, to make a tag to this version
-use the following commands:
+Additional patch branches to fix other bugs for \draco-2\_4\_0 should
+be generated by using the \texttt{svn copy} command to create a new
+branch at \texttt{/ccs/codes/radtran/svn/draco/tags}.  Thus, to
+make a tag to this version use the following commands:
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
   xrightmargin=2.0in]
-cvs checkout -r draco-1_4_1 draco
+svn copy file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_1 file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_2 -m "Creating the a branch for a patch to Draco-1_4_1."
 (make changes)
 (run regression tests)
-cvs tag draco-1_4_2
 \end{lstlisting}
-We note that \cvs\  branches automatically release code to the end
-of the branch.  Hence, \texttt{cvs checkout -r draco-1\_4\_1 draco}
-will automatically give the sources at the end of the \draco\ branch
+We note that \svn\ branches automatically release code to the end of
+the branch.  Hence, \texttt{svn checkout
+  file:///ccs/codes/radtran/svn/draco/tags/draco-1\_4\_1 draco} will
+automatically give the sources at the end of the \draco\ branch
 connected to release~1.4.  We add tags to clarify the development and
 bug tracking process in \draco\ even though they may not be strictly
 necessary in all cases.  For more information on branches, see
-Chapter~5 of the \cvs\  manual.
+Chapter~4 of the \svn\ manual~\cite{svn-redbean}.
 
 %%---------------------------------------------------------------------------%%
 
@@ -909,9 +925,7 @@ cp -r /usr/projects/draco/draco-6_2_0/scripts /usr/projects/draco/draco-6_3_0/sc
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
   xrightmargin=1.00in]
 cd /usr/projects/draco/draco-6_3_0/source
-export CVS_RSH=ssh
-export CVSROOT=ccscs8:/ccs/codes/radtran/cvsroot
-cvs -q co -P -r draco-6_3_0 draco
+svn checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/draco/tags/draco-6_3_0 draco
 \end{lstlisting}
 \item Edit the build/test/release scripts found at
   \url{/usr/projects/draco/draco-6_3_0/scripts}. 
@@ -1104,18 +1118,21 @@ also be made on TeamForge by adding the new version to the
 \label{sec:backup_rel}
 
 The release must also be backed up to the tri-lab archive.  From a
-CCS--2 LAN machine, tar the \cvs\ repository and copy the tar file to
-\url{/usr/projects/asc\_bkups} on HPC.
+CCS--2 LAN machine, tar the \svn\ repository and copy the tar file to
+\url{/usr/projects/asc\_bkups} on HPC.  This can only be done at
+certain times of the year when the \texttt{asc\_bkups} is open for
+backup submissions. 
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
   xrightmargin=1.00in]
 # CCS-2 LAN
-cd /ccs/codes/radtran/cvsroot
-tar --use-compress-program /usr/bin/bzip2 -cvf draco.tar.bz2 draco
-push draco.tar.bz2
+svnadmin dump /ccs/codes/radtran/svn/draco | bzip2 > draco.svn.bz2
+push draco.svn.bz2
 # HPC
 cd /usr/projects/asc_bkups/draco
-pull 1 draco.tar.bz2
+pull 1 draco.svn.bz2
 \end{lstlisting}
+%cd /ccs/codes/radtran/cvsroot
+%tar --use-compress-program /usr/bin/bzip2 -cvf draco.tar.bz2 draco
 
 %%---------------------------------------------------------------------------%%
 
@@ -1131,7 +1148,7 @@ memo or other document), the following procedure may be used:
   xrightmargin=0.75in]
 files=`find . -name '*.hh' -o -name '*.cc' -o -name '*.txt' \
        -o -name '*.cmake' -o -name '*.in' -o -name '*.h'`
-cvs annotate $files > file_list
+svn blame $files > file_list
 \end{lstlisting}
 \item Generate a list of authors.
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.75in, 
@@ -1231,7 +1248,7 @@ needed.
 %A list of
 %desired improvements to the \draco\ release procedures are:
 %\begin{itemize}
-%\item \cvs\  major revision numbers could be updated auto-magically
+%\item \svn\  major revision numbers could be updated auto-magically
 %  when the major release numbers on the tag are advanced.
 %\end{itemize}
 %These topics are noted for future consideration.
