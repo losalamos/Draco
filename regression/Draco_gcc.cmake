@@ -60,6 +60,9 @@ message("CTEST_INITIAL_CACHE =
 ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
 
+message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
+ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
+
 # Empty the binary directory and recreate the CMakeCache.txt
 message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
 ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
