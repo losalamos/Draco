@@ -18,7 +18,7 @@ include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 set_defaults()
 parse_args() 
 find_tools()
-set_cvs_command("draco")
+set_svn_command("draco/trunk")
 
 # Platform customization:
 # 1. Ceilito - set TOOCHAIN_SETUP

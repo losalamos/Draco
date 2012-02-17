@@ -1,2 +1,0 @@
-#!/bin/sh
-/usr/bin/ssh -xai /home/regress/.ssh/regress_rsa -l tme $*

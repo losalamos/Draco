@@ -4,11 +4,11 @@
 # The cron job that starts this file should start no earlier than 1
 # am.  This time is coordinated with the CTEST_NIGHTLY_START_TIME
 # which is fixed wrt DST.  If this guidance is not followed, you may
-# see cvs updates tagged from 2 days ago.
+# see svn updates tagged from 2 days ago.
 
 # The work_dir is the location for the source and build directories
 # /home/regress/draco/cmake_draco/
-#      source/  <-- Source files checked out from CVS go here.
+#      source/  <-- Source files checked out from SVN go here.
 #      build/   <-- Make is run in this location.
 
 # Environment setup
@@ -18,7 +18,8 @@ unset http_proxy
 unset HTTP_PROXY
 export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux64
 
-(cd /home/regress/environment/Modules; cvs -q update -AdP)
+(cd /home/regress/environment/Modules; svn update; svn status -u)
+(cd /home/regress/cmake_draco/regression; svn update; svn status -u)
 
 if test -z "$MODULESHOME"; then
   # This is a new login
@@ -38,7 +39,7 @@ echo "top -b -n 1"
 top -b -n 1 | head -n 15
 
 # Run the ctest (regression) script.  This script will take the following build steps: 
-# 1. cvs update
+# 1. svn update
 # 2. run cmake to build Makefiles
 # 3. run make to build libraries and tests
 # 4. Run the unit tests

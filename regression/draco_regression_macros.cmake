@@ -282,14 +282,14 @@ macro( find_tools )
   if( NOT EXISTS ${CTEST_CMD} )
     message( FATAL_ERROR "Cound not find ctest executable.(CTEST_CMD = ${CTEST_CMD})" )
   endif( NOT EXISTS ${CTEST_CMD} )
-
-  find_program( CTEST_CVS_COMMAND
-    NAMES cvs
-    HINTS
-      "C:/Program Files (x86)/CollabNet Subversion"
-      "C:/Program Files (x86)/CollabNet/Subversion Client"
-      # NO_DEFAULT_PATH
-    )
+  find_program( CTEST_SVN_COMMAND
+     NAMES svn
+     HINTS
+        "C:/Program Files (x86)/CollabNet Subversion"
+        "C:/Program Files (x86)/CollabNet/Subversion Client"
+        # NO_DEFAULT_PATH
+     )
+  set( CTEST_CVS_COMMAND ${CTEST_SVN_COMMAND} )
   if( NOT EXISTS "${CTEST_CVS_COMMAND}" )
     message( FATAL_ERROR "Cound not find cvs executable." )
   endif( NOT EXISTS "${CTEST_CVS_COMMAND}" )
@@ -376,34 +376,20 @@ endmacro( setup_ctest_commands )
 # ------------------------------------------------------------
 # Setup CVSROOT
 # ------------------------------------------------------------
-macro( set_cvs_command projname )
-   if( EXISTS /ccs/codes/radtran/cvsroot )
-      set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
-   elseif( EXISTS /usr/projects/jayenne/regress/cvsroot )
-      set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} -d /usr/projects/jayenne/regress/cvsroot co -P -d source ${projname}" )
-   else()
-      set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
-   endif()
-endmacro()
+# macro( set_cvs_command projname )
+#    if( EXISTS /ccs/codes/radtran/cvsroot )
+#       set( CTEST_CVS_CHECKOUT
+#          "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
+#    elseif( EXISTS /usr/projects/jayenne/regress/cvsroot )
+#       set( CTEST_CVS_CHECKOUT
+#          "${CTEST_CVS_COMMAND} -d /usr/projects/jayenne/regress/cvsroot co -P -d source ${projname}" )
+#    else()
+#       set( CTEST_CVS_CHECKOUT
+#          "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
+#    endif()
+# endmacro()
 ##---------------------------------------------------------------------------##
 macro( set_svn_command svnpath )
-   message("In set_svn_command()...")
-   unset( CTEST_CVS_COMMAND )
-   find_program( CTEST_SVN_COMMAND
-      NAMES svn
-      HINTS
-         "C:/Program Files (x86)/CollabNet Subversion"
-         "C:/Program Files (x86)/CollabNet/Subversion Client"
-      # NO_DEFAULT_PATH
-      )
-   set( CTEST_CVS_COMMAND ${CTEST_SVN_COMMAND} )
-   if( NOT EXISTS "${CTEST_CVS_COMMAND}" )
-      message( FATAL_ERROR "Cound not find svn executable." )
-   endif( NOT EXISTS "${CTEST_CVS_COMMAND}" )
-
    if( EXISTS /ccs/codes/radtran/svn )
       set( CTEST_CVS_CHECKOUT
          "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
