@@ -1,9 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   draco_regression_macros.cmake
-# author Kelly Thompson <kgt@lanl.gov>
-# date   2010 Nov 22
 # brief  Helper macros for setting up a CTest/CDash regression system
-# note   Copyright © 2010-2011 Los Alamos National Security
+# note   Copyright (C) 2010-2012 Los Alamos National Security
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -212,6 +210,8 @@ macro( parse_args )
     else()
       set( CTEST_BUILD_NAME "Win32_${CTEST_BUILD_CONFIGURATION}" )
     endif()
+  elseif( APPLE ) # OS/X
+    set( CTEST_BUILD_NAME "OSX_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   else() # Unix
     set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   endif()
