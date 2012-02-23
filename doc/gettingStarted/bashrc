@@ -1,133 +1,55 @@
 \begin{verbatim}
-##---------------------------------------------------------------------------##
 ## .bashrc - my bash configuration file upon bash login
-##---------------------------------------------------------------------------##
 
-##----------------------------------------##
-# If this is a non interactive shell then
-# don't process this rc file
-##----------------------------------------##
+#------------------------------------------------------------------------------#
+# CCS-2 standard setup
+#------------------------------------------------------------------------------#
 
-if [ $TERM = dumb ]; then
-   return 0
-else
+export DRACO_SRC_DIR=~/draco
 
-#----------------------------------------#
-# Only do this section of code once!     #
-#----------------------------------------#
+# If this is an interactive shell then the environment variable $-
+# should contain an "i":
+case ${-} in 
+*i*)
+   export INTERACTIVE=true
+   if test -f ${DRACO_SRC_DIR}/environment/bashrc/.bashrc; then
+       source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc
+   fi
+   ;;
+*) # Not an interactive shell
+   export INTERACTIVE=false
+   if test -z "$MODULESHOME"; then
+      # This is a new login
+      if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
+         source ${DRACO_SRC_DIR}/environment/Modules/init/bash
+         module load gcc
+      fi
+   else
+      # module environment already exists
+      module use ${DRACO_SRC_DIR}/environment/Modules/modulefiles
+      module use ${DRACO_SRC_DIR}/environment/Modules/ccs-Linux64
+   fi
+   # environments needed for non-interactive logins
+   module load git svn
+   ;;
+esac
 
-if [ -z $BASHRCDONE ]; then  
+#------------------------------------------------------------------------------#
+# User Customizations
+#------------------------------------------------------------------------------#
 
-    #----------------------------------------#
-    #              Doxygen                   #
-    #----------------------------------------#
+if test "$INTERACTIVE" = true; then
 
-    # /scratch/tme only exists on the SGI's
-    if [ "`uname`" = IRIX64 ] ; then
-        export QTDIR=/scratch/tme/qt
-        LD_LIBRARY64_PATH=$LD_LIBRARY64_PATH:/scratch/tme/qt/lib
-    fi
+    export SVN_EDITOR=emacs
+    export LPDEST=gumibears_d
+    export USERNAME=kellyt
 
-    #----------------------------------------#
-    #                  KCC                   #
-    #----------------------------------------#
+    # Aliases ----------------------------------------------------------------#
 
-    target="`hostname`"
-    if [ $target = twix ]; then
-        export KAI_SERIAL=1081
-        export KAI_CODEKEY=kkkllklkkklnchllenllnebb
-        export KAI_PATH=/scratch/tme/bin
-    elif [ $target = crisps ]; then
-        export KAI_SERIAL=1423
-        export KAI_CODEKEY=mmklkjmlljmndkbnjfocgmjb
-        export KAI_PATH=/scratch/tme/bin
-    elif [ $target = bonjovi ]; then
-        export KAI_SERIAL=1081
-        export KAI_CODEKEY=kkkllklkkklnchllenllnebb
-        export KAI_PATH=/usr/local/bin
-    fi
-    
-    #----------------------------------------#
-    #                  CVS                   #
-    #----------------------------------------#
+    alias xload='xload -fg brown -fn 6x13 -geometry 180x100+1500+0'
+    alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
 
-    export CVSEDITOR=xemacs
-    if [ "`uname`" = IRIX64 ] ; then
-        # Force CVS to use SSH authentication from IRIX machines
-        export CVS_RSH=ssh
-        export CVSROOT=mikonos:/radtran/cvsroot
-    elif [ "`uname`" = Linux ] ; then
-        export CVSROOT=/radtran/cvsroot    
-    fi
-
-    #----------------------------------------#
-    #              Python 1.5                #
-    #----------------------------------------#
-
-    if [ "`uname`" = SunOS ] ; then
-        PYTHON_PATH=/usr/local/src/Python-1.5.2:
-    fi
-
-    #----------------------------------------#
-    #                PATHS                   #
-    #----------------------------------------#
-
-    # SEARCH PATH
-    MYPATH=~/bin:
-    PATH=${PYTHON_PATH}${KAI_PATH}${MYPATH}${PATH}
-
-    # MAN PATH
-    if [ "`uname`" = IRIX64 ] ; then
-       MYMANPATH=/scratch/tme/man:
-    fi
-    MANPATH=$MYMANPATH:$GNATS_MANPATH:$MANPATH
-
-    # LOAD PATH
-    if [ "`uname`" = IRIX64 ] ; then
-       MYLOADPATH=/scratch/tme/lib
-    fi
-
-    #-------------------------------------------#
-    # Set BASHRCDONE so we do not do this again #
-    #-------------------------------------------#
-
-    export BASHRCDONE=true
 fi
-
-##---------------------------------------------------------------------------##
-## User code starts here (Aliases, prompts, umask, more envs, etc.)
-##---------------------------------------------------------------------------##
-# draco and tycho stuff
-# I'm working with Gandolf so those libs are included.
-# I'm not working with any packages that need PCGLIB or MPI.
-extradirs="c4 imc mc rng fourier POOMA_MT \
-ConjGrad ConjGradDiffusionSolver LAMG LAMGDiffusionSolver \
-P1Diffusion PCGDiffusionSolver RTT_Format_Reader amr_mesh \
-amr_mesh_fort diffusion linalg matprops mesh meshReaders \
-meshReaders_fort meshReaders_Services meshTest nml quadrature \
-radphys sn stdheaders stopwatch timestep traits units viz xm"
-alias killextras='cd src; rm -rf $extradirs; cd ..' 
-export VENDORS='/radtran/vendors'
-if [ "`uname`" = IRIX64 ] ; then
-    # Gandolf only
-    vlibs0="--with-gandolf-lib=${VENDORS}/gandolf/IRIX64/lib64"
-    alias dracoconfig='../../draco/draco_config .. $vlibs0; killextras'
-    # Gandolf + PCG
-    vlibs1="--with-pcglib-lib=${VENDORS}/pcglib/$(uname) $vlibs"
-    alias pcgdracoconfig='../../draco/draco_config .. $vlibs1; killextras'
-    # Gandolf + PCG + MPI
-    vlibs2="--with-c4=mpi $vlibs"
-    alias mpipcgdracoconfig='../../draco/draco_config .. $vlibs2; killextras'
-elif [ "`uname`" = Linux ] ; then
-    # Gandolf only
-    vlibs0="--with-gandolf-lib=${VENDORS}/gandolf/$(uname)"
-    alias dracoconfig='../../draco/draco_config .. $vlibs0; killextras'
-    # Gandolf + MPI
-    vlibs2="--with-c4=mpi $vlibs0"
-    alias mpipcgdracoconfig='../../draco/draco_config .. $vlibs2; killextras'
-
-# end of TERM /= dumb block (most of this file)
-fi 
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc

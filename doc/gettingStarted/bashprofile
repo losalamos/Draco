@@ -1,78 +1,24 @@
 \begin{verbatim}
 ###############################################################################
 ## .bash_profile
-## Kelly Thompson
 ###############################################################################
 
-##---------------------------------------------------------------------------##
-## INITIAL STUFF
-##---------------------------------------------------------------------------##
+# If this is an interactive shell then the environment variable $-
+# should contain an "i":
+case ${-} in 
+*i*)
+   export INTERACTIVE=true
+   ;;
+*) # Not an interactive shell
+   export INTERACTIVE=false
+   ;;
+esac
 
-# Get the aliases and functions
+##---------------------------------------------------------------------------##
+## Establish environment for login shell
+##---------------------------------------------------------------------------##
 if [ -f ~/.bashrc ]; then
-   . ~/.bashrc
-   export BASH_ENV=$HOME/.bashrc
-fi
-
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS
-##---------------------------------------------------------------------------##
-
-export USERNAME="kellyt"
-
-# Eospac
-export SESPATHU=/codes/radtran/physical_data/eos
-export SESPATHC=/codes/radtran/physical_data/eos
-
-# Ensight
-export ENSIGHT7_READER=/codes/radtran/vendors/psp/Linux/tools
-
-##---------------------------------------------------------------------------##
-## CVS
-##---------------------------------------------------------------------------##
-
-export CVSEDITOR=xemacs
-export CVS_RSH=ssh
-export CVSROOT=mikonos:/codes/radtran/cvsroot
-
-##---------------------------------------------------------------------------##
-## Lahey F90
-##---------------------------------------------------------------------------##
-
-if [ `uname` = Linux ]; then
-   if [ -x ${lf95_bash_setup:=/usr/local/lf9560/bash_setup} ]; then
-      if [ z ${LAHEY_F90_SETUP} ]; then
-         # source ${lf95_bash_setup}
-         # This script should set:
-         F90_PATH=/usr/local/lf9560/bin:
-         F90_MAN_PATH=/usr/local/lf9560/manuals/man/lf95:
-         export F90_LD_LIBRARY_PATH=/usr/local/lf9560/lib:
-         export LAHEY_F90_SETUP=done
-      fi
-   fi
-fi
-
-##---------------------------------------------------------------------------##
-## GCC 3.0.2
-##---------------------------------------------------------------------------##
-
-# use a newer gcc if available
-gccdir=/usr/local/gcc-3.0.3
-if [ -d ${gccdir}/bin ]; then
-   PATH=${gccdir}/bin:${PATH}
-   MANPATH=${gccdir}/man:${MANPATH}
-   LD_LIBRARY_PATH=${gccdir}/lib:${LD_LIBRARY_PATH}
-fi
-
-##---------------------------------------------------------------------------##
-## mpich
-##---------------------------------------------------------------------------##
-
-mpichdir=/usr/local/mpich-1.2.1/bin
-if [ -d ${mpichdir}/bin ]; then
-   PATH=${mpichdir}/bin:${PATH}
-   MANPATH=${mpichdir}/man:${MANPATH}
-   LD_LIBRARY_PATH=${mpichdir}/lib:${LD_LIBRARY_PATH}
+   source ~/.bashrc
 fi
 
 ###############################################################################
