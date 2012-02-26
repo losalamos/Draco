@@ -1,8 +1,6 @@
 ###############################################################################
 #
 # \file    draco/doc/system/Makefile
-# \author  Kelly G. Thompson
-# \date    Tue Apr 12 10:08:22 2000
 # \brief   Makefile for rn98046.tex
 #
 ###############################################################################
@@ -18,9 +16,10 @@ TEXINPUTSENVS := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
 LATEXENVS := ${TEXINPUTSENVS}
 LATEX := ${LATEXENVS} latex
 
-BIBTEXENVS := BSTINPUTS="${DRACOTEXINPUTS}:${BSTINPUTS}"
-BIBTEX := ${BIBTEXENVS} bibtex
+DRACOBIBDIR=${DRACO}/environment/bibfiles
+BIBTEXENVS := BSTINPUTS="${DRACOBIBDIR}:${BSTINPUTS}"
 
+BIBTEX := ${BIBTEXENVS} bibtex 
 MAKEIDX := makeindex
 
 .PHONY : all xdvi ghostview install clean dvi postscript clean-tex index bib tex
@@ -39,6 +38,11 @@ install: all
 postscript: ${FILE}.ps
 
 dvi: ${FILE}.dvi
+
+pdf: ${FILE}.pdf
+
+${FILE}.pdf: ${FILE}.ps
+	ps2pdf ${FILE}.ps
 
 ${FILE}.ps: ${FILE}.dvi
 	dvips -o ${FILE}.ps ${FILE}.dvi
