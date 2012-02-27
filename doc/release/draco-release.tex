@@ -1117,6 +1117,13 @@ also be made on TeamForge by adding the new version to the
 \subsection{Backup the release}
 \label{sec:backup_rel}
 
+% Consider using hotcopy?
+% This command (svnadmin hotcopy) makes a safe copy of the active repo
+% (including hooks, scripts, etc.) that can then be tarballed, even if
+% something happens midstream.   
+% http://wordaligned.org/articles/how-to-mirror-a-subversion-repository
+% http://svnbook.red-bean.com/en/1.6/svn.ref.svnadmin.c.hotcopy.html
+
 The release must also be backed up to the tri-lab archive.  From a
 CCS--2 LAN machine, tar the \svn\ repository and copy the tar file to
 \url{/usr/projects/asc\_bkups} on HPC.  This can only be done at
