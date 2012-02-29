@@ -57,7 +57,7 @@ clean:
 	rm -f draco-autodoc.dvi draco-autodoc.ps draco-autodoc.log draco-autodoc.aux
 	rm -f draco-autodoc.blg draco-autodoc.bbl draco-autodoc.pdf
 	rm -f draco-autodoc.idx draco-autodoc.ilg draco-autodoc.ind
-	rm -f draco-autodoc.toc draco-autodoc.lof draco-autodoc.lot
+	rm -f draco-autodoc.toc draco-autodoc.lof draco-autodoc.lot *~
 
 clean-tex:
 	rm -f draco-autodoc.log draco-autodoc.aux
