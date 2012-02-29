@@ -52,7 +52,7 @@
     \thispagestyle{firstpage}
     \begin{minipage}{2.95in}
      \hspace{-3.4em}
-     {\includegraphics[width=2.6in]{logo.eps}}\\
+     {\includegraphics[width=2.6in]{logo}}\\
      {\sffamily\bfseries\fontsize{21}{21}\selectfont \rule{0pt}{21pt}memo\kern.02em randum}\\
      {\rmfamily\bfseries\slshape\fontsize{8}{9}\selectfont \divname}\\
      {\rmfamily\itshape\fontsize{8}{9}\selectfont \grpname}
