@@ -44,10 +44,16 @@ for mydir in ${extradirs}; do
     export TEXINPUTS=$mydir:$TEXINPUTS
   fi
 done
-extradirs=". ${DRACO_SRC_DIR}/environment/bibtex ${DRACO_SRC_DIR}/environment/bibfiles"
+extradirs=". ${DRACO_SRC_DIR}/environment/bibtex"
 for mydir in ${extradirs}; do
   if test -z "`echo $BSTINPUTS | grep $mydir`" && test -d $mydir; then
     export BSTINPUTS=$mydir:$BSTINPUTS
+  fi
+done
+extradirs=". ${DRACO_SRC_DIR}/environment/bibfiles"
+for mydir in ${extradirs}; do
+  if test -z "`echo $BIBINPUTS | grep $mydir`" && test -d $mydir; then
+    export BIBINPUTS=$mydir:$BIBINPUTS
   fi
 done
 unset extradirs
