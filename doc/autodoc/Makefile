@@ -26,7 +26,12 @@ all: postscript
 install: all
 	@echo install not ready
 
-postscript: draco-autodoc.ps
+pdf: draco-autodoc.pdf
+
+draco-autodoc.pdf: draco-autodoc.ps
+	ps2pdf draco-autodoc.ps
+
+ps postscript: draco-autodoc.ps
 
 dvi: draco-autodoc.dvi
 
@@ -50,7 +55,7 @@ tex:
 
 clean:
 	rm -f draco-autodoc.dvi draco-autodoc.ps draco-autodoc.log draco-autodoc.aux
-	rm -f draco-autodoc.blg draco-autodoc.bbl
+	rm -f draco-autodoc.blg draco-autodoc.bbl draco-autodoc.pdf
 	rm -f draco-autodoc.idx draco-autodoc.ilg draco-autodoc.ind
 	rm -f draco-autodoc.toc draco-autodoc.lof draco-autodoc.lot
 
