@@ -1,48 +1,59 @@
 %%---------------------------------------------------------------------------%%
 %% intro.tex
-%% Time-stamp: <03/05/12 09:23:35 tme>
 %% introduction of Draco build system manual
 %%---------------------------------------------------------------------------%%
 
-\section{Introduction}
-\label{sec:intro}
+\chapter{Introduction}
 
-The purpose of this document is to give a high-level introduction to
-the \draco\ build system (DBS).  A detailed user/developer manual is
-processed with \soft{Doxygen}~\cite{doxygen} and is maintained with
-the \draco\ source code.  
+In this chapter we will examine the %purpose for redesigning the
+design contraints of the \draco\ build system (DBS).  We will
+introduce some definitions of terms and typographical conventions that
+will be employed throughout the text.  Additionally, the organization
+of the manual will be described.  For those who wish to get started
+right away, \S~\ref{sec:quick} tells how to get up and moving without
+working through the manual.  A detailed developer manual is processed
+with \soft{Doxygen}~\cite{doxygen} and is maintained with the
+\draco\ source code.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Purpose}
+\label{sec:purpose}
+
+The purpose of this document is to describe the \draco\ build system.
+Specifically, we will show both users and \draco\ developers how to: 
+\begin{itemize}
+\item configure \draco\ for different platforms and options;
+\item compile \draco\ components;
+\item compile and link programs that use \draco;
+\item add packages to \draco;
+\item add new support options to \draco.
+\end{itemize}
+Thus, this manual is an invaluable reference to those who work in, or
+with, \draco.
 
 As a review, we restate the \draco\ mission statement~\cite{rn98046}:
 \begin{quote}
-  \slshape \draco\ \index{Draco} is a comprehensive, radiation
-  transport library that provides highly tested, verified, reusable
-  components for serial and parallel, computational physics codes.
+  \slshape \draco\ is a comprehensive, readiation transport framework
+  that provides key, reusable components for serial and parallel,
+  computational physics codes.
 \end{quote}
-To meet these requirements \draco\ uses rigorous software engineering
-concepts including object-oriented/\-generic design, unit testing, and
-acyclic (levelized) design principles. The DBS allows \draco\ to
-satisfy its mission statement and enforces the concept of acyclic
+To meet these requirements \draco\ uses modern software engineering
+concepts including object-oriented/\-generic design, multi-environment
+build systems, and service libraries based on levelized component
+designs.  The build system described in this manual allows \draco\ to
+satisfy its mission statement and enforces the concept of levelized
 component design.
 
-The DBS has been in use within CCS--4 (and its predecessor groups)
-since January, 1999.  An informal manual, \textit{The Draco Build
-  System}, has been used by developers to learn the build system. This
-manual rapidly became out-of-date as the DBS was changed and updated.
-However, we have now integrated DBS documentation under
-\soft{Doxygen}; thus, the in-code \soft{Doxygen} documentation, which
-is updated as changes to the DBS are made, has become the official
-source of information about the DBS.  HTML versions of the \draco\ 
-developer manual, along with PDF versions of the build system manual,
-are available on \soft{SourceForge} \index{SourceForge} at
-\cmp{http://sf-web.lanl.gov/draco}.
-
-The DBS has been carefully designed.  In particular, we had several
-requirements that the build system should satisfy.  These requirements
-are:
+The \draco\ build system has been carefully designed.  In particular,
+we had several requirements that the build system should satisfy.
+These requirements are:
 \begin{itemize}
-\item support for simultaneous, multiple configurations;
-\item support for \C++ on all ASCI platforms;
-\item automated unit and regression testing;
+\item support for simultaneous multiple configurations;
+\item support for multiple languages, particularly \cpp, \cc, and
+  \python on all ASC platforms;
+%\item support for \dejagnu\ and regression testing;
+\item on-demand and automated unit and regression testing;
 \item the ability to support multiple code projects;
 \item support for external vendors;
 \item support for multiple languages;
@@ -51,19 +62,18 @@ are:
 \item compliance with the GNU coding standard \cite{gnu} \index{GNU
     Coding Standard}.
 \end{itemize}
-The last requirement, compliance with the GNU Coding Standard, is
-important because the \make\ targets within \draco\ conform to a
-referenced standard.
-
-Compliance with the GNU Coding Standard implies the use of GNU
-autotools \index{GNU autotools}, \autoconf\ and
-\automake~\cite{autoconf}, and \make~\cite{gmake}.  We have recently
-upgraded the DBS to conform to the latest versions of these tools
-(\autoconf\ 2.57).
+This last requirement has evolved a somewhat as the supported
+platforms and build systems scope has grown to include XCode and
+Eclipse on non-Linux platforms.  The use of the CMake suite of tools
+preculdes the use of GNU autotools \index{GNU autotools},
+\autoconf\ and \automake~\cite{autoconf}.  
+It also precludes the use of \make~\cite{gmake} for non-Makefile based
+build projects (e.g.: XCode, Eclipse). More detail will be given in
+Chap.~\ref{chap:model}. 
 
 %%---------------------------------------------------------------------------%%
 
-\subsection{Definitions and Conventions}
+\section{Definitions and Conventions}
 
 Before continuing we shall clarify the terminology and typeface
 conventions that will be employed throughout the remainder of this
@@ -92,23 +102,23 @@ Table ~\ref{tab:tfaces} show the typefaces that we will employ
     \begin{tabular}{c}\hline\hline
       \sys{code systems} (\draco) \\
       \pkg{packages} (\dsxx) \\
-      \cmp{files} (\comp{Makefile}) \\
+      \comp{files} (\comp{Makefile}) \\
       \vble{variables} (\comp{draco/src/\vble{pkg}/}) \\
-      \soft{software programs} (\autoconf) \\ \hline\hline
+      \soft{software programs} (\gmake) \\
+      \lang{languages} (\cpp) \\ \hline\hline
     \end{tabular}
   \end{center}
 \end{table}
 throughout the text to better distinguish certain elements.  In
 general, anything that exists on a computer screen (directory trees,
-files, etc) is typefaced using \cmp{typewriter} font.  Files are
+files, etc) is typefaced using \comp{typewriter} font.  Files are
 distinguished in the standard UNIX way by appending the following
-symbols after the name, \cmp{*} for executables, \cmp{/} for
+symbols after the name, \comp{*} for executables, \comp{/} for
 directories, and @ for links.  Computer screen prompts are represented
-by the \cmp{\$} symbol.
+by the \comp{\$} symbol.
 
 %%---------------------------------------------------------------------------%%
-
-\subsection{DBS Support and Procurement}
+\section{DBS Support and Procurement}
 
 Questions about procuring a copy of the DBS or its use can be
 directed to:
@@ -116,9 +126,124 @@ directed to:
   \begin{tabular}{llc}\hline\hline
     \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
     Group \\ \hline
-    Tom Evans & tme@lanl.gov & CCS--4 \\
-    Kelly Thompson& kellyt@lanl.gov & CCS--4 \\ \hline\hline
+%    Tom Evans & tme@lanl.gov & CCS--4 \\
+    Kelly Thompson & kgt@lanl.gov     & CCS--2 \\ \hline\hline
+    Jae Chang      & jhchang@lanl.gov & CCS--2 \\ \hline\hline
   \end{tabular}
 \end{center}
-Additional information is available on the \draco\ \soft{SourceForge}
-site, \cmp{http://sf-web.lanl.gov/draco}.
+Additional information is available on the \draco\ \soft{TeamForge}
+site, \comp{https://tf.lanl.gov/draco}.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Manual Organization}
+
+This manual is written for three basic groups: (a) \draco\ users, (b)
+\draco\ package developers, and (c) \draco\ system developers. The
+manual is organized around these three groups. There is an additional
+group consisting of developers who plan to use \draco\ as a model for
+their own code systems.  For this group the entire \draco\ Build
+System Manual is of interest.
+
+The \draco\ users group consists of clients who use \draco\ components
+in some form.  The primary interest of this group is configuring and
+compiling \draco\ so that it meets their product's needs.  The
+relationship between this group and \draco\ can be very close (XTM
+code teams) or very distant (XCI code teams).
+
+The \draco\ package developers group contains people who write
+packages in \draco.  The primary interest of this group is
+configuring, compiling, and adding new packages to \draco.  The final
+group, the \draco\ system developers group, are those who maintain the
+\draco\ infrastructure, including the build system.  This group is
+concerned with maintaining the integrity and stability of \draco\ as a
+whole unit. Tables~\ref{tab:draco_package} and \ref{tab:draco_system}
+%%% GROUP ROSTERS
+\begin{table}
+  \begin{center}
+    \caption{Roster of the \draco\ package developer group.}
+    \label{tab:draco_package}
+    \begin{tabular}{llc}\hline\hline
+      \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
+      Group \\ \hline
+      John McGhee$^{\ast}$ & mcghee@lanl.gov & XTM \\
+      Tom Evans & tme@lanl.gov & XTM \\
+      Mark Gray & gray@lanl.gov & XTM \\
+      Rob Lowrie & lowrie@lanl.gov & XTM \\
+      Shawn Pautz & pautz@lanl.gov & XTM \\ 
+      Randy Roberts & rsqrd@lanl.gov & XTM \\
+      Todd Urbatsch & tmonster@lanl.gov & XTM \\ \hline\hline
+      \multicolumn{3}{l}{$^{\ast}$\draco\ project leader.} \\
+    \end{tabular}
+  \end{center}
+\end{table}
+\begin{table}
+  \begin{center}
+    \caption{Roster of the \draco\ systems developer group.}
+    \label{tab:draco_system}
+    \begin{tabular}{llc}\hline\hline
+      \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
+      Group \\ \hline
+      Tom Evans & tme@lanl.gov & XTM \\
+      Randy Roberts & rsqrd@lanl.gov & XTM \\ \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+%%% END GROUP ROSTERS
+gives a current list of the \draco\ package and system developers.
+
+Table~\ref{tab:layout} lists the groups that each chapter targets.
+\begin{table}
+  \begin{center}
+    \caption{The target groups for each chapter.  Group (a) are the
+      \draco\ users; Group (b) are the \draco\ package developers, and 
+      Group(c) are the \draco\ system developers.}
+    \label{tab:layout}
+    \begin{tabular}{ccc}\hline\hline
+      Chapter & Primary Target Group & Secondary Target Groups
+      \\ \hline 
+      \ref{chap:model} & (a), (b), (c) & (a), (b), (c) \\ 
+      \ref{chap:compile} & (a), (b) & (c) \\ 
+      \ref{chap:extern} & (a) & (b) \\
+      \ref{chap:adding} & (b) & (c) \\ 
+      \ref{chap:extend} & (c) & (b) \\ \hline \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+Chapter~\ref{chap:model} gives an overview of the \draco\ source tree
+and build system. A complete listing of the \draco\ source tree is
+included in this chapter. This chapter is useful for all three groups
+that are associated with \draco.
+
+Chapter~\ref{chap:compile} describes how to configure and compile the
+\draco\ system.  Included in this chapter are detailed descriptions of
+all the \draco\ configure options. Chapter~\ref{chap:extern} shows how
+to emulate the \draco\ build model and functionality in external code
+systems that use \draco.  This chapter is geared to code teams that
+heavily use \draco, and, thus, they may gain advantages by using the
+\draco\ build model. These chapters target the \draco\ users and
+\draco\ package developers groups.
+
+Chapter~\ref{chap:adding} shows how to add new component packages to
+\draco.  In this chapter detailed instructions are given that show how
+to add a new package directory, test directory, and, to a lesser
+extent, build options.  The intended audience for this chapter is the
+\draco\ package developers, and, to a lesser extent, \draco\ system
+developers will use this material.
+
+Finally, Chap.~\ref{chap:extend} shows how to extend the \draco\ build 
+system.  This chapter focuses on adding new configure options and new
+language support.  In general, this chapter shows how the \gmake\ and
+\autoconf\ files are used and work.  This chapter is primarily intended
+for \draco\ system developers; however, some content in this chapter
+is necessary for \draco\ package developers.
+
+%%---------------------------------------------------------------------------%%
+
+\section{Quick Start}
+\label{sec:quick}
+
+Many \draco\ users will undoubtedly be familiar with \autoconf\ and
+\gmake. These users can progress directly to \S~\ref{sec:examples} for 
+examples on configuring and building \draco. 
+

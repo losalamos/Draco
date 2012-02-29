@@ -1,11 +1,9 @@
 %%---------------------------------------------------------------------------%%
-%% model.tex
-%% Time-stamp: <03/05/12 09:24:26 tme>
-%% description of the draco component library and overview of the
-%% build system
-%%---------------------------------------------------------------------------%%
+%% model.tex 
+%% description of the draco component library and overview of the build system
+%% ---------------------------------------------------------------------------%%
 
-\section{Draco Build System Architecture}
+\chapter{The Draco Model}
 \label{chap:model}
 
 This chapter presents an overview of the \draco\ build model and
@@ -248,15 +246,14 @@ Figs.~\ref{fig:subdraco}a through d.  Note that these figures show the
 \begin{figure}
   \begin{center}
     \begin{tabular}{cccc} 
-      \subfigure[]{\includegraphics[width=1.25in]{fig/src_src.eps}} & 
-      \subfigure[]{\includegraphics[width=1.25in]{fig/src_doc.eps}} &
-      \subfigure[]{\includegraphics[width=1.25in]{fig/src_config.eps}} &
-      \subfigure[]{\includegraphics[width=1.25in]{fig/src_tools.eps}} \\
+      \subfloat[\comp{src/}]{\includegraphics[width=1.25in]{fig/src_src.eps}} & 
+      \subfloat[\comp{doc/}]{\includegraphics[width=1.25in]{fig/src_doc.eps}} &
+      \subfloat[\comp{config/}]{\includegraphics[width=1.25in]{fig/src_config.eps}} &
+      \subfloat[\comp{tools/}]{\includegraphics[width=1.25in]{fig/src_tools.eps}} \\
     \end{tabular}
   \end{center}
-  \caption{Subdirectories under \comp{draco/}: (a) \comp{src/}, (b)
-    \comp{doc/}, (c) \comp{config/}, (d) \comp{tools/}.  Directories
-    are in boxes and files are in ellipses.}
+  \caption{Subdirectories under \comp{draco/}.  Directories are in
+    boxes and files are in ellipses.}
   \label{fig:subdraco}
 \end{figure}
 complete source tree; not all directories under \comp{src/} will be

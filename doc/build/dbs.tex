@@ -1,33 +1,23 @@
 %%---------------------------------------------------------------------------%%
-%% dbs.tex
-%% Thomas M. Evans
-%% $Id$
+%% Draco Build System
+%% draco_bs.tex
 %%---------------------------------------------------------------------------%%
-\documentclass[11pt]{../tex/rnote}
-\usepackage[centertags]{amsmath}
-\usepackage{amssymb,amsthm,graphicx}
-\usepackage[mathcal]{euscript}
-\usepackage{tabularx}
+\documentclass[reqno]{larep}
+\usepackage[dvips]{graphicx}
+\usepackage{epsfig}
 \usepackage{cite}
-\usepackage{c++}
-\usepackage{tmadd,tmath}
-\usepackage{stl}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb}
+\usepackage[mathcal]{euscript}
+\usepackage{latexsym}
+\usepackage{tmath}
+\usepackage{c++,fancycodes}
+\usepackage{tabularx}
 \usepackage{draco_bs}
 \usepackage{alltt}
-\usepackage{makeidx}
-
-%%---------------------------------------------------------------------------%%
-%% DEFINE SPECIFIC ENVIRONMENTS HERE
-%%---------------------------------------------------------------------------%%
-
-\newcommand{\dsxx}{\pkg{ds\raisebox{.2ex}{\scriptsize++}}}
-\newcommand{\imc}{\pkg{imc}}
-
-\newcommand{\draco}{\sys{Draco}}
-
-\newcommand{\autoconf}{\soft{Autoconf}}
-\newcommand{\automake}{\soft{Automake}}
-\newcommand{\make}{\soft{Make}}
+%\usepackage{doublespace}
+%\usepackage[nomarkers]{endfloat}
+\usepackage{subfig}
 
 \makeindex
 
@@ -38,94 +28,116 @@
 \begin{document}
 
 %%---------------------------------------------------------------------------%%
-%% OPTIONS FOR NOTE
+%% Front Matter
 %%---------------------------------------------------------------------------%%
 
-\toms{Distribution}
-%\toms{Joe Sixpak/XTM, MS B226}
-\refno{X-6:97-??? (U)}
-\subject{The Draco Build System}
+\frontmatter
 
-%-------NO CHANGES
-\divisionname{Computer and Computational Sciences}
-\groupname{CCS--4:Transport Methods Group}
-\fromms{Thomas M. Evans/CCS-4 D409}
-\phone{(505)665--3677}
-\originator{tme}
-\typist{tme}
+\title{The Draco Build System}
+\author{T.M. Evans}
+\author{R.M. Roberts}
+%\author{K.G. Thompson}
+%\address{X--TM, MS D409, Los Alamos National Laboratory, Los Alamos,
+%NM 87544}
+\address{CCS--4, MS D409, Los Alamos National Security, LLC, Los
+  Alamos, NM 87544}
+
+%\email{tme@lanl.gov}
+\email{rsqrd@lanl.gov}
+%\email{kgt@lanl.gov}
+
+\subjclass{LA-NNNNN}
 \date{\today}
-%-------NO CHANGES
 
-%-------OPTIONS
-%\reference{NPB Star Reimbursable Project}
-%\thru{P. D. Soran, XTM, MS B226}
-%\enc{list}      
-%\attachments{list}
-%\cy{list}
-%\encas
-%\attachmentas
-%\attachmentsas 
-%-------OPTIONS
-
-%%---------------------------------------------------------------------------%%
-%% DISTRIBUTION LIST
-%%---------------------------------------------------------------------------%%
-
-\distribution {}
-
-%%---------------------------------------------------------------------------%%
-%% BEGIN NOTE
-%%---------------------------------------------------------------------------%%
-
-\opening
+\keywords{svn, make, GNU, cmake, ctest, cdash, compilers, g++, build system}
 
 \begin{abstract}
   
-  We present an updated build system for the \draco\ component
-  library.  The \draco\ Build System (DBS) \index{Draco Build System}
-  is designed to facilitate both development and usage on multiple
-  platforms.  The DBS complies with the GNU Coding Standards for
-  software packages.  It has been designed according to the following
-  list of requirements:
+  The Draco build system is designed to facilitate both development and
+  usage on multiple platforms.  The build system complies with the GNU
+  Coding Standards for software packages.  The build system has been
+  designed according to the following list of requirements:
   \begin{enumerate}
   \item support for simultaneous, multiple configurations;
-  \item support for \C++ on all ASCI platforms;
+  \item support for \cpp\ on all ASC platforms;
   \item automated unit and regression testing;
   \item the ability to support multiple code projects;
   \item support for external vendors;
+  \item support for explicit template instantiation;
   \item support for multiple languages;
   \item extensibility;
   \item low-cost on developers to add new packages, code, and tests; 
   \item compliance with the GNU coding standard \cite{gnu}.
+  \item support for on-demand and automated regression testing with
+    web-based dashboard presentation.
+%  \item support for \dejagnu\ and regression testing;
+%  \item support for \purify;
+%  \item compliance with the GNU coding standard.
+
+% \item preconfigured development environment
+% \item support for multiple build project types (Makefiles, XCode,
+% Eclipse, etc.)
   \end{enumerate}
-  These requirements are largely met by the DBS.  In fact, the DBS is
-  being used as the build system for 4 CCS--4 projects.
+  These requirements plus additional features such as
+  threaded/parallel building and vendor support have been included in
+  the \draco\ build system.
   
-  The build system uses four GNU development tools, \autoconf,
-  \automake, and \make. These tools are all freely available from the
-  Free Software Foundation.
+  The build system uses three CMake tools~\cite{cmake}, \cmake, \ctest
+  and \cdash.  Version control of the \draco\ source is performed by
+  \svn~\cite{svn-redbean}. These tools are freely available from
+  Kitware and Tigris.org.
+
+
+\vspace{0.5in}
+
+
+\textbf{*** NOTE: This document was written in 1997 and is very much
+  out of date. ***}
+
+  %% The build system uses four GNU tools, \autoconf, \gmake, \gmfour,
+  %% and \dejagnu.  Version control of the \draco\ source is performed by
+  %% \cvs.  These tools are all freely available from the Free Software
+  %% Foundation.
 
 \end{abstract}
+\maketitle
+
+\tableofcontents
+\listoffigures
+\listoftables
 
 %%---------------------------------------------------------------------------%%
-%% INCLUDES
+%% Main Matter
 %%---------------------------------------------------------------------------%%
+
+\mainmatter
 
 \input{intro}
 \input{model}
+\input{compile}
+\input{extern}
+\input{adding}
+\input{extend}
 
 %%---------------------------------------------------------------------------%%
-%% ENDGAME
+%% Back Matter
 %%---------------------------------------------------------------------------%%
+
+\backmatter
+
+\appendix
+
+\input{vendors}
 
 \bibliographystyle{rnote}
-\bibliography{../bib/draco}
+\bibliography{draco}
 
 \printindex
 
-\closing
 \end{document}
 
 %%---------------------------------------------------------------------------%%
-%% end of dbs.tex
+%% end of draco_bs.tex
 %%---------------------------------------------------------------------------%%
+
+

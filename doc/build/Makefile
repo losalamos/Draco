@@ -1,20 +1,17 @@
 ###############################################################################
 # draco/doc/build Makefile
-# Thomas M. Evans
-# Thu Feb 11 10:32:47 1999
-# Time-stamp: <03/05/09 17:01:01 tme>
-###############################################################################
-# @> Makefile for Draco build document
+# Makefile for Draco build document
+# $Id$
 ###############################################################################
 
 DRACO := ../..
-DRACOTEXINPUTS := ${DRACO}/doc/tex
-TEXINPUTSENVS := TEXINPUTS="${TEXINPUTS}:${DRACOTEXINPUTS}"
+DRACOTEXINPUTS := ${DRACO}/environment/latex
+TEXINPUTSENVS := TEXINPUTS="${DRACOTEXINPUTS}:${TEXINPUTS}"
 
 LATEXENVS := ${TEXINPUTSENVS}
 LATEX := ${LATEXENVS} latex
 
-BIBTEXENVS := BSTINPUTS="${BSTINPUTS}:${DRACOTEXINPUTS}"
+BIBTEXENVS := BSTINPUTS="${DRACOTEXINPUTS}:${BSTINPUTS}"
 BIBTEX := ${BIBTEXENVS} bibtex
 
 MAKEIDX := makeindex
@@ -36,9 +33,9 @@ source    := $(texsource) $(figsource)
 ## RULES
 ##---------------------------------------------------------------------------##
 
-.PHONY : all install clean postscript pdf real-clean
+.PHONY : all install clean dvi postscript index bib tex pdf 
 
-all: dbs.dvi 
+all: dbs.pdf
 
 install: 
 	@echo install not ready
@@ -47,6 +44,12 @@ postscript: dbs.ps
 
 pdf: dbs.pdf
 
+%.ps: %.dvi
+	${DVIPS} ${DVIPSFLAGS} $<
+
+%.pdf: %.ps
+	${PDF} $<
+
 %.dvi: %.tex $(source)
 	${LATEX}  $(patsubst %.tex, %, $<)
 	${BIBTEX} $(patsubst %.tex, %, $<)
@@ -54,21 +57,21 @@ pdf: dbs.pdf
 	${LATEX}  $(patsubst %.tex, %, $<)
 	${LATEX}  $(patsubst %.tex, %, $<)
 
-%.ps: %.dvi
-	${DVIPS} ${DVIPSFLAGS} $<
+index: 
+	${MAKEIDX} dbs
 
-%.pdf: %.ps
-	${PDF} $<
+bib:
+	${BIBTEX} dbs
+
+tex:
+	${LATEX} dbs
 
 clean:
-	rm -f dbs.dvi dbs.log dbs.aux
-	rm -f dbs.blg dbs.bbl
+	rm -f dbs.dvi dbs.ps dbs.log dbs.aux
+	rm -f dbs.blg dbs.bbl dbs.pdf
 	rm -f dbs.idx dbs.ilg dbs.ind
 	rm -f dbs.toc dbs.lof dbs.lot
-	rm -f *~
-
-real-clean: clean
-	rm -f dbs.ps dbs.pdf
+	rm -f *~ dbs.ps
 
 ###############################################################################
 #			 end of draco/doc/build Makefile
