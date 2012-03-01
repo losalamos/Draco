@@ -92,7 +92,7 @@ function xe
 function em
 {
     # export GDK_NATIVE_WINDOWS=1
-    if test -z "`ps | grep emacs-x`"; then
+    if test -z "`ps | grep emacs`"; then
         emacs $* -g 90x55
     else
         exec emacsclient --alternate-editor="emacs" -c "$@"
