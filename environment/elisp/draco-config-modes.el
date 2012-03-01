@@ -1,7 +1,5 @@
 ;; ======================================================================
 ;; draco-config-modes.el
-;; Kelly Thompson
-;; 8 Dec 2004
 ;;
 ;; $Id$
 ;;
@@ -426,17 +424,22 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	    reftex-use-multiple-selection-buffers t
 	    reftex-plug-into-AUCTeX               t)
 
-      (setq reftex-texpath-environment-variables draco-texpath)
-      (setq reftex-bibpath-environment-variables draco-bibpath)
-      
+      ;(setq reftex-texpath-environment-variables draco-texpath)
+      ;(setq reftex-bibpath-environment-variables draco-bibpath)
+
+      (setq reftex-bibpath-environment-variables
+            '("BIBINPUTS" "TEXBIB" "!kpsewhich -show-path=.bib"))
+
       (defun draco-latex-mode-hook ()
 	"DRACO hooks added to LaTeX and BibTex modes."
 	(local-set-key [(f5)] 'draco-latex-divider)
 	(local-set-key [(f6)] 'draco-latex-comment-divider)
 	(local-set-key "\C-c %" 'comment-region)
 	(draco-mode-update-menu (draco-menu-insert-comments-tex))
-	(turn-on-bib-cite)
+	;(turn-on-bib-cite)
 	(turn-on-reftex)
+        (turn-on-reftex) 
+        (setq reftex-plug-into-AUCTeX t)
 	(turn-on-auto-fill)
 	(turn-on-draco-mode)
 	)
@@ -691,7 +694,6 @@ auto-mode-alist and set up some customizations for DRACO."
     ; contain any files to be checked in will not be listed in the `*cvs*'
     ; buffer. 
     (setq cvs-auto-remove-handled-directories t)
-    (setq cvs-commit-buffer-require-final-newline t)
     ))
 
 ;; ========================================
