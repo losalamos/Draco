@@ -8,6 +8,16 @@ if test -f $logfile; then
    rm $logfile
 fi
 
+# Environment setup
+
+if test -z "$MODULESHOME"; then
+  # This is a new login
+  if test -f /home/regress/environment/Modules/init/bash; then
+    source /home/regress/environment/Modules/init/bash
+  fi
+fi
+module load bullseyecoverage/8.4.12
+
 # redirect all script output to file
 exec 1>${logfile}
 exec 2>&1
@@ -33,7 +43,6 @@ cat /home/regress/cmake_draco/Nightly_gcc/Coverage/build/lines-of-code.log
 echo " "
 echo "Code coverage"
 echo "-------------"
-module load bullseyecoverage/8.4.12
 cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
 COVFILE=`pwd`/CMake.cov
 COVDIRCFG=`pwd`/covclass_cmake.cfg
@@ -79,7 +88,8 @@ cd ../source/src; covdir
 
 # Send the email
 
-/bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
+/bin/mailx -s "${subj}" kellyt@lanl.gov < ${logfile}
+# /bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
 
 # jayenne@lanl.gov
 # jsbrock@lanl.gov
