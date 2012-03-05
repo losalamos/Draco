@@ -79,5 +79,8 @@ cd ../source/src; covdir
 
 # Send the email
 
-/bin/mailx -s "${subj}" jayenne@lanl.gov < ${logfile}
+/bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
 
+# jayenne@lanl.gov
+# jsbrock@lanl.gov
+# barcher@lanl.gov
