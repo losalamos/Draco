@@ -67,3 +67,7 @@ add_pdflatex_doc(
    BIBINPUTS "${BIBINPUTS}"
    TEXINPUTS "${TEXINPUTS}"
 )
+
+# default make target
+add_custom_target( ${PROJECT_NAME}-pdf ALL
+   DEPENDS ${PROJECT_BINARY_DIR}/draco-release.pdf )
