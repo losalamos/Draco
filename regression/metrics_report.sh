@@ -44,9 +44,10 @@ echo " "
 echo "Code coverage"
 echo "-------------"
 cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
-COVFILE=`pwd`/CMake.cov
-COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src; covdir
+export COVFILE=`pwd`/CMake.cov
+export COVDIRCFG=`pwd`/covclass_cmake.cfg
+cd ../source/src
+covdir
 
 # Jayenne - ClubIMC
 
@@ -63,9 +64,10 @@ echo " "
 echo "Code coverage"
 echo "-------------"
 cd /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build
-COVFILE=`pwd`/CMake.cov
-COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src; covdir
+export COVFILE=`pwd`/CMake.cov
+export COVDIRCFG=`pwd`/covclass_cmake.cfg
+cd ../source/src
+covdir
 
 # Jayenne - Wedgehog
 
@@ -82,9 +84,10 @@ echo " "
 echo "Code coverage"
 echo "-------------"
 cd /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build
-COVFILE=`pwd`/CMake.cov
-COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src; covdir
+export COVFILE=`pwd`/CMake.cov
+export COVDIRCFG=`pwd`/covclass_cmake.cfg
+cd ../source/src
+covdir
 
 # Send the email
 
