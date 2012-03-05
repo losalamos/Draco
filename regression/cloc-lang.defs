@@ -342,7 +342,6 @@ Objective C++
     filter remove_matches ^\s*//
     filter call_regexp_common C
     filter remove_inline //.*$
-    extension mm
     3rd_gen_scale 2.96
 Ocaml
     filter call_regexp_common Pascal
@@ -592,6 +591,7 @@ make
     extension am
     extension gnumakefile
     extension makefile
+    extension mm
     filename Gnumakefile
     filename Makefile
     filename Makefile.in
