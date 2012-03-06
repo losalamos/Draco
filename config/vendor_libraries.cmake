@@ -476,34 +476,10 @@ macro( SetupVendorLibrariesWindows )
    if( NOT EXISTS ${BLAS_blas_LIBRARY} )
       message( STATUS "Looking for BLAS...")
 
-      # Use static BLAS libraries
-      set(BLA_STATIC ON)
-
       # Set the BLAS/LAPACK VENDOR.  
-      if( ${SITE} MATCHES "frost" )
-         # This machine uses Intel MKL instead of Atlas
-         set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
-         # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
-      else()
-         set( ENV{BLA_VENDOR} "Generic" )
-      endif()
-
-      # Don't require BLAS/LAPACK for catamount systems
-      if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" OR
-            ${CMAKE_CXX_COMPILER} MATCHES "ppu-g[+][+]" )
-         set( BLAS_REQUIRED "" )
-      else()
-         set( BLAS_REQUIRED "REQUIRED" )
-      endif()
-
-      # This script looks for BLAS in the following locations:
-      # /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
-      # in case LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
-      if( EXISTS $ENV{LAPACK_LIB_DIR} )
-         set( ENV{LD_LIBRARY_PATH}
-            "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
-      endif()
-
+      set( BLA_VENDOR "Generic" )
+      set( BLAS_REQUIRED "REQUIRED" )
+      
       find_package( BLAS ${BLAS_REQUIRED} )
       if( BLAS_FOUND )
          message( STATUS "Found BLAS: ${BLAS_LIBRARIES}" )
@@ -524,27 +500,10 @@ macro( SetupVendorLibrariesWindows )
       #              name) to link against to use LAPACK
 
       # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
-      
-      # look for other required libraries, Don't search system first
-      find_library(LAPACK_libf2c_LIBRARY
-         NAMES libf2c
-         PATHS 
-         ${LAPACK_LIB_DIR}
-         $ENV{LAPACK_LIB_DIR} 
-         NO_DEFAULT_PATH
-         )
-      # in case not found above, then search again including system locations.
-      # find_library(LAPACK_libf2c_LIBRARY
-      # NAMES libf2c
-      # PATHS 
-      # /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 
-      # ENV LD_LIBRARY_PATH
-      # )
-      mark_as_advanced( LAPACK_libf2c_LIBRARY )
-      if( EXISTS ${LAPACK_libf2c_LIBRARY} )
-         list( APPEND LAPACK_atlas_extra_libs ${LAPACK_libf2c_LIBRARY} )
-         # message("DEBUG: LAPACK_atlas_extra_libs = ${LAPACK_atlas_extra_libs}")
-      endif()
+
+
+
+
       
       find_package( LAPACK ) # QUIET
 
@@ -558,6 +517,12 @@ macro( SetupVendorLibrariesWindows )
    
    # GSL ---------------------------------------------------------------------
    message( STATUS "Looking for GSL...")
+   set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
+   set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
+   
+   # Use static BLAS libraries
+   set(GSL_STATIC ON)
+   
    find_package( GSL REQUIRED )
 
 
@@ -625,6 +590,8 @@ macro( setVendorVersionDefaults )
      endif()
      if( IS_DIRECTORY c:/vendors )
         set( VENDOR_DIR c:/vendors )
+     else( IS_DIRECTORY c:/a/vendors )
+        set( VENDOR_DIR c:/a/vendors )
      endif()
   endif()
   # Cache the result
@@ -650,6 +617,31 @@ individual vendor directories should be defined." )
   if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
      set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
      set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
+  endif()
+  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/LAPACK/lib )
+     set( LAPACK_LIB_DIR "${VENDOR_DIR}/LAPACK/lib" )
+     set( LAPACK_INC_DIR "${VENDOR_DIR}/LAPACK/include" )
+     if( WIN32 )
+        # cleanup LIB
+        unset(newlibpath)
+        foreach( path $ENV{LIB} )
+            if( newlibpath )
+                set( newlibpath "${newlibpath};${path}" )
+            else()
+                set( newlibpath "${path}" )
+            endif()
+        endforeach()
+        set(haslapackpath FALSE)
+        foreach( path ${newlibpath} )
+            if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
+                set( haslapackpath TRUE ) 
+            endif()
+        endforeach()
+        if( NOT ${haslapackpath} )
+            set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
+            set( ENV{LIB} "${newlibpath}" )
+        endif()
+     endif()
   endif()
 
   if( NOT GSL_LIB_DIR AND IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
