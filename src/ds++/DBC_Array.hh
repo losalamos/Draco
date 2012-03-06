@@ -1,11 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
   \file    ds++/DBC_Array.hh
-  \author  Paul Henning
   \brief   Declaration of class DBC_Array
-  \note    Copyright 2005-2010 Los Alamos National Security, LLC
+  \note    Copyright 2005-2012 Los Alamos National Security, LLC
   \version $Id$
 */
+//---------------------------------------------------------------------------//
 
 #ifndef DBC_Array_hh
 #define DBC_Array_hh
@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <iostream>
 #include <limits>
+#include <cstddef>
 
 namespace rtt_dsxx
 {

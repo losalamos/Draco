@@ -2,20 +2,18 @@
 /*!
  * \file   ds++/Vector_Lite.hh
  * \brief  Header for Vector_Lite.
- * \author Rob Lowrie
- * \date   2002-10-19
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2012 Los Alamos National Security, LLC
+ * \version $Id$
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_ds_Vector_Lite_hh
 #define rtt_ds_Vector_Lite_hh
 
+#include "Assert.hh"
+#include <cstddef>
 #include <iostream>
 #include <numeric>
-#include "Assert.hh"
 
 namespace rtt_dsxx
 {
