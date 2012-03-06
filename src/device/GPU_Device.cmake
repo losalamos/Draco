@@ -1,9 +1,8 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   device/GPU_Device.cmake
-# author Kelly Thompson
-# date   2011 Oct 24
 # brief  Instructions for building device Makefile.
-# note   © Copyright 2011 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2011-2012 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 

@@ -39,17 +39,21 @@ include_directories(
 # Compile .cu files into .ptx files.
 # ---------------------------------------------------------------------------- #
 
-#set( CUDA_BUILD_CUBIN ON )
-cuda_compile_ptx( generated_files ${cuda_sources} )
+set( CUDA_BUILD_CUBIN ON )
+cuda_compile( generated_files ${cuda_sources} )
 
-foreach( ptxfile ${generated_files} )
-   get_filename_component( sh_ptxfile ${ptxfile} NAME_WE )
-   string( REPLACE "cuda_compile_ptx_generated_" "" sh_ptxfile
-      ${sh_ptxfile} )
-   set( short_ptxfile "${sh_ptxfile}.ptx" )
-   add_custom_target( RENAME_${sh_ptxfile} ALL
-      COMMAND ${CMAKE_COMMAND} -E rename ${ptxfile} ${short_ptxfile}
-      DEPENDS ${ptxfile} )
+# move and rename the cubin.txt output file from the CMakeLists
+# directory to the CWD.
+# CMakeFiles/cuda_compile.dir/cuda_compile_generated_gpu_kernel.cu.o.cubin.txt
+#    -> gpu_kernel.cubin
+foreach( cubinfile ${generated_files} )
+   get_filename_component( sh_cubinfile ${cubinfile} NAME_WE )
+   string( REPLACE "cuda_compile_generated_" "" sh_cubinfile
+      ${sh_cubinfile} )
+   set( short_cubinfile "${sh_cubinfile}.cubin" )
+   add_custom_target( RENAME_${sh_cubinfile} ALL
+      COMMAND ${CMAKE_COMMAND} -E rename ${cubinfile}.cubin.txt ${short_cubinfile}
+      DEPENDS ${cubinfile} )
 endforeach()
 
 # ---------------------------------------------------------------------------- #
@@ -109,4 +113,16 @@ set_tests_properties( device_gpu_hello_rt_api_exe
 #    RESOURCE_LOCK "singleton"
 #    )
 
+
+set( extra_clean_files
+   cuda_compile_generated_gpu_kernel.ptx
+   cuda_compile_generated_vector_add.ptx
+   gpu_kernel.cubin
+   gpu_kernel.ptx
+   vector_add.cubin
+   vector_add.ptx
+   )
+set_directory_properties(
+   PROPERTIES
+   ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
 

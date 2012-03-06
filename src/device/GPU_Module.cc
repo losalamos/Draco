@@ -1,10 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   device/GPU_Module.cc
- * \author Kelly (KT) Thompson
- * \date   Thu Oct 20 15:28:48 2011
  * \brief  
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2012 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -25,6 +23,8 @@ namespace rtt_device
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor
+ * \arg myPtxFile - the name of a ptx or cubin file.  Ptx files will be
+ * compiled at runtime into cubins.  Prefer the use of cubin to ruduce runtime.
  *
  * Create a GPU_Module object.
  */
@@ -59,7 +59,7 @@ GPU_Module::~GPU_Module()
 std::string GPU_Module::findPtxFile( std::string const & myPtxFile )
 {
     Require( myPtxFile.length() > 0 );
-    
+
     // Location of GPU ptx files - read from config.h
     std::string const testDir( rtt_device::test_ppe_bindir ); 
     // return value

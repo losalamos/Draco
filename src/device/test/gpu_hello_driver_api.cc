@@ -107,7 +107,7 @@ void simple_add( rtt_dsxx::ScalarUnitTest & ut )
     rtt_device::GPU_Device gpu;
     
     // Load the module, must compile the kernel with nvcc -ptx -m32 kernel.cu
-    rtt_device::GPU_Module myModule( "gpu_kernel.ptx");
+    rtt_device::GPU_Module myModule( "gpu_kernel.cubin");
 
     // Load the kernel from the module
     cout << "Load kernel \"sum\" from the module." << endl;
@@ -185,7 +185,7 @@ void vector_add( rtt_dsxx::ScalarUnitTest & ut )
     rtt_device::GPU_Device gpu;
 
     // Load the module, must compile the kernel with nvcc -ptx -m32 kernel.cu
-    rtt_device::GPU_Module myModule( "vector_add.ptx" );
+    rtt_device::GPU_Module myModule( "vector_add.cubin" );
 
     // Host data
     size_t len( 1024 );
@@ -268,7 +268,7 @@ void vector_add_using_wrappers( rtt_dsxx::ScalarUnitTest & ut )
     rtt_device::GPU_Device gpu;
 
     // Load the module, must compile the kernel with nvcc -ptx -m32 kernel.cu
-    rtt_device::GPU_Module myModule( "vector_add.ptx" );
+    rtt_device::GPU_Module myModule( "vector_add.cubin" );
 
     // Host data
     size_t len( 1024 );
