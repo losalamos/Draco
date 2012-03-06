@@ -17,8 +17,8 @@ ulimit -s unlimited
 # modules
 
 if test -n "$MODULESHOME"; then
-    module load mpi/openmpi-1.4.3-gcc-4.5.1-mar.08.11
-    module load cuda/cuda-test-module-4.0.11
+    module load mpi/openmpi-1.5.3-gcc.4.5.1-mar.16.11 
+    module load cuda/cuda-4.0.11
     module load gcc/gcc-4.4.6 # CUDA needs gcc earlier than 4.5.0
     if test -d /ccs/codes/radtran/vendors; then
         # ccs codes is available so use vendor libs at that location.
@@ -50,6 +50,26 @@ if test -n "$MODULESHOME"; then
 fi
 # Avoid printing trigraph chars to the screen (eg: ���)
 export LANG=EN_en
+
+# Vendors
+
+# Ensure that CMake and numdiff are in your path
+extradirs="/home/kgt/vendors/cmake-2.8.7-Linux-i386/bin /home/opt/numdiff/bin"
+for mydir in ${extradirs}; do
+    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
+        export PATH=${mydir}:${PATH}
+    fi
+done
+
+# Ensure that /usr/lib64 is in LD_LIBRARY_PATH (needed for finding BLAS, LAPACK, GSL)
+extradirs="/usr/lib64"
+for mydir in ${extradirs}; do
+    if test -z "`echo $LD_LIBRARY_PATH | grep $mydir`" && test -d $mydir; then
+        export LD_LIBRARY_PATH=${mydir}:${LD_LIBRARY_PATH}
+    fi
+done
+
+
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_darwin
