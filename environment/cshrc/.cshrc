@@ -54,8 +54,8 @@ case rra[0-9][0-9][0-9]a*:
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/rr-dev-fe
    module load hpc-tools friendly-testing cellsdk svn
-   module unload pgi 
-   module load cmake numdiff git xshow python
+   module unload pgi openmpi-pgi
+   module load cmake numdiff git xshow python openmpi-gcc/1.4.3
    breaksw
 case rra[0-9][0-9][0-9][bcd]*:
    # source /usr/projects/crestone/dotfiles/Cshrc
