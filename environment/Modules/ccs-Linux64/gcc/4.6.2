@@ -10,8 +10,14 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
+# cannot load if another compiler is already loaded.
+conflict gcc
 conflict intel
 conflict pgi
+
+# Cannot load if lapack (compiler dependent) is still loaded.  
+# This prevents conflicts between compiler and lapack.
+#conflict lapack
 
 # local variables
 set version     4.6.2;
@@ -51,6 +57,8 @@ setenv          F77             $bindir/gfortran;
 setenv          F90             $bindir/gfortran;
 setenv          FC              $bindir/gfortran;
 setenv          F95             $bindir/gfortran;
+setenv          LCOMPILER       gnu
+setenv          LCOMPILERVER    ${version}
 
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 

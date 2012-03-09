@@ -10,10 +10,14 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
+# cannot load if another compiler is already loaded.
 conflict gcc
 conflict intel
-conflict lapack-gcc
-conflict lapack-intel
+conflict pgi
+
+# Cannot load if lapack (compiler dependent) is still loaded.  
+# This prevents conflicts between compiler and lapack.
+#conflict lapack
 
 # local variables
 set version     9.0-3;
@@ -79,6 +83,8 @@ setenv          F77             $bindir/pgf77;
 setenv          F90             $bindir/pgf90;
 setenv          FC              $bindir/pgf95;
 setenv          F95             $bindir/pgf95;
+setenv          LCOMPILER       pgi
+setenv          LCOMPILERVER    ${version}
 
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
