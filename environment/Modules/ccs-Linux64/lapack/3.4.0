@@ -14,9 +14,9 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 if { [ info exists ::env(LCOMPILER) ] } {
    set compiler $::env(LCOMPILER)
-#   set compiler $::env(LCOMPILERVER)
+   set compilerver $::env(LCOMPILERVER)
 } else {
-  set compiler    gnu
+  set compiler    gcc
   set compilerver 4.1.2
   puts stderr "*** No LCOMPILER  ***"
   puts stderr "*** Using GNU build of LAPACK ***"
@@ -24,7 +24,7 @@ if { [ info exists ::env(LCOMPILER) ] } {
 
 # local variables
 set version     3.4.0;
-set prefix      /ccs/codes/radtran/vendors/Linux64/lapack-$version/${compiler}
+set prefix      /ccs/codes/radtran/vendors/Linux64/lapack-$version/${compiler}-${compilerver}
 set libdir      $prefix/lib;
 set incdir      $prefix/include;
 
