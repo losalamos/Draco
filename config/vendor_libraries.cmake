@@ -205,7 +205,7 @@ macro( setupLAPACKLibrariesUnix )
 
       if( EXISTS $ENV{LAPACK_LIB_DIR} )
          set( ENV{LD_LIBRARY_PATH}
-            "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
+            "$ENV{LAPACK_LIB_DIR}:$ENV{LD_LIBRARY_PATH}")
       endif()
       
       if( ${SITE} MATCHES "frost" )
@@ -219,6 +219,10 @@ macro( setupLAPACKLibrariesUnix )
          set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
          set( LAPACK_FOUND ON )
       else()
+         if( EXISTS $ENV{LAPACK_LIB_DIR}/libblas.a )
+            # avoid picking /usr/lib64/libblas.a
+            set( BLAS_blas_LIBRARY $ENV{LAPACK_LIB_DIR}/libblas.a )
+         endif()
          if( EXISTS $ENV{LAPACK_LIB_DIR}/liblapack.a )
             # avoid picking /usr/lib64/liblapack.a
             set( LAPACK_lapack_LIBRARY $ENV{LAPACK_LIB_DIR}/liblapack.a )
