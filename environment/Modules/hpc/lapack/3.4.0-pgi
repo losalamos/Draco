@@ -6,7 +6,7 @@
 ##
 
 conflict lapack
-conflict gcc
+#conflict gcc
 conflict intel
 
 # global control file
