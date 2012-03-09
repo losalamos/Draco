@@ -1,9 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/vendor_libraries.cmake
-# author Kelly Thompson <kgt@lanl.gov>
-# date   2010 June 6
 # brief  Setup Vendors
-# note   Copyright © 2010-2011 LANS, LLC  
+# note   Copyright (C) 2010-2012 LANS, LLC  
 #------------------------------------------------------------------------------#
 # $Id$ 
 #------------------------------------------------------------------------------#
@@ -188,66 +186,6 @@ macro( setupMPILibrariesUnix )
 endmacro()
 
 #------------------------------------------------------------------------------
-# Helper macros for BLAS/Unix
-#
-# Set the BLAS/LAPACK VENDOR.  This must be one of
-# ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
-# Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl v10 64
-# bit,lp thread model, lp64 model),  
-#
-# This script looks for BLAS in the following locations:
-# /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
-# in case LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
-#
-# Options:
-#
-# BLA_STATIC     Default "ON" Look for static version of the library.
-# BLAS_REQUIRED  If "ON", cmake will signal a fatal error if libblas.a
-#                is not found. 
-#------------------------------------------------------------------------------
-macro( setupBLASLibrariesUnix )
-   if( NOT EXISTS ${BLAS_blas_LIBRARY} )
-
-      set( BLA_STATIC ON )
-      set( BLAS_REQUIRED "" )
-
-      if( ${SITE} MATCHES "frost" )
-         # This machine uses Intel MKL instead of Atlas. 
-         # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
-         set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
-      elseif( ${SITE} MATCHES "cn[0-9]*" )
-         # Backend of Darwin
-         set( ENV{BLA_VENDOR} "Generic" )
-      else()
-         set( ENV{BLA_VENDOR} "ATLAS" )
-      endif()
-
-      if( EXISTS $ENV{LAPACK_LIB_DIR} )
-         set( ENV{LD_LIBRARY_PATH}
-            "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
-      endif()
-
-      find_package( BLAS ${BLAS_REQUIRED} QUIET )
-
-      set_package_properties( BLAS PROPERTIES
-         DESCRIPTION "Basic Linear Algebra Subprograms"
-         TYPE OPTIONAL
-         PURPOSE "Required for bulding the lapack_wrap component." 
-         )
-
-      # If libcblas is also available at the same location, add it to
-      # the list.
-      if( EXISTS $ENV{LAPACK_LIB_DIR}/libcblas.a )
-         list( INSERT BLAS_LIBRARIES 0 $ENV{LAPACK_LIB_DIR}/libcblas.a )
-      endif()
-      set( BLAS_LIBRARIES "${BLAS_LIBRARIES}" CACHE FILEPATH 
-         "List of libraries associated with BLAS.")
-
-   endif()
-
-endmacro()
-
-#------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
 #
 # This module sets the following variables:
@@ -261,7 +199,21 @@ endmacro()
 macro( setupLAPACKLibrariesUnix )
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
+      set( BLA_STATIC ON )
+      set( BLAS_REQUIRED "" )
+      # set( ENV{BLA_VENDOR} "Generic" )
+
+      if( EXISTS $ENV{LAPACK_LIB_DIR} )
+         set( ENV{LD_LIBRARY_PATH}
+            "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
+      endif()
+      
       if( ${SITE} MATCHES "frost" )
+         # This machine uses Intel MKL instead of LAPACK. 
+         # See http://software.intel.com/sites/products/documentation/
+         # hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
+         set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
+         find_package( BLAS ${BLAS_REQUIRED} QUIET )
          # We don't need mkl_lapack so just set LAPACK_LIBRARIES to
          # BLAS_LIBRARIES
          set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
@@ -284,7 +236,12 @@ macro( setupLAPACKLibrariesUnix )
          DESCRIPTION "Linear Algebra PACKage"
          TYPE OPTIONAL
          PURPOSE "Required for bulding the lapack_wrap component." 
-)
+         )
+      set_package_properties( BLAS PROPERTIES
+         DESCRIPTION "Basic Linear Algebra Subprograms"
+         TYPE OPTIONAL
+         PURPOSE "Required for bulding the lapack_wrap component." 
+         )
 
    endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
@@ -490,6 +447,9 @@ macro( SetupVendorLibrariesWindows )
    # LAPACK ------------------------------------------------------------------
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
       message( STATUS "Looking for LAPACK...")
+      # Use static BLAS libraries
+      set(BLA_STATIC ON)
+      set( ENV{BLA_VENDOR} "Generic" )
 
       # This module sets the following variables:
       # LAPACK_FOUND - set to true if a library implementing the LAPACK
@@ -704,7 +664,6 @@ macro( setupVendorLibraries )
            "Provides BLAS, LAPACK, BLACS, ScaLAPACK and SuperLU_DIST."
            )
      else()
-        setupBLASLibrariesUnix()
         setupLAPACKLibrariesUnix()
      endif()
      setupVendorLibrariesUnix()
