@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
-#include <sys/param.h>
+#include <sys/param.h>  // MAXPATHLEN
 #include <sys/stat.h>
 
 namespace rtt_device
@@ -84,7 +84,7 @@ std::string canonical_fname(std::string const &path)
     int err = stat(path.c_str(), &buf);
     if (err) return std::string();
     
-    char npath[PATH_MAX]; npath[0] = '\0';
+    char npath[MAXPATHLEN]; npath[0] = '\0';
     Insist(realpath(path.c_str(), npath) != NULL,
            verbose_error("realpath failed on " + path));
 
