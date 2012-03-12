@@ -91,39 +91,41 @@ if( ${CMAKE_GENERATOR} STREQUAL "Visual Studio 8 2005" OR
     #set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
   endif(MSVC_VERSION GREATER 1399)
 
-  if( ENABLE_SSE AND NOT CMAKE_CL_64 ) # not for 64-bit windows.
-    set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /arch:SSE2" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2" )
-  endif()
+  find_library( Lib_win_winsock NAMES winsock32;ws2_32 )
+  
+  # if( ENABLE_SSE AND NOT CMAKE_CL_64 ) # not for 64-bit windows.
+    # set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /arch:SSE2" )
+    # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2" )
+  # endif()
 
-  if( USE_OPENMP )
-    # Is omp.h available?
-    include (CheckIncludeFiles)
-    check_include_files( omp.h HAVE_OMP_H )
-    if( HAVE_OMP_H )
-      set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /openmp" )
-      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /openmp" )
-    endif()
-    # Find and install the OpenMP library so that it is available at run time.
+  # if( USE_OPENMP )
+    # # Is omp.h available?
+    # include (CheckIncludeFiles)
+    # check_include_files( omp.h HAVE_OMP_H )
+    # if( HAVE_OMP_H )
+      # set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /openmp" )
+      # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /openmp" )
+    # endif()
+    # # Find and install the OpenMP library so that it is available at run time.
 
-    if( MSVC90 ) # Visual Studio 2008
-      # This should return something like C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\amd64\bin
-      # Need to point to C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\amd64\Microsoft.VC90.OpenMP
-      get_filename_component( vcomp90dll_hint ${CMAKE_CXX_COMPILER} PATH ) 
-      string( REPLACE "bin" "redist" vcomp90dll_hint "${vcomp90dll_hint}" )
-      set( vcomp90dll_hint "${vcomp90dll_hint}/Microsoft.VC90.OpenMP" )      
-      find_file( MSVC90_vcomp90_dll_LIBRARY
-        NAMES vcomp90.dll
-        HINTS ${vcomp90dll_hint}
-      )  
-      install(
-        FILES       ${MSVC90_vcomp90_dll_LIBRARY}
-        DESTINATION bin 
-      )
-    else()
-      message( FATAL_ERROR "You have requested an OpenMP C++ build, but the build system doesn't know how to locate vcomp90.dll for your development environment." )
-    endif()
-  endif()
+    # if( MSVC90 ) # Visual Studio 2008
+      # # This should return something like C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\amd64\bin
+      # # Need to point to C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\amd64\Microsoft.VC90.OpenMP
+      # get_filename_component( vcomp90dll_hint ${CMAKE_CXX_COMPILER} PATH ) 
+      # string( REPLACE "bin" "redist" vcomp90dll_hint "${vcomp90dll_hint}" )
+      # set( vcomp90dll_hint "${vcomp90dll_hint}/Microsoft.VC90.OpenMP" )      
+      # find_file( MSVC90_vcomp90_dll_LIBRARY
+        # NAMES vcomp90.dll
+        # HINTS ${vcomp90dll_hint}
+      # )  
+      # install(
+        # FILES       ${MSVC90_vcomp90_dll_LIBRARY}
+        # DESTINATION bin 
+      # )
+    # else()
+      # message( FATAL_ERROR "You have requested an OpenMP C++ build, but the build system doesn't know how to locate vcomp90.dll for your development environment." )
+    # endif()
+  # endif()
 
 else() 
 
