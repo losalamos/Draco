@@ -15,6 +15,7 @@
 
 #include "C4_Serial.hh"
 #include "C4_sys_times.h"
+#include "ds++/SystemCall.hh"
 #include <cstdlib>
 
 namespace rtt_c4
@@ -146,22 +147,8 @@ bool isScalar()
 //---------------------------------------------------------------------------//
 std::string get_processor_name()
 {
-    std::string pname;
-    
-#ifdef HAVE_GETHOSTNAME
-    char hostname[DRACO_MAX_PROCESSOR_NAME];
-    int err = gethostname(hostname, DRACO_MAX_PROCESSOR_NAME);
-    if (err) strncpy(hostname, "gethostname() failed", DRACO_MAX_PROCESSOR_NAME);
-    pname = std::string(hostname);
-#else
-    // Catamount systems do not have gethostname() or getpid().
-    pname = std::string("Host (unknown), PID (unknown):");
-#endif
-    return pname;    
+    return rtt_dsxx::draco_gethostname();;    
 }
-
-
-
 
 } // end namespace rtt_c4
 
