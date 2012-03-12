@@ -1,8 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  * \file   ds++/isFinite.hh
- * \author Kent G. Budge
- * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Checks on floating point numbers
  *
  * This header defines several portable functions that check on the status of
@@ -15,10 +13,10 @@
 #ifndef rtt_dsxx_isFinite_hh
 #define rtt_dsxx_isFinite_hh
 
+#include "Assert.hh"
 #include <algorithm>
 #include <iterator>
 #include <functional>
-#include "Assert.hh"
 
 namespace rtt_dsxx
 {
@@ -37,7 +35,7 @@ inline bool isNaN( T const & x )
 
 //---------------------------------------------------------------------------//
 //! Return true if x equals positive or negative infinity.
-template< typename T >
+template< typename T > DLL_PUBLIC
 bool isInfinity( T const & x );
 
 

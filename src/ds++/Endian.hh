@@ -13,6 +13,7 @@
 #ifndef dsxx_Endian_hh
 #define dsxx_Endian_hh
 
+#include <ds++/config.h>
 #include <algorithm>
 #include <cstring>
 #include <stdint.h>
@@ -134,7 +135,7 @@ T byte_swap_copy(T value)
  *
  * \return true if platform uses big endian format
  */
-bool is_big_endian(void);
+DLL_PUBLIC bool is_big_endian(void);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -145,7 +146,7 @@ bool is_big_endian(void);
  * 
  * \return true if we support IEEE float representation.
  */
-bool has_ieee_float_representation(void);
+DLL_PUBLIC bool has_ieee_float_representation(void);
 
 } // end namespace rtt_dsxx
 

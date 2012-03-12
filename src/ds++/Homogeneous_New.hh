@@ -13,7 +13,7 @@
 #ifndef dsxx_Homogeneous_New_hh
 #define dsxx_Homogeneous_New_hh
 
-// #include "../config.h"
+#include "ds++/config.h"
 
 namespace rtt_dsxx
 {
@@ -86,7 +86,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class Homogeneous_New 
+class DLL_PUBLIC Homogeneous_New 
 {
   public:
 

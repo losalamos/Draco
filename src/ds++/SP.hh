@@ -185,7 +185,7 @@ class SP
     bool operator!=(const SP<T> &sp_in) const { return p != sp_in.p; }
 };
 
-void incompatible(std::type_info const &X, std::type_info const &T);
+DLL_PUBLIC void incompatible(std::type_info const &X, std::type_info const &T);
 
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
