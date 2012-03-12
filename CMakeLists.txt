@@ -88,7 +88,8 @@ cmake_minimum_required( VERSION 2.8.6 FATAL_ERROR )
 # 2.8.6 provides updated FindBLAS and FindLAPACK modules that support
 #      ATLAS. Improved support for XCode.
 # 2.8.7 Improved support for Eclipse CDT.  Add support for CUDA_PATH.
-project( Draco CXX Fortran )
+project( Draco CXX )
+enable_language( Fortran OPTIONAL )
 
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
@@ -205,6 +206,13 @@ set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
 # 6. Use 'make install' to strip libraries and copy libraries and
 #    headers to the INSTALL_PREFIX directory.
 
+
+## Microsoft Visual Studio 10
+##
+## Prerequisits:
+## 1. BLAS & LAPACK: http://icl.cs.utk.edu/lapack-for-windows/lapack/
+##    Follow instructions for "using LAPACK subroutines in a Visual Studio Project without FORTRAN.
+##    
 
 ##---------------------------------------------------------------------------##
 ## End of CMakeLists.txt
