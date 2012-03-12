@@ -1,8 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/path.hh
- * \author Kelly Thompson
- * \date   Thu Sep 27 8:49:19 2010
  * \brief  Encapsulate path information (path separator, etc.)
  * \note   Copyright © 2010 Los Alamos National Security, LLC
  *         All rights reserved.
@@ -17,6 +15,7 @@
  * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
  */
 
+#include <ds++/config.h>
 #include <string>
 
 namespace rtt_dsxx
@@ -33,11 +32,6 @@ char const dirSep = UnixDirSep;
 std::string const exeExtension( "" );
 #endif
 
-//---------------------------------------------------------------------------//
-/*! \brief Report the current working directory
- */
-std::string currentPath(void);
-
 enum FilenameComponent
 {
     FC_PATH,       //!< Extract path portion of fully qualified filename
@@ -49,17 +43,16 @@ enum FilenameComponent
     FC_LASTVALUE
 };
 
-
 //---------------------------------------------------------------------------//
 /*! \brief Get a specific component of a full filename.
  */
-std::string getFilenameComponent( std::string const & fqName,
-                                  FilenameComponent fc );
+DLL_PUBLIC std::string getFilenameComponent( std::string const & fqName,
+                                             FilenameComponent   fc );
 
 //---------------------------------------------------------------------------//
 /*! \brief Does the file exist?
  */
-bool fileExists( std::string const & filename );
+DLL_PUBLIC bool fileExists( std::string const & filename );
 
 } // end namespace rtt_dsxx
 

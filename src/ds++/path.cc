@@ -1,8 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/path.cc
- * \author Kelly Thompson
- * \date   Thu Jul 08 10:21:36 2011
  * \brief  Encapsulate path information (path separator, etc.)
  * \note   Copyright © 2011 Los Alamos National Security, LLC
  *         All rights reserved.
@@ -11,6 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "path.hh"
+#include "SystemCall.hh"
 #include "Assert.hh"
 
 #include <cerrno>       // errno
@@ -18,21 +17,17 @@
 #include <cstdlib>      // realpath
 #include <sstream>
 
-#include <sys/param.h>  // MAXPATHLEN
 #include <sys/stat.h>   // stat
-#include <unistd.h>
+//#ifdef UNIX
+////#include <sys/param.h>  // MAXPATHLEN
+//#include <unistd.h>
+//#endif
+//#ifdef WIN32
+//#include <direct.h> // _getcwd
+//#endif
 
 namespace rtt_dsxx
 {
-
-std::string currentPath(void)
-{
-    // Identify the current working directory.
-    char curr_path[MAXPATHLEN];
-    Insist(getcwd(curr_path, MAXPATHLEN) != NULL,
-           std::string("getcwd failed: " + std::string(strerror(errno))));
-    return std::string( curr_path );
-}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -93,19 +88,12 @@ std::string getFilenameComponent( std::string const & fqName,
             break;
 
         case FC_REALPATH :
-            struct stat buf;
-            if( stat(fqName.c_str(), &buf) )
-            {
+            std::cout << "fqName =  " << fqName << std::endl;
+            std::cout << "_stat() = " << draco_getstat(fqName) << std::endl;
+            if( draco_getstat(fqName) )
                 retVal = std::string();
-            }
             else
-            {
-                char npath[PATH_MAX]; npath[0] = '\0';
-                Insist(realpath(fqName.c_str(), npath) != NULL,
-                       string("realpath failed on " + fqName));
-                
-                retVal = std::string(npath);
-            }
+                retVal = draco_getcwd();
             break;
 
         case FC_ABSOLUTE :
