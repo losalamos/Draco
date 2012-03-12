@@ -11,14 +11,21 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds++/config.h"
 #include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../path.hh"
+#include "../SystemCall.hh"
 #include <cstdlib> // system()
+#include <fstream>
 
 using namespace std;
 using namespace rtt_dsxx;
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -28,7 +35,7 @@ void test_currentPath( ScalarUnitTest & ut )
     cout << "\nTesting currentPath() function ... \n" << endl;
     
     // currentPath
-    string const cp = currentPath();
+    string const cp = draco_getcwd();
 
     // if we got here, currentPath didn't throw.
     
@@ -36,17 +43,17 @@ void test_currentPath( ScalarUnitTest & ut )
     // nothing about what the path string should contain.
     
     if( fileExists( cp ) )
-        ut.passes( string("Retrieved current path exists. cp = ") + cp);
+        PASSMSG( string("Retrieved current path exists. cp = ") + cp);
     else
-        ut.failure("Retrieved current path does not exist. cp = " + cp);
+        FAILMSG("Retrieved current path does not exist. cp = " + cp);
 
     // Test behavior of fileExist when file does not exist.
     string const fileDoesNotExist( "/bounty/hunter/boba_fett" );
         
     if( ! fileExists( fileDoesNotExist ) )
-        ut.passes( string("fileExist() correctly returned false. ")) ;
+        PASSMSG( string("fileExist() correctly returned false. ")) ;
     else
-        ut.failure( string("fileExist() incorrectly returned true. ")) ;
+        FAILMSG( string("fileExist() incorrectly returned true. ")) ;
     
     return;
 }
@@ -86,9 +93,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 
         // Report pass/fail
         if( idx != string::npos )
-            ut.passes( string("Found expected partial path. Path = ") + mypath );
+            PASSMSG( string("Found expected partial path. Path = ") + mypath );
         else
-            ut.failure("Did not find expected partial path. Expected path = "
+            FAILMSG("Did not find expected partial path. Expected path = "
                        + mypath );
     }
     else
@@ -104,9 +111,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 
         // Report pass/fail
         if( idx != string::npos )
-            ut.passes( string("Found expected partial path. Path = ") + mypath );
+            PASSMSG( string("Found expected partial path. Path = ") + mypath );
         else
-            ut.failure("Did not find expected partial path. Expected path = "
+            FAILMSG("Did not find expected partial path. Expected path = "
                        + mypath );
     }
     
@@ -114,10 +121,12 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 
     string mypath2 = getFilenameComponent( string("foobar"),
                                            rtt_dsxx::FC_PATH );
-    if( mypath2 == string("./") )
-        ut.passes("FC_PATH: name w/o path successfully returned ./");
+    string expected = string(".")+string(1,rtt_dsxx::dirSep);
+    if( mypath2 == expected )
+        PASSMSG( string("FC_PATH: name w/o path successfully returned ")
+                   +expected);
     else
-        ut.failure("FC_PATH: name w/o path returned incorrect value.");
+        FAILMSG("FC_PATH: name w/o path returned incorrect value.");
     
     
     // test the FC_NAME mode
@@ -127,63 +136,70 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     
     idx = myname.find( string("tstPath") );
     if( idx != string::npos )
-        ut.passes( string("Found expected filename. myname = ") + myname );
+        PASSMSG( string("Found expected filename. myname = ") + myname );
     else
-        ut.failure("Did not find expected filename. Expected filename = "
+        FAILMSG("Did not find expected filename. Expected filename = "
                    + myname );
-    
-    if( mypath+myname == fqp )
-        ut.passes( string("Successfully divided fqp into path+name = ")
-            + mypath+myname );
-    else
-        ut.failure( "mypath+myname != fqp" );
-
+        
+    if( usesUnixDirSep )
+    {
+        if( mypath+myname == fqp )
+            PASSMSG( string("Successfully divided fqp into path+name = ")
+                        + mypath+myname );
+        else
+            FAILMSG( string("mypath+myname != fqp") +
+                        string("\n\tmypath = ") + mypath +
+                        string("\n\tmyname = ") + myname +
+                        string("\n\tfqp    = ") + fqp
+                      );
+    } 
 
     // value if not found
 
     string myname2 = getFilenameComponent( string("foobar"),
                                            rtt_dsxx::FC_NAME );
     if( myname2 == string("foobar") )
-        ut.passes("name w/o path successfully returned");
+        PASSMSG("name w/o path successfully returned");
     else
-        ut.failure("name w/o path returned incorrect value.");
+        FAILMSG("name w/o path returned incorrect value.");
         
 
     // test the FC_REALPATH
     // ------------------------------------------------------------
 
     string realpath = getFilenameComponent( fqp, rtt_dsxx::FC_REALPATH );
-    
-#if defined( draco_isWin )
+
+#if defined( WIN32 )
     { // The binary should exist.  Windows does not provide an execute bit.  
          std::string exeExists( realpath + ".exe" );
          if( std::ifstream( exeExists.c_str() ) )
-            ut.passes( "FC_REALPATH points to a valid executable." );
-        else
-            ut.failure( "FC_REALPATH is invalid or not executable." );
+            PASSMSG( "FC_REALPATH points to a valid executable." );
+         else
+            FAILMSG( string("FC_REALPATH is invalid or not executable.") +
+                     string("  exeExists = ") + exeExists );
     }
 #else             
     { // The binary should exist and marked by the filesystem as executable.  
 
         if( usesUnixDirSep )
         {
-            if( realpath.size() > 0 ) ut.passes(  "FC_REALPATH has length > 0.");
-            else                      ut.failure( "FC_REALPATH has length <= 0.");
+            if( realpath.size() > 0 ) PASSMSG( "FC_REALPATH has length > 0.");
+            else                      FAILMSG( "FC_REALPATH has length <= 0.");
 
             std::string exeExistsAndExecutable("test -x " + realpath );
             if( std::system( exeExistsAndExecutable.c_str() ) == 0 )
-                ut.passes(
+                PASSMSG(
                     string("FC_REALPATH points to a valid executable. Path = ")
                     + realpath );
             else
-                ut.failure(
+                FAILMSG(
                     string( "FC_REALPATH is invalid or not executable. Path = ")
                     + realpath );
         }
         else
         {
-            if( realpath.size() == 0 ) ut.passes(  "FC_REALPATH has length <= 0.");
-            else                       ut.failure( "FC_REALPATH has length > 0.");
+            if( realpath.size() == 0 ) PASSMSG( "FC_REALPATH has length <= 0.");
+            else                       FAILMSG( "FC_REALPATH has length > 0.");
             
         }
     }
@@ -201,9 +217,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     catch( ... )
     {
         caught=true;
-        ut.passes( "FC_ABSOLUTE throws." );
+        PASSMSG( "FC_ABSOLUTE throws." );
     }
-    if( ! caught ) ut.failure( "FC_ABSOLUTE failed to throw." );
+    if( ! caught ) FAILMSG( "FC_ABSOLUTE failed to throw." );
 
     caught=false;
     try
@@ -213,9 +229,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     catch( ... )
     {
         caught=true;
-        ut.passes( "FC_EXT throws." );
+        PASSMSG( "FC_EXT throws." );
     }
-    if( ! caught ) ut.failure( "FC_EXT failed to throw." );
+    if( ! caught ) FAILMSG( "FC_EXT failed to throw." );
     
     caught=false;
     try
@@ -225,9 +241,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     catch( ... )
     {
         caught=true;
-        ut.passes( "FC_NAME_WE throws." );
+        PASSMSG( "FC_NAME_WE throws." );
     }
-    if( ! caught ) ut.failure( "FC_NAME_WE failed to throw." );
+    if( ! caught ) FAILMSG( "FC_NAME_WE failed to throw." );
 
     // FC_LASTVALUE should always throw.
     caught=false;
@@ -238,9 +254,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     catch( ... )
     {
         caught=true;
-        ut.passes( "FC_LASTVALUE throws." );
+        PASSMSG( "FC_LASTVALUE throws." );
     }
-    if( ! caught ) ut.failure( "FC_LASTVALUE failed to throw." );
+    if( ! caught ) FAILMSG( "FC_LASTVALUE failed to throw." );
     
     return;
 }
