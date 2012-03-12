@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Setup Vendors
-# note   Copyright © 2010-2011 LANS, LLC  
+# note   Copyright (C) 2010-2012 LANS, LLC  
 #------------------------------------------------------------------------------#
 # $Id$ 
 #------------------------------------------------------------------------------#
@@ -181,63 +181,6 @@ macro( setupMPILibrariesUnix )
 endmacro()
 
 #------------------------------------------------------------------------------
-# Helper macros for BLAS/Unix
-#
-# Set the BLAS/LAPACK VENDOR.  This must be one of
-# ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
-# Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl v10 64
-# bit,lp thread model, lp64 model),  
-#
-# This script looks for BLAS in the following locations:
-# /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
-# in case LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
-#
-# Options:
-#
-# BLA_STATIC     Default "ON" Look for static version of the library.
-# BLAS_REQUIRED  If "ON", cmake will signal a fatal error if libblas.a
-#                is not found. 
-#------------------------------------------------------------------------------
-# macro( setupBLASLibrariesUnix )
-   # if( NOT EXISTS ${BLAS_blas_LIBRARY} )
-
-      # set( BLA_STATIC ON )
-      # set( BLAS_REQUIRED "" )
-
-      # if( ${SITE} MATCHES "frost" )
-         # # This machine uses Intel MKL instead of Atlas. 
-         # # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
-         # set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
-      # else()
-         # if( ${SITE} MATCHES "cn[0-9]*" )
-           # # Backend of Darwin
-           # set( ENV{BLA_VENDOR} "Generic" )
-         # else()
-           # set( ENV{BLA_VENDOR} "ATLAS" )
-         # endif()
-      # endif()
-
-      # if( EXISTS $ENV{LAPACK_LIB_DIR} )
-         # set( ENV{LD_LIBRARY_PATH}
-            # "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
-      # endif()
-
-      # find_package( BLAS ${BLAS_REQUIRED} QUIET )
-
-
-      # # When libcblas is also available at the same location, add it to
-      # # the list.
-      # if( EXISTS $ENV{LAPACK_LIB_DIR}/libcblas.a )
-         # list( INSERT BLAS_LIBRARIES 0 $ENV{LAPACK_LIB_DIR}/libcblas.a )
-      # endif()
-      # set( BLAS_LIBRARIES "${BLAS_LIBRARIES}" CACHE FILEPATH 
-         # "List of libraries associated with BLAS.")
-
-   # endif()
-
-# endmacro()
-
-#------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
 #
 # This module sets the following variables:
@@ -300,7 +243,6 @@ macro( SetupVendorLibrariesUnix )
    # GSL ----------------------------------------------------------------------
    # message( STATUS "Looking for GSL...")
    find_package( GSL QUIET )
-
 
    # GRACE ------------------------------------------------------------------
    find_package( Grace QUIET )
@@ -446,27 +388,6 @@ macro( SetupVendorLibrariesWindows )
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       endif()
       
-      
-      
-      # if( IS_DIRECTORY "$ENV{MPI_INC_DIR}" AND IS_DIRECTORY "$ENV{MPI_LIB_DIR}" )
-      # set( MPI_INCLUDE_PATH $ENV{MPI_INC_DIR} )
-      # set( MPI_LIBRARY $ENV{MPI_LIB_DIR}/mpi.lib )
-      # endif()
-      # message(STATUS "Looking for MPI...")
-      # find_package( MPI )
-      # if( MPI_FOUND )
-      # set( DRACO_C4 "MPI" )  
-      # message(STATUS "Looking for MPI... MPI_ROOT = ${MPI_ROOT}")
-      # else()
-      # set( DRACO_C4 "SCALAR" )
-      # message(WARNING "Looking for MPI... NOT FOUND (continuing with C4 = SCALAR)")
-      # endif()
-      # set( DRACO_C4 "${DRACO_C4}" CACHE STRING "C4 communication mode (SCALAR or MPI)" )
-      # if( "${DRACO_C4}" STREQUAL "MPI" OR "${DRACO_C4}" STREQUAL "SCALAR" )
-      # else()
-      # message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
-      # endif()
-      
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
    # LAPACK ------------------------------------------------------------------
@@ -505,39 +426,6 @@ macro( SetupVendorLibrariesWindows )
    set(GSL_STATIC ON)
    
    find_package( GSL REQUIRED )
-
-
-   # find_package( XercesC QUIET )
-
-   # Boost: 
-   #
-   # required by the build system (not by any files that are
-   # released). 
-   # set( Boost_USE_STATIC_LIBS ON CACHE BOOL 
-   # "If available use .lib libs instead of .dll.")
-   #set( Boost_DEBUG ON )
-   # find_package( Boost ${TSP_BOOST_VERSION}
-   # REQUIRED
-   # date_time 
-   # filesystem 
-   # program_options
-   # regex  
-   # system
-   # test_exec_monitor
-   # unit_test_framework
-   # )
-   # add_definitions( ${Boost_LIB_DIAGNOSTIC_DEFINITIONS} )
-
-   # Haven't bothered to try OpenCASCADE on w32 so we just set
-   # this option to OFF.
-   # option( ENABLE_OCC "Enable programs linked against OpenCASCADE" OFF )
-
-   # Use Qt 4 if we want.
-   # option( ENABLE_QT4 "Enable program linked against Qt 4" OFF )
-
-   # if ( ENABLE_QT4 )
-   # find_package( Qt4 )
-   # endif( ENABLE_QT4 )
 
 endmacro()
 
@@ -636,7 +524,6 @@ individual vendor directories should be defined." )
        TYPE RECOMMENDED
        PURPOSE "If not available, all Draco components will be built as scalar applications."
        )
-
     set_package_properties( BLAS PROPERTIES
        DESCRIPTION "Basic Linear Algebra Subprograms"
        TYPE OPTIONAL
