@@ -1,7 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/vendor_libraries.cmake
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2010 June 6
 # brief  Setup Vendors
-# note   Copyright (C) 2010-2012 LANS, LLC  
+# note   Copyright © 2010-2011 LANS, LLC  
 #------------------------------------------------------------------------------#
 # $Id$ 
 #------------------------------------------------------------------------------#
@@ -172,18 +174,68 @@ macro( setupMPILibrariesUnix )
       # Mark some of the variables created by the above logic as
       # 'advanced' so that they do not show up in the 'simple' ccmake 
       # view. 
-      mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY file_cmd )
-      
-      set_package_properties( MPI PROPERTIES
-         URL "http://www.open-mpi.org/"
-         DESCRIPTION "A High Performance Message Passing Library"
-         TYPE RECOMMENDED
-         PURPOSE 
-"If not available, all Draco components will be built as scalar applications."
-)
+      mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY file_cmd )      
+
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
 endmacro()
+
+#------------------------------------------------------------------------------
+# Helper macros for BLAS/Unix
+#
+# Set the BLAS/LAPACK VENDOR.  This must be one of
+# ATLAS, PhiPACK, CXML, DXML, SunPerf, SCSL, SGIMATH, IBMESSL,
+# Intel10_32 (intel mkl v10 32 bit), Intel10_64lp (intel mkl v10 64
+# bit,lp thread model, lp64 model),  
+#
+# This script looks for BLAS in the following locations:
+# /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ${LD_LIBRARY_PATH}
+# in case LAPACK_LIBDIR is defined, ensure it is in LD_LIBRARY_PATH
+#
+# Options:
+#
+# BLA_STATIC     Default "ON" Look for static version of the library.
+# BLAS_REQUIRED  If "ON", cmake will signal a fatal error if libblas.a
+#                is not found. 
+#------------------------------------------------------------------------------
+# macro( setupBLASLibrariesUnix )
+   # if( NOT EXISTS ${BLAS_blas_LIBRARY} )
+
+      # set( BLA_STATIC ON )
+      # set( BLAS_REQUIRED "" )
+
+      # if( ${SITE} MATCHES "frost" )
+         # # This machine uses Intel MKL instead of Atlas. 
+         # # See http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
+         # set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
+      # else()
+         # if( ${SITE} MATCHES "cn[0-9]*" )
+           # # Backend of Darwin
+           # set( ENV{BLA_VENDOR} "Generic" )
+         # else()
+           # set( ENV{BLA_VENDOR} "ATLAS" )
+         # endif()
+      # endif()
+
+      # if( EXISTS $ENV{LAPACK_LIB_DIR} )
+         # set( ENV{LD_LIBRARY_PATH}
+            # "$ENV{LD_LIBRARY_PATH}:$ENV{LAPACK_LIB_DIR}")
+      # endif()
+
+      # find_package( BLAS ${BLAS_REQUIRED} QUIET )
+
+
+      # # When libcblas is also available at the same location, add it to
+      # # the list.
+      # if( EXISTS $ENV{LAPACK_LIB_DIR}/libcblas.a )
+         # list( INSERT BLAS_LIBRARIES 0 $ENV{LAPACK_LIB_DIR}/libcblas.a )
+      # endif()
+      # set( BLAS_LIBRARIES "${BLAS_LIBRARIES}" CACHE FILEPATH 
+         # "List of libraries associated with BLAS.")
+
+   # endif()
+
+# endmacro()
 
 #------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
@@ -202,7 +254,7 @@ macro( setupLAPACKLibrariesUnix )
       set( BLA_STATIC ON )
       set( BLAS_REQUIRED "" )
       # set( ENV{BLA_VENDOR} "Generic" )
-
+      
       if( EXISTS $ENV{LAPACK_LIB_DIR} )
          set( ENV{LD_LIBRARY_PATH}
             "$ENV{LAPACK_LIB_DIR}:$ENV{LD_LIBRARY_PATH}")
@@ -215,7 +267,7 @@ macro( setupLAPACKLibrariesUnix )
          set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
          find_package( BLAS ${BLAS_REQUIRED} QUIET )
          # We don't need mkl_lapack so just set LAPACK_LIBRARIES to
-         # BLAS_LIBRARIES
+         # BLAS_LIBRARIES 
          set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
          set( LAPACK_FOUND ON )
       else()
@@ -229,24 +281,13 @@ macro( setupLAPACKLibrariesUnix )
          endif()
          find_package( LAPACK ) 
       endif()
-
+      
       if( LAPACK_FOUND )
          set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING 
             "lapack libs" )
          mark_as_advanced( LAPACK_LIBRARIES )
       endif()
-
-      set_package_properties( LAPACK PROPERTIES
-         DESCRIPTION "Linear Algebra PACKage"
-         TYPE OPTIONAL
-         PURPOSE "Required for bulding the lapack_wrap component." 
-         )
-      set_package_properties( BLAS PROPERTIES
-         DESCRIPTION "Basic Linear Algebra Subprograms"
-         TYPE OPTIONAL
-         PURPOSE "Required for bulding the lapack_wrap component." 
-         )
-
+      
    endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
 endmacro()
@@ -259,12 +300,7 @@ macro( SetupVendorLibrariesUnix )
    # GSL ----------------------------------------------------------------------
    # message( STATUS "Looking for GSL...")
    find_package( GSL QUIET )
-   set_package_properties( GSL PROPERTIES
-         URL "http://www.gnu.org/s/gsl/"
-         DESCRIPTION "GNU Scientific Library"
-         TYPE REQUIRED
-         PURPOSE "Required for bulding quadrature and rng components."
-         )  
+
 
    # GRACE ------------------------------------------------------------------
    find_package( Grace QUIET )
@@ -287,7 +323,7 @@ macro( SetupVendorLibrariesUnix )
       set( HAVE_CUDA 1 )
       option( USE_CUDA "If CUDA is available, should we use it?" ON )
       set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
-      set( CUDA_NVCC_FLAGS "-arch=sm_20" )
+      # set( CUDA_NVCC_FLAGS "-arch=sm_20" )
       set( cudalibs ${CUDA_CUDART_LIBRARY} )
    endif()
    mark_as_advanced( 
@@ -433,28 +469,13 @@ macro( SetupVendorLibrariesWindows )
       
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
-   # BLAS --------------------------------------------------------------------
-   if( NOT EXISTS ${BLAS_blas_LIBRARY} )
-      message( STATUS "Looking for BLAS...")
-
-      # Set the BLAS/LAPACK VENDOR.  
-      set( BLA_VENDOR "Generic" )
-      set( BLAS_REQUIRED "REQUIRED" )
-      
-      find_package( BLAS ${BLAS_REQUIRED} )
-      if( BLAS_FOUND )
-         message( STATUS "Found BLAS: ${BLAS_LIBRARIES}" )
-      endif()
-      
-   endif( NOT EXISTS ${BLAS_blas_LIBRARY} )
-
    # LAPACK ------------------------------------------------------------------
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
       message( STATUS "Looking for LAPACK...")
-      # Use static BLAS libraries
-      set(BLA_STATIC ON)
-      set( ENV{BLA_VENDOR} "Generic" )
-
+      
+      # Set the BLAS/LAPACK VENDOR.  
+      # set( BLA_VENDOR "Generic" )
+      
       # This module sets the following variables:
       # LAPACK_FOUND - set to true if a library implementing the LAPACK
       #              interface is found
@@ -465,10 +486,6 @@ macro( SetupVendorLibrariesWindows )
 
       # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
 
-
-
-
-      
       find_package( LAPACK ) # QUIET
 
       if( LAPACK_FOUND )
@@ -476,7 +493,7 @@ macro( SetupVendorLibrariesWindows )
          mark_as_advanced( LAPACK_LIBRARIES )
          message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
       endif()
-
+      
    endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
    
    # GSL ---------------------------------------------------------------------
@@ -529,115 +546,113 @@ endmacro()
 # Assign here the library version to be used.
 #------------------------------------------------------------------------------
 macro( setVendorVersionDefaults )
+    #Set the preferred search directories(ROOT)
 
-  # set( TSP_BOOST_VERSION 1.40.0 CACHE STRING
-    # "Minimum supported Boost version." )
-  # set( XERCESC_VERSION 2.8.0 )
+    #Check that VENDOR_DIR is defined as a cache variable or as an
+    #environment variable. If defined as both then take the
+    #environment variable.
 
-  #Set the preferred search directories(ROOT)
-
-  #Check that VENDOR_DIR is defined as a cache variable or as an
-  #environment variable. If defined as both then take the
-  #environment variable.
-
-  # See if VENDOR_DIR is set.  Try some defaults if it is not set.
-  if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
-    set( VENDOR_DIR $ENV{VENDOR_DIR} )
-  endif()
-  # If needed, try some obvious places.
-  if( NOT VENDOR_DIR )
-     if( IS_DIRECTORY /ccs/codes/radtran/vendors/Linux64 )
-        set( VENDOR_DIR /ccs/codes/radtran/vendors/Linux64 )
-     endif()
-     if( IS_DIRECTORY /usr/projects/draco/vendors )
-        set( VENDOR_DIR /usr/projects/draco/vendors )
-     endif()
-     if( IS_DIRECTORY c:/vendors )
-        set( VENDOR_DIR c:/vendors )
-     else( IS_DIRECTORY c:/a/vendors )
-        set( VENDOR_DIR c:/a/vendors )
-     endif()
-  endif()
-  # Cache the result
-  if( IS_DIRECTORY "${VENDOR_DIR}")
-    set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
-      "Root directory where CCS-2 3rd party libraries are located." )
-  else( IS_DIRECTORY "${VENDOR_DIR}")
-    message( "
+    # See if VENDOR_DIR is set.  Try some defaults if it is not set.
+    if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
+        set( VENDOR_DIR $ENV{VENDOR_DIR} )
+    endif()
+    # If needed, try some obvious places.
+    if( NOT EXISTS "${VENDOR_DIR}" )
+        if( IS_DIRECTORY "/ccs/codes/radtran/vendors/Linux64" )
+            set( VENDOR_DIR "/ccs/codes/radtran/vendors/Linux64" )
+        endif()
+        if( IS_DIRECTORY /usr/projects/draco/vendors )
+            set( VENDOR_DIR /usr/projects/draco/vendors )
+        endif()
+        if( IS_DIRECTORY c:/vendors )
+            set( VENDOR_DIR c:/vendors )
+        elseif( IS_DIRECTORY c:/a/vendors )
+            set( VENDOR_DIR c:/a/vendors )
+        endif()
+    endif()
+    # Cache the result
+    if( IS_DIRECTORY "${VENDOR_DIR}")
+        set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
+          "Root directory where CCS-2 3rd party libraries are located." )
+    else( IS_DIRECTORY "${VENDOR_DIR}")
+        message( "
 WARNING: VENDOR_DIR not defined locally or in user environment,
 individual vendor directories should be defined." )
-  endif( IS_DIRECTORY "${VENDOR_DIR}")
+    endif()
 
-  # Import environment variables related to vendors
-  # 1. Use command line variables (-DLAPACK_LIB_DIR=<path>
-  # 2. Use environment variables ($ENV{LAPACK_LIB_DIR}=<path>)
-  # 3. Try to find vendor in $VENDOR_DIR
-  # 4. Don't set anything and let the user set a value in the cache
-  #    after failed 1st configure attempt.
-  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY $ENV{LAPACK_LIB_DIR} )
-     set( LAPACK_LIB_DIR $ENV{LAPACK_LIB_DIR} )
-     set( LAPACK_INC_DIR $ENV{LAPACK_INC_DIR} )
-  endif()
-  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
-     set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
-     set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
-  endif()
-  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/LAPACK/lib )
-     set( LAPACK_LIB_DIR "${VENDOR_DIR}/LAPACK/lib" )
-     set( LAPACK_INC_DIR "${VENDOR_DIR}/LAPACK/include" )
-     if( WIN32 )
-        # cleanup LIB
-        unset(newlibpath)
-        foreach( path $ENV{LIB} )
-            if( newlibpath )
-                set( newlibpath "${newlibpath};${path}" )
-            else()
-                set( newlibpath "${path}" )
+    # Import environment variables related to vendors
+    # 1. Use command line variables (-DLAPACK_LIB_DIR=<path>
+    # 2. Use environment variables ($ENV{LAPACK_LIB_DIR}=<path>)
+    # 3. Try to find vendor in $VENDOR_DIR
+    # 4. Don't set anything and let the user set a value in the cache
+    #    after failed 1st configure attempt.
+    if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY $ENV{LAPACK_LIB_DIR} )
+        set( LAPACK_LIB_DIR $ENV{LAPACK_LIB_DIR} )
+        set( LAPACK_INC_DIR $ENV{LAPACK_INC_DIR} )
+    endif()
+    if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/LAPACK/lib )
+        set( LAPACK_LIB_DIR "${VENDOR_DIR}/LAPACK/lib" )
+        set( LAPACK_INC_DIR "${VENDOR_DIR}/LAPACK/include" )
+        if( WIN32 )
+            # cleanup LIB
+            unset(newlibpath)
+            foreach( path $ENV{LIB} )
+                if( newlibpath )
+                    et( newlibpath "${newlibpath};${path}" )
+                else()
+                    set( newlibpath "${path}" )
+                endif()
+            endforeach()
+            set(haslapackpath FALSE)
+            foreach( path ${newlibpath} )
+                if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
+                    set( haslapackpath TRUE ) 
+                endif()
+            endforeach()
+            if( NOT ${haslapackpath} )
+                set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
+                set( ENV{LIB} "${newlibpath}" )
             endif()
-        endforeach()
-        set(haslapackpath FALSE)
-        foreach( path ${newlibpath} )
-            if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
-                set( haslapackpath TRUE ) 
-            endif()
-        endforeach()
-        if( NOT ${haslapackpath} )
-            set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
-            set( ENV{LIB} "${newlibpath}" )
+            #message("LIB = $ENV{LIB}")
         endif()
-     endif()
-  endif()
+    endif()
+    if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
+        set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
+        set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
+    endif()
 
-  if( NOT GSL_LIB_DIR AND IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
-     set( GSL_LIB_DIR $ENV{GSL_LIB_DIR} )
-     set( GSL_INC_DIR $ENV{GSL_INC_DIR} )
-  endif()
-  if( NOT GSL_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/gsl/lib )
-     set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
-     set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
-  endif()
+    if( NOT GSL_LIB_DIR AND IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
+        set( GSL_LIB_DIR $ENV{GSL_LIB_DIR} )
+        set( GSL_INC_DIR $ENV{GSL_INC_DIR} )
+    endif()
+    if( NOT GSL_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/gsl/lib )
+        set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
+        set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
+    endif()
 
-  #Set the preferred search paths
-  
-  # Look for special build of boost (/DSECURE_SCL=0).
-  # set( BOOST_ROOT ${VENDOR_DIR}/boost-${TSP_BOOST_VERSION}-sscl0 )
-  # if( NOT EXISTS ${BOOST_ROOT} )
-    # set( BOOST_ROOT ${VENDOR_DIR}/boost-${TSP_BOOST_VERSION} )
-  # endif()
-  # set( BOOST_ROOT ${BOOST_ROOT} 
-      # CACHE PATH "Where should CMake loook for Boost?" )
-      
-  # set( XERCESC_ROOT
-    # ${VENDOR_DIR}/xerces-c-${XERCESC_VERSION} )
-        
-     # if   ( VERBOSE )
-      # message("")
-      # message("Preferred search directories:")
-      # message("BOOST_ROOT     = ${BOOST_ROOT}") 
-      # message("XERCESC_ROOT   = ${XERCESC_ROOT}")
-      # message("--VERBOSE--")
-      # message("")
-    # endif( VERBOSE )
+    set_package_properties( MPI PROPERTIES
+       URL "http://www.open-mpi.org/"
+       DESCRIPTION "A High Performance Message Passing Library"
+       TYPE RECOMMENDED
+       PURPOSE "If not available, all Draco components will be built as scalar applications."
+       )
+
+    set_package_properties( BLAS PROPERTIES
+       DESCRIPTION "Basic Linear Algebra Subprograms"
+       TYPE OPTIONAL
+       PURPOSE "Required for bulding the lapack_wrap component." 
+       )
+    set_package_properties( LAPACK PROPERTIES
+       DESCRIPTION "Linear Algebra PACKage"
+       TYPE OPTIONAL
+       PURPOSE "Required for bulding the lapack_wrap component." 
+       )     
+    set_package_properties( GSL PROPERTIES
+       URL "http://www.gnu.org/s/gsl/"
+       DESCRIPTION "GNU Scientific Library"
+       TYPE REQUIRED
+       PURPOSE "Required for bulding quadrature and rng components."
+       )  
 
 endmacro()
 
