@@ -88,8 +88,6 @@ std::string getFilenameComponent( std::string const & fqName,
             break;
 
         case FC_REALPATH :
-            std::cout << "fqName =  " << fqName << std::endl;
-            std::cout << "_stat() = " << draco_getstat(fqName) << std::endl;
             if( draco_getstat(fqName) )
                 retVal = std::string();
             else
