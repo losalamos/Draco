@@ -1,21 +1,16 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/Assert.cc
- * \author Geoffrey Furnish
- * \date   Fri Jul 25 08:41:38 1997
  * \brief  Helper functions for the Assert facility.
  * \note   Copyright (C) 1997-2011 Los Alamos National Security, LLC.
  *         All rights reserved.
+ * \version $Id$
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
+#include "SystemCall.hh" // draco_gethostname(), draco_getpid()
 #include "Assert.hh"
 #include <sstream>
-#include <climits>  // HOST_NAME_MAX, hostname
-#include <cstring>  // strncpy()
-#include <unistd.h> // gethostname
 
 namespace rtt_dsxx
 {
@@ -133,20 +128,13 @@ void insist_ptr( char const * const cond,
  */
 std::string verbose_error(std::string const & message)
 {
+    int pid = draco_getpid();    
     std::ostringstream errstr;
-
-#ifdef HAVE_GETHOSTNAME 
-    char hostname[HOST_NAME_MAX];
-    int err = gethostname(hostname, HOST_NAME_MAX);
-    if (err) strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
-
-    errstr << "Host " << hostname << ", PID " << getpid() << ": "
-           << message;
-#else
-    // Catamount systems do not have gethostname() or getpid().
-    errstr << "Host (unknown), PID (unknown): " << message;
-#endif
-    
+    errstr << "Host " << draco_gethostname() 
+           << ", PID ";
+    if(pid<0) errstr << "(unknown)";
+    else      errstr << pid;
+    errstr << ": " << message;
     return errstr.str();
 } // verbose_error
 

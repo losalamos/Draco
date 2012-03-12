@@ -1,11 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/Assert.hh
- * \author Geoffrey Furnish, Tom Evans, Kelly Thompson
- * \date   6 December 1993
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
- * \note   Copyright (C) 1993-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 1993-2012 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,6 +15,13 @@
 #include "ds++/config.h"
 #include <stdexcept>
 #include <string>
+
+// This warning is issued because we chose to derive from std::logic_error 
+// (IS-A) instead of creating a class that 'HAS-A' std::logic_error.object.
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4275) // non dll-interface class 'std::logic_error' used as base for dll-interface class 'rtt_dsxx::assertion'
+#endif
 
 namespace rtt_dsxx
 {
@@ -319,6 +324,10 @@ DLL_PUBLIC std::string verbose_error( std::string const & message );
 
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // RTT_dsxx_Assert_HH
 
