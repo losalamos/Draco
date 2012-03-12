@@ -36,6 +36,16 @@ endif()
 include( vendor_libraries )
 setupVendorLibraries()
 
+# Platform Checks 
+# Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
+message("
+Platform Checks...
+")
+include( platform_checks )
+set_draco_uname()
+query_have_gethostname()
+query_have_maxpathlen()
+
 # Provide helper functions used by component CMakeLists.txt files
 include( component_macros )
 
