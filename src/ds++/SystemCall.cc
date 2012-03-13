@@ -14,7 +14,8 @@
 #include "Assert.hh"
 
 #include <cstring>      // strncpy()
-#include <cerrno>        // errno
+#include <cerrno>       // errno
+#include <cstdlib>      // _fullpath
 #ifdef UNIX
 #include <sys/param.h>  // MAXPATHLEN
 #include <unistd.h>     // gethostname
@@ -27,6 +28,8 @@
 #include <sys/types.h> // _stat
 #include <sys/stat.h>  // _stat
 #endif
+
+#include <iostream>
 
 namespace rtt_dsxx
 {
@@ -126,13 +129,42 @@ std::string draco_getcwd(void)
 int draco_getstat( std::string const &  fqName )
 {
 #ifdef WIN32
+    /*! \note If path contains the location of a directory, it cannot 
+     * contain a trailing backslash. If it does, -1 will be returned and 
+     * errno will be set to ENOENT. */
+    std::string clean_fqName;
+    if( fqName[fqName.size()-1] == rtt_dsxx::WinDirSep ||
+        fqName[fqName.size()-1] == rtt_dsxx::UnixDirSep )
+        clean_fqName=fqName.substr(0,fqName.size()-1);
+    else
+        clean_fqName=fqName;
+    std::cout << "fqName = " << fqName 
+            << "\nclean_fqName = " << clean_fqName << std::endl;
     struct _stat buf;
-    return _stat(fqName.c_str(), &buf);
+    return _stat(clean_fqName.c_str(), &buf);
 #else
     struct stat buf;
     return stat(fqName.c_str(), &buf);
 #endif
 }
+
+//---------------------------------------------------------------------------//
+/*! \brief Wrapper for system dependent realpath call.
+ *
+ */
+std::string draco_getrealpath( std::string const & path )
+{
+    char buffer[MAXPATHLEN]; // _MAX_PATH
+#ifdef WIN32
+    // http://msdn.microsoft.com/en-us/library/506720ff%28v=vs.100%29.aspx
+    Insist(_fullpath( buffer, path.c_str(), MAXPATHLEN ) != NULL, "Invalid path." );
+#else
+	char *p;
+    Insist((p = realpath(path.c_str(), buffer)) != NULL, "Invalid path." );
+#endif
+    return std::string(buffer);
+}
+
 
 } // end of rtt_dsxx
 

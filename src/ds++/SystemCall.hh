@@ -18,6 +18,17 @@
 namespace rtt_dsxx
 {
 
+//! Character used as path separator.
+char const WinDirSep  = '\\';
+char const UnixDirSep = '/';
+#ifdef _MSC_VER
+char const dirSep = WinDirSep;
+std::string const exeExtension( ".exe" );
+#else
+char const dirSep = UnixDirSep;
+std::string const exeExtension( "" );
+#endif
+
 //===========================================================================//
 // General discussion.  See .cc file for detailed implementation discussion
 // (mostly Linux vs. Windows issues).
@@ -58,6 +69,9 @@ DLL_PUBLIC std::string draco_getcwd( void );
 
 //! Return the stat value for a file
 DLL_PUBLIC int draco_getstat( std::string const &  fqName );
+
+//! Use Linux realpath to resolve symlinks
+DLL_PUBLIC std::string draco_getrealpath( std::string const & path );
 
 } // end of rtt_dsxx
 
