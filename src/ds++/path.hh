@@ -15,22 +15,12 @@
  * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
  */
 
-#include <ds++/config.h>
+#include "ds++/config.h"
+#include "SystemCall.hh"  // rtt_dsxx::dirSep
 #include <string>
 
 namespace rtt_dsxx
 {
-
-//! Character used as path separator.
-char const WinDirSep  = '\\';
-char const UnixDirSep = '/';
-#ifdef _MSC_VER
-char const dirSep = WinDirSep;
-std::string const exeExtension( ".exe" );
-#else
-char const dirSep = UnixDirSep;
-std::string const exeExtension( "" );
-#endif
 
 enum FilenameComponent
 {

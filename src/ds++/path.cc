@@ -18,13 +18,6 @@
 #include <sstream>
 
 #include <sys/stat.h>   // stat
-//#ifdef UNIX
-////#include <sys/param.h>  // MAXPATHLEN
-//#include <unistd.h>
-//#endif
-//#ifdef WIN32
-//#include <direct.h> // _getcwd
-//#endif
 
 namespace rtt_dsxx
 {
@@ -41,7 +34,7 @@ namespace rtt_dsxx
  * Options:
  *    FC_PATH        Return path portion only for fqName
  *    FC_ABSOLUTE    not implemented.
- *    FC_NAME        Return filename w/o patyh for fqName
+ *    FC_NAME        Return filename w/o path for fqName
  *    FC_EXT         not implemented.
  *    FC_NAME_WE     not implemented.
  *    FC_REALPATH    resolve all symlinks
@@ -88,12 +81,20 @@ std::string getFilenameComponent( std::string const & fqName,
             break;
 
         case FC_REALPATH :
-            if( draco_getstat(fqName) )
-                retVal = std::string();
-            else
-                retVal = draco_getcwd();
-            break;
-
+            {
+                std::string path( getFilenameComponent( fqName, FC_PATH ) );
+                if( draco_getstat(path) )
+                {
+                    // On error, return empty string.
+                    retVal = std::string();
+                    // retVal = draco_getcwd();
+                }
+                else
+                {
+                    retVal = draco_getrealpath(path);
+                }
+                break;
+            }
         case FC_ABSOLUTE :
             Insist( false, "case for FC_ABSOLUTE not implemented." );
             break;
@@ -141,10 +142,6 @@ bool fileExists( std::string const & strFilename )
     
     return retVal;
 }
-
-
-
-
 
 } // end namespace rtt_dsxx
 
