@@ -265,7 +265,7 @@ macro( SetupVendorLibrariesUnix )
       set( HAVE_CUDA 1 )
       option( USE_CUDA "If CUDA is available, should we use it?" ON )
       set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
-      # set( CUDA_NVCC_FLAGS "-arch=sm_20" )
+      set( CUDA_NVCC_FLAGS "-arch=sm_21" )
       set( cudalibs ${CUDA_CUDART_LIBRARY} )
    endif()
    mark_as_advanced( 
