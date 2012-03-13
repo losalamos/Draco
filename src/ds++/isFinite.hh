@@ -35,9 +35,8 @@ inline bool isNaN( T const & x )
 
 //---------------------------------------------------------------------------//
 //! Return true if x equals positive or negative infinity.
-template< typename T > DLL_PUBLIC
+template< typename T > 
 bool isInfinity( T const & x );
-
 
 /*---------------------------------------------------------------------------*/
 /*!
@@ -54,7 +53,9 @@ inline bool isFinite( T const & x )
     return ((isNaN<T>(x) == false ) && (isInfinity(x) == false ));
 }
 
-} // ane of namespace rtt_dsxx
+} // end of namespace rtt_dsxx
+
+#include "isFinite.i.hh"
 
 #endif // rtt_dsxx_isFinite_hh
 //---------------------------------------------------------------------------//

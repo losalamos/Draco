@@ -1,23 +1,21 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  * \file   ds++/isFinite.i.hh
- * \author Kent G. Budge
- * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Template implementation for isFinite
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC 
+ * \version $Id$
  */
-//---------------------------------------------------------------------------//
-// $Id$ 
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_isFinite_i_hh
 #define rtt_dsxx_isFinite_i_hh
 
+#include "Assert.hh"
+#include "Soft_Equivalence.hh"
 #include <algorithm>
 #include <iterator>
 #include <functional>
 #include <limits>
-#include "Assert.hh"
-#include "Soft_Equivalence.hh"
 
 namespace rtt_dsxx
 {
@@ -29,7 +27,7 @@ namespace rtt_dsxx
  * \return \c true if x equals positive or negative infinity; \c false
  * otherwise.
  */
-template< typename T >
+template< typename T > 
 bool isInfinity( T const & x )
 {
     if( std::numeric_limits<T>::has_infinity)
