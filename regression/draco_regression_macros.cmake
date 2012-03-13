@@ -390,16 +390,18 @@ endmacro( setup_ctest_commands )
 # endmacro()
 ##---------------------------------------------------------------------------##
 macro( set_svn_command svnpath )
-   if( EXISTS /ccs/codes/radtran/svn )
-      set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
-      message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
-   elseif( EXISTS /usr/projects/jayenne/regress/svn )
-      set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
-   else()
-      set( CTEST_CVS_CHECKOUT
-         "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
+   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY} )
+      if( EXISTS /ccs/codes/radtran/svn )
+         set( CTEST_CVS_CHECKOUT
+            "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
+         message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
+      elseif( EXISTS /usr/projects/jayenne/regress/svn )
+         set( CTEST_CVS_CHECKOUT
+            "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
+      else()
+         set( CTEST_CVS_CHECKOUT
+            "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
+      endif()
    endif()
 endmacro()
 
