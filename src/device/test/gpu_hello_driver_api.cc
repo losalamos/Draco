@@ -19,6 +19,7 @@
 #include "ds++/path.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/SystemCall.hh"
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -98,7 +99,7 @@ void simple_add( rtt_dsxx::ScalarUnitTest & ut )
 
     // Where are we?
     cout << "Paths:"
-         << "\n   Current working dir = " << rtt_dsxx::currentPath()
+         << "\n   Current working dir = " << rtt_dsxx::draco_getcwd()
          << "\n   GPU kernel files at = " << rtt_device::test_ppe_bindir
          << endl;
 
