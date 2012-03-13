@@ -166,12 +166,17 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 
     // test the FC_REALPATH
     // ------------------------------------------------------------
-
     string realpath = getFilenameComponent( fqp, rtt_dsxx::FC_REALPATH );
 
 #if defined( WIN32 )
-    { // The binary should exist.  Windows does not provide an execute bit.  
-         std::string exeExists( realpath + ".exe" );
+    { // The binary should exist.  Windows does not provide an execute bit. 
+         std::string exeExists( realpath + myname ); 
+        std::cout << "fqp = " << fqp
+            << "\nrealpath = " << realpath
+            << "\nexeExists = " << exeExists << std::endl;
+         // might need to append .exe
+         if( draco_getstat( exeExists ) && draco_getstat( exeExists+exeExtension ) == 0)
+             exeExists = exeExists + exeExtension;
          if( std::ifstream( exeExists.c_str() ) )
             PASSMSG( "FC_REALPATH points to a valid executable." );
          else
@@ -273,9 +278,9 @@ int main(int argc, char *argv[])
 
         test_getFilenameComponent(ut, string(argv[0]));
             
-        test_getFilenameComponent(
-            ut,
-            string("test") + rtt_dsxx::WinDirSep + string("tstPath.exe"));
+        if( rtt_dsxx::dirSep == rtt_dsxx::UnixDirSep )
+            test_getFilenameComponent( ut,
+                string("test") + rtt_dsxx::WinDirSep + string("tstPath.exe"));
     }
     catch (exception &err)
     {
