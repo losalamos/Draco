@@ -81,8 +81,8 @@ class QuadCreator
 	DoubleGauss, /*!< 1D Double Gauss (arbitrary order). */
 	LevelSym2D,  /*!< 2D Level Symmetric (even order between 2 and 24, inclusive). */
 	LevelSym,    /*!< 3D Level Symmetric (even order between 2 and 24, inclusive). */
-	Axial1D,     /*!< 1D Axial used for filter sweeps */
-	TriCL        /*!< Triangular 3D Chebyshev-Legendre */
+	TriCL,       /*!< Triangular 3D Chebyshev-Legendre */
+	Axial1D      /*!< 1D Axial used for filter sweeps */
     };
 
     // TYPEDEFS
