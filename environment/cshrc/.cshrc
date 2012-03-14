@@ -15,10 +15,9 @@ case tu*.localdomain:
     source /usr/projects/crestone/dotfiles/Cshrc
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
-    module load friendly-testing hpc-tools
+    module load friendly-testing 
     module load intel-c intel-f openmpi-intel
-    module load gsl/1.14-intel svn
-    module load lapack/atlas-3.8.3-intel emacs 
+    module load gsl/1.14-intel svn emacs
     module load cmake numdiff git xshow papi/4.1.3
     # PGI keeps running out of tmp sapce
     setenv TMPDIR /scratch/$USER/tmp
@@ -53,7 +52,7 @@ case rra[0-9][0-9][0-9]a*:
    source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/rr-dev-fe
-   module load hpc-tools friendly-testing cellsdk svn
+   module load friendly-testing cellsdk svn
    module unload pgi openmpi-pgi
    module load cmake numdiff git xshow python openmpi-gcc/1.4.3
    breaksw
