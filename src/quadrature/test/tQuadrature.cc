@@ -1,36 +1,38 @@
-//----------------------------------*-C++-*----------------------------------//
+n//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/test/tQuadrature.cc
- * \author Kelly Thompson
- * \date   Tue Mar 26 12:36:41 2002
  * \brief  quadrature package test.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2012 LANSLLC All rights reserved.
+ * \version $Id$
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <sstream>
-
-#include "ds++/Assert.hh"
-#include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/ScalarUnitTest.hh"
-#include "units/PhysicalConstants.hh"
 
 #include "../Quadrature.hh"
 #include "../QuadCreator.hh"
 #include "../Q1DGaussLeg.hh"
 #include "../Q2DSquareChebyshevLegendre.hh"
 #include "../Q2DTriChebyshevLegendre.hh"
+#include "../Q3DTriChebyshevLegendre.hh"
 #include "../Q2DLevelSym.hh"
 #include "../Q3DLevelSym.hh"
 #include "../GeneralQuadrature.hh"
+
+#include "units/PhysicalConstants.hh"
+#include "ds++/Assert.hh"
+#include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <sstream>
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 using namespace std;
 using namespace rtt_quadrature;
@@ -63,7 +65,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
     const int sn_order = 4;
 
     // total number of quadrature sets to be tested.
-    const int nquads = 7;
+    const int nquads = 8;
 
     // Declare an enumeration object that specifies the Quadrature set to be
     // tested.
@@ -73,13 +75,13 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
     // #   Qid         Description
     // --- --------    ------------------
     // 0   TriCL2D     2D Triangular Chebyshev-Legendre
-    // 1   TriCL       3D Triangular Chebyshev-Legendre
-    // 2   SquareCL    2D Square Chebyshev-Legendre
-    // 3   GaussLeg    1D Gauss-Legendre
-    // 4   Lobatto     1D Lobatto
-    // 5   DoubleGauss 1D DoubleGauss
-    // 6   LevelSym2D  2D Level Symmetric
-    // 7   LevelSym    3D Level Symmetric
+    // 1   SquareCL    2D Square Chebyshev-Legendre
+    // 2   GaussLeg    1D Gauss-Legendre
+    // 3   Lobatto     1D Lobatto
+    // 4   DoubleGauss 1D DoubleGauss
+    // 5   LevelSym2D  2D Level Symmetric
+    // 6   LevelSym    3D Level Symmetric
+    // 7   TriCL       3D Triangular Chebyshev-Legendre
 
     QuadCreator::Qid qid[nquads] = { QuadCreator::TriCL2D,
                                      QuadCreator::SquareCL,
@@ -87,7 +89,8 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
                                      QuadCreator::Lobatto,
                                      QuadCreator::DoubleGauss,
 				     QuadCreator::LevelSym2D,
-				     QuadCreator::LevelSym };
+				     QuadCreator::LevelSym,
+                                     QuadCreator::TriCL };
 
     // mu0 holds mu for the first direction for each quadrature set tested.
     double mu0[nquads] = { -0.359474792477992,
@@ -96,13 +99,15 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
                            -1.0,
                            -0.7886751346,
 			   -0.350021174581541,
-                            0.350021174581541 };
+                           0.350021174581541,
+                           -0.861136311594053 };
     
     SP< const Quadrature > spQuad;
 
     // loop over quadrature types to be tested.
 
-    for ( int ix = 0; ix < nquads; ++ix ) {
+    for ( int ix = 0; ix < nquads; ++ix )
+    {
 	
 	// Verify that the enumeration value matches its int value.
 	if ( qid[ix] != ix ) 
@@ -117,14 +122,15 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 
 	    // print the name of the quadrature set that we are testing.
 	    string qname = spQuad->name();
-	    cout << "\nTesting the "  << qname
-		 << " quadrature set." << endl
-                 << "   Sn Order         = " << spQuad->getSnOrder() << endl
-                 << "   Number of Ordinates = " << spQuad->getNumOrdinates() << endl
-                 << "   Dimensionality   = " << spQuad->dimensionality()
-                 << endl << endl
-                 << "   Parser Name = " << spQuad->parse_name() << endl
-                 << "   Class = " << spQuad->getClass() << endl;
+	    cout << "Testing the "  << qname
+		 << " quadrature set."
+                 << "\n   Sn Order            = " << spQuad->getSnOrder()
+                 << "\n   Number of Ordinates = " << spQuad->getNumOrdinates()
+                 << "\n   Dimensionality      = " << spQuad->dimensionality()
+                 << "\n"
+                 << "\n   Parser Name         = " << spQuad->parse_name()
+                 << "\n   Class               = " << spQuad->getClass()
+                 << endl;
 
 	    // Extra tests for improving coverage analysis
 	    if( qid[ix] == QuadCreator::GaussLeg)
@@ -315,10 +321,8 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
             double const fourpi( 4.0*rtt_units::PI );
             myQuad.renormalize( fourpi );
             
-            if( ! soft_equiv( myQuad.getNorm(), fourpi     ) )
-                ut.failure(__LINE__);
-            if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) )
-                ut.failure(__LINE__);
+            if( ! soft_equiv( myQuad.getNorm(), fourpi     ) )         ITFAILS;
+            if( ! soft_equiv( myQuad.getWt(1), fourpi*wt1a ) )         ITFAILS;
         }
     }
     
@@ -452,9 +456,58 @@ void Q2DTCL_test( rtt_dsxx::UnitTest & ut )
 } // end of Q2DTCL_test()
 
 //---------------------------------------------------------------------------//
+void Q3DTCL_test( rtt_dsxx::UnitTest & ut )
+{
+    using namespace rtt_dsxx;
+    using namespace rtt_quadrature;
+    using namespace std;
+
+    cout << "\nLooking at Q3DTriChebyshevLegendre\n" << endl;
+    
+    int    const sn_order( 8 );
+    double const assigned_sumwt( 2*rtt_units::PI );
+    Q3DTriChebyshevLegendre const quad( sn_order, assigned_sumwt );
+
+    size_t const expected_nlevels((sn_order+2)*sn_order/8);
+    if( quad.getLevels() == expected_nlevels)
+    {
+	ut.passes("Found expected number of levels in quadrature set.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Found the wrong number of quadrature levels." << endl
+	    << "quad.getLevels() returned " << quad.getLevels()
+	    << ", but we expected to find " << expected_nlevels << "."
+	    << endl;
+	ut.failure( msg.str() );
+    }
+    
+    double const sumwt(quad.iDomega());
+    if( soft_equiv( sumwt, assigned_sumwt ) )
+    {
+	ut.passes("Stored sumwt matches assigned value.");
+    }
+    else
+    {
+	ostringstream msg;
+	msg << "Stored sumwt does not match assigned value as retrieved by iDomega()."
+	    << endl
+	    << "quad.iDomega() returned " << quad.iDomega()
+	    << ", but we expected to find " << assigned_sumwt << "."
+	    << endl;
+	ut.failure( msg.str() );
+    }
+
+    return;
+} // end of Q3DTCL_test()
+
+//---------------------------------------------------------------------------//
 
 void tst_general_quadrature( UnitTest & ut )
 {
+    cout << "\nRunning unit test function: tst_general_quadrature...\n" << endl;
+    
     int const snOrder(4);
     double const norm(1.0);
     Q3DLevelSym const refQuad( snOrder, norm );
@@ -473,18 +526,12 @@ void tst_general_quadrature( UnitTest & ut )
 
     quad.display();
     
-    if( quad.getNumOrdinates() != refQuad.getNumOrdinates() )
-        ut.failure(__LINE__);
-    if( quad.name() != string("GeneralQuadrature") )
-        ut.failure(__LINE__);
-    if( quad.dimensionality() != refQuad.dimensionality() )
-        ut.failure(__LINE__);
-    if( quad.getSnOrder() != refQuad.getSnOrder() )
-        ut.failure(__LINE__);
-    if( quad.getLevels() != refQuad.getLevels() )
-        ut.failure(__LINE__);
-    if( quad.getClass() != refQuad.getClass() )
-        ut.failure(__LINE__);
+    if( quad.getNumOrdinates() != refQuad.getNumOrdinates() )          ITFAILS;
+    if( quad.name() != string("GeneralQuadrature") )                   ITFAILS;
+    if( quad.dimensionality() != refQuad.dimensionality() )            ITFAILS;
+    if( quad.getSnOrder() != refQuad.getSnOrder() )                    ITFAILS;
+    if( quad.getLevels() != refQuad.getLevels() )                      ITFAILS;
+    if( quad.getClass() != refQuad.getClass() )                        ITFAILS;
     
     return;
 }
@@ -501,6 +548,7 @@ int main(int argc, char *argv[])
 	Q3DLevelSym_tests(ut);
         Q2DSCL_test(ut);
         Q2DTCL_test(ut);
+        Q3DTCL_test(ut);
         tst_general_quadrature(ut);
     }
     catch( rtt_dsxx::assertion &err )
