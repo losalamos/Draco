@@ -145,6 +145,25 @@ class QuadServices
         Fz = Phi_10;
     }
 
+    static
+    std::vector< lk_index > compute_n2lk(unsigned L,
+                                         unsigned dim,
+                                         QIM qm);
+    
+    static
+    std::vector< double > computeM(std::vector<Ordinate> const &ordinates,
+                                   std::vector< lk_index > const &n2lk,
+                                   unsigned dim,
+                                   double sumwt);
+
+    static
+    std::vector< double > computeD(std::vector<Ordinate> const &ordinates,
+                                   std::vector< lk_index > const &n2lk,
+                                   std::vector<double> const &M,
+                                   QIM qm,
+                                   unsigned dim,
+                                   double sumwt);
+
   private:
 
     // NESTED CLASSES AND TYPEDEFS
@@ -153,12 +172,22 @@ class QuadServices
     
     //! \brief constuct maps between moment index n and the tuple (k,l).
     // This can optionally be provided by the user.
-    std::vector< lk_index > compute_n2lk(    unsigned const L ) const;
-    std::vector< lk_index > compute_n2lk_1D( unsigned const L ) const;
-    std::vector< lk_index > compute_n2lk_2D_traditional( unsigned const L ) const;
-    std::vector< lk_index > compute_n2lk_3D_traditional( unsigned const L ) const;
-    std::vector< lk_index > compute_n2lk_2D_morel( void ) const;
-    std::vector< lk_index > compute_n2lk_3D_morel( void ) const;
+    std::vector< lk_index > compute_n2lk(    unsigned L ) const;
+
+    static
+    std::vector< lk_index > compute_n2lk_1D( unsigned L);
+
+    static
+    std::vector< lk_index > compute_n2lk_2D_traditional( unsigned L);
+
+    static
+    std::vector< lk_index > compute_n2lk_3D_traditional( unsigned L);
+
+    static
+    std::vector< lk_index > compute_n2lk_2D_morel( unsigned L);
+
+    static
+    std::vector< lk_index > compute_n2lk_3D_morel( unsigned L);
 
     std::vector< Ordinate > compute_ordinates( rtt_dsxx::SP< const Quadrature > const spQuad_,
                                                 comparator_t const comparator_ ) const;
@@ -166,9 +195,27 @@ class QuadServices
     //! Build the Mmatrix.
     std::vector< double > computeM(void) const;
     std::vector< double > computeD(void) const;
-    std::vector< double > computeD_morel(      void) const;
-    std::vector< double > computeD_traditional(void) const;
-    std::vector< double > computeD_svd(        void) const;
+
+    static
+    std::vector< double > computeD_morel(std::vector<Ordinate> const &ordinates,
+                                         std::vector< lk_index > const &n2lk,
+                                         std::vector<double> const &M,
+                                         unsigned const dim,
+                                         double const sumwt);
+
+    static
+    std::vector< double > computeD_traditional(std::vector<Ordinate> const &ordinates,
+                                               std::vector< lk_index > const &n2lk,
+                                               std::vector<double> const &M,
+                                               unsigned const dim,
+                                               double const sumwt);
+
+    static
+    std::vector< double > computeD_svd(std::vector<Ordinate> const &ordinates,
+                                       std::vector< lk_index > const &n2lk,
+                                       std::vector<double> const &M,
+                                       unsigned const dim,
+                                       double const sumwt);
     
     // DATA
     rtt_dsxx::SP< const Quadrature > const spQuad;

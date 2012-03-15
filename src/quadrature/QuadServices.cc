@@ -206,11 +206,26 @@ std::vector< double > QuadServices::applyD( std::vector< double > const & psi ) 
  */
 std::vector< double > QuadServices::computeD(void) const
 {
-    if( qm == GALERKIN ) return computeD_morel();
-    if( qm == SN )       return computeD_traditional();
-    if( qm == SVD )      return computeD_svd();
+    return computeD(ordinates,
+                    n2lk,
+                    Mmatrix,
+                    qm,
+                    spQuad->dimensionality(),
+                    spQuad->getNorm());
+}
 
-    Check(spQuad->getNumOrdinates() == ordinates.size());
+//---------------------------------------------------------------------------//
+/*static*/
+std::vector< double > QuadServices::computeD(std::vector<Ordinate> const &ordinates,
+                                             std::vector< lk_index > const &n2lk,
+                                             std::vector<double> const &M,
+                                             QIM const qm,
+                                             unsigned const dim,
+                                             double const sumwt)
+{
+    if( qm == GALERKIN ) return computeD_morel(ordinates, n2lk, M, dim, sumwt);
+    if( qm == SN )       return computeD_traditional(ordinates, n2lk, M, dim, sumwt);
+    if( qm == SVD )      return computeD_svd(ordinates, n2lk, M, dim, sumwt);
 
     // Should never get here.
     Insist( qm == GALERKIN || qm == SN || qm == SVD,
@@ -228,15 +243,20 @@ std::vector< double > QuadServices::computeD(void) const
  * Under Morel's method, M is always square and we do a direct inversion to
  * obtain D, \f$ D = M^{-1} \f$.
  */
-std::vector< double > QuadServices::computeD_morel(void) const
+
+/* static */
+std::vector< double > QuadServices::computeD_morel(std::vector<Ordinate> const &ordinates,
+                                                   std::vector< lk_index > const &n2lk,
+                                                   std::vector<double> const &mM,
+                                                   unsigned const,
+                                                   double const)
 {
-    int n( numMoments );
-    int m( spQuad->getNumOrdinates() );
+    int n = n2lk.size();
+    int m = ordinates.size();
 
     Require( n == m );
 
-    // create a copy of Mmatrix to use a temp space.
-    std::vector< double > M( Mmatrix );
+    std::vector< double > M(mM);
     std::vector< double > D( m*n );
 
     // Create GSL matrix views of our M and D matrices.
@@ -296,13 +316,19 @@ std::vector< double > QuadServices::computeD_morel(void) const
  *    \Phi_{(l,k)} = \int\limits_{4\pi}{d\Omega c_{(l,k)} Y_{(l,k)}(\Omega)}.
  * \f]
  */
-std::vector< double > QuadServices::computeD_traditional(void) const
+
+/* static */
+std::vector< double >
+QuadServices::computeD_traditional(std::vector<Ordinate> const &ordinates,
+                                   std::vector< lk_index > const &n2lk,
+                                   std::vector<double> const &,
+                                   unsigned const dim,
+                                   double const sumwt)
 {
     using rtt_sf::galerkinYlk;
 
-    unsigned const numOrdinates( spQuad->getNumOrdinates() );
-    double   const sumwt(     spQuad->getNorm() );
-    unsigned const dim(       spQuad->dimensionality() );
+    unsigned const numOrdinates = ordinates.size();
+    unsigned const numMoments = n2lk.size();
     
     std::vector< double > D( numOrdinates*numMoments );
     
@@ -358,16 +384,22 @@ std::vector< double > QuadServices::computeD_traditional(void) const
  * For isotropic scattering M will be (numOrdinates x 1 moment).  We will use the
  * Moore-Penrose Pseudo-Inverse Matrix, \f$ D = (M^T * M)^-1 * M^T.\f$
  */
-std::vector< double > QuadServices::computeD_svd(void) const
+
+/* static */
+std::vector< double > QuadServices::computeD_svd(std::vector<Ordinate> const &ordinates,
+                                                 std::vector< lk_index > const &n2lk,
+                                                 std::vector<double> const &mM,
+                                                 unsigned const,
+                                                 double const)
 {
-    int n( numMoments );
-    int m( spQuad->getNumOrdinates() );
+    int n = n2lk.size();
+    int m = ordinates.size();
 
     // SVD:
     //! \f$ M = U S V^T \f$
     
     // create a copy of Mmatrix to use a temp space.
-    std::vector< double > M( Mmatrix );
+    std::vector< double > M( mM );
     std::vector< double > V( n*n );
     std::vector< double > D( m*n );
     std::vector< double > S( n );
@@ -486,14 +518,35 @@ bool QuadServices::diagonal_not_zero( std::vector<double> const & vec,
  */
 std::vector< double > QuadServices::computeM(void) const
 {
+    return computeM(ordinates,
+                    n2lk,
+                    spQuad->dimensionality(),
+                    spQuad->getNorm());
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Create the M array (moment-to-discrete matrix).
+ * \return The moment-to-discrete matrix.
+ *
+ * This static member function may be used by clients who provide their own
+ * ordinate sets.
+ * 
+ * The moment-to-discrete matrix will be num_moments by num_ordinates in size.
+ */
+
+/* static */
+std::vector< double >
+QuadServices::computeM(std::vector<Ordinate> const &ordinates,
+                       std::vector< lk_index > const &n2lk,
+                       unsigned const dim,
+                       double const sumwt)
+{
     using std::sqrt;
     using rtt_sf::galerkinYlk;
 
-    unsigned const numOrdinates( spQuad->getNumOrdinates() );
-    unsigned const dim(       spQuad->dimensionality() );
-    double   const sumwt(     spQuad->getNorm() );
-
-    Check(numOrdinates == ordinates.size());
+    unsigned const numOrdinates = ordinates.size();
+    unsigned const numMoments = n2lk.size();
 
     // resize the M matrix.
     std::vector< double > Mmatrix( numMoments*numOrdinates, -9999.0 );
@@ -638,16 +691,19 @@ bool QuadServices::D_equals_M_inverse() const
  * Collocation-Galerkin-Sn Method for Solving the Boltzmann Transport
  * Equation." 
  */
+
+/* static */
 std::vector< QuadServices::lk_index > QuadServices::
-compute_n2lk( unsigned const expansionOrder ) const
+compute_n2lk( unsigned const expansionOrder,
+              unsigned const dim,
+              QIM const qm)
 {
-    unsigned const dim( spQuad->dimensionality() );
     unsigned const L( expansionOrder+1 );
 
     if( dim == 3 )
     {
         if( qm == GALERKIN )  
-            return compute_n2lk_3D_morel();
+            return compute_n2lk_3D_morel(L);
         else
             return compute_n2lk_3D_traditional(L);
     }
@@ -656,42 +712,40 @@ compute_n2lk( unsigned const expansionOrder ) const
     if( dim == 2 )
     {
         if( qm == GALERKIN ) 
-            return compute_n2lk_2D_morel();
+            return compute_n2lk_2D_morel(L);
         else
             return compute_n2lk_2D_traditional(L);
     }
     
     Check( dim == 1 );
-    if( dim == 1 )
-    {
-        if( qm == GALERKIN )
-            return compute_n2lk_1D( spQuad->getNumOrdinates() );
-        else
-            return compute_n2lk_1D(L);
-    }
-
-    // Should never get here.
-    Insist( dim <= 3 && dim >= 1, "I only know about dim = {1,2,3}.");
-    return std::vector< QuadServices::lk_index >();
+    return compute_n2lk_1D(L);
 }
+
+//---------------------------------------------------------------------------//
+std::vector< QuadServices::lk_index > QuadServices::
+compute_n2lk( unsigned expansionOrder ) const
+{
+    if (qm==GALERKIN)
+    {
+        expansionOrder = spQuad->getSnOrder()-1;
+    }
+    return compute_n2lk(expansionOrder,
+                        spQuad->dimensionality(),
+                        qm);
+}
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 std::vector< QuadServices::lk_index > QuadServices::
-compute_n2lk_3D_morel( void ) const
+compute_n2lk_3D_morel(unsigned const L)
 {
-    int const L( spQuad->getSnOrder() );
-
-    // This algorithm only  works for level symmetric sets because it
-    // assumes numOrdinates = (L)(L+2).
-    Require( static_cast<int>(spQuad->getNumOrdinates()) == L*(L+2) );
-    
     std::vector< lk_index > result;
 
     // Choose: l= 0, ..., L-1, k = -l, ..., l
-    for( int ell=0; ell< L; ++ell )
-	for( int k = -ell; k <= ell; ++k )
+    for( unsigned ell=0; ell< L; ++ell )
+	for( int k = -ell; k <= static_cast<int>(ell); ++k )
 	    result.push_back( lk_index(ell,k) );
 
     // Add ell=L and k<0
@@ -723,19 +777,13 @@ compute_n2lk_3D_morel( void ) const
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 std::vector< QuadServices::lk_index > QuadServices::
-compute_n2lk_2D_morel( void ) const
+compute_n2lk_2D_morel( unsigned const L )
 {
-    int const L( spQuad->getSnOrder() );
-
-    // This algorithm only  works for level symmetric sets because it
-    // assumes numOrdinates = (L)(L+2)/2.
-    Require( static_cast<int>(spQuad->getNumOrdinates()) == L*(L+2)/2 );
-
     std::vector< lk_index > result;
     
     // Choose: l= 0, ..., N-1, k = 0, ..., l
-    for( int ell=0; ell<L; ++ell )
-	for( int k=0; k<=ell; ++k )
+    for( unsigned ell=0; ell<L; ++ell )
+	for( int k=0; k<=static_cast<int>(ell); ++k )
 	    result.push_back( lk_index(ell,k) );
 
     // Add ell=N and k>0, k odd
@@ -752,7 +800,7 @@ compute_n2lk_2D_morel( void ) const
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 std::vector< QuadServices::lk_index > QuadServices::
-compute_n2lk_3D_traditional( unsigned const L ) const
+compute_n2lk_3D_traditional( unsigned const L )
 {
     std::vector< lk_index > result;
 
@@ -769,7 +817,7 @@ compute_n2lk_3D_traditional( unsigned const L ) const
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 std::vector< QuadServices::lk_index > QuadServices::
-compute_n2lk_2D_traditional( unsigned const L ) const
+compute_n2lk_2D_traditional( unsigned const L )
 {
     std::vector< lk_index > result;
     
@@ -786,7 +834,7 @@ compute_n2lk_2D_traditional( unsigned const L ) const
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 std::vector< QuadServices::lk_index > QuadServices::
-compute_n2lk_1D( unsigned const L ) const
+compute_n2lk_1D( unsigned const L )
 {
     std::vector< lk_index > result;
     
@@ -831,6 +879,7 @@ double QuadServices::augmentM( unsigned n, Ordinate const &Omega ) const
     return galerkinYlk( n2lk[n].first, n2lk[n].second, mu, phi, spQuad->getNorm());
 }
 
+//---------------------------------------------------------------------------//
 std::vector< Ordinate > 
 QuadServices::compute_ordinates(  rtt_dsxx::SP< const Quadrature > const spQuad,
                                   comparator_t const comparator) const

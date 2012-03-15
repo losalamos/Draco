@@ -1,3 +1,19 @@
+2012-3-15 Kent G. Budge <kgbudge@lanl.gov>
+
+	* Produced static public interfaces to the algorithms underlying the
+  	  computeD, computeN and compute_N2lk private members of
+   	  QuadServices, so that these could be applied any arbitrary
+	  quadrature.
+
+	* Used these new functions to greatly simplify the OrdinateSet
+	  compute_moment_to_discrete_weights and
+	  compute_discrete_to_moment_weights and permit them to work
+	  properly for quadrature sets of one dimensionality pruned or
+	  expanded to work in another dimensionality.
+
+    	  Reviewed by KT.
+
+
 2012-02-17  Kelly (KT) Thompson  <kellyt@ccscs9.lanl.gov>
 
 	* Moved draco to the SVN from the CVS revision control system.
