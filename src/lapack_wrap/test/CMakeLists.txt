@@ -11,12 +11,12 @@ project( lapack_wrap_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/lapack_wrap_test.cc 
-   ${PROJECT_SOURCE_DIR}/lapack_wrap_test.hh
-)
+# set( test_lib_sources 
+#    ${PROJECT_SOURCE_DIR}/lapack_wrap_test.cc 
+#    ${PROJECT_SOURCE_DIR}/lapack_wrap_test.hh
+# )
 file( GLOB test_sources *.cc )
-list( REMOVE_ITEM test_sources ${test_lib_sources} )
+#list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -31,9 +31,9 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_lapack_wrap_test ${PROJECT_NAME} 
-   "${test_lib_sources}" )
-add_dependencies(      Lib_lapack_wrap_test Lib_lapack_wrap )
+# add_component_library( Lib_lapack_wrap_test ${PROJECT_NAME} 
+#    "${test_lib_sources}" )
+# add_dependencies(      Lib_lapack_wrap_test Lib_lapack_wrap )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

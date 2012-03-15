@@ -1,24 +1,25 @@
-//----------------------------------*-C++-*----------------------------------//
+n//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   lapack_wrap/test/tstBlas_Level_1.cc
- * \author Thomas M. Evans
- * \date   Thu Aug 29 11:32:12 2002
  * \brief  Test Blas level 1 wrap.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "lapack_wrap_test.hh"
-#include "ds++/Release.hh"
 #include "../Blas.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <algorithm>
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 using namespace std;
 
@@ -33,7 +34,7 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tst_copy()
+void tst_copy( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
     vector<double> y(10, 0.0);
@@ -50,13 +51,13 @@ void tst_copy()
     blas_copy(x, 1, y, 1);
     if (!soft_equiv(x.begin(), x.end(), y.begin(), y.end())) ITFAILS;
 
-    if (rtt_lapack_wrap_test::passed)
+    if (ut.numFails==0)
 	PASSMSG("BLAS copy tests ok.");
 }
 
 //---------------------------------------------------------------------------//
 
-void tst_scal()
+void tst_scal( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
     vector<double> y(10, 0.0);
@@ -78,13 +79,13 @@ void tst_scal()
     blas_scal(alpha, x, 1);
     if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end())) ITFAILS;
 
-    if (rtt_lapack_wrap_test::passed)
+    if (ut.numPasses>0 && ut.numFails==0)
 	PASSMSG("BLAS scal tests ok.");
 }
 
 //---------------------------------------------------------------------------//
 
-void tst_dot()
+void tst_dot( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
     vector<double> y(10, 0.0);
@@ -107,13 +108,13 @@ void tst_dot()
     if (!soft_equiv(dot, ref)) ITFAILS;
     dot = 0.0;
 
-    if (rtt_lapack_wrap_test::passed)
+    if (ut.numPasses>0 && ut.numFails==0)
 	PASSMSG("BLAS dot tests ok.");
 }
 
 //---------------------------------------------------------------------------//
 
-void tst_axpy()
+void tst_axpy( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
     vector<double> y(10, 1.0);
@@ -134,13 +135,13 @@ void tst_axpy()
     blas_axpy(alpha, x, 1, y, 1);
     if (!soft_equiv(y.begin(), y.end(), ref.begin(), ref.end())) ITFAILS;
  
-    if (rtt_lapack_wrap_test::passed)
+    if (ut.numPasses>0 && ut.numFails==0)
 	PASSMSG("BLAS axpy tests ok.");
 }
 
 //---------------------------------------------------------------------------//
 
-void tst_nrm2()
+void tst_nrm2( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
     
@@ -165,7 +166,7 @@ void tst_nrm2()
     nrm = blas_nrm2(x, 1);
     if (!soft_equiv(nrm, ref)) ITFAILS;
     
-    if (rtt_lapack_wrap_test::passed)
+    if (ut.numPasses>0 && ut.numFails==0)
 	PASSMSG("BLAS nrm2 tests ok.");
 }
 
@@ -173,43 +174,44 @@ void tst_nrm2()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    cout << argv[0] << ": version " << rtt_dsxx::release() 
-         << endl;
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	    return 0;
-
     try
     {
+        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
 	// >>> UNIT TESTS
-	tst_copy();
-	tst_scal();
-	tst_dot();
-	tst_axpy();
-	tst_nrm2();
+	tst_copy(ut);
+	tst_scal(ut);
+	tst_dot(ut);
+	tst_axpy(ut);
+	tst_nrm2(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-	cout << "While testing tstBlas_Level_1, " << ass.what()
-	     << endl;
-	return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        {
+            cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
+    }
+    catch (exception &err)
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
 
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_lapack_wrap_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstBlas_Level_1 Test: PASSED" 
-	     << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
 
-    cout << "Done testing tstBlas_Level_1." << endl;
+    return 0;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstBlas_Level_1.cc
+// end of tstBlas_Level_1.cc
 //---------------------------------------------------------------------------//
