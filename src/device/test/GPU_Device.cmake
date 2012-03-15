@@ -1,11 +1,10 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   device/test/CMakeLists.txt
-# author Gabriel Rockefeller
-# date   2011 June 13
 # brief  Instructions for building device/test Makefile.
-# note   © Copyright 2011 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2011-2012 Los Alamos National Security
+#        All rights reserved.
+# version $Id$
 #------------------------------------------------------------------------------#
-# $Id$
 
 if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
    find_package(CUDA)
@@ -46,15 +45,19 @@ cuda_compile( generated_files ${cuda_sources} )
 # directory to the CWD.
 # CMakeFiles/cuda_compile.dir/cuda_compile_generated_gpu_kernel.cu.o.cubin.txt
 #    -> gpu_kernel.cubin
+unset( cubinfiles_list )
 foreach( cubinfile ${generated_files} )
    get_filename_component( sh_cubinfile ${cubinfile} NAME_WE )
    string( REPLACE "cuda_compile_generated_" "" sh_cubinfile
       ${sh_cubinfile} )
    set( short_cubinfile "${sh_cubinfile}.cubin" )
-   add_custom_target( RENAME_${sh_cubinfile} ALL
+   add_custom_command( OUTPUT ${short_cubinfile}
       COMMAND ${CMAKE_COMMAND} -E rename ${cubinfile}.cubin.txt ${short_cubinfile}
       DEPENDS ${cubinfile} )
+   list(  APPEND cubinfiles_list ${short_cubinfile} )
 endforeach()
+add_custom_target( device_test_build_cubin_files ALL
+   DEPENDS ${cubinfiles_list} )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
