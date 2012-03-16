@@ -2,9 +2,8 @@
 /*!
  * \file   lapack_wrap/test/tstBlas_Level_1.cc
  * \brief  Test Blas level 1 wrap.
+ * \version $Id$
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #include "../Blas.hh"
@@ -16,6 +15,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <typeinfo>
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
@@ -33,11 +33,11 @@ using rtt_dsxx::soft_equiv;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-
+template<typename T>
 void tst_copy( rtt_dsxx::UnitTest & ut )
 {
-    vector<double> x(10, 0.0);
-    vector<double> y(10, 0.0);
+    vector<T> x(10, 0.0);
+    vector<T> y(10, 0.0);
     
     for (int i = 0; i < 10; i++)
 	x[i]   = 1.2 + i;
@@ -51,12 +51,18 @@ void tst_copy( rtt_dsxx::UnitTest & ut )
     blas_copy(x, 1, y, 1);
     if (!soft_equiv(x.begin(), x.end(), y.begin(), y.end())) ITFAILS;
 
+    string ttype( typeid(T).name() );
     if (ut.numFails==0)
-	PASSMSG("BLAS copy tests ok.");
+        PASSMSG( std::string("BLAS copy (") + ttype
+                 + std::string("float) tests ok."));
+    else
+        PASSMSG( std::string("BLAS copy (") + ttype
+                 + std::string("float) fails."));
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
+template<typename T>
 void tst_scal( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
@@ -79,12 +85,18 @@ void tst_scal( rtt_dsxx::UnitTest & ut )
     blas_scal(alpha, x, 1);
     if (!soft_equiv(x.begin(), x.end(), ref.begin(), ref.end())) ITFAILS;
 
+    string ttype( typeid(T).name() );
     if (ut.numPasses>0 && ut.numFails==0)
-	PASSMSG("BLAS scal tests ok.");
+        PASSMSG( std::string("BLAS scal (") + ttype
+                 + std::string("float) tests ok."));
+    else
+        PASSMSG( std::string("BLAS scal (") + ttype
+                 + std::string("float) fails."));
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
+template<typename T>
 void tst_dot( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
@@ -108,12 +120,18 @@ void tst_dot( rtt_dsxx::UnitTest & ut )
     if (!soft_equiv(dot, ref)) ITFAILS;
     dot = 0.0;
 
+    string ttype( typeid(T).name() );
     if (ut.numPasses>0 && ut.numFails==0)
-	PASSMSG("BLAS dot tests ok.");
+        PASSMSG( std::string("BLAS dot (") + ttype
+                 + std::string("float) tests ok."));
+    else
+        PASSMSG( std::string("BLAS dot (") + ttype
+                 + std::string("float) fails."));
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
+template<typename T>
 void tst_axpy( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
@@ -135,12 +153,18 @@ void tst_axpy( rtt_dsxx::UnitTest & ut )
     blas_axpy(alpha, x, 1, y, 1);
     if (!soft_equiv(y.begin(), y.end(), ref.begin(), ref.end())) ITFAILS;
  
+    string ttype( typeid(T).name() );
     if (ut.numPasses>0 && ut.numFails==0)
-	PASSMSG("BLAS axpy tests ok.");
+        PASSMSG( std::string("BLAS axpy (") + ttype
+                 + std::string("float) tests ok."));
+    else
+        PASSMSG( std::string("BLAS axpy (") + ttype
+                 + std::string("float) fails."));
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
+template<typename T>
 void tst_nrm2( rtt_dsxx::UnitTest & ut )
 {
     vector<double> x(10, 0.0);
@@ -166,8 +190,14 @@ void tst_nrm2( rtt_dsxx::UnitTest & ut )
     nrm = blas_nrm2(x, 1);
     if (!soft_equiv(nrm, ref)) ITFAILS;
     
+    string ttype( typeid(T).name() );
     if (ut.numPasses>0 && ut.numFails==0)
-	PASSMSG("BLAS nrm2 tests ok.");
+        PASSMSG( std::string("BLAS nrm2 (") + ttype
+                 + std::string("float) tests ok."));
+    else
+        PASSMSG( std::string("BLAS nrm2 (") + ttype
+                 + std::string("float) fails."));
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -178,11 +208,16 @@ int main(int argc, char *argv[])
     {
         rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
 	// >>> UNIT TESTS
-	tst_copy(ut);
-	tst_scal(ut);
-	tst_dot(ut);
-	tst_axpy(ut);
-	tst_nrm2(ut);
+	tst_copy<float>(ut);
+	tst_scal<float>(ut);
+	tst_dot<float>(ut);
+	tst_axpy<float>(ut);
+	tst_nrm2<float>(ut);
+	tst_copy<double>(ut);
+	tst_scal<double>(ut);
+	tst_dot<double>(ut);
+	tst_axpy<double>(ut);
+	tst_nrm2<double>(ut);
     }
     catch (rtt_dsxx::assertion &err)
     {
