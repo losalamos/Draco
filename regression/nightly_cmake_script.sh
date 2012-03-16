@@ -55,8 +55,8 @@ if test "`whoami`" == "regress"; then
     script_dir=/home/regress/cmake_draco
 else
     dashboard_type=Experimental
-    base_dir=/var/tmp/${HOME}/regress/cmake_draco
-    script_dir=${HOME}/draco
+    base_dir=/var/tmp/${USER}/regress/cmake_draco
+    script_dir=/home/regress/cmake_draco
 fi
 
 # compiler
