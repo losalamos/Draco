@@ -159,8 +159,9 @@ std::string draco_getrealpath( std::string const & path )
     // http://msdn.microsoft.com/en-us/library/506720ff%28v=vs.100%29.aspx
     Insist(_fullpath( buffer, path.c_str(), MAXPATHLEN ) != NULL, "Invalid path." );
 #else
-	char *p;
-    Insist((p = realpath(path.c_str(), buffer)) != NULL, "Invalid path." );
+    // char *p;
+    // p =
+    Insist((realpath(path.c_str(), buffer)) != NULL, "Invalid path." );
 #endif
     return std::string(buffer);
 }
