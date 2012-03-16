@@ -1,9 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-g++.cmake
-# author Kelly Thompson 
-# date   2008 May 30
 # brief  Establish flags for Windows - MSVC
-# note   Copyright © 2010 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -130,7 +128,9 @@ endif()
 # -Wsuggest-attribute=const
 if( ${DBS_CXX_COMPILER_VER_MAJOR} GREATER 3 )
    if( ${DBS_CXX_COMPILER_VER_MINOR} GREATER 5 )
-      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
+      if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wsuggest-attribute=const" )
+         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
+      endif()
    endif()
 endif()
 
