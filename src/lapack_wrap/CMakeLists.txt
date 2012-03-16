@@ -11,18 +11,10 @@ if( NOT LAPACK_FOUND )
       "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
 else()
 
-set( SCOPY scopy_ )
-set( DCOPY dcopy_ )
-set( SSCAL sscal_ )
-set( SSCAL sscal_ )
-set( DSCAL dscal_ )
-set( SDOT  sdot_ )
-set( DDOT  ddot_ )
-set( DAXPY daxpy_ )
-set( SAXPY saxpy_ )
-set( SNRM2 snrm2_ )
-set( DNRM2 dnrm2_ )
-configure_file( config.h.in ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
+include(FortranCInterface)
+FortranCInterface_HEADER( lapack_wrap/config.h MACRO_NAMESPACE "FC_")
+# This creates a "lapack_wrap.h" header taht defines mangling macros
+# FC_GLOBAL(), FC_GLOBAL_() FC_MODULE(), and FC_MODULE().
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -71,12 +63,8 @@ endif()
 
 endif( NOT LAPACK_FOUND )
 
-  
-
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-
