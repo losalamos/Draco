@@ -116,8 +116,14 @@
  *    Person(int _c) : c(_c) { }
  *    static void foo(int a);
  * };
+ *
+ * // ds++/isFinite_pt.cc file:
+ * template DLL_PUBLIC 
+ * bool isInfinity( float const & x );
  * \endcode 
  */
+
+#cmakedefine CMAKE_COMPILER_IS_GNUCXX @CMAKE_COMPILER_IS_GNUCXX@
 
 /* Windows ---------------------------------------- */
 #if defined _WIN32 || defined __CYGWIN__ 
@@ -148,7 +154,7 @@
 /* Linux ---------------------------------------- */
 #else 
   #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
-    #if __GNUC__ >= 4
+    #if defined CMAKE_COMPILER_IS_GNUCXX && __GNUC__ >= 4
       #define DLL_PUBLIC __attribute__ ((visibility("default")))
       #define DLL_LOCAL  __attribute__ ((visibility("hidden")))
     #else
