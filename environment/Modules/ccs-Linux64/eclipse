@@ -14,19 +14,19 @@ conflict pgi
 conflict intel
 
 # local variables
-set prefix      /ccs/codes/radtran/vendors/Linux64/eclipse
+set prefix      /ccs/codes/radtran/vendors/Linux64/eclipse-3.7
 set bindir      $prefix
 #set incdir      $prefix/include
 #set libdir      $prefix/lib
 
 # module whatis
-module-whatis   "Eclipse 3.6";
+module-whatis   "Eclipse 3.7";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\Eclipse 3.6\n";
+   puts stderr "\Eclipse 3.7\n";
 }
 
 if { ![file exists $prefix] } {
