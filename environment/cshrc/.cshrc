@@ -59,7 +59,7 @@ case rra[0-9][0-9][0-9]a*:
 case rra[0-9][0-9][0-9][bcd]*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/ppc64
-   module load hpc-tools friendly-testing cellsdk
+   module load friendly-testing cellsdk
    module load cmake gsl-1.14 numdiff 
    module load 
    breaksw
