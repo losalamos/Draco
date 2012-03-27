@@ -390,7 +390,7 @@ endmacro( setup_ctest_commands )
 # endmacro()
 ##---------------------------------------------------------------------------##
 macro( set_svn_command svnpath )
-   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY} )
+   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
       if( EXISTS /ccs/codes/radtran/svn )
          set( CTEST_CVS_CHECKOUT
             "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
