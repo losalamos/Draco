@@ -1,9 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-pgi.cmake
-# author Kelly Thompson 
-# date   2010 Nov 1
-# brief  Establish flags for Linux64 - Intel C++
-# note   Copyright © 2010 Los Alamos National Security, LLC.
+# brief  Establish flags for Linux64 - Portland Group C/C++
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -55,6 +53,11 @@ string( REGEX REPLACE "Copyright.*" " "
   DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
 string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
 
+string( REGEX REPLACE ".*([0-9]).([0-9])[.-]([0-9]).*" "\\1"
+   DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
+string( REGEX REPLACE ".*([0-9]).([0-9])[.-]([0-9]).*" "\\2"
+   DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
+
 #
 # Compiler Flags
 # 
@@ -105,21 +108,29 @@ string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs -nomp" ) # -mp
+   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" ) # -mp
    set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} --nozc_eh ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+# Extra flags for pgCC-11.2+
+# --nozc_eh    (default for 11.2+) Use low cost exception handling. This 
+#              option appears to break our exception handling model resulting
+#              in SEGV.
+if( ${DBS_CXX_COMPILER_VER_MAJOR} GREATER 10 )
+   if( ${DBS_CXX_COMPILER_VER_MINOR} GREATER 1 )
+      if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
+         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
+      endif()
+   endif()
+endif()
+
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
 
 # -Mipa=fast,inline
-# -zc_eh       (default for 11.2+) Use low cost exception handling.
-#              This option appears to break our exception handling
-#              model resulting in SEGV.
-# -Msmartalloc
 # -tp x64      Create a PGI Unified Binary which functions correctly
 #              on and is optimized for both Intel and AMD processors. 
 # -Mprefetch   Control generation of prefetch instructions to improve
@@ -130,6 +141,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
 # -Msafeptr (breaks some array operations in MatRA).
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
+
 ENDIF()
 
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
