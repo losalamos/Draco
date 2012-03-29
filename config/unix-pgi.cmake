@@ -53,9 +53,9 @@ string( REGEX REPLACE "Copyright.*" " "
   DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
 string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
 
-string( REGEX REPLACE ".*([0-9]).([0-9])[.-]([0-9]).*" "\\1"
+string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\1"
    DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
-string( REGEX REPLACE ".*([0-9]).([0-9])[.-]([0-9]).*" "\\2"
+string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\2"
    DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
 
 #
