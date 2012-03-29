@@ -18,13 +18,14 @@ find_path( LIBSCI_INCLUDE_DIR
        $ENV{VENDOR_DIR}/include
        ${VENDOR_DIR}/include
        $ENV{LIBSCI_BASE_DIR}/pgi/include  # Cielito/Cielo
+       $ENV{LIBSCI_BASE_DIR}/pgi/119/interlagos/include  # Cielito/Cielo
     NO_DEFAULT_PATH
 )
 
 if( WIN32 )
    set( LIBSCI_LIBRARY_NAME sci_dll.lib )
 else()
-   set( LIBSCI_LIBRARY_NAME sci )
+   set( LIBSCI_LIBRARY_NAME sci sci_pgi)
 endif()
 
 find_library(LIBSCI_LIBRARY
@@ -35,6 +36,7 @@ find_library(LIBSCI_LIBRARY
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
         $ENV{LIBSCI_BASE_DIR}/pgi/lib # Cielito/Cielo
+        $ENV{LIBSCI_BASE_DIR}/pgi/119/interlagos/lib # Cielito/Cielo
     NO_DEFAULT_PATH # avoid picking up /usr/lib/liblibsci.so
 )
 
