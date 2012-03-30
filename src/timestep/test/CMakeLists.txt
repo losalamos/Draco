@@ -12,8 +12,6 @@ project( timestep_test CXX )
 # ---------------------------------------------------------------------------- #
 
 set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/timestep_test.cc 
-   ${PROJECT_SOURCE_DIR}/timestep_test.hh
    ${PROJECT_SOURCE_DIR}/dummy_package.cc 
    ${PROJECT_SOURCE_DIR}/dummy_package.hh
 )
