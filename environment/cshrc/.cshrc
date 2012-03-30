@@ -12,6 +12,10 @@ setenv PATH $DRACO_ENV_DIR/bin:$PATH
 switch ("`uname -n`")
 case tu*.lanl.gov:
 case tu*.localdomain:
+case hu*.lanl.gov:
+case hu*.localdomain:
+case ty*.lanl.gov:
+case ty*.localdomain:
     source /usr/projects/crestone/dotfiles/Cshrc
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
@@ -40,6 +44,7 @@ case yr*:
     endif
     breaksw
 case ct*:
+case ci*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/ct-fe
@@ -62,6 +67,16 @@ case rra[0-9][0-9][0-9][bcd]*:
    module load friendly-testing cellsdk
    module load cmake gsl-1.14 numdiff 
    module load 
+   breaksw
+case lu*.lanl.gov
+case lu*.localdomain:
+    source /usr/projects/crestone/dotfiles/Cshrc
+    module use $DRACO_ENV_DIR/Modules/hpc
+    module use $DRACO_ENV_DIR/Modules/tu-fe
+    module load friendly-testing 
+    module load intel-c intel-f openmpi-intel
+    module load gsl/1.14-intel svn emacs
+    module load cmake numdiff
    breaksw
 endsw
 

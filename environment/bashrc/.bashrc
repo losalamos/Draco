@@ -119,7 +119,7 @@ alias cpuinfo='cat /proc/cpuinfo'
 alias df='df -h'
 alias dirs='dirs -v'
 alias dmesg='dmesg -s 65536'
-alias du='du -s -h'
+alias du='du -h --max-depth=1 --exclude=.snapshot'
 alias free='free -m'
 alias hosts='cat /etc/hosts'
 alias hpss='echo Try using psi instead of hpss'
@@ -271,20 +271,27 @@ rr-dev-fe)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rr_dev
     ;;
 
-#Yellowrail and Redtail machines
-rt-fe[1-4] | yr-fe1 | rt*[0-9]* | yra[0-9]* )
+#Yellowrail machines
+yr-fe1 | yra[0-9]* )
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_yr
     ;;
 
 #TLCC machines
-tu-fe1 | tua[0-9]* | hu-fe[1-2] | hu*[0-9]*)
+tu-fe* | tua[0-9]* | hu-fe[1-2] | hu*[0-9]* | ty-fe* | ty[0-9]*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
     ;;
 
 # Cielito
-ct-fe1)
+ct-fe[0-9] | ct-login[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
+
+# Luna
+lu-fe[0-9] | lua[0-9]*)
+    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
+    ;;
+
+# Mapache
 
 # Assume CCS machine (ccscs[0-9] or personal workstation)
 *)
@@ -306,6 +313,11 @@ source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
 # No need to use ssh to pop a terminal from the current machine
 alias ${target}='${term} ${term_opts}'
 
+# Turquise network
+alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
+alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
+alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
+
 ##---------------------------------------------------------------------------##
 ## prompt - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
 ##---------------------------------------------------------------------------##
@@ -318,6 +330,29 @@ if test "$TERM" = emacs || \
 else
    export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
 fi
+
+##---------------------------------------------------------------------------##
+## LaTeX settings
+##---------------------------------------------------------------------------##
+# extradirs="$HOME/imcdoc/sty"
+# for mydir in ${extradirs}; do
+#   if test -z "`echo $TEXINPUTS | grep $mydir`" && test -d $mydir; then
+#     export TEXINPUTS=$mydir:$TEXINPUTS
+#   fi
+# done
+# extradirs="$HOME/imcdoc/bib"
+# for mydir in ${extradirs}; do
+#   if test -z "`echo $BSTINPUTS | grep $mydir`" && test -d $mydir; then
+#     export BSTINPUTS=$mydir:$BSTINPUTS
+#   fi
+# done
+# extradirs="$HOME/imcdoc/bib"
+# for mydir in ${extradirs}; do
+#   if test -z "`echo $BIBINPUTS | grep $mydir`" && test -d $mydir; then
+#     export BIBINPUTS=$mydir:$BIBINPUTS
+#   fi
+# done
+# unset extradirs
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
