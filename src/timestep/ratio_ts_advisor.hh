@@ -1,8 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   timestep/ratio_ts_advisor.hh
- * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
- * \date   Thu Apr  2 14:06:18 1998 
  * \brief  Header file for the ratio time-step advisor class.
  */
 //---------------------------------------------------------------------------//
@@ -13,6 +11,7 @@
 #define __timestep_ratio_ts_advisor_hh__
 
 #include "ts_advisor.hh"
+#include "ds++/Assert.hh"
 
 namespace rtt_timestep
 {
@@ -51,9 +50,9 @@ class ratio_ts_advisor : public ts_advisor
      *  \param active_ turns the advisor on/off
      */
     ratio_ts_advisor(const std::string &name_  = std::string("Unlabeled"),
-		     const usage_flag usage_ = max,
+		     const usage_flag   usage_ = max,
 		     const double ratio_value_ = 1.20,
-		     const bool active_ = true);
+		     const bool        active_ = true);
     
     //! Destroys a ratio time step advisor
     ~ratio_ts_advisor();
@@ -64,7 +63,8 @@ class ratio_ts_advisor : public ts_advisor
     /*! \param value_ the value of the desired ratio, (value > 0.)
      */
     void set_ratio(const double value_ = 1.2)
-    { 
+    {
+        Require( value_ > 0.0 );
 	ratio_value = value_;
     }
 
@@ -87,7 +87,11 @@ class ratio_ts_advisor : public ts_advisor
     bool invariant_satisfied() const;
 
     //! Returns the current ratio_value;
-    double get_ratio() const { return ratio_value; }
+    double get_ratio() const
+    {
+        Ensure( ratio_value > 0.0 );
+        return ratio_value;
+    }
 };
 
 } // end of rtt_timestep namespace

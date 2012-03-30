@@ -1,8 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  * \file   timestep/fixed_ts_advisor.hh
- * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
- * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the fixed time-step advisor class.
  */
 //---------------------------------------------------------------------------//
@@ -13,8 +11,10 @@
 #define __timestep_fixed_ts_advisor_hh__
 
 #include "ts_advisor.hh"
+#include "ds++/Assert.hh"
 
-namespace rtt_timestep {
+namespace rtt_timestep
+{
 
 //===========================================================================//
 /*!
@@ -30,7 +30,8 @@ namespace rtt_timestep {
  * simply the user input value. 
  */ 
 //===========================================================================//
-class fixed_ts_advisor : public ts_advisor {
+class fixed_ts_advisor : public ts_advisor
+{
 
   // DATA
 
@@ -69,7 +70,8 @@ class fixed_ts_advisor : public ts_advisor {
      * \param value_ The fixed value.
      */
     void set_fixed_value(const double value_ = large())
-    { 
+    {
+        Require( value_ > 0.0 );
 	fixed_value = value_;
     }
 
@@ -98,8 +100,8 @@ class fixed_ts_advisor : public ts_advisor {
 
 } // end of rtt_timestep namespace
 
-#endif                          // __timestep_fixed_ts_advisor_hh__
+#endif // __timestep_fixed_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of fixed_ts_advisor.hh
+// end of fixed_ts_advisor.hh
 //---------------------------------------------------------------------------//

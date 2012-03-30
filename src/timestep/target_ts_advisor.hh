@@ -1,8 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file timestep/target_ts_advisor.hh
- * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
- * \date Thu Apr  2 14:06:18 1998
  * \brief Header file for the target time-step advisor class.
  */
 //---------------------------------------------------------------------------//
@@ -31,7 +29,8 @@ namespace rtt_timestep {
  * a predetermined problem time. 
  */ 
 //===========================================================================//
-class target_ts_advisor : public ts_advisor {
+class target_ts_advisor : public ts_advisor
+{
 
 // DATA
 
@@ -49,10 +48,10 @@ class target_ts_advisor : public ts_advisor {
      *  \param active_ turns the advisor on/off
      */
     target_ts_advisor( 
-	const std::string &name_  = std::string("Unlabeled"),
-	const usage_flag usage_ = max,
+	const std::string & name_  = std::string("Unlabeled"),
+	const usage_flag    usage_ = max,
 	const double target_value_ = -large(),
-	const bool active_ = true );
+	const bool         active_ = true );
     
     //! Destroys a target time step advisor
     ~target_ts_advisor(void) {/*empty*/};
@@ -62,13 +61,16 @@ class target_ts_advisor : public ts_advisor {
     //! Set the target value
     /*! \param value_ the target value (time)
      */
-    void set_target(const double value_ = -large() )
+    void set_target(double const value_ = -large() )
     { 
 	target_value = value_;
     }
 
 // ACCESSORS
 
+    //! Get the target value
+    double get_target() { return target_value; }
+    
     //! Returns the recommended time-step
     /*! \param tsm the time step manager in which the advisor resides 
      *  \return the time step recommended by this advisor 
