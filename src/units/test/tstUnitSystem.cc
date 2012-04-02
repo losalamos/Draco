@@ -1,24 +1,22 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   src/units/tstUnitSystem.cc
- * \author Kelly Thompson
- * \date   Mon Nov  3 13:39:19 2003
  * \brief  test the UnitSystem class.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright (C) 2003-2012 Los Alamos National Security, LLC.
+ *         All rights reserved
+ * \version $Id$
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
+#include "units_test.hh"
+#include "../UnitSystem.hh"
+#include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/Release.hh"
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/Release.hh"
-#include "units_test.hh"
-#include "../UnitSystem.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -790,13 +788,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
-	// constructed.   If not, we must test the validUnits() member
+	// If DRACO_DBC_LEVE=7, a rtt_dsxx:assertion will be fired when myus
+	// is constructed.  If not, we must test the validUnits() member
 	// funtion explicitly.
 	try
 	{
 	    UnitSystem myus( UnitSystemType().L( rtt_units::L_m, my_cf ) ); 
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVE=0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( ! myus.validUnits() )
@@ -832,13 +830,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// If DRACO_DBC_LEVEL=7 a rtt_dsxx:assertion will be fired when myus is
 	// constructed.   If not, we must test the validUnits() member
 	// funtion explicitly.	
 	try
 	{
 	    UnitSystem myus( UnitSystemType().M( rtt_units::M_kg, my_cf ) );
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVEL == 0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( myus.validUnits() )
@@ -874,13 +872,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// If DRACO_DBC_LEVEL=7 a rtt_dsxx:assertion will be fired when myus is
 	// constructed.   If not, we must test the validUnits() member
 	// funtion explicitly.
 	try
 	{
 	    UnitSystem myus( UnitSystemType().t( rtt_units::t_s, my_cf ) );
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVEL == 0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( myus.validUnits() )
@@ -915,13 +913,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// If DRACO_DBC_LEVEL=7 a rtt_dsxx:assertion will be fired when myus is
 	// constructed.   If not, we must test the validUnits() member
 	// funtion explicitly.
 	try
 	{
 	    UnitSystem myus( UnitSystemType().T( rtt_units::T_K, my_cf ) );
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVEL == 0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( myus.validUnits() )
@@ -956,13 +954,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// If DRACO_DBC_LEVEL=7 a rtt_dsxx:assertion will be fired when myus is
 	// constructed.   If not, we must test the validUnits() member
 	// funtion explicitly.
 	try
 	{
 	    UnitSystem myus( UnitSystemType().I( rtt_units::I_amp, my_cf ) );
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVEL == 0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( myus.validUnits() )
@@ -997,13 +995,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// If DRACO_DBC_LEVEL=7 a rtt_dsxx:assertion will be fired when myus is
 	// constructed.   If not, we must test the validUnits() member
 	// funtion explicitly.
 	try
 	{
 	    UnitSystem myus( UnitSystemType().A( rtt_units::A_rad, my_cf ) );
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVEL == 0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( myus.validUnits() )
@@ -1039,13 +1037,13 @@ void test_valid_units()
     {
 	bool with_dbc(true);
 	bool found_assert(false);
-	// If --with-dbc=7 a rtt_dsxx:assertion will be fired when myus is
+	// If DRACO_DBC_LEVEL=7 a rtt_dsxx:assertion will be fired when myus is
 	// constructed.   If not, we must test the validUnits() member
 	// funtion explicitly.
 	try
 	{
 	    UnitSystem myus( UnitSystemType().Q( rtt_units::Q_mol, my_cf ) );
-	    // If --with-dbc == 0 we will get here so call validUnits by
+	    // If DRACO_DBC_LEVEL == 0 we will get here so call validUnits by
 	    // manually. 
 	    with_dbc=false;
 	    if( myus.validUnits() )
@@ -1118,16 +1116,16 @@ int main( int argc, char *argv[] )
     }
 
     // status of test
-    cout << endl << "*********************************************" << endl;
+    cout << "\n*********************************************\n";
     if( rtt_units_test::passed )
-        cout << "**** tstUnitSystem Test: PASSED" << endl;
-    cout <<         "*********************************************" << endl << endl;
-    
-    cout << "Done testing tstUnitSystem." << endl;
+        cout << "**** tstUnitSystem Test: PASSED\n";
+    else
+        cout << "**** tstUnitSystem Test: FAILED\n";
+    cout << "*********************************************\n\n"
+         << "Done testing tstUnitSystem." << endl;
     return 0;
-
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstUnitSystem.cc
+// end of tstUnitSystem.cc
 //---------------------------------------------------------------------------//
