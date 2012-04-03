@@ -112,6 +112,11 @@ extern unsigned lfg_size();
 */
 extern unsigned lfg_gennum(unsigned* genptr);
 
+/*
+ Return a "unique" number associated with this stream and state
+*/
+extern unsigned lfg_unique_num(unsigned* genptr);
+
 extern void errprint(char const *level, char const *routine, char const *error);
     
 

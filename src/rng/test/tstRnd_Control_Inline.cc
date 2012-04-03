@@ -73,24 +73,24 @@ void control_test()
 
     for (int i = 0; i < 100; i++)
     {
-	double rn0  = r0.ran();
-	double rrn0 = rr0.ran();
-	double rn1  = r1.ran();
-	double rrn1 = rr1.ran();
-	double rn2  = r2.ran();
-	double rrn2 = rr2.ran();
-
-	if (rn0 != rrn0)         ITFAILS;
-	if (rn1 != rrn1)         ITFAILS;
-	if (rn2 != rrn2)         ITFAILS;
-
-	if (rn0 == rrn1)         ITFAILS;
-	if (rn1 == rrn2)         ITFAILS;
-	if (rn2 == rrn0)         ITFAILS;
+        double rn0  = r0.ran();
+        double rrn0 = rr0.ran();
+        double rn1  = r1.ran();
+        double rrn1 = rr1.ran();
+        double rn2  = r2.ran();
+        double rrn2 = rr2.ran();
+    
+        if (rn0 != rrn0)         ITFAILS;
+        if (rn1 != rrn1)         ITFAILS;
+        if (rn2 != rrn2)         ITFAILS;
+    
+        if (rn0 == rrn1)         ITFAILS;
+        if (rn1 == rrn2)         ITFAILS;
+        if (rn2 == rrn0)         ITFAILS;
     }
 
     if (rtt_rng_test::passed)
-	PASSMSG("Rnd_Control simple test ok.");
+    PASSMSG("Rnd_Control simple test ok.");
 }
 
 void check_accessors(void)
@@ -109,6 +109,11 @@ void check_accessors(void)
         double rn0     = gr0.ran();
         if( rn0 < 0 || rn0 >1 )         ITFAILS;
         if( gr0.get_num() != 0 )        ITFAILS;
+        if ( LF_Gen::size_bytes() != LFG_DATA_SIZE*sizeof(unsigned int)) ITFAILS;
+        LF_Gen sgr0;
+        gr0.spawn(sgr0);
+        if ( gr0.is_alias_for(sgr0) )                        ITFAILS;
+        if ( gr0.get_unique_num() == sgr0.get_unique_num() ) ITFAILS;
     }
 
     { // test ctors
@@ -141,10 +146,30 @@ void check_accessors(void)
         else
             PASSMSG("LF_Gen equality operator works.")
 
+        // "get_num" returns the generator stream ID.  It is the same 
+        // after the call to spawn.
+        if (r3.get_num() == r2.get_num()) 
+            PASSMSG("LF_Gen spawn creates objects with the same stream IDs.")
+        else
+            FAILMSG("LF_Gen spawn changed the stream ID number.")
+
+        // Check if the "unique number" is unique enough
+        // Note: This number is a combination of the generator 
+        // ID and an unsigned int from the state.  With some low 
+        // probability it will not be unique, but we only need it 
+        // to be unique enough to prevent the resurrection of
+        // two particles with the same stream ID, as described in
+// https://tf.lanl.gov/sf/go/artf23409?nav=1&_pagenum=1&returnUrlKey=1333470445809
+        for (unsigned int i=0; i<1000000; ++i)
+        {
+            if (r3.get_unique_num() == r2.get_unique_num())
+               FAILMSG("LF_Gen unique state number is not unique.")
+            r2.ran();
+        }
 
         // Check the id for this stream
         double rn = r3.ran();
-        cout << "LF_Gen r3 returne ran() = " << rn << endl;
+        cout << "LF_Gen r3 returns ran() = " << rn << endl;
         unsigned int id = r3.get_num();
         // The value returned by LF_Gen::get_num() lives at the end of the LFG
         // data array.
@@ -161,7 +186,7 @@ void check_accessors(void)
     }
     
     if (rtt_rng_test::passed)
-	PASSMSG("Rnd_Control simple test ok.");
+    PASSMSG("Rnd_Control simple test ok.");
     return;
 }
 
@@ -171,27 +196,27 @@ int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
+    if (string(argv[arg]) == "--version")
+    {
+       cout << argv[0] << ": version " << rtt_dsxx::release() 
+         << endl;
+        return 0;
+    }
 
     cout << "\nThis is rng: version" << rtt_dsxx::release() << "\n" << endl;
     
     try
     {
-	// >>> UNIT TESTS
+        // >>> UNIT TESTS
         check_basics();
-	control_test();
+        control_test();
         check_accessors();
     }
     catch (rtt_dsxx::assertion &ass)
     {
-	cout << "While testing tstRnd_Control, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "While testing tstRnd_Control, " << ass.what()
+             << endl;
+        return 1;
     }
 
     // status of test
@@ -200,7 +225,7 @@ int main(int argc, char *argv[])
     if (rtt_rng_test::passed) 
     {
         cout << "**** tstRnd_Control Test: PASSED" 
-	     << endl;
+             << endl;
     }
     cout <<     "*********************************************" << endl;
     cout << endl;

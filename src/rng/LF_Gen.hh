@@ -40,6 +40,10 @@ class LF_Gen_Ref
     //! Return the identifier for this stream
     unsigned int get_num() const { return lfg_gennum(data.access()); }
 
+    //! Return a unique number for this stream and state
+    unsigned int get_unique_num() const { return lfg_unique_num(data.access()); }
+
+
     inline bool is_alias_for(LF_Gen const &rng);
 
   private:
@@ -100,6 +104,9 @@ class LF_Gen
 
     //! Return the identifier for this stream
     unsigned int get_num() const { return lfg_gennum(data); }
+
+    //! Return a unique number for this stream and state
+    unsigned int get_unique_num() const { return lfg_unique_num(data); }
 
     //! Return the size of the state
     unsigned int size() const { return LFG_DATA_SIZE; }

@@ -901,3 +901,9 @@ lfg_gennum(unsigned *genptr)
 {
     return genptr[OFFSET_gennum];
 }
+
+unsigned
+lfg_unique_num(unsigned *genptr)
+{
+    return (genptr[OFFSET_gennum] + genptr[0]);
+}
