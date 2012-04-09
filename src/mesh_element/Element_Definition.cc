@@ -657,24 +657,24 @@ void Element_Definition::construct_hexa()
     tmp.push_back(1);   
     side_nodes.push_back(tmp);
     tmp[0] = 0;
-    tmp[1] = 1;
-    tmp[2] = 5;
-    tmp[3] = 4;
-    side_nodes.push_back(tmp);
-    tmp[0] = 1;
-    tmp[1] = 2;
-    tmp[2] = 6;
-    tmp[3] = 5;
+    tmp[1] = 4;
+    tmp[2] = 7;
+    tmp[3] = 3;
     side_nodes.push_back(tmp);
     tmp[0] = 2;
     tmp[1] = 3;
     tmp[2] = 7;
     tmp[3] = 6;
     side_nodes.push_back(tmp);
+    tmp[0] = 1;
+    tmp[1] = 2;
+    tmp[2] = 6;
+    tmp[3] = 5;
+    side_nodes.push_back(tmp);
     tmp[0] = 0;
-    tmp[1] = 4;
-    tmp[2] = 7;
-    tmp[3] = 3;
+    tmp[1] = 1;
+    tmp[2] = 5;
+    tmp[3] = 4;
     side_nodes.push_back(tmp);
     tmp[0] = 4;
     tmp[1] = 5;
@@ -701,25 +701,25 @@ void Element_Definition::construct_hexa()
 	side_nodes[0].push_back(9);
 	side_nodes[0].push_back(8);
 	
-	side_nodes[1].push_back(8);
-	side_nodes[1].push_back(13);
-	side_nodes[1].push_back(16);
 	side_nodes[1].push_back(12);
+	side_nodes[1].push_back(19);
+	side_nodes[1].push_back(15);
+	side_nodes[1].push_back(11);
 	
-	side_nodes[2].push_back(9);
+	side_nodes[2].push_back(10);
+	side_nodes[2].push_back(15);
+	side_nodes[2].push_back(18);
 	side_nodes[2].push_back(14);
-	side_nodes[2].push_back(17);
-	side_nodes[2].push_back(13);
 	
-	side_nodes[3].push_back(10);
-	side_nodes[3].push_back(15);
-	side_nodes[3].push_back(18);
+	side_nodes[3].push_back(9);
 	side_nodes[3].push_back(14);
+	side_nodes[3].push_back(17);
+	side_nodes[3].push_back(13);
 	
+	side_nodes[4].push_back(8);
+	side_nodes[4].push_back(13);
+	side_nodes[4].push_back(16);
 	side_nodes[4].push_back(12);
-	side_nodes[4].push_back(19);
-	side_nodes[4].push_back(15);
-	side_nodes[4].push_back(11);
 	
 	side_nodes[5].push_back(16);
 	side_nodes[5].push_back(17);

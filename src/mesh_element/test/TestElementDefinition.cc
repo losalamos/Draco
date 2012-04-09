@@ -949,30 +949,22 @@ bool test_hexa_8(
     ldum = ldum && elem_def.get_dimension() == 3;
     ldum = ldum && elem_def.get_number_of_sides() == 6;
     for (int j=0; j<8; ++j)
-	ldum = ldum && elem_def.get_node_location(j) == 
-	    Element_Definition::CORNER;
+	ldum = ldum && elem_def.get_node_location(j) == Element_Definition::CORNER;
     for (int j=0; j<6; ++j)
-	ldum = ldum && elem_def.get_side_type(j).get_type() == 
-	    Element_Definition::QUAD_4;
+	ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_4;
     const int size = 4;
     int s0[size] = {0,3,2,1};
-    int s1[size] = {0,1,5,4};
-    int s2[size] = {1,2,6,5};
-    int s3[size] = {2,3,7,6};
-    int s4[size] = {0,4,7,3};
+    int s1[size] = {0,4,7,3};
+    int s2[size] = {2,3,7,6};
+    int s3[size] = {1,2,6,5};
+    int s4[size] = {0,1,5,4};
     int s5[size] = {4,5,6,7};
-    ldum = ldum && elem_def.get_side_nodes(0) == 
-	vector<size_t>(s0,s0+size);
-    ldum = ldum && elem_def.get_side_nodes(1) == 
-	vector<size_t>(s1,s1+size);
-    ldum = ldum && elem_def.get_side_nodes(2) == 
-	vector<size_t>(s2,s2+size);
-    ldum = ldum && elem_def.get_side_nodes(3) == 
-	vector<size_t>(s3,s3+size);
-    ldum = ldum && elem_def.get_side_nodes(4) == 
-	vector<size_t>(s4,s4+size);
-    ldum = ldum && elem_def.get_side_nodes(5) == 
-	vector<size_t>(s5,s5+size);
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0,s0+size);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1,s1+size);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2,s2+size);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3,s3+size);
+    ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4,s4+size);
+    ldum = ldum && elem_def.get_side_nodes(5) == vector<size_t>(s5,s5+size);
     ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 4;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 4;
@@ -1008,34 +1000,25 @@ bool test_hexa_20(
     ldum = ldum && elem_def.get_dimension() == 3;
     ldum = ldum && elem_def.get_number_of_sides() == 6;
     for (int j=0; j<8; ++j)
-	ldum = ldum && elem_def.get_node_location(j) == 
-	    Element_Definition::CORNER;
+	ldum = ldum && elem_def.get_node_location(j) == Element_Definition::CORNER;
     for (int j=8; j<20; ++j)
-	ldum = ldum && elem_def.get_node_location(j) == 
-	    Element_Definition::EDGE;
+	ldum = ldum && elem_def.get_node_location(j) == Element_Definition::EDGE;
     for (int j=0; j<6; ++j)
-	ldum = ldum && elem_def.get_side_type(j).get_type() == 
-	    Element_Definition::QUAD_8;
+	ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_8;
     const int size = 8;
     int s0[size] = {0,3,2,1,11,10,9,8};
-    int s1[size] = {0,1,5,4,8,13,16,12};
-    int s2[size] = {1,2,6,5,9,14,17,13};
-    int s3[size] = {2,3,7,6,10,15,18,14};
-    int s4[size] = {0,4,7,3,12,19,15,11};
+    int s1[size] = {0,4,7,3,12,19,15,11};
+    int s2[size] = {2,3,7,6,10,15,18,14};
+    int s3[size] = {1,2,6,5,9,14,17,13};
+    int s4[size] = {0,1,5,4,8,13,16,12};
     int s5[size] = {4,5,6,7,16,17,18,19};
-    ldum = ldum && elem_def.get_side_nodes(0) == 
-	vector<size_t>(s0,s0+size);
-    ldum = ldum && elem_def.get_side_nodes(1) == 
-	vector<size_t>(s1,s1+size);
-    ldum = ldum && elem_def.get_side_nodes(2) == 
-	vector<size_t>(s2,s2+size);
-    ldum = ldum && elem_def.get_side_nodes(3) == 
-	vector<size_t>(s3,s3+size);
-    ldum = ldum && elem_def.get_side_nodes(4) == 
-	vector<size_t>(s4,s4+size);
-    ldum = ldum && elem_def.get_side_nodes(5) == 
-	vector<size_t>(s5,s5+size);
-        ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0,s0+size);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1,s1+size);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2,s2+size);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3,s3+size);
+    ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4,s4+size);
+    ldum = ldum && elem_def.get_side_nodes(5) == vector<size_t>(s5,s5+size);
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 8;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 8;
     ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 8;
@@ -1071,39 +1054,28 @@ bool test_hexa_27(
     ldum = ldum && elem_def.get_dimension() == 3;
     ldum = ldum && elem_def.get_number_of_sides() == 6;
     for (int j=0; j<8; ++j)
-	ldum = ldum && elem_def.get_node_location(j) == 
-	    Element_Definition::CORNER;
+	ldum = ldum && elem_def.get_node_location(j) == Element_Definition::CORNER;
     for (int j=8; j<20; ++j)
-	ldum = ldum && elem_def.get_node_location(j) == 
-	    Element_Definition::EDGE;
+	ldum = ldum && elem_def.get_node_location(j) == Element_Definition::EDGE;
     for (int j=20; j<26; ++j)
-	ldum = ldum && elem_def.get_node_location(j) == 
-	    Element_Definition::FACE;
-    ldum = ldum && elem_def.get_node_location(26) == 
-	Element_Definition::CELL;
+	ldum = ldum && elem_def.get_node_location(j) == Element_Definition::FACE;
+    ldum = ldum && elem_def.get_node_location(26) == Element_Definition::CELL;
     for (int j=0; j<6; ++j)
-	ldum = ldum && elem_def.get_side_type(j).get_type() == 
-	    Element_Definition::QUAD_9;
+	ldum = ldum && elem_def.get_side_type(j).get_type() == Element_Definition::QUAD_9;
     const int size = 9;
     int s0[size] = {0,3,2,1,11,10,9,8,20};
-    int s1[size] = {0,1,5,4,8,13,16,12,21};
-    int s2[size] = {1,2,6,5,9,14,17,13,22};
-    int s3[size] = {2,3,7,6,10,15,18,14,23};
-    int s4[size] = {0,4,7,3,12,19,15,11,24};
+    int s1[size] = {0,4,7,3,12,19,15,11,21};
+    int s2[size] = {2,3,7,6,10,15,18,14,22};
+    int s3[size] = {1,2,6,5,9,14,17,13,23};
+    int s4[size] = {0,1,5,4,8,13,16,12,24};
     int s5[size] = {4,5,6,7,16,17,18,19,25};
-    ldum = ldum && elem_def.get_side_nodes(0) == 
-	vector<size_t>(s0,s0+size);
-    ldum = ldum && elem_def.get_side_nodes(1) == 
-	vector<size_t>(s1,s1+size);
-    ldum = ldum && elem_def.get_side_nodes(2) == 
-	vector<size_t>(s2,s2+size);
-    ldum = ldum && elem_def.get_side_nodes(3) == 
-	vector<size_t>(s3,s3+size);
-    ldum = ldum && elem_def.get_side_nodes(4) == 
-	vector<size_t>(s4,s4+size);
-    ldum = ldum && elem_def.get_side_nodes(5) == 
-	vector<size_t>(s5,s5+size);
-        ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0,s0+size);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1,s1+size);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2,s2+size);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3,s3+size);
+    ldum = ldum && elem_def.get_side_nodes(4) == vector<size_t>(s4,s4+size);
+    ldum = ldum && elem_def.get_side_nodes(5) == vector<size_t>(s5,s5+size);
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 6;
     ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 9;
     ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 9;
     ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 9;
