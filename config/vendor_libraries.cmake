@@ -174,7 +174,8 @@ macro( setupMPILibrariesUnix )
       # Mark some of the variables created by the above logic as
       # 'advanced' so that they do not show up in the 'simple' ccmake 
       # view. 
-      mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY file_cmd )      
+      mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
+      set( file_cmd ${file_cmd} CACHE INTERNAL "file command" )
 
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
