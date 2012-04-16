@@ -18,20 +18,29 @@ digraph source_tree {
     node [fontsize=18];
     {
 	node    [shape=ellipse];
-	doc_m   [label="Makefile.in"];
-	doc_cin [label="configure.in"];
-	doc_c   [label="configure*"];
+	doc_m   [label="CMakeLists.txt"];
 	
 	node      [shape=box];
-	buildd    [label="build/"];	
-	purifyd   [label="purify/"];
-	systemd   [label="system/"];
-	imcd      [label="imc/"];
-	matpropsd [label="matprops/"];
-	tex       [label="tex/"];
+    arc       [label="archive/"];
+    ass       [label="assessment/"];
+    aut       [label="autodoc/"/];
+	bui       [label="build/"];	
+    cod       [label="code_stats/"];
+    dat       [label="data/"];
+    des       [label="design/"];
+    dra       [label="draco-autodoc/"];
+    get       [label="gettingStarted/"];
+    mat       [label="matprops/"];
+    mer       [label="merge/"];
+    mes       [label="mesh/"];
+    num       [label="numdiff/"];
+    pur       [label="purify/"];
+    rel       [label="release/"];
+    releases  [label="releases/"];
+    reo       [label="reorganization_VisScope/"];
+    sys       [label="system/"];
     }
     
   /* tree */
-    doc -> {doc_m doc_cin doc_c buildd purifyd systemd imcd matpropsd
-		tex};
+    doc -> {doc_m arc ass aut bui cod dat des dra get mat mer mes num pur rel releases reo sys};
 }

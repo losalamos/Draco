@@ -19,16 +19,44 @@ digraph source_tree {
     {
       /* config */
 	node      [shape=ellipse];
-	mpin      [label="Makefile.package.in"];
-	mtin      [label="Makefile.test.in"];
-	makefile  [label="Makefile.in"];
-	aclocal   [label="aclocal.m4"];
-	config_g  [label="config.guess*"];
-	config_s  [label="config.sub*"];
-	install   [label="install-sh*"];
+	cma [label="CMakeLists.txt"];
+    cha [label="ChangeLog"];
+    finddraco [label="FindDRACO.cmake"];
+    findgsl   [label="FindGSL.cmake"];
+    findgrace [label="FindGrace.cmake"];
+    findlibsci [label="FindLIBSCI.cmake"];
+    toolchaincat [label="Toolchain-catamount.cmake"];
+    toolchainrrppe [label="Toolchain-roadrunner-ppe.cmake"];
+    toolchainrrspu [label="Toolchain-roadrunner-spu.cmake"];
+    bui [label="buildEnv.cmake"];
+    cma [label="cmake_uninstall.cmake.in"];
+    compil [label="compilerEnv.cmake"];
+    compon [label="component_macros.cmake"];
+    con [label="configureFileOnMake.cmake"];
+    doc [label="doc_macros.cmake"];
+    dox [label="doxygen_config.in"];
+    dracotest [label="dracoTesting.cmake"];
+    dracover  [label="dracoVersion.cmake"];
+    parse [label="parse_arguments.cmake"];
+    platformch [label="platform_checks.cmake"];
+    platformcu [label="platform_customization_roadrunner_ppe.cmake"];
+    unixgxx [label="unix-g++.cmake"];
+    unixgfor [label="unix-gfortran.cmake"];
+    unixifort [label="unix-ifort.cmake"];
+    unixintel [label="unix-intel.cmake"];
+    unixpgf90 [label="unix-pgf90.cmake"];
+    unixpgi [label="unix-pgi.cmake"];
+    unixppu [label="unix-ppu.cmake"];
+    unixspu [label="unix-spu.cmake"];
+    vend [label="vendor_libraries.cmake"];
+    wincl [label="windows-cl.cmake"];
+    winifort [label="windows-ifort.cmake"];
     }
     
   /* tree */
     
-    config -> {mpin mtin makefile aclocal config_g config_s install};
+    config -> {cma cha finddraco findgsl findgrace findlibsci toolchaincat toolchainrrppe
+    toolchainrrspu bui cma compil compon con doc dox dracotest dracover parse platformch 
+    platformcu unixgxx unixgfor unixifort unixintel unixpgf90 unixpgi unixppu unixspu vend
+    wincl winifort};
 }

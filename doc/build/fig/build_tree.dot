@@ -13,15 +13,15 @@ digraph build_tree {
 
   /* .. level */
 
-    sgi [label="sgi_scalar/", fontsize=22, shape=box];
+    gccmpid [label="gcc_mpid/", fontsize=22, shape=box];
     
   /* sgi_scalar level */
 
     draco   [label="draco/", fontsize=20, shape=box];
-    bin     [label="bin/", fontsize=20, shape=box];
-    include [label="include/", fontsize=20, shape=box];
-    lib     [label="lib/", fontsize=20, shape=box];
-    libexe  [label="libexec/", fontsize=20, shape=box];
+/*    bin     [label="bin/", fontsize=20, shape=box]; */
+/*    include [label="include/", fontsize=20, shape=box]; */
+/*    lib     [label="lib/", fontsize=20, shape=box]; */
+/*    libexe  [label="libexec/", fontsize=20, shape=box]; */
 
   /* draco/ level */
     node [fontsize=18];
@@ -29,48 +29,57 @@ digraph build_tree {
       /* directories */
 	node   [shape=box];
 	src    [label="src/"];
-	tools  [label="tools/"];
-	doc    [label="doc/"];
+	config [label="config/"];
+	testing [label="Testing/"];
+	cmakefiles [label="CMakeFiles/"];
 
       /* files */
 	node       [shape=ellipse];
 	draco_make [label="Makefile"];
-	draco_cach [label="config.cache"];
-	draco_log  [label="config.log"];
-	draco_stat [label="config.status*"];
+	draco_cach [label="CMakeCache.txt"];
+	draco_cust [label="CTestCustom.cmake"];
+	draco_ctest [label="CTestTestfile.cmake"];
+	draco_dart [label="DartConfiguration.tcl"];
+	draco_install [label="cmake_install.cmake"];
+	draco_uninstall [label="cmake_uninstall.cmake"];
     }
     
   /* draco/<dir> */
     node [fontsize=14];
     {
       /* src */
+        node   [shape=box];
+        src_cmfiles [label="CMakeFiles/"];
+        
 	node    [shape=ellipse];
-	src_cs  [label="config.status*"];
-	src_cl  [label="config.log"];
+	src_ctest   [label="CTestTestfile.cmake"];
+	src_install [label="cmake_install.cmake"];
 	src_m   [label="Makefile"];
 
 	src_files [label="source directories ...", shape=plaintext];
 
-      /* tools */
+      /* config */
+        node   [shape=box];
+        config_cmfiles [label="CMakeFiles/"];
+        
 	node     [shape=ellipse];
-	tools_m  [label="Makefile"];
-	tools_cl [label="config.log"];
-	tools_cs [label="config.status*"];
+	config_m  [label="Makefile"];
+	config_install [label="cmake_install.cmake"];
+	config_ctest [label="CTestTestfile.cmake"];
 
-      /* doc */
-	node   [shape=ellipse];
-	doc_m  [label="Makefile"];
-	doc_cl [label="config.log"];
-	doc_cs [label="config.status*"];
+      /* Testing */
+        /* node   [shape=box]; */
+        /* test_temp [label="Temporary/"]; */
 
-	doc_files [label="doc directories ...", shape=plaintext];
     }
     
   /* tree */
 
-    sgi -> {draco include lib bin libexe};
-    draco -> {src tools doc draco_make draco_cach draco_log draco_stat};
-    src -> {src_cs src_cl src_m src_files};
-    tools -> {tools_m tools_cl tools_cs};
-    doc -> {doc_m doc_cl doc_cs doc_files};
+    gccmpid -> {draco}; /*  include lib bin libexe}; */
+    draco -> {src config testing cmakefiles
+            draco_make draco_cach draco_cust draco_ctest draco_dart
+            draco_install draco_uninstall};
+    src -> {src_cmfiles src_m src_install src_ctest src_files};
+    config -> {config_cmfiles config_m config_install config_ctest};
+    /* testing -> {test_temp}; */
 }

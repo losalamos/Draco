@@ -19,30 +19,31 @@ digraph pkg {
     
     node [shape=box];
     test [label="test/"];
+    autodoc [label="autodoc/"];
+    docdir [label="doc/"];
     sub1 [label="sub-directory/", style=dotted];
     sub2 [label="sub-directory/", style=dotted];
-    sub3 [label="sub-directory/", style=dotted];
 
   /* files */
     node [shape=ellipse];
-    confin [label="configure.in"];
-    conf [label="configure*"];
+    cmakelists [label="CMakeLists.txt"];
+    testcmakelists [label="CMakeLists.txt", fontsize=16];
+/*    conf [label="configure*"]; */
 
     node [style=dotted];
     config [label="config.h.in"];
     pkgin [label="pkg-vendor.h"];
-    msrc [label="Makefile.srcs"];
-    mmisc [label="Makefile.misc"];
+/*    msrc [label=""]; */
+/*    mmisc [label="Makefile.misc"]; */
 
-    code [label="source code ...", shape=plaintext];
+    code [label="source code (.hh, .i.hh, .t.hh, _pt.cc, .cc) ...", shape=plaintext];
 
-    mtar [label="Makefile.target", fontsize=16];
+    
     tcode [label="source code ...", fontsize=16, shape=plaintext];
 
   /* tree */
     
-    package -> {test sub1 sub2 sub3 confin conf config pkgin code msrc
-		    mmisc};
-    test -> {mtar tcode};
+    package -> {test autodoc docdir sub1 sub2 cmakelists config pkgin code };
+    test -> {testcmakelists tcode};
     
 }

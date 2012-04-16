@@ -23,20 +23,19 @@ digraph source_tree {
 	tools  [label="tools/"];
 	doc    [label="doc/"];
 	config [label="config/"];
+    autodoc [label="autodoc/"];
+    environment [label="environment/"];
+    regression [ label="regression/"];
 
       /* files */
 	node       [shape=ellipse];
-	draco_min  [label="Makefile.in"];
-	news       [label="NEWS"];
+	draco_cml  [label="CMakeLists.txt"];
 	readme     [label="README.draco"];
 	change     [label="ChangeLog"];
-	draco_cin  [label="configure.in"];
-	draco_c    [label="configure*"];
-	draco_conf [label="draco_config*"];
     }
     
   /* tree */
     
-    draco -> {src tools doc config draco_min news readme change draco_cin
-		  draco_c draco_conf};
+    draco -> {src tools doc config autodoc environment regression 
+              draco_cml readme change};
 }

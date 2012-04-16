@@ -4,56 +4,51 @@
 %% how to add a new package to the draco system
 %%---------------------------------------------------------------------------%%
 
-\chapter{Adding a Package to Draco\index{Draco!adding packages}}
+\chapter{Adding a Component to Draco\index{Draco!adding components}}
 \label{chap:adding}
 
 \section{Overview}
 \label{sec:adding_overview}
 
-New \draco\ packages get added in subdirectories under
+New \draco\ components should be added in subdirectories under
 \comp{draco/src/}.  Each \draco\ package may have its own additional
 subdirectories under \comp{draco/src/\vble{pkg}}.
 Figure~\ref{fig:package} illustrates a representative package
+directory.  A component directory should conform to following
+guidelines:
+\begin{itemize}
+\item each component directory should have a \comp{test/} subdirectory
+    that holds component test code, these tests are also used to
+    verify package builds as described in \S~\ref{sec:building_draco}. Most unit tests should use the features provided by the \comp{ds++/ScalarUnitTest} or \comp{c4/ParallelUnitTest} helper classes,
+\item each component should have \comp{autodoc/}  and \comp{doc/} subdirectories.  The  \comp{autodoc/} directory should provide at least one file, \latin{pkg/}\comp{.dcc.in}, that provides basic information about the component that can be included in the compiled HTML autodoc for \draco,
+\item all subdirectories in the package should have the same configuration and build options,
+\item the component should use as many of the \cmake\ macros defined by the \draco\ build system as possible to avoid duplicate code,
+%\item components should use the \draco\ system default
+%  \comp{Makefile.package.in}\index{Makefile.package.in} and
+%  \comp{Makefile.test.in}\index{Makefile.test.in} makefiles,
+%\item packages should use the \draco\ system default \autoconf\ macros
+%  in \comp{aclocal.m4}\index{aclocal.m4} in
+%  \comp{configure.in}\index{configure.in|(},
+%\item if the package has special needs, it can have a unique
+%  \comp{Makefile.in}\index{Makefile.in|(},
+\item special configuration requirements for a package may be added to 
+  that package's \comp{CMakeLists.txt} file.
+\end{itemize}
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[width=2.5in]{fig/package.eps}
+    \includegraphics[clip, trim=1cm 9cm 1cm 9cm,width=6.5in]{fig/package} % trim=l b r t
     \caption{Standard package directory configuration in \draco.}
     \label{fig:package}
   \end{center}
 \end{figure}
-directory.  A package directory should conform to following
-guidelines:
-\begin{itemize}
-\item each package directory should have a \comp{test/} subdirectory
-    that holds component test code, these tests are also used to
-    verify package builds as described in \S~\ref{sec:building_draco}.
-\item all subdirectories in the package should have the same
-  configuration and build options,
-\item packages should use the \draco\ system default
-  \comp{Makefile.package.in}\index{Makefile.package.in} and
-  \comp{Makefile.test.in}\index{Makefile.test.in} makefiles,
-\item packages should use the \draco\ system default \autoconf\ macros
-  in \comp{aclocal.m4}\index{aclocal.m4} in
-  \comp{configure.in}\index{configure.in|(},
-\item if the package has special needs, it can have a unique
-  \comp{Makefile.in}\index{Makefile.in|(},
-\item special configuration requirements for a package may be added to 
-  that package's \comp{configure.in} file.
-\end{itemize}
-In general, most packages will be able to use the default makefiles
-and configure templates that are provided by \draco.  Customization of 
-package configure files is treated in \S~\ref{sec:customize}.
+In general, most packages will be able to use another component's \comp{CMakeLists.txt} and \comp{autodoc/}\latin{pkg}\comp{.dcc.in} as a templates.  Customization of 
+component \comp{CMakeLists.txt}  files is treated in \S~\ref{sec:customize}.
 
-At a minimum, each package requires a
-\comp{configure.in} file to produce a
-\comp{configure*} script.  Additionally, the package must have access
-to a makefile template.  \draco\ provides the default makefile
-templates \comp{Makefile.package.in} and
-\comp{Makefile.test.in} for
-\comp{src/\vble{pkg}/} and \comp{src/\vble{pkg}/test} directories.
-Finally, to set configuration options on a package-by-package basis,
-the files \comp{config.h.in}\index{config.h.in|(} and
-\comp{\vble{pkg}-\vble{vendor}.h}\index{pkg-vendor.h|(} are required.
+At a minimum, each package requires a \comp{CMakeLists.txt}.  
+% Additionally, the package must have access to a makefile template.  \draco\ provides the default makefile templates \comp{Makefile.package.in} and \comp{Makefile.test.in} for
+% \comp{src/\vble{pkg}/} and \comp{src/\vble{pkg}/test} directories.
+To set configuration options on a package-by-package basis,
+the files \comp{config.h.in}\index{config.h.in|(} and \comp{\vble{pkg}-\vble{vendor}.h}\index{pkg-vendor.h|(}, may also be required.
 Table~\ref{tab:pkgfiles} lists all of the possible configuration files
 \begin{table}
   \caption{\draco\ build system package files.}
@@ -66,29 +61,30 @@ Table~\ref{tab:pkgfiles} lists all of the possible configuration files
       \multicolumn{1}{Y}{Package Configuration Files} &  
       \multicolumn{1}{Y}{Description} \\
       \hline
+% CMakeLists.txt
+CMakeLists.txt & file contains cmake instructions for generating directly local project files (e.g.: Makefiles).      \\
                                 % configure.in
-      configure.in & file containing \autoconf\ tests that is used to
-      build \comp{configure*} \\
-                                % configure*
-      configure* & package configure script generated by \autoconf\ from 
-      \comp{configure.in} \\
-                                % Makefile.in
-      Makefile.in & special package makefile, this is present only if
-      the default \comp{Makefile.package.in} is not used \\
-                                % Makefile.srcs
-      Makefile.srcs & special source modifications, called by the
-      default makefiles \\
-                                % Makefile.target
-      Makefile.target & special target modifications for package test
-      directories, called by the default makefiles \\
-                                % Makefile.misc
-      Makefile.misc & special makefile for miscellaneous additions,
-      called by the default makefiles \\
+%      configure.in & file containing \autoconf\ tests that is used to
+%      build \comp{configure*} \\
+%                                % configure*
+%      configure* & package configure script generated by \autoconf\ from 
+%      \comp{configure.in} \\
+%                                % Makefile.in
+%      Makefile.in & special package makefile, this is present only if
+%      the default \comp{Makefile.package.in} is not used \\
+%                                % Makefile.srcs
+%      Makefile.srcs & special source modifications, called by the
+%      default makefiles \\
+%                                % Makefile.target
+%      Makefile.target & special target modifications for package test
+%      directories, called by the default makefiles \\
+%                                % Makefile.misc
+%      Makefile.misc & special makefile for miscellaneous additions,
+%      called by the default makefiles \\
                                 % config.h.in
-      config.h.in & package specific environment configuration file \\
+      config.h.in & package specific environment configuration file that will be processed into \comp{\$\{PROJECT\_BINARY\_DIR\}/}\latin{pkg}\comp{/config.h} \\
                                 % package-vendor.h
-      \vble{pkg}-\vble{vendor}.h & package-specific vendor include
-      headers \\
+      \vble{pkg}-\vble{vendor}.h & package-specific vendor include  headers \\
       \hline\hline
     \end{tabularx}
   \end{center}
@@ -96,75 +92,107 @@ Table~\ref{tab:pkgfiles} lists all of the possible configuration files
 that can be found in a \draco\ package.  All of these files are
 explained in \S~\ref{sec:package_files}.
 
-\draco\ provides templates for package-level \comp{configure.in} and
-\comp{Makefile.in} files.  \draco\ templates are located in two places
-in the \draco\ source tree, \comp{draco/config} and
-\comp{draco/templates}.  Figure~\ref{fig:src_draco} shows the contents
-of these directories.  Table~\ref{tab:templates} gives a description
-\begin{table}
-  \caption{\draco\ build system templates.}
-  \label{tab:templates}
-  \begin{center}
-    \begin{tabularx}{\linewidth}{
-        >{\setlength{\hsize}{.85\hsize}}L %
-        >{\setlength{\hsize}{.65\hsize}}L %
-        >{\setlength{\hsize}{1.5\hsize}}X}
-      \hline\hline
-      \multicolumn{1}{Y}{Template File} & \multicolumn{1}{Y}{Location} 
-      & \multicolumn{1}{Y}{Description} \\
+\draco\ does not provide templates for package-level \comp{CMakeLists.txt} and
+\comp{config.h.in} files, but the contents of these files are straight forward for most cases and the developer can use an existing component's \comp{CMakeLists.txt} and
+\comp{config.h.in} files as templates.
+
+\draco\ macros are defined in \cmake\ configuration files located at \comp{draco/config/}.  These
+macros are used by \cmake\ to generate the build logic and platform checks that go into the generated project files for the selected build type (e.g: Makefiles).  
+The macros are divided into separate files to provide appropriate groupings as presented in Table~\ref{tab:config_grouping}.
+ \begin{center}
+   \label{tab:config_grouping} 
+ \begin{longtable}{p{1.0in}ap{3.1in}}
+% {\linewidth}{
+%        >{\setlength{\hsize}{.35\hsize}}X %
+%        >{\setlength{\hsize}{1.05\hsize}}L %
+%        >{\setlength{\hsize}{1.35\hsize}}X}
+  \caption{Draco configuration macro files.} \\
+  
+      \hline\hline      
+      \multicolumn{1}{c}{Type} & \multicolumn{1}{c}{Configuration File}  & \multicolumn{1}{c}{Description} \\
       \hline
-                                % Makefile.package.in
-      Makefile.package.in & draco/config & default makefile template
-      for \draco\ packages \\
-                                % Makefile.test.in
-      Makefile.test.in & draco/config & default makefile template for
-      \draco\ package \comp{test/} directories \\
-                                % configure.package.in
-      configure.package.in & draco/templates & standard
-      \comp{configure.in} template for \draco\ packages \\
-                                % template.h
-      template.h & draco/templates & template for \cc\ header files,
-      both \comp{*.h} and \comp{*.h.in} headers \\
-                                % template.hh
-      template.hh & draco/templates & template for \cpp\ header files,
-      both \comp{*.hh} and \comp{*.hh.in} headers \\
-                                % template.cc
-      template.cc & draco/templates & template for \cpp\ implementation
-      and explicit instantiation files \\
-                                % template.t.hh
-      template.t.hh & draco/templates & template for \cpp\ templated
-      code \\
+      \endfirsthead
+      
       \hline\hline
-    \end{tabularx}
-  \end{center}
-\end{table}
-of each template file.
+      \multicolumn{1}{c}{Type} & \multicolumn{1}{c}{Configuration File}  & \multicolumn{1}{c}{Description} \\
+      \hline
+      \endhead
+      
+      \hline \multicolumn{3}{r}{\textit{Continued on next page}} \\
+      \endfoot
+      
+      \hline\hline 
+      \endlastfoot
+      
+% FindXXX
+Vendor support
+& FindGSL & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for GSL. \\
+& FindGrace & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for XM Grace.  \\
+& FindLIBSCI & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for Cray's LibSCI (an optimized \sys{LAPACK} replacement. \\
+& vendor\_libraries & controlling macro that looks for requested vendor libraries by calling \comp{find\_package()}. \\
 
-\draco\ macros are defined in \comp{draco/config/aclocal.m4}.  These
-macros are used by \autoconf\ to generate the tests that go into
-\comp{configure*} scripts.  The macros are divided into two basic
-categories: (a) macros used in \comp{configure.in}, (b) macros used
-internally in \comp{aclocal.m4}.  In general, \draco\ package
-developers need only be concerned with (a).  These are summarized in
-\S~\ref{sec:package_files}.  The macros in category (b) are the domain
-of \draco\ system developers and are described in
-Chap.~\ref{chap:extend}.
+\hline
 
-Most package directories use the default makefile templates in
-\comp{draco/config}.  These are called from the package's
-\comp{configure.in} script; thus, they are not seen inside of the
-package directory.  Simple modifications to the standard makefiles is
-achieved by adding \comp{Makefile.srcs}, \comp{Makefile.targets},
-and/or \comp{Makefile.misc}.  The use of these files is summarized in
-\S~\ref{sec:package_files}. 
+% Toolchain      
+Toolchain files
+& Toolchain-catamount & allow use of \cmake's cross-compile feature to aid the build system configuration for Catamount-like systems.\\
+& Toolchain-roadrunner-ppe &  allow use of \cmake's cross-compile feature to aid the build system configuration for Roadrunner cell front end. \\
+& Toolchain-roadrunner-spu &  allow use of \cmake's cross-compile feature to aid the build system configuration for Roadrunner cell back end.\\
+\hline
+
+% Primary configuration setup
+Primary configuration
+& buildEnv & establish top-level defaults like \comp{DRACO\_DBC\_LEVEL} \\
+& compilerEnv & controls compiler discovery and calls appropriate compiler flag setup routines \\
+& dracoVersion & establishes the \draco\ version tag that is embedded in the code \\
+& dracoTesting & establishes the \comp{check} build target. Test registration macros are provided in \comp{component\_}\-\comp{macros}\-\comp{.cmake}. \\
+& platform\_checks & macros that probe the local system for available features, headers, etc. \\
+& unix-g++ & sets compiler flags for GNU C and C++\\
+& unix-gfortran & sets compiler flags for GNU Fortran \\
+& unix-ifort & sets compiler flags for Intel Fortran \\
+& unix-intel & sets compiler flags for Intel C and C++ \\
+& unix-pgf90 & sets compiler flags for PGI Fortran \\
+& unix-pgi & sets compiler flags for PGI C and C++ \\
+& unix-ppu & sets compiler flags for GNU C and C++ on PPC PPU architectures \\
+& unix-spu &  sets compiler flags for GNU C and C++ on PPC SPU architectures \\
+& windows-cl & sets compiler flags for Microsoft C and C++ \\
+& windows-ifort & sets compiler flags for Intel Fortran on Windows \\
+\hline
+
+% Component configuration
+Component configuration
+& component\_macros & provides build system macros (\comp{add\_}\-\comp{component\_}\-\comp{library}, \comp{add\_}\-\comp{scalar\_}\-\comp{test}, etc. ) for use in component level \comp{CMakeLists.txt} files.   \\
+\hline
+
+% Documentation
+Documentation configuration 
+& doc\_macros & these macros simply the generation of a \comp{CMakeLists.txt} file needed for generating documentation from \LaTeX\ sources. \\
+& doxygen\_config.in & this file will be processed if \comp{BUILD\_AUTODOC=ON} and contains the configuration settings for \doxygen\ processing of source code to generate HTML developer documentation. \\
+\hline
+
+% General
+General helper macros 
+& parse\_arguments & a helper program that simplifies argument processing for \cmake\ macro definition.\\
+& cmake\_uninstall.cmake.in & this template is processed by the build system to keep track of generated files that can be uninstalled. \\
+& configureFileOnMake & this script can be used by an \comp{add\_custom\_command} to generate files/scripts/etc. on the fly. \\
+\end{longtable} 
+\end{center}
+In general, \draco\ package developers need only be concerned with \latin{Component configuration} set of macros. 
+% These are summarized in \S~\ref{sec:package_files}.  
+The remaining macros are the the domain of \draco\ system developers and are described in Chap.~\ref{chap:extend}.
+
+Most component directories use the standardized \comp{CMakeLists.txt}.
+Simple modifications to the standard component and test \comp{CMakeLists.txt} is
+achieved inserting \cmake\ scripting, including specialized \draco\ build system configuration macros, directly into the local \comp{CMakeLists.txt}.
+The use of these files and macros is summarized in \S~\ref{sec:package_files}. 
 
 In summary, each package has a \comp{test/} directory for component
-tests.  Additional subdirectories that contain package components may
+tests and an \comp{autodoc/} directory for documentation that can be generated by \doxygen.
+Additional subdirectories that contain package components may
 be included.  All package subdirectories are configured using the same
-options.  Packages may define unique macros inside of
-\comp{src/\vble{pkg}/configure.in}.  Also, packages may use a unique
-\comp{Makefile.in} if they require special functionality that does not
-exist in the standard makefile templates.  We will now turn our
+options.  Also, components may use a unique scripting commands from within
+\comp{CMakeLists.txt} if they require special functionality that does not
+exist in the standard \comp{CMakeLists.txt} file.  We will now turn our
 attention to a more detailed description of the configure files.
 
 %%---------------------------------------------------------------------------%%
@@ -172,77 +200,194 @@ attention to a more detailed description of the configure files.
 \section{Package Files}
 \label{sec:package_files}
 
+    %
+% \lstset{language=ksh,
+  % showstringspaces=false,
+  % frame=shadowbox,
+  % basicstyle=\footnotesize,
+  % rulesepcolor=\color{black},
+  % backgroundcolor=\color{listingBG}
+% }
+\lstset{ %
+%language=C++,                   % choose the language of the code
+language=bash,                   % choose the language of the code
+basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+numbers=left,                   % where to put the line-numbers
+numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+numbersep=5pt,                  % how far the line-numbers are from the code
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=false,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+%frame=single,                  % adds a frame around the code
+frame=shadowbox,                % adds a frame around the code
+tabsize=2,                      % sets default tabsize to 2 spaces
+captionpos=b,                   % sets the caption-position to bottom
+breaklines=true,                % sets automatic line breaking
+breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+rulesepcolor=\color{black},
+backgroundcolor=\color{listingBG},
+% backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+escapeinside={\%*}{*)}          % if you want to add a comment within your code
+}
+
 In this section we give expanded descriptions of the default
 package-dependent files listed in Table~\ref{tab:pkgfiles}.  We will
-not go into great detail about the \autoconf\ macros and default
-makefiles that are defined in the \draco\ system.  That discussion is
+not go into great detail about the \cmake\ macros that are defined in the \draco\ system.  That discussion is
 reserved until Chap.~\ref{chap:extend}.  We will concentrate primarily
 on the three file-types that are found in each package directory:
-\comp{configure.in}, \comp{config.h.in}, and
-\comp{\vble{pkg}-vendor.h}.  We reserve a discussion of makefile
+\comp{CMakeLists.txt}, \comp{config.h.in}, and \comp{\vble{pkg}-vendor.h}.  We reserve a discussion of makefile
 customization until \S~\ref{sec:customize}.
 \begin{description}
-\item[\comp{configure.in}]\index{configure.in|textbf} The
-  \comp{configure.in} file determines how the \comp{configure*} script
-  gets built by \autoconf.  We will step through a standard package
-  \comp{configure.in} script to learn how to generate package
-  \comp{configure*} files.  An example is the \cfour\ 
-  \comp{configure.in} script illustrated in Fig.~\ref{fig:c4-in}.
-  \begin{figure}
-    \begin{center}
-      \input{fig/conin}
-    \end{center}
-    \caption{\comp{configure.in} file for the \pkg{c4} package.}
-    \label{fig:c4-in}
-  \end{figure}
-  Notice that the \confin\ file has seven basic sections.  Within
-  these sections there are both required and unrequired macros.
+\item[\comp{CMakeLists.txt}]\index{CMakeLists.txt|textbf} The
+  \comp{CMakeLists.txt} provides all of the build instructions needed to generate a set of build instructions for the local file scope.  In the case of a \sys{Unix Makefiles} build project, the generated \sys{Makefiles} are created based on the instructions provided in \comp{CMakeLists.txt}.  We will step through a standard package
+  \comp{CMakeLists.txt} script to learn how to properly instruct \cmake\ to generate a component level build project.  An example is the \pkg{quadrature} 
+  \comp{CMakeLists.txt} script illustrated in Listing~\ref{lst:quadrature-cml}.
+  % Fig.~\ref{fig:quadrature-in}.
+  %\begin{center}
+  %\begin{figure}
+    %\label{fig:quadrature-in}
+    %\caption{\comp{CMakeLists.txt} file for the \pkg{quadrature} package.}
+    
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in,caption={\comp{CMakeLists.txt} file for the \pkg{quadrature} package.},label=lst:quadrature-cml,float=htp]
+cmake_minimum_required(VERSION 2.6)
+project( quadrature CXX )
+
+# ---------------------------------------------------------------------------- #
+# Source files
+# ---------------------------------------------------------------------------- #
+
+#file( GLOB template_implementations *.t.hh *.i.hh )
+file( GLOB sources *.cc )
+#file( GLOB explicit_instantiations *_pt.cc )
+file( GLOB headers *.hh )
+#list( REMOVE_ITEM headers ${template_implementations} )
+
+# Make the header files available in the IDE.
+if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+   list( APPEND sources ${headers} )
+endif()
+
+# ---------------------------------------------------------------------------- #
+# Directories to search for include directives
+# ---------------------------------------------------------------------------- #
+
+include_directories( ${PROJECT_SOURCE_DIR}       # sources
+                     ${draco_src_dir_SOURCE_DIR} # ds++ header files
+                     ${dsxx_BINARY_DIR}          # ds++/config.h
+                     ${GSL_INCLUDE_DIRS}
+                     ${MPI_INCLUDE_PATH}
+)
+
+# ---------------------------------------------------------------------------- #
+# Build package library
+# ---------------------------------------------------------------------------- #
+
+add_component_library( Lib_quadrature ${PROJECT_NAME} "${sources}" )
+add_dependencies( Lib_quadrature
+   Lib_units
+   Lib_special_functions
+   Lib_ode )
+
+# ---------------------------------------------------------------------------- #
+# Installation instructions
+# ---------------------------------------------------------------------------- #
+
+install( TARGETS Lib_quadrature DESTINATION lib )
+install( FILES ${headers} DESTINATION include/quadrature )
+
+# ---------------------------------------------------------------------------- #
+# Unit tests
+# ---------------------------------------------------------------------------- #
+
+if( BUILD_TESTING )
+ add_subdirectory( test )
+endif()   
+  
+
+# ---------------------------------------------------------------------------- #
+# Autodoc
+# ---------------------------------------------------------------------------- #
+
+process_autodoc_pages()
+\end{lstlisting}
+  %\end{figure}
+  %\end{center}
+  Notice that the \comp{CMakeLists.txt} file has seven basic sections.  Within
+  these sections there are both required and optional macros.
   Table~\ref{tab:confmacros} lists all of the usable macros in a
-  \draco\ \confin\ script.  Customizing a \confin\ script is explained 
+  \draco\ \comp{CMakeLists.txt} file.  Customizing a \comp{CMakeLists.txt} script is explained 
   in \S~\ref{sec:customize}.
   \begin{table}
-    \caption{Macros used by the \confin\ scripts.  Macros that require 
-      arguments are indicated by \comp{()} following the macro name.
-      Note that some macros take the literal argument \comp{pkg},
-      while some macros require the package name \vble{pkg}.  Examples 
-      of these are \comp{AC\_MPI\_SETUP(pkg)} and
-      \comp{AC\_PKGNAME(\vble{pkg})}.}
+    \caption{Macros used by the \comp{CMakeLists.txt} files.  Macros that require 
+      arguments are indicated by \comp{()} following the macro name.}
     \label{tab:confmacros}
     \begin{center}
       \begin{tabularx}{\linewidth}{
-          >{\setlength{\hsize}{.7\hsize}}L %
+          >{\setlength{\hsize}{.9\hsize}}L %
           >{\setlength{\hsize}{.3\hsize}}Y %
-          >{\setlength{\hsize}{2.\hsize}}X}
+          >{\setlength{\hsize}{1.6\hsize}}X}
         \hline\hline
         {\normalfont Macro} & Required & Description\\ \hline
-                                % INTRO
-        \multicolumn{3}{X}{Section 1: INTRO} \\ \hline 
-        AC\_INIT() & yes & initializes configure, takes a filename
-        from the package directory as an argument \\
-        AC\_CONFIG() & yes & tells configure where the macro
-        definitions are located, takes a relative path argument
-        pointing to the directory \comp{draco/config} \\
-        AC\_CONFIG\_HEADER() & yes & tells configure to make the
-        \comp{config.h} header, takes the argument
-        \comp{\vble{pkg}/config.h:config.h.in} \\
-        AC\_PKGNAME() & yes & defines the package name, takes the
-        argument \vble{pkg} \\
+                               
+        \multicolumn{3}{X}{Section 1: Project declaration} \\ \hline 
+        cmake\_minimum\_required( VERSION 2.6 ) & yes & states that this file uses features of \cmake\ that were not introduced until version 2.6.  If an older version of \cmake\ is used, a fatal error will be thrown. \\
+        project( quadrature CXX ) &  yes & This command registers the component name (must be unique within the \draco\ project) as the \cmake\ project name and sets the source code language. \\
         \hline
-                                % VENDORS
-        \multicolumn{3}{X}{Section 2: VENDOR SETUPS} \\ \hline
-        AC\_MPI\_SETUP() & no & sets up \mpi\ options for this
-        package, takes either \comp{pkg} or \comp{test} as an argument
-        depending if the vendor is required by the package or for
-        testing (in \comp{\vble{pkg}/test/}) \\
-        AC\_SHMEM\_SETUP() & no & sets up \shmem\ options for this
-        package, takes either \comp{pkg} or \comp{test} as an argument
-        \\
-        AC\_SPRNG\_SETUP() & no & sets up \sprng\ options for this
-        package, takes either \comp{pkg} or \comp{test} as an argument
-        \\ 
-        AC\_PGSLIB\_SETUP() & no & sets up \pgslib\ options for this
-        package, takes either \comp{pkg} or \comp{test} as an argument
-        \\ 
+        
+        \multicolumn{3}{X}{Section 2: Source code registration} \\ \hline 
+        file( GLOB sources *.cc ) & no & This regular expression command selects all \comp{*.cc} files and assigns them to the list \$\comp{sources}. \\
+        file( GLOB headers *.hh ) & no & This regular expression command selects all \comp{*.hh} files and assigns them to the list \$\comp{headers}. \\
+        if( MSVC\_IDE ... ) & no & This if-block appends all of the header files to the list of C++ sources if the project generator is an IDE where we want easy navigation to both sources and headers. \\
+        \hline
+        
+        \multicolumn{3}{X}{Section 3: Include directives} \\ \hline         
+        include\_directories( \$\{\comp{PROJECT\_SOURCE\_DIR}\} ... ) & no & This command instructs the build system to look in the provided list of directories to satisfy include directives found in the source code.  For \sys{Unix Makefiles}, this command results in \comp{-I}\latin{dir}\comp{/} on each compile line. The command uses \cmake\ variables that contain the appropriate paths. In this context, the quotes are important. \\
+        \hline
+        
+        \multicolumn{3}{X}{Section 4: Compile directives} \\ \hline
+        add\_component\_library( Lib\_quadrature \$\{PROJECT\_NAME\} "\$\{sources\}" ) & yes & Generate a library from sources, \$\{\comp{sources}\}, whose name is based on \$\{\comp{PROJECT\_NAME}\} and has the build target key \comp{Lib\_quadrature} \\
+        add\_dependencies( Lib\_quadrature Lib\_special\_functions Lib\_ode ) & yes & The build target \comp{Lib\_quadrature} must be linked against build targets (libraries) Lib\_quadrature, Lib\_special\_functions and Lib\_ode. \\
+        \hline
+        
+        \multicolumn{3}{X}{Section 5: Install commands} \\ \hline
+        install( TARGETS Lib\_quadrature DESTINATION lib ) & no & The file represented by the build target \comp{Lib\_quadrature} (the component library) is to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/lib} directory. \\
+        install( FILES \$\{headers\} DESTINATION include/quadrature )& no & The files represented by the \cmake\ variable \$\{\comp{\{headers\}}\} are to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/include/quadrature} directory.\\
+        \hline
+        
+        \multicolumn{3}{X}{Section 6: Unit Tests} \\ \hline
+        if( BUILD\_TESTING ) ... & yes & This logic block instructs \cmake\ to include the test directory when generating build project unless the developer has explicitly set \comp{BUILD\_TESTING=OFF}. \\
+        \hline
+        
+        \multicolumn{3}{X}{Section 7: Autodoc} \\ \hline
+        process\_autodoc\_pages() & no & If this package provides \doxygen\ documentation, process the source files when instructed to build the \comp{autodoc} build target. \\
+        
+        % AC\_INIT() & yes & initializes configure, takes a filename
+        % from the package directory as an argument \\
+        % AC\_CONFIG() & yes & tells configure where the macro
+        % definitions are located, takes a relative path argument
+        % pointing to the directory \comp{draco/config} \\
+        % AC\_CONFIG\_HEADER() & yes & tells configure to make the
+        % \comp{config.h} header, takes the argument
+        % \comp{\vble{pkg}/config.h:config.h.in} \\
+        % AC\_PKGNAME() & yes & defines the package name, takes the
+        % argument \vble{pkg} \\
+        % \hline
+                               % VENDORS
+        % \multicolumn{3}{X}{Section 2: VENDOR SETUPS} \\ \hline
+        % AC\_MPI\_SETUP() & no & sets up \mpi\ options for this
+        % package, takes either \comp{pkg} or \comp{test} as an argument
+        % depending if the vendor is required by the package or for
+        % testing (in \comp{\vble{pkg}/test/}) \\
+        % AC\_SHMEM\_SETUP() & no & sets up \shmem\ options for this
+        % package, takes either \comp{pkg} or \comp{test} as an argument
+        % \\
+        % AC\_SPRNG\_SETUP() & no & sets up \sprng\ options for this
+        % package, takes either \comp{pkg} or \comp{test} as an argument
+        % \\ 
+        % AC\_PGSLIB\_SETUP() & no & sets up \pgslib\ options for this
+        % package, takes either \comp{pkg} or \comp{test} as an argument
+        % \\ 
         \hline\hline
       \end{tabularx}
     \end{center}
@@ -261,11 +406,12 @@ customization until \S~\ref{sec:customize}.
 \section{Customized Packages}
 \label{sec:customize}
 
+Section not complete.
+
 %%---------------------------------------------------------------------------%%
 %% indices
 
-\index{configure.in|)}
-\index{Makefile.in|)}
+\index{CMakeLists.txt|)}
 \index{config.h.in|)}
 \index{pkg-vendor.h|)}
 

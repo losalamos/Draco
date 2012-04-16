@@ -1,0 +1,100 @@
+/* Time-stamp: <99/02/01 16:18:21 tme> */
+
+digraph build_tree {
+  /* graph attributes */
+    center=1;
+    margin=".25,.25";
+    size="6.5,9";
+    rankdir=LR;
+    
+  /* main directories */
+
+    node [fontname=Courier];
+
+  /* .. level */
+
+    gccmpid [label="gcc_mpid/", fontsize=22, shape=box];
+    
+  
+  /* draco/ level */
+    node [fontsize=18];
+    {
+
+  /* gcc_mpid level */
+
+    draco   [label="draco/", fontsize=20, shape=box];
+    bin     [label="bin/", fontsize=20, shape=box]; 
+    include [label="include/", fontsize=20, shape=box]; 
+    lib     [label="lib/", fontsize=20, shape=box]; 
+    config  [label="config/", fontsize=20, shape=box]; 
+
+    node       [shape=ellipse];
+    tgt_cl     [label="ChangeLog"];
+    tgt_cp     [label="Copyright"];
+    tgt_read   [label="README.draco"];
+        
+      /* directories */
+        
+      /*   node   [shape=box]; */
+      /*   src    [label="src/"]; */
+      /*   config [label="config/"]; */
+      /*   testing [label="Testing/"]; */
+      /*   cmakefiles [label="CMakeFiles/"]; */
+
+      /* /\* files *\/ */
+      /*   node       [shape=ellipse]; */
+      /*   draco_make [label="Makefile"]; */
+      /*   draco_cach [label="CMakeCache.txt"]; */
+      /*   draco_cust [label="CTestCustom.cmake"]; */
+      /*   draco_ctest [label="CTestTestfile.cmake"]; */
+      /*   draco_dart [label="DartConfiguration.tcl"]; */
+      /*   draco_install [label="cmake_install.cmake"]; */
+      /*   draco_uninstall [label="cmake_uninstall.cmake"]; */
+    }
+    
+  /* draco/<dir> */
+    node [fontsize=14];
+    {
+        /* include */
+        node   [shape=box]; 
+        incl_dsxx_dir [label="ds++/"]; 
+        incl_c4_dir   [label="c4/"]; 
+        include_dirs  [label="other component directories ...", shape=plaintext];
+
+        /* lib */
+        node    [shape=ellipse];
+        libdsxx [label="librtt_ds++.so"]; 
+        libc4   [label="librtt_c4.so"]; 
+        lib_files    [label="other component libraries ...", shape=plaintext];
+
+        /* config */
+        node    [shape=ellipse];
+        buildEnv [label="buildEnv.cmake"]; 
+        unixgxx  [label="unix-g++.cmake"]; 
+        config_files [label="other config files ...", shape=plaintext];
+
+        /* draco build directory */
+        binary_dir [label="binary (build) directory ...", shape=plaintext];
+
+        /* bin */
+        node    [shape=ellipse];
+        ip_int [label="Ipcress_Interpreter*"]; 
+        
+    }
+    
+  /* tree */
+
+    gccmpid -> {draco include lib bin config
+            tgt_cl tgt_cp tgt_read};
+    draco   -> { binary_dir };
+    include -> { incl_dsxx_dir incl_c4_dir include_dirs };
+    lib     -> { libdsxx libc4 lib_files };
+    config  -> { buildEnv unixgxx config_files };
+    bin     -> { ip_int };
+    /* draco  -> {src config testing cmakefiles
+            draco_make draco_cach draco_cust draco_ctest draco_dart
+            draco_install draco_uninstall}; */
+    /* src -> {src_cmfiles src_m src_install src_ctest src_files}; */
+    /* config -> {config_cmfiles config_m config_install config_ctest}; */
+    /* testing -> {test_temp}; */
+}

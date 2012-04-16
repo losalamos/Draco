@@ -23,52 +23,58 @@ with \soft{Doxygen}~\cite{doxygen} and is maintained with the
 The purpose of this document is to describe the \draco\ build system.
 Specifically, we will show both users and \draco\ developers how to: 
 \begin{itemize}
-\item configure \draco\ for different platforms and options;
-\item compile \draco\ components;
+\item configure \draco\ for different platforms, build types and options; \index{configure}
+\item compile \draco\ components; \index{compile}
 \item compile and link programs that use \draco;
-\item add packages to \draco;
-\item add new support options to \draco.
+\item add components to \draco;
+\item add new support options to \draco;
+\item generate developer documentation via \soft{Doxygen}.
 \end{itemize}
 Thus, this manual is an invaluable reference to those who work in, or
 with, \draco.
 
 As a review, we restate the \draco\ mission statement~\cite{rn98046}:
 \begin{quote}
-  \slshape \draco\ is a comprehensive, readiation transport framework
-  that provides key, reusable components for serial and parallel,
+  \slshape \draco\ is a comprehensive, radiation transport framework
+  that provides key, reusable components for serial and parallel % and heterogeneous architecture platforms
   computational physics codes.
-\end{quote}
+\end{quote} \index{reuse}\index{serial}\index{parallel}\index{computational physics} \index{radiation transport}
 To meet these requirements \draco\ uses modern software engineering
-concepts including object-oriented/\-generic design, multi-environment
+concepts including object-oriented/\-generic design~\cite{ooadid}, multi-environment
 build systems, and service libraries based on levelized component
-designs.  The build system described in this manual allows \draco\ to
+designs~\cite{la96}.  The build system described in this manual allows \draco\ to
 satisfy its mission statement and enforces the concept of levelized
-component design.
+component design.\index{object-oriented}\index{levelized}
 
 The \draco\ build system has been carefully designed.  In particular,
 we had several requirements that the build system should satisfy.
 These requirements are:
 \begin{itemize}
-\item support for simultaneous multiple configurations;
-\item support for multiple languages, particularly \cpp, \cc, and
-  \python on all ASC platforms;
-%\item support for \dejagnu\ and regression testing;
+  \item support for simultaneous, multiple configurations (Release, Debug, etc);
+  \item support for multiple languages, but the recommended languages are \lang{C} and \cpp.
+  \item support for \cpp\ on all current ASC platforms;
+  \item \lang{C} and \cpp\ coding must conform strictly to issued ISO standards.
+\begin{enumerate}
+\item \cpp 03, also known as the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003.
+\item \lang{C99}, also known as the ANSI C ISO/IEC 9899:1999 standard
+\end{enumerate}
+  \item support for multiple build project types (\soft{Makefiles}, \soft{XCode}, \soft{Eclipse}, etc.)
 \item on-demand and automated unit and regression testing;
 \item the ability to support multiple code projects;
 \item support for external vendors;
-\item support for multiple languages;
+  \item support for explicit template instantiation;
 \item extensibility;
 \item low-cost on developers to add new packages, code, and tests; 
-\item compliance with the GNU coding standard \cite{gnu} \index{GNU
+\item  adoption of selected sections of the GNU coding standard~\cite{gnu} \index{GNU
     Coding Standard}.
 \end{itemize}
 This last requirement has evolved a somewhat as the supported
-platforms and build systems scope has grown to include XCode and
-Eclipse on non-Linux platforms.  The use of the CMake suite of tools
+platforms and build systems scope has grown to include \soft{XCode} \index{XCode} and
+\soft{Eclipse} \index{Eclipse} on non-Linux platforms.  The use of the \cmake \index{CMake} suite of tools
 preculdes the use of GNU autotools \index{GNU autotools},
 \autoconf\ and \automake~\cite{autoconf}.  
 It also precludes the use of \make~\cite{gmake} for non-Makefile based
-build projects (e.g.: XCode, Eclipse). More detail will be given in
+build projects (e.g.: \soft{XCode}, \soft{Eclipse}). More detail will be given in
 Chap.~\ref{chap:model}. 
 
 %%---------------------------------------------------------------------------%%
@@ -82,11 +88,11 @@ are not to be interpreted as an ``universal standard.''  They are
 simply used to make sure that the concepts illucidated within this
 manual have a common point of reference.
 
-A \latin{product} is anything that is produced from a source code
-tree~\cite{ja94}.  A \latin{system} is a code, or a group of codes,
-that persist over time~\cite{tn98}.  A \latin{project} is an
+A \latin{product} \index{product} is anything that is produced from a source code
+tree~\cite{ja94}.  A \latin{system} \index{system} is a code, or a group of codes,
+that persist over time~\cite{tn98}.  A \latin{project} \index{project} is an
 undertaking that has a definite beginning and ending date, and it
-produces a product.  A \latin{package} is one component of a system
+produces a product.  A \latin{package} \index{package} is one component \index{component}of a system
 (package and components are used interchangeably).  Packages normally
 reside in a single directory in the source code tree; although, that
 directory may have subdirectories.  However, packages are sometimes
@@ -127,31 +133,31 @@ directed to:
     \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
     Group \\ \hline
 %    Tom Evans & tme@lanl.gov & CCS--4 \\
-    Kelly Thompson & kgt@lanl.gov     & CCS--2 \\ \hline\hline
+    Kelly Thompson & kgt@lanl.gov     & CCS--2 \\
     Jae Chang      & jhchang@lanl.gov & CCS--2 \\ \hline\hline
   \end{tabular}
 \end{center}
 Additional information is available on the \draco\ \soft{TeamForge}
-site, \comp{https://tf.lanl.gov/draco}.
+site, \href{https://tf.lanl.gov/draco}{https://tf.lanl.gov/draco}.
 
 %%---------------------------------------------------------------------------%%
 
 \section{Manual Organization}
 
 This manual is written for three basic groups: (a) \draco\ users, (b)
-\draco\ package developers, and (c) \draco\ system developers. The
+\draco\ component developers, and (c) \draco\ system developers. The
 manual is organized around these three groups. There is an additional
 group consisting of developers who plan to use \draco\ as a model for
 their own code systems.  For this group the entire \draco\ Build
 System Manual is of interest.
 
 The \draco\ users group consists of clients who use \draco\ components
-in some form.  The primary interest of this group is configuring and
-compiling \draco\ so that it meets their product's needs.  The
-relationship between this group and \draco\ can be very close (XTM
-code teams) or very distant (XCI code teams).
+in some form.  The primary interest of this group is configuring \index{configure} and
+compiling \index{compile} \draco\ so that it meets their product's needs.  The
+relationship between this group and \draco\ can be very close (CCS--2
+code teams) or very distant (XCP-1 code teams).
 
-The \draco\ package developers group contains people who write
+The \draco\ components developers group contains people who write
 packages in \draco.  The primary interest of this group is
 configuring, compiling, and adding new packages to \draco.  The final
 group, the \draco\ system developers group, are those who maintain the
@@ -166,13 +172,20 @@ whole unit. Tables~\ref{tab:draco_package} and \ref{tab:draco_system}
     \begin{tabular}{llc}\hline\hline
       \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
       Group \\ \hline
-      John McGhee$^{\ast}$ & mcghee@lanl.gov & XTM \\
-      Tom Evans & tme@lanl.gov & XTM \\
-      Mark Gray & gray@lanl.gov & XTM \\
-      Rob Lowrie & lowrie@lanl.gov & XTM \\
-      Shawn Pautz & pautz@lanl.gov & XTM \\ 
-      Randy Roberts & rsqrd@lanl.gov & XTM \\
-      Todd Urbatsch & tmonster@lanl.gov & XTM \\ \hline\hline
+      Kelly Thompson$^{\ast}$ & kgt@lanl.gov & CCS--2 \\
+      Jae Chang & jhchang@lanl.gov & CCS--2 \\
+      Allan Wollaber & wollaber@lanl.gov & CCS--2 \\
+      Gabe Rockefeller& gaber@lanl.gov & CCS--2 \\
+      Jeff Densmore & jdd@lanl.gov & CCS--2 \\
+      Kent Budge & kgbudge@lanl.gov & CCS--2 \\
+      Jim Warsa & warsa@lanl.gov, & CCS--2 \\
+%      John McGhee$^{\ast}$ & mcghee@lanl.gov & XTM \\
+%      Tom Evans & tme@lanl.gov & XTM \\
+%      Mark Gray & gray@lanl.gov & XTM \\
+      Rob Lowrie & lowrie@lanl.gov & CCS--2 \\
+%      Shawn Pautz & pautz@lanl.gov & XTM \\ 
+%      Randy Roberts & rsqrd@lanl.gov & XTM \\
+      Todd Urbatsch & tmonster@lanl.gov &  CCS--2 \\ \hline\hline
       \multicolumn{3}{l}{$^{\ast}$\draco\ project leader.} \\
     \end{tabular}
   \end{center}
@@ -184,29 +197,38 @@ whole unit. Tables~\ref{tab:draco_package} and \ref{tab:draco_system}
     \begin{tabular}{llc}\hline\hline
       \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
       Group \\ \hline
-      Tom Evans & tme@lanl.gov & XTM \\
-      Randy Roberts & rsqrd@lanl.gov & XTM \\ \hline\hline
+      Kelly Thompson & kgt@lanl.gov & CCS--2 \\
+      Allan Wollaber & wollaber@lanl.gov & CCS--2 \\
+      Jae Chang & jhchang@lanl.gov & CCS--2 \\
+%      Tom Evans & tme@lanl.gov & XTM \\
+  %    Randy Roberts & rsqrd@lanl.gov & XTM \\ 
+\hline\hline
     \end{tabular}
   \end{center}
 \end{table}
 %%% END GROUP ROSTERS
 gives a current list of the \draco\ package and system developers.
 
-Table~\ref{tab:layout} lists the groups that each chapter targets.
+Table~\ref{tab:layout} lists the recommended chapters for review by each \draco\ developer group.
 \begin{table}
   \begin{center}
-    \caption{The target groups for each chapter.  Group (a) are the
-      \draco\ users; Group (b) are the \draco\ package developers, and 
-      Group(c) are the \draco\ system developers.}
+    \caption{Chapters targeted for each group of \draco\ developers.}
     \label{tab:layout}
-    \begin{tabular}{ccc}\hline\hline
-      Chapter & Primary Target Group & Secondary Target Groups
-      \\ \hline 
-      \ref{chap:model} & (a), (b), (c) & (a), (b), (c) \\ 
-      \ref{chap:compile} & (a), (b) & (c) \\ 
-      \ref{chap:extern} & (a) & (b) \\
-      \ref{chap:adding} & (b) & (c) \\ 
-      \ref{chap:extend} & (c) & (b) \\ \hline \hline
+    \begin{tabular}{lll}\hline\hline
+%      Chapter & Primary Target Group & Secondary Target Groups
+%      \\ \hline 
+%      \ref{chap:model} & (a), (b), (c) & (a), (b), (c) \\ 
+%      \ref{chap:compile} & (a), (b) & (c) \\ 
+%      \ref{chap:extern} & (a) & (b) \\
+%      \ref{chap:adding} & (b) & (c) \\ 
+%      \ref{chap:extend} & (c) & (b) \\ \hline \hline
+
+          Group                             & Recommended  & Optional \\ \hline
+% \ref{chap:model} Model &   \ref{chap:compile} Compile & \ref{chap:extern} Extern &   \ref{chap:adding} Add & \ref{chap:extend} Extend \\ \hline
+	Users                             & Chap. \ref{chap:model}, \ref{chap:compile} and \ref{chap:extern} &    \\
+	Component Developers & Chap. \ref{chap:model}, \ref{chap:compile} and \ref{chap:adding} & Chap. \ref{chap:extern} and \ref{chap:extend}  \\
+	System Developers        & Chap. \ref{chap:model}, \ref{chap:adding} and \ref{chap:extend}  & Chap. \ref{chap:compile} \\  \hline \hline
+
     \end{tabular}
   \end{center}
 \end{table}
@@ -233,8 +255,10 @@ developers will use this material.
 
 Finally, Chap.~\ref{chap:extend} shows how to extend the \draco\ build 
 system.  This chapter focuses on adding new configure options and new
-language support.  In general, this chapter shows how the \gmake\ and
-\autoconf\ files are used and work.  This chapter is primarily intended
+language support.  %In general, this chapter shows how the \gmake\ and
+%\autoconf\ files are used and work. 
+In general, this chapter shows how the \cmake\ files are used and work.
+ This chapter is primarily intended
 for \draco\ system developers; however, some content in this chapter
 is necessary for \draco\ package developers.
 
@@ -243,7 +267,7 @@ is necessary for \draco\ package developers.
 \section{Quick Start}
 \label{sec:quick}
 
-Many \draco\ users will undoubtedly be familiar with \autoconf\ and
-\gmake. These users can progress directly to \S~\ref{sec:examples} for 
+Many \draco\ users will undoubtedly be familiar with \cmake\ and
+\make. These users can progress directly to \S~\ref{sec:examples} for 
 examples on configuring and building \draco. 
 

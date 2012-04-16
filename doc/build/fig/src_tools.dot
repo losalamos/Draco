@@ -18,10 +18,24 @@ digraph source_tree {
     node [fontsize=18];
     {
 	node     [shape=ellipse];
-	tool_m   [label="Makefile.in"];
-	tool_cin [label="configure.in"];
-	tool_c   [label="configure*"];
-	nmlgen   [label="nmlgen*"];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+	[label=""];
+    
     }
     
   /* tree */

@@ -1,62 +1,136 @@
 digraph draco_level {
-  /* graph attributes */
+    /* graph attributes */
     center=1;
-    size="6,4";
-    ranksep=1.5;
+    size="7.5,10";
+    ranksep=4;
     
-  /* levels */
+    /* levels */
+    legend [shape=plaintext, label="Legend:", fontsize=14];
     level1 [shape=plaintext, label="Level 1:", fontsize=18];
     level2 [shape=plaintext, label="Level 2:", fontsize=18];
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
+/*     level5 [shape=plaintext, label="Level 5:", fontsize=18]; */
+/*    level6 [shape=plaintext, label="Level 6:", fontsize=18]; */
     
-    level4 -> level3 -> level2 -> level1 [style=invis];
+    /* level6 -> level5 -> */
+    level4 -> level3 -> level2 -> level1 -> legend [style=invis];
     
-  /* packages */
+    /* packages */
+
+    /* legend */
+    leg_vendor [shape=box, label="3rd party vendor", color=green, shape=hexagon];
+    leg_draco  [shape=box, label="Draco component",  color=blue,  shape=box ];
+    leg_depre  [shape=box, label="Deprecated component", color=red,  shape=box ];
+
+    /* level 1 */
+    vdlopen    [shape=hexagon, color=green, label="dlopen"];
+    veospac    [shape=hexagon, color=green, label="EOSPAC"];
+    vgrace     [shape=hexagon, color=green, label="XMGRACE"];
+    vlapack    [shape=hexagon, color=green, label="LAPACK"];
+    vmpi       [shape=hexagon, color=green, label="MPI"];
+    vdacs      [shape=hexagon, color=green, label="DaCS"];
+    vpapi      [shape=hexagon, color=green, label="PAPI"];
+        
+    dsxx [shape=box, color=blue, label="ds++", width=6];
     
-  /* level 1 */
-    dsxx [shape=box, label="ds++", width=7];
-    traits [shape=box, label="traits" width=2];
-    xm [shape=box, label="xm"];
+    /* level 2 */
+    vgsl       [shape=hexagon, color=green, label="GSL"];
+
+    c4         [shape=box, color=blue, label="c4"];
+    cdi        [shape=box, color=blue, label="cdi"];
+    fpetrap    [shape=box, color=blue, label="fpe_trap"];
+    lapack     [shape=box, color=blue, label="lapack_wrap"];
+    linear     [shape=box, color=blue, label="linear"];
+    meshelement [shape=box, color=blue, label="mesh_element"];
+    ode        [shape=box, color=blue, label="ode"];
+    plot       [shape=box, color=blue, label="plot2D"];
+    rng        [shape=box, color=blue, label="rng"];
+    shlib      [shape=box, color=blue, label="shared_lib"];
+    traits     [shape=box, color=blue, label="traits"];
+    units      [shape=box, color=blue, label="units"];
+        
+    /* level 3 */
+    device    [shape=box, color=blue, label="device"];
+    cdieos    [shape=box, color=blue, label="cdi_eospac"];
+    cdiip     [shape=box, color=blue, label="cdi_ipcress"];
+    diagnostics [shape=box, color=blue, label="diagnostics"];
+    fit       [shape=box, color=blue, label="fit"];
+    meshread  [shape=box, color=blue, label="meshReaders"];
+    min       [shape=box, color=blue, label="min"];
+    norms     [shape=box, color=blue, label="norms"];
+    parser    [shape=box, color=blue, label="parser"];
+    roots     [shape=box, color=blue, label="roots"];
+    sf        [shape=box, color=blue, label="special_functions"];
+    timestep  [shape=box, color=blue, label="timestep"];
+    viz       [shape=box, color=blue, label="viz"];
     
-  /* level 2 */
-    c4 [shape=box, label="c4", width=2];
-    rng [shape=box, label="rng"];
-    nml [shape=box, label="nml", width=2];
-    units [shape=box, label="units"];
+    /* level 4 */
+    cdianal   [shape=box, color=blue, label="cdi_analytic"];
+    quad      [shape=box, color=blue, label="quadrature"];
+    rttread   [shape=box, color=blue, label="RTT_Format_Reader"];
     
-  /* level 3 */
-    mesh [shape=box, label="mesh"];
-    diffusion [shape=box, label="diffusion"];
-    imc [shape=box, label="imc"];
-    linalg [shape=box, label="linalg"];
-    radphys [shape=box, label="radphys"];
-    timestep [shape=box, label="timestep"];
+    /* dependencies */
+    {rank=same; legend leg_vendor leg_draco leg_depre};
+    {rank=same; level1 dsxx vlapack vmpi veospac vgrace vdlopen vgsl vdacs vpapi};
+    {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi ode linear};
+    {rank=same; level3 viz timestep cdieos meshread parser sf};
+    {rank=same; level4 rttread quad};
+
+
+    leg_draco -> {leg_vendor} [color=green, style=dotted, label="test dependency only"];
+    leg_draco -> {leg_depre} [color=red, label="full dependency"];
     
-  /* level 4 */
-    p1diffusion [shape=box, label="P1Diffusion"];
-    matprops [shape=box, label="matprops"];
+    /* draco packages */
+
+    /* NOTE:  hidden dependencies are in comments at the end of each line.
+     * For example if a package depends on c4 it implicitly depends on dsxx
+     * as well.  The dependency on dsxx is not shown explicitly on the
+     * graph. 
     
-  /* dependencies */
-    {rank=same; level1 traits dsxx xm}
-    {rank=same; level2 c4 rng nml units}
-    {rank=same; level3 mesh diffusion imc linalg radphys timestep}
-    {rank=same; level4 p1diffusion matprops}
+    /* level 2 */
+    c4          -> {dsxx}        [color=blue];
+    c4          -> {vmpi}        [color=green];
+    c4          -> {vpapi}       [color=green, style=dotted];
+    cdi         -> {dsxx}        [color=blue];
+    fpetrap     -> {dsxx}        [color=blue];
+    fpetrap     -> {vmpi}        [color=green];
+    lapack      -> {dsxx}        [color=blue];
+    lapack      -> {vlapack}     [color=green];
+    linear      -> {dsxx}        [color=blue];
+    meshelement -> {dsxx}        [color=blue];
+    ode         -> {dsxx}        [color=blue];
+    plot        -> {dsxx}        [color=blue];
+    plot        -> {vgrace}      [color=green];
+    rng         -> {dsxx}        [color=blue];
+    rng         -> {vgsl}        [color=green];
+    shlib       -> {dsxx}        [color=blue];
+    shlib       -> {vdlopen}     [color=green];
+    traits      -> {dsxx}        [color=blue];
+    units       -> {dsxx}        [color=blue];
     
-  /* draco packages */
-  /* level 2 */
-    rng -> dsxx;
-    c4 -> dsxx;
-    nml -> dsxx;
-    units -> dsxx;
-  /* level 3 */
-    diffusion -> nml;
-    linalg -> {dsxx nml c4};
-    radphys -> {units traits};
-    mesh -> {dsxx c4 nml xm traits};
-    timestep -> {dsxx c4};
-    imc -> {dsxx c4 rng};
-  /* level 4 */
-    p1diffusion -> {linalg diffusion dsxx};
-    matprops -> {units radphys traits dsxx};
+    /* level 3 */
+    device      -> {dsxx}        [color=blue];
+    device      -> {c4}          [color=blue, style=dotted];
+    device      -> {vdacs}       [color=green];
+    cdieos      -> {cdi}         [color=blue];
+    cdieos      -> {veospac}     [color=green]; 
+    cdiip       -> {cdi}         [color=blue];
+    diagnostics -> {c4}          [color=blue];
+    fit         -> {linear}      [color=blue];
+    meshread    -> {meshelement} [color=blue];
+    min         -> {linear}      [color=blue];
+    norms       -> {c4}          [color=blue];
+    parser      -> {c4 units}    [color=blue];
+    roots       -> {linear}      [color=blue];
+    sf          -> {units ode}   [color=blue];
+    sf          -> {vgsl}        [color=green];
+    timestep    -> {c4}          [color=blue];
+    viz         -> {traits}      [color=blue];
+
+    /* level 4 */
+    cdianal     -> {parser cdi ode}        [color=blue];
+    quad        -> {sf meshelement parser} [color=blue];
+    rttread     -> {meshread}              [color=blue];
+
 }

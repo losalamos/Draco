@@ -18,29 +18,41 @@ digraph source_tree {
     node [fontsize=18];
     {
 	node    [shape=ellipse];
-	src_c   [label="configure*"];
-	src_cin [label="configure.in"];
-	src_m   [label="Makefile.in"];
+	src_cml [label="CMakeLists.txt"];
 
 	node     [shape=box];
-	p1diff   [label="P1Diffusion/"];
+    rttfr    [label="RTT_Format_Reader"];
 	c4       [label="c4/"];
-	diff     [label="diffusion/"];
+	cdi      [label="cdi/"];
+	cdia     [label="cdi_analytic/"];
+	cdie     [label="cdi_eospac/"];
+	cdii     [label="cdi_ipcress/"];
+    device   [label="device/"];
 	dsxx     [label="ds++/"];
-	imc      [label="imc/"];
-	linalg   [label="linalg/"];
-	mat      [label="matprops/"];	
-	mesh     [label="mesh/"];
-	nml      [label="nml/"];
-	radphys  [label="radphys/"];
+    fit      [label="fit/"];
+    fpetrap  [label="fpe_trap/"];
+    lapackwrap [label="lapack_wrap/"];
+    linear   [label="linear/"];
+    meshread [label="meshReaders/"];
+    meshele  [label="mesh_element/"];
+    min      [label="min/"];
+    norms    [label="norms/"];
+    ode      [label="ode/"];
+    parser   [label="parser/"];
+    plot2D   [label="plot2D/"];
+    quadrature[label="quadrature/"];
 	rng      [label="rng/"];
+    roots    [label="roots/"];
+    sharedlib [label="shared_lib/"];
+    sf       [label="special_funtions/"];
 	timestep [label="timestep/"];
 	traits   [label="traits/"];
 	units    [label="units/"];
-	xm       [label="xm/"];
+	viz      [label="viz/"];
     }
     
   /* tree */
-    src -> {src_c src_cin src_m p1diff c4 diff dsxx imc linalg mat mesh nml
-		radphys rng timestep traits units xm};
+    src -> {src_cml rttfr c4 cdi cdia cdie cdii device dsxx fit fpetrap lapackwrap linear
+            meshread meshele min norms ode parser plot2D quadrature rng roots sharedlib
+            sf timestep traits units viz };
 }
