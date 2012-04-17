@@ -7,6 +7,8 @@
 
 if (APPLE)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
+else()
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 endif()
 
 find_path( LIBSCI_INCLUDE_DIR 
