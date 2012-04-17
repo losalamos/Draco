@@ -72,19 +72,16 @@
 \frontmatter
 
 \title{The Draco Build System}
-\author{K.G. Thompson}
-\author{T.M. Evans}
-\author{R.M. Roberts}
-%\author{K.G. Thompson}
-%\address{X--TM, MS D409, Los Alamos National Laboratory, Los Alamos,
-%NM 87544}
-\address{CCS--4, MS D409, Los Alamos National Security, LLC, Los
-  Alamos, NM 87544}
-
+\author{K.G. Thompson$^a$}
+\address{$^a$CCS--2, MS D409, Los Alamos National Security, LLC, Los Alamos, NM 87545}
 \email{kgt@lanl.gov}
-%\email{tme@lanl.gov}
-%\email{rsqrd@lanl.gov}
-%\email{kgt@lanl.gov}
+
+\author{T.M. Evans$^b$}
+\address{$^b$currently at ORNL}
+
+\author{R.M. Roberts$^c$}
+\address{$^c$D--6, MS F609, Los Alamos National Security, LLC, Los Alamos, NM 87545}
+\email{rsqrd@lanl.gov}
 
 \subjclass{CCS--2:12--NN(U), LA--12--NNNNN}
 \date{\today}
@@ -142,14 +139,11 @@
 %  \item support for \purify;
 
   \end{enumerate}
-  These requirements plus additional features such as
-  threaded/parallel building, heterogeneous architectures and vendor support have been included in
+  These requirements plus additional features such as threaded/parallel building, heterogeneous architectures and vendor support have been included in
   the \draco\ build system.
   
-  The build system primarily uses three CMake tools~\cite{cmake}, \cmake, \ctest
-  and \cdash.  Version control of the \draco\ source is performed by
-  \svn~\cite{svn-redbean}. These tools are freely available from
-  \href{http://kitware.com}{Kitware} and \href{http://tigris.org}{Tigris.org}.
+  The build system primarily uses three CMake tools~\cite{cmake}, \cmake, \ctest and \cdash.  Version control of the \draco\ source is performed by
+  \svn~\cite{svn-redbean}. These tools are freely available from \href{http://kitware.com}{Kitware} and \href{http://tigris.org}{Tigris.org}.
 
 %
 %\vspace{0.5in}
@@ -165,6 +159,7 @@
 \tableofcontents
 \listoffigures
 \listoftables
+% \lstlistoflistings % [KT 4-17-2012 This isn't working for me]
 
 %%---------------------------------------------------------------------------%%
 %% Main Matter

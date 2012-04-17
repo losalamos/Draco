@@ -439,7 +439,7 @@ If the build configuration requires many options, the developer may choose to cr
     CMakeCache.txt
     $ cmake $draco_home
 \end{verbatim}
-A sample \comp{CMakeCache.txt} file is provided in the root \draco\ source directory:
+A sample \comp{CMakeCache.txt} file is provided in the root \draco\ source directory.  The contents of this file are also provided in Listing~\ref{lst:cmakecachetxt}.
 %
 \lstset{language=ksh,
   showstringspaces=false,
@@ -448,7 +448,7 @@ A sample \comp{CMakeCache.txt} file is provided in the root \draco\ source direc
   rulesepcolor=\color{black},
   backgroundcolor=\color{listingBG}
 }
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in]
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in, caption={A sample \comp{CMakeCache.txt} file.}, float=tn,label={lst:cmakecachetxt}]
 # CMakeCache.txt template for Draco
 # $Id$
 
@@ -508,8 +508,8 @@ One final note about running \cmake\ from the command line is the option to choo
      $ cd linux_mpid/draco
      $ ccmake $draco_home
 \end{verbatim}
-This will start an interactive configure session that will look similar to 
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in]
+This will start an interactive configure session that will look similar the screenshot shown in Listing~\ref{lst:ccmake-empty}.
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in, caption={The \comp{ccmake} screen prior to running configure.}, float=htn, label={lst:ccmake-empty}]
                                                      Page 0 of 1
  EMPTY CACHE
 
@@ -521,8 +521,8 @@ Press [h] for help           Press [q] to quit without generating
 Press [t] to toggle advanced mode (Currently Off)
 \end{lstlisting}
 Selecting interactive command \comp{[c]} (followed by \comp{[e]} to exit the output review screen) 
-will populate the configure environment with default values (be sure to turn caps lock off) resulting in something similar to the following screen.
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in]
+will populate the configure environment with default values (be sure to turn caps lock off) resulting in something similar to what is shown in Listing~\ref{lst:ccmake-post-configure}
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in, caption={The \comp{ccmake} screen after the initial configure command.}, float=htn, label={lst:ccmake-post-configure}]
                                                      Page 1 of 1
  BUILD_AUTODOC                   *OFF                                                    
  BUILD_DOC                       *OFF                                                    

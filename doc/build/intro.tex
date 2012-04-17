@@ -40,7 +40,7 @@ As a review, we restate the \draco\ mission statement~\cite{rn98046}:
   computational physics codes.
 \end{quote} \index{reuse}\index{serial}\index{parallel}\index{computational physics} \index{radiation transport}
 To meet these requirements \draco\ uses modern software engineering
-concepts including object-oriented/\-generic design~\cite{ooadid}, multi-environment
+concepts including object-oriented, generic design~\cite{ooadid}, multi-environment
 build systems, and service libraries based on levelized component
 designs~\cite{la96}.  The build system described in this manual allows \draco\ to
 satisfy its mission statement and enforces the concept of levelized
@@ -74,7 +74,7 @@ platforms and build systems scope has grown to include \soft{XCode} \index{XCode
 preculdes the use of GNU autotools \index{GNU autotools},
 \autoconf\ and \automake~\cite{autoconf}.  
 It also precludes the use of \make~\cite{gmake} for non-Makefile based
-build projects (e.g.: \soft{XCode}, \soft{Eclipse}). More detail will be given in
+build projects (e.g.: \soft{XCode}, \soft{Eclipse CDT}). More detail will be given in
 Chap.~\ref{chap:model}. 
 
 %%---------------------------------------------------------------------------%%
@@ -124,7 +124,8 @@ directories, and @ for links.  Computer screen prompts are represented
 by the \comp{\$} symbol.
 
 %%---------------------------------------------------------------------------%%
-\section{DBS Support and Procurement}
+\section{Draco Build System Support and Procurement}
+\label{sec:procurement}
 
 Questions about procuring a copy of the DBS or its use can be
 directed to:
@@ -132,13 +133,17 @@ directed to:
   \begin{tabular}{llc}\hline\hline
     \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
     Group \\ \hline
-%    Tom Evans & tme@lanl.gov & CCS--4 \\
     Kelly Thompson & kgt@lanl.gov     & CCS--2 \\
     Jae Chang      & jhchang@lanl.gov & CCS--2 \\ \hline\hline
   \end{tabular}
 \end{center}
 Additional information is available on the \draco\ \soft{TeamForge}
-site, \href{https://tf.lanl.gov/draco}{https://tf.lanl.gov/draco}.
+site, \href{https://tf.lanl.gov/draco}{https://tf.lanl.gov/draco}.  Also note that the \draco\ team 
+maintains a a \sys{UNIX} file sharing group, \comp{draco}.  
+Developers wishing to access \draco\ source code or development environment files must be members of this file sharing group. 
+Membership is controlled by the current super-users of the group as listed on \href{https://register.lanl.gov}{https://register.lanl.gov} 
+which should correspond to the individuals listed in the table above.
+
 
 %%---------------------------------------------------------------------------%%
 
@@ -263,11 +268,70 @@ for \draco\ system developers; however, some content in this chapter
 is necessary for \draco\ package developers.
 
 %%---------------------------------------------------------------------------%%
+\section{Adminstration}
+\label{sec:admin}
+
+\subsection{Important locations}
+\draco\ make use of NFS-based and web-based tools.  Locations of \draco\ related files and services are provided in Table~\ref{tab:important-locations}.
+\begin{table}
+  \begin{center}
+    \caption{File and Internet locations used by \draco}
+    \label{tab:important-locations}
+    \begin{tabular}{lp{4in}}\hline\hline
+
+          Item                             & Location \\ 
+          \hline
+          Repository & \url{svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/} \\
+          Archival storage & \url{HPSS://hpss/jayenne/} \\
+          Wiki & \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
+          Bug Tracker &  \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
+          Regression files & \url{ccscs8://home/regress/cmake_draco} and \url{hpc://usr/projects/jayenne/regress} \\
+          Regression Dashboard & \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash} \\
+  
+	\hline \hline
+
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsection{Mailing list and commit notificiations}
+The \draco\ team maintains a mailing list used for announcements and general \draco\ discussion. To subscribe to this list, send an email to \url{listmanager@listserv.lanl.gov} 
+with the body \comp{'subscribe draco'}. For
+more information about mailing lists at LANL you can send an email to the same address with the message
+\comp{'help'}. Some list management functions can also be completed by visiting \url{https://register.lanl.gov}.
+If you are not sure if you are subscribed or not you can send the command \comp{'which'} to \url{listmanger@listserv.lanl.gov} to see what LANL lists you are subscribed to.
+Table~\ref{tab:email-lists} lists a few other mailing lists that may be useful for \draco\ developers to subscribe to.
+\begin{table}
+  \begin{center}
+    \caption{Suggested email lists for \draco\ developers}
+    \label{tab:email-lists}
+    \begin{tabular}{lp{4.5in}}
+    \hline\hline
+
+          List Name                             & Purpose \\ 
+          \hline
+          \comp{draco} & General \draco\ related discussion, including \svn\ commit messages. \\
+          \comp{jayenne} & General \sys{Jayenne} related discussion, including \svn\ commit messages for \sys{ClubIMC}, \sys{Wedgehog} and \sys{Milagro}. \\
+          \comp{capsaicin} & General \capsaicin\ related discussion, including \svn\ commit messages. \\
+  
+	\hline \hline
+
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsection{Regression Dashboard}
+\draco\ maintains a regression dashboard at \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash}. \draco developers are encouraged to visit the dashboard regularrly to view the nightly reports.  You may need to contact one of the \draco\ group super-users (see Sec.~\ref{sec:procurement}) to gain access to the the dashboard.  You can configure the dashboard to send email for various situations like failing unit tests.
+
+\subsection{Issue Tracking}
+\draco\ uses the LANL \soft{Team Forge} bug tracking system to manage issue, bug and feature tracking. \soft{Team Forge} can be accessed by opening a web browser from the Yellow network (i.e.: inside the LANL firewall) to \url{https://tf.lanl.gov}. You are encouraged to browse the list of known bugs/issues of the project you are working on.
+
+%%---------------------------------------------------------------------------%%
 
 \section{Quick Start}
 \label{sec:quick}
 
 Many \draco\ users will undoubtedly be familiar with \cmake\ and
 \make. These users can progress directly to \S~\ref{sec:examples} for 
-examples on configuring and building \draco. 
+examples on configuring and building \draco. We also recommend a review of Ref.~\cite{ccs2:12-16} for developers who are new to \draco.
 
