@@ -53,7 +53,7 @@ case ci*:
    module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    module unload load xt-libsci
    # force the 11.0.04 version to load (the login node defaults to 10.5.0).
-   module load load xt-libsci/11.0.04
+   module load xt-libsci/11.0.04
    breaksw
 case rr-dev*:
 case rra[0-9][0-9][0-9]a*:
