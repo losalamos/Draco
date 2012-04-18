@@ -32,7 +32,7 @@ elseif( APPLE )
 else() # AIX
    set( C4_MPICMD "poe -procs " )
 endif()
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
+if( "${SITE}" MATCHES "c[it]" )
    set( C4_MPICMD "aprun -n " )
 endif()
 
