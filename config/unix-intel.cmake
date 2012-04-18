@@ -54,7 +54,7 @@ endif()
 #            n=1 display warnings and errors (DEFAULT)
 #            n=2 display remarks, warnings, and errors
 # -shared-intel Causes Intel-provided libraries to be linked in
-#            dynamically.  The should eliminate the need to link
+#            dynamically.  This should eliminate the need to link
 #            against libm for every library.
 
 # Suppressions 

@@ -818,6 +818,11 @@ void test_valid_units()
 	    PASSMSG( msg.str() );
 	    found_assert = true;
 	}
+        catch( ... )
+        {
+            FAILMSG("Should not get here: Fail with L.");
+        }
+        
 	if( with_dbc && ! found_assert )
 	{
 	    ostringstream msg;
@@ -859,6 +864,11 @@ void test_valid_units()
 	    PASSMSG( msg.str() );
 	    found_assert = true;
 	}
+        catch( ... )
+        {
+            FAILMSG("Should not get here: Fail with L.");
+        }
+
 	if( with_dbc && ! found_assert )
 	{
 	    ostringstream msg;
