@@ -48,7 +48,7 @@ case ci*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/ct-fe
-   module load gsl/1.15 svn
+   module load gsl/1.14 svn
    module load cmake/2.8.7 numdiff git xshow papi
    module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    module unload load xt-libsci
