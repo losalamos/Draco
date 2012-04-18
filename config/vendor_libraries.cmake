@@ -560,19 +560,19 @@ macro( setupVendorLibraries )
   # System specific settings
   if ( UNIX )
      setupMPILibrariesUnix()
-     if( "${SITE}" MATCHES "c[it]" )
-        # Provides BLAS and LAPACK
-        find_package( LIBSCI )
-        set_package_properties( LIBSCI PROPERTIES
-           # URL "http://www.open-mpi.org/"
-           DESCRIPTION "Cray's High Performance Scientify Library (LAPACK, BLAS, more)."
-           TYPE RECOMMENDED
-           PURPOSE 
-           "Provides BLAS, LAPACK, BLACS, ScaLAPACK and SuperLU_DIST."
-           )
-     else()
+#     if( "${SITE}" MATCHES "c[it]" )
+        # # Provides BLAS and LAPACK
+        # find_package( LIBSCI )
+        # set_package_properties( LIBSCI PROPERTIES
+        #    # URL "http://www.open-mpi.org/"
+        #    DESCRIPTION "Cray's High Performance Scientify Library (LAPACK, BLAS, more)."
+        #    TYPE RECOMMENDED
+        #    PURPOSE 
+        #    "Provides BLAS, LAPACK, BLACS, ScaLAPACK and SuperLU_DIST."
+        #    )
+#     else()
         setupLAPACKLibrariesUnix()
-     endif()
+#     endif()
      setupVendorLibrariesUnix()
   elseif( WIN32 )
      setupVendorLibrariesWindows()
