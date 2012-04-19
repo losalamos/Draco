@@ -52,7 +52,7 @@ case ci*:
    module load cmake/2.8.7 numdiff git xshow papi
    module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    module unload xt-libsci
-   module load lapack/3.4.0-pgi
+   # module load lapack/3.4.0-pgi # use /opt/pgi/11.10.0/...
    breaksw
 case rr-dev*:
 case rra[0-9][0-9][0-9]a*:
@@ -89,7 +89,6 @@ set myhost=`echo $HOST | sed -e 's/[.].*//g'`
 alias btar 'tar --use-compress-program /usr/bin/bzip2'
 alias cd.. 'cd ..'
 alias cpuinfo 'cat /proc/cpuinfo'
-#alias cvsup 'cvs -q update -AdP'
 alias df 'df -h'
 alias dirs 'dirs -v'
 alias dmesg 'dmesg -s 65536'
@@ -118,7 +117,3 @@ alias watchioblocks 'ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
 alias which 'alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
 alias wmdstat 'watch -n 2 "cat /proc/mdstat"'
 alias xload 'xload -label ${myhost}'
-
-# CVS
-#setenv CVS_RSH ssh
-#setenv CVSROOT ccscs9:/ccs/codes/radtran/cvsroot
