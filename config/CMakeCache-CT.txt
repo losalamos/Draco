@@ -46,15 +46,15 @@ CMAKE_Fortran_COMPILER:FILEPATH=ftn
 #set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 
 # Help find vendor software
-MPI_INC_DIR:PATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/include
-MPI_LIB_DIR:PATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib
 MPIEXEC:FILEPATH=/usr/bin/aprun
 MPIEXEC_NUMPROC_FLAG:STRING=-n
-MPI_C_LIBRARIES:FILEPATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib/libmpich.a
-MPI_CXX_LIBRARIES:FILEPATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib/libmpich.a
-MPI_Fortran_LIBRARIES:FILEPATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib/libmpich.a
-MPI_C_INCLUDE_PATH:PATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/include
-MPI_CXX_INCLUDE_PATH:PATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/include
-MPI_Fortran_INCLUDE_PATH:PATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/include
+MPI_C_LIBRARIES:FILEPATH=
+MPI_CXX_LIBRARIES:FILEPATH=
+MPI_Fortran_LIBRARIES:FILEPATH=
+MPI_C_INCLUDE_PATH:PATH=
+MPI_CXX_INCLUDE_PATH:PATH=
+MPI_Fortran_INCLUDE_PATH:PATH=
 
+# /opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib/libmpich.a
+# /opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/include
 
