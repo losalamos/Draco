@@ -65,7 +65,7 @@ list( REMOVE_ITEM test_sources ${special_test} )
 # ApplicationUnitTest uses a paradigm that is not compatbilty with
 # Catamount systems.  We cannot run aprun under a system call.
 set( special_test ${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc )
-if( NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Catamount" )
+if( NOT "${SITE}" MATCHES "c[it]" )
    # This test also has special arguments and spawns mpirun indirectly so
    # we register it as a scalar test.
    if( "${DRACO_C4}" MATCHES "MPI" )
