@@ -16,7 +16,9 @@
 \usepackage{cite}
 %\usepackage{c++}
 \usepackage{fancycodes}  % needed to get ``LaTeX'' symbol.
-\usepackage[hang,small]{caption2} % used for spacing table captions
+%\usepackage[font=small,format=plain,labelfont=bf,up,textfont=it,up]{caption}
+\usepackage[font=small,format=hang]{caption}
+%\usepackage[hang,small]{caption2} % used for spacing table captions
 
 \usepackage{fancybox}
 \usepackage{shading}
@@ -197,6 +199,37 @@ The \draco\ team maintains a Unix file sharing group named
 \draco\ source code or development environment files.  Membership is
 controlled by the current super-users as listed on
 \url{register.lanl.gov}. 
+%%----------------------------------------
+\subsection{Important Locations}
+
+Important file and web locations  for \draco\ are listed in Table~\ref{tab:locs}.
+%
+\begin{table}[!htbp]%
+  \caption{File and Internet locations used by \draco}%
+  \label{tab:locs}
+  \begin{center}
+    \begin{tabularx}{0.8\linewidth}{
+        >{\setlength{\hsize}{0.4\hsize}}X
+%        >{\setlength{\hsize}{0.2\hsize}}Y
+        >{\setlength{\hsize}{1.0\hsize}}Y}
+      \hline\hline
+     Item & Location \\
+    \end{tabularx}
+    \begin{tabularx}{0.8\linewidth}{
+        >{\setlength{\hsize}{0.4\hsize}}X
+%        >{\setlength{\hsize}{0.2\hsize}}Y
+        >{\setlength{\hsize}{1.0\hsize}}X}
+      \hline
+Repository & \url{svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn}\\
+Archival storage & \url{HPSS://hpss/jayenne}\\
+Wiki & \url{http://tf.lanl.gov}\\
+Bug Tracker & \url{http://tf.lanl.gov}\\
+Regression files & \url{ccscs8:///home/regress/cmake_draco} and \\
+& \url{hpc:///usr/projects/jayenne/regress}\\
+      \hline\hline
+    \end{tabularx}
+  \end{center}
+\end{table}
 
 %%----------------------------------------
 \subsection{Mailing List}
@@ -366,10 +399,13 @@ setup.
 Many \draco\ documents found in the \comp{doc} directory are
 generated using \LaTeX.  Typically, the developer can run
 \comp{'make pdf'} from the document source directory to generate a
-PDF for viewing.
+PDF for viewing.  If you want to build \LaTeX\ documentation from a Windows PC, we recommend the use of TeXworks' MikTeX.
 
 %%----------------------------------------
 \subsection{Instrumentation and Memory Profiling}
+
+\subsubsection{CTest}
+When a test is failing, one of the first things to do is to run it by hand outside of the \ctest\ framework.  The execution command and full output of a test can be retrieved by running \ctest\ with the \textit{verbose} option. For example, \comp{ctest -VV -R regex\_for\_test\_name}.  Once the default execution command is known, it is easy to run the test manually or modify the command so as to run it by under totalview, valgrind or some other tool. 
 
 \subsubsection{Valgrind}
 
@@ -453,6 +489,8 @@ Assure is not currently supported by the build system.
 Newer versions of Totalview provide memory checking and memory
 profiling tools.  Totalview instrumentation occurs at run time and the
 \draco\ build system does not need to provide any special support.
+
+
 
 %%----------------------------------------
 \subsection{Debuggers}
