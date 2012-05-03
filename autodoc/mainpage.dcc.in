@@ -8,13 +8,13 @@
 \mainpage The Draco Documentation System
 
 \par Authors
-<a href="mailto:tme@lanl.gov">Tom Evans</a>,
-<a href="mailto:tmonster@lanl.gov">Todd Urbatsch</a>,
-<a href="mailto:mwbuksas@lanl.gov">Mike Buksas</a>,
-<a href="mailto:jhchang@lanl.gov">Jae Chang</a>,
 <a href="mailto:kgt@lanl.gov">Kelly (KT) Thompson</a>,
 <a href="mailto:kgb@lanl.gov">Kent Budge</a>,
 <a href="mailto:lowrie@lanl.gov">Robert Lowrie</a>
+<a href="mailto:warsa@lanl.gov">Jim Warsa</a>,
+<a href="mailto:gaber@lanl.gov">Gabe Rockefeller</a>,
+<a href="mailto:jhchang@lanl.gov">Jae Chang</a>,
+<a href="mailto:wollaber@lanl.gov">Allan Wollaber</a>,
 
 \par Executive Summary
 Draco is a C++ radiation transport component library developed by CCS-2, Los
@@ -46,7 +46,7 @@ the namespace reference rtt_<pkg> -->
 - \ref overview_c4
 - \ref overview_cdi
 - \ref overview_cdi_analytic
-- \ref overview_cdi_gandolf
+<!-- retired - \ref overview_cdi_gandolf -->
 - \ref rtt_device
 - \ref overview_diagnostics
 - \ref overview_dsxx
@@ -60,7 +60,7 @@ the namespace reference rtt_<pkg> -->
 - \ref overview_norms
 - \ref rtt_ode
 - \ref overview_parser
-- \ref rtt_pcgwrap
+<!-- retired - \ref rtt_pcgwrap -->
 - \ref rtt_plot2d
 - \ref overview_quadrature
 - \ref overview_rng
