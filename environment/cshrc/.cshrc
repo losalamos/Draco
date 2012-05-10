@@ -79,7 +79,14 @@ case lu*.localdomain:
     module load intel-c intel-f openmpi-intel
     module load gsl/1.14-intel svn emacs
     module load cmake numdiff
-   breaksw
+    breaksw
+case gondolin*:
+    source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
+    module load grace totalview numdiff git gsl svn gcc lapack/3.4.0
+    module load cmake openmpi emacs
+    module load trilinos BLACS SCALAPACK SuperLU_DIST hypre/2.0.0 ndi 
+    module load ParMetis/3.1.1
+    breaksw
 endsw
 
 # Set term title
