@@ -29,7 +29,6 @@ module load friendly-testing hpc-tools python graphics
 module load pgi/9.0-3 openmpi-pgi/1.4.3 grace totalview
 module load gsl/1.14-gcc grace-draco lapack BLACS SCALAPACK 
 module load trilinos SuperLU_DIST hypre ParMetis ndi emacs cmake
-module list
 
 export FC=pgf90
 

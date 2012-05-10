@@ -35,7 +35,6 @@ if test -z "$MODULESHOME"; then
   # This is a new login
   if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
     source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-    module list
   fi
 fi
 

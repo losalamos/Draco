@@ -27,7 +27,6 @@ module use $DRACO_MODULE_DIR/rr-dev-fe
 
 module load hpc-tools friendly-testing python openmpi-gcc cmake svn
 module load cellsdk gsl/1.14-gcc lapack/atlas-3.8.2 git xshow numdiff
-module list
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_rr_dev

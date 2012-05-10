@@ -35,7 +35,6 @@ module purge &> /dev/null
 # module load lapack/atlas-3.8.3-intel BLACS/1.1-intel ParMetis/3.1.1-intel
 # module load gsl/1.14-intel trilinos/10.6.4-intel SCALAPACK/1.7-intel
 # module load hypre/2.0.0-intel grace-draco ndi xshow cmake numdiff
-module list
 
 # Ensure that F90 and FC are set for Intel C/C++/FC environment.
 #if test `echo $CC | grep icc | wc -l` = 1; then

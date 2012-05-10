@@ -36,8 +36,6 @@ module load lapack/atlas-3.8.3 BLACS/1.1 ParMetis/3.1.1
 module load gsl/1.14-pgi trilinos/10.6.4 SCALAPACK/1.7 svn
 module load hypre/2.0.0 grace-draco ndi xshow cmake numdiff
 
-module list
-
 # Ensure that F90 and FC are set for Intel C/C++/FC environment.
 if test `echo $CC | grep pgcc | wc -l` = 1; then
   export F90=pgf90
