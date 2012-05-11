@@ -8,10 +8,6 @@ if test -n "$verbose"; then
 fi
 
 ##---------------------------------------------------------------------------##
-## ALIASES
-##---------------------------------------------------------------------------##
-
-##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
 
@@ -19,25 +15,16 @@ fi
 ulimit -s unlimited
 
 # modules
-
 if test -z "$MODULESHOME"; then
-  # This is a new login
-  if test -f ${DRACO_SRC_DIR}/environment/Modules/init/bash; then
-    source ${DRACO_SRC_DIR}/environment/Modules/init/bash
-    module load grace gcc/4.5.2
+  if test -f /ccs/codes/radtran/vendors/modules-3.2.7/init/bash; then
+    source /ccs/codes/radtran/vendors/modules-3.2.7/init/bash
   fi
-else
-    # module environment already exists
-    module use ${DRACO_SRC_DIR}/environment/Modules/modulefiles
-    module use ${DRACO_SRC_DIR}/environment/Modules/ccs-Linux64
 fi
-module load BLACS SCALAPACK SuperLU_DIST gsl hypre lapack ndi openmpi emacs
+module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
+module load ndi openmpi emacs
 module load ParMetis/3.1.1 trilinos totalview cmake numdiff git svn
-module list
 
 #LaTeX
-#vendordir=/ccs/codes/radtran/vendors
-#extradirs="/ccs/codes/radtran/vendors/environment/latex"
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
 for mydir in ${extradirs}; do
   if test -z "`echo $TEXINPUTS | grep $mydir`" && test -d $mydir; then
