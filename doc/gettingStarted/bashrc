@@ -8,12 +8,9 @@
 # If this is an interactive shell then the environment variable $-
 # should contain an "i":
 case ${-} in 
-*i*)
-   export INTERACTIVE=true 
-   ;;
+*i*) export INTERACTIVE=true ;;
 *) # Not an interactive shell
-   export INTERACTIVE=false
-   ;;
+   export INTERACTIVE=false ;;
 esac
    
 #------------------------------------------------------------------------------#
@@ -27,7 +24,6 @@ fi
 #------------------------------------------------------------------------------#
 # User Customizations
 #------------------------------------------------------------------------------#
-
 if test "$INTERACTIVE" = true; then
 
     export SVN_EDITOR=emacs
@@ -38,7 +34,6 @@ if test "$INTERACTIVE" = true; then
 
     alias xload='xload -fg brown -fn 6x13 -geometry 180x100+1500+0'
     alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
-
 fi
 
 ##---------------------------------------------------------------------------##
