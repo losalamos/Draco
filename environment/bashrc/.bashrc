@@ -16,32 +16,8 @@
 ##           set the optional parameters.
 
 ##---------------------------------------------------------------------------##
-## If this is a non interactive shell then don't process this rc file
+## ENVIRONMENTS for all sessions
 ##---------------------------------------------------------------------------##
-
-# If this is an interactive shell then the environment variable $-
-# should contain an "i":
-case ${-} in 
-*i*)
-   export INTERACTIVE=true
-   export verbose=
-   if test -n "${verbose}"; then
-      echo "in .bashrc"
-   fi
-   ;;
-*) # Not an interactive shell (e.g. A PBS shell?)
-   export INTERACTIVE=false
-   return
-   ;;
-esac
-
-##---------------------------------------------------------------------------##
-## ENVIRONMENTS
-##---------------------------------------------------------------------------##
-
-# Turn on checkwinsize
-shopt -s checkwinsize # autocorrect window size
-#shopt -s cdspell # autocorrect spelling errors on cd command line.
 
 # Clean up the default path to remove duplicates
 tmpifs=$IFS
@@ -56,15 +32,6 @@ done
 IFS=$tmpifs
 unset tmpifs
 unset oldpath
-
-# X server resources
-if test -f ${HOME}/.Xdefaults; then
-  if test -x /usr/X11R6/bin/xrdb; then
-    if test ! "${DISPLAY}x" = "x"; then
-      /usr/X11R6/bin/xrdb ${HOME}/.Xdefaults
-    fi
-  fi
-fi
 
 # Avoid double colon in PATH
 export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
@@ -84,7 +51,8 @@ for mydir in ${extradirs}; do
    fi
 done
 
-# Tell wget to use LANL's www proxy (see trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
+# Tell wget to use LANL's www proxy (see
+# trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage) 
 # export http_proxy=http://wpad.lanl.gov/wpad.dat
 export http_proxy=http://proxyout.lanl.gov:8080
 export https_proxy=$http_proxy
@@ -95,156 +63,132 @@ export no_proxy=lanl.gov
 export NO_PROXY=$no_proxy
 # See help page for how to setup subversion
 
-##---------------------------------------------------------------------------##
-## cd paths - disable here, let user choose in ~/.bashrc
-##---------------------------------------------------------------------------##
-
+# cd paths - disable here, let user choose in ~/.bashrc
 CDPATH=
 
 ##---------------------------------------------------------------------------##
-## aliases
+## ENVIRONMENTS for interactive sessions
 ##---------------------------------------------------------------------------##
 
-# Generic Settings
-
-alias ll='ls -Fl'
-alias lt='ls -Flt'
-alias ls='ls -F'
-alias l.='ls -h -d .*'
-
-alias a2ps='a2ps --sides=duplex --medium=letter'
-alias btar='tar --use-compress-program /usr/bin/bzip2'
-alias cd..='cd ..'
-alias cpuinfo='cat /proc/cpuinfo'
-alias df='df -h'
-alias dirs='dirs -v'
-alias dmesg='dmesg -s 65536'
-alias du='du -h --max-depth=1 --exclude=.snapshot'
-alias free='free -m'
-alias hosts='cat /etc/hosts'
-alias hpss='echo Try using psi instead of hpss'
-alias ldmesg='dmesg -s 65536 | less'
-alias less='/usr/bin/less -r'
-alias mdstat='cat /proc/mdstat'
-alias meminfo='cat /proc/meminfo'
-alias mroe='more'
-alias print='lp'
-nodename=`uname -n | sed -e 's/[.].*//g'`
-alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
-alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
-alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
-#alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
-alias wmdstat='watch -n 2 "cat /proc/mdstat"'
-alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
-
-if test -x /ccs/codes/marmot/magicdraw/MagicDraw_UML_9.0/bin/mduml; then
-  alias magicdraw='/ccs/codes/marmot/magicdraw/MagicDraw_UML_9.0/bin/mduml'
-fi
-if test -x /usr/bin/kghostview; then
-  alias gv='/usr/bin/kghostview'
-  alias ghostview='/usr/bin/kghostview'
-fi
-if test -x /opt/bin/gstat; then
-  alias wgstat='watch /opt/bin/gstat -1a'
-  alias linkstat='gsh dmesg | grep "Link is up at" | sort -u'
-  alias interactive_qsub='xterm -e qsub -I -l nodes=1:ppn=4 &'
-  alias cqs='echo -e "\nCurrent Queuing System: $PREFERED_QUEUE_SYSTEM \n"'
-fi
-
-# Provide special ls commands if this is a color-xterm or compatible terminal.
-if test "${TERM}" != emacs && 
-   test "${TERM}" != dumb; then
-   # replace list aliases with ones that include colorized output.
-   alias ll='ls --color -Fl'
-   alias l.='ls --color -aFl'
-   alias lt='ls --color -Flt'
-   alias lt.='ls --color -aFlt'
-   alias ls='ls --color -F'
-fi
-
-# Use 'nt' to create new terminal window.
-if test -z "$prefered_term"; then
-   export prefered_term="gnome-terminal konsole xterm"
-fi
-if test "${TERM}" != emacs && 
-   test "${TERM}" != dumb; then
-   # choose a terminal {konsole,gnome-terminal,xterm}
-   if test -z "$term"; then
-     for item in ${prefered_term}; do
-       tmp=`which ${item} 2> /dev/null`
-       if test ${tmp:-notset} != notset; then
-         export term=$item
-         case ${item} in
-         konsole)
-           export term_opts='--vt_sz 90x60 --nomenubar'
-           export title_flag=-T
-           export exe_flag=-e
-           break
-           ;;
-         gnome-terminal)
-           export term_opts='--use-factory --geometry=80x60 --hide-menubar'
-           export title_flag=-t
-           export exe_flag=-x
-           break
-           ;;
-         xterm)
-           export term_opts='-geometry 80x60'
-           export title_flag=-T
-           export exe_flag=-e
-           break
-           ;;
-         *)
-           echo "You must must setup the variables term, term_opts,"
-           echo "title_flag and exe_flag for this terminal ($item)"
-           echo "in draco/environment/bashrc/.bashrc."  
-           break
-           ;;
-         esac
-       fi
-     done
+# If this is an interactive shell then the environment variable $-
+# should contain an "i":
+case ${-} in 
+*i*)
+   export INTERACTIVE=true
+   export verbose=
+   if test -n "${verbose}"; then
+      echo "in .bashrc"
    fi
-fi
 
-# Function to create a new terminal window (requires X11)
-if test ${term:-notset} != notset; then
+   # Turn on checkwinsize
+   shopt -s checkwinsize # autocorrect window size
+   #shopt -s cdspell # autocorrect spelling errors on cd command line.
 
-function nt()
-{
-  ssh_cmd="ssh -AX"
-  localmachine=`uname -n | sed -e 's/[.].*//'`
-  machine=$1
-  shift
-  if test "${machine}notset" = notset ||
-     test "${localmachine}" = "${machine}"; then
-    machine=localhost
-  fi
-  case ${machine} in
-  -h)
-    opts="${title_flag} [machineName] ${exe_flag} ${ssh_cmd} [machineName]"
-    echo "Usage: nt [machinename]"
-    echo "  A new terminal window will be created using the command"
-    echo "  ${term} ${term_opts} [extra args] $opts"
-    return
-    ;;
-  localhost)
-    machineName=localhost
-    ;;
-  *)
-    machineName=${machine}
-    ;;
-  esac
+   # X server resources
+   if test -f ${HOME}/.Xdefaults; then
+       if test -x /usr/X11R6/bin/xrdb; then
+           if test ! "${DISPLAY}x" = "x"; then
+               /usr/X11R6/bin/xrdb ${HOME}/.Xdefaults
+           fi
+       fi
+   fi
 
-  cmd="${term} ${term_opts} $* ${title_flag}"
-  if test ${machineName} = localhost; then
-    cmd="${cmd} ${localmachine}"
-  else
-    cmd="${cmd} ${machineName} ${exe_flag} ${ssh_cmd} ${machine}"
-  fi
-  echo $cmd
-  eval $cmd
-}
-export nt
-fi
+   ##---------------------------------------------------------------------------##
+   ## aliases
+   ##---------------------------------------------------------------------------##
+
+   # Generic Settings
+
+   alias ll='ls -Fl'
+   alias lt='ls -Flt'
+   alias ls='ls -F'
+   alias l.='ls -h -d .*'
+
+   alias a2ps='a2ps --sides=duplex --medium=letter'
+   alias btar='tar --use-compress-program /usr/bin/bzip2'
+   alias cd..='cd ..'
+   alias cpuinfo='cat /proc/cpuinfo'
+   alias df='df -h'
+   alias dirs='dirs -v'
+   alias dmesg='dmesg -s 65536'
+   alias du='du -h --max-depth=1 --exclude=.snapshot'
+   alias free='free -m'
+   alias hosts='cat /etc/hosts'
+   alias hpss='echo Try using psi instead of hpss'
+   alias ldmesg='dmesg -s 65536 | less'
+   alias less='/usr/bin/less -r'
+   alias mdstat='cat /proc/mdstat'
+   alias meminfo='cat /proc/meminfo'
+   alias mroe='more'
+   alias print='lp'
+   nodename=`uname -n | sed -e 's/[.].*//g'`
+   alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
+   alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
+   alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
+   #alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
+   alias wmdstat='watch -n 2 "cat /proc/mdstat"'
+   alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
+
+   if test -x /ccs/codes/marmot/magicdraw/MagicDraw_UML_9.0/bin/mduml; then
+       alias magicdraw='/ccs/codes/marmot/magicdraw/MagicDraw_UML_9.0/bin/mduml'
+   fi
+   if test -x /usr/bin/kghostview; then
+       alias gv='/usr/bin/kghostview'
+       alias ghostview='/usr/bin/kghostview'
+   fi
+   if test -x /opt/bin/gstat; then
+       alias wgstat='watch /opt/bin/gstat -1a'
+       alias linkstat='gsh dmesg | grep "Link is up at" | sort -u'
+       alias interactive_qsub='xterm -e qsub -I -l nodes=1:ppn=4 &'
+       alias cqs='echo -e "\nCurrent Queuing System: $PREFERED_QUEUE_SYSTEM \n"'
+   fi
+
+   # Provide special ls commands if this is a color-xterm or compatible terminal.
+   if test "${TERM}" != emacs && 
+       test "${TERM}" != dumb; then
+   # replace list aliases with ones that include colorized output.
+       alias ll='ls --color -Fl'
+       alias l.='ls --color -aFl'
+       alias lt='ls --color -Flt'
+       alias lt.='ls --color -aFlt'
+       alias ls='ls --color -F'
+   fi
+
+   source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
+
+   # Aliases for machines
+
+   # No need to use ssh to pop a terminal from the current machine
+   # alias ${target}='${term} ${term_opts}'
+
+   # Turquise network
+   alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
+   alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
+   alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
+
+##---------------------------------------------------------------------------##
+## prompt - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
+##---------------------------------------------------------------------------##
+
+   if test "$TERM" = emacs || \
+       test "$TERM" = dumb  || \
+       test -z "`declare -f npwd | grep npwd`"; then
+       export PS1="\h:\w [\!] % "
+       export LS_COLORS=''
+   else
+       export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
+   fi
+   ;;
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS for non interactive sessions
+##---------------------------------------------------------------------------##
+
+*) # Not an interactive shell (e.g. A PBS shell?)
+   export INTERACTIVE=false
+   # return
+   ;;
+esac
 
 ##---------------------------------------------------------------------------##
 ##---------------------------------------------------------------------------##
@@ -304,55 +248,12 @@ lu-fe[0-9] | lua[0-9]*)
 
 esac
 
-source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
-
-##---------------------------------------------------------------------------##
-## Aliases for machines
-##---------------------------------------------------------------------------##
-
-# No need to use ssh to pop a terminal from the current machine
-alias ${target}='${term} ${term_opts}'
-
-# Turquise network
-alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
-alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
-alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
-
-##---------------------------------------------------------------------------##
-## prompt - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
-##---------------------------------------------------------------------------##
-
-if test "$TERM" = emacs || \
-   test "$TERM" = dumb  || \
-   test -z "`declare -f npwd | grep npwd`"; then
-    export PS1="\h:\w [\!] % "
-    export LS_COLORS=''
-else
-   export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
-fi
-
-##---------------------------------------------------------------------------##
-## LaTeX settings
-##---------------------------------------------------------------------------##
-# extradirs="$HOME/imcdoc/sty"
-# for mydir in ${extradirs}; do
-#   if test -z "`echo $TEXINPUTS | grep $mydir`" && test -d $mydir; then
-#     export TEXINPUTS=$mydir:$TEXINPUTS
-#   fi
-# done
-# extradirs="$HOME/imcdoc/bib"
-# for mydir in ${extradirs}; do
-#   if test -z "`echo $BSTINPUTS | grep $mydir`" && test -d $mydir; then
-#     export BSTINPUTS=$mydir:$BSTINPUTS
-#   fi
-# done
-# extradirs="$HOME/imcdoc/bib"
-# for mydir in ${extradirs}; do
-#   if test -z "`echo $BIBINPUTS | grep $mydir`" && test -d $mydir; then
-#     export BIBINPUTS=$mydir:$BIBINPUTS
-#   fi
-# done
-# unset extradirs
+# Only print the loaded modules if this is an interactive session.
+case ${-} in 
+*i*)
+    module list
+    ;;
+esac
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
