@@ -3,12 +3,17 @@ Information & Download links: http://modules.sourceforge.net
 Draco Developers:
 
 Setup for CCS LAN:
-1. check out Draco/environment from CVS.
-2. from ~/.bashrc, source Draco/environment/bashrc/.bashrc.  This will 
-   initialize the module system and load a default set of modules.
+1. check out Draco/environment from SVN.
+2. Initialize the Environment Modules environment.
+   a. from ~/.bashrc, source draco/environment/bashrc/.bashrc.  This will 
+      initialize the module system and load a default set of modules, or
+   b. i.   source the CCS LAN's ${module_dir}/init/bash or init/csh:
+           (e.g.: /ccs/codes/radtran/vendors/modules-3.2.7/init/bash)
+           (e.g.: /ccs/codes/radtran/vendors/modules-3.2.7/init/csh)
+      ii.  module load gcc cmake ...
 
 Setup for HPC:
-1. check out Draco/environment from CVS (or use a copy from 
+1. check out draco/environment from SVN (or use a copy from 
    /usr/projects/draco/...)
 2. Make draco modules available to the already loaded module system:
    module use ~/draco/environment/Modules/hpc
@@ -21,5 +26,4 @@ Use:
 % module load <name>
 % module switch <name1> <name2>
 % module purge
-
 
