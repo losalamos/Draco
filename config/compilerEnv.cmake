@@ -138,9 +138,9 @@ macro(dbsSetupCxx)
    endif()
    
    string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
-      DBS_CXX_COMPILER_VER_MAJOR ${CMAKE_CXX_COMPILER_VERSION} )
+      DBS_CXX_COMPILER_VER_MAJOR "${CMAKE_CXX_COMPILER_VERSION}" )
    string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
-      DBS_CXX_COMPILER_VER_MINOR ${CMAKE_CXX_COMPILER_VERSION} )
+      DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
    
    if( ${my_cxx_compiler} MATCHES "cl" )
       include( windows-cl )

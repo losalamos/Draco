@@ -114,8 +114,8 @@ endif()
 
 # Extra flags for gcc-4.6.2+
 # -Wsuggest-attribute=const
-if( ${DBS_CXX_COMPILER_VER_MAJOR} GREATER 3 )
-   if( ${DBS_CXX_COMPILER_VER_MINOR} GREATER 5 )
+if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3 )
+   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 5 )
       if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wsuggest-attribute=const" )
          set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
       endif()
