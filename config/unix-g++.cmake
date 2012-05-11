@@ -53,27 +53,8 @@ set( GCC_LIBRARIES
 #
 # config.h settings
 #
-
-execute_process(
-  COMMAND ${CMAKE_C_COMPILER} --version
-  OUTPUT_VARIABLE DBS_C_COMPILER_VER
-  )
-string( REGEX REPLACE "Copyright.*" " " 
-  DBS_C_COMPILER_VER ${DBS_C_COMPILER_VER} )
-string( STRIP ${DBS_C_COMPILER_VER} DBS_C_COMPILER_VER )
-
-execute_process(
-  COMMAND ${CMAKE_CXX_COMPILER} --version
-  OUTPUT_VARIABLE DBS_CXX_COMPILER_VER
-  )
-string( REGEX REPLACE "Copyright.*" " " 
-  DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
-string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
-
-string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
-   DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
-string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
-   DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
+set( DBS_C_COMPILER_VER "gcc ${CMAKE_CXX_COMPILER_VERSION}" )
+set( DBS_CXX_COMPILER_VER "g++ ${CMAKE_CXX_COMPILER_VERSION}" )
 
 # is this bullseye?
 execute_process(
@@ -88,6 +69,13 @@ if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
       CACHE BOOL "Are we running Bullseye" )
    mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
+
+# determine if compiler supports OpenMP
+# The following variables are set:
+#   OpenMP_C_FLAGS - flags to add to the C compiler for OpenMP support
+#   OpenMP_CXX_FLAGS - flags to add to the CXX compiler for OpenMP support
+#   OPENMP_FOUND - true if openmp is detected
+# find_package(OpenMP)
 
 #
 # Compiler Flags

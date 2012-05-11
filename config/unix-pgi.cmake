@@ -28,7 +28,6 @@ endif()
 # Disable OpenMP for now (it doesn't appear to be working correctly.)
 set( USE_OPENMP NO )
 
-
 #
 # C++ libraries required by Fortran linker
 # 
@@ -36,27 +35,8 @@ set( USE_OPENMP NO )
 #
 # config.h settings
 #
-
-execute_process(
-  COMMAND ${CMAKE_C_COMPILER} -V
-  OUTPUT_VARIABLE DBS_C_COMPILER_VER
-  )
-string( REGEX REPLACE "Copyright.*" " " 
-  DBS_C_COMPILER_VER ${DBS_C_COMPILER_VER} )
-string( STRIP ${DBS_C_COMPILER_VER} DBS_C_COMPILER_VER )
-
-execute_process(
-  COMMAND ${CMAKE_CXX_COMPILER} -V
-  OUTPUT_VARIABLE DBS_CXX_COMPILER_VER
-  )
-string( REGEX REPLACE "Copyright.*" " " 
-  DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
-string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
-
-string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\1"
-   DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
-string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\2"
-   DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
+set( DBS_C_COMPILER_VER "pgcc ${CMAKE_CXX_COMPILER_VERSION}" )
+set( DBS_CXX_COMPILER_VER "pgCC ${CMAKE_CXX_COMPILER_VERSION}" )
 
 #
 # Compiler Flags
