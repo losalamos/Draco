@@ -1,9 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compiler_env.cmake
-# author Kelly Thompson
-# date   2008 May 30
 # brief  Default CMake build parameters
-# note   Copyright © 2010 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -125,38 +123,43 @@ endmacro()
 # Setup C++ Compiler
 #------------------------------------------------------------------------------#
 macro(dbsSetupCxx)
-  
-  if( NOT gen_comp_env_set STREQUAL 1 )
-   dbsSetupCompilers()
-  endif()
-  
-  if( ${CMAKE_CXX_COMPILER} MATCHES "tau_cxx.sh" )
-     execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
-        OUTPUT_VARIABLE my_cxx_compiler
-        )
-  else()
-     set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
-  endif()
+   
+   if( NOT gen_comp_env_set STREQUAL 1 )
+      dbsSetupCompilers()
+   endif()
+   
+   if( ${CMAKE_CXX_COMPILER} MATCHES "tau_cxx.sh" )
+      execute_process(
+         COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
+         OUTPUT_VARIABLE my_cxx_compiler
+         )
+   else()
+      set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
+   endif()
+   
+   string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
+      DBS_CXX_COMPILER_VER_MAJOR ${CMAKE_CXX_COMPILER_VERSION} )
+   string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
+      DBS_CXX_COMPILER_VER_MINOR ${CMAKE_CXX_COMPILER_VERSION} )
+   
+   if( ${my_cxx_compiler} MATCHES "cl" )
+      include( windows-cl )
+   elseif( ${my_cxx_compiler} MATCHES "ppu-g[+][+]" )
+      include( unix-ppu )
+   elseif( ${my_cxx_compiler} MATCHES "spu-g[+][+]" )
+      include( unix-spu )
+   elseif( ${my_cxx_compiler} MATCHES "icpc" )
+      include( unix-intel )
+   elseif( ${my_cxx_compiler} MATCHES "pgCC" )
+      include( unix-pgi )
+   elseif( ${my_cxx_compiler} MATCHES "xt-asyncpe" ) # Ceilo (catamount/pgi)
+      include( unix-pgi )
+   elseif( ${my_cxx_compiler} MATCHES "[cg][+]+" )
+      include( unix-g++ )
+   else( ${my_cxx_compiler} MATCHES "cl" )
+      message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
+   endif( ${my_cxx_compiler} MATCHES "cl" )
 
-  if( ${my_cxx_compiler} MATCHES "cl" )
-    include( windows-cl )
-  elseif( ${my_cxx_compiler} MATCHES "ppu-g[+][+]" )
-     include( unix-ppu )
-  elseif( ${my_cxx_compiler} MATCHES "spu-g[+][+]" )
-     include( unix-spu )
-  elseif( ${my_cxx_compiler} MATCHES "icpc" )
-     include( unix-intel )
-  elseif( ${my_cxx_compiler} MATCHES "pgCC" )
-     include( unix-pgi )
-  elseif( ${my_cxx_compiler} MATCHES "xt-asyncpe" ) # Ceilo (catamount/pgi)
-     include( unix-pgi )
-  elseif( ${my_cxx_compiler} MATCHES "[cg][+]+" )
-    include( unix-g++ )
-  else( ${my_cxx_compiler} MATCHES "cl" )
-    message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
-  endif( ${my_cxx_compiler} MATCHES "cl" )
- 
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -180,25 +183,21 @@ endmacro()
 # 
 #------------------------------------------------------------------------------#
 macro(dbsSetupFortran)
-  
-  # if( NOT gen_comp_env_set STREQUAL 1 )
-  #  dbsSetupCompilers()
-  # endif()
-  
-  if( ${CMAKE_Fortran_COMPILER} MATCHES "gfortran" )
-    include( unix-gfortran )
-  elseif( ${CMAKE_Fortran_COMPILER} MATCHES "ifort" )
-    include( unix-ifort )
-  elseif( ${CMAKE_Fortran_COMPILER} MATCHES "pgf9[05]" )
-     include( unix-pgf90 )
-  elseif( ${my_cxx_compiler} MATCHES "xt-asyncpe" ) # Ceilo (catamount/pgi)
-     include( unix-pgf90 )
-  elseif( ${my_cxx_compiler} MATCHES "pgf90" )
-     include( unix-pgf90 )
-  else()
-    message( FATAL_ERROR "Build system does not support F90=${CMAKE_Fortran_COMPILER}" )
-  endif()
- 
+   
+   if( ${CMAKE_Fortran_COMPILER} MATCHES "gfortran" )
+      include( unix-gfortran )
+   elseif( ${CMAKE_Fortran_COMPILER} MATCHES "ifort" )
+      include( unix-ifort )
+   elseif( ${CMAKE_Fortran_COMPILER} MATCHES "pgf9[05]" )
+      include( unix-pgf90 )
+   elseif( ${my_cxx_compiler} MATCHES "xt-asyncpe" ) # Ceilo (catamount/pgi)
+      include( unix-pgf90 )
+   elseif( ${my_cxx_compiler} MATCHES "pgf90" )
+      include( unix-pgf90 )
+   else()
+      message( FATAL_ERROR "Build system does not support F90=${CMAKE_Fortran_COMPILER}" )
+   endif()
+   
 endmacro()
 
 #------------------------------------------------------------------------------#
