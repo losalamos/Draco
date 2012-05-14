@@ -38,6 +38,32 @@ set( USE_OPENMP NO )
 set( DBS_C_COMPILER_VER "pgcc ${CMAKE_CXX_COMPILER_VERSION}" )
 set( DBS_CXX_COMPILER_VER "pgCC ${CMAKE_CXX_COMPILER_VERSION}" )
 
+# On CT/CI, the built-in values for CMAKE_CXX_COMPILER_VERSION is
+# blank and we must force the values...
+# This is fixed with CMake-2.8.8+
+if( "${DBS_CXX_COMPILER_VER}" STREQUAL "pgCC " )
+   execute_process(
+      COMMAND ${CMAKE_C_COMPILER} -V
+      OUTPUT_VARIABLE DBS_C_COMPILER_VER
+      )
+   string( REGEX REPLACE "Copyright.*" " " 
+      DBS_C_COMPILER_VER ${DBS_C_COMPILER_VER} )
+   string( STRIP ${DBS_C_COMPILER_VER} DBS_C_COMPILER_VER )
+
+   execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} -V
+      OUTPUT_VARIABLE DBS_CXX_COMPILER_VER
+      )
+   string( REGEX REPLACE "Copyright.*" " " 
+      DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
+   string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
+
+   string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\1"
+      DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
+   string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\2"
+      DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
+endif()
+
 #
 # Compiler Flags
 # 
@@ -99,8 +125,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
 # --nozc_eh    (default for 11.2+) Use low cost exception handling. This 
 #              option appears to break our exception handling model resulting
 #              in SEGV.
-if( ${DBS_CXX_COMPILER_VER_MAJOR} GREATER 10 )
-   if( ${DBS_CXX_COMPILER_VER_MINOR} GREATER 1 )
+if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 10 )
+   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 1 )
       if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
       endif()
