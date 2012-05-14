@@ -239,7 +239,6 @@ lu-fe[0-9] | lua[0-9]*)
 
 # Assume CCS machine (ccscs[0-9] or personal workstation)
 *)
-    echo "Using default target."
     if test -d /ccs/codes/radtran; then 
         # assume this is a CCS LAN machine (64-bit)
         source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
