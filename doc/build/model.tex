@@ -417,6 +417,47 @@ The generated files can be installed to the \latin{target} directory by building
 
 In many cases, \draco\ based software projects will be configured and compiled alongside \draco.  In this case, a binary directory for the client (e.g.: \clubimc\ or \capsaicin) might be found parallel to the \comp{draco} binary directory (see Fig.~\ref{fig:build_tree_post_install}) and the the client products (headers, libraries, etc.) are installed into the same target directory used by \draco.  Details on how to configure and compile \draco\ are found in Chap.~\ref{chap:compile}, \S~\ref{sec:configuring_draco} and \S~\ref{sec:building_draco}.
 
+
+%%---------------------------------------------------------------------------%%
+
+\section{Coding Conventions}
+\label{sec:codeconventions}
+
+\draco\ does not adhere strictly to any code convention for formatting, but it is recommended that developers attempt to follow the styles already used in existing source code.  The following subsections list specific code conventions that are required by \draco.
+
+\subsection{File Extensions}
+\label{sec:cc-fileext}
+
+Table~\ref{tab:fileext} lists file extension standards used by \draco\ along with a description of the expected content type.
+%
+\begin{table}
+  \begin{center}
+    \caption{Draco Coding Conventions: Standard File Extensions}
+    \label{tab:fileext}
+    \begin{tabular}{p{0.5in}p{2.0in}p{3.5in}}\hline\hline
+    
+    File Extension & Description & Details \\ \hline
+    \comp{.h} & ANSI C header file & Rarely used in \draco\ except for wrapping calls to vendor functions. \\
+    \comp{.c} & ANSI C implementation file & Rarely used in \draco\ except for wrapping calls to vendor functions. \\
+    \comp{.hh} & C++ declarations file & Common file that provide class and function declarations, including templated functions and classes.\\  
+    \comp{.i.hh} & C++ inline implementation file & C++ implementation instructions that could be placed directly in the \comp{.hh} file.  These implementations are for inlined functions or implicitly instantiated template functions.  This file is always included directly by the \comp{.hh} file after all declarations have been made. \\
+    \comp{.t.hh} & C++ template implementation file & C++ implementation instructions for explicitly instantiated functions.  This file always includes the associated \comp{.hh} file and is only included by an explicit instantiation file(\comp{\_pt.cc}). \\
+    \comp{.cc} & C++ implementation file & C++ implementation instructions for functions declared in the \comp{.hh} file that are not to be inlined and are not template functions. \\
+    \comp{\_pt.cc} & C++ explicit instantiation file & C++ explicit instantiations of templated classes and functions found in the associated declarations file. \\
+    \comp{.in} & Files that must be processed & Usually found as \comp{config.h.in} that is processed into \comp{config.h} and provides preprocessor definitions used by the local component. \\
+    \comp{.cmake} & \cmake\ build system file & Additional build system commands that have been extracted form \comp{CMakeLists.txt} files to improve reuse via cmake-macros. \\
+	\hline \hline
+
+    \end{tabular}
+  \end{center}
+\end{table}
+
+
+\subsection{Tabs and editor width}
+\label{sec:cc-tabs}
+
+\draco\ developers have found that code is most cleanly viewed on various editors if spaces are used in place of tabs and the maximum column width is restricted to 80 columns.
+
 %%---------------------------------------------------------------------------%%
 
 \section{Summary}

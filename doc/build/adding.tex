@@ -199,15 +199,6 @@ attention to a more detailed description of the configure files.
 
 \section{Package Files}
 \label{sec:package_files}
-
-    %
-% \lstset{language=ksh,
-  % showstringspaces=false,
-  % frame=shadowbox,
-  % basicstyle=\footnotesize,
-  % rulesepcolor=\color{black},
-  % backgroundcolor=\color{listingBG}
-% }
 \lstset{ %
 %language=C++,                   % choose the language of the code
 language=bash,                   % choose the language of the code
@@ -230,7 +221,6 @@ backgroundcolor=\color{listingBG},
 % backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
 escapeinside={\%*}{*)}          % if you want to add a comment within your code
 }
-
 In this section we give expanded descriptions of the default
 package-dependent files listed in Table~\ref{tab:pkgfiles}.  We will
 not go into great detail about the \cmake\ macros that are defined in the \draco\ system.  That discussion is
@@ -239,7 +229,7 @@ on the three file-types that are found in each package directory:
 \comp{CMakeLists.txt}, \comp{config.h.in}, and \comp{\vble{pkg}-vendor.h}.  We reserve a discussion of makefile
 customization until \S~\ref{sec:customize}.
 \begin{description}
-\item[\comp{CMakeLists.txt}]\index{CMakeLists.txt|textbf} The
+\item[\vble{pkg}/\comp{CMakeLists.txt}]\index{CMakeLists.txt|textbf} The
   \comp{CMakeLists.txt} provides all of the build instructions needed to generate a set of build instructions for the local file scope.  In the case of a \sys{Unix Makefiles} build project, the generated \sys{Makefiles} are created based on the instructions provided in \comp{CMakeLists.txt}.  We will step through a standard package
   \comp{CMakeLists.txt} script to learn how to properly instruct \cmake\ to generate a component level build project.  An example is the \pkg{quadrature} 
   \comp{CMakeLists.txt} script illustrated in Listing~\ref{lst:quadrature-cml}.
@@ -311,8 +301,7 @@ endif()
 
 process_autodoc_pages()
 \end{lstlisting}
-  %\end{figure}
-  %\end{center}
+
   Notice that the \comp{CMakeLists.txt} file has seven basic sections.  Within
   these sections there are both required and optional macros.
   Table~\ref{tab:confmacros} lists all of the usable macros in a
@@ -392,6 +381,10 @@ process_autodoc_pages()
       \end{tabularx}
     \end{center}
   \end{table}
+\item[\vble{pkg}/\comp{test}/\comp{CMakeLists}] This
+  \comp{CMakeLists.txt} provides all of the build and execution instructions needed to generate and execute unit tests. 
+\item[\comp{src}/\comp{CMakeLists}] This
+  \comp{CMakeLists.txt} provides all of the build instructions concerning compiler setup, vendor setup and specifies what components to include in the current build.
 \item[\comp{config.h.in}]\index{config.h.in|textbf} The \confhin\ file 
   contains \comp{\#define} and other \lang{cpp} macros needed to build 
   the package.  By isolating macros to the \confhin\ file, compile
@@ -407,6 +400,21 @@ process_autodoc_pages()
 \label{sec:customize}
 
 This is an advanced topic and requires detailed knowledge of both \cmake\ and the \draco\ build system.  If needed, this section can be provided in a future revision of this document.
+
+In the future these common issues may need to be addressed with detail:
+
+\subsection{Platform Checks}
+\label{sec:platformcheck}
+
+See \cmake\ documentation and existing build files.
+
+\subsection{Generator executables}
+\label{sec:generator_executable}
+To generating a tool that is used to generate a source file see \cmake\ documentation (FAQ).
+
+\subsection{Complicated dependencies}
+\label{sec:complicated_deps}
+To generating a tool that is used to generate a source file see \cmake\ documentation (FAQ).
 
 %%---------------------------------------------------------------------------%%
 %% indices
