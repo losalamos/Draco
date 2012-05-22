@@ -332,7 +332,7 @@ platform support.  However, Intel has decided to discontinue this
 product.  
 
 Code added to the \draco\ repository must also compile without
-warnings using Intel~10 and PGI~9.  This requirement is check by the
+warnings using Intel~10, Intel~12 and PGI~9.  This requirement is checked by the
 nightly regressions.  \draco\ will also compile under Mac XCode, but
 this is not a requirement.
 
@@ -383,7 +383,7 @@ access to these tools on platforms that do not provide them natively.
 %\normalsize
 
 %%----------------------------------------
-\subsection{Automatic Documentation}
+\subsection{Documentation}
 
 \subsubsection{Doxygen}
 \label{doxygen}
@@ -400,7 +400,31 @@ setup.
 Many \draco\ documents found in the \comp{doc} directory are
 generated using \LaTeX.  Typically, the developer can run
 \comp{'make pdf'} from the document source directory to generate a
-PDF for viewing.  If you want to build \LaTeX\ documentation from a Windows PC, we recommend the use of TeXworks' MikTeX.
+PDF for viewing.  If you want to build \LaTeX\ documentation from a Windows PC, we recommend the use of TeXworks' MikTeX.  For proper compilation of \LaTeX\ sources into PDF you may need to set the environment variables shown in Table~\ref{tab:latex_environ}.
+%
+\begin{table}[!htbp]%
+  \caption{Environment variables for comilation of \LaTeX\ sources}%
+  \label{tab:latex_environ}
+  \begin{center}
+    \begin{tabularx}{\linewidth}{
+        >{\setlength{\hsize}{0.1\hsize}}X
+        >{\setlength{\hsize}{0.4\hsize}}Y
+        >{\setlength{\hsize}{0.5\hsize}}Y}
+      \hline\hline
+      Variable & Location & Description \\
+    \end{tabularx}
+    \begin{tabularx}{\linewidth}{
+        >{\setlength{\hsize}{0.1\hsize}}L
+        >{\setlength{\hsize}{0.4\hsize}}L
+        >{\setlength{\hsize}{0.5\hsize}}X}
+      \hline
+      \comp{BIBINPUTS} & \comp{\$\{draco\}/environment/bibfiles} & Location of bibliographic entry files. \\
+      \comp{BSTINPUTS} & \comp{\$\{draco\}/environment/bibtex} & Location of biliographic style files. \\
+      \comp{TEXINPUTS} & \comp{\$\{draco\}/environment/latex} & Location of document style files. \\
+      \hline\hline
+    \end{tabularx}
+  \end{center}
+\end{table}
 
 %%----------------------------------------
 \subsection{Instrumentation and Memory Profiling}
@@ -508,6 +532,12 @@ command similar to:
 \footnotesize
 \begin{verbatim}
      mpirun -tv -np 4 <path/to/exe> -a <arguments>
+\end{verbatim}
+\normalsize
+or
+\footnotesize
+\begin{verbatim}
+     totalview mpirun -a -np 4 <path/to/exe> -a <arguments>
 \end{verbatim}
 \normalsize
 
