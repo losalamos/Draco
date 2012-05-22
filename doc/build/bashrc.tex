@@ -1,0 +1,43 @@
+\begin{verbatim}
+## .bashrc - my bash configuration file upon bash login
+
+#------------------------------------------------------------------------------#
+# CCS-2 standard setup
+#------------------------------------------------------------------------------#
+
+export DRACO_SRC_DIR=~/draco
+
+# If this is an interactive shell then the environment variable $-
+# should contain an "i":
+case ${-} in 
+*i*)  export INTERACTIVE=true  ;;
+*) # Not an interactive shell
+   export INTERACTIVE=false  ;;
+esac
+
+#------------------------------------------------------------------------------#
+# Load default Draco Environment
+#------------------------------------------------------------------------------#
+if test -f ${DRACO_SRC_DIR}/environment/bashrc/.bashrc; then
+    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc
+fi
+
+#------------------------------------------------------------------------------#
+# User Customizations
+#------------------------------------------------------------------------------#
+if test "$INTERACTIVE" = true; then
+
+    export SVN_EDITOR=emacs
+    export LPDEST=gumibears_d
+    export USERNAME=kellyt
+
+    # Aliases ----------------------------------------------------------------#
+
+    alias xload='xload -fg brown -fn 6x13 -geometry 180x100+1500+0'
+    alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
+fi
+
+##---------------------------------------------------------------------------##
+## end of .bashrc
+##---------------------------------------------------------------------------##
+\end{verbatim}
