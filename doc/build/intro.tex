@@ -21,7 +21,7 @@ with \soft{Doxygen}~\cite{doxygen} and is maintained with the
 \label{sec:purpose}
 
 The purpose of this document is to describe the \draco\ build system.
-Specifically, we will show both users and \draco\ developers how to: 
+Specifically, we will show both \draco\ users and \draco\ developers how to: 
 \begin{itemize}
 \item configure \draco\ for different platforms, build types and options; \index{configure}
 \item compile \draco\ components; \index{compile}
@@ -53,10 +53,10 @@ These requirements are:
   \item support for simultaneous, multiple configurations (Release, Debug, etc);
   \item support for multiple languages, but the recommended languages are \lang{C} and \cpp.
   \item support for \cpp\ on all current ASC platforms;
-  \item \lang{C} and \cpp\ coding must conform strictly to issued ISO standards.
+  \item \lang{C} and \cpp\ coding must conform strictly to issued ISO standards. \index{ISO standards}
 \begin{enumerate}
-\item \cpp 03, also known as the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003.
-\item \lang{C99}, also known as the ANSI C ISO/IEC 9899:1999 standard
+\item \cpp 03, also known as the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003. \index{ISO standards!v14882:1998} \index{ISO standards!v14882:2003}
+\item \lang{C99}, also known as the ANSI C ISO/IEC 9899:1999 standard \index{ISO standards!v9899:1999}
 \end{enumerate}
   \item support for multiple build project types (\soft{Makefiles}, \soft{XCode}, \soft{Eclipse}, etc.)
 \item on-demand and automated unit and regression testing;
@@ -80,8 +80,9 @@ Chap.~\ref{chap:model}.
 %%---------------------------------------------------------------------------%%
 
 \section{Definitions and Conventions}
+\index{conventions} \index{definitions}
 
-Before continuing we shall clarify the terminology and typeface
+ Before continuing we shall clarify the terminology and typeface
 conventions that will be employed throughout the remainder of this
 manual.  The definitions that we use here are for convenience.  They
 are not to be interpreted as an ``universal standard.''  They are
@@ -126,20 +127,21 @@ by the \comp{\$} symbol.
 %%---------------------------------------------------------------------------%%
 \section{Draco Build System Support and Procurement}
 \label{sec:procurement}
+\index{Build System!Procurement} \index{Build System!Support}
 
 Questions about procuring a copy of the DBS or its use can be
 directed to:
 \begin{center}
-  \begin{tabular}{llc}\hline\hline
+  \begin{tabular}{llcl}\hline\hline
     \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
-    Group \\ \hline
-    Kelly Thompson & kgt@lanl.gov     & CCS--2 \\
-    Jae Chang      & jhchang@lanl.gov & CCS--2 \\ \hline\hline
+    Group & Team \\ \hline
+    Kelly Thompson & kgt@lanl.gov     & CCS--2 & Jayenne \\
+    Jae Chang      & jhchang@lanl.gov & CCS--2 & Capsaicin \\ \hline\hline
   \end{tabular}
-\end{center}
-Additional information is available on the \draco\ \soft{TeamForge}
+\end{center} \index{Jayenne} \index{Capsaicin}
+Additional information is available on the \draco\ \soft{TeamForge} \index{TeamForge}
 site, \href{https://tf.lanl.gov/draco}{https://tf.lanl.gov/draco}.  Also note that the \draco\ team 
-maintains a a \sys{UNIX} file sharing group, \comp{draco}.  
+maintains a a \sys{UNIX} file sharing group, \index{Unix file sharing group} \comp{draco}.  
 Developers wishing to access \draco\ source code or development environment files must be members of this file sharing group. 
 Membership is controlled by the current super-users of the group as listed on \href{https://register.lanl.gov}{https://register.lanl.gov} 
 which should correspond to the individuals listed in the table above.
@@ -149,8 +151,7 @@ which should correspond to the individuals listed in the table above.
 
 \section{Manual Organization}
 
-This manual is written for three basic groups: (a) \draco\ users, (b)
-\draco\ component developers, and (c) \draco\ system developers. The
+This manual is written for three basic groups: (a)~\draco\ users, (b)~\draco\ component developers, and (c)~\draco\ system developers. The
 manual is organized around these three groups. There is an additional
 group consisting of developers who plan to use \draco\ as a model for
 their own code systems.  For this group the entire \draco\ Build
@@ -220,19 +221,10 @@ Table~\ref{tab:layout} lists the recommended chapters for review by each \draco\
     \caption{Chapters targeted for each group of \draco\ developers.}
     \label{tab:layout}
     \begin{tabular}{lll}\hline\hline
-%      Chapter & Primary Target Group & Secondary Target Groups
-%      \\ \hline 
-%      \ref{chap:model} & (a), (b), (c) & (a), (b), (c) \\ 
-%      \ref{chap:compile} & (a), (b) & (c) \\ 
-%      \ref{chap:extern} & (a) & (b) \\
-%      \ref{chap:adding} & (b) & (c) \\ 
-%      \ref{chap:extend} & (c) & (b) \\ \hline \hline
-
           Group                             & Recommended  & Optional \\ \hline
-% \ref{chap:model} Model &   \ref{chap:compile} Compile & \ref{chap:extern} Extern &   \ref{chap:adding} Add & \ref{chap:extend} Extend \\ \hline
-	Users                             & Chap. \ref{chap:model}, \ref{chap:compile} and \ref{chap:extern} &    \\
-	Component Developers & Chap. \ref{chap:model}, \ref{chap:compile} and \ref{chap:adding} & Chap. \ref{chap:extern} and \ref{chap:extend}  \\
-	System Developers        & Chap. \ref{chap:model}, \ref{chap:adding} and \ref{chap:extend}  & Chap. \ref{chap:compile} \\  \hline \hline
+	Users                             & Chap. \ref{chap:model}, \ref{chap:compile}, \ref{chap:extern} and \ref{chap:quickstart} &    \\
+	Component Developers & Chap. \ref{chap:model}, \ref{chap:compile}, \ref{chap:adding} and \ref{chap:quickstart} & Chap. \ref{chap:extern} and \ref{chap:extend}  \\
+	System Developers        & Chap. \ref{chap:model}, \ref{chap:adding},  \ref{chap:extend} and \ref{chap:quickstart} & Chap. \ref{chap:compile} \\  \hline \hline
 
     \end{tabular}
   \end{center}
@@ -272,29 +264,27 @@ is necessary for \draco\ package developers.
 \label{sec:admin}
 
 \subsection{Important locations}
-\draco\ make use of NFS-based and web-based tools.  Locations of \draco\ related files and services are provided in Table~\ref{tab:important-locations}.
+\draco\ makes use of NFS-based and web-based tools.  Locations of \draco\ related files and services are provided in Table~\ref{tab:important-locations}.
 \begin{table}
   \begin{center}
     \caption{File and Internet locations used by \draco}
     \label{tab:important-locations}
     \begin{tabular}{lp{4in}}\hline\hline
-
           Item                             & Location \\ 
           \hline
           Repository & \url{svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/} \\
           Archival storage & \url{HPSS://hpss/jayenne/} \\
-          Wiki & \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
-          Bug Tracker &  \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
+          Wiki$^a$ & \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
+          Bug Tracker$^a$ &  \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
           Regression files & \url{ccscs8://home/regress/cmake_draco} and \url{hpc://usr/projects/jayenne/regress} \\
           Regression Dashboard & \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash} \\
-  
-	\hline \hline
-
+  	\hline \hline
+      \multicolumn{2}{p{0.85\linewidth}}{$^a$The \draco\ team is considering adoption of Redmine for Wiki and Tracker support.  The location of this tool is \url{http://hydra.lanl.gov/redmine} } \\
     \end{tabular}
   \end{center}
-\end{table}
+\end{table} \index{Repository} \index{archival storage} \index{wiki} \index{bug tracker} \index{regression files} \index{regression dashboard} \index{Redmine}
 
-\subsection{Mailing list and commit notificiations}
+\subsection{Mailing list and commit notifications} \index{mailing list} \index{commit notification}
 The \draco\ team maintains a mailing list used for announcements and general \draco\ discussion. To subscribe to this list, send an email to \url{listmanager@listserv.lanl.gov} 
 with the body \comp{'subscribe draco'}. For
 more information about mailing lists at LANL you can send an email to the same address with the message
@@ -321,7 +311,7 @@ Table~\ref{tab:email-lists} lists a few other mailing lists that may be useful f
 \end{table}
 
 \subsection{Regression Dashboard}
-\draco\ maintains a regression dashboard at \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash}. \draco developers are encouraged to visit the dashboard regularrly to view the nightly reports.  You may need to contact one of the \draco\ group super-users (see Sec.~\ref{sec:procurement}) to gain access to the the dashboard.  You can configure the dashboard to send email for various situations like failing unit tests.
+\draco\ maintains a regression dashboard at \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash}. \draco\ developers are encouraged to visit the dashboard regularly to view the nightly reports.  You may need to contact one of the \draco\ group super-users (see Sec.~\ref{sec:procurement}) to gain access to the the dashboard.  You can configure the dashboard to send email for various situations like failing unit tests. \index{regression dashboard}
 
 \subsection{Issue Tracking}
 \draco\ uses the LANL \soft{Team Forge} bug tracking system to manage issue, bug and feature tracking. \soft{Team Forge} can be accessed by opening a web browser from the Yellow network (i.e.: inside the LANL firewall) to \url{https://tf.lanl.gov}. You are encouraged to browse the list of known bugs/issues of the project you are working on.

@@ -45,40 +45,15 @@ The \draco\ team maintains a Unix file sharing group named
 \comp{draco}.  You must be a member of this group to access
 \draco\ source code or development environment files.  Membership is
 controlled by the current super-users as listed on
-\url{register.lanl.gov}. 
+\url{register.lanl.gov}.  \index{Unix file sharing group}
 %%----------------------------------------
 \subsection{Important Locations}
 
-Important file and web locations  for \draco\ are listed in Table~\ref{tab:locs}.
-
-\begin{table}[!htbp]%
-  \caption{File and Internet locations used by \draco}%
-  \label{tab:locs}
-  \begin{center}
-    \begin{tabularx}{0.9\linewidth}{
-        >{\setlength{\hsize}{0.4\hsize}}X
-        >{\setlength{\hsize}{1.0\hsize}}Y}
-      \hline\hline
-     Item & Location \\
-    \end{tabularx}
-    \begin{tabularx}{0.9\linewidth}{
-        >{\setlength{\hsize}{0.4\hsize}}X
-        >{\setlength{\hsize}{1.0\hsize}}X}
-      \hline
-Repository & \url{svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn}\\
-Archival storage & \url{HPSS://hpss/jayenne}\\
-Wiki$^a$ & \url{http://tf.lanl.gov}\\
-Bug Tracker$^a$ & \url{http://tf.lanl.gov}\\
-Regression files & \url{ccscs8:///home/regress/cmake_draco} and \\
-& \url{hpc:///usr/projects/jayenne/regress}\\
-      \hline\hline
-      \multicolumn{2}{p{0.85\linewidth}}{$^a$The \draco\ team is considering adoption of Redmine for Wiki and Tracker support.  The location of this tool is \url{http://hydra.lanl.gov/redmine} } \\
-    \end{tabularx}
-  \end{center}
-\end{table}
+Important file and web locations  for \draco\ are listed in Table~\ref{tab:important-locations}.
 
 %%----------------------------------------
 \subsection{Mailing List}
+\index{mailing list}
 
 The \draco\ team maintains a mailing list used for announcements and
 general \draco\ discussion.  To subscribe to this list, send an email
@@ -90,57 +65,37 @@ list management functions can also be completed by visiting
 
 If you are not sure if you are subscribed or not you can send the
 command ``which'' to \url{listmanger@listserv.lanl.gov} to see what
-LANL lists you are subscribed to.  Table~\ref{tab:emaillists} below
+LANL lists you are subscribed to.  Table~\ref{tab:email-lists} below
 lists a few other mailing lists that may be useful for CCS--2
 developers to subscribe to.
 
 %%----------------------------------------
-\subsection{SVN notifications}
+\subsection{SVN commit notifications}
+\index{SVN!commit notifications}
 
 The \draco\ effort uses \svn\ for revision control.  When changes are
 committed to the repository email is sent to team member who have
 requested the notification.  These notifications are managed by the
-LANL listserver.  Below in Table~\ref{tab:emaillists} are some of the
+LANL listserver.  Table~\ref{tab:email-lists} summarizes the
 active lists.  Developers are encouraged to subscribe to lists
 corresponding to projects that they are involved in.
 
-%
-\begin{table}[!htbp]%
-  \caption{Suggested email lists for CCS-4 developers}%
-  \label{tab:emaillists}
-  \begin{center}
-    \begin{tabularx}{\linewidth}{
-        >{\setlength{\hsize}{0.2\hsize}}X
-        >{\setlength{\hsize}{1.0\hsize}}Y}
-      \hline\hline
-      List Name & Purpose \\
-    \end{tabularx}
-    \begin{tabularx}{\linewidth}{
-        >{\setlength{\hsize}{0.2\hsize}}L
-        >{\setlength{\hsize}{1.0\hsize}}X}
-      \hline
-      draco     & General \draco\ related discussion, including svn commit messages. \\
-      jayenne   & General \jayenne\ related discussion, including svn commit messages. \\
-      capsaicin & General \capsaicin\ related discussion, including svn commit messages. \\
-      \hline\hline
-    \end{tabularx}
-  \end{center}
-\end{table}
-
 %%----------------------------------------
 \subsection{Nightly regression reports}
+\index{regression reports!Nightly}
 
 The \draco\ effort uses \cdash\ for reporting nightly regression
 results.  \draco\ developers are encouraged to visit the dashboard
 (\url{coder.lanl.gov/cdash}) regularly to view the nightly reports.
 Developers are also encouraged to register their email address with
 the dashboard to receive email reports of regression failures or
-warnings.
+warnings. \index{dashboard}
 
 %%----------------------------------------
 \subsection{Issue Tracking}
+\index{issue tracking}
 
-\draco\ uses the LANS Team Forge bug tracking system to manage issue,
+\draco\ uses the LANS Team Forge \index{Team Forge} issue tracking system to manage issue,
 bug and feature tracking.  Team Forge can be accessed by opening a web
 browser from the Yellow network (i.e.: inside the LANL firewall) to
 \url{tf.lanl.gov}.  You are encouraged to browse the list of known
@@ -157,12 +112,13 @@ bugs/issues of the project you are working on.
 
 %%----------------------------------------
 \subsection{C++}
+\index{C++}
 
 The \draco\ code library is primary written in C++.  The team
 recommends that the GNU g++ compiler (v. 4.0+) be used for development
 of the \draco\ code library.  Recent versions of g++ have shown
 excellent adherence to the C++ standard and very good cross-platform
-support. Traditionally, KCC was recommended as the primary C++
+support. Traditionally, KCC was recommended as the primary C++ \index{C++!KCC}
 compiler because of its adherence to the C++ standard and its cross
 platform support.  However, Intel has decided to discontinue this
 product.  
@@ -170,12 +126,12 @@ product.
 Code added to the \draco\ repository must also compile without
 warnings using Intel~10, Intel~12 and PGI~9.  This requirement is checked by the
 nightly regressions.  \draco\ will also compile under Mac XCode, but
-this is not a requirement.
+this is not a requirement. \index{C++!Intel} \index{C++!Portland Group}
 
 %%----------------------------------------
 \subsection{Build tools}
 
-For \draco\ to be correctly configured you must use \cmake\ and
+For \draco\ to be correctly configured you must use \cmake\ and \index{cmake}
 \ctest~\cite{cmake} version 2.8.6 or later.  Many machines at LANL
 provide \cmake, but not 2.8.6+.  Thus, \cmake\ is provided as a part
 of the \draco\ development environment for supported LANL machines.
@@ -183,13 +139,14 @@ of the \draco\ development environment for supported LANL machines.
 Additionally, \textbf{svn}, \textbf{python} and \textbf{numdiff} are
 also required for successful execution of the unit test suite. The
 \draco\ development environment (i.e.: \textbf{modules}) provides
-access to these tools on platforms that do not provide them natively.
+access to these tools on platforms that do not provide them natively. \index{SVN} \index{Python} \index{numdiff}
 
 %%----------------------------------------
 \subsection{Documentation}
 
 \subsubsection{Doxygen}
 \label{doxygen}
+\index{Doxygen} \index{documentation!automatic} 
 
 If you want to use the automatic documentation features of
 \draco~\cite{doxygen} then you will need to have both \doxygen\ and
@@ -199,11 +156,12 @@ setup.
 
 \subsubsection{LaTeX}
 \label{latex}
+\index{documentation!LaTeX}
 
 Many \draco\ documents found in the \comp{doc} directory are
 generated using \LaTeX.  Typically, the developer can run
 \comp{'make pdf'} from the document source directory to generate a
-PDF for viewing.  If you want to build \LaTeX\ documentation from a Windows PC, we recommend the use of TeXworks' MikTeX.  For proper compilation of \LaTeX\ sources into PDF you may need to set the environment variables shown in Table~\ref{tab:latex_environ}.
+PDF for viewing.  If you want to build \LaTeX\ documentation from a Windows PC, we recommend the use of TeXworks' MikTeX.  For proper compilation of \LaTeX\ sources into PDF you may need to set the environment variables shown in Table~\ref{tab:latex_environ}. \index{TeX Works}
 %
 \begin{table}[!htbp]%
   \caption{Environment variables for comilation of \LaTeX\ sources}%
@@ -231,11 +189,13 @@ PDF for viewing.  If you want to build \LaTeX\ documentation from a Windows PC, 
 
 %%----------------------------------------
 \subsection{Instrumentation and Memory Profiling}
+\index{instrumentation} \index{profiling}
 
 \subsubsection{CTest}
 When a test is failing, one of the first things to do is to run it by hand outside of the \ctest\ framework.  The execution command and full output of a test can be retrieved by running \ctest\ with the \textit{verbose} option. For example, \comp{ctest -VV -R regex\_for\_test\_name}.  Once the default execution command is known, it is easy to run the test manually or modify the command so as to run it by under totalview, valgrind or some other tool. 
 
 \subsubsection{Valgrind}
+\index{valgrind} \index{instrumentation!valgrind} \index{instrumentation!memory leaks}
 
 If \textbf{valgrind} is available on the local system, it may be used
 to check debug \draco\ executables (including unit tests) for memory
@@ -251,7 +211,7 @@ here:
 \end{verbatim}
 \normalsize
 
-Dynamic Analysis (i.e.: \textbf{valgrind}) results are provided by the
+Dynamic Analysis (i.e.: \textbf{valgrind}) results are provided by the  \index{instrumentation!dynamic analysis}
 nightly regression scripts and can be viewed from the
 \draco\ dashboard at
 \url{coder.lanl.gov/cdash/index.php?project=Draco}.  Developers can
@@ -261,6 +221,7 @@ section of the dashboard by issuing the commands \comp{'make
 directory.
 
 \subsubsection{Bullseye Code Coverage}
+\index{instrumentation!code coverage analysis} \index{Bullseye Code Coverage}
 
 Code coverage statistics for \draco\ and client codes are provided by
 using the Bullseye Code Coverage tool~\cite{bullseyeweb} on the
@@ -271,6 +232,7 @@ Developers can generate their own coverage data (section to be
 completed later)
 
 \subsubsection{Lines of Code}
+\index{instrumentation!lines-of-code analysis} \index{CLOC}
 
 Lines-of-code statistics \draco\ and client codes are provided on the
 nightly regression scripts and can be viewed from the
@@ -281,6 +243,7 @@ name.  These metrics can be generated manually by running the
 \textbf{cloc} script found in the \comp{regression} subdirectory.
 
 \subsubsection{Purify}
+\index{Purify}
 
 Purify is not currently supported by the build system.
 
@@ -306,6 +269,7 @@ Purify is not currently supported by the build system.
 %% executable to instrument your code.
 
 \subsubsection{Assure}
+\index{Assure}
 
 Assure is not currently supported by the build system.
 
@@ -313,6 +277,7 @@ Assure is not currently supported by the build system.
 %% \textbf{Assure}~\cite{assure} with \draco.  Assure does work on Linux.
 
 \subsubsection{Totalview}
+\index{Totalview}
 
 Newer versions of Totalview provide memory checking and memory
 profiling tools.  Totalview instrumentation occurs at run time and the
@@ -345,6 +310,7 @@ or
 \normalsize
 
 \subsubsection{gdb}
+\index{gdb}
 
 The \textbf{gdb} debugger is the only option on some specialized
 platforms such as the PPC node of Roadrunner.
@@ -361,6 +327,7 @@ debugging is beyond the scope of this document.
 
 %%----------------------------------------
 \subsection{\emacs}
+\index{Emacs}
 
 \draco\ does not require anyone to use \emacs.  However, many of the
 \draco\ developers use \emacs\ as their primary editor.  Custom
@@ -439,6 +406,7 @@ configure your environment to make them work properly with the
 
 %%----------------------------------------
 \subsection{Bash}
+\index{bash}
 
 The recommended shell for \draco\ development is \bash.  All of the
 following examples assume that the user is running \bash\ as his or
@@ -448,7 +416,7 @@ Linux machines, \bash\ is the default shell.  It is not the default
 shell for the ICN machines.  If you are running on one of these
 machines and would like to make \bash\ start automatically, you can
 make the request to the consultants by calling 5-4444 or emailing
-\url{consult@lanl.gov}.
+\url{consult@lanl.gov}. \index{LANL HPC consultants}
 
 %% add the following code to the end of your \comp{.login} startup
 %% script.  This particular example is known to work for Theta and Chi.
@@ -466,31 +434,33 @@ make the request to the consultants by calling 5-4444 or emailing
 
 %%----------------------------------------
 \subsection{SVN}
+\index{SVN}
 
 \svn\ is used exclusively for version control in \draco\ and its
 clients (\capsaicin, \milagro, etc.).  In order to work with
 these code-packages you must have access to the CCS--2 \svn\ 
 repository.  To simplify \svn\ usage syntax we recommend that your
-have the \comp{SVN\_EDITOR} environment variable set in your shell as shown in Listing~\ref{lst:setsvneditor}.  If you
+have the \comp{SVN\_EDITOR} environment variable set in your shell % as shown in Listing~\ref{lst:setsvneditor}.  
+If you
 are running \bash, these can be set in your \comp{.bash\_profile}.
 If you are running csh or tcsh then you should have the equivalent
 coding using csh syntax in your \comp{.cshrc}.
 %
-\lstset{language=ksh,
-  showstringspaces=false,
-  frame=shadowbox,
-  basicstyle=\footnotesize,
-  rulesepcolor=\color{black},
-  backgroundcolor=\color{listingBG}
-}
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in, caption={Setting the default SVN editor in the .bashrc file.}, float=tn,label={lst:setsvneditor}]
-#
-# Setup SVN (.bash_profile)
-#
-
-# Set the default SVN editor
-export SVN_EDITOR=emacs
-\end{lstlisting}
+%\lstset{language=ksh,
+%  showstringspaces=false,
+%  frame=shadowbox,
+%  basicstyle=\footnotesize,
+%  rulesepcolor=\color{black},
+%  backgroundcolor=\color{listingBG}
+%}
+%\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in, caption={Setting the default SVN editor in the .bashrc file.}, float=tn,label={lst:setsvneditor}]
+%#
+%# Setup SVN (.bash_profile)
+%#
+%
+%# Set the default SVN editor
+%export SVN_EDITOR=emacs
+%\end{lstlisting}
 %
 %% # Set the SVN communication protocol
 %% export SVN_RSH=ssh
@@ -499,29 +469,30 @@ export SVN_EDITOR=emacs
 %% export SVNROOT=mikonos:/codes/radtran/svnroot
 %
 The \comp{SVN\_EDITOR} environment variable should be set to your
-preferred editor.  Most \draco\ developers use \emacs\ and it is the
+preferred editor(e.g. \comp{setenv SVN\_EDITOR emacs}).  Most \draco\ developers use \emacs\ and it is the
 recommended editor for new users because \draco\ specific
-functionality has been added to this editor~\cite{xtm:9909}.
+functionality has been added to this editor~\cite{xtm:9909}.  If you do not set this environment variable, Linux systems will assume \comp{vi}.  You can also choose another editor such as \soft{NEdit}.
 
 %%----------------------------------------
 \subsection{.bash\_profile and .bashrc}
 
 Section~\ref{.bashprofile} includes a sample listing of a
 \comp{.bash\_profile} and \comp{.bashrc} files that includes all of
-the needed \draco\ developer environment setup.  These changes should
+the recommended \draco\ developer environment setup.  These changes should
 be implemented in your work environment before you attempt to
 checkout, configure or build \draco\ or any of its clients.
 
 %%---------------------------------------------------------------------------%%
 
 \section{Directory Structure and Obtaining the Source Files}
+\index{directory structure}
 
 The \draco\ directory structure is discussed with some detail in
-Ref.~\cite{draco-build}.  We will not repeat that discussion here.
-What you need to know is that \draco\ and its clients will check out
-of the \svn\ repository into a \emph{source} directory in your
-personal workspace.  You will also create one or more \emph{build}
-directories where configuration and compiling will take place and unit
+Ref.~\ref{chap:model}.  We will not repeat that discussion here.
+\draco\ and its clients will check out
+of the \svn\ repository into a \emph{source} directory (usually in your
+personal workspace).  You will also create one or more \emph{build}
+directories where configuration and compiling will take place and unit \index{build directory}
 tests will be run.  Finally, you will create a directory where header
 files and compiled binaries and libraries will be installed.
 
@@ -537,15 +508,15 @@ you have chosen to use a different path for your work space.
 To obtain a copy of the \draco\ sources execute the following
 \emph{checkout} command from within your work directory.  The
 italicized text is representative of the shell's response to your
-command.
+command. \index{SVN:checkout}
 
 \footnotesize
 \begin{verse}
-\texttt{[/var/tmp/work] \% svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/draco/trunk draco} \\
-%\emph{svn checkout: Updating draco \\
-%U draco/.svnignore \\
-%      ... \\
-%U draco/tools/test\_filter.py}}
+\texttt{[/var/tmp/work/source] \% svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/draco/trunk draco \\
+\emph{U    draco/environment/bashrc/.bashrc} \\
+\emph{U    draco/environment/bashrc/.bashrc\_linux64} \\
+\emph{U    draco/environment/bashrc/.bashrc\_linux} \\
+\ldots}
 \end{verse}
 \normalsize
 
@@ -611,16 +582,21 @@ and then create a directory for each code under this build location.
 \footnotesize
 \begin{verse}
 \texttt{[/var/tmp/work] \% ls -F \\
-\emph{draco/\ \ capsaicin/\ \ linux\_mpid/\ \ linux\_scalar/ }}
+\emph{source/\ \ \ linux\_mpid/\ \ linux\_scalar/ }}
 \end{verse}
 
 \begin{verse}
 \texttt{[/var/tmp/work] \% ls -F linux\_mpid \\
 \emph{draco/  capsaicin/}}
 \end{verse}
+
+\begin{verse}
+\texttt{[/var/tmp/work] \% ls -F source \\
+\emph{draco/  capsaicin/}}
+\end{verse}
 \normalsize
 
-We will configure the sources in these directories.  \comp{configure}
+We will configure the sources in these directories.  \comp{cmake}
 will be used to generate the required directory structure in the build
 tree and fill the tree with appropriate Makefile and header files.
 This document will show you how to configure, build and install build
@@ -629,9 +605,9 @@ both parallel and scalar versions of \draco\ under Linux.
 %%----------------------------------------
 \subsection{Target Directory}
 
-You will also need a \emph{target} directory (aka: install or prefix
+You will also need a \emph{target} directory (aka: install or prefix 
 directory) where object and executable files can be installed.  This
-directory will be created automatically by the \draco\ make system
+directory will be created automatically by the \draco\ make system. \index{target directory} \index{prefix directory}
 
 You should use separate target directories for each set of configure
 options (i.e.: scalar vs MPI) and for each architecture you are
@@ -657,7 +633,7 @@ accomplished by running \cmake\ from the build directory.  This will
 populate the build tree with the subdirectories, Makefiles and header
 files that define up the make system.  Variables in your environment
 or provided on the \cmake\ command line modify the properties of the
-generated build project.
+generated build project. \index{build project} \index{Makefile} \index{XCode} \index{Eclipse CDT}
 
 The following example will generate a Makefile-based build project
 that uses MPI and generates debug code:
@@ -665,7 +641,7 @@ that uses MPI and generates debug code:
 \footnotesize
 \begin{verse}
 \texttt{[/var/tmp/work/linux\_mpid/draco] \% cmake \\
-  \hspace{0.5in}-DCMAKE\_INSTALL\_PREFIX=/var/tmp/work/linux\_mpid/install
+  \hspace{0.5in}-DCMAKE\_INSTALL\_PREFIX=/var/tmp/work/linux\_mpid
   /var/tmp/work/draco} \\
 %\hspace{0.5in}--with-pcglib-lib=\$\{VENDORS\}/pcglib/\$(uname)} \\
 %\emph{../../draco/configure --prefix=/home/kellyt/work/sgi\_mpi0 --with-c4=mpi $\backslash$\\
@@ -681,7 +657,7 @@ build to use \openmpi\, the command \textbf{mpirun} must be found in
 the \comp{PATH} and the environment variables \comp{GSL\_INC\_DIR}
 and \comp{GSL\_LIB\_DIR} must point to a valid install of the GNU
 Scientific Library.  In our case, these are set automatically through
-the \draco\ development environment's established by \comp{.bashrc}.
+the \draco\ development environment's use of vendor modules loaded automatically by the \comp{.bashrc} provided in \draco's \comp{environment} directory.
 
 Different builds will need to include different vendor libraries.  See
 Ref.~\cite{draco-build} for details about what libraries may need to
@@ -690,27 +666,29 @@ documentation concerning required configure options.  For example, to
 include \comp{plot2D} in the build project, the build system must
 find \textbf{xmgrace} in the local environment or variables must be
 set to point to the correct locations.
-
+%
 \footnotesize
 \begin{verse}
 \texttt{-DGRACE\_INC\_DIR=/ccs/opt/x86\_64/grace/grace/include \\
 -DGRACE\_LIB\_DIR=/ccs/opt/x86\_64/grace/grace/lib}
 \end{verse}
 \normalsize
+%
+Alternatively, you can load the \draco\ module for \comp{XMGrace} that will set these values for you automatically.
 
 To configure a scalar version of \draco\ we would execute a similar command.
 
 \footnotesize
 \begin{verse}
 \texttt{[/var/tmp/work/linux\_mpid/draco] \% cmake \\
-  \hspace{0.5in}-DCMAKE\_INSTALL\_PREFIX=/var/tmp/work/linux\_mpid/install  \\
+  \hspace{0.5in}-DCMAKE\_INSTALL\_PREFIX=/var/tmp/work/linux\_mpid  \\
   \hspace{0.5in}-DDRACO\_C4=SCALAR \\
-  \hspace{0.5in}/var/tmp/work/draco} \\
+  \hspace{0.5in}/var/tmp/work/source/draco} \\
 \end{verse}
 \normalsize
 
 Once the configuration is complete the files required for building the
-\draco\ libraries will exist in the target directory.  The Makefiles
+\draco\ libraries will exist in the binary directory.  The Makefiles
 (or project files) will know where the required system tools live,
 where the vendor libraries are installed and where the final
 \draco\ library files should be installed.
@@ -779,7 +757,7 @@ existing build directory.
 %%---------------------------------------------------------------------------%%
 
 \section{Compiling the Sources}
-\label{compile}
+\label{compile} \index{compiling}
 
 %% After \draco\ has been configured as described in section
 %% \S\ref{configure} very little remains to be done exept to run
@@ -813,24 +791,21 @@ existing build directory.
 %and will build with these parts of \draco\ missing.)
 
 We are now ready to compile \draco.  From the \draco\ target directory
-simply run \textbf{gmake} to create the \draco\ libraries.  It will
-take several minutes to complete the building process.  You may want
+simply run \textbf{gmake} to create the \draco\ libraries.  You may want
 to run \textbf{gmake} in parallel to speed up the compilation
 process.  Using the optional gmake argument ``\comp{-j N}'' will tell
 \textbf{gmake} to use \textbf{N} processors for the compilation
-process.  We recommend that \textbf{N} be set to value that is a
-little larger than the number of available cores (i.e.: 20 on a 16
-core machine).
+process.  We recommend that \textbf{N} be set to value that is about 50\% larger than the number of available cores (i.e.: 24 on a 16 core machine).
 
 \footnotesize
 \begin{verse}
-\texttt{[/var/tmp/work/linux\_mpid/draco] \% gmake -j 20 install}
+\texttt{[/var/tmp/work/linux\_mpid/draco] \% gmake -j 24}
 \end{verse}
 \normalsize
-
+%
 Once the build process has finished several new directories will exist
-in the target directory.  The \draco\ library files will have been
-installed in \comp{/var/tmp/work/linux\_mpid/lib}.  The C++ header
+in the binary directory.    If the \comp{install} target is requested (e.g.: \comp{make -j24 install}), the \draco\ library files will have been
+installed in the \emph{prefix} directory (e.g.: \comp{/var/tmp/work/linux\_mpid/lib}).  The C++ header
 files from \draco\ will be stored under
 \comp{/var/tmp/work/linux\_mpid/include}.
 
@@ -880,7 +855,7 @@ building the unit tests set \comp{-DBUILD\_TESTING=OFF} during the
 %%---------------------------------------------------------------------------%%
 
 \section{Regression Tests}
-\label{regression}
+\label{regression} \index{regression tests} \index{ctest}
 
 \draco\ has a complete set of regression tests included with source.
 If you wish to test any particular component you can run the command
@@ -926,10 +901,10 @@ like the following output.
 \normalsize
 
 If you want to test all of the \draco\ packages simply run
-\comp{ctest} from the \draco\ target directory
+\comp{ctest} from the \draco\ binary directory
 (\url{/var/tmp/work/linux_mpid/draco}).  Similarly you can run the
-same command from the \capsaicin\ target directory (or any other
-client's target directory) to run all of the \capsaicin\ (client's)
+same command from the \capsaicin\ binary directory (or any other
+client's binary directory) to run all of the \capsaicin\ (client's)
 regression tests.
 
 %%---------------------------------------------------------------------------%%
@@ -938,12 +913,13 @@ regression tests.
 
 %%----------------------------------------
 \subsection{Automatic Documentation}
+\index{documentation!automatic}
 
 In order to generate the HTML 
 %and \LaTeX\ 
 \emph{automatic documentation} for \draco\ you must have
 \doxygen\ configured for the system you are working on (see section
-\S\ref{doxygen}).  Once you are setup to use \doxygen\ and the
+\S\ref{doxygen}~\cite{doxygen}).  Once you are setup to use \doxygen\ and the
 configuration step (\S\ref{configure}) has been completed you can
 generate the automatic documentation by executing the following
 command from the \draco\ target directory.
@@ -960,11 +936,10 @@ command from the \draco\ target directory.
 \normalsize
 
 This will create two new directories under
-\comp{/var/tmp/work/\emph{target}/autodoc} named \comp{html}.
+\comp{/var/tmp/work/\emph{binarydir}/autodoc} named \comp{html}.
 Hypertext versions of all of the automatically created documents are
 created in the \comp{html} directory.  The head file is named
-\comp{index.html}.  The html documentation is created using
-Doxygen~\cite{doxygen}.
+\comp{index.html}.  
 %An
 %equivalent set of documents in \LaTeX\ format can be found in the
 %\comp{latex} directory.  You can run \textbf{make} from within the
@@ -1050,7 +1025,7 @@ you may want to peruse the \draco\ team forge web site
 
 These documents are automatically checked out when you check out
 \draco\ from the \svn\ repository and are stored in the \draco\ source
-directory \comp{/var/tmp/work/draco/doc}.  
+directory, \comp{/var/tmp/work/draco/doc}.  
 
 %% Howver, the
 %% \LaTeX\ \emph{style} files that these documents depend on are not
@@ -1198,16 +1173,12 @@ resolution.
 %%----------------------------------------
 \subsection{C++ Error Messages}
 
-If you encounter a C++ error message that you don't understand, you contact other \draco\ developers and search the web for help.  The following web sites may be of some use:
+If you encounter a C++ error message that you don't understand, you should contact other \draco\ developers and search the web for help.  The following web sites may be of some use:
 \begin{itemize}
 \item \url{cplusplus.com} - Documentation, tutorials, discussion boards for C++.
 \item C++ FAQ (\url{www.parashift.com/c++-faq-lite}) -  Answers to common C++ questions.
 \item OpenOffice Wiki (\url{http://wiki.services.openoffice.org/wiki/Writing_warning-free_code}) - Writing warning-free code.
 \end{itemize}
-
-On Mac OSX, it may be necessary to modify your
-\comp{DYLD\_LIBRARY\_PATH} environment variable to point to the
-location of some vendor libraries like CUDA or Thrust.
 
 %%----------------------------------------
 \subsection{DYLD\_LIBRARY\_PATH}
