@@ -359,7 +359,7 @@ Unit const raw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< another name for number
 Unit const MKS = { 1.,   1.,    1., 1., 1., 1., 1., 1., 1.,  0.};
 Unit const CGS = { 0.01, 0.001, 1., 1., 1., 1., 1., 1., 1.,  0.};
 Unit const CGMU = { 0.01, 0.001, 1e-6, 1., 1., 1., 1., 1., 1.,  0.};
-Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e-3/rtt_units::EV2K, 1., 1., 1., 1.,  0.};
+Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e3*rtt_units::EV2K, 1., 1., 1., 1.,  0.};
 
 //---------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are

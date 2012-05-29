@@ -435,7 +435,7 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 "Default function for inserting a comment block in front of a C++ function or method."
   (interactive)
   (beginning-of-line)
-  (insert "//---------------------------------------------------------------------------//\n")
+  (insert "//---------------------------------------------------------------------------------------//\n")
   (insert "/*! \n")
   (insert " * \\brief \n")
   (insert " * \n")
@@ -445,15 +445,14 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
   (previous-line 3)
   (end-of-line)
 )
-
 (defun draco-insert-class-doc ()
 "Function for inserting a class desicription boilerplate."
   (interactive)
-  (insert "//===========================================================================//\n")
+  (insert "//=======================================================================================//\n")
   (insert "/*!\n")
   (insert " * \\class \n")
   (insert " * \\brief \n")
-  (insert "//===========================================================================//\n")
+  (insert "//=======================================================================================//\n")
   (previous-line 2)
   (end-of-line)
 )
@@ -462,7 +461,7 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 "Function for inserting a single line comment divider."
   (interactive)
   (beginning-of-line)
-  (insert "//---------------------------------------------------------------------------//\n")
+  (insert "//---------------------------------------------------------------------------------------//\n")
 )
 
 (defun draco-save-and-kill-current-buffer ()
