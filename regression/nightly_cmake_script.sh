@@ -23,11 +23,11 @@ export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux64
 
 if test -z "$MODULESHOME"; then
   # This is a new login
-  if test -f /home/regress/environment/Modules/init/bash; then
-    source /home/regress/environment/Modules/init/bash
-    module load gcc gsl 
-    module load lapack/atlas-3.8.3 openmpi cmake svn
-    module load valgrind numdiff
+  if test -f /ccs/codes/radtran/vendors/modules-3.2.7/init/bash; then
+    source /ccs/codes/radtran/vendors/modules-3.2.7/init/bash
+    module load grace gcc gsl lapack
+    module load openmpi
+    module load cmake numdiff svn
     module list
   fi
 fi
