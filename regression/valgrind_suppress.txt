@@ -349,3 +349,20 @@
    fun:__gmpn_divrem
    ...
 }
+
+#==================== F90 open/read/write errors ====================#
+{
+   fortran/open
+   Memcheck:Addr8
+   fun:for__add_to_lf_table
+   fun:for__open_proc
+   fun:for_open
+   ...
+}
+{
+   fortran/read
+   Memcheck:Cond
+   fun:for__nml_lex
+   fun:for_read_seq_nml
+   ...
+}
