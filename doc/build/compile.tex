@@ -22,7 +22,7 @@ examples that show how to build \draco\ for various configurations.
 \label{sec:draco_dependencies}
 
 As mentioned in \S~\ref{sec:overview_of_draco}, \draco\ is based on
-the concept of levelized design~\cite{la96}.  A component-level diagram
+the concept of levelized design~\cite{la96} \index{levelized design}.  A component-level diagram
 is shown in Fig.~\ref{fig:level}\index{levelized design}.  By following the dependency lines
 \begin{figure}
   \centerline{\includegraphics[angle=90]{fig/level}}
@@ -31,13 +31,12 @@ is shown in Fig.~\ref{fig:level}\index{levelized design}.  By following the depe
 \end{figure}
 of this diagram, one can determine the exact dependencies required by
 each component in \draco.  Thus, to compile a component static library, all of
-the dependencies, both explicit and implicit, must be included on the
-link line.
+the dependencies, both explicit and implicit, must be included when linking.
 
 In addition to the direct component dependencies illustrated in
 Fig.~\ref{fig:level}, the \comp{\vble{pkg}/test/} directory may
 require additional components for its compartmentalized unit tests.  For example,
-\comp{device} does not explicitly require \comp{c4}, but \comp{c4} and \comp{MPI} are required for compiling the unit tests for \comp{device}.  This component-level diagram includes  dependencies for unit tests.  Dotted lines represent dependencies that are only required for building the unit tests.  
+\comp{device} does not explicitly require \comp{c4}, but \comp{c4} and \comp{MPI} are required for compiling the unit tests for \comp{device}.  Unit test dependencies are included in this component-level diagram and dependencies unique to the tests are represented by dotted lines.   
 %Figure~\ref{fig:test_level} shows the \draco\ package
 %dependency tree
 %\begin{figure}
@@ -234,7 +233,7 @@ where \comp{-lgsl -lgslcblas} are the \pkg{GSL} libraries (see \S~\ref{appsec:gs
 This example assumes that all of the following library locations are
 defined in \ldlib.  Thus, even though \pkg{quadrature} does not explicitly depend
 on \mpi\ or \sys{GSL}, it uses \draco\ packages (\cfour\ and \pkg{special\_functions}) that
-do require these libraries.  In practice, the \draco\ build system attempts to find and use full paths to vendor and \draco\ component libraries so that \ldlib\ does not need to be manipulated by the developer or software user.  The build system also locates and sets all of the libraries required or each vendor so that a \draco\ component or client only needs to specify that it should link to a set of libraries provided by the \cmake\ variable  \$\vble{\{\{VENDOR\}}\comp{\_LIBRARIES\}}.
+do require these libraries.  In practice, the \draco\ build system attempts to find and use full paths to vendor and \draco\ component libraries so that \ldlib\ does not need to be manipulated by the developer or software user.  The build system also locates and sets all of the libraries required or each vendor so that a \draco\ component or client only needs to specify that it should link to a set of libraries provided by the \cmake\ variable  \$\vble{\{\$\{VENDOR\}}\comp{\_LIBRARIES\}}.
 
 %%---------------------------------------------------------------------------%%
 

@@ -29,7 +29,6 @@ digraph source_tree {
     dat       [label="data/"];
     des       [label="design/"];
     dra       [label="draco-autodoc/"];
-    get       [label="gettingStarted/"];
     mat       [label="matprops/"];
     mer       [label="merge/"];
     mes       [label="mesh/"];
