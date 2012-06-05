@@ -236,6 +236,9 @@ macro( parse_args )
            # convert one big string into a set of strings, one per line
            string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
            set( proc_ids "" )
+# consider using:
+# include(ProcessorCount)
+# ProcessorCount(DRACO_NUM_CORES)
            foreach( line ${cpuinfo} )
               if( ${line} MATCHES "processor" )
                  list( APPEND proc_ids ${line} )
