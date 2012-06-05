@@ -20,7 +20,7 @@ dependencies.
 \label{appsec:mpi}
 
 \soft{MPI} is the message passing interface used for most parallel codes including \draco.
-While \draco\ can be built without \soft{MPI}, we find that most production capabilities require \soft{MPI} and the scalar build mode becomes useful only for debugging.  At the current time, \draco\ can use either the \href{http://www.openmpi.org}{OpenMPI} or \href{http://www.mcs.anl.gov/research/projects/mpich2/}{MPICH2} flavor of \soft{MPI}. The \draco\ build system should automatically detect the available \soft{MPI} system and link against it (enabling \comp{DRACO\_C4=MPI}).  
+While \draco\ can be built without \soft{MPI}, we find that most production capabilities require \soft{MPI} and the scalar build mode becomes useful only for debugging.  At the current time, \draco\ can use either the \href{http://www.openmpi.org}{OpenMPI} or \href{http://www.mcs.anl.gov/research/projects/mpich2/}{MPICH2} flavor of \soft{MPI}. The \draco\ build system should automatically detect the available \soft{MPI} system and link against it (enabling \comp{DRACO\_C4=MPI}).  \index{OpenMPI}\index{MPICH2}\index{build option!DRACO\_C4}
 
 The \draco\ development environment does not normally provide the \soft{MPI} vendor installation since it must be compiled to take advantage of specialized hardware on each machine (interconnects, etc).  The one exception is on CCS development machines were a version is provided for testing purposes only. 
 
@@ -37,7 +37,7 @@ The \draco\ development environment does not normally provide the \soft{MPI} ven
 %%---------------------------------------------------------------------------%%
 
 \section{LAPACK}
-\label{appsec:lapack}
+\label{appsec:lapack} \index{LAPACK} \index{BLAS}
 
 The \href{http://www.netlib.org/lapack/}{LAPACK} libraries provide efficient implementation of linear algebra operations on shared-memory vector and parallel processors. The \draco\ development environment provides it's own installation of \soft{LAPACK} that can be loaded into the developer environment through the use of the \draco\ modules feature.
 
@@ -48,7 +48,7 @@ Make your component depend on LAPACK by adding \comp{LAPACK\_LIBRARIES} to your 
 %%---------------------------------------------------------------------------%%
 
 \section{GSL, GNU Scientific Library}
-\label{appsec:gsl}
+\label{appsec:gsl}\index{GNU Scientific Library}
 
 The \href{http://www.gnu.org/software/gsl/}{GSL} libraries provide efficient implementation of common numerical operations like root-finding, splines, and statistics. The \draco\ development environment provides it's own installation of \soft{GSL} that can be loaded into the developer environment through the use of the \draco\ modules feature.
 
@@ -59,21 +59,21 @@ Make your component depend on GSL by adding \comp{GSL\_LIBRARIES} to your \comp{
 %%---------------------------------------------------------------------------%%
 
 \section{CUDA}
-\label{appsec:cuda}
+\label{appsec:cuda} \index{CUDA}
 
 \href{http://www.nvidia.com/object/cuda_home_new.html}{CUDA}$^{TM}$ is a parallel computing platform and programming model invented by NVIDIA. It enables dramatic increases in computing performance by harnessing the power of the graphics processing unit (GPU).  Support for CUDA is still experimental and you will need to review the code found in the \pkg{device} component, the discovery routines in \comp{vendor\_libraries.cmake} and the \cmake\ module \comp{FindCUDA} for details on using this vendor.
 
 %%---------------------------------------------------------------------------%%
 
 \section{DaCS}
-\label{appsec:dacs}
+\label{appsec:dacs} \index{DaCS}
 
 DaCS is the communication library used to run code on the IBM Cell architecture (Roadrunner).  Support for DaCS is mature, but no further development is planned since this architecture has been discontinued.  You can glean some of the implementation features by review \draco's \pkg{device} component.
 
 %%---------------------------------------------------------------------------%%
 
 \section{XMGRACE}
-\label{appsec:grace}
+\label{appsec:grace} \index{Grace}
 
 Grace is a WYSIWYG 2D plotting tool for the X Window System.  The \draco\ development environment provides it's own installation of \soft{Grace} that can be loaded into the developer environment through the use of the \draco\ modules feature.
 

@@ -325,7 +325,7 @@ directories where various builds will take place require some
 consideration.  In \S~\ref{sec:draco_src_tree} we described how the
 source tree is not necessarily where the build takes place.  In fact,
 we advise that builds be performed in a location separate from the
-source tree\footnote{The exception to this advice is when the target build tool is \sys{Eclipse CDT} where there are advantages to using a {\it within-source-tree build}, namely, better support for \svn\ through the \sys{Eclipse} IDE.}.  Through this method multiple builds can be performed
+source tree\footnote{The exception to this advice is when the target build tool is \sys{Eclipse CDT} where there are advantages to using a {\it within-source-tree build}, namely, better support for \svn\ through the \sys{Eclipse} IDE.}.  Through this method multiple builds (debug, optimized) can be performed
 simultaneously using the same source files.  Additionally, the source tree will not be cluttered
 by build-file remnants such as object dependency files.\index{build!within-source-tree}\index{build!out-of-source-tree}
 
@@ -336,15 +336,13 @@ be descriptive of the particular build that is being performed.  For
 example to build a debug version on a Linux platform with \mpi\ support, one might make
 a directory entitled \comp{linux\_\,mpid/}. Thus, for \sys{Unix} systems the user enters
 \begin{verbatim}
-     $ mkdir linux_mpid
-     $ cd linux_mpid
-     $ mkdir draco
+     $ mkdir -p linux_mpid/draco
 \end{verbatim} % $
 Similar directory creation processes should be used on other platforms.  Note that we do not require a \comp{draco/} binary directory under the target
 directory.  However, this strategy does alleviate the complexity when
 using \draco\ with other code systems.  If the user is planning on
 using a product that emulates the \draco\ build system, such as
-\capsaicin, \clubimc\  or \milagro, then additional directories should be
+\capsaicin, \clubimc\  or \milagro, then parallel binary directories should be
 added for each product
 \begin{verbatim}
      $ cd linux_mpid
@@ -358,8 +356,8 @@ reserved until Chap.~\ref{chap:extern}.
 \subsection{Running CMake from the command line}
 \label{sec:running_configure_cmd_line}
 
-The next step is to run the \cmake\ command line tool inside the \draco\ binary directory.  If you prefer, you can run the interactive \cmake\ tools described in \S~\ref{sec:running_configure_ccmake} and \S~\ref{sec:running_configure_cmakegui}.  We assume that the \draco\ source tree lives at \dracohome.  We need to
-run \cmake\ from the \draco\ binary directory, \comp{linux\_\,mpid/draco/} and provide the location of the \draco\ source tree as a \cmake\ argument.  Most importantly, we need to set the
+The next step is to run the \cmake\ command line tool inside the \draco\ binary directory.  If you prefer, you can run the interactive \cmake\ tools described in \S~\ref{sec:running_configure_ccmake} and \S~\ref{sec:running_configure_cmakegui}.  We assume that the \draco\ source tree lives at \dracohome.  
+To generate a build project in the binary dreictory, run \cmake\ from the \draco\ binary directory, \comp{linux\_\,mpid/draco/} and provide the location of the \draco\ source tree as a \cmake\ argument.  Most importantly, we need to set the
 install directory\index{directory!install}, denoted by \comp{CMAKE\_INSTALL\_PREFIX} on the \cmake\ command line\footnote{This can also be set in the file \comp{linux\_\,mpid/draco/CMakeCache.txt}, or in the GUI interface provided by \comp{ccmake} or \comp{cmake-gui}.}.  To set a build parameter on the \cmake\ command line we use the \cmake\ option \comp{-D}.  An example \cmake\ configuration command for a \sys{UNIX} \sys{Makefile} configuration is illustrated here:
 \begin{verbatim}
       $ cd linux_mpid/draco
@@ -415,7 +413,7 @@ More details on the configuration options are given in
 %\S~\ref{sec:configuration_options}. 
 
 Running \cmake\ in the \comp{draco/} binary directory within the target
-directory (\comp{linux\_\,mpid/draco/}) produces a directory tree under
+directory (\comp{linux\_\,mpid/}) produces a directory tree under
 the \comp{draco/} subdirectory that is parallel to the \draco\ source
 directory tree.  This directory structure is illustrated in
 Fig.~\ref{fig:build_tree}.  Note that we could have run \cmake\ 
@@ -425,7 +423,7 @@ subdirectory would be moved up one level.
 
 One final point should be mentioned about \comp{CMAKE\_INSTALL\_PREFIX}.  \cmake's
 default location for the installation directory is
-\comp{/usr/local/} on \sys{UNIX} and \comp{\%ProgramFiles\%} on \sys{Windows}, but the build system will modify this value to point to a \comp{install} subdirectory located beneath the \draco\ binary diretory (e.g.: \comp{linux\_\,mpid/draco/install}) if the developer does not provide another location.  Thus, the user must enter a value for \comp{CMAKE\_INSTALL\_PREFIX} either on the command line or via the \cmake\ GUI 
+\comp{/usr/local/} on \sys{UNIX} and \comp{\%ProgramFiles\%} on \sys{Windows}, but the build system will modify this value to point to an \comp{install} subdirectory located beneath the \draco\ binary diretory (e.g.: \comp{linux\_\,mpid/draco/install}) if the developer does not provide another location.  Thus, the user must enter a value for \comp{CMAKE\_INSTALL\_PREFIX} either on the command line or via the \cmake\ GUI 
 explicitly to override the default.  The suggested method is to set
 \comp{CMAKE\_INSTALL\_PREFIX} to the target directory (\comp{linux\_\,mpid/} in this
 example).  This will allow multiple targets to be built simultaneously 
@@ -493,7 +491,7 @@ DRACO_DBC_LEVEL:STRING=7
  
 # Keyword for creating new libraries (STATIC or SHARED).
 DRACO_LIBRARY_TYPE:STRING=SHARED
-\end{lstlisting}
+\end{lstlisting} \index{CMakeCache.txt} \index{generator}
 Developers can copy this file to the \draco\ binary directory and modify, comment out or add options as needed before running \cmake\ for the first time.
 
 One final note about running \cmake\ from the command line is the option to choose a project {\it Generator}\index{generator}\index{cmake!generator}.  On \sys{UNIX} systems, the default generator is \sys{Unix Makefiles}, but \sys{Eclipse CDT4 - Unix Makefiles} is also supported.  To select an alternative generator, use the \comp{-G} command line argument for \cmake.  The full list of available generators can be obtained by running \comp{'cmake --help'}.
@@ -520,7 +518,7 @@ Press [h] for help           Press [q] to quit without generating
 Press [t] to toggle advanced mode (Currently Off)
 \end{lstlisting}
 Selecting interactive command \comp{[c]} (followed by \comp{[e]} to exit the output review screen) 
-will populate the configure environment with default values (be sure to turn caps lock off) resulting in something similar to what is shown in Listing~\ref{lst:ccmake-post-configure}
+will populate the configure environment with default values (be sure to turn caps lock off) resulting in something similar to what is shown in Listing~\ref{lst:ccmake-post-configure}.
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in, caption={The \comp{ccmake} screen after the initial configure command.}, float=htn, label={lst:ccmake-post-configure}]
                                                      Page 1 of 1
  BUILD_AUTODOC                   *OFF                                                    
@@ -576,7 +574,7 @@ Additionally, some of these options can be matrixed.  For example,
 archived libaries, and so forth.  The options that one gives during the \cmake\ 
 configure step specify most of these options. Also, the build
 system has built-in intelligence that will try to make the right
-choice if incomplete listings for various options are given.
+choice if incomplete listings for various options are specified.
 
 For the standard set of \cmake\ options, see Ref.~\cite{cmake}.  The full set of configure options may be examined by running the \cmake\ interactive sessions (\comp{ccmake} or \comp{cmake-gui}).  Some options may only appear on specific systems, after specific vendor installations are discovered, or for specific {\it generators}.  This is the reason that you may need to run {\it configure} more than once when using the interactive versions of \cmake.
 %For the standard set of configure options, see Ref.~\cite{autoconf}.
@@ -592,7 +590,7 @@ For the standard set of \cmake\ options, see Ref.~\cite{cmake}.  The full set of
 %Note that from this point onward, we will only give examples using
 %\dracoconf. 
 As mentioned in the previous section, the built-in configure variable, \comp{CMAKE\_INSTALL\_PREFIX}, should be set explicitly (usually to the target directory) by the
-user to avoid installation of \draco\ components in \comp{/usr/local/}.
+user to avoid installation of \draco\ components in \comp{/usr/local/}.  Alternately, the developer may consider the use of \cmake's \comp{DESTDIR} feature (See \href{http://www.cmake.org/Wiki/CMake_FAQ#Does_CMake.27s_.22make_install.22_support_DESTDIR.3F}{CMake FAQ}).
 
 Configuration options come in four forms: \comp{FILEPATH}, \comp{PATH}, \comp{STRING} and \comp{BOOL}\footnote{There are actually variable types in \cmake.  The 5th type is \comp{INTERNAL}, but this type is not available for user manipulation.}.\index{cmake!variable types}   \draco\ policy is to name \comp{BOOL} options prefixed with \comp{ENABLE\_} or \comp{USE\_}, although there are some exceptions to this policy and this policy is not adopted by \cmake\ built-in variables.  Other variable names should be prefixed with a name to provide context.  This provides a sorted in list the \comp{CMakeCache.txt} file and in the \comp{ccmake} interface and it allows groupings to be collapsed in the GUI.  This policy of using prefix context strings is a \cmake\ and a \draco\ policy standard.
 Table~\ref{tab:draco-enable} lists the complete set of \comp{BOOL}
@@ -853,10 +851,10 @@ these variables are given below.
 Table~\ref{tab:vendor}.  \draco\ treats vendors according to the
 following rules:
 \begin{enumerate}
-\item Required vendor libraries are on by default but the configuration will {\bf fail} if the libraries cannot be located;
+\item Required vendor libraries are on by default and the configuration will {\bf fail} if the libraries cannot be located;
 \item Optional vendor libraries are on by default but the configuration will {\bf pass} if the libraries cannot be located.
 \end{enumerate}
-For example, \pkg{GSL} is a required vendor.  If \pkg{GSL} cannot be found, the project will not be configured and it cannot be built.  If the optional vendor \pkg{XMGrace} cannot be found, the configuration will be successful, but the \draco\ component \pkg{plot2D} will be omitted because it requires \pkg{XMGrace}.  Finally, if the optional vendor \pkg{MPI} cannot be found the configuration will be sucessful, but the \cfour\ component will be built with the \comp{SCALAR} option instead of \comp{MPI}.  Review Table~\ref{tab:depends} to determine what components may be omitted when vendor libraries are not found. This concept applies to all vendor libraries.
+For example, \pkg{GSL} is a required vendor.  If \pkg{GSL} cannot be found, the project will not be configured and  cannot be built.  If the optional vendor \pkg{XMGrace} cannot be found, the configuration will be successful, but the \draco\ component \pkg{plot2D} will be omitted because it requires \pkg{XMGrace}.  Finally, if the optional vendor \pkg{MPI} cannot be found the configuration will be sucessful, but the \cfour\ component will be built with the \comp{SCALAR} option instead of \comp{MPI}.  Review Table~\ref{tab:depends} to determine what components may be omitted when vendor libraries are not found. This concept applies to all vendor libraries.
 
 %We note that these rules are applied on a package-by-package basis.
 %For example, \sprng\ is only required for \rng; thus, \sprng\ is on in
@@ -888,13 +886,13 @@ For example, \pkg{GSL} is a required vendor.  If \pkg{GSL} cannot be found, the 
 %\comp{--with-\vble{vendor}-lib} simply changes the default search
 %locations for headers and libraries as explained above.
 
-We note that if an optional vendor is not found by the build system then
-the packages that depend on these vendors will not build.  
-%In other
-%words, required vendors need not be turned off even if the packages
-%that use them are not part of a specific \draco\ distribution.
-\draco\ knows what packages require what vendors, so optional vendor libraries that are missing
-in a particular distribution will have no effect on the rest of the packages.
+% We note that if an optional vendor is not found by the build system then
+% the packages that depend on these vendors will not build.  
+%%In other
+%%words, required vendors need not be turned off even if the packages
+%%that use them are not part of a specific \draco\ distribution.
+% \draco\ knows what packages require what vendors, so optional vendor libraries that are missing
+% in a particular distribution will have no effect on the rest of the packages.
 
 %% ---------------------------------------------------------------------------- %%
 \subsubsection{C4 Package Options}
@@ -930,13 +928,13 @@ libraries are set before compiling on either of these systems.
 
 %% ---------------------------------------------------------------------------- %%
 \subsubsection{Design-by-Contract}
-\label{sec:dbc}
+\label{sec:dbc}\index{Design-by-Contract}
 
 The \comp{DRACO\_DBC\_LEVEL} variable controls \draco's Design-by-Contract
 (DBC) machinery\index{Design-by-Contract}\index{DBC}.  DBC support ranges from \comp{0} (lowest) to
 \comp{7} (highest).  The value is a bit mask similar to that used by the \sys{UNIX} command \comp{chmod}, \comp{+1} turns on \comp{Require}, 
-\comp{+2} turns on \comp{Check} and \comp{+4} turns on comp{Ensure}.  If all options are activated, the  Design-by-Contract is 7. 
-Table~\ref{tab:dbc} shows the DBC level for various settings of \comp{DRACO\_DBC\_LEVEL}.
+\comp{+2} turns on \comp{Check} and \comp{+4} turns on \comp{Ensure}.  If all options are activated, the  Design-by-Contract is 7. 
+Table~\ref{tab:dbc} shows the DBC level for various settings of \comp{DRACO\_DBC\_LEVEL}. \index{configure options!DRACO\_DBC\_LEVEL}
 \begin{table}
   \caption{DBC support in \draco.}
   \label{tab:dbc}
@@ -962,7 +960,7 @@ For more information on the \dsxx\ package DBC and assertion components, see the
 
 %% ---------------------------------------------------------------------------- %%
 \subsubsection{Diagnostics}
-\label{sec:diagnostics}
+\label{sec:diagnostics}\index{configure options!DRACO\_DIAGNOSTICS}\index{configure options!DRACO\_TIMING}
 
 The \comp{DRACO\_DIAGNOSTICS} and \comp{DRACO\_TIMING} build variables control \draco's \pkg{diagnostic} machinery.  The purpose of this component is allow other \draco\ components to collect and report diagnostic data during runtime.  When \comp{DRACO\_DIAGNOSTICS} feature is turned off, the inserted diagnostic code does not cause any performance penalty because it is a compile time feature.  The same is true for \comp{DRACO\_TIMING} which focuses on profiling and reporting perfomance timing statistics.  The allowed values for each of these build variables are bit masks as explained in \S~\ref{sec:dbc}.  Tables~\ref{tab:ddiagnostics} and \ref{tab:dtiming} provide a description for variouls settings.
 \begin{table}
@@ -1000,9 +998,9 @@ The \comp{DRACO\_DIAGNOSTICS} and \comp{DRACO\_TIMING} build variables control \
 
 %% ---------------------------------------------------------------------------- %%
 \subsubsection{Optimization}
-\label{sec:optimization}
+\label{sec:optimization}\index{optimization}
 
-The optimization flags\index{optimization} for the \comp{CXX}, \comp{CC} and \comp{FC} compilers have default values established 
+The optimization flags\index{optimization} for the \comp{CXX}, \comp{CC} and \comp{FC} \index{configure option!CXX} \index{configure option!CC}\index{configure option!FC} compilers have default values established 
 based on the compiler vendor and the selected build type (\comp{Release}, \comp{Debug}, etc.).  These flags
 are established in \draco\ build system's configuration files \comp{config/}\vble{arch\_compiler\_vendor}\comp{.cmake} 
 (e.g.: \comp{config/unix-g++.cmake} or \comp{config/windows-cl.cmake}).  In general, \comp{Release} configurations will use optimization flags like \comp{-O3 -funroll-loops} and \comp{Debug} configurations will include debug symbols and no optimization, \comp{-g -O0}.  The \comp{RelWithDebInfo} configuration uses a mixture of flags trying to produce an optimized configuration that still has the debug symbols.  \draco\ policy to keep the source code as close to the language standard as possible.   To aid the developer, the \comp{Debug} configurations impose compiler flags that will increase the warning level and verbosity during the compilation.  For example, when using the \sys{g++} compiler the flags \comp{'-ansi -pedantic -Wcast-align -Wpointer-arith -Wall'} are used for \comp{Debug} configurations. In general, \comp{Release} builds use the most aggressive optimizations that provide reliable and consistent results.
@@ -1026,11 +1024,11 @@ are established in \draco\ build system's configuration files \comp{config/}\vbl
 After configuration, building \draco\ is mostly straightforward.  For \sys{UNIX} \sys{Makefile} build configurations, 
 one simply enters the binary directory, or a component's binary
 subdirectory, and runs \gmake.  The \draco\ Makefiles include all of
-the standard targets provided by \cmake.  For more detail, see ref.~\cite{cmake}. The most commonly used targets are \comp{all} and \comp{install}.  
+the standard targets provided by \cmake.  For more detail, see ref.~\cite{cmake}. The most commonly used targets are \comp{all} and \comp{install}.  \index{build target!all}\index{build target!install}
 The \draco\ build system takes full advantage of multi-core architectures allowing multithreaded compilation of \draco.  
 To take advantage of this features use the \comp{'-j N'} option of \gmake.  The recommended value for the number of concurrent threads, 
 \comp{N}, is 50\% oversubscription of the number of available cores (i.e.: 24 for a 16-core machine). Examples of various builds are reserved
-until \S~ref{sec:examples}.\index{compile!parallel}
+until \S~\ref{sec:examples}.\index{compile!parallel}
 
 For other build environments like \sys{Eclipse} or \sys{XCode}, \cmake\ provides a solution configuration that can be loaded into the IDE.  Use the 
 build environment's normal methods for compiling the \comp{ALL\_BUILD} target.
@@ -1149,6 +1147,15 @@ Thus, if \comp{CMakeLists.txt} or any of the files from the \comp{config} source
 
 %% ---------------------------------------------------------------------------- %%
 \subsection{Build Targets}
+\index{build target!all}
+\index{build target!install}
+\index{build target!check}
+\index{build target!clean}
+\index{build target!rebuild\_cache}
+\index{build target!test}
+\index{build target!edit\_cache}
+\index{build target!Experimental}
+\index{build target!help}
 
 A detailed discussion of all the build targets provided by \cmake~\cite{cmake} is beyond the scope of this text. 
 What follows is a brief description of the build targets in \draco\ and what operations they perform.\index{build:targets}
@@ -1173,6 +1180,7 @@ What follows is a brief description of the build targets in \draco\ and what ope
 \item[\comp{Experimental}]\index{gmake!targets!Experimental} configure, compile, run the tests and submit the results to the \draco\ \cdash\ dashboard.
 \item[\comp{Lib\_}\vble{pkg}]\index{gmake!targets!Lib\_pkg} Compile the library for \draco\ component \vble{pkg}.
 \item[\comp{Ut\_}\vble{pkg\_test}\comp{\_exe}]\index{gmake!targets!Ut\_pkg\_test\_exe} Compile the unit test executable for test \vble{test} for the \draco\ component \vble{pkg}.
+\item[\comp{help}] provides a list of available targets.
 \end{description}
 These targets have been designed to satisfy the needs of users, who
 perform one-time global builds, and developers, who perform multiple
@@ -1333,5 +1341,5 @@ We have given a tutorial on how to configure and build \draco.  The
 component and vendor dependencies in \draco\ have been listed in
 \S~\ref{sec:draco_dependencies}.  Details on configuring and
 building \draco\ have been given in \S~\ref{sec:configuring_draco} and 
-\ref{sec:building_draco}.  We have tied these concepts together with
+\S~\ref{sec:building_draco}.  We have tied these concepts together with
 several examples in \S~\ref{sec:examples}.
