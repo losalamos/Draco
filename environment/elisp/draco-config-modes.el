@@ -478,6 +478,7 @@ auto-mode-alist."
 	  (append
 	   '(("\\.f90$"  . f90-mode)
 	     ("\\.F$"    . f90-mode)
+	     ("\\.F90$"  . f90-mode)
 	     ("\\.FH$"   . f90-mode)
 	     ("\\.fm4$"  . f90-mode)
 	     ) auto-mode-alist))
