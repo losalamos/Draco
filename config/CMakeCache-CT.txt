@@ -3,47 +3,18 @@
 # ------------------------------------------------------------
 
 # Location where 'make install' will copy files to.
-# CMAKE_INSTALL_PREFIX:PATH=c:/Release-x64/draco
-CMAKE_INSTALL_PREFIX:PATH=/scratch/kellyt/ct/pgi-mpid/t
-
-CMAKE_BUILD_TYPE:STRING=Debug
-CMAKE_GENERATOR:STRING=Unix Makefiles
-
-# ------------------------------------------------------------
-# Review these additional settings
-# ------------------------------------------------------------
-
-# Should we compile the tests?
-BUILD_TESTING:BOOL=ON
-
-# C4 communication mode (SCALAR or MPI)
-DRACO_C4:STRING=MPI
-
-# Design-by-Contract (0-7)?
-DRACO_DBC_LEVEL:STRING=7
- 
-# Keyword for creating new libraries (STATIC or SHARED).
-DRACO_LIBRARY_TYPE:STRING=STATIC
-
+CMAKE_INSTALL_PREFIX:PATH=/scratch/moniker/ct/pgi-mpid/t
 
 #---------------------------------------------------------------------------#
 # CT/CI settings
 #---------------------------------------------------------------------------#
+# Keyword for creating new libraries (STATIC or SHARED).
+DRACO_LIBRARY_TYPE:STRING=STATIC
 
+# Use Cray provided compiler wrappers
 CMAKE_C_COMPILER:FILEPATH=cc
 CMAKE_CXX_COMPILER:FILEPATH=CC 
 CMAKE_Fortran_COMPILER:FILEPATH=ftn
-
-# set the search path for the environment coming with the compiler
-# and a directory where you can install your own compiled software
-# CMAKE_FIND_ROOT_PATH:PATH=/opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib
-
-# adjust the default behavior of the FIND_XXX() commands:
-# search headers and libraries in the target environment, search
-# programs in the host environment.  Can be set to NEVER, ONLY or BOTH (default)
-#set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-#set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-#set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 
 # Help find vendor software
 MPIEXEC:FILEPATH=/usr/bin/aprun
@@ -54,7 +25,3 @@ MPI_Fortran_LIBRARIES:FILEPATH=
 MPI_C_INCLUDE_PATH:PATH=
 MPI_CXX_INCLUDE_PATH:PATH=
 MPI_Fortran_INCLUDE_PATH:PATH=
-
-# /opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/lib/libmpich.a
-# /opt/cray/mpt/5.4.2/xt/gemini/mpich2-pgi/109/include
-
