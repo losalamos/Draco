@@ -25,6 +25,10 @@ if( ${ENABLE_STRICT_ANSI} )
    set( STRICT_ANSI_FLAGS "-Xa -A --no_using_std" )
 endif()
 
+if( DRACO_ENABLE_CXX11 )
+   message( FATAL_ERROR "PGI does not provide support for the C++11 standard.  Please set DRACO_ENABLE_CXX11=OFF.")
+endif()
+
 # Disable OpenMP for now (it doesn't appear to be working correctly.)
 set( USE_OPENMP NO )
 
@@ -57,12 +61,11 @@ if( "${DBS_CXX_COMPILER_VER}" STREQUAL "pgCC " )
    string( REGEX REPLACE "Copyright.*" " " 
       DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
    string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
-
-   string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\1"
-      DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
-   string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\2"
-      DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
 endif()
+string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\1"
+   DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
+string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\2"
+   DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
 
 #
 # Compiler Flags
@@ -121,18 +124,20 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
-# Extra flags for pgCC-11.2+
-# --nozc_eh    (default for 11.2+) Use low cost exception handling. This 
-#              option appears to break our exception handling model resulting
-#              in SEGV.
-if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 10 )
-   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 1 )
+
+   # Extra flags for pgCC-11.2+
+   # --nozc_eh    (default for 11.2+) Use low cost exception handling. This 
+   #              option appears to break our exception handling model resulting
+   #              in SEGV.
+   # This may be related to PGI bug 1858 (http://www.pgroup.com/support/release_tprs.htm).
+   if( "${DBS_CXX_COMPILER_VER_MAJOR}.${DBS_CXX_COMPILER_VER_MINOR}" GREATER 10 )
+      message("ver>10.1")
       if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
+         message("adding --nozc_eh")
          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
       endif()
    endif()
-endif()
-
+   
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
 
@@ -148,7 +153,7 @@ endif()
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
 
-ENDIF()
+endif()
 
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 
