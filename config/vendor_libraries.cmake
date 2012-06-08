@@ -3,7 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Setup Vendors
-# note   Copyright (C) 2010-2012 LANS, LLC  
+# note   Copyright (C) 2010-2012  Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$ 
 #------------------------------------------------------------------------------#
@@ -56,47 +57,47 @@ macro( setupMPILibrariesUnix )
       find_package( MPI QUIET )
 
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
-      if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
-#         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
-         set( MPIEXEC $ENV{MPIRUN} )
-         find_package( MPI QUIET )
-      endif()
+#       if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
+# #         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
+#          set( MPIEXEC $ENV{MPIRUN} )
+#          find_package( MPI QUIET )
+#       endif()
 
       # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
-      if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
-            EXISTS "${MPI_INC_DIR}" )
-#         message( STATUS "3rd attempt to find MPI: examine $MPI_INC_DIR" )
-         if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
-            set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
-         endif()
-         if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
-            set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
-         endif()
-         set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
-         find_library( MPI_LIBRARY
-            NAMES mpi mpich msmpi
-            PATHS ${MPI_LIB_DIR} 
-            ${MPICH_DIR}/lib
-            )
-         set( extra_libs mpi++ libopen-rte libopen-pal)
-         unset( MPI_EXTRA_LIBRARY )
-         foreach( lib ${extra_libs} )
-            find_library( mpi_extra_lib_${lib}
-               NAMES ${lib}
-               HINTS ${MPI_LIB_DIR} 
-               ${MPICH_DIR}/lib )
-            mark_as_advanced( mpi_extra_lib_${lib} )
-            if( EXISTS "${mpi_extra_lib_${lib}}" )
-               list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
-            endif()
-         endforeach()
-         find_package( MPI QUIET )
-         if( ${MPI_EXTRA_LIBRARY} MATCHES "NOTFOUND" )
-            # do nothing
-         else()
-            list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
-         endif()
-      endif()
+#       if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
+#             EXISTS "${MPI_INC_DIR}" )
+# #         message( STATUS "3rd attempt to find MPI: examine $MPI_INC_DIR" )
+#          if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
+#             set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
+#          endif()
+#          if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
+#             set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
+#          endif()
+#          set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
+#          find_library( MPI_LIBRARY
+#             NAMES mpi mpich msmpi
+#             PATHS ${MPI_LIB_DIR} 
+#             ${MPICH_DIR}/lib
+#             )
+#          set( extra_libs mpi++ libopen-rte libopen-pal)
+#          unset( MPI_EXTRA_LIBRARY )
+#          foreach( lib ${extra_libs} )
+#             find_library( mpi_extra_lib_${lib}
+#                NAMES ${lib}
+#                HINTS ${MPI_LIB_DIR} 
+#                ${MPICH_DIR}/lib )
+#             mark_as_advanced( mpi_extra_lib_${lib} )
+#             if( EXISTS "${mpi_extra_lib_${lib}}" )
+#                list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
+#             endif()
+#          endforeach()
+#          find_package( MPI QUIET )
+#          if( ${MPI_EXTRA_LIBRARY} MATCHES "NOTFOUND" )
+#             # do nothing
+#          else()
+#             list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
+#          endif()
+#       endif()
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
