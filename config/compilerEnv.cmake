@@ -22,8 +22,7 @@ endif()
 set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING 
 	"Keyword for creating new libraries (STATIC or SHARED).")
 # Provide a constrained drop down list in cmake-gui.
-set_property( CACHE DRACO_LIBRARY_TYPE
-   PROPERTY STRINGS SHARED STATIC)
+set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
 if( EXISTS $ENV{PAPI_HOME} )
     set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
@@ -41,7 +40,6 @@ if( EXISTS $ENV{PAPI_HOME} )
     add_feature_info( HAVE_PAPI HAVE_PAPI 
        "Provide PAPI hardware counters if available." )
 endif()
-
 
 #----------------------------------------------------------------------#
 # Macro to establish which runtime libraries to link against 
@@ -128,11 +126,36 @@ macro(dbsSetupCxx)
       dbsSetupCompilers()
    endif()
    
+   # Deal with compiler wrappers
    if( ${CMAKE_CXX_COMPILER} MATCHES "tau_cxx.sh" )
+      # When using the TAU profiling tool, the actual compiler vendor
+      # is hidden under the tau_cxx.sh script.  Use the following
+      # command to determine the actual compiler flavor before setting
+      # compiler flags (end of this macro).
       execute_process(
          COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
+         OUTPUT_VARIABLE my_cxx_compiler )
+   elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" ) 
+      # Ceilo (catamount) uses a wrapper script
+      # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
+      # compiler.  Use the following command to determine the actual
+      # compiler flavor before setting compiler flags (end of this
+      # macro).
+      execute_process(
+         COMMAND ${CMAKE_CXX_COMPILER} --version
          OUTPUT_VARIABLE my_cxx_compiler
-         )
+         ERROR_QUIET )
+      string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
+         my_cxx_compiler ${my_cxx_compiler})
+      # If a wrapper script is used, CMake will not have found the
+      # compiler version...
+      # icpc (ICC) 12.1.2 20111128
+      # pgCC 11.10-0 64-bit target 
+      # g++ (GCC) 4.6.2 20111026 (Cray Inc.)
+      if( "x${CMAKE_CXX_COMPILER_VERSION}" STREQUAL "x" )
+         string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
+            CMAKE_CXX_COMPILER_VERSION ${my_cxx_compiler} )
+      endif()
    else()
       set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
    endif()
@@ -151,8 +174,6 @@ macro(dbsSetupCxx)
    elseif( ${my_cxx_compiler} MATCHES "icpc" )
       include( unix-intel )
    elseif( ${my_cxx_compiler} MATCHES "pgCC" )
-      include( unix-pgi )
-   elseif( ${my_cxx_compiler} MATCHES "xt-asyncpe" ) # Ceilo (catamount/pgi)
       include( unix-pgi )
    elseif( ${my_cxx_compiler} MATCHES "[cg][+]+" )
       include( unix-g++ )
@@ -183,21 +204,40 @@ endmacro()
 # 
 #------------------------------------------------------------------------------#
 macro(dbsSetupFortran)
-   
-   if( ${CMAKE_Fortran_COMPILER} MATCHES "gfortran" )
+
+   if( NOT gen_comp_env_set STREQUAL 1 )
+      dbsSetupCompilers()
+   endif()
+
+   # Deal with comiler wrappers
+   if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" ) 
+      # Ceilo (catamount) uses a wrapper script
+      # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
+      # compiler.  Use the following command to determine the actual
+      # compiler flavor before setting compiler flags (end of this
+      # macro).
+      execute_process(
+         COMMAND ${CMAKE_Fortran_COMPILER} --version
+         OUTPUT_VARIABLE my_fc_compiler
+         ERROR_QUIET )
+      string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
+         my_fc_compiler ${my_fc_compiler})
+   else()
+      set( my_fc_compiler ${CMAKE_Fortran_COMPILER} )
+   endif()
+
+   if( ${my_fc_compiler} MATCHES "gfortran" )
       include( unix-gfortran )
-   elseif( ${CMAKE_Fortran_COMPILER} MATCHES "ifort" )
+   elseif( ${my_fc_compiler} MATCHES "ifort" )
       include( unix-ifort )
-   elseif( ${CMAKE_Fortran_COMPILER} MATCHES "pgf9[05]" )
+   elseif( ${my_fc_compiler} MATCHES "pgf9[05]" )
       include( unix-pgf90 )
-   elseif( ${my_cxx_compiler} MATCHES "xt-asyncpe" ) # Ceilo (catamount/pgi)
-      include( unix-pgf90 )
-   elseif( ${my_cxx_compiler} MATCHES "pgf90" )
+   elseif( ${my_fc_compiler} MATCHES "pgf90" )
       include( unix-pgf90 )
    else()
-      message( FATAL_ERROR "Build system does not support F90=${CMAKE_Fortran_COMPILER}" )
+      message( FATAL_ERROR "Build system does not support F90=${my_fc_compiler}" )
    endif()
-   
+
 endmacro()
 
 #------------------------------------------------------------------------------#

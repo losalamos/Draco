@@ -3,7 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building src level Makefile.
-# note   © Copyright 2010 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -24,6 +25,11 @@ dbsConfigInfo()
 include( compilerEnv )
 dbsSetupCompilers()
 dbsSetupCxx()
+# Is Fortran enabled (it is considered 'optional' for draco)?
+get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
+if( _LANGUAGES_ MATCHES Fortran) 
+   dbsSetupFortran()
+endif()
 
 include( FeatureSummary )
 
@@ -143,8 +149,11 @@ Source dir  : ${Draco_SOURCE_DIR}
 Build dir   : ${Draco_BINARY_DIR}
 
 CXX Compiler: ${CMAKE_CXX_COMPILER}
-CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}
-Library Type: ${DRACO_LIBRARY_TYPE}
+CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+if( _LANGUAGES_ MATCHES Fortran) 
+   message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
+endif()
+message("Library Type: ${DRACO_LIBRARY_TYPE}
 
 ENABLE_RNG_NR    : ${ENABLE_RNG_NR}
 DRACO_DBC_LEVEL  : ${DRACO_DBC_LEVEL}")

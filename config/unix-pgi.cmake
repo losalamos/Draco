@@ -37,37 +37,6 @@ set( USE_OPENMP NO )
 # 
 
 #
-# config.h settings
-#
-set( DBS_C_COMPILER_VER "pgcc ${CMAKE_CXX_COMPILER_VERSION}" )
-set( DBS_CXX_COMPILER_VER "pgCC ${CMAKE_CXX_COMPILER_VERSION}" )
-
-# On CT/CI, the built-in values for CMAKE_CXX_COMPILER_VERSION is
-# blank and we must force the values...
-# This is fixed with CMake-2.8.8+
-if( "${DBS_CXX_COMPILER_VER}" STREQUAL "pgCC " )
-   execute_process(
-      COMMAND ${CMAKE_C_COMPILER} -V
-      OUTPUT_VARIABLE DBS_C_COMPILER_VER
-      )
-   string( REGEX REPLACE "Copyright.*" " " 
-      DBS_C_COMPILER_VER ${DBS_C_COMPILER_VER} )
-   string( STRIP ${DBS_C_COMPILER_VER} DBS_C_COMPILER_VER )
-
-   execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} -V
-      OUTPUT_VARIABLE DBS_CXX_COMPILER_VER
-      )
-   string( REGEX REPLACE "Copyright.*" " " 
-      DBS_CXX_COMPILER_VER ${DBS_CXX_COMPILER_VER} )
-   string( STRIP ${DBS_CXX_COMPILER_VER} DBS_CXX_COMPILER_VER )
-endif()
-string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\1"
-   DBS_CXX_COMPILER_VER_MAJOR ${DBS_CXX_COMPILER_VER} )
-string( REGEX REPLACE ".* ([0-9]+).([0-9]+)[.-]([0-9]+).*" "\\2"
-   DBS_CXX_COMPILER_VER_MINOR ${DBS_CXX_COMPILER_VER} )
-
-#
 # Compiler Flags
 # 
 
@@ -131,9 +100,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    #              in SEGV.
    # This may be related to PGI bug 1858 (http://www.pgroup.com/support/release_tprs.htm).
    if( "${DBS_CXX_COMPILER_VER_MAJOR}.${DBS_CXX_COMPILER_VER_MINOR}" GREATER 10 )
-      message("ver>10.1")
       if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
-         message("adding --nozc_eh")
          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
       endif()
    endif()

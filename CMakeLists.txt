@@ -3,7 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright © 2010 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, 
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -52,7 +53,7 @@
 #          -DCMAKE_BUILD_TYPE=Release
 # 5. [optional] Run 'make edit_cache' to review your build setup.
 #    Edit as needed. 
-# 6. Run 'make -j16' to compile the code. (also try 'make VERBOSE=1')
+# 6. Run 'make -j24' to compile the code. (also try 'make VERBOSE=1')
 # 7. Run 'ctest -j16' to run the tests.
 # 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
 # 9. [optional] Run 'make help' for a list of targets.
