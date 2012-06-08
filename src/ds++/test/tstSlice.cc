@@ -108,8 +108,68 @@ void tstSlice(UnitTest &ut)
     {
 	ut.failure("operator- is NOT correct");
     }
-    ++i;
+    i++;
     if (i != s.end())
+    {
+	ut.failure("++ past end is NOT correct");
+    }
+    else
+    {
+	ut.passes("++ past end is correct");
+    }
+
+    Slice<vector<unsigned>::iterator>::const_iterator ci = s.begin();
+    if (*ci == 1)
+    {
+	ut.passes("deref of begin is correct");
+    }
+    else
+    {
+	ut.failure("deref of begin is NOT correct");
+    }
+    if (ci[0] == 1)
+    {
+	ut.passes("operator[] of begin is correct");
+    }
+    else
+    {
+	ut.failure("operator[] of begin is NOT correct");
+    }
+    if (*(ci+1) == 3)
+    {
+	ut.passes("operator+ is correct");
+    }
+    else
+    {
+	ut.failure("operator+ is NOT correct");
+    }
+    ++ci;
+    if (*ci == 3)
+    {
+	ut.passes("deref of ++begin is correct");
+    }
+    else
+    {
+	ut.failure("deref of ++begin is NOT correct");
+    }
+    if (s.begin()<ci)
+    {
+	ut.passes("correct const iterator ordering");
+    }
+    else
+    {
+	ut.failure("NOT correct const iterator ordering");
+    }
+    if (ci-s.begin() == 1)
+    {
+	ut.passes("operator- is correct");
+    }
+    else
+    {
+	ut.failure("operator- is NOT correct");
+    }
+    ci++;
+    if (ci != s.end())
     {
 	ut.failure("++ past end is NOT correct");
     }
@@ -159,6 +219,56 @@ void tstSlice(UnitTest &ut)
     else
     {
 	ut.failure("size of Slice is NOT correct");
+    }
+
+    Slice<vector<unsigned>::iterator> const cs = s;
+    if (cs[1]==3)
+    {
+	ut.passes("indexing of const Slice is correct");
+    }
+    else
+    {
+	ut.failure("size of const Slice is NOT correct");
+    }
+    if (cs.front() == 1)
+    {
+	ut.passes("front of const Slice is correct");
+    }
+    else
+    {
+	ut.failure("front of const Slice is NOT correct");
+    }
+    if (cs.back() == 3)
+    {
+	ut.passes("back of const Slice is correct");
+    }
+    else
+    {
+	ut.failure("back of const Slice is NOT correct");
+    }
+    if (cs.begin()<cs.end())
+    {
+	ut.passes("ordering of const Slice is correct");
+    }
+    else
+    {
+	ut.failure("ordering of const Slice is NOT correct");
+    }
+    if (!(cs.end()<cs.begin()))
+    {
+	ut.passes("ordering of const Slice is correct");
+    }
+    else
+    {
+	ut.failure("ordering of const Slice is NOT correct");
+    }
+    if (!cs.empty())
+    {
+	ut.passes("emptiness of const Slice is correct");
+    }
+    else
+    {
+	ut.failure("emptiness of const Slice is NOT correct");
     }
 }
 

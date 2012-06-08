@@ -38,7 +38,7 @@ void tstconj(UnitTest &ut)
     }
 
     complex<double> c(2.7, -1.4);
-    if (soft_equiv((conj(c)*c).real(), square(abs(c))))
+    if (soft_equiv((rtt_dsxx::conj(c)*c).real(), square(abs(c))))
     {
 	ut.passes("conj(complex) is correct");
     }

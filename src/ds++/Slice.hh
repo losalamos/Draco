@@ -97,6 +97,7 @@ class Slice
 
       private:
 	friend class Slice;
+        friend class const_iterator;
 
 	iterator(Ran const first,
 		 difference_type const offset,
@@ -165,6 +166,14 @@ class Slice
 	    Require(stride==i.stride);
 
 	    return ((first-i.first)+offset-i.offset)/stride;
+	}
+
+	const_iterator(iterator const &i)
+	    : first(i.first),
+	      offset(i.offset),
+	      stride(i.stride)
+	{
+	    Require(stride>0);
 	}
 
       private:

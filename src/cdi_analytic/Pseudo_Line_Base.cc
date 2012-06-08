@@ -82,9 +82,16 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
 
 vector<char> Pseudo_Line_Base::pack() const 
 {
-    // caculate the size in bytes
+    throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
+    // Because we haven't implemented packing functionality for Expression
+    // trees yet.
+
+    return vector<char>();
+    
+#if 0
+// caculate the size in bytes
     unsigned const size =
-        3 * sizeof(double) + 2 * sizeof(int) + sizeof(Averaging);
+        3 * sizeof(double) + 3 * sizeof(int) + continuum_->packed_size();
 
     vector<char> pdata(size);
 
@@ -96,7 +103,7 @@ vector<char> Pseudo_Line_Base::pack() const
 
 	
     // pack the data
-    packer << continuum_;
+    continuum_->pack(packer);
     packer << seed_;
     packer << number_of_lines_;
     packer << line_peak_;
@@ -108,6 +115,7 @@ vector<char> Pseudo_Line_Base::pack() const
     Ensure (packer.get_ptr() == &pdata[0] + size);
 	
     return pdata;
+#endif
 }
 
 //---------------------------------------------------------------------------//

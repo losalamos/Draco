@@ -61,6 +61,23 @@ int main(int argc, char *argv[])
         {
             ut.failure("complex zero NOT good");
         }
+        
+        if (Field_Traits<double const>::zero() == 0.0)
+        {
+            ut.passes("double zero good");
+        }
+        else
+        {
+            ut.failure("double zero NOT good");
+        }
+        if (Field_Traits<double const>::one() == 1.0)
+        {
+            ut.passes("double zero good");
+        }
+        else
+        {
+            ut.failure("double zero NOT good");
+        }
 
     }
     catch (std::exception &err)

@@ -158,6 +158,26 @@ void tstExpression(UnitTest &ut)
         ut.failure("expression NOT successfully evaluated");
     }
 
+    {
+        ostringstream expression_text_copy;
+        expression->write(vars, expression_text_copy);
+        
+        char const * expression_text_raw =
+            "20*(r>=1.1*m&&z<=1.5*m||r>=2*m)";
+        // changes slightly due to stripping of extraneous whitespace,
+        // parentheses, and positive prefix
+        if (expression_text_copy.str()==expression_text_raw)
+        {
+            ut.passes("expression successfully rendered as text");
+        }
+        else
+        {
+            ut.failure("expression NOT successfully rendered as text");
+            cerr << expression_text_raw << endl;
+            cerr << expression_text_copy.str() << endl;
+        }
+    }
+
     tokens = String_Token_Stream("(1 && (4>=6 || 4>6 || 6<4 || 6<=4 || !0))"
                                  "* ( (r/m)^(t/s) + -3 - z/m)");
     
@@ -217,6 +237,92 @@ void tstExpression(UnitTest &ut)
     else
     {
         ut.failure("expression NOT successfully evaluated");
+    }
+
+    {
+        ostringstream expression_text_copy;
+        expression->write(vars, expression_text_copy);
+        
+        char const * expression_text_raw =
+            "exp(-0.5*r/m)*(3*cos(2*y/m)+5*sin(3*y/m))";
+        // changes slightly due to stripping of extraneous whitespace,
+        // parentheses, and positive prefix
+        if (expression_text_copy.str()==expression_text_raw)
+        {
+            ut.passes("expression successfully rendered as text");
+        }
+        else
+        {
+            ut.failure("expression NOT successfully rendered as text");
+            cerr << expression_text_raw << endl;
+            cerr << expression_text_copy.str() << endl;
+        }
+    }
+
+    tokens = String_Token_Stream("log(1.0)");
+
+    expression = Expression::parse(4, variable_map, tokens);
+
+    if (expression != SP<Expression>())
+    {
+        ut.passes("expression successfully parsed");
+    }
+    else
+    {
+        ut.failure("expression NOT successfully parsed");
+    }        
+
+    if (soft_equiv((*expression)(xs), 0.0))
+    {
+        ut.passes("expression successfully evaluated");
+    }
+    else
+    {
+        ut.failure("expression NOT successfully evaluated");
+    }
+
+    {
+        ostringstream expression_text_copy;
+        expression->write(vars, expression_text_copy);
+        
+        char const * expression_text_raw = "log(1)";
+        // changes slightly due to stripping of extraneous whitespace,
+        // parentheses, and positive prefix
+        if (expression_text_copy.str()==expression_text_raw)
+        {
+            ut.passes("expression successfully rendered as text");
+        }
+        else
+        {
+            ut.failure("expression NOT successfully rendered as text");
+            cerr << expression_text_raw << endl;
+            cerr << expression_text_copy.str() << endl;
+        }
+    }
+
+    {
+        tokens = String_Token_Stream("log(1.0) + cos(2.0) + exp(3.0) + sin(4.0)");
+        
+        SP<Expression> expression = Expression::parse(4, variable_map, tokens);
+        
+        if (expression->is_constant(0))
+        {
+            ut.passes("expression successfully const tested");
+        }
+        else
+        {
+            ut.failure("expression NOT successfully const tested");
+        }
+
+        expression->set_units(J);
+        if (is_compatible(J, expression->units()))
+        {
+            ut.passes("units correctly set");
+        }
+        else
+        {
+            ut.failure("units NOT correctly set");
+        }
     }
 }
 

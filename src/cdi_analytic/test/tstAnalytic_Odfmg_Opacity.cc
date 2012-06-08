@@ -589,6 +589,32 @@ void pseudo_line_opacity_test(UnitTest &ut)
                        "in pseudo line model");
         }
     }
+
+    vector<vector<vector<double> > > opacities =
+        model.getOpacity(vector<double>(2, 1.0), 1.0);
+
+    if (opacities.size()!=2)
+    {
+        ut.failure("NOT correct number of opacities in vector T opacity call");
+    }
+
+    opacities = model.getOpacity(1.0, vector<double>(2, 1.0));
+
+    if (opacities.size()!=2)
+    {
+        ut.failure("NOT correct number of opacities in vector rho opacity call");
+    }
+
+    if (model.getDataDescriptor() != "Pseudo Line Odfmg Absorption")
+    {
+        ut.failure("NOT correct data descriptor");
+    }
+
+    // Try pack
+
+//    vector<char> data = model.pack();
+    // kgbudge: Doesn't work yet, because we haven't implemented packing for
+    // expression trees yet.
 }
 
 //---------------------------------------------------------------------------//
