@@ -85,8 +85,6 @@ vector<char> Pseudo_Line_Base::pack() const
     throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
     // Because we haven't implemented packing functionality for Expression
     // trees yet.
-
-    return vector<char>();
     
 #if 0
 // caculate the size in bytes
