@@ -60,68 +60,71 @@ class Slice
 	typedef typename traits::pointer           pointer;
 	typedef typename traits::reference         reference;
 
+        Ran first() const { return first_; }
+        difference_type offset() const { return offset_; }
+        unsigned stride() const { return stride_; }
+
 	iterator &operator++()
 	{
-	    offset += stride;
+	    offset_ += stride_;
 	    return *this;
 	}
 
 	iterator operator++(int)
 	{
-	    offset += stride;
-	    return iterator(first, offset-stride, stride);
+	    offset_ += stride_;
+	    return iterator(first_, offset_-stride_, stride_);
 	}
 
 	reference operator*() const
 	{
-	    return first[offset];
+	    return first_[offset_];
 	}
 
 	reference operator[](difference_type i) const
 	{
-	    return first[offset+i];
+	    return first_[offset_+i];
 	}
 
 	iterator operator+(difference_type i) const
 	{
-	    return iterator(first, offset+i*stride, stride);
+	    return iterator(first_, offset_+i*stride_, stride_);
 	}
 
 	difference_type operator-(iterator i) const
 	{
-	    Require((first-i.first)%stride==0);
-	    Require(stride==i.stride);
+	    Require((first_-i.first_)%stride_==0);
+	    Require(stride_==i.stride_);
 
-	    return ((first-i.first)+offset-i.offset)/stride;
+	    return ((first_-i.first_)+offset_-i.offset_)/stride_;
 	}
 
       private:
 	friend class Slice;
-        friend class const_iterator;
 
 	iterator(Ran const first,
 		 difference_type const offset,
 		 unsigned const stride)
-	    : first(first),
-	      offset(offset),
-	      stride(stride)
+	    : first_(first),
+	      offset_(offset),
+	      stride_(stride)
 	{
 	    Require(stride>0);
 	}
 
 	friend bool operator<(iterator a, iterator b)
 	{
-	    return a.first-b.first<b.offset-a.offset;
+	    return a.first_-b.first_<b.offset_-a.offset_;
 	}
 
 	friend bool operator!=(iterator a, iterator b)
 	{
-	    return a.first-b.first!=b.offset-a.offset;
+	    return a.first_-b.first_!=b.offset_-a.offset_;
 	}
 
-	Ran first;
-	difference_type offset;
-	unsigned stride;
+	Ran first_;
+	difference_type offset_;
+	unsigned stride_;
     };
 
     class const_iterator
@@ -133,47 +136,50 @@ class Slice
 	typedef typename traits::pointer           pointer;
 	typedef typename traits::reference         reference;
 
+        Ran first() const { return first_; }
+        difference_type offset() const { return offset_; }
+        unsigned stride() const { return stride_; }
+
 	const_iterator &operator++()
 	{
-	    offset += stride;
+	    offset_ += stride_;
 	    return *this;
 	}
 
 	const_iterator operator++(int)
 	{
-	    offset += stride;
-	    return const_iterator(first, offset-stride, stride);
+	    offset_ += stride_;
+	    return const_iterator(first_, offset_-stride_, stride_);
 	}
 
 	value_type const & operator*() const
 	{
-	    return first[offset];
+	    return first_[offset_];
 	}
 
 	value_type const & operator[](difference_type i) const
 	{
-	    return first[offset+i];
+	    return first_[offset_+i];
 	}
 
 	const_iterator operator+(difference_type i) const
 	{
- 	    return const_iterator(first, offset+i*stride, stride);
+ 	    return const_iterator(first_, offset_+i*stride_, stride_);
 	}
 
 	difference_type operator-(const_iterator i) const
 	{
-	    Require((first-i.first)%stride==0);
-	    Require(stride==i.stride);
+	    Require((first_-i.first_)%stride_==0);
+	    Require(stride_==i.stride_);
 
-	    return ((first-i.first)+offset-i.offset)/stride;
+	    return ((first_-i.first_)+offset_-i.offset_)/stride_;
 	}
 
 	const_iterator(iterator const &i)
-	    : first(i.first),
-	      offset(i.offset),
-	      stride(i.stride)
+	    : first_(i.first()),
+	      offset_(i.offset()),
+	      stride_(i.stride())
 	{
-	    Require(stride>0);
 	}
 
       private:
@@ -182,26 +188,26 @@ class Slice
 	const_iterator(Ran const first,
 		       difference_type const offset,
 		       unsigned const stride)
-	    : first(first),
-	      offset(offset),
-	      stride(stride)
+	    : first_(first),
+	      offset_(offset),
+	      stride_(stride)
 	{
 	    Require(stride>0);
 	}
 
 	friend bool operator<(const_iterator a, const_iterator b)
 	{
-	    return a.first-b.first<b.offset-a.offset;
+	    return a.first_-b.first_<b.offset_-a.offset_;
 	}
 
 	friend bool operator!=(const_iterator a, const_iterator b)
 	{
-	    return a.first-b.first!=b.offset-a.offset;
+	    return a.first_-b.first_!=b.offset_-a.offset_;
 	}
 
-	Ran first;
-	difference_type offset;
-	unsigned stride;
+	Ran first_;
+	difference_type offset_;
+	unsigned stride_;
     };
 
     typedef std::reverse_iterator<iterator> reverse_iterator;
