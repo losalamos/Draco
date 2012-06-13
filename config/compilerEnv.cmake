@@ -165,6 +165,8 @@ macro(dbsSetupCxx)
    string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
       DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
    
+   option( DRACO_ENABLE_CXX11 "Support C++11 features." OFF )
+
    if( ${my_cxx_compiler} MATCHES "cl" )
       include( windows-cl )
    elseif( ${my_cxx_compiler} MATCHES "ppu-g[+][+]" )
