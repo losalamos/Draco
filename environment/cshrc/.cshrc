@@ -22,7 +22,7 @@ case ty*.localdomain:
     module load friendly-testing 
     module load intel-c intel-f openmpi-intel
     module load gsl/1.14-intel svn emacs
-    module load cmake numdiff git xshow papi/4.1.3
+    module load cmake numdiff git xshow papi/4.1.3 lapack/3.4.0-intel
     # PGI keeps running out of tmp sapce
     setenv TMPDIR /scratch/$USER/tmp
     if (! -d $TMPDIR ) then
