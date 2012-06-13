@@ -219,8 +219,8 @@ macro(dbsSetupFortran)
       # compiler flavor before setting compiler flags (end of this
       # macro).
       execute_process(
-         # COMMAND ${CMAKE_Fortran_COMPILER} --version
-         COMMAND ${CMAKE_Fortran_COMPILER} -V
+         COMMAND ${CMAKE_Fortran_COMPILER} --version
+         # COMMAND ${CMAKE_Fortran_COMPILER} -V
          OUTPUT_VARIABLE my_fc_compiler
          ERROR_QUIET )
       string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 

@@ -16,15 +16,19 @@ file( GLOB test_sources *.f90 )
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
+set( test_deps "Lib_FortranChecks;Lib_dsxx" )
 
 # BUG: We shouldn't need the special {CMAKE_Fortran_compiler_libs} on
 #      the link line, but because of PGI 11-12 broken zc_eh feature,
 #      we must for the Fortran compiler to link the nozc_eh C++
 #      libraries.  This variable is set in config/unix-pgf90.cmake.
+if( ${CMAKE_Fortran_COMPILER_FLAVOR} STREQUAL "PGI" )
+   set( test_deps "${test_deps};${CMAKE_Fortran_compiler_libs}" )
+endif()
 
 add_scalar_tests( 
    SOURCES "${test_sources}" 
-   DEPS    "Lib_FortranChecks;Lib_dsxx;${CMAKE_Fortran_compiler_libs}" )
+   DEPS    "${test_deps}" )
 
 if( ${CMAKE_Fortran_COMPILER_FLAVOR} STREQUAL "PGI" )
    # CMake has trouble figuring out how PGI works.

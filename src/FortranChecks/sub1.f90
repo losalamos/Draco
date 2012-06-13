@@ -21,10 +21,11 @@ subroutine sub1(alpha,np,nf) bind(c)
   real(c_double), value, intent(in) :: alpha
   integer(c_size_t), intent(inout) :: np
   integer(c_size_t), intent(inout) :: nf
-  
+  double precision :: small=1.0e-13
+
   write(*,'(a,f5.1,2i3)') "Hello, world.", alpha, np, nf
 
-  if( alpha.eq.1.0 )then
+  if( alpha.gt.1.0-small.and.alpha.lt.1.0+small )then
      print '(a)',"Test: passed"
      print '(a)',"     alpha == 1.0"
      np = np+1
