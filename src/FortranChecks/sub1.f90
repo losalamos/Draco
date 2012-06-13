@@ -22,7 +22,7 @@ subroutine sub1(alpha,np,nf) bind(c)
   integer(c_size_t), intent(inout) :: np
   integer(c_size_t), intent(inout) :: nf
   
-  print '(a f5.1 i3 i3)', "Hello, world.", alpha, np, nf
+  write(*,'(a,f5.1,2i3)') "Hello, world.", alpha, np, nf
 
   if( alpha.eq.1.0 )then
      print '(a)',"Test: passed"
