@@ -3,7 +3,7 @@
 # author Kelly Thompson 
 # date   2011 June 7
 # brief  Establish flags for Unix - PGI Fortran
-# note   Copyright © 2010 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -14,7 +14,7 @@
 set( CMAKE_Fortran_COMPILER_FLAVOR "PGI" )
 
 set( CMAKE_Fortran_FLAGS
-  "-Mpreprocess"  ) 
+  "-Mpreprocess" ) 
 set( CMAKE_Fortran_FLAGS_DEBUG 
   "-g -Mbounds -Mchkptr")
 set( CMAKE_Fortran_FLAGS_RELEASE 
@@ -22,6 +22,37 @@ set( CMAKE_Fortran_FLAGS_RELEASE
 set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO 
   "${CMAKE_Fortran_FLAGS_DEBUG} -O3")
+
+# ------------------------------------------------------------
+# Find and save compiler libraries.  These may need to be used when
+# the main code is C++ that links to Fortran libraries.
+# ------------------------------------------------------------
+
+# Order of libraries is important
+set( f90_system_lib libzceh.a libstd.a libC.a )
+
+# Static libraries from the /lib directory (useful for target_link_library command).
+set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL
+   "Fortran system libraries that are needed by the applications built with Intel Fortran (only optimized versions are redistributable.)" )
+
+# Intel Fortran lib directory
+get_filename_component( CMAKE_Fortran_BIN_DIR ${CMAKE_Fortran_COMPILER} PATH )
+string( REPLACE "bin" "lib" CMAKE_Fortran_LIB_DIR ${CMAKE_Fortran_BIN_DIR} )
+
+# Generate a list of run time libraries.
+foreach( lib ${f90_system_lib} )
+
+   get_filename_component( libwe ${lib} NAME_WE )
+   # optimized library
+   find_file( CMAKE_Fortran_${libwe}_lib
+      NAMES ${lib}
+      PATHS "${CMAKE_Fortran_LIB_DIR}"
+      HINTS ENV LD_LIBRARY_PATH
+      )
+   mark_as_advanced( CMAKE_Fortran_${libwe}_lib )
+   list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib} )
+   
+endforeach()
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgf90.cmake
