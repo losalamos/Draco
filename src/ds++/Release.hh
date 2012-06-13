@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file   ../Release.hh
+ * \file   ds++/Release.hh
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Header file for ds++ library release function.
@@ -34,8 +34,11 @@ DLL_PUBLIC const std::string release();
 
 } // end of rtt_ds++
 
-#endif                          // rtt_ds_Release_hh
+//! This version can be called by Fortran and wraps the C++ version.
+extern "C" void ec_release( char * release_string, size_t maxlen );
+
+#endif // rtt_ds_Release_hh
 
 //---------------------------------------------------------------------------//
-//                              end of ../Release.hh
+// end of ds++/Release.hh
 //---------------------------------------------------------------------------//

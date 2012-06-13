@@ -1,0 +1,143 @@
+//---------------------------------*-text-*-----------------------------------//
+// FortranChecks.dcc
+// FortranChecks Overview page
+// Kelly Thompson
+// Wednesday, Jun 13, 2012, 12:35 pm
+//---------------------------------------------------------------------------//
+// $Id: FortranChecks.dcc.in 6055 2011-08-03 15:58:35Z kellyt $
+//---------------------------------------------------------------------------//
+
+/*!
+
+<!---------------------------------------------------------------------------->
+
+\page overview_dsxx Overview of the FortranChecks package
+\version Draco-@DRACO_VERSION@
+\author Kelly G. Thompson
+
+\section abstract Abstract 
+
+This component provides some simple tests for creating a F90 main that calls
+C++ functions found in C++ libraries and a C++ main that calls Fortran
+subroutines found in Fortran libraries.  It make use of ISO_C_BINDING to
+provide the correct name mangling and type conversions in the 2-language
+interoperability tests.
+
+This component is also used to ensure that the Fortran portions of the build
+system work correctly on all target platforms and compiler vendors.  This
+component does not currently provide any installable features -- but it could
+potentially provide wrapper routines at some point in the future.
+
+<!--------------------------------------------------------------------------->
+\section cpp_fortran_interop C++/Fortran Interoperability
+
+- http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
+- http://www.fortran.bcs.org/2002/interop.htm (Example of C calling Fortran)
+- http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/compiler_f/bldaps_for/common/bldaps_interopc.htm
+
+<!--------------------------------------------------------------------------->
+\section cpp_fortran_interop_cmake C++/Fortran Interoperability with CMake Macros
+
+If you are calling an external Fortran package (e.g.: LAPACK),
+consider using the FortranCInterface feature found in CMake.
+
+<!--------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------->
+
+\section cf_interop_c_calls_fortran Example of C Calling Fortran
+
+The following example calls a Fortran subroutine called \c SIMULATION. This
+subroutine corresponds to the C void function simulation. 
+
+Fortran Code:
+
+\code
+SUBROUTINE SIMULATION(ALPHA, BETA, GAMMA, DELTA, ARRAYS) BIND(C)
+  USE, INTRINSIC :: ISO_C_BINDING
+  IMPLICIT NONE
+  INTEGER (C_LONG), VALUE :: ALPHA
+  REAL (C_DOUBLE), INTENT(INOUT) :: BETA
+  INTEGER (C_LONG), INTENT(OUT) :: GAMMA
+  REAL (C_DOUBLE),DIMENSION(*),INTENT(IN) :: DELTA
+  TYPE, BIND(C) :: PASS INTEGER (C_INT) :: LENC, LENF
+  TYPE (C_PTR) :: C, F END
+  TYPE PASS TYPE (PASS), INTENT(INOUT) :: ARRAYS
+  REAL (C_FLOAT), ALLOCATABLE, TARGET, SAVE :: ETA(:)
+  REAL (C_FLOAT), POINTER :: C_ARRAY(:)
+  ...
+  ! Associate C_ARRAY with an array allocated in C
+  CALL C_F_POINTER (ARRAYS%C, C_ARRAY, (/ARRAYS%LENC/) )
+  ...
+  ! Allocate an array and make it available in C
+  ARRAYS%LENF = 100
+  ALLOCATE (ETA(ARRAYS%LENF))
+  ARRAYS%F = C_LOC(ETA)
+  ...
+END SUBROUTINE SIMULATION
+\endcode
+
+C Struct Declaration
+\code
+struct pass {int lenc, lenf; float *c, *f;};
+\endcode
+C Function Prototype:
+\code
+void simulation(long alpha, double *beta, long *gamma, double delta[], struct pass *arrays);
+\endcode
+C Calling Sequence:
+\code
+simulation(alpha, &beta, &gamma, delta, &arrays);
+\endcode
+
+<!---------------------------------------------------------------------------->
+\section cf_interop_Fortran_calls_c Example of Fortran Calling C
+
+The following example calls a C function.
+
+C Function Prototype:
+\code
+int C_Library_Function(void* sendbuf, int sendcount, int *recvcounts);
+\endcode
+Fortran Modules:
+\code
+MODULE FTN_C_1
+  USE, INTRINSIC :: ISO_C_BINDING
+END MODULE FTN_C_1
+
+MODULE FTN_C_2
+   INTERFACE
+      INTEGER (C_INT) FUNCTION C_LIBRARY_FUNCTION &
+         (SENDBUF, SENDCOUNT, RECVCOUNTS) &
+         BIND(C, NAME=’C_Library_Function’)
+      USE FTN_C_1
+      IMPLICIT NONE
+      TYPE (C_PTR), VALUE :: SENDBUF
+      INTEGER (C_INT), VALUE :: SENDCOUNT
+      TYPE (C_PTR), VALUE :: RECVCOUNTS
+      END FUNCTION C_LIBRARY_FUNCTION
+   END INTERFACE
+END MODULE FTN_C_2
+\endcode
+Fortran Calling Sequence:
+\code
+USE, INTRINSIC :: ISO_C_BINDING, ONLY: C_INT, C_FLOAT, C_LOC
+USE FTN_C_2
+...
+REAL (C_FLOAT), TARGET :: SEND(100)
+INTEGER (C_INT) :: SENDCOUNT
+INTEGER (C_INT), ALLOCATABLE, TARGET :: RECVCOUNTS(100)
+...
+ALLOCATE( RECVCOUNTS(100) )
+...
+CALL C_LIBRARY_FUNCTION(C_LOC(SEND), SENDCOUNT, C_LOC(RECVCOUNTS))
+...
+\endcode
+
+<!---------------------------------------------------------------------------->
+
+*/
+
+//---------------------------------------------------------------------------//
+// end of FortranChecks.dcc
+//---------------------------------------------------------------------------//

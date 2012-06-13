@@ -85,6 +85,9 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
+if( _LANGUAGES_ MATCHES Fortran) 
+   add_dir_if_exists( FortranChecks )
+endif()
 
 if( GRACE_FOUND )
   add_dir_if_exists( plot2D )
