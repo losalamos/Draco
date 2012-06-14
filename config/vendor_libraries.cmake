@@ -103,7 +103,7 @@ macro( setupMPILibrariesUnix )
       if( MPI_FOUND )
 #         message( STATUS "MPI FOUND: Setting DRACO_C4 = MPI" )
          set( DRACO_C4 "MPI" )  
-         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
+         # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX -DMPICH_SKIP_MPICXX" )
          if( NOT MPIEXEC )
             if( "${SITE}" MATCHES "c[it]" )
                set( MPIEXEC aprun )
@@ -170,6 +170,11 @@ macro( setupMPILibrariesUnix )
                STRING "extra mpirun flags (string)." FORCE)
          endif()
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
+      elseif( "${MPIEXEC}" MATCHES aprun)
+         set( MPIEXEC_POSTFLAGS -cc none CACHE
+            STRING "extra mpirun flags (list)." FORCE)
+         set( MPIEXEC_POSTFLAGS_STRING "-cc none" CACHE
+            STRING "extra mpirun flags (string)." FORCE)
       endif()
 
       # Mark some of the variables created by the above logic as
