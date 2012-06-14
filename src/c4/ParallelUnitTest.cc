@@ -10,12 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-
 #include "ParallelUnitTest.hh"
-#include "SpinLock.hh"
-#include "global.hh"
+#include <sstream>
 
 namespace rtt_c4
 {

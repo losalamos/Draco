@@ -17,8 +17,10 @@
 #ifndef c4_ParallelUnitTest_hh
 #define c4_ParallelUnitTest_hh
 
-#include <iostream>
+#include "SpinLock.hh"
+#include "global.hh"
 #include "ds++/UnitTest.hh"
+#include <iostream>
 
 namespace rtt_c4
 {

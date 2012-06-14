@@ -3,7 +3,7 @@
  * \file   parser/Unit.hh
  * \author Kent Budge
  * \brief  Definition the Unit struct
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,9 +12,9 @@
 #ifndef __parser_Unit_hh__
 #define __parser_Unit_hh__
 
-#include <cmath>
-#include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <cmath>
 
 namespace rtt_parser
 {

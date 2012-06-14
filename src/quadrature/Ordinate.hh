@@ -4,8 +4,8 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright ©  2006-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C)  2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,11 +14,11 @@
 #ifndef quadrature_Ordinate_hh
 #define quadrature_Ordinate_hh
 
-#include <vector>
+#include "Quadrature.hh"
+#include "mesh_element/Geometry.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "mesh_element/Geometry.hh"
-#include "Quadrature.hh"
+#include <vector>
 
 namespace rtt_quadrature
 {
