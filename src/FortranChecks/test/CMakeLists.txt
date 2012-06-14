@@ -26,11 +26,13 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_executable( cppmain ${test_sources} )
-target_link_libraries( cppmain Lib_dsxx Lib_FortranChecks )
-
-
-add_scalar_tests( 
-   SOURCES "${test_sources}" 
-   DEPS    "Lib_dsxx;Lib_FortranChecks" )
-
+if( NOT "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
+   # ISO_C_BINDING does not appear to work correctly for pgf90 9.0.
+   add_executable( cppmain ${test_sources} )
+   target_link_libraries( cppmain Lib_dsxx Lib_FortranChecks )
+   
+   add_scalar_tests( 
+      SOURCES "${test_sources}" 
+      DEPS    "Lib_dsxx;Lib_FortranChecks" )
+   
+endif()

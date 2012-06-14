@@ -23,7 +23,7 @@ program testflags
      subroutine ec_release(release_string,maxlen) BIND(C, name="ec_release")
        use iso_c_binding, only: c_char,c_size_t
        implicit none
-       character(kind=c_char), intent(out)  :: release_string(*)
+       character(kind=c_char,len=1), intent(out)  :: release_string
        integer(c_size_t), intent(in), value :: maxlen
      end subroutine ec_release
   end interface

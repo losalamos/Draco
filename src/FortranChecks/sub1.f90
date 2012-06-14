@@ -16,7 +16,7 @@
 ! use iso_c_binding
   
 subroutine sub1(alpha,np,nf) bind(c)
-  use iso_c_binding
+  use iso_c_binding, only: c_double, c_size_t
   implicit none
   real(c_double), value, intent(in) :: alpha
   integer(c_size_t), intent(inout) :: np

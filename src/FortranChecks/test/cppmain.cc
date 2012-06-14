@@ -18,7 +18,7 @@
 using namespace std;
 
 // forward declaration of f90 functions
-extern "C" void sub1(double alpha, size_t &numPass, size_t &numFail);
+extern "C" void sub1(double alpha, size_t *numPass, size_t *numFail);
 
 //---------------------------------------------------------------------------//
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         size_t np(ut.numPasses);
         size_t nf(ut.numFails);
         // Call fortran subroutine
-        sub1(alpha,np,nf);
+        sub1(alpha,&np,&nf);
         ut.numPasses = np;
         ut.numFails = nf;            
         std::cout << ut.numPasses << " " << ut.numFails << std::endl;

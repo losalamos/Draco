@@ -74,41 +74,41 @@ SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -ftree-vectorize -funroll-loops 
 # the main code is C++ that links to Fortran libraries.
 # ------------------------------------------------------------
 
-# set( f90_system_lib libgfortran.a libgomp.a )
-# if( ENABLE_OPENMP )
-#   set( f90_system_lib ${f90_system_lib};libgomp.a )
-# endif( ENABLE_OPENMP )
+set( f90_system_lib libgfortran.a libgomp.a )
+if( ENABLE_OPENMP )
+  set( f90_system_lib ${f90_system_lib};libgomp.a )
+endif( ENABLE_OPENMP )
 
-# # Static libraries from the /lib directory (useful for target_link_library command).
-# set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL "Fortran system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" )
+# Static libraries from the /lib directory (useful for target_link_library command).
+set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL "Fortran system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" )
 
-# execute_process(
-#   COMMAND ${CMAKE_Fortran_COMPILER} --print-file-name=libgfortran.a
-#   OUTPUT_VARIABLE CMAKE_Fortran_LIB_DIR )
-# get_filename_component( CMAKE_Fortran_LIB_DIR
-#   ${CMAKE_Fortran_LIB_DIR} PATH )
+execute_process(
+  COMMAND ${CMAKE_Fortran_COMPILER} --print-file-name=libgfortran.a
+  OUTPUT_VARIABLE CMAKE_Fortran_LIB_DIR )
+get_filename_component( CMAKE_Fortran_LIB_DIR
+  ${CMAKE_Fortran_LIB_DIR} PATH )
 
-# foreach( lib ${f90_system_lib} )
+foreach( lib ${f90_system_lib} )
 
-#   get_filename_component( libwe ${lib} NAME_WE )
-#   # optimized library
-#   find_file( CMAKE_Fortran_${libwe}_lib_RELEASE
-#     NAMES ${lib}
-#     PATHS "${CMAKE_Fortran_LIB_DIR}"
-#     )
-#   mark_as_advanced( CMAKE_Fortran_${libwe}_lib_RELEASE )
-#   # debug library
-#   set( CMAKE_Fortran_${libwe}_lib_DEBUG ${CMAKE_Fortran_${libwe}_lib_RELEASE} )
-#   mark_as_advanced( CMAKE_Fortran_${libwe}_lib_DEBUG )
-#   set( CMAKE_Fortran_${libwe}_lib_LIBRARY
-#     optimized
-#     "${CMAKE_Fortran_${libwe}_lib_RELEASE}"
-#     debug
-#     "${CMAKE_Fortran_${libwe}_lib_DEBUG}"
-#     CACHE INTERNAL "Fortran static system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" FORCE )
-#   list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib_LIBRARY} )
+  get_filename_component( libwe ${lib} NAME_WE )
+  # optimized library
+  find_file( CMAKE_Fortran_${libwe}_lib_RELEASE
+    NAMES ${lib}
+    PATHS "${CMAKE_Fortran_LIB_DIR}"
+    )
+  mark_as_advanced( CMAKE_Fortran_${libwe}_lib_RELEASE )
+  # debug library
+  set( CMAKE_Fortran_${libwe}_lib_DEBUG ${CMAKE_Fortran_${libwe}_lib_RELEASE} )
+  mark_as_advanced( CMAKE_Fortran_${libwe}_lib_DEBUG )
+  set( CMAKE_Fortran_${libwe}_lib_LIBRARY
+    optimized
+    "${CMAKE_Fortran_${libwe}_lib_RELEASE}"
+    debug
+    "${CMAKE_Fortran_${libwe}_lib_DEBUG}"
+    CACHE INTERNAL "Fortran static system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" FORCE )
+  list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib_LIBRARY} )
 
-# endforeach( lib ${f90_system_lib} )
+endforeach( lib ${f90_system_lib} )
 
 # Code Coverage options:
 
