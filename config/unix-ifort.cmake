@@ -103,7 +103,9 @@ foreach( lib ${f90_system_lib} )
    # optimized library
    find_file( CMAKE_Fortran_${libwe}_lib_RELEASE
       NAMES ${lib}
-      PATHS "${CMAKE_Fortran_LIB_DIR}"
+      PATHS 
+         "${CMAKE_Fortran_LIB_DIR}"
+         "$ENV{INTEL_PATH}/compiler/lib"
       PATH_SUFFIXES "intel64"
       )
    mark_as_advanced( CMAKE_Fortran_${libwe}_lib_RELEASE )
