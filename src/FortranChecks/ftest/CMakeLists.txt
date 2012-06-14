@@ -22,7 +22,7 @@ set( test_deps "Lib_FortranChecks;Lib_dsxx" )
 #      the link line, but because of PGI 11-12 broken zc_eh feature,
 #      we must for the Fortran compiler to link the nozc_eh C++
 #      libraries.  This variable is set in config/unix-pgf90.cmake.
-if( ${CMAKE_Fortran_COMPILER_FLAVOR} STREQUAL "PGI" )
+if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
    set( test_deps "${test_deps};${CMAKE_Fortran_compiler_libs}" )
 endif()
 
@@ -30,7 +30,7 @@ add_scalar_tests(
    SOURCES "${test_sources}" 
    DEPS    "${test_deps}" )
 
-if( ${CMAKE_Fortran_COMPILER_FLAVOR} STREQUAL "PGI" )
+if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
    # CMake has trouble figuring out how PGI works.
    set_target_properties( Ut_FortranChecks_ftest_f90main_exe
       PROPERTIES 

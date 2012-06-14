@@ -3,7 +3,7 @@
 # author Kelly Thompson 
 # date   2010 Sep 27
 # brief  Establish flags for Windows - Intel Visual Fortran
-# note   Copyright © 2010 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -14,12 +14,15 @@
 set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 
 # I know that gfortran 4.1 won't compile our code (maybe 4.2 or 4.3 will).
-if( ${CMAKE_CXX_COMPILER_VERSION} STRLESS "4.4" )
+if( "${CMAKE_CXX_COMPILER_VERSION}" STRLESS "4.4" )
   message( FATAL_ERROR """
 *** Compiler incompatibility:
 gfortran < 4.2 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
 """
   )
+# If we absolutely must compile with an older version of gfortran, the
+# following flags may need to be added: "-x f95-cpp-input"
+
 endif()
 
 # General flags:
