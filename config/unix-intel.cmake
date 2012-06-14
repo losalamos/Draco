@@ -14,9 +14,6 @@
 # 7/20/11 - Use -O3 for Release builds but reduce -fp-model from
 #           strict to precise to eliminate warning 1678.
 
-
-
-
 #
 # Sanity Checks
 # 
@@ -67,21 +64,24 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-fpic -w1 -vec-report0 -diag-disable remark -shared-intel -openmp" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -DDEBUG") 
+  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check-uninit -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -inline-level=1 -ip -fp -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
-  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -strict-ansi")
+  if( DRACO_ENABLE_CXX11 )
+     set( CMAKE_CXX_FLAGS             "${CMAKE_C_FLAGS} -std=c++0x")
+  endif()
+  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -strict-ansi -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+
 endif()
 
 find_library( INTEL_LIBM m )
 mark_as_advanced( INTEL_LIBM )
-
 
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection

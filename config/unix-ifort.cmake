@@ -81,42 +81,42 @@ endif( ENABLE_SSE )
 # the main code is C++ that links to Fortran libraries.
 # ------------------------------------------------------------
 
-# # Order of libraries is important
-# set( f90_system_lib 
-#    libifport.a libifcore.a libirc.a libsvml.a libimf.a )
-# if( USE_OPENMP )
-#   set( f90_system_lib ${f90_system_lib};libiomp5.a )
-# endif( USE_OPENMP )
+# Order of libraries is important
+set( f90_system_lib 
+   libifport.a libifcore.a libirc.a libsvml.a libimf.a )
+if( USE_OPENMP )
+  set( f90_system_lib ${f90_system_lib};libiomp5.a )
+endif( USE_OPENMP )
 
-# # Static libraries from the /lib directory (useful for target_link_library command).
-# set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL
-#    "Fortran system libraries that are needed by the applications built with Intel Fortran (only optimized versions are redistributable.)" )
+# Static libraries from the /lib directory (useful for target_link_library command).
+set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL
+   "Fortran system libraries that are needed by the applications built with Intel Fortran (only optimized versions are redistributable.)" )
 
-# # Intel Fortran lib directory
-# get_filename_component( CMAKE_Fortran_BIN_DIR ${CMAKE_Fortran_COMPILER} PATH )
-# string( REPLACE "bin" "lib" CMAKE_Fortran_LIB_DIR ${CMAKE_Fortran_BIN_DIR} )
+# Intel Fortran lib directory
+get_filename_component( CMAKE_Fortran_BIN_DIR ${CMAKE_Fortran_COMPILER} PATH )
+string( REPLACE "bin" "lib" CMAKE_Fortran_LIB_DIR ${CMAKE_Fortran_BIN_DIR} )
 
-# # Generate a list of run time libraries.
-# foreach( lib ${f90_system_lib} )
+# Generate a list of run time libraries.
+foreach( lib ${f90_system_lib} )
 
-#    get_filename_component( libwe ${lib} NAME_WE )
-#    # optimized library
-#    find_file( CMAKE_Fortran_${libwe}_lib_RELEASE
-#       NAMES ${lib}
-#       PATHS "${CMAKE_Fortran_LIB_DIR}"
-#       PATH_SUFFIXES "intel64"
-#       )
-#    mark_as_advanced( CMAKE_Fortran_${libwe}_lib_RELEASE )
-#    # debug library
-#    set( CMAKE_Fortran_${libwe}_lib_DEBUG ${CMAKE_Fortran_${libwe}_lib_RELEASE} )
-#    mark_as_advanced( CMAKE_Fortran_${libwe}_lib_DEBUG )
-#    set( CMAKE_Fortran_${libwe}_lib_LIBRARY
-#       optimized "${CMAKE_Fortran_${libwe}_lib_RELEASE}"
-#       debug     "${CMAKE_Fortran_${libwe}_lib_DEBUG}"
-#       CACHE INTERNAL "Fortran static system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" FORCE )
-#    list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib_LIBRARY} )
+   get_filename_component( libwe ${lib} NAME_WE )
+   # optimized library
+   find_file( CMAKE_Fortran_${libwe}_lib_RELEASE
+      NAMES ${lib}
+      PATHS "${CMAKE_Fortran_LIB_DIR}"
+      PATH_SUFFIXES "intel64"
+      )
+   mark_as_advanced( CMAKE_Fortran_${libwe}_lib_RELEASE )
+   # debug library
+   set( CMAKE_Fortran_${libwe}_lib_DEBUG ${CMAKE_Fortran_${libwe}_lib_RELEASE} )
+   mark_as_advanced( CMAKE_Fortran_${libwe}_lib_DEBUG )
+   set( CMAKE_Fortran_${libwe}_lib_LIBRARY
+      optimized "${CMAKE_Fortran_${libwe}_lib_RELEASE}"
+      debug     "${CMAKE_Fortran_${libwe}_lib_DEBUG}"
+      CACHE INTERNAL "Fortran static system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" FORCE )
+   list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib_LIBRARY} )
    
-# endforeach()
+endforeach()
 
 # # Mixed Language Linking:
 # # When linking C++ code that calls F90 libraries, we also need -ldl -lpthread
