@@ -85,8 +85,10 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
-if( _LANGUAGES_ MATCHES Fortran) 
-   add_dir_if_exists( FortranChecks )
+if( _LANGUAGES_ MATCHES Fortran )
+   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+      add_dir_if_exists( FortranChecks )
+   endif()
 endif()
 
 if( GRACE_FOUND )
