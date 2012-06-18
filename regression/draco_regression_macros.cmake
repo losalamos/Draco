@@ -198,9 +198,20 @@ macro( parse_args )
   elseif($ENV{CXX} MATCHES "ppu-g[+][+]" )
      set( compiler_short_name "ppu-gcc" )
   elseif($ENV{CXX} MATCHES "xt-asyncpe" )
-     set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
-  elseif( ${sitename} MATCHES "Cielito" )
-     set( compiler_short_name "pgi" ) # Cielito CC -> pgCC
+     # Ceilo (catamount) uses a wrapper script
+     # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
+     # compiler.  Use the following command to determine the actual
+     # compiler flavor before setting compiler flags (end of this
+     # macro).
+     execute_process(
+        COMMAND $ENV{CXX} --version
+        OUTPUT_VARIABLE my_cxx_compiler
+        ERROR_QUIET )
+     if( ${my_cxx_compiler} MATCHES "icpc")
+        set( compiler_short_name "intel" )
+     elseif( ${my_cxx_compiler} MATCHES "pgCC")
+        set( compiler_short_name "pgi" )
+     endif()
   endif()
 
   # maybe just gcc?
@@ -484,8 +495,21 @@ endmacro(process_cc_or_da)
 # ------------------------------------------------------------
 macro(platform_customization)
    if( "${sitename}" MATCHES "Cielito" )
-      set( TOOLCHAIN_SETUP
-         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake" )
+#      set( TOOLCHAIN_SETUP
+#         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake"
+# )
+      set(CT_CUSTOM_VARS "DRACO_LIBRARY_TYPE:STRING=STATIC
+CMAKE_C_COMPILER:FILEPATH=cc
+CMAKE_CXX_COMPILER:FILEPATH=CC 
+CMAKE_Fortran_COMPILER:FILEPATH=ftn
+MPIEXEC:FILEPATH=/usr/bin/aprun
+MPIEXEC_NUMPROC_FLAG:STRING=-n
+MPI_C_LIBRARIES:FILEPATH=
+MPI_CXX_LIBRARIES:FILEPATH=
+MPI_Fortran_LIBRARIES:FILEPATH=
+MPI_C_INCLUDE_PATH:PATH=
+MPI_CXX_INCLUDE_PATH:PATH=
+MPI_Fortran_INCLUDE_PATH:PATH=")
    elseif( "${sitename}" MATCHES "RoadRunner" )
       if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
          set( TOOLCHAIN_SETUP
