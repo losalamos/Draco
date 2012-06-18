@@ -43,6 +43,7 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
       ${PROJECT_SOURCE_DIR}        # headers for tests
       ${PROJECT_SOURCE_DIR}/..     # headers for package
       ${PROJECT_BINARY_DIR}/..     # config.h
+      ${c4_BINARY_DIR}             # c4/config.h
       )
 
 # ---------------------------------------------------------------------------- #

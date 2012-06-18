@@ -15,7 +15,6 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 
 # I know that gfortran 4.1 won't compile our code (maybe 4.2 or 4.3
 # will).
-message("CMAKE_CXX_COMPILER_VERSION = ${CMAKE_CXX_COMPILER_VERSION}")
 if( "${CMAKE_CXX_COMPILER_VERSION}" STRLESS "4.3" )
   message( FATAL_ERROR """
 *** Compiler incompatibility:
