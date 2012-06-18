@@ -48,10 +48,15 @@ case ci*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/ct-fe
-   module load gsl/1.14 svn
-   module load cmake/2.8.7 numdiff git xshow papi
-   module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
-   module unload xt-libsci
+   module unload PrgEnv-intel PrgEnv-pgi
+   module unload cmake numdiff svn gsl
+   module load PrgEnv-intel
+   module unload xt-totalview xt-libsci
+   module load gsl/1.14 lapack/3.4.0-intel
+   module load cmake numdiff svn
+   # module load git xshow papi
+   # module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
+   # module unload xt-libsci lapack/3.4.0-intel
    # module load lapack/3.4.0-pgi # use /opt/pgi/11.10.0/...
    breaksw
 case rr-dev*:
