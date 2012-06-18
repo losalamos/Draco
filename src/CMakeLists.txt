@@ -21,22 +21,25 @@ dbsSetDefaults()
 # Save config info
 dbsConfigInfo()
 
-# Set compiler options
-include( compilerEnv )
-dbsSetupCompilers()
-dbsSetupCxx()
-# Is Fortran enabled (it is considered 'optional' for draco)?
-get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
-if( _LANGUAGES_ MATCHES Fortran) 
-   dbsSetupFortran()
-endif()
-
-include( FeatureSummary )
-
 # Build only for Opteron? Or PPE also?
 if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
    include( platform_customization_roadrunner_ppe )
 endif()
+
+# Set compiler options
+include( compilerEnv )
+dbsSetupCompilers()
+dbsSetupCxx()
+
+# Is Fortran enabled (it is considered 'optional' for draco)?
+get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
+if( _LANGUAGES_ MATCHES Fortran )
+   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+      dbsSetupFortran()
+   endif()
+endif()
+
+include( FeatureSummary )
 
 # Find any globally required libraries
 include( vendor_libraries )
