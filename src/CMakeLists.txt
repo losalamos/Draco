@@ -81,7 +81,9 @@ add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( device )       # needs ds++
 add_dir_if_exists( fpe_trap )     # needs ds++
-add_dir_if_exists( lapack_wrap )  # needs ds++
+if (NOT APPLE)
+  add_dir_if_exists( lapack_wrap )  # needs ds++
+endif()
 add_dir_if_exists( linear )       # needs ds++
 add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
@@ -89,7 +91,7 @@ add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
 if( _LANGUAGES_ MATCHES Fortran )
-   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" AND NOT APPLE )
       add_dir_if_exists( FortranChecks )
    endif()
 endif()
