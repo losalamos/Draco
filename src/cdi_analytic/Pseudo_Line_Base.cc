@@ -130,8 +130,9 @@ double Pseudo_Line_Base::monoOpacity(double const x,
     for (unsigned i=0; i<number_of_lines; ++i)
     {
         double const nu0 = center_[i];
-        double const d = x - nu0;
-        Result += peak*exp(-d*d/(width*width*nu0*nu0));
+        double const d = (x - nu0)/(width*nu0);
+//        Result += peak*exp(-d*d);
+        Result += peak/(1+d*d);
     }
     
     unsigned const number_of_edges = number_of_edges_;

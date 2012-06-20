@@ -92,7 +92,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
     double g1 = group_bounds[0];
     double const gmin = g1;
     double const gmax = group_bounds[number_of_groups];
-    vector<double> raw;
+    vector<pair<double, double> > raw;
     for (unsigned g=0; g<number_of_groups; ++g)
     {
         double const g0 = g1;
@@ -106,7 +106,33 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
         {
             double const x = (iq+0.5)*(gmax-gmin)/qpoints_ + gmin;
             if (x>=g1) break;
-            raw.push_back(monoOpacity(x, T));
+            double x0 = iq*(gmax-gmin)/qpoints_ + gmin;
+            double x1 = (iq+1)*(gmax-gmin)/qpoints_ + gmin;
+            double weight;
+            switch (averaging_)
+            {
+                case NONE:
+                    weight = x1-x0;
+                    break;
+
+                case ROSSELAND:
+                    weight = CDI::integrateRosselandSpectrum(x0/rtt_parser::keV.conv,
+                                                             x1/rtt_parser::keV.conv,
+                                                             T);
+                    break;
+
+                case PLANCK:
+                    weight = CDI::integratePlanckSpectrum(x0/rtt_parser::keV.conv,
+                                                          x1/rtt_parser::keV.conv,
+                                                          T);
+                    break;
+           
+                default:
+                    Insist(false, "bad case");            
+            }
+            weight += sqrt(std::numeric_limits<double>::min()); 
+              // avoid division by 0
+            raw.push_back(pair<double, double>(monoOpacity(x, T), weight));
         }
         sort(raw.begin(), raw.end());
         unsigned const N = raw.size();
@@ -121,7 +147,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double const f = 0.5*(b0 + b1);
-                    Result[g][b] = raw[static_cast<unsigned>(f*N)];
+                    Result[g][b] = raw[static_cast<unsigned>(f*N)].first;
                 }
             }
             break;
@@ -139,8 +165,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
-                        t += 1/raw[q];
-                        w += 1;
+                        t += raw[q].second/raw[q].first;
+                        w += raw[q].second;
                     }
                     
                     Result[g][b] = w/t;
@@ -161,8 +187,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
-                        t += raw[q];
-                        w += 1;
+                        t += raw[q].first*raw[q].second;
+                        w += raw[q].second;
                     }
                     
                     Result[g][b] = t/w;
