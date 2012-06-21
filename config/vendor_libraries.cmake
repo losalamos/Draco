@@ -15,6 +15,18 @@
 
 include( FeatureSummary )
 
+#
+# Getting .so requirements?
+#
+#include( GetPrerequisites )
+#get_prerequisites( library LIST_OF_REQS 1 0 <exepath> <dirs>)
+#list_prerequisites(<target> [<recurse> [<exclude_system> [<verbose>]]])
+
+#
+# Install all required system libraries?
+#
+# include( InstallRequiredSystemLibraries)
+
 #------------------------------------------------------------------------------#
 # Setup MPI when on Linux
 #------------------------------------------------------------------------------#
@@ -54,56 +66,15 @@ macro( setupMPILibrariesUnix )
       endif()
 
       # First attempt to find mpi
+      # bug #75: This package will print to std:
+      # -- warning: No 'file' command, skipping execute_process...
+      # -- warning: No 'file' command, skipping execute_process...
+      # -- warning: No 'file' command, skipping execute_process...
       find_package( MPI QUIET )
-
-      # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
-#       if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
-# #         message( STATUS "2nd attempt to find MPI: examine $MPIRUN" )
-#          set( MPIEXEC $ENV{MPIRUN} )
-#          find_package( MPI QUIET )
-#       endif()
-
-      # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
-#       if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
-#             EXISTS "${MPI_INC_DIR}" )
-# #         message( STATUS "3rd attempt to find MPI: examine $MPI_INC_DIR" )
-#          if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
-#             set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
-#          endif()
-#          if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
-#             set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
-#          endif()
-#          set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
-#          find_library( MPI_LIBRARY
-#             NAMES mpi mpich msmpi
-#             PATHS ${MPI_LIB_DIR} 
-#             ${MPICH_DIR}/lib
-#             )
-#          set( extra_libs mpi++ libopen-rte libopen-pal)
-#          unset( MPI_EXTRA_LIBRARY )
-#          foreach( lib ${extra_libs} )
-#             find_library( mpi_extra_lib_${lib}
-#                NAMES ${lib}
-#                HINTS ${MPI_LIB_DIR} 
-#                ${MPICH_DIR}/lib )
-#             mark_as_advanced( mpi_extra_lib_${lib} )
-#             if( EXISTS "${mpi_extra_lib_${lib}}" )
-#                list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
-#             endif()
-#          endforeach()
-#          find_package( MPI QUIET )
-#          if( ${MPI_EXTRA_LIBRARY} MATCHES "NOTFOUND" )
-#             # do nothing
-#          else()
-#             list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
-#          endif()
-#       endif()
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
-#         message( STATUS "MPI FOUND: Setting DRACO_C4 = MPI" )
          set( DRACO_C4 "MPI" )  
-         # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX -DMPICH_SKIP_MPICXX" )
          if( NOT MPIEXEC )
             if( "${SITE}" MATCHES "c[it]" )
                set( MPIEXEC aprun )
@@ -119,11 +90,13 @@ macro( setupMPILibrariesUnix )
          endif()
          
       else()
-#         message( STATUS "MPI NOT FOUND: Setting DRACO_C4 = SCALAR" )
          set( DRACO_C4 "SCALAR" )
-         set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
-         set( MPI_LIBRARY "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
-         set( MPI_LIBRARIES "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
+         set( MPI_INCLUDE_PATH "" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
+         set( MPI_LIBRARY "" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
+         set( MPI_LIBRARIES "" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
       endif()
 
       # Save the result in the cache file.
@@ -368,9 +341,12 @@ macro( SetupVendorLibrariesWindows )
       else()
          set( DRACO_C4 "SCALAR" )
          unset( C4_MPI )
-         set( MPI_INCLUDE_PATH "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
-         set( MPI_LIBRARY "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
-         set( MPI_LIBRARIES "" CACHE FILEPATH "no mpi library for scalar build." FORCE )
+         set( MPI_INCLUDE_PATH "" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
+         set( MPI_LIBRARY "" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
+         set( MPI_LIBRARIES "" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
       endif()
 
       # Save the result in the cache file.
