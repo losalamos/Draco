@@ -108,7 +108,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
             if (x>=g1) break;
             double x0 = iq*(gmax-gmin)/qpoints_ + gmin;
             double x1 = (iq+1)*(gmax-gmin)/qpoints_ + gmin;
-            double weight;
+            double weight(0.0);
             switch (averaging_)
             {
                 case NONE:
