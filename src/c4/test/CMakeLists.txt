@@ -62,23 +62,19 @@ add_parallel_tests(
    )
 list( REMOVE_ITEM test_sources ${special_test} )
 
-# ApplicationUnitTest uses a paradigm that is not compatbilty with
-# Catamount systems.  We cannot run aprun under a system call.
+# This test also has special arguments and spawns mpirun indirectly so
+# we register it as a scalar test.
 set( special_test ${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc )
-if( NOT "${SITE}" MATCHES "c[it]" )
-   # This test also has special arguments and spawns mpirun indirectly so
-   # we register it as a scalar test.
-   if( "${DRACO_C4}" MATCHES "MPI" )
-      set( application_unit_test_args "--np 1;--np 2;--np 4" )
-   else()
-      set( application_unit_test_args "--np scalar" )
-   endif()
-   add_scalar_tests(
-      SOURCES   "${special_test}" 
-      DEPS      "${test_deps}"
-      TEST_ARGS "${application_unit_test_args}"
-      )
+if( "${DRACO_C4}" MATCHES "MPI" )
+   set( application_unit_test_args "--np 1;--np 2;--np 4" )
+else()
+   set( application_unit_test_args "--np scalar" )
 endif()
+add_scalar_tests(
+   SOURCES   "${special_test}" 
+   DEPS      "${test_deps}"
+   TEST_ARGS "${application_unit_test_args}"
+   APPLICATION_UNIT_TEST  )
 list( REMOVE_ITEM test_sources ${special_test} )
 
 # This tests runs with extra arguments 
