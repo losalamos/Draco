@@ -54,6 +54,8 @@ case ci*:
    module unload xt-totalview xt-libsci
    module load gsl/1.14 lapack/3.4.0-intel
    module load cmake numdiff svn
+   module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel 
+   module load ParMetis/3.1.1-intel ndi
    # module load git xshow papi
    # module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    # module unload xt-libsci lapack/3.4.0-intel
