@@ -16,7 +16,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     3.4.0;
-set prefix      /usr/projects/draco/vendors/lapack-$version/intel-12.1.2.273
+set prefix      /usr/projects/draco/vendors/ct/lapack-$version/intel-12.1.2
 set libdir      $prefix/lib;
 set incdir      $prefix/include;
 
