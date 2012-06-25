@@ -177,7 +177,13 @@ endmacro()
 #    [ FAIL_REGEX    "regex" ]
 #    [ RESOURCE_LOCK "lockname" ]
 #    [ RUN_AFTER     "test_name" ]
+#    [ APPLICATION_UNIT_TEST ]
 # )
+#
+# Options:
+#   APPLICATION_UNIT_TEST - (CI/CT only) If present, do not run the
+#        test under 'aprun'.  ApplicationUnitTest based tests must be
+#        run this way.
 #
 #----------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
@@ -189,7 +195,7 @@ macro( add_scalar_tests test_sources )
       # list names
       "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER"
       # option names
-      "NONE"
+      "APPLICATION_UNIT_TEST;NONE"
       ${ARGV}
       )
 
@@ -198,8 +204,16 @@ macro( add_scalar_tests test_sources )
    # On some platforms (Cielo, Cielito, RedStorm), even scalar tests
    # must be run underneath MPIEXEC (yod, aprun):
    if( "${MPIEXEC}" MATCHES "aprun" )
-      set( RUN_CMD ${MPIEXEC} -n 1 )
-      set( APT_TARGET_FILE_PREFIX "./" )
+      if( NOT addscalartest_APPLICATION_UNIT_TEST )
+         set( RUN_CMD ${MPIEXEC} -n 1 )
+         set( APT_TARGET_FILE_PREFIX "./" )
+      else()
+         # This is a special case for catamount (CI/CT).  For
+         # appliation unit tests, the main test runs on the 'login'
+         # node (1 rank only) and the real test is run under 'aprun'.
+         # So we do not prefix the test command with 'aprun'.
+         unset( RUN_CMD )
+      endif()
    elseif(  "${MPIEXEC}" MATCHES "yod" )
       set( RUN_CMD ${MPIEXEC} -np 1 )
    else()
