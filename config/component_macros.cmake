@@ -183,7 +183,8 @@ endmacro()
 # Options:
 #   APPLICATION_UNIT_TEST - (CI/CT only) If present, do not run the
 #        test under 'aprun'.  ApplicationUnitTest based tests must be
-#        run this way.
+#        run this way.  Setting this option when DRACO_C4==SCALAR will
+#        reset any value provided in TEST_ARGS to be "--np scalar".
 #
 #----------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
@@ -204,20 +205,33 @@ macro( add_scalar_tests test_sources )
    # On some platforms (Cielo, Cielito, RedStorm), even scalar tests
    # must be run underneath MPIEXEC (yod, aprun):
    if( "${MPIEXEC}" MATCHES "aprun" )
-      if( NOT addscalartest_APPLICATION_UNIT_TEST )
-         set( RUN_CMD ${MPIEXEC} -n 1 )
-         set( APT_TARGET_FILE_PREFIX "./" )
-      else()
-         # This is a special case for catamount (CI/CT).  For
-         # appliation unit tests, the main test runs on the 'login'
-         # node (1 rank only) and the real test is run under 'aprun'.
-         # So we do not prefix the test command with 'aprun'.
-         unset( RUN_CMD )
-      endif()
+      set( RUN_CMD ${MPIEXEC} -n 1 )
+      set( APT_TARGET_FILE_PREFIX "./" )
    elseif(  "${MPIEXEC}" MATCHES "yod" )
       set( RUN_CMD ${MPIEXEC} -np 1 )
    else()
       unset( RUN_CMD )
+   endif()
+
+   # Special cases for tests that use the ApplicationUnitTest
+   # framework (see c4/ApplicationUnitTest.hh).
+   if( addscalartest_APPLICATION_UNIT_TEST )
+      # This is a special case for catamount (CI/CT).  For appliation
+      # unit tests, the main test runs on the 'login' node (1 rank
+      # only) and the real test is run under 'aprun'.  So we do not
+      # prefix the test command with 'aprun'.
+      if( "${MPIEXEC}" MATCHES "aprun" )
+         unset( RUN_CMD )
+      endif()
+      
+      # If this is an ApplicationUnitTest based test then the
+      # TEST_ARGS will look like "--np 1;--np 2;--np 4".  For the case
+      # where DRACO_C4 = SCALAR, we will automatically demote these
+      # arguments to "--np scalar."
+      if( "${DRACO_C4}" MATCHES "SCALAR" )
+         set( addscalartest_TEST_ARGS "--np scalar" )
+      endif()
+
    endif()
 
    # When on roadrunner backend (x86), we must ssh into the PPE to run
