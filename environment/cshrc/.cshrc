@@ -60,6 +60,11 @@ case ci*:
    # module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    # module unload xt-libsci lapack/3.4.0-intel
    # module load lapack/3.4.0-pgi # use /opt/pgi/11.10.0/...
+
+   # Avoid run time messages of the form:
+   # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
+   # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
+   setenv KMP_AFFINITY none
    breaksw
 case rr-dev*:
 case rra[0-9][0-9][0-9]a*:
