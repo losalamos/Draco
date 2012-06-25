@@ -24,6 +24,11 @@ set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING
 # Provide a constrained drop down list in cmake-gui.
 set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
+# OpenMP default setup
+if( NOT DEFINED USE_OPENMP )
+   option( USE_OPENMP "Turn on OpenMP features?" ON )
+endif()
+
 if( EXISTS $ENV{PAPI_HOME} )
     set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
     set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH 
@@ -83,6 +88,8 @@ macro(dbsSetupCompilers)
       message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
    endif()  
    
+   # Defaults for 1st pass:
+
    # shared or static libararies?
    if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
       message(STATUS "Building static libraries.")
@@ -103,18 +110,22 @@ macro(dbsSetupCompilers)
    
    ##---------------------------------------------------------------------------##
    ## Check for OpenMP
-   
-   set( USE_OPENMP OFF )
-   include( CheckIncludeFiles )
-   check_include_files( omp.h HAVE_OMP_H )
-   if( ${HAVE_OMP_H} )
-      set( USE_OPENMP ON )
-   endif()   
-   option( USE_OPENMP "Turn on OpenMP features?" ${USE_OPENMP} )
+
+   #if( NOT gen_comp_env_set STREQUAL 1 )
+   # set( USE_OPENMP OFF )
+   if( USE_OPENMP )
+      include( CheckIncludeFiles )
+      check_include_files( omp.h HAVE_OMP_H )
+      if( NOT ${HAVE_OMP_H} )
+         set( USE_OPENMP OFF )
+      endif()   
+   endif()
+   set( USE_OPENMP ${USE_OPENMP} CACHE BOOL "Turn on OpenMP features?" )
+   # endif()
 
    ##---------------------------------------------------------------------------##
 
-   set( gen_comp_env_set 1 )
+   # set( gen_comp_env_set 1 )
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -122,9 +133,9 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro(dbsSetupCxx)
    
-   if( NOT gen_comp_env_set STREQUAL 1 )
+   # if( NOT gen_comp_env_set STREQUAL 1 )
       dbsSetupCompilers()
-   endif()
+   # endif()
    
    # Deal with compiler wrappers
    if( ${CMAKE_CXX_COMPILER} MATCHES "tau_cxx.sh" )
@@ -207,9 +218,9 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro(dbsSetupFortran)
 
-   if( NOT gen_comp_env_set STREQUAL 1 )
+   #if( NOT gen_comp_env_set STREQUAL 1 )
       dbsSetupCompilers()
-   endif()
+   #endif()
 
    # Deal with comiler wrappers
    if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" ) 
@@ -237,6 +248,47 @@ macro(dbsSetupFortran)
       include( unix-pgf90 )
    else()
       message( FATAL_ERROR "Build system does not support F90=${my_fc_compiler}" )
+   endif()
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Toggle a compiler flag based on a bool
+##---------------------------------------------------------------------------##
+macro( toggle_compiler_flag switch compiler_flag )
+   if( ${switch} )
+      if( NOT "${CMAKE_C_FLAGS}" MATCHES ${compiler_flag} )
+         set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${compiler_flag}" 
+            CACHE STRING "compiler flags" FORCE )
+      endif()
+      if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "${compiler_flag}" )
+         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${compiler_flag}" 
+            CACHE STRING "compiler flags" FORCE )
+      endif()
+      if( NOT "${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${compiler_flag}" )
+         set( CMAKE_EXE_LINKER_FLAGS 
+            "${CMAKE_EXE_LINKER_FLAGS} ${compiler_flag}" 
+            CACHE STRING "linker flags" FORCE )
+      endif()
+   else()
+      if( "${CMAKE_C_FLAGS}" MATCHES "${compiler_flag}" )
+         string( REPLACE "${compiler_flag}" "" 
+            CMAKE_C_FLAGS ${CMAKE_C_FLAGS} )
+         set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" 
+            CACHE STRING "compiler flags" FORCE )
+      endif()
+      if( "${CMAKE_CXX_FLAGS}" MATCHES "${compiler_flag}" )
+         string( REPLACE "${compiler_flag}" "" 
+            CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
+         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" 
+            CACHE STRING "compiler flags" FORCE )
+      endif()
+      if( "${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${compiler_flag}" )
+         string( REPLACE "${compiler_flag}" "" 
+            CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
+         set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}"  
+            CACHE STRING "linker flags" FORCE )
+      endif()
    endif()
 
 endmacro()

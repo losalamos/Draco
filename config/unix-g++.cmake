@@ -70,58 +70,48 @@ if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
    mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
 
-# determine if compiler supports OpenMP
-# The following variables are set:
-#   OpenMP_C_FLAGS - flags to add to the C compiler for OpenMP support
-#   OpenMP_CXX_FLAGS - flags to add to the CXX compiler for OpenMP support
-#   OPENMP_FOUND - true if openmp is detected
-# find_package(OpenMP)
-
 #
 # Compiler Flags
 # 
 
 # Flags from Draco autoconf build system:
-# -ansi -pedantic
-# -Wnon-virtual-dtor 
-# -Wreturn-type 
-# -Wno-long-long
-# -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC
-# -Wextra
-# -Weffc++
-
-# -march=core2 | corei7 
-# -mtune=core2 | corei7 
 
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-fPIC -Wcast-align -Wpointer-arith -Wall -fopenmp" )
+   set( CMAKE_C_FLAGS                "-fPIC -Wcast-align -Wpointer-arith -Wall" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) 
+   if( DRACO_ENABLE_CXX11 )
+     set( CMAKE_CXX_FLAGS              "${CMAKE_CXX_FLAGS} -std=c++0x")
+   endif()
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
-   # XCode needs this extra bit of help for OpenMP support
-   set( CMAKE_EXE_LINKER_FLAGS "-fopenmp" )
 endif()
 
 # Extra flags for gcc-4.6.2+
-# -Wsuggest-attribute=const
-if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3 )
-   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 5 )
+# -Wsuggest-attribute=[const|pure|noreturn]
+if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3 ) # 4
+   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 5 ) # 4.6
+      # include(CheckCXXCompilerFlag)
+      # CHECK_CXX_COMPILER_FLAG( "-Wnoexcept, HAS_WNOEXCEPT)
       if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wsuggest-attribute=const" )
          set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
+      endif()
+      if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wnoexcept" )
+         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wnoexcept" )
       endif()
    endif()
 endif()
 
+##---------------------------------------------------------------------------##
 
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
@@ -154,6 +144,9 @@ set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE ST
 set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+# Toggle for OpenMP
+toggle_compiler_flag( USE_OPENMP "-fopenmp" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake

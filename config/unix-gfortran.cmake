@@ -81,9 +81,9 @@ else()
    set(libext ".so")
 endif()
 set( f90_system_lib libgfortran.${libext} )
-if( ENABLE_OPENMP )
+if( USE_OPENMP )
   set( f90_system_lib ${f90_system_lib};libgomp.${libext} )
-endif( ENABLE_OPENMP )
+endif( USE_OPENMP )
 
 # Static libraries from the /lib directory (useful for target_link_library command).
 set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL "Fortran system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" )
