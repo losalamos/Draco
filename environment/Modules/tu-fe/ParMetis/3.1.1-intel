@@ -12,7 +12,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     3.1.1
-set prefix      /usr/projects/draco/vendors/ParMetis-$version/TLCC-openmpi133-intel100023-intel100023
+set prefix      /usr/projects/draco/vendors/ParMetis-$version/tu-openmpi145-intel1212-intel1212
 set libdir      $prefix/lib
 set incdir      $prefix/include
 set incdir2     $prefix/source/METISLib

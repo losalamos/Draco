@@ -11,21 +11,21 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version     10.6.4
-set prefix      /usr/projects/draco/vendors/trilinos-$version/tu-openmpi143-pgi903-pgi903
-set incdir      $prefix/include;
+set version      3.0
+set prefix      /usr/projects/draco/vendors/SuperLU_DIST_$version/tu-openmpi145-intel1212-intel1212
 set libdir      $prefix/lib
+set incdir      $prefix/include
 
 # module whatis
-module-whatis   "Trilinos $version";
+module-whatis   "SuperLU_DIST";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tTrilinos $version\n";
-   puts stderr "\tTRILINOS_INC_DIR\t= $incdir";
-   puts stderr "\tTRILINOS_LIB_DIR\t= $libdir";
+   puts stderr "\tSuperLU_DIST $version\n";
+   puts stderr "\tSUPERLUDIST_LIB_DIR\t= $libdir";
+   puts stderr "\tSUPERLUDIST_INC_DIR\t= $incdir";
 }
 
 if { ![file exists $prefix] } {
@@ -34,9 +34,5 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-# Converting clients to embedded info in module files, rather
-# than supporting client license files in the installation directory(s). 
-# prepend-path    PATH            $bindir;
-
-setenv TRILINOS_INC_DIR $incdir
-setenv TRILINOS_LIB_DIR $libdir
+setenv SUPERLUDIST_LIB_DIR $libdir
+setenv SUPERLUDIST_INC_DIR $incdir
