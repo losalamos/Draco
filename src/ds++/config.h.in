@@ -43,6 +43,9 @@
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
 #cmakedefine HAVE_CUDA @HAVE_CUDA@
 
+/* Are we using C++11 */
+#cmakedefine DRACO_ENABLE_CXX11
+
 /* Platform checks for various functions */
 
 #cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
