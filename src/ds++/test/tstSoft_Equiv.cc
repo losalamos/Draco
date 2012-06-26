@@ -4,31 +4,31 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:55:54 2001
  * \brief  Soft_Equiv header testing utilities.
- * \note   Copyright (c) 2001-2010 Los Alamos National Security, LLC
+ * \note   Copyright (c) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
 #include "../Assert.hh"
-
-#include <iostream>
+#include "../ScalarUnitTest.hh"
 #include <vector>
-#include <cmath>
-#include <list>
+
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
 
 using namespace std;
-
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_soft_equiv_scalar()
+void test_soft_equiv_scalar(rtt_dsxx::ScalarUnitTest & ut)
 {
     // ensure that we can not use integer tolerance.
     {
@@ -78,11 +78,12 @@ void test_soft_equiv_scalar()
         if (!soft_equiv(-1.0e-35, zero)) ITFAILS;
         if (!soft_equiv( 1.0e-35, zero)) ITFAILS;
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void test_soft_equiv_container()
+void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 {
     vector<double> values(3, 0.0);
     values[0] = 0.3247333291470;
@@ -96,25 +97,17 @@ void test_soft_equiv_container()
 
     if (soft_equiv(values.begin(), values.end(),
 		   reference.begin(), reference.end()))
-    {
 	PASSMSG("Passed vector equivalence test.");
-    }
     else
-    {
 	ITFAILS;
-    }
 
 
     values[1] = 0.3224333221472;
     if (!soft_equiv(values.begin(), values.end(),
 		    reference.begin(), reference.end(), 1.e-13))
-    {
 	PASSMSG("Passed vector equivalence precision test.");
-    }
     else
-    {
 	ITFAILS;
-    }
 
     double v[3];
     v[0] = 0.3247333291470;
@@ -123,13 +116,9 @@ void test_soft_equiv_container()
 
     if (soft_equiv(&v[0], &v[3],
 		   reference.begin(), reference.end()))    
-    {
 	PASSMSG("Passed vector-pointer equivalence test.");
-    }
     else
-    {
 	ITFAILS;
-    }
 
     if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
 	ITFAILS;
@@ -137,55 +126,40 @@ void test_soft_equiv_container()
     v[1] = 0.3224333221472;
     if (!soft_equiv(&v[0], v+3,
 		    reference.begin(), reference.end(), 1.e-13))
-    {
 	PASSMSG("Passed vector-pointer equivalence precision test.");
-    }
     else
-    {
 	ITFAILS;
-    }
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-	// >>> UNIT TESTS
-	test_soft_equiv_scalar();
-	test_soft_equiv_container();
+        // >>> UNIT TESTS
+	test_soft_equiv_scalar(ut);
+	test_soft_equiv_container(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &excpt)
     {
-	cout << "While testing tstSoft_Equiv, " << ass.what()
-	     << endl;
-	return 1;
+        std::cout << "ERROR: While testing tstSoft_Equiv, "
+                  << excpt.what() << std::endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_ds_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstSoft_Equiv Test: PASSED" 
-	     << endl;
+        std::cout << "ERROR: While testing tstSoft_Equiv, " 
+                  << "An unknown exception was thrown."
+                  << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstSoft_Equiv." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstSoft_Equiv.cc
+// end of tstSoft_Equiv.cc
 //---------------------------------------------------------------------------//
