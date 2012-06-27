@@ -166,54 +166,17 @@ endmacro()
 # Helper macros for LAPACK/Unix
 #
 # This module sets the following variables:
-# LAPACK_FOUND - set to true if a library implementing the LAPACK
+# lapack_FOUND - set to true if a library implementing the LAPACK
 #         interface is found 
-# LAPACK_LINKER_FLAGS - uncached list of required linker flags
-#         (excluding -l and -L). 
-# LAPACK_LIBRARIES - uncached list of libraries (using full path name)
-#         to link against to use LAPACK 
+# lapack_VERSION - '3.4.0'
+# provides targets: lapack, blas
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
-   if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
 
-      set( BLA_STATIC ON )
-      set( BLAS_REQUIRED "" )
-      # set( ENV{BLA_VENDOR} "Generic" )
-      
-      if( EXISTS $ENV{LAPACK_LIB_DIR} )
-         set( ENV{LD_LIBRARY_PATH}
-            "$ENV{LAPACK_LIB_DIR}:$ENV{LD_LIBRARY_PATH}")
-      endif()
-      
-      if( ${SITE} MATCHES "frost" )
-         # This machine uses Intel MKL instead of LAPACK. 
-         # See http://software.intel.com/sites/products/documentation/
-         # hpc/compilerpro/en-us/fortran/lin/mkl/userguide.pdf
-         set( ENV{BLA_VENDOR} "Intel10_64lp_gf_sequential" )
-         find_package( BLAS ${BLAS_REQUIRED} QUIET )
-         # We don't need mkl_lapack so just set LAPACK_LIBRARIES to
-         # BLAS_LIBRARIES 
-         set( LAPACK_LIBRARIES ${BLAS_LIBRARIES} )
-         set( LAPACK_FOUND ON )
-      else()
-         if( EXISTS $ENV{LAPACK_LIB_DIR}/libblas.a )
-            # avoid picking /usr/lib64/libblas.a
-            set( BLAS_blas_LIBRARY $ENV{LAPACK_LIB_DIR}/libblas.a )
-         endif()
-         if( EXISTS $ENV{LAPACK_LIB_DIR}/liblapack.a )
-            # avoid picking /usr/lib64/liblapack.a
-            set( LAPACK_lapack_LIBRARY $ENV{LAPACK_LIB_DIR}/liblapack.a )
-         endif()
-         find_package( LAPACK ) 
-      endif()
-      
-      if( LAPACK_FOUND )
-         set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING 
-            "lapack libs" )
-         mark_as_advanced( LAPACK_LIBRARIES )
-      endif()
-      
-   endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
+   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.  
+   list( APPEND CMAKE_PREFIX_PATH
+      $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.0 )
+   find_package( lapack )
 
 endmacro()
 
@@ -378,31 +341,31 @@ macro( SetupVendorLibrariesWindows )
    set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
 
    # LAPACK ------------------------------------------------------------------
-   if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
-      message( STATUS "Looking for LAPACK...")
+   # if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
+   #    message( STATUS "Looking for LAPACK...")
       
-      # Set the BLAS/LAPACK VENDOR.  
-      # set( BLA_VENDOR "Generic" )
+   #    # Set the BLAS/LAPACK VENDOR.  
+   #    # set( BLA_VENDOR "Generic" )
       
-      # This module sets the following variables:
-      # LAPACK_FOUND - set to true if a library implementing the LAPACK
-      #              interface is found
-      # LAPACK_LINKER_FLAGS - uncached list of required linker flags
-      #              (excluding -l and -L).
-      # LAPACK_LIBRARIES - uncached list of libraries (using full path
-      #              name) to link against to use LAPACK
+   #    # This module sets the following variables:
+   #    # LAPACK_FOUND - set to true if a library implementing the LAPACK
+   #    #              interface is found
+   #    # LAPACK_LINKER_FLAGS - uncached list of required linker flags
+   #    #              (excluding -l and -L).
+   #    # LAPACK_LIBRARIES - uncached list of libraries (using full path
+   #    #              name) to link against to use LAPACK
 
-      # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
+   #    # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
 
-      find_package( LAPACK ) # QUIET
+   #    find_package( LAPACK ) # QUIET
 
-      if( LAPACK_FOUND )
-         set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING "lapack libs" )
-         mark_as_advanced( LAPACK_LIBRARIES )
-         message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
-      endif()
+   #    if( LAPACK_FOUND )
+   #       set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING "lapack libs" )
+   #       mark_as_advanced( LAPACK_LIBRARIES )
+   #       message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
+   #    endif()
       
-   endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
+   # endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
    
    # GSL ---------------------------------------------------------------------
    message( STATUS "Looking for GSL...")
@@ -465,36 +428,36 @@ individual vendor directories should be defined." )
         set( LAPACK_LIB_DIR $ENV{LAPACK_LIB_DIR} )
         set( LAPACK_INC_DIR $ENV{LAPACK_INC_DIR} )
     endif()
-    if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/LAPACK/lib )
-        set( LAPACK_LIB_DIR "${VENDOR_DIR}/LAPACK/lib" )
-        set( LAPACK_INC_DIR "${VENDOR_DIR}/LAPACK/include" )
-        if( WIN32 )
-            # cleanup LIB
-            unset(newlibpath)
-            foreach( path $ENV{LIB} )
-                if( newlibpath )
-                    set( newlibpath "${newlibpath};${path}" )
-                else()
-                    set( newlibpath "${path}" )
-                endif()
-            endforeach()
-            set(haslapackpath FALSE)
-            foreach( path ${newlibpath} )
-                if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
-                    set( haslapackpath TRUE ) 
-                endif()
-            endforeach()
-            if( NOT ${haslapackpath} )
-                set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
-                set( ENV{LIB} "${newlibpath}" )
-            endif()
-            #message("LIB = $ENV{LIB}")
-        endif()
-    endif()
-    if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
-        set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
-        set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
-    endif()
+    # if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/LAPACK/lib )
+    #     set( LAPACK_LIB_DIR "${VENDOR_DIR}/LAPACK/lib" )
+    #     set( LAPACK_INC_DIR "${VENDOR_DIR}/LAPACK/include" )
+    #     if( WIN32 )
+    #         # cleanup LIB
+    #         unset(newlibpath)
+    #         foreach( path $ENV{LIB} )
+    #             if( newlibpath )
+    #                 set( newlibpath "${newlibpath};${path}" )
+    #             else()
+    #                 set( newlibpath "${path}" )
+    #             endif()
+    #         endforeach()
+    #         set(haslapackpath FALSE)
+    #         foreach( path ${newlibpath} )
+    #             if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
+    #                 set( haslapackpath TRUE ) 
+    #             endif()
+    #         endforeach()
+    #         if( NOT ${haslapackpath} )
+    #             set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
+    #             set( ENV{LIB} "${newlibpath}" )
+    #         endif()
+    #         #message("LIB = $ENV{LIB}")
+    #     endif()
+    # endif()
+    # if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
+    #     set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
+    #     set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
+    # endif()
 
     if( NOT GSL_LIB_DIR AND IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
         set( GSL_LIB_DIR $ENV{GSL_LIB_DIR} )
@@ -548,19 +511,7 @@ macro( setupVendorLibraries )
      if( NOT MPI_SETUP_DONE )
         setupMPILibrariesUnix()
      endif()
-#     if( "${SITE}" MATCHES "c[it]" )
-        # # Provides BLAS and LAPACK
-        # find_package( LIBSCI )
-        # set_package_properties( LIBSCI PROPERTIES
-        #    # URL "http://www.open-mpi.org/"
-        #    DESCRIPTION "Cray's High Performance Scientify Library (LAPACK, BLAS, more)."
-        #    TYPE RECOMMENDED
-        #    PURPOSE 
-        #    "Provides BLAS, LAPACK, BLACS, ScaLAPACK and SuperLU_DIST."
-        #    )
-#     else()
-        setupLAPACKLibrariesUnix()
-#     endif()
+     setupLAPACKLibrariesUnix()
      setupVendorLibrariesUnix()
   elseif( WIN32 )
      setupVendorLibrariesWindows()
