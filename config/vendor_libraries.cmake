@@ -158,6 +158,8 @@ macro( setupMPILibrariesUnix )
 
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
+   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -373,6 +375,8 @@ macro( SetupVendorLibrariesWindows )
       
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
+   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+
    # LAPACK ------------------------------------------------------------------
    if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
       message( STATUS "Looking for LAPACK...")
@@ -541,7 +545,9 @@ macro( setupVendorLibraries )
 
   # System specific settings
   if ( UNIX )
-     setupMPILibrariesUnix()
+     if( NOT MPI_SETUP_DONE )
+        setupMPILibrariesUnix()
+     endif()
 #     if( "${SITE}" MATCHES "c[it]" )
         # # Provides BLAS and LAPACK
         # find_package( LIBSCI )

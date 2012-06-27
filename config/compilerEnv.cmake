@@ -92,11 +92,11 @@ macro(dbsSetupCompilers)
 
    # shared or static libararies?
    if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-      message(STATUS "Building static libraries.")
+      # message(STATUS "Building static libraries.")
       set( MD_or_MT "MD" )
       set( DRACO_SHARED_LIBS 0 )
    elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-      message(STATUS "Building shared libraries.")
+      # message(STATUS "Building shared libraries.")
       set( MD_or_MT "MD" )
       # This CPP symbol is used by config.h to signal if we are need to add 
       # declspec(dllimport) or declspec(dllexport) for MSVC.
