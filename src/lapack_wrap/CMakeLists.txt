@@ -6,7 +6,7 @@ project( lapack_wrap CXX )
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-if( NOT LAPACK_FOUND )
+if( NOT lapack_FOUND )
    message( STATUS
       "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
 else()
@@ -61,7 +61,7 @@ if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
 
-endif( NOT LAPACK_FOUND )
+endif( NOT lapack_FOUND )
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
