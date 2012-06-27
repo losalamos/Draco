@@ -36,6 +36,9 @@ include_directories(
 
 add_component_library( Lib_special_functions ${PROJECT_NAME} "${sources}" )
 add_dependencies( Lib_special_functions Lib_units Lib_ode )
+#set_target_properties( Lib_special_functions
+#   PROPERTIES
+#   LINK_INTERFACE_LIBRARIES "Lib_units;Lib_ode;Lib_dsxx;${GSL_LIBRARIES}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
