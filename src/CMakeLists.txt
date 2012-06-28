@@ -110,7 +110,6 @@ add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4
 add_dir_if_exists( roots )        # needs linear
-add_dir_if_exists( special_functions ) # needs units, ds++
 add_dir_if_exists( timestep )     # needs c4, ds++
 add_dir_if_exists( viz )          # needs traits, ds++
 add_dir_if_exists( cdi_ipcress )
@@ -118,10 +117,15 @@ add_dir_if_exists( cdi_ipcress )
 # Level 4
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )
-add_dir_if_exists( cdi_analytic )     # needs cdi, ode, parser
-add_dir_if_exists( quadrature )       # needs units, c4, special_functions
-add_dir_if_exists( RTT_Format_Reader) # needs meshReaders, mesh_element, c4, 
-                                      #       dsxx
+add_dir_if_exists( special_functions ) # needs roots, units, ode
+add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
+add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
+
+# Level 5
+message(" ")
+message( STATUS "Configuring Level 5 packages --" )
+add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
+
 
 # Summary
 message(" ")
