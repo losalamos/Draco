@@ -174,9 +174,11 @@ endmacro()
 macro( setupLAPACKLibrariesUnix )
 
    # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.  
-   list( APPEND CMAKE_PREFIX_PATH
-      $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.0 )
-   find_package( lapack )
+   if( EXISTS  $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.0 )
+      list( APPEND CMAKE_PREFIX_PATH
+         $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.0 )
+      find_package( lapack )
+   endif()
 
 endmacro()
 
