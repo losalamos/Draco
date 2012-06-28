@@ -88,6 +88,10 @@ macro( setupMPILibrariesUnix )
             find_library( MPI_Fortran_LIB mpi_f77 HINTS ${MPI_LIB_DIR} )
             mark_as_advanced( MPI_Fortran_LIB )
          endif()
+         set( MPI_LIBRARIES "${MPI_LIBRARIES}" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
+         set( MPI_Fortran_LIBRARIES "${MPI_Fortran_LIBRARIES}" CACHE FILEPATH 
+            "no mpi library for scalar build." FORCE )
          
       else()
          set( DRACO_C4 "SCALAR" )
