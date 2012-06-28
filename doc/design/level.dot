@@ -10,10 +10,11 @@ digraph draco_level {
     level2 [shape=plaintext, label="Level 2:", fontsize=18];
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
-/*     level5 [shape=plaintext, label="Level 5:", fontsize=18]; */
+    level5 [shape=plaintext, label="Level 5:", fontsize=18]; 
 /*    level6 [shape=plaintext, label="Level 6:", fontsize=18]; */
     
-    /* level6 -> level5 -> */
+    /* level6 -> */
+    level5 -> 
     level4 -> level3 -> level2 -> level1 -> legend [style=invis];
     
     /* packages */
@@ -61,21 +62,24 @@ digraph draco_level {
     norms     [shape=box, color=blue, label="norms"];
     parser    [shape=box, color=blue, label="parser"];
     roots     [shape=box, color=blue, label="roots"];
-    sf        [shape=box, color=blue, label="special_functions"];
     timestep  [shape=box, color=blue, label="timestep"];
     viz       [shape=box, color=blue, label="viz"];
     
     /* level 4 */
+    sf        [shape=box, color=blue, label="special_functions"];
     cdianal   [shape=box, color=blue, label="cdi_analytic"];
-    quad      [shape=box, color=blue, label="quadrature"];
     rttread   [shape=box, color=blue, label="RTT_Format_Reader"];
+
+    /* level 5 */
+    quad      [shape=box, color=blue, label="quadrature"];
+
     
     /* dependencies */
     {rank=same; legend leg_vendor leg_draco leg_depre};
     {rank=same; level1 dsxx vlapack vmpi veospac vgrace vdlopen vgsl vdacs vpapi};
     {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi ode linear};
-    {rank=same; level3 viz timestep cdieos meshread parser sf};
-    {rank=same; level4 rttread quad};
+    {rank=same; level3 viz timestep cdieos meshread parser};
+    {rank=same; level4 rttread sf};
 
 
     leg_draco -> {leg_vendor} [color=green, style=dotted, label="test dependency only"];
@@ -123,7 +127,7 @@ digraph draco_level {
     norms       -> {c4}          [color=blue];
     parser      -> {c4 units}    [color=blue];
     roots       -> {linear}      [color=blue];
-    sf          -> {units ode}   [color=blue];
+    sf          -> {units ode roots} [color=blue];
     sf          -> {vgsl}        [color=green];
     timestep    -> {c4}          [color=blue];
     viz         -> {traits}      [color=blue];
