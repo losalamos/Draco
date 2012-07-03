@@ -22,7 +22,7 @@ case ty*.localdomain:
     module load friendly-testing 
     module load intel/12.1.2 openmpi
     module load gsl/1.14-intel svn emacs
-    module load cmake numdiff git xshow papi/4.1.3 lapack/3.4.0-intel
+    module load cmake numdiff git xshow lapack/3.4.0-intel
     module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
     module load ParMetis/3.1.1-intel ndi
     # PGI keeps running out of tmp sapce
