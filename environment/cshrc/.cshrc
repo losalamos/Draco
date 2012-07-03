@@ -2,7 +2,7 @@
 
 # Use: In ~/.cshrc add the following code:
 #
-# setenv DRACO_ENV_DIR ~/draco/environment
+ setenv DRACO_ENV_DIR ~/draco/environment
 # source $DRACO_ENV_DIR/cshrc/.cshrc
 #
 
@@ -16,13 +16,15 @@ case hu*.lanl.gov:
 case hu*.localdomain:
 case ty*.lanl.gov:
 case ty*.localdomain:
-    source /usr/projects/crestone/dotfiles/Cshrc
+#    source /usr/projects/crestone/dotfiles/Cshrc
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel-c intel-f openmpi-intel
+    module load intel openmpi
     module load gsl/1.14-intel svn emacs
     module load cmake numdiff git xshow papi/4.1.3 lapack/3.4.0-intel
+    module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
+    module load ParMetis/3.1.1-intel ndi
     # PGI keeps running out of tmp sapce
     setenv TMPDIR /scratch/$USER/tmp
     if (! -d $TMPDIR ) then
