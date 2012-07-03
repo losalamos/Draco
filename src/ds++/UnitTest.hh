@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright © 2006-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -138,6 +139,11 @@ class DLL_PUBLIC UnitTest
     void status(void) const { out << resultMessage() << std::endl; return; }
     //! Reset the pass and fail counts to zero.
     void reset() { numPasses=0;numFails=0; return; }
+    bool dbcRequire(void) const { return m_dbcRequire; }
+    bool dbcCheck(void)   const { return m_dbcCheck;   }
+    bool dbcEnsure(void)  const { return m_dbcEnsure;  }
+    bool dbcNothrow(void) const { return m_dbcNothrow; }
+    bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; } 
 
     // DATA
     //! The number of passes found for this test.
@@ -168,6 +174,14 @@ class DLL_PUBLIC UnitTest
 
     //! Where should output be sent (default is std::cout)
     std::ostream & out;
+
+    /*! Save the state of DBC so that it is easily accessible from within a
+     * unit test.
+     */
+    bool m_dbcRequire;
+    bool m_dbcCheck;
+    bool m_dbcEnsure;
+    bool m_dbcNothrow;    
 };
 
 } // end namespace rtt_dsxx

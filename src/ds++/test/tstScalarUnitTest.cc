@@ -179,8 +179,9 @@ int main( int argc, char *argv[] )
     {
         string msg = err.what();
         if( msg != string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
+        {
+            cout << "ERROR: While testing " << argv[0] << ", "
+                 << err.what() << endl;
             return 1;
         }
         return 0;

@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 12 12:11:22 2003
  * \brief  Assertion tests.
- * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 1997-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Assert.hh"
 #include "../Release.hh"
 
@@ -19,6 +20,11 @@
 #include <cmath>
 
 using namespace std;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -39,7 +45,7 @@ using namespace std;
 // rtt_dsxx::assertion. 
 //---------------------------------------------------------------------------//
 
-static void t1()
+static void t1( rtt_dsxx::UnitTest & ut )
 {
     std::cout << "t1 test: ";
     try 
@@ -48,12 +54,11 @@ static void t1()
     } 
     catch( rtt_dsxx::assertion const & a )
     {
-	std::cout << a.what() << std::endl;
-	std::cout << "failed" << std::endl;
+        FAILMSG("rtt_dsxx::assertion caught.");
     }
     catch( ... )
     {
-	std::cout << "passed" << std::endl;
+	PASSMSG("runtime_error exception caught");
     }
     return;
 }
@@ -63,9 +68,9 @@ static void t1()
 // message. 
 //---------------------------------------------------------------------------//
 
-static void t2()
+static void t2( rtt_dsxx::UnitTest & ut )
 {
-    std::cout << "t2-a test: ";
+    std::cout << "t2 test: ";
     std::string error_message;
     try 
     {
@@ -73,37 +78,27 @@ static void t2()
     } 
     catch( rtt_dsxx::assertion const & a )
     {
-	std::cout << "passed" << std::endl;
+        PASSMSG("caught rtt_dsxx::assertion");
 	error_message = std::string( a.what() );
     }
     catch( ... )
     {
-	std::cout << "failed" << std::endl;
+        FAILMSG("falied to catch rtt_dsxx:assertion");
     }
 
     // Make sure we can extract the error message.
-
-    std::cout << "t2-b test: ";
     std::string const compare_value( 
 	"Assertion: hello1, failed in myfile, line 42.\n" ); 
-    if ( error_message.compare( compare_value ) == 0 )
-	std::cout << "passed" << std::endl;
-    else
-	std::cout << "failed" << std::endl;
+    if ( error_message.compare( compare_value ) != 0 ) ITFAILS;
+
     return;
 }
 
 //---------------------------------------------------------------------------//
 // Test throwing and catching of a literal
-//
-//lint -e1775  do not warn about "const char*" not being a declared exception
-//             type.  
-//lint -e1752  do not warn about catching "const char*" instead of
-//             catching a reference to an exception (see "More Effective C++"
-//             for details about catching exceptions)
 //---------------------------------------------------------------------------//
 
-static void t3()
+static void t3( rtt_dsxx::UnitTest & ut )
 {
     std::cout << "t3 test: ";
     try 
@@ -112,17 +107,15 @@ static void t3()
     } 
     catch( rtt_dsxx::assertion const & a )
     {
-	std::cout << a.what() << std::endl;
-	std::cout << "failed" << std::endl;
+        FAILMSG("Should not have caught an rtt_dsxx::assertion");
     }
     catch( const char* msg )
     {
-	std::cout << "passed   "
-		  << "msg = " << msg << std::endl;
+        PASSMSG("Caught a const char* exception.");
     }
     catch( ... )
     {
-	std::cout << "failed" << std::endl;
+        FAILMSG("Failed to catch a const char* exception.");
     }
     return;
 }
@@ -131,7 +124,7 @@ static void t3()
 // Check the toss_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
-static void ttoss_cookies()
+static void ttoss_cookies( rtt_dsxx::UnitTest & ut )
 {
     {
         std::cout << "ttoss_cookies test: ";
@@ -145,11 +138,11 @@ static void ttoss_cookies()
         }
         catch( rtt_dsxx::assertion const & /* error */ )
         {
-            std::cout << "passed" << std::endl;
+            PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies.");
         }
         catch( ... )
         {
-            std::cout << "failed" << std::endl;
+            ITFAILS;
         }
     }
     {
@@ -164,60 +157,84 @@ static void ttoss_cookies()
         }
         catch( rtt_dsxx::assertion const &  /* error */ )
         {
-            std::cout << "passed" << std::endl;
+            PASSMSG("Caught rtt_dsxx::assertion thrown by toss_cookies_ptr.");
         }
         catch( ... )
         {
-            std::cout << "failed" << std::endl;
+            ITFAILS;
         } 
     }
     return;
 }
 
-
+//---------------------------------------------------------------------------//
+// Check the show_cookies function.
+// This function builds an error message and throws an exception.
+//---------------------------------------------------------------------------//
+static void tshow_cookies( rtt_dsxx::UnitTest & ut )
+{
+    using namespace std;
+    {
+        cout << "tshow_cookies test: \n";
+        try
+        {
+            string const msg("testing show_cookies()");
+            string const file("DummyFile.ext");
+            int const line( 55 );
+            cout << "The following line should be an an error "
+                 << "message...\n\t";
+            rtt_dsxx::show_cookies( msg, file, line );
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & /* error */ )
+        {
+            ITFAILS;
+        }
+        catch( ... )
+        {
+            PASSMSG("show_cookies did not throw!");
+        }
+    }
+    return;
+}
 
 //---------------------------------------------------------------------------//
 // Check the operation of the Require() macro.
 //---------------------------------------------------------------------------//
 
-static void trequire()
+static void trequire( rtt_dsxx::UnitTest & ut )
 {
-    std::cout << "t-Require test: ";
-    try {
+    std::cout << "t-Require test: \n";
+    try
+    {
+        if( ut.dbcNothrow() )
+        {
+            std::cout << "(NOTHROW=ON) The next line should be the output "
+                      << "from Require(0) w/o an exception thrown."
+                      << std::endl;
+        }
 	Require( 0 );
-	throw "Bogus!";
+        if( ! ut.dbcNothrow() ) throw "Bogus!";
     }
     catch( rtt_dsxx::assertion const & a )
     {
-#if DBC & 1
-	std::cout << "passed" << std::endl;
-
-	std::cout << "t-Require message value test: ";
-	{
-	    std::string msg( a.what() );
-	    std::string expected_value( "Assertion: 0, failed in" );
-	    string::size_type idx = msg.find( expected_value );
-	    if( idx != string::npos )
-	    {
-		cout << "passed" << std::endl;
-	    }
-	    else
-	    {
-		cout << "failed" << std::endl;
-	    }
-	}
-	
-#else
-	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
-#endif
+        // The nothrow option should never get here.
+        if( ut.dbcNothrow() ) ITFAILS;
+        if( ut.dbcRequire() )
+        {
+            PASSMSG("trequire: caught rtt_dsxx::assertion");
+            std::cout << "t-Require message value test: ";
+            std::string msg( a.what() );
+            std::string expected_value( "Assertion: 0, failed in" );
+            string::size_type idx = msg.find( expected_value );
+            if( idx == string::npos ) ITFAILS;
+        }
+        // If require is off we should never get here.
+        else { ITFAILS; }
     }
     catch(...)
     {
-#if DBC & 1
-	std::cout << "failed" << std::endl;
-#else
-	std::cout << "passed" << std::endl;
-#endif
+        if( ut.dbcRequire() ) ITFAILS;
     }
     return;
 }
@@ -226,44 +243,40 @@ static void trequire()
 // Check the operation of the Check() macro.
 //---------------------------------------------------------------------------//
 
-static void tcheck()
+static void tcheck( rtt_dsxx::UnitTest & ut )
 {
-    std::cout << "t-Check test: ";
-    try {
+    std::cout << "t-Check test: \n";
+    try
+    {
+        if( ut.dbcNothrow() )
+        {
+            std::cout << "(NOTHROW=ON) The next line should be the output "
+                      << "from Check(false) w/o an exception thrown."
+                      << std::endl;
+        }
 	Check( false );
-	throw std::runtime_error( std::string( "tstAssert: t2()" ) );
+        if( ! ut.dbcNothrow() )
+            throw std::runtime_error( std::string( "tstAssert: tcheck()" ) );
     }
     catch( rtt_dsxx::assertion const & a )
     {
-#if DBC & 2
-	std::cout << "passed" << std::endl;
-
-	std::cout << "t-Check message value test: ";
-	{
-	    std::string msg( a.what() );
-	    std::string expected_value( "Assertion: false, failed in" );
+        // The nothrow option should never get here.
+        if( ut.dbcNothrow() ) ITFAILS;
+        if( ut.dbcCheck() )
+        {
+            PASSMSG("tcheck: caught rtt_dsxx::assertion");
+            std::cout << "t-Check message value test: ";
+            std::string msg( a.what() );
+            std::string expected_value( "Assertion: false, failed in" );
 	    string::size_type idx = msg.find( expected_value );
-	    if( idx != string::npos )
-	    {
-		cout << "passed" << std::endl;
-	    }
-	    else
-	    {
-		cout << "failed" << std::endl;
-	    }
+	    if( idx == string::npos ) ITFAILS;
 	}
-#else
-	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
-	std::string msg( a.what() );
-#endif
+        // If check is off we should never get here.
+        else { ITFAILS; }
     }
     catch(...)
     {
-#if DBC & 2
-	std::cout << "failed\n";
-#else
-	std::cout << "passed\n";
-#endif
+        if( ut.dbcCheck() ) ITFAILS;
     }
     return;
 }
@@ -272,133 +285,119 @@ static void tcheck()
 // Check the operation of the Ensure() macro.
 //---------------------------------------------------------------------------//
 
-static void tensure()
+static void tensure( rtt_dsxx::UnitTest & ut )
 {
-    std::cout << "t-Ensure test: ";
-    try {
+    std::cout << "t-Ensure test: \n";
+    try
+    {
+        if( ut.dbcNothrow() )
+        {
+            std::cout << "(NOTHROW=ON) The next line should be the output "
+                      << "from Ensure(0) w/o an exception thrown."
+                      << std::endl;
+        }
 	Ensure(0);
-	throw "Bogus!";
+        if( ! ut.dbcNothrow() ) throw "Bogus!";
     }
     catch( rtt_dsxx::assertion const & a )
     {
-#if DBC & 4
-	std::cout << "passed" << std::endl;
+        // The nothrow option should never get here.
+        if( ut.dbcNothrow() ) ITFAILS;
 
-	std::cout << "t-Ensure message value test: ";
-	{
+        if( ut.dbcEnsure() )
+        {
+            PASSMSG("tensure: caught rtt_dsxx::assertion");
+            std::cout << "t-Ensure message value test: ";
 	    std::string msg( a.what() );
 	    std::string expected_value( "Assertion: 0, failed in" );
 	    string::size_type idx = msg.find( expected_value );
-	    if( idx != string::npos )
-	    {
-		cout << "passed" << std::endl;
-	    }
-	    else
-	    {
-		cout << "failed" << std::endl;
-	    }
-	}
-
-#else
-	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
-#endif
+	    if( idx == string::npos ) ITFAILS;
+        }
+        else { ITFAILS; }
     }
     catch(...)
     {
-#if DBC & 4
-	std::cout << "failed\n";
-#else
-	std::cout << "passed\n";
-#endif
+        if( ut.dbcEnsure() ) ITFAILS;
     }
     return;
 }
 
-static void tremember()
+//---------------------------------------------------------------------------//
+// Check the operatio of the Remeber() macro.
+//---------------------------------------------------------------------------//
+static void tremember( rtt_dsxx::UnitTest & ut )
 {
-    //lint -e774  do not warn about if tests always evaluating to False.  The
-    //            #if confuses flexelint here.
-
     std::cout << "t-Remember test: ";
-
     int x = 0;
     Remember(x = 5);
-#if DBC & 4
-    if (x != 5) 
-	std::cout << "failed" << std::endl;
+    if( ut.dbcEnsure() )
+    {
+        if (x != 5) ITFAILS;
+    }
     else
-	std::cout << "passed" << std::endl;
-#else
-    if (x != 0) 
-	std::cout << "failed" << std::endl;
-    else
-	std::cout << "passed" << std::endl;
-#endif
-    return;}
+    {
+        if (x != 0) ITFAILS;
+    }
+    return;
+}
 
 //---------------------------------------------------------------------------//
 // Check the operation of the Assert() macro, which works like Check().
 //---------------------------------------------------------------------------//
 
-static void tassert()
+static void tassert( rtt_dsxx::UnitTest & ut )
 {
-    std::cout << "t-Assert test: ";
-    try {
+    std::cout << "t-Assert test: \n";
+    try
+    {
+        if( ut.dbcNothrow() )
+        {
+            std::cout << "(NOTHROW=ON) The next line should be the output "
+                      << "from Assert(0) w/o an exception thrown."
+                      << std::endl;
+        }
 	Assert(0);
-	throw "Bogus!";
+        if( ! ut.dbcNothrow() ) throw "Bogus!";
     }
     catch( rtt_dsxx::assertion const & a )
     {
-#if DBC & 2
-	std::cout << "passed" << std::endl;
-
-	std::cout << "t-Assert message value test: ";
-	{
-	    std::string msg( a.what() );
-	    std::string expected_value( "Assertion: 0, failed in" );
-	    string::size_type idx = msg.find( expected_value );
-	    if( idx != string::npos )
-	    {
-		cout << "passed" << std::endl;
-	    }
-	    else
-	    {
-		cout << "failed" << std::endl;
-	    }
+        // The nothrow option should never get here.
+        if( ut.dbcNothrow() ) ITFAILS;
+        if( ut.dbcCheck() )
+        {
+            PASSMSG("tassert: caught rtt_dsxx::assertion");
+            std::cout << "t-Assert message value test: ";
+            std::string msg( a.what() );
+            std::string expected_value( "Assertion: 0, failed in" );
+            string::size_type idx = msg.find( expected_value );
+            if( idx == string::npos ) ITFAILS;
 	}
-#else
-	std::cout << "failed" << "\t" << "a.what() = " << a.what() << std::endl;
-#endif
+        else { ITFAILS; }
     }
     catch(...)
     {
-#if DBC & 2
-	std::cout << "failed\n";
-#else
-	std::cout << "passed\n";
-#endif
+        if( ut.dbcCheck() ) ITFAILS;
     }
-    return;}
+    return;
+}
 
 //---------------------------------------------------------------------------//
 // Basic test of the Insist() macro.
 //---------------------------------------------------------------------------//
 
-static void tinsist()
+static void tinsist( rtt_dsxx::UnitTest & ut )
 {
-    //lint -e506  Do not warn about constant value boolean in the Insist
-    //            test. 
     {
         std::cout << "t-Insist test: ";
         std::string insist_message( "You must be kidding!" );
-        try {
+        try
+        {
             Insist( 0, insist_message );
             throw "Bogus!";
         }
         catch( rtt_dsxx::assertion const & a ) 
         {
-            std::cout << "passed" << std::endl;
-            
+            PASSMSG("tinsist: caught rtt_dsxx::assertion");            
             std::cout << "t-Insist message value test: ";
             {
                 bool passed( true );
@@ -408,29 +407,26 @@ static void tinsist()
                 if( idx == string::npos ) passed=false;
                 idx = msg.find( insist_message );
                 if( idx == string::npos ) passed=false;
-                if( passed )
-                    cout << "passed" << std::endl;
-                else
-                    cout << "failed" << std::endl;
+                if( ! passed ) ITFAILS;
             }
         }
         catch(...) 
         {
-            std::cout << "failed" << std::endl;
+            ITFAILS;
         }
     }
     
     {
         std::cout << "t-Insist ptr test: ";
         char const * const insist_message( "You must be kidding!" );
-        try {
+        try
+        {
             Insist_ptr( 0, insist_message );
             throw "Bogus!";
         }
         catch( rtt_dsxx::assertion const & a ) 
         {
-            std::cout << "passed" << std::endl;
-            
+            PASSMSG("tinsist_ptr: caught rtt_dsxx::assertion"); 
             std::cout << "t-Insist ptr message value test: ";
             {
                 bool passed( true );
@@ -440,18 +436,14 @@ static void tinsist()
                 if( idx == string::npos ) passed=false;
                 idx = msg.find( insist_message );
                 if( idx == string::npos ) passed=false;
-                if( passed )
-                    cout << "passed" << std::endl;
-                else
-                    cout << "failed" << std::endl;
+                if( !passed ) ITFAILS;
             }
         }
         catch(...) 
         {
-            std::cout << "failed" << std::endl;
+            ITFAILS;
         }
     }
-    
     return;
 }
 
@@ -459,57 +451,43 @@ static void tinsist()
 // Basic test of the Insist_ptr() macro.
 //---------------------------------------------------------------------------//
 
-static void tinsist_ptr()
+static void tinsist_ptr( rtt_dsxx::UnitTest & ut )
 {
-    //lint -e506  Do not warn about constant value boolean in the Insist
-    //            test. 
-    
     std::cout << "t-Insist test: ";
-    try {
+    try
+    {
 	Insist( 0, "You must be kidding!" );
 	throw "Bogus!";
     }
     catch( rtt_dsxx::assertion const & a ) 
     {
-	std::cout << "passed" << std::endl;
-        
+        PASSMSG("tinsist_ptr: caught  rtt_dsxx::assertion");        
 	std::cout << "t-Insist_ptr message value test: ";
 	{
-	    bool passed( true );
 	    std::string msg( a.what() );
 	    std::string expected_value( "You must be kidding!" );
 	    string::size_type idx( msg.find( expected_value ) );
-	    if( idx == string::npos ) passed=false;
-	    if( passed )
-		cout << "passed" << std::endl;
-	    else
-		cout << "failed" << std::endl;
+	    if( idx == string::npos ) ITFAILS;
 	}
     }
     catch(...) 
     {
-	std::cout << "failed" << std::endl;
+	ITFAILS;
     }
     return;
 }
 
-void tverbose_error()
+//---------------------------------------------------------------------------//
+// Check the verbose_error() function.
+//---------------------------------------------------------------------------//
+
+void tverbose_error( rtt_dsxx::UnitTest & ut )
 {
     std::string const message( rtt_dsxx::verbose_error(
-                             std::string("This is an error.") ) );
+                                   std::string("This is an error.") ) );
     std::cout << "verbose_error() test: ";
-    if( message.find( std::string("Host")) != std::string::npos &&
-        message.find( std::string("PID") ) != std::string::npos )
-    {
-        cout << "passed" << std::endl;
-        rtt_ds_test::passed = rtt_ds_test::passed && true;
-    }
-    else
-    {
-        cout << "failed" << std::endl;
-        rtt_ds_test::passed = rtt_ds_test::passed && false;
-    }
-    
+    if( message.find( std::string("Host")) == std::string::npos ||
+        message.find( std::string("PID") ) == std::string::npos ) ITFAILS;
     return;
 }
 
@@ -517,49 +495,46 @@ void tverbose_error()
 
 int main( int argc, char *argv[] )
 {
-    //lint -e30 -e85 -e24 -e715 -e818 Suppress warnings about use of argv 
-    //          (string comparison, unknown length, etc.)
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
+    try
+    {   // >>> UNIT TESTS
+    
+        // Test basic throw and catch functionality.
+        t1(ut);
+        t2(ut);
+        t3(ut);
 
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if( string( argv[arg] ).find( "--version" ) == 0 )
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
+        // Test mechanics of Assert funtions.
+        ttoss_cookies(ut);
+        tshow_cookies(ut);
     
-    // >>> UNIT TESTS
-    
-    // Test basic throw and catch functionality.
-    t1();
-    t2();
-    t3();
+        // Test Design-by-Constract macros.
+        trequire(ut);
+        tcheck(ut);
+        tensure(ut);
+        tremember(ut);
+        tassert(ut);
+        tinsist(ut);
+        tinsist_ptr(ut);
 
-    // Test mechanics of Assert funtions.
-    ttoss_cookies();
-    
-    // Test Design-by-Constract macros.
-    trequire();
-    tcheck();
-    tensure();
-    tremember();
-    tassert();
-    tinsist();
-    tinsist_ptr();
-
-    // fancy ouput
-    tverbose_error();
-    
-    // status of test
-    cout <<     "\n*********************************************\n";
-    if (rtt_ds_test::passed) 
-        cout << "**** tstAssert Test: PASSED\n";
-    cout <<     "*********************************************\n\n"
-         << "Done testing tstAssert." << endl;
-    return 0;
+        // fancy ouput
+        tverbose_error(ut);
+    }
+    catch( rtt_dsxx::assertion &err )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
+    }
+    catch( ... )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
+    }
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAssert.cc
+// end of tstAssert.cc
 //---------------------------------------------------------------------------//

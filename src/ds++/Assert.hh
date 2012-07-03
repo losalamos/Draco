@@ -160,12 +160,11 @@ class DLL_PUBLIC assertion : public std::logic_error
      * We do not allow the destructor to throw! */
     virtual ~assertion() throw();
 
-  private:
     /*! Helper function to build error message that includes source file name
      *  and line number. */
-    std::string build_message( std::string const & cond, 
-			       std::string const & file, 
-			       int         const   line ) const;
+    static std::string build_message( std::string const & cond, 
+                                      std::string const & file, 
+                                      int         const   line );
 };
 
 //---------------------------------------------------------------------------//
@@ -175,12 +174,15 @@ class DLL_PUBLIC assertion : public std::logic_error
 //! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
 DLL_PUBLIC void toss_cookies( std::string const & cond, 
                               std::string const & file, 
-                              int         const line );
+                              int         const   line );
 
 DLL_PUBLIC void toss_cookies_ptr(char const * const cond,
                                  char const * const file, 
-                                 int         const line );
-
+                                 int          const line );
+//! Print error w/o throw
+DLL_PUBLIC void show_cookies( std::string const & cond, 
+                              std::string const & file, 
+                              int         const   line );
 //! Throw a rtt_dsxx::assertion for Insist.
 DLL_PUBLIC void insist( std::string const & cond, 
                         std::string const & msg, 
@@ -228,11 +230,14 @@ DLL_PUBLIC std::string verbose_error( std::string const & message );
       0      Require
       1      Check
       2      Ensure, Remember
+      3      (nothrow option)
 \endverbatim
  * 
  * So for instance, \c -DDBC=7 turns them all on, \c -DDBC=0 turns them all
  * off, and \c -DDBC=1 turns on \c Require but turns off \c Check and \c
- * Ensure.  The default is to have them all enabled.
+ * Ensure.  The default is to have them all enabled.  The fourth bit (3) can
+ * be toggled on to disable the C++ thrown exception while keeping all of the
+ * DBC checks and messages active. 
  *
  * The \c Insist macro is akin to the \c Assert macro, but it provides the
  * opportunity to specify an instructive message.  The idea here is that you
@@ -292,13 +297,40 @@ DLL_PUBLIC std::string verbose_error( std::string const & message );
 #define DBC 7
 #endif
 
-#if DBC
-#define REMEMBER_ON
-#define Remember(c) c
+
+//---------------------------------------------------------------------------//
+// No-throw versions of DBC
+//---------------------------------------------------------------------------//
+#if DBC & 8
+
+#if DBC & 1
+#define REQUIRE_ON
+#define Require(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
-#define Remember(c)
+#define Require(c) 
 #endif
 
+#if DBC & 2
+#define CHECK_ON
+#define Check(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
+#else
+#define Check(c) 
+#define Assert(c) 
+#endif
+
+#if DBC & 4
+#define ENSURE_ON
+#define Ensure(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
+#else
+#define Ensure(c) 
+#endif
+
+#else // DBC & 8
+
+//---------------------------------------------------------------------------//
+// Regular (exception throwing) versions of DBC
+//---------------------------------------------------------------------------//
 #if DBC & 1
 #define REQUIRE_ON
 #define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
@@ -322,6 +354,21 @@ DLL_PUBLIC std::string verbose_error( std::string const & message );
 #define Ensure(c) 
 #endif
 
+#endif // DBC & 8
+
+//---------------------------------------------------------------------------//
+// If any of DBC is on, then make the remember macro active
+//---------------------------------------------------------------------------//
+#if DBC
+#define REMEMBER_ON
+#define Remember(c) c
+#else
+#define Remember(c)
+#endif
+
+//---------------------------------------------------------------------------//
+// Always on
+//---------------------------------------------------------------------------//
 #define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
 #define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 

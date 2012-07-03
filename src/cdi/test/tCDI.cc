@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 15:52:01 2001
  * \brief  CDI test executable.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,8 +16,9 @@
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
 #include "DummyEoS.hh"
-#include "ds++/Release.hh"
 #include "../CDI.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -42,11 +45,16 @@ using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void check_CDI(const CDI &cdi)
+void check_CDI( rtt_dsxx::UnitTest & ut, CDI const &cdi)
 {
     // check cdi, note that the different combinations of rtt_cdi::Model and
     // rtt_cdi::Reaction will yield the same results because DummyOpacity,
@@ -57,76 +65,46 @@ void check_CDI(const CDI &cdi)
     // check for gray
     if (typeid(*cdi.gray(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION)) == 
         typeid(DummyGrayOpacity))
-    {
         PASSMSG("CDI gray() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI gray() did not return the correct type!");
-    }
 
     if (typeid(*cdi.gray(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)) == 
         typeid(DummyGrayOpacity))
-    {
         PASSMSG("CDI gray() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI gray() did not return the correct type!");
-    }
 
     // check for multigroup
     if (typeid(*cdi.mg(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION)) == 
         typeid(DummyMultigroupOpacity))
-    {
         PASSMSG("CDI mg() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI mg() did not return the correct type!");
-    }
-
 
     if (typeid(*cdi.mg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)) == 
         typeid(DummyMultigroupOpacity))
-    {
         PASSMSG("CDI mg() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI mg() did not return the correct type!");
-    }
 
     //          check for odfmg
     if (typeid(*cdi.odfmg(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION)) == 
         typeid(DummyOdfmgOpacity))
-    {
         PASSMSG("CDI odfmg() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI odfmg() did not return the correct type!");
-    }
 
     if (typeid(*cdi.odfmg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)) == 
         typeid(DummyOdfmgOpacity))
-    {
         PASSMSG("CDI odfmg() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI odfmg() did not return the correct type!");
-    }
-
 
     if (typeid(*cdi.eos()) == typeid(DummyEoS))
-    {
         PASSMSG("CDI eos() returned the correct type!");
-    }
     else
-    {
         FAILMSG("CDI eos() did not return the correct type!");
-    }
 
     // gray test case: Find the value of opacity at T=0.35 keV and rho = 27.2
     // g/cm^3.  For DummyGrayOpacity the value should be .35272 cm^2/g.
@@ -139,13 +117,9 @@ void check_CDI(const CDI &cdi)
                      getOpacity(temp, dens);
 
     if (match(opacity, refOpacity))
-    {
         PASSMSG("CDI.gray()->getOpacity is ok.");
-    }
     else
-    {
         FAILMSG("CDI.gray()->getOpacity is not ok.");
-    }
 
     // mg test case: Find the mg opacities at T=0.35 keV and rho = 27.2
     // g/cm^3.  For DummyMultigroupOpacity the values should be { }.  Three
@@ -161,13 +135,9 @@ void check_CDI(const CDI &cdi)
     energyBoundary[3] = 50.0;
 
     if (cdi.mg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->getNumGroups() == ng)
-    {
         PASSMSG("CDI.mg()->getNumGroups() is ok.");
-    }
     else
-    {
         FAILMSG("CDI.mg()->getNumGroups() is not ok.");
-    }
 
     std::vector< double > vRefOpacity( 3 );
     for ( size_t group=0; group<ng; ++group )
@@ -179,13 +149,9 @@ void check_CDI(const CDI &cdi)
                getOpacity( temp, dens );
 
     if ( match( vOpacity, vRefOpacity ) )
-    {
         PASSMSG("CDI.mg()->getOpacity(T,rho) is ok.");
-    }
     else
-    {
         FAILMSG("CDI.mg()->getOpacity(T,rho) is not ok.");
-    }
 	
     // odfmg test case: Find the mg opacities at T=0.35 keV and rho = 27.2
     // g/cm^3.  For DummyOdfmgOpacity the values should be { }.  Three
@@ -204,13 +170,9 @@ void check_CDI(const CDI &cdi)
 
     if (cdi.odfmg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->getNumGroups()
         == numGroups )
-    {
         PASSMSG("CDI.odfmg()->getNumGroups() is ok.");
-    }
     else
-    {
         FAILMSG("CDI.odfmg()->getNumGroups() is not ok.");
-    }
 
     std::vector< double > bandBoundary(numBands + 1);
     bandBoundary[0] = 0.0;
@@ -221,13 +183,9 @@ void check_CDI(const CDI &cdi)
 
     if (cdi.odfmg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->getNumBands()
         == numBands )
-    {
         PASSMSG("CDI.odfmg()->getNumBands() is ok.");
-    }
     else
-    {
         FAILMSG("CDI.odfmg()->getNumBands() is not ok.");
-    }
 
     std::vector< std::vector< double > > odfmgRefOpacity( numGroups );
     for ( size_t group=0; group<numGroups; ++group )
@@ -248,13 +206,9 @@ void check_CDI(const CDI &cdi)
                    getOpacity( temp, dens );
 
     if ( match( odfmgOpacity, odfmgRefOpacity ) )
-    {
         PASSMSG("CDI.odfmg()->getOpacity(T,rho) is ok.");
-    }
     else
-    {
         FAILMSG("CDI.odfmg()->getOpacity(T,rho) is not ok.");
-    }
 
 
     // Test the EoS plug-in component of this CDI.
@@ -305,13 +259,12 @@ void check_CDI(const CDI &cdi)
             FAILMSG(message.str());
         }
     }
-
     return;
 }
 
 //---------------------------------------------------------------------------//
 
-void test_CDI()
+void test_CDI(rtt_dsxx::UnitTest & ut)
 {
     // make SPs to opacity and EoS objects
     SP<const GrayOpacity>       gray_planck_abs;
@@ -369,38 +322,26 @@ void test_CDI()
 
             if (cdi.isGrayOpacitySet(m,r))       ITFAILS;
             if (cdi.isMultigroupOpacitySet(m,r)) ITFAILS;
-            if (cdi.isOdfmgOpacitySet(m,r)) ITFAILS;
+            if (cdi.isOdfmgOpacitySet(m,r))      ITFAILS;
         }
     if (cdi.isEoSSet()) ITFAILS;
 
     if( cdi.getMatID() == matName )
-    {
         PASSMSG("Good, the material identifier was set and fetched correctly.");
-    }
     else
-    {
         FAILMSG("Oh-ho, the material identifier was not set and fetched correctly.");
-    }
 
     // there should be no energy group boundaries set yet
     if (CDI::getFrequencyGroupBoundaries().empty())
-    {
         PASSMSG("Good, no frequency group boundaries defined yet.");
-    }
     else
-    {
         FAILMSG("Oh-oh, frequency boundaries are defined.");
-    }
 
     // there should be no opacity band boundaries set yet
     if (CDI::getOpacityCdfBandBoundaries().empty())
-    {
         PASSMSG("Good, no opacity band boundaries defined yet.");
-    }
     else
-    {
         FAILMSG("Uh-oh, opacity band boundaries are defined.");
-    }
 
     // now assign stuff to it
     cdi.setGrayOpacity(gray_planck_abs);
@@ -429,13 +370,9 @@ void test_CDI()
             test = false;
 
         if (test)
-        {
             PASSMSG("All multigroup data has consistent energy groups.");
-        }
         else
-        {
             FAILMSG("Multigroup data has inconsistent energy groups.");
-        }
     }
 
     // check the odfmg energy group boundaries
@@ -456,13 +393,9 @@ void test_CDI()
             test = false;
 
         if (test)
-        {
             PASSMSG("All odfmg data has consistent energy groups.");
-        }
         else
-        {
             FAILMSG("Odfmg data has inconsistent energy groups.");
-        }
     }
 	
     // check the odfmg opacity band boundaries
@@ -483,13 +416,9 @@ void test_CDI()
             test = false;
 
         if (test)
-        {
             PASSMSG("All odfmg data has consistent opacity bands.");
-        }
         else
-        {
             FAILMSG("Odfmg data has inconsistent opacity bands.");
-        }
     }
 	
     // catch an exception when we try to assign a multigroup opacity to CDI
@@ -499,11 +428,11 @@ void test_CDI()
     {
         cdi.setMultigroupOpacity(mg_diff_bound);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Good, we caught the following exception: \n"
-                << ass.what();
+                << error.what();
         PASSMSG(message.str());
         caught = true;
     }
@@ -522,11 +451,11 @@ void test_CDI()
     {
         cdi.setOdfmgOpacity(odfmg_diff_bound);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Good, we caught the following exception when trying to assign bad odfmg frequency structure: \n"
-                << ass.what();
+                << error.what();
         PASSMSG(message.str());
         caught = true;
     }
@@ -545,11 +474,11 @@ void test_CDI()
     {
         cdi.setOdfmgOpacity(odfmg_diff_bound2);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Good, we caught the following exception when trying to assign bad odfmg band structure: \n"
-                << ass.what();
+                << error.what();
         PASSMSG(message.str());
         caught = true;
     }
@@ -564,68 +493,40 @@ void test_CDI()
 
     // make sure these are assigned
     if (cdi.isGrayOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
-    {
         PASSMSG("Gray planck absorption set!");
-    }
     else
-    {
         FAILMSG("Gray planck absorption not set!");
-    }
 
     if (cdi.isGrayOpacitySet(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING))
-    {
         PASSMSG("Gray isotropic scattering set!");
-    }
     else
-    {
         FAILMSG("Gray isotropic scattering not set!");
-    }
 
     if (cdi.isMultigroupOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
-    {
         PASSMSG("Multigroup planck (in-group) absorption set!");
-    }
     else
-    {
         FAILMSG("Multigroup planck (in-group) absorption not set!");
-    }
 
     if (cdi.isMultigroupOpacitySet(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING))
-    {
         PASSMSG("Multigroup isotropic scattering set!");
-    }
     else
-    {
         FAILMSG("Multigroup isotropic scattering not set!");
-    }
 
     if (cdi.isOdfmgOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
-    {
         PASSMSG("Odfmg planck (in-group) absorption set!");
-    }
     else
-    {
         FAILMSG("Odfmg planck (in-group) absorption not set!");
-    }
 
     if (cdi.isOdfmgOpacitySet(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING))
-    {
         PASSMSG("Odfmg isotropic scattering set!");
-    }
     else
-    {
         FAILMSG("Odfmg isotropic scattering not set!");
-    }
 
 
     if (cdi.isEoSSet())
-    {
         PASSMSG("EoS set!");
-    }
     else
-    {
         FAILMSG("EoS not set!");
-    }
 
     // catch some exceptions
     caught = false;
@@ -633,11 +534,11 @@ void test_CDI()
     {
         cdi.setGrayOpacity(gray_planck_abs);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Good, we caught the following exception: \n"
-                << ass.what();
+                << error.what();
         PASSMSG(message.str());
         caught = true;
     }
@@ -651,98 +552,68 @@ void test_CDI()
     {
         cdi.mg(rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Good, we caught the following exception: \n"
-                << ass.what();
+                << error.what();
         PASSMSG(message.str());
         caught = true;
     }
     if (!caught)
-    {
         FAILMSG("Failed to catch an illegal access exception!");
-    }
 
     // check the cdi through a function call
-    check_CDI(cdi);
+    check_CDI(ut,cdi);
 
     // reset and make sure we are empty
     cdi.reset();
     if (!cdi.isGrayOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
-    {
         PASSMSG("Gray planck absorption unset!");
-    }
     else
-    {
         FAILMSG("Gray planck absorption is still set!");
-    }
 
     if (!cdi.isGrayOpacitySet(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING))
-    {
         PASSMSG("Gray isotropic scattering unset!");
-    }
     else
-    {
         FAILMSG("Gray isotropic scattering is still set!");
-    }
 
     if (!cdi.isMultigroupOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
-    {
         PASSMSG("Multigroup planck (in-group) absorption unset!");
-    }
     else
-    {
         FAILMSG("Multigroup planck (in-group) absorption is still set!");
-    }
 
     if (!cdi.isMultigroupOpacitySet(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING))
-    {
         PASSMSG("Multigroup isotropic scattering unset!");
-    }
     else
-    {
         FAILMSG("Multigroup isotropic scattering is still set!");
-    }
 
     if (!cdi.isOdfmgOpacitySet(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION))
-    {
         PASSMSG("Odfmg planck (in-group) absorption unset!");
-    }
     else
-    {
         FAILMSG("Odfmg planck (in-group) absorption is still set!");
-    }
 
     if (!cdi.isOdfmgOpacitySet(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING))
-    {
         PASSMSG("Odfmg isotropic scattering unset!");
-    }
     else
-    {
         FAILMSG("Odfmg isotropic scattering is still set!");
-    }
 
 
     if (!cdi.isEoSSet())
-    {
         PASSMSG("EoS unset!");
-    }
     else
-    {
         FAILMSG("EoS is still set!");
-    }
 
     caught = false;
     try
     {
         cdi.mg(rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Good, we caught the following exception: \n"
-                << ass.what();
+                << error.what();
         PASSMSG(message.str());
         caught = true;
     }
@@ -753,15 +624,11 @@ void test_CDI()
 
     // there should be no energy group boundaries set yet
     if (CDI::getFrequencyGroupBoundaries().empty())
-    {
         PASSMSG("Good, no frequency group boundaries defined after reset.");
-    }
     else
-    {
         FAILMSG("Oh-oh, frequency boundaries are defined after reset.");
-    }
 
-    if (rtt_cdi_test::passed)
+    if (ut.numFails == 0)
     {
         PASSMSG("Fundamental CDI Operations are ok.");
         cout << endl;
@@ -770,7 +637,7 @@ void test_CDI()
 
 //---------------------------------------------------------------------------//
 
-void test_planck_integration()
+void test_planck_integration(rtt_dsxx::UnitTest & ut)
 {
     // We have not defined any group structure yet; thus, the Insist will
     // always fire if an integration is requested over a non-existent group 
@@ -779,11 +646,11 @@ void test_planck_integration()
     {
         CDI::integratePlanckSpectrum( 1, 1.0 );
     }
-    catch(const rtt_dsxx::assertion &ass)
+    catch(const rtt_dsxx::assertion &error)
     {
         ostringstream message;
         message << "Caught illegal Planck calculation exception: \n"
-                << "\t" << ass.what();
+                << "\t" << error.what();
         PASSMSG(message.str());
         caught = true;
     }
@@ -873,88 +740,52 @@ void test_planck_integration()
     double g_total     = CDI::integratePlanckSpectrum(   1.0);
 
     if (soft_equiv(g1_integral, 0.00528686, 1.e-6))
-    {
         PASSMSG("Group 1 integral within tolerance.");
-    }
     else
-    {
         FAILMSG("Group 1 integral fails tolerance.");
-    }
 
     if (soft_equiv(g2_integral, 0.74924, 1.e-6))
-    {
         PASSMSG("Group 2 integral within tolerance.");
-    }
     else
-    {
         FAILMSG("Group 2 integral fails tolerance.");
-    }
 
     if (soft_equiv(g3_integral, 0.245467, 1.e-6))
-    {
         PASSMSG("Group 3 integral within tolerance.");
-    }
     else
-    {
         FAILMSG("Group 3 integral fails tolerance.");
-    }
 
     if (soft_equiv(g_total, 0.999994, 1.e-6))
-    {
         PASSMSG("Total integral over groups within tolerance.");
-    }
     else
-    {
         FAILMSG("Total integral over groups fails tolerance.");
-    }
 
     // Test that a zero temperature returns a zero.
     if (soft_equiv(CDI::integratePlanckSpectrum(0.0, 100.0, 0.0), 0.0))
-    {
         PASSMSG("Planck integral from hnu=0 to 100 at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Planck integral from hnu=0 to 100 at T=0 is not zero: BAD!");
-    }
 
     if (soft_equiv(CDI::integratePlanckSpectrum(1, 0.0), 0.0))
-    {
         PASSMSG("Planck integral of group 1 at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Planck integral of group 1 at T=0 is not zero: BAD!");
-    }
 
     if (soft_equiv(CDI::integratePlanckSpectrum(2, 0.0), 0.0))
-    {
         PASSMSG("Planck integral of group 2 at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Planck integral of group 2 at T=0 is not zero: BAD!");
-    }
 
     if (soft_equiv(CDI::integratePlanckSpectrum(3, 0.0), 0.0))
-    {
         PASSMSG("Planck integral of group 3 at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Planck integral of group 3 at T=0 is not zero: BAD!");
-    }
 
     if (soft_equiv(CDI::integratePlanckSpectrum(0.0), 0.0))
-    {
         PASSMSG("Planck integral over all groups at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Planck integral over all groups at T=0 is not zero: BAD!");
-    }
 
-    if (rtt_cdi_test::passed)
+    if (ut.numFails == 0)
     {
         PASSMSG("All Planckian integral tests ok.");
         cout << endl;
@@ -991,35 +822,27 @@ void test_planck_integration()
 
     }
 
-    if (rtt_cdi_test::passed)
-    {
+    if (ut.numFails == 0)
         PASSMSG("Group-wise and Full spectrum Planckian and Rosseland integrals match.");
-    }
     else
-    {
         FAILMSG("Group-wise and Full spectrum Planckian and Rosseland integrals do not match.");
-    }
-
-
-
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void test_rosseland_integration()
+void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
 {
-
     // Only report this as a failure if 1) the error was not caught AND 2)
     // the Require macro is available.
-    bool dbc_require( DBC & 1 );
-    if( dbc_require )
+    if( ut.dbcRequire() && ! ut.dbcNothrow() )
     {
         bool caught = false;
         try
         {
             CDI::integrateRosselandSpectrum(0, 1.0);
         }
-        catch(const rtt_dsxx::assertion &ass)
+        catch(const rtt_dsxx::assertion &error)
         {
             ostringstream message;
             message << "Caught illegal Rosseland calculation exception: \n";
@@ -1037,7 +860,7 @@ void test_rosseland_integration()
         {
             CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0, P,R);
         }
-        catch(const rtt_dsxx::assertion &ass)
+        catch(const rtt_dsxx::assertion &error)
         {
             ostringstream message;
             message << "Caught illegal Rosseland and Planckian "
@@ -1046,9 +869,7 @@ void test_rosseland_integration()
             caught = true;
         }
         if (!caught)
-        {
             FAILMSG("Did not catch an exception for calculating Rosseland and Planckian integral.");
-        }
     }
 
     // check some planck integrals
@@ -1186,30 +1007,18 @@ void test_rosseland_integration()
 
     // Test that a zero temperature returns a zero
     if (soft_equiv(CDI::integrateRosselandSpectrum(0.0, 100.0, 0.0), 0.0))
-    {
         PASSMSG("Rosseland integral from hnu=0 to 100 at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Rosseland integral from hnu=0 to 100 at T=0 is not zero: BAD!");
-    }
     CDI::integrate_Rosseland_Planckian_Spectrum(0.0, 100.0, 0.0, PL, ROS);
     if (soft_equiv(PL, 0.0))
-    {
         PASSMSG("Rosseland call for Planck integral  at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Rosseland call for Planck integral at T=0 is not zero: BAD!");
-    }
     if (soft_equiv(ROS, 0.0))
-    {
         PASSMSG("Rosseland integral  at T=0 is zero: good!");
-    }
     else
-    {
         FAILMSG("Rosseland integral  at T=0 is not zero: BAD!");
-    }
 
     // check the normalized planck integrals
     if (CDI::getNumberFrequencyGroups() != 3) ITFAILS;
@@ -1219,28 +1028,20 @@ void test_rosseland_integration()
     if (!soft_equiv(PL,  0.005286862763740451, 1.e-6)) ITFAILS;
     if (!soft_equiv(ROS, 0.00158258277444842, 1.e-5)) ITFAILS;
 
-    if (rtt_cdi_test::passed)
-    {
+    if (ut.numFails == 0)
         PASSMSG("Group 1 Rosseland and Planck integrals ok.");
-    }
     else
-    {
         FAILMSG("Group 1 Rosseland and Planck integrals failed.");
-    }
 
     // Second group
     CDI::integrate_Rosseland_Planckian_Spectrum(2, 1.0, PL, ROS);
     if (!soft_equiv(PL,  0.7492399297, 1.e-6)) ITFAILS;
     if (!soft_equiv(ROS, 0.5897280880, 1.e-6)) ITFAILS;
 
-    if (rtt_cdi_test::passed)
-    {
+    if (ut.numFails == 0)
         PASSMSG("Group 2 Rosseland and Planck integrals ok.");
-    }
     else
-    {
         FAILMSG("Group 2 Rosseland and Planck integrals failed.");
-    }
 
 
 
@@ -1249,14 +1050,10 @@ void test_rosseland_integration()
     if (!soft_equiv(PL,  0.2454669108, 1.e-6)) ITFAILS;
     if (!soft_equiv(ROS, 0.4086877254, 1.e-6)) ITFAILS;
 
-    if (rtt_cdi_test::passed)
-    {
+    if (ut.numFails == 0)
         PASSMSG("Group 3 Rosseland and Planck integrals ok.");
-    }
     else
-    {
         FAILMSG("Group 3 Rosseland and Planck integrals failed.");
-    }
 
 
 
@@ -1284,16 +1081,12 @@ void test_rosseland_integration()
     if (!soft_equiv(PL,  0.0, 1.e-6)) ITFAILS;
     if (!soft_equiv(ROS, 0.0, 1.e-6)) ITFAILS;
 
-    if (rtt_cdi_test::passed)
-    {
+    if (ut.numFails == 0)
         PASSMSG("Zero T Rosseland and Planck integrals ok.");
-    }
     else
-    {
         FAILMSG("Zero T Rosseland and Planck integrals failed.");
-    }
         
-    if (rtt_cdi_test::passed)
+    if (ut.numFails == 0)
     {
         ostringstream msg;
         msg << "Group-wize and Full spectrum Planckian and Rosseland "
@@ -1308,7 +1101,7 @@ void test_rosseland_integration()
         FAILMSG( msg.str().c_str() );
     }
 
-    if (rtt_cdi_test::passed)
+    if (ut.numFails == 0)
     {
         PASSMSG("All Rosseland and Rosseland/Planckian integral tests ok.");
         cout << endl;
@@ -1318,60 +1111,31 @@ void test_rosseland_integration()
 
 //---------------------------------------------------------------------------//
 
-void printPkgVer()
-{
-    std::cout << "This is Draco package CDI.\n"
-              << "Version: " <<  rtt_dsxx::release()
-              << std::endl << std::endl;
-    return;
-}
-
-//---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
         // >>> UNIT TESTS
-        printPkgVer();
-
-        test_CDI();
-
-        test_planck_integration();
-
-        test_rosseland_integration();
-
+        test_CDI(ut);
+        test_planck_integration(ut);
+        test_rosseland_integration(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-        cout << "While testing tCDI, " << ass.what()
-             << endl;
-        return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_test::passed) 
+    catch( ... )
     {
-        cout << "**** tCDI Test: PASSED" 
-             << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tCDI." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tCDI.cc
+// end of tCDI.cc
 //---------------------------------------------------------------------------//

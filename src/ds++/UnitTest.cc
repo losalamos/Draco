@@ -12,6 +12,7 @@
 
 #include "UnitTest.hh"
 #include "path.hh"
+#include "Assert.hh"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -42,12 +43,28 @@ UnitTest::UnitTest( int              & /* argc */,
       testName( getFilenameComponent( std::string(argv[0]), rtt_dsxx::FC_NAME )),
       testPath( getFilenameComponent( std::string(argv[0]), rtt_dsxx::FC_PATH )),
       release(  release_ ),
-      out(      out_ )
+      out(      out_ ),
+      m_dbcRequire(false),
+      m_dbcCheck(false),
+      m_dbcEnsure(false),
+      m_dbcNothrow(false)
 {
     Require( release   != NULL );
     Ensure(  numPasses == 0 );
     Ensure(  numFails  == 0 );
     Ensure(  testName.length() > 0 );
+#if DBC & 1
+    m_dbcRequire = true;
+#endif
+#if DBC & 2
+    m_dbcCheck = true;
+#endif
+#if DBC & 4
+    m_dbcEnsure = true;
+#endif
+#if DBC & 8
+    m_dbcNothrow = true;
+#endif
     return;
 }
 

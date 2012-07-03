@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 15:50:53 2001
  * \brief  GrayOpacity and Multigroup opacity test.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,11 +15,12 @@
 #include "DummyGrayOpacity.hh"
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
-#include "ds++/Release.hh"
 #include "../GrayOpacity.hh"
 #include "../MultigroupOpacity.hh"
 #include "../OdfmgOpacity.hh"
 #include "../OpacityCommon.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 
@@ -34,17 +37,21 @@ using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::OdfmgOpacity;
 using rtt_dsxx::SP;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void simple_tests()
+void simple_tests( rtt_dsxx::UnitTest & ut )
 {
     // make SPs to gray and multigroup opacities
     SP<GrayOpacity>       gray;
     SP<MultigroupOpacity> mg;
     SP<OdfmgOpacity>      odfmg;
-
 
     // Assign and check gray opacity  
     SP<rtt_cdi_test::DummyGrayOpacity> gray_total;
@@ -70,28 +77,19 @@ void simple_tests()
         rhogrid[1] = 0.2;
 
         if ( match(gray->getTemperatureGrid(), Tgrid) )
-        {
             PASSMSG("Gray temperature grid correct.");
-        }
         else
-        {
             FAILMSG("Gray temperature grid incorrect.");
-        }
 
         if ( match(gray->getDensityGrid(), rhogrid) )
-        {
             PASSMSG("Gray density grid correct.");
-        }
         else
-        {
             FAILMSG("Gray density grid incorrect.");
-        }
     }
 
     // now reassign and check gray opacity for absorption opacities
     {
         gray = gray_abs;
-
         if (gray->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
     }
 
@@ -124,31 +122,19 @@ void simple_tests()
         egroups[3] = 50.0;
 
         if ( match(mg->getTemperatureGrid(), Tgrid) )
-        {
             PASSMSG("Multigroup temperature grid correct.");
-        }
         else
-        {
             FAILMSG("Multigroup temperature grid incorrect.");
-        }
 
         if ( match(mg->getDensityGrid(), rhogrid) )
-        {
             PASSMSG("Multigroup density grid correct.");
-        }
         else
-        {
             FAILMSG("Multigroup density grid incorrect.");
-        }
 
         if ( match(mg->getGroupBoundaries(), egroups) )
-        {
             PASSMSG("Multigroup energy boundaries correct.");
-        }
         else
-        {
             FAILMSG("Multigroup energy boundaries incorrect.");
-        }
 
         if (mg->getNumTemperatures() != 3)    ITFAILS;
         if (mg->getNumDensities() != 2)       ITFAILS;
@@ -191,48 +177,37 @@ void simple_tests()
         egroups[3] = 50.0;
 
         if ( match(odfmg->getTemperatureGrid(), Tgrid) )
-        {
             PASSMSG("Odfmg temperature grid correct.");
-        }
         else
-        {
             FAILMSG("Odfmg temperature grid incorrect.");
-        }
 
         if ( match(odfmg->getDensityGrid(), rhogrid) )
-        {
             PASSMSG("Odfmg density grid correct.");
-        }
         else
-        {
             FAILMSG("Odfmg density grid incorrect.");
-        }
 
         if ( match(odfmg->getGroupBoundaries(), egroups) )
-        {
             PASSMSG("Odfmg energy boundaries correct.");
-        }
         else
-        {
             FAILMSG("Odfmg energy boundaries incorrect.");
-        }
 
         if (odfmg->getNumTemperatures() != 3)    ITFAILS;
         if (odfmg->getNumDensities() != 2)       ITFAILS;
         if (odfmg->getNumGroupBoundaries() != 4) ITFAILS;
     }
 
-    // noew reassign and check multigroup opacities for absorption
+    // now reassign and check multigroup opacities for absorption
     {
         odfmg = odfmg_abs;
 
         if (odfmg->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void gray_opacity_test()
+void gray_opacity_test( rtt_dsxx::UnitTest & ut )
 {
     // ---------------------------- //
     // Create a GrayOpacity object. //
@@ -241,13 +216,9 @@ void gray_opacity_test()
     SP< GrayOpacity > spDGO;
 
     if ( spDGO = new rtt_cdi_test::DummyGrayOpacity() )
-    {
         PASSMSG("SP to new GrayOpacity object created.");
-    }
     else
-    {
         FAILMSG("Unable to create a SP to new GrayOpacity object.");
-    }
 
     // ------------------------ //
     // Dummy Gray Opacity Tests //
@@ -338,7 +309,7 @@ void gray_opacity_test()
 
 //---------------------------------------------------------------------------//
 
-void multigroup_opacity_test()
+void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
 {
     // ----------------------------------------- //
     // Create a Dummy Multigroup Opacity object. //
@@ -524,10 +495,11 @@ void multigroup_opacity_test()
                 << " vector of temps. and a vector of densities.";
         FAILMSG( message.str() );
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
-void odfmg_opacity_test()
+void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
 {
     // ----------------------------------------- //
     // Create a Dummy Odfmg Opacity object. //
@@ -610,7 +582,8 @@ void odfmg_opacity_test()
         for ( int band=0; band<numBands; ++band )
         {
             odfmgRefOpacity[group][band] = 2.0 * (temp + dens/1000.0)
-                                           / (energyBoundaries[group] + energyBoundaries[group+1])
+                                           / (energyBoundaries[group]
+                                              + energyBoundaries[group+1])
                                            * pow(10.0, band - 2);
         }
     }
@@ -662,7 +635,8 @@ void odfmg_opacity_test()
             {
                 vRefOpacity[it][group][band] = 2.0 * (vtemperature[it] 
                                                       + dens/1000.0)
-                                               / (energyBoundaries[group] + energyBoundaries[group+1])
+                                               / (energyBoundaries[group]
+                                                  + energyBoundaries[group+1])
                                                * pow(10.0, band - 2);
             }
         }
@@ -748,49 +722,36 @@ void odfmg_opacity_test()
                 << " vector of temps. and a vector of densities.";
         FAILMSG( message.str() );
     }
+    return;
 }
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
         // >>> UNIT TESTS
-        simple_tests();
-        gray_opacity_test();
-        multigroup_opacity_test();
+        simple_tests(ut);
+        gray_opacity_test(ut);
+        multigroup_opacity_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-        cout << "While testing tDummyOpacity, " << ass.what()
-             << endl;
-        return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_test::passed) 
+    catch( ... )
     {
-        cout << "**** tDummyOpacity Test: PASSED" 
-             << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tDummyOpacity." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tDummyOpacity.cc
+// end of tDummyOpacity.cc
 //---------------------------------------------------------------------------//
  

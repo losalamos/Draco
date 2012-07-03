@@ -3,13 +3,14 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (c) 1997-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1997-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Data_Table.hh"
 
@@ -23,10 +24,14 @@
 using namespace std;
 using rtt_dsxx::Data_Table;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
 
 //---------------------------------------------------------------------------//
 
-void test_array()
+void test_array( rtt_dsxx::UnitTest & ut )
 {
     const int array[3] = {10,11,12};
 
@@ -116,15 +121,17 @@ void test_array()
     if(!caught) ITFAILS;
 #endif
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("test_array");
     else
         FAILMSG("test_array FAILED!");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void test_scalar()
+void test_scalar( rtt_dsxx::UnitTest & ut )
 {
     Data_Table<int> dt(32);
 
@@ -169,10 +176,11 @@ void test_scalar()
     }
     if(!caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("test_scalar");
     else
         FAILMSG("test_scalar FAILED!");
+    return;
 }
 
 
@@ -237,53 +245,38 @@ void test_scalar()
 int 
 main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
 
-#if DBC
-    try
+    if( ut.dbcOn() && ! ut.dbcNothrow() )
     {
-	// >>> UNIT TESTS
-	test_array();
-        test_scalar();
-//        test_vector();
+        try
+        {
+            // >>> UNIT TESTS
+            test_array(ut);
+            test_scalar(ut);
+//        test_vector(ut);
+        }
+        catch (rtt_dsxx::assertion &error)
+        {
+            cout << "ERROR: While testing tstData_Table_Ptr, " << error.what()
+                 << endl;
+            ut.numFails++;
+        }
+
+        catch (...)
+        {
+            cout << "ERROR: While testing " << argv[0] << ", " 
+                 << "An unknown exception was thrown" << endl;
+            ut.numFails++;        
+        }
     }
-    catch (rtt_dsxx::assertion &error)
+    else
     {
-        cout << "While testing tstData_Table_Ptr, " << error.what()
-             << endl;
-        return 1;
+        PASSMSG("Unit tests only works if DBC is on and the DBC nothrow option is off.");
     }
-
-    catch (...)
-    {
-        cout << "caught uncaught exception" << std::endl;
-        return 10;
-    }
-
-#endif
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_ds_test::passed) 
-    {
-        cout << "**** tstData_Table Test: PASSED" 
-	     << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstData_Table." << endl;
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstData_Table.cc
+// end of tstData_Table.cc
 //---------------------------------------------------------------------------//

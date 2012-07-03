@@ -4,20 +4,19 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <sstream>
-
+#include "../Ylm.hh"
+#include "units/PhysicalConstants.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "units/PhysicalConstants.hh"
-
-#include "../Ylm.hh"
 #include "ds++/Release.hh"
+#include <sstream>
 
 using namespace std;
 using namespace rtt_sf;
@@ -86,40 +85,40 @@ void tstcPlk( rtt_dsxx::UnitTest & ut )
     // cPlk(2,2)
     expVal = sqrt(5.0/96.0/PI) * 3.0 * (1.0-x*x);
     comparecPlk(2,2,x,expVal,ut);
-    
-#ifdef REQUIRE_ON
 
-    // Check out-of-bounds
+    if( ut.dbcOn() && ! ut.dbcNothrow() )
+    {
+        // Check out-of-bounds
 
-    bool caught(false);
-    try
-    {
-        comparecPlk(2,3,x,expVal,ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        ut.passes("Caught out of bounds.");
-        caught = true;
-    }
-    if( ! caught )
-        ut.failure("Did not catch out of bounds.");
+        bool caught(false);
+        try
+        {
+            comparecPlk(2,3,x,expVal,ut);
+        }
+        catch( rtt_dsxx::assertion &err )
+        {
+            ut.passes("Caught out of bounds.");
+            caught = true;
+        }
+        if( ! caught )
+            ut.failure("Did not catch out of bounds.");
 
-    // Check mu out-of-range
+        // Check mu out-of-range
 
-    caught = false;
-    x=-999999.999;
-    try
-    {
-        comparecPlk(2,0,x,expVal,ut);
+        caught = false;
+        x=-999999.999;
+        try
+        {
+            comparecPlk(2,0,x,expVal,ut);
+        }
+        catch( rtt_dsxx::assertion &err )
+        {
+            ut.passes("Caught mu out of range.");
+            caught = true;
+        }
+        if( ! caught )
+            ut.failure("Did not catch mu out of range.");
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        ut.passes("Caught mu out of range.");
-        caught = true;
-    }
-    if( ! caught )
-        ut.failure("Did not catch mu out of range.");
-#endif
     
     return;
 }
@@ -382,9 +381,9 @@ void tstgalerkinYlk( rtt_dsxx::UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
         tstcPlk(          ut );
         tstNormalizedYlk( ut );
         tstRealYlk(       ut );
@@ -395,17 +394,17 @@ int main(int argc, char *argv[])
     {
         cout << "ERROR: While testing " << argv[0] << ", "
              << err.what() << endl;
-        return 1;
+        ut.numFails++;
     }
     catch( ... )
     {
         cout << "ERROR: While testing " << argv[0] << ", " 
              << "An unknown exception was thrown on processor " << endl;
-        return 1;
+        ut.numFails++;
     }
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of testYlm.cc
+// end of testYlm.cc
 //---------------------------------------------------------------------------//

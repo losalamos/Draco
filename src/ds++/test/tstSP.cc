@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Feb  5 17:29:59 2003
  * \brief  SP test.
- * \note   Copyright (c) 2003-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../SP.hh"
 #include "../Assert.hh"
@@ -22,8 +23,12 @@
 #include <sstream>
 
 using namespace std;
-
 using rtt_dsxx::SP;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
 
 //---------------------------------------------------------------------------//
 // TEST HELPERS
@@ -97,8 +102,8 @@ class Bar : public Foo
   public:
     explicit Bar(int i) : Foo(i) { nbars++; }
     virtual ~Bar(void)  { nbars--; }
-    virtual int vf() { return Foo::f() + 1; }
-    int f(void) { return Foo::f() + 2; }
+    virtual int vf()    { return Foo::f() + 1; }
+    int f(void)         { return Foo::f() + 2; }
 };
 
 //---------------------------------------------------------------------------//
@@ -145,9 +150,10 @@ SP<Bar> get_bar()
 
 //---------------------------------------------------------------------------//
 
-void test_foobar(SP<Foo> f, int v)
+void test_foobar( rtt_dsxx::UnitTest & ut, SP<Foo> f, int v)
 {
     if (f->vf() != v) ITFAILS;
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -155,11 +161,12 @@ void test_foobar(SP<Foo> f, int v)
 void kill_SPBar(SP<Bar> &b)
 {
     b = SP<Bar>();
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void temp_change_SP(SP<Foo> f)
+void temp_change_SP( rtt_dsxx::UnitTest & ut, SP<Foo> f)
 {
     CHECK_N_OBJECTS(1, 1, 0, 0);
 
@@ -170,8 +177,10 @@ void temp_change_SP(SP<Foo> f)
 
     if (f->vf() != 100) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if( ut.numFails == 0 )
         PASSMSG("SP<Bar> successfully (temporarily) reassigned to SP<Foo>.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -195,7 +204,7 @@ void temp_change_SP(SP<Foo> f)
 //    bool operator==(const T *, const SP<T> &);
 //    bool operator!=(const T *, const SP<T> &);
 //
-void type_T_test()
+void type_T_test( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
 
@@ -213,7 +222,7 @@ void type_T_test()
     // now all should be destroyed
     CHECK_0_OBJECTS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Explicit constructor for type T * ok.");
 
     // test copy constructor for type T *
@@ -245,7 +254,7 @@ void type_T_test()
             // additional references
             CHECK_N_OBJECTS(3, 2, 1, 0);
 
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Assignment of SP<T> ok.");
 
             // now copy construct
@@ -258,7 +267,7 @@ void type_T_test()
             if (spfoo->f()  != 2) ITFAILS;
             if (rspfoo->f() != 2) ITFAILS;
 
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Copy construct of SP<T> ok.");
 
             // now make a foo pointer and assign
@@ -271,7 +280,7 @@ void type_T_test()
             if (spfoo->f()  != 2)  ITFAILS;
             if (rspfoo->f() != 2)  ITFAILS;
 
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Assignment of T* ok.");
 
             // now we can check equality 
@@ -319,7 +328,7 @@ void type_T_test()
                 FAILMSG("Overloaded equality operators failed.");
             }
 
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Equality/Inequality operations ok.");
         }
         
@@ -331,8 +340,10 @@ void type_T_test()
     // now all should be destroyed
     CHECK_0_OBJECTS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Operations on type T ok");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -350,7 +361,7 @@ void type_T_test()
 //    operator bool() const;
 //    bool operator!() const;
 // 
-void type_X_test()
+void type_X_test( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
 
@@ -382,7 +393,7 @@ void type_X_test()
 
     CHECK_0_OBJECTS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Explicit constructor for type X * ok.");
 
     // check SP<X> constructor and assignment
@@ -417,7 +428,7 @@ void type_X_test()
             if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
             if (typeid(spbar.bp()) != typeid(Bar *)) ITFAILS;
 
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Assignment with SP<X> ok.");
 
             // now do copy construction
@@ -430,7 +441,7 @@ void type_X_test()
             if (typeid(rspfoo.bp()) != typeid(Foo *)) ITFAILS;
             if (typeid(*rspfoo.bp()) != typeid(Bar))  ITFAILS;
             
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Copy constructor with SP<X> ok.");
 
             // now check assignment with X *
@@ -443,7 +454,7 @@ void type_X_test()
             if (typeid(rspfoo.bp()) != typeid(Foo *)) ITFAILS;
             if (typeid(*rspfoo.bp()) != typeid(Bar))  ITFAILS;
 
-            if (rtt_ds_test::passed)
+            if (ut.numFails == 0)
                 PASSMSG("Assignment with X * ok.");
 
             // assign SPfoo2 to a bar
@@ -483,7 +494,7 @@ void type_X_test()
         if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
         if (typeid(spbar.bp()) != typeid(Bar *)) ITFAILS;
         
-        if (rtt_ds_test::passed)
+        if (ut.numFails == 0)
             PASSMSG("Set to SP<>() releases pointer.");
 
         // assign spfoo to NULL
@@ -493,24 +504,26 @@ void type_X_test()
         if (spfoo) ITFAILS;
         if (spbar) ITFAILS;
 
-        if (rtt_ds_test::passed)
+        if (ut.numFails == 0)
             PASSMSG("Overloaded bool ok.");
 
         if (!spfoo2) ITFAILS;
 
-        if (rtt_ds_test::passed)
+        if (ut.numFails == 0)
             PASSMSG("Overloaded ! (not) ok."); 
     }
 
     CHECK_0_OBJECTS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Operations on type X ok");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void fail_modes_test()
+void fail_modes_test( rtt_dsxx::UnitTest & ut )
 {
     // make an object and try to reference it
     SP<Foo>    spfoo;
@@ -524,49 +537,50 @@ void fail_modes_test()
 
     // try to reference a function
     bool caught = false;
-#if DBC
-    try
+    if( ut.dbcOn() && ! ut.dbcNothrow() )
     {
-        spfoo->f();
-    }
-    catch (rtt_dsxx::assertion & /* assertion */ )
-    {
-        caught = true;
-        ostringstream m;
-        m << "Good, caught null access on member function " << endl;
-        PASSMSG(m.str());
-    }
-    if (!caught)
-        FAILMSG("Failed to catch illegal access exception.");
+        try
+        {
+            spfoo->f();
+        }
+        catch (rtt_dsxx::assertion & /* assertion */ )
+        {
+            caught = true;
+            ostringstream m;
+            m << "Good, caught null access on member function " << endl;
+            PASSMSG(m.str());
+        }
+        if (!caught)
+            FAILMSG("Failed to catch illegal access exception.");
 
-    // try assigning a derived NULL to a base; the spfoo base pointer is
-    // still a foo in the case 
-    spfoo = spbar;
-    if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
+        // try assigning a derived NULL to a base; the spfoo base pointer is
+        // still a foo in the case 
+        spfoo = spbar;
+        if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
 
-    CHECK_0_OBJECTS;
+        CHECK_0_OBJECTS;
 
-    // now try assigning to a non-derived class of Foo that is NULL,
-    // unfortunately, even though this shouldn't be allowed we get away with
-    // it because wombat has some virtual functions and is NULL; however,
-    // this isn't really dangerous because spfoo still doesn't point to
-    // anything 
-    spfoo  = spbat;
-    caught = false;
-    try
-    {
-        spfoo->f();
+        // now try assigning to a non-derived class of Foo that is NULL,
+        // unfortunately, even though this shouldn't be allowed we get away with
+        // it because wombat has some virtual functions and is NULL; however,
+        // this isn't really dangerous because spfoo still doesn't point to
+        // anything 
+        spfoo  = spbat;
+        caught = false;
+        try
+        {
+            spfoo->f();
+        }
+        catch (rtt_dsxx::assertion & /* assertion */ )
+        {
+            caught = true;
+            ostringstream m;
+            m << "Good, caught null access on member function " << endl;
+            PASSMSG(m.str());
+        }
+        if (!caught)
+            FAILMSG("Failed to catch illegal access exception.");
     }
-    catch (rtt_dsxx::assertion & /* assertion */ )
-    {
-        caught = true;
-        ostringstream m;
-        m << "Good, caught null access on member function " << endl;
-        PASSMSG(m.str());
-    }
-    if (!caught)
-        FAILMSG("Failed to catch illegal access exception.");
-#endif
     // now make a wombat and try
     spbat  = new Wombat;
     CHECK_N_OBJECTS(0, 0, 0, 1);
@@ -645,13 +659,15 @@ void fail_modes_test()
     spbat = bat;
     CHECK_N_OBJECTS(0, 0, 0, 1);
     
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Failure modes work ok.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void equality_test()
+void equality_test( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
 
@@ -675,13 +691,15 @@ void equality_test()
 
     CHECK_N_OBJECTS(2, 0, 0, 0);
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Equality tests work ok.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void get_test()
+void get_test( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
 
@@ -702,43 +720,46 @@ void get_test()
         
         if (fb->f() != 21)  ITFAILS;
         if (b->f() != 23)   ITFAILS;
-        
     }
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Get/factory tests work ok.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void access_test()
+void access_test( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
 
     SP<Bar> b(new Bar(10));
     CHECK_N_OBJECTS(1, 1, 0, 0);
 
-    test_foobar(b, 12);
+    test_foobar(ut, b, 12);
     CHECK_N_OBJECTS(1, 1, 0, 0);
 
     kill_SPBar(b);
     CHECK_0_OBJECTS;
 
     b = new Bar(12);
-    temp_change_SP(b); // this temporarily changes to a Foo
+    temp_change_SP(ut, b); // this temporarily changes to a Foo
 
     if (b->vf() != 14)                   ITFAILS;
     if (typeid(b.bp()) != typeid(Bar *)) ITFAILS;
 
     CHECK_N_OBJECTS(1, 1, 0, 0);
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Accessor/set-style tests work ok.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void list_test()
+void list_test( rtt_dsxx::UnitTest & ut )
 {
     {
         // This test was borrowed from Boost's shared_ptr_test.cpp
@@ -758,72 +779,59 @@ void list_test()
         if ( p->next ) ITFAILS;
     }
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
         PASSMSG("Linked-list test works ok.");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
         // >>> UNIT TESTS
 
         CHECK_0_OBJECTS;
 
-        type_T_test();
+        type_T_test(ut);
         cout << endl;
 
-        type_X_test();
+        type_X_test(ut);
         cout << endl;
 
-        fail_modes_test();
+        fail_modes_test(ut);
         cout << endl;
 
-        equality_test();
+        equality_test(ut);
         cout << endl;
 
-        get_test();
+        get_test(ut);
         cout << endl;
 
-        access_test();
+        access_test(ut);
 
-        list_test();
+        list_test(ut);
 
         CHECK_0_OBJECTS;
     }
-    catch (rtt_dsxx::assertion &assert)
+    catch( rtt_dsxx::assertion &err )
     {
-        cout << "While testing tstSP, " << assert.what()
-             << endl;
-        return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_ds_test::passed) 
-        cout << "**** tstSP Test: PASSED" << endl;
-    else
-        cout << "**** tstSP Test: FAILED" << endl;
-	
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstSP." << endl;
-    return 0;
+    catch( ... )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
+    }
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstSP.cc
+// end of tstSP.cc
 //---------------------------------------------------------------------------//

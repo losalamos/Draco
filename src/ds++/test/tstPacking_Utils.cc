@@ -4,13 +4,14 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:58:08 2001
  * \brief  
- * \note   Copyright (c) 2001-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Packing_Utils.hh"
 #include "../Assert.hh"
@@ -31,22 +32,27 @@ using rtt_dsxx::pack_data;
 using rtt_dsxx::unpack_data;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
 void do_some_packing(Packer &p,
-                     const vector<double> &vd,
-                     const vector<int> &vi)
+                     vector<double> const & vd,
+                     vector<int>    const & vi)
 {
-    for ( size_t i = 0; i < vd.size(); ++i )
-        p << vd[i];
-
-    for ( size_t i = 0; i < vi.size(); ++i )
-        p << vi[i];
+    for ( size_t i = 0; i < vd.size(); ++i ) p << vd[i];
+    for ( size_t i = 0; i < vi.size(); ++i ) p << vi[i];
+    return;
 }
 
-void compute_buffer_size_test()
+//---------------------------------------------------------------------------//
+
+void compute_buffer_size_test( rtt_dsxx::UnitTest & ut )
 {
     // make data
 
@@ -121,11 +127,14 @@ void compute_buffer_size_test()
         if (c != test_string[i]) ITFAILS;
     }
 
-    if (rtt_ds_test::passed)
+    if( ut.numFails == 0 )
         PASSMSG("compute_buffer_size_test() worked fine.");
+
+    return;
 }
 
-void packing_test()
+//---------------------------------------------------------------------------//
+void packing_test( rtt_dsxx::UnitTest & ut)
 {
     // make some data
     double x = 102.45;
@@ -159,21 +168,20 @@ void packing_test()
         if (p.get_ptr() != b2+s2) ITFAILS;
 
         // Catch a failure when excedding the buffer limit:
-#if DBC
-        bool caught = false;
-        try
+        if( ut.dbcOn() && ! ut.dbcNothrow() )
         {
-            p << iz;
+            bool caught = false;
+            try
+            {
+                p << iz;
+            }
+            catch (const rtt_dsxx::assertion & /* error */ )
+            {
+                cout << "Good, caught the exception" << endl;
+                caught = true;
+            }
+            if (!caught) ITFAILS;
         }
-        catch (const rtt_dsxx::assertion & /* error */ )
-        {
-            cout << "Good, caught the exception" << endl;
-            caught = true;
-        }
-        if (!caught) ITFAILS;
-#endif
-
-
     }
     
     // unpack the data
@@ -195,20 +203,22 @@ void packing_test()
 
         if (u.get_ptr() != s1+b1) ITFAILS;
 
-#if DBC
-        // try catching a failure
-        bool caught = false;
-        try
+        // If DBC is off or if DBC nothrow is on, then this test is invalid. 
+        if( ut.dbcOn() && ! ut.dbcNothrow() )
         {
-            u.unpack(i);
+            // try catching a failure
+            bool caught = false;
+            try
+            {
+                u.unpack(i);
+            }
+            catch (const rtt_dsxx::assertion & /* error */ )
+            {
+                cout << "Good, caught the exception" << endl;
+                caught = true;
+            }
+            if (!caught) ITFAILS;
         }
-        catch (const rtt_dsxx::assertion & /* error */ )
-        {
-            cout << "Good, caught the exception" << endl;
-            caught = true;
-        }
-        if (!caught) ITFAILS;
-#endif 
 
         u.set_buffer(s2, b2);
         u >> i >> d;
@@ -307,7 +317,7 @@ void packing_test()
 
 //---------------------------------------------------------------------------//
 
-void std_string_test()
+void std_string_test( rtt_dsxx::UnitTest & ut )
 {
     vector<char> pack_string;
 
@@ -372,7 +382,7 @@ void std_string_test()
 
 //---------------------------------------------------------------------------//
  
-void packing_functions_test()
+void packing_functions_test( rtt_dsxx::UnitTest & ut )
 {
     
     // Data to pack:
@@ -436,12 +446,12 @@ void packing_functions_test()
 
     // Now, manually copy the packed size of the packed vector into the total
     // data array.
-    std::copy(packed_int.begin(), packed_int.end(), back_inserter(total_packed));
+    copy(packed_int.begin(), packed_int.end(), back_inserter(total_packed));
     
     // Now, manually append the data of the packed vector into the total data
     // array. 
-    std::copy(packed_vector.begin(), packed_vector.end(),
-              back_inserter(total_packed));
+    copy(packed_vector.begin(), packed_vector.end(),
+         back_inserter(total_packed));
 
     
 
@@ -455,12 +465,12 @@ void packing_functions_test()
 
     // Manually copy the packed size of the packed string into the total data
     // array.
-    std::copy(packed_int.begin(), packed_int.end(), back_inserter(total_packed));
+    copy(packed_int.begin(), packed_int.end(), back_inserter(total_packed));
 
     // Manually append the data of the packed string into the total data
     // array.
-    std::copy(packed_string.begin(), packed_string.end(),
-              back_inserter(total_packed));
+    copy(packed_string.begin(), packed_string.end(),
+         back_inserter(total_packed));
 
 
 
@@ -499,15 +509,16 @@ void packing_functions_test()
 
     if (y_new != y) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if( ut.numFails == 0 )
         PASSMSG("pack_data and unpack_data work fine.");
 
+    return;
 }
 
 
 //---------------------------------------------------------------------------//
 
-void endian_conversion_test()
+void endian_conversion_test( rtt_dsxx::UnitTest & ut )
 {
 
     Packer p;
@@ -551,55 +562,37 @@ void endian_conversion_test()
     for (int i=0; i<letter_length; ++i)
         if (unpacked_letters[i] != letters[i]) ITFAILS;
 
-
+    return;
 }
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
         // >>> UNIT TESTS
-        packing_test();
-        
-        std_string_test();
-
-        packing_functions_test();
-
-        compute_buffer_size_test();
-
-        endian_conversion_test();
+        packing_test(ut);
+        std_string_test(ut);
+        packing_functions_test(ut);
+        compute_buffer_size_test(ut);
+        endian_conversion_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &error)
     {
-        cout << "While testing tstPacking_Utils, " << ass.what()
-             << endl;
-        return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << error.what() << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_ds_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstPacking_Utils Test: PASSED" 
-             << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstPacking_Utils." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstPacking_Utils.cc
+// end of tstPacking_Utils.cc
 //---------------------------------------------------------------------------//

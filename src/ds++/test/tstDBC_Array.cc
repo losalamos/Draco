@@ -3,11 +3,15 @@
   \file    ds++/test/tstArray.cc
   \author  Paul Henning
   \brief   Test of the rtt_dsxx::DBC_Array class
-  \note    Copyright 2005-2010  Los Alamos National Security, LLC
+  \note    Copyright (C) 2005-20102  Los Alamos National Security, LLC
+           All rights reserved.
   \version $Id$
 */
 //---------------------------------------------------------------------------//
 
+#include "../ScalarUnitTest.hh"
+#include "../DBC_Array.hh"
+#include "../Release.hh"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -15,14 +19,16 @@
 #include <set>
 #include <algorithm>
 #include <time.h>
-#include "../DBC_Array.hh"
-#include "../Release.hh"
-#include "ds_test.hh"
 
 using std::cout;
 using std::endl;
 using rtt_dsxx::DBC_Array;
 using std::string;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
 
 typedef DBC_Array<int> AInt;
 
@@ -37,43 +43,42 @@ struct Test_Class
     time_t class_time;
 };
 
-
 //---------------------------------------------------------------------------//
-bool test_empty(AInt& empty_array)
+bool test_empty( rtt_dsxx::UnitTest & ut, AInt& empty_array )
 {
-    if(empty_array.size() != 0) ITFAILS;
-    if(!empty_array.empty()) ITFAILS;
-    if(empty_array.begin() != 0) ITFAILS;
+    if(empty_array.size() != 0)                  ITFAILS;
+    if(!empty_array.empty())                     ITFAILS;
+    if(empty_array.begin() != 0)                 ITFAILS;
     if(empty_array.end() != empty_array.begin()) ITFAILS;
-    if(!(empty_array == empty_array)) ITFAILS;
-    if(empty_array != empty_array) ITFAILS;
+    if(!(empty_array == empty_array))            ITFAILS;
+    if(empty_array != empty_array)               ITFAILS;
     AInt def2;
-    if(!(empty_array == def2)) ITFAILS;
-    if(empty_array != def2) ITFAILS;
-#if DBC & 1
-    size_t catch_count = 0;
-    try
+    if(!(empty_array == def2))                   ITFAILS;
+    if(empty_array != def2)                      ITFAILS;
+    if( ut.dbcOn() && ! ut.dbcNothrow() )
     {
-        empty_array[0] = 1;
+        size_t catch_count = 0;
+        try
+        {
+            empty_array[0] = 1;
+        }
+        catch (rtt_dsxx::assertion & /* error */ )
+        {
+            catch_count += 1;
+        }
+        if(catch_count != 1) ITFAILS;
     }
-    catch (rtt_dsxx::assertion & /* error */ )
-    {
-	catch_count += 1;
-    }
-    if(catch_count != 1) ITFAILS;
-#endif
-
     return true;
 }
 
-
 //---------------------------------------------------------------------------//
-bool test_sized_array(AInt             const & sv, 
-                      size_t           const   Exp_Size, 
-                      std::vector<int> const & Exp_Value)
+bool test_sized_array( rtt_dsxx::UnitTest     & ut,
+                       AInt             const & sv, 
+                       size_t           const   Exp_Size, 
+                       std::vector<int> const & Exp_Value)
 {
     if(sv.size() != Exp_Size) ITFAILS;
-    if(sv.empty()) ITFAILS;
+    if(sv.empty())            ITFAILS;
     if(static_cast<size_t>(std::distance(sv.begin(), sv.end())) != Exp_Size)
         ITFAILS;
 
@@ -109,77 +114,76 @@ bool test_sized_array(AInt             const & sv,
     if (&sv.front()!=sv.begin()) ITFAILS;
     if (&sv.back()+1!=sv.end()) ITFAILS;
 
-#if DBC & 1
-    size_t catch_count = 0;
-
-    int foo = 0;
-    for(size_t i = 0; i < Exp_Size*2; ++i)
+    if( ut.dbcOn() && ! ut.dbcNothrow() )
     {
-	try
-	{
-	    foo += sv[i];
-	}
-	catch (rtt_dsxx::assertion & /* error */ )
-	{
-            catch_count += 1;
-	}
-    }
-    if(catch_count != Exp_Size) ITFAILS;
+        size_t catch_count = 0;
 
-#endif
+        int foo = 0;
+        for(size_t i = 0; i < Exp_Size*2; ++i)
+        {
+            try
+            {
+                foo += sv[i];
+            }
+            catch (rtt_dsxx::assertion & /* error */ )
+            {
+                catch_count += 1;
+            }
+        }
+        if(catch_count != Exp_Size) ITFAILS;
+    }
     return true;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_default_ctor()
+void test_default_ctor(rtt_dsxx::UnitTest & ut)
 {
     AInt default_ctor;
-    test_empty(default_ctor);
-    if (rtt_ds_test::passed)
+    test_empty(ut,default_ctor);
+    if (ut.numFails == 0)
 	PASSMSG("default constructor works.");
     else
 	FAILMSG("default constructor FAILED.");
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_size_5()
+void test_size_5(rtt_dsxx::UnitTest & ut)
 {
     AInt sv5(5,0);
     std::vector<int> exp_val(5,0);
-    test_sized_array(sv5, 5, exp_val);
+    test_sized_array(ut,sv5, 5, exp_val);
     sv5.clear();
-    test_empty(sv5);
+    test_empty(ut,sv5);
 
     AInt sv8(size_t(8),int(10));
     exp_val.assign(8,10);
-    test_sized_array(sv8, 8, exp_val);
+    test_sized_array(ut,sv8, 8, exp_val);
 
     AInt sv0(0);
     sv0.clear();
-    test_empty(sv0);
+    test_empty(ut,sv0);
     sv0.swap(sv0);
-    test_empty(sv0);
+    test_empty(ut,sv0);
     AInt sv0_copy(sv0);
-    test_empty(sv0_copy);
+    test_empty(ut,sv0_copy);
     sv0_copy = sv0_copy;
-    test_empty(sv0_copy);
+    test_empty(ut,sv0_copy);
 
     std::ostringstream out;
     out << sv0;
     if (out.str().size()>0) ITFAILS;
 
-    if (sv5 == sv8) ITFAILS;
+    if (sv5 == sv8)         ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("length/value constructor works.");
     else
 	FAILMSG("length/value constructor FAILED.");
 }
 
 //---------------------------------------------------------------------------//
-void test_non_pod()
+void test_non_pod( rtt_dsxx::UnitTest & ut )
 {
     // Show that we are calling the default constructor on non-POD types.
     const time_t time_s = time(0);
@@ -213,16 +217,15 @@ void test_non_pod()
  	if(foo[i].class_time != tc_master.class_time-2) ITFAILS;
     }
 
-
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("non-POD operations work.");
     else
 	FAILMSG("non-POD operations FAILED.");
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_assign_to_empty()
+void test_assign_to_empty(rtt_dsxx::UnitTest & ut)
 {
     std::set<int> cont;		// use this for non-sequential memory
     std::vector<int> exp_val;
@@ -236,16 +239,16 @@ void test_assign_to_empty()
 
     inserted.assign(cont.begin(), cont.end());
 
-    test_sized_array(inserted, 10, exp_val);
-    if (rtt_ds_test::passed)
+    test_sized_array(ut,inserted, 10, exp_val);
+    if (ut.numFails == 0)
 	PASSMSG("assignment to empty works.");
     else
 	PASSMSG("assignment to filled FAILED.");
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_assign_to_filled()
+void test_assign_to_filled( rtt_dsxx::UnitTest & ut )
 {
     std::set<int> cont;		// use this for non-sequential memory
     std::vector<int> exp_val;
@@ -259,24 +262,23 @@ void test_assign_to_filled()
     // Different sizes
     AInt inserted(2);
     inserted.assign(cont.begin(), cont.end());
-    test_sized_array(inserted, 10, exp_val);
+    test_sized_array(ut,inserted, 10, exp_val);
 
     AInt ss(10);
     AInt::iterator orig_start = ss.begin();
     ss.assign(cont.begin(), cont.end());
     if(orig_start != ss.begin()) ITFAILS; // shouldn't change memory
-    test_sized_array(ss, 10, exp_val);
+    test_sized_array(ut,ss, 10, exp_val);
 
-
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("assignment to filled works.");
     else
 	PASSMSG("assignment to filled FAILED.");
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_swap()
+void test_swap( rtt_dsxx::UnitTest & ut )
 {
     std::vector<int> exp_val_a(10);
     for(size_t i = 0; i < 10; ++i)
@@ -289,8 +291,8 @@ void test_swap()
     const std::vector<int> exp_val_b(4);
     AInt c_b(4,0);
 
-    test_sized_array(c_a, 10, exp_val_a);
-    test_sized_array(c_b, 4, exp_val_b);
+    test_sized_array(ut,c_a, 10, exp_val_a);
+    test_sized_array(ut,c_b, 4, exp_val_b);
 
     AInt::iterator list10_start = c_a.begin();
     AInt::iterator list4_start = c_b.begin();
@@ -298,37 +300,36 @@ void test_swap()
     c_a.swap(c_b);
 
     if(c_b.begin() != list10_start) ITFAILS;
-    if(c_a.begin() != list4_start) ITFAILS;
+    if(c_a.begin() != list4_start)  ITFAILS;
 
-    test_sized_array(c_b, 10, exp_val_a);
-    test_sized_array(c_a, 4, exp_val_b);
+    test_sized_array(ut,c_b, 10, exp_val_a);
+    test_sized_array(ut,c_a, 4, exp_val_b);
 
     c_b.swap(c_a);
     if(c_a.begin() != list10_start) ITFAILS;
-    if(c_b.begin() != list4_start) ITFAILS;
+    if(c_b.begin() != list4_start)  ITFAILS;
 
-    test_sized_array(c_a, 10, exp_val_a);
-    test_sized_array(c_b, 4, exp_val_b);
+    test_sized_array(ut,c_a, 10, exp_val_a);
+    test_sized_array(ut,c_b, 4, exp_val_b);
 
     c_b.clear();
     if(c_b.begin() != 0) ITFAILS;
-    test_empty(c_b);
+    test_empty(ut,c_b);
     c_b.swap(c_a);    
     if(c_a.begin() != 0) ITFAILS;
     if(c_b.begin() != list10_start) ITFAILS;
-    test_sized_array(c_b, 10, exp_val_a);
-    test_empty(c_a);
+    test_sized_array(ut,c_b, 10, exp_val_a);
+    test_empty(ut,c_a);
 
-
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("swap works.");
     else
 	PASSMSG("swap FAILED.");
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_copies()
+void test_copies( rtt_dsxx::UnitTest & ut )
 {
     std::vector<int> exp_val(10);
     for(size_t i = 0; i < 10; ++i)
@@ -343,80 +344,78 @@ void test_copies()
     AInt empty_copy; empty_copy = master;
     AInt full_copy(5); full_copy = master;
 
-    test_sized_array(ctor_copy, 10, exp_val);
-    test_sized_array(empty_copy, 10, exp_val);
-    test_sized_array(full_copy, 10, exp_val);
+    test_sized_array(ut,ctor_copy, 10, exp_val);
+    test_sized_array(ut,empty_copy, 10, exp_val);
+    test_sized_array(ut,full_copy, 10, exp_val);
 
-    if(ctor_copy != master) ITFAILS;
-    if(master != empty_copy) ITFAILS;
+    if(ctor_copy != master)     ITFAILS;
+    if(master != empty_copy)    ITFAILS;
     if(full_copy != empty_copy) ITFAILS;
 
-    if(master.begin() == ctor_copy.begin()) ITFAILS;
+    if(master.begin() == ctor_copy.begin())  ITFAILS;
     if(master.begin() == empty_copy.begin()) ITFAILS;
-    if(master.begin() == full_copy.begin()) ITFAILS;
+    if(master.begin() == full_copy.begin())  ITFAILS;
 
     if(ctor_copy.begin() == empty_copy.begin()) ITFAILS;
-    if(ctor_copy.begin() == full_copy.begin()) ITFAILS;
+    if(ctor_copy.begin() == full_copy.begin())  ITFAILS;
 
     if(empty_copy.begin() == full_copy.begin()) ITFAILS;
 
-
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("copies work.");
     else
 	PASSMSG("copies FAILED.");
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void test_assign()
+void test_assign( rtt_dsxx::UnitTest & ut )
 {
     AInt master;
     std::vector<int> cmp;
 
     cmp.assign(5,3);
     master.assign(5, 3);
-    test_sized_array(master, 5, cmp);
+    test_sized_array(ut,master, 5, cmp);
 
     // Make sure that data gets changed, even if the size stays the same
     cmp.assign(5,6);
     master.assign(5,6);
-    test_sized_array(master, 5, cmp);
+    test_sized_array(ut,master, 5, cmp);
 
     // Check that assigning to a new size works
     cmp.assign(8,6);
     master.assign(8,6);
-    test_sized_array(master, 8, cmp);
+    test_sized_array(ut,master, 8, cmp);
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("assign works.");
     else
 	PASSMSG("assign FAILED.");
-
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-void more_iterator_init_tests()
+void more_iterator_init_tests( rtt_dsxx::UnitTest & ut )
 {
     AInt master(7, 8);
     std::vector<int> cmp(7, 8);
 
-    test_sized_array(master, 7, cmp);
+    test_sized_array(ut,master, 7, cmp);
 
     AInt slave(master.begin(), master.end());
 
-    test_sized_array(slave, 7, cmp);
+    test_sized_array(ut,slave, 7, cmp);
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails == 0)
 	PASSMSG("iterator_init works.");
     else
 	PASSMSG("iterator_init FAILED.");
-
+    return;
 }
 
 //---------------------------------------------------------------------------//
-void test_resize()
+void test_resize(rtt_dsxx::UnitTest & ut)
 {
     AInt A;
     unsigned const newSize(7);
@@ -425,7 +424,7 @@ void test_resize()
     for( size_t i=0; i< newSize; i++)
         A[i] = 0;   
     
-    bool tr_passes = test_sized_array( A, newSize, cmp);
+    bool tr_passes = test_sized_array(ut, A, newSize, cmp);
     if (tr_passes)
 	PASSMSG("resize works.");
     else
@@ -434,7 +433,7 @@ void test_resize()
 }
 
 //---------------------------------------------------------------------------//
-void test_comparisons()
+void test_comparisons(rtt_dsxx::UnitTest & ut)
 {
     AInt A(7,0);
     AInt B(7,1);
@@ -475,48 +474,38 @@ void test_comparisons()
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-	test_default_ctor();
-	test_non_pod();
-	test_size_5();
-	test_assign_to_empty();
-	test_assign_to_filled();
-	test_swap();
-	test_copies();
-	test_assign();
-	more_iterator_init_tests();
-        test_resize();
-        test_comparisons();
+	test_default_ctor(ut);
+	test_non_pod(ut);
+	test_size_5(ut);
+	test_assign_to_empty(ut);
+	test_assign_to_filled(ut);
+	test_swap(ut);
+	test_copies(ut);
+	test_assign(ut);
+	more_iterator_init_tests(ut);
+        test_resize(ut);
+        test_comparisons(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tstDBC_Array, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
     }
-
+    catch( ... )
     {
-	// status of test
-	cout << endl;	
-	cout <<     "*********************************************" << endl;
-	if (rtt_ds_test::passed) 
-	{
-	    cout << "**** tstDBC_Array Test: PASSED\n";
-	}
-	cout <<     "*********************************************" << endl;
-	cout << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
     }
-
-    cout << "Done testing DBC_Array" << endl;
-    return 0;
+    return ut.numFails;
 }   
+
+//---------------------------------------------------------------------------//
+// end of tstDBC_Array.cc
+//---------------------------------------------------------------------------//
+
 

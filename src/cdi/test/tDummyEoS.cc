@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 10:52:50 2001
  * \brief  EoS class test.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +14,7 @@
 #include "cdi_test.hh"
 #include "DummyEoS.hh"
 #include "../EoS.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
@@ -27,11 +30,16 @@ using rtt_cdi_test::match;
 using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_EoS()
+void test_EoS( rtt_dsxx::UnitTest & ut )
 {
     // --------------------- //
     // Create an EoS object. //
@@ -113,47 +121,34 @@ void test_EoS()
 		<< " returned values that are out of spec.";
 	FAILMSG( message.str() );
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	// >>> UNIT TESTS
-	test_EoS();
+	test_EoS(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch( rtt_dsxx::assertion &err )
     {
-	cout << "While testing tDummyEoS, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_test::passed) 
+    catch( ... )
     {
-        cout << "**** tDummyEoS Test: PASSED" 
-	     << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tDummyEoS." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tDummyEoS.cc
+// end of tDummyEoS.cc
 //---------------------------------------------------------------------------//
