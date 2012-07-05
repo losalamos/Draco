@@ -496,10 +496,11 @@ examining the \texttt{ChangeLog}, the version numbers found in
 prior releases.  However, this process will rely primary on the
 \svn\ tag values for the top level \texttt{CMakeLists.txt}.
 
-Ensure that the working copy of draco is at the \texttt{HEAD} of the
-\svn\ repository by executing the command '\texttt{svn update}' from
-the \draco\ source directory.  Now examine the \svn\ log for
-\texttt{CMakeLists.txt} as follows:
+The tagged version of \draco\ can be found using the '\texttt{svn list}' command as follows:
+%Ensure that the working copy of draco is at the \texttt{HEAD} of the
+%\svn\ repository by executing the command '\texttt{svn update}' from
+%the \draco\ source directory.  Now examine the \svn\ log for
+%\texttt{CMakeLists.txt} as follows:
 %
 \lstset{language=ksh,
   showstringspaces=false,
@@ -510,8 +511,7 @@ the \draco\ source directory.  Now examine the \svn\ log for
 }
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
   xrightmargin=1.0in]
-cd /ccs/codes/radtran/svn/draco/tags
-ls
+svn list file:///ccs/codes/radtran/svn/draco/tags | grep draco-
         draco-6_3_0
         draco-6_2_1
         draco-6_2_0
@@ -520,23 +520,9 @@ ls
         draco-5_21_0
 ...
 \end{lstlisting}
-%% cvs log CMakeLists.txt | more
-
-%%    RCS file: /ccs/codes/radtran/cvsroot/draco/CMakeLists.txt,v
-%%    Working file: CMakeLists.txt
-%%    head: 1.31
-%%    symbolic names:
-%%         draco-6_3_0: 1.31
-%%         draco-6_2_1: 1.27
-%%         draco-6_2_0: 1.25
-%%         draco-6_1_0: 1.18
-%%         draco-6_0_0: 1.9
-%%         draco-5_21_0: 1.5
-
 %
-Take note of the list of {\it symbolic links}.  The largest value
-should correspond to the most recent \draco\ release.  In the example
-above, the most recent release was \texttt{draco-6\_3\_0}.  If the
+The tag with the largest value should be the same as the most recent release entry in the \texttt{ChangeLog}.
+In the example above, the most recent release was \texttt{draco-6\_3\_0}.  If the
 next release is a major release, its version tag will be
 \texttt{draco-7\_0\_0}.  If the next release is a minor release, the
 version tag will be \texttt{draco-6\_4\_0} and if the next release is
@@ -584,12 +570,11 @@ supported.
 \multicolumn{1}{c}{Machine} & 
 \multicolumn{1}{c}{Compiler Set} & 
 \multicolumn{1}{c}{Vendors} \\ \hline
-TLCC hurricane/turing & Intel 10.0.023 &  OpenMPI-1.4.3 \\
-                      & PGI 9.0-3      &  OpenMPI-1.4.3 \\
+Hurricane/Turing/Typhoon/Luna & Intel 12.1.2 &  OpenMPI-1.4.5 \\
+Ceilo/Ceilito         & Intel 12.1.2     &  MPICH2-5.4.2 \\
 Roadrunner/rr\_dev    & GCC 4.3.0      &  OpenMPI-1.4.3 \\
 YellowRail            & PGI 9.0-3      &  OpenMPI-1.4.3 \\
 Dawn                  & --             &  --             \\
-Ceilo/Ceilito         & PGI 10.9.0     &  MPICH2-5.2.0.7 \\
 Moonlight             & --             & --             \\
 Mapache               & --             & --             \\
 \hline\hline
@@ -609,45 +594,32 @@ with various compiler (GNU, Portland Group, Intel) and vendor sets.
 
 A summary changes per component will be included in the
 \texttt{ChangeLog}, including changes to the build system,
-\draco\ developer environment and documents. It is unfortunate that
-\cvs\ records change information per file instead of by commit because
-it makes it a bit painful to extract information changes since the
-last release.  Here is the process that can provide this information.
-
-{\bf *** OUT OF DATE: NEEDS TO BE UPDATED FOR SVN ***}
+\draco\ developer environment and documents.
+% It is unfortunate that
+%\cvs\ records change information per file instead of by commit because
+%it makes it a bit painful to extract information changes since the last release.  
+Here is the process that can provide this information.
 
 \begin{enumerate}
-\item Generate a list of files that have been modified since the last
-  release and count the files.
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
-  xrightmargin=1.0in]
-
-*** OUT OF DATE: NEEDS TO BE UPDATED FOR SVN ***
-
-cvs -q diff -N -c -r draco-6_3_0 | grep "Index: " > files_changed.log
-num_files_changed=`cat files_changed.log | sort -u | wc -l`
+\item Generate a list of files that have been modified since the last release and count the files.
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=.5in, 
+  xrightmargin=0.5in]
+svn diff -r"{2012-01-06}":"{2012-06-28}" --summarize &> modified_files.log
+num_files_changed=`cat modified_files.log | awk  '{print $2}' | sort -u | wc -l`
 echo $num_files_changed
 \end{lstlisting}
 %$
-\item Generate a log file that contains all changes since the last
+\item Generate a log file that contains all commit messages since the last
   release.  This command doesn't work with symbolic tag names and you
   must use a date range instead.  The date of the last release can be
   taken from the \texttt{ChangeLog}.
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
-  xrightmargin=1.0in]
-cvs -q log -NS -d"2011-01-06<now" > comments_since_last_release.log
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
+  xrightmargin=0.5in]
+svn log -r"{2012-01-06}":"{2012-06-28}" --verbose &> svn_messages.log  
+number_of_commits=`cat svn_message.log | grep "Changed paths:" | wc -l`
 \end{lstlisting}
-% -N don't print a list of tags
-% -S suppress the header
-\item The total number of commits since the last release can be
-  aproximated using the following script:
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
-  xrightmargin=1.0in]
-grep "date: "  comments_since_last_release.log | \
-     sed -e 's/state.*//g' | sort -u | wc -l
-\end{lstlisting}
-\item Go through the file \texttt{comments\_since\_last\_release.log}
-  and summarize the log entries in the \texttt{ChangeLog}.
+\item Go through the file \texttt{svn\_messages.log}
+  and summarize the log entries in the \texttt{ChangeLog} following the format from previous release messages.
 \end{enumerate}
 
 Record the number of files modified and the number of commits to the
@@ -704,56 +676,53 @@ defects can be copied to \texttt{ChangeLog}.
 
 The last set of data required for the release note in the
 \texttt{ChangeLog} are the current code statistics including total
-lines-of-code, LOC, as reported by the \draco\ tool
-\texttt{count\_loc.sh} and the function point code coverage as
-reported by the Bullseye tool~\cite{bullseyeweb}.
-
-The LOC metric is generated by running the \draco\ tool
-\texttt{count\_loc.sh} from the \draco\ source directory.  This report
-can be copied directly into the \texttt{ChangeLog}.
+lines-of-code, LOC, as reported by the tool
+\texttt{cloc}\footnote{\url{http://cloc.sourceforge.net/}} and the function point code coverage as
+reported by the Bullseye tool~\cite{bullseyeweb}.  Both of these reports can be extracted from the nightly dashboard data by using the \draco\ script \texttt{regression/metrics\_report.sh}.  Edit this script and set the email address to your own, then run the script.  An email with all of the relevant data will be created.  The data will look something like what follows and should be copied into the \texttt{ChangeLog} file.
 %
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
-  xrightmargin=1.0in]
-cd draco
-tools/count_loc.sh
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
+  xrightmargin=0.5in]
+======================================================================
+Code Metrics for Draco and Jayenne, Thu Jul 5 12:21:43 MDT 2012
+======================================================================
+ 
+--------------------
+Draco
+--------------------
+ 
+Lines of code
+-------------
+http://cloc.sourceforge.net v 1.54  T=21.0 s (54.6 files/s, 12985.3 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C++                            423          15036          22227          72905
+Text                           178           6486           6816          47634
+C/C++ Header                   355           8334          22978          20914
+Lisp                            13           1801           2517          11916
+Perl                             2           1294           1009           8330
+CMake                          104           1729           3693           4797
+XML                              2            933              0           2418
+Python                          26           1210           1343           2197
+C                               14            277            552            652
+Bourne Shell                    10            170            488            548
+CSS                              1            113             37            395
+make                            11            171            108            344
+Fortran 90                       2             19             34             54
+C Shell                          2             18             40             51
+HTML                             2              8             15             45
+awk                              1              6              2             27
+-------------------------------------------------------------------------------
+SUM:                          1146          37605          61859         173227
+-------------------------------------------------------------------------------
 
-Counting lines of source code --
-Directory:  /home/kellyt/draco
-Date     :  Mon Jan 9 10:13:18 MST 2012
 
-                 Total C++ source: 40418
-   C++ source in test directories: 22788
-      C++ contract specifications: 1549
-                     C++ comments: 42466
-             Total Fortran source: 0
-                 Fortran comments: 0
-              LaTeX Documentation: 15427
-                      HTML source: 0
-                        Text docs: 7589
-       Build system script source: 9958
-   Executable shell script source: 599
-           Executable Perl source: 1867
-                    Python source: 3870
-                    Expect source: 0
-                     Elisp source: 6696
-\end{lstlisting}
-
-The code coverage data can be extracted from the coverage data file
-that is generated during the nightly regression test on
-\texttt{ccscs8}. This report can be copied directly into the
-\texttt{ChangeLog}. 
-%
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
-  xrightmargin=1.0in]
-cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
-export COVFILE=`pwd`/CMake.cov
-export COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src; covdir -p
-
+Code coverage
+-------------
 Directory               Function Coverage           C/D Coverage
 ------------------  ---------------------  ---------------------
 units/                  82 /    82 = 100%      58 /    58 = 100%
-traits/                 16 /    16 = 100%       0 /     0
+traits/                 16 /    16 = 100%       0 /     0       
 diagnostics/             8 /     8 = 100%       4 /     4 = 100%
 special_functions/      29 /    29 = 100%     190 /   198 =  95%
 fit/                     1 /     1 = 100%      15 /    16 =  93%
@@ -766,20 +735,20 @@ mesh_element/           24 /    24 = 100%     165 /   213 =  77%
 cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
 meshReaders/            15 /    15 = 100%     127 /   172 =  73%
 fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
-RTT_Format_Reader/     315 /   321 =  98%     273 /   356 =  76%
-ds++/                  632 /   651 =  97%     571 /   643 =  88%
+ds++/                  667 /   670 =  99%     586 /   665 =  88%
+RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+parser/                266 /   269 =  98%    1075 /  1357 =  79%
+timestep/               62 /    63 =  98%     104 /   178 =  58%
+rng/                    68 /    70 =  97%      65 /    70 =  92%
 norms/                  25 /    26 =  96%      21 /    34 =  61%
 viz/                    24 /    25 =  96%     129 /   168 =  76%
-timestep/               59 /    62 =  95%     104 /   178 =  58%
-c4/                    177 /   189 =  93%     352 /   406 =  86%
-cdi_analytic/          130 /   140 =  92%     156 /   190 =  82%
-rng/                    62 /    67 =  92%      63 /    70 =  90%
-parser/                246 /   266 =  92%    1050 /  1351 =  77%
-quadrature/            167 /   188 =  88%     517 /   683 =  75%
+cdi_analytic/          133 /   140 =  95%     163 /   194 =  84%
+quadrature/            179 /   191 =  93%     544 /   637 =  85%
+c4/                    177 /   190 =  93%     356 /   414 =  85%
 plot2D/                 22 /    29 =  75%      46 /    76 =  60%
-lapack_wrap/            11 /    16 =  68%       0 /     0
+lapack_wrap/            12 /    16 =  75%       0 /     0       
 ------------------  ---------------------  ---------------------
-Total                 2230 /  2340 =  95%    4809 /  5999 =  80%
+Total                 2314 /  2370 =  97%    4889 /  5993 =  81%
 \end{lstlisting}
 
 %%---------------------------------------------------------------------------%%
@@ -832,9 +801,11 @@ svn update
 Assuming that the working directory is fully sychronized with the HEAD
 revision of the \svn\ repository, we can tag the release.
 %
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
-  xrightmargin=2.0in]
-svn copy file:///ccs/codes/radtran/svn/draco/trunk file:///ccs/codes/radtran/svn/draco/tags/draco-6_4_0 -m "Tagging the draco-6_4_0 release."
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
+  xrightmargin=1.0in]
+svn copy file:///ccs/codes/radtran/svn/draco/trunk \
+   file:///ccs/codes/radtran/svn/draco/tags/draco-6_4_0 \
+   -m "Tagging the draco-6_4_0 release."
 \end{lstlisting}
 % cvs tag 'draco-6_4_0'
 
@@ -869,9 +840,11 @@ svn copy file:///ccs/codes/radtran/svn/draco/trunk file:///ccs/codes/radtran/svn
 As mentioned in the policy section, bug fixes are handled on
 \svn\ branches.  To generate such a branch the following
 \svn\ commands are used:
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
-  xrightmargin=2.0in]
-svn copy file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_0 file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_1 -m "Creating the a branch for a patch to Draco-1_4_0."
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
+  xrightmargin=1.0in]
+svn copy file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_0 \
+   file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_1 \
+   -m "Creating the a branch for a patch to Draco-1_4_0."
 \end{lstlisting}
 %cvs -q checkout -r draco-1_4_0 draco
 %cvs tag -b draco-1_4_1
@@ -883,15 +856,16 @@ Additional patch branches to fix other bugs for \draco-2\_4\_0 should
 be generated by using the \texttt{svn copy} command to create a new
 branch at \texttt{/ccs/codes/radtran/svn/draco/tags}.  Thus, to
 make a tag to this version use the following commands:
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=2.0in, 
-  xrightmargin=2.0in]
-svn copy file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_1 file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_2 -m "Creating the a branch for a patch to Draco-1_4_1."
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
+  xrightmargin=1.0in]
+svn copy file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_1 \
+   file:///ccs/codes/radtran/svn/draco/tags/draco-1_4_2 \
+   -m "Creating the a branch for a patch to Draco-1_4_1."
 (make changes)
 (run regression tests)
 \end{lstlisting}
 We note that \svn\ branches automatically release code to the end of
-the branch.  Hence, \texttt{svn checkout
-  file:///ccs/codes/radtran/svn/draco/tags/draco-1\_4\_1 draco} will
+the branch.  Hence, `\texttt{svn} \texttt{checkout} \texttt{file:\-///ccs/\-codes/\-radtran\-/svn/draco/tags/draco-1\_4\_1} \texttt{draco}` will
 automatically give the sources at the end of the \draco\ branch
 connected to release~1.4.  We add tags to clarify the development and
 bug tracking process in \draco\ even though they may not be strictly
@@ -922,8 +896,8 @@ mkdir -p /usr/projects/draco/draco-6_3_0/logs
 cp -r /usr/projects/draco/draco-6_2_0/scripts /usr/projects/draco/draco-6_3_0/scripts
 \end{lstlisting}
 \item Access the tagged source code.
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=1.0in, 
-  xrightmargin=1.00in]
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.20in, 
+  xrightmargin=0.20in]
 cd /usr/projects/draco/draco-6_3_0/source
 svn checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/draco/tags/draco-6_3_0 draco
 \end{lstlisting}
@@ -954,9 +928,8 @@ build types and build environment are correctly set
 %
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.20in, 
   xrightmargin=0.20in]
-#!/bin/env bash
+#!/bin/bash -l
 
-#MSUB -V
 #MSUB -l walltime=01:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
@@ -972,14 +945,10 @@ build_permissions="g+rwX"
 install_permissions="g+rwX,o=g-w"
 
 # environment (use draco modules)
-module () 
-{
-  eval `/usr/bin/modulecmd bash $*` 
-}
 module purge
-module load hpc-tools friendly-testing python cmake
-module load intel-c/10.0.023 intel-f/10.0.023 openmpi-intel/1.4.3
-module load gsl/1.14-intel lapack/atlas-3.8.3-intel numdiff
+module load friendly-testing python cmake
+module load intel/12.1.2 openmpi/1.4.5
+module load gsl/1.14-intel lapack/3.4.0-intel numdiff
 module list
 
 # This is the bug fix number.  Normally set this to zero.
@@ -989,12 +958,8 @@ CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 ddir="draco-6_3_0"
 platform="tu"
-dmpi=openmpi143
-df90=gfortran
-dcpp=g++
-
-# Define or source your platform information here
-dcpp=intel100023
+dmpi=openmpi145
+dcpp=intel1212
 df90=$dcpp
 
 # Locations for source, build and install
@@ -1155,12 +1120,12 @@ memo or other document), the following procedure may be used:
   xrightmargin=0.75in]
 files=`find . -name '*.hh' -o -name '*.cc' -o -name '*.txt' \
        -o -name '*.cmake' -o -name '*.in' -o -name '*.h'`
-svn blame $files > file_list
+svn annotate $files > file_list
 \end{lstlisting}
 \item Generate a list of authors.
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.75in, 
   xrightmargin=0.75in]
-user_list=`cat file_list | awk '{print $2}' | sort -u | sed -e 's/^(//'`
+user_list=`cat file_list | awk '{print $2}' | sort -u`
 \end{lstlisting}
 \item Generate a report
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.75in, 
@@ -1214,12 +1179,12 @@ Currently, \draco\ can make use of the following vendor libraries
 \multicolumn{1}{c}{Vendor name} & 
 \multicolumn{1}{c}{Recommended Version} & 
 \multicolumn{1}{c}{Required or Optional} \\ \hline
-OpenMPI                & 1.3.3+ & Required \\
+OpenMPI                & 1.4.3+ & Required \\
 GNU Scientific Library & 1.14+  & Required \\
 Numdiff                & 5.2.1+ & Required \\
 Python                 & $<$3.0 & Required \\
-CMake                  & 2.8.6+ & Required \\
-LAPACK                 & 2.8.3+ & Optional \\
+CMake                  & 2.8.8+ & Required \\
+LAPACK                 & 3.4.0+ & Optional \\
 Grace (gnuplot)        & 4.4+   & Optional \\
 PAPI                   & 4.1+   & Optional \\
 \hline\hline
