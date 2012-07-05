@@ -709,7 +709,7 @@ Table~\ref{tab:draco-with} lists commonly used argument based configure options 
       \comp{NUMDIFF} & \comp{FILEPATH} to \sys{numdiff} & automatic discovery &  tool used by testing system for comparing output to gold standard output. \\
       \comp{VENDOR\_DIR} & \comp{PATH} & empty & location used by build system for auto discovery of vendor software. \\
       \comp{DRACO\_C4} & MPI or SCALAR & MPI$^{\text{a}}$ & see \S~\ref{sec:vendor_libs} \\
-      \comp{DRACO\_DBC\_LEVEL} & 0-7 & 7$^{\text{b}}$ &  see \S~\ref{sec:dbc} \\
+      \comp{DRACO\_DBC\_LEVEL} & 0-15 & 7$^{\text{b}}$ &  see \S~\ref{sec:dbc} \\
       \comp{DRACO\_DIAGNOSTICS} & 0-7 & 0 &  see \S~\ref{sec:diagnostics} \\
       \comp{DRACO\_LIBRARY\_TYPE} & STATIC or SHARED & SHARED &  toggle compilation of archive or shared object (DLL) libraries \\
       \comp{DRACO\_TIMING} & 0-2 & 0 &  see \S~\ref{sec:diagnostics} \\
@@ -932,8 +932,8 @@ libraries are set before compiling on either of these systems.
 
 The \comp{DRACO\_DBC\_LEVEL} variable controls \draco's Design-by-Contract
 (DBC) machinery\index{Design-by-Contract}\index{DBC}.  DBC support ranges from \comp{0} (lowest) to
-\comp{7} (highest).  The value is a bit mask similar to that used by the \sys{UNIX} command \comp{chmod}, \comp{+1} turns on \comp{Require}, 
-\comp{+2} turns on \comp{Check} and \comp{+4} turns on \comp{Ensure}.  If all options are activated, the  Design-by-Contract is 7. 
+\comp{15} (highest).  The value is a bit mask similar to that used by the \sys{UNIX} command \comp{chmod}, \comp{+1} turns on \comp{Require}, 
+\comp{+2} turns on \comp{Check}, \comp{+4} turns on \comp{Ensure} and \comp{+8} disables exception throwing.  If all options are activated, the  Design-by-Contract is 15. Normal Debug builds use \comp{DRACO\_DBC\_LEVEL=7} where all Design-by-Contract checks are active and exceptions are thrown when a contract is violated.
 Table~\ref{tab:dbc} shows the DBC level for various settings of \comp{DRACO\_DBC\_LEVEL}. \index{configure options!DRACO\_DBC\_LEVEL}
 \begin{table}
   \caption{DBC support in \draco.}
@@ -949,12 +949,20 @@ Table~\ref{tab:dbc} shows the DBC level for various settings of \comp{DRACO\_DBC
       5 & Ensure, Require, Remember \\
       6 & Ensure, Check, Remember \\
       7 & Ensure, Check, Require, Remember \\ 
+      8 & None \\
+      9 & Require, Remember, NoThrow \\
+      10 & Check, Remember, NoThrow \\
+      11 & Check, Require, Remember, NoThrow \\
+      12 & Ensure, Remember, NoThrow \\
+      13 & Ensure, Require, Remember, NoThrow \\
+      14 & Ensure, Check, Remember, NoThrow \\
+      15 & Ensure, Check, Require, Remember, NoThrow \\ 
       \hline\hline
     \end{tabular}
   \end{center}
 \end{table}
 If this option is not explicitly set by the developer (\comp{DRACO\_DBC\_LEVEL} is not defined) then the
-\dsxx\ package automatically sets DBC to \comp{7}, its highest
+\dsxx\ package automatically sets DBC to \comp{7}, its most aggressive
 setting, for \sys{Debug} configrations.  For \sys{Release} configurations, the DBC will be defaulted to \comp{0}, no DBC checking.  
 For more information on the \dsxx\ package DBC and assertion components, see the \dsxx\ source documentation.
 
