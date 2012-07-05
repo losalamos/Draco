@@ -86,9 +86,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) 
-   if( DRACO_ENABLE_CXX11 )
-     set( CMAKE_CXX_FLAGS              "${CMAKE_CXX_FLAGS} -std=c++0x")
-   endif()
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -146,7 +143,9 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Toggle for OpenMP
-toggle_compiler_flag( USE_OPENMP "-fopenmp" )
+toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
+# Toggle for C++11 support
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX")
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake

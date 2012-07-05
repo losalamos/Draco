@@ -254,43 +254,46 @@ endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Toggle a compiler flag based on a bool
+##
+## Examples:
+##   toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
+##   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX")
 ##---------------------------------------------------------------------------##
-macro( toggle_compiler_flag switch compiler_flag )
-   if( ${switch} )
-      if( NOT "${CMAKE_C_FLAGS}" MATCHES ${compiler_flag} )
-         set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${compiler_flag}" 
-            CACHE STRING "compiler flags" FORCE )
-      endif()
-      if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "${compiler_flag}" )
-         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${compiler_flag}" 
-            CACHE STRING "compiler flags" FORCE )
-      endif()
-      if( NOT "${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${compiler_flag}" )
-         set( CMAKE_EXE_LINKER_FLAGS 
-            "${CMAKE_EXE_LINKER_FLAGS} ${compiler_flag}" 
-            CACHE STRING "linker flags" FORCE )
-      endif()
-   else()
-      if( "${CMAKE_C_FLAGS}" MATCHES "${compiler_flag}" )
-         string( REPLACE "${compiler_flag}" "" 
-            CMAKE_C_FLAGS ${CMAKE_C_FLAGS} )
-         set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" 
-            CACHE STRING "compiler flags" FORCE )
-      endif()
-      if( "${CMAKE_CXX_FLAGS}" MATCHES "${compiler_flag}" )
-         string( REPLACE "${compiler_flag}" "" 
-            CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
-         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" 
-            CACHE STRING "compiler flags" FORCE )
-      endif()
-      if( "${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${compiler_flag}" )
-         string( REPLACE "${compiler_flag}" "" 
-            CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
-         set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}"  
-            CACHE STRING "linker flags" FORCE )
-      endif()
-   endif()
+macro( toggle_compiler_flag switch compiler_flag compiler_flag_var_names)
+   # generate names that are safe for CMake RegEx MATCHES commands
+   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})      
 
+   # Loop over types of variables to check: CMAKE_C_FLAGS,
+   # CMAKE_CXX_FLAGS, etc.
+   foreach( comp ${compiler_flag_var_names} )
+
+      # sanity check
+      if( NOT ${comp} STREQUAL "C" AND
+            NOT ${comp} STREQUAL "CXX" AND
+            NOT ${comp} STREQUAL "EXE_LINKER")
+         message(FATAL_ERROR "When calling
+toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names),
+compiler_flag_var_names must be set to one or more of these valid
+names: C;CXX;EXE_LINKER.")
+      endif()
+      
+      string( REPLACE "+" "x" safe_${CMAKE_${comp}_FLAGS}
+         ${CMAKE_${comp}_FLAGS} )
+
+      if( ${switch} )
+         if( NOT "${safe_${CMAKE_${comp}_FLAGS}}" MATCHES "${safe_compiler_flag}" )
+            set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag}" 
+               CACHE STRING "compiler flags" FORCE )
+         endif()
+      else()
+         if( "${safe_${CMAKE_${comp}_FLAGS}}" MATCHES "${safe_compiler_flag}" )
+            string( REPLACE "${compiler_flag}" "" 
+               CMAKE_${comp}_FLAGS ${CMAKE_${comp}_FLAGS} )
+            set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" 
+               CACHE STRING "compiler flags" FORCE )
+         endif()
+      endif()
+   endforeach()
 endmacro()
 
 #------------------------------------------------------------------------------#

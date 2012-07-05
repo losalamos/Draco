@@ -3,7 +3,7 @@
 # author Kelly Thompson 
 # date   2010 Nov 1
 # brief  Establish flags for Linux64 - Intel C++
-# note   Copyright © 2010 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -70,9 +70,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -inline-level=1 -ip -fp -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
-  if( DRACO_ENABLE_CXX11 )
-     set( CMAKE_CXX_FLAGS             "${CMAKE_C_FLAGS} -std=c++0x")
-  endif()
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -strict-ansi -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -99,8 +96,9 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Toggle for OpenMP
-toggle_compiler_flag( USE_OPENMP "-openmp" )
+toggle_compiler_flag( USE_OPENMP "-openmp" "C;CXX;EXE_LINKER")
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX")
 
 #------------------------------------------------------------------------------#
-# End config/unix-g++.cmake
+# End config/unix-intel.cmake
 #------------------------------------------------------------------------------#
