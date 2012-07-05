@@ -1,0 +1,62 @@
+Release of Draco-6_4_0
+
+Draco has been updated to version 6_4_0 and is tied to the release of
+Jayenne-6_2_0.  This release was completed on the following
+platfoms/toolsets: 
+
+Platform      Compiler          MPI              
+TU/HU/TY/LU   Intel 12.1.2      OpenMPI-1.4.5
+CT/CI         Intel 12.1.2      MPICH2-5.4.2
+YR            PGI 9.0-3         OpenMPI-1.4.3
+Roadrunner    GCC-4.3.0         OpenMPI-1.4.3
+
+Summary of changes:
+ * 307 files where changed, added or removed in 292 commits.
+ * All releases will use Intel 12.1.2 and OpenMPI-1.4.5 or
+   MPICH2-5.4.2 (CT/CI) except Roadrunner. 
+ * Improved build support for CT/CI including support for building w/o
+   a toolchain file. 
+ * Updated documents: 
+    - Draco Release Policy
+    - Draco Build System
+    - GettingStarted merged with "Draco Build System"
+ * Updated modules/environments
+    - For CCS LAN, module infrastruture moved out of draco source tree
+      and to /ccs/codes/radtran/vendors.
+ * AppliationUnitTest as modified for better support on CT/CI
+   systems. 
+ * cdi_analytic: Modify pseudo line spectrum model to use a damping
+   rather than Gauss profile. Use proper black body weights in band
+   averages. Allow for possibility some bands have negligible energy
+   in them. 
+ * Added a new feature to Draco DBC that will print DBC messages w/o
+   throwing the associated exception from toss_cookies(). The new
+   NOTHROW feature is enabled by setting the 4th bit of
+   DRACO_DBC_LEVEL (+8) and is meant for use in optimized code where
+   all DBC messages are desired w/o stopping the code. 
+ * Added new component, FortranChecks, to demonstrate Fortran as a
+   primary supported language in Draco.  This component tests
+   Fortran/C linkage and demonstrates ISO_C_BINDING.
+ * lapack_wrap was reworked to use CMake's FortranCInterface features
+   to automatically detect and use the correct Fortran/C name
+   mangling. 
+ * In quadrature, produced static public interfaces to the algorithms
+   underlying the computeD, computeN and compute_N2lk private members
+   of QuadServices, so that these could be applied any arbitrary
+   quadrature. Used these new functions to greatly simplify the
+   OrdinateSet compute_moment_to_discrete_weights and
+   compute_discrete_to_moment_weights and permit them to work properly
+   for quadrature sets of one dimensionality pruned or expanded to
+   work in another dimensionality.
+
+A more complete list of changes can be found in the ChangeLog. 
+
+Known issues:
+
+ * tstOMP fails on CT/CI.
+
+Please direct your questions or concerns to myself or the Draco team
+(draco@lanl.gov). 
+
+
+
