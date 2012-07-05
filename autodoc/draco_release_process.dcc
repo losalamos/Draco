@@ -18,7 +18,7 @@ official Draco installations provided at
 The purpose of this document is to outline the release policy and procedures
 for Draco products.  The Draco team requires that regular releases be made for
 code libraries and executables.  These releases will be given a revision
-number.  Since we use CVS, these release numbers must also coincide with a CVS
+number.  Since we use SVN, these release numbers must also coincide with a SVN
 tag.
 
 <!-- ---------------------------------------------------------------------- -->
@@ -34,7 +34,7 @@ tag.
 - \ref draco_release_create_changelog
 - \ref draco_release_update_tags 
 - \ref draco_release_check_code
-- \ref draco_release_tag_cvs
+- \ref draco_release_tag_svn
 - \ref draco_release_generate_release
 - \ref draco_release_notification
 
@@ -51,8 +51,8 @@ proccess of software release in the Draco code system.
 
 <li>The general release policy in Draco requires that all components be
     released with a common Draco version/tag number.  This tag should take the
-    form <tt>draco-\#_\#_\#</tt> for packages.  This release number should be
-    present in the top level CMakelists.txt file.  This version number will be
+    form <tt>draco-\#_\#_\#</tt>.  This release number should be present in
+    the top level CMakelists.txt file.  This version number will be
     automatically written to the ds++/Release.hh file and all other Draco
     components will point to this file.</li>
 
@@ -62,8 +62,8 @@ proccess of software release in the Draco code system.
 
       <li>Each component must pass its respective suite of regression tests on
           all currently supported platforms. (As of August 2011 we support
-          CCS-2 64-bit Linux, Turing/Hurricane/Typhoon, Cielito/Cielo and
-          rr-dev/RoadRunner.)</li>
+          CCS-2 64-bit Linux, Turing/Hurricane/Typhoon, Cielito/Cielo, Luna,
+          Yellowrail and rr-dev/RoadRunner.)</li>
 
       <li>Documentation must be fully up-to-date.</li>
 
@@ -75,8 +75,8 @@ proccess of software release in the Draco code system.
    </ul>
 </li>
 
-<li>Files under the Draco CVS repository should only have
-    draco CVS tags (no 3rd party tags in our repository).</li>
+<li>Files under the Draco SVN repository should only have
+    draco SVN tags (no 3rd party tags in our repository).</li>
 
 <li>The number scheme for release tags is major_minor_bugfix.  The first digit
     only changes for a major release.  The second digit changes for minor
@@ -159,11 +159,12 @@ release.
 \code
 Machine                Compilers        Vendors
 ----------------       ---------------  -----------
-TLCC hurricane/turing  Intel 10.0.023   OpenMPI-1.4.3
+TLCC hurricane/turing/ Intel 12.1.2     OpenMPI-1.4.5
+     typhoon
+YellowRail/Luna        Intel 12.1.2     OpenMPI-1.4.5
+Ceilo/Ceilito          Intel 12.1.2     MPICH2-5.4.2
 Roadrunner             GCC 4.3.0        OpenMPI-1.4.3
-Redtail/YellowRail     PGI 9.0-3        OpenMPI-1.4.3
 Dawn                   --               --
-Ceilo/Ceilito          PGI 10.9.0       MPICH2-5.2.0.7
 \endcode
 
 <!-- ---------------------------------------------------------------------- -->
@@ -173,14 +174,12 @@ Ceilo/Ceilito          PGI 10.9.0       MPICH2-5.2.0.7
 Determine the last release number
 
 \code
-   % cd draco
-   % cvs log CMakeLists.txt | more
- 
-   RCS file: /ccs/codes/radtran/cvsroot/draco/CMakeLists.txt,v
-   Working file: CMakeLists.txt
-   head: 1.5
-   symbolic names:
-        draco-5_20_0: 1.3  <-- This is what you are looking for.
+   % svn list file:///ccs/codes/radtran/svn/draco/tags
+
+   draco-6_2_0/
+   draco-6_2_1/
+   draco-6_3_0/      <-- This is what you are looking for.
+   draco_021299/
 \endcode
 
 <!-- ---------------------------------------------------------------------- -->
@@ -190,24 +189,22 @@ Determine the last release number
 There are several commands that can be used to build a description of code
 changes.
 
-- List files that have been modified:
+- List files that have been modified and the total number of files modified:
 \code
-   % cvs -q diff -N -c -r draco-5_20_0 &> changes_since_#_#_#.log
+   % svn diff -r"{2012-01-06}":"{2012-06-28}" --summarize &> modified_files.log
+   % cat modified_files.log | awk  '{print $2}' | sort -u | wc -l
 \endcode
 
-- List the cvs log comments for files that have been changed:
+- List the svn log comments for files that have been changed:
 \code
-   % cat changes_since_5_20_0.log | grep "Index:" &> files_changed_since_5_20_0.log  
-# Number of files changed is approximately:
-   % cat files_changed_since_5_20_0.log | sort -u | wc -l
+   % svn log -r"{2012-01-06}":"{2012-06-28}" --verbose &> svn_message.log
 \endcode
-or
+- Dates are samples.  You will need to use the actual date range for your
+  query.
+- List number of commits:
 \code
-   % cvs -q log -NS -d"2010-01-29<now" > comments_since_5_20_0.log
-# number of commits is approximately:
-   % cat comments_since_5_20_0.log | grep "date: " | sort -u | wc -l
+   % cat svn_message.log | grep "Changed paths:" | wc -l
 \endcode
-- Dates are samples.  You will need to use the actual date range for your query.
 - Summarize changes in the Draco ChangeLog and in the ReleaseNote.
 
 <!-- ---------------------------------------------------------------------- -->
@@ -253,12 +250,12 @@ Replace all version tags found in source code with the new version number.
 
 <!-- ---------------------------------------------------------------------- -->
 
-\section draco_release_tag_cvs Tag the CVS repsitory
+\section draco_release_tag_svn Tag the SVN repsitory
 
 - Commit all these changes to CVS (new version tag, updated \c ChangeLog, xml
   files, etc.). For example,
   \code
-     % cvs commit -m"Preparing for release of draco-#_#_#"
+     % svn commit -m"Preparing for release of draco-#_#_#"
   \endcode    
 - Place a CVS tag on the source files.
   - Checkout clean copies of all packages:

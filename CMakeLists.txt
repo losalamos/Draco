@@ -103,7 +103,7 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 3)
+set(DRACO_VERSION_MINOR 4)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )
@@ -131,14 +131,8 @@ else()
    set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-15)?" )
 endif()
 # provide a constrained drop down menu in cmake-gui
-set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS 0 1 2 3 4 5 6 7 15)
-
-#
-# Packaging (CPack) options
-# 
-#TODO: Not a packaged product, so leave out for now:
-#include( cpack_env )
-# For example see CMake source dist: CMakeCPack.cmake.
+set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS 
+   0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
 
 #
 # Build Draco components:

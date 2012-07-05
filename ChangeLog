@@ -1,3 +1,214 @@
+2012-06-28  Kelly (KT) Thompson  <kellyt@lanl.gov>
+
+	*  draco: Release draco-6_3_0.  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - clubimc-6_2_0
+	  - milagro-5_4_0
+	  - wedgehog-7_5_0
+	  - capsaicin-3_2_0
+
+	* Platforms:
+	  YR/TU/HU/TY/LU Intel 12.1.2    OpenMPI-1.4.5
+	  CT/CI          Intel 12.1.2    MPICH2-5.4.2
+	  Roadrunner     GCC-4.3.0       OpenMPI-1.4.3
+
+	* Summary of changes:
+	  - 307 files where changed, added or removed in 292 commits.
+	  - All releases will use Intel 12.1.2 and OpenMPI-1.4.5 or
+	    MPICH2-5.4.2 (CT/CI) except Roadrunner.
+
+	* Details per package:
+
+	Build System:
+	  - Improved detection and setup of MPI libraries, flags, MPIEXEC,
+  	    etc.
+	  - Turn on OpenMP support by default for all compilers sans PGI.
+	  - Nightly regressions added for OSX (mistress).
+	  - Improve auto-detection of CUDA and CUDA compiler flag setup.
+	  - Improved determination of HOST_NAME_MAX for OSX.
+	  - No longer support ATLAS version of LAPACK.  Require the use of
+	    lapack-3.4.0 or later.
+	  - Discovered an issue with PGI zero-cost exception handeling
+	    which is turned on by default in version 11+.  Initially added
+	    the --nozc_eh flag for PGI to avoid using this feature of the
+	    compiler.  Later we determined that newer PGI versions are
+	    fundamentally broken and decided to only support Intel and
+	    GCC.
+	  - Improved build support for CT/CI including support for
+	    building w/o a toolchain file.
+
+	Developer Environment:
+	  - Provide an updated memo for "Draco Release Policy and
+	    Procedures."
+	  - Change default module for Bullseye Coverage to 8.4.12.
+	  - Provide SVN 1.6.17 on ICN platforms and version 1.7.2 to the
+	    CCS LAN.
+	  - Provide a presentation of how CMake is used by Draco (talk
+	    given to the SWIFT team).
+	  - Update Emacs setup scripts so that F9 starts the psvn wrapper
+	    for SVN.
+	  - Remove module setup files for older software (cmake-2.8.1,
+  	    gcc-4.4.4, etc.)
+	  - Provide an updated Draco Release Policy document.
+	  - Update gettingStarted document and then merge it into an
+  	    updated Draco Build System document.
+	  - Retired a lot of documents and scripts that are deprecated by
+	    the CMake-based build system.
+	  - On the CCS LAN, remove module binary and setup from Draco
+	    sources.  It is now located at /ccs/codes/radtran/vendors/...
+
+	c4:
+	  - In Timer, provide improved support for PAPI instrumentation.
+	  - ApplicationUnitTest was updated to optionally provide wall
+	    clock times for individual tests.
+	  - ApplicationUnitTest updated to support 'aprun' on CT/CI.  This
+	    includes modifying the add_application_test() cmake macro so
+	    that it only runs from the 'login' and knows how to run under
+	    aprun.
+
+	cdi_analytic:
+	  - eliminate redundant code.
+	  - Added tests to improve code coverage.
+	  - Modify pseudo line spectrum model to use a damping rather than
+	    Gauss profile. Use proper black body weights in band
+	    averages. Allow for possibility some bands have negligible
+	    energy in them. For example, the command
+
+	   add_scalar_tests(
+              SOURCES   "${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc"
+	      DEPS      "Lib_dsxx"
+	      TEST_ARGS "--np 2"
+	      APPLICATION_UNIT_TEST )
+
+	    will start the test c4/test/tstApplicationUnitTest "--np" "2"
+	    from the login node.
+
+	ds++:
+	  - In SP, provide improved detection and reporting of casting
+	    between incompatible pointer types.
+	  - Provide new class SystemCall that provides functions like
+	    draco_gethostname() and draco_getpid() and masks direct system
+	    calls.
+	  - Rework isFinite class so that Draco standard dependencies
+	    between .hh, .i.hh, .cc and _pt.cc files exist.
+	  - Added tests to improve code coverage.
+	  - Added a new feature to Draco DBC that will print DBC messages
+	    w/o throwing the associated exception from toss_cookies().
+	    The new NOTHROW feature is enabled by setting the 4th bit of
+	    DRACO_DBC_LEVEL (+8) and is meant for use in optimized code
+	    where all DBC messages are desired w/o stopping the code.
+
+	FortranChecks:
+	  - This is a new draco component associated with making Fortran a
+	    primary Draco language.  This component tests operatio of the
+	    Fortran compiler and Fortran/C++ linkage.  It also provides
+	    sample ISO_C_BINDING syntax.
+
+	lapack_wrap:
+	  - Implement CMake's FortranCInterface features to automatically
+	    detect and use the correct Fortran/C name mangling.
+	  - Eliminate the Blas_Level_1.hh file by moving all of it's
+	    content into Blas.hh.  This is a minor change since the
+	    previous Blas.hh only included the Blas_Level_1.hh header.
+	  - Update the unit test so that it runs through all of the
+	    wrapped blas routines for floats and doubles.  Previously, we
+	    only tested the interfaces for doubles.
+
+	parser:
+	  - Fixed a memory leak discovered in Abstract_Class_Parser.
+	  - Add unit testst to improve code coverage.
+	  - Added tests to improve code coverage.
+
+	quadrature:
+	  - Produced static public interfaces to the algorithms underlying
+	    the computeD, computeN and compute_N2lk private members of
+	    QuadServices, so that these could be applied any arbitrary
+	    quadrature. Used these new functions to greatly simplify the
+	    OrdinateSet compute_moment_to_discrete_weights and
+	    compute_discrete_to_moment_weights and permit them to work
+	    properly for quadrature sets of one dimensionality pruned or
+	    expanded to work in another dimensionality.
+
+	RTT_Format_Reader:
+	  - Added unit tests for improved coverage of main library.
+
+	* Corrected defects:
+	  - artf22444: Regression reports fail to post from Cielito.
+
+	* Known defects:
+	  - Known defects are listed on LANL's TeamForge web server,
+	    tf.lanl.gov.  Here is a list of known defects:
+
+	  - artf21614: Safe_Ptr has a design defect (This feature is not
+	    currently used by Capsaicin or Jayenne).
+	  - artf22544: c4/tstOMP fails on CT (This feature is not
+	    currently used by Capsaicin or Jayenne).
+          - artf20096: c4/tstComm_Dup fails for optimized builds on
+	    Cielito.
+	  - #93: Provide more checks for C++11 capabilities/features.
+
+	* Statistics: (draco/regression/metrics_report.sh)
+
+Lines of code
+-------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C++                            423          15036          22227          72905
+Text                           178           6486           6816          47634
+C/C++ Header                   355           8334          22978          20914
+Lisp                            13           1801           2517          11916
+Perl                             2           1294           1009           8330
+CMake                          104           1729           3693           4797
+XML                              2            933              0           2418
+Python                          26           1210           1343           2197
+C                               14            277            552            652
+Bourne Shell                    10            170            488            548
+CSS                              1            113             37            395
+make                            11            171            108            344
+Fortran 90                       2             19             34             54
+C Shell                          2             18             40             51
+HTML                             2              8             15             45
+awk                              1              6              2             27
+-------------------------------------------------------------------------------
+SUM:                          1146          37605          61859         173227
+-------------------------------------------------------------------------------
+
+Code coverage
+-------------
+Directory               Function Coverage           C/D Coverage
+------------------  ---------------------  ---------------------
+units/                  82 /    82 = 100%      58 /    58 = 100%
+traits/                 16 /    16 = 100%       0 /     0
+diagnostics/             8 /     8 = 100%       4 /     4 = 100%
+special_functions/      29 /    29 = 100%     190 /   198 =  95%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+cdi/                    39 /    39 = 100%      27 /    30 =  90%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+linear/                 16 /    16 = 100%     324 /   392 =  82%
+roots/                   8 /     8 = 100%     256 /   312 =  82%
+mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
+ds++/                  667 /   670 =  99%     586 /   665 =  88%
+RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+parser/                266 /   269 =  98%    1075 /  1357 =  79%
+timestep/               62 /    63 =  98%     104 /   178 =  58%
+rng/                    68 /    70 =  97%      65 /    70 =  92%
+norms/                  25 /    26 =  96%      21 /    34 =  61%
+viz/                    24 /    25 =  96%     129 /   168 =  76%
+cdi_analytic/          133 /   140 =  95%     163 /   194 =  84%
+quadrature/            179 /   191 =  93%     544 /   637 =  85%
+c4/                    177 /   190 =  93%     356 /   414 =  85%
+plot2D/                 22 /    29 =  75%      46 /    76 =  60%
+lapack_wrap/            12 /    16 =  75%       0 /     0
+------------------  ---------------------  ---------------------
+Total                 2314 /  2370 =  97%    4889 /  5993 =  81%
+
+
 2012-3-15 Kent G. Budge <kgbudge@lanl.gov>
 
 	* Produced static public interfaces to the algorithms underlying the
@@ -53,7 +264,7 @@
 	    no longer requires libgandolf.
 	  - Introduce CUDA support.
 	  - Provide basic support for PAPI instrumentation.
-	  - Provide basic support for OpenMPI directives.
+	  - Provide basic support for OpenMP directives.
 
 	* Details per package:
 

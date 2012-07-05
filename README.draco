@@ -1,5 +1,5 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> DRACO RELEASE draco-6_1_0   
+>>> DRACO RELEASE draco-6_4_0   
 >>> CCS-2 Computational Physics Group      
 >>> Copyright LANS LLC 
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -78,6 +78,11 @@ Design-by-Contract, etc.
 fit: {Least squares fit}
 
 fpe_trap: {Catch IEEE floating point exceptions}
+
+FortranCheck [draco/src/FortranCheck]: {Test Fortran compatibility} The
+examples in this component will demonstrate if the Fortran compiler is working;
+if Fortran/C interlanguage linking/running is working and sample ISO_C_BINDING
+calls.
 
 lapack_wrap: BLAS and LAPACK functionality for C++.
 

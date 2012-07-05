@@ -166,9 +166,8 @@
 
 % generate file list
 % cd draco
-% files1=`find . -name '*.hh'`
-% files2=`find . -name '*.cc'`
-% cvs annotate $files1 $files2 > blame
+% files=`find . -name '*.hh' -o -name '*.cc' -o -name '*.txt' -o -name '*.cmake' -o -name '*.in' -o -name '*.h' -o -name '*.tex'`
+% cvs annotate $files > blame
 
 % generate user list
 % cat blame | awk '{print $2}' > blame.ulist
