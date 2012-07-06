@@ -21,7 +21,12 @@ subroutine sub1(alpha,np,nf) bind(c)
   real(c_double), value, intent(in) :: alpha
   integer(c_size_t), intent(inout) :: np
   integer(c_size_t), intent(inout) :: nf
-  double precision :: small=1.0d-13
+
+  ! local variables
+  double precision :: small
+
+  !----------------------------------------
+  small=1.0d-13
 
   write(*,'(a,f5.1,2i3)') "Hello, world.", alpha, np, nf
 
