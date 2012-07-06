@@ -10,8 +10,9 @@
 	  - capsaicin-3_2_0
 
 	* Platforms:
-	  YR/TU/HU/TY/LU Intel 12.1.2    OpenMPI-1.4.5
+	  TU/HU/TY/LU    Intel 12.1.2    OpenMPI-1.4.5
 	  CT/CI          Intel 12.1.2    MPICH2-5.4.2
+	  YR             PGI 9.0-3       OpenMPI-1.4.3
 	  Roadrunner     GCC-4.3.0       OpenMPI-1.4.3
 
 	* Summary of changes:
@@ -66,15 +67,7 @@
 	  - ApplicationUnitTest updated to support 'aprun' on CT/CI.  This
 	    includes modifying the add_application_test() cmake macro so
 	    that it only runs from the 'login' and knows how to run under
-	    aprun.
-
-	cdi_analytic:
-	  - eliminate redundant code.
-	  - Added tests to improve code coverage.
-	  - Modify pseudo line spectrum model to use a damping rather than
-	    Gauss profile. Use proper black body weights in band
-	    averages. Allow for possibility some bands have negligible
-	    energy in them. For example, the command
+	    aprun. For example, the command
 
 	   add_scalar_tests(
               SOURCES   "${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc"
@@ -84,6 +77,14 @@
 
 	    will start the test c4/test/tstApplicationUnitTest "--np" "2"
 	    from the login node.
+
+	cdi_analytic:
+	  - eliminate redundant code.
+	  - Added tests to improve code coverage.
+	  - Modify pseudo line spectrum model to use a damping rather than
+	    Gauss profile. Use proper black body weights in band
+	    averages. Allow for possibility some bands have negligible
+	    energy in them.
 
 	ds++:
 	  - In SP, provide improved detection and reporting of casting

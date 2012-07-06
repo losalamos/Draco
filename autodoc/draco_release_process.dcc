@@ -257,23 +257,10 @@ Replace all version tags found in source code with the new version number.
   \code
      % svn commit -m"Preparing for release of draco-#_#_#"
   \endcode    
-- Place a CVS tag on the source files.
-  - Checkout clean copies of all packages:
+- Place a SVN tag on the source files.
   \code
-       % cd $RELEASEDIR
-       % cvs co draco
+       % svn copy file:///ccs/codes/radtran/svn/draco/trunk file:///ccs/codes/radtran/svn/draco/tags/draco-#_#_#
   \endcode
-  - For each directory, tag the local copy:
-  \code
-       % cvs tag 'draco-#_#_#'
-  \endcode
-  - If you need to move a tag (e.g.: A file was changed that must be included
-    in the rlease.), you can force-move the version tag.
-  \code
-       % cvs tag -r 1.6 -F draco-#_#_# myfile.cc
-  \endcode
-  In the above example, '1.6' is the current version of the modified file (use
-  \c cvs \c log \c myfile.cc to see the version numbers)
 
 <!-- ---------------------------------------------------------------------- -->
 
@@ -281,14 +268,12 @@ Replace all version tags found in source code with the new version number.
 
 - Access the files from the release folder
 \code
-% export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
-% export CVS_RSH=ssh
 % cd /usr/projects/draco
 % install -d draco-6_2_0/source draco-6_2_0/scripts draco-6_2_0/logs
 % cd draco-6_2_0/scripts
 % cp ../../draco-6_1_0/scripts/* .
 % cd ../source
-% cvs -d ccscs8:/ccs/codes/radtran/cvsroot co -P -r draco-6_2_0 draco
+% svn co svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/draco/tags/draco-6_4_0 draco
 \endcode
 - Examine \c /usr/projects/crestone/dotfiles/Cshrc to determine what
   compilers to use for each platform (see \ref

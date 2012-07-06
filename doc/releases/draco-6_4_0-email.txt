@@ -2,7 +2,7 @@ Release of Draco-6_4_0
 
 Draco has been updated to version 6_4_0 and is tied to the release of
 Jayenne-6_2_0.  This release was completed on the following
-platfoms/toolsets: 
+platforms/toolsets: 
 
 Platform      Compiler          MPI              
 TU/HU/TY/LU   Intel 12.1.2      OpenMPI-1.4.5
@@ -21,9 +21,9 @@ Summary of changes:
     - Draco Build System
     - GettingStarted merged with "Draco Build System"
  * Updated modules/environments
-    - For CCS LAN, module infrastruture moved out of draco source tree
-      and to /ccs/codes/radtran/vendors.
- * AppliationUnitTest as modified for better support on CT/CI
+    - For CCS LAN, module infrastructure moved out of draco source
+      tree and to /ccs/codes/radtran/vendors.
+ * ApplicationUnitTest as modified for better support on CT/CI
    systems. 
  * cdi_analytic: Modify pseudo line spectrum model to use a damping
    rather than Gauss profile. Use proper black body weights in band
