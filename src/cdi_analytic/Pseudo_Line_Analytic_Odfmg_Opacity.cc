@@ -90,25 +90,20 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                                    vector<double>(bands_per_group));
 
     double g1 = group_bounds[0];
-    double const gmin = g1;
-    double const gmax = group_bounds[number_of_groups];
     vector<pair<double, double> > raw;
+    unsigned const N = qpoints_;
     for (unsigned g=0; g<number_of_groups; ++g)
     {
         double const g0 = g1;
         g1 = group_bounds[g+1];
         raw.resize(0);
         
-        for (unsigned iq=
-                 static_cast<unsigned>(qpoints_*(g0-gmin)/(gmax-gmin)-0.5);
-             iq<qpoints_;
-             ++iq)
+        for (unsigned iq=0; iq<N; ++iq)
         {
-            double const x = (iq+0.5)*(gmax-gmin)/qpoints_ + gmin;
-            if (x>=g1) break;
-            double x0 = iq*(gmax-gmin)/qpoints_ + gmin;
-            double x1 = (iq+1)*(gmax-gmin)/qpoints_ + gmin;
-            double weight(0.0);
+            double const x0 =     iq*(g1-g0)/N + g0;
+            double const x1 = (iq+1)*(g1-g0)/N + g0;
+            double const x = 0.5*(x0+x1);
+            double weight;
             switch (averaging_)
             {
                 case NONE:
@@ -128,14 +123,18 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     break;
            
                 default:
-                    Insist(false, "bad case");            
+                    Insist(false, "bad case");
+                    weight = 1.0;
+                    // should not be reached since Insist throws an exception;
+                    // here to suppress a compiler warning.
             }
             weight += sqrt(std::numeric_limits<double>::min()); 
-              // avoid division by 0
+              // avoid division by 0 at low temperatures where the high
+              // frequency groups have vanishing black body contribution
+            
             raw.push_back(pair<double, double>(monoOpacity(x, T), weight));
         }
         sort(raw.begin(), raw.end());
-        unsigned const N = raw.size();
 
         switch (averaging_)
         {
