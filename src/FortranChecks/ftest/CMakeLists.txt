@@ -16,7 +16,7 @@ file( GLOB test_sources *.f90 )
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
-set( test_deps "Lib_FortranChecks;Lib_dsxx" )
+set( test_deps "Lib_FortranChecks;Lib_dsxx;Lib_FC_Derived_Type" )
 
 # BUG: We shouldn't need the special {CMAKE_Fortran_compiler_libs} on
 #      the link line, but because of PGI 11-12 broken zc_eh feature,

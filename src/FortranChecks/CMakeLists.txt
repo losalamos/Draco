@@ -22,6 +22,7 @@ project( FortranChecks CXX Fortran )
 # ---------------------------------------------------------------------------- #
 
 file( GLOB f90sources *.f90 )
+file( GLOB Csources *.cc )
 
 #file( GLOB template_implementations *.t.hh *.i.hh )
 #file( GLOB sources *.cc )
@@ -45,11 +46,13 @@ file( GLOB f90sources *.f90 )
 #   ${PROJECT_BINARY_DIR} ) # config.h
 
 # ---------------------------------------------------------------------------- #
-# Build package library
+# Build package libraries
 # ---------------------------------------------------------------------------- #
 
 # add_component_library( target_name library_name "$sources" )
 add_component_library( Lib_FortranChecks FortranCheck "${f90sources}" )
+
+add_component_library( Lib_FC_Derived_Type FC_Derived_Type "${Csources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
