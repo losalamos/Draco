@@ -2,7 +2,7 @@
 # Draco - Support libraries for transport solvers.
 # Copyright 2012 LANS, LLC.
 # ---------------------------------------------------------------------------- #
-# $Id: CMakeLists.txt 6136 2011-09-14 00:16:01Z kellyt $
+# $Id$
 # ---------------------------------------------------------------------------- #
 
 project( FortranChecks_ftest Fortran )

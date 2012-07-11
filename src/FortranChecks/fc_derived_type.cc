@@ -20,6 +20,7 @@ struct my_informative_type
    double  some_double;
    int     some_int;
    int64_t some_large_int;
+   int *   some_pointer;
 };
 
 
@@ -27,9 +28,12 @@ struct my_informative_type
 extern "C" 
 void rtt_test_derived_type(const my_informative_type& mit, int& error_code)
 {
-    std::cout << "On C-interface, derived type has double = " <<
-                  mit.some_double << ", int = " << mit.some_int
-                  << ", large_int = " << mit.some_large_int << std::endl;
+    std::cout << "In the C-interface, derived type has double = " <<
+                  mit.some_double <<  std::endl
+                  << "int = " << mit.some_int << std::endl
+                  << "large_int = " << mit.some_large_int << std::endl
+                  << "*some_pointer[1] = " << *(mit.some_pointer)  << std::endl
+                  << "*some_pointer[2] = " << *(mit.some_pointer+1) << std::endl;
     std::cout << std::endl;
 
     error_code = 0;
@@ -45,7 +49,12 @@ void rtt_test_derived_type(const my_informative_type& mit, int& error_code)
        return;
     }
     else if (mit.some_large_int != ( (2LL) << 33) )
+    {
        error_code = 3;
+       return;
+    }
+    else if ( *(mit.some_pointer) != 2003 && *(mit.some_pointer+1) != 2012)
+       error_code = 4;
 
     return;
 }

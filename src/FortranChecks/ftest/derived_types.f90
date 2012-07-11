@@ -19,7 +19,7 @@
 ! into local scope.
 !---------------------------------------------------------------------------
 module rtt_test_derived_types
-     use iso_c_binding, only : c_double, c_int, c_int64_t
+     use iso_c_binding, only : c_double, c_int, c_int64_t, c_ptr, c_null_ptr
      implicit none
 
      ! Create a derived type that contains some "extra" information
@@ -27,6 +27,7 @@ module rtt_test_derived_types
          real(c_double)       :: some_double
          integer(c_int)       :: some_int
          integer(c_int64_t)   :: some_large_int
+         type(c_ptr)          :: some_pointer = C_NULL_PTR
      end type
 
      ! Now create an interface to the C routine that accepts that type
@@ -49,13 +50,14 @@ end module rtt_test_derived_types
 program test_derived_types
 
   use rtt_test_derived_types
-  use iso_c_binding, only : c_int, c_int64_t, c_double
+  use iso_c_binding, only : c_int, c_int64_t, c_double, c_loc, c_ptr
   implicit none
   
   !----------------------------------------------------------------------
   ! Variable declarations
    type(my_informative_type)  :: mit
    integer(c_int)             :: error_code
+   integer(c_int), allocatable, target, dimension(:) :: int_array
    
    !----------------------------------------------------------------------
    ! Initialization 
@@ -64,16 +66,25 @@ program test_derived_types
    mit%some_int        = 137
    mit%some_large_int  = 2_c_int64_t**34;
 
+   allocate(int_array(10))
+   int_array(1) = 2003
+   int_array(2) = 2012
+   mit%some_pointer = c_loc(int_array)
+
    error_code = -1 
    print *, "On Fortran side, derived type contains double =", mit%some_double
    print *, "integer = ", mit%some_int
-   print *, "and large integer = ", mit%some_large_int
+   print *, "large integer = ", mit%some_large_int
+   print *, "int_array(1) = ", int_array(1)
+   print *, "int_array(2) = ", int_array(2)
    print * 
 
    !----------------------------------------------------------------------
    ! Call the c-function with the derived type and check the error code
    call rtt_test_derived_type( mit, error_code)
-   
+  
+   deallocate(int_array)
+ 
    if( error_code .eq. 0 )then
       print '(a)', "Test: passed"
       print '(a)', "     error code is equal to zero"

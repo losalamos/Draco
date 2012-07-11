@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt 6475 2012-03-12 22:54:19Z kellyt $
+# $Id$
 
 cmake_minimum_required(VERSION 2.6)
 project( FortranChecks CXX Fortran )
