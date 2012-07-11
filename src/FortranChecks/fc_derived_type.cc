@@ -53,7 +53,7 @@ void rtt_test_derived_type(const my_informative_type& mit, int& error_code)
        error_code = 3;
        return;
     }
-    else if ( *(mit.some_pointer) != 2003 && *(mit.some_pointer+1) != 2012)
+    else if ( *(mit.some_pointer) != 2003 || *(mit.some_pointer+1) != 2012)
        error_code = 4;
 
     return;
