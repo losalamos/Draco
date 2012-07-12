@@ -274,8 +274,8 @@ class SortPermutation
         std::vector<IT> iters;
         iters.reserve(size());
         IT it = first;
-        while (it != last)
-            iters.push_back(it); ++it;
+        while (it != last) {
+            iters.push_back(it); ++it; }
         doCreatePermutation(first, last, comp, iters);
     }
 
