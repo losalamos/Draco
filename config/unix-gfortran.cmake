@@ -15,7 +15,18 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 
 # I know that gfortran 4.1 won't compile our code (maybe 4.2 or 4.3
 # will).
-if( "${CMAKE_CXX_COMPILER_VERSION}" STRLESS "4.3" )
+if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
+   execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} --version
+      OUTPUT_VARIABLE CMAKE_Fortran_COMPILER_VERSION
+      ERROR_QUIET )
+   string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
+      CMAKE_Fortran_COMPILER_VERSION
+      ${CMAKE_Fortran_COMPILER_VERSION})
+   string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
+            CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} )
+endif()
+if( "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.3" )
   message( FATAL_ERROR """
 *** Compiler incompatibility:
 gfortran < 4.3 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
