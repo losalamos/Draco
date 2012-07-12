@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Parse_Table.hh
+ * \file   Parse_Table.hh
  * \author Kent G. Budge
- * \brief Definition of Keyword and Parse_Table.
- * \note Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Definition of Keyword and Parse_Table.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,9 +12,9 @@
 #ifndef CCS4_Parse_Table_HH
 #define CCS4_Parse_Table_HH
 
-#include <vector>
-#include "ds++/Assert.hh"
 #include "Token_Stream.hh"
+#include "ds++/Assert.hh"
+#include <vector>
 
 namespace rtt_parser 
 {
@@ -176,14 +176,14 @@ class Parse_Table
     //! Add the keywords from another Parse_Table
     void add(Parse_Table const &);
 
-    std::vector<Keyword>::reserve;
+    using std::vector<Keyword>::reserve;
 
     //! Set parser options.
     void set_flags(unsigned char);
 
     // ACCESSORS
     
-    std::vector<Keyword>::size;
+    using std::vector<Keyword>::size;
 
     //! Return the current parser options.
     unsigned char get_flags() const { return flags_; }
@@ -272,6 +272,6 @@ bool Is_Well_Formed_Keyword(Keyword const &key);
 
 #endif  // CCS4_Parse_Table_HH
 //---------------------------------------------------------------------------//
-//                      end of Parse_Table.hh
+// end of Parse_Table.hh
 //---------------------------------------------------------------------------//
 
