@@ -7,6 +7,11 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
+# Useful options that could be added to aid debugging
+# http://gcc.gnu.org/wiki/Atomic/GCCMM
+# http://gcc.gnu.org/wiki/TransactionalMemory
+
+
 #
 # Sanity Checks
 # 
@@ -106,6 +111,15 @@ if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3 ) # 4
          set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wnoexcept" )
       endif()
    endif()
+   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 6 ) # 4.7 
+      # http://gcc.gnu.org/gcc-4.7/changes.html
+      if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wunused-local-typedefs" )
+         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wunused-local-typedefs" )
+      endif()
+      # if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wzero-as-null-pointer-constant" )
+      #    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wzero-as-null-pointer-constant" )
+      # endif()
+   endif()
 endif()
 
 ##---------------------------------------------------------------------------##
@@ -145,7 +159,21 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 # Toggle for OpenMP
 toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
 # Toggle for C++11 support
-toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX")
+# can use -std=c++11 with version 4.7+
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX") 
+
+
+
+# Notes for building gcc-4.7.1
+# ../gcc-4.7.1/configure \
+# --prefix=/ccs/codes/radtran/vendors/gcc-4.7.1 \
+# --enable-language=c++,fortran,lto \
+# --with-gmp-lib=/ccs/codes/radtran/vendors/Linux64/gmp-4.3.2/lib \
+# --with-gmp-include=/ccs/codes/radtran/vendors/Linux64/gmp-4.3.2/include \
+# --with-mpfr-lib=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0/lib \
+# --with-mpfr-include=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0/include \
+# --with-mpc-lib=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2/lib \
+# --with-mpc-include=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2/include 
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake
