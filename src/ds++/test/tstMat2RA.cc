@@ -106,21 +106,21 @@ void t1()
 {
     cout << "t1: beginning.\n";
 
-    {
-    // Test for required typedefs
+    // {
+    // // Test for required typedefs
 
-        typedef X::value_type value_type;
-        typedef X::reference reference;
-        typedef X::const_reference const_reference;
-        typedef X::pointer pointer;
-        typedef X::const_pointer const_pointer;
-        typedef X::iterator iterator;
-        typedef X::const_iterator const_iterator;
-        typedef X::difference_type difference_type;
-        typedef X::size_type size_type;
-        typedef X::reverse_iterator reverse_iterator;
-        typedef X::const_reverse_iterator const_reverse_iterator;
-    }
+    //     // typedef X::value_type value_type;
+    //     // typedef X::reference reference;
+    //     // typedef X::const_reference const_reference;
+    //     // typedef X::pointer pointer;
+    //     // typedef X::const_pointer const_pointer;
+    //     // typedef X::iterator iterator;
+    //     // typedef X::const_iterator const_iterator;
+    //     // typedef X::difference_type difference_type;
+    //     // typedef X::size_type size_type;
+    //     // typedef X::reverse_iterator reverse_iterator;
+    //     // typedef X::const_reverse_iterator const_reverse_iterator;
+    // }
 
     {
     // The following constructor is not required by the Random Access
@@ -335,14 +335,14 @@ void t2()
 {
     cout << "t2: beginning.\n";
 
-    {
-        typedef iterator_traits<X::iterator>::value_type value_type;
-        typedef iterator_traits<X::iterator>::difference_type difference_type;
-        typedef iterator_traits<X::iterator>::reference reference;
-        typedef iterator_traits<X::iterator>::pointer pointer;
-        typedef iterator_traits<X::iterator>::iterator_category
-                                              iterator_category;
-    }
+    // {
+    //     typedef iterator_traits<X::iterator>::value_type value_type;
+    //     typedef iterator_traits<X::iterator>::difference_type difference_type;
+    //     typedef iterator_traits<X::iterator>::reference reference;
+    //     typedef iterator_traits<X::iterator>::pointer pointer;
+    //     typedef iterator_traits<X::iterator>::iterator_category
+    //                                           iterator_category;
+    // }
 
     {
     // The following constructor is not required by the Random Access
@@ -574,7 +574,7 @@ void t2()
     }
 
     {
-        typedef iterator_traits<X::iterator>::value_type value_type;
+        // typedef iterator_traits<X::iterator>::value_type value_type;
 
         double darray[6] = {0, 1, 2, 3, 4, 5};
 
@@ -624,7 +624,7 @@ void t2()
     }
 
     {
-        typedef iterator_traits<X::iterator>::value_type value_type;
+        //typedef iterator_traits<X::iterator>::value_type value_type;
         typedef iterator_traits<X::iterator>::difference_type difference_type;
 
         double darray[6] = {0, 1, 2, 3, 4, 5};
@@ -761,15 +761,15 @@ void t3()
 {
     cout << "t3: beginning.\n";
 
-    {
-        typedef iterator_traits<X::const_iterator>::value_type value_type;
-        typedef iterator_traits<X::const_iterator>::difference_type
-                                                    difference_type;
-        typedef iterator_traits<X::const_iterator>::reference reference;
-        typedef iterator_traits<X::const_iterator>::pointer pointer;
-        typedef iterator_traits<X::const_iterator>::iterator_category
-                                                    iterator_category;
-    }
+    // {
+    //     typedef iterator_traits<X::const_iterator>::value_type value_type;
+    //     typedef iterator_traits<X::const_iterator>::difference_type
+    //                                                 difference_type;
+    //     typedef iterator_traits<X::const_iterator>::reference reference;
+    //     typedef iterator_traits<X::const_iterator>::pointer pointer;
+    //     typedef iterator_traits<X::const_iterator>::iterator_category
+    //                                                 iterator_category;
+    // }
 
     {
     // The following constructor is not required by the Random Access
@@ -997,7 +997,7 @@ void t3()
     }
 
     {
-        typedef iterator_traits<X::const_iterator>::value_type value_type;
+        // typedef iterator_traits<X::const_iterator>::value_type value_type;
 
         double darray[6] = {0, 1, 2, 3, 4, 5};
 
@@ -1047,7 +1047,7 @@ void t3()
     }
 
     {
-        typedef iterator_traits<X::const_iterator>::value_type value_type;
+        // typedef iterator_traits<X::const_iterator>::value_type value_type;
         typedef iterator_traits<X::const_iterator>::difference_type
                                                     difference_type;
 
@@ -1181,15 +1181,15 @@ void t4()
 {
     cout << "t4: beginning.\n";
 
-    {
-        typedef iterator_traits<X::reverse_iterator>::value_type value_type;
-        typedef iterator_traits<X::reverse_iterator>::difference_type
-                                                      difference_type;
-        typedef iterator_traits<X::reverse_iterator>::reference reference;
-        typedef iterator_traits<X::reverse_iterator>::pointer pointer;
-        typedef iterator_traits<X::reverse_iterator>::iterator_category
-                                                      iterator_category;
-    }
+    // {
+    //     typedef iterator_traits<X::reverse_iterator>::value_type value_type;
+    //     typedef iterator_traits<X::reverse_iterator>::difference_type
+    //                                                   difference_type;
+    //     typedef iterator_traits<X::reverse_iterator>::reference reference;
+    //     typedef iterator_traits<X::reverse_iterator>::pointer pointer;
+    //     typedef iterator_traits<X::reverse_iterator>::iterator_category
+    //                                                   iterator_category;
+    // }
 
     {
     // The following constructor is not required by the Random Access
@@ -1421,7 +1421,7 @@ void t4()
     }
 
     {
-        typedef iterator_traits<X::reverse_iterator>::value_type value_type;
+        // typedef iterator_traits<X::reverse_iterator>::value_type value_type;
 
         double darray[6] = {0, 1, 2, 3, 4, 5};
 
@@ -1471,7 +1471,7 @@ void t4()
     }
 
     {
-        typedef iterator_traits<X::reverse_iterator>::value_type value_type;
+        // typedef iterator_traits<X::reverse_iterator>::value_type value_type;
         typedef iterator_traits<X::reverse_iterator>::difference_type
                                                       difference_type;
 
@@ -1609,17 +1609,17 @@ void t5()
 {
     cout << "t5: beginning.\n";
 
-    {
-        typedef iterator_traits<X::const_reverse_iterator>::value_type
-                                                            value_type;
-        typedef iterator_traits<X::const_reverse_iterator>::difference_type
-                                                            difference_type;
-        typedef iterator_traits<X::const_reverse_iterator>::reference
-                                                            reference;
-        typedef iterator_traits<X::const_reverse_iterator>::pointer pointer;
-        typedef iterator_traits<X::const_reverse_iterator>::iterator_category
-                                                            iterator_category;
-    }
+    // {
+    //     typedef iterator_traits<X::const_reverse_iterator>::value_type
+    //                                                         value_type;
+    //     typedef iterator_traits<X::const_reverse_iterator>::difference_type
+    //                                                         difference_type;
+    //     typedef iterator_traits<X::const_reverse_iterator>::reference
+    //                                                         reference;
+    //     typedef iterator_traits<X::const_reverse_iterator>::pointer pointer;
+    //     typedef iterator_traits<X::const_reverse_iterator>::iterator_category
+    //                                                         iterator_category;
+    // }
 
     {
     // The following constructor is not required by the Random Access
@@ -1848,8 +1848,8 @@ void t5()
     }
 
     {
-        typedef iterator_traits<X::const_reverse_iterator>::value_type
-                                                            value_type;
+        // typedef iterator_traits<X::const_reverse_iterator>::value_type
+        //                                                     value_type;
 
         double darray[6] = {0, 1, 2, 3, 4, 5};
 
@@ -1899,8 +1899,8 @@ void t5()
     }
 
     {
-        typedef iterator_traits<X::const_reverse_iterator>::value_type
-                                                            value_type;
+        // typedef iterator_traits<X::const_reverse_iterator>::value_type
+        //                                                     value_type;
         typedef iterator_traits<X::const_reverse_iterator>::difference_type
                                                             difference_type;
 

@@ -4,7 +4,7 @@
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:18:27 2000
  * \brief  SortPermutation class definition.
- * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2000-2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -271,17 +271,11 @@ class SortPermutation
     template<class IT, class COMP>
     void createPermutation(IT first, IT last, const COMP &comp)
     {
-        typedef typename std::iterator_traits<IT>::value_type value_type;
         std::vector<IT> iters;
-
         iters.reserve(size());
-
         IT it = first;
         while (it != last)
-        {
             iters.push_back(it); ++it;
-        }
-
         doCreatePermutation(first, last, comp, iters);
     }
 
@@ -307,8 +301,6 @@ class SortPermutation
                              const COMP &comp,
 			     const std::vector<IT> &iters)
     {
-        typedef typename std::iterator_traits<IT>::value_type value_type;
-      
         std::vector< Proxy<IT> > proxies;
         proxies.reserve(size());
       
