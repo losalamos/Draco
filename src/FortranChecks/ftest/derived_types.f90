@@ -21,6 +21,10 @@
 module rtt_test_derived_types
      use iso_c_binding, only : c_double, c_int, c_int64_t, c_ptr, c_null_ptr
      implicit none
+     ! Proper enumeration types don't work in F2003, but this is close
+     ! Enumerations with bind(C) are just integers anyway
+     ! See: http://www.rhinocerus.net/forum/lang-fortran/92750-no-enumeration-data-type-fortran.html
+     integer(c_int), parameter :: GREY=0, MULTIGROUP=1, ODF=2 
 
      ! Create a derived type that contains some "extra" information
      type, bind(C)  :: my_informative_type
@@ -28,7 +32,8 @@ module rtt_test_derived_types
          integer(c_int)       :: some_int
          integer(c_int64_t)   :: some_large_int
          type(c_ptr)          :: some_pointer = C_NULL_PTR
-     end type
+         integer(c_int)       :: some_enum
+    end type
 
      ! Now create an interface to the C routine that accepts that type
      interface 
@@ -64,7 +69,8 @@ program test_derived_types
    
    mit%some_double     = 3.141592654_c_double
    mit%some_int        = 137
-   mit%some_large_int  = 2_c_int64_t**34;
+   mit%some_large_int  = 2_c_int64_t**34
+   mit%some_enum       = MULTIGROUP
 
    allocate(int_array(10))
    int_array(1) = 2003
@@ -77,6 +83,7 @@ program test_derived_types
    print *, "large integer = ", mit%some_large_int
    print *, "int_array(1) = ", int_array(1)
    print *, "int_array(2) = ", int_array(2)
+   print *, "The enumerated type is MULTIGROUP=", MULTIGROUP
    print * 
 
    !----------------------------------------------------------------------

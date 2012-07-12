@@ -21,6 +21,8 @@ struct my_informative_type
    int     some_int;
    int64_t some_large_int;
    int *   some_pointer;
+   enum    MG_Select {GREY=0, MULTIGROUP=1, ODF=2};
+   MG_Select some_enum;
 };
 
 
@@ -33,7 +35,8 @@ void rtt_test_derived_type(const my_informative_type& mit, int& error_code)
                   << "int = " << mit.some_int << std::endl
                   << "large_int = " << mit.some_large_int << std::endl
                   << "*some_pointer[1] = " << *(mit.some_pointer)  << std::endl
-                  << "*some_pointer[2] = " << *(mit.some_pointer+1) << std::endl;
+                  << "*some_pointer[2] = " << *(mit.some_pointer+1) << std::endl
+                  << "some_enum = " << mit.some_enum << std::endl;
     std::cout << std::endl;
 
     error_code = 0;
@@ -54,7 +57,12 @@ void rtt_test_derived_type(const my_informative_type& mit, int& error_code)
        return;
     }
     else if ( *(mit.some_pointer) != 2003 || *(mit.some_pointer+1) != 2012)
+    {
        error_code = 4;
+       return;
+    }
+    else if ( mit.some_enum != my_informative_type::MULTIGROUP )
+       error_code = 5;
 
     return;
 }
