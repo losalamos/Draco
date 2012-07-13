@@ -17,7 +17,7 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 # will).
 if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
    execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} --version
+      COMMAND ${CMAKE_Fortran_COMPILER} --version
       OUTPUT_VARIABLE CMAKE_Fortran_COMPILER_VERSION
       ERROR_QUIET )
    string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
