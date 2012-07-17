@@ -41,6 +41,7 @@ digraph draco_level {
     c4         [shape=box, color=blue, label="c4"];
     cdi        [shape=box, color=blue, label="cdi"];
     fpetrap    [shape=box, color=blue, label="fpe_trap"];
+    fc         [shape=box, color=blue, label="FortranChecks"];
     lapack     [shape=box, color=blue, label="lapack_wrap"];
     linear     [shape=box, color=blue, label="linear"];
     meshelement [shape=box, color=blue, label="mesh_element"];
@@ -97,6 +98,7 @@ digraph draco_level {
     c4          -> {vmpi}        [color=green];
     c4          -> {vpapi}       [color=green, style=dotted];
     cdi         -> {dsxx}        [color=blue];
+    fc          -> {dsxx}        [color=blue];
     fpetrap     -> {dsxx}        [color=blue];
     fpetrap     -> {vmpi}        [color=green];
     lapack      -> {dsxx}        [color=blue];
