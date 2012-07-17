@@ -3,26 +3,27 @@
  * \file   parser/test/tstutilities.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  
+ * \brief
+ * \note   Copyright (C) 2003-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <limits>
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "parser_test.hh"
-#include "ds++/Release.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
 #include "../File_Token_Stream.hh"
 #include "../String_Token_Stream.hh"
 #include "../utilities.hh"
 #include "../Unit.hh"
+#include "c4/global.hh"
+#include "c4/SpinLock.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include <limits>
 
 using namespace std;
-
 using namespace rtt_parser;
 using namespace rtt_dsxx;
 
@@ -353,7 +354,7 @@ void tstutilities(UnitTest &ut)
     }
 
     old_error_count = tokens.error_count();
-    Remember( double T = )
+    // Remember( double T = )
         parse_temperature(tokens);
     if (tokens.error_count()!=old_error_count)
     {
@@ -363,7 +364,8 @@ void tstutilities(UnitTest &ut)
     {
 	ut.passes("temperature successfully parsed");
     }
-    Remember(T=) parse_temperature(tokens);
+    // Remember(T=)
+        parse_temperature(tokens);
     if (tokens.error_count()!=old_error_count)
     {
 	ut.failure("temperature NOT successfully parsed");
@@ -398,7 +400,8 @@ void tstutilities(UnitTest &ut)
     }
 
     // Try reading sequence of quantities with signs
-    Remember(T=) parse_quantity(tokens, J, "energy");
+    // Remember(double T=)
+        parse_quantity(tokens, J, "energy");
     if (tokens.error_count()!=old_error_count)
     {
 	ut.failure("second negative quantity NOT successfully parsed");
@@ -765,5 +768,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstutilities.cc
+// end of tstutilities.cc
 //---------------------------------------------------------------------------//

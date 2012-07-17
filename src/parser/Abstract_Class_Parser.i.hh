@@ -53,7 +53,7 @@ register_child(string const &keyword,
     std::strcpy(cptr, keyword.c_str());
     keys_.push_back(cptr);
 
-    unsigned const N = map_.size();
+    int const N = static_cast<int>(map_.size());
     map_.push_back(parse_function);
     
     Keyword key = {cptr,
