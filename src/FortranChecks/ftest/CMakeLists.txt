@@ -26,9 +26,16 @@ if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
    set( test_deps "${test_deps};${CMAKE_Fortran_compiler_libs}" )
 endif()
 
-add_scalar_tests( 
-   SOURCES "${test_sources}" 
-   DEPS    "${test_deps}" )
+# Gfortran prior to 4.7 does not implement iso_c_binding correctly:
+if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "GFORTRAN" AND
+      "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.7")
+   # do not build these tests.
+   message( "WARNING: Using gfortran < 4.7.  FortranChecks/ftest disabled.")
+else()
+   add_scalar_tests( 
+      SOURCES "${test_sources}" 
+      DEPS    "${test_deps}" )
+endif()
 
 if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
    # CMake has trouble figuring out how PGI works.
