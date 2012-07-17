@@ -174,6 +174,22 @@ toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX")
 # --with-mpfr-include=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0/include \
 # --with-mpc-lib=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2/lib \
 # --with-mpc-include=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2/include 
+# --disable-multilib
+
+# gmp-5.0.5
+# ./configure --prefix=/usr/projects/draco/vendors/gmp-5.0.5
+# make; make check; make install
+
+# mpfr-3.1.1
+# ./configure --prefix=/usr/projects/draco/vendors/mpfr-3.1.1 --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5
+# make; make check; make install
+
+# mpc-0.8.2
+# ./configure --prefix=/usr/projects/draco/vendors/mpc-0.8.2 --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5 --with-mpfr=/usr/projects/draco/vendors/mpfr-3.1.1
+# make; make check; make install
+
+# Note: On some redhat systems you may need to hide (move) all shared
+# libraries for gmp, mpfr and mpc before configuring/making gcc.
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake
