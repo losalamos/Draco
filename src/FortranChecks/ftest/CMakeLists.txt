@@ -32,8 +32,9 @@ add_scalar_tests(
 
 if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
    # CMake has trouble figuring out how PGI works.
-   set_target_properties( Ut_FortranChecks_ftest_f90main_exe
-      PROPERTIES 
-        LINKER_LANGUAGE Fortran )
+   foreach( ut f90main derived_types )
+      set_target_properties( Ut_FortranChecks_ftest_${ut}_exe
+         PROPERTIES LINKER_LANGUAGE Fortran )
+   endforeach()
  endif()
 
