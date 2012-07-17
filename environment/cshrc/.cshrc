@@ -53,7 +53,8 @@ case ci*:
    module unload PrgEnv-intel PrgEnv-pgi
    module unload cmake numdiff svn gsl
    module load PrgEnv-intel
-   module unload xt-totalview xt-libsci
+   module unload xt-libsci
+   module unload xt-totalview 
    module load gsl/1.14 lapack/3.4.0-intel
    module load cmake numdiff svn
    module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel 
@@ -75,13 +76,15 @@ case rra[0-9][0-9][0-9]a*:
    module use $DRACO_ENV_DIR/Modules/rr-dev-fe
    module load friendly-testing cellsdk svn
    module unload pgi openmpi-pgi
-   module load cmake numdiff git xshow python openmpi-gcc/1.4.3
+   module load cmake numdiff python openmpi-gcc/1.4.3
+   module load gcc/4.7.1
    breaksw
 case rra[0-9][0-9][0-9][bcd]*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/ppc64
    module load friendly-testing cellsdk
    module load cmake gsl-1.14 numdiff 
+   module load gcc/4.7.1
    module load 
    breaksw
 case lu*.lanl.gov
