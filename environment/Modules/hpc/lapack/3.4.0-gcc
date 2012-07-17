@@ -6,7 +6,7 @@
 ##
 
 conflict lapack
-conflict gcc
+conflict intel 
 conflict pgi
 
 # global control file
@@ -18,7 +18,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     3.4.0;
-set prefix      /usr/projects/draco/vendors/lapack-$version/gcc-4.6.1
+set prefix      /usr/projects/draco/vendors/lapack-$version/gcc-4.7.1
 set libdir      $prefix/lib;
 set incdir      $prefix/include;
 
