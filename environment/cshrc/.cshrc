@@ -84,7 +84,6 @@ case rra[0-9][0-9][0-9][bcd]*:
    module use $DRACO_ENV_DIR/Modules/ppc64
    module load friendly-testing cellsdk
    module load cmake gsl-1.14 numdiff 
-   module load gcc/4.7.1
    module load 
    breaksw
 case lu*.lanl.gov
