@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Apr  2 14:14:29 2001
  * \brief  
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -47,9 +49,11 @@ namespace rtt_cdi_eospac
 
     // The eosTableLength is initalized to 1 and then changed by
     // es1tabs_() to be the required length.
-    Eospac::Eospac( const SesameTables& in_SesTabs )
-	: numRegions( 1 ), regionIndex( 1 ), eosTableLength( 1 ),
-	SesTabs( in_SesTabs )
+    Eospac::Eospac( SesameTables const & in_SesTabs )
+	: SesTabs( in_SesTabs ),
+          numRegions( 1 ),
+          regionIndex( 1 ),
+          eosTableLength( 1 )
 	{
 	    // Eospac can only be instantiated if SesameTables is
 	    // provided.  If SesameTables is invalid this will be
@@ -235,7 +239,7 @@ std::vector<char> Eospac::pack() const
 
     // pack the descriptor
     packer << static_cast<int>(packed_descriptor.size());
-    for (int i = 0; i < packed_descriptor.size(); i++)
+    for( size_t i = 0; i < packed_descriptor.size(); i++ )
 	packer << packed_descriptor[i];
 
     Ensure (packer.get_ptr() == &packed[0] + size);
@@ -287,7 +291,7 @@ std::vector<char> Eospac::pack() const
 
 	    // Convert temperatures from keV to degrees Kelvin.
 	    std::vector< double > vtempsKelvin = vtemperature;
-	    for ( int i=0; i<vtemperature.size(); ++i )
+	    for( size_t i=0; i<vtemperature.size(); ++i )
 		vtempsKelvin[i] = keV2K( vtemperature[i] );
 	    
 	    // we don't need derivative values.
@@ -382,7 +386,7 @@ std::vector<char> Eospac::pack() const
 
 	    // Convert temperatures from keV to degrees Kelvin.
 	    std::vector< double > vtempsKelvin = vtemperature;
-	    for ( int i=0; i<vtemperature.size(); ++i )
+	    for ( size_t i=0; i<vtemperature.size(); ++i )
 		vtempsKelvin[i] = keV2K( vtemperature[i] );
 	    
 	    // return EOS value plus first derivatives.
@@ -437,7 +441,7 @@ std::vector<char> Eospac::pack() const
 	    // that dF/dT = returnVal[2]/T, dF/drho =
 	    // returnVal[1]/rho.  returnVal[0] is the EoS value (not a 
 	    // derivative value.
-	    for ( int i=0; i<vtemperature.size(); ++i )
+	    for ( size_t i=0; i<vtemperature.size(); ++i )
 // Return units for temperature should be keV not Kelvin.
 // Heat Capacity will be kJ/g/keV!
 // 		dFdT[i] = dFdT[i]/vtempsKelvin[i];
@@ -521,7 +525,7 @@ std::vector<char> Eospac::pack() const
 	    // If we reach the end of the list without a match return
 	    // false. 
 	    
-	    for ( int i=0; i<returnTypes.size(); ++i )
+	    for ( size_t i=0; i<returnTypes.size(); ++i )
 		if ( returnType == returnTypes[i] ) return true;
 	    return false;
 	}

@@ -3,7 +3,9 @@
  * \file   cdi_eospac/Eospac.hh
  * \author Kelly Thompson
  * \date   Mon Apr  2 14:14:29 2001
- * \brief  
+ * \brief
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +16,7 @@
 
 // cdi_eospac dependencies
 #include "SesameTables.hh"
-#include <cdi_eospac/config.h>  // defines V_FLOAT - also see configure.in
+#include "cdi_eospac/config.h" // defines V_FLOAT - also see CMakeLists.txt
 
 // Draco dependencies
 #include "cdi/EoS.hh"

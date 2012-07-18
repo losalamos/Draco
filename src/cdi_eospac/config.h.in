@@ -12,13 +12,13 @@
 /* VENDOR TYPES */
 
 /* int, long, long long (strict ansi off) */
-#undef V_INT
+#cmakedefine V_INT @V_INT@
 
 /* float, double, long double */
-#undef V_FLOAT
+#cmakedefine V_FLOAT @V_FLOAT@
 
 /* int */
-#undef V_BOOL
+#cmakedefine V_BOOL @V_BOOL@
 
 #endif   /* __cdi_eospac_config_h__ */
 

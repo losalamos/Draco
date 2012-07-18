@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Apr 19 11:00:24 2001
  * \brief  Implementation file for tEospacWithCDI
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,6 +15,7 @@
 #include "cdi_eospac_test.hh"
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 
 // Draco dependencies
@@ -24,13 +27,14 @@
 #include <string>
 #include <sstream>
 
-namespace rtt_cdi_eospac_test
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
+using namespace std;
+
+namespace rtt_cdi_eospac_test
 {
-using std::cout;
-using std::endl;
-using std::string;
-using std::ostringstream;
 using rtt_dsxx::SP;
    
 //---------------------------------------------------------------------------//
@@ -52,12 +56,12 @@ using rtt_dsxx::SP;
  * --with-eospac-lib=/radtran/vendors/eospac/IRIX64/lib64 tag.
  * --with-eospac-lib=/radtran/vendors/eospac/Linux/lib.
  */
-void eospac_with_cdi_test()
+void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 {
     
-    std::cout << std::endl
-	      << "Test of C++ code calling EOSPAC routines via the CDI interface." 
-	      << std::endl << std::endl;
+    cout << endl
+         << "Test of C++ code calling EOSPAC routines via the CDI interface." 
+         << endl << endl;
     
     // ---------------------------- //
     // Create a SesameTables object //
@@ -158,7 +162,7 @@ void eospac_with_cdi_test()
 	// 		rtt_cdi_eospac::SesameTables().enelc( Al3717 )
 	//                  .zfree3( Al23714 ).enion( Al3717 ).tconde( Al23714 ) ) )
 	
-	PASSMSG("SP to new Eospac object created.")
+	PASSMSG("SP to new Eospac object created.");
     else
     {
 	FAILMSG("Unable to create SP to new Eospac object.");
@@ -171,7 +175,7 @@ void eospac_with_cdi_test()
     
     rtt_dsxx::SP< rtt_cdi::CDI > spCdiEos;
     if ( spCdiEos = new rtt_cdi::CDI() )
-	PASSMSG("SP to CDI object created successfully.")
+	PASSMSG("SP to CDI object created successfully.");
     else
 	FAILMSG("Failed to create SP to CDI object.");
 
@@ -181,7 +185,7 @@ void eospac_with_cdi_test()
 
     spCdiEos->setEoS( spEospac );
     if ( spCdiEos->isEoSSet() )
-	PASSMSG("Eospac object assigned to CDI successfully.")
+	PASSMSG("Eospac object assigned to CDI successfully.");
     else
 	FAILMSG("Failed to assign Eospac object to CDI object.");
     
@@ -207,7 +211,7 @@ void eospac_with_cdi_test()
 	    temperature, density );
     
     if ( match( specificElectronInternalEnergy, refValue ) )
-	PASSMSG("getSpecificElectronInternalEnergy() test passed.")
+	PASSMSG("getSpecificElectronInternalEnergy() test passed.");
     else
 	FAILMSG("getSpecificElectronInternalEnergy() test failed.");
     
@@ -220,7 +224,7 @@ void eospac_with_cdi_test()
 	    temperature, density );
     
     if ( match(  heatCapacity, refValue ) )
-	PASSMSG("getElectronHeatCapacity() test passed.")
+	PASSMSG("getElectronHeatCapacity() test passed.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed.");
     
@@ -233,7 +237,7 @@ void eospac_with_cdi_test()
 	    temperature, density );
     
     if ( match( specificIonInternalEnergy, refValue ) )
-	PASSMSG("getSpecificIonInternalEnergy() test passed.")
+	PASSMSG("getSpecificIonInternalEnergy() test passed.");
     else
 	FAILMSG("getSpecificIonInternalEnergy() test failed.");
     
@@ -245,7 +249,7 @@ void eospac_with_cdi_test()
 	spCdiEos->eos()->getIonHeatCapacity( temperature, density );
     
     if ( match( heatCapacity, refValue ) )
-	PASSMSG("getIonHeatCapacity() test passed.")
+	PASSMSG("getIonHeatCapacity() test passed.");
     else
 	FAILMSG("getIonHeatCapacity() test failed.");
     
@@ -258,9 +262,9 @@ void eospac_with_cdi_test()
 	    temperature, density );
     
     if ( match( nfree, refValue ) )
-	PASSMSG("getNumFreeElectronsPerIon() test passed.")
-	    else
-		FAILMSG("getNumFreeElectronsPerIon() test failed.");
+	PASSMSG("getNumFreeElectronsPerIon() test passed.");
+    else
+        FAILMSG("getNumFreeElectronsPerIon() test failed.");
     
     // Retrieve the electron based thermal conductivity
     
@@ -271,7 +275,7 @@ void eospac_with_cdi_test()
 	    temperature, density );
     
     if ( match( chie, refValue ) )
-	PASSMSG("getElectronThermalConductivity() test passed.")
+	PASSMSG("getElectronThermalConductivity() test passed.");
     else
 	FAILMSG("getElectronThermalConductivity() test failed.");
     
@@ -284,8 +288,8 @@ void eospac_with_cdi_test()
     // both tuples have identical data so that the returned
     // results will also be identical.
     
-    std::vector< double > vtemps(2);
-    std::vector< double > vdensities(2);
+    vector< double > vtemps(2);
+    vector< double > vdensities(2);
     
     vtemps[0] = temperature;
     vtemps[1] = temperature;
@@ -295,7 +299,7 @@ void eospac_with_cdi_test()
     // Retrieve electron based heat capacities for each set of 
     // (density, temperature) values.
     
-    std::vector< double > vcve(2);
+    vector< double > vcve(2);
     vcve = spCdiEos->eos()->getElectronHeatCapacity( 
 	vtemps, vdensities );
     
@@ -348,46 +352,25 @@ void eospac_with_cdi_test()
 
 int main(int argc, char *argv[])
 {
-
-    using std::cout;
-    using std::endl;
-    using std::string;
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	// >>> UNIT TESTS
-	rtt_cdi_eospac_test::eospac_with_cdi_test();
+        rtt_cdi_eospac_test::eospac_with_cdi_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-	cout << "While testing tEospacWithCDI, " << ass.what()
+	cout << "While testing tEospacWithCDI, " << err.what()
 	     << endl;
-	return 1;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_eospac_test::passed) 
+    catch( ... )
     {
-        cout << "**** tEospacWithCDI Test: PASSED" 
-	     << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown on processor " << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tEospacWithCDI." << endl;
-
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

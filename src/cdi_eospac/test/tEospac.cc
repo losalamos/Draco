@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Apr 2 14:20:14 2001
  * \brief  Implementation file for tEospac
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,6 +15,7 @@
 #include "cdi_eospac_test.hh"
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 
 // Draco dependencies
@@ -25,6 +28,10 @@
 #include <vector>
 #include <sstream>
 #include <string>
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 namespace rtt_cdi_eospac_test
 {
@@ -54,7 +61,7 @@ using rtt_dsxx::SP;
  * --with-eospac-lib=/radtran/vendors/eospac/Linux/lib tag.
  *
  */
-void cdi_eospac_test()
+void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 {
     // Start the test.
 
@@ -157,7 +164,7 @@ void cdi_eospac_test()
 	//   rtt_cdi_eospac::SesameTables().enelc( Al3717 )
 	//     .zfree3( Al23714 ).enion( Al3717 ).tconde( Al23714 ) ) )
 	
-	PASSMSG("SP to new Eospac object created.")
+	PASSMSG("SP to new Eospac object created.");
     else
     {
 	FAILMSG("Unable to create SP to new Eospac object.");
@@ -186,9 +193,9 @@ void cdi_eospac_test()
 	    temperature, density );
     
     if ( match( specificElectronInternalEnergy, refValue ) )
-       PASSMSG("getSpecificElectronInternalEnergy() test passed.")
+        PASSMSG("getSpecificElectronInternalEnergy() test passed.");
     else
-       FAILMSG("getSpecificElectronInternalEnergy() test failed.");
+        FAILMSG("getSpecificElectronInternalEnergy() test failed.");
     
     // Retrieve an electron heat capacity (= dE/dT)	    
     
@@ -199,7 +206,7 @@ void cdi_eospac_test()
 					   density );
     
     if ( match(  heatCapacity, refValue ) )
-	PASSMSG("getElectronHeatCapacity() test passed.")
+	PASSMSG("getElectronHeatCapacity() test passed.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed.");
     
@@ -212,7 +219,7 @@ void cdi_eospac_test()
 	    temperature, density );
     
     if ( match( specificIonInternalEnergy, refValue ) )
-	PASSMSG("getSpecificIonInternalEnergy() test passed.")
+	PASSMSG("getSpecificIonInternalEnergy() test passed.");
     else
 	FAILMSG("getSpecificIonInternalEnergy() test failed.");
     
@@ -224,7 +231,7 @@ void cdi_eospac_test()
 	spEospac->getIonHeatCapacity( temperature, density );
     
     if ( match( heatCapacity, refValue ) )
-	PASSMSG("getIonHeatCapacity() test passed.")
+	PASSMSG("getIonHeatCapacity() test passed.");
     else
 	FAILMSG("getIonHeatCapacity() test failed.");
     
@@ -237,7 +244,7 @@ void cdi_eospac_test()
 	    temperature, density );
     
     if ( match( nfree, refValue ) )
-	PASSMSG("getNumFreeElectronsPerIon() test passed.")
+	PASSMSG("getNumFreeElectronsPerIon() test passed.");
     else
 	FAILMSG("getNumFreeElectronsPerIon() test failed.");
     
@@ -250,7 +257,7 @@ void cdi_eospac_test()
 	    temperature, density );
     
     if ( match( chie, refValue ) )
-	PASSMSG("getElectronThermalConductivity() test passed.")
+	PASSMSG("getElectronThermalConductivity() test passed.");
     else
 	FAILMSG("getElectronThermalConductivity() test failed.");
 
@@ -283,7 +290,7 @@ void cdi_eospac_test()
     // also match.
     
     if ( match( vCve[0], vCve[1] ) )
-	PASSMSG("getElectronHeatCapacity() test passed for vector state values.")
+	PASSMSG("getElectronHeatCapacity() test passed for vector state values.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed for vector state values.");
     
@@ -295,7 +302,7 @@ void cdi_eospac_test()
 	    temperature, density );
     
     if ( match( vCve[0], heatCapacity ) )
-	PASSMSG("getElectronHeatCapacity() test passed for vector state values.")
+	PASSMSG("getElectronHeatCapacity() test passed for vector state values.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed for vector state values.");
     
@@ -326,47 +333,26 @@ void cdi_eospac_test()
 
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release()
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	// >>> UNIT TESTS
-	rtt_cdi_eospac_test::cdi_eospac_test();
+        rtt_cdi_eospac_test::cdi_eospac_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (exception &err)
     {
-	cout << "While testing tEospac, " << ass.what()
-	     << endl;
-	return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_eospac_test::passed) 
+    catch( ... )
     {
-        cout << "**** tEospac Test: PASSED" 
-	     << endl;
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown on processor " << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tEospac." << endl;
-
-    return 0;
+    return ut.numFails;
 }   
-
 
 //---------------------------------------------------------------------------//
 // end of tEospac.cc
