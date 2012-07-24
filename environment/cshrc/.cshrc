@@ -31,6 +31,20 @@ case ty*.localdomain:
        mkdir $TMPDIR
     endif
     breaksw
+case ml-fey*.lanl.gov:
+case ml*.localdomain:
+#    source /usr/projects/crestone/dotfiles/Cshrc
+    # YeTi work around for /usr/legacy-projects
+    # module use /usr/legacy-projects/draco/vendors/Modules/ml-fe
+    module use $DRACO_ENV_DIR/Modules/hpc
+    module use $DRACO_ENV_DIR/Modules/tu-fe
+    module load friendly-testing 
+    module load intel/12.1.2 openmpi cmake
+    module load gsl/1.14-intel svn 
+    module load numdiff lapack/3.4.0-intel
+    # module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
+    # module load ParMetis/3.1.1-intel ndi
+    breaksw
 case yr*.lanl.gov:
 case yr*:
     source /usr/projects/crestone/dotfiles/Cshrc
