@@ -22,7 +22,7 @@ if test -z "$MODULESHOME"; then
 fi
 module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
 module load ndi openmpi emacs
-module load ParMetis/3.1.1 trilinos totalview cmake numdiff git svn
+module load ParMetis trilinos totalview cmake numdiff git svn
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
