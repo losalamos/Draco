@@ -64,48 +64,61 @@ ${CTEST_INITIAL_CACHE}
 message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
-# Empty the binary directory and recreate the CMakeCache.txt
-message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
-ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
+if( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
+   # Start
+   message( "ctest_start( ${CTEST_MODEL} )")
+   ctest_start( ${CTEST_MODEL} )
 
-# Start
-message( "ctest_start( ${CTEST_MODEL} )")
-ctest_start( ${CTEST_MODEL} )
+   # Submit results
+   message( "ctest_submit()")
+   ctest_submit()
+else( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
 
-# Update
-message( "ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )"  )
-ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )
-message( "Files updated: ${res}" )
+   # Empty the binary directory and recreate the CMakeCache.txt
+   message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
+   ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+   file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 
-# Configure
-message( "setup_for_code_coverage()" )
-setup_for_code_coverage() # from draco_regression_macros.cmake
-message(  "ctest_configure()" )
-ctest_configure() 
+   # Start
+   message( "ctest_start( ${CTEST_MODEL} )")
+   ctest_start( ${CTEST_MODEL} )
 
-# Build
-message( "ctest_build()" )
-ctest_build()
+   # Update
+   message( "ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )"  )
+   ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )
+   message( "Files updated: ${res}" )
 
-# Test
-message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON ) 
+   # Configure
+   message( "setup_for_code_coverage()" )
+   setup_for_code_coverage() # from draco_regression_macros.cmake
+   message(  "ctest_configure()" )
+   ctest_configure() 
 
-# Process code coverage (bullseye) or dynamic analysis (valgrind)
-message("Processing code coverage or dynamic analysis")
-process_cc_or_da()
+   # Build
+   message( "ctest_build()" )
+   ctest_build()
 
-# Submit results
-message( "ctest_submit()")
-ctest_submit()
+   # Test
+   message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
+   ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON ) 
 
-# Install the files
-message(  "Installing files to ${CMAKE_INSTALL_PREFIX}..." )
-execute_process( 
-   COMMAND           ${CMAKE_MAKE_PROGRAM} install
-   WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-   )
+   # Process code coverage (bullseye) or dynamic analysis (valgrind)
+   message("Processing code coverage or dynamic analysis")
+   process_cc_or_da()
+
+   if( NOT "${CTEST_NOSUBMIT}" STREQUAL "ON" )
+      # Submit results
+      message( "ctest_submit()")
+      ctest_submit()
+   endif()
+
+   # Install the files
+   message(  "Installing files to ${CMAKE_INSTALL_PREFIX}..." )
+   execute_process( 
+      COMMAND           ${CMAKE_MAKE_PROGRAM} install
+      WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+      )
+endif( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
 
 message("end of ${CTEST_SCRIPT_NAME}.")
 

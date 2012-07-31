@@ -66,6 +66,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
      set( sitename "RoadRunner" )
   elseif( ${sitename} MATCHES "ct" )
      set( sitename "Cielito" )
+  elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
+     set( sitename "Moonlight" )
   endif()
 #  message( "sitename = ${sitename}")
   set( CTEST_SITE ${sitename} )
@@ -190,6 +192,13 @@ macro( parse_args )
      set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
   
+  # Post options: SubmitOnly or NoSubmit
+  if( ${CTEST_SCRIPT_ARG} MATCHES NoSubmit )
+     set( CTEST_NOSUBMIT "ON" )
+  elseif( ${CTEST_SCRIPT_ARG} MATCHES SubmitOnly )
+     set( CTEST_SUBMITONLY "ON" )
+  endif()
+
   set( compiler_short_name "gcc" )
   if( $ENV{CXX} MATCHES "pgCC" )
      set( compiler_short_name "pgi" )
