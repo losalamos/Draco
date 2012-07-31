@@ -570,12 +570,11 @@ supported.
 \multicolumn{1}{c}{Machine} & 
 \multicolumn{1}{c}{Compiler Set} & 
 \multicolumn{1}{c}{Vendors} \\ \hline
-Hurricane/Turing/Typhoon/Luna & Intel 12.1.2 &  OpenMPI-1.4.5 \\
+Hurricane/Turing/Typhoon/Luna/Moonlight & Intel 12.1.2 &  OpenMPI-1.4.5 \\
 Ceilo/Ceilito         & Intel 12.1.2     &  MPICH2-5.4.2 \\
-Roadrunner/rr\_dev    & GCC 4.3.0      &  OpenMPI-1.4.3 \\
+Roadrunner/rr\_dev    & GCC 4.3.0      &  OpenMPI-1.4.3, DaCS \\
 YellowRail            & PGI 9.0-3      &  OpenMPI-1.4.3 \\
 Dawn                  & --             &  --             \\
-Moonlight             & --             & --             \\
 Mapache               & --             & --             \\
 \hline\hline
 \end{tabular}
@@ -1179,7 +1178,7 @@ Currently, \draco\ can make use of the following vendor libraries
 \multicolumn{1}{c}{Vendor name} & 
 \multicolumn{1}{c}{Recommended Version} & 
 \multicolumn{1}{c}{Required or Optional} \\ \hline
-OpenMPI                & 1.4.3+ & Required \\
+OpenMPI                & 1.4.5+ & Required \\
 GNU Scientific Library & 1.14+  & Required \\
 Numdiff                & 5.2.1+ & Required \\
 Python                 & $<$3.0 & Required \\
@@ -1187,6 +1186,7 @@ CMake                  & 2.8.8+ & Required \\
 LAPACK                 & 3.4.0+ & Optional \\
 Grace (gnuplot)        & 4.4+   & Optional \\
 PAPI                   & 4.1+   & Optional \\
+CUDA & 4.1+ & Optional \\
 \hline\hline
 \end{tabular}
 \end{center}
