@@ -72,6 +72,7 @@ if( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
    # Submit results
    message( "ctest_submit()")
    ctest_submit()
+
 else( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
 
    # Empty the binary directory and recreate the CMakeCache.txt
@@ -92,11 +93,22 @@ else( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
    message( "setup_for_code_coverage()" )
    setup_for_code_coverage() # from draco_regression_macros.cmake
    message(  "ctest_configure()" )
-   ctest_configure() 
+   ctest_configure(
+      BUILD        "${CTEST_BINARY_DIRECTORY}"
+      RETURN_VALUE res) # LABELS label1 [label2] 
 
    # Build
-   message( "ctest_build()" )
-   ctest_build()
+   message( "ctest_build( TARGET install RETURN_VALUE res )" )
+   ctest_build( 
+      TARGET install 
+      RETURN_VALUE res
+      NUMBER_ERRORS num_errors
+      NUMBER_WARNINGS num_warnings
+      )
+   message( "build result: 
+   ${res}
+   Build errors  : ${num_errors}
+   Build warnings: ${num_warnings}" )
 
    # Test
    message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
@@ -113,11 +125,11 @@ else( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
    endif()
 
    # Install the files
-   message(  "Installing files to ${CMAKE_INSTALL_PREFIX}..." )
-   execute_process( 
-      COMMAND           ${CMAKE_MAKE_PROGRAM} install
-      WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-      )
+   # message(  "Installing files to ${CMAKE_INSTALL_PREFIX}..." )
+   # execute_process( 
+   #    COMMAND           ${CMAKE_MAKE_PROGRAM} install
+   #    WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+   #    )
 endif( "${CTEST_SUBMITONLY}" STREQUAL "ON" )
 
 message("end of ${CTEST_SCRIPT_NAME}.")
