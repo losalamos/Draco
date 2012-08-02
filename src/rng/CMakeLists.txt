@@ -38,6 +38,10 @@ include_directories(
    ${GSL_INCLUDE_DIR}
 ) 
 
+if( RANDOM123_FOUND )
+   include_directories( ${RANDOM123_INCLUDE_DIR} )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #

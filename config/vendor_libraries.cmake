@@ -195,6 +195,10 @@ macro( SetupVendorLibrariesUnix )
    # message( STATUS "Looking for GSL...")
    find_package( GSL QUIET )
 
+   # Random123 ----------------------------------------------------------------
+   # message( STATUS "Looking for Random123...")
+   find_package( Random123 QUIET )
+
    # GRACE ------------------------------------------------------------------
    find_package( Grace QUIET )
    set_package_properties( Grace PROPERTIES
@@ -383,6 +387,12 @@ macro( SetupVendorLibrariesWindows )
    
    find_package( GSL REQUIRED )
 
+   # Random123 ---------------------------------------------------------------
+   message( STATUS "Looking for Random123...")
+   set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.06/include" )
+
+   find_package( Random123 REQUIRED )
+
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -474,6 +484,14 @@ individual vendor directories should be defined." )
         set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
     endif()
 
+    if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
+        set( RANDOM123_INC_DIR $ENV{RANDOM123_INC_DIR} )
+    endif()
+    if( NOT RANDOM123_INC_DIR AND
+          IS_DIRECTORY "${VENDOR_DIR}/Random123-1.06/include" )
+        set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.06/include" )
+    endif()
+
     set_package_properties( MPI PROPERTIES
        URL "http://www.open-mpi.org/"
        DESCRIPTION "A High Performance Message Passing Library"
@@ -496,6 +514,12 @@ individual vendor directories should be defined." )
        TYPE REQUIRED
        PURPOSE "Required for bulding quadrature and rng components."
        )  
+    set_package_properties( Random123 PROPERTIES
+       URL "http://www.deshawresearch.com/resources_random123.html"
+       DESCRIPTION "a library of counter-based random number generators"
+       TYPE REQUIRED
+       PURPOSE "Required for building rng component."
+       )
 
 endmacro()
 
