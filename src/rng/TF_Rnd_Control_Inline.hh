@@ -17,13 +17,14 @@
 
 // header file for SPRNG package
 //#include "LFG.h"
-#include "LF_Gen.hh"
+#include "TF_Gen.hh"
+#include <math.h>
 
 namespace rtt_rng 
 {
 
 /*! All this does is to hold a seed and a stream number.  Everything else
- *  that the traditional Rnd_Control did was moved to LF_Gen */
+ *  that the traditional Rnd_Control did was moved to TF_Gen */
 
 class Rnd_Control 
 {
@@ -49,7 +50,7 @@ class Rnd_Control
     void set_num(const int num) { d_streamnum = num; }
 
     //! Query size of a packed random number state.
-    int get_size() const { return (LFG_DATA_SIZE+2)*sizeof(unsigned); }
+    int get_size() const { return (4+2)*sizeof(unsigned); }
 
     //! Get the seed value used to initialize the SPRNG library.
     int get_seed() const { return d_seed; }
@@ -57,18 +58,18 @@ class Rnd_Control
     //! Return the total number of current streams set.
     int get_number() const { return d_number; }
 
-    inline void initialize(const unsigned snum, LF_Gen&);
-    inline void initialize(LF_Gen&);
-    inline void half_initialize(LF_Gen&);
+    inline void initialize(const unsigned snum, TF_Gen&);
+    inline void initialize(TF_Gen&);
+    //inline void half_initialize(TF_Gen&); //not used, not applicable
 };
 
 
 // ---------------------------------------------------------------------------
 
 
-//! Update the stream number and initialize the LF_Gen
+//! Update the stream number and initialize the TF_Gen
 inline void 
-Rnd_Control::initialize(const unsigned snum, LF_Gen& lf)
+Rnd_Control::initialize(const unsigned snum, TF_Gen& tf)
 {
     Require (snum <= d_number);
 
@@ -76,41 +77,26 @@ Rnd_Control::initialize(const unsigned snum, LF_Gen& lf)
     d_streamnum = snum;
 
     // create a new Rnd object
-    lfg_create_rng(d_streamnum, d_seed, lf.begin(), lf.end());
+    tf = TF_Gen(d_seed,d_streamnum);
 
     // advance the counter
     d_streamnum++;
 }
 
 
-//! Initialize the LF_Gen with the next stream number
+//! Initialize the TF_Gen with the next stream number
 inline void 
-Rnd_Control::initialize(LF_Gen& lf)
+Rnd_Control::initialize(TF_Gen& tf)
 {
     Require(d_streamnum <= d_number);
 
     // create a new Rnd object
-    lfg_create_rng(d_streamnum, d_seed, lf.begin(), lf.end());
+    tf = TF_Gen(d_seed,d_streamnum);
 
     // advance the counter
     d_streamnum++;
 
 }
-
-
-//! Do half an initialization... it is your responsibility to finish!
-inline void 
-Rnd_Control::half_initialize(LF_Gen& lf)
-{
-    Require(d_streamnum <= d_number);
-
-    // create a (partially initialized) new Rnd object
-    lfg_create_rng_part1(d_streamnum, d_seed, lf.begin(), lf.end());
-
-    // advance the counter
-    d_streamnum++;
-}
-
 
 
 } // end namespace rtt_rng
