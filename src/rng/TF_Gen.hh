@@ -9,14 +9,18 @@
 #ifndef TF_Gen_hh
 #define TF_Gen_hh
 
-#include "Random123/threefry.h"
-#include "Random123/array.h"
 //#include "rng/config.h"
-//#include <ds++/Assert.hh>
+#include "Random123/threefry.h"
+//#include "Random123/array.h"
 #include <ds++/Data_Table.hh>
+//#include <ds++/Assert.hh>
 #include <algorithm>
 #include <stdint.h>
 #include <math.h>
+
+#ifndef TFG_DATA_SIZE
+#define TFG_DATA_SIZE 4
+#endif
 
 namespace rtt_rng
 {
@@ -32,7 +36,7 @@ namespace rtt_rng
   public:
     TF_Gen_Ref(unsigned int* const db, unsigned int* const de)
       : data(db, de)
-    { Require(std::distance(db,de) == 4); }
+    { Require(std::distance(db,de) == TFG_DATA_SIZE); }
 
     double ran() const
     {
@@ -79,7 +83,7 @@ namespace rtt_rng
   private:
 
     friend class TF_Gen_Ref;
-    mutable unsigned int data[4];
+    mutable unsigned int data[TFG_DATA_SIZE];
 
   public:
 
@@ -87,7 +91,7 @@ namespace rtt_rng
     typedef unsigned int const * const_iterator;
 
     //! Default constructor
-    TF_Gen() { Require(sizeof(data)/sizeof(unsigned int) == 4); }
+    TF_Gen() { Require(sizeof(data)/sizeof(unsigned int) == TFG_DATA_SIZE); }
 
     TF_Gen(uint32_t const seed, uint32_t const streamnum)
     {
@@ -99,7 +103,7 @@ namespace rtt_rng
 
     TF_Gen(unsigned int* const _data)
     {
-      std::copy(_data, _data + 4, data);
+      std::copy(_data, _data + TFG_DATA_SIZE, data);
     }
 
     //! (included for compatibility)
@@ -122,7 +126,7 @@ namespace rtt_rng
     // this function is not as applicable to TF_Gen and should be avoided.
     void spawn(TF_Gen& new_gen) const
     {
-      std::copy(data, data + 4, new_gen.data);
+      std::copy(data, data + TFG_DATA_SIZE, new_gen.data);
       new_gen.data[0] = 0; //reset the lower counter in new stream
       data[1] = data[1] + 1;//increment the higher counter for next time
     }
@@ -137,24 +141,24 @@ namespace rtt_rng
       return (assemble_from_u32<uint64_t>(foo));
     }
     //! Return the size of the state
-    unsigned int size() const { return 4; }
+    unsigned int size() const { return TFG_DATA_SIZE; }
 
     iterator begin() { return data; }
 
-    iterator end() { return data + 4; }
+    iterator end() { return data + TFG_DATA_SIZE; }
 
     const_iterator begin() const { return data; }
 
-    const_iterator end() const { return data + 4; }
+    const_iterator end() const { return data + TFG_DATA_SIZE; }
 
     bool operator==(TF_Gen const & rhs) const {
       return std::equal(begin(), end(), rhs.begin()); }
 
     TF_Gen_Ref ref() const {
-      return TF_Gen_Ref(data, data + 4); }
+      return TF_Gen_Ref(data, data + TFG_DATA_SIZE); }
 
     static unsigned int size_bytes() {
-      return 4*sizeof(unsigned int); }
+      return TFG_DATA_SIZE*sizeof(unsigned int); }
 
 #if 0
     // Copying RNG streams shouldn't be done lightly!
@@ -179,7 +183,7 @@ namespace rtt_rng
 
   inline void TF_Gen_Ref::spawn(TF_Gen& new_gen) const
   {
-    std::copy(data.begin(), data.begin() + 4, new_gen.data);
+    std::copy(data.begin(), data.begin() + TFG_DATA_SIZE, new_gen.data);
     new_gen.data[0] = 0; //reset the lower counter in new stream
     data.access()[1] = data.access()[1] + 1;//increment the higher counter for next time
 
