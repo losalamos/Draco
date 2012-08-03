@@ -11,8 +11,9 @@
 
 #include "Random123/threefry.h"
 #include "Random123/array.h"
+//#include "rng/config.h"
+//#include <ds++/Assert.hh>
 #include <ds++/Data_Table.hh>
-#include <ds++/ArrayWrap.hh>
 #include <algorithm>
 #include <stdint.h>
 #include <math.h>
@@ -44,16 +45,19 @@ namespace rtt_rng
       return ((double)assemble_from_u32<uint64_t>(result.data())) / pow(2, 64);
     }
 
-    //! Spawn a new, independent stream from this one (included for compatibility)
+    //! Spawn a new, independent stream from this one
+    // this function is not as applicable to TF_Gen_Ref and should be avoided.
     inline void spawn(TF_Gen& new_gen) const;
 
     //! Return the identifier number for this stream
-    uint64_t get_num() const {
-      return (assemble_from_u32<uint64_t>(data.access() + 2)); }
+    uint32_t get_num() const { return data[3]; }
 
     //! Return a unique number for this stream and state
-    // unsure on how to return the necessary 128-bit precision in a <64-bit integer
-    unsigned int get_unique_num() const { return 0xdeadbeef;}
+    uint64_t get_unique_num() const
+    {
+      uint32_t foo [] = {data[3],data[1]};
+      return (assemble_from_u32<uint64_t>(foo));
+    }
 
 
     inline bool is_alias_for(TF_Gen const &rng);
@@ -87,6 +91,8 @@ namespace rtt_rng
 
     TF_Gen(uint32_t const seed, uint32_t const streamnum)
     {
+      data[0] = 0;
+      data[1] = 0;
       data[2] = seed;
       data[3] = streamnum;
     }
@@ -107,27 +113,29 @@ namespace rtt_rng
       TFRNG::key_type key = {{data[2], data[3]}};
       TFRNG::ctr_type result = aynRand(ctr, key);
       ctr.incr();
-      std::copy(ctr.data(), ctr.data() + 2, data);
+      data[0] = ctr[0];
+      data[1] = ctr[1];
       return ((double)assemble_from_u32<uint64_t>(result.data())) / pow(2, 64);
     }
 
     //! Spawn a new, independent stream from this one.
+    // this function is not as applicable to TF_Gen and should be avoided.
     void spawn(TF_Gen& new_gen) const
     {
-      new_gen.data[0] = 0;
-      new_gen.data[1] = 0;
-      new_gen.data[2] = data[2];
-      new_gen.data[3] = data[3] + 1;
+      std::copy(data, data + 4, new_gen.data);
+      new_gen.data[0] = 0; //reset the lower counter in new stream
+      data[1] = data[1] + 1;//increment the higher counter for next time
     }
 
     //! Return the identifier number for this stream
-    uint64_t get_num() const {
-      return (assemble_from_u32<uint64_t>(data + 2)); }
+    uint32_t get_num() const { return data[3]; }
 
     //! Return a unique number for this stream and state
-    // unsure on how to return the necessary 128-bit precision in a <64-bit integer
-    unsigned int get_unique_num() const { return 0xdeadbeef;}
-
+    uint64_t get_unique_num() const
+    {
+      uint32_t foo [] = {data[3],data[1]};
+      return (assemble_from_u32<uint64_t>(foo));
+    }
     //! Return the size of the state
     unsigned int size() const { return 4; }
 
@@ -171,10 +179,10 @@ namespace rtt_rng
 
   inline void TF_Gen_Ref::spawn(TF_Gen& new_gen) const
   {
-    new_gen.data[0] = 0;
-    new_gen.data[1] = 0;
-    new_gen.data[2] = data[2];
-    new_gen.data[3] = data[3] + 1;
+    std::copy(data.begin(), data.begin() + 4, new_gen.data);
+    new_gen.data[0] = 0; //reset the lower counter in new stream
+    data.access()[1] = data.access()[1] + 1;//increment the higher counter for next time
+
   }
 
   inline bool TF_Gen_Ref::is_alias_for(TF_Gen const &rng)
