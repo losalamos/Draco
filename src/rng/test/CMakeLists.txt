@@ -18,9 +18,16 @@ set( test_lib_sources
 file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
+set( random123_sources
+   ${PROJECT_SOURCE_DIR}/tstTF_Gen.cc
+   ${PROJECT_SOURCE_DIR}/tstTF_Rnd_Control_Inline.cc
+)
+
 if( RANDOM123_FOUND )
    file( GLOB random123_sources *.cpp *.c )
    list( APPEND test_sources ${random123_sources} )
+else()
+   list( REMOVE_ITEM test_sources ${random123_sources} )
 endif()
 
 # ---------------------------------------------------------------------------- #
