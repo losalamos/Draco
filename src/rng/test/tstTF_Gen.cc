@@ -109,16 +109,19 @@ void random_existence(){
     cout << rf0n1 << endl;
     if(soft_equiv(rf0n1, rf0n0)) ITFAILS;
     //check influence of second argument in data
+    foo[0] = 0;
     foo[1] = 0;
     double rf0n2 = aynRandRef.ran();
     cout << rf0n2 << endl;
     if(soft_equiv(rf0n2, rf0n1)) ITFAILS;
     //check influence of third argument in data
+    foo[0] = 0;
     foo[2] = 0;
     double rf0n3 = aynRandRef.ran();
     cout << rf0n3 << endl;
     if(soft_equiv(rf0n3, rf0n2)) ITFAILS;
     //check influence of fourth argument in data
+    foo[0] = 0;
     foo[3] = 0;
     double rf0n4 = aynRandRef.ran();
     cout << rf0n4 << endl;
