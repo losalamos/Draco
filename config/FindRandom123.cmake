@@ -10,8 +10,6 @@ find_path( RANDOM123_INCLUDE_DIR
     PATHS
        ${RANDOM123_INC_DIR}
        $ENV{RANDOM123_INC_DIR}
-       $ENV{VENDOR_DIR}/include
-       ${VENDOR_DIR}/include
     NO_DEFAULT_PATH
 )
 
