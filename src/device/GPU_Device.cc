@@ -76,13 +76,17 @@ GPU_Device::GPU_Device(void) // int /*argc*/, char */*argv*/[] )
     context.resize(2);
     for (int device = 0; device < deviceCount; device++)
     {
-        // Save the handle for each device
-        err = cuDeviceGet(&device_handle[device], device);
-        checkForCudaError(err);
-    
-        // Save the handle for each context
-        err = cuCtxCreate( &context[device], device, device_handle[device] );
-        checkForCudaError(err);
+        // Only initialize if compute capability >= 2.0
+        if ( computeCapability[device][0] >= 2)
+        {
+            // Save the handle for each device
+            err = cuDeviceGet(&device_handle[device], device);
+            checkForCudaError(err);
+        
+            // Save the handle for each context
+            err = cuCtxCreate( &context[device], device, device_handle[device]);
+            checkForCudaError(err);
+        }
     }
 }
 
@@ -96,8 +100,12 @@ GPU_Device::~GPU_Device()
     // Free reserved contexts:
     for (int device = 0; device < deviceCount; device++)
     {
-        cudaError_enum err = cuCtxDestroy( context[device] );
-        checkForCudaError(err);
+        // Only initialize if compute capability >= 2.0
+        if ( computeCapability[device][0] >= 2)
+        {
+            cudaError_enum err = cuCtxDestroy( context[device] );
+            checkForCudaError(err);
+        }
     }
 }
 
