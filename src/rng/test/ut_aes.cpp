@@ -31,8 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 // Check our AES implementation against the example in FIPS-197
 
-#include <Random123/aes.h>
-#include <Random123/ReinterpretCtr.hpp>
+#include "ut_aes.hh"
 #if R123_USE_AES_OPENSSL
 #include <openssl/aes.h>
 #endif
@@ -46,7 +45,7 @@ using namespace std;
 using namespace r123;
 
 #if !R123_USE_SSE
-int main(int argc, char **argv){
+int main(void){
     std::cout << "No SSE support.  This test is not compiled\n";
     return 0;
 }
@@ -54,7 +53,7 @@ int main(int argc, char **argv){
 
 #include "util_m128.h"
 
-int main(int argc, char **argv){
+int main(void){
     r123array1xm128i IN, K;
 
     K.v[0].m =  m128i_from_charbuf("0001020304050607 08090a0b0c0d0e0f");
@@ -77,6 +76,9 @@ int main(int argc, char **argv){
         cout << "The AES-NI instructions are not available on this hardware.  Skipping AES-NI tests\n";
     }
 #else
+    /* Silence unused-but-set warnings. */
+    (void)IN;
+    (void)K;
     cout << "The AES-NI Bijections are not compiled into this binary.  Skipping AES-NI tests\n";
 #endif
     

@@ -48,6 +48,9 @@ int main(int argc, char **argv){
     unsigned long saved[5];
     double sum = 0.;
 
+    /* Silence an unused-parameter warning. */
+    (void)argc;
+
     r = gsl_rng_alloc(gsl_rng_cbrng);
     assert (gsl_rng_min(r) == 0);
     assert (gsl_rng_max(r) == 0xffffffffUL); // Not necessarily ~0UL

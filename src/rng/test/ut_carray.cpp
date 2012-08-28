@@ -29,7 +29,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <Random123/array.h>
+#include "ut_carray.hh"
 #include <iostream>
 #include <typeinfo>
 #include <sstream>
@@ -246,7 +246,7 @@ void doit(size_t N, size_t W){
 }
 
 
-int main(int argc, char **argv){
+int main(void){
 #if R123_USE_SSE
     doit<r123array1xm128i>(1, 128);
 #endif

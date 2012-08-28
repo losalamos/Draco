@@ -45,6 +45,9 @@ int main(int argc, char **argv){
 int
 main(int argc, char **argv)
 {
+    /* Silence an unused-parameter warning. */
+    (void)argc;
+
 #if R123_USE_AES_NI
     struct r123array1xm128i c, k, ret;
     char m128str[M128_STR_SIZE], *kat;

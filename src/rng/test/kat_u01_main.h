@@ -181,6 +181,10 @@ int debug = 0;
 int verbose = 0;
 const char *progname;
 
+#if defined __GNUC__
+#pragma GCC system_header
+#endif
+
 int
 main(int argc, char **argv)
 {

@@ -36,12 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning (disable : 4521)
 #endif
 
-#include <Random123/philox.h>
-#include <Random123/aes.h>
-#include <Random123/threefry.h>
-#include <Random123/ars.h>
-#include <Random123/conventional/Engine.hpp>
-#include <Random123/ReinterpretCtr.hpp>
+#include "ut_Engine.hh"
 #if R123_USE_STD_RANDOM
 #include <random>
 #endif
@@ -90,7 +85,6 @@ void doit(){
     typedef typename EType::result_type rtype;
     typedef typename BType::ctr_type ctype;
     typedef typename BType::key_type ktype;
-    typedef typename BType::ukey_type uktype;
 
     DummySeedSeq dummyss;
     EType ess(dummyss);
@@ -212,7 +206,7 @@ void doit(){
     cout << " OK" << endl;
 }
 
-int main(int argc, char **argv){
+int main(void){
 #if R123_USE_PHILOX_64BIT
     doit<Engine<Philox2x64 > >();
     doit<Engine<ReinterpretCtr<r123array4x32, Philox2x64 > > >();

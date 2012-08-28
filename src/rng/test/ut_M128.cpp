@@ -35,18 +35,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int main(){ printf("No SSE.  Nothing to check\n"); return 0; }
 #else
 
-#include <Random123/features/sse.h>
+#include "ut_M128.hh"
 #include <sstream>
 
-int main(int argc, char **argv){
-    r123m128i uninitialized;
+int main(void){
     __m128i zm = _mm_setzero_si128();
 #if R123_USE_CXX0X
     r123m128i zM(zm);
 #else
     r123m128i zM; zM.m = zm;
 #endif
-    uninitialized.m = _mm_setzero_si128();
 
     // operator bool (or maybe void*)
     assert(!zM);

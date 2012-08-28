@@ -32,6 +32,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __katdoth__
 #define __katdoth__
 
+#if defined __GNUC__
+#pragma GCC system_header
+#endif
+
 #include <Random123/philox.h>
 #include <Random123/threefry.h>
 #include <Random123/ars.h>
