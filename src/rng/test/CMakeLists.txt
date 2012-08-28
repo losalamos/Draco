@@ -81,6 +81,32 @@ if( RANDOM123_FOUND)
       PASS_REGEX "PASSED"
       FAIL_REGEX "FAILED" )
 
+   if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
+      cuda_add_executable( kat_cuda
+         ${PROJECT_SOURCE_DIR}/kat_cuda.cu )
+
+      add_test(
+         NAME    rng_kat_cuda
+         COMMAND $<TARGET_FILE:kat_cuda> )
+
+      set_tests_properties( rng_kat_cuda
+         PROPERTIES
+         PASS_REGULAR_EXPRESSION "PASSED"
+         FAIL_REGULAR_EXPRESSION "FAILED" )
+
+      cuda_add_executable( kat_u01_cuda
+         ${PROJECT_SOURCE_DIR}/kat_u01_cuda.cu )
+
+      add_test(
+         NAME    rng_kat_u01_cuda
+         COMMAND $<TARGET_FILE:kat_u01_cuda> )
+
+      set_tests_properties( rng_kat_u01_cuda
+         PROPERTIES
+         PASS_REGULAR_EXPRESSION "PASSED"
+         FAIL_REGULAR_EXPRESSION "FAILED" )
+   endif()
+
    configure_file( ${PROJECT_SOURCE_DIR}/kat_vectors
       ${PROJECT_BINARY_DIR}/kat_vectors COPYONLY )
 endif()
