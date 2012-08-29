@@ -231,7 +231,7 @@ ct-fe[0-9] | ct-login[0-9])
     ;;
 
 # Luna
-lu-fe[0-9] | lua[0-9]*)
+lu-fe[0-9] | lua[0-9]* | ml-fey | ml*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 
@@ -241,7 +241,13 @@ lu-fe[0-9] | lua[0-9]*)
 *)
     if test -d /ccs/codes/radtran; then 
         # assume this is a CCS LAN machine (64-bit)
-        source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
+        if test `uname -m` = 'x86_64'; then
+          # draco environment only supports 64-bit linux...
+          source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
+        else
+          echo "Draco's environment no longer supports 32-bit Linux."
+          echo "Module support not available. Email kgt@lanl.gov for more information."
+        fi
     fi
     ;;
 
@@ -250,7 +256,9 @@ esac
 # Only print the loaded modules if this is an interactive session.
 case ${-} in 
 *i*)
-    module list
+    if test -n "$MODULESHOME"; then
+      module list
+    fi
     ;;
 esac
 
