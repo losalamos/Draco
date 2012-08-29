@@ -28,7 +28,7 @@ using namespace rtt_dsxx;
 
 void tstconj(UnitTest &ut)
 {
-    if (soft_equiv(conj(3.5), 3.5))
+    if (soft_equiv(rtt_dsxx::conj(3.5), 3.5))
     {
 	ut.passes("conj(double) is correct");
     }
