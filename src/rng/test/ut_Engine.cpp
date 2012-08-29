@@ -36,7 +36,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning (disable : 4521)
 #endif
 
-#include "ut_Engine.hh"
+#if defined (__ICC)
+// Suppress Intel's "unrecognized preprocessor directive" warning, triggered
+// by use of #warning in Random123/features/sse.h.
+#pragma warning disable 11
+#endif
+
+#if defined (__GNUC__) && !defined (__ICC)
+// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+
+#include <Random123/philox.h>
+#include <Random123/aes.h>
+#include <Random123/threefry.h>
+#include <Random123/ars.h>
+
+#if defined(__GNUC__) && !defined (__ICC)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+
+#include <Random123/conventional/Engine.hpp>
+#include <Random123/ReinterpretCtr.hpp>
 #if R123_USE_STD_RANDOM
 #include <random>
 #endif

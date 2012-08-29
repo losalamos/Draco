@@ -181,10 +181,6 @@ int debug = 0;
 int verbose = 0;
 const char *progname;
 
-#if defined __GNUC__
-#pragma GCC system_header
-#endif
-
 int
 main(int argc, char **argv)
 {
@@ -194,6 +190,9 @@ main(int argc, char **argv)
     uint64_t *inp;
     KatU01Result *out;
     
+    /* Silence an unused-parameter warning. */
+    (void)argc;
+
     progname = argv[0];
     if ((cp = getenv("KAT_U01_DEBUG")) != NULL) debug = atoi(cp);
     /* First test that hextod appears to work */

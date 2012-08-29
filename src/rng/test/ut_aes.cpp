@@ -31,7 +31,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 // Check our AES implementation against the example in FIPS-197
 
-#include "ut_aes.hh"
+#if defined (__ICC)
+// Suppress Intel's "unrecognized preprocessor directive" warning, triggered
+// by use of #warning in Random123/features/sse.h.
+#pragma warning disable 11
+#endif
+
+#if defined (__GNUC__) && !defined (__ICC)
+// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+
+#include <Random123/aes.h>
+
+#if defined(__GNUC__) && !defined (__ICC)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+
+#include <Random123/ReinterpretCtr.hpp>
 #if R123_USE_AES_OPENSSL
 #include <openssl/aes.h>
 #endif
