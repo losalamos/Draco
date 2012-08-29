@@ -84,14 +84,12 @@ if( RANDOM123_FOUND)
          "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELWITHDEBINFO" )
       add_scalar_tests(
          SOURCES    "${random123_unit_tests}"
-         DEPS       "Lib_dsxx;${GSL_LIBRARIES};"
          PASS_REGEX "."
          FAIL_REGEX "failed;error" )
    endif()
 
    add_scalar_tests(
       SOURCES    "${random123_known_answer_tests}"
-      DEPS       "Lib_dsxx;"
       PASS_REGEX "PASSED"
       FAIL_REGEX "FAILED" )
 
