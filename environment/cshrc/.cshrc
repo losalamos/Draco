@@ -16,6 +16,10 @@ case hu*.lanl.gov:
 case hu*.localdomain:
 case ty*.lanl.gov:
 case ty*.localdomain:
+case lu*.lanl.gov:
+case lu*.localdomain:
+case ml-fey*.lanl.gov:
+case ml*.lanl.gov:
 #    source /usr/projects/crestone/dotfiles/Cshrc
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
@@ -100,16 +104,6 @@ case rra[0-9][0-9][0-9][bcd]*:
    module load cmake gsl-1.14 numdiff 
    module load 
    breaksw
-case lu*.lanl.gov
-case lu*.localdomain:
-    source /usr/projects/crestone/dotfiles/Cshrc
-    module use $DRACO_ENV_DIR/Modules/hpc
-    module use $DRACO_ENV_DIR/Modules/tu-fe
-    module load friendly-testing 
-    module load intel-c intel-f openmpi-intel
-    module load gsl/1.14-intel svn emacs
-    module load cmake numdiff
-    breaksw
 case gondolin*:
     source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
     module load grace totalview numdiff git gsl svn gcc lapack/3.4.0
