@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for RTT_Format_Reader.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( RTT_Format_Reader CXX )
 
@@ -22,25 +30,24 @@ endif()
 include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
-                     ${MPI_INCLUDE_PATH}
-)
+                     )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_RTT_Format_Reader 
-   RTT_Format_Reader "${sources}" "rtt_" )
-add_dependencies( Lib_RTT_Format_Reader
-   Lib_meshReaders
-   Lib_mesh_element 
-   Lib_dsxx )
+add_component_library( 
+   TARGET       Lib_RTT_Format_Reader 
+   TARGET_DEPS  Lib_meshReaders
+   LIBRARY_NAME RTT_Format_Reader 
+   SOURCES      "${sources}" 
+   LIBRARY_NAME_PREFIX "rtt_" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_RTT_Format_Reader DESTINATION lib )
+install( TARGETS Lib_RTT_Format_Reader EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/RTT_Format_Reader )
 
 # ---------------------------------------------------------------------------- #
@@ -48,14 +55,11 @@ install( FILES ${headers} DESTINATION include/RTT_Format_Reader )
 # ---------------------------------------------------------------------------- #
 
 if( BUILD_TESTING )
- add_subdirectory( test )
-endif()   
-  
+   add_subdirectory( test )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-

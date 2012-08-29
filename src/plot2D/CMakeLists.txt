@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for plot2D.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( plot2D CXX )
 
@@ -17,12 +25,9 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/plot2D/config.h )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-#file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
-#file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh *.h )
 list( APPEND headers ${PROJECT_BINARY_DIR}/plot2D/config.h )
-#list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
@@ -44,17 +49,21 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_plot2D plot2D "${sources}" )
+add_component_library( 
+   TARGET       Lib_plot2D
+   TARGET_DEPS  Lib_dsxx
+   LIBRARY_NAME plot2D
+   SOURCES      "${sources}" 
+#   VENDOR_LIST  "GRACE"
+#   VENDOR_LIBS  "${Grace_LIBRARY}"
+   )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_plot2D DESTINATION lib )
-install( 
-   FILES       ${headers} 
-               # ${template_implementations} 
-   DESTINATION include/plot2D )
+install( TARGETS Lib_plot2D EXPORT draco-targets DESTINATION lib )
+install( FILES ${headers} DESTINATION include/plot2D )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
@@ -69,4 +78,3 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-

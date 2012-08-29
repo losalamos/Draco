@@ -1,10 +1,13 @@
-# ---------------------------------------------------------------------------- #
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-# ---------------------------------------------------------------------------- #
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for fit/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-# ---------------------------------------------------------------------------- #
-
+#------------------------------------------------------------------------------#
 project( fit_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -34,8 +37,11 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_fit_test ${PROJECT_NAME} "${test_lib_sources}" )
-add_dependencies(      Lib_fit_test Lib_fit )
+add_component_library(
+   TARGET       Lib_fit_test
+   TARGET_DEPS  Lib_fit
+   LIBRARY_NAME ${PROJECT_NAME} 
+   SOURCES      "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
@@ -43,7 +49,7 @@ add_dependencies(      Lib_fit_test Lib_fit )
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_linear;Lib_dsxx" )
+   DEPS    "Lib_linear" )
 
 
 

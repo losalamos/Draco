@@ -15,71 +15,204 @@ include( parse_arguments )
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_library'
 # 
-# In addition to adding a library built from $sources, set
+# Purpose 1: In addition to adding a library built from $sources, set
 # Draco-specific properties for the library.  This macro reduces ~20
 # lines of code down to 1-2.
+#
+# Purpose 2: Encapsulate library and vendor library dependencies per
+# package.
+#
+# Purpose 3: Use information from 1 and 2 above to generate exported
+# targets. 
 # 
 # Usage:
 #
-# add_component_library( <target_name> <output_library_name> "${list_of_sources}" )
+# add_component_library(
+#   TARGET       "target name"
+#   LIBRARY_NAME "output library name"
+#   TARGET_DEPS  "dep1;dep2;..."
+#   PREFIX       "ClubIMC"
+#   SOURCES      "file1.cc;file2.cc;..."
+#   LIBRARY_NAME_PREFIX "rtt_"
+#   VENDOR_LIST  "MPI;GSL"
+#   VENDOR_LIBS  "${MPI_CXX_LIBRARIES};${GSL_LIBRARIES}"
+#   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_DIR};${GSL_INCLUDE_DIR}"
+#   )
+#
+# Example:
+#
+# add_component_library(
+#   TARGET       Lib_quadrature
+#   LIBRARY_NAME quadrature
+#   TARGET_DEPS  "Lib_parser;Lib_special_functions;Lib_mesh_element"
+#   PREFIX       "Draco"
+#   SOURCES      "${sources}"
+#   )
 #
 # Note: you must use quotes around ${list_of_sources} to preserve the list.
-#
-# Example: see ds++/CMakeLists.txt
-#
-# Option: Consider using default_args (cmake.org/Wiki/CMakeMacroParseArguments)
 #------------------------------------------------------------------------------
-macro( add_component_library target_name outputname sources 
+macro( add_component_library )
+#target_name outputname sources 
 # optional argument: libraryPrefix 
-)
+
+ # These become variables of the form ${acl_NAME}, etc.
+   parse_arguments( 
+      # prefix
+      acl
+      # list names
+      "PREFIX;TARGET;LIBRARY_NAME;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS;LIBRARY_NAME_PREFIX;LINK_LANGUAGE"
+      # option names
+      "NONE"
+      ${ARGV}
+      )
+
+   #
+   # Defaults:
+   # 
    # Optional 3rd argument is the library prefix.  The default is "rtt_".
-   if( ARGV3 )
-      set( libraryPrefix ${ARGV3} )
-   else()
-      set( libraryPrefix "rtt_" )
+   if( "${acl_LIBRARY_NAME_PREFIX}x" STREQUAL "x" )
+      set( acl_LIBRARY_NAME_PREFIX "rtt_" )
+   endif()
+   if( "${acl_LINK_LANGUAGE}x" STREQUAL "x" )
+      set( acl_LINK_LANGUAGE CXX )
    endif()
 
+   #
+   # Create the Library and set the Properties
+   #
+
    # This is a test library.  Find the component name
-   string( REPLACE "_test" "" comp_target ${target_name} )
+   string( REPLACE "_test" "" comp_target ${acl_TARGET} )
    # extract project name, minus leading "Lib_"
    string( REPLACE "Lib_" "" folder_name ${comp_target} )
 
-   add_library( ${target_name} ${DRACO_LIBRARY_TYPE} ${sources}  )
+   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
    if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-      set_target_properties( ${target_name} 
+      set_target_properties( ${acl_TARGET} 
          PROPERTIES 
          # Provide compile define macro to enable declspec(dllexport) linkage.
          COMPILE_DEFINITIONS BUILDING_DLL 
          # Use custom library naming
-         OUTPUT_NAME ${libraryPrefix}${outputname}
-         FOLDER ${folder_name}
+         OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
+         FOLDER      ${folder_name}
          )
    else()
-      set_target_properties( ${target_name}
+      set_target_properties( ${acl_TARGET}
          PROPERTIES 
          # Use custom library naming
-         OUTPUT_NAME ${libraryPrefix}${outputname}
-         FOLDER ${folder_name}
+         OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
+         FOLDER      ${folder_name}
          )
    endif()
 
-   if( ${target_name} MATCHES "_test" )
+   #
+   # Special post-build options for Win32 platforms
+   #
+
+   if( ${acl_TARGET} MATCHES "_test" )
       # For Win32 with shared libraries, the package dll must be
       # located in the test directory.
 
       get_target_property( ${comp_target}_loc ${comp_target} LOCATION )
       if( WIN32 )
-         add_custom_command( TARGET ${target_name}
+         add_custom_command( TARGET ${acl_TARGET}
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-            )
+                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
       endif()
-
    endif()
 
-   # OUTPUT_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}${libraryPrefix}ds++${CMAKE_STATIC_LIBRARY_SUFFIX}
+   #
+   # Generate properties related to library dependencies
+   #
+   if( NOT "${acl_TARGET_DEPS}x" STREQUAL "x" )
+      target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
+      # add_dependencies( ${acl_TARGET} ${acl_TARGET_DEPS} )
+   endif()
+   if( NOT "${acl_VENDOR_LIBS}x" STREQUAL "x" )
+      target_link_libraries( ${acl_TARGET} ${acl_VENDOR_LIBS} )
+   endif()
+   if( NOT "${acl_VENDOR_INCLUDE_DIRS}x" STREQUAL "x" )
+      include_directories( ${acl_VENDOR_INCLUDE_DIRS} )
+   endif()
+
+   #
+   # Register the library for exported library support
+   #
    
+   # Defaults
+   if( "${acl_PREFIX}x" STREQUAL "x" )
+      set( acl_PREFIX "Draco" )
+   endif()
+
+   # Find target file name and location
+   get_target_property( imploc ${acl_TARGET} LOCATION )
+
+   set( ilil "")
+   if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND  "${acl_VENDOR_LIBS}x" STREQUAL "x")
+      # do nothing
+   elseif( "${acl_TARGET_DEPS}x" STREQUAL "x" )
+      set( ilil "${acl_VENDOR_LIBS}" )
+   elseif( "${acl_VENDOR_LIBS}x" STREQUAL "x")
+      set( ilil "${acl_TARGET_DEPS}" )
+   else()
+      set( ilil "${acl_TARGET_DEPS};${acl_VENDOR_LIBS}" )
+   endif()
+   
+   # For non-test libraries, save properties to the
+   # project-config.cmake file.
+   if( "${ilil}x" STREQUAL "x" )
+      set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
+         "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
+set_target_properties(${acl_TARGET} PROPERTIES
+   IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
+   IMPORTED_LOCATION                 \"${imploc}\"
+)
+")
+   else()
+      set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
+         "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
+set_target_properties(${acl_TARGET} PROPERTIES
+   IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
+   IMPORTED_LINK_INTERFACE_LIBRARIES \"${ilil}\"
+   IMPORTED_LOCATION                 \"${imploc}\"
+)
+")
+   endif()
+
+   if( NOT "${acl_TARGET}" MATCHES "test" )
+
+      list( APPEND ${acl_PREFIX}_LIBRARIES ${acl_TARGET} )
+      string( REPLACE "Lib_" "" compname ${acl_TARGET} )
+      list( APPEND ${acl_PREFIX}_PACKAGE_LIST ${compname} )
+
+      list( APPEND ${acl_PREFIX}_TPL_LIST ${acl_VENDOR_LIST} )
+      list( APPEND ${acl_PREFIX}_TPL_INCLUDE_DIRS ${acl_VENDOR_INCLUDE_DIRS} )
+      list( APPEND ${acl_PREFIX}_TPL_LIBRARIES ${acl_VENDOR_LIBS} )
+      if( ${acl_PREFIX}_TPL_INCLUDE_DIRS )
+         list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_INCLUDE_DIRS )
+      endif()
+      if( ${acl_PREFIX}_TPL_LIBRARIES )
+         list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIBRARIES )
+      endif()
+      if( ${acl_PREFIX}_TPL_LIST )
+         list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIST )   
+      endif()
+      
+      set( ${acl_PREFIX}_LIBRARIES "${${acl_PREFIX}_LIBRARIES}"  CACHE INTERNAL "List of component targets" FORCE)
+      set( ${acl_PREFIX}_PACKAGE_LIST "${${acl_PREFIX}_PACKAGE_LIST}"  CACHE INTERNAL
+         "List of known ${acl_PREFIX} targets" FORCE)
+      set( ${acl_PREFIX}_TPL_LIST "${${acl_PREFIX}_TPL_LIST}"  CACHE INTERNAL 
+         "List of third party libraries known by ${acl_PREFIX}" FORCE)
+      set( ${acl_PREFIX}_TPL_INCLUDE_DIRS "${${acl_PREFIX}_TPL_INCLUDE_DIRS}"  CACHE
+         INTERNAL "List of include paths used by ${acl_PREFIX} to find thrid party vendor header files." 
+         FORCE)
+      set( ${acl_PREFIX}_TPL_LIBRARIES "${${acl_PREFIX}_TPL_LIBRARIES}"  CACHE INTERNAL
+         "List of third party libraries used by ${acl_PREFIX}." FORCE)
+      set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
+         "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
+
+   endif()
 endmacro()
 
 # ------------------------------------------------------------
@@ -135,8 +268,7 @@ endmacro()
 # 2. Register the pass/fail criteria.
 # ------------------------------------------------------------
 macro( register_parallel_test targetname numPE command cmd_args )
-
-   add_test( 
+  add_test( 
       NAME    ${targetname}
       COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${MPIRUN_POSTFLAGS}

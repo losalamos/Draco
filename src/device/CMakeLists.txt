@@ -40,4 +40,3 @@ endif()
 
 process_autodoc_pages()
 
-

@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   c4/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for c4
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( c4 CXX )
 
@@ -62,21 +70,32 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${PROJECT_BINARY_DIR}       # c4/config.h
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
-                     ${MPI_INCLUDE_PATH}
                      )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_c4 c4 "${sources}" ${PAPI_LIBRARY} )
-add_dependencies( Lib_c4 Lib_dsxx )
+set( c4_VENDOR_LIBS "${MPI_LIBRARIES}")
+if( PAPI_LIBRARY )
+   list( APPEND c4_VENDOR_LIBS ${PAPI_LIBRARY} )
+endif()
+
+add_component_library( 
+   TARGET       Lib_c4
+   TARGET_DEPS  Lib_dsxx
+   LIBRARY_NAME c4 
+   SOURCES      "${sources}"
+   VENDOR_LIST  "MPI" 
+   VENDOR_LIBS  "${c4_VENDOR_LIBS}"
+   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_PATH}" 
+   )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_c4 DESTINATION lib )
+install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/c4 )
 
 # ---------------------------------------------------------------------------- #
@@ -86,12 +105,9 @@ install( FILES ${headers} DESTINATION include/c4 )
 if( BUILD_TESTING )
  add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-

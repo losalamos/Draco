@@ -44,23 +44,32 @@ include_directories(
    ${PROJECT_BINARY_DIR}        # config.h
    ${draco_src_dir_SOURCE_DIR}  # ds++ header files
    ${dsxx_BINARY_DIR}           # ds++/config.h
-   ${CUDA_TOOLKIT_INCLUDE}
    )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_device device "${sources}" )
-target_link_libraries( Lib_device 
-   Lib_dsxx
-   ${CUDA_CUDA_LIBRARY} 
+add_component_library( 
+   TARGET       Lib_device
+   TARGET_DEPS  Lib_dsxx
+   LIBRARY_NAME device 
+   SOURCES      "${sources}"
+   VENDOR_LIST  "CUDA"
+   VENDOR_LIBS  "${CUDA_CUDA_LIBRARY}"
+   VENDOR_INCLUDE_DIRS "${CUDA_TOOLKIT_INCLUDE}"   
    )
+# target_link_libraries( Lib_device 
+#    Lib_dsxx
+#    ${CUDA_CUDA_LIBRARY} 
+#    )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_device DESTINATION lib )
+install( TARGETS Lib_device  
+   EXPORT draco-targets
+   DESTINATION lib )
 install( FILES ${headers} DESTINATION include/device )
 

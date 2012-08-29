@@ -31,6 +31,31 @@
 #     )
 # endif()
 
+# examples from lapack
+# SET(CTEST_CUSTOM_WARNING_EXCEPTION
+#   ${CTEST_CUSTOM_WARNING_EXCEPTION}
+
+#   # Common warning when linking ATLAS built with GNU Fortran 4.1 and building 
+#   # with GNU Fortran 4.4.  It can be safely ignored.
+#   "libgfortran.*may conflict with libgfortran"
+
+#   # Harmless warning often seen on IRIX
+#   "WARNING 84 : .*libm.* is not used for resolving any symbol"
+
+#   # Warnings caused by sun compilers when building code to only run on your 
+#   # native platform
+#   "xarch=native on this architecture implies -xarch=.*which generates code that does not run"
+  
+#   # Harmless warnings from the Intel compiler on Windows
+#   "ipo: warning #11010: file format not recognized for .*\\.exe\\.embed\\.manifest\\.res"
+#   "LINK : warning LNK4224: /INCREMENTAL:YES is no longer supported;  ignored"
+
+#   # Warnings caused by string truncation in the test code.  The truncation is 
+#   # intentional
+#   "Character string truncated to length 1 on assignment"
+# )
+
+
 # Exceptions 
 # set( CTEST_CUSTOM_WARNING_EXCEPTION
 #   ${CTEST_CUSTOM_WARNING_EXCEPTION}

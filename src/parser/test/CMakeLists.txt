@@ -1,10 +1,13 @@
-#=============================================================================
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-#=============================================================================
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for parser/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-#=============================================================================
-
+#------------------------------------------------------------------------------#
 project( parser_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -30,8 +33,11 @@ include_directories(
    ${MPI_INCLUDE_PATH} )
 
 # Library Lib_parser_test
-add_component_library( Lib_parser_test ${PROJECT_NAME} "${test_lib_sources}" )
-add_dependencies( Lib_parser_test Lib_parser )
+add_component_library(
+   TARGET        Lib_parser_test
+   TARGET_DEPS   Lib_parser
+   LIBRARY_NAME  ${PROJECT_NAME}
+   SOURCES       "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

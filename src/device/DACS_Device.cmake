@@ -3,9 +3,11 @@
 # author Gabriel Rockefeller
 # date   2011 June 13
 # brief  Instructions for building device Makefile.
-# note   © Copyright 2011 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2011-2012 Los Alamos National Security, 
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
+#------------------------------------------------------------------------------#
 
 # At the moment, this package is het-only, and x86-only, but it builds
 # small ppe binaries for testing (so that dacs_de_start can have
@@ -13,7 +15,7 @@
 
 # BUG in <dacs.h>: pgCC (with strict ansi flag -A) will not compile
 # code that includes <dacs.h> because of trailing commas found in
-# enumeration lists.  
+# enumeration lists.
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 
@@ -86,16 +88,23 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-   add_component_library( Lib_device device "${sources}" )
-   target_link_libraries( Lib_device 
-      /usr/lib64/libdacs_hybrid.so
+   add_component_library( 
+      TARGET       Lib_device 
+      TARGET_DEPS  Lib_dsxx
+      LIBRARY_NAME device 
+      SOURCES      "${sources}" 
+      VENDOR_LIST  "DaCS"
+      VENDOR_LIBS  "/usr/lib64/libdacs_hybrid.so"
       )
+   # target_link_libraries( Lib_device 
+   #    /usr/lib64/libdacs_hybrid.so
+   #    )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-   install( TARGETS Lib_device DESTINATION lib )
+   install( TARGETS Lib_device EXPORT draco-targets DESTINATION lib )
    install( FILES ${headers} DESTINATION include/device )
 
 endif() # endif x86 build

@@ -45,14 +45,17 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-# add_component_library( target_name library_name "$sources" )
-add_component_library( Lib_dsxx ds++ "${sources}" )
+add_component_library( 
+   TARGET       Lib_dsxx 
+   LIBRARY_NAME ds++ 
+   SOURCES      "${sources}" 
+   )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_dsxx DESTINATION lib )
+install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION lib )
 target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
 
@@ -69,4 +72,3 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-

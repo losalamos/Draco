@@ -1,13 +1,15 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for min.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( min CXX )
-
-# ---------------------------------------------------------------------------- #
-# Generate config.h (only occurs when cmake is run)
-# ---------------------------------------------------------------------------- #
-
-#configure_file( config.h.in ${PROJECT_BINARY_DIR}/min/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -16,7 +18,6 @@ project( min CXX )
 file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
-#list( APPEND headers ${PROJECT_BINARY_DIR}/min/config.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
@@ -39,14 +40,17 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_min ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_min Lib_linear )
+add_component_library( 
+   TARGET       Lib_min
+   TARGET_DEPS  Lib_linear 
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_min DESTINATION lib )
+install( TARGETS Lib_min EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} ${template_implementations} DESTINATION include/min )
 
 # ---------------------------------------------------------------------------- #
@@ -55,8 +59,7 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/min )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
-  
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

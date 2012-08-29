@@ -53,6 +53,56 @@ macro( dbsSetDefaults )
      set( CMAKE_SUPPRESS_REGENERATION ON )  
   endif()
   
+  # Design-by-Contract
+
+  #   Insist() assertions    : always on
+  #   Require() preconditions: add +1 to DBC_LEVEL
+  #   Check() assertions     : add +2 to DBC_LEVEL
+  #   Ensure() postconditions: add +4 to DBC_LEVEL
+  #   Do not throw on error  : add +8 to DBC_LEVEL
+  string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE )
+  if( "${CMAKE_BUILD_TYPE}" MATCHES "RELEASE" )
+     set( DRACO_DBC_LEVEL "0" CACHE STRING "Design-by-Contract (0-15)?" )
+  else()
+     set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-15)?" )
+  endif()
+  # provide a constrained drop down menu in cmake-gui
+  set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS 
+     0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
+  
+  if( CMAKE_CONFIGURATION_TYPES )
+     set( NESTED_CONFIG_TYPE -C "${CMAKE_CFG_INTDIR}" )
+  else()
+     if( CMAKE_BUILD_TYPE )
+        set( NESTED_CONFIG_TYPE -C "${CMAKE_BUILD_TYPE}" )
+     else()
+        set( NESTED_CONFIG_TYPE )
+     endif()
+  endif()
+  
+  # Enable parallel build for Eclipse:
+  set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## dbsInitExportTargets
+##
+## These fields are constructed during Draco configure and are
+## saved/installed to lib/cmake/draco-X.X/draco-config.cmake.
+##---------------------------------------------------------------------------##
+macro( dbsInitExportTargets PREFIX )
+  # Data for exporting during install
+   set( ${PREFIX}_LIBRARIES ""  CACHE INTERNAL "List of draco targets" FORCE)
+   set( ${PREFIX}_PACKAGE_LIST ""  CACHE INTERNAL
+      "List of known package targets" FORCE)
+   set( ${PREFIX}_TPL_LIST ""  CACHE INTERNAL 
+      "List of third party libraries known by this package" FORCE)
+   set( ${PREFIX}_TPL_INCLUDE_DIRS ""  CACHE
+      INTERNAL "List of include paths used by this package to find thrid party vendor header files." 
+      FORCE)
+   set( ${PREFIX}_TPL_LIBRARIES ""  CACHE INTERNAL
+      "List of third party libraries used by this package." FORCE)
 endmacro()
 
 #------------------------------------------------------------------------------#

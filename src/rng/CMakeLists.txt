@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for rng.
+# note   Copyright (C) 2010-2012, Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( rng CXX )
 
@@ -35,25 +43,34 @@ include_directories(
    ${PROJECT_BINARY_DIR}      # rng/config.h
    ${PROJECT_SOURCE_DIR}/..   # ds++ header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
-   ${GSL_INCLUDE_DIR}
 ) 
-
-if( RANDOM123_FOUND )
-   include_directories( ${RANDOM123_INCLUDE_DIR} )
-endif()
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_rng ${PROJECT_NAME} "${sources}"  )
-target_link_libraries( Lib_rng ${GSL_LIBRARIES}  )
+if( RANDOM123_FOUND )
+   set( rng_vendor_include_dirs
+      "${GSL_INCLUDE_DIRS};${RANDOM123_INCLUDE_DIR}" )
+else()
+   set( rng_vendor_include_dirs "${GSL_INCLUDE_DIRS}" )
+endif()
+
+add_component_library( 
+   TARGET       Lib_rng
+   TARGET_DEPS  Lib_dsxx
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${sources}"  
+   VENDOR_LIST         "GSL"
+   VENDOR_LIBS         "${GSL_LIBRARIES}"
+   VENDOR_INCLUDE_DIRS "${rng_vendor_include_dirs}"
+)
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_rng DESTINATION lib )
+install( TARGETS Lib_rng EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/rng )
 
 # ---------------------------------------------------------------------------- #
@@ -63,12 +80,9 @@ install( FILES ${headers} DESTINATION include/rng )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-

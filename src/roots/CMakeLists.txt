@@ -1,13 +1,15 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for roots.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( roots CXX )
-
-# ---------------------------------------------------------------------------- #
-# Generate config.h (only occurs when cmake is run)
-# ---------------------------------------------------------------------------- #
-
-#configure_file( config.h.in ${PROJECT_BINARY_DIR}/roots/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -16,7 +18,6 @@ project( roots CXX )
 file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
-#list( APPEND headers ${PROJECT_BINARY_DIR}/roots/config.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
@@ -39,14 +40,17 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_roots ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_roots Lib_linear )
+add_component_library( 
+   TARGET       Lib_roots
+   TARGET_DEPS  Lib_linear
+   LIBRARY_NAME ${PROJECT_NAME} 
+   SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_roots DESTINATION lib )
+install( TARGETS Lib_roots EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} ${template_implementations} DESTINATION include/roots )
 
 # ---------------------------------------------------------------------------- #
@@ -56,12 +60,10 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/roots 
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
 

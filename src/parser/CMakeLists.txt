@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for parser.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( parser CXX )
 
@@ -7,11 +15,8 @@ project( parser CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-#file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
-#file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-#list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
@@ -26,21 +31,23 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
                      ${c4_BINARY_DIR}            # c4/config.h
-                     ${MPI_INCLUDE_PATH}
-)
+                     )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_parser ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_parser Lib_c4 Lib_units )
+add_component_library( 
+   TARGET       Lib_parser
+   TARGET_DEPS  "Lib_c4;Lib_units"
+   LIBRARY_NAME ${PROJECT_NAME} 
+   SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_parser DESTINATION lib )
+install( TARGETS Lib_parser EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/parser )
 
 # ---------------------------------------------------------------------------- #
@@ -48,14 +55,15 @@ install( FILES ${headers} DESTINATION include/parser )
 # ---------------------------------------------------------------------------- #
 
 if( BUILD_TESTING )
- add_subdirectory( test )
+   add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
+
 
 

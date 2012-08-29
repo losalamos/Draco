@@ -1,10 +1,13 @@
-#=============================================================================
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-#=============================================================================
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for quadrature/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-#=============================================================================
-
+#------------------------------------------------------------------------------#
 project( quadrature_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -25,27 +28,30 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # config.h
-   ${MPI_INCLUDE_PATH} )
+   )
 
 # ---------------------------------------------------------------------------- #
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_quadrature_test ${PROJECT_NAME} "${test_lib_sources}" )
-add_dependencies( Lib_quadrature_test Lib_quadrature )
+add_component_library( 
+   TARGET       Lib_quadrature_test 
+   TARGET_DEPS  Lib_quadrature
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 set( test_deps
-   Lib_parser
-   Lib_c4
-   Lib_special_functions
-   Lib_ode
-   Lib_dsxx
-   ${GSL_LIBRARIES}
-   ${MPI_LIBRARIES} 
+#   Lib_parser
+#   Lib_c4
+#   Lib_special_functions
+#   Lib_ode
+#   Lib_dsxx
+#   ${GSL_LIBRARIES}
+#   ${MPI_LIBRARIES} 
    ${PAPI_LIBRARY} )
 
 add_scalar_tests(

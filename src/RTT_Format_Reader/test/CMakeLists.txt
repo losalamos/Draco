@@ -1,10 +1,13 @@
-#=============================================================================
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-#=============================================================================
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for RTT_Format_Reader/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-#=============================================================================
-
+#------------------------------------------------------------------------------#
 project( RTT_Format_Reader_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -32,14 +35,11 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_RTT_Format_Reader_test 
-   RTT_Format_Reader_test 
-   ${test_lib_sources} )
-add_dependencies( Lib_RTT_Format_Reader_test
-   Lib_RTT_Format_Reader 
-   Lib_RTT_Format_Reader
-   Lib_mesh_element
-   Lib_dsxx)
+add_component_library( 
+   TARGET       Lib_RTT_Format_Reader_test 
+   TARGET_DEPS  Lib_RTT_Format_Reader
+   LIBRARY_NAME RTT_Format_Reader_test 
+   SOURCES      "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

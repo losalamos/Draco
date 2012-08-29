@@ -1,0 +1,99 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Save Draco configuration information for installation (cmake export)
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+# $Id: CMakeLists.txt 5442 2010-11-03 16:50:26Z kellyt $
+#------------------------------------------------------------------------------#
+
+get_filename_component( _SELF_DIR "${CMAKE_CURRENT_LIST_FILE}"  PATH )
+include( "${_SELF_DIR}/draco-targets.cmake" )
+@DRACO_GNUtoMS_INSTALL@
+
+# Also set the draco install dir
+set( DRACO_DIR "@CMAKE_INSTALL_PREFIX@" )
+set( DRACO_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
+set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco-@DRACO_VERSION_MAJOR@.@DRACO_VERSION_MINOR@" )
+
+# Provide some pretty print information during configure
+include( FeatureSummary )
+set_package_properties( draco PROPERTIES
+   URL "http://coder/redmine/projects/draco"
+   DESCRIPTION "Draco is a comprehensive, radiation transport framework that provides key, reusable components for serial and parallel computational physics codes."
+   TYPE REQUIRED
+   PURPOSE "Provides underlying capabilities required by ClubIMC (smart pointers, data access, randon number generators, etc."
+   )   
+
+## ---------------------------------------------------------------------------
+## Compilers used by Draco build
+## ---------------------------------------------------------------------------
+
+set( Draco_CXX_COMPILER     "@CMAKE_CXX_COMPILER@" )
+set( Draco_C_COMPILER       "@CMAKE_C_COMPILER@" )
+set( Draco_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@" )
+set( Draco_CXX_COMPILER_FLAGS      "@Draco_CXX_COMPILER_FLAGS@" )
+set( Draco_C_COMPILER_FLAGS        "@Draco_C_COMPILER_FLAGS@" )
+set( Draco_Fortran_COMPILER_FLAGS  "@Draco_Fortran_COMPILER_FLAGS@" )
+set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
+
+## ---------------------------------------------------------------------------
+## Set library specifications and paths 
+## ---------------------------------------------------------------------------
+
+## The project version number
+set(Draco_VERSION "@DRACO_VERSION@")
+
+## The project include file directories.
+set(Draco_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include")
+
+## The project library directories.
+set(Draco_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/lib")
+
+## The project libraries.
+set(Draco_LIBRARIES "@Draco_LIBRARIES@" )
+
+## The project tpl include paths
+set(Draco_TPL_INCLUDE_DIRS "@Draco_TPL_INCLUDE_DIRS@" )
+
+## The project tpl library paths (not currently implemented)
+#  set(Draco_TPL_LIBRARY_DIRS "")
+
+## The project tpl libraries
+set(Draco_TPL_LIBRARIES "@Draco_TPL_LIBRARIES@" )
+
+## ---------------------------------------------------------------------------
+## MPI specific variables
+##   These variables are provided to make it easier to get the mpi libraries
+##   and includes on systems that do not use the mpi wrappers for compiling
+## ---------------------------------------------------------------------------
+
+set(DRACO_C4 "@DRACO_C4@" )
+set(Draco_MPIEXEC "@MPIEXEC@")
+set(Draco_MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
+set(Draco_MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
+set(MPI_Fortran_INCLUDE_PATH "@MPI_Fortran_INCLUDE_PATH@")
+set(MPI_Fortran_LIBRARIES "@MPI_Fortran_LIBRARIES@")
+# These are needed for registering tests
+set(MPIEXEC "@MPIEXEC@")
+set(MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
+set(MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
+
+## ---------------------------------------------------------------------------
+## Set useful general variables 
+## ---------------------------------------------------------------------------
+
+## The packages enabled for this project
+set(Draco_PACKAGE_LIST "@Draco_PACKAGE_LIST@" )
+
+## The TPLs enabled for this project
+set(Draco_TPL_LIST "@Draco_TPL_LIST@")
+
+## ---------------------------------------------------------------------------
+## Save per target properties for importing into other projects.
+## ---------------------------------------------------------------------------
+
+@Draco_EXPORT_TARGET_PROPERTIES@
+

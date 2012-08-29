@@ -1,10 +1,13 @@
-# ---------------------------------------------------------------------------- #
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-# ---------------------------------------------------------------------------- #
+#-----------------------------*-cmake-*----------------------------------------#
+# file   src/ds++/test/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2010 April 28
+# brief  Instructions for building ds++/test level Makefile.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-# ---------------------------------------------------------------------------- #
-
+#------------------------------------------------------------------------------#
 project( dsxx_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -36,9 +39,11 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_dsxx_test ds++_test     "${test_lib_sources}" )
-#                      ^target_name  ^library_name ^source list
-add_dependencies( Lib_dsxx_test Lib_dsxx )
+add_component_library( 
+   TARGET       Lib_dsxx_test
+   TARGET_DEPS  Lib_dsxx
+   LIBRARY_NAME ds++_test 
+   SOURCES      "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

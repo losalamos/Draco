@@ -1,10 +1,13 @@
-#=============================================================================
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-#=============================================================================
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for traits/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-#=============================================================================
-
+#------------------------------------------------------------------------------#
 project( traits_test CXX )
 
 file( GLOB test_sources *.cc )

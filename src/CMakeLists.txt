@@ -12,39 +12,6 @@
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project( draco_src_dir )
 
-# Set default compile environment:
-
-# Setup defaults, value checks, etc.
-include(buildEnv)
-# set defaults for BUILD_TYPE and INSTALL_PREFIX
-dbsSetDefaults()
-# Save config info
-dbsConfigInfo()
-
-# Build only for Opteron? Or PPE also?
-if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
-   include( platform_customization_roadrunner_ppe )
-endif()
-
-# Set compiler options
-include( compilerEnv )
-dbsSetupCompilers()
-dbsSetupCxx()
-
-# Is Fortran enabled (it is considered 'optional' for draco)?
-get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
-if( _LANGUAGES_ MATCHES Fortran )
-   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
-      dbsSetupFortran()
-   endif()
-endif()
-
-include( FeatureSummary )
-
-# Find any globally required libraries
-include( vendor_libraries )
-setupVendorLibraries()
-
 # Platform Checks 
 # Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
 message("
@@ -120,13 +87,13 @@ message(" ")
 message( STATUS "Configuring Level 4 packages --" )
 add_dir_if_exists( special_functions ) # needs roots, units, ode
 add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
+#add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 
 # Level 5
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
-
 
 # Summary
 message(" ")
@@ -174,6 +141,10 @@ ENABLE_RNG_NR    : ${ENABLE_RNG_NR}
 DRACO_DBC_LEVEL  : ${DRACO_DBC_LEVEL}")
 message("DRACO_DIAGNOSTICS: ${DRACO_DIAGNOSTICS}
 DRACO_TIMING     : ${DRACO_TIMING}")
+
+# Push some variables up one level
+set( Draco_EXPORT_TARGET_PROPERTIES
+   "${Draco_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
 
 ##---------------------------------------------------------------------------##
 ## End of src/CMakeLists.txt

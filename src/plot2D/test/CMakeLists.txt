@@ -1,22 +1,21 @@
-#=============================================================================
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-#=============================================================================
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for plot2D/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-#=============================================================================
-
+#------------------------------------------------------------------------------#
 project( plot2D_test CXX )
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
-#set( test_lib_sources 
-#	${PROJECT_SOURCE_DIR}/test_utils.cc 
-#	${PROJECT_SOURCE_DIR}/test_utils.hh)
 file( GLOB test_sources *.cc )
 file( GLOB bench_files bench/*.agr bench/*.par )
-#list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -28,20 +27,10 @@ include_directories(
    )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-#add_component_library( Lib_plot2D_test ${PROJECT_NAME} "${test_lib_sources}" )
-#add_dependencies( Lib_plot2D_test Lib_plot2D )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-set( test_deps 
-   Lib_dsxx 
-   ${Grace_LIBRARY} 
-   )
+set( test_deps  Lib_dsxx ${Grace_LIBRARY} )
 
 # This test requires numdiff
 find_program( NUMDIFF

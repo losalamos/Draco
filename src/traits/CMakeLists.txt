@@ -1,4 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for trais.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
+#------------------------------------------------------------------------------#
 
 cmake_minimum_required(VERSION 2.6)
 project( traits CXX )
@@ -27,7 +36,6 @@ install( FILES ${headers} DESTINATION include/traits )
 if( BUILD_TESTING )
  add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

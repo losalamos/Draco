@@ -3,9 +3,11 @@
 # author Gabriel Rockefeller
 # date   2011 June 13
 # brief  Instructions for building device/test Makefile.
-# note   © Copyright 2011 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2011-2012 Los Alamos National Security, 
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
+#------------------------------------------------------------------------------#
 
 # If this is an x86 build, build the unit tests.  If this is a ppe
 # build, build the ppe helper binaries.  The ppe binaries must be
@@ -27,8 +29,6 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
 # ---------------------------------------------------------------------------- #
 
    set( test_sources
-      # dacs_noop_ppe.cc
-      # dacs_wait_for_cmd_ppe.cc
       tstDACS_Device.cc
       tstDACS_Device_Interface.cc
       tstDACS_Device_Process.cc

@@ -93,7 +93,7 @@ cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR )
 #       Addition of CMakePackageConfigHelpers
 #       Support MSVC builds mixed with MingGW gfortran
 #       Support for Xcode 4.3
-project( Draco CXX )
+project( Draco CXX C )
 enable_language( Fortran OPTIONAL )
 
 # Build system configuration files are located here.
@@ -118,21 +118,41 @@ add_test( SystemInformationNew
 set_tests_properties( SystemInformationNew
    PROPERTIES LABELS "nomemcheck" )
 
-# Build options (static or shared, dbc-level
-#   Insist() assertions    : always on
-#   Require() preconditions: add +1 to DBC_LEVEL
-#   Check() assertions     : add +2 to DBC_LEVEL
-#   Ensure() postconditions: add +4 to DBC_LEVEL
-#   Do not throw on error  : add +8 to DBC_LEVEL
-string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE )
-if( "${CMAKE_BUILD_TYPE}" MATCHES "RELEASE" )
-   set( DRACO_DBC_LEVEL "0" CACHE STRING "Design-by-Contract (0-15)?" )
-else()
-   set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-15)?" )
+# Set default compile environment:
+
+# Setup defaults, value checks, etc.
+include(buildEnv)
+# set defaults for BUILD_TYPE and INSTALL_PREFIX
+dbsSetDefaults()
+# Initialize fields that define the exported target files
+# (draco-config.cmake)
+dbsInitExportTargets( "Draco" )
+# Save config info
+dbsConfigInfo()
+
+# Build only for Opteron? Or PPE also?
+if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
+   include( platform_customization_roadrunner_ppe )
 endif()
-# provide a constrained drop down menu in cmake-gui
-set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS 
-   0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
+
+# Set compiler options
+include( compilerEnv )
+dbsSetupCompilers()
+dbsSetupCxx()
+
+# Is Fortran enabled (it is considered 'optional' for draco)?
+get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
+if( _LANGUAGES_ MATCHES Fortran )
+   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+      dbsSetupFortran()
+   endif()
+endif()
+
+include( FeatureSummary )
+
+# Find any globally required libraries
+include( vendor_libraries )
+setupVendorLibraries()
 
 #
 # Build Draco components:
@@ -152,9 +172,6 @@ configure_file(
 #
 # Extra custom commands
 #
-# alias for 'make configure'
-add_custom_target( configure
-   COMMAND ${CMAKE_MAKE_PROGRAM} rebuild_cache )   
 
 # Doxygen documentation
 option( BUILD_AUTODOC OFF )
@@ -191,8 +208,9 @@ add_custom_target( uninstall
    "${CMAKE_COMMAND}" -P
    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
 
-# Enable parallel build for Eclipse:
-set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
+# Export targets
+install( EXPORT draco-targets
+   DESTINATION lib/cmake/draco-${DRACO_VERSION} )
 
 ##---------------------------------------------------------------------------##
 ## Notes:

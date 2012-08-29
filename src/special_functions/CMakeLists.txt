@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for special_functions.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( special_functions CXX )
 
@@ -34,17 +42,21 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_special_functions ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_special_functions Lib_units Lib_ode )
-#set_target_properties( Lib_special_functions
-#   PROPERTIES
-#   LINK_INTERFACE_LIBRARIES "Lib_units;Lib_ode;Lib_dsxx;${GSL_LIBRARIES}" )
+add_component_library( 
+   TARGET       Lib_special_functions
+   TARGET_DEPS  "Lib_units;Lib_ode;Lib_roots"
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${sources}" 
+   VENDOR_LIST         "GSL"
+   VENDOR_LIBS         "${GSL_LIBRARIES}"
+   VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIRS}"
+)
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_special_functions DESTINATION lib )
+install( TARGETS Lib_special_functions EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/special_functions )
 
 # ---------------------------------------------------------------------------- #
@@ -52,14 +64,11 @@ install( FILES ${headers} DESTINATION include/special_functions )
 # ---------------------------------------------------------------------------- #
 
 if( BUILD_TESTING )
- add_subdirectory( test )
+   add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-

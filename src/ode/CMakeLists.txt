@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for ode.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( ode CXX )
 
@@ -39,14 +47,18 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_ode ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_ode Lib_c4 )
+add_component_library(
+   TARGET       Lib_ode 
+   TARGET_DEPS  Lib_dsxx
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${sources}" )
+add_dependencies( Lib_ode Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_ode DESTINATION lib )
+install( TARGETS Lib_ode EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} ${template_implementations} DESTINATION include/ode )
 
 # ---------------------------------------------------------------------------- #
@@ -56,12 +68,10 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/ode )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
-  
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
 

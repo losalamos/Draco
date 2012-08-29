@@ -1,10 +1,13 @@
-# ---------------------------------------------------------------------------- #
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-# ---------------------------------------------------------------------------- #
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2012 Aug 1
+# brief  Generate build project files for ode/test.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-# ---------------------------------------------------------------------------- #
-
+#------------------------------------------------------------------------------#
 project( ode_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -31,8 +34,11 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_ode_test ${PROJECT_NAME} "${test_lib_sources}" )
-add_dependencies( Lib_ode_test Lib_ode )
+add_component_library(
+   TARGET       Lib_ode_test
+   TARGET_DEPS  Lib_ode
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

@@ -1,5 +1,11 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   src/quadrature/CMakeLists.txt
+# brief  Instructions for building quadrature Makefiles.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, 
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( quadrature CXX )
 
@@ -7,11 +13,8 @@ project( quadrature CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-#file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
-#file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-#list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
@@ -27,23 +30,23 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${dsxx_BINARY_DIR}          # ds++/config.h
                      ${GSL_INCLUDE_DIRS}
                      ${MPI_INCLUDE_PATH}
-)
+                     )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_quadrature ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_quadrature
-   Lib_units
-   Lib_special_functions
-   Lib_ode )
+add_component_library( 
+   TARGET       Lib_quadrature
+   TARGET_DEPS  "Lib_parser;Lib_special_functions;Lib_mesh_element"
+   LIBRARY_NAME ${PROJECT_NAME} 
+   SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_quadrature DESTINATION lib )
+install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/quadrature )
 
 # ---------------------------------------------------------------------------- #
@@ -51,14 +54,14 @@ install( FILES ${headers} DESTINATION include/quadrature )
 # ---------------------------------------------------------------------------- #
 
 if( BUILD_TESTING )
- add_subdirectory( test )
+   add_subdirectory( test )
 endif()   
   
-
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
 
 
