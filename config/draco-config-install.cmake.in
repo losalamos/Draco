@@ -81,6 +81,15 @@ set(MPIEXEC "@MPIEXEC@")
 set(MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
 set(MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
 
+## CUDA
+set( USE_CUDA "@USE_CUDA@" )
+if( USE_CUDA )
+   set( CUDA_FOUND @CUDA_FOUND@ )
+   set( CUDA_NVCC_EXECUTABLE "@CUDA_NVCC_EXECUTABLE@" )
+   set( CUDA_CUDA_LIBRARY "@CUDA_CUDA_LIBRARY@" )
+   set( CUDA_TOOLKIT_INCLUDE "@CUDA_TOOLKIT_INCLUDE@" )
+endif()
+
 ## ---------------------------------------------------------------------------
 ## Set useful general variables 
 ## ---------------------------------------------------------------------------
