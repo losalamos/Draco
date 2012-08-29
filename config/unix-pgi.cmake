@@ -90,7 +90,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -DNDEBUG -gopt" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gopt" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
 
