@@ -499,7 +499,7 @@ individual vendor directories should be defined." )
        TYPE OPTIONAL
        PURPOSE "Required for bulding the lapack_wrap component." 
        )
-    set_package_properties( LAPACK PROPERTIES
+    set_package_properties( lapack PROPERTIES
        DESCRIPTION "Linear Algebra PACKage"
        TYPE OPTIONAL
        PURPOSE "Required for bulding the lapack_wrap component." 
