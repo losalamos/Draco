@@ -73,7 +73,7 @@ case ci*:
    module load PrgEnv-intel
    module unload xt-libsci
    module unload xt-totalview 
-   module load gsl/1.14 lapack/3.4.0-intel
+   module load gsl/1.14 lapack/3.4.1-intel
    module load cmake numdiff svn
    module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel 
    module load ParMetis/3.1.1-intel ndi
