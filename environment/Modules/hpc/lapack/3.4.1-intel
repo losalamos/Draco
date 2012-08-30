@@ -1,0 +1,52 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+conflict lapack
+conflict gcc
+conflict pgi
+
+# global control file
+if { [file exists $env(MODULESHOME)/etc/control] } {
+   source $env(MODULESHOME)/etc/control;
+}
+
+
+
+# local variables
+set version     3.4.1;
+set prefix      /usr/projects/draco/vendors/lapack-$version/intel-12.1.2
+set libdir      $prefix/lib;
+set incdir      $prefix/include;
+
+# module whatis
+module-whatis   "loads the LAPACK-$version environment";
+
+# module help
+proc ModulesHelp { } {
+   global version prefix bindir;
+
+   puts stderr "\tLAPACK ($version)\n";
+   puts stderr "\tLAPACK_LIB_DIR\t= $libdir";
+#   puts stderr "\tLAPACK_INC_DIR\t= $incdir";
+#   puts stderr "\tLAPACK_ROOT\t= $prefix";
+#   puts stderr "\t\$LAPACK_LS_FLAGS, \$LAPACK_COMPILE_FLAGS";
+}
+
+if { ![file exists $prefix] } {
+   puts stderr "\n[module-info name]: $prefix: No such file or directory.\n";
+   break;
+   exit 1;
+}
+
+#setenv          LAPACK_ROOT 	$prefix;
+#setenv          LAPACK_LD_FLAGS  "-L/usr/lib64 -lgfortran -L$libdir -llapack -lcblas -lf77blas -latlas";
+#setenv          LAPACK_COMPILE_FLAGS 	-I$prefix/include;
+
+setenv          LAPACK_LIB_DIR  $libdir
+#setenv          LAPACK_INC_DIR  $incdir
+setenv          BLAS_blas_LIBRARY ${libdir}/libblas.a
+
