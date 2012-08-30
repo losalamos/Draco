@@ -172,15 +172,15 @@ endmacro()
 # This module sets the following variables:
 # lapack_FOUND - set to true if a library implementing the LAPACK
 #         interface is found 
-# lapack_VERSION - '3.4.0'
+# lapack_VERSION - '3.4.1'
 # provides targets: lapack, blas
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
 
    # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.  
-   if( EXISTS  $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.0 )
+   if( EXISTS  $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.1 )
       list( APPEND CMAKE_PREFIX_PATH
-         $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.0 )
+         $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.1 )
       find_package( lapack )
    endif()
 
