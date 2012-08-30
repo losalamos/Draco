@@ -92,8 +92,7 @@ class QuadCreator
 
 //    rtt_mesh_element::Geometry parsed_geometry;
 
-    QuadCreator(void)
-        : Qid_map( createQidMap() )
+    QuadCreator(void) : Qid_map( createQidMap() )
     { /* empty */ }
 
     virtual ~QuadCreator(void) { /* empty */ }
@@ -103,7 +102,8 @@ class QuadCreator
     // I'm not sure if this needs to be virtual or not.
     virtual rtt_dsxx::SP<Quadrature> quadCreate( Qid quad_type,
 						 size_t sn_order = 4,
-						 double norm = 0.0 );
+						 double norm = 0.0,
+                                                 Quadrature::QIM interpModel = Quadrature::SN );
 
     rtt_dsxx::SP<Quadrature> quadCreate( rtt_parser::Token_Stream &tokens );
 

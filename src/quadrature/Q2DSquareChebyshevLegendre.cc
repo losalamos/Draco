@@ -34,8 +34,8 @@ namespace rtt_quadrature
  *                 weights will be equal to this value (default = 2*PI).
  */
 //---------------------------------------------------------------------------//
-Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double norm_ ) 
-    : Quadrature( sn_order_, norm_ ), numOrdinates (sn_order_ * sn_order_)
+Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double norm_, Quadrature::QIM qm_ ) 
+    : Quadrature( sn_order_, norm_, qm_ ), numOrdinates (sn_order_ * sn_order_)
 {
     using std::fabs;
     using std::sqrt;
@@ -247,11 +247,11 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
 //         wt[63] =    2.266773646114762394E-02;
 //     }
 //     else
-//     {
-        Q1DGaussLeg gauss(snOrder, 2.0);    
-
+    {
+        Q1DGaussLeg gauss(snOrder, 2.0, interpModel);    
+        
         // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
-
+        
         for (unsigned i=0; i<snOrder; ++i)
         {
             double const xmu=gauss.getMu(i);
@@ -268,7 +268,7 @@ Q2DSquareChebyshevLegendre::Q2DSquareChebyshevLegendre( size_t sn_order_, double
                 wt[ordinate]  = xwt/snOrder;
             }
         }
-//     }
+    }
 
     // Normalize the quadrature set
     double wsum = 0.0;

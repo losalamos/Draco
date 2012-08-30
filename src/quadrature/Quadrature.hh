@@ -62,7 +62,6 @@ using std::string;
 //    Added use of the ds++/Assert class.
 // 
 //===========================================================================//
-
 class Quadrature 
 {
   public:
@@ -74,6 +73,14 @@ class Quadrature
         TWO_DIM_TRIANGULAR,  
         TWO_DIM_SQUARE,
         THREE_DIM_TRIANGULAR
+    };
+
+    //! Quadrature Interpolation Model: specifies how to compute the Discrete-to-Moment operator
+    enum QIM 
+    {
+        SN,  /*!< Use the standard SN method. */
+        GQ,  /*!< Use Morel's Galerkin Quadrature method. */
+        SVD  /*!< Let M be an approximate inverse of D. */
     };
 
     // CREATORS
@@ -93,9 +100,10 @@ class Quadrature
      *                 value is set in QuadCreator.
      */
 
-    Quadrature( size_t snOrder_, double norm_)
+    Quadrature( size_t snOrder_, double norm_, QIM interpModel_)
 	: snOrder( snOrder_ ),
           norm( norm_ ),
+          interpModel( interpModel_ ),
           mu(), eta(), xi(), wt(), omega()          
     { /* empty */ }
 
@@ -285,6 +293,8 @@ class Quadrature
      */
     double getNorm() const { return norm; }
 
+    QIM interpolation_model() const { return interpModel; }
+
     /*!
      * \brief Returns a string containing the name of the quadrature set.
      */
@@ -330,9 +340,12 @@ class Quadrature
     // DATA
 
     const size_t snOrder; // defaults to 4.
+
     double norm; // 1D: defaults to 2.0.
                  // 2D: defaults to 2*pi.
                  // 3D: defaults to 4*pi.
+
+    QIM interpModel;
 
     // Quadrature directions and weights.
     vector<double> mu;

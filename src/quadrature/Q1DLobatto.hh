@@ -44,7 +44,7 @@ class Q1DLobatto : public Quadrature
     // CREATORS
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q1DLobatto( size_t snOrder_, double norm_ );
+    Q1DLobatto( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q1DLobatto(); // disable default construction
 
     // ACCESSORS

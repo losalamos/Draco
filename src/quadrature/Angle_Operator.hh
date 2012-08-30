@@ -14,7 +14,8 @@
 #define quadrature_Angle_Operator_hh
 
 #include <vector>
-#include "Ordinate.hh"
+#include "OrdinateSet.hh"
+#include "QuadServices.hh"
 
 namespace rtt_quadrature
 {
@@ -94,9 +95,20 @@ class Angle_Operator : public rtt_quadrature::OrdinateSet
     Angle_Operator(rtt_dsxx::SP<Quadrature const> const &quadrature,
                    rtt_mesh_element::Geometry const geometry,
                    unsigned const dimension,
-                   bool const extra_starting_directions=false);
+                   unsigned const expansion_order,
+                   bool const extra_starting_directions=false,
+                   comparator_t const comparator = Ordinate::SnCompare );
+
+    Angle_Operator(rtt_dsxx::SP<Quadrature const> const &quadrature,
+                   rtt_mesh_element::Geometry const geometry,
+                   unsigned const dimension,
+                   unsigned const expansion_order,
+                   Quadrature::QIM const qim,
+                   bool const extra_starting_directions=false,
+                   comparator_t const comparator = Ordinate::SnCompare );
 
     // MANIPULATORS
+    void setAngleOperator();
 
     // ACCESSORS
 
@@ -155,6 +167,7 @@ class Angle_Operator : public rtt_quadrature::OrdinateSet
     {
         return true;
     }
+
 
   private:
 

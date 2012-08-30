@@ -44,7 +44,7 @@ class Q1DDoubleGauss : public Quadrature
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
 
-    Q1DDoubleGauss( size_t snOrder_, double norm_ );
+    Q1DDoubleGauss( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q1DDoubleGauss(); // disable default construction
 
     // ACCESSORS

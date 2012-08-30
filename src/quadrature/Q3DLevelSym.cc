@@ -29,8 +29,8 @@ namespace rtt_quadrature
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 4*PI).
  */
-Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_ ) 
-    : Quadrature( sn_order_, norm_ ), 
+Q3DLevelSym::Q3DLevelSym( size_t sn_order_, double norm_, Quadrature::QIM qm_ ) 
+    : Quadrature( sn_order_, norm_, qm_ ), 
       numOrdinates ( sn_order_ * (sn_order_+2) )
 
 { 

@@ -29,18 +29,18 @@ namespace rtt_quadrature
  * \param norm_    A normalization constant.  The sum of the quadrature
  *                 weights will be equal to this value (default = 4*PI).
  */
-GeneralQuadrature::GeneralQuadrature(
-    size_t sn_order_,
-    double norm_,
-    std::vector<double> const & mu_,
-    std::vector<double> const & eta_,
-    std::vector<double> const & xi_,
-    std::vector<double> const & wt_,
-    size_t levels_,
-    size_t dim_,
-    std::string const & quadratureName_,
-    Quadrature_Class quadratureClass_) 
-    : Quadrature( sn_order_, norm_ ), 
+GeneralQuadrature::GeneralQuadrature(size_t sn_order_,
+                                     double norm_,
+                                     Quadrature::QIM qm_,
+                                     std::vector<double> const & mu_,
+                                     std::vector<double> const & eta_,
+                                     std::vector<double> const & xi_,
+                                     std::vector<double> const & wt_,
+                                     size_t levels_,
+                                     size_t dim_,
+                                     std::string const & quadratureName_,
+                                     Quadrature_Class quadratureClass_) 
+    : Quadrature( sn_order_, norm_, qm_ ), 
       numOrdinates ( mu_.size() ),
       numLevels ( levels_ ),
       numDims   ( dim_ ),

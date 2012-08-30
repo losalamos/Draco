@@ -33,8 +33,8 @@ namespace rtt_quadrature
  *                 weights will be equal to this value (default = 2*PI).
  */
 //---------------------------------------------------------------------------//
-Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ ) 
-    : Quadrature( sn_order_, norm_ ), numOrdinates (sn_order_ * (sn_order_+2)/2)
+Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_, Quadrature::QIM qm_ ) 
+    : Quadrature( sn_order_, norm_, qm_ ), numOrdinates (sn_order_ * (sn_order_+2)/2)
 {
     using std::fabs;
     using rtt_dsxx::soft_equiv;
@@ -57,7 +57,8 @@ Q2DLevelSym::Q2DLevelSym( size_t sn_order_, double norm_ )
     // In the future we probably should reverse the dependence - we should
     // use the 2D quadrature to construct the 3D one, rather than depending
     // on a particular data layout in the 3D quadrature.
-    Q3DLevelSym quad3D(snOrder, 2.0*norm);
+
+    Q3DLevelSym quad3D(snOrder, 2.0*norm, interpModel);
     for( size_t ordinate = 0; ordinate < numOrdinates; ++ordinate )
     {
 	mu[ordinate] = quad3D.getMu(ordinate);

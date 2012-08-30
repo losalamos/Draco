@@ -22,34 +22,14 @@ using namespace rtt_units;
 
 namespace rtt_quadrature
 {
-//---------------------------------------------------------------------------//
-/*!
- *
- * The computation of the tau and alpha coefficients is described by Morel in
- * various technical notes on the treatment of the angle derivatives in the
- * streaming operator.
- *
- * \param quadrature Sn quadrature set.
- *
- * \param geometry Geometry of the physical problem space.
- *
- * \param dimension Dimension of the physical problem space (1, 2, or 3)
- */
 
-Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
-                                rtt_mesh_element::Geometry const   geometry,
-                                unsigned                   const   dimension,
-                                bool                       const   extra_starting_directions)
-    : OrdinateSet(quadrature, geometry, dimension, extra_starting_directions),
-      number_of_levels_(0),
-      levels_(), is_dependent_(), alpha_(), tau_()
+void Angle_Operator::setAngleOperator()
 {
-    Require(quadrature!=SP<Quadrature>());
-    Require(dimension>0 && dimension<4);
-    Require(geometry<rtt_mesh_element::END_GEOMETRY);
-
     vector<Ordinate> const &ordinates = getOrdinates();
     unsigned const number_of_ordinates = ordinates.size();
+
+    rtt_mesh_element::Geometry const geometry = getGeometry();
+    unsigned const dimension = getDimension();
 
     // Compute the ordinate derivative coefficients.
     
@@ -66,7 +46,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
     number_of_levels_ = 0;
     if (geometry==rtt_mesh_element::AXISYMMETRIC)
     {
-        number_of_levels_ = quadrature->getSnOrder();
+        number_of_levels_ =  getQuadrature()->getSnOrder();
         if (dimension == 1)
         {
             number_of_levels_ /= 2;
@@ -168,6 +148,8 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
             if (wt!=0)
             {
                 tau_[a] = (mu-mum)/(mup-mum);
+                //tau_[a] = 0.5;                          // old school
+
                 Check(tau_[a] >= 0.0 && tau_[a]<1.0);
             }
                         
@@ -228,6 +210,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
             if (wt !=0)
             {
                 tau_[a] = (mu-mum)/(2*wt*rnorm);
+
                 Check(tau_[a]>0.0 && tau_[a]<=1.0);
             }
         }
@@ -238,7 +221,60 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const & quadrature,
     }
 
     Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
+}
 
+//---------------------------------------------------------------------------//
+/*!
+ *
+ * The computation of the tau and alpha coefficients is described by Morel in
+ * various technical notes on the treatment of the angle derivatives in the
+ * streaming operator.
+ *
+ * \param quadrature Sn quadrature set.
+ *
+ * \param geometry Geometry of the physical problem space.
+ *
+ * \param dimension Dimension of the physical problem space (1, 2, or 3)
+ */
+
+Angle_Operator::Angle_Operator( SP<Quadrature const>       const &quadrature,
+                                rtt_mesh_element::Geometry const  geometry,
+                                unsigned                   const  dimension,
+                                unsigned                   const  expansion_order,
+                                bool                       const  extra_starting_directions,
+                                comparator_t               const  comparator)
+    : OrdinateSet(quadrature, geometry, dimension, expansion_order, extra_starting_directions, comparator),
+      number_of_levels_(0),
+      levels_(), is_dependent_(), alpha_(), tau_()
+{
+    //std::cout << " CREATING ANGLE_OPERATOR with expansion order " << expansion_order << " and dimension " << dimension << std::endl;
+    Require(quadrature!=SP<Quadrature>());
+    Require(dimension>0 && dimension<4);
+    Require(geometry!=rtt_mesh_element::END_GEOMETRY);
+
+    setAngleOperator();
+    
+    Ensure(check_class_invariants());
+}
+
+Angle_Operator::Angle_Operator( SP<Quadrature const>       const &quadrature,
+                                rtt_mesh_element::Geometry const  geometry,
+                                unsigned                   const  dimension,
+                                unsigned                   const  expansion_order,
+                                Quadrature::QIM            const  qim,
+                                bool                       const  extra_starting_directions,
+                                comparator_t               const  comparator)
+    : OrdinateSet(quadrature, geometry, dimension, expansion_order, qim, extra_starting_directions, comparator),
+      number_of_levels_(0),
+      levels_(), is_dependent_(), alpha_(), tau_()
+{
+    //std::cout << " CREATING ANGLE_OPERATOR with expansion order " << expansion_order << " and dimension " << dimension << std::endl;
+    Require(quadrature!=SP<Quadrature>());
+    Require(dimension>0 && dimension<4);
+    Require(geometry!=rtt_mesh_element::END_GEOMETRY);
+
+    setAngleOperator();
+    
     Ensure(check_class_invariants());
 }
 

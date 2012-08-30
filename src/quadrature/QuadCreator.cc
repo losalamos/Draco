@@ -30,7 +30,6 @@
 #include "Q3DTriChebyshevLegendre.hh"
 #include "Q2DSquareChebyshevLegendre.hh"
 #include "QuadCreator.hh"
-#include "QuadServices.hh"
 
 namespace rtt_quadrature
 {
@@ -61,10 +60,12 @@ namespace rtt_quadrature
 rtt_dsxx::SP<Quadrature> 
 QuadCreator::quadCreate( QuadCreator::Qid quad_type, 
 			 size_t sn_order,
-                         double norm ) 
+                         double norm,
+                         Quadrature::QIM interpModel) 
 {
     Require(sn_order>0);
     Require(sn_order%2==0);
+    Require(interpModel == Quadrature::SN || interpModel == Quadrature::GQ || interpModel == Quadrature::SVD);
     
     using rtt_dsxx::soft_equiv;
 
@@ -79,51 +80,51 @@ QuadCreator::quadCreate( QuadCreator::Qid quad_type,
 	    // if the client did not specify a value for norm then it will be
 	    // zero here.  We must set it to a default value of 2.0.
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
-	    spQuad = new Q1DGaussLeg( sn_order, norm );
+	    spQuad = new Q1DGaussLeg( sn_order, norm, interpModel );
 	    break;
 
 	case Lobatto:
 	    // if the client did not specify a value for norm then it will be
 	    // zero here.  We must set it to a default value of 2.0.
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
-	    spQuad = new Q1DLobatto( sn_order, norm );
+	    spQuad = new Q1DLobatto( sn_order, norm, interpModel );
 	    break;
 
 	case DoubleGauss:
 	    // if the client did not specify a value for norm then it will be
 	    // zero here.  We must set it to a default value of 2.0.
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
-	    spQuad = new Q1DDoubleGauss( sn_order, norm );
+	    spQuad = new Q1DDoubleGauss( sn_order, norm, interpModel );
 	    break;	    	    
 
 	case Axial1D:
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0;
-	    spQuad = new Q1Axial( sn_order, norm );
+	    spQuad = new Q1Axial( sn_order, norm, interpModel );
 	    break;
 	    
 	case LevelSym2D:
 	    if ( soft_equiv(norm,0.0) ) norm = 2.0*rtt_units::PI;
-	    spQuad = new Q2DLevelSym( sn_order, norm );
+	    spQuad = new Q2DLevelSym( sn_order, norm, interpModel );
 	    break;
 	    
 	case LevelSym:
 	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
-	    spQuad = new Q3DLevelSym( sn_order, norm );
+	    spQuad = new Q3DLevelSym( sn_order, norm, interpModel );
 	    break;
 
 	case SquareCL:
 	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
-	    spQuad = new Q2DSquareChebyshevLegendre( sn_order, norm );
+	    spQuad = new Q2DSquareChebyshevLegendre( sn_order, norm, interpModel );
 	    break;	    
 
 	case TriCL2D:
 	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
-	    spQuad = new Q2DTriChebyshevLegendre( sn_order, norm );
+	    spQuad = new Q2DTriChebyshevLegendre( sn_order, norm, interpModel );
 	    break;	    
 
 	case TriCL:
 	    if ( soft_equiv(norm,0.0) ) norm = 4.0*rtt_units::PI;
-	    spQuad = new Q3DTriChebyshevLegendre( sn_order, norm );
+	    spQuad = new Q3DTriChebyshevLegendre( sn_order, norm, interpModel );
 	    break;
 
 	default:
@@ -212,8 +213,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
     QuadCreator::Qid quad_type( QuadCreator::LevelSym2D );
     double quad_norm(     1.0 );   // default
     unsigned sn_order(    2 );     // default
-    // This variable is not currently used
-    // QIM      interpModel( SN );    // default
+    Quadrature::QIM interpModel( Quadrature::SN );    // default
 
     while( tokens.lookahead().type() != END )
     {
@@ -255,8 +255,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
             
             if( pos == Qid_map.end() )
                 tokens.report_semantic_error(
-                    "I don't know anything about the quadrature type = "
-                    +tokenText);
+                    "I don't know anything about the quadrature type = " +tokenText);
             else
                 quad_type = pos->second;
          }
@@ -275,16 +274,17 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
         {
             string s = tokens.shift().text();
             std::cout << s << std::endl;
+
             // force lower case
             std::transform(s.begin(),s.end(),s.begin(),tl);
-            // if( s == "sn" )
-                // interpModel = SN;
-            // else if( s == "galerkin" )
-                // interpModel = GALERKIN;
-            // else if( s == "svd" )
-                // interpModel = SVD;
-            // else
-            if( s != "sn" && s != "galerkin" && s != "svd" )
+
+            if( s == "sn" )
+                interpModel = Quadrature::SN;
+            else if ( s == "galerkin" )
+                interpModel = Quadrature::GQ;
+            else if ( s == "svd" )
+                interpModel = Quadrature::SVD;
+            else
                 tokens.report_semantic_error(
                     string("I don't know anything about \"angle quadrature: ")
                     +string("interpolation algorithm = ")+s
@@ -304,8 +304,7 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
     Token const token = tokens.shift();
     Ensure( token.type() == END );
     
-    rtt_dsxx::SP<Quadrature> parsed_quadrature =
-        quadCreate(quad_type,sn_order, quad_norm);
+    rtt_dsxx::SP<Quadrature> parsed_quadrature = quadCreate(quad_type, sn_order, quad_norm, interpModel);
 
     if (parsed_quadrature == rtt_dsxx::SP<rtt_quadrature::Quadrature>())
         tokens.report_semantic_error("Could not construct quadrature");

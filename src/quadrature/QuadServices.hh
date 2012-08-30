@@ -15,20 +15,15 @@
 #ifndef quadrature_QuadServices_hh
 #define quadrature_QuadServices_hh
 
+#include <iostream>
+#include <iomanip>
+
 #include "ds++/SP.hh"
 #include "Ordinate.hh"
 #include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
-
-//! Specify how to compute the Discrete-to-Moment operator.
-enum QIM // Quadrature Interpolation Model
-{
-    SN,        /*!< Use the standard SN method. */
-    GALERKIN,  /*!< Use Morel's Galerkin colocation method. */
-    SVD        /*!< Let M be an approximate inverse of D. */
-};
 
 class QuadServices 
 {
@@ -45,20 +40,10 @@ class QuadServices
     // CREATORS
     
     //! Default constructor assumes that only isotropic scattering is used. 
-    QuadServices( rtt_dsxx::SP< const Quadrature > const spQuad_,
-                  QIM                              const qm = SN,
-                  unsigned                         const expansionOrder = 0,
-                  comparator_t                     const comparator = Ordinate::SnCompare);
-
-//     //! Create a QuadServices from an ordinate set.
-//     explicit QuadServices( OrdinateSet const & os );
-    
-    //! Constructor that allows the user to pick the (k,l) moments to use.
-    //! \todo This still needs to be defined.
-    QuadServices( rtt_dsxx::SP< const Quadrature > const   spQuad_,
-		  std::vector< lk_index >          const & lkMoments_,
-                  QIM                              const   qm = SN,
-                  comparator_t                     const comparator = Ordinate::SnCompare );
+    QuadServices( std::vector<Ordinate> const &ordinates,
+                  double                const norm,
+                  unsigned              const dimension,
+                  unsigned              const expansionOrder = 0);
 
     //! Copy constructor (the long doxygen description is in the .cc file).
     QuadServices( QuadServices const & rhs );
@@ -67,57 +52,99 @@ class QuadServices
     virtual ~QuadServices() { /* empty */ }
 
     // MANIPULATORS
+
+    std::vector< double > applyM( std::vector< double > const & phi) const;
+    std::vector< double > applyD( std::vector< double > const & psi) const;
     
     //! Assignment operator for QuadServices.
     QuadServices& operator=( QuadServices const & rhs );
 
     //! Compute extra "moment-to-discrete" entries that are needed for starting direction ordinates.
-    double augmentM( unsigned moment, Ordinate const & Omega ) const;
+    double augmentM( unsigned moment, Ordinate const & Omega, std::vector< lk_index > const & n2lk ) const;
 
     // ACCESSORS
 
-    //! \brief Return the moment-to-discrete operator.
-    std::vector< double > getM() const { return Mmatrix; }
+    //! \brief Provide the number of moments used by QuadServices.
+    unsigned getExpansionOrder() const { return expansionOrder_; }
 
-    //! \brief Return the discrete-to-moment operator.
-    std::vector< double > getD() const { return Dmatrix; }
+    //! \brief Provide the quadrature normalization used by QuadServices.
+    double getNorm() const { return norm_; }
 
-    std::vector< double > applyM( std::vector< double > const & phi ) const;
-    std::vector< double > applyD( std::vector< double > const & psi ) const;
+    //! \brief Provide the dimensionality used by QuadServices.
+    unsigned getDimension() const { return dimension_; }
+
+    //! \brief Provide the dimensionality used by QuadServices.
+    std::vector<Ordinate> const &getOrdinates() const { return ordinates_; }
 
     //! \brief Provide the number of moments used by QuadServices.
-    unsigned getNumMoments() const { return numMoments; }
+    unsigned getNumOrdinates() const { return ordinates_.size(); }
 
     //! \brief Pretty print vector<T> in a 2D format.
-    template< typename T > 
     void print_matrix( std::string           const & matrix_name,
-		       std::vector<T>        const & x,
-		       std::vector<unsigned> const & dims ) const;
+		       std::vector<double>   const & x,
+		       std::vector<unsigned> const & dims ) const
+    {
+        using std::cout;
+        using std::endl;
+        using std::string;
+        
+        Require( dims[0]*dims[1] == x.size() );
+        
+        unsigned pad_len( matrix_name.length()+2 );
+        string padding( pad_len, ' ' );
+        cout << matrix_name << " =";
+        // row
+        for( unsigned i=0; i<dims[1]; ++i )
+        {
+            if( i != 0 ) cout << padding;
+            
+            std::cout << "{ ";
+            
+            for( unsigned j=0; j<dims[0]-1; ++j )
+                std::cout << std::setprecision(10) << x[j+dims[0]*i] << ", ";
+            
+            std::cout << std::setprecision(10) << x[dims[0]-1+dims[0]*i] << " }." << std::endl;
+        }
+        std::cout << std::endl;
+        return;
+    }
     
-    //! \brief Return the (l,k) index pair associated with moment index n.
-    lk_index lkPair( unsigned n ) const { Require( n<numMoments ); return n2lk[n]; }
+    //! \brief Provide the maximum available expansion order.
+    virtual unsigned getMaxExpansionOrder() const = 0;
 
     //! \brief Provide the number of moments used by QuadServices.
-    std::vector< lk_index > get_n2lk() const { return n2lk; }
+    virtual unsigned getNumMoments() const = 0;
 
-    //! Helper functions to compute coefficients
-    static
+    //! \brief Provide the number of moments in each expansion order
+    virtual std::vector<unsigned> getMoments() const = 0;
+
+    //! \brief Provide the number of moments used by QuadServices.
+    virtual std::vector< lk_index > const &get_n2lk() const = 0;
+
+    //! \brief Return the (l,k) index pair associated with moment index n.
+    virtual lk_index lkPair( unsigned n ) const = 0;
+
+    //! \brief Return the moment-to-discrete operator.
+    std::vector< double > getM() const;
+
+    //! \brief Return the discrete-to-moment operator.
+    std::vector< double > getD() const;
+
+    unsigned max_available_expansion_order(std::vector< lk_index > const &n2lk);
+
+    std::vector<unsigned> compute_moments(unsigned const L,
+                                          std::vector< lk_index > const &n2lk);
+
     double compute_azimuthalAngle( double const mu,
-				   double const eta,
-				   double const xi ) ;
+                                   double const eta,
+                                   double const xi ) const;
+    
+    // STATICS
 
     //! Helper function to check validity of LU matrix
-    static
-    bool diagonal_not_zero( std::vector<double> const & vec,
-                            int m, int n ) ;
-    //! Checks
-    bool D_equals_M_inverse(void) const;
+    static bool diagonal_not_zero( std::vector<double> const & vec,
+                                   int m, int n ) ;
     
-   // STATICS
-    
-    static unsigned compute_number_of_moments(unsigned mesh_dimensions,
-                                              unsigned expansion_order);
-
     static void moment_to_flux(double Phi_10,
                                double &Fz)
     {
@@ -145,91 +172,35 @@ class QuadServices
         Fz = Phi_10;
     }
 
-    static
-    std::vector< lk_index > compute_n2lk(unsigned L,
-                                         unsigned dim,
-                                         QIM qm);
-    
-    static
-    std::vector< double > computeM(std::vector<Ordinate> const &ordinates,
-                                   std::vector< lk_index > const &n2lk,
-                                   unsigned dim,
-                                   double sumwt);
+    //! \brief Return the moment-to-discrete operator.
+    virtual std::vector< double > getM_() const = 0;
 
-    static
-    std::vector< double > computeD(std::vector<Ordinate> const &ordinates,
-                                   std::vector< lk_index > const &n2lk,
-                                   std::vector<double> const &M,
-                                   QIM qm,
-                                   unsigned dim,
-                                   double sumwt);
+    //! \brief Return the discrete-to-moment operator.
+    virtual std::vector< double > getD_() const = 0;
 
-  private:
+  protected:
 
-    // NESTED CLASSES AND TYPEDEFS
-
-    // IMPLEMENTATION
-    
-    //! \brief constuct maps between moment index n and the tuple (k,l).
-    // This can optionally be provided by the user.
-    std::vector< lk_index > compute_n2lk(    unsigned L ) const;
-
-    static
     std::vector< lk_index > compute_n2lk_1D( unsigned L);
 
-    static
-    std::vector< lk_index > compute_n2lk_2D_traditional( unsigned L);
-
-    static
-    std::vector< lk_index > compute_n2lk_3D_traditional( unsigned L);
-
-    static
-    std::vector< lk_index > compute_n2lk_2D_morel( unsigned L);
-
-    static
-    std::vector< lk_index > compute_n2lk_3D_morel( unsigned L);
-
-    std::vector< Ordinate > compute_ordinates( rtt_dsxx::SP< const Quadrature > const spQuad_,
-                                                comparator_t const comparator_ ) const;
+  private:
     
-    //! Build the Mmatrix.
-    std::vector< double > computeM(void) const;
-    std::vector< double > computeD(void) const;
-
-    static
-    std::vector< double > computeD_morel(std::vector<Ordinate> const &ordinates,
-                                         std::vector< lk_index > const &n2lk,
-                                         std::vector<double> const &M,
-                                         unsigned const dim,
-                                         double const sumwt);
-
-    static
-    std::vector< double > computeD_traditional(std::vector<Ordinate> const &ordinates,
-                                               std::vector< lk_index > const &n2lk,
-                                               std::vector<double> const &M,
-                                               unsigned const dim,
-                                               double const sumwt);
-
-    static
-    std::vector< double > computeD_svd(std::vector<Ordinate> const &ordinates,
+    
+    // legacy calculation, not currently implemented
+    std::vector< double > computeD_SVD(std::vector<Ordinate> const &ordinates,
                                        std::vector< lk_index > const &n2lk,
                                        std::vector<double> const &M,
                                        unsigned const dim,
                                        double const sumwt);
+
     
     // DATA
-    rtt_dsxx::SP< const Quadrature > const spQuad;
-    QIM                              const qm;
-    std::vector< lk_index >          const n2lk;
-    unsigned                         const numMoments;
-    vector< Ordinate >               const ordinates;
-    std::vector< double >            const Mmatrix;
-    std::vector< double >            const Dmatrix;
+    std::vector<Ordinate>     const ordinates_;
+    double                    const norm_;
+    unsigned                  const dimension_;
+    unsigned                  const expansionOrder_;
 };
 
 } // end namespace rtt_quadrature
-
-#include "QuadServices.i.hh"
 
 #endif // quadrature_QuadServices_hh
 

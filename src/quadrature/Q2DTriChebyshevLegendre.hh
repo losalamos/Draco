@@ -48,7 +48,7 @@ class Q2DTriChebyshevLegendre  : public Quadrature
   public:
 
     //! Disable default constructor.
-    Q2DTriChebyshevLegendre( size_t snOrder_, double norm_ );
+    Q2DTriChebyshevLegendre( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q2DTriChebyshevLegendre();
 
     // ACCESSORS

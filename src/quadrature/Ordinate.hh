@@ -14,11 +14,13 @@
 #ifndef quadrature_Ordinate_hh
 #define quadrature_Ordinate_hh
 
-#include "Quadrature.hh"
+#include <vector>
+
 #include "mesh_element/Geometry.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <vector>
+
+#include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
@@ -119,89 +121,6 @@ inline bool operator==(Ordinate const &a, Ordinate const &b)
 
 //! Typedef for ordinate comparator functions
 typedef bool (*comparator_t)(Ordinate const &, Ordinate const &);
-
-//===========================================================================//
-/*!
- * \class OrdinateSet
- * \brief A collection of Ordinates that make up a complete quadrature set.
- */
-//===========================================================================//
-class OrdinateSet
-{
-  public:
-
-    // CREATORS
-
-    //! default creator
-    OrdinateSet( rtt_dsxx::SP< Quadrature const > const quadrature,
-                 rtt_mesh_element::Geometry geometry,
-                 unsigned const dimension,
-                 bool const extra_starting_directions=false);
-
-
-    //! destructor
-    virtual ~OrdinateSet(){}
-
-    // ACCESSORS
-
-    //! Return the ordinates.
-    std::vector<Ordinate> const &getOrdinates() const { return ordinates_; }
-
-    //! Return the quadrature on which this OrdinateSet is based.
-    rtt_dsxx::SP< const Quadrature > getQuadrature() const
-    {
-        Ensure(quadrature_ != rtt_dsxx::SP<Quadrature>());
-        
-        return quadrature_;
-    }
-
-    //! Return the geometry.
-    rtt_mesh_element::Geometry getGeometry() const { return geometry_; }
-
-    //! Return the dimension.
-    unsigned getDimension() const { return dimension_; }
-
-    //! Return the norm.
-    double getNorm() const { return norm_; }
-
-    //! Return the ordering operator.
-    comparator_t getComparator() const { return comparator_; }
-
-    //! Return the ordering operator.
-    bool extra_starting_directions() const
-    {
-        return extra_starting_directions_;
-    }
-
-    bool check_class_invariants() const;
-
-    // SERVICES
-
-    vector<double>
-    compute_moment_to_discrete_weights(unsigned expansion_order) const;
-
-    vector<double>
-    compute_discrete_to_moment_weights(unsigned expansion_order) const;
-    
-  private:
-
-    // Helper functions called by the constructor.
-    void create_set_from_1d_quadrature();
-    void create_set_from_2d_quadrature_for_2d_mesh();
-    void create_set_from_2d_quadrature_for_1d_mesh();
-    void create_set_from_2d_quadrature_for_3d_mesh();
-    void create_set_from_3d_quadrature_for_3d_mesh();
-
-    // DATA
-    std::vector<Ordinate> ordinates_;
-    rtt_dsxx::SP< Quadrature const > quadrature_;
-    rtt_mesh_element::Geometry geometry_;
-    unsigned dimension_;
-    double norm_;
-    comparator_t comparator_;
-    bool const extra_starting_directions_;
-    
-};
 
 } // end namespace rtt_quadrature
 

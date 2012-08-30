@@ -44,8 +44,8 @@ namespace rtt_quadrature
  *                 weights will be equal to this value (default = 2.0).
  */
 
-Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_ ) 
-    : Quadrature( numGaussPoints, norm_ ), 
+Q1DLobatto::Q1DLobatto( size_t numGaussPoints, double norm_, Quadrature::QIM qm_ ) 
+    : Quadrature( numGaussPoints, norm_, qm_ ), 
       numOrdinates( numGaussPoints )
 {
     using rtt_dsxx::soft_equiv;

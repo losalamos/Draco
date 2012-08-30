@@ -48,7 +48,7 @@ class Q3DTriChebyshevLegendre  : public Quadrature
   public:
 
     //! Disable default constructor.
-    Q3DTriChebyshevLegendre( size_t snOrder_, double norm_ );
+    Q3DTriChebyshevLegendre( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q3DTriChebyshevLegendre();
 
     // ACCESSORS

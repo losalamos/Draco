@@ -48,7 +48,7 @@ class Q1Axial : public Quadrature
      // CREATORS
     
     //! constructors.
-    Q1Axial( size_t snOrder_, double norm_ );
+    Q1Axial( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q1Axial(); // disable default consturtion
 
      // ACCESSORS

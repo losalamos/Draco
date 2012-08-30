@@ -14,6 +14,7 @@
 #include <cmath>
 #include <iostream>
 #include <gsl/gsl_sf_legendre.h>
+#include <gsl/gsl_sf_gamma.h>
 #include "ds++/Assert.hh"
 #include "units/PhysicalConstants.hh"
 #include "Factorial.hh"
@@ -325,6 +326,33 @@ double galerkinYlk( unsigned const l,
         Ylk*=std::sqrt(2.0)*std::cos(absk*phi);
 
     return Ylk;
+}
+
+double Ylm( unsigned const l,
+            int      const m,
+            double   const mu,
+            double   const phi,
+            double   const sumwt )
+{
+    int const absm( std::abs( m) );
+    
+    // The constant and the Associated Legendre Polynomial.
+
+    double const alpha = (2.0*l + 1.0) * (gsl_sf_fact(l-absm)/gsl_sf_fact(l+absm)) * (m != 0 ? 2.0 : 1.0) / sumwt;
+
+    double ylm =  sqrt(alpha) * gsl_sf_legendre_Plm( l, absm, mu );
+
+    // Adjust 
+    if( m < 0 )
+    {
+        ylm *= std::sin(absm*phi);
+    }
+    else if( m > 0 )
+    {
+        ylm *= std::cos(absm*phi);
+    }
+
+    return ylm;
 }
 
 } // end namespace rtt_sf

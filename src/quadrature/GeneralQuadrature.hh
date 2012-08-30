@@ -39,6 +39,7 @@ class GeneralQuadrature : public Quadrature
     // The default values for snOrder_ and norm_ were set in QuadCreator.
     GeneralQuadrature( size_t snOrder_,
                        double norm_,
+                       Quadrature::QIM qm,
                        std::vector<double>  const & mu_,
                        std::vector<double>  const & eta_,
                        std::vector<double>  const & xi_,

@@ -34,8 +34,8 @@ namespace rtt_quadrature
  *                 weights will be equal to this value (default = 2*PI).
  */
 //---------------------------------------------------------------------------//
-Q3DTriChebyshevLegendre::Q3DTriChebyshevLegendre( size_t sn_order_, double norm_ ) 
-    : Quadrature( sn_order_, norm_ ),
+Q3DTriChebyshevLegendre::Q3DTriChebyshevLegendre( size_t sn_order_, double norm_, Quadrature::QIM qm_ ) 
+    : Quadrature( sn_order_, norm_, qm_ ),
       numOrdinates ( sn_order_ * (sn_order_+2) )
 {
     using std::fabs;
@@ -53,7 +53,7 @@ Q3DTriChebyshevLegendre::Q3DTriChebyshevLegendre( size_t sn_order_, double norm_
     xi.resize(numOrdinates, 0.0);
     wt.resize(numOrdinates, 0.0);
 
-    Q1DGaussLeg gauss(snOrder, 2.0);    
+    Q1DGaussLeg gauss(snOrder, 2.0, interpModel);    
 
     // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
 

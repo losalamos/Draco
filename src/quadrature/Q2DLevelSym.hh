@@ -42,7 +42,7 @@ class Q2DLevelSym : public Quadrature
     // CREATORS
     
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q2DLevelSym( size_t snOrder_, double norm_ );
+    Q2DLevelSym( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q2DLevelSym(); // disable default construction
 
     // ACCESSORS

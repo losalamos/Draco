@@ -45,7 +45,7 @@ class Q1DGaussLeg : public Quadrature
     // CREATORS
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Q1DGaussLeg( size_t snOrder_, double norm_ );
+    Q1DGaussLeg( size_t snOrder_, double norm_, Quadrature::QIM qm_ );
     Q1DGaussLeg(); // disable default construction
 
     // ACCESSORS

@@ -53,6 +53,11 @@ double galerkinYlk( unsigned const l,
                     double   const phi,
                     double   const sumwt );
 
+double Ylm( unsigned const l,
+            int      const m,
+            double   const mu,
+            double   const phi,
+            double   const sumwt );
 
 } // end namespace rtt_sf
 

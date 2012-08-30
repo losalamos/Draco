@@ -140,7 +140,7 @@ vector<double> Quadrature::iOmegaOmegaDomega() const {
             integral[0] += wt[i]*mu[i]*mu[i];
             integral[1] += wt[i]*mu[i]*eta[i];
             integral[2] += wt[i]*eta[i]*mu[i];
-                integral[3] += wt[i]*eta[i]*eta[i];
+            integral[3] += wt[i]*eta[i]*eta[i];
         }
     }
     else

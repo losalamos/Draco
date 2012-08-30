@@ -14,6 +14,7 @@
 #define quadrature_QuadServices_i_hh
 
 #include <iostream>
+#include <iomanip>
 
 namespace rtt_quadrature
 {
@@ -45,10 +46,13 @@ void QuadServices::print_matrix( std::string    const & matrix_name,
     for( unsigned i=0; i<dims[1]; ++i )
     {
 	if( i != 0 ) cout << padding;
+
 	cout << "{ ";
+
 	for( unsigned j=0; j<dims[0]-1; ++j )
-	    cout << x[j+dims[0]*i] << ", ";
-	cout << x[dims[0]-1+dims[0]*i] << " }." << endl;
+	    cout << setprecision(10) << x[j+dims[0]*i] << ", ";
+
+	cout << setprecision(10) << x[dims[0]-1+dims[0]*i] << " }." << endl;
     }
     cout << endl;
     return;
