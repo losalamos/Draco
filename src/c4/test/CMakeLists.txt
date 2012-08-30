@@ -34,7 +34,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # config.h
-   ${MPI_INCLUDE_PATH} )
+   )
 
 # ---------------------------------------------------------------------------- #
 # Build library for test directory
