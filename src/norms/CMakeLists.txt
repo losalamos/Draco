@@ -33,7 +33,8 @@ include_directories(
    ${PROJECT_SOURCE_DIR}/..   # c4/ds++ header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
    ${c4_BINARY_DIR}           # c4/config.h
-) 
+   ${MPI_CXX_INCLUDE_PATH}
+   )
 
 # ---------------------------------------------------------------------------- #
 # Build package library

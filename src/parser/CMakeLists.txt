@@ -31,6 +31,7 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
                      ${c4_BINARY_DIR}            # c4/config.h
+                     ${MPI_CXX_INCLUDE_PATH}
                      )
 
 # ---------------------------------------------------------------------------- #
