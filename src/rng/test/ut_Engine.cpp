@@ -42,9 +42,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning disable 11
 #endif
 
-#if defined (__GNUC__) && !defined (__ICC)
+#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h.
+#if (GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
+#endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
@@ -53,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Random123/threefry.h>
 #include <Random123/ars.h>
 
-#if defined(__GNUC__) && !defined (__ICC)
+#if (GNUC_VERSION >= 40600)
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
