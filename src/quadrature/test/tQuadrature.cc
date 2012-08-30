@@ -118,7 +118,7 @@ void quadrature_test( rtt_dsxx::UnitTest & ut )
 	else 
 	{
 	    // Instantiate the quadrature object.
-	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order ); 
+	    spQuad = QuadratureCreator.quadCreate( qid[ix], sn_order, 2.0 ); 
 
 	    // print the name of the quadrature set that we are testing.
 	    string qname = spQuad->name();
@@ -249,7 +249,7 @@ void Q2DLevelSym_tests( rtt_dsxx::UnitTest & ut )
 
     int    const sn_order( 4 );
     double const sumwt( 1.0 );
-    Q2DLevelSym const quad( sn_order, sumwt );
+    Q2DLevelSym const quad( sn_order, sumwt, Quadrature::SN );
 
     size_t const expected_nlevels((sn_order+2)*sn_order/8);
     if( quad.getLevels() == expected_nlevels)
@@ -280,7 +280,7 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
         
         int    const sn_order( 4 );
         double const assigned_sumwt( 1.0 );
-        Q3DLevelSym const quad( sn_order, assigned_sumwt );
+        Q3DLevelSym const quad( sn_order, assigned_sumwt, Quadrature::SN );
         
         size_t const expected_nlevels((sn_order+2)*sn_order/8);
         if( quad.getLevels() == expected_nlevels)
@@ -316,7 +316,7 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
         // Test renormalize member function
         {
             // must create a non-const quadrature
-            Q3DLevelSym myQuad( sn_order, assigned_sumwt );
+            Q3DLevelSym myQuad( sn_order, assigned_sumwt, Quadrature::SN );
             double const wt1a( myQuad.getWt(1) );
             double const fourpi( 4.0*rtt_units::PI );
             myQuad.renormalize( fourpi );
@@ -329,7 +329,7 @@ void Q3DLevelSym_tests( rtt_dsxx::UnitTest & ut )
     { // Test a high order quadrature set
         int    const sn_order( 22 );
         double const assigned_sumwt( 1.0 );
-        Q3DLevelSym const quad( sn_order, assigned_sumwt );
+        Q3DLevelSym const quad( sn_order, assigned_sumwt, Quadrature::SN );
         
         size_t const expected_nlevels((sn_order+2)*sn_order/8);
         if( quad.getLevels() == expected_nlevels)
@@ -372,7 +372,7 @@ void Q2DSCL_test( rtt_dsxx::UnitTest & ut )
     
     int    const sn_order( 8 );
     double const assigned_sumwt( 1.0 );
-    Q2DSquareChebyshevLegendre const quad( sn_order, assigned_sumwt );
+    Q2DSquareChebyshevLegendre const quad( sn_order, assigned_sumwt, Quadrature::SN );
 
     size_t const expected_nlevels(sn_order);
     if( quad.getLevels() == expected_nlevels)
@@ -419,7 +419,7 @@ void Q2DTCL_test( rtt_dsxx::UnitTest & ut )
     
     int    const sn_order( 8 );
     double const assigned_sumwt( 2*rtt_units::PI );
-    Q2DTriChebyshevLegendre const quad( sn_order, assigned_sumwt );
+    Q2DTriChebyshevLegendre const quad( sn_order, assigned_sumwt, Quadrature::SN );
 
     size_t const expected_nlevels(sn_order);
     if( quad.getLevels() == expected_nlevels)
@@ -466,7 +466,7 @@ void Q3DTCL_test( rtt_dsxx::UnitTest & ut )
     
     int    const sn_order( 8 );
     double const assigned_sumwt( 2*rtt_units::PI );
-    Q3DTriChebyshevLegendre const quad( sn_order, assigned_sumwt );
+    Q3DTriChebyshevLegendre const quad( sn_order, assigned_sumwt, Quadrature::SN );
 
     size_t const expected_nlevels((sn_order+2)*sn_order/8);
     if( quad.getLevels() == expected_nlevels)
@@ -510,11 +510,12 @@ void tst_general_quadrature( UnitTest & ut )
     
     int const snOrder(4);
     double const norm(1.0);
-    Q3DLevelSym const refQuad( snOrder, norm );
+    Q3DLevelSym const refQuad( snOrder, norm, Quadrature::SN );
 
     // Create a general quadrature
     GeneralQuadrature const quad( snOrder,
                                   norm,
+                                  Quadrature::SN,
                                   refQuad.getMu(),
                                   refQuad.getEta(),
                                   refQuad.getXi(),

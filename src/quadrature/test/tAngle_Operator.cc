@@ -49,7 +49,8 @@ void tstAngle_Operator_Axisymmetric(ScalarUnitTest &ut)
     SP<Angle_Operator> const spAngle_Operator =
         SP<Angle_Operator>(new Angle_Operator(spQuad,
                                               rtt_mesh_element::AXISYMMETRIC,
-                                              2,
+                                              2, // dimension
+                                              0, // expansion order
                                               false));
 
     if (spAngle_Operator->Number_Of_Levels()==2)
@@ -218,7 +219,7 @@ void tstAngle_Operator_Extra(ScalarUnitTest &ut)
 
     ostringstream create_axisymmetric;
     
-    create_axisymmetric << "type = tri CL\n"
+    create_axisymmetric << "type = level symmetric \n"
                         << "order = " << order << "\n"
                         << "end\n"
                         << endl;
@@ -231,7 +232,8 @@ void tstAngle_Operator_Extra(ScalarUnitTest &ut)
     SP<Angle_Operator> const spAxisymmetric =
         SP<Angle_Operator>(new Angle_Operator(spQ_Axisymmetric,
                                               rtt_mesh_element::AXISYMMETRIC,
-                                              2,  // dimension
+                                              2, // dimension
+                                              0, // expansion order
                                               true));
 
     if (spAxisymmetric->Number_Of_Levels() == order)
@@ -272,7 +274,8 @@ void tstAngle_Operator_Extra(ScalarUnitTest &ut)
     SP<Angle_Operator> const spSpherical =
         SP<Angle_Operator>(new Angle_Operator(spQ_Spherical,
                                               rtt_mesh_element::SPHERICAL,
-                                              1,  // dimension
+                                              1, // dimension
+                                              0, // expansion order
                                               true));
 
     if (spSpherical->Number_Of_Levels()==1)
@@ -314,7 +317,8 @@ void tstAngle_Operator_Spherical(ScalarUnitTest &ut)
     SP<Angle_Operator> const spAngle_Operator =
         SP<Angle_Operator>(new Angle_Operator(spQuad,
                                               rtt_mesh_element::SPHERICAL,
-                                              1,
+                                              1, // dimension
+                                              0, // expansion order
                                               false));
 
     if (spAngle_Operator->Number_Of_Levels()==1)

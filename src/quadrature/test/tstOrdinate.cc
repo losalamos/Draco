@@ -26,7 +26,7 @@
 #include "../Q1DGaussLeg.hh"
 #include "../QuadServices.hh"
 #include "ds++/Release.hh"
-#include "../Ordinate.hh"
+#include "../OrdinateSet.hh"
 
 using namespace rtt_quadrature;
 using namespace rtt_dsxx;
@@ -94,7 +94,7 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
         }
         else
         {
-            ut.passes("Ordinate doest not test equal on mod mu");
+            ut.passes("Ordinate does not test equal on mod mu");
         }
         if (Omega == Ordinate( sqrtThird, 1.9, sqrtThird, wt ))
         {
@@ -102,7 +102,7 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
         }
         else
         {
-            ut.passes("Ordinate doest not test equal on mod eta");
+            ut.passes("Ordinate does not test equal on mod eta");
         }
         if (Omega == Ordinate( sqrtThird, sqrtThird, 1.9, wt ))
         {
@@ -110,7 +110,7 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
         }
         else
         {
-            ut.passes("Ordinate doest not test equal on mod xi");
+            ut.passes("Ordinate does not test equal on mod xi");
         }
         if (Omega == Ordinate( sqrtThird, sqrtThird, sqrtThird, 0.2 ))
         {
@@ -118,7 +118,7 @@ void test_ordinate_ctor( rtt_dsxx::UnitTest & ut )
         }
         else
         {
-            ut.passes("Ordinate doest not test equal on mod wt");
+            ut.passes("Ordinate does not test equal on mod wt");
         }
     }
     return;
@@ -244,6 +244,7 @@ void test_create_ordinate_set( UnitTest & ut )
                 ut.failure("norm does NOT match");
         }
     }
+
     {
         // 3d set for 3d quadrature
         SP< Quadrature const > const
@@ -369,6 +370,7 @@ void test_create_ordinate_set( UnitTest & ut )
                 ut.failure("norm does NOT match");
         }
     }
+    std::cout << "HERE" << std::endl;
     {
         // 3d set for 3d quadrature
         SP< Quadrature const > const
@@ -394,6 +396,7 @@ void test_create_ordinate_set( UnitTest & ut )
                 ut.failure("norm does NOT match");
         }
     }
+
     {
         // 3d set for 3d quadrature
         SP< Quadrature const > const
@@ -480,7 +483,7 @@ void test_Y( UnitTest & ut)
         {
             unsigned m=0;
             double sph( Ordinate::Y(ell,k, ordinates[m], sumwt ) );
-            double phi( QuadServices::compute_azimuthalAngle( ordinates[m].mu(), ordinates[m].eta(), ordinates[m].xi() ) );
+            double phi( ordinate_set.get_qs()->compute_azimuthalAngle( ordinates[m].mu(), ordinates[m].eta(), ordinates[m].xi() ) );
             
             double sfYlm( rtt_sf::galerkinYlk(ell,
                                               k,
