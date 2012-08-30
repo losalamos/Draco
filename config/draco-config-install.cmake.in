@@ -11,6 +11,8 @@
 
 get_filename_component( _SELF_DIR "${CMAKE_CURRENT_LIST_FILE}"  PATH )
 include( "${_SELF_DIR}/draco-targets.cmake" )
+
+# Setup for GNUtoMS (see 'cmake --help-module GNUInstallDirs')
 @DRACO_GNUtoMS_INSTALL@
 
 # Also set the draco install dir
@@ -22,9 +24,14 @@ set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco-@DRACO_VERSION_MAJ
 include( FeatureSummary )
 set_package_properties( draco PROPERTIES
    URL "http://coder/redmine/projects/draco"
-   DESCRIPTION "Draco is a comprehensive, radiation transport framework that provides key, reusable components for serial and parallel computational physics codes."
+   DESCRIPTION 
+"Draco is a comprehensive, radiation transport framework that provides
+     key, reusable components for serial and parallel computational physics
+     codes." 
    TYPE REQUIRED
-   PURPOSE "Provides underlying capabilities required by ClubIMC (smart pointers, data access, randon number generators, etc."
+   PURPOSE 
+"Provides underlying capabilities required by ClubIMC (smart pointers, 
+     data access, randon number generators, etc."
    )   
 
 ## ---------------------------------------------------------------------------
