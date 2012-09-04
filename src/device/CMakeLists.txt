@@ -40,3 +40,6 @@ endif()
 
 process_autodoc_pages()
 
+# Push some variables up one level
+set( Draco_EXPORT_TARGET_PROPERTIES
+   "${Draco_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)

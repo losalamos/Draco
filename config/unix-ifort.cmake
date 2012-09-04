@@ -23,13 +23,10 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 # -prec-div    Attempts to use slower but more accurate implementation of 
 #              floating-point divide. 
 # -static      Link against static Fortran runtime libraries.
-# -fPIC        Generate position independent code
 # -implicitnone Do not allow automatic variable types.
 # -openmp      Enable OpenMP parallelization
 # -parallel    Automatic parallelziation.
-set( CMAKE_Fortran_FLAGS 
-  "-warn  -fpp -fPIC -implicitnone"
-  ) #  -fp-model strict -prec-div -static
+set( CMAKE_Fortran_FLAGS "-warn  -fpp -implicitnone" ) 
 if( USE_OPENMP )
    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -openmp -parallel" )
 endif()
@@ -66,15 +63,6 @@ SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO
 if( ENABLE_SSE )
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -mia32 -axSSSE3" ) # sse3, ssse3
 endif( ENABLE_SSE )
-
-
-# Save ifort version value
-# execute_process( 
-#   COMMAND ${CMAKE_Fortran_COMPILER} --version
-#   OUTPUT_VARIABLE tmp )
-# string( REGEX REPLACE ".*([0-9]+[.][0-9][ ][0-9]+).*" 
-#   "\\1" CMAKE_Fortran_COMPILER_VERSION "${tmp}" 
-#   )   
 
 # ------------------------------------------------------------
 # Find and save compiler libraries.  These may need to be used when

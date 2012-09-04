@@ -37,11 +37,9 @@ else()
       DEPS    "${test_deps}" )
 endif()
 
-if( "${CMAKE_Fortran_COMPILER_FLAVOR}" STREQUAL "PGI" )
-   # CMake has trouble figuring out how PGI works.
-   foreach( ut f90main derived_types )
-      set_target_properties( Ut_FortranChecks_ftest_${ut}_exe
-         PROPERTIES LINKER_LANGUAGE Fortran )
-   endforeach()
- endif()
-
+# Static library builds and FC=pgfortran builds need help determining
+# the linker language.
+foreach( ut f90main derived_types )
+   set_target_properties( Ut_FortranChecks_ftest_${ut}_exe
+      PROPERTIES LINKER_LANGUAGE Fortran )
+endforeach()

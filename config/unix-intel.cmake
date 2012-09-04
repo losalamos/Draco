@@ -63,7 +63,7 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS                "-fpic -w1 -vec-report0 -diag-disable remark -shared-intel" )
+  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check-uninit -DDEBUG") 
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -fp-model precise -fp-speculation strict -ftz -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )

@@ -28,7 +28,6 @@ set( headers
    ${PROJECT_BINARY_DIR}/device/config.h
    device_cuda.h
    )
-# file( GLOB cudaSources *.cu )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode)
@@ -57,19 +56,12 @@ add_component_library(
    SOURCES      "${sources}"
    VENDOR_LIST  "CUDA"
    VENDOR_LIBS  "${CUDA_CUDA_LIBRARY}"
-   VENDOR_INCLUDE_DIRS "${CUDA_TOOLKIT_INCLUDE}"   
+   VENDOR_INCLUDE_DIRS "${CUDA_TOOLKIT_INCLUDE}"
    )
-# target_link_libraries( Lib_device 
-#    Lib_dsxx
-#    ${CUDA_CUDA_LIBRARY} 
-#    )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_device  
-   EXPORT draco-targets
-   DESTINATION lib )
+install( TARGETS Lib_device EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/device )
-
