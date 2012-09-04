@@ -94,7 +94,7 @@ if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )  # if x86 build
       LIBRARY_NAME device 
       SOURCES      "${sources}" 
       VENDOR_LIST  "DaCS"
-      VENDOR_LIBS  "/usr/lib64/libdacs_hybrid.so"
+      VENDOR_LIBS  "/opt/ofed/lib64/librdmacm.so;/opt/ofed/lib64/libibverbs.so;/opt/PBS/lib64/libtorque.so;/usr/lib64/libnuma.so;/usr/lib64/libdacs_hybrid.so"
       )
    # target_link_libraries( Lib_device 
    #    /usr/lib64/libdacs_hybrid.so
