@@ -4,42 +4,43 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:41:12 2002
  * \brief  RTT_Mesh_Reader test.
+ * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ * \version $Id$
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <sstream>
-
+#include "../RTT_Mesh_Reader.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
-#include "../RTT_Mesh_Reader.hh"
-#include "RTT_Format_Reader_test.hh"
-
-using namespace std;
+#include "ds++/ScalarUnitTest.hh"
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // Enum definitions and forward declarations
 //---------------------------------------------------------------------------//
 
-namespace rtt_RTT_Mesh_Reader_test
-{
-using namespace rtt_RTT_Format_Reader;
-using namespace rtt_RTT_Format_Reader_test;
+using namespace std;
+using namespace rtt_dsxx;
+using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 using rtt_mesh_element::Element_Definition;
 
 enum Meshes {DEFINED};
 
-bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype);
+bool check_virtual( rtt_dsxx::UnitTest &ut,
+                    RTT_Mesh_Reader const & mesh,
+                    Meshes const & meshtype);
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void runTest()
+void runTest( rtt_dsxx::UnitTest &ut)
 {
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
@@ -68,7 +69,7 @@ void runTest()
 	    // mesh file (enum DEFINED).
 	case (0):
 	    mesh_type = DEFINED;
-	    all_passed = all_passed && check_virtual(mesh, mesh_type);
+	    all_passed = all_passed && check_virtual(ut, mesh, mesh_type);
 	    break;
 
 	default:
@@ -86,7 +87,7 @@ void runTest()
     }
 
     // Report results of test.
-    if (passed)
+    if( ut.numFails == 0 && ut.numPasses > 0 )
     {
 	PASSMSG("All tests passed.");
     }
@@ -94,15 +95,18 @@ void runTest()
     {
 	FAILMSG("Some tests failed.");
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
+bool check_virtual( rtt_dsxx::UnitTest    & ut,
+                    RTT_Mesh_Reader const & mesh,
+                    Meshes          const & meshtype )
 {
     // Save and reset at end of function
-    bool unit_test_status( passed );
-    passed = true;
+    bool unit_test_status( ut.numFails==0 && ut.numPasses>0 );
+    bool passed( true );
     
     // Exercise the virtual accessor functions for this mesh.
     vector<vector<double> > node_coords;
@@ -298,49 +302,42 @@ bool check_virtual(const RTT_Mesh_Reader & mesh, const Meshes & meshtype)
     return false;
 }
 
-} // end of rtt_RTT_Format_Reader_test
-
 //---------------------------------------------------------------------------//
 // Main
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    using rtt_dsxx::release;
-    using rtt_RTT_Mesh_Reader_test::runTest;
-    using rtt_RTT_Mesh_Reader_test::passed;
-    
-    // version tag
-    cout << argv[0] << ": version " << release() << endl;
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	    return 0;
-
     try
     {
-	runTest();
+        ScalarUnitTest ut( argc, argv, release );
+	runTest(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-	cout << "While testing TestRTTMeshReader, " << ass.what() << endl;
-	return 1;
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
     }
-    catch (...)
+    catch (exception &err)
     {
-	cout << "While testing TestRTTMeshReader, "
-             << "an unknown exception occurred." << endl;
-	return 1;
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
     }
-    
-    // status of test
-    cout <<   "\n*********************************************\n";
-    if (passed) 
-        cout << "**** TestRTTMeshReader Test: PASSED";
-    cout <<   "\n*********************************************\n\n"
-         << "Done testing TestRTTMeshReader." << endl;
+    catch( ... )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", " 
+             << "An unknown exception was thrown" << endl;
+        return 1;
+    }
     return 0;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of TestRTTMeshReader.cc
+// end of TestRTTMeshReader.cc
 //---------------------------------------------------------------------------//

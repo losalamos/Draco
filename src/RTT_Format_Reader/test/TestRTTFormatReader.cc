@@ -10,24 +10,24 @@
  */
 //---------------------------------------------------------------------------//
 
-#include "RTT_Format_Reader_test.hh"
 #include "TestRTTFormatReader.hh"
-
+#include "../RTT_Mesh_Reader.hh"
 #include "../CellDefs.hh"
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 
-#include <iostream>
-#include <vector>
 #include <sstream>
-#include <cmath>
 
 using namespace std;
 using namespace rtt_dsxx;
 
-using rtt_RTT_Format_Reader::RTT_Format_Reader;
-using rtt_dsxx::release;
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+
+//---------------------------------------------------------------------------------------//
+
+map<Meshes, bool> Dims_validated;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -37,9 +37,9 @@ void runTest(UnitTest &ut)
 {
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
-    const int MAX_MESHES = 1;
+    int const MAX_MESHES = 1;
     std::string filename[MAX_MESHES] = {"rttdef.mesh"};
-    rtt_RTT_Format_Reader_test::Meshes mesh_type;
+    Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
     {
@@ -65,54 +65,39 @@ void runTest(UnitTest &ut)
             // Test all nested class accessor functions for a very simplistic
             // mesh file (enum DEFINED).
             case (0):
-                mesh_type  = rtt_RTT_Format_Reader_test::DEFINED;
+                mesh_type  = DEFINED;
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_header(
-                                 mesh,  mesh_type, ut);
+                             check_header( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_dims(
-                                 mesh, mesh_type, ut);
+                             check_dims( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_node_flags(
-                                 mesh,  mesh_type, ut);
+                             check_node_flags( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_side_flags(
-                                 mesh,  mesh_type, ut);
+                             check_side_flags( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_cell_flags(
-                                 mesh,  mesh_type, ut);
+                             check_cell_flags( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_node_data_ids(
-                                 mesh,  mesh_type, ut);
+                             check_node_data_ids( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_side_data_ids(
-                                 mesh,  mesh_type, ut);
+                             check_side_data_ids( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_cell_data_ids(
-                                 mesh,  mesh_type, ut);
+                             check_cell_data_ids( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_cell_defs(
-                                 mesh,  mesh_type, ut);
+                             check_cell_defs( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_nodes(
-                                 mesh,  mesh_type, ut);
+                             check_nodes( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_sides(
-                                 mesh,  mesh_type, ut);
+                             check_sides( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_cells(
-                                 mesh,  mesh_type, ut);
+                             check_cells( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_node_data(
-                                 mesh,  mesh_type, ut);
+                             check_node_data( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_side_data(
-                                 mesh,  mesh_type, ut);
+                             check_side_data( mesh, mesh_type, ut);
                 all_passed = all_passed &&
-                             rtt_RTT_Format_Reader_test::check_cell_data(
-                                 mesh,  mesh_type, ut);
+                             check_cell_data( mesh, mesh_type, ut);
                 break;
-
+                
             default:
                 ostringstream m;
                 m << "Invalid mesh type encountered." << std::endl;
@@ -141,22 +126,12 @@ void runTest(UnitTest &ut)
     }
 
     // Report results of test.
-    if (rtt_RTT_Format_Reader_test::passed)
-    {
+    if( ut.numFails == 0 && ut.numPasses > 0 )
         ut.passes("All tests passed.");
-    }
     else
-    {
         ut.failure("Some tests failed.");
-    }
+    return;
 }
-
-//---------------------------------------------------------------------------//
-
-namespace rtt_RTT_Format_Reader_test
-{
-
-map<Meshes, bool> Dims_validated;
 
 //---------------------------------------------------------------------------//
 bool verify_Dims(RTT_Format_Reader const & mesh, 
@@ -1289,7 +1264,7 @@ bool check_cell_defs(RTT_Format_Reader const & mesh,
     {
         std::vector<int> const myNodes = mesh.get_cell_defs_node_map(0);
         size_t mySize = myNodes.size();
-        std::cout << "mySize = " << mySize << std::endl;
+        // std::cout << "mySize = " << mySize << std::endl;
         if( mySize == 0 )
         {
             ut.passes("get_cell_defs_node_map(int) returned an empty vector.");
@@ -1318,13 +1293,9 @@ bool check_cell_defs(RTT_Format_Reader const & mesh,
     {
         bool myBool = mesh.get_cell_defs_redefined();
         if( myBool)
-        {
             ut.failure("Unexpected value for get_cell_defs_redefined(): Cells are redefined.");
-        }
         else
-        {
             ut.passes("Expected value for get_cell_defs_redefined(): Cells are not redefined.");
-        }
     }
     
     // Check cell definition number of nodes.
@@ -1922,7 +1893,7 @@ bool check_cell_data(RTT_Format_Reader const & mesh,
 
     if (all_passed)
     {
-        ut.passes("Got all CellData accessors.");
+        ut.passes(std::string("Got all CellData accessors."));
     }                         
     else
     {
@@ -1930,8 +1901,6 @@ bool check_cell_data(RTT_Format_Reader const & mesh,
     }
 
     return all_passed;
-}
-
 }
 
 //---------------------------------------------------------------------------//
@@ -1960,14 +1929,12 @@ int main(int argc, char *argv[])
              << err.what() << endl;
         return 1;
     }
-
     catch( ... )
     {
         cout << "ERROR: While testing " << argv[0] << ", " 
              << "An unknown exception was thrown" << endl;
         return 1;
     }
-
     return 0;
 }   
 

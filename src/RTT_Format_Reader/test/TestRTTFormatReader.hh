@@ -12,15 +12,11 @@
 #ifndef __test_TestRTT_Format_Reader_hh__
 #define __test_TestRTT_Format_Reader_hh__
 
-#include "ds++/UnitTest.hh"
 #include "../RTT_Format_Reader.hh"
+#include "ds++/UnitTest.hh"
 #include <map>
 
-namespace rtt_RTT_Format_Reader_test
-{
-
 using rtt_dsxx::UnitTest;
-
 typedef rtt_RTT_Format_Reader::RTT_Format_Reader RTT_Format_Reader;
 
 enum Meshes {DEFINED};
@@ -78,10 +74,8 @@ bool check_cell_data(const RTT_Format_Reader & mesh,
 		     const Meshes & meshtype,
                      UnitTest &ut);
 
-} // end namespace rtt_RTT_Format_Reader_test
-
-#endif                // _test_TestRTT_Format_Reader_hh__
+#endif // _test_TestRTT_Format_Reader_hh__
 
 //---------------------------------------------------------------------------//
-//                    end of meshReaders/test/TestRTTFormatReader.hh
+// end of meshReaders/test/TestRTTFormatReader.hh
 //---------------------------------------------------------------------------//
