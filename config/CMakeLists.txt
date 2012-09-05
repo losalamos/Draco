@@ -12,16 +12,52 @@
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project( config )
 
-file( GLOB CMake_src *.cmake )
-file( GLOB CMake_in  *.in    )
+set( CMake_src
+#   FindGSL.cmake
+#   FindGrace.cmake
+#   FindLIBSCI.cmake
+#   FindRandom123.cmake
+#   Toolchain-catamount.cmake
+   Toolchain-roadrunner-ppe.cmake
+   Toolchain-roadrunner-spu.cmake
+   buildEnv.cmake
+   compilerEnv.cmake
+   component_macros.cmake
+   configureFileOnMake.cmake
+   debug_macros.cmake
+   doc_macros.cmake
+   dracoTesting.cmake
+   dracoVersion.cmake
+   parse_arguments.cmake
+   platform_checks.cmake
+   platform_customization_roadrunner_ppe.cmake
+   unix-g++.cmake
+   unix-gfortran.cmake
+   unix-ifort.cmake
+   unix-intel.cmake
+   unix-pgf90.cmake
+   unix-pgi.cmake
+   unix-ppu.cmake
+   unix-spu.cmake
+#   vendor_libraries.cmake
+   windows-cl.cmake
+   windows-ifort.cmake
+)
+set( CMake_in
+   cmake_uninstall.cmake.in
+   doxygen_config.in
+   )
 
 # include(debug_macros)
 # echo_all_cmake_variable_values()
 
 string( TOUPPER "${CMAKE_BUILD_TYPE}" upper_build_type )
-set( Draco_CXX_COMPILER_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${upper_build_type}}" )
-set( Draco_C_COMPILER_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${upper_build_type}}" )
-set( Draco_Fortran_COMPILER_FLAGS "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${upper_build_type}}" )
+set( Draco_CXX_COMPILER_FLAGS 
+   "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${upper_build_type}}" )
+set( Draco_C_COMPILER_FLAGS 
+   "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${upper_build_type}}" )
+set( Draco_Fortran_COMPILER_FLAGS 
+   "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${upper_build_type}}" )
 
 configure_file( draco-config-install.cmake.in
    ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake @ONLY)
