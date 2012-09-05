@@ -31,7 +31,9 @@ digraph draco_level {
     vlapack    [shape=hexagon, color=green, label="LAPACK"];
     vmpi       [shape=hexagon, color=green, label="MPI"];
     vdacs      [shape=hexagon, color=green, label="DaCS"];
+    vcuda      [shape=hexagon, color=green, label="CUDA"];
     vpapi      [shape=hexagon, color=green, label="PAPI"];
+    vran123    [shape=hexagon, color=green, label="Random123"];
         
     dsxx [shape=box, color=blue, label="ds++", width=6];
     
@@ -109,7 +111,8 @@ digraph draco_level {
     plot        -> {dsxx}        [color=blue];
     plot        -> {vgrace}      [color=green];
     rng         -> {dsxx}        [color=blue];
-    rng         -> {vgsl}        [color=green];
+    rng         -> {vgsl vran123}  [color=green];
+    rng         -> {vcuda}       [color=green, style=dotted];
     shlib       -> {dsxx}        [color=blue];
     shlib       -> {vdlopen}     [color=green];
     traits      -> {dsxx}        [color=blue];
@@ -118,7 +121,7 @@ digraph draco_level {
     /* level 3 */
     device      -> {dsxx}        [color=blue];
     device      -> {c4}          [color=blue, style=dotted];
-    device      -> {vdacs}       [color=green];
+    device      -> {vdacs vcuda} [color=green];
     cdieos      -> {cdi}         [color=blue];
     cdieos      -> {veospac}     [color=green]; 
     cdiip       -> {cdi}         [color=blue];
