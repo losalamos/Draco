@@ -29,7 +29,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # c4/config.h
-   ${MPI_INCLUDE_PATH} 
+#   ${MPI_INCLUDE_PATH} 
 )
 
 # ---------------------------------------------------------------------------- #
@@ -48,7 +48,7 @@ add_component_library(
 
 add_scalar_tests(
    SOURCES "${test_sources}" 
-   DEPS    "Lib_cdi_analytic;${PAPI_LIBRARY}" )
+   DEPS    "Lib_cdi_analytic" )
 #  DEPS    "Lib_parser;Lib_cdi;Lib_c4;${MPI_LIBRARIES};Lib_dsxx;${PAPI_LIBRARY}" )
 
 

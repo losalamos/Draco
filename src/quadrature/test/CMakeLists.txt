@@ -44,19 +44,10 @@ add_component_library(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-set( test_deps
-#   Lib_parser
-#   Lib_c4
-#   Lib_special_functions
-#   Lib_ode
-#   Lib_dsxx
-#   ${GSL_LIBRARIES}
-#   ${MPI_LIBRARIES} 
-   ${PAPI_LIBRARY} )
-
+#set( test_deps ${PAPI_LIBRARY} )
 add_scalar_tests(
-   SOURCES "${test_sources}"
-   DEPS    "${test_deps}" ) 
+   SOURCES "${test_sources}" )
+#   DEPS    "${test_deps}" ) 
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)

@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/quadrature/CMakeLists.txt
 # brief  Instructions for building quadrature Makefiles.
-# note   Copyright (C) 2010-2012 Los Alamos National Security, 
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -29,7 +29,6 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
                      ${GSL_INCLUDE_DIRS}
-                     ${MPI_INCLUDE_PATH}
                      )
 
 # ---------------------------------------------------------------------------- #
@@ -38,7 +37,7 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 
 add_component_library( 
    TARGET       Lib_quadrature
-   TARGET_DEPS  "Lib_parser;Lib_special_functions;Lib_mesh_element"
+   TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element"
    LIBRARY_NAME ${PROJECT_NAME} 
    SOURCES      "${sources}" )
 

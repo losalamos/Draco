@@ -65,9 +65,9 @@ add_component_library(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_scalar_tests(
+add_scalar_tests( 
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx;${GSL_LIBRARIES};" )
+   DEPS    "Lib_rng_test" ) # dsxx;${GSL_LIBRARIES};" )
 
 if( RANDOM123_FOUND)
    # Random123 unit tests almost all use assert to check for failures,
