@@ -79,12 +79,15 @@ endif()
 # Compiler Flags
 # 
 
+# cmake-2.8.9+ -fPIC can be established by using
+# set(CMAKE_POSITION_INDEPENDENT_CODE ON) 
+
 # Flags from Draco autoconf build system:
 
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-fPIC -Wcast-align -Wpointer-arith -Wall" )
+   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
