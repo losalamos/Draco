@@ -43,7 +43,7 @@ case ml*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/12.1.2 openmpi cudatoolkit
+    module load intel/12.1.5 openmpi cudatoolkit
     module load cmake gsl/1.14-intel svn 
     module load numdiff lapack/3.4.1-intel
     module load trilinos SuperLU_DIST/3.0-intel

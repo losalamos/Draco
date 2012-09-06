@@ -12,7 +12,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     10.12.2
-set prefix      /usr/projects/draco/vendors/trilinos-$version/ml-openmpi145-intel1212-intel1212
+set prefix      /usr/projects/draco/vendors/trilinos-$version/ml-openmpi145-intel1215-intel1215
 set incdir      $prefix/include;
 set libdir      $prefix/lib
 
