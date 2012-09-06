@@ -47,13 +47,13 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 
 # This test requires numdiff, so don't run it if it's not available.
-find_program( NUMDIFF
-              numdiff
-              HINTS ${VENDOR_DIR}
-            )
+# find_program( NUMDIFF
+#               numdiff
+#               HINTS ${VENDOR_DIR}
+#             )
 
-#if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
-if ( NOT ${NUMDIFF} MATCHES NOTFOUND )
+if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
+#if ( NOT ${NUMDIFF} MATCHES NOTFOUND )
    add_scalar_tests(
       SOURCES "${test_sources}"
       DEPS    "Lib_dsxx" 
