@@ -121,31 +121,56 @@ macro( setupMPILibrariesUnix )
             COMMAND ${MPIEXEC} --version
             ERROR_VARIABLE  DBS_MPI_VER
             )
-         string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
-            DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-         string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
-            DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-
+         if( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9].[0-9]" )
+            string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
+               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+            string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
+               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+         elseif( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9]" )
+            string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\1"
+               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+            string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\2"
+               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+         endif()
+               
          # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
          # This is required on Turning when running 'ctest -j16'.  See
          # notes in component_macros.cmake.
-        
-         # --bind-to-core added in OpenMPI-1.4
-         if( ${DBS_MPI_VER_MINOR} GREATER 3 )
-            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
-               STRING "extra mpirun flags (list)." FORCE)
-            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
-               STRING "extra mpirun flags (string)." FORCE)
-            # set( MPIEXEC_POSTFLAGS --bind-to-none --bycore CACHE
-            #    STRING "extra mpirun flags (list)." FORCE)
-            # set( MPIEXEC_POSTFLAGS_STRING "--bind-to-none --bycore" CACHE
-            #    STRING "extra mpirun flags (string)." FORCE)
-         else()
-            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
-               STRING "extra mpirun flags (list)." FORCE)
-            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
-               STRING "extra mpirun flags (string)." FORCE)
+         if( NOT "${SITE}" MATCHES "rr" )
+            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
+            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
          endif()
+         set( MPIEXEC_POSTFLAGS ${MPIEXEC_POSTFLAGS}
+            CACHE STRING "extra mpirun flags (list)." FORCE)
+         set( MPIEXEC_POSTFLAGS_STRING ${MPIEXEC_POSTFLAGS_STRING}
+            CACHE STRING "extra mpirun flags (string)." FORCE)
+         
+         # Find cores/cpu and cpu/node.
+         set( MPI_CORES_PER_CPU 4 )
+         if( EXISTS "/proc/cpuinfo" )
+            file( READ "/proc/cpuinfo" cpuinfo_data )
+            string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
+            foreach( line ${cpuinfo_data} )
+               if( "${line}" MATCHES "cpu cores" )
+                  string( REGEX REPLACE ".*([0-9]+).*" "\\1"
+                     MPI_CORES_PER_CPU "${line}" )
+               endif()
+            endforeach()
+         endif()
+         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+            "Number of multi-core CPUs per node" FORCE )
+         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+            "Number of cores per cpu" FORCE )
+         # --bind-to-core added in OpenMPI-1.4
+         # if( ${DBS_MPI_VER_MINOR} GREATER 3 )
+         #    set( MPIEXEC_POSTFLAGS 
+         #       "-bind-to-core -cpus-per-proc ${CORES_PER_CPU} -loadbalance" CACHE
+         #       STRING "extra mpirun flags (list)." FORCE)
+         #    set( MPIEXEC_POSTFLAGS_STRING 
+         #       "-bind-to-core -cpus-per-proc ${CORES_PER_CPU} -loadbalance" CACHE
+         #       STRING "extra mpirun flags (string)." FORCE)
+         # endif()
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       elseif( "${MPIEXEC}" MATCHES aprun)
          set( MPIEXEC_POSTFLAGS -cc none CACHE
