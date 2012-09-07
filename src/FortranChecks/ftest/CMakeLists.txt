@@ -35,11 +35,11 @@ else()
    add_scalar_tests( 
       SOURCES "${test_sources}" 
       DEPS    "${test_deps}" )
-endif()
 
-# Static library builds and FC=pgfortran builds need help determining
-# the linker language.
-foreach( ut f90main derived_types )
-   set_target_properties( Ut_FortranChecks_ftest_${ut}_exe
-      PROPERTIES LINKER_LANGUAGE Fortran )
-endforeach()
+   # Static library builds and FC=pgfortran builds need help determining
+   # the linker language.
+   foreach( ut f90main derived_types )
+      set_target_properties( Ut_FortranChecks_ftest_${ut}_exe
+         PROPERTIES LINKER_LANGUAGE Fortran )
+   endforeach()
+endif()
