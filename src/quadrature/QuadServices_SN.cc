@@ -53,15 +53,15 @@ QuadServices_SN::QuadServices_SN( vector<Ordinate> const &ordinates,
       M( computeM() ),
       D( computeD() )
 { 
-    std::vector< unsigned > dimsM;
-    dimsM.push_back( getNumMoments() );
-    dimsM.push_back( getNumOrdinates() );
-    print_matrix( "M", M, dimsM );
+    //std::vector< unsigned > dimsM;
+    //dimsM.push_back( getNumMoments() );
+    //dimsM.push_back( getNumOrdinates() );
+    //print_matrix( "M", M, dimsM );
 
-    std::vector< unsigned > dimsD;
-    dimsD.push_back( getNumOrdinates() );
-    dimsD.push_back( getNumMoments() );
-    print_matrix( "D", D, dimsD );
+    //std::vector< unsigned > dimsD;
+    //dimsD.push_back( getNumOrdinates() );
+    //dimsD.push_back( getNumMoments() );
+    //print_matrix( "D", D, dimsD );
 
     //double s=0;
     //for (unsigned i=0; i<dimsD[0]; ++i)

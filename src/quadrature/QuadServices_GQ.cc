@@ -52,24 +52,23 @@ QuadServices_GQ::QuadServices_GQ( vector<Ordinate> const &ordinates,
       M( computeM() ),
       D( computeD() )
 { 
-    std::vector< unsigned > dimsM;
-    dimsM.push_back( getNumMoments() );
-    dimsM.push_back( getNumOrdinates() );
+    //std::vector< unsigned > dimsM;
+    //dimsM.push_back( getNumMoments() );
+    //dimsM.push_back( getNumOrdinates() );
 
-    
-    std::vector< double > Mm(getM());
+    //std::vector< double > Mm(getM());
     //std::cout << "M matrix is (" << dimsM[0] << " x " << dimsM[1] << std::endl
     //          << "M matrix size is: " << Mm.size() << " (should be: " << dimsM[0]*dimsM[1]  << ")" << std::endl;
-    print_matrix( "M", Mm, dimsM );
+    //print_matrix( "M", Mm, dimsM );
 
-    std::vector< unsigned > dimsD;
-    dimsD.push_back( getNumOrdinates() );
-    dimsD.push_back( getNumMoments() );
+    //std::vector< unsigned > dimsD;
+    //dimsD.push_back( getNumOrdinates() );
+    //dimsD.push_back( getNumMoments() );
 
-    std::vector< double > Dd(getD());
+    //std::vector< double > Dd(getD());
     //std::cout << "D matrix is (" << dimsD[0] << " x " << dimsD[1] << std::endl
     //          << "D matrix size is: " << Dd.size() << " (should be: " << dimsD[0]*dimsD[1]  << ")" << std::endl;
-    print_matrix( "D", Dd, dimsD );
+    //print_matrix( "D", Dd, dimsD );
 
     //double s=0;
     //for (unsigned i=0; i<dimsD[0]; ++i)
