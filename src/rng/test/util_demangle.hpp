@@ -34,6 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 #include <cxxabi.h>
 #endif
+#ifdef __PGI
+#include <typeinfo>
+#endif
 
 // Every compiler has a demangling library *somewhere*.  Unfortunately, they're
 // all different...
