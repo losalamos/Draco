@@ -268,13 +268,23 @@ endmacro()
 # 2. Register the pass/fail criteria.
 # ------------------------------------------------------------
 macro( register_parallel_test targetname numPE command cmd_args )
-  add_test( 
-      NAME    ${targetname}
-      COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-              ${MPIRUN_POSTFLAGS}
-              ${command}
-              ${cmdarg}
-      )
+   if( addparalleltest_MPI_PLUS_OMP )
+      add_test( 
+         NAME    ${targetname}
+         COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+                 ${MPIEXEC_OMP_POSTFLAGS}
+                 ${command}
+                 ${cmdarg}
+                 )
+   else()
+      add_test( 
+         NAME    ${targetname}
+         COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+                 ${MPIRUN_POSTFLAGS}
+                 ${command}
+                 ${cmdarg}
+                 )
+   endif()
    set_tests_properties( ${targetname}
       PROPERTIES	
         PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
@@ -290,7 +300,12 @@ macro( register_parallel_test targetname numPE command cmd_args )
       set_tests_properties( ${targetname}
          PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
    endif()
-
+   if( addparalleltest_MPI_PLU_OMP ) 
+      set_tests_properties( ${targetname}
+         PROPERTIES
+           RUN_SERIAL "ON"
+           LABELS "nomemcheck" )
+   endif()
 endmacro()
 
 #----------------------------------------------------------------------#
@@ -487,7 +502,7 @@ macro( add_parallel_tests )
       # list names
       "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;MPIFLAGS"
       # option names
-      "NONE"
+      "MPI_PLUS_OMP"
       ${ARGV}
       )
 
@@ -558,6 +573,12 @@ macro( add_parallel_tests )
            VS_KEYWORD  ${testname}
            FOLDER ${compname}
          )
+      if( addparalleltest_MPI_PLUS_OMP )
+         if( ${CMAKE_GENERATOR} MATCHES Xcode )
+            set_target_properties( Ut_c4_tstOMP_exe
+               PROPERTIES XCODE_ATTRIBUTE_ENABLE_OPENMP_SUPPORT YES )
+         endif()
+      endif()
       get_target_property( target_source_list Lib_${compname} SOURCES )
       if( NOT "${target_source_list}" MATCHES NOTFOUND )
          set( complib Lib_${compname} )

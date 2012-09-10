@@ -140,10 +140,6 @@ macro( setupMPILibrariesUnix )
             set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
             set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
          endif()
-         set( MPIEXEC_POSTFLAGS ${MPIEXEC_POSTFLAGS}
-            CACHE STRING "extra mpirun flags (list)." FORCE)
-         set( MPIEXEC_POSTFLAGS_STRING ${MPIEXEC_POSTFLAGS_STRING}
-            CACHE STRING "extra mpirun flags (string)." FORCE)
          
          # Find cores/cpu and cpu/node.
          set( MPI_CORES_PER_CPU 4 )
@@ -164,13 +160,16 @@ macro( setupMPILibrariesUnix )
             "Number of cores per cpu" FORCE )
          # --bind-to-core added in OpenMPI-1.4
          # if( ${DBS_MPI_VER_MINOR} GREATER 3 )
-         #    set( MPIEXEC_POSTFLAGS 
-         #       "-bind-to-core -cpus-per-proc ${CORES_PER_CPU} -loadbalance" CACHE
-         #       STRING "extra mpirun flags (list)." FORCE)
-         #    set( MPIEXEC_POSTFLAGS_STRING 
-         #       "-bind-to-core -cpus-per-proc ${CORES_PER_CPU} -loadbalance" CACHE
-         #       STRING "extra mpirun flags (string)." FORCE)
-         # endif()
+         set( MPIEXEC_OMP_POSTFLAGS 
+            -bind-to-core -cpus-per-proc ${MPI_CORES_PER_CPU} -loadbalance 
+            CACHE STRING "extra mpirun flags (list)." FORCE )
+         set( MPIEXEC_OMP_POSTFLAGS_STRING 
+            "-bind-to-core -cpus-per-proc ${MPI_CORES_PER_CPU} -loadbalance"
+            CACHE STRING "extra mpirun flags (list)." FORCE)
+         set( MPIEXEC_POSTFLAGS ${MPIEXEC_POSTFLAGS}
+            CACHE STRING "extra mpirun flags (list)." FORCE)
+         set( MPIEXEC_POSTFLAGS_STRING ${MPIEXEC_POSTFLAGS_STRING}
+            CACHE STRING "extra mpirun flags (string)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       elseif( "${MPIEXEC}" MATCHES aprun)
          set( MPIEXEC_POSTFLAGS -cc none CACHE

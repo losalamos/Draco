@@ -127,17 +127,17 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
     int tid(-1);
     int nthreads(-1),maxthreads(-1);
 
-    if( one_mpi_rank_per_node )
-    {
+    // if( one_mpi_rank_per_node )
+    // {
         maxthreads = omp_get_max_threads();
         // nthreads   = omp_get_num_threads();
-    }
-    else
-    {
-        // More than 1 MPI rank per node --> turn off OMP.
-        maxthreads = 1;
-        omp_set_num_threads( maxthreads );
-    }
+    // }
+    // else
+    // {
+    //     // More than 1 MPI rank per node --> turn off OMP.
+    //     maxthreads = 1;
+    //     omp_set_num_threads( maxthreads );
+    // }
 
 #pragma omp parallel private(tid)
     {
@@ -267,7 +267,8 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
                       << "\n\t             \tSerial Time \tOMP Time"
                       << "\n\tbuild      = \t" << t1_serial_build.wall_clock()
                       << "\t" << t1_omp_build.wall_clock()
-                      << "\n\taccumulate = \t" << t2_serial_accumulate.wall_clock()
+                      << "\n\taccumulate = \t"
+                      << t2_serial_accumulate.wall_clock()
                       << "\t" << t2_omp_accumulate.wall_clock() << std::endl;
         }
         
@@ -458,5 +459,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of phw.cc
+// end of tstOMP.cc
 //---------------------------------------------------------------------------//
