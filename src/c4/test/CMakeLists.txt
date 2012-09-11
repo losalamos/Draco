@@ -79,10 +79,14 @@ add_parallel_tests(
 list( REMOVE_ITEM test_sources ${special_test} )
 
 # This test uses MPI+OMP:
-# Bullseye doesn't like some OMP directives.
+# - Bullseye doesn't like some OMP directives.
+# - Timing tests are broken if the test has to be pushed to a virtual
+#   machine (aprun) or pushded to a PPC node (roadrunner, ppu-).
 set( special_test ${PROJECT_SOURCE_DIR}/tstOMP.cc )
 list( REMOVE_ITEM test_sources ${special_test} )
-if( DBS_CXX_IS_BULLSEYE OR ${CMAKE_CXX_COMPILER} MATCHES "[ps]pu-" )
+if( DBS_CXX_IS_BULLSEYE OR 
+      ${CMAKE_CXX_COMPILER} MATCHES "[ps]pu-" OR
+      ${MPIEXEC} MATCHES "aprun" )
    # no-op
 else()
    add_parallel_tests(
