@@ -32,8 +32,6 @@
 
 using namespace rtt_c4;
 
-typedef std::complex<double> complex;
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -291,12 +289,12 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
 //---------------------------------------------------------------------------//
 // This is a simple demonstration problem for OMP.  Nothing really to check
 // for PASS/FAIL. 
-int MandelbrotCalculate(complex c, int maxiter)
+int MandelbrotCalculate(std::complex<double> c, int maxiter)
 {
     // iterates z = z*z + c until |z| >= 2 or maxiter is reached, returns the
     // number of iterations
 
-    complex z = c;
+    std::complex<double> z = c;
     int n = 0;
     for(; n<maxiter; ++n)
     {
@@ -311,10 +309,10 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     const int width  = 78;
     const int height = 44;
     const int num_pixels = width*height;
-    const complex center(-0.7, 0.0);
-    const complex span(   2.7, -(4/3.0)*2.7*height/width );
-    const complex begin = center-span/2.0;
-    // const complex end   = center+span/2.0;
+    const std::complex<double> center(-0.7, 0.0);
+    const std::complex<double> span(   2.7, -(4/3.0)*2.7*height/width );
+    const std::complex<double> begin = center-span/2.0;
+    // const std::complex<double> end   = center+span/2.0;
     const int maxiter = 100000;
 
     // Use OMP threads
@@ -341,8 +339,11 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
         const int x = pix%width;
         const int y = pix/width;
 
-        complex c = begin + complex( x * span.real() / (width+1.0),
-                                     y * span.imag() / (height+1.0) );
+        std::complex<double> c = begin +
+                                 std::complex<double>( x * span.real() /
+                                                       (width+1.0),
+                                                       y * span.imag() /
+                                                       (height+1.0) );
 
         int n = MandelbrotCalculate(c,maxiter);
         if( n == maxiter) n = 0;
@@ -378,8 +379,11 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
         const int x = pix%width;
         const int y = pix/width;
 
-        complex c = begin + complex( x * span.real() / (width+1.0),
-                                     y * span.imag() / (height+1.0) );
+        std::complex<double> c = begin +
+                                 std::complex<double>( x * span.real() /
+                                                       (width+1.0),
+                                                       y * span.imag() /
+                                                       (height+1.0) );
 
         int n = MandelbrotCalculate(c,maxiter);
         if( n == maxiter) n = 0;
