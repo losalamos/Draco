@@ -163,7 +163,18 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
 # Toggle for C++11 support
 # can use -std=c++11 with version 4.7+
-toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX") 
+if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER VERSION_EQUAL 4.7)
+   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX") 
+elseif(  CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.3 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.3)
+   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX") 
+else()
+   if( DRACO_ENABLE_CXX11 )
+      message(FATAL_ERROR "
+C++11 requested via DRACO_ENABLE_CXX11=${DRACO_ENABLE_CXX11}.  
+Therefore a gcc compiler with a version higher than 4.3 is needed.
+Found gcc version ${GCC_VERSION}") 
+   endif()
+endif()
 
 
 
