@@ -85,8 +85,8 @@ list( REMOVE_ITEM test_sources ${special_test} )
 set( special_test ${PROJECT_SOURCE_DIR}/tstOMP.cc )
 list( REMOVE_ITEM test_sources ${special_test} )
 if( DBS_CXX_IS_BULLSEYE OR 
-      ${CMAKE_CXX_COMPILER} MATCHES "[ps]pu-" OR
-      ${MPIEXEC} MATCHES "aprun" )
+      "${CMAKE_CXX_COMPILER}" MATCHES "[ps]pu-" OR
+      "${MPIEXEC}" MATCHES "aprun" )
    # no-op
 else()
    add_parallel_tests(
