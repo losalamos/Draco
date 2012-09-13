@@ -246,6 +246,8 @@ macro( SetupVendorLibrariesUnix )
       set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
       set( CUDA_NVCC_FLAGS "-arch=sm_21" )
       set( cudalibs ${CUDA_CUDART_LIBRARY} )
+      set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
+         "static or shared (dll) libraries" FORCE )
    endif()
    mark_as_advanced( 
       CUDA_SDK_ROOT_DIR 
