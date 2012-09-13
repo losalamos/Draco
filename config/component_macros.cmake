@@ -300,7 +300,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
       set_tests_properties( ${targetname}
          PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
    endif()
-   if( addparalleltest_MPI_PLU_OMP ) 
+   if( addparalleltest_MPI_PLUS_OMP ) 
       set_tests_properties( ${targetname}
          PROPERTIES
            RUN_SERIAL "ON"
