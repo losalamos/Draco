@@ -243,12 +243,26 @@ macro( register_scalar_test targetname runcmd command cmd_args )
          COMMAND ${RUN_CMD} ${APT_TARGET_FILE_PREFIX}${command} ${cmdargs})
    endif()
 
+   # reserve enough threads for application unit tests
+   set( num_procs 1 ) # normally we only need 1 core for each scalar
+                      # test.  For application unit tests, a parallel
+                      # job is forked that needs more cores.
+   if( addscalartest_APPLICATION_UNIT_TEST )
+      if( "${cmd_args}" MATCHES "--np" )
+         string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs
+                      "${cmd_args}" )
+         # the forked processes needs $num_proc threads.  add one for
+         # the master thread, the original scalar process.
+         math( EXPR num_procs  "${num_procs} + 1" )
+      endif()
+   endif()
+
    # set pass fail criteria, processors required, etc.
    set_tests_properties( ${targetname}
       PROPERTIES	
       PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
       FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
-      PROCESSORS              "1"
+      PROCESSORS              "${num_procs}"
       WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
       )
    if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
