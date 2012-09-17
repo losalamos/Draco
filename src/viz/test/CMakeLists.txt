@@ -54,10 +54,14 @@ add_component_library(
 
 if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
 #if ( NOT ${NUMDIFF} MATCHES NOTFOUND )
-   add_scalar_tests(
-      SOURCES "${test_sources}"
-      DEPS    "Lib_dsxx" 
-      )
+   if( NOT APPLE )
+      # numdiff/ndselect crashes when run on OS/X so don't try to run
+      # the tests.
+      add_scalar_tests(
+         SOURCES "${test_sources}"
+         DEPS    "Lib_dsxx" 
+         )
+   endif()
 endif()
 
 # ---------------------------------------------------------------------------- #
