@@ -218,26 +218,26 @@ OrdinateSet::OrdinateSet( SP<Quadrature const>       const quadrature,
     using std::endl;
     using std::setprecision;
 
-    cout << endl << "ORDINATES" << endl << endl;
-    cout << "   m  \t     mu        \t     eta       \t      xi       \t      Phi      \t      wt      " << endl;
-    cout << "  --- \t-------------- \t-------------- \t-------------- \t-------------- \t--------------" << endl;
-    double sum_wt = 0.0;
-    for ( size_t m = 0; m < ordinates_.size(); ++m)
-    {
-        double const phi((dimension_== 1 && geometry_ == rtt_mesh_element::CARTESIAN)
-                         ? 0
-                         : qs_->compute_azimuthalAngle(ordinates_[m].mu(), ordinates_[m].eta(), ordinates_[m].xi()));
-        cout << "   "
-	     << m << "\t"
-	     << setprecision(10) << setw(14) << ordinates_[m].mu()  << "\t"
-	     << setprecision(10) << setw(14) << ordinates_[m].eta() << "\t"
-	     << setprecision(10) << setw(14) << ordinates_[m].xi()  << "\t"
-	     << setprecision(4)  << setw(8)  << phi << "(" <<  setw(6)  << phi*360/2/rtt_units::PI << ")" << "\t" 
-	     << setprecision(10) << setw(14) << ordinates_[m].wt()  << endl;
-	sum_wt += ordinates_[m].wt();
-    }
-    cout << endl << "  The sum of the weights is " << sum_wt << endl;
-    cout << endl;
+    // cout << endl << "ORDINATES" << endl << endl;
+    // cout << "   m  \t     mu        \t     eta       \t      xi       \t      Phi      \t      wt      " << endl;
+    // cout << "  --- \t-------------- \t-------------- \t-------------- \t-------------- \t--------------" << endl;
+    // double sum_wt = 0.0;
+    // for ( size_t m = 0; m < ordinates_.size(); ++m)
+    // {
+    //     double const phi((dimension_== 1 && geometry_ == rtt_mesh_element::CARTESIAN)
+    //                      ? 0
+    //                      : qs_->compute_azimuthalAngle(ordinates_[m].mu(), ordinates_[m].eta(), ordinates_[m].xi()));
+    //     cout << "   "
+    //          << m << "\t"
+    //          << setprecision(10) << setw(14) << ordinates_[m].mu()  << "\t"
+    //          << setprecision(10) << setw(14) << ordinates_[m].eta() << "\t"
+    //          << setprecision(10) << setw(14) << ordinates_[m].xi()  << "\t"
+    //          << setprecision(4)  << setw(8)  << phi << "(" <<  setw(6)  << phi*360/2/rtt_units::PI << ")" << "\t" 
+    //          << setprecision(10) << setw(14) << ordinates_[m].wt()  << endl;
+    //     sum_wt += ordinates_[m].wt();
+    // }
+    // cout << endl << "  The sum of the weights is " << sum_wt << endl;
+    // cout << endl;
 
 //-----------------------------------------------
 
