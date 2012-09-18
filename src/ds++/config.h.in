@@ -88,6 +88,11 @@
 /* OpenMP Setup */
 #cmakedefine USE_OPENMP @USE_OPENMP@
 
+/* C++ 11 support */
+#cmakedefine DRACO_ENABLE_CXX11
+/* @DRACO_ENABLE_CXX11@ */
+#cmakedefine CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@"
+
 /* ---------------------------------------- */
 /* GENERAL build system setup               */
 /* ---------------------------------------- */   

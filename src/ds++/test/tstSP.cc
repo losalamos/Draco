@@ -16,6 +16,7 @@
 #include "../SP.hh"
 #include "../Assert.hh"
 
+#include <memory> // shared_ptr
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -26,9 +27,9 @@ using namespace std;
 using rtt_dsxx::SP;
 
 #define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__);
-#define FAILURE    ut.failure(__LINE__, __FILE__);
-#define FAILMSG(a) ut.failure(a);
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 // TEST HELPERS
@@ -347,6 +348,143 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
+
+#ifdef DRACO_ENABLE_CXX11
+
+void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
+{
+    using std::shared_ptr;
+    
+    CHECK_0_OBJECTS;
+
+    // test explicit constructor for type T *
+    {
+        // make a Foo, Bar, and Baz
+        shared_ptr<Foo> spfoo(new Foo(1));
+        shared_ptr<Bar> spbar(new Bar(2));
+        shared_ptr<Baz> spbaz(new Baz(3));
+        
+        // there should be 3 Foos, 2 Bars and 1 Baz
+        CHECK_N_OBJECTS(3, 2, 1, 0);
+    }
+
+    // now all should be destroyed
+    CHECK_0_OBJECTS;
+
+    if (ut.numFails == 0)
+        PASSMSG("Explicit constructor for type T * ok. (std::shared_ptr)");
+
+    // test copy constructor for type T *
+    {
+        shared_ptr<Foo> rspfoo;
+        shared_ptr<Bar> rspbar;
+        shared_ptr<Baz> rspbaz;
+        {
+            // no objects yet
+            CHECK_0_OBJECTS;
+
+            Foo *f  = new Foo(1);
+            Bar *b  = new Bar(2);
+            Baz *bz = new Baz(3);
+            
+            shared_ptr<Foo> spfoo(f);
+            shared_ptr<Bar> spbar(b);
+            shared_ptr<Baz> spbaz(bz);
+            
+            // there should be 3 Foos, 2 Bars and 1 Baz
+            CHECK_N_OBJECTS(3, 2, 1, 0);
+
+            // now assign
+            rspfoo = spfoo;
+            rspbar = spbar;
+            rspbaz = spbaz;
+            
+            // there are no additional objects made because the shared_ptr will make
+            // additional references
+            CHECK_N_OBJECTS(3, 2, 1, 0);
+
+            if (ut.numFails == 0)
+                PASSMSG("Assignment of shared_ptr<T> ok. (std::shared_ptr)");
+
+            // now copy construct
+            shared_ptr<Foo> ispfoo = rspfoo;
+            shared_ptr<Bar> ispbar = rspbar;
+
+            // still no new foos created
+            CHECK_N_OBJECTS(3, 2, 1, 0);
+            if (ispfoo->f() != 2) ITFAILS;
+            if (spfoo->f()  != 2) ITFAILS;
+            if (rspfoo->f() != 2) ITFAILS;
+
+            if (ut.numFails == 0)
+                PASSMSG("Copy construct of shared_ptr<T> ok. (std::shared_ptr)");
+
+            // now make a foo pointer and assign
+            Foo *ff = new Foo(10);
+            ispfoo.reset( ff );  // for rtt_dsxx::SP we do 'ispfoo=ff;'
+
+            // still no new foos created
+            CHECK_N_OBJECTS(4, 2, 1, 0);
+            if (ispfoo->f() != 11) ITFAILS;
+            if (spfoo->f()  != 2)  ITFAILS;
+            if (rspfoo->f() != 2)  ITFAILS;
+
+            if (ut.numFails == 0)
+                PASSMSG("Assignment of T* ok. (std::shared_ptr)");
+
+            // now we can check equality 
+            if (rspfoo == spfoo)
+                PASSMSG("Equality operation ok. (std::shared_ptr)");
+            else
+                FAILMSG("Equality operation failed. (std::shared_ptr)");
+            
+            // now check inequality
+            if (rspfoo != spfoo)
+                FAILMSG("Equality operation failed. (std::shared_ptr)");
+            else
+                PASSMSG("Equality operation ok. (std::shared_ptr)");
+
+            if (rspbar != spbar)   ITFAILS;
+            if (rspbaz != spbaz)   ITFAILS;
+
+            if (spfoo.get() != f)  ITFAILS;
+            if (spbar.get() != b)  ITFAILS;
+            if (spbaz.get() != bz) ITFAILS;
+
+            if (spfoo.get() == b)  ITFAILS; // this is ok because a Bar * can
+                                            // be passed to Foo *
+
+            if (spbar.get() == dynamic_cast<Bar *>(f)) ITFAILS;
+
+            if (f  != spfoo.get()) ITFAILS;
+            if (b  != spbar.get()) ITFAILS;
+            if (bz != spbaz.get()) ITFAILS;
+
+            if (f == spfoo.get())
+                PASSMSG("Overloaded equality operators ok. (std::shared_ptr)");
+            else
+                FAILMSG("Overloaded equality operators failed. (std::shared_ptr)");
+
+            if (ut.numFails == 0)
+                PASSMSG("Equality/Inequality operations ok. (std::shared_ptr)");
+        }
+    
+        // we should still have objects left even because we still have
+        // viable shared_ptrs in scope
+        CHECK_N_OBJECTS(3, 2, 1, 0);
+    }
+
+    // now all should be destroyed
+    CHECK_0_OBJECTS;
+
+    if (ut.numFails == 0)
+        PASSMSG("Operations on type T ok (std::shared_ptr)");
+
+    return;
+}
+#endif
+
+//---------------------------------------------------------------------------//
 // here we test the following SP members:
 //
 //    SP();
@@ -520,6 +658,169 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
 
     return;
 }
+
+//---------------------------------------------------------------------------//
+#ifdef DRACO_ENABLE_CXX11
+void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
+{
+    CHECK_0_OBJECTS;
+
+    // check explicit constructor
+    {
+        // make a foo pointer
+        shared_ptr<Foo> spfoo(new Bar(10));
+        CHECK_N_OBJECTS(1, 1, 0, 0);
+
+        if (spfoo->vf() != 12) ITFAILS;
+        if (spfoo->f()  != 11) ITFAILS;
+
+        Foo &f = *spfoo;
+        if (f.f()  != 11) ITFAILS;
+        if (f.vf() != 12) ITFAILS;
+
+        Foo ff = *spfoo;
+        if (ff.vf() != 10) ITFAILS;
+
+        Bar *b = dynamic_cast<Bar *>(spfoo.get()); // base_class ptr?
+        if (b->vf() != 12) ITFAILS;
+        if (b->f()  != 13) ITFAILS;
+
+        if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
+        if (typeid(*spfoo.get()) != typeid(Bar))  ITFAILS;
+
+        CHECK_N_OBJECTS(2, 1, 0, 0);
+    }
+
+    CHECK_0_OBJECTS;
+
+    if (ut.numFails == 0)
+        PASSMSG("Explicit constructor for type X * ok (std::shared_ptr<X>).");
+
+    // check shared_ptr<X> constructor and assignment
+    {
+        // make some objects
+        shared_ptr<Foo> spfoo;
+        shared_ptr<Bar> spbar;
+        shared_ptr<Foo> spfoo2;
+
+        if (spfoo)  ITFAILS;
+        if (spbar)  ITFAILS;
+        if (spfoo2) ITFAILS;
+        {
+            spbar.reset( new Bar(50) ); // spbar = new Bar(50);
+            CHECK_N_OBJECTS(1, 1, 0, 0);
+            
+            if (spbar->f()  != 53) ITFAILS;
+            if (spbar->vf() != 52) ITFAILS;
+
+            // now assign to base class shared_ptr
+            spfoo = spbar;
+            CHECK_N_OBJECTS(1, 1, 0, 0);
+
+            // check reassignment
+            spfoo = spbar;
+            CHECK_N_OBJECTS(1, 1, 0, 0);
+
+            if (spfoo->f()  != 51) ITFAILS;
+            if (spfoo->vf() != 52) ITFAILS;
+
+            if (typeid(spfoo.get())  != typeid(Foo *)) ITFAILS;
+            if (typeid(*spfoo.get()) != typeid(Bar))   ITFAILS;
+            if (typeid(spbar.get())  != typeid(Bar *)) ITFAILS;
+
+            if (ut.numFails == 0)
+                PASSMSG("Assignment with shared_ptr<X> ok.");
+
+            // now do copy construction
+            shared_ptr<Foo> rspfoo(spbar);
+            CHECK_N_OBJECTS(1, 1, 0, 0);
+
+            if (rspfoo->f()  != 51) ITFAILS;
+            if (rspfoo->vf() != 52) ITFAILS;
+
+            if (typeid(rspfoo.get())  != typeid(Foo *)) ITFAILS;
+            if (typeid(*rspfoo.get()) != typeid(Bar))   ITFAILS;
+            
+            if (ut.numFails == 0)
+                PASSMSG("Copy constructor with shared_ptr<X> ok.");
+
+            // now check assignment with X *
+            rspfoo.reset( new Bar(12) ); // rspfoo = new Bar(12);
+            CHECK_N_OBJECTS(2, 2, 0, 0);
+
+            if (rspfoo->f()  != 13) ITFAILS;
+            if (rspfoo->vf() != 14) ITFAILS;
+
+            if (typeid(rspfoo.get())  != typeid(Foo *)) ITFAILS;
+            if (typeid(*rspfoo.get()) != typeid(Bar))   ITFAILS;
+
+            if (ut.numFails == 0)
+                PASSMSG("Assignment with X * ok (std::shared_ptr<X>).");
+
+            // assign shared_ptrfoo2 to a bar
+            spfoo2.reset( new Bar(20) ); // spfoo2 = new Bar(20);
+            CHECK_N_OBJECTS(3, 3, 0, 0);
+
+            // assign spfoo2 to itself
+            spfoo2 = spfoo2;
+            CHECK_N_OBJECTS(3, 3, 0, 0);
+            
+            // assign spfoo2 to itself (underlying object)
+            // !!! THIS BEHAVIOR IS DIFFERENT FROM rtt_dsxx:SP<X> !!! //
+            // spfoo2.reset( spfoo2.get() ); // spfoo2 = spfoo2.bp();
+            // CHECK_N_OBJECTS(2, 2, 0, 0);  // CHECK_N_OBJECTS(3, 3, 0, 0);
+        }
+        // still have 2 object
+        CHECK_N_OBJECTS(2, 2, 0, 0);
+
+        // assign spfoo to a baz
+        spfoo2.reset( new Baz(45) ); // spfoo2 = new Baz(45);
+        CHECK_N_OBJECTS(2, 2, 1, 0);
+
+        if (spfoo2->f()  != 46) ITFAILS;
+        if (spfoo2->vf() != 49) ITFAILS;
+
+        if (typeid(*spfoo2.get()) != typeid(Baz)) ITFAILS;
+
+        // assign spbar to NULL
+        spbar = shared_ptr<Bar>();
+        CHECK_N_OBJECTS(2, 2, 1, 0);
+
+        // spfoo should still point to the same bar
+        if (spfoo->f()  != 51) ITFAILS;
+        if (spfoo->vf() != 52) ITFAILS;
+        
+        if (typeid(spfoo.get())  != typeid(Foo *)) ITFAILS;
+        if (typeid(*spfoo.get()) != typeid(Bar))   ITFAILS;
+        if (typeid(spbar.get() ) != typeid(Bar *)) ITFAILS;
+        
+        if (ut.numFails == 0)
+            PASSMSG("Set to shared_ptr<>() releases pointer.");
+
+        // assign spfoo to NULL
+        spfoo = shared_ptr<Foo>();
+        CHECK_N_OBJECTS(1, 1, 1, 0);
+
+        if (spfoo) ITFAILS;
+        if (spbar) ITFAILS;
+
+        if (ut.numFails == 0)
+            PASSMSG("Overloaded bool ok.");
+
+        if (!spfoo2) ITFAILS;
+
+        if (ut.numFails == 0)
+            PASSMSG("Overloaded ! (not) ok (std::shared_ptr<X>)."); 
+    }
+    
+    CHECK_0_OBJECTS;
+
+    if (ut.numFails == 0)
+        PASSMSG("Operations on type X ok (std::shared_ptr<X>).");
+
+    return;
+}
+#endif
 
 //---------------------------------------------------------------------------//
 
@@ -796,26 +1097,21 @@ int main(int argc, char *argv[])
 
         CHECK_0_OBJECTS;
 
-        type_T_test(ut);
-        cout << endl;
-
-        type_X_test(ut);
-        cout << endl;
-
-        fail_modes_test(ut);
-        cout << endl;
-
-        equality_test(ut);
-        cout << endl;
-
-        get_test(ut);
-        cout << endl;
-
-        access_test(ut);
-
-        list_test(ut);
-
+        type_T_test(ut);     cout << endl;
+        type_X_test(ut);     cout << endl;
+        fail_modes_test(ut); cout << endl;
+        equality_test(ut);   cout << endl;
+        get_test(ut);        cout << endl;
+        access_test(ut);     cout << endl;
+        list_test(ut);       cout << endl;
         CHECK_0_OBJECTS;
+
+#ifdef DRACO_ENABLE_CXX11
+        type_T_test_shared_ptr(ut);
+        type_X_test_shared_ptr(ut);
+        CHECK_0_OBJECTS;        
+#endif
+        
     }
     catch( rtt_dsxx::assertion &err )
     {
