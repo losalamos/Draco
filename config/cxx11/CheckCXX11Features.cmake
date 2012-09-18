@@ -12,7 +12,8 @@
 #  HAS_CXX11_CONSTEXPR          - constexpr keyword
 #  HAS_CXX11_SIZEOF_MEMBER      - sizeof() non-static members
 #  HAS_CXX11_FUNC               - __func__ preprocessor constant
-#
+#  HAS_CXX11_INITIALIZER_LISTS  - 
+# 
 # Original script by Rolf Eike Beer
 # Modifications by Andreas Weis
 #
@@ -89,10 +90,9 @@ cxx11_check_feature("decltype"           2343 HAS_CXX11_DECLTYPE)
 cxx11_check_feature("cstdint"            ""   HAS_CXX11_CSTDINT_H)
 cxx11_check_feature("long_long"          1811 HAS_CXX11_LONG_LONG)
 cxx11_check_feature("variadic_templates" 2555 HAS_CXX11_VARIADIC_TEMPLATES)
-# not used by Draco
-# cxx11_check_feature("constexpr"          2235 HAS_CXX11_CONSTEXPR)
+cxx11_check_feature("constexpr"          2235 HAS_CXX11_CONSTEXPR)
 cxx11_check_feature("sizeof_member"      2253 HAS_CXX11_SIZEOF_MEMBER)
-cxx11_check_feature("__func__"           2340 HAS_CXX11_FUNC)
+cxx11_check_feature("initializer_lists" 2672 HAS_CXX11_INITIALIZER_LISTS)
 
 set(CXX11_FEATURE_LIST ${CXX11_FEATURE_LIST} CACHE STRING "C++11 feature support list")
 mark_as_advanced(FORCE CXX11_FEATURE_LIST)

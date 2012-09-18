@@ -1,2 +1,21 @@
 * These tests were provided by http://pageant.ghulbus.eu/?p=664.
 
+http://en.wikipedia.org/wiki/C%2B%2B11
+http://wiki.apache.org/stdcxx/C++0xCompilerSupport
+
+* Notes:
+
+http://channel9.msdn.com/Events/Lang-NEXT/Lang-NEXT-2012/-Not-Your-Father-s-C-
+http://www.softwarequalityconnection.com/2011/06/the-biggest-changes-in-c11-and-why-you-should-care/
+
+lambda
+auto
+array initialization (uniform syntax)
+nullptr
+
+all_of() algorithm
+any_of() algorithm
+none_of() algorithm
+threading library
+smart pointer class
+
