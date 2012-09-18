@@ -10,6 +10,7 @@
 # Useful options that could be added to aid debugging
 # http://gcc.gnu.org/wiki/Atomic/GCCMM
 # http://gcc.gnu.org/wiki/TransactionalMemory
+# http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
 
 #
@@ -75,6 +76,9 @@ if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
    mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
 
+set( DRACO_ENABLE_STRICT_ANSI ON CACHE INTERNAL 
+   "use strict ANSI flags, C98" FORCE )
+
 #
 # Compiler Flags
 # 
@@ -94,7 +98,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) 
-   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -ansi -pedantic -Woverloaded-virtual -Wno-long-long")
+   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual -Wno-long-long")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
@@ -165,8 +169,12 @@ toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
 # can use -std=c++11 with version 4.7+
 if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER VERSION_EQUAL 4.7)
    toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX") 
+   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
+      "disable strict ANSI" FORCE)
 elseif(  CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.3 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.3)
    toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX") 
+   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
+      "disable strict ANSI" FORCE)
 else()
    if( DRACO_ENABLE_CXX11 )
       message(FATAL_ERROR "
@@ -176,7 +184,8 @@ Found gcc version ${GCC_VERSION}")
    endif()
 endif()
 
-
+# Do we add '-ansi -pedantic'?
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi -pedantic" "CXX" )
 
 # Notes for building gcc-4.7.1
 # ../gcc-4.7.1/configure \
