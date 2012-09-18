@@ -91,7 +91,7 @@ set( DRACO_ENABLE_STRICT_ANSI ON CACHE INTERNAL
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall" )
+   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -march=native" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
