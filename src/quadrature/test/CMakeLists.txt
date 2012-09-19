@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   quadrature/test/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for quadrature/test.
@@ -44,10 +44,7 @@ add_component_library(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-#set( test_deps ${PAPI_LIBRARY} )
-add_scalar_tests(
-   SOURCES "${test_sources}" )
-#   DEPS    "${test_deps}" ) 
+add_scalar_tests( SOURCES "${test_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)
