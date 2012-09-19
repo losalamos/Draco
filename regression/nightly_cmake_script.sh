@@ -23,15 +23,11 @@ export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux64
 
 if test -z "$MODULESHOME"; then
   # This is a new login
-  if test -f /ccs/codes/radtran/vendors/modules-3.2.7/init/bash; then
-    source /ccs/codes/radtran/vendors/modules-3.2.7/init/bash
-    module load grace gcc gsl lapack
-    module load openmpi
-    module load cmake numdiff svn
-    module list
+  if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
+    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
   fi
 fi
-module load valgrind
+module load grace gcc gsl lapack openmpi cmake numdiff svn valgrind
 module list
 
 echo " "
@@ -56,7 +52,7 @@ if test "`whoami`" == "regress"; then
 else
     dashboard_type=Experimental
     base_dir=/var/tmp/${USER}/regress/cmake_draco
-    script_dir=/home/regress/cmake_draco
+    script_dir=/ccs/codes/radtran/regress-homedir/cmake_draco
 fi
 
 # compiler
@@ -76,7 +72,7 @@ ctest -VV -S ${script_dir}/regression/Draco_gcc.cmake,${dashboard_type},${build_
 
 # Coverage build
 build_type=Coverage
-module load bullseyecoverage/8.4.12
+module load bullseyecoverage/8.7.17
 CXX=`which g++`
 CC=`which gcc`
 export work_dir=${base_dir}/${dashboard_type}_${comp}/${build_type}
