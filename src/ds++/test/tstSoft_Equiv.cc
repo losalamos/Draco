@@ -11,11 +11,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds++/config.h"
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
 #include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include <vector>
+#include <deque>
+#ifdef DRACO_ENABLE_CXX11
+#include <array>
+#endif
 
 #define ITFAILS    ut.failure( __LINE__, __FILE__ )
 #define PASSMSG(m) ut.passes(m)
@@ -23,6 +28,7 @@
 
 using namespace std;
 using rtt_dsxx::soft_equiv;
+using rtt_dsxx::soft_equiv_deep;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -90,10 +96,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     values[1] = 0.3224333221471;
     values[2] = 0.3324333522912;
     
-    vector<double> reference(3, 0.0);
-    reference[0] = 0.3247333291470;
-    reference[1] = 0.3224333221471;
-    reference[2] = 0.3324333522912;
+    vector<double> const reference( values );
 
     if (soft_equiv(values.begin(), values.end(),
 		   reference.begin(), reference.end()))
@@ -101,18 +104,19 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     else
 	ITFAILS;
 
-
-    values[1] = 0.3224333221472;
+    // modify one value (delta < tolerance )
+    values[1] += 1.0e-13;
     if (!soft_equiv(values.begin(), values.end(),
 		    reference.begin(), reference.end(), 1.e-13))
 	PASSMSG("Passed vector equivalence precision test.");
     else
 	ITFAILS;
 
+    // Tests that compare 1D vector data to 1D array data.
     double v[3];
-    v[0] = 0.3247333291470;
-    v[1] = 0.3224333221471;
-    v[2] = 0.3324333522912;
+    v[0] = reference[0];
+    v[1] = reference[1];
+    v[2] = reference[2];
 
     if (soft_equiv(&v[0], &v[3],
 		   reference.begin(), reference.end()))    
@@ -123,13 +127,108 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
 	ITFAILS;
 
-    v[1] = 0.3224333221472;
+    // modify one value (delta < tolerance )
+    v[1] += 1.0e-13;
     if (!soft_equiv(&v[0], v+3,
 		    reference.begin(), reference.end(), 1.e-13))
 	PASSMSG("Passed vector-pointer equivalence precision test.");
     else
 	ITFAILS;
 
+#ifdef DRACO_ENABLE_CXX11
+    // C++ std::array containers
+    std::array<double,3> cppa_vals{
+        { 0.3247333291470, 0.3224333221471, 0.3324333522912 } };
+    if (soft_equiv(cppa_vals.begin(), cppa_vals.end(),
+		   reference.begin(), reference.end()))
+	PASSMSG("Passed std::array<int,3> equivalence test.");
+    else
+	ITFAILS;
+#endif
+
+    // Try with a std::deque
+    deque<double> d;
+    d.push_back(reference[0]);
+    d.push_back(reference[1]);
+    d.push_back(reference[2]);
+    if (soft_equiv(d.begin(), d.end(),
+                   reference.begin(), reference.end()))
+	PASSMSG("Passed deque<T> equivalence test.");
+    else
+	ITFAILS;
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
+
+void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
+{
+#ifdef DRACO_ENABLE_CXX11
+    
+    vector<vector<double> > values = {
+        { 0.3247333291470, 0.3224333221471, 0.3324333522912 },
+        { 0.3247333292470, 0.3224333222471, 0.3324333523912 },
+        { 0.3247333293470, 0.3224333223471, 0.3324333524912 }
+    };
+    vector<vector<double> > const reference = values; 
+        
+    if (soft_equiv_deep<2>().equiv(values.begin(), values.end(),
+                                   reference.begin(), reference.end()))
+        PASSMSG("Passed vector<vector<double>> equivalence test.");
+    else
+        ITFAILS;
+
+    // Soft_Equiv should still pass
+    values[0][1]+= 1.0e-13;
+    if (!soft_equiv_deep<2>().equiv(values.begin(), values.end(),
+                                    reference.begin(), reference.end(), 1.e-13))
+        PASSMSG("Passed vector<vector<double>> equivalence precision test.");
+    else
+        ITFAILS;
+
+    // Compare C++ array to vector<vector<double>> data.
+    // This cannot work because the C++ array is fundamentally a 1-D container.
+        
+    // double v[3];
+    // v[0] = 0.3247333291470;
+    // v[1] = 0.3224333221471;
+    // v[2] = 0.3324333522912;
+    // if (soft_equiv(&v[0], &v[3],
+    //     	   reference.begin(), reference.end()))    
+    //     PASSMSG("Passed vector-pointer equivalence test.");
+    // else
+    //     ITFAILS;
+       
+    // if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
+    //     ITFAILS;
+
+    // Test 3-D array
+    vector<vector<vector<double> > > const ref = {
+        {
+            { 0.1, 0.2 },
+            { 0.3, 0.4 }
+        },
+        {
+            { 1.1, 1.2 },
+            { 1.3, 1.4 }
+        },
+        {
+            { 2.1, 2.2 },
+            { 2.3, 2.4 }
+        }
+    };
+    vector<vector<vector<double> > > val = ref;
+    
+    if (soft_equiv_deep<3>().equiv(val.begin(), val.end(),
+                                   ref.begin(), ref.end()))
+        PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
+    else
+        ITFAILS;
+
+#else
+        // no-op
+#endif
     return;
 }
 
@@ -143,6 +242,7 @@ int main(int argc, char *argv[])
         // >>> UNIT TESTS
 	test_soft_equiv_scalar(ut);
 	test_soft_equiv_container(ut);
+	test_soft_equiv_deep_container(ut);
     }
     catch (rtt_dsxx::assertion &excpt)
     {
