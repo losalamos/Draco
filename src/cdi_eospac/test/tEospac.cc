@@ -11,18 +11,14 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-// cdi_eospac dependencies
-#include "cdi_eospac_test.hh"
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
-// Draco dependencies
+#include "ds++/Soft_Equivalence.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
 
-// STL dependencies
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -40,6 +36,7 @@ using std::cout;
 using std::endl;
 using std::string;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -191,8 +188,9 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     double specificElectronInternalEnergy =
 	spEospac->getSpecificElectronInternalEnergy(
 	    temperature, density );
+    double const tol(1.0e-10);
     
-    if ( match( specificElectronInternalEnergy, refValue ) )
+    if ( soft_equiv( specificElectronInternalEnergy, refValue, tol ) )
         PASSMSG("getSpecificElectronInternalEnergy() test passed.");
     else
         FAILMSG("getSpecificElectronInternalEnergy() test failed.");
@@ -205,7 +203,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 	spEospac->getElectronHeatCapacity( temperature,
 					   density );
     
-    if ( match(  heatCapacity, refValue ) )
+    if ( soft_equiv(  heatCapacity, refValue, tol ) )
 	PASSMSG("getElectronHeatCapacity() test passed.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed.");
@@ -218,7 +216,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 	spEospac->getSpecificIonInternalEnergy( 
 	    temperature, density );
     
-    if ( match( specificIonInternalEnergy, refValue ) )
+    if ( soft_equiv( specificIonInternalEnergy, refValue, tol ) )
 	PASSMSG("getSpecificIonInternalEnergy() test passed.");
     else
 	FAILMSG("getSpecificIonInternalEnergy() test failed.");
@@ -230,7 +228,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     heatCapacity =
 	spEospac->getIonHeatCapacity( temperature, density );
     
-    if ( match( heatCapacity, refValue ) )
+    if ( soft_equiv( heatCapacity, refValue, tol ) )
 	PASSMSG("getIonHeatCapacity() test passed.");
     else
 	FAILMSG("getIonHeatCapacity() test failed.");
@@ -243,7 +241,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 	spEospac->getNumFreeElectronsPerIon( 
 	    temperature, density );
     
-    if ( match( nfree, refValue ) )
+    if ( soft_equiv( nfree, refValue, tol ) )
 	PASSMSG("getNumFreeElectronsPerIon() test passed.");
     else
 	FAILMSG("getNumFreeElectronsPerIon() test failed.");
@@ -256,7 +254,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 	spEospac->getElectronThermalConductivity(
 	    temperature, density );
     
-    if ( match( chie, refValue ) )
+    if ( soft_equiv( chie, refValue, tol ) )
 	PASSMSG("getElectronThermalConductivity() test passed.");
     else
 	FAILMSG("getElectronThermalConductivity() test failed.");
@@ -287,9 +285,9 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     
     // Since the i=0 and i=1 tuples of density and temperature 
     // are identical the two returned heat capacities should
-    // also match.
+    // also soft_equiv.
     
-    if ( match( vCve[0], vCve[1] ) )
+    if ( soft_equiv( vCve[0], vCve[1], tol ) )
 	PASSMSG("getElectronHeatCapacity() test passed for vector state values.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed for vector state values.");
@@ -301,7 +299,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 	spEospac->getElectronHeatCapacity( 
 	    temperature, density );
     
-    if ( match( vCve[0], heatCapacity ) )
+    if ( soft_equiv( vCve[0], heatCapacity, tol ) )
 	PASSMSG("getElectronHeatCapacity() test passed for vector state values.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed for vector state values.");
@@ -319,7 +317,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     // 	    std::vector< double > altHeatCapacity = spEospac->getdFdT( 
     // 		vtemps, vdensities, rtt_cdi_eospac::ES4enelc );
     
-    // 	    if ( match( altHeatCapacity, vCve ) )
+    // 	    if ( soft_equiv( altHeatCapacity, vCve, tol ) )
     // 		PASSMSG("getdFdT() test passed for vector state values.");
     // 	    else 
     // 		FAILMSG("getdFdT() test failed for vector state values.");
@@ -339,16 +337,17 @@ int main(int argc, char *argv[])
 	// >>> UNIT TESTS
         rtt_cdi_eospac_test::cdi_eospac_test(ut);
     }
-    catch (exception &err)
+    catch (rtt_dsxx::assertion &err)
     {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
+        std::cout << "ERROR: While testing " << argv[0] << ", "
+                  << err.what() << std::endl;
         ut.numFails++;
     }
     catch( ... )
     {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown on processor " << endl;
+        std::cout << "ERROR: While testing " << argv[0] << ", " 
+                  << "An unknown exception was thrown on processor "
+                  << std::endl;
         ut.numFails++;
     }
     return ut.numFails;

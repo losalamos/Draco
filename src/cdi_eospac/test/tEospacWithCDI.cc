@@ -11,18 +11,14 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-// cdi_gandolf dependencies
-#include "cdi_eospac_test.hh"
 #include "../Eospac.hh"
 #include "../SesameTables.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
-// Draco dependencies
+#include "ds++/Soft_Equivalence.hh"
 #include "ds++/SP.hh"
 #include "cdi/CDI.hh"
 
-// STL dependencies
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -36,6 +32,7 @@ using namespace std;
 namespace rtt_cdi_eospac_test
 {
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
    
 //---------------------------------------------------------------------------//
 // TESTS
@@ -209,8 +206,9 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
     double specificElectronInternalEnergy =
 	spCdiEos->eos()->getSpecificElectronInternalEnergy(
 	    temperature, density );
+    double const tol(1.0e-10);
     
-    if ( match( specificElectronInternalEnergy, refValue ) )
+    if ( soft_equiv( specificElectronInternalEnergy, refValue, tol ) )
 	PASSMSG("getSpecificElectronInternalEnergy() test passed.");
     else
 	FAILMSG("getSpecificElectronInternalEnergy() test failed.");
@@ -223,7 +221,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 	spCdiEos->eos()->getElectronHeatCapacity( 
 	    temperature, density );
     
-    if ( match(  heatCapacity, refValue ) )
+    if ( soft_equiv(  heatCapacity, refValue, tol ) )
 	PASSMSG("getElectronHeatCapacity() test passed.");
     else
 	FAILMSG("getElectronHeatCapacity() test failed.");
@@ -236,7 +234,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 	spCdiEos->eos()->getSpecificIonInternalEnergy( 
 	    temperature, density );
     
-    if ( match( specificIonInternalEnergy, refValue ) )
+    if ( soft_equiv( specificIonInternalEnergy, refValue, tol ) )
 	PASSMSG("getSpecificIonInternalEnergy() test passed.");
     else
 	FAILMSG("getSpecificIonInternalEnergy() test failed.");
@@ -248,7 +246,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
     heatCapacity =
 	spCdiEos->eos()->getIonHeatCapacity( temperature, density );
     
-    if ( match( heatCapacity, refValue ) )
+    if ( soft_equiv( heatCapacity, refValue, tol ) )
 	PASSMSG("getIonHeatCapacity() test passed.");
     else
 	FAILMSG("getIonHeatCapacity() test failed.");
@@ -261,7 +259,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 	spCdiEos->eos()->getNumFreeElectronsPerIon( 
 	    temperature, density );
     
-    if ( match( nfree, refValue ) )
+    if ( soft_equiv( nfree, refValue, tol ) )
 	PASSMSG("getNumFreeElectronsPerIon() test passed.");
     else
         FAILMSG("getNumFreeElectronsPerIon() test failed.");
@@ -274,7 +272,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 	spCdiEos->eos()->getElectronThermalConductivity(
 	    temperature, density );
     
-    if ( match( chie, refValue ) )
+    if ( soft_equiv( chie, refValue, tol ) )
 	PASSMSG("getElectronThermalConductivity() test passed.");
     else
 	FAILMSG("getElectronThermalConductivity() test failed.");
@@ -307,7 +305,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
     // are identical the two returned heat capacities should
     // also match.
     
-    if ( match( vcve[0], vcve[1] ) )
+    if ( soft_equiv( vcve[0], vcve[1], tol ) )
     {
 	ostringstream msg;
 	msg << "getElectronHeatCapacity() test passed for " 
@@ -329,7 +327,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 	spCdiEos->eos()->getElectronHeatCapacity( 
 	    temperature, density );
     
-    if ( match( vcve[0], heatCapacity ) )
+    if ( soft_equiv( vcve[0], heatCapacity, tol ) )
     {
 	ostringstream msg;
 	msg << "getElectronHeatCapacity() test passed for " 

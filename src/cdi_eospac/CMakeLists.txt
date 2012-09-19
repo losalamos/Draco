@@ -1,5 +1,11 @@
-# $Id: CMakeLists.txt 6053 2011-08-02 19:00:05Z kellyt $
-
+#-----------------------------*-cmake-*----------------------------------------#
+# file   src/cdi_eospac/CMakeLists.txt
+# brief  Instructions for building cdi_eospac Makefiles.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+# $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( cdi_eospac CXX )
 
@@ -36,21 +42,24 @@ include_directories(
    ${PROJECT_SOURCE_DIR}/..   # ds++ and cdi header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
    ${ode_BINARY_DIR}          # ode/config.h
-   ${parser_BINARY_DIR}
+#    ${parser_BINARY_DIR}
 ) 
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_cdi_eospac cdi_eospac "${sources}"  )
-add_dependencies(      Lib_cdi_eospac Lib_cdi Lib_dsxx )
+add_component_library( 
+   TARGET       Lib_cdi_eospac
+   TARGET_DEPS  Lib_cdi
+   LIBRARY_NAME cdi_eospac
+   SOURCES      "${sources}"  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_cdi_eospac DESTINATION lib )
+install( TARGETS Lib_cdi_eospac EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/cdi_eospac )
 
 # ---------------------------------------------------------------------------- #
@@ -66,5 +75,3 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-
