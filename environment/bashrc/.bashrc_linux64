@@ -16,8 +16,8 @@ ulimit -s unlimited
 
 # modules
 if test -z "$MODULESHOME"; then
-  if test -f /ccs/codes/radtran/vendors/modules-3.2.7/init/bash; then
-    source /ccs/codes/radtran/vendors/modules-3.2.7/init/bash
+  if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
+    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
   fi
 fi
 module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
