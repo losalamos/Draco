@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 // TODO - really do a thorough and complete set of tests.
 
+#include "rng/config.h"
+
 #ifdef _MSC_FULL_VER
 // Engines have multiple copy constructors, quite legal C++, disable MSVC complaint
 #pragma warning (disable : 4521)

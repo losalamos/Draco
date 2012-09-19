@@ -12,6 +12,9 @@
 /* Use a non-reproducable random number generator (*_Inline only) */
 #cmakedefine RNG_NR @RNG_NR@
 
+/* Enable Random123 C++0x support */
+#cmakedefine R123_USE_CXX0X @R123_USE_CXX0X@
+
 /* USE STANDARD C INTERFACE */
 #ifndef _MSC_VER
 #ifndef __STDC__

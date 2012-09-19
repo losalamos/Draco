@@ -19,6 +19,9 @@ option( ENABLE_RNG_NR "Enable non reproducable random number generator" OFF )
 if( ENABLE_RNG_NR )
    set( RNG_NR 1 )
 endif()
+if( RANDOM123_ENABLE_CXX0X )
+   set( R123_USE_CXX0X 1 )
+endif()
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/rng/config.h )
 
 # ---------------------------------------------------------------------------- #

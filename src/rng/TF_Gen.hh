@@ -9,7 +9,7 @@
 #ifndef TF_Gen_hh
 #define TF_Gen_hh
 
-//#include "rng/config.h"
+#include "rng/config.h"
 #include "Random123/threefry.h"
 //#include "Random123/array.h"
 #include <ds++/Data_Table.hh>

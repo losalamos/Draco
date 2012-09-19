@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef KAT_U01_H__
 #define KAT_U01_H__
 
+#include "rng/config.h"
+
 #include <Random123/u01.h>
 
 #define NUM_FLOAT_CONVERTERS 4

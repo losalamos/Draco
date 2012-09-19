@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 // Check our AES implementation against the example in FIPS-197
 
+#include "rng/config.h"
+
 #if defined (__ICC)
 // Suppress Intel's "unrecognized preprocessor directive" warning, triggered
 // by use of #warning in Random123/features/sse.h.
