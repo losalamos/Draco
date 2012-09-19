@@ -59,12 +59,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Random123/threefry.h>
 #include <Random123/ars.h>
 
+#include <Random123/conventional/Engine.hpp>
+
 #if (GNUC_VERSION >= 40600)
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
 
-#include <Random123/conventional/Engine.hpp>
 #include <Random123/ReinterpretCtr.hpp>
 #if R123_USE_STD_RANDOM
 #include <random>
