@@ -47,8 +47,6 @@
 #    build (instead of using CMakeCache.txt).  For example:
 #    cmake ~/draco \
 #          -DCMAKE_INSTALL_PREFIX=/var/tmp/draco-install-dir \
-#          -DMPI_INC_DIR=/ccs/codes/mpi/openmpi/Linux64/1.3.3/include \
-#          -DMPI_LIB_DIR=/ccs/codes/mpi/openmpi/Linux64/1.3.3/lib \
 #          -DDRACO_DBC_LEVEL=0 \
 #          -DCMAKE_BUILD_TYPE=Release
 # 5. [optional] Run 'make edit_cache' to review your build setup.
@@ -162,6 +160,7 @@ setupVendorLibraries()
 # 
 add_subdirectory( src )
 add_subdirectory( config )
+add_subdirectory( autodoc )
 
 #
 # Dashboard/Regression setup
@@ -176,22 +175,12 @@ configure_file(
 # Extra custom commands
 #
 
-# Doxygen documentation
-option( BUILD_AUTODOC OFF )
-if( BUILD_AUTODOC )
-   add_subdirectory( autodoc )
-endif()
-
 # LaTeX documentation
 option( BUILD_DOC OFF )
 if( BUILD_DOC )
    add_subdirectory( doc )
 endif()
 
-# provide the cache file for reference
-install( FILES ${PROJECT_BINARY_DIR}/CMakeCache.txt 
-         DESTINATION config 
-         RENAME Draco-CMakeCache.txt )
 # install top level documents
 install( 
    FILES 

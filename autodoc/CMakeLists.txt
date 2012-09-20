@@ -3,7 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Instructions for building Doxygen documentation
-# note   Copyright © 2010 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -15,7 +16,7 @@ find_package( Doxygen QUIET )
 if( DOXYGEN_FOUND )
 
   set( DOXYGEN_OUTPUT_DIR
-    ${PROJECT_BINARY_DIR}/autodoc )
+    ${CMAKE_INSTALL_PREFIX}/autodoc )
 
   # Source directories that should be examined by doxygen Sets
   # ${DOXYGEN_INPUT}.  This value is embedded in the doxygen_config
@@ -27,7 +28,7 @@ if( DOXYGEN_FOUND )
   foreach( package ${package_list} )
      if( EXISTS ${package}/CMakeLists.txt )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}" )
-        message( "Doxygen will process ${package}" )
+#        message( "Doxygen will process ${package}" )
      endif()
      if( EXISTS ${package}/test/CMakeLists.txt )
         set( DOXYGEN_EXAMPLES "${DOXYGEN_EXAMPLES} ${package}/test" )
@@ -48,7 +49,7 @@ if( DOXYGEN_FOUND )
      endif()
   endforeach()  
 
-  set( DOXYGEN_HTML_OUTPUT html )
+  set( DOXYGEN_HTML_OUTPUT draco )
   set( DOXYGEN_DOTFILE_DIRS dot )
 
   set( htmlfooter "html/footer.html")
@@ -84,17 +85,17 @@ if( DOXYGEN_FOUND )
     )
   configure_file(
     ${PROJECT_SOURCE_DIR}/autodoc/html/footer.html.in
-    ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html
+    ${PROJECT_BINARY_DIR}/autodoc/${DOXYGEN_HTML_OUTPUT}/footer.html
     @ONLY
     )
   configure_file(
     ${PROJECT_SOURCE_DIR}/autodoc/html/header.html.in
-    ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html
+    ${PROJECT_BINARY_DIR}/autodoc/${DOXYGEN_HTML_OUTPUT}/header.html
     @ONLY
     )
   configure_file(
     ${PROJECT_SOURCE_DIR}/autodoc/html/draco.css
-    ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/draco.css
+    ${PROJECT_BINARY_DIR}/autodoc/${DOXYGEN_HTML_OUTPUT}/draco.css
     COPYONLY
     )
   add_custom_command(
@@ -106,8 +107,8 @@ if( DOXYGEN_FOUND )
             -DPACKAGE_LINKS=${PACKAGE_LINKS}
             -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
     DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
-    COMMENT "Doxygen docs will be installed at"
-            "${DOXYGEN_HTML_OUTPUT}.  You must run 'make install'"
+    COMMENT "Doxygen docs are installed at"
+            "${DOXYGEN_HTML_OUTPUT}.  " # You must run 'make install'"
   )
 
   # Copy image files
@@ -137,28 +138,15 @@ if( DOXYGEN_FOUND )
     COMMAND "${DOXYGEN_EXECUTABLE}"
     ARGS    doxygen_config
     DEPENDS
-      ${DOXYGEN_OUTPUT_DIR}/doxygen_config
-      ${DOXYGEN_OUTPUT_DIR}/mainpage.dcc
-    WORKING_DIRECTORY ${DOXYGEN_OUTPUT_DIR}
+      ${PROJECT_BINARY_DIR}/autodoc/doxygen_config
+      ${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/autodoc
     )
 
   # Target for building doxygen files.
   add_custom_target( autodoc
-    # This DEPENDS links the 'autodoc' make target to the custom command above.    
-    # DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
     DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
-    COMMENT "Building Doxygen based autodocs (HTML)...  After running 'make install' your docs will be at ${CMAKE_INSTALL_PREFIX}/autodoc/${DOXYGEN_HTML_OUTPUT}/index.html."
-    )
-
-  install( 
-    DIRECTORY ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}
-    DESTINATION autodoc
-    )
-
-  install(
-    FILES ${DOXYGEN_OUTPUT_DIR}/Draco.tag
-    DESTINATION autodoc
-    OPTIONAL
+    COMMENT "Building Doxygen based autodocs (HTML)...  "
     )
 
 endif( DOXYGEN_FOUND )
