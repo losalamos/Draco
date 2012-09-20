@@ -215,11 +215,6 @@ rr-dev-fe)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rr_dev
     ;;
 
-#Yellowrail machines
-yr-fe1 | yra[0-9]* )
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_yr
-    ;;
-
 #TLCC machines
 tu-fe* | tua[0-9]* | hu-fe[1-2] | hu*[0-9]* | ty-fe* | ty[0-9]*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
