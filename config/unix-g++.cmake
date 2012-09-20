@@ -91,7 +91,10 @@ set( DRACO_ENABLE_STRICT_ANSI ON CACHE INTERNAL
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -march=native" )
+   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall" )
+   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode )
+      set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} -march=native" )
+   endif()
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
@@ -107,7 +110,7 @@ endif()
 
 # Extra flags for gcc-4.6.2+
 # -Wsuggest-attribute=[const|pure|noreturn]
-if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3 ) # 4
+if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3  AND NOT  ${CMAKE_GENERATOR} MATCHES Xcode ) # 4
    if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 5 ) # 4.6
       # include(CheckCXXCompilerFlag)
       # CHECK_CXX_COMPILER_FLAG( "-Wnoexcept, HAS_WNOEXCEPT)

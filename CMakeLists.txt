@@ -94,7 +94,10 @@ cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR )
 #       Support MSVC builds mixed with MingGW gfortran
 #       Support for Xcode 4.3
 project( Draco CXX C )
-enable_language( Fortran OPTIONAL )
+
+if (NOT ${CMAKE_GENERATOR} MATCHES Xcode )
+   enable_language( Fortran OPTIONAL )
+endif()
 
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
