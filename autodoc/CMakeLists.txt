@@ -52,8 +52,8 @@ if( DOXYGEN_FOUND )
   set( DOXYGEN_HTML_OUTPUT draco )
   set( DOXYGEN_DOTFILE_DIRS dot )
 
-  set( htmlfooter "html/footer.html")
-  set( htmlheader "html/header.html")
+  set( htmlfooter "${DOXYGEN_HTML_OUTPUT}/footer.html")
+  set( htmlheader "${DOXYGEN_HTML_OUTPUT}/header.html")
 
 # doxygen_config.in needs the following symbols:
 
