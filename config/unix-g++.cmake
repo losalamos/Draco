@@ -22,6 +22,12 @@ if( NOT CMAKE_COMPILER_IS_GNUCC )
 endif( NOT CMAKE_COMPILER_IS_GNUCC )
 
 #
+# Compiler flag check
+#
+include(CheckCCompilerFlag)
+check_c_compiler_flag(-march=native HAS_MARCH_NATIVE)
+
+#
 # C++ libraries required by Fortran linker
 # 
 
@@ -92,7 +98,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
    set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall" )
-   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode )
+   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
       set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} -march=native" )
    endif()
    set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
