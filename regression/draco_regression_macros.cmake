@@ -544,6 +544,11 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
    string( TOUPPER ${dep_pkg} dep_pkg_caps )
    # Assume that draco_work_dir is parallel to our current location.
    string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
+   if( "${dep_pkg}" MATCHES "draco" )
+      string( REPLACE "cmake_jayenne/draco" "cmake_draco" 
+         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )      
+   endif()
+ 
    find_file( ${dep_pkg}_target_dir
       NAMES README.${dep_pkg}
       HINTS
