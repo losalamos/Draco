@@ -16,7 +16,9 @@
 #include "../SP.hh"
 #include "../Assert.hh"
 
+#ifdef DRACO_ENABLE_CXX11
 #include <memory> // shared_ptr
+#endif
 #include <iostream>
 #include <vector>
 #include <cmath>

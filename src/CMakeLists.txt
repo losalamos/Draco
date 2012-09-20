@@ -25,7 +25,9 @@ if( DRACO_ENABLE_CXX11 )
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
       "${Draco_SOURCE_DIR}/config/cxx11")
    include(CheckCXX11Features)
-   # See ${CXX11_FEATURE_LIST}={HAS_CXX11_AUTO;HAS_CXX11_NULLPTR;HAS_CXX11_LAMBDA;HAS_CXX11_STAT...}
+   if( NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_SHARED_PTR" )
+      set( DRACO_ENABLE_CXX11 OFF CACHE BOOL "Turn on C++11 support" FORCE )
+   endif()
 endif()
 
 # Provide helper functions used by component CMakeLists.txt files
