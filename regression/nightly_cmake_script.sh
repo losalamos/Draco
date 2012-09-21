@@ -27,7 +27,8 @@ if test -z "$MODULESHOME"; then
     source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
   fi
 fi
-module load grace gcc gsl lapack openmpi cmake numdiff svn valgrind
+module load grace gcc gsl lapack openmpi cmake numdiff svn 
+module load valgrind
 module list
 
 echo " "
