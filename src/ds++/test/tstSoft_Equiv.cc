@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:55:54 2001
  * \brief  Soft_Equiv header testing utilities.
- * \note   Copyright (c) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -162,9 +162,9 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 
 //---------------------------------------------------------------------------//
 
+#ifdef DRACO_ENABLE_CXX11
 void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
 {
-#ifdef DRACO_ENABLE_CXX11
     
     vector<vector<double> > values = {
         { 0.3247333291470, 0.3224333221471, 0.3324333522912 },
@@ -226,11 +226,9 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
     else
         ITFAILS;
 
-#else
-        // no-op
-#endif
     return;
 }
+#endif
 
 //---------------------------------------------------------------------------//
 
@@ -242,7 +240,9 @@ int main(int argc, char *argv[])
         // >>> UNIT TESTS
 	test_soft_equiv_scalar(ut);
 	test_soft_equiv_container(ut);
+#ifdef DRACO_ENABLE_CXX11
 	test_soft_equiv_deep_container(ut);
+#endif
     }
     catch (rtt_dsxx::assertion &excpt)
     {
