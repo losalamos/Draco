@@ -206,7 +206,7 @@ void IpcressFile::read_strings( size_t const byte_offset,
     // Copy data into vector<string> container
     for( size_t i=0; i<nitems; ++i )
         vdata[i] = std::string( &memblock[i*ipcress_word_size],
-                                &memblock[(i+1)*ipcress_word_size] );
+                                ipcress_word_size );
 
     return;    
 }
