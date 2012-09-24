@@ -94,6 +94,7 @@ cxx11_check_feature("constexpr"          2235 HAS_CXX11_CONSTEXPR)
 cxx11_check_feature("sizeof_member"      2253 HAS_CXX11_SIZEOF_MEMBER)
 cxx11_check_feature("initializer_lists"  2672 HAS_CXX11_INITIALIZER_LISTS)
 cxx11_check_feature("shared_ptr"         ""   HAS_CXX11_SHARED_PTR)
+cxx11_check_feature("array"              ""   HAS_CXX11_ARRAY)
 
 set(CXX11_FEATURE_LIST ${CXX11_FEATURE_LIST} CACHE STRING "C++11 feature support list")
 mark_as_advanced(FORCE CXX11_FEATURE_LIST)
