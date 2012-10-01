@@ -12,11 +12,11 @@ fi
 
 if test -z "$MODULESHOME"; then
   # This is a new login
-  if test -f /home/regress/environment/Modules/init/bash; then
-    source /home/regress/environment/Modules/init/bash
+  if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
+    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
   fi
 fi
-module load bullseyecoverage/8.4.12
+module load bullseyecoverage
 
 # redirect all script output to file
 exec 1>${logfile}
@@ -30,64 +30,64 @@ echo "======================================================================"
 echo ${subj}
 echo "======================================================================"
 
-# Draco
+# # Draco
 
-echo " "
-echo "--------------------"
-echo "Draco"
-echo "--------------------"
-echo " "
-echo "Lines of code"
-echo "-------------"
-cat /home/regress/cmake_draco/Nightly_gcc/Coverage/build/lines-of-code.log
-echo " "
-echo "Code coverage"
-echo "-------------"
-cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
-export COVFILE=`pwd`/CMake.cov
-export COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src
-covdir
+# echo " "
+# echo "--------------------"
+# echo "Draco"
+# echo "--------------------"
+# echo " "
+# echo "Lines of code"
+# echo "-------------"
+# cat /home/regress/cmake_draco/Nightly_gcc/Coverage/build/lines-of-code.log
+# echo " "
+# echo "Code coverage"
+# echo "-------------"
+# cd /home/regress/cmake_draco/Nightly_gcc/Coverage/build
+# export COVFILE=`pwd`/CMake.cov
+# export COVDIRCFG=`pwd`/covclass_cmake.cfg
+# cd ../source/src
+# covdir
 
-# Jayenne - ClubIMC
+# # Jayenne - ClubIMC
 
-echo " "
-echo " "
-echo "--------------------"
-echo "Jayenne - ClubIMC"
-echo "--------------------"
-echo " "
-echo "Lines of code"
-echo "-------------"
-cat /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build/lines-of-code.log
-echo " "
-echo "Code coverage"
-echo "-------------"
-cd /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build
-export COVFILE=`pwd`/CMake.cov
-export COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src
-covdir
+# echo " "
+# echo " "
+# echo "--------------------"
+# echo "Jayenne - ClubIMC"
+# echo "--------------------"
+# echo " "
+# echo "Lines of code"
+# echo "-------------"
+# cat /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build/lines-of-code.log
+# echo " "
+# echo "Code coverage"
+# echo "-------------"
+# cd /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build
+# export COVFILE=`pwd`/CMake.cov
+# export COVDIRCFG=`pwd`/covclass_cmake.cfg
+# cd ../source/src
+# covdir
 
-# Jayenne - Wedgehog
+# # Jayenne - Wedgehog
 
-echo " "
-echo " "
-echo "--------------------"
-echo "Jayenne - Wedgehog"
-echo "--------------------"
-echo " "
-echo "Lines of code"
-echo "-------------"
-cat /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build/lines-of-code.log
-echo " "
-echo "Code coverage"
-echo "-------------"
-cd /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build
-export COVFILE=`pwd`/CMake.cov
-export COVDIRCFG=`pwd`/covclass_cmake.cfg
-cd ../source/src
-covdir
+# echo " "
+# echo " "
+# echo "--------------------"
+# echo "Jayenne - Wedgehog"
+# echo "--------------------"
+# echo " "
+# echo "Lines of code"
+# echo "-------------"
+# cat /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build/lines-of-code.log
+# echo " "
+# echo "Code coverage"
+# echo "-------------"
+# cd /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build
+# export COVFILE=`pwd`/CMake.cov
+# export COVDIRCFG=`pwd`/covclass_cmake.cfg
+# cd ../source/src
+# covdir
 
 # Jayenne - Milagro
 
@@ -122,10 +122,40 @@ covdir
  #  for name in $user_list; do numlines=`grep $name ../m_file_list | wc -l`; echo "$numlines: $name"; done > ../author_loc
  #   cat ../author_loc | sort -rn
 
+
+# Jayenne - Wedgehog + ClubIMC + Draco
+
+echo " "
+echo " "
+echo "--------------------"
+echo "Jayenne - Combined report for Wedgehog, ClubIMC and Draco"
+echo "--------------------"
+echo " "
+echo "Lines of code"
+echo "-------------"
+# Use grep and head to clean up the output:
+/home/regress/cmake_draco/regression/cloc --sum-reports \
+/home/regress/cmake_draco/Nightly_gcc/Coverage/build/lines-of-code.log \
+/home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build/lines-of-code.log \
+/home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build/lines-of-code.log \
+| grep -v sourceforge | head -n 25
+
+echo " "
+echo "Code coverage"
+echo "-------------"
+echo " "
+export COVFILE=`pwd`/jayenne.cov
+export COVDIRCFG=/home/regress/cmake_draco/regression/covdir.cfg
+if test -f $COVFILE; then
+   rm -f $COVFILE
+fi
+covmerge -q --mp --no-banner -c -f $COVFILE /home/regress/cmake_draco/Nightly_gcc/Coverage/build/CMake.cov /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build/CMake.cov /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build/CMake.cov
+covdir
+
 # Send the email
 
 /bin/mailx -s "${subj}" kellyt@lanl.gov < ${logfile}
-#/bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
+# /bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
 
 # jayenne@lanl.gov
 # jsbrock@lanl.gov
