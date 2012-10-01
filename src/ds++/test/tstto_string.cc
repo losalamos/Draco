@@ -4,24 +4,19 @@
  * \author Kent Budge
  * \date   Fri Jul 25 08:49:48 2008
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <ds++/config.h> // Must be first!
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <cstdlib>
-
-#include "../Assert.hh"
+#include "../to_string.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Soft_Equivalence.hh"
 #include "../Release.hh"
-#include "../to_string.hh"
+// #include <cmath>
+#include <cstdlib> // M_PI
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -32,16 +27,25 @@ using namespace rtt_dsxx;
 
 void tstto_string( UnitTest &ut)
 {
-    string const pi = to_string(M_PI, 20);
+    string const pi = rtt_dsxx::to_string(M_PI, 20);
 
-    if (soft_equiv(M_PI, atof(pi.c_str())))
-    {
+    if( soft_equiv(M_PI, atof(pi.c_str())) )
         ut.passes("pi correctly written/read");
-    }
     else
-    {
         ut.failure("pi NOT correctly written/read");
-    }
+
+    double const foo(2.11111111);
+    unsigned int const p(0);
+    // Must be careful to use rtt_dsxx::to_string and avoid std::to_string --
+    // especially after 'using namespace std.'
+    string s1( rtt_dsxx::to_string(foo,p) );
+    string s2( rtt_dsxx::to_string(foo) );
+    if( s1 == s2 )
+        ut.passes("double printed using default formatting.");
+    else
+        ut.failure("double printed with wrong format!");
+        
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -56,15 +60,13 @@ int main(int argc, char *argv[])
     catch (std::exception &err)
     {
         std::cout << "ERROR: While testing tstto_string, " 
-                  << err.what()
-                  << endl;
+                  << err.what() << endl;
         ut.numFails++;
     }
     catch( ... )
     {
         std::cout << "ERROR: While testing tstto_string, " 
-                  << "An unknown exception was thrown."
-                  << endl;
+                  << "An unknown exception was thrown." << endl;
         ut.numFails++;
     }
     return ut.numFails;

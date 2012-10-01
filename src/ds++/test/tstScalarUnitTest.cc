@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:17:24 2006
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -149,6 +150,66 @@ void tstGetWordCountFile( UnitTest & unitTest )
 }
 
 //---------------------------------------------------------------------------//
+void tstdbcsettersandgetters( UnitTest & unitTest, int argc, char *argv[] )
+{
+    std::cout << "Testing Design-by-Contract setters and getters "
+              << "for the UnitTest class..." << std::endl;
+    
+    // Silent version.
+    ostringstream messages;
+    
+    // DBC = 0 (all off)
+    {
+        ScalarUnitTest foo( argc, argv, release, messages );
+        foo.dbcRequire( false );
+        foo.dbcCheck(   false );
+        foo.dbcEnsure(  false );
+        if( foo.dbcRequire() ) ITFAILS;
+        if( foo.dbcCheck() )   ITFAILS;
+        if( foo.dbcEnsure() )  ITFAILS;
+        if( foo.dbcOn() )      ITFAILS;
+    }
+    // DBC = 1 (Require only)
+    {
+        ScalarUnitTest foo( argc, argv, release, messages );
+        foo.dbcRequire( true );
+        foo.dbcCheck(   false );
+        foo.dbcEnsure(  false );
+        if( ! foo.dbcRequire() ) ITFAILS;
+        if( foo.dbcCheck() )     ITFAILS;
+        if( foo.dbcEnsure() )    ITFAILS;
+        if( ! foo.dbcOn() )      ITFAILS;
+    }
+    // DBC = 2 (Check only)
+    {
+        ScalarUnitTest foo( argc, argv, release, messages );
+        foo.dbcRequire( false );
+        foo.dbcCheck(   true );
+        foo.dbcEnsure(  false );
+        if( foo.dbcRequire() ) ITFAILS;
+        if( ! foo.dbcCheck() ) ITFAILS;
+        if( foo.dbcEnsure() )  ITFAILS;
+        if( ! foo.dbcOn() )    ITFAILS;
+    }
+    // DBC = 4 (Ensure only)
+    {
+        ScalarUnitTest foo( argc, argv, release, messages );
+        foo.dbcRequire( false );
+        foo.dbcCheck(   false );
+        foo.dbcEnsure(  true );
+        if( foo.dbcRequire() )  ITFAILS;
+        if( foo.dbcCheck() )    ITFAILS;
+        if( ! foo.dbcEnsure() ) ITFAILS;
+        if( ! foo.dbcOn() )     ITFAILS;
+    }
+
+    if( unitTest.numPasses > 0 && unitTest.numFails == 0 )
+        PASSMSG( "UnitTest Design-by-Contract setters and getters are working.");
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
 
 int main( int argc, char *argv[] )
 {
@@ -168,12 +229,7 @@ int main( int argc, char *argv[] )
 
         tstGetWordCountFile( ut );
         
-        if( argc == 1 )
-        {
-            // Test --version option.
-            tstVersion( ut, argc, argv );
-        }
-
+        tstdbcsettersandgetters( ut, argc, argv );
     }
     catch( rtt_dsxx::assertion &err )
     {
@@ -192,7 +248,6 @@ int main( int argc, char *argv[] )
              << err.what() << endl;
         return 1;
     }
-
     catch( ... )
     {
         cout << "ERROR: While testing " << argv[0] << ", " 

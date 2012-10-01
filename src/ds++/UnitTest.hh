@@ -126,6 +126,12 @@ class DLL_PUBLIC UnitTest
     //! The assignment operator is disabled.
     UnitTest& operator=( UnitTest const &rhs );
 
+    //! Only special cases should use these (like the unit test
+    //! tstScalarUnitTest.cc). 
+    void dbcRequire( bool b ) { m_dbcRequire=b; return; }
+    void dbcCheck(   bool b ) { m_dbcCheck=b;   return; }
+    void dbcEnsure(  bool b ) { m_dbcEnsure=b;  return; }
+
     //! Change the target for output
     // void setostream( std::ostream out_ ) { out = out_; return; };
     
