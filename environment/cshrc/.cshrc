@@ -2,7 +2,7 @@
 
 # Use: In ~/.cshrc add the following code:
 #
- setenv DRACO_ENV_DIR ~/draco/environment
+# setenv DRACO_ENV_DIR ~/draco/environment
 # source $DRACO_ENV_DIR/cshrc/.cshrc
 #
 
@@ -10,17 +10,16 @@ setenv PATH $DRACO_ENV_DIR/bin:$PATH
 
 # Extra module stuff
 switch ("`uname -n`")
-case tu*.lanl.gov:
-case tu*.localdomain:
-case hu*.lanl.gov:
-case hu*.localdomain:
-case ty*.lanl.gov:
-case ty*.localdomain:
 case lu*.lanl.gov:
 case lu*.localdomain:
-#case ml-fey*.lanl.gov:
-#case ml*.lanl.gov:
+case pi-fey*.lanl.gov:
+case pi*.localdomain:
+case ty*.lanl.gov:
+case ty*.localdomain:
+
 #    source /usr/projects/crestone/dotfiles/Cshrc
+    source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
+
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
@@ -30,16 +29,55 @@ case lu*.localdomain:
     module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
     module load ParMetis/3.1.1-intel ndi
     # PGI keeps running out of tmp sapce
-    setenv TMPDIR /scratch/$USER/tmp
-    if (! -d $TMPDIR ) then
-       mkdir $TMPDIR
-    endif
+#     setenv TMPDIR /scratch/$USER/tmp
+#     if (! -d $TMPDIR ) then
+#        mkdir $TMPDIR
+#     endif
     breaksw
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
-#    source /usr/projects/crestone/dotfiles/Cshrc
-    # YeTi work around for /usr/legacy-projects
-    # module use /usr/legacy-projects/draco/vendors/Modules/ml-fe
+
+    if ($?tcsh) then
+        set modules_shell="tcsh"
+    else
+        set modules_shell="csh"
+    endif
+    
+    set exec_prefix='/usr/projects/draco/vendors/modules-3.2.9'
+    set prefix=""
+    set postfix=""
+
+    if ( $?histchars ) then
+        set histchar = `echo $histchars | cut -c1`
+        set _histchars = $histchars
+        set prefix  = 'unset histchars;'
+        set postfix = 'set histchars = $_histchars;'
+    else
+        set histchar = \!
+    endif
+    
+    if ($?prompt) then
+        set prefix  = "$prefix"'set _prompt="$prompt";set prompt="";'
+        set postfix = "$postfix"'set prompt="$_prompt";unset _prompt;'
+    endif
+    
+    if ($?noglob) then
+        set prefix  = "$prefix""set noglob;"
+        set postfix = "$postfix""unset noglob;"
+    endif
+    set postfix = "set _exit="'$status'"; $postfix; test 0 = "'$_exit;'
+    
+    alias module $prefix'eval `'$exec_prefix'/bin/modulecmd '$modules_shell' '$histchar'*`; '$postfix
+    unset exec_prefix
+    unset prefix
+    unset postfix
+    
+    setenv MODULESHOME /usr/projects/draco/vendors/modules-3.2.9
+    setenv MODULE_VERSION 3.2.9
+    setenv MODULE_VERSION_STACK 3.2.9
+
+    source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
+
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
@@ -49,20 +87,6 @@ case ml*.localdomain:
     module load trilinos SuperLU_DIST/3.0-intel
     module load ParMetis/3.1.1-intel ndi
     alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
-    breaksw
-case yr*.lanl.gov:
-case yr*:
-    source /usr/projects/crestone/dotfiles/Cshrc
-    module use $DRACO_ENV_DIR/Modules/hpc
-    module use $DRACO_ENV_DIR/Modules/yr-fe
-    module load lapack/atlas-3.8.3 svn
-    module load cmake numdiff git xshow
-    module load gsl/1.14-pgi emacs
-    # PGI keeps running out of tmp sapce
-    setenv TMPDIR /scratch/$USER/tmp
-    if (! -d $TMPDIR ) then
-       mkdir $TMPDIR
-    endif
     breaksw
 case ct*:
 case ci*:
