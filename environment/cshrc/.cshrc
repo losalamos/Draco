@@ -23,7 +23,7 @@ case ty*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/12.1.2 openmpi
+    module load intel/12.1.5 openmpi
     module load gsl/1.14-intel svn emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
