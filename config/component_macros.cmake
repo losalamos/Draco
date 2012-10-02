@@ -248,7 +248,7 @@ macro( register_scalar_test targetname runcmd command cmd_args )
                       # test.  For application unit tests, a parallel
                       # job is forked that needs more cores.
    if( addscalartest_APPLICATION_UNIT_TEST )
-      if( "${cmd_args}" MATCHES "--np" )
+      if( "${cmd_args}" MATCHES "--np" AND NOT "${cmd_args}" MATCHES "scalar")
          string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs
                       "${cmd_args}" )
          # the forked processes needs $num_proc threads.  add one for
