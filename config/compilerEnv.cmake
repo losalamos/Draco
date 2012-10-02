@@ -262,10 +262,11 @@ endmacro()
 ## Toggle a compiler flag based on a bool
 ##
 ## Examples:
-##   toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
-##   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX")
+##   toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" "")
+##   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX" "DEBUG")
 ##---------------------------------------------------------------------------##
-macro( toggle_compiler_flag switch compiler_flag compiler_flag_var_names)
+macro( toggle_compiler_flag switch compiler_flag
+      compiler_flag_var_names build_modes )
    # generate names that are safe for CMake RegEx MATCHES commands
    string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})      
 
@@ -286,19 +287,51 @@ names: C;CXX;EXE_LINKER.")
       string( REPLACE "+" "x" safe_${CMAKE_${comp}_FLAGS}
          ${CMAKE_${comp}_FLAGS} )
 
-      if( ${switch} )
-         if( NOT "${safe_${CMAKE_${comp}_FLAGS}}" MATCHES "${safe_compiler_flag}" )
-            set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag}" 
-               CACHE STRING "compiler flags" FORCE )
+      if( "${build_modes}x" STREQUAL "x" ) # set flags for all build modes
+
+         if( ${switch} )
+            if( NOT "${safe_${CMAKE_${comp}_FLAGS}}" MATCHES "${safe_compiler_flag}" )
+               set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag}" 
+                  CACHE STRING "compiler flags" FORCE )
+            endif()
+         else()
+            if( "${safe_${CMAKE_${comp}_FLAGS}}" MATCHES "${safe_compiler_flag}" )
+               string( REPLACE "${compiler_flag}" "" 
+                  CMAKE_${comp}_FLAGS ${CMAKE_${comp}_FLAGS} )
+               set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" 
+                  CACHE STRING "compiler flags" FORCE )
+            endif()
          endif()
-      else()
-         if( "${safe_${CMAKE_${comp}_FLAGS}}" MATCHES "${safe_compiler_flag}" )
-            string( REPLACE "${compiler_flag}" "" 
-               CMAKE_${comp}_FLAGS ${CMAKE_${comp}_FLAGS} )
-            set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" 
-               CACHE STRING "compiler flags" FORCE )
-         endif()
+
+      else() # build_modes listed
+         
+         foreach( bm ${build_modes} )
+
+            string( REPLACE "+" "x" safe_${CMAKE_${comp}_FLAGS_${bm}}
+               ${CMAKE_${comp}_FLAGS_${bm}} )
+            
+            if( ${switch} )
+               if( NOT "${safe_${CMAKE_${comp}_FLAGS_${bm}}}" MATCHES 
+                     "${safe_compiler_flag}" )
+                  set( CMAKE_${comp}_FLAGS_${bm} 
+                     "${CMAKE_${comp}_FLAGS_${bm}} ${compiler_flag}" 
+                     CACHE STRING "compiler flags" FORCE )
+               endif()
+            else()
+               if( "${safe_${CMAKE_${comp}_FLAGS_${bm}}}" MATCHES 
+                     "${safe_compiler_flag}" )
+                  string( REPLACE "${compiler_flag}" "" 
+                     CMAKE_${comp}_FLAGS_${bm} ${CMAKE_${comp}_FLAGS_${bm}} )
+                  set( CMAKE_${comp}_FLAGS_${bm} 
+                     "${CMAKE_${comp}_FLAGS_${bm}}" 
+                     CACHE STRING "compiler flags" FORCE )
+               endif()
+            endif()
+            
+         endforeach()
+
       endif()
+
    endforeach()
 endmacro()
 

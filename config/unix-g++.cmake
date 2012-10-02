@@ -112,50 +112,41 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
-endif()
+   # Extra Debug flags that only exist in newer gcc versions.
+   include(CheckCXXCompilerFlag)
+   check_cxx_compiler_flag( "-Wnoexcept" HAS_WNOEXCEPT)
+   if( HAS_WNOEXCEPT )
+      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wnoexcept" )
+   endif()
+   check_cxx_compiler_flag( "-Wsuggest-attribute=const"
+      HAS_WSUGGEST_ATTRIBUTE )
+   if( HAS_WSUGGEST_ATTRIBUTE )
+      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
+   endif()
+   check_cxx_compiler_flag( "-Wunused-local-typedefs"
+      HAS_WUNUSED_LOCAL_TYPEDEFS )
+   if( HAS_WUNUSED_LOCAL_TYPEDEFS )
+      set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wunused-local-typedefs" )
+   endif()
+   check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant"
+      HAS_WZER0_AS_NULL_POINTER_CONSTANT )
+   # if( HAS_WZER0_AS_NULL_POINTER_CONSTANT )
+   #    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wzero-as-null-pointer-constant" )
+   # endif()
 
-# Extra flags for gcc-4.6.2+
-# -Wsuggest-attribute=[const|pure|noreturn]
-if( "${DBS_CXX_COMPILER_VER_MAJOR}" GREATER 3  AND NOT  ${CMAKE_GENERATOR} MATCHES Xcode ) # 4
-   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 5 ) # 4.6
-      # include(CheckCXXCompilerFlag)
-      # CHECK_CXX_COMPILER_FLAG( "-Wnoexcept, HAS_WNOEXCEPT)
-      if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wsuggest-attribute=const" )
-         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
-      endif()
-      if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wnoexcept" )
-         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wnoexcept" )
-      endif()
-   endif()
-   if( "${DBS_CXX_COMPILER_VER_MINOR}" GREATER 6 ) # 4.7 
-      # http://gcc.gnu.org/gcc-4.7/changes.html
-      if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wunused-local-typedefs" )
-         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wunused-local-typedefs" )
-      endif()
-      # if( NOT "${CMAKE_CXX_FLAGS_DEBUG}" MATCHES "-Wzero-as-null-pointer-constant" )
-      #    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wzero-as-null-pointer-constant" )
-      # endif()
-   endif()
 endif()
 
 ##---------------------------------------------------------------------------##
 
-string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
-if( ${CMAKE_BUILD_TYPE_UPPER} MATCHES "DEBUG" )
-   option( GCC_ENABLE_ALL_WARNINGS 
-      "Add \"-Weffc++\" to the compile options (only available for DEBUG builds)." OFF )
-   option( GCC_ENABLE_GLIBCXX_DEBUG "Use special version of libc.so that includes STL bounds checking (only available for DEBUG builds)." OFF )
-   if( GCC_ENABLE_ALL_WARNINGS )
-      set( DRACO_CXX_FLAGS_DEBUG "${DRACO_CXX_FLAGS_DEBUG} -Weffc++" )
-      # Force update the CMAKE_CXX_FLAGS (see bottom of this file)
-      set( CXX_FLAGS_INITIALIZED "" CACHE INTERNAL "using draco settings." FORCE )
-   endif()
-   if( GCC_ENABLE_GLIBCXX_DEBUG )
-      set( DRACO_CXX_FLAGS_DEBUG "${DRACO_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" )
-      # Force update the CMAKE_CXX_FLAGS (see bottom of this file)
-      set( CXX_FLAGS_INITIALIZED "" CACHE INTERNAL "using draco settings." FORCE )
-   endif()
-endif()
+option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options."
+   OFF )
+toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
+
+option( GCC_ENABLE_GLIBCXX_DEBUG 
+   "Use special version of libc.so that includes STL bounds checking." 
+   OFF )
+toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG 
+   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
 
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
@@ -173,15 +164,15 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Toggle for OpenMP
-toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" )
+toggle_compiler_flag( USE_OPENMP "-fopenmp" "C;CXX;EXE_LINKER" "" )
 # Toggle for C++11 support
 # can use -std=c++11 with version 4.7+
 if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER VERSION_EQUAL 4.7)
-   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX") 
+   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX" "") 
    set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
       "disable strict ANSI" FORCE)
 elseif(  CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.3 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.3)
-   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX") 
+   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX" "") 
    set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
       "disable strict ANSI" FORCE)
 else()
@@ -194,7 +185,7 @@ Found gcc version ${GCC_VERSION}")
 endif()
 
 # Do we add '-ansi -pedantic'?
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi -pedantic" "CXX" )
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi -pedantic" "CXX" "")
 
 # Notes for building gcc-4.7.1
 # ../gcc-4.7.1/configure \
