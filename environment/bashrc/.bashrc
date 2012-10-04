@@ -126,12 +126,9 @@ case ${-} in
    alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
    alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
    #alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
-   alias wmdstat='watch -n 2 "cat /proc/mdstat"'
+   # alias wmdstat='watch -n 2 "cat /proc/mdstat"'
    alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
 
-   if test -x /ccs/codes/marmot/magicdraw/MagicDraw_UML_9.0/bin/mduml; then
-       alias magicdraw='/ccs/codes/marmot/magicdraw/MagicDraw_UML_9.0/bin/mduml'
-   fi
    if test -x /usr/bin/kghostview; then
        alias gv='/usr/bin/kghostview'
        alias ghostview='/usr/bin/kghostview'
@@ -216,7 +213,7 @@ rr-dev-fe)
     ;;
 
 #TLCC machines
-tu-fe* | tua[0-9]* | hu-fe[1-2] | hu*[0-9]* | ty-fe* | ty[0-9]*)
+ty-fe* | ty[0-9]*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
     ;;
 
