@@ -346,6 +346,9 @@ endmacro()
 #        test under 'aprun'.  ApplicationUnitTest based tests must be
 #        run this way.  Setting this option when DRACO_C4==SCALAR will
 #        reset any value provided in TEST_ARGS to be "--np scalar".
+#   LINK_WITH_FORTRAN - Tell the compiler to use the Fortran compiler
+#        for the final link of the test.  This is needed for Intel and
+#        PGI. 
 #
 #----------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
@@ -357,7 +360,7 @@ macro( add_scalar_tests test_sources )
       # list names
       "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER"
       # option names
-      "APPLICATION_UNIT_TEST;NONE"
+      "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE"
       ${ARGV}
       )
 
@@ -460,13 +463,17 @@ macro( add_scalar_tests test_sources )
 
       get_filename_component( testname ${file} NAME_WE )
       add_executable( Ut_${compname}_${testname}_exe ${file} )
-      set_target_properties( 
-         Ut_${compname}_${testname}_exe 
+      set_target_properties( Ut_${compname}_${testname}_exe 
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
            FOLDER ${compname}
          )
+      # Do we need to use the Fortran compiler as the linker?
+      if( addscalartest_LINK_WITH_FORTRAN )
+         set_target_properties( Ut_${compname}_${testname}_exe 
+            PROPERTIES LINKER_LANGUAGE Fortran )
+      endif()
       target_link_libraries( 
          Ut_${compname}_${testname}_exe 
          ${test_lib_target_name}
@@ -516,7 +523,7 @@ macro( add_parallel_tests )
       # list names
       "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;MPIFLAGS"
       # option names
-      "MPI_PLUS_OMP"
+      "MPI_PLUS_OMP;LINK_WITH_FORTRAN"
       ${ARGV}
       )
 
@@ -571,7 +578,7 @@ macro( add_parallel_tests )
    else()
        set( MPIRUN_POSTFLAGS "${addparalleltest_MPIFLAGS}" )
    endif ()
-
+  
 
    # Loop over each test source files:
    # 1. Compile the executable
@@ -589,9 +596,14 @@ macro( add_parallel_tests )
          )
       if( addparalleltest_MPI_PLUS_OMP )
          if( ${CMAKE_GENERATOR} MATCHES Xcode )
-            set_target_properties( Ut_c4_tstOMP_exe
+            set_target_properties( Ut_${compname}_${testname}_exe 
                PROPERTIES XCODE_ATTRIBUTE_ENABLE_OPENMP_SUPPORT YES )
          endif()
+      endif()
+      # Do we need to use the Fortran compiler as the linker?
+      if( addparalleltest_LINK_WITH_FORTRAN )
+           set_target_properties( Ut_${compname}_${testname}_exe 
+               PROPERTIES LINKER_LANGUAGE Fortran )
       endif()
       get_target_property( target_source_list Lib_${compname} SOURCES )
       if( NOT "${target_source_list}" MATCHES NOTFOUND )
