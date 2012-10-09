@@ -27,7 +27,7 @@ case ty*.localdomain:
     module load gsl/1.14-intel svn emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
-    module load ParMetis/3.1.1-intel ndi
+    module load ParMetis/3.1.1-intel ndi random123
     # PGI keeps running out of tmp sapce
 #     setenv TMPDIR /scratch/$USER/tmp
 #     if (! -d $TMPDIR ) then
@@ -85,7 +85,7 @@ case ml*.localdomain:
     module load cmake gsl/1.14-intel svn 
     module load numdiff lapack/3.4.1-intel
     module load trilinos SuperLU_DIST/3.0-intel
-    module load ParMetis/3.1.1-intel ndi
+    module load ParMetis/3.1.1-intel ndi random123
     alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
     breaksw
 case ct*:
@@ -101,7 +101,7 @@ case ci*:
    module load gsl/1.14 lapack/3.4.1-intel
    module load cmake numdiff svn
    module load trilinos SuperLU_DIST/3.0-intel 
-   module load ParMetis/3.1.1-intel ndi
+   module load ParMetis/3.1.1-intel ndi random123
    # module load git xshow papi
    # module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
    # module unload xt-libsci lapack/3.4.0-intel
@@ -132,7 +132,7 @@ case rra[0-9][0-9][0-9][bcd]*:
 case gondolin*:
     source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
     module load grace totalview numdiff git gsl svn gcc lapack/3.4.0
-    module load cmake openmpi emacs
+    module load cmake openmpi emacs random123
     module load trilinos BLACS SCALAPACK SuperLU_DIST hypre/2.0.0 ndi 
     module load ParMetis/3.1.1
     breaksw

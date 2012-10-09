@@ -30,7 +30,7 @@ module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/ct-fe
 
 # modules
-module load cmake git xshow numdiff gsl/1.15 svn
+module load cmake git xshow numdiff gsl/1.15 svn random123
 
 export F90=pgf90
 
