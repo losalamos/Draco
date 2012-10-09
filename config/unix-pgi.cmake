@@ -19,9 +19,6 @@ if( BUILD_SHARED_LIBS )
   message( FATAL_ERROR "Feature not available - yell at KT." )
 endif( BUILD_SHARED_LIBS )
 
-# Cannot use strict ansi flags on RedStorm
-option( DRACO_ENABLE_STRICT_ANSI "Turn on strict ANSI compliance?" OFF )
-
 if( DRACO_ENABLE_CXX11 )
    message( FATAL_ERROR 
       "PGI does not provide support for the C++11 standard.  Please "

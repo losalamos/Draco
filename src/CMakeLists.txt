@@ -25,11 +25,16 @@ if( DRACO_ENABLE_CXX11 )
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
       "${Draco_SOURCE_DIR}/config/cxx11")
    include(CheckCXX11Features)
-   if( NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_SHARED_PTR" OR
-         NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_ARRAY"    OR
-         NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_INITIALIZER_LISTS" )
-      set( DRACO_ENABLE_CXX11 OFF CACHE BOOL "Turn on C++11 support" FORCE )
-   endif()
+# Leave the CXX FLAG turned on if it is available (--std=c++11).  Let
+# the developer review the platform checks manually...
+#   if( NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_SHARED_PTR" OR
+#         NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_ARRAY"    OR
+#         NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_INITIALIZER_LISTS" )
+#      set( DRACO_ENABLE_CXX11 OFF CACHE BOOL "Turn on C++11 support" FORCE )
+#
+#   endif()
+# The developer can awlays turn C++11 support off manually by editing
+# the CMakeCache.txt
 endif()
 
 # Provide helper functions used by component CMakeLists.txt files

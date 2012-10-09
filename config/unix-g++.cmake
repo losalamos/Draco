@@ -82,9 +82,6 @@ if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
    mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
 
-set( DRACO_ENABLE_STRICT_ANSI ON CACHE INTERNAL 
-   "use strict ANSI flags, C98" FORCE )
-
 #
 # Compiler Flags
 # 
@@ -164,17 +161,17 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Toggle for OpenMP
+# consider:
+#   find_package(OpenMP)
+#   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_CXX_FLAGS}" "C;CXX;EXE_LINKER" "" )
 toggle_compiler_flag( USE_OPENMP "-fopenmp" "C;CXX;EXE_LINKER" "" )
+
 # Toggle for C++11 support
 # can use -std=c++11 with version 4.7+
 if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER VERSION_EQUAL 4.7)
    toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX" "") 
-   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
-      "disable strict ANSI" FORCE)
 elseif(  CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.3 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.3)
    toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX" "") 
-   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
-      "disable strict ANSI" FORCE)
 else()
    if( DRACO_ENABLE_CXX11 )
       message(FATAL_ERROR "

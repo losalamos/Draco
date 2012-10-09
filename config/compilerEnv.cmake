@@ -128,6 +128,7 @@ macro(dbsSetupCompilers)
    ##---------------------------------------------------------------------------##
 
    # set( gen_comp_env_set 1 )
+
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -177,9 +178,9 @@ macro(dbsSetupCxx)
       DBS_CXX_COMPILER_VER_MAJOR "${CMAKE_CXX_COMPILER_VERSION}" )
    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
       DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
-   
-   option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
 
+   # C++11 support:
+   option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
    if( ${my_cxx_compiler} MATCHES "cl" )
       include( windows-cl )
    elseif( ${my_cxx_compiler} MATCHES "ppu-g[+][+]" )
@@ -198,6 +199,11 @@ macro(dbsSetupCxx)
    else( ${my_cxx_compiler} MATCHES "cl" )
       message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
    endif( ${my_cxx_compiler} MATCHES "cl" )
+   set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL 
+      "Support C++11 features." FORCE )
+
+   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL 
+      "use strict ANSI flags, C98" FORCE )
 
 endmacro()
 

@@ -96,14 +96,8 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Toggle for OpenMP
-toggle_compiler_flag( USE_OPENMP "-openmp" "C;CXX;EXE_LINKER" "")
-toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX" "")
-set( DRACO_ENABLE_STRICT_ANSI ON CACHE INTERNAL 
-   "disable strict ANSI" FORCE)
-if( DRACO_ENABLE_CXX11 )
-   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE INTERNAL 
-      "disable strict ANSI" FORCE)
-endif()
+toggle_compiler_flag( USE_OPENMP               "-openmp"      "C;CXX;EXE_LINKER" "")
+toggle_compiler_flag( DRACO_ENABLE_CXX11       "-std=c++0x"   "CXX" "")
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-strict-ansi" "CXX" "")
 
 #------------------------------------------------------------------------------#
