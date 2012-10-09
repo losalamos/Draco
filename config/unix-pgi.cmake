@@ -20,13 +20,12 @@ if( BUILD_SHARED_LIBS )
 endif( BUILD_SHARED_LIBS )
 
 # Cannot use strict ansi flags on RedStorm
-option( ENABLE_STRICT_ANSI "Turn on strict ANSI compliance?" ON )
-if( ${ENABLE_STRICT_ANSI} )
-   set( STRICT_ANSI_FLAGS "-Xa -A" )
-endif()
+option( DRACO_ENABLE_STRICT_ANSI "Turn on strict ANSI compliance?" OFF )
 
 if( DRACO_ENABLE_CXX11 )
-   message( FATAL_ERROR "PGI does not provide support for the C++11 standard.  Please set DRACO_ENABLE_CXX11=OFF.")
+   message( FATAL_ERROR 
+      "PGI does not provide support for the C++11 standard.  Please "
+      "set DRACO_ENABLE_CXX11=OFF.")
 endif()
 
 # Disable OpenMP for now (it doesn't appear to be working correctly.)
@@ -92,7 +91,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gopt" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} ${STRICT_ANSI_FLAGS} --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
 
    # Extra flags for pgCC-11.2+
    # --nozc_eh    (default for 11.2+) Use low cost exception handling. This 
@@ -138,6 +137,9 @@ set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE ST
 set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+# Do we add '-ansi -pedantic'?
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-Xa -A" "CXX" "" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgi.cmake
