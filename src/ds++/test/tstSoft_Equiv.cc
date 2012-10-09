@@ -135,7 +135,8 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     else
 	ITFAILS;
 
-#ifdef DRACO_ENABLE_CXX11
+#ifdef HAS_CXX11_ARRAY
+#ifdef HAS_CXX_INITIALIZER_LISTS
     // C++ std::array containers
     std::array<double,3> cppa_vals{
         { 0.3247333291470, 0.3224333221471, 0.3324333522912 } };
@@ -144,6 +145,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 	PASSMSG("Passed std::array<int,3> equivalence test.");
     else
 	ITFAILS;
+#endif
 #endif
 
     // Try with a std::deque
@@ -162,7 +164,8 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 
 //---------------------------------------------------------------------------//
 
-#ifdef DRACO_ENABLE_CXX11
+#ifdef HAS_CXX11_ARRAY
+#ifdef HAS_CXX_INITIALIZER_LISTS
 void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
 {
     
@@ -229,6 +232,7 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
     return;
 }
 #endif
+#endif
 
 //---------------------------------------------------------------------------//
 
@@ -240,8 +244,10 @@ int main(int argc, char *argv[])
         // >>> UNIT TESTS
 	test_soft_equiv_scalar(ut);
 	test_soft_equiv_container(ut);
-#ifdef DRACO_ENABLE_CXX11
+#ifdef HAS_CXX11_ARRAY
+#ifdef HAS_CXX_INITIALIZER_LISTS
 	test_soft_equiv_deep_container(ut);
+#endif
 #endif
     }
     catch (rtt_dsxx::assertion &excpt)

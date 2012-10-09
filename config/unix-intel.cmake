@@ -98,7 +98,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 # Toggle for OpenMP
 toggle_compiler_flag( USE_OPENMP               "-openmp"      "C;CXX;EXE_LINKER" "")
 toggle_compiler_flag( DRACO_ENABLE_CXX11       "-std=c++0x"   "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-strict-ansi" "CXX" "")
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-strict-ansi" "C;CXX" "")
 
 #------------------------------------------------------------------------------#
 # End config/unix-intel.cmake

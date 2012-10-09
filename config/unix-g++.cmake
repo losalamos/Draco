@@ -94,7 +94,7 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall" )
+   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
    if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
       set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} -march=native" )
    endif()
@@ -104,7 +104,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) 
-   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual -Wno-long-long")
+   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
@@ -182,7 +182,9 @@ Found gcc version ${GCC_VERSION}")
 endif()
 
 # Do we add '-ansi -pedantic'?
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi -pedantic" "CXX" "")
+#toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi" "CXX" "")
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c++98" "CXX" "")
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c90"   "C" "")
 
 # Notes for building gcc-4.7.1
 # ../gcc-4.7.1/configure \

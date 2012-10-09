@@ -25,16 +25,7 @@ if( DRACO_ENABLE_CXX11 )
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
       "${Draco_SOURCE_DIR}/config/cxx11")
    include(CheckCXX11Features)
-# Leave the CXX FLAG turned on if it is available (--std=c++11).  Let
-# the developer review the platform checks manually...
-#   if( NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_SHARED_PTR" OR
-#         NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_ARRAY"    OR
-#         NOT "${CXX11_FEATURE_LIST}" MATCHES "HAS_CXX11_INITIALIZER_LISTS" )
-#      set( DRACO_ENABLE_CXX11 OFF CACHE BOOL "Turn on C++11 support" FORCE )
-#
-#   endif()
-# The developer can awlays turn C++11 support off manually by editing
-# the CMakeCache.txt
+   # Results are saved in ds++/config.h
 endif()
 
 # Provide helper functions used by component CMakeLists.txt files
@@ -151,7 +142,8 @@ Source dir  : ${Draco_SOURCE_DIR}
 Build dir   : ${Draco_BINARY_DIR}
 
 CXX Compiler: ${CMAKE_CXX_COMPILER}
-CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}
+C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
 if( _LANGUAGES_ MATCHES Fortran) 
    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
 endif()

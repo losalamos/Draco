@@ -179,6 +179,8 @@ macro(dbsSetupCxx)
    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
       DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
 
+   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL "use strict ANSI flags, C98" )
+
    # C++11 support:
    option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
    if( ${my_cxx_compiler} MATCHES "cl" )
@@ -199,11 +201,19 @@ macro(dbsSetupCxx)
    else( ${my_cxx_compiler} MATCHES "cl" )
       message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
    endif( ${my_cxx_compiler} MATCHES "cl" )
+
+   # Force possibly new values to cache
    set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL 
       "Support C++11 features." FORCE )
+   set( DRACO_ENABLE_STRICT_ANSI ${DRACO_ENABLE_STRICT_ANSI} CACHE
+      BOOL "use strict ANSI flags, C98" FORCE )
 
-   set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL 
-      "use strict ANSI flags, C98" FORCE )
+   # Sanity check
+   if( DRACO_ENABLE_CXX11 AND DRACO_ENABLE_STRICT_ANSI )
+      message( FATAL_ERROR "Both DRACO_ENABLE_CXX11=ON and "
+         "DRACO_ENABLE_STRICT_ANSI=ON is not supported because "
+         "STRICT_ANSI implied C++98 standard only." )
+   endif()
 
 endmacro()
 

@@ -96,5 +96,7 @@ cxx11_check_feature("initializer_lists"  2672 HAS_CXX11_INITIALIZER_LISTS)
 cxx11_check_feature("shared_ptr"         ""   HAS_CXX11_SHARED_PTR)
 cxx11_check_feature("array"              ""   HAS_CXX11_ARRAY)
 
+# Please add a CPP macro def in ds++/config.h.
+
 set(CXX11_FEATURE_LIST ${CXX11_FEATURE_LIST} CACHE STRING "C++11 feature support list")
 mark_as_advanced(FORCE CXX11_FEATURE_LIST)
