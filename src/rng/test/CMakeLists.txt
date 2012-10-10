@@ -85,7 +85,7 @@ if( RANDOM123_FOUND)
       add_scalar_tests(
          SOURCES    "${random123_unit_tests}"
          PASS_REGEX "."
-         FAIL_REGEX "failed;error" )
+         FAIL_REGEX "failed;error;Failure" )
    endif()
 
    add_scalar_tests(
