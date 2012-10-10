@@ -6,14 +6,14 @@
 \chapter{The Draco Model}
 \label{chap:model}
 
-This chapter presents an overview of the \draco\ build model, architecture and
-source.  We present, in detail, the requirements for the \draco\ build
-system in \S~\ref{sec:build_sys_req}.  Because the \draco\ build model
-was originally designed to conform to the GNU coding standard, a brief
-summary of GNU requirements is given in \S~\ref{sec:gnu_build_model}.
-Finally, this chapter concludes with a description of the \draco\ 
-source tree and files that are created during configuring and
-building.
+This chapter presents an overview of the \draco\ build model,
+architecture and source.  We present, in detail, the requirements for
+the \draco\ build system in \S~\ref{sec:build_sys_req}.  Because the
+\draco\ build model was originally designed to conform to the GNU
+coding standard, a brief summary of GNU requirements is given in
+\S~\ref{sec:overview_draco}.  Finally, this chapter concludes with a
+description of the \draco\ source tree and files that are created
+during configuring and building.
 
 %%---------------------------------------------------------------------------%%
 
@@ -24,19 +24,28 @@ Documentation describing the purpose and capabilities of packages
 within \draco\ is beyond the scope of this text.  However, a brief
 summary of \draco\ is pertinent to this discussion.  \draco\ is a
 component library for computational radiation transport.  \draco\ is
-primarily a \cpp\ library; however, other language support is not
-precluded in \draco.  In particular, \draco\ has plans to support \lang{ISO\_C\_BINDING} \index{Fortran!ISO\_C\_BINDING} interfacing between \cpp\ and \fortran \index{Fortran!F90}.  A more general type of 
-automatic type-interfacing between \cpp\ and \fortran~\cite{gr99} was implemented to support \sys{Dante} code, but was abandoned in favor of a simpler interface paradigm.
+primarily a suite of \cpp\ libraries; however, other language support
+is not precluded in \draco\ and full language support is provided for
+both \lang{C} and \lang{Fortran}.  In particular, \draco\ supports
+\lang{ISO\_C\_BINDING} \index{Fortran!ISO\_C\_BINDING} interfacing
+between \cpp\ and \fortran \index{Fortran!F90}.  A more general type
+of automatic type-interfacing between \cpp\ and \fortran~\cite{gr99}
+was implemented to support \sys{Dante} code, but was abandoned in
+favor of a simpler interface paradigm.
 % Additionally, we plan to incorporate a generalized interface for
 %problem input specifications using \python\ extensions.
 
-The products of \draco\ are individual component libraries
-that provide reusable services geared towards radiation transport
-applications.  For example, \draco\ provides random number generators that may be used by a Monte
-Carlo radiation transport solver.  \draco\ also provides access to opacity models and an angular quadrature component that can be used by deterministic radiation transport solvers.  In addition to components designed for radiation transport,
-\draco\ provides several service packages including \dsxx, a data
-structures library that contains numeric containers, smart pointers,
-and assertions, and \cfour, a communications library, among others.
+The products of \draco\ are individual component libraries that
+provide reusable services geared towards radiation transport
+applications.  For example, \draco\ provides random number generators
+that may be used by a Monte Carlo radiation transport solver.
+\draco\ also provides access to opacity models and an angular
+quadrature component that can be used by deterministic radiation
+transport solvers.  In addition to components designed for radiation
+transport, \draco\ provides several service packages including \dsxx,
+a data structures library that contains numeric containers, smart
+pointers, and assertions, and \cfour, a communications library, among
+others.
 
 %The fundamental principle guiding code design in \draco\ is templating
 %on Mesh Types (MT).  Thus, the libraries in \draco\ will work with any
@@ -44,12 +53,15 @@ and assertions, and \cfour, a communications library, among others.
 %efficient implementations of various meshes to be included in generic
 %radiation transport packages.  
 
-\draco\ is designed using object-oriented~\cite{me97} \index{object-oriented}and generic
-programming~\cite{au99} \index{generic programming} philosophies.  Foremost among these notions
-are levelized design \index{levelized}, Design-by-Contract$^{\text{\footnotesize TM}}$, \index{ Design-by-Contract}
-and the generic concept-model \index{generic concept-model} idea.  Other software engineering
-methods are employed for quality control including regression testing,
-automatic documentation, code profiling, and design and code reviews.
+\draco\ is designed using object-oriented~\cite{me97}
+\index{object-oriented}and generic programming~\cite{au99}
+\index{generic programming} philosophies.  Foremost among these
+notions are levelized design \index{levelized},
+Design-by-Contract$^{\text{\footnotesize TM}}$, \index{
+  Design-by-Contract} and the generic concept-model \index{generic
+  concept-model} idea.  Other software engineering methods are
+employed for quality control including regression testing, automatic
+documentation, code profiling, and design and code reviews.
 
   
 
@@ -60,32 +72,43 @@ automatic documentation, code profiling, and design and code reviews.
 
 \subsection{Software Requirements}
 
-Originally, the \draco\ build system was designed according to the GNU coding
-standard and made use of  \autoconf~\cite{autoconf}, \index{autoconf}
-\gmake~\cite{gmake} \index{make}, and \gmfour~\cite{m4} \index{m4} for configuring and building components.  
-In 2011, this requirement was altered as the development team chose to replace the
-aging build system with a \cmake-based system~\cite{cmake}. \index{cmake}  In addition, \draco\ version
-control is performed by \svn~\cite{svn-redbean}.  
+Originally, the \draco\ build system was designed according to the GNU
+coding standard~\cite{gnu}\index{GNU Coding Standard} and made use of
+\autoconf~\cite{autoconf}, \index{autoconf} \gmake~\cite{gmake}
+\index{make}, and \gmfour~\cite{m4} \index{m4} for configuring and
+building components.  In 2011, this requirement was altered as the
+development team chose to replace the aging build system with a
+\cmake-based system~\cite{cmake}. \index{cmake} In addition,
+\draco\ version control is performed by \svn~\cite{svn-redbean}.
 
 Additional software is used for performing quality control.
-Regression testing is handled by \cmake's \ctest\ and \cdash\ tools.  Bugs are
-tracked using \teamforge~\cite{teamforge,teamforge-lanl}. \index{TeamForge} In addition, an archived email
-list is available to submit design plans and discussion between team
-members.  Also, \valgrind~\cite{valgrind}, \index{valgrind} \bullseye~\cite{bullseyeweb} \index{Bullseye Coverage} and \cloc~\cite{clocweb} \index{CLOC} play important roles in the
-quality control process.  The build system supports
-processing code and tests through \valgrind\ on all platforms for performing dynamic memory and cache analysis. It supports the use of \bullseye\ for analyzing \cpp\ code coverage metrics (function and condition/decision branch coverage) and it uses \cloc\ for tracking total lines of source code.  All of this information is collected nightly by the regression system and published on the \draco\ regression dashboard at \url{http://coder.lanl.gov/cdash}.
+Regression testing is handled by \cmake's \ctest\ and \cdash\ tools.
+Bugs are tracked using
+\teamforge~\cite{teamforge,teamforge-lanl}. \index{TeamForge} In
+addition, an archived email list is available to submit design plans
+and discussion between team members.  Also, \valgrind~\cite{valgrind},
+\index{valgrind} \bullseye~\cite{bullseyeweb} \index{Bullseye
+  Coverage} and \cloc~\cite{clocweb} \index{CLOC} play important roles
+in the quality control process.  The build system supports processing
+code and tests through \valgrind\ on all platforms for performing
+dynamic memory and cache analysis. It supports the use of
+\bullseye\ for analyzing \cpp\ code coverage metrics (function and
+condition/decision branch coverage) and it uses \cloc\ for tracking
+total lines of source code.  All of this information is collected
+nightly by the regression system and published on the
+\draco\ regression dashboard at \url{http://coder.lanl.gov/cdash}.
  
 The \draco\ build system contains support for multiple language
-environments.  However, the primary language in use at present is the 1998 ANSI
-Standard \cpp~\cite{ansi:cpp} \index{C++!1998 ANSI Standard}.  \draco\ does not currently support the 2011 ANSI \cpp\ Standard~\cite{ansi:cpp11}\index{C++! 2011 ANSI Standard} because LANL standard compilers do not support the new standard yet.  As soon as the required compilers support the new standard, \draco\ will allow code to be written that conforms to the 2011 standard. Currently, any \cpp\ compiler that conforms to the 1998 C++ standard will compile \draco.  Portland Group, Intel and GNU \cpp\ are regularly used for building on ASC hardware. 
-Currently, there
-is no \fortran\ code in \draco; although, we expect that to change in
-the future.  (The build system does look for a \fortran\ compiler during the configuration step so that a compatible version of LAPACK can be located and tested with the selected linker.)
-Additional languages required by \draco\ are \python\ and 
-\lang{PERL}.  \draco\ expects these scripting
-languages to be located in a directory that is included in the developer's \comp{PATH},
-and the build system checks for this.   A suite of tools that can typeset \LaTeX\ sources is also
-necessary for compiling much of the documentation that comes with \draco.
+environments.  However, the primary language in use at present is the
+2011 ISO Standard \cpp~\cite{ansi:cpp} \index{C++!2011 ANSI
+  Standard}. Currently, any \cpp\ compiler that conforms to the 2011
+\cpp\ standard will compile \draco. Intel and GNU \cpp\ are regularly
+used for building on ASC hardware.  Additional languages required by
+\draco\ are \python\ and \lang{PERL}.  \draco\ expects these scripting
+languages to be located in a directory that is included in the
+developer's \comp{PATH}, and the build system checks for this.  A
+suite of tools that can typeset \LaTeX\ sources is also necessary for
+compiling much of the documentation that comes with \draco.
   
 %   Unfortunately, the Kuck and Associates
 %\cpp\ compiler, \soft{KCC}~\cite{kai}, is the only ANSI Standard
@@ -94,35 +117,38 @@ necessary for compiling much of the documentation that comes with \draco.
 %platforms of interest to Los Alamos National Laboratory and the
 %Accelerated Strategic Computing Initiative (ASCI).  
 
-With the exception of \bullseye\ and the listed commercial compilers, all of the
-aforementioned software products are freely available.  Note that \bullseye\ is  an
-analysis tool and is not required to configure, build, or use
-\draco.  Also note that the GNU set of compilers are freely available and using them allows \draco\ to be built without the use of any commercial software.
+With the exception of \bullseye\ and the listed commercial compilers,
+all of the aforementioned software products are freely available.
+Note that \bullseye\ is an analysis tool and is not required to
+configure, build, or use \draco.  Also note that the GNU set of
+compilers are freely available and using them allows \draco\ to be
+built without the use of any commercial software.
 
-The build system checks for the presence of each of aforementioned software products; thus, as
-long as the software is in the user's path, the configuration will
-succeed.  Finally, \draco\ utilizes a number of vendor libraries,
-depending upon configuration, that must be installed on the system in
-which \draco\ resides.  Detail on these packages and their
-configuration options is given in Chap.~\ref{chap:compile}.
+The build system checks for the presence of each of aforementioned
+software products; thus, as long as the software is in the user's
+path, the configuration will succeed.  Finally, \draco\ utilizes a
+number of vendor libraries, depending upon configuration, that must be
+installed on the system in which \draco\ resides.  Detail on these
+packages and their configuration options is given in
+Chap.~\ref{chap:compile}.
 
-\begin{table}
+\begin{table}[ht]
   \begin{center}
     \caption{Required and optional tools for configuring and building \draco.}
     \label{tab:reqtools}
     \begin{tabular}{lp{1.5in}p{1.5in}p{1.5in}}\hline\hline
     
           Tool & Required  & Recommended & Optional \\ \hline
-	Configuration & \cmake-2.8.6+ & \ctest & \cdash  \\
-	\cpp\ compiler & Any standards compliant \cpp\ compiler &  g++ 4.5+ & Intel 10-12, PGI 11 \\
-	\fortran\ compiler & optional & gfortran 4.5+ & Intel 10-12, PGI-11 \\
-	Build tool & any of ... & \gmake & Eclipse CDT, XCode, Visual Studio \\
-	Scripting language & \cmake & \python & \perl \\
-	Version control & \svn & & \git \\
-	Dynamic Analysis & optional & \valgrind & \\
-	Code Coverage & optional& \bullseye & \\
-	Lines-of-Code & optional & \cloc & \\
-	Bug Tracking$^a$ & optional & \teamforge & ChangeLog, text files, email \\
+	Configuration & \cmake-2.8.8+ & \ctest & \cdash  \\
+	\cpp\ compiler     & Any standards compliant \cpp\ compiler & g++ 4.7+ & Intel 12+ \\
+	\fortran\ compiler & Must support the 2003 standard         & gfortran 4.7+ & Intel 12+ \\
+	Build tool         & any of ... & \gmake & Eclipse CDT, XCode \\
+	Scripting language & \cmake     & \python & \perl \\
+	Version control    & \svn       & & \git \\
+	Dynamic Analysis   & optional   & \valgrind & \\
+	Code Coverage      & optional   & \bullseye & \\
+	Lines-of-Code      & optional   & \cloc & \\
+	Bug Tracking$^a$ & optional     & \teamforge & ChangeLog, text files, email \\
 	Documentation & optional & \LaTeX\ typesetting tool, \doxygen, text files & \\	
 	\hline \hline
 	\multicolumn{4}{l}{$^a$ The project management software Redmine is currently under evaluation by the Draco board.} \\
@@ -142,12 +168,16 @@ shall take an expanded look at the complete list of requirements.  The
 list of requirements for the \draco\ build system is:
 %
 \begin{enumerate}
-\item support for simultaneous, multiple configurations (Release, Debug, Scalar, Parallel, etc);
-\item support for multiple programming languages, while preferring \lang{C} and \cpp;
+\item support for simultaneous, multiple configurations (Release,
+  Debug, Scalar, Parallel, etc);
+\item support for multiple programming languages, while preferring
+  \lang{C}, \cpp\ and \lang{Fortran};
 \item support for \cpp\ on all current ASC platforms;
-\item \lang{C} and \cpp\ coding must conform strictly to issued ISO standards~\cite{ansi:cpp} \index{ISO standard}:
+\item \lang{C} and \cpp\ coding must conform strictly to issued ISO
+  standards~\cite{ansi:cpp} \index{ISO standard}:
 \begin{enumerate}
-\item \cpp 03, also known as the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003;
+\item \cpp 11, also known as the ISO/IEC 14882:2011 standard
+% amended by the 2003 technical corrigendum, ISO/IEC 14882:2003;
 \item \lang{C99}, also known as the ANSI C ISO/IEC 9899:1999 standard;
 \item support for explicit template instantiation; \index{explicit template instantiation}
 \end{enumerate}
@@ -159,8 +189,8 @@ list of requirements for the \draco\ build system is:
 \item extensible support for external vendors; 
 \item extensibility;
 \item low-cost on developers to add new packages, code, and tests; 
-\item  adoption of selected sections of the GNU coding standard~\cite{gnu} \index{GNU
-    Coding Standard}.
+%\item  adoption of selected sections of the GNU coding standard~\cite{gnu} \index{GNU
+%    Coding Standard}.
 \end{enumerate}
 %
 We will analyze each of these requirements in turn.  First, from a
@@ -177,16 +207,25 @@ in \S~\ref{sec:draco_src_tree} and Chap.~\ref{chap:compile}.
 
 % #2
 \draco\ is not a single language system.  Although \draco\ is
-presently composed of \cpp\ code, we expect multiple languages
-(in particular \lang{Fortran} \index{Fortran}) to be supported for interfacing and numerical
-optimization.  The \draco\ build system is general and is not
-restricted to single language support.  Supporting multiple languages
-is an essential requirement because \draco\ customers utilize many
-frameworks and languages.  Note that difficulty in modifying the build system to use of other compiled languages depends heavily on whether \cmake\ supports the extra programming language.  As of this writing, \cmake\ only supports C, C++ and Fortran as primary languages.
+primarily composed of \cpp\ code, portions of \draco\ are written in
+\lang{C} and \lang{Fortran} \index{Fortran}.  The \draco\ build system
+is general and is not restricted to single language support.
+Supporting multiple languages is an essential requirement because
+\draco\ customers utilize many frameworks and languages.  Note that
+difficulty in modifying the build system to use of other compiled
+languages depends heavily on whether \cmake\ supports the extra
+programming language.  As of this writing, \cmake\ only supports C,
+C++ and Fortran as primary languages.
 
 % #3 & #4
-\cpp\ source code in \draco\ must conform to the the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003. \index{ISO standard} This ensures that \cpp\ sources will 
-compile by any standards compliant \cpp\ compiler.  The DBS activates many compiler warning flags for Debug builds so that developers are notified if their code deviates from the standard.  In particular, code that does not compile cleaning using ASC standard compilers on target ASC platforms must be brought into compliance or be removed from the \draco\ system.
+\cpp\ source code in \draco\ must conform to the the ISO/IEC
+14882:2011 standard. \index{ISO standard} This ensures that
+\cpp\ sources will compile by any standards compliant \cpp\ compiler.
+The DBS activates many compiler warning flags for Debug builds so that
+developers are notified if their code deviates from the standard.  In
+particular, code that does not compile cleaning using ASC standard
+compilers on target ASC platforms must be brought into compliance or
+be removed from the \draco\ system.
 
 % #5
 In recent years the need to support non-command line integrated development environments, \index{integrated development environment} IDE, has become increasingly important.  With the conversion of the build system from \soft{autotools} to \cmake\ in 2011, this has become a build system requirement.  The primary build tool continues to be \soft{Makefiles} but support for the \soft{Eclipse CDT} IDE on Linux and for the \soft{XCode} IDE on OS/X are also supported.
@@ -223,7 +262,17 @@ Another guiding principle of the \draco\ suite of components is the concept that
 
 % #14
 
-The final requirement is that the \draco\ build system should continue to adhere to the GNU Coding Standard~\cite{gnu} as much as is reasonable\index{GNU Coding Standard}.  Obviously, the adoption of \cmake\ and non-Makefile based build systems is not supported by this standard and we have made a deliberate decision to make the build system more flexible at the cost of standardization.  By formalizing our build model on an accepted standard, we reduce the overhead associated with maintaining the system. In the case of the \cmake-based build system, we make heavy use of the features provided by \cmake\ and avoid the use of custom build scripts except for cases that are absolutely necessary (i.e.: python scripts for running application codes and checking the results against gold standards). 
+Finally, it should be noted that the DBS adhered to the GNU Coding
+Standard~\cite{gnu} \index{GNU Coding Standard} until the adoption of
+\cmake\ and non-Makefile based build systems is not supported by this
+standard and we have made a deliberate decision to make the build
+system more flexible at the cost of standardization.  By formalizing
+our build model on an accepted standard, we reduce the overhead
+associated with maintaining the system. In the case of the
+\cmake-based build system, we make heavy use of the features provided
+by \cmake\ and avoid the use of custom build scripts except for cases
+that are absolutely necessary (i.e.: python scripts for running
+application codes and checking the results against gold standards).
 % A summary of the pertinent parts of the GNU standard is given in \S~\ref{sec:gnu_build_model}
 
 %\subsection{The GNU Build Model}
@@ -261,12 +310,15 @@ The GNU standard specifies many constraints on build and make systems including 
 \item \cmake\ guarantees certain names (e.g.: \comp{PROJECT\_NAME}, \comp{PROJECT\_BINARY\_DIR}, \comp{CMAKE\_<LANG>\_FLAGS, \comp{MPI\_FOUND}, etc.}) to exist in the build.  A more complete list can be obtained by running '\comp{cmake --help-variable-list}.'
 \item \cmake\ guarantees certain build project targets will be defined:
 \begin{itemize}
-\item all - generate all normal targets
-\item clean - remove generated files (libraries, object files, binaries, etc.)
-\item Experimental - run the build and tests and submit the results to the dashboard.
-\item install - copy built files to the \comp{CMAKE\_INSTALL\_PREFIX} directory 
-\item test -  run the unit tests
-\item uninstall - remove files copied as a result of the install target
+\item \texttt{all} - generate all normal targets
+\item \texttt{clean} - remove generated files (libraries, object files, binaries, etc.)
+\item \texttt{Experimental} - run the build and tests and submit the results to the dashboard.
+\item \texttt{install} - copy built files to the \comp{CMAKE\_INSTALL\_PREFIX} directory 
+\item \texttt{test} -  run the unit tests
+\item \texttt{uninstall} - remove files copied as a result of the install
+  target
+\item A complete list of build targets can be generated by using the
+  command '\comp{make help}.'
 \end{itemize}
 \item The DBS standardizes additional Makefile targets:
 \begin{itemize}
@@ -329,7 +381,7 @@ Figs.~\ref{fig:subdraco}a through c.  Note that these figures show the
 complete source tree.
 % not all directories under \comp{src/} will be released under certain \cvs\ checkouts.  
 % The file \comp{draco\_config*} is a configure script that sets the proper paths to run configure in external directories.  
-Under \draco\ there exists several files generated or needed by \cmake\ and \ctest.  The files \comp{CTestConfig.cmake} \index{CTestConfig.cmake} and \comp{CTestCustom.cmake} \index{CTestCustom.cmake} are read by \ctest\ and specify the location of the \draco\ dashboard and configuration setup for testing.  These settings include a list of source to omit from code coverage, tests to omit from dynamic analysis, warnings that should be ignored, etc.  The \comp{CMakeLists.txt} \index{CMakeLists.txt} file is the primary build system configuration file parsed by \cmake\ in order to generate the build project (i.e.: Makefiles, project files, etc.).  The \comp{CMakeCache.txt} \index{CMakeCache.txt} file is a template that developers can copy to their build sandbox and update initial build configuration settings before the first invocation of \cmake.  This file is not required by the \draco\ build system and is provided only as an aid for developers.
+Under \draco\ there exist several files generated or needed by \cmake\ and \ctest.  The files \comp{CTestConfig.cmake} \index{CTestConfig.cmake} and \comp{CTestCustom.cmake} \index{CTestCustom.cmake} are read by \ctest\ and specify the location of the \draco\ dashboard and configuration setup for testing.  These settings include a list of source to omit from code coverage, tests to omit from dynamic analysis, warnings that should be ignored, etc.  The \comp{CMakeLists.txt} \index{CMakeLists.txt} file is the primary build system configuration file parsed by \cmake\ in order to generate the build project (i.e.: Makefiles, project files, etc.).  The \comp{CMakeCache.txt} \index{CMakeCache.txt} file is a template that developers can copy to their build sandbox and update initial build configuration settings before the first invocation of \cmake.  This file is not required by the \draco\ build system and is provided only as an aid for developers.
 The \comp{*.cmake} files from the \comp{config} directory 
 contains macro tests for configuring \draco.  Descriptions
 of these files are given in Chap.~\ref{chap:extend}.  Finally, the

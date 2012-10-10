@@ -21,10 +21,11 @@ digraph source_tree {
 	node      [shape=ellipse];
 	cma [label="CMakeLists.txt"];
     cha [label="ChangeLog"];
-    finddraco [label="FindDRACO.cmake"];
+    findeospac [label="FindEOSPAC.cmake"];
     findgsl   [label="FindGSL.cmake"];
     findgrace [label="FindGrace.cmake"];
     findlibsci [label="FindLIBSCI.cmake"];
+    findrng123 [label="FindRandom123.cmake"];
     toolchaincat [label="Toolchain-catamount.cmake"];
     toolchainrrppe [label="Toolchain-roadrunner-ppe.cmake"];
     toolchainrrspu [label="Toolchain-roadrunner-spu.cmake"];
@@ -33,8 +34,10 @@ digraph source_tree {
     compil [label="compilerEnv.cmake"];
     compon [label="component_macros.cmake"];
     con [label="configureFileOnMake.cmake"];
+    cxx11 [label="cxx11" shape=box];
     doc [label="doc_macros.cmake"];
     dox [label="doxygen_config.in"];
+    dci [label="draco-config-install.cmake.in"];
     dracotest [label="dracoTesting.cmake"];
     dracover  [label="dracoVersion.cmake"];
     parse [label="parse_arguments.cmake"];
@@ -49,14 +52,14 @@ digraph source_tree {
     unixppu [label="unix-ppu.cmake"];
     unixspu [label="unix-spu.cmake"];
     vend [label="vendor_libraries.cmake"];
-    wincl [label="windows-cl.cmake"];
-    winifort [label="windows-ifort.cmake"];
+/*    wincl [label="windows-cl.cmake"]; */
+/*    winifort [label="windows-ifort.cmake"]; */
     }
     
   /* tree */
     
-    config -> {cma cha finddraco findgsl findgrace findlibsci toolchaincat toolchainrrppe
-    toolchainrrspu bui cma compil compon con doc dox dracotest dracover parse platformch 
+    config -> {cma cha findeospac findgsl findgrace findlibsci findrng123 toolchaincat toolchainrrppe
+    toolchainrrspu bui cma compil compon con cxx11 doc dox dci dracotest dracover parse platformch 
     platformcu unixgxx unixgfor unixifort unixintel unixpgf90 unixpgi unixppu unixspu vend
-    wincl winifort};
+    };
 }

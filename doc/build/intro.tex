@@ -10,20 +10,21 @@ design contraints of the \draco\ build system (DBS).  We will
 introduce some definitions of terms and typographical conventions that
 will be employed throughout the text.  Additionally, the organization
 of the manual will be described.  For those who wish to get started
-right away, \S~\ref{sec:quick} tells how to get up and moving without
-working through the manual.  A detailed developer manual is processed
-with \soft{Doxygen}~\cite{doxygen} and is maintained with the
-\draco\ source code.
+right away, \S~\ref{sec:quick} details how to get up and moving
+without working through the entire manual.  Also, a detailed developer
+manual is processed with \soft{Doxygen}~\cite{doxygen} and is
+maintained with the \draco\ source code.
 
 %%---------------------------------------------------------------------------%%
 
 \section{Purpose}
 \label{sec:purpose}
 
-The purpose of this document is to describe the \draco\ build system.
-Specifically, we will show both \draco\ users and \draco\ developers how to: 
+The purpose of this document is to describe the DBS.  Specifically, we
+will show both \draco\ users and \draco\ developers how to:
 \begin{itemize}
-\item configure \draco\ for different platforms, build types and options; \index{configure}
+\item configure \draco\ for different platforms, build types and
+  options; \index{configure}
 \item compile \draco\ components; \index{compile}
 \item compile and link programs that use \draco;
 \item add components to \draco;
@@ -36,27 +37,40 @@ with, \draco.
 As a review, we restate the \draco\ mission statement~\cite{rn98046}:
 \begin{quote}
   \slshape \draco\ is a comprehensive, radiation transport framework
-  that provides key, reusable components for serial and parallel % and heterogeneous architecture platforms
+  that provides key, reusable components for serial and parallel
+% and heterogeneous architecture platforms
   computational physics codes.
 \end{quote} \index{reuse}\index{serial}\index{parallel}\index{computational physics} \index{radiation transport}
 To meet these requirements \draco\ uses modern software engineering
-concepts including object-oriented, generic design~\cite{ooadid}, multi-environment
-build systems, and service libraries based on levelized component
-designs~\cite{la96}.  The build system described in this manual allows \draco\ to
-satisfy its mission statement and enforces the concept of levelized
-component design.\index{object-oriented}\index{levelized}
+concepts including object-oriented, generic design~\cite{ooadid},
+multi-environment build systems, and service libraries based on
+levelized component designs~\cite{la96}.  The build system described
+in this manual allows \draco\ to satisfy its mission statement and
+enforces the concept of levelized component
+design.\index{object-oriented}\index{levelized}
 
 The \draco\ build system has been carefully designed.  In particular,
 we had several requirements that the build system should satisfy.
 These requirements are:
 \begin{itemize}
   \item support for simultaneous, multiple configurations (Release, Debug, etc);
-  \item support for multiple languages, but the recommended languages are \lang{C} and \cpp.
-  \item support for \cpp\ on all current ASC platforms;
-  \item \lang{C} and \cpp\ coding must conform strictly to issued ISO standards. \index{ISO standards}
+  \item support for multiple languages. The recommended language is
+    \cpp, but support for \lang{C} and \lang{Fortran} is provided on
+    all current ASC platforms.
+  \item \lang{C} and \cpp\ coding must conform strictly to issued ISO
+    standards. \index{ISO standards}
 \begin{enumerate}
-\item \cpp 03, also known as the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003. \index{ISO standards!v14882:1998} \index{ISO standards!v14882:2003}
-\item \lang{C99}, also known as the ANSI C ISO/IEC 9899:1999 standard \index{ISO standards!v9899:1999}
+\item \cpp 11, also known as the ISO/IEC 14882:2011.\index{ISO standards!v14882:2011}
+%  standard amended by the 2003 technical corrigendum, ISO/IEC
+%  14882:2003. \index{ISO standards!v14882:2003}
+\item \lang{C99}, also known as the ANSI C ISO/IEC 9899:1999 standard
+  \index{ISO standards!v9899:1999}
+\item \cpp 11, also known as the ISO/IEC 14882:2011 standard\index{ISO
+  standards!v14882:2011}, was published in September 2011 and is
+  supported by the Draco Build System.  Because compiler support for
+  the new standard is immature, the build system will automatically
+  disable support for 2011 features if the selected compiler is unable
+  to support basic features of the updated standard.
 \end{enumerate}
   \item support for multiple build project types (\soft{Makefiles}, \soft{XCode}, \soft{Eclipse}, etc.)
 \item on-demand and automated unit and regression testing;
@@ -65,17 +79,17 @@ These requirements are:
   \item support for explicit template instantiation;
 \item extensibility;
 \item low-cost on developers to add new packages, code, and tests; 
-\item  adoption of selected sections of the GNU coding standard~\cite{gnu} \index{GNU
-    Coding Standard}.
 \end{itemize}
-This last requirement has evolved a somewhat as the supported
-platforms and build systems scope has grown to include \soft{XCode} \index{XCode} and
-\soft{Eclipse} \index{Eclipse} on non-Linux platforms.  The use of the \cmake \index{CMake} suite of tools
-preculdes the use of GNU autotools \index{GNU autotools},
-\autoconf\ and \automake~\cite{autoconf}.  
-It also precludes the use of \make~\cite{gmake} for non-Makefile based
-build projects (e.g.: \soft{XCode}, \soft{Eclipse CDT}). More detail will be given in
-Chap.~\ref{chap:model}. 
+Formerly, the DBS implemented the GNU coding standard~\cite{gnu}
+\index{GNU Coding Standard}, however, this requirement has evolved
+somewhat as the supported platforms and build systems scope has grown
+to include \soft{XCode} \index{XCode} and \soft{Eclipse}
+\index{Eclipse} on non-Linux platforms.  The use of the \cmake
+\index{CMake} suite of tools preculdes the use of GNU autotools
+\index{GNU autotools}, \autoconf\ and \automake~\cite{autoconf}.  It
+also precludes the use of \make~\cite{gmake} for non-Makefile based
+build projects (e.g.: \soft{XCode}, \soft{Eclipse CDT}). More detail
+will be given in Chap.~\ref{chap:model}.
 
 %%---------------------------------------------------------------------------%%
 
@@ -102,7 +116,7 @@ system that contains many components.  In this case, package has macro
 (system level) and micro (system-component level) connotations.
 
 Table ~\ref{tab:tfaces} show the typefaces that we will employ
-\begin{table}
+\begin{table}[h]
   \begin{center}
     \caption{Typefaces used throughout the text.}
     \label{tab:tfaces}
@@ -182,7 +196,7 @@ whole unit. Tables~\ref{tab:draco_package} and \ref{tab:draco_system}
       Jae Chang & jhchang@lanl.gov & CCS--2 \\
       Allan Wollaber & wollaber@lanl.gov & CCS--2 \\
       Gabe Rockefeller& gaber@lanl.gov & CCS--2 \\
-      Jeff Densmore & jdd@lanl.gov & CCS--2 \\
+%      Jeff Densmore & jdd@lanl.gov & CCS--2 \\
       Kent Budge & kgbudge@lanl.gov & CCS--2 \\
       Jim Warsa & warsa@lanl.gov, & CCS--2 \\
 %      John McGhee$^{\ast}$ & mcghee@lanl.gov & XTM \\
@@ -279,7 +293,7 @@ is necessary for \draco\ package developers.
           Regression files & \url{ccscs8://home/regress/cmake_draco} and \url{hpc://usr/projects/jayenne/regress} \\
           Regression Dashboard & \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash} \\
   	\hline \hline
-      \multicolumn{2}{p{0.85\linewidth}}{$^a$The \draco\ team is considering adoption of Redmine for Wiki and Tracker support.  The location of this tool is \url{http://hydra.lanl.gov/redmine} } \\
+      \multicolumn{2}{p{0.85\linewidth}}{$^a$The \draco\ team is considering adoption of Redmine for Wiki and Tracker support.  The location of this tool is \url{http://coder.lanl.gov/redmine} } \\
     \end{tabular}
   \end{center}
 \end{table} \index{Repository} \index{archival storage} \index{wiki} \index{bug tracker} \index{regression files} \index{regression dashboard} \index{Redmine}

@@ -29,17 +29,17 @@ digraph build_tree {
       /* directories */
 	node   [shape=box];
 	src    [label="src/"];
-	config [label="config/"];
 	testing [label="Testing/"];
 	cmakefiles [label="CMakeFiles/"];
+	autodoc [label="autodoc/"];
 
       /* files */
 	node       [shape=ellipse];
-	draco_make [label="Makefile"];
 	draco_cach [label="CMakeCache.txt"];
 	draco_cust [label="CTestCustom.cmake"];
 	draco_ctest [label="CTestTestfile.cmake"];
 	draco_dart [label="DartConfiguration.tcl"];
+	draco_make [label="Makefile"];
 	draco_install [label="cmake_install.cmake"];
 	draco_uninstall [label="cmake_uninstall.cmake"];
     }
@@ -56,30 +56,34 @@ digraph build_tree {
 	src_install [label="cmake_install.cmake"];
 	src_m   [label="Makefile"];
 
-	src_files [label="source directories ...", shape=plaintext];
+	src_files [label="component directories ...", shape=plaintext];
 
-      /* config */
+      /* autodoc */
         node   [shape=box];
-        config_cmfiles [label="CMakeFiles/"];
+        autodoc_cmfiles [label="CMakeFiles/"];
+        autodoc_draco [label="draco/"];
         
 	node     [shape=ellipse];
-	config_m  [label="Makefile"];
-	config_install [label="cmake_install.cmake"];
-	config_ctest [label="CTestTestfile.cmake"];
+	autodoc_m  [label="Makefile"];
+	autodoc_install [label="cmake_install.cmake"];
+	autodoc_ctest [label="CTestTestfile.cmake"];
+        autodoc_doxygen_config [label="doxygen_config"]
+        autodoc_mainpage [label="mainpage.dcc"]
 
       /* Testing */
-        /* node   [shape=box]; */
-        /* test_temp [label="Temporary/"]; */
+        node   [shape=box]; 
+        test_temp [label="Temporary/"]; 
 
     }
     
   /* tree */
 
     gccmpid -> {draco}; /*  include lib bin libexe}; */
-    draco -> {src config testing cmakefiles
+    draco -> {src autodoc testing cmakefiles
             draco_make draco_cach draco_cust draco_ctest draco_dart
             draco_install draco_uninstall};
     src -> {src_cmfiles src_m src_install src_ctest src_files};
-    config -> {config_cmfiles config_m config_install config_ctest};
-    /* testing -> {test_temp}; */
+    autodoc -> {autodoc_cmfiles autodoc_draco autodoc_m autodoc_install autodoc_ctest
+            autodoc_doxygen_config autodoc_mainpage};
+    testing -> {test_temp};
 }

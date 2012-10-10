@@ -96,14 +96,14 @@
   designed according to the following list of requirements:
   \begin{enumerate}
   \item support for simultaneous, multiple configurations (Release, Debug, etc);
-  \item support for \cpp\ on all current ASC platforms;
-  \item support for multiple build project types (\soft{Makefiles}, \soft{XCode}, \soft{Eclipse}, etc.)
-  \item on-demand and automated unit and regression testing;
+  \item support for multiple programming languages.  The primary
+    language is \cpp\ but support for for \lang{C} and \lang{Fortran}
+    is required for all current ASC platforms.
+  \item support for multiple build project types (\soft{Makefiles},
+    \soft{XCode}, \soft{Eclipse}, etc.)
   \item the ability to support multiple code projects;
   \item support for external vendors;
   \item support for explicit template instantiation;
-  \item support for multiple languages, but the recommended langues are \lang{C} and \cpp.
-  \item support for \cpp\ on all current ASC platforms;
   \item \lang{C} and \cpp\ coding must conform strictly to issued ISO standards.
 %\begin{enumerate}
 %\item \cpp 03, also known as the ISO/IEC 14882:1998 standard amended by the 2003 technical corrigendum, ISO/IEC 14882:2003.
@@ -111,7 +111,7 @@
 %\end{enumerate}
   \item extensibility;
   \item low-cost on developers to add new packages, code, and tests; 
-  \item adoption of selected sections of the GNU coding standard \cite{gnu}.
+%  \item adoption of selected sections of the GNU coding standard \cite{gnu}.
 %\begin{enumerate}
 %\item \S4.2 Writing robust programs
 %\item \S4.3 Library behavior
@@ -139,11 +139,15 @@
 %  \item support for \purify;
 
   \end{enumerate}
-  These requirements plus additional features such as threaded/parallel building, heterogeneous architectures and vendor support have been included in
-  the \draco\ build system.
+  These requirements plus additional features such as
+  threaded/parallel building, heterogeneous architectures and vendor
+  support have been included in the \draco\ build system.
   
-  The build system primarily uses three CMake tools~\cite{cmake}, \cmake, \ctest and \cdash.  Version control of the \draco\ source is performed by
-  \svn~\cite{svn-redbean}. These tools are freely available from \href{http://kitware.com}{Kitware} and \href{http://tigris.org}{Tigris.org}.
+  The build system primarily uses three CMake tools~\cite{cmake},
+  \cmake, \ctest and \cdash.  Version control of the \draco\ source is
+  performed by \svn~\cite{svn-redbean}. These tools are freely
+  available from \href{http://kitware.com}{Kitware} and
+  \href{http://tigris.org}{Tigris.org}, respectively.
 
 %
 %\vspace{0.5in}
