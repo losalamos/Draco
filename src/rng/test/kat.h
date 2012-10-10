@@ -34,31 +34,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rng/config.h"
 
-#if defined (__ICC)
-/* Suppress Intel's "unrecognized preprocessor directive" warning, triggered
-   by use of #warning in Random123/features/sse.h. */
-#pragma warning disable 11
-#endif
-
-#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
-#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
-/* Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h. */
-#if (GNUC_VERSION >= 40600)
-#pragma GCC diagnostic push
-#endif
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#ifdef __GNUC__
+#pragma GCC system_header
 #endif
 
 #include <Random123/philox.h>
 #include <Random123/threefry.h>
 #include <Random123/ars.h>
 #include <Random123/aes.h>
-
-#if (GNUC_VERSION >= 40600)
-/* Restore GCC diagnostics to previous state. */
-#pragma GCC diagnostic pop
-#endif
 
 enum method_e{
 #define RNGNxW_TPL(base, N, W) base##N##x##W##_e,

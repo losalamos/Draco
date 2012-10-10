@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "rng/config.h"
 
-#include <Random123/ars.h>
+#include "ut_ars.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

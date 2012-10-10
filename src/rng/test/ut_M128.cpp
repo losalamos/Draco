@@ -37,28 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int main(){ printf("No SSE.  Nothing to check\n"); return 0; }
 #else
 
-#if defined (__ICC)
-// Suppress Intel's "unrecognized preprocessor directive" warning, triggered
-// by use of #warning in Random123/features/sse.h.
-#pragma warning disable 11
-#endif
-
-#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
-#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
-// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h.
-#if (GNUC_VERSION >= 40600)
-#pragma GCC diagnostic push
-#endif
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
-
-#include <Random123/features/sse.h>
-
-#if (GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
-#pragma GCC diagnostic pop
-#endif
-
+#include "ut_M128.hh"
 #include <sstream>
 
 int main(void){

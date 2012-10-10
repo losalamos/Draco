@@ -33,6 +33,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define UTIL_M128_H__
 #include "rng/config.h"
 
+#ifdef __GNUC__
+#pragma GCC system_header
+#endif
+
 #include <Random123/features/sse.h>
 
 /* The formatting in fips-197 seems to correspond to
