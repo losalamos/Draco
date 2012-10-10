@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 
     r = gsl_rng_alloc(gsl_rng_cbrng);
     assert (gsl_rng_min(r) == 0);
-    assert (gsl_rng_max(r) == 0xffffffffUL); // Not necessarily ~0UL
+    assert (gsl_rng_max(r) == 0xffffffffUL); /* Not necessarily ~0UL */
     assert (gsl_rng_size(r) > 0);
 
     printf("%s\nulongs from %s in initial state\n", argv[0], gsl_rng_name(r));

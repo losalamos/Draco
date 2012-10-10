@@ -35,8 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Random123/features/sse.h>
 
-// The formatting in fips-197 seems to correspond to
-// byte[15] [14] ... [0]
+/* The formatting in fips-197 seems to correspond to
+   byte[15] [14] ... [0] */
 __m128i m128i_from_charbuf(const char *s){
     unsigned int bytes[16];
     sscanf(s, "%02x%02x%02x%02x" "%02x%02x%02x%02x" "%02x%02x%02x%02x" "%02x%02x%02x%02x",

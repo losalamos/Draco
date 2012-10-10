@@ -719,7 +719,7 @@ lfg_gen_dbl(unsigned *genptr)
 /*************************************************************************/
 /*************************************************************************/
 
-// Use this trick to suppress warnings about 'unused argument: end'
+/* Use this trick to suppress warnings about 'unused argument: end' */
 #define UNUSED_ARGUMENT(x) (void)x
 
 static void

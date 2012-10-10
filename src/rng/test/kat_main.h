@@ -191,7 +191,7 @@ void report_##base##N##x##W##error(const kat_instance *ti){ \
 #include "rngNxW.h"
 #undef RNGNxW_TPL
 
-// dispatch to one of the report_<GEN>NxW() functions
+/* dispatch to one of the report_<GEN>NxW() functions */
 void analyze_tests(const kat_instance *tests, size_t ntests){
     size_t i;
     for(i=0; i<ntests; ++i){
@@ -201,7 +201,7 @@ void analyze_tests(const kat_instance *tests, size_t ntests){
             if (memcmp(ti->u.base##N##x##W##_data.computed.v, ti->u.base##N##x##W##_data.expected.v, N*W/8)) report_##base##N##x##W##error(ti); break;
 #include "rngNxW.h"
 #undef RNGNxW_TPL
-        case unused: ; // silence a warning
+        case unused: ; /* silence a warning */
         }
     }
 }

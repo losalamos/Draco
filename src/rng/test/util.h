@@ -48,20 +48,20 @@ extern int verbose;
 #define NOMINMAX /* tells Windows.h to NOT define min() & max() */
 #include <Windows.h>
 R123_STATIC_INLINE double now(){
-    LARGE_INTEGER f; // ticks per second
+    LARGE_INTEGER f; /* ticks per second */
     LARGE_INTEGER t;
     QueryPerformanceFrequency(&f);
-    QueryPerformanceCounter(&t); // ticks since epoch
+    QueryPerformanceCounter(&t); /* ticks since epoch */
     return ((double)t.QuadPart)/((double)f.QuadPart);
 }
-#else // _MSC_VER
+#else /* _MSC_VER */
 #include <sys/time.h>
 R123_STATIC_INLINE double now(){
     struct timeval tv; 
     gettimeofday(&tv, 0); 
     return 1.e-6*tv.tv_usec + tv.tv_sec;
 }
-#endif // _MSC_VER
+#endif /* _MSC_VER */
 
 /* timer returns difference between current time and *d, also updates *d with current time. */
 R123_STATIC_INLINE double timer(double *d) {

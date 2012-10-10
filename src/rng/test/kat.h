@@ -35,14 +35,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rng/config.h"
 
 #if defined (__ICC)
-// Suppress Intel's "unrecognized preprocessor directive" warning, triggered
-// by use of #warning in Random123/features/sse.h.
+/* Suppress Intel's "unrecognized preprocessor directive" warning, triggered
+   by use of #warning in Random123/features/sse.h. */
 #pragma warning disable 11
 #endif
 
 #define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
 #if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
-// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h.
+/* Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h. */
 #if (GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
 #endif
@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Random123/aes.h>
 
 #if (GNUC_VERSION >= 40600)
-// Restore GCC diagnostics to previous state.
+/* Restore GCC diagnostics to previous state. */
 #pragma GCC diagnostic pop
 #endif
 
@@ -64,7 +64,7 @@ enum method_e{
 #define RNGNxW_TPL(base, N, W) base##N##x##W##_e,
 #include "rngNxW.h"
 #undef RNGNxW_TPL
-    unused // silences warning about dangling comma
+    unused /* silences warning about dangling comma */
 };
 
 #define RNGNxW_TPL(base, N, W)                       \
