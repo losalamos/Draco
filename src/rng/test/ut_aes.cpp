@@ -106,6 +106,7 @@ int main(void){
     cout << "The OpenSSL AES implementation is not linked with this binary.  Skipping the AESOpenSSL16x8\n";
 #endif // R123_USE_AES_OPENSSL
 
+    cout << "ut_aes: all OK" << endl;
     return 0;
 }
 

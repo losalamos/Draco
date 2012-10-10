@@ -79,6 +79,7 @@ main(int argc, char **argv)
 #else
     printf("%s: no AES-NI compiled into this program\n", argv[0]);
 #endif
+    printf("ut_ars: all OK\n");
     return 0;
 }
 

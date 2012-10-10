@@ -315,6 +315,8 @@ int main(void){
     doit<r123array2x64>(2, 64);
     doit<r123array4x64>(4, 64);
     doit<r123array16x8>(16, 8);
+
+    cout << "ut_carray: all OK" << endl;
     return 0;
 }
 

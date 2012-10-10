@@ -111,5 +111,7 @@ int main(int argc, char **argv){
     assert(gsl_rng_get(r) == save);
     
     gsl_rng_free (r);
+
+    printf("ut_gsl: OK\n");
     return 0;
 }

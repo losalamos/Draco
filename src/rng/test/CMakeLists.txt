@@ -84,7 +84,7 @@ if( RANDOM123_FOUND)
          "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELWITHDEBINFO" )
       add_scalar_tests(
          SOURCES    "${random123_unit_tests}"
-         PASS_REGEX "."
+         PASS_REGEX "OK"
          FAIL_REGEX "failed;error;Failure" )
    endif()
 
