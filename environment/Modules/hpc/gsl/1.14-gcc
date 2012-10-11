@@ -12,7 +12,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version      1.14
-set prefix      "/usr/projects/draco/vendors/gsl-$version/gcc433"
+set prefix      "/usr/projects/draco/vendors/gsl-$version/gcc471"
 set libdir      $prefix/lib
 set incdir      $prefix/include
 set bindir      $prefix/bin
