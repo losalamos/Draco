@@ -109,7 +109,8 @@ int main(int argc, char **argv){
 	printf("%d: %.4g\n", i, gsl_rng_uniform(r));
     }
     assert(gsl_rng_get(r) == save);
-    
+
+    gsl_rng_free (rcopy);
     gsl_rng_free (r);
 
     printf("ut_gsl: OK\n");
