@@ -12,7 +12,8 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version     1.6.17
-set prefix      /usr/projects/draco/vendors/ct/subversion-$version
+# set prefix      /usr/projects/draco/vendors/ct/subversion-$version
+set prefix      /usr/projects/draco/vendors/subversion-$version
 set bindir      $prefix/bin;
 set mandir      $prefix/man;
 set libdir      $prefix/lib;
