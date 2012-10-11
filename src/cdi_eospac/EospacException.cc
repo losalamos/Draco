@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Fri Apr  6 13:59:06 2001
  * \brief  Implementation file for the cdi_eospac exception handler class.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

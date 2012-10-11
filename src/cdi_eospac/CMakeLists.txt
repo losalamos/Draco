@@ -9,16 +9,17 @@
 cmake_minimum_required(VERSION 2.6)
 project( cdi_eospac CXX )
 
-# ---------------------------------------------------------------------------- #
-# Generate config.h (only occurs when cmake is run)
-# ---------------------------------------------------------------------------- #
+##---------------------------------------------------------------------------##
+# Requires EOSPAC 
+##---------------------------------------------------------------------------##
+find_package( EOSPAC )
+set_package_properties( EOSPAC PROPERTIES
+   DESCRIPTION "Access SESAME thermodynamic and transport data."
+   TYPE OPTIONAL
+   PURPOSE "Required for bulding the cdi_eospac component."
+   )
 
-# Create cdi_eospac/config.h
-set(V_INT   int)
-set(V_FLOAT double)
-set(V_BOOL  int)
-configure_file( config.h.in ${PROJECT_BINARY_DIR}/cdi_eospac/config.h )
-
+if( EOSPAC_FOUND )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
@@ -42,7 +43,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}/..   # ds++ and cdi header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
    ${ode_BINARY_DIR}          # ode/config.h
-#    ${parser_BINARY_DIR}
+   ${EOSPAC_INCLUDE_DIR}
 ) 
 
 # ---------------------------------------------------------------------------- #
@@ -75,3 +76,5 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
+endif() # EOSPAC_FOUND

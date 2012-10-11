@@ -14,12 +14,10 @@ project( cdi_eospac_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/cdi_eospac_test.cc 
-   ${PROJECT_SOURCE_DIR}/cdi_eospac_test.hh
+set( test_sources
+   ${PROJECT_SOURCE_DIR}/tEospac.cc
+   ${PROJECT_SOURCE_DIR}/tEospacWithCDI.cc
 )
-file( GLOB test_sources *.cc )
-list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -37,4 +35,5 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}" 
-   DEPS    Lib_cdi )
+   DEPS    "Lib_cdi;${EOSPAC_LIBRARY}" 
+   )

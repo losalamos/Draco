@@ -5,6 +5,8 @@
  * \date   Fri Apr  6 08:57:48 2001
  * \brief  Header file for SesameTables (mapping material IDs
  *         to Sesame table indexes).
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,221 +15,169 @@
 #ifndef __cdi_eospac_SesameTables_hh__
 #define __cdi_eospac_SesameTables_hh__
 
+#include "eos_Interface.h"
 #include <vector>
 
 namespace rtt_cdi_eospac
 {
  
-    // ---------------------------- //
-    // Enumerated EOSPAC data types //
-    // ---------------------------- //
+//===========================================================================//
+/*!
+ * \class SesameTables
+ * 
+ * \brief This is a helper class for Eospac.  It tells Eospac what Sesame data
+ *        is being requested and what lookup tables to use.
+ *
+ * \sa The web page for <a 
+ *     href="http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/eos.html">EOSPAC</a>.
+ *
+ * \sa The web page for <a
+ *     href="http://int.lanl.gov/projects/sdm/win/materials/">Eos Material
+ *     Identifiers</a>.  This web site also does dynamic plotting of EoS
+ *     values.
+ *
+ * Each sesame material definition has 16 data tables (actually material
+ * identifiers) that define its state.  At least one table must be defined for
+ * this to be a valid object.  This list of tables is used by the Eospac
+ * constructor to determine what Sesame table data to cache.  There are 37
+ * return types defined by EOSPAC.  Some data tables provide information for
+ * more than one return type.
+ *
+ * \example cdi_eospac/test/tEospac.cc
+ */
 
-	/*!
-	 * \brief These are the data types known by EOSPAC
-	 */
-	enum ES4DataType
-	{
-	    ES4null,      /*!< null table entry. */
-	    
-	    // Sesame Catalog 301 entries:
-	    
-	    ES4prtot,     /*!< temperature-based total pressure. */
-	    ES4entot,     /*!< temperature-based total internal energy/mass. */
-	    ES4tptot,     /*!< pressure-based total temperature. */
-	    ES4tntot,     /*!< energy-based total temperature. */
-	    ES4pntot,     /*!< energy-based total pressure. */
-	    ES4eptot,     /*!< pressure-based total internal energy/mass. */
-	    
-	    // Sesame Catalog 303 entries:
-	    
-	    ES4prion,    /*!< temperature-based ion pressure. */
-	    ES4enion,    /*!< temperature-based ion internal energy/mass. */
-	    ES4tpion,    /*!< pressure-based ion temperature. */
-	    ES4tnion,    /*!< energy-based ion temperature. */
-	    ES4pnion,    /*!< energy-based ion pressure. */
-	    ES4epion,    /*!< pressure-based ion internal energy/mass. */
-	    
-	    // Sesame Catalog 304 entries:
-	    
-	    ES4prelc,   /*!< temperature-based electron pressure. */
-	    ES4enelc,   /*!< temperature-based electron internal energy/mass. */
-	    ES4tpelc,   /*!< pressure-based electron temperature. */
-	    ES4tnelc,   /*!< energy-based electron temperature. */
-	    ES4pnelc,   /*!< energy-based electron pressure. */
-	    ES4epelc,   /*!< pressure-based electron internal energy/mass. */
-	    
-	    // Sesame Catalog 306 entries:
-	    
-	    ES4prcld,  /*!< temperature-based cold curve pressure. */
-	    ES4encld,  /*!< temperature-based cold curve internal energy/mass. */
-	    
-	    // Sesame Catalogs 502-505
-	    
-	    ES4opacr,  /*!< temperature-based Rosseland mean opacity. */
-	    ES4opacc2, /*!< temperature-based electron conductive opacity. */
-	    ES4zfree2, /*!< temperature-based number of free electrons per ion. */
-	    ES4opacp,  /*!< temperature-based Planck mean opacity. */
-	    
-	    // Sesame Catalogs 601-605
-	    
-	    ES4zfree3, /*!< temperature-based number of free electrons per ion. */
-	    ES4econde, /*!< temperature-based electron electrical conductivity. */
-	    ES4tconde, /*!< temperature-based electron thermal conductivity. */
-	    ES4therme, /*!< temperature-based electron thermo-electric coef. */
-	    ES4opacc3, /*!< temperature-based electron conductive opacity. */
-	    
-	    // Sesame Catalog 411
-	    
-	    ES4tmelt,  /*!< temperature-based melting temperature. */
-	    ES4pmelt,  /*!< temperature-based melting pressure. */
-	    ES4emelt,  /*!< temperature-based melting internal energy/mass. */
-	    
-	    // Sesame Catalog 412
-	    
-	    ES4tfreez, /*!< temperature-based freezing temperature. */
-	    ES4pfreez, /*!< temperature-based freezing pressure. */
-	    ES4efreez, /*!< temperature-based freezing internal energy/mass. */
-	    
-	    // Sesame Catalog 431
-	    
-	    ES4shearm /*!< temperature-based shear modulus. */
-	};
-
-    //===========================================================================//
-    /*!
-     * \class SesameTables
-     * 
-     * \brief This is a helper class for Eospac.  It tells Eospac what 
-     *        Sesame data is being requested and what lookup tables to 
-     *        use.
-     *
-     * \sa The web page for <a 
-     *     href="http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/eos.html">EOSPAC</a>.
-     *
-     * \sa The web page for <a 
-     *     href="http://int.lanl.gov/projects/sdm/win/materials/">Eos
-     *     Material Identifiers</a>.  This web site also does dynamic
-     *     plotting of EoS values.
-     *
-     * Each sesame material definition has 16 data tables (actually
-     * material identifiers) that define its state.  At least one
-     * table must be defined for this to be a valid object.  This list 
-     * of tables is used by the Eospac constructor to determine what
-     * Sesame table data to cache.  There are 37 return types defined
-     * by EOSPAC.  Some data tables provide information for more than
-     * one return type.
-     *
-     * \example cdi_eospac/test/tEospac.cc
-     */
-
-    // revision history:
-    // -----------------
-    // 0) original
-    // 
-    //===========================================================================//
+// revision history:
+// -----------------
+// 0) original
+// 
+//===========================================================================//
     
-    class SesameTables 
-    {
-	// DATA
+class SesameTables 
+{
+    // DATA
 	
-	/*!
-	 * \brief There are 37 return types defined by EOSPAC.
-	 */
-	const int numReturnTypes; // should be 37
+    //! There are 305 return types defined by EOSPAC (see eos_Interface.h)
+    unsigned const numReturnTypes; // should be 305 
 
-	/*!
-	 * \brief Map from EOSPAC data type to material identifier.
-	 *
-	 * Each of the enumerated EOSPAC data types can have a
-	 * different SesameTable material identifier.  This vector
-	 * contains a list of these material IDs.
-	 */
-	std::vector< int > matMap;
+    /*!
+     * \brief Map from EOSPAC data type to material identifier.
+     *
+     * Each of the enumerated EOSPAC data types can have a different
+     * SesameTable material identifier.  This vector contains a list of these
+     * material IDs.
+     */
+    std::vector< unsigned > matMap;
 
-	/*!
-	 * \brief Toggle list to identify which data types have been
-	 *        requested. 
-	 */
-	std::vector< ES4DataType > rtMap;
+    //! Toggle list to identify which data types have been requested.
+    std::vector< EOS_INTEGER > rtMap;
 
-      public:
+  public:
 	
-	// CREATORS
+    // CREATORS
 	
-	explicit SesameTables();
+    SesameTables(void);
 	
-	// ACCESSORS
+    // ACCESSORS
 
-	// set functions
+    // set functions
 
-	SesameTables& prtot( int matID ); 
-	SesameTables& entot( int matID ); 
-	SesameTables& tptot( int matID ); 
-	SesameTables& tntot( int matID ); 
-	SesameTables& pntot( int matID ); 
-	SesameTables& eptot( int matID ); 
-	SesameTables& prion( int matID ); 
-	SesameTables& enion( int matID ); 
-	SesameTables& tpion( int matID ); 
-	SesameTables& tnion( int matID ); 
-	SesameTables& pnion( int matID ); 
-	SesameTables& epion( int matID ); 
-	SesameTables& prelc( int matID ); 
-	SesameTables& enelc( int matID ); 
-	SesameTables& tpelc( int matID ); 
-	SesameTables& tnelc( int matID ); 
-	SesameTables& pnelc( int matID ); 
-	SesameTables& epelc( int matID ); 
-	SesameTables& prcld( int matID ); 
-	SesameTables& encld( int matID ); 
-	SesameTables& opacr( int matID ); 
-	SesameTables& opacc2( int matID );
-	SesameTables& zfree2( int matID );
-	SesameTables& opacp(  int matID );
-	SesameTables& zfree3( int matID );
-	SesameTables& econde( int matID );
-	SesameTables& tconde( int matID );
-	SesameTables& therme( int matID );
-	SesameTables& opacc3( int matID );
-	SesameTables& tmelt(  int matID );
-	SesameTables& pmelt(  int matID );
-	SesameTables& emelt(  int matID );
-	SesameTables& tfreez( int matID );
-	SesameTables& pfreez( int matID );
-	SesameTables& efreez( int matID );
-	SesameTables& shearm( int matID );
+    //! Thermoelectric Coefficient (1/cm^2/s)
+    SesameTables& B_DT( unsigned matID );
+    //! Shear Modulus (Gpa)
+    SesameTables& Gs_D( unsigned matID );
+    //! Electron Conducitive Opacity (cm^2/g)
+    SesameTables& Kc_DT( unsigned matID );
+    //! Electrical Conductivity (1/s)
+    SesameTables& Kec_DT( unsigned matID );
+    //! Electron Conductive Opacity (cm^2/g)
+    SesameTables& Keo_DT( unsigned matID );
+    //! Planck Mean Opacity (cm^2/g)
+    SesameTables& Kp_DT(  unsigned matID );
+    //! Rosseland Mean Opacity (cm^2/g)
+    SesameTables& Kr_DT( unsigned matID );
+    //! Thermal Conductivity (1/cm/s)
+    SesameTables& Ktc_DT( unsigned matID );
+    //! Pressure Cold Curve (GPa)
+    SesameTables& Pc_D( unsigned matID );
+    //! Electron Pressure (GPa)
+    SesameTables& Pe_DT( unsigned matID );
+    //! Electron Pressure (GPa)
+    SesameTables& Pe_DUe( unsigned matID );
+    //! Freeze Pressure (GPa)
+    SesameTables& Pf_D( unsigned matID );
+    //! Ion Pressure plus Cold Curve Pressure (GPa)
+    SesameTables& Pic_DT( unsigned matID );
+    //! Ion Pressure plus Cold Curve Pressure (GPa)
+    SesameTables& Pic_DUic( unsigned matID );
+    //! Melt Pressure (GPa)
+    SesameTables& Pm_D(  unsigned matID );
+    //! Total Pressure (GPa)
+    SesameTables& Pt_DT( unsigned matID );
+    //! Total Pressure (Gpa)
+    SesameTables& Pt_DUt( unsigned matID );
+    //! Temperature (K)
+    SesameTables& T_DPe( unsigned matID );
+    //! Temperature (K)
+    SesameTables& T_DPic( unsigned matID );
+    //! Temperature (K)
+    SesameTables& T_DPt( unsigned matID );
+    //! Temperature (K)
+    SesameTables& T_DUe( unsigned matID );
+    //! Temperature (K)
+    SesameTables& T_DUic( unsigned matID ); 
+    //! Temperature (K)
+    SesameTables& T_DUt( unsigned matID );
+    //! Freeze Temperature (eV)
+    SesameTables& Tf_D( unsigned matID );
+    //! Melt Temperature (K)
+    SesameTables& Tm_D(  unsigned matID );
+    //! Specific-Internal-Energy Cold Curve (MJ/kg)
+    SesameTables& Uc_D( unsigned matID );
+    //! Electron Specific-Internal-Energy (MJ/kg)
+    SesameTables& Ue_DPe( unsigned matID );
+    //! Electron Specific-Internal-Energy (MJ/kg)
+    SesameTables& Ue_DT( unsigned matID ); 
+    //! Freeze Specific-Internal-Energy (MJ/kg)
+    SesameTables& Uf_D( unsigned matID );
+    //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
+    SesameTables& Uic_DPic( unsigned matID ); 
+    //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
+    SesameTables& Uic_DT( unsigned matID );
+    //! Melt Specific-Internal-Energy (MJ/kg)
+    SesameTables& Um_D(  unsigned matID );
+    //! Melt Specific-Internal-Energy (MJ/kg)
+    SesameTables& Ut_DPt( unsigned matID );
+    //! Melt Specific-Internal-Energy (MJ/kg)
+    SesameTables& Ut_DT( unsigned matID );
+    //! Mean Ion Charge (Conductivity Model) (free electrons per atom)
+    SesameTables& Zfc_DT( unsigned matID );
+    //! Mean Ion Charge (Opacity Modlel) (free electrons per atom)
+    SesameTables& Zfo_DT( unsigned matID );
 
-	// More Aliases
+    // More Aliases
 
-	SesameTables& Cve(   int matID ) { return enelc( matID );}
-	SesameTables& Cvi(   int matID ) { return enion( matID );}
-// 	SesameTables& zfree( int matID ) { return zfree3( matID );}
-// 	SesameTables& chie(  int matID ) { return tconde( matID );}
+    SesameTables& Cve(   unsigned matID ) { return Ue_DT( matID );}
+    SesameTables& Cvi(   unsigned matID ) { return Uic_DT( matID );}
+// 	SesameTables& zfree( unsigned matID ) { return Zfc_DT( matID );}
+// 	SesameTables& chie(  unsigned matID ) { return Ktc_DT( matID );}
 
-	// Get functions
+    // Get functions
 	
-	/*!
-	 * \brief Return the material identifier associated with a
-	 *        Sesame return type.
-	 */
-	int matID( ES4DataType returnType ) const;
+    //! Return the material identifier associated with a Sesame return type.
+    unsigned matID( EOS_INTEGER returnType ) const;
 
-	// Return the enumerated data type associated with the
-	// provided integer index
-	ES4DataType returnTypes( int index ) const;
+    //! Return the enumerated data type associated with the integer index.
+    EOS_INTEGER returnTypes( unsigned index ) const;
 
-	// Return the number of return types (always 37)
-	int getNumReturnTypes() const 
-	{
-	    return numReturnTypes;
-	}
-
-    }; // end class SesameTables
+    //! Return the number of return types 
+    unsigned getNumReturnTypes() const { return numReturnTypes; }
+        
+}; // end class SesameTables
     
 } // end namespace rtt_cdi_eospac
 
 #endif  // __cdi_eospac_SesameTables_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_eospac/SesameTables.hh
+// end of cdi_eospac/SesameTables.hh
 //---------------------------------------------------------------------------//

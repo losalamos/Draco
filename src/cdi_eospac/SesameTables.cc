@@ -5,13 +5,14 @@
  * \date   Fri Apr  6 08:57:48 2001
  * \brief  Implementation file for SesameTables (mapping material IDs
  *         to Sesame table indexes).
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "SesameTables.hh"
-
 #include "ds++/Assert.hh"
 
 // Need for DEBUG only
@@ -20,260 +21,253 @@
 namespace rtt_cdi_eospac
 {
 
-    // Constructor.
+// Constructor.
 
-    SesameTables::SesameTables()
-	: numReturnTypes( 37 )
-	{  
-	    // Initialize the material map;
-	    matMap.resize( numReturnTypes );
-	    for ( int i=0; i<numReturnTypes; ++i )
-		matMap[i] = ES4null;
+SesameTables::SesameTables()
+    : numReturnTypes( EOS_M_DT ) //  EOS_M_DT = 305 (see eos_Interface.h)
+{  
+    // Initialize the material map;
+    matMap.resize( numReturnTypes, EOS_NullTable );
 	    
-	    // Init a list of return types
-	    rtMap.resize( numReturnTypes );
-	    for ( int i=0; i<numReturnTypes; ++i )
-		rtMap[i] = ES4null;
+    // Init a list of return types
+    rtMap.resize( numReturnTypes, EOS_NullTable );
+}
 
- 	    // EOSPAC has numReturnTypes=37 datatypes.  See
-	    // http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/
-	    // UsersDocument/HTML/EOSPAC.html#5.4 for details.
-	}
+// Set functions
 
-    // Set functions
+SesameTables& SesameTables::Pt_DT( unsigned matID )
+{
+    matMap[ EOS_Pt_DT ] = matID;
+    rtMap[ EOS_Pt_DT ] = EOS_Pt_DT;
+    return *this;
+}
 
-    SesameTables& SesameTables::prtot( int matID )
-	{
-	    matMap[ ES4prtot ] = matID;
-	    rtMap[ ES4prtot ] = ES4prtot;
-	    return *this;
-	}
+SesameTables& SesameTables::Ut_DT( unsigned matID )
+{
+    matMap[ EOS_Ut_DT ] = matID;
+    rtMap[ EOS_Ut_DT ] = EOS_Ut_DT;
+    return *this;
+}
+SesameTables& SesameTables::T_DPt( unsigned matID ) 
+{
+    matMap[ EOS_T_DPt ] = matID;
+    rtMap[ EOS_T_DPt ] = EOS_T_DPt;
+    return *this;
+}
+SesameTables& SesameTables::T_DUt( unsigned matID ) 
+{
+    matMap[ EOS_T_DUt ] = matID;
+    rtMap[ EOS_T_DUt ] = EOS_T_DUt;
+    return *this;
+}
+SesameTables& SesameTables::Pt_DUt( unsigned matID ) 
+{
+    matMap[ EOS_Pt_DUt ] = matID;
+    rtMap[ EOS_Pt_DUt ] = EOS_Pt_DUt;
+    return *this;
+}
+SesameTables& SesameTables::Ut_DPt( unsigned matID ) 
+{
+    matMap[ EOS_Ut_DPt ] = matID;
+    rtMap[ EOS_Ut_DPt ] = EOS_Ut_DPt;
+    return *this;
+}
+SesameTables& SesameTables::Pic_DT( unsigned matID ) 
+{
+    matMap[ EOS_Pic_DT ] = matID;
+    rtMap[ EOS_Pic_DT ] = EOS_Pic_DT;
+    return *this;
+}
+SesameTables& SesameTables::Uic_DT( unsigned matID ) 
+{
+    matMap[ EOS_Uic_DT ] = matID;
+    rtMap[ EOS_Uic_DT ] = EOS_Uic_DT;
+    return *this;
+}
+SesameTables& SesameTables::T_DPic( unsigned matID ) 
+{
+    matMap[ EOS_T_DPic ] = matID;
+    rtMap[ EOS_T_DPic ] = EOS_T_DPic;
+    return *this;
+}
+SesameTables& SesameTables::T_DUic( unsigned matID ) 
+{
+    matMap[ EOS_T_DUic ] = matID;
+    rtMap[ EOS_T_DUic ] = EOS_T_DUic;
+    return *this;
+}
+SesameTables& SesameTables::Pic_DUic( unsigned matID ) 
+{
+    matMap[ EOS_Pic_DUic ] = matID;
+    rtMap[ EOS_Pic_DUic ] = EOS_Pic_DUic;
+    return *this;
+}
+SesameTables& SesameTables::Uic_DPic( unsigned matID ) 
+{
+    matMap[ EOS_Uic_DPic ] = matID;
+    rtMap[ EOS_Uic_DPic ] = EOS_Uic_DPic;
+    return *this;
+}
+SesameTables& SesameTables::Pe_DT( unsigned matID ) 
+{
+    matMap[ EOS_Pe_DT ] = matID;
+    rtMap[ EOS_Pe_DT ] = EOS_Pe_DT;
+    return *this;
+}
+SesameTables& SesameTables::Ue_DT( unsigned matID ) 
+{
+    matMap[ EOS_Ue_DT ] = matID;
+    rtMap[ EOS_Ue_DT ] = EOS_Ue_DT;
+    return *this;
+}
+SesameTables& SesameTables::T_DPe( unsigned matID ) 
+{
+    matMap[ EOS_T_DPe ] = matID;
+    rtMap[ EOS_T_DPe ] = EOS_T_DPe;
+    return *this;
+}
+SesameTables& SesameTables::T_DUe( unsigned matID ) 
+{
+    matMap[ EOS_T_DUe ] = matID;
+    rtMap[ EOS_T_DUe ] = EOS_T_DUe;
+    return *this;
+}
+SesameTables& SesameTables::Pe_DUe( unsigned matID ) 
+{
+    matMap[ EOS_Pe_DUe ] = matID;
+    rtMap[ EOS_Pe_DUe ] = EOS_Pe_DUe;
+    return *this;
+}
+SesameTables& SesameTables::Ue_DPe( unsigned matID ) 
+{
+    matMap[ EOS_Ue_DPe ] = matID;
+    rtMap[ EOS_Ue_DPe ] = EOS_Ue_DPe;
+    return *this;
+}
+SesameTables& SesameTables::Pc_D( unsigned matID ) 
+{
+    matMap[ EOS_Pc_D ] = matID;
+    rtMap[ EOS_Pc_D ] = EOS_Pc_D;
+    return *this;
+}
+SesameTables& SesameTables::Uc_D( unsigned matID ) 
+{
+    matMap[ EOS_Uc_D ] = matID;
+    rtMap[ EOS_Uc_D ] = EOS_Uc_D;
+    return *this;
+}
+SesameTables& SesameTables::Kr_DT( unsigned matID ) 
+{
+    matMap[ EOS_Kr_DT ] = matID;
+    rtMap[ EOS_Kr_DT ] = EOS_Kr_DT;
+    return *this;
+}
+SesameTables& SesameTables::Keo_DT( unsigned matID )
+{
+    matMap[ EOS_Keo_DT ] = matID;
+    rtMap[ EOS_Keo_DT ] = EOS_Keo_DT;
+    return *this;
+}
+SesameTables& SesameTables::Zfo_DT( unsigned matID )
+{
+    matMap[ EOS_Zfo_DT ] = matID;
+    rtMap[ EOS_Zfo_DT ] = EOS_Zfo_DT;
+    return *this;
+}
+SesameTables& SesameTables::Kp_DT(  unsigned matID )
+{
+    matMap[ EOS_Kp_DT ] = matID;
+    rtMap[ EOS_Kp_DT ] = EOS_Kp_DT;
+    return *this;
+}
+SesameTables& SesameTables::Zfc_DT( unsigned matID )
+{
+    matMap[ EOS_Zfc_DT ] = matID;
+    rtMap[ EOS_Zfc_DT ] = EOS_Zfc_DT;
+    return *this;
+}
+SesameTables& SesameTables::Kec_DT( unsigned matID )
+{
+    matMap[ EOS_Kec_DT ] = matID;
+    rtMap[ EOS_Kec_DT ] = EOS_Kec_DT;
+    return *this;
+}
+SesameTables& SesameTables::Ktc_DT( unsigned matID )
+{
+    matMap[ EOS_Ktc_DT ] = matID;
+    rtMap[ EOS_Ktc_DT ] = EOS_Ktc_DT;
+    return *this;
+}
+SesameTables& SesameTables::B_DT( unsigned matID )
+{
+    matMap[ EOS_B_DT ] = matID;
+    rtMap[ EOS_B_DT ] = EOS_B_DT;
+    return *this;
+}
+SesameTables& SesameTables::Kc_DT( unsigned matID )
+{
+    matMap[ EOS_Kc_DT ] = matID;
+    rtMap[ EOS_Kc_DT ] = EOS_Kc_DT;
+    return *this;
+}
+SesameTables& SesameTables::Tm_D(  unsigned matID )
+{
+    matMap[ EOS_Tm_D ] = matID;
+    rtMap[ EOS_Tm_D ] = EOS_Tm_D;
+    return *this;
+}
+SesameTables& SesameTables::Pm_D(  unsigned matID )
+{
+    matMap[ EOS_Pm_D ] = matID;
+    rtMap[ EOS_Pm_D ] =EOS_Pm_D ;
+    return *this;
+}
+SesameTables& SesameTables::Um_D(  unsigned matID )
+{
+    matMap[ EOS_Um_D ] = matID;
+    rtMap[ EOS_Um_D ] = EOS_Um_D;
+    return *this;
+}
+SesameTables& SesameTables::Tf_D( unsigned matID )
+{
+    matMap[ EOS_Tf_D ] = matID;
+    rtMap[ EOS_Tf_D ] = EOS_Tf_D;
+    return *this;
+}
+SesameTables& SesameTables::Pf_D( unsigned matID )
+{
+    matMap[ EOS_Pf_D ] = matID;
+    rtMap[ EOS_Pf_D ] = EOS_Pf_D;
+    return *this;
+}
+SesameTables& SesameTables::Uf_D( unsigned matID )
+{
+    matMap[ EOS_Uf_D ] = matID;
+    rtMap[ EOS_Uf_D ] = EOS_Uf_D;
+    return *this;
+}
+SesameTables& SesameTables::Gs_D( unsigned matID )
+{
+    matMap[ EOS_Gs_D ] = matID;
+    rtMap[ EOS_Gs_D ] = EOS_Gs_D;
+    return *this;
+}
 
-	SesameTables& SesameTables::entot( int matID )
-	{
-	    matMap[ ES4entot ] = matID;
-	    rtMap[ ES4entot ] = ES4entot;
-	    return *this;
-	}
-	SesameTables& SesameTables::tptot( int matID ) 
-	{
-	    matMap[ ES4tptot ] = matID;
-	    rtMap[ ES4tptot ] = ES4tptot;
-	    return *this;
-	}
-	SesameTables& SesameTables::tntot( int matID ) 
-	{
-	    matMap[ ES4tntot ] = matID;
-	    rtMap[ ES4tntot ] = ES4tntot;
-	    return *this;
-	}
-	SesameTables& SesameTables::pntot( int matID ) 
-	{
-	    matMap[ ES4pntot ] = matID;
-	    rtMap[ ES4pntot ] = ES4pntot;
-	    return *this;
-	}
-	SesameTables& SesameTables::eptot( int matID ) 
-	{
-	    matMap[ ES4eptot ] = matID;
-	    rtMap[ ES4eptot ] = ES4eptot;
-	    return *this;
-	}
-	SesameTables& SesameTables::prion( int matID ) 
-	{
-	    matMap[ ES4prion ] = matID;
-	    rtMap[ ES4prion ] = ES4prion;
-	    return *this;
-	}
-	SesameTables& SesameTables::enion( int matID ) 
-	{
-	    matMap[ ES4enion ] = matID;
-	    rtMap[ ES4enion ] = ES4enion;
-	    return *this;
-	}
-	SesameTables& SesameTables::tpion( int matID ) 
-	{
-	    matMap[ ES4tpion ] = matID;
-	    rtMap[ ES4tpion ] = ES4tpion;
-	    return *this;
-	}
-	SesameTables& SesameTables::tnion( int matID ) 
-	{
-	    matMap[ ES4tnion ] = matID;
-	    rtMap[ ES4tnion ] = ES4tnion;
-	    return *this;
-	}
-	SesameTables& SesameTables::pnion( int matID ) 
-	{
-	    matMap[ ES4pnion ] = matID;
-	    rtMap[ ES4pnion ] = ES4pnion;
-	    return *this;
-	}
-	SesameTables& SesameTables::epion( int matID ) 
-	{
-	    matMap[ ES4enion ] = matID;
-	    rtMap[ ES4enion ] = ES4enion;
-	    return *this;
-	}
-	SesameTables& SesameTables::prelc( int matID ) 
-	{
-	    matMap[ ES4prelc ] = matID;
-	    rtMap[ ES4prelc ] = ES4prelc;
-	    return *this;
-	}
-	SesameTables& SesameTables::enelc( int matID ) 
-	{
-	    matMap[ ES4enelc ] = matID;
-	    rtMap[ ES4enelc ] = ES4enelc;
-	    return *this;
-	}
-	SesameTables& SesameTables::tpelc( int matID ) 
-	{
-	    matMap[ ES4tpelc ] = matID;
-	    rtMap[ ES4tpelc ] = ES4tpelc;
-	    return *this;
-	}
-	SesameTables& SesameTables::tnelc( int matID ) 
-	{
-	    matMap[ ES4tnelc ] = matID;
-	    rtMap[ ES4tnelc ] = ES4tnelc;
-	    return *this;
-	}
-	SesameTables& SesameTables::pnelc( int matID ) 
-	{
-	    matMap[ ES4pnelc ] = matID;
-	    rtMap[ ES4pnelc ] = ES4pnelc;
-	    return *this;
-	}
-	SesameTables& SesameTables::epelc( int matID ) 
-	{
-	    matMap[ ES4epelc ] = matID;
-	    rtMap[ ES4epelc ] = ES4epelc;
-	    return *this;
-	}
-	SesameTables& SesameTables::prcld( int matID ) 
-	{
-	    matMap[ ES4prcld ] = matID;
-	    rtMap[ ES4prcld ] = ES4prcld;
-	    return *this;
-	}
-	SesameTables& SesameTables::encld( int matID ) 
-	{
-	    matMap[ ES4encld ] = matID;
-	    rtMap[ ES4encld ] = ES4encld;
-	    return *this;
-	}
-	SesameTables& SesameTables::opacr( int matID ) 
-	{
-	    matMap[ ES4opacr ] = matID;
-	    rtMap[ ES4opacr ] = ES4opacr;
-	    return *this;
-	}
-	SesameTables& SesameTables::opacc2( int matID )
-	{
-	    matMap[ ES4opacc2 ] = matID;
-	    rtMap[ ES4opacc2 ] = ES4opacc2;
-	    return *this;
-	}
-	SesameTables& SesameTables::zfree2( int matID )
-	{
-	    matMap[ ES4zfree2 ] = matID;
-	    rtMap[ ES4zfree2 ] = ES4zfree2;
-	    return *this;
-	}
-	SesameTables& SesameTables::opacp(  int matID )
-	{
-	    matMap[ ES4opacp ] = matID;
-	    rtMap[ ES4opacp ] = ES4opacp;
-	    return *this;
-	}
-	SesameTables& SesameTables::zfree3( int matID )
-	{
-	    matMap[ ES4zfree3 ] = matID;
-	    rtMap[ ES4zfree3 ] = ES4zfree3;
-	    return *this;
-	}
-	SesameTables& SesameTables::econde( int matID )
-	{
-	    matMap[ ES4econde ] = matID;
-	    rtMap[ ES4econde ] = ES4econde;
-	    return *this;
-	}
-	SesameTables& SesameTables::tconde( int matID )
-	{
-	    matMap[ ES4tconde ] = matID;
-	    rtMap[ ES4tconde ] = ES4tconde;
-	    return *this;
-	}
-	SesameTables& SesameTables::therme( int matID )
-	{
-	    matMap[ ES4therme ] = matID;
-	    rtMap[ ES4therme ] = ES4therme;
-	    return *this;
-	}
-	SesameTables& SesameTables::opacc3( int matID )
-	{
-	    matMap[ ES4opacc3 ] = matID;
-	    rtMap[ ES4opacc3 ] = ES4opacc3;
-	    return *this;
-	}
-	SesameTables& SesameTables::tmelt(  int matID )
-	{
-	    matMap[ ES4tmelt ] = matID;
-	    rtMap[ ES4tmelt ] = ES4tmelt;
-	    return *this;
-	}
-	SesameTables& SesameTables::pmelt(  int matID )
-	{
-	    matMap[ ES4pmelt ] = matID;
-	    rtMap[ ES4pmelt ] =ES4pmelt ;
-	    return *this;
-	}
-	SesameTables& SesameTables::emelt(  int matID )
-	{
-	    matMap[ ES4emelt ] = matID;
-	    rtMap[ ES4emelt ] = ES4emelt;
-	    return *this;
-	}
-	SesameTables& SesameTables::tfreez( int matID )
-	{
-	    matMap[ ES4tfreez ] = matID;
-	    rtMap[ ES4tfreez ] = ES4tfreez;
-	    return *this;
-	}
-	SesameTables& SesameTables::pfreez( int matID )
-	{
-	    matMap[ ES4pfreez ] = matID;
-	    rtMap[ ES4pfreez ] = ES4pfreez;
-	    return *this;
-	}
-	SesameTables& SesameTables::efreez( int matID )
-	{
-	    matMap[ ES4efreez ] = matID;
-	    rtMap[ ES4efreez ] = ES4efreez;
-	    return *this;
-	}
-	SesameTables& SesameTables::shearm( int matID )
-	{
-	    matMap[ ES4shearm ] = matID;
-	    rtMap[ ES4shearm ] = ES4shearm;
-	    return *this;
-	}
+//---------------------------------------------------------------------------//
+// Get Functions
 
-    // Get Functions
+// Return the enumerated data type associated with the provided integer index
+EOS_INTEGER SesameTables::returnTypes( unsigned index ) const
+{
+    Require( index < numReturnTypes );
+    return rtMap[ index ];
+}
 
-	// Return the enumerated data type associated with the
-	// provided integer index
-	ES4DataType SesameTables::returnTypes( int index ) const
-	    {
-		Assert( index >= 0 && index < numReturnTypes );
- 		return rtMap[ index ];
-	    }
-
-    int SesameTables::matID( ES4DataType returnType ) const
-	{
-	    return matMap[ returnType ];
-	}
+unsigned SesameTables::matID( EOS_INTEGER returnType ) const
+{
+    Require( returnType >= 0 );
+    return matMap[ returnType ];
+}
 
 } // end namespace rtt_cdi_eospac
 
