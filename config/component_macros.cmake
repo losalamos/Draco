@@ -844,13 +844,11 @@ endmacro()
 # E.g.: process_autodoc_pages()
 #----------------------------------------------------------------------#
 macro( process_autodoc_pages )
-   if( BUILD_AUTODOC )
-      file( GLOB autodoc_in autodoc/*.in )
-      foreach( file ${autodoc_in} )
-         get_filename_component( dest_file ${file} NAME_WE )
-         configure_file( ${file} ${PROJECT_BINARY_DIR}/autodoc/${dest_file}.dcc @ONLY )
-      endforeach()
-   endif()
+   file( GLOB autodoc_in autodoc/*.in )
+   foreach( file ${autodoc_in} )
+      get_filename_component( dest_file ${file} NAME_WE )
+      configure_file( ${file} ${PROJECT_BINARY_DIR}/autodoc/${dest_file}.dcc @ONLY )
+   endforeach()
 endmacro()
 
 #----------------------------------------------------------------------#

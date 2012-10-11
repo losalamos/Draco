@@ -38,11 +38,22 @@ BUILD_TESTING:BOOL=ON
 # C4 communication mode (SCALAR or MPI)
 DRACO_C4:STRING=MPI
 
-# Design-by-Contract (0-7)?
+# Design-by-Contract (0-15)?
 DRACO_DBC_LEVEL:STRING=7
  
 # Keyword for creating new libraries (STATIC or SHARED).
 DRACO_LIBRARY_TYPE:STRING=SHARED
+
+# Build the tests also (default: ON)
+BUILD_TESTING:BOOL=ON
+
+# Tell the build system to print lots of extra information about its
+# state (default: OFF)
+DBS_PRINT_DEBUG_INFO:BOOL=OFF
+
+# If the compiler is GCC, optional debug modes can be selected:
+GCC_ENABLE_ALL_WARNINGS:BOOL=OFF
+GCC_ENABLE_GLIBCXX_DEBUG:BOOL=OFF
 
 # ------------------------------------------------------------
 # [OPTIONAL] If not using Draco Modules, you may need to set these

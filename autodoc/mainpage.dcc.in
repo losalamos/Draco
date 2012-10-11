@@ -46,6 +46,7 @@ the namespace reference rtt_<pkg> -->
 - \ref overview_c4
 - \ref overview_cdi
 - \ref overview_cdi_analytic
+- \ref overview_cdi_eospac
 <!-- retired - \ref overview_cdi_gandolf -->
 - \ref rtt_device
 - \ref overview_diagnostics
