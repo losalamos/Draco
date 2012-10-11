@@ -21,7 +21,7 @@ if test -z "$MODULESHOME"; then
   fi
 fi
 module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
-module load ndi openmpi emacs random123
+module load ndi openmpi emacs random123 eospac
 module load ParMetis trilinos totalview cmake numdiff git svn
 
 #LaTeX
