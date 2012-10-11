@@ -28,7 +28,7 @@ if test -z "$MODULESHOME"; then
   fi
 fi
 module load grace gcc gsl lapack openmpi cmake numdiff svn 
-module load valgrind random123
+module load valgrind random123 eospac
 module list
 
 echo " "
