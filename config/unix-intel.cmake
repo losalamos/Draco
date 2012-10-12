@@ -25,6 +25,8 @@ endif()
 #
 # Compiler Flags
 # 
+include(CheckCCompilerFlag)
+check_c_compiler_flag(-xHost HAS_XHOST)
 
 # Try 'icpc -help':
 # -inline-level=<n> control inline expansion (same as -Ob<n>)
@@ -64,10 +66,13 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -fp-model precise" )
+  if (HAS_XHOST)
+     set( CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} -xHost" )
+  endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check-uninit -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -inline-level=1 -ip -fp-speculation strict -ftz -pthread -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation safe -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -inline-level=1 -ip -fp -fp-speculation strict -ftz -pthread" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -ip -fp -fp-speculation safe -pthread" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
