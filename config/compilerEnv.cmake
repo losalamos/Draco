@@ -203,7 +203,7 @@ macro(dbsSetupCxx)
       include( unix-g++ )
    else( ${my_cxx_compiler} MATCHES "cl" )
       message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
-   endif( ${my_cxx_compiler} MATCHES "cl" )
+   endif()
 
    # Force possibly new values to cache
    set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL 
