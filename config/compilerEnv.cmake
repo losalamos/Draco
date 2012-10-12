@@ -183,7 +183,10 @@ macro(dbsSetupCxx)
 
    # C++11 support:
    option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
-   if( ${my_cxx_compiler} MATCHES "cl" )
+   if( ${my_cxx_compiler} MATCHES "clang" OR 
+         ${my_cxx_compiler} MATCHES "llvm")
+      include( apple-clang )
+   elseif( ${my_cxx_compiler} MATCHES "cl" )
       include( windows-cl )
    elseif( ${my_cxx_compiler} MATCHES "ppu-g[+][+]" )
       set( DRACO_ENABLE_CXX11 OFF )
