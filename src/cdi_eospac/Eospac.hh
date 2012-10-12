@@ -16,7 +16,6 @@
 
 // cdi_eospac dependencies
 #include "SesameTables.hh"
-//#include "cdi_eospac/config.h" // defines V_FLOAT - also see CMakeLists.txt
 
 // Draco dependencies
 #include "cdi/EoS.hh"
@@ -194,7 +193,10 @@ class Eospac : public rtt_cdi::EoS
      * \param SesTabs A rtt_cdi_eospac::SesameTables object that defines what
      * data tables will be available for queries from the Eospac object.
      */
-    Eospac( const SesameTables& SesTabs );
+    Eospac( SesameTables const & SesTabs );
+
+    //! Create an Eospack by unpacking a vector<char> stream.
+    explicit Eospac( std::vector<char> const & packed );
 
     // (defaulted) Eospac(const Eospac &rhs);
 
@@ -412,6 +414,13 @@ class Eospac : public rtt_cdi::EoS
     bool     typeFound(  EOS_INTEGER returnType ) const;
     unsigned tableIndex( EOS_INTEGER returnType ) const;
 
+
+    //! Initialize list of available table info items
+    static std::vector< EOS_INTEGER > initializeInfoItems(void);
+
+    //! Initialize descriptions of available table info items
+    static std::vector< std::string > initializeInfoItemDescriptions(void);
+    
     //! Converts a double to a length one vector.
     static inline std::vector< double > dbl_v1( double const dbl ) {
         return std::vector< double >(1,dbl); }

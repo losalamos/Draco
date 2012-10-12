@@ -14,8 +14,7 @@
 
 #include "SesameTables.hh"
 #include "ds++/Assert.hh"
-
-// Need for DEBUG only
+#include "ds++/Packing_Utils.hh"
 #include <iostream>
 
 namespace rtt_cdi_eospac
@@ -36,6 +35,48 @@ SesameTables::SesameTables()
     rtMap.resize( numReturnTypes, EOS_NullTable );
     
     return;
+}
+
+//---------------------------------------------------------------------------//
+// Construct from packed data stream
+SesameTables::SesameTables( std::vector<char> const & packed )
+    : numReturnTypes( EOS_M_DT+1 ), //  EOS_M_DT = 305 (see eos_Interface.h)
+      tableName( initializeTableNames(numReturnTypes) ),
+      tableDescription( initializeTableDescriptions(numReturnTypes) )
+{
+    // At least 3 integegers (even if the data arrays are empty).
+    Require( packed.size() >= 3*sizeof(int) );
+
+    // make an unpacker
+    rtt_dsxx::Unpacker unpacker;
+    unpacker.set_buffer(packed.size(), &packed[0]);
+
+    // unpack and check the number of tables
+    int nrt(0);
+    unpacker >> nrt;
+    Check( nrt == static_cast<int>(numReturnTypes) );
+
+    // unpack and check matMap
+    int packed_matmap_size(0);
+    unpacker >> packed_matmap_size;
+    Check( packed_matmap_size > 0 );
+
+    // provide container for unpacking and then unpack the data
+    std::vector<char> packed_matmap( packed_matmap_size );
+    for( int i=0; i<packed_matmap_size; ++i )
+        unpacker >> packed_matmap[i];
+    rtt_dsxx::unpack_data(matMap, packed_matmap);
+
+    // unpack and check rtMap
+    int packed_rtmap_size(0);
+    unpacker >> packed_rtmap_size;
+    Check( packed_rtmap_size > 0 );
+
+    // provide container for unpacking and then unpack the data
+    std::vector<char> packed_rtmap( packed_rtmap_size );
+    for( int i=0; i<packed_rtmap_size; ++i )
+        unpacker >> packed_rtmap[i];
+    rtt_dsxx::unpack_data(rtMap, packed_rtmap);
 }
 
 // Set functions
@@ -288,6 +329,59 @@ unsigned SesameTables::matID( EOS_INTEGER returnType ) const
 {
     Require( returnType >= 0 );
     return matMap[ returnType ];
+}
+
+//---------------------------------------------------------------------------//
+/*! Pack a SesameTables object into a vector<char> stream.
+ *
+ * Packed data stream:
+ *
+ * int   numReturnTypes
+ * int   matMap.size()
+ * int[] matMap
+ * int   rtMap.size()
+ * int[] rtMap
+ */
+std::vector<char> SesameTables:: pack(void) const
+{
+    using std::vector;
+    using std::string;
+
+    // pack up the matMap
+    vector<char> packed_matmap;
+    rtt_dsxx::pack_data( matMap, packed_matmap );
+
+    // pack up the rtMap
+    vector<char> packed_rtmap;
+    rtt_dsxx::pack_data( rtMap, packed_rtmap );
+
+    // Total packed size:
+    size_t size = 1 * sizeof(int) // numReturnTypes
+                  + sizeof(int) + static_cast<int>(packed_matmap.size()) // size+data
+                  + sizeof(int) + static_cast<int>(packed_rtmap.size()); // size_data
+
+    // make a container to hold the packed data
+    vector<char> packed(size);
+    
+    // make a packer and set it
+    rtt_dsxx::Packer packer;
+    packer.set_buffer(size, &packed[0]);
+
+    // pack the numReturnTypes
+    packer << static_cast<int>(numReturnTypes);
+
+    // pack the matMap (size+data)
+    packer << static_cast<int>(packed_matmap.size());
+    for( size_t i=0; i<packed_matmap.size(); ++i )
+        packer << packed_matmap[i];
+
+    // pack the rtMap (size+data)
+    packer << static_cast<int>(packed_rtmap.size());
+    for( size_t i=0; i<packed_rtmap.size(); ++i )
+        packer << packed_rtmap[i];
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+    return packed;    
 }
 
 //---------------------------------------------------------------------------//

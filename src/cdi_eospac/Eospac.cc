@@ -41,59 +41,32 @@ namespace rtt_cdi_eospac
  *
  */
 Eospac::Eospac( SesameTables const & in_SesTabs )
-    : SesTabs( in_SesTabs )      
+    : SesTabs( in_SesTabs ),
+      infoItems( initializeInfoItems() ),
+      infoItemDescriptions( initializeInfoItemDescriptions() )
 {
-    using std::string;
-    
     // Eospac can only be instantiated if SesameTables is provided.  If
     // SesameTables is invalid this will be caught in expandEosTable();
 
     // PreCache the default data type
     expandEosTable();
 
-    // Setup the static infoItems array (used for printing table information).
-    if( infoItems.size() == 0 )
-    {
-        infoItems.push_back( EOS_Cmnt_Len );
-        infoItems.push_back( EOS_Exchange_Coeff );
-        infoItems.push_back( EOS_F_Convert_Factor );
-        infoItems.push_back( EOS_Log_Val );
-        infoItems.push_back( EOS_Material_ID );
-        infoItems.push_back( EOS_Mean_Atomic_Mass );
-        infoItems.push_back( EOS_Mean_Atomic_Num );
-        infoItems.push_back( EOS_Modulus );
-        infoItems.push_back( EOS_Normal_Density );
-        infoItems.push_back( EOS_Table_Type );
-        infoItems.push_back( EOS_X_Convert_Factor );
-        infoItems.push_back( EOS_Y_Convert_Factor );
-
-        infoItemDescriptions.push_back(
-            string("The length in chars of the comments for the specified data table") );
-        infoItemDescriptions.push_back(
-            string("The exchange coefficient") );
-        infoItemDescriptions.push_back(
-            string("The conversion factor corresponding to the dependent variable, F(x,y)") );
-        infoItemDescriptions.push_back(
-            string("Non-zero if the data table is in a log10 format") );
-        infoItemDescriptions.push_back(
-            string("The SESAME material identification number") );
-        infoItemDescriptions.push_back(
-            string("The mean atomic mass") );
-        infoItemDescriptions.push_back(
-            string("The mean atomic number") );
-        infoItemDescriptions.push_back(
-            string("The solid bulk modulus") );
-        infoItemDescriptions.push_back(
-            string("The normal density") );
-        infoItemDescriptions.push_back(
-            string("The type of data table. See APPENDIX B and APPENDIX C") );
-        infoItemDescriptions.push_back(
-            string("The conv. factor corresponding to the primary indep. variable, x") );
-        infoItemDescriptions.push_back(
-            string("The conv. factor corresponding to the secondary indep. variable, y") );
-    }
-	    
 } // end Eospac::Eospac()
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Construct an Eospac by unpacking a vector<char> stream
+ */
+Eospac::Eospac( std::vector<char> const & packed )
+    : SesTabs( SesameTables( packed ) ),
+      infoItems( initializeInfoItems() ),
+      infoItemDescriptions( initializeInfoItemDescriptions() )
+{
+    // Use the initializer list to build the needed SesTabs.  Now initialize
+    // libeospac using the data found in SesTabs just like in the default
+    // ctor.     
+    expandEosTable();
+}
 
 //---------------------------------------------------------------------------//
 /*!
@@ -321,39 +294,14 @@ std::vector< double > Eospac::getElectronThermalConductivity(
  * accessing the char * under the vector (required by implication by the
  * standard) with the syntax &char_string[0]. Note, it is unsafe to use
  * iterators because they are \b not required to be char *.
+ *
+ * Eospac has no state of its own to pack.  However, this function does call
+ * the SesameTable pack() because this data is required to rebuild Eospac.
  */
 std::vector<char> Eospac::pack() const
 {
-    std::string msg = "cdi_eospac::pack() not implemented";
-    std::vector<char> packed_descriptor;
-    rtt_dsxx::pack_data(msg, packed_descriptor);
-
-    // ************************************************************
-    // See GandolfGrayOpacity.cc for how to finish this function.
-    // ************************************************************
-
-    // determine the total size: 3 ints (reaction, model, material id) + 2
-    // ints for packed_filename size and packed_descriptor size + char in
-    // packed_filename and packed_descriptor
-    int size = packed_descriptor.size() + 1;
-
-    // make a container to hold packed data
-    std::vector<char> packed(size);
-
-    // make a packer and set it
-    rtt_dsxx::Packer packer;
-    packer.set_buffer(size, &packed[0]);
-
-    // pack the descriptor
-    packer << static_cast<int>(packed_descriptor.size());
-    for( size_t i = 0; i < packed_descriptor.size(); i++ )
-	packer << packed_descriptor[i];
-
-    Insist(packer.get_ptr() == &packed[0] + size, msg);
-
-    return packed;
+    return SesTabs.pack();
 }
-
 
 // -------------- //
 // Implementation //
@@ -610,6 +558,58 @@ unsigned Eospac::tableIndex( EOS_INTEGER returnType ) const
             return i;
     
     return 0;
+}
+
+//---------------------------------------------------------------------------//
+std::vector< EOS_INTEGER > Eospac::initializeInfoItems(void)
+{
+    std::vector< EOS_INTEGER > ii;
+    ii.push_back( EOS_Cmnt_Len );
+    ii.push_back( EOS_Exchange_Coeff );
+    ii.push_back( EOS_F_Convert_Factor );
+    ii.push_back( EOS_Log_Val );
+    ii.push_back( EOS_Material_ID );
+    ii.push_back( EOS_Mean_Atomic_Mass );
+    ii.push_back( EOS_Mean_Atomic_Num );
+    ii.push_back( EOS_Modulus );
+    ii.push_back( EOS_Normal_Density );
+    ii.push_back( EOS_Table_Type );
+    ii.push_back( EOS_X_Convert_Factor );
+    ii.push_back( EOS_Y_Convert_Factor );
+    return ii;
+}
+
+//---------------------------------------------------------------------------//
+std::vector< std::string > Eospac::initializeInfoItemDescriptions(void)
+{
+    using std::string;
+    
+    std::vector< std::string > iid;
+     iid.push_back(
+         string("The length in chars of the comments for the specified data table") );
+     iid.push_back(
+         string("The exchange coefficient") );
+     iid.push_back(
+         string("The conversion factor corresponding to the dependent variable, F(x,y)") );
+     iid.push_back(
+         string("Non-zero if the data table is in a log10 format") );
+     iid.push_back(
+         string("The SESAME material identification number") );
+     iid.push_back(
+         string("The mean atomic mass") );
+     iid.push_back(
+         string("The mean atomic number") );
+     iid.push_back(
+         string("The solid bulk modulus") );
+     iid.push_back(
+         string("The normal density") );
+     iid.push_back(
+         string("The type of data table. See APPENDIX B and APPENDIX C") );
+     iid.push_back(
+         string("The conv. factor corresponding to the primary indep. variable, x") );
+     iid.push_back(
+         string("The conv. factor corresponding to the secondary indep. variable, y") );
+     return iid;
 }
 
 } // end namespace rtt_cdi_eospac

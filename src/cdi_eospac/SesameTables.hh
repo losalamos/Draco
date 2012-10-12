@@ -30,12 +30,7 @@ namespace rtt_cdi_eospac
  *        is being requested and what lookup tables to use.
  *
  * \sa The web page for <a 
- *     href="http://laurel.lanl.gov/XCI/PROJECTS/DATA/eos/eos.html">EOSPAC</a>.
- *
- * \sa The web page for <a
- *     href="http://int.lanl.gov/projects/sdm/win/materials/">Eos Material
- *     Identifiers</a>.  This web site also does dynamic plotting of EoS
- *     values.
+ *     href="http://xweb.lanl.gov/PROJECTS/DATA/eos/">EOSPAC</a>.
  *
  * Each sesame material definition has 16 data tables (actually material
  * identifiers) that define its state.  At least one table must be defined for
@@ -83,8 +78,11 @@ class SesameTables
     std::vector< std::string > const tableDescription;
 
     // CREATORS
-	
+
+    //! Default constructor
     SesameTables(void);
+    //! Construct by unpacking a vector<char> stream.
+    explicit SesameTables( std::vector<char> const & packed );
 	
     // ACCESSORS
 
@@ -181,6 +179,9 @@ class SesameTables
     //! Return the number of return types 
     unsigned getNumReturnTypes() const { return numReturnTypes; }
 
+    //! Pack a SesameTables object into a vector<char> stream.
+    std::vector<char> pack() const;
+    
     // implementation
     static std::vector< std::string > initializeTableNames(        size_t datasize );
     static std::vector< std::string > initializeTableDescriptions( size_t datasize );
