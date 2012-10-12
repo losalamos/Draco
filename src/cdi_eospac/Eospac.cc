@@ -19,6 +19,7 @@
 #include "ds++/Packing_Utils.hh"
 
 // C++ standard library dependencies
+#include <string>
 #include <sstream>
 #include <iostream>
 
@@ -40,16 +41,57 @@ namespace rtt_cdi_eospac
  *
  */
 Eospac::Eospac( SesameTables const & in_SesTabs )
-    : SesTabs( in_SesTabs )
+    : SesTabs( in_SesTabs )      
 {
+    using std::string;
+    
     // Eospac can only be instantiated if SesameTables is provided.  If
     // SesameTables is invalid this will be caught in expandEosTable();
 
     // PreCache the default data type
     expandEosTable();
-		
-    // May want to use "es1info()" to get info about table? //
-    // May want to use "es1name()" to get table name?       //
+
+    // Setup the static infoItems array (used for printing table information).
+    if( infoItems.size() == 0 )
+    {
+        infoItems.push_back( EOS_Cmnt_Len );
+        infoItems.push_back( EOS_Exchange_Coeff );
+        infoItems.push_back( EOS_F_Convert_Factor );
+        infoItems.push_back( EOS_Log_Val );
+        infoItems.push_back( EOS_Material_ID );
+        infoItems.push_back( EOS_Mean_Atomic_Mass );
+        infoItems.push_back( EOS_Mean_Atomic_Num );
+        infoItems.push_back( EOS_Modulus );
+        infoItems.push_back( EOS_Normal_Density );
+        infoItems.push_back( EOS_Table_Type );
+        infoItems.push_back( EOS_X_Convert_Factor );
+        infoItems.push_back( EOS_Y_Convert_Factor );
+
+        infoItemDescriptions.push_back(
+            string("The length in chars of the comments for the specified data table") );
+        infoItemDescriptions.push_back(
+            string("The exchange coefficient") );
+        infoItemDescriptions.push_back(
+            string("The conversion factor corresponding to the dependent variable, F(x,y)") );
+        infoItemDescriptions.push_back(
+            string("Non-zero if the data table is in a log10 format") );
+        infoItemDescriptions.push_back(
+            string("The SESAME material identification number") );
+        infoItemDescriptions.push_back(
+            string("The mean atomic mass") );
+        infoItemDescriptions.push_back(
+            string("The mean atomic number") );
+        infoItemDescriptions.push_back(
+            string("The solid bulk modulus") );
+        infoItemDescriptions.push_back(
+            string("The normal density") );
+        infoItemDescriptions.push_back(
+            string("The type of data table. See APPENDIX B and APPENDIX C") );
+        infoItemDescriptions.push_back(
+            string("The conv. factor corresponding to the primary indep. variable, x") );
+        infoItemDescriptions.push_back(
+            string("The conv. factor corresponding to the secondary indep. variable, y") );
+    }
 	    
 } // end Eospac::Eospac()
 
@@ -94,6 +136,55 @@ Eospac::~Eospac()
 // --------- //
 // Accessors //
 // --------- //
+
+void Eospac::printTableInformation( EOS_INTEGER const tableType,
+                                    std::ostream & out ) const
+{
+    // Obtain the table handle for this type
+    EOS_INTEGER tableHandle( tableHandles[ tableIndex( tableType )]);
+    
+    EOS_INTEGER one(1);
+    EOS_INTEGER errorCode(EOS_OK);
+    // std::vector< EOS_REAL > infoVals( infoItems.size() );
+    EOS_REAL infoVal;
+
+    out << "\nEOSPAC information for Table " << SesTabs.tableName[tableType]
+        << " (" << SesTabs.tableDescription[tableType] << ")\n"
+        << "-------------------------------------------------------------"
+        << "-------------------------\n";
+    
+    for( size_t i=0; i<infoItems.size(); ++i )
+    {
+        eos_GetTableInfo( &tableHandle, &one, &infoItems[i], &infoVal, 
+                          &errorCode );
+        if( errorCode == EOS_OK )
+        {
+            out << std::setiosflags(std::ios::fixed)
+                << std::setw(70) << std::left << infoItemDescriptions[i] << ": "
+                << std::setprecision(6) << std::setiosflags(std::ios::fixed)
+                << std::setw(13) << std::right << infoVal << std::endl;
+        }
+        else if( errorCode != EOS_INVALID_INFO_FLAG )
+        {
+            std::ostringstream outputString;
+            EOS_CHAR errorMessage[EOS_MaxErrMsgLen];
+            // Ignore EOS_INVALID_INFO_FLAG since not all infoItems are
+            // currently applicable to a specific tableHandle. 
+            eos_GetErrorMessage( &errorCode, errorMessage );
+            outputString << "\n\tAn unsuccessful request for EOSPAC table information "
+                     << "was made by eos_GetTableInfo().\n"
+                     << "\tThe requested infoType was \"" 
+                     << infoItems[i] << "\" (see eos_Interface.h for type)\n"
+                     << "\tThe error code returned was \""
+                     << errorCode << "\".\n"
+                     << "\tThe associated error message is:\n\t\""
+                     << errorMessage
+                     << "\"\n";
+            throw EospacException( outputString.str() );
+        }
+    }
+    return;
+}
 
 //---------------------------------------------------------------------------//
 double Eospac::getSpecificElectronInternalEnergy(
@@ -233,7 +324,7 @@ std::vector< double > Eospac::getElectronThermalConductivity(
  */
 std::vector<char> Eospac::pack() const
 {
-    std::string msg = "eospac::pack not fully implemented";
+    std::string msg = "cdi_eospac::pack() not implemented";
     std::vector<char> packed_descriptor;
     rtt_dsxx::pack_data(msg, packed_descriptor);
 
@@ -258,7 +349,7 @@ std::vector<char> Eospac::pack() const
     for( size_t i = 0; i < packed_descriptor.size(); i++ )
 	packer << packed_descriptor[i];
 
-    Ensure (packer.get_ptr() == &packed[0] + size);
+    Insist(packer.get_ptr() == &packed[0] + size, msg);
 
     return packed;
 }
@@ -493,6 +584,7 @@ bool Eospac::typeFound( EOS_INTEGER returnType ) const
     return false;
 }
 
+//---------------------------------------------------------------------------//
 unsigned Eospac::tableIndex( EOS_INTEGER returnType ) const
 {
     // Loop over all available types.  If the requested type id matches on in
@@ -508,7 +600,8 @@ unsigned Eospac::tableIndex( EOS_INTEGER returnType ) const
                      << "for which EOSPAC does not have an\n"
                      << "\tassociated material identifier.\n"
                      << "\tRequested returnType = \"" 
-                     << returnType << "\"\n";
+                     << SesTabs.tableName[returnType]
+                     << " (" << SesTabs.tableDescription[returnType] << ")\"\n";
         throw EospacUnknownDataType( outputString.str() );
     }
     

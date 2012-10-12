@@ -23,6 +23,7 @@
 
 // C++ standard library dependencies
 #include <vector>
+#include <iostream>
 
 namespace rtt_cdi_eospac
 {
@@ -164,20 +165,21 @@ class Eospac : public rtt_cdi::EoS
      */
     mutable std::vector< EOS_INTEGER > returnTypes;
 
-    /*!
-     * \brief The eos tables are cached with this pointer. 
+    /*! \brief handles to individual portions of the EOS table.
      *
-     * The length and contents are set in the contructor by the EOSPAC routine
-     * es1tabs_().
-     *
-     * EOSPAC uses different data types on different architectures.  Most of
-     * these differences are dealt with directly by the EospacWrapper class.
-     * Unfortunatley, the actual eosTable must be controlled by the host
-     * (Eospac) and must match the data type expected by libeospac.a.
+     * The EOS tables are allocated and controlled by EOSPAC.  These handles
+     * act as pointers into the table.  Each handle is associated with a
+     * tuple {material identifier, data type}.
      */
-    // mutable V_FLOAT *eosTable;
-    mutable std::vector<EOS_INTEGER> tableHandles;
+     mutable std::vector<EOS_INTEGER> tableHandles; 
 
+    /*!
+     * \brief A list of information enumerations that can be used to query
+     *        information about EOS tables.
+     */
+    mutable std::vector< EOS_INTEGER > infoItems;
+    mutable std::vector< std::string > infoItemDescriptions;
+    
   public:
 	
     // ------------ //
@@ -203,7 +205,7 @@ class Eospac : public rtt_cdi::EoS
      * destroyed.  We define the destructor in the implementation file to
      * avoid including the unnecessary header files.
      */
-    ~Eospac();
+    ~Eospac(void);
 	
     // MANIPULATORS
 	
@@ -214,16 +216,18 @@ class Eospac : public rtt_cdi::EoS
     // --------- //
 
     /*!
+     * \brief
+     */
+    void printTableInformation( EOS_INTEGER const tableType,
+                                std::ostream & out = std::cout ) const;
+    
+    /*!
      * \brief Retrieve the specific electron internal energy given a
      *        temperature and a density for this material.
      *
      * \param density Density of the material in g/cm^3
      * \param temperature Temperature of the material in keV.
      * \return The specific electron internal energy in kJ/g.
-
-
-     * v6.2: density: Mg/m^3
-     *       temperature: K
      */
     double getSpecificElectronInternalEnergy(
         double temperature, double density ) const;

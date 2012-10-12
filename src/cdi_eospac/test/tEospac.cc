@@ -44,9 +44,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
 {
     // Start the test.
 
-    std::cout << std::endl
-	      << "Test of C++ code calling EOSPAC routines" 
-	      << std::endl << std::endl;
+    std::cout << "\nTest of C++ code calling EOSPAC routines\n"  << std::endl;
     
     // ---------------------------- //
     // Create a SesameTables object //
@@ -176,8 +174,6 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     
     double density     = 1.0;  // g/cm^3
     double temperature = 5800; // K
-    // double density = 2.8; // g/cm^3
-    // double temperature = 273; // K = 0 C
     temperature *= K2keV;      // convert temps to keV
     
     double refValue = 1.0507392783;  // kJ/g
@@ -211,7 +207,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
         PASSMSG("getElectronHeatCapacity() test passed.");
     else
         FAILMSG("getElectronHeatCapacity() test failed.");
-    
+
     // Retrive an Ion Internal Energy
     
     refValue = 5.23391652028; // kJ/g
@@ -236,7 +232,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
         PASSMSG("getIonHeatCapacity() test passed.");
     else
         FAILMSG("getIonHeatCapacity() test failed.");
-    
+
     // Retrieve the number of free electrons per ion
     
     refValue = 12.8992087458; // electrons per ion
@@ -300,17 +296,176 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
         FAILMSG("getElectronHeatCapacity() test failed for vector state values.");
     }
     
-    // This result should also match the scalar value
-    // calculated above.
+    // Retrieve the electron based thermal conductivity
+    // This result should also match the scalar value calculated above.
+   
+    std::vector<double> vchie(2);
+    vchie = spEospac->getElectronThermalConductivity( vtemps, vdensities );
     
-    heatCapacity = spEospac->getElectronHeatCapacity( temperature, density );
-    
-    if ( soft_equiv( vCve[0], heatCapacity, tol ) )
-        PASSMSG("getElectronHeatCapacity() test passed for vector state values.");
+    if ( soft_equiv( vchie[0], vchie[1], tol ) )
+        PASSMSG("getElectronThermalConductivity() test passed for vector.");
     else
-        FAILMSG("getElectronHeatCapacity() test failed for vector state values.");
+        FAILMSG("getElectronThermalConductivity() test failed for vector.");
+
+    // Retrieve the ion based heat capacity
+    // This result should also match the scalar value calculated above.
+   
+    std::vector<double> vCvi(2);
+    vCvi = spEospac->getIonHeatCapacity( vtemps, vdensities );
     
+    if ( soft_equiv( vCvi[0], vCvi[1], tol ) )
+        PASSMSG("getIonHeatCapacity() test passed for vector.");
+    else
+        FAILMSG("getIonHeatCapacity() test failed for vector.");
+
+    // Retrieve the number of free electrons per ion
+    // This result should also match the scalar value calculated above.
+   
+    std::vector<double> vnfepi(2);
+    vnfepi = spEospac->getNumFreeElectronsPerIon( vtemps, vdensities );
+    
+    if ( soft_equiv( vnfepi[0], vnfepi[1], tol ) )
+        PASSMSG("getNumFreeElectronsPerIon() test passed for vector.");
+    else
+        FAILMSG("getNumFreeElectronsPerIon() test failed for vector.");
+
+    // Retrieve the specific electron internal energy
+    // This result should also match the scalar value calculated above.
+   
+    std::vector<double> vUe(2);
+    vUe = spEospac->getSpecificElectronInternalEnergy( vtemps, vdensities );
+    
+    if ( soft_equiv( vUe[0], vUe[1], tol ) )
+        PASSMSG("getSpecificElectronInternalEnergy() test passed for vector.");
+    else
+        FAILMSG("getSpecificElectronInternalEnergy() test failed for vector.");
+
+    // Retrieve the specific ion internal energy
+    // This result should also match the scalar value calculated above.
+   
+    std::vector<double> vUi(2);
+    vUi = spEospac->getSpecificIonInternalEnergy( vtemps, vdensities );
+    
+    if ( soft_equiv( vUe[0], vUe[1], tol ) )
+        PASSMSG("getSpecificIonInternalEnergy() test passed for vector.");
+    else
+        FAILMSG("getSpecificIonInternalEnergy() test failed for vector.");
+
+    return;
 } // end of runTest()
+
+
+//---------------------------------------------------------------------------//
+// Test the cdi_eospac exception class
+//---------------------------------------------------------------------------//
+void cdi_eospac_except_test( rtt_dsxx::UnitTest & ut )
+{
+    // Material: Iron
+    // 2140 provides tables: 101 102 103 201 301 303 304 305 306 401
+    int const Fe2140( 2140 );
+    // 12140 provides tables: 101 201 501 502 503 504 505
+    int const Fe12140( 12140 );
+
+    // Create a SesameTables object for Iron and setup the tables
+    rtt_cdi_eospac::SesameTables FeSt;
+
+    // Total Pressure (GPa) from table 301
+    FeSt.Pt_DT( Fe2140 );
+
+    // Vapor Density on coexistence line (Mg/m^3) from table 401
+    FeSt.Dv_T( Fe2140 );
+
+    // Calculated versus Interpolated Opacity Grid Boundary (from table 501) 
+    FeSt.Ogb( Fe12140 );
+
+    // Table Comments:
+    // EOS_Comment
+    // EOS_Info
+
+    // Generate an Eospac object
+
+    rtt_dsxx::SP< rtt_cdi_eospac::Eospac const > spEospac;
+    spEospac = new rtt_cdi_eospac::Eospac( FeSt );
+
+    // Print table information for Pt_DT:
+    {    
+        std::ostringstream msg;
+        spEospac->printTableInformation( EOS_Pt_DT, msg );
+        std::cout << "\nTable information for Fe2140:\n" << msg.str() << std::endl;
+        
+        // Examine the output
+        std::map< std::string, unsigned > wordcount =
+            rtt_dsxx::UnitTest::get_word_count( msg, false );
+        
+        if( wordcount[ std::string("EOS_Pt_DT") ] == 1 &&
+            wordcount[ std::string("2140") ]      == 1 )
+            PASSMSG( "Information table for Pt_DT for Fe2140 printed correctly.");
+        else
+            FAILMSG( "Information table for Pt_DT for Fe2140 failed to print.");
+    }
+    
+    // Try to print data for a table that is not loaded.
+    // Print table information for Pt_DT:
+    {
+
+        std::cout << "\nAttempting to access a table that should not be available ..."
+                  << std::endl;
+        bool exceptionThrown(false);
+        try
+        {
+            std::ostringstream msg;
+            spEospac->printTableInformation( EOS_Ktc_DT, msg );
+            std::cout << "Table information for Fe2140:\n" << msg.str() << std::endl;
+        }
+        catch(rtt_cdi_eospac::EospacException & err )
+        {
+            exceptionThrown = true;
+            std::ostringstream msg;
+            msg << "Correctly caught an exception.  The message is "
+                << err.what() << std::endl;
+        }
+
+        if( exceptionThrown )
+            PASSMSG("Attempted access to unloaded table throws exception.");
+        else
+            FAILMSG("Failed to throw exeption for invalid table access.");
+    }
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
+//!  Tests the Eospac constructor and access routines.
+void cdi_eospac_tpack( rtt_dsxx::UnitTest & ut )
+{
+    // Start the test.
+    std::cout << "\nTest the 'incomplete' pack() function for "
+              << "cdi_eospac().\n" << std::endl;
+
+     int const Al3717 = 3717;
+     rtt_cdi_eospac::SesameTables AlSt;
+     AlSt.Uic_DT( Al3717 );
+     rtt_dsxx::SP< rtt_cdi_eospac::Eospac const>
+         spEospac( new rtt_cdi_eospac::Eospac( AlSt ));
+
+     // The packer is not in place.  This will throw an exception
+     bool exceptionThrown(false);
+     try
+     {
+         std::vector<char> packed_image = spEospac->pack();
+     }
+     catch( rtt_dsxx::assertion & err )
+     {
+         exceptionThrown = true;
+     }
+
+     if( exceptionThrown )
+         PASSMSG("Attempt to use pack() throws exception.");
+     else
+         FAILMSG("Failed to throw exeption when using pack().");
+     
+    return;
+}
 
 } // end of namespace rtt_cdi_eospac_test
 
@@ -324,6 +479,8 @@ int main(int argc, char *argv[])
     {
 	// >>> UNIT TESTS
         rtt_cdi_eospac_test::cdi_eospac_test(ut);
+        rtt_cdi_eospac_test::cdi_eospac_except_test(ut);
+        rtt_cdi_eospac_test::cdi_eospac_tpack(ut);
     }
     catch (rtt_cdi_eospac::EospacException &err )
     {

@@ -17,6 +17,7 @@
 
 #include "eos_Interface.h"
 #include <vector>
+#include <string>
 
 namespace rtt_cdi_eospac
 {
@@ -72,15 +73,39 @@ class SesameTables
     std::vector< EOS_INTEGER > rtMap;
 
   public:
-	
+    
+    // DATA
+    
+    //! Return the table name based on the enum.
+    std::vector< std::string > const tableName;
+
+    //! Return a description of the table based on the enum
+    std::vector< std::string > const tableDescription;
+
     // CREATORS
 	
     SesameTables(void);
 	
     // ACCESSORS
 
-    // set functions
+    // set functions: Uncomment when these are needed and unit tests are added.
 
+    //! Thermal Conductivity (1/cm/s)
+    SesameTables& Ktc_DT( unsigned matID );
+    //! Electron Specific-Internal-Energy (MJ/kg)
+    SesameTables& Ue_DT( unsigned matID ); 
+    //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
+    SesameTables& Uic_DT( unsigned matID );
+    //! Mean Ion Charge (Conductivity Model) (free electrons per atom)
+    SesameTables& Zfc_DT( unsigned matID );
+    //! Total Pressure (GPa)
+    SesameTables& Pt_DT( unsigned matID );
+    //! Vapor Density on coexistence line (Mg/m^3) from table 401
+    SesameTables& Dv_T( unsigned matID );
+    //! Calculated versus Interpolated Opacity Grid Boundary (from table 501)
+    SesameTables& Ogb( unsigned matID );
+    
+#if 0
     //! Thermoelectric Coefficient (1/cm^2/s)
     SesameTables& B_DT( unsigned matID );
     //! Shear Modulus (Gpa)
@@ -95,8 +120,6 @@ class SesameTables
     SesameTables& Kp_DT(  unsigned matID );
     //! Rosseland Mean Opacity (cm^2/g)
     SesameTables& Kr_DT( unsigned matID );
-    //! Thermal Conductivity (1/cm/s)
-    SesameTables& Ktc_DT( unsigned matID );
     //! Pressure Cold Curve (GPa)
     SesameTables& Pc_D( unsigned matID );
     //! Electron Pressure (GPa)
@@ -111,8 +134,6 @@ class SesameTables
     SesameTables& Pic_DUic( unsigned matID );
     //! Melt Pressure (GPa)
     SesameTables& Pm_D(  unsigned matID );
-    //! Total Pressure (GPa)
-    SesameTables& Pt_DT( unsigned matID );
     //! Total Pressure (Gpa)
     SesameTables& Pt_DUt( unsigned matID );
     //! Temperature (K)
@@ -135,32 +156,20 @@ class SesameTables
     SesameTables& Uc_D( unsigned matID );
     //! Electron Specific-Internal-Energy (MJ/kg)
     SesameTables& Ue_DPe( unsigned matID );
-    //! Electron Specific-Internal-Energy (MJ/kg)
-    SesameTables& Ue_DT( unsigned matID ); 
     //! Freeze Specific-Internal-Energy (MJ/kg)
     SesameTables& Uf_D( unsigned matID );
     //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
     SesameTables& Uic_DPic( unsigned matID ); 
-    //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
-    SesameTables& Uic_DT( unsigned matID );
     //! Melt Specific-Internal-Energy (MJ/kg)
     SesameTables& Um_D(  unsigned matID );
     //! Melt Specific-Internal-Energy (MJ/kg)
     SesameTables& Ut_DPt( unsigned matID );
     //! Melt Specific-Internal-Energy (MJ/kg)
     SesameTables& Ut_DT( unsigned matID );
-    //! Mean Ion Charge (Conductivity Model) (free electrons per atom)
-    SesameTables& Zfc_DT( unsigned matID );
     //! Mean Ion Charge (Opacity Modlel) (free electrons per atom)
     SesameTables& Zfo_DT( unsigned matID );
-
-    // More Aliases
-
-    SesameTables& Cve(   unsigned matID ) { return Ue_DT( matID );}
-    SesameTables& Cvi(   unsigned matID ) { return Uic_DT( matID );}
-// 	SesameTables& zfree( unsigned matID ) { return Zfc_DT( matID );}
-// 	SesameTables& chie(  unsigned matID ) { return Ktc_DT( matID );}
-
+#endif
+    
     // Get functions
 	
     //! Return the material identifier associated with a Sesame return type.
@@ -171,7 +180,11 @@ class SesameTables
 
     //! Return the number of return types 
     unsigned getNumReturnTypes() const { return numReturnTypes; }
-        
+
+    // implementation
+    static std::vector< std::string > initializeTableNames(        size_t datasize );
+    static std::vector< std::string > initializeTableDescriptions( size_t datasize );
+    
 }; // end class SesameTables
     
 } // end namespace rtt_cdi_eospac
