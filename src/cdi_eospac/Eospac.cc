@@ -387,24 +387,30 @@ std::vector< double > Eospac::getF(
 
     switch( etdd )
     {
-        case ETDD_VALUE: return returnVals; break;
+        case ETDD_VALUE:
+        {
+            // return returnVals;
+            break;
+        }
         case ETDD_DFDX:
         {
-            return dFx;
+            // return dFx;
+            returnVals = dFx;
             break;
         }
         case ETDD_DFDY:
         {
             // Convert back to temperature units of keV (kJ/g/K -> kJ/g/keV):
-            std::transform( dFy.begin(), dFy.end(), dFy.begin(), keV2K );
-            return dFy;
+            std::transform( dFy.begin(), dFy.end(), returnVals.begin(), keV2K );
+            // return dFy;
             break;
         }
         default:
+        {
             Insist( etdd == ETDD_VALUE || etdd == ETDD_DFDX || etdd == ETDD_DFDY,
                     "Bad value for EosTableDataDerivative." );
+        }
     }
-    // should never get here.
     return returnVals;
 }
 
