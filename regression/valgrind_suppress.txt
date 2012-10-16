@@ -10,10 +10,10 @@
 
 # OR --------
 
-# mpirun -np 1 valgrind --leak-check=full --suppressions=/home/kgt/draco/regression/valgrind_suppress.txt ./phw
+# mpirun -np 1 valgrind --leak-check=full --suppressions=/home/kellyt/draco/regression/valgrind_suppress.txt ./phw
 
 ## -------------------------------------------------------------------------- ##
-## OpenMPI-1.3.3
+## OpenMPI-1.6
 ## -------------------------------------------------------------------------- ##
 {
    <libmpi-syscall>
@@ -62,10 +62,6 @@
   ...
   fun:orterun
 }
-
-#--------------------------------------------------------
-## Inserted for Yellowrail
-
 {
   <yellowrail: syscall munmap>
   Memcheck:Addr1
@@ -137,14 +133,12 @@
    ...
    obj:/*/libmpi.so*
 }
-#--------------------------------------------------------
-## Inserted for Turing
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   ...
-   obj:/lib64/ld-2.5.so
-}
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Leak
+#    ...
+#    obj:/lib64/ld-2.5.so
+# }
 #--------------------------------------------------------
 ## Python suppressions
 {
@@ -360,9 +354,30 @@
    ...
 }
 {
-   fortran/read
+   fortran/read/1
    Memcheck:Cond
    fun:for__nml_lex
    fun:for_read_seq_nml
    ...
+}
+{
+   fortran/write/1
+   Memcheck:Cond
+   ...
+   fun:_gfortrani_write_i
+   ...
+}
+
+#================ libc problems =====================================#
+# See https://bugzilla.redhat.com/show_bug.cgi?id=629976
+# This only shows up for fortran main().
+{
+   libc/free/error/below/main/1
+   Memcheck:Free
+   fun:free
+   fun:free_mem
+   fun:__libc_freeres
+   fun:_vgnU_freeres
+   fun:exit
+   fun:(below main)
 }
