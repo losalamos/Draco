@@ -138,6 +138,7 @@ int draco_getstat( std::string const &  fqName )
         clean_fqName=fqName.substr(0,fqName.size()-1);
     else
         clean_fqName=fqName;
+    
     std::cout << "fqName = " << fqName 
             << "\nclean_fqName = " << clean_fqName << std::endl;
     struct _stat buf;
@@ -149,8 +150,8 @@ int draco_getstat( std::string const &  fqName )
 }
 
 //---------------------------------------------------------------------------//
-/*! \brief Wrapper for system dependent realpath call.
- *
+/*! 
+ * \brief Wrapper for system dependent realpath call.
  */
 std::string draco_getrealpath( std::string const & path )
 {
@@ -166,8 +167,24 @@ std::string draco_getrealpath( std::string const & path )
     return std::string(buffer);
 }
 
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Make a directory
+ * boost::filesystem::create_directories("/tmp/a/b/c");
+ * \todo Do we need a permissions argument?
+ */
+void draco_mkdir( std::string const & path )
+{
+    // Insist( ! fileExists( path ), "That path already exists." );
+#ifdef WIN32
+    _mkdir( path.c_str() );
+#else
+    mkdir( path.c_str(), 0700 );
+    // S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
+#endif    
+}
 
-} // end of rtt_dsxx
+} // end of namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
 // end of SystemCall.cc

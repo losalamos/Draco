@@ -266,6 +266,98 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     return;
 }
 
+//---------------------------------------------------------------------------//
+void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
+{
+    std::cout << "\nBegin test tstPath::test_draco_remove.\n" << std::endl;
+    {
+        // create a file.
+        std::cout << "Creating a file..." << std::endl;
+        std::string dummyFile("dummyFile.txt");
+        std::ofstream outfile( dummyFile.c_str() );
+        outfile.close();
+
+        // Did we create the file?
+        if( fileExists( dummyFile ) )
+        {
+            PASSMSG( string("Successfully created file = ") + dummyFile );
+        }
+        else
+        {
+            FAILMSG( string("Failed to create file = ") + dummyFile );
+            // no reason to continue.
+            return;
+        }
+
+        // Remove the file
+        draco_remove( dummyFile );
+        if( fileExists( dummyFile ) )
+            FAILMSG( string("Failed to remove file = ") + dummyFile );
+        else
+            PASSMSG( string("Successfully removed file = ") + dummyFile );
+    }
+
+    {
+        // Test a more complex sytem of directories and files.
+    
+        std::cout << "Creating a file in a subdirectory..." << std::endl;
+
+        std::string dummyFile1("dummydir/d1/dummyFile1.txt");
+        std::string dummyFile2("dummydir/d1/dummyFile2.txt");
+        std::string dummyFile3("dummydir/dummyFile3.txt");
+        std::string dummyDir1( getFilenameComponent( dummyFile1, FC_PATH ));
+        std::string dummyDir2( getFilenameComponent( dummyDir1, FC_PATH ));
+
+        // Create directories.
+        
+        draco_mkdir( dummyDir2 ); // "dummydir"
+        draco_mkdir( dummyDir1 ); // "dummydir/d1"
+        if( isDirectory( dummyDir2 ) )
+            PASSMSG( std::string("Successfully created directory = ") + dummyDir2 );
+        else
+            FAILMSG( std::string("Failed to create directory = ") + dummyDir2 );
+        draco_mkdir( dummyDir1 );
+        if( isDirectory( dummyDir1 ) )
+            PASSMSG( std::string("Successfully created directory = ") + dummyDir1 );
+        else
+            FAILMSG( std::string("Failed to create directory = ") + dummyDir1 );
+
+        // Create files
+
+        std::ofstream outfile1( dummyFile1.c_str() );
+        std::ofstream outfile2( dummyFile2.c_str() );
+        std::ofstream outfile3( dummyFile3.c_str() );
+        outfile1.close();
+        outfile2.close();
+        outfile3.close();
+
+        // Did we create the files?
+        if( fileExists( dummyFile1 ) && fileExists( dummyFile2 )
+            && fileExists( dummyFile3 ) )
+        {
+            PASSMSG( string("Successfully created files = ") + dummyFile1
+                     + std::string(", ") + dummyFile2 + std::string(" and ")
+                     + dummyFile3 );
+        }
+        else
+        {
+            FAILMSG( string("Failed to create files = ") + dummyFile1
+                     + std::string(", ") + dummyFile2 + std::string(" and ")
+                     + dummyFile3 );
+            // no reason to continue.
+            return;
+        }
+
+        // Recursively remove the file and subdirectory.
+        draco_remove( dummyDir2 );
+        if( fileExists( dummyDir2 ) )
+            FAILMSG( string("Failed to remove directory = ") + dummyDir2 );
+        else
+            PASSMSG( string("Successfully removed directory = ") + dummyDir2 );
+        
+    }
+    return;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -281,6 +373,8 @@ int main(int argc, char *argv[])
         if( rtt_dsxx::dirSep == rtt_dsxx::UnixDirSep )
             test_getFilenameComponent( ut,
                 string("test") + rtt_dsxx::WinDirSep + string("tstPath.exe"));
+
+        test_draco_remove(ut);
     }
     catch (exception &err)
     {

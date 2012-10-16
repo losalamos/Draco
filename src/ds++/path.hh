@@ -34,15 +34,18 @@ enum FilenameComponent
 };
 
 //---------------------------------------------------------------------------//
-/*! \brief Get a specific component of a full filename.
- */
+//! Get a specific component of a full filename.
 DLL_PUBLIC std::string getFilenameComponent( std::string const & fqName,
                                              FilenameComponent   fc );
 
 //---------------------------------------------------------------------------//
-/*! \brief Does the file exist?
- */
-DLL_PUBLIC bool fileExists( std::string const & filename );
+//! Does the file exist?
+DLL_PUBLIC bool fileExists(  std::string const & filename );
+DLL_PUBLIC bool isDirectory( std::string const & path );
+
+//---------------------------------------------------------------------------//
+//! Recursively remove a directory.
+void draco_remove( std::string const & path );
 
 } // end namespace rtt_dsxx
 

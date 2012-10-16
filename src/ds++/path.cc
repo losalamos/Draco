@@ -16,8 +16,16 @@
 #include <cstring>      // strerror
 #include <cstdlib>      // realpath
 #include <sstream>
-
+#include <iostream>
 #include <sys/stat.h>   // stat
+
+// #include <stdio.h>
+// #include <limits.h>
+// #include <sys/types.h>
+// #include <unistd.h>
+#ifdef UNIX
+#include <dirent.h> // struct DIR
+#endif
 
 namespace rtt_dsxx
 {
@@ -46,22 +54,28 @@ std::string getFilenameComponent( std::string const & fqName,
     using std::string;
     string retVal;
     string::size_type idx;
+    std::string fullName( fqName );
     
     switch( fc )
     {
         case FC_PATH :
-            idx=fqName.rfind( rtt_dsxx::UnixDirSep );
+            // if fqName is a directory and ends with "/", trim the trailing
+            // dirSep.
+            if( fqName.rfind( rtt_dsxx::UnixDirSep ) == fqName.length()-1 )
+                fullName=fqName.substr(0,fqName.length()-1);
+            
+            idx=fullName.rfind( rtt_dsxx::UnixDirSep );
             if( idx == string::npos ) 
             {
                 // Didn't find directory separator, as 2nd chance look for Windows
                 // directory separator. 
-                idx=fqName.rfind( rtt_dsxx::WinDirSep );
+                idx=fullName.rfind( rtt_dsxx::WinDirSep );
             }
             // If we still cannot find a path separator, return "./"
             if( idx == string::npos )
                 retVal = string( string(".") + rtt_dsxx::dirSep );
             else
-                retVal = fqName.substr(0,idx+1); 
+                retVal = fullName.substr(0,idx+1); 
             break;
             
         case FC_NAME :
@@ -141,6 +155,94 @@ bool fileExists( std::string const & strFilename )
     } 
     
     return retVal;
+}
+
+bool isDirectory( std::string const & path )
+{
+    // If the path does not exist, then it cannot be a directory.
+    if( ! fileExists(path) ) return false;
+    
+    struct stat stFileInfo;
+    bool retVal( false );
+    int intStat;
+
+    // Attempt to get the file attributes
+    intStat = stat( path.c_str(), &stFileInfo );
+    Check( intStat == 0 );
+
+    if( S_ISDIR( stFileInfo.st_mode) ) retVal=true;
+
+    return retVal;
+}
+
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Recursively remove a directory.
+ * \arg   path String representing the top node ofthe directory to be removed.
+ * \return void
+ *
+ * Sample implementation for Win32 (uses Win API which I don't want to do)
+ * http://stackoverflow.com/questions/1468774/recursive-directory-deletion-with-win32
+ * http://msdn.microsoft.com/en-us/library/aa365488%28VS.85%29.aspx
+ *
+ * Sample implementation for Unix
+ * http://www.linuxquestions.org/questions/programming-9/deleting-a-directory-using-c-in-linux-248696/
+ *
+ * Consider using Boost.FileSystem
+ * \c boost::filesystem::remove_all(path);
+ */
+void draco_remove( std::string const & dirname )
+{
+    // If file does not exist, report and continue.
+    if( ! fileExists( dirname ) )
+    {
+        std::cout << "File/directory \"" << dirname
+                  << "\"does not exist.  Continuing..." << std::endl;
+        return;
+    }
+
+    // If this is not a directory, no recursion is needed:
+    if( isDirectory( dirname ) )
+    {
+    
+        DIR *dir;
+        struct dirent *entry;
+    
+        dir = opendir( dirname.c_str() );
+        Insist(dir != NULL, "Error opendir()");
+
+        // Loop over all entries in the directory.
+        while( (entry = readdir(dir)) != NULL )
+        {
+            std::string d_name( entry->d_name );
+            // Don't include "." or ".." entries.
+            if( d_name != std::string(".") && d_name != std::string("..") )
+            {
+                std::string itemPath;
+                if( dirname[dirname.length()-1] == UnixDirSep )
+                    itemPath = dirname + d_name;
+                else
+                    itemPath = dirname + UnixDirSep + d_name;
+                
+                // if the entry is a directory, recursively delete it,
+                // otherwise, delete the file
+                if (entry->d_type == DT_DIR)
+                    draco_remove(itemPath);
+                else
+                {
+                    std::cout << "Deleting \"" << itemPath << "\"" << std::endl;
+                    remove(itemPath.c_str());
+                }
+            }
+        }
+        closedir(dir);
+    }
+    
+    // Now the directory is empty, finally delete the directory itself. 
+    std::cout << "Deleting \"" << dirname << "\"" << std::endl;
+    remove(dirname.c_str());
+    return;
 }
 
 } // end namespace rtt_dsxx

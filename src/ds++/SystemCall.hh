@@ -73,6 +73,9 @@ DLL_PUBLIC int draco_getstat( std::string const &  fqName );
 //! Use Linux realpath to resolve symlinks
 DLL_PUBLIC std::string draco_getrealpath( std::string const & path );
 
+//! Create a directory
+DLL_PUBLIC void draco_mkdir( std::string const & path );
+
 } // end of rtt_dsxx
 
 #endif // rtt_dsxx_SystemCall_hh
