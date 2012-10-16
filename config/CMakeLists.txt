@@ -20,6 +20,7 @@ set( CMake_src
 #   Toolchain-catamount.cmake
    Toolchain-roadrunner-ppe.cmake
    Toolchain-roadrunner-spu.cmake
+   apple-clang.cmake
    buildEnv.cmake
    compilerEnv.cmake
    component_macros.cmake
