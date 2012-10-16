@@ -175,9 +175,15 @@
     #if defined CMAKE_COMPILER_IS_GNUCXX && __GNUC__ >= 4
       #define DLL_PUBLIC __attribute__ ((visibility("default")))
       #define DLL_LOCAL  __attribute__ ((visibility("hidden")))
+      /* These defines are taken from ds++/Compiler.hh written by Paul Henning */ 
+      /* #define HIDE_FUNC __attribute__ ((visibility ("hidden"))) */
+      /* #define EXPORT_FUNC __attribute__ ((visibility ("default"))) */
+      /* #define HIDE_CLASS __attribute ((visibility ("hidden"))) */
+      /* #define EXPORT_CLASS __attribute ((visibility ("default"))) */
     #else
       #define DLL_PUBLIC
       #define DLL_LOCAL
+
     #endif /* __GNUC__ >=4 */
 
   #else /* DRACO_SHARED_LIBS */
