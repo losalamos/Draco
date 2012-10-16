@@ -21,6 +21,8 @@
 #include <Random123/threefry.h>
 #include <Random123/ars.h>
 
+#include <Random123/conventional/Engine.hpp>
+
 #endif // rng_test_ut_Engine_hh
 
 //---------------------------------------------------------------------------//

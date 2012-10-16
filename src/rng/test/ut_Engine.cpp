@@ -40,7 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ut_Engine.hh"
 
-#include <Random123/conventional/Engine.hpp>
 #include <Random123/ReinterpretCtr.hpp>
 #if R123_USE_STD_RANDOM
 #include <random>
