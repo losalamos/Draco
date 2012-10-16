@@ -23,10 +23,6 @@ find_package_handle_standard_args(Random123 DEFAULT_MSG RANDOM123_INCLUDE_DIR)
 if( RANDOM123_FOUND )
    set(RANDOM123_FOUND ${RANDOM123_FOUND} CACHE BOOL "Did we find the Random123 include directory?")
    set(RANDOM123_INCLUDE_DIRS ${RANDOM_INCLUDE_DIR})
-
-   if( DRACO_ENABLE_CXX11 )
-      option( RANDOM123_ENABLE_CXX0X "Enable C++0x features in Random123" OFF )
-   endif()
 endif()
 
 if( VERBOSE )
