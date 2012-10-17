@@ -164,10 +164,9 @@ bool isDirectory( std::string const & path )
     
     struct stat stFileInfo;
     bool retVal( false );
-    int intStat;
 
     // Attempt to get the file attributes
-    intStat = stat( path.c_str(), &stFileInfo );
+    Remember( int intStat = ) stat( path.c_str(), &stFileInfo );
     Check( intStat == 0 );
 
     if( S_ISDIR( stFileInfo.st_mode) ) retVal=true;
