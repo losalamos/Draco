@@ -22,16 +22,17 @@ digraph build_tree {
 
   /* gcc_mpid level */
 
-    draco   [label="draco/", fontsize=20, shape=box];
+        /* draco   [label="draco/", fontsize=20, shape=box]; */
     bin     [label="bin/", fontsize=20, shape=box]; 
     include [label="include/", fontsize=20, shape=box]; 
     lib     [label="lib/", fontsize=20, shape=box]; 
-    config  [label="config/", fontsize=20, shape=box]; 
+    /* config  [label="config/", fontsize=20, shape=box]; */
 
     node       [shape=ellipse];
     tgt_cl     [label="ChangeLog"];
     tgt_cp     [label="Copyright"];
     tgt_read   [label="README.draco"];
+    tgt_todo   [label="ToDo"];
         
       /* directories */
         
@@ -66,15 +67,18 @@ digraph build_tree {
         libdsxx [label="librtt_ds++.so"]; 
         libc4   [label="librtt_c4.so"]; 
         lib_files    [label="other component libraries ...", shape=plaintext];
-
-        /* config */
-        node    [shape=ellipse];
-        buildEnv [label="buildEnv.cmake"]; 
-        unixgxx  [label="unix-g++.cmake"]; 
-        config_files [label="other config files ...", shape=plaintext];
+        lib_cmake [label="cmake/draco-6.4/" shape=box];
+        
+        /* cmake/draco-6.4 */
+         node    [shape=ellipse];
+         buildEnv [label="buildEnv.cmake"]; 
+         compEnv  [label="compilerEnv.cmake"];
+         compMacros   [label="component_macros.cmake"];
+         unixgxx  [label="unix-g++.cmake"];
+         config_files [label="other config files ...", shape=plaintext];
 
         /* draco build directory */
-        binary_dir [label="binary (build) directory ...", shape=plaintext];
+        /* binary_dir [label="binary (build) directory ...", shape=plaintext]; */
 
         /* bin */
         node    [shape=ellipse];
@@ -84,12 +88,12 @@ digraph build_tree {
     
   /* tree */
 
-    gccmpid -> {draco include lib bin config
-            tgt_cl tgt_cp tgt_read};
-    draco   -> { binary_dir };
+    gccmpid -> { include lib bin tgt_cl tgt_cp tgt_read tgt_todo};
+    /* draco   -> { binary_dir }; */
     include -> { incl_dsxx_dir incl_c4_dir include_dirs };
-    lib     -> { libdsxx libc4 lib_files };
-    config  -> { buildEnv unixgxx config_files };
+    lib     -> { lib_cmake libdsxx libc4 lib_files };
+    /* config  -> { buildEnv unixgxx config_files }; */
+    lib_cmake -> { buildEnv unixgxx compEnv compMacros config_files };
     bin     -> { ip_int };
     /* draco  -> {src config testing cmakefiles
             draco_make draco_cach draco_cust draco_ctest draco_dart

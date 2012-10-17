@@ -10,10 +10,11 @@ digraph draco_level {
     level2 [shape=plaintext, label="Level 2:", fontsize=18];
     level3 [shape=plaintext, label="Level 3:", fontsize=18];
     level4 [shape=plaintext, label="Level 4:", fontsize=18];
-/*     level5 [shape=plaintext, label="Level 5:", fontsize=18]; */
+    level5 [shape=plaintext, label="Level 5:", fontsize=18]; 
 /*    level6 [shape=plaintext, label="Level 6:", fontsize=18]; */
     
-    /* level6 -> level5 -> */
+    /* level6 -> */
+    level5 -> 
     level4 -> level3 -> level2 -> level1 -> legend [style=invis];
     
     /* packages */
@@ -30,7 +31,9 @@ digraph draco_level {
     vlapack    [shape=hexagon, color=green, label="LAPACK"];
     vmpi       [shape=hexagon, color=green, label="MPI"];
     vdacs      [shape=hexagon, color=green, label="DaCS"];
+    vcuda      [shape=hexagon, color=green, label="CUDA"];
     vpapi      [shape=hexagon, color=green, label="PAPI"];
+    vran123    [shape=hexagon, color=green, label="Random123"];
         
     dsxx [shape=box, color=blue, label="ds++", width=6];
     
@@ -40,6 +43,7 @@ digraph draco_level {
     c4         [shape=box, color=blue, label="c4"];
     cdi        [shape=box, color=blue, label="cdi"];
     fpetrap    [shape=box, color=blue, label="fpe_trap"];
+    fc         [shape=box, color=blue, label="FortranChecks"];
     lapack     [shape=box, color=blue, label="lapack_wrap"];
     linear     [shape=box, color=blue, label="linear"];
     meshelement [shape=box, color=blue, label="mesh_element"];
@@ -61,21 +65,24 @@ digraph draco_level {
     norms     [shape=box, color=blue, label="norms"];
     parser    [shape=box, color=blue, label="parser"];
     roots     [shape=box, color=blue, label="roots"];
-    sf        [shape=box, color=blue, label="special_functions"];
     timestep  [shape=box, color=blue, label="timestep"];
     viz       [shape=box, color=blue, label="viz"];
     
     /* level 4 */
+    sf        [shape=box, color=blue, label="special_functions"];
     cdianal   [shape=box, color=blue, label="cdi_analytic"];
-    quad      [shape=box, color=blue, label="quadrature"];
     rttread   [shape=box, color=blue, label="RTT_Format_Reader"];
+
+    /* level 5 */
+    quad      [shape=box, color=blue, label="quadrature"];
+
     
     /* dependencies */
     {rank=same; legend leg_vendor leg_draco leg_depre};
     {rank=same; level1 dsxx vlapack vmpi veospac vgrace vdlopen vgsl vdacs vpapi};
     {rank=same; level2 shlib plot lapack traits c4 fpetrap units cdi ode linear};
-    {rank=same; level3 viz timestep cdieos meshread parser sf};
-    {rank=same; level4 rttread quad};
+    {rank=same; level3 viz timestep cdieos meshread parser};
+    {rank=same; level4 rttread sf};
 
 
     leg_draco -> {leg_vendor} [color=green, style=dotted, label="test dependency only"];
@@ -93,6 +100,7 @@ digraph draco_level {
     c4          -> {vmpi}        [color=green];
     c4          -> {vpapi}       [color=green, style=dotted];
     cdi         -> {dsxx}        [color=blue];
+    fc          -> {dsxx}        [color=blue];
     fpetrap     -> {dsxx}        [color=blue];
     fpetrap     -> {vmpi}        [color=green];
     lapack      -> {dsxx}        [color=blue];
@@ -103,7 +111,8 @@ digraph draco_level {
     plot        -> {dsxx}        [color=blue];
     plot        -> {vgrace}      [color=green];
     rng         -> {dsxx}        [color=blue];
-    rng         -> {vgsl}        [color=green];
+    rng         -> {vgsl vran123}  [color=green];
+    rng         -> {vcuda}       [color=green, style=dotted];
     shlib       -> {dsxx}        [color=blue];
     shlib       -> {vdlopen}     [color=green];
     traits      -> {dsxx}        [color=blue];
@@ -112,7 +121,7 @@ digraph draco_level {
     /* level 3 */
     device      -> {dsxx}        [color=blue];
     device      -> {c4}          [color=blue, style=dotted];
-    device      -> {vdacs}       [color=green];
+    device      -> {vdacs vcuda} [color=green];
     cdieos      -> {cdi}         [color=blue];
     cdieos      -> {veospac}     [color=green]; 
     cdiip       -> {cdi}         [color=blue];
@@ -123,7 +132,7 @@ digraph draco_level {
     norms       -> {c4}          [color=blue];
     parser      -> {c4 units}    [color=blue];
     roots       -> {linear}      [color=blue];
-    sf          -> {units ode}   [color=blue];
+    sf          -> {units ode roots} [color=blue];
     sf          -> {vgsl}        [color=green];
     timestep    -> {c4}          [color=blue];
     viz         -> {traits}      [color=blue];

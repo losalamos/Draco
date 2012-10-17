@@ -27,11 +27,12 @@ digraph build_tree {
     node [fontsize=18];
     {
       /* directories */
-	node   [shape=box];
-	src    [label="src/"];
+	node    [shape=box];
+	src     [label="src/"];
 	testing [label="Testing/"];
 	cmakefiles [label="CMakeFiles/"];
 	autodoc [label="autodoc/"];
+	config  [label="config/"];
 
       /* files */
 	node       [shape=ellipse];
@@ -70,6 +71,15 @@ digraph build_tree {
         autodoc_doxygen_config [label="doxygen_config"]
         autodoc_mainpage [label="mainpage.dcc"]
 
+      /* config */
+        node [shape=box];
+        config_cmfiles [label="CMakeFiles/"];
+        
+	node [shape=ellipse];
+	config_m [label="Makefile"];
+	config_install [label="cmake_install.cmake"];
+	config_ctest [label="CTestTestfile.cmake"];
+
       /* Testing */
         node   [shape=box]; 
         test_temp [label="Temporary/"]; 
@@ -79,11 +89,12 @@ digraph build_tree {
   /* tree */
 
     gccmpid -> {draco}; /*  include lib bin libexe}; */
-    draco -> {src autodoc testing cmakefiles
+    draco -> {src autodoc testing cmakefiles config
             draco_make draco_cach draco_cust draco_ctest draco_dart
             draco_install draco_uninstall};
     src -> {src_cmfiles src_m src_install src_ctest src_files};
     autodoc -> {autodoc_cmfiles autodoc_draco autodoc_m autodoc_install autodoc_ctest
             autodoc_doxygen_config autodoc_mainpage};
+    config -> { config_cmfiles config_m config_install config_ctest };
     testing -> {test_temp};
 }
