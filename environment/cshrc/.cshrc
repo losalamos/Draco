@@ -10,12 +10,8 @@ setenv PATH $DRACO_ENV_DIR/bin:$PATH
 
 # Extra module stuff
 switch ("`uname -n`")
-case lu*.lanl.gov:
-case lu*.localdomain:
 case pi-fey*.lanl.gov:
 case pi*.localdomain:
-case ty*.lanl.gov:
-case ty*.localdomain:
 
 #    source /usr/projects/crestone/dotfiles/Cshrc
     source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
@@ -26,14 +22,28 @@ case ty*.localdomain:
     module load intel/12.1.5 openmpi
     module load gsl/1.14-intel svn emacs
     module load cmake numdiff git lapack/3.4.1-intel
-    module load trilinos/10.10.2-intel SuperLU_DIST/3.0-intel
-    module load ParMetis/3.1.1-intel ndi random123
+    module load trilinos SuperLU_DIST
+    module load ParMetis ndi random123 eospac
     # PGI keeps running out of tmp sapce
 #     setenv TMPDIR /scratch/$USER/tmp
 #     if (! -d $TMPDIR ) then
 #        mkdir $TMPDIR
 #     endif
     breaksw
+case lu*.lanl.gov:
+case lu*.localdomain:
+case ty*.lanl.gov:
+case ty*.localdomain:
+    module use $DRACO_ENV_DIR/Modules/hpc
+    module use $DRACO_ENV_DIR/Modules/tu-fe
+    module load friendly-testing 
+    module load intel/12.1.5 openmpi
+    module load gsl/1.14-intel svn emacs
+    module load cmake numdiff git lapack/3.4.1-intel
+    module load trilinos SuperLU_DIST
+    module load ParMetis ndi
+    breaksw
+
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
 
