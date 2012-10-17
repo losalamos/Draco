@@ -15,14 +15,10 @@
 #include <cerrno>       // errno
 #include <cstring>      // strerror
 #include <cstdlib>      // realpath
+#include <cstdio>       // remove
 #include <sstream>
 #include <iostream>
 #include <sys/stat.h>   // stat
-
-// #include <stdio.h>
-// #include <limits.h>
-// #include <sys/types.h>
-// #include <unistd.h>
 #ifdef UNIX
 #include <dirent.h> // struct DIR
 #endif
