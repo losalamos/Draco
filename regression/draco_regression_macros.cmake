@@ -339,7 +339,7 @@ macro( find_tools )
 
   find_program( CTEST_MEMORYCHECK_COMMAND NAMES valgrind )
   set(          CTEST_MEMORYCHECK_COMMAND_OPTIONS  
-     "-q --tool=memcheck --leak-check=full --trace-children=yes --error-limit=100 --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt" )
+     "-q --tool=memcheck --leak-check=full --trace-children=yes --error-limit=100 --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt --gen-suppressions=all" )
   # --show-reachable --num-callers=50
   # --suppressions=<filename>
   # --gen-suppressions=all|yes|no
