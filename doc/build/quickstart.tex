@@ -95,11 +95,14 @@ warnings. \index{dashboard}
 \subsection{Issue Tracking}
 \index{issue tracking}
 
-\draco\ uses the LANS Team Forge \index{Team Forge} issue tracking system to manage issue,
+\draco\ officially uses the LANS Team Forge \index{Team Forge} issue tracking system to manage issue,
 bug and feature tracking.  Team Forge can be accessed by opening a web
 browser from the Yellow network (i.e.: inside the LANL firewall) to
-\url{tf.lanl.gov}.  You are encouraged to browse the list of known
-bugs/issues of the project you are working on.
+\url{tf.lanl.gov}.  
+
+Starting Q4CY12, many key developers have started using CCS-2's Redmine \index{Redmine} project management console to manage issues, bugs, features, releases, etc.  The Redmine console can be accessed by opening a web browser from the Yellow network to \url{coder.lanl.gov/redmine}.  If you need an account please contact someone who is in the \draco\ systems developer group (see Table~\ref{tab:draco_system}).
+
+You are encouraged to browse the list of known bugs/issues of the project you are working on.  
 
 %%----------------------------------------
 % \subsection{Project Management}
@@ -115,16 +118,14 @@ bugs/issues of the project you are working on.
 \index{C++}
 
 The \draco\ code library is primary written in C++.  The team
-recommends that the GNU g++ compiler (v. 4.0+) be used for development
+recommends that the GNU g++ compiler (v. 4.7+\footnote{gfortran-4.7.0 was the first version that provided complete support for \comp{ISO\_C\_BINDING} used by \draco\ to interface between \lang{Fortran} and \cpp.}) be used for development
 of the \draco\ code library.  Recent versions of g++ have shown
 excellent adherence to the C++ standard and very good cross-platform
-support. Traditionally, KCC was recommended as the primary C++ \index{C++!KCC}
-compiler because of its adherence to the C++ standard and its cross
-platform support.  However, Intel has decided to discontinue this
-product.  
+support. 
 
+LANL ASC projects rely on Intel-12.1+ compiler for released code and \draco\ must also work with this tool set.
 Code added to the \draco\ repository must also compile without
-warnings using Intel~10, Intel~12 and PGI~9.  This requirement is checked by the
+warnings using under both GNU and Intel compiler suites.  This requirement is checked by the
 nightly regressions.  \draco\ will also compile under Mac XCode, but
 this is not a requirement. \index{C++!Intel} \index{C++!Portland Group}
 
@@ -132,8 +133,8 @@ this is not a requirement. \index{C++!Intel} \index{C++!Portland Group}
 \subsection{Build tools}
 
 For \draco\ to be correctly configured you must use \cmake\ and \index{cmake}
-\ctest~\cite{cmake} version 2.8.6 or later.  Many machines at LANL
-provide \cmake, but not 2.8.6+.  Thus, \cmake\ is provided as a part
+\ctest~\cite{cmake} version 2.8.8\footnote{\cmake\ version 2.8.8 introduced support for exported and imported build system targets used by \draco\ and client projects} or later.  Many machines at LANL
+provide \cmake, but not 2.8.8+.  Thus, \cmake\ is provided as a part
 of the \draco\ development environment for supported LANL machines.
 
 Additionally, \textbf{svn}, \textbf{python} and \textbf{numdiff} are
@@ -922,21 +923,16 @@ In order to generate the HTML
 \S\ref{doxygen}~\cite{doxygen}).  Once you are setup to use \doxygen\ and the
 configuration step (\S\ref{configure}) has been completed you can
 generate the automatic documentation by executing the following
-command from the \draco\ target directory.
+command from the \draco\ build directory.
 
 \footnotesize
 \begin{verbatim}
-     [/var/tmp/work/linux_mpid/draco] % ccmake .
-     # set BUILD_AUTODOC=ON, configure, generate
-
-     [/var/tmp/work/linux_mpid/draco] % cd autodoc
-     [...rk/linux_mpid/draco/autodoc] % make autodoc
-     [...rk/linux_mpid/draco/autodoc] % make install
+     [...rk/linux_mpid/draco] % make autodoc
 \end{verbatim}
 \normalsize
 
 This will create two new directories under
-\comp{/var/tmp/work/\emph{binarydir}/autodoc} named \comp{html}.
+\comp{/var/tmp/work/\emph{targetdir}/autodoc} named \comp{html}.
 Hypertext versions of all of the automatically created documents are
 created in the \comp{html} directory.  The head file is named
 \comp{index.html}.  

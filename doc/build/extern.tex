@@ -107,7 +107,7 @@ the external code developer should be aware that external code
 components will be installed in the same location as \draco\ 
 components.
 
-The \draco\ design allows both the \draco\ build system and its installed components to be used in an external code system.  In this model, \draco\ must be installed in an accessible location.  The external code system can load the \draco\ build system by adding the \comp{\$draco\_install/config} directory to the \comp{CMAKE\_MODULE\_PATH} allowing the external code system to use any or all of the \draco\ build system.  \index{build option!CMAKE\_MODULE\_PATH}
+The \draco\ design allows both the \draco\ build system and its installed components to be used in an external code system.  In this model, \draco\ must be installed in an accessible location.  The external code system can load the \draco\ build system by adding the \comp{\$draco\_install/lib/cmake/draco-6.4/} directory to the \comp{CMAKE\_MODULE\_PATH} allowing the external code system to use any or all of the \draco\ build system.  \index{build option!CMAKE\_MODULE\_PATH}
 
 %Including the \draco\ components in external components is easily
 %accomplished using \cvs.  Through \cvs\ module control we have

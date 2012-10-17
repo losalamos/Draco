@@ -129,24 +129,26 @@ Vendor support
 & FindGSL & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for GSL. \\
 & FindGrace & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for XM Grace.  \\
 & FindLIBSCI & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for Cray's LibSCI (an optimized \sys{LAPACK} replacement. \\
+& FindEOSPAC & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for libeospac6 (access Sesame physical data\index{physical data}\index{Sesame}). \\
+& FindRandom123  & use \cmake's \comp{find\_package\_handle\_standard\_args} to locate and register settings for the Random123 random number generator. \\
 & vendor\_libraries & controlling macro that looks for requested vendor libraries by calling \comp{find\_package()}. \\
 
 \hline
 
 % Toolchain      
 Toolchain files
-& Toolchain-catamount & allow use of \cmake's cross-compile feature to aid the build system configuration for Catamount-like systems.\\
+%& Toolchain-catamount & allow use of \cmake's cross-compile feature to aid the build system configuration for Catamount-like systems.\\
 & Toolchain-roadrunner-ppe &  allow use of \cmake's cross-compile feature to aid the build system configuration for Roadrunner cell front end. \\
 & Toolchain-roadrunner-spu &  allow use of \cmake's cross-compile feature to aid the build system configuration for Roadrunner cell back end.\\
 \hline
 
 % Primary configuration setup
 Primary configuration
+& apple-clang & sets compiler flags for the clang and clang++ compilers on OS/X \\
 & buildEnv & establish top-level defaults like \comp{DRACO\_DBC\_LEVEL} \\
 & compilerEnv & controls compiler discovery and calls appropriate compiler flag setup routines \\
 & dracoVersion & establishes the \draco\ version tag that is embedded in the code \\
 & dracoTesting & establishes the \comp{check} build target. Test registration macros are provided in \comp{component\_}\-\comp{macros}\-\comp{.cmake}. \\
-& platform\_checks & macros that probe the local system for available features, headers, etc. \\
 & unix-g++ & sets compiler flags for GNU C and C++\\
 & unix-gfortran & sets compiler flags for GNU Fortran \\
 & unix-ifort & sets compiler flags for Intel Fortran \\
@@ -158,6 +160,17 @@ Primary configuration
 & windows-cl & sets compiler flags for Microsoft C and C++ \\
 & windows-ifort & sets compiler flags for Intel Fortran on Windows \\
 \hline
+
+% Platform Checks
+Platform checks
+& platform\_checks & macros that probe the local system for available features, headers, etc. \\
+& cxx11/ & macros and tests for checking \lang{C++11} feature availability \\
+\hline
+
+% Debug configuration setup
+\draco\ build system debug features 
+& debug\_macros & provides \cmake\ macros that can be used to debug the build system \\
+\hline 
 
 % Component configuration
 Component configuration
@@ -175,6 +188,7 @@ General helper macros
 & parse\_arguments & a helper program that simplifies argument processing for \cmake\ macro definition.\\
 & cmake\_uninstall.cmake.in & this template is processed by the build system to keep track of generated files that can be uninstalled. \\
 & configureFileOnMake & this script can be used by an \comp{add\_custom\_command} to generate files/scripts/etc. on the fly. \\
+& draco-config-install & provides support for \cmake's exported targets and dependencies.  This file is processed and installed as \comp{draco-config.cmake}. \\
 \end{longtable} 
 \end{center}
 In general, \draco\ package developers need only be concerned with \latin{Component configuration} set of macros. 
@@ -240,7 +254,7 @@ customization until \S~\ref{sec:customize}.
     %\caption{\comp{CMakeLists.txt} file for the \pkg{quadrature} package.}
     
 \begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.0in, xrightmargin=0.0in,caption={\comp{CMakeLists.txt} file for the \pkg{quadrature} package.},label=lst:quadrature-cml,float=htp]
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 project( quadrature CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -273,17 +287,17 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( Lib_quadrature ${PROJECT_NAME} "${sources}" )
-add_dependencies( Lib_quadrature
-   Lib_units
-   Lib_special_functions
-   Lib_ode )
+add_component_library( 
+   TARGET       Lib_quadrature
+   TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element"
+   LIBRARY_NAME ${PROJECT_NAME} 
+   SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_quadrature DESTINATION lib )
+install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/quadrature )
 
 # ---------------------------------------------------------------------------- #
@@ -307,49 +321,129 @@ process_autodoc_pages()
   Table~\ref{tab:confmacros} lists all of the usable macros in a
   \draco\ \comp{CMakeLists.txt} file.  Customizing a \comp{CMakeLists.txt} script is explained 
   in \S~\ref{sec:customize}.
-  \begin{table}
-    \caption{Macros used by the \comp{CMakeLists.txt} files.  Macros that require 
-      arguments are indicated by \comp{()} following the macro name.}
-    \label{tab:confmacros}
-    \begin{center}
-      \begin{tabularx}{\linewidth}{
-          >{\setlength{\hsize}{.9\hsize}}L %
-          >{\setlength{\hsize}{.3\hsize}}Y %
-          >{\setlength{\hsize}{1.6\hsize}}X}
-        \hline\hline
-        {\normalfont Macro} & Required & Description\\ \hline
-                               
-        \multicolumn{3}{X}{Section 1: Project declaration} \\ \hline 
-        cmake\_minimum\_required( VERSION 2.6 ) & yes & states that this file uses features of \cmake\ that were not introduced until version 2.6.  If an older version of \cmake\ is used, a fatal error will be thrown. \\
-        project( quadrature CXX ) &  yes & This command registers the component name (must be unique within the \draco\ project) as the \cmake\ project name and sets the source code language. \\
+  
+%\begin{table}
+%    \caption{Macros used by the \comp{CMakeLists.txt} files.  Macros that require 
+%      arguments are indicated by \comp{()} following the macro name.}
+%    \label{tab:confmacros}
+%    \begin{center}
+%      \begin{tabularx}{\linewidth}{
+%          >{\setlength{\hsize}{1.2\hsize}}L %
+%          >{\setlength{\hsize}{.3\hsize}}Y %
+%          >{\setlength{\hsize}{1.2\hsize}}X}
+%        \hline\hline
+%        {\normalfont Macro} & Required & Description\\ 
+%        \hline
+%        
+%                               
+%        \multicolumn{3}{X}{Section 1: Project declaration} \\ \hline 
+%        cmake\_minimum\_required( VERSION 2.8 ) & yes & states that this file uses features of \cmake\ that were not introduced until version 2.6.  If an older version of \cmake\ is used, a fatal error will be thrown. \\
+%        project( quadrature CXX ) &  yes & This command registers the component name (must be unique within the \draco\ project) as the \cmake\ project name and sets the source code language. \\
+%        \hline
+        
+%        \multicolumn{3}{X}{Section 2: Source code registration} \\ \hline 
+%        file( GLOB sources *.cc ) & no & This regular expression command selects all \comp{*.cc} files and assigns them to the list \$\comp{sources}. \\
+%        file( GLOB headers *.hh ) & no & This regular expression command selects all \comp{*.hh} files and assigns them to the list \$\comp{headers}. \\
+%        if( MSVC\_IDE ... ) & no & This if-block appends all of the header files to the list of C++ sources if the project generator is an IDE where we want easy navigation to both sources and headers. \\
+%        \hline
+        
+%        \multicolumn{3}{X}{Section 3: Include directives} \\ \hline         
+%        include\_directories( \$\{\comp{PROJECT\_SOURCE\_DIR}\} ... ) & no & This command instructs the build system to look in the provided list of directories to satisfy include directives found in the source code.  For \sys{Unix Makefiles}, this command results in \comp{-I}\latin{dir}\comp{/} on each compile line. The command uses \cmake\ variables that contain the appropriate paths. In this context, the quotes are important. \\
+%        \hline
+%        
+%        \multicolumn{3}{X}{Section 4: Compile directives} \\ \hline
+%        add\_component\_library( \hspace{0.75in} TARGET Lib\_quadrature \hspace{0.5in} TARGET\_DEPS Lib\_special\_functions;\-Lib\_parser;\-Lib\_mesh\_element LIBRARY\_NAME \$\{PROJECT\_NAME\} \hspace{0.25in} SOURCES "\$\{sources\}" ) 
+%        & yes 
+%        & Generate a library from sources, \$\{\comp{sources}\}, whose name is based on \$\{\comp{PROJECT\_NAME}\} and has the build target key \comp{Lib\_quadrature}. The build target \comp{Lib\_quadrature} must be linked against build targets (libraries) \comp{Lib\_special\_functions}, \comp{Lib\_parser} and \comp{Lib\_mesh\_element}. \\
+%        \hline
+        
+%        \multicolumn{3}{X}{Section 5: Install commands} \\ \hline
+%        install( TARGETS Lib\_quadrature EXPORT draco-targets DESTINATION lib ) & no & The file represented by the build target \comp{Lib\_quadrature} (the component library) is to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/lib} directory. \\
+%        install( FILES \$\{headers\} DESTINATION include/quadrature )& no & The files represented by the \cmake\ variable \$\{\comp{\{headers\}}\} are to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/\-include/\-quadrature} directory. This target should be included in the list of exported targets that can be picked up by another \cmake-based build system. \\
+%        \hline
+%        
+%        \multicolumn{3}{X}{Section 6: Unit Tests} \\ \hline
+%        if( BUILD\_TESTING ) ... & yes & This logic block instructs \cmake\ to include the test directory when generating build project unless the developer has explicitly set \comp{BUILD\_TESTING=OFF}. \\
+%        \hline
+%        
+%        \multicolumn{3}{X}{Section 7: Autodoc} \\ \hline
+%        process\_autodoc\_pages() & no & If this package provides \doxygen\ documentation, process the source files when instructed to build the \comp{autodoc} build target. \\
+        
+%
+%        \hline\hline
+%      \end{tabularx}
+%    \end{center}
+%  \end{table}
+\item[\vble{pkg}/\comp{test}/\comp{CMakeLists}] This
+  \comp{CMakeLists.txt} provides all of the build and execution instructions needed to generate and execute unit tests. 
+\item[\comp{src}/\comp{CMakeLists}] This
+  \comp{CMakeLists.txt} provides all of the build instructions concerning compiler setup, vendor setup and specifies what components to include in the current build.
+\item[\comp{config.h.in}]\index{config.h.in|textbf} The \confhin\ file 
+  contains \comp{\#define} and other \lang{cpp} macros needed to build 
+  the package.  By isolating macros to the \confhin\ file, compile
+  line bloat is drastically reduced.  Additionally, each package's
+  macro requirements are isolated from other packages.  A symptom of
+  placing \comp{-D\vble{option}} on the compile line is that these
+  definitions tend to get probagated throughout the build cycle.
+\end{description}
+
+
+%%---------------------------------------------------------------------------%%
+%\begin{longtable}{p{2.7in}a>{\raggedright}p{2.8in}}
+ \label{tab:confmacros}  
+ \begin{longtable}{p{2.5in}cp{3.1in}}
+ \caption{Macros used by the \comp{CMakeLists.txt} files.  Macros that require 
+      arguments are indicated by \comp{()} following the macro name.} \\    
+      
+   \hline\hline
+   \multicolumn{1}{c}{Macro} & \multicolumn{1}{c}{Required} & \multicolumn{1}{c}{Description} \\             
+   \hline
+   \endfirsthead
+        
+   \hline\hline
+   \multicolumn{1}{c}{Macro} & \multicolumn{1}{c}{Required} & \multicolumn{1}{c}{Description} \\             
+   \hline
+   \endhead
+   
+   \hline \multicolumn{3}{r}{\textit{Continued on next page}} \\
+   \endfoot
+   
+   \hline\hline
+   \endlastfoot        
+        
+   \multicolumn{3}{l}{Section 1: Project declaration} \\ 
+   \hline 
+        \comp{cmake\_minimum\_required( VERSION~2.8~)} & yes & {\raggedright states that this file uses features of \cmake\ that were not introduced until version 2.6.  If an older version of \cmake\ is used, a fatal error will be thrown.} \\
+        \comp{project( quadrature CXX )} &  yes & This command registers the component name (must be unique within the \draco\ project) as the \cmake\ project name and sets the source code language. \\
+        \hline   
+
+        \multicolumn{3}{l}{Section 2: Source code registration} \\ \hline 
+        \comp{file( GLOB sources *.cc )} & no & {\raggedright This regular expression command selects all \comp{*.cc} files and assigns them to the list \$\comp{sources}.} \\
+        \comp{file( GLOB headers *.hh )} & no & This regular expression command selects all \comp{*.hh} files and assigns them to the list \$\comp{headers}. \\
+        \comp{if( MSVC\_IDE ... )} & no & This if-block appends all of the header files to the list of C++ sources if the project generator is an IDE where we want easy navigation to both sources and headers. \\
+        \hline                
+
+        \multicolumn{3}{l}{Section 3: Include directives} \\ \hline         
+        \comp{include\_directories( \$\{PROJECT\_SOURCE\_DIR\} ... )} & no & This command instructs the build system to look in the provided list of directories to satisfy include directives found in the source code.  For \sys{Unix Makefiles}, this command results in \comp{-I}\latin{dir}\comp{/} on each compile line. The command uses \cmake\ variables that contain the appropriate paths. In this context, the quotes are important. \\
         \hline
         
-        \multicolumn{3}{X}{Section 2: Source code registration} \\ \hline 
-        file( GLOB sources *.cc ) & no & This regular expression command selects all \comp{*.cc} files and assigns them to the list \$\comp{sources}. \\
-        file( GLOB headers *.hh ) & no & This regular expression command selects all \comp{*.hh} files and assigns them to the list \$\comp{headers}. \\
-        if( MSVC\_IDE ... ) & no & This if-block appends all of the header files to the list of C++ sources if the project generator is an IDE where we want easy navigation to both sources and headers. \\
+        \multicolumn{3}{l}{Section 4: Compile directives} \\ \hline
+        \comp{add\_component\_library( \hspace{0.75in} TARGET Lib\_quadrature \hspace{0.5in} TARGET\_DEPS Lib\_special\_functions;\-Lib\_parser;\-Lib\_mesh\_element LIBRARY\_NAME \$\{PROJECT\_NAME\} \hspace{0.25in} SOURCES "\$\{sources\}" )} 
+        & yes 
+        & Generate a library from sources, \$\{\comp{sources}\}, whose name is based on \$\{\comp{PROJECT\_NAME}\} and has the build target key \comp{Lib\_quadrature}. The build target \comp{Lib\_quadrature} must be linked against build targets (libraries) \comp{Lib\_special\_functions}, \comp{Lib\_parser} and \comp{Lib\_mesh\_element}. \\
+        \hline                  
+
+        \multicolumn{3}{l}{Section 5: Install commands} \\ \hline
+        \comp{install( TARGETS Lib\_quadrature EXPORT draco-targets \hspace{0.5in} DESTINATION lib )} & no & The file represented by the build target \comp{Lib\_quadrature} (the component library) is to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/lib} directory. \\
+        \comp{install( FILES \$\{headers\} DESTINATION include/quadrature )} & no & The files represented by the \cmake\ variable \$\{\comp{\{headers\}}\} are to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/\-include/\-quadrature} directory. This target should be included in the list of exported targets that can be picked up by another \cmake-based build system. \\
         \hline
         
-        \multicolumn{3}{X}{Section 3: Include directives} \\ \hline         
-        include\_directories( \$\{\comp{PROJECT\_SOURCE\_DIR}\} ... ) & no & This command instructs the build system to look in the provided list of directories to satisfy include directives found in the source code.  For \sys{Unix Makefiles}, this command results in \comp{-I}\latin{dir}\comp{/} on each compile line. The command uses \cmake\ variables that contain the appropriate paths. In this context, the quotes are important. \\
+        \multicolumn{3}{l}{Section 6: Unit Tests} \\ \hline
+        \comp{if( BUILD\_TESTING ) ...} & yes & This logic block instructs \cmake\ to include the test directory when generating build project unless the developer has explicitly set \comp{BUILD\_TESTING=OFF}. \\
         \hline
         
-        \multicolumn{3}{X}{Section 4: Compile directives} \\ \hline
-        add\_component\_library( Lib\_quadrature \$\{PROJECT\_NAME\} "\$\{sources\}" ) & yes & Generate a library from sources, \$\{\comp{sources}\}, whose name is based on \$\{\comp{PROJECT\_NAME}\} and has the build target key \comp{Lib\_quadrature} \\
-        add\_dependencies( Lib\_quadrature Lib\_special\_functions Lib\_ode ) & yes & The build target \comp{Lib\_quadrature} must be linked against build targets (libraries) Lib\_quadrature, Lib\_special\_functions and Lib\_ode. \\
-        \hline
-        
-        \multicolumn{3}{X}{Section 5: Install commands} \\ \hline
-        install( TARGETS Lib\_quadrature DESTINATION lib ) & no & The file represented by the build target \comp{Lib\_quadrature} (the component library) is to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/lib} directory. \\
-        install( FILES \$\{headers\} DESTINATION include/quadrature )& no & The files represented by the \cmake\ variable \$\{\comp{\{headers\}}\} are to be installed into the \$\comp{\{CMAKE\_INSTALL\_PREFIX\}/include/quadrature} directory.\\
-        \hline
-        
-        \multicolumn{3}{X}{Section 6: Unit Tests} \\ \hline
-        if( BUILD\_TESTING ) ... & yes & This logic block instructs \cmake\ to include the test directory when generating build project unless the developer has explicitly set \comp{BUILD\_TESTING=OFF}. \\
-        \hline
-        
-        \multicolumn{3}{X}{Section 7: Autodoc} \\ \hline
-        process\_autodoc\_pages() & no & If this package provides \doxygen\ documentation, process the source files when instructed to build the \comp{autodoc} build target. \\
+        \multicolumn{3}{l}{Section 7: Autodoc} \\ \hline
+        \comp{process\_autodoc\_pages()} & no & If this package provides \doxygen\ documentation, process the source files when instructed to build the \comp{autodoc} build target. \\
         
         % AC\_INIT() & yes & initializes configure, takes a filename
         % from the package directory as an argument \\
@@ -376,23 +470,10 @@ process_autodoc_pages()
         % \\ 
         % AC\_PGSLIB\_SETUP() & no & sets up \pgslib\ options for this
         % package, takes either \comp{pkg} or \comp{test} as an argument
-        % \\ 
-        \hline\hline
-      \end{tabularx}
-    \end{center}
-  \end{table}
-\item[\vble{pkg}/\comp{test}/\comp{CMakeLists}] This
-  \comp{CMakeLists.txt} provides all of the build and execution instructions needed to generate and execute unit tests. 
-\item[\comp{src}/\comp{CMakeLists}] This
-  \comp{CMakeLists.txt} provides all of the build instructions concerning compiler setup, vendor setup and specifies what components to include in the current build.
-\item[\comp{config.h.in}]\index{config.h.in|textbf} The \confhin\ file 
-  contains \comp{\#define} and other \lang{cpp} macros needed to build 
-  the package.  By isolating macros to the \confhin\ file, compile
-  line bloat is drastically reduced.  Additionally, each package's
-  macro requirements are isolated from other packages.  A symptom of
-  placing \comp{-D\vble{option}} on the compile line is that these
-  definitions tend to get probagated throughout the build cycle.
-\end{description}
+        % \\         
+                                                                                                                                                                                                                                
+\end{longtable}
+    
 
 %%---------------------------------------------------------------------------%%
 

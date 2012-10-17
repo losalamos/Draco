@@ -442,7 +442,7 @@ appropriate options\footnote{By default, the build system will configure for a d
 %  and \gmake, 
 the directory structure illustrated in Fig.~\ref{fig:build_tree} is generated.
 \begin{figure}
-  \centerline{\includegraphics[width=6in]{fig/build_tree}}
+  \centerline{\includegraphics[clip,trim=2cm 4cm 2cm 4cm,width=6.5in]{fig/build_tree}}
   \caption{The \draco\ build tree after running \cmake\ for a Makefile-based project.  The \comp{source directories} are shown in
     Fig.~\ref{fig:subdraco}a. The \comp{doc directories} are shown in
     Fig.~\ref{fig:subdraco}b.}  The binary tree for \sys{Eclipse CDT4 - Unix Makefile} based projects will match this layout but will also include two additional dot files: \comp{.cproject} and \comp{.project}.
@@ -458,8 +458,8 @@ After building the project (possibly by running \make), the generated libraries 
 
 The generated files can be installed to the \latin{target} directory by building the \comp{install} target.  For development, it is a common practice to set the \latin{install} location to be the platform \latin{target} directory. \index{target directory} \index{install directory} This allows the generated libraries, headers and executable files to be stored under an appropriately named directory like \comp{gcc\_mpid} or \comp{intel10\_openmpi145\_rwdi} (Version 10 Intel compilers, OpenMPI version 1.4.5 and ReleaseWithDebInfo build model).  Running the \comp{install} target will add the \comp{lib/}, \comp{bin/}, \comp{include/} and \comp{config} directories under the  \latin{target} directory as shown in Figure~\ref{fig:build_tree_post_install}.
 \begin{figure}
-  \centerline{\includegraphics[width=4in]{fig/build_tree_post_install}}
-  \caption{The \draco\ build tree after running \comp{make install} for a Makefile-based project.  The \latin{install} target creates  the \comp{lib/}, \comp{bin/}, \comp{include/} and \comp{config} directories under the  \latin{target} directory.  The target directory is specified at \latin{configure} time by setting the \cmake\ variable \comp{CMAKE\_INSTALL\_PREFIX}.}
+  \centerline{\includegraphics[clip,trim=2.5cm 9.5cm 2.5cm 9.5cm,width=6.5in]{fig/build_tree_post_install}}
+  \caption{The \draco\ install tree after running \comp{make install} for a Makefile-based project.  The \latin{install} target creates  the \comp{lib/}, \comp{bin/} and \comp{include/} directories under the  \latin{target} directory.  The target directory is specified at \latin{configure} time by setting the \cmake\ variable \comp{CMAKE\_INSTALL\_PREFIX}.}
   \label{fig:build_tree_post_install}
 \end{figure}
 
@@ -470,7 +470,6 @@ The generated files can be installed to the \latin{target} directory by building
 %do is generate a build directory for each configure.  
 
 In many cases, \draco\ based software projects will be configured and compiled alongside \draco.  In this case, a binary directory for the client (e.g.: \clubimc\ or \capsaicin) might be found parallel to the \comp{draco} binary directory (see Fig.~\ref{fig:build_tree_post_install}) and the the client products (headers, libraries, etc.) are installed into the same target directory used by \draco.  Details on how to configure and compile \draco\ are found in Chap.~\ref{chap:compile}, \S~\ref{sec:configuring_draco} and \S~\ref{sec:building_draco}.
-
 
 %%---------------------------------------------------------------------------%%
 
@@ -491,15 +490,16 @@ Table~\ref{tab:fileext} lists file extension standards used by \draco\ along wit
     \begin{tabular}{p{0.5in}p{2.0in}p{3.5in}}\hline\hline
     
     File Extension & Description & Details \\ \hline
-    \comp{.h} & ANSI C header file & Rarely used in \draco\ except for wrapping calls to vendor functions. \\
-    \comp{.c} & ANSI C implementation file & Rarely used in \draco\ except for wrapping calls to vendor functions. \\
-    \comp{.hh} & C++ declarations file & Common file that provide class and function declarations, including templated functions and classes.\\  
-    \comp{.i.hh} & C++ inline implementation file & C++ implementation instructions that could be placed directly in the \comp{.hh} file.  These implementations are for inlined functions or implicitly instantiated template functions.  This file is always included directly by the \comp{.hh} file after all declarations have been made. \\
+    \comp{.h} & \lang{C99} header file & Rarely used in \draco\ except for wrapping calls to vendor functions. \\
+    \comp{.c} & \lang{C99} implementation file & Rarely used in \draco\ except for wrapping calls to vendor functions. \\
+    \comp{.hh} & \cpp\ declarations file & Common file that provide class and function declarations, including templated functions and classes.\\  
+    \comp{.i.hh} & \cpp\ inline implementation file & C++ implementation instructions that could be placed directly in the \comp{.hh} file.  These implementations are for inlined functions or implicitly instantiated template functions.  This file is always included directly by the \comp{.hh} file after all declarations have been made. \\
     \comp{.t.hh} & C++ template implementation file & C++ implementation instructions for explicitly instantiated functions.  This file always includes the associated \comp{.hh} file and is only included by an explicit instantiation file(\comp{\_pt.cc}). \\
     \comp{.cc} & C++ implementation file & C++ implementation instructions for functions declared in the \comp{.hh} file that are not to be inlined and are not template functions. \\
     \comp{\_pt.cc} & C++ explicit instantiation file & C++ explicit instantiations of templated classes and functions found in the associated declarations file. \\
     \comp{.in} & Files that must be processed & Usually found as \comp{config.h.in} that is processed into \comp{config.h} and provides preprocessor definitions used by the local component. \\
     \comp{.cmake} & \cmake\ build system file & Additional build system commands that have been extracted form \comp{CMakeLists.txt} files to improve reuse via cmake-macros. \\
+    \comp{.f90} & \lang{Fortran} source file & \lang{Fortran} files in draco are assumed to be free-format and \lang{Fortran2003} compliant. \\
 	\hline \hline
 
     \end{tabular}
@@ -510,7 +510,7 @@ Table~\ref{tab:fileext} lists file extension standards used by \draco\ along wit
 \subsection{Tabs and editor width}
 \label{sec:cc-tabs}
 
-\draco\ developers have found that code is most cleanly viewed on various editors if spaces are used in place of tabs and the maximum column width is restricted to 80 columns.  The \draco-mode for \soft{Emacs} captures the C++ indention style informally adopted by \draco.  The basic indentation is 4 spaces except for namespace bocks where no indentation is used.  Additional indentation may be used for case labels and multi-line math statements are normally aligned to improve readability.
+\draco\ developers have found that code is most cleanly viewed on various editors if spaces are used in place of tabs and the maximum column width is restricted to 80 columns.  The \draco-mode for \soft{Emacs} captures the C++ indention style informally adopted by \draco.  The basic indentation is 4 spaces except for namespace bocks where no indentation is used.  Additional indentation may be used for case labels and multi-line math statements are normally aligned to improve readability.  The class block keywords \comp{public} and \comp{private} are only indented 2 spaces. Comment blocks should use \cpp\ style for \cpp\ sources and \lang{C}-style for \lang{C} sources and should employ \doxygen\ ~\cite{doxygen} markup.  \lang{Fortran} sources should use free-format and start in in column zero.
 
 %%---------------------------------------------------------------------------%%
 

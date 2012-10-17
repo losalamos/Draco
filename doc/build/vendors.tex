@@ -77,10 +77,29 @@ DaCS is the communication library used to run code on the IBM Cell architecture 
 
 Grace is a WYSIWYG 2D plotting tool for the X Window System.  The \draco\ development environment provides it's own installation of \soft{Grace} that can be loaded into the developer environment through the use of the \draco\ modules feature.
 
-The \draco\ build system uses its homegrown \comp{FindGrace.cmake} module to discover Grace.  If the build system is finding the wrong installation of Graco, you can manually set \comp{GRACE\_INC\_DIR} and \comp{GRACE\_LIB\_DIR} to the full paths of these two items before running \cmake\ for the first time.
+The \draco\ build system uses its homegrown \comp{FindGrace.cmake} module to discover Grace.  If the build system is finding the wrong installation of Grace, you can manually set \comp{GRACE\_INC\_DIR} and \comp{GRACE\_LIB\_DIR} to the full paths of these two items before running \cmake\ for the first time.
 
 Make your component depend on Grace by adding \comp{Grace\_LIBRARIES} to your \comp{target\_link\_libraries} command.  You may also need to add \comp{Grace\_INCLUDE\_DIRS} to your list of \comp{include\_directories}.
 
+%%---------------------------------------------------------------------------%%
+\section{EOSPAC}
+\label{appsec:eospac} \index{EOSPAC}
+
+EOSPAC is a LANL provided library that provides access to Sesame data.  \draco\ provides a module that can be loaded to set the default developer environment for building with EOSPAC.  \pkg{cdi\_eospac} requires this vendor.
+
+The \draco\ build system uses its homegrown \comp{FindEOSPAC.cmake} module to discover EOSPAC.  If the build system is finding the wrong installation of EOSPAC, you can manually set \comp{EOSPAC\_INC\_DIR} and \comp{EOSPAC\_LIB\_DIR} to the full paths of these two items before running \cmake\ for the first time.
+
+Make your component depend on EOSPAC by adding \comp{EOSPAC\_LIBRARY} to your \comp{target\_link\_libraries} command.  You may also need to add \comp{EOSPAC\_INCLUDE\_DIRS} to your list of \comp{include\_directories}.
+
+%%---------------------------------------------------------------------------%%
+\section{Random123}
+\label{appsec:random123} \index{Random123}
+
+Random123 is a header-only random number generation implementation used by the Jayenne project. \draco\ provides a module that can be loaded to set the default developer environment for building with Random123.  \pkg{rng} requires this vendor.
+
+The \draco\ build system uses its homegrown \comp{FindRANDOM123.cmake} module to discover Random123.  If the build system is finding the wrong installation of Random123, you can manually set \comp{RANDOM123\_INC\_DIR} to the full path before running \cmake\ for the first time.
+
+Make your component depend on Random123 by adding \comp{RANDOM123\_INCLUDE\_DIRS} to your list of \comp{include\_directories}.
 
 %%%---------------------------------------------------------------------------%%
 %

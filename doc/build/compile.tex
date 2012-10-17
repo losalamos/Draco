@@ -25,7 +25,7 @@ As mentioned in \S~\ref{sec:overview_of_draco}, \draco\ is based on
 the concept of levelized design~\cite{la96} \index{levelized design}.  A component-level diagram
 is shown in Fig.~\ref{fig:level}\index{levelized design}.  By following the dependency lines
 \begin{figure}
-  \centerline{\includegraphics[angle=90]{fig/level}}
+  \centerline{\includegraphics[clip,trim=1cm 4cm 0cm 4cm, width=7.5in, angle=90]{fig/level}} % brtl
   \caption{Component-level diagram for \draco.}
   \label{fig:level}
 \end{figure}
@@ -50,9 +50,9 @@ The policy in \draco\ is that
 test directories are responsible for their own template instantiations\index{policy!templates} in \comp{*\_pt.cc} files.
 Directions showing how to include test directory dependencies are given in Chap~\ref{chap:adding}. 
 
-When using \draco\ on an external product, all component dependent
+When linking \draco\ into an external product, all component dependent
 libraries must be included.\index{dependencies!component}  The list of necessary libraries for
-linking a package is given in Table~\ref{tab:depends}.  In summary,
+linking a package is given in Table~\ref{tab:depends}.  This list of dependencies is also captured in the installed file \comp{lib/cmake/draco-6.4/draco-config.cmake}. In summary,
 \begin{table}
   \caption{
     Listing of \draco\ component dependencies.  The \draco\ component
@@ -72,6 +72,7 @@ linking a package is given in Table~\ref{tab:depends}.  In summary,
       \multicolumn{1}{c}{Package Dependencies} &
       \multicolumn{1}{c}{Test Dependencies} \\ \hline
        \dsxx & 1 & - & - & - \\
+       \pkg{FortranChecks} & 1 & - & - & - \\
 
 %       \xm & 1 & - & - & - \\
 %       \pkg{nml} & 2 & \dsxx & - & - \\
@@ -86,7 +87,7 @@ linking a package is given in Table~\ref{tab:depends}.  In summary,
        \rng & 2 & \dsxx & - & - \\  
        \pkg{shared\_lib} & 2 & \dsxx & - & - \\
        \pkg{traits} & 2 & \dsxx & - & -  \\ 
-       \pkg{units} & 2 & \dsxx & - & - \\       
+       \pkg{units} & 2 & \dsxx & - & - \\      
        
 %       \pkg{diffusion} & 3 & \pkg{nml} & \dsxx & \pkg{mesh} \\
 %         \imc & 3 & \dsxx, \rng, \cfour & - & - \\
@@ -95,25 +96,27 @@ linking a package is given in Table~\ref{tab:depends}.  In summary,
 %       \pkg{nml} & - & - \\
 %       \pkg{radphys} & 3 & \pkg{traits}, \pkg{units} & - &
 %       \pkg{mesh} \\ 
-       \pkg{cdi\_ipcress} & 3 & \pkg{cdi} & \dsxx & - \\
-       \pkg{cdi\_eospac} & 3 & \pkg{cdi} & \dsxx & - \\
-       \pkg{device} & 3 & \dsxx & - & \cfour \\
+
        \pkg{diagnostics} & 3 & \cfour & \dsxx & - \\
        \pkg{fit} & 3 & \pkg{linear} & \dsxx & - \\
        \pkg{meshReaders} & 3 & \pkg{mesh\_element} & \dsxx & - \\
-       \pkg{min} & 3 & \pkg{linear} & \dsxx & - \\
        \pkg{norms} & 3 & \cfour & \dsxx & - \\
+       \pkg{min} & 3 & \pkg{linear} & \dsxx & - \\
        \pkg{parser} & 3 & \cfour, \pkg{units} & \dsxx & - \\
        \pkg{roots} & 3 & \pkg{linear} & \dsxx & - \\
-       \pkg{special\_functions} & 3 & \pkg{ode}, \pkg{units} & \dsxx & - \\
        \pkg{timestep} & 3 & \cfour & \dsxx & - \\
        \pkg{viz} & 3 & \pkg{traits} & \dsxx & - \\
+       \pkg{cdi\_ipcress} & 3 & \pkg{cdi} & \dsxx & - \\
+       \pkg{cdi\_eospac} & 3 & \pkg{cdi} & \dsxx & - \\
+       \pkg{device} & 3 & \dsxx & - & \cfour \\
        
+       \pkg{special\_functions} & 4 & \pkg{roots}, \pkg{ode}, \pkg{units} & \pkg{linear}, \dsxx & - \\
        \pkg{cdi\_analytic} & 4 & \pkg{parser}, \pkg{ode}, \pkg{cdi} & \cfour, \dsxx, \pkg{units} & - \\
-       \pkg{quadrature} & 4 & \pkg{parser},  & \cfour, \dsxx, \pkg{units},  & - \\
-        &  & \pkg{mesh\_element},  & \pkg{ode} &  \\
-        &  & \pkg{special\_functions} &  &  \\
-              
+
+       \pkg{quadrature} & 5 & \pkg{parser},                 & \cfour, \dsxx, \pkg{units},  & - \\
+                                       &  & \pkg{mesh\_element},  & \pkg{ode}, \pkg{roots} &  \\
+                                       &  & \pkg{special\_functions} & \pkg{linear} &  \\
+        
 %       \pkg{matprops} & 4 & \dsxx, \pkg{traits}, \pkg{units},
 %       \pkg{radphys} & - & \pkg{mesh} \\
 %       \pone & 4 & \dsxx, \pkg{linalg}, \pkg{diffusion} & \cfour,
@@ -132,9 +135,7 @@ dependencies (Fig.~\ref{fig:level}).  The external \draco\ client
 must be aware that when using a \draco\ package all of the packages
 dependencies (not package test dependencies) must be included.
 
-Some components in \draco\ require external vendor support.\index{dependencies!vendor}
-Additionally, some configuration options in \draco\ require external
-vendor support.  Table~\ref{tab:vendor} lists all of the present
+\draco\ requires support (vendor) libraries\index{dependencies!vendor} in order to build specific components (e.g.: \pkg{c4} requires \soft{MPI}).  Additionally, some optional features in \draco\ can only be enabled if optional external vendor libraries are available to the local build (e.g.: \pkg{lapack\_wrap} needs \soft{LAPACK}).  Table~\ref{tab:vendor} lists all of the present
 \begin{table}
   \caption{Vendors required by packages in \draco.  Implicit are the
     \cpp\ Standard Template Library (STL), the \cc\ Standard
@@ -157,10 +158,11 @@ vendor support.  Table~\ref{tab:vendor} lists all of the present
       \pkg{mesh\_element} & 2 & - & - \\
       \pkg{ode} & 2 & - & - \\
       \pkg{plot2D} & 2 & \sys{XM Grace} & yes \\
-      \pkg{rng} & 2 & \sys{GSL} & yes \\
+      \pkg{rng} & 2 & \sys{GSL}, \sys{Random123} & yes \\
       \pkg{shared\_lib} & 2 & \sys{dlopen} & yes \\
       \pkg{traits} & 2 & - & - \\
       \pkg{units} & 2 & - & - \\
+      \pkg{FortranChecks} & 2 & - & - \\
       
 %      \pkg{nml} & 2 & - & - \\
 %      \rng & 2 & \sprng & yes  \\
@@ -188,17 +190,18 @@ vendor support.  Table~\ref{tab:vendor} lists all of the present
 %      \pkg{matprops} & 4 & - & - \\
 %      \pone & 4 & - & - \\ 
       \pkg{cdi\_analytic} & 4 & \sys{MPI} & no \\
-      \pkg{quadrature} & 4 & \sys{GSL} & yes \\
-       &  & \sys{MPI} & no \\
       \pkg{RTT\_Format\_Reader} & 4 & - & - \\
+            
+      \pkg{quadrature} & 5 & \sys{GSL} & yes \\
+       &  & \sys{MPI} & no \\
 
 \hline\hline
     \end{tabular}
   \end{center}
 \end{table}
 components in \draco\ and the vendors that are required to build those
-components.  Also, because \draco\ is based on the concepts of levelized
-design as stated above, each component in \draco\ may have dependencies
+components.  Because \draco\ is based on the concepts of levelized
+design, each component in \draco\ may have dependencies
 on lower level \draco\ components.  In these cases only the dependencies
 of the specified package are of interest.  For example, the \pkg{parser} 
 component itself requires no external vendors; however, \pkg{parser} requires
@@ -218,14 +221,14 @@ assume that a user wishes to use the \pkg{quadrature} package.  Additionally,
 this configuration will be a parallel configuration using
 \mpi\,\footnote{\cfour\ is \draco's communication package and
   determines if the resulting code will be scalar or parallel.}.  From
-Table~\ref{tab:depends} we see that \pkg{quadrature} is dependent on the \draco\ 
-packages \pkg{special\_functions}, \pkg{parser}, \pkg{mesh\_element}, \pkg{ode}, \dsxx, \pkg{units}, and \cfour.  From Table~\ref{tab:vendor} we see
-that \pkg{ode} requires the \sys{GSL} library and \cfour\ requires the \mpi\ 
+Table~\ref{tab:depends} we see that \pkg{quadrature} is directly dependent on the \draco\ 
+packages \pkg{special\_functions}, \pkg{parser} and \pkg{mesh\_element}.  Its implicitly dependent on \pkg{ode}, \dsxx, \pkg{units}, \pkg{roots}, \pkg{linear} and \cfour.  From Table~\ref{tab:vendor} we see
+that \pkg{special\_functions} requires the \sys{GSL} library and \cfour\ requires the \mpi\ 
 library.  Accordingly, for a \sys{UNIX} \sys{Makefile}-based build, the following libraries must be included on the
 link line:
 \begin{verbatim}
-     -lrtt_quadrature -lrtt_parser -lrtt_special_functions -lrtt_c4 -lrtt_units \
-     -lrtt_mesh_element -lrtt_ode -lrtt_ds++ \
+     -lrtt_quadrature -lrtt_special_functions -lrtt_parser -lrtt_roots -lrtt_c4 \
+     -lrtt_units -lrtt_mesh_element -lrtt_ode -lrtt_linear -lrtt_ds++ \
      -lgsl -lgslcblas \
      -lmpi_cxx -lmpi -lopen-rte -lopen-pal
 \end{verbatim}
@@ -233,7 +236,7 @@ where \comp{-lgsl -lgslcblas} are the \pkg{GSL} libraries (see \S~\ref{appsec:gs
 This example assumes that all of the following library locations are
 defined in \ldlib.  Thus, even though \pkg{quadrature} does not explicitly depend
 on \mpi\ or \sys{GSL}, it uses \draco\ packages (\cfour\ and \pkg{special\_functions}) that
-do require these libraries.  In practice, the \draco\ build system attempts to find and use full paths to vendor and \draco\ component libraries so that \ldlib\ does not need to be manipulated by the developer or software user.  The build system also locates and sets all of the libraries required or each vendor so that a \draco\ component or client only needs to specify that it should link to a set of libraries provided by the \cmake\ variable  \$\vble{\{\$\{VENDOR\}}\comp{\_LIBRARIES\}}.
+do require these libraries.  In practice, the \draco\ build system attempts to find and use full paths to vendor and \draco\ component libraries so that \ldlib\ does not need to be manipulated by the developer or software user.  The build system also locates and sets all of the libraries required or each vendor so that a \draco\ component or client only needs to specify that it should link to a set of libraries provided by the \cmake\ variable  \$\vble{\{\$\{VENDOR\}}\comp{\_LIBRARIES\}}.  We note that the installed file \comp{lib/cmake/draco-6.4/draco-config.cmake} captures all of the interdependency and vendor dependencies shown here.  This file is a list of \latin{exported} \cmake\ targets for \draco\ and can be used by \cmake\ to \latin{import} all of the \draco\ dependencies and targets into another build system.
 
 %%---------------------------------------------------------------------------%%
 
@@ -269,8 +272,7 @@ package, which requires \pkg{traits}, linking \comp{-lrtt\_traits} is incorrect 
       \pkg{shared\_lib} & yes & yes & no \\
       \pkg{traits} & yes & no & no \\
       \pkg{units} & yes & yes & no \\
-      
-      
+      \pkg{FortranChecks} & no & no & no \\
       
       \pkg{cdi\_eospac} & yes & yes & no \\
       \pkg{cdi\_ipcress} & yes & yes & yes \\
@@ -282,13 +284,14 @@ package, which requires \pkg{traits}, linking \comp{-lrtt\_traits} is incorrect 
       \pkg{norms} & yes & yes & no \\
       \pkg{parser} & yes & yes & no \\
       \pkg{roots} & yes & yes & no \\
-      \pkg{special\_functions} & yes & yes & no \\
       \pkg{timestep} & yes & yes & no \\
       \pkg{viz} & yes & yes & no \\
                  
       \pkg{cdi\_analytic} & yes & yes & no \\
-      \pkg{quadrature} & yes & yes & no \\
       \pkg{RTT\_Format\_Reader} & yes & yes & no \\
+      \pkg{special\_functions} & yes & yes & no \\
+      
+      \pkg{quadrature} & yes & yes & no \\
       
       \hline\hline
 %      \multicolumn{4}{l}{$^{\text a}$\pkg{nml} uses a \perl\ script
@@ -463,7 +466,7 @@ A sample \comp{CMakeCache.txt} file is provided in the root \draco\ source direc
 
 # Location where 'make install' will copy files to.
 # CMAKE_INSTALL_PREFIX:PATH=c:/Release-x64/draco
-CMAKE_INSTALL_PREFIX:PATH=/var/tmp/kgt/cmake/gcc/mpid/t
+CMAKE_INSTALL_PREFIX:PATH=/var/tmp/$ENV{USER}/cmake/gcc/mpid/t
 
 # VENDOR_DIR:PATH=$ENV{VENDOR_DIR}
 # Windows: k:/vendors/x64-Windows
@@ -486,11 +489,22 @@ BUILD_TESTING:BOOL=ON
 # C4 communication mode (SCALAR or MPI)
 DRACO_C4:STRING=MPI
 
-# Design-by-Contract (0-7)?
+# Design-by-Contract (0-15)?
 DRACO_DBC_LEVEL:STRING=7
  
 # Keyword for creating new libraries (STATIC or SHARED).
 DRACO_LIBRARY_TYPE:STRING=SHARED
+
+# Build the tests also (default: ON)
+BUILD_TESTING:BOOL=ON
+
+# Tell the build system to print lots of extra information about its
+# state (default: OFF)
+DBS_PRINT_DEBUG_INFO:BOOL=OFF
+
+# If the compiler is GCC, optional debug modes can be selected:
+GCC_ENABLE_ALL_WARNINGS:BOOL=OFF
+GCC_ENABLE_GLIBCXX_DEBUG:BOOL=OFF
 \end{lstlisting} \index{CMakeCache.txt} \index{generator}
 Developers can copy this file to the \draco\ binary directory and modify, comment out or add options as needed before running \cmake\ for the first time.
 
@@ -623,11 +637,12 @@ Table~\ref{tab:draco-enable} lists the complete set of \comp{BOOL}
 %      \\
 \comp{ENABLE\_RNG\_NR} & OFF & Selects the non-reproducible random number generator feature \\
 \comp{USE\_OPENMP} & ON & Disables OpenMP pragmas when compiling \draco\ sources \\
-\comp{BUILD\_AUTODOC} & OFF & Enables discovery of Doxygen and the \comp{autodoc} build target \\
+% \comp{BUILD\_AUTODOC} & OFF & Enables discovery of Doxygen and the \comp{autodoc} build target \\
 %\comp{BUILD_DOC} & OFF & Enables building of all \LaTeX\ documentation found in the \comp{doc} directory \\
 \comp{BUILD\_TESTING} & ON & Allows developers to omit configuring for and building code found in test directories (disables \ctest\ features) \\
-\comp{BUILD\_USE\_SOLUTION\_FOLDERS} & ON & Only available for \sys{Visual Studio} and \sys{X-Code} generators; makes each \draco\ component a solution folder \\
+% \comp{BUILD\_USE\_SOLUTION\_FOLDERS} & ON & Only available for \sys{Visual Studio} and \sys{X-Code} generators; makes each \draco\ component a solution folder \\
 \comp{CMAKE\_VERBOSE\_MAKEFILE}$^{\text{a}}$ & OFF & Forces the make process to echo all commands to the screen during the build process \\
+\comp{DBS\_PRINT\_DEBUG\_INFO} & OFF & Extremely verbose mode for \cmake\.   All state and variables are printed during \cmake\ execution. \\
 \comp{GCC\_ENABLE\_ALL\_WARNINGS} & OFF & When using gcc, enable more compiler warning features \\
 \comp{GCC\_ENABLE\_GLIBCXX\_DEBUG} & OFF &  When using gcc, use alternate glibc library that provides bounds checking and more safety features \\
 
@@ -778,6 +793,7 @@ following vendors are used by \draco:
 \item \pkg{CUDA} provides support for running threads on Graphic Processing Units, GPUs, see \S~\ref{appsec:cuda};
 \item \pkg{DaCS} provides support for running threads on IBM cell processing units, see \S~\ref{appsec:dacs};
 \item \pkg{XMGRACE} provides a 2D plotting capability, see \S~\ref{appsec:grace};
+\item \pkg{Random123} provides random numbers, see \S~\ref{appsec:random123};
 %\item \shmem\ communication library, see \S~\ref{appsec:shmem};
 %\item \sprng\ random number library, see \S~\ref{appsec:sprng};
 %\item \pcglib\ parallel conjugate gradient solver, see  \S~\ref{appsec:pcglib}.
@@ -805,14 +821,21 @@ Table~\ref{tab:vendortags} lists the environment and build system variables that
       & MPI\_Fortran\_INCLUDE\_PATH & \\
       \hline
 % LAPACK/BLAS      
-      \pkg{LAPACK} & BLA\_STATIC & Look for archive (static) \pkg{LAPACK} and \pkg{BLAS} libraries. Default is ON. \\
-      & BLA\_VENDOR & Use a particular type of \pkg{LAPACK} installation like \sys{ATLAS} or \sys{Intel10\_64lp\_gf\_sequential}$^{\text{b}}$. \\
-      & ENV\{LD\_LIBRARY\_PATH\} & To help the build system find \pkg{LAPACK}, ensure that the library location is appended to this environment variable. \\ 
-      & ENV\{LAPACK\_LIB\_DIR\} & To load a specific \pkg{LAPACK}, ensure this variable is set to the desired location. \\
+%      \pkg{LAPACK} & BLA\_STATIC & Look for archive (static) \pkg{LAPACK} and \pkg{BLAS} libraries. Default is ON. \\
+%      & BLA\_VENDOR & Use a particular type of \pkg{LAPACK} installation like \sys{ATLAS} or \sys{Intel10\_64lp\_gf\_sequential}$^{\text{b}}$. \\
+%      & ENV\{LD\_LIBRARY\_PATH\} & To help the build system find \pkg{LAPACK}, ensure that the library location is appended to this environment variable. \\ 
+       \pkg{LAPACK}$^{\text{b}}$ & ENV\{LAPACK\_LIB\_DIR\} & To load a specific \pkg{LAPACK}, ensure this variable is set to the desired location. \\
       \hline
 % GSL
       \pkg{GSL} & ENV\{GSL\_INC\_DIR\} & Help the build system find the desired installation by setting this environment variable. \\
       &  ENV\{GSL\_LIB\_DIR\} & Help the build system find the desired installation by setting this environment variable. \\
+      \hline
+% EOSPAC
+      \pkg{EOSPAC} & ENV\{EOSPAC\_INC\_DIR\} & Help the build system find the desired installation by setting this environment variable. \\
+      &  ENV\{EOSPAC\_LIB\_DIR\} & Help the build system find the desired installation by setting this environment variable. \\
+      \hline
+% Random123
+      \pkg{Random123} & ENV\{RANDOM123\_INC\_DIR\} & Help the build system find the desired installation by setting this environment variable. \\
       \hline
 % XMGRACe
       \pkg{XMGrace} & ENV\{GRACE\_INC\_DIR\} & Help the build system find the desired installation by setting this environment variable. \\
@@ -838,7 +861,7 @@ Table~\ref{tab:vendortags} lists the environment and build system variables that
       \hline\hline
       % footnotes
       \multicolumn{3}{p{6in}}{$^{\text{a}}${\footnotesize Run \comp{'cmake --help-module FindMPI'} for more details on the discovery process for \pkg{MPI}.}} \\
-      \multicolumn{3}{p{6in}}{$^{\text{b}}${\footnotesize To obtain a list of support installations of \pkg{LAPACK}, see the documentation for \cmake's \comp{FindLAPACK.cmake} module (try \comp{'cmake --help-module FindLAPACK'}).}} \\
+      \multicolumn{3}{p{6in}}{$^{\text{b}}${\footnotesize As of \draco-6\_5\_0, the \draco\ build system imports the \pkg{LAPACK} targets via the \cmake\ imported targets feature.}} \\
       \multicolumn{3}{p{6in}}{$^{\text{c}}${\footnotesize Run \comp{'cmake --help-module FindCUDA'} for more details on the discovery process for \pkg{CUDA}.}} \\
     \end{tabular}
   \end{center}
@@ -919,7 +942,7 @@ This is the case for \latin{Cielito} and \latin{Cielo}.  For these systems the \
 employs a \latin{toolchain} file to aid in the selection of appropriate compilers and \sys{MPI} environment variables.  
 To configure \draco\ on these systems use a command similar to
 \begin{verbatim}
-     $ cmake -DCMAKE_TOOLCHAIN_FILE=$draco_home/config/Toolchain-catamount.cmake \
+     $ cmake -DCMAKE_TOOLCHAIN_FILE=$draco_home/config/Toolchain-roadrunner-spu.cmake \
              $draco_home
 \end{verbatim}
 The \comp{CMAKE\_TOOLCHAIN\_FILE} command line argument should appear first in the list of arguments provided to \cmake.
@@ -1011,7 +1034,7 @@ The \comp{DRACO\_DIAGNOSTICS} and \comp{DRACO\_TIMING} build variables control \
 The optimization flags\index{optimization} for the \comp{CXX}, \comp{CC} and \comp{FC} \index{configure option!CXX} \index{configure option!CC}\index{configure option!FC} compilers have default values established 
 based on the compiler vendor and the selected build type (\comp{Release}, \comp{Debug}, etc.).  These flags
 are established in \draco\ build system's configuration files \comp{config/}\vble{arch\_compiler\_vendor}\comp{.cmake} 
-(e.g.: \comp{config/unix-g++.cmake} or \comp{config/windows-cl.cmake}).  In general, \comp{Release} configurations will use optimization flags like \comp{-O3 -funroll-loops} and \comp{Debug} configurations will include debug symbols and no optimization, \comp{-g -O0}.  The \comp{RelWithDebInfo} configuration uses a mixture of flags trying to produce an optimized configuration that still has the debug symbols.  \draco\ policy to keep the source code as close to the language standard as possible.   To aid the developer, the \comp{Debug} configurations impose compiler flags that will increase the warning level and verbosity during the compilation.  For example, when using the \sys{g++} compiler the flags \comp{'-ansi -pedantic -Wcast-align -Wpointer-arith -Wall'} are used for \comp{Debug} configurations. In general, \comp{Release} builds use the most aggressive optimizations that provide reliable and consistent results.
+(e.g.: \comp{config/unix-g++.cmake} or \comp{config/windows-cl.cmake}).  In general, \comp{Release} configurations will use optimization flags like \comp{-O3 -funroll-loops -march=native} and \comp{Debug} configurations will include debug symbols and no optimization, \comp{-g -O0}.  The \comp{RelWithDebInfo} configuration uses a mixture of flags trying to produce an optimized configuration that still has the debug symbols.  \draco\ policy to keep the source code as close to the language standard as possible.   To aid the developer, the \comp{Debug} configurations impose compiler flags that will increase the warning level and verbosity during the compilation.  For example, when using the \sys{g++} compiler the flags \comp{'-std=c++11 -pedantic -Wcast-align -Wpointer-arith -Wall'} are used for \comp{Debug} configurations. In general, \comp{Release} builds use the most aggressive optimizations that provide reliable and consistent results.
 
 %The optimization flags for \KCC, the \cpp\ compiler of choice for
 %\draco, has some unique options.  Specifically, the lowest level of
