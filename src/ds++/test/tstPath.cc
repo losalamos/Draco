@@ -300,7 +300,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
     {
         // Test a more complex sytem of directories and files.
     
-        std::cout << "Creating a file in a subdirectory..." << std::endl;
+        std::cout << "Creating files in a directory structure..." << std::endl;
 
         std::string dummyFile1("dummydir/d1/dummyFile1.txt");
         std::string dummyFile2("dummydir/d1/dummyFile2.txt");
@@ -347,8 +347,12 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
             // no reason to continue.
             return;
         }
-
+        // Print the directory tree
+        std::cout << "The directory tree contains: " << std::endl;
+        draco_dir_print( dummyDir2 );
+        
         // Recursively remove the file and subdirectory.
+        std::cout << "Removing all entries in " << dummyDir2 << std::endl;
         draco_remove( dummyDir2 );
         if( fileExists( dummyDir2 ) )
             FAILMSG( string("Failed to remove directory = ") + dummyDir2 );

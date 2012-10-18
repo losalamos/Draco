@@ -170,75 +170,20 @@ bool isDirectory( std::string const & path )
     return retVal;
 }
 
-
 //---------------------------------------------------------------------------//
-/*!
- * \brief Recursively remove a directory.
- * \arg   path String representing the top node ofthe directory to be removed.
- * \return void
- *
- * Sample implementation for Win32 (uses Win API which I don't want to do)
- * http://stackoverflow.com/questions/1468774/recursive-directory-deletion-with-win32
- * http://msdn.microsoft.com/en-us/library/aa365488%28VS.85%29.aspx
- *
- * Sample implementation for Unix
- * http://www.linuxquestions.org/questions/programming-9/deleting-a-directory-using-c-in-linux-248696/
- *
- * Consider using Boost.FileSystem
- * \c boost::filesystem::remove_all(path);
- */
-void draco_remove( std::string const & dirname )
+//! Recursively remove a directory.
+void draco_remove( std::string const & path )
 {
-    // If file does not exist, report and continue.
-    if( ! fileExists( dirname ) )
-    {
-        std::cout << "File/directory \"" << dirname
-                  << "\"does not exist.  Continuing..." << std::endl;
-        return;
-    }
-
-    // If this is not a directory, no recursion is needed:
-    if( isDirectory( dirname ) )
-    {
-    
-        DIR *dir;
-        struct dirent *entry;
-    
-        dir = opendir( dirname.c_str() );
-        Insist(dir != NULL, "Error opendir()");
-
-        // Loop over all entries in the directory.
-        while( (entry = readdir(dir)) != NULL )
-        {
-            std::string d_name( entry->d_name );
-            // Don't include "." or ".." entries.
-            if( d_name != std::string(".") && d_name != std::string("..") )
-            {
-                std::string itemPath;
-                if( dirname[dirname.length()-1] == UnixDirSep )
-                    itemPath = dirname + d_name;
-                else
-                    itemPath = dirname + UnixDirSep + d_name;
-                
-                // if the entry is a directory, recursively delete it,
-                // otherwise, delete the file
-                if (entry->d_type == DT_DIR)
-                    draco_remove(itemPath);
-                else
-                {
-                    std::cout << "Deleting \"" << itemPath << "\"" << std::endl;
-                    remove(itemPath.c_str());
-                }
-            }
-        }
-        closedir(dir);
-    }
-    
-    // Now the directory is empty, finally delete the directory itself. 
-    std::cout << "Deleting \"" << dirname << "\"" << std::endl;
-    remove(dirname.c_str());
+    draco_walk_directory_tree( path, wdtOpRemove() );
     return;
 }
+//! Recursively print a directory tree.
+void draco_dir_print( std::string const & path )
+{
+    draco_walk_directory_tree( path, wdtOpPrint() );
+    return;    
+}
+
 
 } // end namespace rtt_dsxx
 
