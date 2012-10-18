@@ -63,8 +63,8 @@ std::string getFilenameComponent( std::string const & fqName,
             idx=fullName.rfind( rtt_dsxx::UnixDirSep );
             if( idx == string::npos ) 
             {
-                // Didn't find directory separator, as 2nd chance look for Windows
-                // directory separator. 
+                // Didn't find directory separator, as 2nd chance look for
+                // Windows directory separator.
                 idx=fullName.rfind( rtt_dsxx::WinDirSep );
             }
             // If we still cannot find a path separator, return "./"
@@ -78,8 +78,8 @@ std::string getFilenameComponent( std::string const & fqName,
             idx=fqName.rfind( UnixDirSep );
             if( idx == string::npos )
             {
-                // Didn't find directory separator, as 2nd chance look for Windows
-                // directory separator.
+                // Didn't find directory separator, as 2nd chance look for
+                // Windows directory separator.
                 idx=fqName.rfind( WinDirSep );
             }
             // If we still cannot find a path separator, return the whole
@@ -153,6 +153,9 @@ bool fileExists( std::string const & strFilename )
     return retVal;
 }
 
+//---------------------------------------------------------------------------//
+/*! \brief Does the 'path' represent a directory?
+ */
 bool isDirectory( std::string const & path )
 {
     // If the path does not exist, then it cannot be a directory.

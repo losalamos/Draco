@@ -22,6 +22,7 @@
 #include <iostream>
 #ifdef UNIX
 #include <dirent.h> // struct DIR
+#include <sys/stat.h> // struct stat; S_ISDIR
 #endif
 
 namespace rtt_dsxx
@@ -92,6 +93,19 @@ class wdtOpRemove
  *
  * Consider using Boost.FileSystem
  * \c boost::filesystem::remove_all(path);
+ *
+ * \code{.cpp}
+#include "boost/filesystem.hpp"
+#include <iostream>
+using namespace boost::filesystem;
+int main()
+{
+  path current_dir("."); //
+  for (recursive_directory_iterator iter(current_dir), end; iter != end; ++iter)
+    std::cout << iter->path() << "\n";
+  return 0;
+}
+ * \endcode
  */
 template< typename T > 
 void draco_walk_directory_tree( std::string const & dirname, T const & myOperator )
@@ -109,7 +123,8 @@ void draco_walk_directory_tree( std::string const & dirname, T const & myOperato
     {
         DIR *dir;
         struct dirent *entry;
-    
+        struct stat statbuf;
+        
         dir = opendir( dirname.c_str() );
         Insist(dir != NULL, "Error opendir()");
 
@@ -128,8 +143,18 @@ void draco_walk_directory_tree( std::string const & dirname, T const & myOperato
                 
                 // if the entry is a directory, recursively delete it,
                 // otherwise, delete the file
-                if (entry->d_type == DT_DIR)
-                    draco_walk_directory_tree( itemPath, myOperator );
+
+                // This implementation fails on the lightwight compute kernels
+                // on CI/CT, so we will use a different technique that relies
+                // on stat.
+//                 if (entry->d_type == DT_DIR)
+//                     draco_walk_directory_tree( itemPath, myOperator );
+//                 else
+//                     myOperator( itemPath );
+                int error = stat( itemPath.c_str(), &statbuf );
+                Check( error != -1 );
+                if( S_ISDIR( statbuf.st_mode ) )
+                    draco_walk_directory_tree(itemPath, myOperator);
                 else
                     myOperator( itemPath );
             }
