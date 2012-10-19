@@ -133,6 +133,14 @@
    ...
    obj:/*/libmpi.so*
 }
+{
+   openmpi/memcheck/dirpath
+   Memcheck:Addr4
+   fun:opal_os_dirpath_create
+   ...
+   fun:main
+}
+
 # {
 #    <insert_a_suppression_name_here>
 #    Memcheck:Leak
