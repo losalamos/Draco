@@ -9,15 +9,11 @@
 //---------------------------------------------------------------------------//
 
 #include "path.hh"
-#include "SystemCall.hh"
-#include "Assert.hh"
-
 #include <cerrno>       // errno
 #include <cstring>      // strerror
 #include <cstdlib>      // realpath
 #include <cstdio>       // remove
 #include <sstream>
-#include <iostream>
 #include <sys/stat.h>   // stat
 #ifdef UNIX
 #include <dirent.h> // struct DIR

@@ -15,10 +15,8 @@
  * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
  */
 
-#include "ds++/config.h"
-#include "SystemCall.hh"  // rtt_dsxx::dirSep
 #include "Assert.hh"
-#include <string>
+#include "SystemCall.hh"  // rtt_dsxx::dirSep
 #include <iostream>
 #ifdef UNIX
 #include <dirent.h> // struct DIR
@@ -94,7 +92,7 @@ class wdtOpRemove
  * Consider using Boost.FileSystem
  * \c boost::filesystem::remove_all(path);
  *
- * \code{.cpp}
+ * \code
 #include "boost/filesystem.hpp"
 #include <iostream>
 using namespace boost::filesystem;
@@ -151,7 +149,7 @@ void draco_walk_directory_tree( std::string const & dirname, T const & myOperato
 //                     draco_walk_directory_tree( itemPath, myOperator );
 //                 else
 //                     myOperator( itemPath );
-                int error = stat( itemPath.c_str(), &statbuf );
+                Remember( int error = ) stat( itemPath.c_str(), &statbuf );
                 Check( error != -1 );
                 if( S_ISDIR( statbuf.st_mode ) )
                     draco_walk_directory_tree(itemPath, myOperator);
