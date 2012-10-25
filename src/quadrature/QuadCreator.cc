@@ -270,6 +270,16 @@ QuadCreator::quadCreate( rtt_parser::Token_Stream &tokens )
                 sn_order = 2;
             }
         }   
+
+        else if( token.text() == "normalization")
+        {
+            quad_norm = parse_positive_real(tokens);
+            if (quad_norm == 0)
+            {
+                tokens.report_syntax_error("quadrature normalization must be greater than zero");
+            }
+        }   
+
         else if( token.text() == "interpolation algorithm")
         {
             string s = tokens.shift().text();
