@@ -1,15 +1,15 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   draco/doc/release/CMakeLists.txt
+# file   draco/doc/build/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building LaTeX documentation.
 # note   Copyright (C) 2012 Los Alamos National Security, 
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
+# $Id: CMakeLists.txt 6817 2012-10-11 18:08:03Z kellyt $
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.8)
-project(dracodoc_releaseprocedure NONE)
+project(dracodoc_buildsystem NONE)
 
 if( "${PROJECT_SOURCE_DIR}" MATCHES "${PROJECT_BINARY_DIR}" )
    message( FATAL_ERROR "Must use out-of-source build tree!" )
@@ -22,20 +22,38 @@ endif()
 include( UseLATEX )
 
 ##---------------------------------------------------------------------------##
-set( main_latex_file draco-release.tex )
+set( main_latex_file dbs.tex )
 set( image_files
-   AB.eps
-   branch-example.png
-   branch.eps
-   drelease.eps
-   sample-bug-itemization-on-tf.png
-   sample-resolved-defect-list.png
-   tag-strategy.eps
+   fig/build_tree.pdf
+   fig/build_tree_post_install.pdf
+   fig/cmakegui_defaults.pdf
+   fig/level.pdf
+   fig/package.pdf
+   fig/src_config.pdf
+   fig/src_doc.pdf
+   fig/src_draco.pdf
+   fig/src_src.pdf
+   fig/src_tools.pdf
+   fig/src_tree.pdf
+)
+set( extra_input_files
+   adding.tex
+   bashprofile.tex
+   bashrc.tex
+   compile.tex
+   dbs.tex
+   extend.tex
+   extern.tex
+   intro.tex
+   model.tex
+   quickstart.tex
+   vendors.tex
 )
 
 add_latex_document( ${main_latex_file}
+   INPUTS ${extra_input_files}
    IMAGES ${image_files}
    DEFAULT_PDF
    BIBFILES ../../environment/bibfiles/draco.bib
-   # IMAGE_DIRS figs
+   USE_INDEX
 )

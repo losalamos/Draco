@@ -3,7 +3,8 @@
 %% Thomas M. Evans
 %% LA-UR-98--5562
 %%---------------------------------------------------------------------------%%
-\documentclass[11pt]{rnote}
+%\documentclass[11pt]{rnote}
+\documentclass[note]{ResearchNote_pdf}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 \usepackage[mathcal]{euscript}
@@ -182,7 +183,7 @@ from its present instantiation.  \draco\ has evolved beyond the
 mission statement.  For example, the \pkg{Jayenne} program currently
 has the structure illustrated in Figure~\ref{fig:Jayenne}.
 \begin{figure}
-  \centerline{\includegraphics[width=5in]{jdir.eps}}
+  \centerline{\includegraphics[width=5in]{jdir}}
   \caption{\pkg{Jayenne} program structure in \draco.}
   \label{fig:Jayenne}
 \end{figure}
@@ -241,7 +242,7 @@ Consider the CVS repository model shown for a hypothetical code system
 in Figure~\ref{fig:cvsroot}.  Let us begin our analysis of this system
 by
 \begin{figure}
-  \centerline{\includegraphics[width=5in]{cvsroot.eps}}
+  \centerline{\includegraphics[width=5in]{cvsroot}}
   \caption{A hypothetical code system in the XTM CVS repository.}
   \label{fig:cvsroot}
 \end{figure}
@@ -325,7 +326,7 @@ customers.
 A proposed product-module structure that results from CVS
 checkout is shown in Fig.~\ref{fig:checkout}.
 \begin{figure}
-  \centerline{\includegraphics[width=6in]{checkout.eps}}
+  \centerline{\includegraphics[width=6in]{checkout}}
   \caption{Project-module organization upon CVS checkout.  Components
     in dashed-line boxes are the products produced by the system.}
   \label{fig:checkout}
@@ -466,7 +467,7 @@ compilation and updates, is the responsibility of the code developer.
 Documents pertaining to code components should be stored in the CVS
 repository as illustrated in Fig.~\ref{fig:doc}.  Documents that
 \begin{figure}
-  \centerline{\includegraphics[width=4in]{doc.eps}}
+  \centerline{\includegraphics[width=4in]{doc}}
   \caption{Document archiving in XTM product-modules.}
   \label{fig:doc}
 \end{figure}
@@ -503,7 +504,7 @@ external vendor package, \pkg{SPRNG}.  Figure~\ref{fig:milagro_co}
 shows the product-module, \pkg{Milagro}, that results from CVS
 checkout.
 \begin{figure}
-  \centerline{\includegraphics[width=6in]{milagro_co.eps}}
+  \centerline{\includegraphics[width=6in]{milagro_co}}
   \caption{Project-module organization of \pkg{Milagro} upon CVS
     checkout.  Components in dashed-line boxes are the products
     produced by the top-level \pkg{Milagro} \dir{makefile}.}
@@ -515,7 +516,7 @@ Fig.~\ref{fig:checkout}.
 Figure~\ref{fig:milagro_cvs} shows the \pkg{Milagro} components in the 
 CVS repository.  This example illustrates the general CVS organization 
 \begin{figure}
-  \centerline{\includegraphics[width=5in]{milagro_cvs.eps}}
+  \centerline{\includegraphics[width=5in]{milagro_cvs}}
   \caption{The \pkg{Milagro} module components in the CVS repository.}
   \label{fig:milagro_cvs}
 \end{figure}
@@ -593,8 +594,7 @@ Furnish who provided the concept \draco.
 %%---------------------------------------------------------------------------%%
 
 \bibliographystyle{rnote}
-\bibliography{../../environment/bibfiles/draco}
-% old \bibliography{../bib/draco}
+\bibliography{draco}
 
 \closing
 \end{document}

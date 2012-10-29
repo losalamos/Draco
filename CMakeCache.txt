@@ -15,7 +15,7 @@
 
 # Location where 'make install' will copy files to.
 # CMAKE_INSTALL_PREFIX:PATH=c:/Release-x64/draco
-CMAKE_INSTALL_PREFIX:PATH=/var/tmp/kgt/cmake/gcc/mpid/t
+CMAKE_INSTALL_PREFIX:PATH=/var/tmp/$ENV{USER}/cmake/gcc/mpid/t
 
 # VENDOR_DIR:PATH=$ENV{VENDOR_DIR}
 # Windows: k:/vendors/x64-Windows

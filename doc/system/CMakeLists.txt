@@ -1,15 +1,15 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   draco/doc/release/CMakeLists.txt
+# file   draco/doc/system/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
-# date   2010 April 28
+# date   2010 October 29
 # brief  Instructions for building LaTeX documentation.
 # note   Copyright (C) 2012 Los Alamos National Security, 
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
+# $Id: CMakeLists.txt 6817 2012-10-11 18:08:03Z kellyt $
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.8)
-project(dracodoc_releaseprocedure NONE)
+project(dracodoc_system NONE)
 
 if( "${PROJECT_SOURCE_DIR}" MATCHES "${PROJECT_BINARY_DIR}" )
    message( FATAL_ERROR "Must use out-of-source build tree!" )
@@ -22,20 +22,16 @@ endif()
 include( UseLATEX )
 
 ##---------------------------------------------------------------------------##
-set( main_latex_file draco-release.tex )
 set( image_files
-   AB.eps
-   branch-example.png
-   branch.eps
-   drelease.eps
-   sample-bug-itemization-on-tf.png
-   sample-resolved-defect-list.png
-   tag-strategy.eps
-)
-
-add_latex_document( ${main_latex_file}
+   checkout.eps
+   cvsroot.eps
+   doc.eps
+   jdir.eps
+   milagro_co.eps
+   milagro_cvs.eps
+   )
+add_latex_document( rn98046.tex
    IMAGES ${image_files}
    DEFAULT_PDF
-   BIBFILES ../../environment/bibfiles/draco.bib
-   # IMAGE_DIRS figs
+#   BIBFILES ../../environment/bibfiles/draco.bib
 )

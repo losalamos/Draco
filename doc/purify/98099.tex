@@ -2,7 +2,8 @@
 %% 98099.tex
 %% Thomas M. Evans
 %%---------------------------------------------------------------------------%%
-\documentclass[11pt]{../tex/nmemo}
+%\documentclass[11pt]{../tex/nmemo}
+\documentclass[note]{newmemo}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 \usepackage{subfigure}
@@ -40,8 +41,11 @@
 \subject{Using \purify\ in \draco\ with MPI}
 
 %-------NO CHANGES
-\divisionname{Applied Theoretical \& Computational Physics Div.}
+%\divisionname{Applied Theoretical \& Computational Physics Div.}
 \groupname{X-TM:Transport Methods Group}
+\groupmail{XTM, Mail Stop D409}
+\groupphone{Phone: 505-667-7029 Fax: 505-665-4972}
+
 \fromms{Tom M. Evans/XTM D409}
 \phone{(505)665--3677}
 \originator{tme}
@@ -251,7 +255,7 @@ view all of the \purify\ windows.
 Three \purify\ windows are opened as the program executes.  The first
 window, Fig.~\ref{fig:main}, gives diagnostics for \dir{mpirun}.  The
 \begin{figure}
-  \centerline{\includegraphics[width=4in]{main.eps}}
+  \centerline{\includegraphics[width=4in]{main}}
   \caption{\purify\ window for \dir{mpirun}.}
   \label{fig:main}
 \end{figure}
@@ -260,9 +264,9 @@ second and third windows, Figs.~\ref{fig:proc}a and \ref{fig:proc}b, give
   \begin{center}
     \begin{tabular}{c}
       \subfigure[Processor 0
-      window.]{\includegraphics[width=4in]{p0.eps}} \\
+      window.]{\includegraphics[width=4in]{p0}} \\
       \subfigure[Processor 1
-      window.]{\includegraphics[width=4in]{p1.eps}}
+      window.]{\includegraphics[width=4in]{p1}}
     \end{tabular}
   \end{center}
   \caption{\purify\ windows for processors 0 and 1.}
@@ -317,8 +321,8 @@ The author thanks Scott Turner (XTM) for relating his experiences with
 
 %%---------------------------------------------------------------------------%%
 
-\bibliographystyle{../tex/rnote}
-\bibliography{../bib/draco}
+\bibliographystyle{rnote}
+\bibliography{draco}
  
 \closing
 \end{document}

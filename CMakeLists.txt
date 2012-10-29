@@ -158,9 +158,10 @@ setupVendorLibraries()
 #
 # Build Draco components:
 # 
-add_subdirectory( src )
 add_subdirectory( config )
 add_subdirectory( autodoc )
+add_subdirectory( doc )
+add_subdirectory( src )
 
 #
 # Dashboard/Regression setup
@@ -170,16 +171,6 @@ configure_file(
   ${PROJECT_SOURCE_DIR}/CTestCustom.cmake
   ${PROJECT_BINARY_DIR}/CTestCustom.cmake
   COPYONLY )
-
-#
-# Extra custom commands
-#
-
-# LaTeX documentation
-option( BUILD_DOC OFF )
-if( BUILD_DOC )
-   add_subdirectory( doc )
-endif()
 
 # install top level documents
 install( 
