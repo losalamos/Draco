@@ -18,7 +18,7 @@
 #include "../ScalarUnitTest.hh"
 #include <vector>
 #include <deque>
-#ifdef DRACO_ENABLE_CXX11
+#ifdef HAS_CXX11_ARRAY
 #include <array>
 #endif
 
