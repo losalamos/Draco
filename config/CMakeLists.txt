@@ -60,6 +60,26 @@ set( Draco_C_COMPILER_FLAGS
 set( Draco_Fortran_COMPILER_FLAGS 
    "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${upper_build_type}}" )
 
+# sanity checks
+# 'src' directory must be processed before the 'config' directory.
+if( "${Draco_PACKAGE_LIST}" STREQUAL "" )
+   message( FATAL_ERROR 
+"Something is wrong with the build system.  Draco_PACKAGE_LIST is empty." )
+endif()
+if( "${Draco_TPL_LIST}" STREQUAL "" )
+   message( FATAL_ERROR 
+"Something is wrong with the build system.  Draco_TPL_LIST is empty." )
+endif()
+if( "${Draco_LIBRARIES}" STREQUAL "" )
+   message( FATAL_ERROR 
+"Something is wrong with the build system.  Draco_LIBRARIES is empty." )
+endif()
+if( "${Draco_TPL_LIBRARIES}" STREQUAL "" )
+   message( FATAL_ERROR 
+"Something is wrong with the build system.  Draco_TPL_LIBRARIES is empty." )
+endif()
+
+# Process the config file
 configure_file( draco-config-install.cmake.in
    ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake @ONLY)
 

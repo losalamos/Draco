@@ -35,6 +35,9 @@
 #
 # 1. By default MPI is selected by finding mpirun/mpiexec/etc in your
 #    PATH. 
+# 2. GSL must be found in a standard system location or the
+#    environment variables GSL_INC_DIR and GSL_LIB_DIR must be set to
+#    point to the local GSL installation.
 #
 # Building:
 # 
@@ -158,10 +161,10 @@ setupVendorLibraries()
 #
 # Build Draco components:
 # 
-add_subdirectory( config )
 add_subdirectory( autodoc )
 add_subdirectory( doc )
 add_subdirectory( src )
+add_subdirectory( config ) # This must be processed after 'src'
 
 #
 # Dashboard/Regression setup
