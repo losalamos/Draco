@@ -141,6 +141,12 @@ ColdFusion
     filter call_regexp_common HTML
     extension cfm
     3rd_gen_scale 4.00
+CUDA
+    filter remove_matches ^\s*//
+    filter call_regexp_common C
+    filter remove_inline //.*$
+    extension cu
+    3rd_gen_scale 1.0
 Crystal Reports
     filter remove_matches ^\s*//
     3rd_gen_scale 4.00
@@ -498,16 +504,26 @@ Teamcenter mth
     3rd_gen_scale 1.00
 Text
     filter remove_matches ^\s*%
+    extension bib
     extension bst
+    extension cfg
     extension cls
-    extension sty
+    extension dia
     extension dot
+    extension fig
     extension log
+    extension sty
     extension tex
     extension txt
     filename  ChangeLog
     filename  Copyright
     filename  README
+    filename  README.draco
+    filename  README.archive
+    filename  README.environment
+    filename  README.elisp
+    filename  README.python
+    filename  ToDo
 VHDL
     filter remove_matches ^\s*--
     filter remove_matches ^\s*//
