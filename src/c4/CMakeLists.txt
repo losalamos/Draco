@@ -50,7 +50,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB template_implementations *.t.hh *.i.hh )
+file( GLOB template_implementations *.t.hh )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh *.h)

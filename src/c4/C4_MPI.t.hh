@@ -76,8 +76,10 @@ C4_Req send_async(const T *buffer,
     C4_Req request;
     
     // do an MPI_Isend (non-blocking send)
+    Remember( int const retval = )
     MPI_Isend(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
 	      destination, tag, communicator, &request.r());
+  Check(retval == MPI_SUCCESS);
 
     // set the request to active
     request.set();
@@ -117,12 +119,13 @@ void send_is(C4_Req  &request,
   // set the request
   request.set();
   
-  Remember(const int retval =)
+  Remember( int const retval = )
       MPI_Issend(const_cast<T *>(buffer), size, 
                  MPI_Traits<T>::element_type(),
-                 destination, tag, communicator, &request.r());
-  
+                 destination, tag, communicator, &request.r());  
   Check(retval == MPI_SUCCESS);
+  
+  return;
 }
 //---------------------------------------------------------------------------//
 
@@ -136,9 +139,11 @@ C4_Req receive_async(T   *buffer,
     C4_Req request;
     
     // post an MPI_Irecv (non-blocking receive)
+    Remember( int const retval = )
     MPI_Irecv(buffer, size, MPI_Traits<T>::element_type(), source, tag, 
 	      communicator, &request.r());
-
+    Check(retval == MPI_SUCCESS);
+    
     // set the request to active
     request.set();
     return request;
@@ -159,8 +164,11 @@ void receive_async(C4_Req &request,
     request.set();
 
     // post an MPI_Irecv
+    Remember( int const retval = )
     MPI_Irecv(buffer, size, MPI_Traits<T>::element_type(), source, tag, 
 	      communicator, &request.r());
+    Check(retval == MPI_SUCCESS);
+    return;
 }
 
 //---------------------------------------------------------------------------//

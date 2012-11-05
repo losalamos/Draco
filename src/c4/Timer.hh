@@ -16,7 +16,6 @@
 
 #include <iostream>
 #include "C4_Functions.hh"
-#include "ds++/Assert.hh"
 #include <c4/config.h>
 
 namespace rtt_c4

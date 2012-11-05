@@ -28,6 +28,16 @@ void indeterminate_gatherv<unsigned>(
     std::vector<std::vector<unsigned> > &incoming_data);
 
 template
+void indeterminate_gatherv<int>(
+    std::vector<int> &outgoing_data,
+    std::vector<std::vector<int> > &incoming_data);
+
+template
+void indeterminate_gatherv<double>(
+    std::vector<double> &outgoing_data,
+    std::vector<std::vector<double> > &incoming_data);
+
+template
 void indeterminate_gatherv<char>(
     std::vector<char> &outgoing_data,
     std::vector<std::vector<char> > &incoming_data);
