@@ -2,11 +2,17 @@
 
 # Collect montly metrics for Jayenne codes and email a report.
 
+# Ensure the work directory exists
+if ! test -d /var/tmp/kellyt; then
+   mkdir -p /var/tmp/kellyt
+fi
+
 # Remove any exising log file.
 logfile=/var/tmp/kellyt/metrics.log
 if test -f $logfile; then
    rm $logfile
 fi
+touch $logfile
 
 # Environment setup
 
@@ -152,10 +158,14 @@ fi
 covmerge -q --mp --no-banner -c -f $COVFILE /home/regress/cmake_draco/Nightly_gcc/Coverage/build/CMake.cov /home/regress/cmake_jayenne/clubimc/Nightly_gcc/Coverage/build/CMake.cov /home/regress/cmake_jayenne/wedgehog/Nightly_gcc/Coverage/build/CMake.cov
 covdir
 
+echo " "
+echo "* C/D Coverage is condition/decision coverage"
+echo "  http://www.bullseye.com/coverage.html#basic_conditionDecision"
+
 # Send the email
 
 /bin/mailx -s "${subj}" kellyt@lanl.gov < ${logfile}
-# /bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
+#/bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
 
 # jayenne@lanl.gov
 # jsbrock@lanl.gov
