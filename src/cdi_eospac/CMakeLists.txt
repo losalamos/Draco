@@ -12,7 +12,7 @@ project( cdi_eospac CXX )
 ##---------------------------------------------------------------------------##
 # Requires EOSPAC 
 ##---------------------------------------------------------------------------##
-find_package( EOSPAC )
+find_package( EOSPAC QUIET )
 set_package_properties( EOSPAC PROPERTIES
    DESCRIPTION "Access SESAME thermodynamic and transport data."
    TYPE OPTIONAL

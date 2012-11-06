@@ -158,8 +158,22 @@ macro( setupMPILibrariesUnix )
             "Number of multi-core CPUs per node" FORCE )
          set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
             "Number of cores per cpu" FORCE )
+
+         # set( MPIEXEC_OMP_POSTFLAGS_STRING "-mca mpi_paffinity_alone 0")
+         # set( socketid 0 )
+         # math( EXPR maxsocketid "${MPI_CPUS_PER_NODE} - 1" )
+         # math( EXPR maxcoreid "${MPI_CORES_PER_CPU} - 1" )
+         # while( NOT ${socketid} STREQUAL ${maxsocketid} )
+         #    set( MPIEXEC_OMP_POSTFLAGS_STRING
+         #       "${MPIEXEC_OMP_POSTFLAGS_STRING} hwloc-bind socket:${socketid}.core:0-${maxcoreid}" )
+         #    math( EXPR socketid "${socketid} + 1" )
+         # endwhile()
+         # unset( socketid )
+         # unset( coreid )
+         # separate_arguments( MPIEXEC_OMP_POSTFLAGS UNIX_COMMAND 
+         #    "${MPIEXEC_OMP_POSTFLAGS_STRING}" )
+
          # --bind-to-core added in OpenMPI-1.4
-         # if( ${DBS_MPI_VER_MINOR} GREATER 3 )
          set( MPIEXEC_OMP_POSTFLAGS 
             -bind-to-core -cpus-per-proc ${MPI_CORES_PER_CPU} -loadbalance 
             CACHE STRING "extra mpirun flags (list)." FORCE )
