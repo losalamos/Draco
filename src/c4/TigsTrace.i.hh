@@ -251,7 +251,7 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
             else
             {
                 Check( recv_from_self_index >= 0 );
-                Check( recv_from_self_index < static_cast<in>(IsideBufferSize) );
+                Check( recv_from_self_index < static_cast<int>(IsideBufferSize) );
                 std::copy(&sbuffer[ksend],
                           &sbuffer[ksend] + JsideIndirect[s].size(),
                           &rbuffer[recv_from_self_index]);
