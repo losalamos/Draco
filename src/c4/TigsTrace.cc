@@ -342,7 +342,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
 
         // wait on the receives
         for( size_t s=0; s<reqs_recv.size(); ++s )
-            if( JsideConnects[s] != rtt_c4::node() )
+            // if( JsideConnects[s] != rtt_c4::node() )
                 reqs_recv[s].wait();
 
         // wait for communications to finish
