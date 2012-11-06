@@ -1,0 +1,13 @@
+General Comments on file formats:
+
+The vsd file is a Microsoft Visio file.  If you have access to a Windows machine
+you can edit this file with Visio (purchased from ESD).  If you only want to 
+view the file, you can obtain the free Visio viewer from Microsoft.  The pdf
+file of the same name 
+
+TigsTrace_accumulatev:
+
+This file contains a UML diagram for TigsTrace as well as some detailed
+notes about the unit test tstTigsTrace and tstAccumulate. 
+
+
