@@ -135,7 +135,7 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
             else
             {
                 Check( recv_from_self_index >= 0 );
-                Check( recv_from_self_index < JsideBufferSize );
+                Check( recv_from_self_index < static_cast<int>(JsideBufferSize) );
                 std::copy(&sbuffer[ksend],
                           &sbuffer[ksend] + IsideIndirect[s].size(),
                           &rbuffer[recv_from_self_index]);
@@ -251,7 +251,7 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
             else
             {
                 Check( recv_from_self_index >= 0 );
-                Check( recv_from_self_index < IsideBufferSize );
+                Check( recv_from_self_index < static_cast<in>(IsideBufferSize) );
                 std::copy(&sbuffer[ksend],
                           &sbuffer[ksend] + JsideIndirect[s].size(),
                           &rbuffer[recv_from_self_index]);
