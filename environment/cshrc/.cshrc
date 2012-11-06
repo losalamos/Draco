@@ -1,4 +1,4 @@
-# -*- mode:sh -*-
+#!/bin/csh
 
 # Use: In ~/.cshrc add the following code:
 #
@@ -95,7 +95,7 @@ case ml*.localdomain:
     module load cmake gsl/1.14-intel svn 
     module load numdiff lapack/3.4.1-intel
     module load trilinos SuperLU_DIST/3.0-intel
-    module load ParMetis/3.1.1-intel ndi random123
+    module load ParMetis/3.1.1-intel ndi random123 eospac
     alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
     breaksw
 case ct*:
@@ -103,19 +103,17 @@ case ci*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/ct-fe
+   # Move some environment out of the way.
    module unload PrgEnv-intel PrgEnv-pgi
    module unload cmake numdiff svn gsl
+   # load the Intel programming env, but then unloda libsci and totalview
    module load PrgEnv-intel
-   module unload xt-libsci
-   module unload xt-totalview 
+   module unload xt-libsci xt-totalview 
+   # draco modules start here.
    module load gsl/1.14 lapack/3.4.1-intel
    module load cmake numdiff svn
    module load trilinos SuperLU_DIST/3.0-intel 
    module load ParMetis/3.1.1-intel ndi random123 eospac
-   # module load git xshow papi
-   # module load tkdiff/4.1.4 openspeedshop/2.0.1b10 
-   # module unload xt-libsci lapack/3.4.0-intel
-   # module load lapack/3.4.0-pgi # use /opt/pgi/11.10.0/...
 
    # Avoid run time messages of the form:
    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
@@ -124,7 +122,7 @@ case ci*:
    breaksw
 case rr-dev*:
 case rra[0-9][0-9][0-9]a*:
-   source /usr/projects/crestone/dotfiles/Cshrc
+   source /usr/projects/eap/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/hpc
    module use $DRACO_ENV_DIR/Modules/rr-dev-fe
    module load friendly-testing cellsdk svn
