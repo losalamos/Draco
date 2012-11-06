@@ -136,7 +136,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 	ITFAILS;
 
 #ifdef HAS_CXX11_ARRAY
-#ifdef HAS_CXX_INITIALIZER_LISTS
+#ifdef HAS_CXX11_INITIALIZER_LISTS
     // C++ std::array containers
     std::array<double,3> cppa_vals{
         { 0.3247333291470, 0.3224333221471, 0.3324333522912 } };
@@ -165,7 +165,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 //---------------------------------------------------------------------------//
 
 #ifdef HAS_CXX11_ARRAY
-#ifdef HAS_CXX_INITIALIZER_LISTS
+#ifdef HAS_CXX11_INITIALIZER_LISTS
 void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
 {
     
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 	test_soft_equiv_scalar(ut);
 	test_soft_equiv_container(ut);
 #ifdef HAS_CXX11_ARRAY
-#ifdef HAS_CXX_INITIALIZER_LISTS
+#ifdef HAS_CXX11_INITIALIZER_LISTS
 	test_soft_equiv_deep_container(ut);
 #endif
 #endif

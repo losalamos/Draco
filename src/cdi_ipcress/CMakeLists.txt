@@ -72,7 +72,7 @@ set_target_properties(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
+set( CMAKE_INSTALL_DO_STRIP NO )
 install( TARGETS Lib_cdi_ipcress EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} DESTINATION include/cdi_ipcress )
 install( TARGETS Exe_Ipcress_Interpreter DESTINATION bin )

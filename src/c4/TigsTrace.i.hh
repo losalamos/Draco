@@ -87,18 +87,8 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
         size_t const numRecv(JsideIndirect.size());
         std::vector< T > sbuffer(IsideBufferSize);
         std::vector< T > rbuffer(JsideBufferSize);
-
-        // add one to avoid out-of-bounds errors when we dereference
-        // the first element of the vector in MPI calls
-        // GS_Tag tag  = OK;
-        // std::vector< MPI_Status  > rstatuslist(numRecv+1);
-        // std::vector< MPI_Request > rreqs(numRecv+1);
-        // MPI_Status  sstatus;
-        // MPI_Request sreq;
         std::vector< rtt_c4::C4_Req > reqs_recv;
-        
-        // size_t const dsize( sizeof(T) );
-	    
+        	    
         // fill the send buffer on the Iside
         size_t k=0;
         for (size_t s=0; s<IsideConnects.size(); s++)
@@ -110,7 +100,7 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
         }
 
         size_t krcv=0;
-        size_t recv_from_self_index=-1;
+        int recv_from_self_index=-1;
         for( size_t r=0; r<numRecv; r++ )
         {
             // do not post receives-from-self
@@ -120,9 +110,6 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
                                          &rbuffer[krcv],
                                          JsideIndirect[r].size(),
                                          JsideConnects[r] ) );
-                // MPI_Irecv(&rbuffer[krcv], JsideIndirect[r].size()*dsize, 
-                //           MPI_BYTE, JsideConnects[r], MPI_ANY_TAG, 
-                //           MPI_COMM_WORLD, &rreqs[r]);
             }
             // store the receive buffer index for use later
             else
@@ -138,10 +125,6 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
             // do not send-to-self
             if( IsideConnects[s] != rtt_c4::node() )
             {
-                // MPI_Isend(&sbuffer[ksend], IsideIndirect[s].size()*dsize, 
-                //           MPI_BYTE, IsideConnects[s], tag, MPI_COMM_WORLD,
-                //           &sreq);
-                // MPI_Wait(&sreq, &sstatus);
                 rtt_c4::C4_Req c4req_send = rtt_c4::send_async(
                     &sbuffer[ksend],
                     IsideIndirect[s].size(),
@@ -151,7 +134,7 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
             // otherwise put directly into receive buffer
             else
             {
-                // Check( recv_from_self_index >= 0 );
+                Check( recv_from_self_index >= 0 );
                 Check( recv_from_self_index < JsideBufferSize );
                 std::copy(&sbuffer[ksend],
                           &sbuffer[ksend] + IsideIndirect[s].size(),
@@ -160,15 +143,6 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
             ksend+=IsideIndirect[s].size();
         }
 
-        // wait on receives
-        // for( size_t r = 0; r < numRecv; r++ )
-        // {
-        //     // do not post receives-from-self
-        //     if( JsideConnects[r] != rtt_c4::node() )
-        //     {
-        //         MPI_Wait(&rreqs[r], &rstatuslist[r]);
-        //     }
-        // }
         for( size_t s=0; s<reqs_recv.size(); ++s )
             if( JsideConnects[s] != rtt_c4::node() )
                 reqs_recv[s].wait();
@@ -230,17 +204,7 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
         std::vector< T > sbuffer(JsideBufferSize);
         std::vector< T > rbuffer(IsideBufferSize);
         std::vector< rtt_c4::C4_Req > reqs_recv;
-        
-        // add one to avoid out-of-bounds errors when we dereference
-        // the first element of the vector in MPI calls
-        // GS_Tag tag  = OK;
-        // std::vector < MPI_Status > rstatuslist(numRecv+1);
-        // std::vector< MPI_Request > rreqs(numRecv+1);
-        // MPI_Status  sstatus;
-        // MPI_Request sreq;
-        
-        // size_t const dsize( sizeof(T) );
-	    
+        	    
         // fill the send buffer on the Jside
         size_t k=0;
         for( size_t s=0; s<numSend; s++ )
@@ -252,15 +216,12 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
         }
 
         size_t krcv=0;
-        size_t recv_from_self_index=-1;
+        int recv_from_self_index=-1;
         for( size_t r=0; r<numRecv; r++ )
         {
             // do not post receives-from-self
             if( IsideConnects[r] != rtt_c4::node() )
             {
-                // MPI_Irecv(&rbuffer[krcv], IsideIndirect[r].size()*dsize, 
-                //           MPI_BYTE, IsideConnects[r], MPI_ANY_TAG, 
-                //           MPI_COMM_WORLD, &rreqs[r]);
                 reqs_recv.push_back( rtt_c4::receive_async(
                                          &rbuffer[krcv],
                                          IsideIndirect[r].size(),
@@ -281,10 +242,6 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
             // do not send-to-self
             if( JsideConnects[s] != rtt_c4::node() )
             {
-                // MPI_Isend(&sbuffer[ksend], JsideIndirect[s].size()*dsize, 
-                //           MPI_BYTE, JsideConnects[s], tag, MPI_COMM_WORLD,
-                //           &sreq);
-                // MPI_Wait(&sreq, &sstatus);
                 rtt_c4::C4_Req c4req_send = rtt_c4::send_async(
                     &sbuffer[ksend], JsideIndirect[s].size(),
                     JsideConnects[s] );
@@ -293,7 +250,7 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
             // otherwise put directly into receive buffer
             else
             {
-                // Check( recv_from_self_index >= 0 );
+                Check( recv_from_self_index >= 0 );
                 Check( recv_from_self_index < IsideBufferSize );
                 std::copy(&sbuffer[ksend],
                           &sbuffer[ksend] + JsideIndirect[s].size(),
@@ -302,14 +259,6 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
             ksend+=JsideIndirect[s].size();
         }
 
-        // for( size_t r = 0; r < numRecv; r++ )
-        // {
-        //     // do not post receives-from-self
-        //     if( IsideConnects[r] != rtt_c4::node() )
-        //     {
-        //         MPI_Wait(&rreqs[r], &rstatuslist[r]);
-        //     }
-        // }
         for( size_t s=0; s<reqs_recv.size(); ++s )
             if( IsideConnects[s] != rtt_c4::node() )
                 reqs_recv[s].wait();

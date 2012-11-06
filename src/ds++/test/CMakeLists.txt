@@ -49,6 +49,23 @@ add_component_library(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
+# Run ScalarUnitTest in 2 modes: (a) without additional command line
+# arguments and (b) a special test to demonstrate the optional
+# '--version' command line argument
+add_scalar_tests(
+   SOURCES ${PROJECT_SOURCE_DIR}/tstScalarUnitTest.cc
+   # Run first case without arguments
+   # Run second case with the '--version' argument.
+   TEST_ARGS " ;--version"
+   #         ^^^ this space before the semicolon is important!
+   # The 2nd case does not print "PASS" so we register the following
+   # regex as PASS message.
+   PASS_REGEX "tstScalarUnitTest: version"
+)
+list( REMOVE_ITEM test_sources
+   ${PROJECT_SOURCE_DIR}/tstScalarUnitTest.cc )
+
+# The remaining tests
 add_scalar_tests( 
    SOURCES "${test_sources}" 
    )

@@ -77,7 +77,8 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
  */
 IpcressMultigroupOpacity::IpcressMultigroupOpacity(
     std::vector<char> const & packed )
-    : materialID(0),
+    : ipcressFilename(),
+      materialID(0),
       fieldNames(),
       opacityModel(),
       opacityReaction(),

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Angle_Operator
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -245,7 +245,7 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const &quadrature,
                                 comparator_t               const  comparator)
     : OrdinateSet(quadrature, geometry, dimension, expansion_order, extra_starting_directions, comparator),
       number_of_levels_(0),
-      levels_(), is_dependent_(), alpha_(), tau_()
+      levels_(), first_angles_(), is_dependent_(), alpha_(), tau_()
 {
     //std::cout << " CREATING ANGLE_OPERATOR with expansion order " << expansion_order << " and dimension " << dimension << std::endl;
     Require(quadrature!=SP<Quadrature>());
@@ -265,8 +265,8 @@ Angle_Operator::Angle_Operator( SP<Quadrature const>       const &quadrature,
                                 bool                       const  extra_starting_directions,
                                 comparator_t               const  comparator)
     : OrdinateSet(quadrature, geometry, dimension, expansion_order, qim, extra_starting_directions, comparator),
-      number_of_levels_(0),
-      levels_(), is_dependent_(), alpha_(), tau_()
+      number_of_levels_(0), levels_(), first_angles_(),
+      is_dependent_(), alpha_(), tau_()
 {
     //std::cout << " CREATING ANGLE_OPERATOR with expansion order " << expansion_order << " and dimension " << dimension << std::endl;
     Require(quadrature!=SP<Quadrature>());

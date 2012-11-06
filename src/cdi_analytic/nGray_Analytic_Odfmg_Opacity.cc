@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_Odfmg_Opacity class member definitions.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -65,7 +65,8 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
  */
 nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
     const sf_char &packed)
-    :  Analytic_Odfmg_Opacity(packed)
+    : Analytic_Odfmg_Opacity(packed),
+      group_models()
 {
     // the packed size must be at least 5 integers (number of groups, number of 
     // bands, reaction type, model type, analytic model indicator)

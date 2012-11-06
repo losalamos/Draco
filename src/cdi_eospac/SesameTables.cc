@@ -25,6 +25,8 @@ namespace rtt_cdi_eospac
 
 SesameTables::SesameTables()
     : numReturnTypes( EOS_M_DT+1 ), //  EOS_M_DT = 305 (see eos_Interface.h)
+      matMap(),
+      rtMap(),
       tableName( initializeTableNames(numReturnTypes) ),
       tableDescription( initializeTableDescriptions(numReturnTypes) )
 {  
@@ -41,6 +43,8 @@ SesameTables::SesameTables()
 // Construct from packed data stream
 SesameTables::SesameTables( std::vector<char> const & packed )
     : numReturnTypes( EOS_M_DT+1 ), //  EOS_M_DT = 305 (see eos_Interface.h)
+      matMap(),
+      rtMap(),
       tableName( initializeTableNames(numReturnTypes) ),
       tableDescription( initializeTableDescriptions(numReturnTypes) )
 {

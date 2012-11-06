@@ -90,7 +90,9 @@ class IpcressMaterial
     // CREATORS
 
     //! Default constructor builds an empty object.
-    IpcressMaterial(void) { /* empty */ };
+    IpcressMaterial(void)
+        : fieldNames(), fieldValues(), zoa(0.0)
+    { /* empty */ };
     
     /*!
      * \brief IpcressMaterial constructor builds a complete object.

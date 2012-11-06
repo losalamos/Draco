@@ -25,14 +25,14 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 // ACCUMULATE
 //---------------------------------------------------------------------------//
+#ifdef C4_MPI
+
 template<typename T, typename Tciter, typename BinaryOp>
 void accumulatev(Tciter   localBegin,
                  Tciter   localEnd,
                  T        init, 
                  BinaryOp op)
 {
-#ifdef C4_MPI
-    
     // one processor - nothing to do.
     if( rtt_c4::nodes() == 1 ) return;
 
@@ -62,12 +62,23 @@ void accumulatev(Tciter   localBegin,
     // Also update localBegin for processor 0
     if( rtt_c4::node()==0 )
         std::copy( data.begin(), data.end(), localBegin );
-    
-#else // NOT C4_MPI
-    // Nothing to do.
-#endif    
+
     return;
 }
+
+#else // NOT C4_MPI
+
+template<typename T, typename Tciter, typename BinaryOp>
+void accumulatev(Tciter   ,
+                 Tciter   ,
+                 T        , 
+                 BinaryOp )
+{
+    // Nothing to do.
+    return;
+}
+
+#endif // C4_MPI
 
 } // end namespace rtt_c4
 

@@ -42,6 +42,9 @@ namespace rtt_cdi_eospac
  */
 Eospac::Eospac( SesameTables const & in_SesTabs )
     : SesTabs( in_SesTabs ),
+      matIDs(),
+      returnTypes(),
+      tableHandles(),
       infoItems( initializeInfoItems() ),
       infoItemDescriptions( initializeInfoItemDescriptions() )
 {
@@ -59,6 +62,9 @@ Eospac::Eospac( SesameTables const & in_SesTabs )
  */
 Eospac::Eospac( std::vector<char> const & packed )
     : SesTabs( SesameTables( packed ) ),
+      matIDs(),
+      returnTypes(),
+      tableHandles(),
       infoItems( initializeInfoItems() ),
       infoItemDescriptions( initializeInfoItemDescriptions() )
 {
@@ -68,7 +74,7 @@ Eospac::Eospac( std::vector<char> const & packed )
     expandEosTable();
 }
 
-//---------------------------------------------------------------------------//
+//--------------------------------------------------------------------------//
 /*!
  * \brief Default Eospac() destructor.
  *

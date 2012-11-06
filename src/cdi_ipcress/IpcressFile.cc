@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Implementation file for IpcressFile class.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,12 +13,10 @@
 #include "IpcressFile.hh"
 #include "IpcressFile.t.hh"
 #include "ds++/Assert.hh"
-#include "ds++/path.hh"
 #include "ds++/Endian.hh"
 
 namespace rtt_cdi_ipcress
 {
-
 
 //---------------------------------------------------------------------------//
 /*!
@@ -35,9 +33,13 @@ namespace rtt_cdi_ipcress
 IpcressFile::IpcressFile( const std::string& ipcressDataFilename )
     : dataFilename( locateIpcressFile(ipcressDataFilename) ),
       ipcress_word_size(8), // bytes per entry in file.
+      ipcressFileHandle(),
       // num_table_records(24),
       toc(24,0),  // 24 records in the table of contents
-      matIDs()
+      matIDs(),
+      dfo(),
+      ds(),
+      materialData()
 {
     //! \bug May need to determine if this machine uses IEEE floating point
     // numbers or Cray floating point format.

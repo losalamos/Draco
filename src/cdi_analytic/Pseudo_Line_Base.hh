@@ -3,7 +3,7 @@
  * \file   cdi_analytic/Pseudo_Line_Base.hh
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2012, Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -81,6 +81,8 @@ class Pseudo_Line_Base
     //! Constructor for packed state.
     explicit  Pseudo_Line_Base(vector<char> const &packed);
 
+    virtual ~Pseudo_Line_Base() { /* empty */ };
+    
     double line_width() const { return line_width_; }
 
     //! Pack up the class for persistence.

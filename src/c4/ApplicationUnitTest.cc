@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco application unit tests.
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -53,7 +54,8 @@ ApplicationUnitTest::ApplicationUnitTest(
       logExtension( buildLogExtension( numProcs ) ),
       listOfArgs( listOfArgs_ ),
       logFile(),
-      reportTimings(false)
+      reportTimings(false),
+      problemTimer()
 {
     using std::string;
 

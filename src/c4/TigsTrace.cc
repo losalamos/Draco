@@ -56,7 +56,18 @@ namespace rtt_c4
  */
 TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
     : onProcDomain( M.size() ),
-      onProcRange( J )
+      onProcRange( J ),
+      IM(),
+      IMV(),
+      counts(),
+      IsideBufferSize(0),
+      JsideBufferSize(0),
+      IsideConnects(),
+      IsideIndirect(), 
+      JsideConnects(),
+      JsideIndirect(),
+      BmapList(),
+      countsList() 
 {
     if( rtt_c4::nodes()==1 )
     {
