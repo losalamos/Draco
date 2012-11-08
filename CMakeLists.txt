@@ -83,12 +83,7 @@
 #       http://www.cmake.org/Wiki/CMake_Version_Compatibility_Matrix
 #------------------------------------------------------------------------------#
 
-cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR )
-# 2.8.5 provides an updated FindMPI.cmake module that supports
-#      Fortran.  Previous to 2.8.5, draco/config/FindMPI.cmake
-#      provided a customized module to allow Fortran + MPI to work. 
-# 2.8.6 provides updated FindBLAS and FindLAPACK modules that support
-#      ATLAS. Improved support for XCode.
+cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR ) 
 # 2.8.7 Improved support for Eclipse CDT.  Add support for CUDA_PATH.
 # 2.8.8 Support for CMAKE_CXX_COMPILER_VERSION.
 #       Addition of CMakePackageConfigHelpers
@@ -107,7 +102,7 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 4)
+set(DRACO_VERSION_MINOR 5)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )

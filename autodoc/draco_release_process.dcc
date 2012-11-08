@@ -61,9 +61,9 @@ proccess of software release in the Draco code system.
    <ul>
 
       <li>Each component must pass its respective suite of regression tests on
-          all currently supported platforms. (As of August 2011 we support
-          CCS-2 64-bit Linux, Turing/Hurricane/Typhoon, Cielito/Cielo, Luna,
-          Yellowrail and rr-dev/RoadRunner.)</li>
+          all currently supported platforms. (As of November 2012 we support
+          CCS-2 64-bit Linux, Pinto/Moonlight/Typhoon/Luna, Cielito/Cielo, 
+          and rr-dev/RoadRunner.)</li>
 
       <li>Documentation must be fully up-to-date.</li>
 
@@ -159,12 +159,11 @@ release.
 \code
 Machine                Compilers        Vendors
 ----------------       ---------------  -----------
-TLCC hurricane/turing/ Intel 12.1.2     OpenMPI-1.4.5
-     typhoon
-YellowRail/Luna        Intel 12.1.2     OpenMPI-1.4.5
+TLCC pinto/Moonlight/  Intel 12.1.5     OpenMPI-1.4.5
+     Typhoon/Luna
 Ceilo/Ceilito          Intel 12.1.2     MPICH2-5.4.2
-Roadrunner             GCC 4.3.0        OpenMPI-1.4.3
-Dawn                   --               --
+Roadrunner             GCC 4.7.1        OpenMPI-1.4.3
+Sequoia                --               --
 \endcode
 
 <!-- ---------------------------------------------------------------------- -->

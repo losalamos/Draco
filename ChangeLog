@@ -1,3 +1,281 @@
+2012-11-06  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-6_5_0.  This is a minor Draco release.
+	  http://coder.lanl.gov/redmine/versions/2
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - Jayenne-6_3_0
+
+	* Platforms:
+	  PI/ML/TY/LU    Intel 12.1.5    OpenMPI-1.4.5
+	  CT/CI          Intel 12.1.2    MPICH2-5.4.2
+
+	* Summary of changes:
+	  - 428 files changed, added or removed in 218 commits.
+	  - New support for ML and PI.
+	  - Build system now uses CMake Imported/Exported targets.
+	  - C++11 support turned on for compilers that support the new
+	    standard.
+	  - cdi_eospac re-activated.
+	  - Random123 random number generator support is new. Random123 is
+	    a library of counter-based random number generators developed
+	    by John Salmon and Mark Moraes at D. E. Shaw Research, and
+	    available from
+	    http://www.deshawresearch.com/resources_random123.html.
+	  - Adoption of Fortran2003 standards means that the new minimum
+	    versions for gfortran is 4.7 and the new minimum version for
+	    pgfortran is 10.4.
+	  - No longer supporting YR/TU/HU/RR.
+
+	* Details per package:
+
+	Build System:
+	  - Provide a new macro 'toggle_compiler_flag()' that simplifies
+	    adding/removing compiler flags (e.g. -std=c++11).
+	  - Support finding Random123 and EOSPAC.
+	  - Export Draco target data that can be imported into other
+	    projects
+	    (http://www.vtk.org/Wiki/CMake/Tutorials/Exporting_and_Importing_Targets).
+	  - Remove -DNDEBUG from Intel and PGI RelWithDebInfo flags.
+	  - Add new variables MPI_CPUS_PER_NODE and MPI_CORES_PER_CPU that
+	    provide some information about the local architecture.
+	  - Provide a new option, MPI_PLUS_OMP, for add_parallel_test()
+	    macro. This macro tells the build system to treat the test
+	    with special properties related to running OpenMP threads
+	    under MPI.
+	    1. The test property is set to be excluded from valgrind
+	       testing.
+	    2. The test property is set to register OpenMP support on
+	       Xcode.
+	    3. The flags for mpirun are altered (see next bullet).
+	    4. The test runs isolated in time from other tests.
+	  - C++11 support is now turned on by default for all compilers
+	    except pgCC and [sp]pu-g++.  The build system variable
+	    DRACO_ENABLE_CXX11 can be used to disable or query C++11
+	    support. If C++11 support is enabled, a series of checks will
+	    be performed during the initial configure step.
+	  - Add CXX flags -march=native for g++ and -Xhost for icpc to
+	    improve architecture specific optimizations.
+	  - Autodoc portions of the build system have been refactored to
+	    improve simplicity, robustness and performance issues.  No
+	    need to modify the build configuration to enable autodoc -
+	    simply run 'make autodoc.'
+	  - Provide a new optional argument, LINK_WITH_FORTRAN, for
+	    add_scalar_tests(...) and add_parallel_tests(...) macros.  If
+	    specified, the target property LINKER_LANGUAGE=Fortran will be
+	    set for the unit test appliation.
+	  - Clarify the use of -ansi and -std=c++11 flags.  These flags
+	    cannot both be turned on because -ansi indicates the use of
+	    the c++98 standard.
+
+	Developer Environment:
+	  - Documentation and comments updated in various files.
+	  - .cshrc updated:
+	    - default module set updated with modules required for
+	      Capsaicin development.
+	    - PI/ML/TY/LU:
+	      Intel/12.1.5 new default.
+	      PAPI no longer loaded by default.
+	      cudatoolkit new default on ML.
+	      lapack/3.4.1 new default.
+	      eospac/6.2 new default.
+	    - RR3:
+	      gcc/4.7.1 new default for x86 portion.
+	    - CCS7 Darwin:
+	      Establish VENDOR_DIR=/projects/opt/draco/vendors/
+	      Establish defult modules.
+	    - CCS2 LAN:
+	      openmpi/1.6 new default.
+	      eospac/6.2 new default.
+
+	Documentation:
+	  - Build system document updated to reflect adoption of the C++11
+	    standard and official support for Fortran2003.
+	  - Update how LaTeX documents are handled by the build
+	    system (r6846). Eliminate build system variable
+	    BUILD_DOCS. The doc subdirectory will alwasy be configured.
+	    Documents can be built from the build directory by using one
+	    of the target names (alldocs, doc-build, doc-mesh, etc.)  Use
+	    'make help' from the doc build directory to find target names.
+	    Running make within a doc subdirectory (e.g.: system) will
+	    generate the pdf.
+
+	c4:
+	  - Moved some communications specific routines from wedgehog_gs
+	    to c4.  In particular a new accumulatev function is provided
+	    that accumulates an array across all processors using an
+	    arbitrary functor.  This commit also provides a new class
+	    TigsTrace that is used by Wedgehog to generate
+	    old_to_new_cell_map[idx_old_cell]. This Trace is borrowed from
+	    the Antero project's communicator and has lived in Wedgehog
+	    for many years.  Because it is a communication-specific code,
+	    it should live in c4 instead of wedgehog.
+
+	cdi_analytic:
+	  - In Pseudo_Line_Analytic_Odfmg_Opacity.cc, modify source to use
+	    Lorenz profiles for pseudo-lines.
+
+	cdi_eospac:
+	  - This component has been completely rewritten to use libeospac-6.2
+	    features. It is now active in Draco and can be used for
+	    loading equation-of-state data from Sesame data files.
+
+	ds++:
+	  - Draco Design-by-Contract macros (Assert.hh) modified with an
+	    extra bit field for NOTHROW features.  Using +8 will disable
+	    the associated exception thrown from toss_cookies() but will
+	    still print all of the DBC messages.  This mode is useful for
+	    debugging large simulations where it is important to see the
+	    whole cascade of DBC messages without killing an MPI rank by
+	    throwing a C++ exception.
+	  - Provide a new capability for comparing floating point data in
+	    arbitrarily deep STL objects to a provided tolerance value.  I
+	    used a simple class template recursion technique that
+	    minimizes the amount of new code.  The upside is that no
+	    exising code needs to be changed. The downside is that users
+	    will need to use a slightly different syntax for comparing STL
+	    containers that have more than 1 level.  This new feature
+	    cannot be used on multi-D C style arrays (e.g. double
+	    foo[10][10][10] = {...}) as these objects are actually 1-D in
+	    memory space.
+	  - Provide new filesystem related functions (SystemCall, path)
+	    draco_mkdir( string ) for creating directories.
+	  - isDirectory( string ) for checking if a string points to a
+	    directory.
+	  - draco_remove( string ) for removing files or recursively
+	    removing directories.
+
+	FortranChecks:
+	  - Added tests to demonstrate the use of derived types with
+	    iso_c_binding. This coding requires the F2003 standard
+	    "import" and "iso_c_binding" intrinsics.  This bumps the
+	    minimum required compiler version for gfortran to 4.7.1+ and
+	    pgfortran 10.4+.
+
+	quadrature:
+	  - Fixed some long-standing bugs and issues for quadratures,
+	    including bugs in axisymmetric coordinates in 1D and 2D,
+	    errors when using scattering  expansions greater than
+	    isotropic, and preparing for aaccess to the Galerkin
+	    Quadrature method via input.
+
+	rng:
+	  - Added Random123 known-answer and unit test. If Random123 was
+	    found, build and run these.
+	  - Added Random123 CUDA known-answer tests.
+
+	RTT_Format_Reader
+	  - Updated tests and eliminated deprecated code.
+
+	special_functions:
+	  - Now depends on Draco's 'roots' component.
+
+	* Corrected defects:
+	  - artf1845: cdi_eospac tests fail compile on Enterprise LINUX.
+
+	* Known defects:
+	  - Some known defects are listed on LANL's TeamForge web server,
+	    tf.lanl.gov.  Here is a list of known defects:
+
+	  - artf21614: Safe_Ptr has a design defect (This feature is not
+	    currently used by Capsaicin or Jayenne).
+	  - artf22544: c4/tstOMP fails on CT (This feature is not
+	    currently used by Capsaicin or Jayenne).
+          - artf20096: c4/tstComm_Dup fails for optimized builds on
+	    Cielito.
+
+	  - Additional defects are listed on CCS-2's Redmine server,
+	    coder.lanl.gov/redmine.  Here is a list of known defects:
+
+	    - #52 Create a cmake file that sets compiler flags for nvcc.
+	    - #58 Totalview does not support C++11 shared_ptr<T>.
+	    - #59 cdi_eospac design flaw
+
+	* Statistics (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+70924: kellyt
+44426: kgbudge
+13594: tme
+7363: lowrie
+6152: bta
+5073: mwbuksas
+4686: warsa
+4360: mcghee
+3683: gaber
+2313: phenning
+2176: rsqrd
+961: sethrj
+747: wollaber
+693: kgt
+525: pahrens
+478: furnish
+463: talbotp
+440: jhchang
+131: bergen
+
+Lines of code
+-------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C++                            448          12834          21699          67436
+Text                           211           7283           6536          55728
+C/C++ Header                   375           8296          22940          21102
+Lisp                            13           1801           2517          11916
+Perl                             2           1294           1009           8330
+CMake                          118           1891           4892           6788
+XML                              2            933              0           2418
+Python                          26           1210           1343           2197
+C                               17            314            655            800
+Bourne Shell                     9            175            570            514
+CSS                              1            113             37            395
+make                             7            105             69            205
+C Shell                          3             36             62            194
+Fortran 90                       3             38             68            118
+CUDA                             4             28             57             65
+HTML                             2              8             15             45
+-------------------------------------------------------------------------------
+SUM:                          1241          36359          62469         178251
+-------------------------------------------------------------------------------
+
+Code Coverage
+-------------
+Directory               Function Coverage           C/D Coverage
+------------------  ---------------------  ---------------------
+units/                  82 /    82 = 100%      58 /    58 = 100%
+traits/                 16 /    16 = 100%       0 /     0
+diagnostics/             8 /     8 = 100%       4 /     4 = 100%
+special_functions/      30 /    30 = 100%     196 /   204 =  96%
+fit/                     1 /     1 = 100%      15 /    16 =  93%
+ode/                     5 /     5 = 100%      29 /    32 =  90%
+cdi/                    39 /    39 = 100%      27 /    30 =  90%
+min/                     9 /     9 = 100%     137 /   154 =  88%
+linear/                 16 /    16 = 100%     324 /   392 =  82%
+roots/                   8 /     8 = 100%     256 /   312 =  82%
+mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+cdi_eospac/             44 /    44 = 100%      34 /    48 =  70%
+FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
+RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+ds++/                  462 /   465 =  99%     445 /   485 =  91%
+parser/                266 /   269 =  98%    1075 /  1357 =  79%
+timestep/               62 /    63 =  98%     104 /   178 =  58%
+rng/                    68 /    70 =  97%      65 /    70 =  92%
+norms/                  25 /    26 =  96%      21 /    34 =  61%
+viz/                    24 /    25 =  96%     129 /   168 =  76%
+cdi_analytic/          134 /   141 =  95%     161 /   192 =  83%
+c4/                    176 /   189 =  93%     493 /   554 =  88%
+quadrature/            184 /   220 =  83%     494 /   671 =  73%
+plot2D/                 22 /    29 =  75%      46 /    76 =  60%
+lapack_wrap/            12 /    16 =  75%       0 /     0
+------------------  ---------------------  ---------------------
+Total                 2160 /  2240 =  96%    4880 /  6053 =  80%
+
+
 2012-06-28  Kelly (KT) Thompson  <kellyt@lanl.gov>
 
 	*  draco: Release draco-6_4_0.  This is a minor Draco release.
@@ -135,9 +413,6 @@
 	RTT_Format_Reader:
 	  - Added unit tests for improved coverage of main library.
 
-	* Corrected defects:
-	  - artf22444: Regression reports fail to post from Cielito.
-
 	* Known defects:
 	  - Known defects are listed on LANL's TeamForge web server,
 	    tf.lanl.gov.  Here is a list of known defects:
@@ -148,6 +423,13 @@
 	    currently used by Capsaicin or Jayenne).
           - artf20096: c4/tstComm_Dup fails for optimized builds on
 	    Cielito.
+	  - #59 cdi_eospac design flaw
+	  - #58 Totalview does not support C++11 shared_ptr<T>
+	  - #52 Need to create cmake support file that provides compiler
+	        flags for nvcc.
+
+	* Corrected defects:
+	  - artf22444: Regression reports fail to post from Cielito.
 	  - #93: Provide more checks for C++11 capabilities/features.
 
 	* Statistics: (draco/regression/metrics_report.sh)
