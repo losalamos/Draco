@@ -16,7 +16,6 @@
 #include <string>
 #include "ds++/config.h"
 
-
 //===========================================================================//
 /*!
  * \namespace rtt_dsxx
@@ -31,6 +30,10 @@ namespace rtt_dsxx
 
 //! Query package for the release number.
 DLL_PUBLIC const std::string release();
+//! Return a list of Draco authors
+DLL_PUBLIC const std::string author_list();
+//! Return a list of Draco authors
+DLL_PUBLIC const std::string copyright();
 
 } // end of rtt_ds++
 

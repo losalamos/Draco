@@ -103,6 +103,7 @@ void tstVersion( UnitTest & /* ut */, int & argc, char **& argv )
     cmd += " --version";
     
     system( cmd.c_str() );
+
     return;
 }
 
@@ -218,6 +219,10 @@ int main( int argc, char *argv[] )
         // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
         // function setTestName).
         ScalarUnitTest ut( argc, argv, release );
+
+        // Also try to print the copyright and author list
+        std::cout << copyright() << std::endl;
+
         tstOne(ut);
 
         // Silent version.
