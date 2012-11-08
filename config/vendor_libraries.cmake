@@ -72,6 +72,24 @@ macro( setupMPILibrariesUnix )
       # -- warning: No 'file' command, skipping execute_process...
       find_package( MPI QUIET )
 
+      # On CI/CT, we need to link to STATIC libraries, but
+      # findMPI.cmake will conly return shared libraries.  Force
+      # conversion to static iff CT with STATIC and openmpi are
+      # selected.
+      if( "${SITE}" MATCHES "c[it]" AND
+            "${MPIEXEC}" MATCHES "openmpi" AND
+            "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
+         foreach( VAR MPI_CXX_LIBRARIES MPI_C_LIBRARIES 
+               MPI_Fortran_LIBRARIES MPI_EXTRA_LIBRARY MPI_LIBRARIES )
+            string( REGEX REPLACE "mpi_cxx[.]so" "mpi_cxx.a" ${VAR} "${${VAR}}" )
+            string( REGEX REPLACE "mpi[.]so" "mpi.a" ${VAR} "${${VAR}}" )
+            string( REGEX REPLACE "mpi_mpifh[.]so" "mpi_mpifh.a" ${VAR} "${${VAR}}" )
+            string( REGEX REPLACE "mpi_usempif08[.]so" "mpi_usempif08.a" ${VAR} "${${VAR}}" )
+            string( REGEX REPLACE "pmi[.]so" "pmi.a" ${VAR} "${${VAR}}" )
+            set( ${VAR} "${${VAR}}" CACHE STRING
+               "MPI libraries to link against." FORCE )
+      endif()
+
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
          set( DRACO_C4 "MPI" )  

@@ -40,7 +40,7 @@ elseif( APPLE )
 else() # AIX
    set( C4_MPICMD "poe -procs " )
 endif()
-if( "${SITE}" MATCHES "c[it]" )
+if( "${SITE}" MATCHES "c[it]" AND NOT "${MPI_FLAVOR}" MATCHES "openmpi" )
    set( C4_MPICMD "aprun -n " )
 endif()
 
