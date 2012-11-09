@@ -55,9 +55,9 @@ namespace rtt_c4
  * \param Blast     end of the destination data
  */
 template < typename iterA , typename iterC, typename iterB > 
-void TigsTrace::scatterList(iterA Afirst,   iterA Alast, 
-                            iterC Cntfirst, iterC Cntlast, 
-                            iterB Bfirst,   iterB Blast) const
+void TigsTrace::scatterList(iterA Afirst,   iterA Remember(Alast), 
+                            iterC Cntfirst, iterC Remember(Cntlast), 
+                            iterB Bfirst,   iterB Remember(Blast) ) const
 {
     Require (JsideIndirect.size() == JsideConnects.size());
     Require (IsideIndirect.size() == IsideConnects.size());
@@ -181,8 +181,8 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Alast,
  * \param Alast     end of the destination data
  */
 template < typename iterA, typename iterB > 
-void TigsTrace::gather( iterB Bfirst, iterB Blast,
-                        iterA Afirst, iterA Alast )
+void TigsTrace::gather( iterB Bfirst, iterB Remember(Blast),
+                        iterA Afirst, iterA Remember(Alast) )
 {
     Require( JsideIndirect.size() == JsideConnects.size() );
     Require( IsideIndirect.size() == IsideConnects.size() );
@@ -308,8 +308,8 @@ void TigsTrace::gather( iterB Bfirst, iterB Blast,
  * \param op        the binary reduction operation
  */
 template < typename iterA , typename iterB , typename BinaryOp > 
-void TigsTrace::scatter(iterA    Afirst, iterA    Alast,
-                        iterB    Bfirst, iterB    Blast,
+void TigsTrace::scatter(iterA    Afirst, iterA Alast,
+                        iterB    Bfirst, iterB Remember(Blast),
                         BinaryOp op)
 {
     Check( std::distance(Afirst, Alast) == onProcDomain );
