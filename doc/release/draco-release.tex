@@ -4,7 +4,8 @@
 %% $Id$
 %%---------------------------------------------------------------------------%%
 %\documentclass[11pt]{nmemo}
-\documentclass[note]{newmemo}
+%\documentclass[11pt]{newmemo}
+\documentclass[note]{ResearchNote_pdf}
 \usepackage[centertags]{amsmath}
 \usepackage{amssymb,amsthm,graphicx}
 %\usepackage[mathcal]{euscript}
@@ -98,10 +99,10 @@
 % \divisionname{Applied Theoretical \& Computational Physics Div.}
 %\groupname{X-TM:Transport Methods Group}
 
-%\divisionname{Computer and Computational Sciences}
+\divisionname{Computer, Computational and Statistical Sciences}
 \groupname{CCS--2: Computational Physics \& Methods}
-\groupmail{CCS-2, Mail Stop D413}
-\groupphone{Phone: 505-667-7029 Fax: 505-665-4972}
+%\groupmail{CCS-2, Mail Stop D413}
+%\groupphone{Phone: 505-667-7029 Fax: 505-665-4972}
 \fromms{
    Kelly Thompson/CCS--2, D409
 %   Thomas M. Evans \vspace{0.4 em}
@@ -133,13 +134,10 @@
 Baker Randal S.           CCS-2      D409  \\
 Budge Kent G.             CCS-2      D409 \\
 Chang Jae Ho              CCS-2      D409 \\
-Densmore Jeffery D.       CCS-2      D409 \\
 Lowrie Robert B.          CCS-2      D413\\
-Palmer Todd S.            CCS-2      D409 \\
 Rockefeller Gabriel M.    CCS-2      D409 \\
 Rosa Massimiliano         CCS-2      K784 \\
 Turner Scott A.           CCS-2      D409\\
-Urbatsch Todd J.          CCS-2      D409 \\
 Warsa James S.            CCS-2      D409\\
 Wollaber Allan B.         CCS-2      D409\\
 \\
@@ -161,7 +159,7 @@ many features with the FreeBSD Release Engineering
 process~\cite{freebsd-release-eng}.  These procedures should also
 apply to \draco-clients such as \capsaicin\footnote{Email Jae Chang
   (jhchang@lanl.gov) for details}, and \jayenne\ (\clubimc, \wedgehog,
-\milagro)\footnote{Email Todd Urbatsch (tmonster@lanl.gov) for
+\milagro)\footnote{Email Rob Lowrie (lowrie@lanl.gov) for
   details}.  We require releases in order to provide capability to
 users and for developers of software products that use \draco's
 capabilities.  Formal releases allow CCS--2 code projects to maintain
@@ -185,10 +183,11 @@ provided.
 \draco\ evolved as a loose collection of individual components bound
 by a common build-system.  While \draco\ is more tightly integrated in
 its present incarnation, \draco\ development still concentrates on
-individual components.  \draco\ components are written in C++, utilize
+individual components.  \draco\ components are primarily written in C++, utilize
 an Object Oriented Design (OOD), enforce Design-by-Contract
 verification, enforces component level encapsulation and levelized
-dependency between components.  \draco\ is a software project that is
+dependency between components.  In recent months, the \draco\ build system began proving support for Fortran based components and some Fortran code is now provided.  
+\draco\ is a software project that is
 continually evolving.  Many components that were once actively
 developed and used have been retired.  New components are frequently
 added to meet today's programming requirements.
@@ -259,7 +258,7 @@ The \draco\ release policies are:
   \begin{enumerate}
   \item Debug: 
     \texttt{-DCMAKE\_BUILD\_TYPE=DEBUG} 
-    \texttt{-DGCC\_ENABLE\_ALL\_WARNINGS=ON} 
+    \texttt{-DGCC\_ENABLE\_ALL\_WARNINGS=ON} \\
     \texttt{-DGCC\_ENABLE\_GLIBCXX\_DEBUG=ON} 
   \item Release: 
     \texttt{-DCMAKE\_BUILD\_TYPE=RELEASE}
@@ -570,12 +569,10 @@ supported.
 \multicolumn{1}{c}{Machine} & 
 \multicolumn{1}{c}{Compiler Set} & 
 \multicolumn{1}{c}{Vendors} \\ \hline
-Hurricane/Turing/Typhoon/Luna/Moonlight & Intel 12.1.2 &  OpenMPI-1.4.5 \\
+Moonlight/Pinto/Typhoon/Luna & Intel 12.1.5 &  OpenMPI-1.4.5 \\
 Ceilo/Ceilito         & Intel 12.1.2     &  MPICH2-5.4.2 \\
-Roadrunner/rr\_dev    & GCC 4.3.0      &  OpenMPI-1.4.3, DaCS \\
-YellowRail            & PGI 9.0-3      &  OpenMPI-1.4.3 \\
-Dawn                  & --             &  --             \\
-Mapache               & --             & --             \\
+Roadrunner/rr\_dev    & GCC 4.7.1      &  OpenMPI-1.4.3, DaCS \\
+Sequoia                  & --             &  --             \\
 \hline\hline
 \end{tabular}
 \end{center}
@@ -601,8 +598,8 @@ Here is the process that can provide this information.
 
 \begin{enumerate}
 \item Generate a list of files that have been modified since the last release and count the files.
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=.5in, 
-  xrightmargin=0.5in]
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=.25in, 
+  xrightmargin=0.25in]
 svn diff -r"{2012-01-06}":"{2012-06-28}" --summarize &> modified_files.log
 num_files_changed=`cat modified_files.log | awk  '{print $2}' | sort -u | wc -l`
 echo $num_files_changed
@@ -612,10 +609,10 @@ echo $num_files_changed
   release.  This command doesn't work with symbolic tag names and you
   must use a date range instead.  The date of the last release can be
   taken from the \texttt{ChangeLog}.
-\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.5in, 
-  xrightmargin=0.5in]
+\begin{lstlisting}[basicstyle=\footnotesize, xleftmargin=0.25in, 
+  xrightmargin=0.25in]
 svn log -r"{2012-01-06}":"{2012-06-28}" --verbose &> svn_messages.log  
-number_of_commits=`cat svn_message.log | grep "Changed paths:" | wc -l`
+number_of_commits=`cat svn_messages.log | grep "Changed paths:" | wc -l`
 \end{lstlisting}
 \item Go through the file \texttt{svn\_messages.log}
   and summarize the log entries in the \texttt{ChangeLog} following the format from previous release messages.
