@@ -144,8 +144,7 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Remember(Alast),
         }
 
         for( size_t s=0; s<reqs_recv.size(); ++s )
-            if( JsideConnects[s] != rtt_c4::node() )
-                reqs_recv[s].wait();
+            reqs_recv[s].wait();
         
         rtt_c4::global_barrier();
             
@@ -260,8 +259,7 @@ void TigsTrace::gather( iterB Bfirst, iterB Remember(Blast),
         }
 
         for( size_t s=0; s<reqs_recv.size(); ++s )
-            if( IsideConnects[s] != rtt_c4::node() )
-                reqs_recv[s].wait();
+            reqs_recv[s].wait();
         rtt_c4::global_barrier();
           
         // unload the receive buffer
