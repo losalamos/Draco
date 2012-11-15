@@ -64,30 +64,30 @@ const std::string release()
 const std::string author_list()
 {
     std::stringstream alist;
-    alist << "  "
+    alist << "    "
           << "Kelly G. Thompson, "
           << "Kent G. Budge, "
           << "Tom M. Evans,"
-          << "\n  "
+          << "\n    "
           << "Rob Lowrie, "
           << "B. Todd Adams, "
           << "Mike W. Buksas,"
-          << "\n  "
+          << "\n    "
           << "James S. Warsa, "
           << "John McGhee, "
           << "Gabriel M. Rockefeller,"
-          << "\n  "
+          << "\n    "
           << "Paul J. Henning, "
           << "Randy M. Roberts, "
           << "Seth R. Johnson,"
-          << "\n  "
+          << "\n    "
           << "Allan B. Wollaber, "
           << "Peter Ahrens, "
           << "Jeff Furnish,"
-          << "\n  "
+          << "\n    "
           << "Paul W. Talbot, "
           << "Jae H. Chang, "
-          << "Benjamin K. Bergen.";
+          << "and Benjamin K. Bergen.";
     return alist.str();
 }
 
@@ -99,7 +99,7 @@ const std::string copyright()
     std::ostringstream msg;
 
     msg << "Draco Contributers: \n"
-        << author_list() << "\n"
+        << author_list() << "\n\n"
         << "Copyright (C) 1995-2012 LANS, LLC" << std::endl;
   
     return msg.str();

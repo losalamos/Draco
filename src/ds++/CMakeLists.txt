@@ -1,5 +1,13 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   ds++/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2010 Sep 24
+# brief  Generate build project files for ds++.
+# note   Copyright (C) 2010-2012, Los Alamos National Security
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-
+#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 2.6)
 project( dsxx CXX )
 
@@ -26,7 +34,8 @@ list( REMOVE_ITEM headers ${template_implementations} )
 # BUG: artf21615 (tf.lanl.gov): Safe_Ptr has a design defect
 list( REMOVE_ITEM headers 
    ${PROJECT_SOURCE_DIR}/Safe_Ptr.hh
-   ${PROJECT_SOURCE_DIR}/DBC_Ptr.hh )
+   ${PROJECT_SOURCE_DIR}/DBC_Ptr.hh 
+)
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
