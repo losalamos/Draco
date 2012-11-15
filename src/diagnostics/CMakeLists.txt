@@ -41,6 +41,10 @@ file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
+list( REMOVE_ITEM headers
+   ${template_implementations} 
+   ${PROJECT_SOURCE_DIR}/draco_info.cc
+   )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
@@ -59,6 +63,9 @@ include_directories(
    ${c4_BINARY_DIR}   # c4/config.h
    )
 
+# setup binary directory
+file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
+
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -69,6 +76,11 @@ add_component_library(
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 
+add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info.cc )
+target_link_libraries( Exe_draco_info Lib_dsxx  )
+set_target_properties( Exe_draco_info
+   PROPERTIES OUTPUT_NAME bin/draco_info )
+
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
@@ -76,6 +88,7 @@ add_component_library(
 install( TARGETS Lib_diagnostics  
    EXPORT draco-targets
    DESTINATION lib )
+install( TARGETS Exe_draco_info DESTINATION bin )
 install( FILES ${headers}  DESTINATION include/diagnostics )
 
 # ---------------------------------------------------------------------------- #
