@@ -40,6 +40,8 @@ set( CMake_src
    unix-pgi.cmake
    unix-ppu.cmake
    unix-spu.cmake
+   unix-xl.cmake
+   unix-xlf.cmake
 #   vendor_libraries.cmake
    windows-cl.cmake
    windows-ifort.cmake
