@@ -16,9 +16,10 @@
 
 #include "Assert.hh"
 #include "Endian.hh"
-//#include <string>
+#include <string>
 #include <vector>
 #include <cstring>
+#include <map>
 
 namespace rtt_dsxx
 {
@@ -113,7 +114,7 @@ class Packer
 
     // In pack mode, pack values into the buffer.  In size mode, adds
     // the size of the type into the total buffer size required.
-    template<class T> inline void pack(const T&);
+    template<typename T> inline void pack(const T&);
 
     // Accept data from another character stream.
     template<class IT> void accept(unsigned int bytes, IT data);
@@ -231,7 +232,7 @@ void Packer::set_buffer(unsigned int size_in, pointer buffer)
    \endcode
 
  */
-template<class T>
+template<typename T>
 void Packer::pack(const T &value)
 {
     if ( size_mode )
@@ -248,6 +249,7 @@ void Packer::pack(const T &value)
 	// advance the iterator pointer to the next location
 	ptr += sizeof(T);
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -302,7 +304,7 @@ void Packer::pad(unsigned int bytes)
  * case the total required stream size is incremented.
 
  */
-template<class T>
+template<typename T>
 inline Packer& operator<<(Packer &p, const T &value)
 {
     // pack the value
@@ -380,7 +382,7 @@ class Unpacker
     inline void set_buffer(unsigned int, const_pointer);
 
     // Unpack value from buffer.
-    template<class T> inline void unpack(T &);
+    template<typename T> inline void unpack(T &);
     
     // >>> ACCESSORS
 
@@ -459,7 +461,7 @@ void Unpacker::set_buffer(unsigned int size_in, const_pointer buffer)
  * be accessible using the sizeof() operator
 
  */
-template<class T>
+template<typename T>
 void Unpacker::unpack(T &value)
 {
     Require (begin_ptr);
@@ -524,7 +526,7 @@ void Unpacker::extract(unsigned int bytes, T it)
  * so that stream in operations can be strung together.
 
  */
-template<class T>
+template<typename T>
 inline Unpacker& operator>>(Unpacker &u, T &value)
 {
     u.unpack(value);
@@ -573,7 +575,7 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
  * \param field container or string
  * \param packed vector<char> that is empty; data will be packed into it
  */
-template<class FT>
+template<typename FT>
 void pack_data(const FT &field, std::vector<char> &packed)
 {
     Require (packed.empty());
@@ -601,6 +603,62 @@ void pack_data(const FT &field, std::vector<char> &packed)
 	packer << *itr;
 
     Ensure (packer.get_ptr() == &packed[0] + size);
+}
+
+//---------------------------------------------------------------------------//
+template<typename KeyT, typename DataT>
+size_t pack_data( std::map< KeyT, std::vector< DataT > > const & map,
+                  std::vector<char> & packed )
+{
+    Require (packed.empty());
+
+    // determine the size of the field
+    size_t const numkeys = map.size();
+
+    // determine the number of bytes in the field
+    size_t const key_size = numkeys * sizeof( KeyT ) + sizeof(size_t);
+    size_t data_size(0);
+    for( typename std::map< KeyT, std::vector<DataT> >::const_iterator
+             itr=map.begin(); itr != map.end(); ++itr )
+    {
+        // Size of data plus a size_t that indicates the vector length.
+        data_size += (*itr).second.size() * sizeof( DataT ) + sizeof(size_t);
+    }
+    
+    // make a vector<char> large enough to hold the packed field
+    size_t const size(key_size+data_size);
+    packed.resize(size);
+
+    // make an unpacker and set it
+    Packer packer;
+    packer.set_buffer( size, &packed[0] );
+
+    // pack up the number of keys in the map.
+    packer << numkeys;
+
+    // iterate and pack:
+    // 1. the keys
+    for( typename std::map< KeyT, std::vector<DataT> >::const_iterator
+             itr = map.begin(); itr != map.end(); itr++ )
+    {
+        packer << (*itr).first;
+    }
+    // 2. The vector size and vector data for each key.
+    for( typename std::map< KeyT, std::vector<DataT> >::const_iterator
+             itr = map.begin(); itr != map.end(); itr++ )
+    {
+        // The size of the fector associated with one key.
+        packer << (*itr).second.size();
+        // pack the data found in the vector for one key.
+        for( typename std::vector<DataT>::const_iterator
+                 it = (*itr).second.begin(); it != (*itr).second.end(); it++ )
+        {
+            packer << *it;
+        }
+    }
+
+    Ensure( packer.get_ptr() == &packed[0] + size );
+    return size;
 }
 
 //---------------------------------------------------------------------------//
@@ -645,28 +703,68 @@ void pack_data(const FT &field, std::vector<char> &packed)
  * \param packed vector<char> created by pack_data function (or in a manner
  * analogous) 
  */
-template<class FT>
-void unpack_data(FT &field, const std::vector<char> &packed)
+template<typename FT>
+void unpack_data( FT &field, std::vector<char> const & packed )
 {
-    Require (field.empty());
-    Require (packed.size() >= sizeof(int));
+    Require( field.empty() );
+    Require( packed.size() >= sizeof(int) );
 
     // make an unpacker and set it
     Unpacker unpacker;
-    unpacker.set_buffer(packed.size(), &packed[0]);
+    unpacker.set_buffer( packed.size(), &packed[0] );
 
     // unpack the number of elements in the field
     int field_size = 0;
     unpacker >> field_size;
 
     // make a field big enough to hold all the elements
-    field.resize(field_size);
+    field.resize( field_size );
     
     // unpack the data
-    for (typename FT::iterator itr = field.begin(); itr != field.end(); itr++)
+    for( typename FT::iterator itr = field.begin(); itr != field.end(); itr++ )
 	unpacker >> *itr;
 
-    Require (unpacker.get_ptr() == &packed[0] + packed.size());
+    Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );
+    return;
+}
+//---------------------------------------------------------------------------//
+template<typename keyT, typename dataT>
+void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,
+                  std::vector<char> const & packed)
+{
+    Require( unpacked_map.empty() );
+    Require( packed.size() >= sizeof(size_t) );
+
+    // make an unpacker and set it
+    Unpacker unpacker;
+    unpacker.set_buffer( packed.size(), &packed[0] );
+
+    // unpack the number of elements in the field
+    size_t numkeys( 0 );
+    unpacker >> numkeys;
+
+    // unpack the keys
+    keyT key(0);
+    for( size_t i=0; i<numkeys; ++i )
+    {
+        unpacker >> key;
+        unpacked_map[key] = std::vector<dataT>();
+    }
+
+    // unpack the data
+    for( typename std::map< keyT, std::vector<dataT> >::iterator // C++11 auto
+             it=unpacked_map.begin(); it!=unpacked_map.end(); ++it )
+    {
+        size_t numdata(0);
+        unpacker >> numdata;
+        unpacked_map[(*it).first].resize(numdata);
+        for( typename std::vector<dataT>::iterator
+                 itr = (*it).second.begin(); itr != (*it).second.end(); itr++ )
+	unpacker >> *itr;
+    }
+
+    Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );
+    return;
 }
 
 } // end namespace rtt_dsxx

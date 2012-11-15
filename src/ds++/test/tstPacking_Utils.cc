@@ -3,7 +3,8 @@
  * \file   ds++/test/tstPacking_Utils.cc
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:58:08 2001
- * \brief  
+ * \brief  Test the routines used for serializing and de-serializing C++
+ *         objects. 
  * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
  *         All rights reserved
  */
@@ -11,6 +12,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <stdint.h>
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Packing_Utils.hh"
@@ -309,10 +311,87 @@ void packing_test( rtt_dsxx::UnitTest & ut)
 
         if (cc[0] != 'a') ITFAILS;
         if (cc[1] != 'r') ITFAILS;
-
     }
 
     delete [] buffer;
+}
+//---------------------------------------------------------------------------//
+void packing_test_c90( rtt_dsxx::UnitTest & ut)
+{
+    using std::vector;
+
+    std::cout << "\nTesting packing/unpacking size_t and uint64_t..."
+              << std::endl;
+    size_t const numFails(ut.numFails);
+    
+    // make some data
+    double x = 102.45;
+    double y = 203.89;
+    double z = 203.88;
+
+    size_t ix     = 10;
+    uint64_t iy   = 11; 
+    size_t iz     = 12;
+
+    // make 2 buffers for data
+    size_t s1 = 2 * sizeof(double) + 2 * sizeof(size_t);
+    //char *b1  = new char[s1];
+    vector<char> b1(s1);
+    size_t s2 = sizeof(double) + sizeof(size_t);
+    //char *b2  = new char[s2];
+    vector<char> b2(s2);
+
+    // pack the data
+    {
+        Packer p;
+
+        p.set_buffer(s1, &b1[0]);
+        p << x << ix;
+        p.pack(y);
+        p.pack(iy);
+
+        if (p.get_ptr() != &b1[0]+s1) ITFAILS;
+
+        p.set_buffer(s2, &b2[0]);
+        p << iz << z;
+        
+        if (p.get_ptr() != &b2[0]+s2) ITFAILS;
+    }
+    
+    // unpack the data
+    {
+        Unpacker u;
+
+        double   d = 0;
+        size_t   i = 0;
+        uint64_t i64 = 0;
+        
+        u.set_buffer(s1, &b1[0]);
+        u >> d >> i;
+        if (d != x )              ITFAILS;
+        if (i != ix)              ITFAILS;
+
+        u.unpack(d);
+        u.unpack(i64); 
+        if (d != y)               ITFAILS;
+        if (i64 != iy)            ITFAILS;
+
+        if (u.get_ptr() != s1+&b1[0]) ITFAILS;
+
+        u.set_buffer(s2, &b2[0]);
+        u >> i >> d;
+        if (i != iz)              ITFAILS;
+        if (d != z)               ITFAILS;
+        
+        if (u.get_ptr() != s2+&b2[0]) ITFAILS;
+    }
+
+    if( numFails == ut.numFails ) // no new failures.
+        PASSMSG( "Packing/unpacking size_t and uint64_t works." );
+    else
+        FAILMSG( "Packing/unpacking size_t and uint64_t failed." );
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -388,9 +467,10 @@ void packing_functions_test( rtt_dsxx::UnitTest & ut )
     // Data to pack:
     // -------------
     vector<double> x(5);
-    string         y("Tom Evans is a hack!");
+    string         y("The quick brown fox jumps over the lazy dog.");
     
-    for (int i=0; i<5; ++i) x[i] = 100.0*static_cast<double>(i) + 2.5;
+    for (int i=0; i<5; ++i)
+        x[i] = 100.0*static_cast<double>(i) + 2.5;
 
 
     // Pack the data
@@ -453,8 +533,6 @@ void packing_functions_test( rtt_dsxx::UnitTest & ut )
     copy(packed_vector.begin(), packed_vector.end(),
          back_inserter(total_packed));
 
-    
-
     /* Now, we repeat the process for the string data */
 
     // Reset the packer, to re-use the space for holding packed data sizes:
@@ -471,8 +549,6 @@ void packing_functions_test( rtt_dsxx::UnitTest & ut )
     // array.
     copy(packed_string.begin(), packed_string.end(),
          back_inserter(total_packed));
-
-
 
     // Unpack the data
     // ---------------
@@ -498,9 +574,7 @@ void packing_functions_test( rtt_dsxx::UnitTest & ut )
     
     unpack_data(x_new, packed_vector_new);
     unpack_data(y_new, packed_string_new);
-
-
-    
+   
     // Compare the results
     // -------------------
 
@@ -515,15 +589,12 @@ void packing_functions_test( rtt_dsxx::UnitTest & ut )
     return;
 }
 
-
 //---------------------------------------------------------------------------//
-
 void endian_conversion_test( rtt_dsxx::UnitTest & ut )
 {
 
     Packer p;
     Unpacker up(true);
-
 
     // Test the int type.
     const int moo = 0xDEADBEEF;
@@ -541,8 +612,6 @@ void endian_conversion_test( rtt_dsxx::UnitTest & ut )
 
     // Check
     if (static_cast<unsigned>(oom) != 0xEFBEADDE) ITFAILS;
-
-    
 
     // Verify that char data (being one byte) is unchanged.
     const char letters[] = "abcdefg";
@@ -566,6 +635,46 @@ void endian_conversion_test( rtt_dsxx::UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
+void packing_map_test( rtt_dsxx::UnitTest & ut )
+{
+    std::cout << "\nTesting packing/unpacking std::map<T1,"
+              << "std::vector<T2>>..." << std::endl;
+    size_t const numFails(ut.numFails);
+
+    // create a map
+    std::map< int, std::vector< int > > mymap;
+    mymap[3] = std::vector<int>(3,33);
+    mymap[1] = std::vector<int>(6,121);
+    mymap[4] = std::vector<int>(2,1);
+
+    // packed storage
+    std::vector<char> packed_mymap;
+    /*size_t packed_size = */ rtt_dsxx::pack_data( mymap, packed_mymap );
+
+    // unpack the data
+    std::map< int, std::vector< int > > mymap_new;
+    rtt_dsxx::unpack_data( mymap_new, packed_mymap );
+
+    // Check size
+    if( mymap.size() != mymap_new.size() )  ITFAILS;
+    // Check keys
+    if( mymap_new.count( 3 ) != 1 ) ITFAILS;
+    if( mymap_new.count( 1 ) != 1 ) ITFAILS;
+    if( mymap_new.count( 4 ) != 1 ) ITFAILS;
+    // Check data per key.
+    if( mymap_new[3] != mymap[3] ) ITFAILS;
+    if( mymap_new[1] != mymap[1] ) ITFAILS;
+    if( mymap_new[4] != mymap[4] ) ITFAILS;
+
+    if( ut.numFails == numFails )  // no new failures.
+        PASSMSG( "packing/unpacking std::map<T1,std::vector<T2>>" );
+    else
+        FAILMSG( "packing/unpacking std::map<T1,std::vector<T2>>" );
+    
+    return;
+}
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
@@ -573,10 +682,12 @@ int main(int argc, char *argv[])
     {
         // >>> UNIT TESTS
         packing_test(ut);
+        packing_test_c90(ut);
         std_string_test(ut);
         packing_functions_test(ut);
         compute_buffer_size_test(ut);
         endian_conversion_test(ut);
+        packing_map_test(ut);
     }
     catch (rtt_dsxx::assertion &error)
     {
