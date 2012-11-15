@@ -208,6 +208,9 @@ macro( setupMPILibrariesUnix )
             STRING "extra mpirun flags (list)." FORCE)
          set( MPIEXEC_POSTFLAGS_STRING "-cc none" CACHE
             STRING "extra mpirun flags (string)." FORCE)
+      elseif( "${MPIEXEC}" MATCHES srun)
+         set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
+            STRING "flag used to specify number of processes." FORCE)
       endif()
 
       # Mark some of the variables created by the above logic as
