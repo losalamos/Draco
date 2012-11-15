@@ -13,11 +13,14 @@
 #include "Index_Labeled.hh"
 #include "Index_Proc.hh"
 
-using namespace rtt_norms;
+namespace rtt_norms
+{
 
 template class Norms_Index<size_t>;
 template class Norms_Index<Index_Labeled>;
 template class Norms_Index<Index_Proc>;
+
+}
 
 //---------------------------------------------------------------------------//
 // end of norms/Norms_Index.t.cc
