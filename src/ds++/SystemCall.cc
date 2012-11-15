@@ -19,14 +19,11 @@
 #ifdef UNIX
 #include <sys/param.h>  // MAXPATHLEN
 #include <unistd.h>     // gethostname
-#include <sys/stat.h>   // stat
 #endif
 #ifdef WIN32
 #include <winsock2.h>  // gethostname
 #include <process.h>   // _getpid
 #include <direct.h>    // _getcwd
-#include <sys/types.h> // _stat
-#include <sys/stat.h>  // _stat
 #endif
 
 #include <iostream>
@@ -124,9 +121,13 @@ std::string draco_getcwd(void)
 //---------------------------------------------------------------------------//
 /*! \brief Wrapper for system dependent stat call.
  *
- * http://msdn.microsoft.com/en-us/library/14h5k7ff%28v=vs.80%29.aspx
+ * Windows
+ *    http://msdn.microsoft.com/en-us/library/14h5k7ff%28v=vs.80%29.aspx
+ * Linux
+ *    http://en.wikipedia.org/wiki/Stat_%28system_call%29
  */
-int draco_getstat( std::string const &  fqName )
+draco_getstat::draco_getstat( std::string const & fqName )
+    : stat_return_code(0)
 {
 #ifdef WIN32
     /*! \note If path contains the location of a directory, it cannot 
@@ -141,11 +142,32 @@ int draco_getstat( std::string const &  fqName )
     
     std::cout << "fqName = " << fqName 
             << "\nclean_fqName = " << clean_fqName << std::endl;
-    struct _stat buf;
-    return _stat(clean_fqName.c_str(), &buf);
+    stat_return_code = _stat(clean_fqName.c_str(), &buf);
 #else
-    struct stat buf;
-    return stat(fqName.c_str(), &buf);
+    stat_return_code = stat(fqName.c_str(), &buf);
+#endif
+}
+
+//! Is this a regular file?
+bool draco_getstat::isreg()
+{
+#if WIN32
+    Insist( false, "draco_getstat::isreg() not implemented for WIN32" );
+#else
+    bool b = S_ISREG(buf.st_mode);
+    return b;
+#endif
+}
+
+//! Is a Unix permission bit set?
+bool draco_getstat::has_permission_bit( int mask )
+{
+    Insist( isreg(), "Can only check permission bit for regular files." );
+#if WIN32
+    Insist( false, "draco_getstat::hsa_permission_bit() not implemented for WIN32" );
+#else
+    // check execute bit (buf.st_mode & 0111)
+    return (buf.st_mode & mask);
 #endif
 }
 

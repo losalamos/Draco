@@ -14,6 +14,14 @@
 
 #include "ds++/config.h"
 #include <string>
+#ifdef UNIX
+#include <sys/stat.h>   // stat
+#endif
+#ifdef WIN32
+#include <sys/types.h> // _stat
+#include <sys/stat.h>  // _stat
+
+#endif
 
 namespace rtt_dsxx
 {
@@ -68,7 +76,30 @@ DLL_PUBLIC int draco_getpid( void );
 DLL_PUBLIC std::string draco_getcwd( void );
 
 //! Return the stat value for a file
-DLL_PUBLIC int draco_getstat( std::string const &  fqName );
+// DLL_PUBLIC
+// int draco_getstat( std::string const &  fqName );
+class draco_getstat
+{
+  private:
+    int stat_return_code;
+#ifdef WIN32
+    struct _stat buf;
+#else
+    struct stat buf;
+#endif
+    
+  public:
+    //! constructor
+    explicit draco_getstat( std::string const & fqName );
+    //! If the call to stat failed, this function will return false.
+    bool valid(void){ return stat_return_code==0; };
+    bool isreg(void);
+    /*!
+     * \brief Determine if the file has the requested permission bits set.
+     * \note The leading zero for the mask is important.
+     */
+    bool has_permission_bit( int mask=0777 );
+};
 
 //! Use Linux realpath to resolve symlinks
 DLL_PUBLIC std::string draco_getrealpath( std::string const & path );

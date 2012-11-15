@@ -170,7 +170,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 
 #if defined( WIN32 )
     { // The binary should exist.  Windows does not provide an execute bit. 
-         std::string exeExists( realpath + myname ); 
+        std::string exeExists( realpath + myname ); 
         std::cout << "fqp = " << fqp
             << "\nrealpath = " << realpath
             << "\nexeExists = " << exeExists << std::endl;
@@ -191,8 +191,14 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
             if( realpath.size() > 0 ) PASSMSG( "FC_REALPATH has length > 0.");
             else                      FAILMSG( "FC_REALPATH has length <= 0.");
 
-            std::string exeExistsAndExecutable("test -x " + realpath );
-            if( std::system( exeExistsAndExecutable.c_str() ) == 0 )
+            draco_getstat rpstatus( realpath );
+
+            // string realpath2 = getFilenameComponent( "Makefile",
+            //                    rtt_dsxx::FC_REALPATH );
+            // draco_getstat rpstatus2( realpath2 );
+            // bool exebit = rpstatus2.has_permission_bit( 0100 );
+            
+            if( rpstatus.has_permission_bit( 0100 ) )
                 PASSMSG(
                     string("FC_REALPATH points to a valid executable. Path = ")
                     + realpath );
