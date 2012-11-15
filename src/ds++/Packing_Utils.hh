@@ -576,15 +576,15 @@ inline Unpacker& operator>>(Unpacker &u, T &value)
  * \param packed vector<char> that is empty; data will be packed into it
  */
 template<typename FT>
-void pack_data(const FT &field, std::vector<char> &packed)
+void pack_data(FT const &field, std::vector<char> &packed)
 {
-    Require (packed.empty());
+    Require( packed.empty() );
 
     // determine the size of the field
-    const int field_size = field.size();
+    int const field_size = field.size();
 
     // determine the number of bytes in the field
-    const int size = field_size * sizeof(typename FT::value_type) + sizeof(int);
+    int const size = field_size * sizeof(typename FT::value_type) + sizeof(int);
 
     // make a vector<char> large enough to hold the packed field
     packed.resize(size);
@@ -597,32 +597,71 @@ void pack_data(const FT &field, std::vector<char> &packed)
     packer << field_size;
 
     // iterate and pack
-    for (typename FT::const_iterator itr = field.begin();
-         itr != field.end();
-	 itr++)
+    for( typename FT::const_iterator itr = field.begin();
+         itr != field.end(); itr++ )
+    {
 	packer << *itr;
-
+    }
+    
     Ensure (packer.get_ptr() == &packed[0] + size);
+    return;
 }
 
 //---------------------------------------------------------------------------//
-template<typename KeyT, typename DataT>
-size_t pack_data( std::map< KeyT, std::vector< DataT > > const & map,
-                  std::vector<char> & packed )
+template<typename keyT, typename dataT>
+void pack_data( std::map< keyT, dataT > const & map,
+                std::vector<char> &packed )
 {
-    Require (packed.empty());
+    Require( packed.empty() );
 
     // determine the size of the field
     size_t const numkeys = map.size();
 
     // determine the number of bytes in the field
-    size_t const key_size = numkeys * sizeof( KeyT ) + sizeof(size_t);
+    size_t const key_size  = numkeys * sizeof( keyT);
+    size_t const data_size = numkeys * sizeof(dataT);
+    
+    // make a vector<char> large enough to hold the packed field
+    size_t const size(sizeof(size_t)+key_size+data_size);
+    packed.resize(size);
+
+    // make an unpacker and set it
+    Packer packer;
+    packer.set_buffer( size, &packed[0] );
+
+    // pack up the number of elements in the field
+    packer << numkeys;
+
+    // iterate and pack
+    for( typename std::map< keyT, dataT >::const_iterator
+             itr = map.begin(); itr != map.end(); itr++ )
+    {
+        packer << (*itr).first;
+        packer << (*itr).second;
+    }
+
+    Ensure (packer.get_ptr() == &packed[0] + size);
+    return;
+}
+
+//---------------------------------------------------------------------------//
+template<typename keyT, typename dataT>
+void pack_data( std::map< keyT, std::vector< dataT > > const & map,
+                std::vector<char> & packed )
+{
+    Require( packed.empty() );
+
+    // determine the size of the field
+    size_t const numkeys = map.size();
+
+    // determine the number of bytes in the field
+    size_t const key_size = numkeys * sizeof( keyT ) + sizeof(size_t);
     size_t data_size(0);
-    for( typename std::map< KeyT, std::vector<DataT> >::const_iterator
+    for( typename std::map< keyT, std::vector<dataT> >::const_iterator
              itr=map.begin(); itr != map.end(); ++itr )
     {
         // Size of data plus a size_t that indicates the vector length.
-        data_size += (*itr).second.size() * sizeof( DataT ) + sizeof(size_t);
+        data_size += (*itr).second.size() * sizeof( dataT ) + sizeof(size_t);
     }
     
     // make a vector<char> large enough to hold the packed field
@@ -638,19 +677,19 @@ size_t pack_data( std::map< KeyT, std::vector< DataT > > const & map,
 
     // iterate and pack:
     // 1. the keys
-    for( typename std::map< KeyT, std::vector<DataT> >::const_iterator
+    for( typename std::map< keyT, std::vector<dataT> >::const_iterator
              itr = map.begin(); itr != map.end(); itr++ )
     {
         packer << (*itr).first;
     }
     // 2. The vector size and vector data for each key.
-    for( typename std::map< KeyT, std::vector<DataT> >::const_iterator
+    for( typename std::map< keyT, std::vector<dataT> >::const_iterator
              itr = map.begin(); itr != map.end(); itr++ )
     {
         // The size of the fector associated with one key.
         packer << (*itr).second.size();
         // pack the data found in the vector for one key.
-        for( typename std::vector<DataT>::const_iterator
+        for( typename std::vector<dataT>::const_iterator
                  it = (*itr).second.begin(); it != (*itr).second.end(); it++ )
         {
             packer << *it;
@@ -658,7 +697,7 @@ size_t pack_data( std::map< KeyT, std::vector< DataT > > const & map,
     }
 
     Ensure( packer.get_ptr() == &packed[0] + size );
-    return size;
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -727,6 +766,36 @@ void unpack_data( FT &field, std::vector<char> const & packed )
     Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );
     return;
 }
+//---------------------------------------------------------------------------//
+template<typename keyT, typename dataT>
+void unpack_data( std::map<keyT,dataT> & unpacked_map,
+                  std::vector<char> const & packed )
+{
+    Require( unpacked_map.empty() );
+    Require( packed.size() >= sizeof(int) );
+
+    // make an unpacker and set it
+    Unpacker unpacker;
+    unpacker.set_buffer( packed.size(), &packed[0] );
+
+    // unpack the number of elements in the field
+    size_t numkeys( 0 );
+    unpacker >> numkeys;
+
+    // unpack the keys
+    keyT key;
+    dataT data;
+    for( size_t i=0; i<numkeys; ++i )
+    {
+        unpacker >> key;
+        unpacker >> data;
+        unpacked_map[key] = data;
+    }
+
+    Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );
+    return;
+}
+
 //---------------------------------------------------------------------------//
 template<typename keyT, typename dataT>
 void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,

@@ -18,6 +18,7 @@
 #include "eos_Interface.h"
 #include <vector>
 #include <string>
+#include <map>
 
 namespace rtt_cdi_eospac
 {
@@ -62,10 +63,12 @@ class SesameTables
      * SesameTable material identifier.  This vector contains a list of these
      * material IDs.
      */
-    std::vector< unsigned > matMap;
+    std::map< EOS_INTEGER, unsigned > matMap;
+    // std::vector< unsigned > matMap;
 
-    //! Toggle list to identify which data types have been requested.
-    std::vector< EOS_INTEGER > rtMap;
+    //! Toggle list to identify which data types have been requested
+    // (materialID, data type)
+    std::map< unsigned, std::vector<EOS_INTEGER> > rtMap;
 
   public:
     
@@ -80,7 +83,13 @@ class SesameTables
     // CREATORS
 
     //! Default constructor
-    SesameTables(void);
+    SesameTables(void)
+        : numReturnTypes( EOS_M_DT+1 ), //  EOS_M_DT = 305 (see eos_Interface.h)
+          matMap(), rtMap(),
+          tableName(        initializeTableNames(numReturnTypes) ),
+          tableDescription( initializeTableDescriptions(numReturnTypes) )
+    { /* empty */ }
+    
     //! Construct by unpacking a vector<char> stream.
     explicit SesameTables( std::vector<char> const & packed );
 	
@@ -88,6 +97,8 @@ class SesameTables
 
     // set functions: Uncomment when these are needed and unit tests are added.
 
+    SesameTables& addTable( EOS_INTEGER const tableID, unsigned const matID );
+    
     //! Thermal Conductivity (1/cm/s)
     SesameTables& Ktc_DT( unsigned matID );
     //! Electron Specific-Internal-Energy (MJ/kg)
@@ -174,8 +185,19 @@ class SesameTables
     unsigned matID( EOS_INTEGER returnType ) const;
 
     //! Return the enumerated data type associated with the integer index.
-    EOS_INTEGER returnTypes( unsigned index ) const;
+    std::vector<EOS_INTEGER> returnTypes( unsigned const index ) const;
 
+    //! Return a list of table/material identifiers associated with this
+    //! SesameTables object.
+    std::vector<unsigned> matList(void) const
+    {
+        std::vector<unsigned> mlist;
+        for( std::map< unsigned, std::vector<EOS_INTEGER> >::const_iterator
+                 it=rtMap.begin(); it != rtMap.end(); ++it )
+            mlist.push_back((*it).first);
+        return mlist;
+    }
+    
     //! Return the number of return types 
     unsigned getNumReturnTypes() const { return numReturnTypes; }
 
@@ -183,8 +205,10 @@ class SesameTables
     std::vector<char> pack() const;
     
     // implementation
-    static std::vector< std::string > initializeTableNames(        size_t datasize );
-    static std::vector< std::string > initializeTableDescriptions( size_t datasize );
+    static std::vector< std::string > initializeTableNames(
+        size_t const datasize );
+    static std::vector< std::string > initializeTableDescriptions(
+        size_t const datasize );
     
 }; // end class SesameTables
     

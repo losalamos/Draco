@@ -432,20 +432,37 @@ void Eospac::expandEosTable() const
     // to a table then add this information to the vectors returnTypes[] and
     // matIDs[] which are used by EOSPAC.
 
-    for( size_t i=0; i<SesTabs.getNumReturnTypes(); ++i )
+    // for( size_t i=0; i<SesTabs.getNumReturnTypes(); ++i )
+    // {
+    //     if ( SesTabs.matID( i ) != 0 ) /* if tableIndex assigned for eos data type i */
+    //     {
+    //         // MatIDs[] and returnTypes[] are a tuple.
+    //         matIDs.insert( matIDs.begin(),
+    //                        SesTabs.matID(
+    //                            SesTabs.returnTypes( i ) ) );
+
+    //         // SESAME tables assoicated with this material/table id.
+
+    //         std::vector<EOS_INTEGER> table_types( SesTabs.returnTypes( i ) )
+            
+    //         returnTypes.insert( returnTypes.begin(),
+    //                             SesTabs.returnTypes( i ) ); 
+    //     }
+    // }
+
+    std::vector<unsigned> materialTableList( SesTabs.matList() );
+    for( size_t i=0; i<materialTableList.size(); ++i )
     {
-        if ( SesTabs.returnTypes( i ) != EOS_NullTable )
+        std::vector<EOS_INTEGER> tableTypes(
+            SesTabs.returnTypes( materialTableList[i] ) );
+        for( size_t j=0; j<tableTypes.size(); ++j )
         {
-            // MatIDs[] and returnTypes[] are a tuple.
-
-            returnTypes.insert( returnTypes.begin(),
-                                SesTabs.returnTypes( i ) ); 
-            matIDs.insert( matIDs.begin(),
-                           SesTabs.matID(
-                               SesTabs.returnTypes( i ) ) );
+            matIDs.push_back(materialTableList[i]);
+            returnTypes.push_back( tableTypes[j] );
         }
-    }
+    }       
 
+    
     // Allocate eosTable.  The length and location of eosTable will be
     // modified by es1tabs() as needed.
     for( size_t i=0; i<returnTypes.size(); ++i )

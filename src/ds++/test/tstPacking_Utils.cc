@@ -637,39 +637,74 @@ void endian_conversion_test( rtt_dsxx::UnitTest & ut )
 //---------------------------------------------------------------------------//
 void packing_map_test( rtt_dsxx::UnitTest & ut )
 {
-    std::cout << "\nTesting packing/unpacking std::map<T1,"
-              << "std::vector<T2>>..." << std::endl;
-    size_t const numFails(ut.numFails);
+    std::cout << "\nTesting packing/unpacking std::maps..."
+              << std::endl;
 
-    // create a map
-    std::map< int, std::vector< int > > mymap;
-    mymap[3] = std::vector<int>(3,33);
-    mymap[1] = std::vector<int>(6,121);
-    mymap[4] = std::vector<int>(2,1);
+    { // test packing/unpacking a simple map
+        size_t const numFails(ut.numFails);
+        
+        std::map< int, int > mymap;
+        mymap[3] = 33;
+        mymap[1] = 11;
+        mymap[4] = 44;
 
-    // packed storage
-    std::vector<char> packed_mymap;
-    /*size_t packed_size = */ rtt_dsxx::pack_data( mymap, packed_mymap );
+        // packed storage
+        std::vector<char> packed_mymap;
+        rtt_dsxx::pack_data( mymap, packed_mymap );
 
-    // unpack the data
-    std::map< int, std::vector< int > > mymap_new;
-    rtt_dsxx::unpack_data( mymap_new, packed_mymap );
+        // unpack the data
+        std::map< int, int > mymap_new;
+        rtt_dsxx::unpack_data( mymap_new, packed_mymap );
 
-    // Check size
-    if( mymap.size() != mymap_new.size() )  ITFAILS;
-    // Check keys
-    if( mymap_new.count( 3 ) != 1 ) ITFAILS;
-    if( mymap_new.count( 1 ) != 1 ) ITFAILS;
-    if( mymap_new.count( 4 ) != 1 ) ITFAILS;
-    // Check data per key.
-    if( mymap_new[3] != mymap[3] ) ITFAILS;
-    if( mymap_new[1] != mymap[1] ) ITFAILS;
-    if( mymap_new[4] != mymap[4] ) ITFAILS;
+        // Check size
+        if( mymap.size() != mymap_new.size() )  ITFAILS;
+        // Check keys
+        if( mymap_new.count( 3 ) != 1 ) ITFAILS;
+        if( mymap_new.count( 1 ) != 1 ) ITFAILS;
+        if( mymap_new.count( 4 ) != 1 ) ITFAILS;
+        // Check data per key.
+        if( mymap_new[3] != mymap[3] ) ITFAILS;
+        if( mymap_new[1] != mymap[1] ) ITFAILS;
+        if( mymap_new[4] != mymap[4] ) ITFAILS;
 
-    if( ut.numFails == numFails )  // no new failures.
-        PASSMSG( "packing/unpacking std::map<T1,std::vector<T2>>" );
-    else
-        FAILMSG( "packing/unpacking std::map<T1,std::vector<T2>>" );
+        if( ut.numFails == numFails )  // no new failures.
+            PASSMSG( "packing/unpacking std::map<T1,T2>" );
+        else
+            FAILMSG( "packing/unpacking std::map<T1,T2>" );
+    }
+
+    { // test packing/unpacking a map of vectors.
+        size_t const numFails(ut.numFails);
+        
+        std::map< int, std::vector< int > > mymap;
+        mymap[3] = std::vector<int>(3,33);
+        mymap[1] = std::vector<int>(6,121);
+        mymap[4] = std::vector<int>(2,1);
+
+        // packed storage
+        std::vector<char> packed_mymap;
+        rtt_dsxx::pack_data( mymap, packed_mymap );
+
+        // unpack the data
+        std::map< int, std::vector< int > > mymap_new;
+        rtt_dsxx::unpack_data( mymap_new, packed_mymap );
+
+        // Check size
+        if( mymap.size() != mymap_new.size() )  ITFAILS;
+        // Check keys
+        if( mymap_new.count( 3 ) != 1 ) ITFAILS;
+        if( mymap_new.count( 1 ) != 1 ) ITFAILS;
+        if( mymap_new.count( 4 ) != 1 ) ITFAILS;
+        // Check data per key.
+        if( mymap_new[3] != mymap[3] ) ITFAILS;
+        if( mymap_new[1] != mymap[1] ) ITFAILS;
+        if( mymap_new[4] != mymap[4] ) ITFAILS;
+
+        if( ut.numFails == numFails )  // no new failures.
+            PASSMSG( "packing/unpacking std::map<T1,std::vector<T2>>" );
+        else
+            FAILMSG( "packing/unpacking std::map<T1,std::vector<T2>>" );
+    }
     
     return;
 }
