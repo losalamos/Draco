@@ -94,20 +94,6 @@ void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
 }
 
 //---------------------------------------------------------------------------//
-void tstVersion( UnitTest & /* ut */, int & argc, char **& argv )
-{
-    // build the command that contains "--version"
-    string cmd;
-    for( int ic=0; ic<argc; ++ic )
-        cmd += " " + string( argv[0] );
-    cmd += " --version";
-    
-    system( cmd.c_str() );
-
-    return;
-}
-
-//---------------------------------------------------------------------------//
 void tstGetWordCountFile( UnitTest & unitTest )
 {
     cout << "\ntstGetWordCountFile...\n" << endl;
