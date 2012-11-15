@@ -4,10 +4,15 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator template definitions.
+ * \note   Copyright (C) 2000-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
+
+#include <sstream>
+#include <map>
 
 namespace rtt_viz
 {

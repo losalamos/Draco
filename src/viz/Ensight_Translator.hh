@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator header file.
+ * \note   Copyright (C) 2000-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,23 +14,23 @@
 #ifndef rtt_viz_Ensight_Translator_hh
 #define rtt_viz_Ensight_Translator_hh
 
-#include "viz/config.h"
+// #include "viz/config.h"
 #include "Ensight_Stream.hh"
 #include "traits/Viz_Traits.hh"
 #include "ds++/SP.hh"
 #include "ds++/Check_Strings.hh"
 
-#include <sstream>
-#include <iostream>
-#include <iomanip>
+// #include <sstream>
+// #include <iostream>
+// #include <iomanip>
 #include <set>
-#include <map>
-#include <cstring>
-#include <errno.h>
-#include <cstdlib>
-#include <cstdlib>
-#include <sys/types.h>
-#include <sys/stat.h>
+// #include <map>
+// #include <cstring>
+// #include <errno.h>
+// #include <cstdlib>
+// #include <cstdlib>
+// #include <sys/types.h>
+// #include <sys/stat.h>
 
 namespace rtt_viz
 {

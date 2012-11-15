@@ -4,13 +4,18 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator implementation file (non-templated code).
- * \note   Copyright © 2000-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "Ensight_Translator.hh"
+#include "ds++/path.hh"
+#include "ds++/SystemCall.hh"
+#include <iomanip>
+#include <cstring>
 
 namespace rtt_viz
 {
@@ -256,7 +261,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 		  << strerror(errno);
 	Insist (0,  dir_error.str().c_str());
     }
-    DRACO_MKDIR( d_prefix.c_str() );
+    rtt_dsxx::draco_mkdir( d_prefix );
     stat_ret = stat(d_prefix.c_str(), &sbuf);
     if(stat_ret)
     {
@@ -279,10 +284,11 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	if(!stat_ret)
 	{
 	    // This is probably too agressive...
-	    std::ostringstream cmd;
-            cmd << DRACO_RMDIR << d_prefix;
-	    system(cmd.str().c_str());
-            DRACO_MKDIR( d_prefix.c_str() );
+	    // std::ostringstream cmd;
+            // cmd << DRACO_RMDIR << d_prefix;
+	    // system(cmd.str().c_str());
+            rtt_dsxx::draco_remove( d_prefix );
+            rtt_dsxx::draco_mkdir( d_prefix );
 	}
     }
     else
@@ -371,7 +377,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     // continuation
     d_geo_dir = d_prefix + "/geo";
     if (!graphics_continue)
-        DRACO_MKDIR( d_geo_dir.c_str() );
+        rtt_dsxx::draco_mkdir( d_geo_dir );
 
     // make data directory names and directories
     d_vdata_dirs.resize(d_vdata_names.size());
@@ -382,7 +388,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
-            DRACO_MKDIR( d_vdata_dirs[i].c_str() );
+            rtt_dsxx::draco_mkdir( d_vdata_dirs[i] );
     }
     for (size_t i = 0; i < d_cdata_names.size(); i++)
     {
@@ -390,7 +396,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
-            DRACO_MKDIR( d_cdata_dirs[i].c_str() );
+            rtt_dsxx::draco_mkdir( d_cdata_dirs[i] );
     }   
 }
 
