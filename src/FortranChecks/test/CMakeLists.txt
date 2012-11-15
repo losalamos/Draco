@@ -26,9 +26,6 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_executable( cppmain ${test_sources} )
-target_link_libraries( cppmain Lib_dsxx Lib_FortranChecks )
-
 add_scalar_tests( 
    SOURCES "${test_sources}" 
    DEPS    "Lib_dsxx;Lib_FortranChecks" )
