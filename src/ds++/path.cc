@@ -89,7 +89,8 @@ std::string getFilenameComponent( std::string const & fqName,
         case FC_REALPATH :
             {
                 std::string path( getFilenameComponent( fqName, FC_PATH ) );
-                if( draco_getstat(path) )
+                std::string name( getFilenameComponent( fqName, FC_NAME ) );
+                if( ! draco_getstat(path).valid() )
                 {
                     // On error, return empty string.
                     retVal = std::string();
@@ -97,7 +98,7 @@ std::string getFilenameComponent( std::string const & fqName,
                 }
                 else
                 {
-                    retVal = draco_getrealpath(path);
+                    retVal = draco_getrealpath(path) + rtt_dsxx::dirSep + name;
                 }
                 break;
             }
