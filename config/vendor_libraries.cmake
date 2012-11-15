@@ -249,6 +249,9 @@ macro( SetupVendorLibrariesUnix )
 
    # GSL ----------------------------------------------------------------------
    # message( STATUS "Looking for GSL...")
+   if( DRACO_LIBRARY_TYPE MATCHES "STATIC" )
+      set( GSL_STATIC ON )
+   endif()
    find_package( GSL QUIET )
 
    # Random123 ----------------------------------------------------------------
