@@ -27,6 +27,10 @@
 <!-- ---------------------------------------------------------------------- -->
 <hr>
 
+\section Wiki
+
+A more up-to-date version of this document is at http://coder.lanl.gov/redmine/projects/draco/wiki/Configuration_and_Building.
+
 \section how2build_toolset Toolset
 
 The Draco build system requires the following tools:

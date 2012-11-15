@@ -190,24 +190,27 @@ toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c90"   "C" "")
 # ../gcc-4.7.1/configure \
 # --prefix=/ccs/codes/radtran/vendors/gcc-4.7.1 \
 # --enable-language=c++,fortran,lto \
-# --with-gmp-lib=/ccs/codes/radtran/vendors/Linux64/gmp-4.3.2/lib \
-# --with-gmp-include=/ccs/codes/radtran/vendors/Linux64/gmp-4.3.2/include \
-# --with-mpfr-lib=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0/lib \
-# --with-mpfr-include=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0/include \
-# --with-mpc-lib=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2/lib \
-# --with-mpc-include=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2/include 
-# --disable-multilib
+# --with-gmp=/ccs/codes/radtran/vendors/Linux64/gmp-4.3.2 \
+# --with-mpfr=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0 \
+# --with-mpc=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2 \
+# --disable-multilib [--enable-static --disable-shared]
 
 # gmp-5.0.5
-# ./configure --prefix=/usr/projects/draco/vendors/gmp-5.0.5
+# ./configure --prefix=/usr/projects/draco/vendors/gmp-5.0.5 \
+# [--enable-static --disable-shared] 
 # make; make check; make install
 
 # mpfr-3.1.1
-# ./configure --prefix=/usr/projects/draco/vendors/mpfr-3.1.1 --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5
+# ./configure --prefix=/usr/projects/draco/vendors/mpfr-3.1.1 \
+# --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5  [--enable-static \
+# --disable-shared] 
 # make; make check; make install
 
 # mpc-0.8.2
-# ./configure --prefix=/usr/projects/draco/vendors/mpc-0.8.2 --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5 --with-mpfr=/usr/projects/draco/vendors/mpfr-3.1.1
+# ./configure --prefix=/usr/projects/draco/vendors/mpc-0.8.2 \
+# --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5 \
+# --with-mpfr=/usr/projects/draco/vendors/mpfr-3.1.1  [--enable-static \
+# --disable-shared] 
 # make; make check; make install
 
 # Note: On some redhat systems you may need to hide (move) all shared
