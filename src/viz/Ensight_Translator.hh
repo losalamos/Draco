@@ -14,23 +14,11 @@
 #ifndef rtt_viz_Ensight_Translator_hh
 #define rtt_viz_Ensight_Translator_hh
 
-// #include "viz/config.h"
 #include "Ensight_Stream.hh"
 #include "traits/Viz_Traits.hh"
 #include "ds++/SP.hh"
 #include "ds++/Check_Strings.hh"
-
-// #include <sstream>
-// #include <iostream>
-// #include <iomanip>
 #include <set>
-// #include <map>
-// #include <cstring>
-// #include <errno.h>
-// #include <cstdlib>
-// #include <cstdlib>
-// #include <sys/types.h>
-// #include <sys/stat.h>
 
 namespace rtt_viz
 {

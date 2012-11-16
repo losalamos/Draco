@@ -81,18 +81,21 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
     
     bool graphics_continue = false; // default behavior
     
-    if ( ! overwrite ) {
+    if ( ! overwrite )
+    {
 	// then try to parse the case file.  Case files are always ascii.
 
 	std::ifstream casefile(d_case_filename.c_str());
 
-	if ( casefile ) {
+	if ( casefile )
+        {
 	    // then case file exists, so parse the dump times
 	    std_string key("number of steps:");
 	    std_string line;
 	    int num_steps = 0;
 
-	    for (;;) {
+	    for (;;)
+            {
 		std::getline(casefile, line);
 		Insist(casefile.good(),
 		       "Error getting number of steps from case file!");
@@ -115,7 +118,8 @@ Ensight_Translator::Ensight_Translator(const std_string &prefix,
 
 	    d_dump_times.resize(num_steps);
 	    
-	    for ( int i = 0; i < num_steps; ++i ) {
+	    for ( int i = 0; i < num_steps; ++i )
+            {
 		casefile >> d_dump_times[i];
 		Insist(casefile.good(),
 		       "Error reading dump_times from case file!");
