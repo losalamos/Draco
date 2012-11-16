@@ -24,6 +24,10 @@ set( test_sources
    ${PROJECT_SOURCE_DIR}/tstSubrandom_Sequence.cc
 )
 
+if( RANDOM123_FOUND )
+   list( APPEND test_sources ${PROJECT_SOURCE_DIR}/tstCounter_RNG.cc )
+endif()
+
 # Random123 unit tests
 set( random123_unit_tests
    ${PROJECT_SOURCE_DIR}/ut_aes.cpp
