@@ -16,6 +16,9 @@
 #include "ds++/SystemCall.hh"
 #include <iomanip>
 #include <cstring>
+// <cerrno> defines the last error number from the system
+//          www.cplusplus.com/reference/clibrary/cerrno/errno/
+#include <cerrno>
 
 namespace rtt_viz
 {
