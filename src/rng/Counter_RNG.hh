@@ -1,197 +1,241 @@
-//----------------------------------* C++ *----------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
- * \file    rng/TF_Gen.hh
- * \author  Peter Ahrens
- * \brief   Declaration of class TF_Gen (modeled after LF_Gen)
+ * \file   rng/Counter_RNG.hh
+ * \author Peter Ahrens
+ * \date   Fri Aug 3 16:53:23 2012
+ * \brief  Declaration of class Counter_RNG.
+ * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 
-#ifndef TF_Gen_hh
-#define TF_Gen_hh
+#ifndef Counter_RNG_hh
+#define Counter_RNG_hh
 
 #include "rng/config.h"
-#include "Random123/threefry.h"
-//#include "Random123/array.h"
-#include <ds++/Data_Table.hh>
-//#include <ds++/Assert.hh>
-#include <algorithm>
-#include <stdint.h>
-#include <math.h>
 
-#ifndef TFG_DATA_SIZE
-#define TFG_DATA_SIZE 4
+#ifdef _MSC_FULL_VER
+// Engines have multiple copy constructors, quite legal C++, disable MSVC
+// complaint.
+#pragma warning (disable : 4521)
 #endif
+
+#if defined (__ICC)
+// Suppress Intel's "unrecognized preprocessor directive" warning, triggered
+// by use of #warning in Random123/features/sse.h.
+#pragma warning disable 11
+#endif
+
+#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
+// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and
+// an "unused local typedef" warning, from a pre-C++11 implementation of a
+// static assertion in compilerfeatures.h.
+#if (GNUC_VERSION >= 40600)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#endif
+
+#include "Random123/threefry.h"
+
+#if (GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+
+#include "Random123/u01.h"
+
+#include <ds++/Data_Table.hh>
+#include <algorithm>
 
 namespace rtt_rng
 {
 
-  typedef r123::Threefry2x32 TFRNG;
+// Forward declaration.
+class Counter_RNG;
 
-  //forward declaration
-  class TF_Gen;
+// Select a particular counter-based random number generator from Random123.
+typedef r123::Threefry2x64 CBRNG;
 
-  //*! This is a reference to a TF_Gen */
-  class TF_Gen_Ref
-  {
-  public:
-    TF_Gen_Ref(unsigned int* const db, unsigned int* const de)
-      : data(db, de)
-    { Require(std::distance(db,de) == TFG_DATA_SIZE); }
-
-    double ran() const
-    {
-      TFRNG aynRand;
-      TFRNG::ctr_type ctr = {{data[0], data[1]}};
-      TFRNG::key_type key = {{data[2], data[3]}};
-      TFRNG::ctr_type result = aynRand(ctr, key);
-      ctr.incr();
-      std::copy(ctr.data(), ctr.data() + 2, data.access());
-      return ((double)assemble_from_u32<uint64_t>(result.data())) / pow(2, 64);
-    }
-
-    //! Spawn a new, independent stream from this one
-    // this function is not as applicable to TF_Gen_Ref and should be avoided.
-    inline void spawn(TF_Gen& new_gen) const;
-
-    //! Return the identifier number for this stream
-    uint32_t get_num() const { return data[3]; }
-
-    //! Return a unique number for this stream and state
-    uint64_t get_unique_num() const
-    {
-      uint32_t foo [] = {data[3],data[1]};
-      return (assemble_from_u32<uint64_t>(foo));
-    }
-
-
-    inline bool is_alias_for(TF_Gen const &rng);
-
-  private:
-    mutable rtt_dsxx::Data_Table<unsigned int> data;
-  };
+#define CBRNG_DATA_SIZE 4
 
 //===========================================================================//
 /*!
- * \class TF_Gen
- * \brief This holds the data for, and acts as the interface to, one random
- *        number stream
+ * \class Counter_RNG_Ref
+ * \brief A reference to a Counter_RNG.
+ *
+ * Counter_RNG_Ref provides an interface to a counter-based random number
+ * generator from the Random123 library from D. E. Shaw Research
+ * (http://www.deshawresearch.com/resources_random123.html).  Unlike
+ * Counter_RNG, Counter_RNG_Ref doesn't own its own RNG state (i.e., key and
+ * counter); instead, it operates using a data block specified during
+ * construction.
  */
 //===========================================================================//
-
-  class TF_Gen
-  {
-  private:
-
-    friend class TF_Gen_Ref;
-    mutable unsigned int data[TFG_DATA_SIZE];
-
+class Counter_RNG_Ref
+{
   public:
+    //! Constructor.  db and de specify the extents of an RNG state block.
+    Counter_RNG_Ref(uint64_t* const db, uint64_t* const de)
+        : data(db, de) 
+    { Require(std::distance(db,de) * sizeof(uint64_t) ==
+              sizeof(CBRNG::ctr_type) + sizeof(CBRNG::key_type)); }
 
-    typedef unsigned int* iterator;
-    typedef unsigned int const * const_iterator;
-
-    //! Default constructor
-    TF_Gen() { Require(sizeof(data)/sizeof(unsigned int) == TFG_DATA_SIZE); }
-
-    TF_Gen(uint32_t const seed, uint32_t const streamnum)
-    {
-      data[0] = 0;
-      data[1] = 0;
-      data[2] = seed;
-      data[3] = streamnum;
-    }
-
-    TF_Gen(unsigned int* const _data)
-    {
-      std::copy(_data, _data + TFG_DATA_SIZE, data);
-    }
-
-    //! (included for compatibility)
-    void finish_init() const {}
-
-    //! Return a random double
+    //! Return a random double in the open interval (0, 1)---i.e., excluding
+    //! the endpoints.
     double ran() const
     {
-      TFRNG aynRand;
-      TFRNG::ctr_type ctr = {{data[0], data[1]}};
-      TFRNG::key_type key = {{data[2], data[3]}};
-      TFRNG::ctr_type result = aynRand(ctr, key);
-      ctr.incr();
-      data[0] = ctr[0];
-      data[1] = ctr[1];
-      return ((double)assemble_from_u32<uint64_t>(result.data())) / pow(2, 64);
+        CBRNG rng;
+        CBRNG::ctr_type ctr = {{data[0], data[1]}};
+        CBRNG::key_type key = {{data[2], data[3]}};
+        CBRNG::ctr_type result = rng(ctr, key);
+        ctr.incr();
+        std::copy(ctr.data(), ctr.data() + 2, data.access());
+        return u01_open_open_64_53(result[0]);
     }
 
     //! Spawn a new, independent stream from this one.
-    // this function is not as applicable to TF_Gen and should be avoided.
-    void spawn(TF_Gen& new_gen) const
+    inline void spawn(Counter_RNG& new_gen) const;
+
+    //! Return the identifier for this stream.
+    uint64_t get_num() const { return data[2]; }
+
+    //! Return a unique number for this stream and state.
+    uint64_t get_unique_num() const { return data[2]; }
+
+    //! Is this Counter_RNG_Ref a reference to rng?
+    inline bool is_alias_for(Counter_RNG const &rng);
+
+  private:
+    mutable rtt_dsxx::Data_Table<uint64_t> data;
+};
+
+
+//===========================================================================//
+/*!
+ * \class Counter_RNG
+ * \brief A counter-based random-number generator.
+ *
+ * Counter_RNG provides an interface to a counter-based random number
+ * generator from the Random123 library from D. E. Shaw Research
+ * (http://www.deshawresearch.com/resources_random123.html).
+ */
+//===========================================================================//
+class Counter_RNG
+{
+  private:
+
+    friend class Counter_RNG_Ref;
+    mutable uint64_t data[4];
+
+  public:
+
+    typedef uint64_t* iterator;
+    typedef uint64_t const * const_iterator;
+
+    //! Default constructor.
+    Counter_RNG() { Require(sizeof(data) ==
+                            sizeof(CBRNG::ctr_type) +
+                            sizeof(CBRNG::key_type)); }
+
+    //! Constructor.
+    Counter_RNG(uint64_t const seed, uint64_t const key_lo,
+                uint64_t const key_hi)
     {
-      std::copy(data, data + TFG_DATA_SIZE, new_gen.data);
-      new_gen.data[0] = 0; //reset the lower counter in new stream
-      data[1] = data[1] + 1;//increment the higher counter for next time
+        data[0] = 0;
+        data[1] = seed;
+        data[2] = key_lo;
+        data[3] = key_hi;
     }
 
-    //! Return the identifier number for this stream
-    uint32_t get_num() const { return data[3]; }
-
-    //! Return a unique number for this stream and state
-    uint64_t get_unique_num() const
+    //! Create a new Counter_RNG from data.
+    Counter_RNG(uint64_t* const _data)
     {
-      uint32_t foo [] = {data[3],data[1]};
-      return (assemble_from_u32<uint64_t>(foo));
+	std::copy(_data, _data + 4, data);
     }
-    //! Return the size of the state
-    unsigned int size() const { return TFG_DATA_SIZE; }
+
+    //! Return a random double in the interval (0, 1)---i.e., excluding the
+    //! endpoints.
+    double ran() const
+    {
+        CBRNG rng;
+        CBRNG::ctr_type ctr = {{data[0], data[1]}};
+        CBRNG::key_type key = {{data[2], data[3]}};
+        CBRNG::ctr_type result = rng(ctr, key);
+        ctr.incr();
+        data[0] = ctr[0];
+        data[1] = ctr[1];
+        return u01_open_open_64_53(result[0]);
+    }
+
+    //! Spawn a new, independent stream from this one.
+    void spawn(Counter_RNG& new_gen) const
+    {
+        std::copy(data, data + 4, new_gen.data);
+        new_gen.data[0] = 0;   // Reset the lower counter in new stream.
+        CBRNG::key_type key = {{new_gen.data[2], new_gen.data[3]}};
+        key.incr();            // Increment the key in new stream.
+        new_gen.data[2] = key[0];
+        new_gen.data[3] = key[1];
+    }
+
+    //! Return the identifier for this stream.
+    uint64_t get_num() const { return data[2]; }
+
+    //! Return a unique number for this stream and state.
+    uint64_t get_unique_num() const { return data[2]; }
+
+    //! Return the size of the state.
+    unsigned int size() const { return sizeof(data)/sizeof(uint64_t); }
 
     iterator begin() { return data; }
-
-    iterator end() { return data + TFG_DATA_SIZE; }
+    
+    iterator end() { return data + sizeof(data)/sizeof(uint64_t); }
 
     const_iterator begin() const { return data; }
 
-    const_iterator end() const { return data + TFG_DATA_SIZE; }
+    const_iterator end() const { return data + sizeof(data)/sizeof(uint64_t); }
 
-    bool operator==(TF_Gen const & rhs) const {
-      return std::equal(begin(), end(), rhs.begin()); }
+    //! Test for equality.
+    bool operator==(Counter_RNG const & rhs) const { 
+        return std::equal(begin(), end(), rhs.begin()); }
 
-    TF_Gen_Ref ref() const {
-      return TF_Gen_Ref(data, data + TFG_DATA_SIZE); }
+    //! Return a Counter_RNG_Ref corresponding to this Counter_RNG.
+    Counter_RNG_Ref ref() const {
+        return Counter_RNG_Ref(data, data + sizeof(data)/sizeof(uint64_t)); }
 
-    static unsigned int size_bytes() {
-      return TFG_DATA_SIZE*sizeof(unsigned int); }
-
-#if 0
-    // Copying RNG streams shouldn't be done lightly!
-    inline TF_Gen& operator=(TF_Gen const &src)
-    {
-      if(&src != this)
-	std::memcpy(data, src.data, size_bytes());
-      return *this;
-    }
-#endif
-
+    //! Return the size of this Counter_RNG in bytes.
+    static unsigned int size_bytes() { return sizeof(data); }
+    
   private:
-    TF_Gen(TF_Gen const &);
+    Counter_RNG(Counter_RNG const &);
+};
 
-  };
+
 //---------------------------------------------------------------------------//
 // Implementation
 //---------------------------------------------------------------------------//
 
-  // This implementation requires the full definition of TF_Gen, so it must be
-  // placed here instead of in the TF_Gen_Ref class.
+// This implementation requires the full definition of Counter_RNG, so it must
+// be placed here instead of in the Counter_RNG_Ref class.
 
-  inline void TF_Gen_Ref::spawn(TF_Gen& new_gen) const
-  {
-    std::copy(data.begin(), data.begin() + TFG_DATA_SIZE, new_gen.data);
-    new_gen.data[0] = 0; //reset the lower counter in new stream
-    data.access()[1] = data.access()[1] + 1;//increment the higher counter for next time
+inline void Counter_RNG_Ref::spawn(Counter_RNG& new_gen) const
+{ 
+    std::copy(data.begin(), data.begin() + 4, new_gen.data);
+    new_gen.data[0] = 0;             // Reset the lower counter in new stream.
+    CBRNG::key_type key = {{new_gen.data[2], new_gen.data[3]}};
+    key.incr();                      // Increment the key in new stream.
+    new_gen.data[2] = key[0];
+    new_gen.data[3] = key[1];
+}
 
-  }
+inline bool Counter_RNG_Ref::is_alias_for(Counter_RNG const &rng)
+{
+    return rng.begin() == data.access();
+}
 
-  inline bool TF_Gen_Ref::is_alias_for(TF_Gen const &rng)
-  {
-    return rng.begin() == data.access(); }
 
 } // end namespace rtt_rng
+
 #endif

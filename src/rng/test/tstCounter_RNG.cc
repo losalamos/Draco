@@ -1,65 +1,80 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   rng/test/tstTF_Gen.cc
- * \author Peter Ahrens 
- * \brief  TF_Gen test.
+ * \file   rng/test/tstCounter_RNG.cc
+ * \author Peter Ahrens
+ * \date   Fri Aug 3 16:53:23 2012
+ * \brief  Counter_RNG tests.
+ * \note   Copyright (C) 2012 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "rng_test.hh"
-#include "ds++/Release.hh"
-#include "TF_Gen.hh"
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include <iostream>
-#include <vector>
 
-using rtt_rng::TF_Gen;
-using rtt_rng::TF_Gen_Ref;
+#include "ds++/Assert.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "rng/Counter_RNG.hh"
+
 using namespace std;
 using namespace rtt_dsxx;
+using namespace rtt_rng;
+
+#define ITFAILS ut.failure(__LINE__)
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void random_existence(){
-  //test TF_Gen class
+void tstCounter_RNG(UnitTest &ut)
+{
+    rtt_rng::Counter_RNG cbrng(12345, 0, 0);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << cbrng.ran() << std::endl;
+    }
+
+    ut.passes("Success");
+}
+
+void random_existence(UnitTest &ut){
+  //test Counter_RNG class
     //create some example data (force it to be uint64_t to test 64-bit)
-    vector<unsigned int> foo(4,0);
-    foo[0] = 0xcafebabe;
-    foo[1] = 0xbaddecaf;
-    foo[2] = 0xfabaceae;
-    foo[3] = 0xdeadbeef;
-    //create a TF_Gen from some data
-    TF_Gen aynRand0(foo.data());
+    vector<uint64_t> foo(4,0);
+    foo[0] = 0xcafecafecafecafe;
+    foo[1] = 0xbaddecafbaddecaf;
+    foo[2] = 0xfabaceaefabaceae;
+    foo[3] = 0xdeadbeefdeadbeef;
+    //create a Counter_RNG from some data
+    Counter_RNG aynRand0(foo.data());
     double r0n0 = aynRand0.ran();
     cout << r0n0 << endl;
     //check function get_num()
-    if(aynRand0.get_num() != 0xdeadbeef) ITFAILS;
+    if(aynRand0.get_num() != 0xfabaceaefabaceae) ITFAILS;
     //check influence of first argument in data
     foo[0] = 0;
-    TF_Gen aynRand1(foo.data());
+    Counter_RNG aynRand1(foo.data());
     double r1n0 = aynRand1.ran();
     cout << r1n0 << endl;
     if(soft_equiv(r1n0, r0n0)) ITFAILS;
     //check influence of second argument in data
     foo[1] = 0;
-    TF_Gen aynRand2(foo.data());
+    Counter_RNG aynRand2(foo.data());
     double r2n0 = aynRand2.ran();
     cout << r2n0 << endl;
     if(soft_equiv(r2n0, r1n0)) ITFAILS;
     //check influence of third argument in data
     foo[2] = 0;
-    TF_Gen aynRand3(foo.data());
+    Counter_RNG aynRand3(foo.data());
     double r3n0 = aynRand3.ran();
     cout << r3n0 << endl;
     if(soft_equiv(r3n0, r2n0)) ITFAILS;
     //check influence of fourth argument in data
     foo[3] = 0;
-    TF_Gen aynRand4(foo.data());
+    Counter_RNG aynRand4(foo.data());
     double r4n0 = aynRand4.ran();
     cout << r4n0 << endl;
     if(soft_equiv(r4n0, r3n0)) ITFAILS;
@@ -72,37 +87,37 @@ void random_existence(){
     if(soft_equiv(r0n0, r0n2)) ITFAILS;
     if(soft_equiv(r0n1, r0n2)) ITFAILS;
     //check alternate (seed,streamnum) constructor
-    TF_Gen aynRand5(0xcafebabe,0xbaddecaf);
+    Counter_RNG aynRand5(0xcafebabe,0xbaddecaf, 0);
     if(aynRand5.get_num() != 0xbaddecaf) ITFAILS;
     //check counter default value
     if(aynRand5.begin()[0] != 0) ITFAILS;
-    if(aynRand5.begin()[1] != 0) ITFAILS;
+    if(aynRand5.begin()[1] != 0xcafebabe) ITFAILS;
     //check counter after incrementing
     aynRand5.ran();
     if(aynRand5.begin()[0] != 1) ITFAILS;
     //check counter carry-over
-    aynRand5.begin()[0] = 0xffffffff;
+    aynRand5.begin()[0] = 0xffffffffffffffff;
     aynRand5.ran();
     if(aynRand5.begin()[0] != 0) ITFAILS;
-    if(aynRand5.begin()[1] != 1) ITFAILS;
+    if(aynRand5.begin()[1] != 0xcafebabf) ITFAILS;
     //check function size()
     if (aynRand0.size() != 4) ITFAILS;
     //check function size_bytes()
-    if (aynRand0.size_bytes() != 4 * sizeof(unsigned int)) ITFAILS;
-  //test TF_Gen_Ref class
+    if (aynRand0.size_bytes() != 4 * sizeof(uint64_t)) ITFAILS;
+  //test Counter_RNG_Ref class
     //reset the foo values
     foo[0] = 0xcafebabe;
     foo[1] = 0xbaddecaf;
     foo[2] = 0xfabaceae;
     foo[3] = 0xdeadbeef;
-    //create a TF_Gen_Ref from the data
-    TF_Gen_Ref aynRandRef(foo.data(),(foo.data() + 4));
+    //create a Counter_RNG_Ref from the data
+    Counter_RNG_Ref aynRandRef(foo.data(),(foo.data() + 4));
     double rf0n0 = aynRandRef.ran();
     cout << rf0n0 << endl;
     //check function get_num()
-    if(aynRand0.get_num() != 0xdeadbeef) ITFAILS;
+    if(aynRand0.get_num() != 0xfabaceaefabaceae) ITFAILS;
     //check function get_unique_num()
-    if(aynRand0.get_unique_num() != 0xbaddecafdeadbeef) ITFAILS;
+    if(aynRand0.get_unique_num() != 0xfabaceaefabaceae) ITFAILS;
     //check influence of first argument in data
     foo[0] = 0;
     double rf0n1 = aynRandRef.ran();
@@ -144,12 +159,12 @@ void random_existence(){
     aynRandRef.ran();
     if(foo[0] != 1) ITFAILS;
     //check counter carry-over
-    foo[0] = 0xffffffff;
+    foo[0] = 0xffffffffffffffff;
     foo[1] = 0;
     aynRandRef.ran();
     if(foo[0] != 0) ITFAILS;
     if(foo[1] != 1) ITFAILS;
-  //check TF_Gen and TF_Gen_Ref relations
+  //check Counter_RNG and Counter_RNG_Ref relations
     //reset the foo values
     foo[0] = 0xcafebabe;
     foo[1] = 0xbaddecaf;
@@ -158,64 +173,51 @@ void random_existence(){
     //check spawning capability
     aynRandRef.spawn(aynRand0);
     aynRand0.spawn(aynRand1);
-    if (aynRandRef.get_unique_num() != 0xbaddecb0deadbeef) ITFAILS;
-    if (aynRand0.get_unique_num() != 0xbaddecb0deadbeef) ITFAILS;
-    if (aynRand1.get_unique_num() != 0xbaddecafdeadbeef) ITFAILS;
+    if (aynRandRef.get_unique_num() != 0xfabaceae) ITFAILS;
+    if (aynRand0.get_unique_num() != 0xfabaceaf) ITFAILS;
+    if (aynRand1.get_unique_num() != 0xfabaceb0) ITFAILS;
     if (aynRand0.begin()[0] != 0) ITFAILS;
-    if (aynRand0.begin()[2] != 0xfabaceae) ITFAILS;
+    if (aynRand0.begin()[2] != 0xfabaceaf) ITFAILS;
     if (aynRand1.begin()[0] != 0) ITFAILS;
-    if (aynRand1.begin()[2] != 0xfabaceae) ITFAILS;
+    if (aynRand1.begin()[2] != 0xfabaceb0) ITFAILS;
     //check aliasing capability
-    TF_Gen_Ref aynRandAlias0(aynRand0.begin(),aynRand0.end());
-    TF_Gen_Ref aynRandAlias1 = aynRand0.ref();
+    Counter_RNG_Ref aynRandAlias0(aynRand0.begin(),aynRand0.end());
+    Counter_RNG_Ref aynRandAlias1 = aynRand0.ref();
     if (!aynRandAlias0.is_alias_for(aynRand0)) ITFAILS;
     if (!aynRandAlias1.is_alias_for(aynRand0)) ITFAILS;
     //check equality operators
-    TF_Gen aynRand6(42,42);
+    Counter_RNG aynRand6(42,42, 0);
     aynRand6 = aynRand0;
     if (!(aynRand0 == aynRand6)) ITFAILS;
 }
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-    if (string(argv[arg]) == "--version")
-    {
-       cout << argv[0] << ": version " << rtt_dsxx::release() 
-         << endl;
-        return 0;
-    }
-
-    cout << "\nThis is rng: version" << rtt_dsxx::release() << "\n" << endl;
-    
+    ScalarUnitTest ut(argc, argv, release);
     try
     {
-        // >>> UNIT TESTS
-        random_existence();
+        tstCounter_RNG(ut);
+        random_existence(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (std::exception &err)
     {
-        cout << "While testing tstTF_Gen, " << ass.what()
-             << endl;
-        return 1;
+        std::cout << "ERROR: While testing tstCounter_RNG, " 
+                  << err.what()
+                  << endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_rng_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstTF_Gen Test: PASSED" 
-             << endl;
+        std::cout << "ERROR: While testing tstCounter_RNG, " 
+                  << "An unknown exception was thrown."
+                  << endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstTF_Gen." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstTF_Gen.cc
+//                        end of tstCounter_RNG.cc
 //---------------------------------------------------------------------------//
