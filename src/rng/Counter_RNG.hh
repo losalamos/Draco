@@ -127,7 +127,7 @@ class Counter_RNG
   private:
 
     friend class Counter_RNG_Ref;
-    mutable uint64_t data[4];
+    mutable uint64_t data[CBRNG_DATA_SIZE];
 
   public:
 
@@ -152,7 +152,7 @@ class Counter_RNG
     //! Create a new Counter_RNG from data.
     Counter_RNG(uint64_t* const _data)
     {
-	std::copy(_data, _data + 4, data);
+	std::copy(_data, _data + CBRNG_DATA_SIZE, data);
     }
 
     //! Return a random double in the interval (0, 1)---i.e., excluding the
@@ -172,7 +172,7 @@ class Counter_RNG
     //! Spawn a new, independent stream from this one.
     void spawn(Counter_RNG& new_gen) const
     {
-        std::copy(data, data + 4, new_gen.data);
+        std::copy(data, data + CBRNG_DATA_SIZE, new_gen.data);
         new_gen.data[0] = 0;   // Reset the lower counter in new stream.
         CBRNG::key_type key = {{new_gen.data[2], new_gen.data[3]}};
         key.incr();            // Increment the key in new stream.
@@ -223,7 +223,7 @@ class Counter_RNG
 
 inline void Counter_RNG_Ref::spawn(Counter_RNG& new_gen) const
 { 
-    std::copy(data.begin(), data.begin() + 4, new_gen.data);
+    std::copy(data.begin(), data.begin() + CBRNG_DATA_SIZE, new_gen.data);
     new_gen.data[0] = 0;             // Reset the lower counter in new stream.
     CBRNG::key_type key = {{new_gen.data[2], new_gen.data[3]}};
     key.incr();                      // Increment the key in new stream.
