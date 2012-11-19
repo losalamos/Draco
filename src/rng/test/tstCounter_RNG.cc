@@ -49,32 +49,32 @@ void random_existence(UnitTest &ut){
     foo[2] = 0xfabaceaefabaceae;
     foo[3] = 0xdeadbeefdeadbeef;
     //create a Counter_RNG from some data
-    Counter_RNG aynRand0(foo.data());
+    Counter_RNG aynRand0(&foo[0]);
     double r0n0 = aynRand0.ran();
     cout << r0n0 << endl;
     //check function get_num()
     if(aynRand0.get_num() != 0xfabaceaefabaceae) ITFAILS;
     //check influence of first argument in data
     foo[0] = 0;
-    Counter_RNG aynRand1(foo.data());
+    Counter_RNG aynRand1(&foo[0]);
     double r1n0 = aynRand1.ran();
     cout << r1n0 << endl;
     if(soft_equiv(r1n0, r0n0)) ITFAILS;
     //check influence of second argument in data
     foo[1] = 0;
-    Counter_RNG aynRand2(foo.data());
+    Counter_RNG aynRand2(&foo[0]);
     double r2n0 = aynRand2.ran();
     cout << r2n0 << endl;
     if(soft_equiv(r2n0, r1n0)) ITFAILS;
     //check influence of third argument in data
     foo[2] = 0;
-    Counter_RNG aynRand3(foo.data());
+    Counter_RNG aynRand3(&foo[0]);
     double r3n0 = aynRand3.ran();
     cout << r3n0 << endl;
     if(soft_equiv(r3n0, r2n0)) ITFAILS;
     //check influence of fourth argument in data
     foo[3] = 0;
-    Counter_RNG aynRand4(foo.data());
+    Counter_RNG aynRand4(&foo[0]);
     double r4n0 = aynRand4.ran();
     cout << r4n0 << endl;
     if(soft_equiv(r4n0, r3n0)) ITFAILS;
@@ -111,7 +111,7 @@ void random_existence(UnitTest &ut){
     foo[2] = 0xfabaceae;
     foo[3] = 0xdeadbeef;
     //create a Counter_RNG_Ref from the data
-    Counter_RNG_Ref aynRandRef(foo.data(),(foo.data() + 4));
+    Counter_RNG_Ref aynRandRef(&foo[0],(&foo[0] + 4));
     double rf0n0 = aynRandRef.ran();
     cout << rf0n0 << endl;
     //check function get_num()
