@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/path.hh
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright © 2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2010-2012 Los Alamos National Security, LLC
  *         All rights reserved.
  * \version $Id$
  */
@@ -56,7 +56,12 @@ class wdtOpPrint
         std::cout << dirpath << std::endl; }
 };
 //---------------------------------------------------------------------------//
-//! Functor for removing all items in a direcotry tree
+/*!
+ * \brief Functor for removing all items in a direcotry tree
+ *
+ * Unix:    rm -rf
+ * Windows: del /f/q
+ */
 class wdtOpRemove 
 {
   public:

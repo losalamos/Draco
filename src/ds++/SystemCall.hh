@@ -14,14 +14,10 @@
 
 #include "ds++/config.h"
 #include <string>
-#ifdef UNIX
-#include <sys/stat.h>   // stat
-#endif
 #ifdef WIN32
 #include <sys/types.h> // _stat
-#include <sys/stat.h>  // _stat
-
 #endif
+#include <sys/stat.h>   // stat (UNIX) or _stat (WIN32)
 
 namespace rtt_dsxx
 {
