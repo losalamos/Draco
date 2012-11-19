@@ -206,7 +206,8 @@ class Counter_RNG
         return Counter_RNG_Ref(data, data + sizeof(data)/sizeof(uint64_t)); }
 
     //! Return the size of this Counter_RNG in bytes.
-    static unsigned int size_bytes() { return sizeof(data); }
+    static unsigned int size_bytes() {
+        return CBRNG_DATA_SIZE*sizeof(uint64_t); }
     
   private:
     Counter_RNG(Counter_RNG const &);
