@@ -23,9 +23,6 @@ find_package_handle_standard_args(Random123 DEFAULT_MSG RANDOM123_INCLUDE_DIR)
 if( RANDOM123_FOUND )
    set(RANDOM123_FOUND ${RANDOM123_FOUND} CACHE BOOL "Did we find the Random123 include directory?")
    set(RANDOM123_INCLUDE_DIRS ${RANDOM_INCLUDE_DIR})
-
-   # Enable the definition of UINT64_C in stdint.h
-   add_definitions(-D__STDC_CONSTANT_MACROS)
 endif()
 
 if( VERBOSE )

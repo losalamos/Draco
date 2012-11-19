@@ -179,6 +179,9 @@ macro(dbsSetupCxx)
    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
       DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
 
+   # Enable the definition of UINT64_C in stdint.h
+   add_definitions(-D__STDC_CONSTANT_MACROS)
+
    set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL "use strict ANSI flags, C98" )
 
    # C++11 support:
