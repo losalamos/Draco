@@ -254,12 +254,12 @@ macro(dbsSetupCxx)
    set( CMAKE_REQUIRED_DEFINITIONS
       "${CMAKE_REQUIRED_DEFINITIONS} -D__STDC_CONSTANT_MACROS" )
 
-   # Define _POSIX_C_SOURCE=200112L, to enable definitions conforming
+   # Define _POSIX_C_SOURCE=200112, to enable definitions conforming
    # to POSIX.1-2001.
    if( DRACO_ENABLE_C99 )
-      add_definitions(-D_POSIX_C_SOURCE=200112L)
+      add_definitions(-D_POSIX_C_SOURCE=200112)
       set( CMAKE_REQUIRED_DEFINITIONS
-         "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112L" )
+         "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112" )
    endif()
 
 endmacro()
