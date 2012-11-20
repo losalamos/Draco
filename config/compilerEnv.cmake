@@ -179,35 +179,10 @@ macro(dbsSetupCxx)
    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
       DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
 
-   # To the greatest extent possible, installed versions of packages
-   # should record the configuration options that were used when they
-   # were built.  For preprocessor macros, this is usually
-   # accomplished via #define directives in config.h files.  A
-   # package's installed config.h file serves as both a record of
-   # configuration options and a central location for macro
-   # definitions that control features in the package.  Defining
-   # macros via the -D command-line option to the preprocessor leaves
-   # no record of configuration choices (except in a build log, which
-   # may not be preserved with the installation).
-   #
-   # Unfortunately, there are cases where a particular macro must be
-   # defined before some particular system header file is included, or
-   # before any system header files are included.  In these
-   # situations, using the config.h mechanism introduces sensitivity
-   # to the order of header files, which can lead to brittleness;
-   # defining project-wide language- or system-feature macros via -D,
-   # using CMake's add_definitions command, is an acceptable
-   # alternative.  Such definitions appear below.
-
-   # Enable the definition of UINT64_C in stdint.h (required by
-   # Random123).
-   add_definitions(-D__STDC_CONSTANT_MACROS)
-
-   # Define _POSIX_C_SOURCE=200112L, to enable definitions conforming
-   # to POSIX.1-2001.
-   add_definitions(-D_POSIX_C_SOURCE=200112L)
-
    set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL "use strict ANSI flags, C98" )
+
+   # C99 support:
+   option( DRACO_ENABLE_C99 "Support C99 features." OFF )
 
    # C++11 support:
    option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
@@ -239,14 +214,52 @@ macro(dbsSetupCxx)
    # Force possibly new values to cache
    set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL 
       "Support C++11 features." FORCE )
+   set( DRACO_ENABLE_C99 ${DRACO_ENABLE_C99} CACHE BOOL 
+      "Support C99 features." FORCE )
    set( DRACO_ENABLE_STRICT_ANSI ${DRACO_ENABLE_STRICT_ANSI} CACHE
       BOOL "use strict ANSI flags, C98" FORCE )
 
    # Sanity check
-   if( DRACO_ENABLE_CXX11 AND DRACO_ENABLE_STRICT_ANSI )
+   if( (DRACO_ENABLE_CXX11 AND DRACO_ENABLE_STRICT_ANSI) OR
+         (DRACO_ENABLE_C99 AND DRACO_ENABLE_STRICT_ANSI) )
       message( FATAL_ERROR "Both DRACO_ENABLE_CXX11=ON and "
-         "DRACO_ENABLE_STRICT_ANSI=ON is not supported because "
+         "DRACO_ENABLE_STRICT_ANSI=ON, or DRACO_ENABLE_C99=ON and "
+         "DRACO_ENABLE_STRICT_ANSI=ON, are not supported because "
          "STRICT_ANSI implied C++98 standard only." )
+   endif()
+
+   # To the greatest extent possible, installed versions of packages
+   # should record the configuration options that were used when they
+   # were built.  For preprocessor macros, this is usually
+   # accomplished via #define directives in config.h files.  A
+   # package's installed config.h file serves as both a record of
+   # configuration options and a central location for macro
+   # definitions that control features in the package.  Defining
+   # macros via the -D command-line option to the preprocessor leaves
+   # no record of configuration choices (except in a build log, which
+   # may not be preserved with the installation).
+   #
+   # Unfortunately, there are cases where a particular macro must be
+   # defined before some particular system header file is included, or
+   # before any system header files are included.  In these
+   # situations, using the config.h mechanism introduces sensitivity
+   # to the order of header files, which can lead to brittleness;
+   # defining project-wide language- or system-feature macros via -D,
+   # using CMake's add_definitions command, is an acceptable
+   # alternative.  Such definitions appear below.
+
+   # Enable the definition of UINT64_C in stdint.h (required by
+   # Random123).
+   add_definitions(-D__STDC_CONSTANT_MACROS)
+   set( CMAKE_REQUIRED_DEFINITIONS
+      "${CMAKE_REQUIRED_DEFINITIONS} -D__STDC_CONSTANT_MACROS" )
+
+   # Define _POSIX_C_SOURCE=200112L, to enable definitions conforming
+   # to POSIX.1-2001.
+   if( DRACO_ENABLE_C99 )
+      add_definitions(-D_POSIX_C_SOURCE=200112L)
+      set( CMAKE_REQUIRED_DEFINITIONS
+         "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112L" )
    endif()
 
 endmacro()

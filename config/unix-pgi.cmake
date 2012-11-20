@@ -136,6 +136,7 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Do we add '-ansi -pedantic'?
+toggle_compiler_flag( DRACO_ENABLE_C99         "-c99"   "C"   "" )
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-Xa -A" "CXX" "" )
 
 #------------------------------------------------------------------------------#

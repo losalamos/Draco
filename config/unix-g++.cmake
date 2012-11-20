@@ -181,6 +181,9 @@ Found gcc version ${GCC_VERSION}")
    endif()
 endif()
 
+# Toggle for C99 support
+toggle_compiler_flag( DRACO_ENABLE_C99 "-std=c99" "C" "" )
+
 # Do we add '-ansi -pedantic'?
 #toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi" "CXX" "")
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c++98" "CXX" "")
