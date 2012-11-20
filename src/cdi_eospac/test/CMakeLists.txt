@@ -37,3 +37,18 @@ add_scalar_tests(
    SOURCES "${test_sources}" 
    DEPS    "Lib_cdi;${EOSPAC_LIBRARY}" 
    )
+
+add_test( 
+   NAME cdi_eospac_tQueryEospac
+   COMMAND ${CMAKE_COMMAND} 
+   -DAPP=$<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
+   -DSTDINFILE=${PROJECT_SOURCE_DIR}/QueryEospacInput.dat
+   -DGOLDFILE=${PROJECT_SOURCE_DIR}/QueryEospac.gold
+   -P ${PROJECT_SOURCE_DIR}/tQueryEospac.cmake
+)
+set_tests_properties( cdi_eospac_tQueryEospac  
+   PROPERTIES	
+      PASS_REGULAR_EXPRESSION "Passes"
+      FAIL_REGULAR_EXPRESSION "Fails"
+)
+

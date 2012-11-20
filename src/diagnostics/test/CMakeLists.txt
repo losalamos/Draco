@@ -52,6 +52,15 @@ add_parallel_tests(
    PE_LIST "1"
    DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
 
-
-
-
+# Application Unit Test
+add_test( 
+   NAME    Ut_diagnostics_draco_info
+   COMMAND ${CMAKE_COMMAND} 
+   -DAPP=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+   -P ${PROJECT_SOURCE_DIR}/tDracoInfo.cmake
+)
+set_tests_properties( Ut_diagnostics_draco_info
+   PROPERTIES	
+      PASS_REGULAR_EXPRESSION "Passes"
+      FAIL_REGULAR_EXPRESSION "Fails"
+      )
