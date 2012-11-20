@@ -79,6 +79,9 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     
     // Create a SesameTables object for Aluminum.
     rtt_cdi_eospac::SesameTables AlSt;
+
+    // Print a list of EosTables
+    AlSt.printEosTableList();
     
     // Assign matID Al3717 to enion lookups (used for Cvi) for AlSt.  We can
     // also assign these tables when the Eospac object is created (see example
@@ -504,8 +507,8 @@ int main(int argc, char *argv[])
     try
     {
 	// >>> UNIT TESTS
-        // rtt_cdi_eospac_test::cdi_eospac_test(ut);
-        // rtt_cdi_eospac_test::cdi_eospac_except_test(ut);
+        rtt_cdi_eospac_test::cdi_eospac_test(ut);
+        rtt_cdi_eospac_test::cdi_eospac_except_test(ut);
         rtt_cdi_eospac_test::cdi_eospac_tpack(ut);
     }
     catch (rtt_cdi_eospac::EospacException &err )

@@ -26,14 +26,14 @@
 //---------------------------------------------------------------------------//
 void printeosproplist()
 {
-    std::cout << "  Uic_DT  - Specific Ion Internal Energy (and heat capacity)\n"
-              << "  Ktc_DT  - Electron thermal conductivity\n"
-              << "  Ue_DT   - \n"
-              << "  Zfc_DT  - \n"
-              << std::endl;
+    std::cout
+        << "  Uic_DT  - Specific Ion Internal Energy (and heat capacity)\n"
+        << "  Ktc_DT  - Electron thermal conductivity\n"
+        << "  Ue_DT   - \n"
+        << "  Zfc_DT  - \n"
+        << std::endl;
+    return;
 }
-
-
 
 //---------------------------------------------------------------------------//
 void query_eospac()

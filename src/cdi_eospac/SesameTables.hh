@@ -203,6 +203,9 @@ class SesameTables
 
     //! Pack a SesameTables object into a vector<char> stream.
     std::vector<char> pack() const;
+
+    //! Print a list of EOS tables that EOSPAC knows about
+    void printEosTableList() const;
     
     // implementation
     static std::vector< std::string > initializeTableNames(

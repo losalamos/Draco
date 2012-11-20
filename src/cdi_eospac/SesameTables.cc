@@ -281,7 +281,6 @@ std::vector<EOS_INTEGER> SesameTables::returnTypes(
         Insist( found > 0, msg.str() );
     }
     return result;
-    // return rtMap[ tableIndex ];
 }
 
 unsigned SesameTables::matID( EOS_INTEGER returnType ) const
@@ -347,6 +346,17 @@ std::vector<char> SesameTables:: pack(void) const
     
     Ensure( packer.get_ptr() == &packed[0] + packed_SesameTable_size );
     return packed;    
+}
+
+//---------------------------------------------------------------------------//
+void SesameTables::printEosTableList() const
+{
+    std::cout << "List of EOS Tables:\n" << std::endl;
+    for( size_t i=0; i<tableName.size(); ++i )
+        if( tableName[i].size() > 0 )
+            std::cout << tableName[i] << "\t- "
+                      << tableDescription[i] << "\n";
+    return;
 }
 
 //---------------------------------------------------------------------------//
