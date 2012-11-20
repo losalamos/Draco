@@ -147,6 +147,10 @@ macro( add_component_library )
 
    # Find target file name and location
    get_target_property( imploc ${acl_TARGET} LOCATION )
+   # the above command returns the location in the build tree.  We
+   # need to convert this to the install location.
+   get_filename_component( imploc ${imploc} NAME )
+   set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${imploc}" )
 
    set( ilil "")
    if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND  "${acl_VENDOR_LIBS}x" STREQUAL "x")
