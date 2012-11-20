@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   cdi_ipcress/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi_ipcress.
