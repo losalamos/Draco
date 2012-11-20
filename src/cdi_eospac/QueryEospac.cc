@@ -49,7 +49,7 @@ void query_eospac()
     while( keepGoing )
     {
         // Table ID
-        int tableID;
+        int tableID(0);
         cout << "What table id (0 or q to quit)? ";
         std::cin >> tableID;
         if( tableID == 0 ) break;
