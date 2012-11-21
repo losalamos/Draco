@@ -264,6 +264,21 @@
    obj:/lib64/ld-2.5.so
    ...
 }
+{
+   QueryEospac/condjump/ld25so1
+   Memcheck:Cond
+   fun:strlen
+   ...
+   obj:/lib/ld-2.5.so
+}
+{
+   QueryEospac/condjump/ld25so2
+   Memcheck:Cond
+   fun:_dl_relocate_object
+   ...
+   obj:/lib/ld-2.5.so
+}
+
 
 ## ---------------------------------------------------------------------- ##
 ## Numdiff
