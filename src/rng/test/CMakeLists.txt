@@ -123,6 +123,9 @@ if( RANDOM123_FOUND)
          FAIL_REGULAR_EXPRESSION "FAILED" )
    endif()
 
+   add_executable(time_serial
+      ${PROJECT_SOURCE_DIR}/time_serial.c )
+
    configure_file( ${PROJECT_SOURCE_DIR}/kat_vectors
       ${PROJECT_BINARY_DIR}/kat_vectors COPYONLY )
 endif()
