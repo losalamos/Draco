@@ -182,7 +182,7 @@ macro(dbsSetupCxx)
    set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL "use strict ANSI flags, C98" )
 
    # C99 support:
-   option( DRACO_ENABLE_C99 "Support C99 features." OFF )
+   option( DRACO_ENABLE_C99 "Support C99 features." ON )
 
    # C++11 support:
    option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
