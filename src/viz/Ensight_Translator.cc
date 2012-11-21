@@ -270,7 +270,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     {
 	std::ostringstream dir_error;
 	dir_error << "Unable to create EnSight directory \"" 
-		  << d_dump_dir << "\": "
+		  << d_prefix << "\": "
 		  << strerror(errno);
 	Insist (0,  dir_error.str().c_str());
     }
