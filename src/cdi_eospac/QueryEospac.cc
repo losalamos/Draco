@@ -24,18 +24,6 @@
 #include <sstream>
 
 //---------------------------------------------------------------------------//
-void printeosproplist()
-{
-    std::cout
-        << "  Uic_DT  - Specific Ion Internal Energy (and heat capacity)\n"
-        << "  Ktc_DT  - Electron thermal conductivity\n"
-        << "  Ue_DT   - \n"
-        << "  Zfc_DT  - \n"
-        << std::endl;
-    return;
-}
-
-//---------------------------------------------------------------------------//
 void query_eospac()
 {
     using std::endl;
@@ -50,32 +38,35 @@ void query_eospac()
     {
         // Table ID
         int tableID(0);
-        cout << "What table id (0 or q to quit)? ";
+        cout << "What material/table id (0 or q to quit)? ";
         std::cin >> tableID;
         if( tableID == 0 ) break;
 
-        // Property
+        // Create a SesameTable
+        rtt_cdi_eospac::SesameTables SesameTab;
+        
+        // Query user for table(s) to query.
         std::string eosprop("");
         cout << "What property (h for help)? ";
         std::cin >> eosprop;
         if( eosprop == std::string("h") )
         {
-            printeosproplist();
+            //printeosproplist();
+            SesameTab.printEosTableList();
             cout << "What property (h for help)? ";
             std::cin >> eosprop;
         }
-        
-        // Create a SesameTable
-        rtt_cdi_eospac::SesameTables SesameTab;
-        if( eosprop == std::string("Uic_DT") )
+
+        // Register some EOS tables...
+        if( eosprop == std::string("Uic_DT") || eosprop == std::string("EOS_Uic_DT") )
             SesameTab.Uic_DT( tableID );
-        else if( eosprop == std::string("Ktc_DT") )
+        else if( eosprop == std::string("Ktc_DT") ||  eosprop == std::string("EOS_Ktc_DT") )
             SesameTab.Ktc_DT( tableID );
         else
         {
-            cout << "Requested EOS property unknown.  "
-                 << "Please select on of:" << endl;
-            printeosproplist();
+            cout << "Requested EOS property unknown or currently unsupported.  "
+                 << "Please select one of (you can ommit the prefix EOS_):" << endl;
+            SesameTab.printEosTableList();
             continue;
         }
         

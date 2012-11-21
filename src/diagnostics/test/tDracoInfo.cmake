@@ -38,7 +38,7 @@ execute_process(
 # Ensure there are no errors
 if( NOT "${testerror}x" STREQUAL "x" OR NOT "${testres}" STREQUAL "0" )
    message( FATAL_ERROR "Test FAILED: 
-     mesage = ${testerror}")
+     error message = ${testerror}")
 endif()
 
 ##---------------------------------------------------------------------------##

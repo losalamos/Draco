@@ -470,7 +470,7 @@ void Eospac::expandEosTable() const
 
     // Initialize eosTable and find it's required length
 
-    int errorCode(0);
+    EOS_INTEGER errorCode(0);
     int nTables( returnTypes.size() );
     eos_CreateTables( &nTables, &returnTypes[0], &matIDs[0], &tableHandles[0],
                       &errorCode );
@@ -479,19 +479,26 @@ void Eospac::expandEosTable() const
     if ( errorCode != EOS_OK )
     {
         std::ostringstream outputString;
+        EOS_CHAR errorMessage[EOS_MaxErrMsgLen];
+        eos_GetErrorMessage( &errorCode, errorMessage );
+        outputString
+            << "\n   An unsuccessful request was made to initialize the "
+            << "EOSPAC table area by expandEosTable()."
+            << "\n  The error code returned by eos_CreateTables(...) was \""
+            << errorCode << "\"."
+            << "\n  The associated error message is:\n\t\""
+                << errorMessage << ".\"\n";
         for( size_t i=0; i<returnTypes.size(); ++i )
         {
-            EOS_CHAR errorMessage[EOS_MaxErrMsgLen];
-            int tableHandleErrorCode( EOS_OK );
+            EOS_INTEGER tableHandleErrorCode( EOS_OK );
             eos_GetErrorCode(    &tableHandles[i], &tableHandleErrorCode );
-            eos_GetErrorMessage( &tableHandles[i], errorMessage );
+            eos_GetErrorMessage( &tableHandleErrorCode, errorMessage );
         
             outputString
-                << "\n\tAn unsuccessful request was made to initialize the "
-                << "EOSPAC table area by expandEosTable().\n"
-                << "\tThe error code returned by eos_CreateTables(...) was \""
+                << "\n   The error code associated with tableHandle = "
+                << tableHandles[i] << " was \""
                 << tableHandleErrorCode << "\".\n"
-                << "\tThe associated error message is:\n\t\""
+                << "   The associated error message is:\n\t\""
                 << errorMessage << "\"\n";
         }
             
@@ -523,18 +530,25 @@ void Eospac::expandEosTable() const
 
     if (errorCode != EOS_OK)
     {
-        std::ostringstream outputString;
+        std::ostringstream outputString;        
+        EOS_CHAR errorMessage[EOS_MaxErrMsgLen];
+        eos_GetErrorMessage( &errorCode, errorMessage );
+        outputString
+            << "\n   An unsuccessful request was made to load the "
+            << "EOSPAC table area by expandEosTable()."
+            << "\n  The error code returned by eos_LoadTables(...) was \""
+            << errorCode << "\"."
+            << "\n  The associated error message is:\n\t\""
+                << errorMessage << ".\"\n";
         for( size_t i=0; i<returnTypes.size(); ++i )
         {
-            EOS_CHAR errorMessage[EOS_MaxErrMsgLen];
             EOS_INTEGER tableHandleErrorCode( EOS_OK );
             eos_GetErrorCode(    &tableHandles[i], &tableHandleErrorCode );
-            eos_GetErrorMessage( &tableHandles[i], errorMessage );
+            eos_GetErrorMessage( &tableHandleErrorCode, errorMessage );
         
             outputString
-                << "\n\tAn unsuccessful request was made to initialize the "
-                << "EOSPAC table area by expandEosTable().\n"
-                << "\tThe error code returned by eos_LoadTables(...) was \""
+                << "\n   The error code associated with tableHandle = "
+                << tableHandles[i] << " was \""
                 << tableHandleErrorCode << "\".\n"
                 << "\tThe associated error message is:\n\t\""
                 << errorMessage << "\"\n";
