@@ -18,8 +18,9 @@
 #include "Assert.hh"
 #include "SystemCall.hh"  // rtt_dsxx::dirSep
 #include <iostream>
+#include <cstdio>     // remove
 #ifdef UNIX
-#include <dirent.h> // struct DIR
+#include <dirent.h>   // struct DIR
 #include <sys/stat.h> // struct stat; S_ISDIR
 #endif
 

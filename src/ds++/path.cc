@@ -12,7 +12,6 @@
 #include <cerrno>       // errno
 #include <cstring>      // strerror
 #include <cstdlib>      // realpath
-#include <cstdio>       // remove
 #include <sstream>
 #include <sys/stat.h>   // stat
 #ifdef UNIX
