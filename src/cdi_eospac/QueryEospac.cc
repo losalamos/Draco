@@ -36,11 +36,14 @@ void query_eospac()
     bool keepGoing(true);
     while( keepGoing )
     {
+        
         // Table ID
-        int tableID(0);
+        std::string entry;
         cout << "What material/table id (0 or q to quit)? ";
-        std::cin >> tableID;
-        if( tableID == 0 ) break;
+        std::cin >> entry;
+        if( entry == "q" || entry == "0" ) break;
+        // Convert 'string entry' to 'int tableID'
+        int tableID = atoi(entry.c_str());
 
         // Create a SesameTable
         rtt_cdi_eospac::SesameTables SesameTab;
