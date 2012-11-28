@@ -22,6 +22,7 @@
 #include <cmath>
 #include <vector>
 #include <sstream>
+#include <cstdlib> // defines atoi
 
 //---------------------------------------------------------------------------//
 void query_eospac()
