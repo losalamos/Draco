@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a function.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,13 +14,13 @@
 #ifndef roots_brent_hh
 #define roots_brent_hh
 
+#include "brent.hh"
+#include "ds++/Assert.hh"
+#include "ds++/sign.hh"
+
 #include <cmath>
 #include <limits>
 #include <vector>
-
-#include "ds++/Assert.hh"
-#include "ds++/sign.hh"
-#include "brent.hh"
 
 namespace rtt_roots
 {

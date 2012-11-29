@@ -4,20 +4,19 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:24:48 2004
  * \brief  Test the zbrent function template
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/ScalarUnitTest.hh"
-
-#include "ds++/Release.hh"
 #include "../zbrac.hh"
 #include "../zbrent.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;

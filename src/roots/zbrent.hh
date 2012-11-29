@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   utils/zbrent.hh
+ * \file   roots/zbrent.hh
  * \author Kent Budge
  * \date   Tue Aug 17 15:57:06 2004
  * \brief  Find a bracketed root of a function.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -37,5 +38,5 @@ Real zbrent(Function func,
 #endif // utils_zbrent_hh
 
 //---------------------------------------------------------------------------//
-//              end of utils/zbrent.hh
+// end of utils/zbrent.hh
 //---------------------------------------------------------------------------//
