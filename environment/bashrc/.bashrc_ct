@@ -30,9 +30,17 @@ module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/ct-fe
 
 # modules
-module load cmake git xshow numdiff gsl/1.15 svn random123
-
-export F90=pgf90
+module unload PrgEnv-intel PrgEnv-pgi
+module unload cmake numdiff svn gsl
+# load the Intel programming env, but then unloda libsci and totalview
+module load PrgEnv-intel
+module unload xt-libsci xt-totalview intel
+module load intel/13.0.1.117
+# draco modules start here.
+module load gsl/1.14 lapack/3.4.1-intel
+module load cmake numdiff svn
+module load trilinos SuperLU_DIST/3.0-intel 
+module load ParMetis/3.1.1-intel ndi random123 eospac
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_ct

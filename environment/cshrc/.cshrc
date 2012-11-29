@@ -108,7 +108,8 @@ case ci*:
    module unload cmake numdiff svn gsl
    # load the Intel programming env, but then unloda libsci and totalview
    module load PrgEnv-intel
-   module unload xt-libsci xt-totalview 
+   module unload xt-libsci xt-totalview intel
+   module load intel/13.0.1.117
    # draco modules start here.
    module load gsl/1.14 lapack/3.4.1-intel
    module load cmake numdiff svn

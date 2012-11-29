@@ -1,3 +1,4 @@
+#!/bin/bash
 ##-*- Mode: bash -*-
 ##---------------------------------------------------------------------------##
 ## .bashrc - my bash configuration file upon bash shell startup
