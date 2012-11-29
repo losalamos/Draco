@@ -33,7 +33,7 @@ if { ![file exists $prefix] } {
 
 setenv EOSPAC_LIB_DIR $libdir
 setenv EOSPAC_INC_DIR $incdir
-prepend-path PATH $bindir
+#prepend-path PATH $bindir
 
 # Data locations
 setenv SESAMEPATH /usr/projects/data/eos
