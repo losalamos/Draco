@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file   quadrature/Ordinate.hh
  * \author Kent Budge
@@ -7,35 +7,32 @@
  * \note   Copyright (C)  2006-2012 Los Alamos National Security, LLC.
  *         All rights reserved. 
  */
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 
 #ifndef quadrature_Ordinate_hh
 #define quadrature_Ordinate_hh
 
-#include <vector>
-
-#include "mesh_element/Geometry.hh"
-#include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-#include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
+using rtt_dsxx::soft_equiv;
 
-//===========================================================================//
+//=======================================================================================//
 /*!
  * \class Ordinate
  * \brief Class containing angle cosines and weights for an element of
- * an angle quadrature set.
+ * an ordinate set.
  *
  * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x +
  * \eta_m \mathbf e_y + \xi_m \mathbf e_z \f$ plus the associated point weight,
- * $\f w_m \f$.
+ * $\f w_m \f$. We could represent this as a simple 4-tuple of doubles, but
+ * the ordinates must satisfy certain invariants that are protected by the
+ * class representation.
  */
-//===========================================================================//
+//=======================================================================================//
 
 class Ordinate
 {
@@ -45,70 +42,57 @@ class Ordinate
 
     //! Create an uninitialized Ordinate.  This is required by the
     //! constructor for vector<Ordinate>.
-    Ordinate() : x_(0), y_(0), z_(0), weight_(0) {}
+    Ordinate() : mu_(0), eta_(0), xi_(0), wt_(0) {}
 
     //! Construct an Ordinate from the specified vector and weight.
-    Ordinate(double const x,
-             double const y,
-             double const z,
-             double const weight)
+    Ordinate(double const mu,
+             double const eta,
+             double const xi,
+             double const wt)
         :
-        x_(x), y_(y), z_(z), weight_(weight)
+        mu_(mu), eta_(eta), xi_(xi), wt_(wt)
     {
+        Require(soft_equiv(mu*mu+eta*eta+xi*xi, 1.0));
     }
 
     //! Construct a 1D Ordinate from the specified angle and weight.
     inline
-    Ordinate(double const xx, double const weight)
-    : x_(xx), y_(0.0), z_(0.0), weight_(weight)
+    Ordinate(double const mu, double const wt)
+    : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt)
     {
-        Require(xx != 0.0 && xx<=1.0);
+        Require(mu >=-1.0 && mu<=1.0);
     }
     
     // Accessors
     
-    double mu()  const { return x_; };
-    double eta() const { return y_; };
-    double xi()  const { return z_; };
-    double wt()  const { return weight_; };
+    double mu()  const { return mu_; };
+    double eta() const { return eta_; };
+    double xi()  const { return xi_; };
+    double wt()  const { return wt_; };
 
-    // STATIC
-    
-    //! STL-compatible comparator predicate to sort ordinates by xi
-    //! then mu. 
-    static
-    bool SnCompare(const Ordinate &, const Ordinate &);
-    
-    //! STL-compatible comparator predicate to sort ordinates into PARTISN 2-D
-    //! axisymmetric ordering.
-    static
-    bool SnComparePARTISN2a(const Ordinate &, const Ordinate &);
-    
-    //! STL-compatible comparator predicate to sort ordinates into PARTISN 3-D
-    //! ordering.
-    static
-    bool SnComparePARTISN3(const Ordinate &, const Ordinate &);
-
-    //! Compute a real representation of the spherical harmonics.
-    static
-    double Y(unsigned l,
-             int m,
-             Ordinate const &ordinate,
-             double const sumwt );
+    double const *cosines() const
+    {
+        // This is a little krufty, but guaranteed to work according to C++
+        // object layout rules.
+        return &mu_;
+    }
 
   private:
 
     // DATA
 
-    // The data must be kept private in order to preserve the norm invariant.
+    // The data must be kept private in order to protect the norm invariant.
     
     //! Angle cosines for the ordinate.
-    double x_, y_, z_;
+    // Do not change the layout of these members! They must be declared in
+    // this sequence for cosines() to work as expected!
+    double mu_, eta_, xi_;
+    
     //! Quadrature weight for the ordinate.
-    double weight_;
+    double wt_;
 };
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 //! Test ordinates for equality
 inline bool operator==(Ordinate const &a, Ordinate const &b)
 {
@@ -119,13 +103,10 @@ inline bool operator==(Ordinate const &a, Ordinate const &b)
         a.wt()==b.wt();
 }
 
-//! Typedef for ordinate comparator functions
-typedef bool (*comparator_t)(Ordinate const &, Ordinate const &);
-
 } // end namespace rtt_quadrature
 
 #endif // quadrature_Ordinate_hh
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 //              end of quadrature/Ordinate.hh
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//

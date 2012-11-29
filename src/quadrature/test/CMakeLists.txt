@@ -16,7 +16,8 @@ project( quadrature_test CXX )
 
 set( test_lib_sources 
 	${PROJECT_SOURCE_DIR}/quadrature_test.cc 
-	${PROJECT_SOURCE_DIR}/quadrature_test.hh)
+	${PROJECT_SOURCE_DIR}/quadrature_test.hh
+)
 file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 file( GLOB input_files *.inp )
@@ -35,10 +36,11 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library( 
-   TARGET       Lib_quadrature_test 
+   TARGET       Lib_quadrature_test
    TARGET_DEPS  Lib_quadrature
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${test_lib_sources}" )
+   LIBRARY_NAME quadrature_test 
+   SOURCES      "${test_lib_sources}" 
+   PREFIX       Draco )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests

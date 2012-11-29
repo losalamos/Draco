@@ -328,6 +328,7 @@ double galerkinYlk( unsigned const l,
     return Ylk;
 }
 
+//---------------------------------------------------------------------------------------//
 double Ylm( unsigned const l,
             int      const m,
             double   const mu,

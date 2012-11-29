@@ -9,176 +9,380 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <cmath>
-#include <sstream>
+#include <algorithm>
 
 #include "Quadrature.hh"
+#include "Sn_Ordinate_Space.hh"
+#include "Galerkin_Ordinate_Space.hh"
 
 namespace rtt_quadrature
 {
+typedef Ordinate_Set::Ordering Ordering;
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
- * \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
+ * Create a set of ordinates from the Quadrature.
+ *
+ * \param dimension Dimension of the problem.
+
+ * \param geometry Geometry of the problem.
+ *
+ * \param norm Norm for the ordinate weights.
+ *
+ * \param mu_axis Which spatial axis maps to the mu direction cosine?
+ *
+ * \param eta_axis Which spatial axis maps to the eta direction cosine?
+ *
+ * \param include_starting_directions Should starting directions be included
+ * in the ordinate set for each level? This argument is ignored for Cartesian
+ * geometries.
+ *
+ * \param include_extra_starting_directions Should extra starting directions
+ * be included in the ordinate set for each level?
  */
-double Quadrature::iDomega() const {
-    double integral = 0.0;
-    size_t N( wt.size() );
-    for ( size_t i=0; i<N; ++i )
-	integral += wt[i];
-    return integral;
+vector<Ordinate>
+Quadrature::create_ordinates(unsigned const dimension,
+                             Geometry const geometry,
+                             double const norm,
+                             unsigned const mu_axis,
+                             unsigned const eta_axis,
+                             bool const include_starting_directions,
+                             bool const include_extra_directions) const
+{
+    Require(dimension>0 && dimension<4);
+    Require(norm>0.0);
+    Require(mu_axis<3 && eta_axis<3);
+    Require(dimension>1 || mu_axis==0);
+    Require(dimension==1 || mu_axis!=eta_axis);
+    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+    
+    vector<Ordinate> Result = create_ordinates_(dimension,
+                                                geometry,
+                                                norm,
+                                                mu_axis,
+                                                eta_axis,
+                                                include_starting_directions,
+                                                include_extra_directions);
+
+    return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
- * \brief Integrates the vector Omega over the unit sphere. 
+ * Create an ordinate set from the Quadrature.
  *
- * The solution to this integral is a vector with length equal to the
- * number of dimensions of the quadrature set.  The solution should be
- * the zero vector. 
+ * \param dimension Dimension of the problem.
+
+ * \param geometry Geometry of the problem.
  *
- * The integral is actually calculated as a quadrature sum over all
- * directions of the quantity: 
+ * \param norm Norm for the ordinate weights.
  *
- *     Omega(m) * wt(m)
+ * \param include_starting_directions Should starting directions be included
+ * in the ordinate set for each level? This argument is ignored for Cartesian
+ * geometries.
  *
- * Omega is a vector quantity.
+ * \param include_extra_starting_directions Should extra starting directions
+ * be included in the ordinate set for each level?
+ *
+ * \param ordering What ordering should be imposed on the ordinates?
  */
-vector<double> Quadrature::iOmegaDomega() const {
-    vector<double> integral(3,0.0);
-    Require( wt.size() > 0 );
-    Require( mu.size() == wt.size() );
-    unsigned n(mu.size());
-    for( unsigned i=0; i<n; ++i )
-        integral[0] += wt[i]*mu[i];
-    n = eta.size();
-    Check( n <= wt.size() );
-    for( unsigned i=0; i<n; ++i )
-        integral[1] += wt[i]*eta[i];
-    n = xi.size();
-    Check( n <= wt.size() );
-    for( unsigned i=0; i<n; ++i )
-        integral[2] += wt[i]*xi[i];    
-//     switch( ndims ) {
-//     case 3:
-// 	for ( size_t i = 0; i < getNumOrdinates(); ++i )
-// 	    integral[2] += wt[i]*xi[i];
-// 	//lint -fallthrough
-//     case 2:
-// 	for ( size_t i = 0; i < getNumOrdinates(); ++i )
-// 	    integral[1] += wt[i]*eta[i];
-// 	//lint -fallthrough
-//     case 1:
-// 	for ( size_t i = 0; i < getNumOrdinates(); ++i )
-// 	    integral[0] += wt[i]*mu[i];
-// 	break;
-//     default:
-// 	Insist(false,"Number of spatial dimensions must be 1, 2 or 3.");
-//    }
-    return integral;
+SP<Ordinate_Set>
+Quadrature::create_ordinate_set(unsigned const dimension,
+                                Geometry const geometry,
+                                double const norm,
+                                bool const include_starting_directions,
+                                bool const include_extra_directions,
+                                Ordering const ordering) const
+{
+    Require(dimension>0 && dimension<4);
+    Require(norm>0.0);
+    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+
+    vector<Ordinate> ordinates = create_ordinates_(dimension,
+                                                   geometry,
+                                                   norm,
+                                                   include_starting_directions,
+                                                   include_extra_directions);
+    
+    SP<Ordinate_Set> Result =
+        SP<Ordinate_Set>(new Ordinate_Set(dimension,
+                                          geometry,
+                                          ordinates,
+                                          include_starting_directions,
+                                          include_extra_directions,
+                                          ordering));
+
+    return Result;
 }
 
-//---------------------------------------------------------------------------//
-/*!
- * \brief Integrates the tensor (Omega Omega) over the unit sphere. 
- *
- * The solution to this integral is a tensor vector with ndims^2 elements
- * The off-diagonal elements should be zero.  The diagonal elements
- * should have the value sumwt/3.  
- *
- * We actually return a 1D vector whose length is ndims^2.  The "diagonal"
- * elements are 0, 4 and 8.
- *
- * The integral is actually calculated as a quadrature sum over all
- * directions of the quantity:
- *
- *     Omega(m) Omega(m) wt(m)
- *
- * The quantity ( Omega Omega ) is a tensor quantity.
- */
-vector<double> Quadrature::iOmegaOmegaDomega() const {
-    size_t ndims = dimensionality();
-//     // may want full tensor for 2D quadrature set.
-//     if( eta.size() > 0 && eta.size() == xi.size() )
-//         ndims = 3;
-    // The size of the solution tensor will be ndims^2.
-    // The solution is returned as a vector and not a tensor.  The diagonal
-    // elements of the tensor are elements 0, 4 and 8 of the vector.
-    vector<double> integral( ndims*ndims, 0.0 );
+//---------------------------------------------------------------------------------------//
+/* protected */
+void Quadrature::add_1D_starting_directions_(Geometry const geometry,
+                                             bool const add_starting_directions,
+                                             bool const add_extra_starting_directions,
+                                             vector<Ordinate> &ordinates) const
+{
+    // Add starting directions if necessary
 
-    // We are careful to only compute the terms of the tensor solution that
-    // are available for the current dimensionality of the quadrature set.
-    if( xi.size()>0 && eta.size()>0 )
+    if (add_starting_directions)
     {
-        for ( size_t i = 0; i < getNumOrdinates(); ++i )
+        if( geometry ==  rtt_mesh_element::SPHERICAL )
         {
-            integral[0] += wt[i]*mu[i]*mu[i];
-            integral[1] += wt[i]*mu[i]*eta[i];
-            integral[2] += wt[i]*mu[i]*xi[i];
-            integral[3] += wt[i]*eta[i]*mu[i];
-            integral[4] += wt[i]*eta[i]*eta[i];
-            integral[5] += wt[i]*eta[i]*xi[i];
-            integral[6] += wt[i]*xi[i]*mu[i];
-            integral[7] += wt[i]*xi[i]*eta[i];
-            integral[8] += wt[i]*xi[i]*xi[i];
+            // insert mu=-1 starting direction
+            vector<Ordinate>::iterator a = ordinates.begin();
+            a = ordinates.insert(a, Ordinate(-1.0,
+                                             0.0,
+                                             0.0,
+                                             0.0));
+            
+            // insert mu=1 starting direction 
+            if (add_extra_starting_directions)
+                ordinates.push_back(Ordinate(1.0,
+                                             0.0,
+                                             0.0,
+                                             0.0));
+        }
+        else if (geometry == rtt_mesh_element::AXISYMMETRIC )
+        {
+            Insist(false, "should not be reached");
         }
     }
-    else if( xi.size()>0 )
+}
+
+//---------------------------------------------------------------------------------------//
+/* protected */
+void Quadrature::add_2D_starting_directions_(Geometry const geometry,
+                                             bool const add_starting_directions,
+                                             bool const add_extra_starting_directions,
+                                             vector<Ordinate> &ordinates) const
+{
+    // Add starting directions if necessary
+
+    if (add_starting_directions)
     {
-        for ( size_t i = 0; i < getNumOrdinates(); ++i )
+        if( geometry ==  rtt_mesh_element::AXISYMMETRIC )
         {
-            integral[0] += wt[i]*mu[i]*mu[i];
-            integral[1] += wt[i]*mu[i]*xi[i];
-            integral[2] += wt[i]*xi[i]*mu[i];
-            integral[3] += wt[i]*xi[i]*xi[i];
+            sort(ordinates.begin(), ordinates.end(), Ordinate_Set::level_compare);
+
+            // Define an impossible value for a direction cosine.  We use
+            // this to simplify the logic of determining when we are at
+            // the head of a new level set.
+
+            double const SENTINEL_COSINE = 2.0; 
+
+            // Insert the supplemental ordinates.
+
+            double eta = -SENTINEL_COSINE;
+
+            for ( vector<Ordinate>::iterator a = ordinates.begin();
+                  a != ordinates.end();
+                  ++a)
+            {
+                double const old_eta = eta;
+                eta = a->eta();
+                if (!soft_equiv(eta, old_eta))
+                    // We are at the start of a new level.  Insert the starting
+                    // ordinate.  This has xi==0 and mu determined by the
+                    // normalization condition.
+                {
+                    Check(1.0-eta*eta >= 0.0);
+
+                    // insert mu < 0
+                    a = ordinates.insert(a, Ordinate(-sqrt(1.0-eta*eta),
+                                                     eta,
+                                                     0.0,
+                                                     0.0));
+
+                    // insert mu > 0
+                    if (add_extra_starting_directions)
+                        if (a != ordinates.begin())
+                            a = ordinates.insert(a, Ordinate(sqrt(1.0-old_eta*old_eta),
+                                                             old_eta,
+                                                             0.0,
+                                                             0.0));
+                }
+            }
+
+            // insert mu > 0 on the final level
+            if (add_extra_starting_directions)
+                ordinates.push_back(Ordinate(sqrt(1.0-eta*eta),
+                                             eta,
+                                             0.0,
+                                             0.0));
+            
         }
     }
-    else if( eta.size()>0 )
+}
+
+//---------------------------------------------------------------------------------------//
+void Quadrature::map_axes_(unsigned const mu_axis, unsigned const eta_axis,
+                           vector<double> &mu, vector<double> &eta, vector<double> &xi)
+    const
+{
+    if (mu_axis==0)
     {
-        for ( size_t i = 0; i < getNumOrdinates(); ++i )
+        if (eta_axis==1)
         {
-            integral[0] += wt[i]*mu[i]*mu[i];
-            integral[1] += wt[i]*mu[i]*eta[i];
-            integral[2] += wt[i]*eta[i]*mu[i];
-            integral[3] += wt[i]*eta[i]*eta[i];
+            // no action needed -- defaults in place
+        }
+        else
+        {
+            eta.swap(xi);
+        }
+    }
+    else if (mu_axis==1)
+    {
+        if (eta_axis==0)
+        {
+            mu.swap(eta);
+        }
+        else
+        {
+            eta.swap(xi);
+            mu.swap(xi);
         }
     }
     else
     {
-	for ( size_t i = 0; i < getNumOrdinates(); ++i )
-	    integral[0] += wt[i]*mu[i]*mu[i];
+        if (eta_axis==0)
+        {
+            mu.swap(eta);
+            mu.swap(xi);
+        }
+        else
+        {
+            mu.swap(xi);
+        }
     }
-    return integral;
 }
 
-//---------------------------------------------------------------------------//
-void Quadrature::renormalize(const double new_norm)
-{
-    Require(new_norm > 0);
-    Require(norm > 0);
+//---------------------------------------------------------------------------------------//
+/*!
+ * Create an Ordinate_Space from the Quadrature.
+ *
+ * \param dimension Dimension of the problem.
 
-    double const c=new_norm/norm;
+ * \param geometry Geometry of the problem.
+ *
+ * \param moment_expansion_order Expansion order in moment space
+ *
+ * \param mu_axis Which spatial axis maps to the mu direction cosine?
+ *
+ * \param eta_axis Which spatial axis maps to the eta direction cosine?
+ *
+ * \param include_extra_starting_directions Should extra starting directions
+ * be included in the ordinate set for each level?
+ *
+ * \param ordering What ordering should be imposed on the ordinates?
+ */
+SP<Ordinate_Space>
+Quadrature::create_ordinate_space(unsigned const dimension,
+                                      Geometry const geometry,
+                                      unsigned const moment_expansion_order,
+                                      unsigned const mu_axis,
+                                      unsigned const eta_axis,
+                                      bool const include_extra_directions,
+                                      Ordering const ordering) const
+{
+    Require(dimension>0 && dimension<4);
+    Require(mu_axis<3 && eta_axis<3);
+    Require(dimension>1 || mu_axis==0);
+    Require(dimension==1 || mu_axis!=eta_axis);
+    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
     
-    for ( size_t i = 0; i < getNumOrdinates(); ++i )
+    vector<Ordinate> ordinates = create_ordinates_(dimension,
+                                                   geometry,
+                                                   1.0,  // hardwired norm
+                                                   mu_axis,
+                                                   eta_axis,
+                                                   true, // include starting directions
+                                                   include_extra_directions);
+    
+    SP<Ordinate_Space> Result;
+    switch (qim())
     {
-        wt[i] = c * wt[i];
+        case SN:
+           Result = new Sn_Ordinate_Space(dimension,
+                                              geometry,
+                                              ordinates,
+                                              moment_expansion_order,
+                                              include_extra_directions,
+                                              ordering);
+           break;
+
+        case GQ:
+           Result = new Galerkin_Ordinate_Space(dimension,
+                                                    geometry,
+                                                    ordinates,
+                                                    moment_expansion_order,
+                                                    include_extra_directions,
+                                                    ordering);
+           break;
+
+        default:
+            Insist(false, "bad case");
     }
 
-    // re-set normalization value
-    norm = new_norm;
+    return Result;
 }
 
-//---------------------------------------------------------------------------//
-string Quadrature::as_text(string const &indent) const
+//---------------------------------------------------------------------------------------//
+/*!
+ * Create an angle operator from the Quadrature.
+ *
+ * \param dimension Dimension of the problem.
+
+ * \param geometry Geometry of the problem.
+ *
+ * \param moment_expansion_order Expansion order in moment space
+ *
+ * \param include_extra_starting_directions Should extra starting directions
+ * be included in the ordinate set for each level?
+ *
+ * \param ordering What ordering should be imposed on the ordinates?
+ */
+SP<Ordinate_Space>
+Quadrature::create_ordinate_space(unsigned const dimension,
+                                      Geometry const geometry,
+                                      unsigned const moment_expansion_order,
+                                      bool const include_extra_directions,
+                                      Ordering const ordering) const
 {
-    using namespace std;
+    Require(dimension>0 && dimension<4);
+    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+    
+    vector<Ordinate> ordinates = create_ordinates_(dimension,
+                                                   geometry,
+                                                   1.0,  // hardwired norm
+                                                   true, // include starting directions
+                                                   include_extra_directions);
+    
+    SP<Ordinate_Space> Result;
+    switch (qim())
+    {
+        case SN:
+           Result = new Sn_Ordinate_Space(dimension,
+                                              geometry,
+                                              ordinates,
+                                              moment_expansion_order,
+                                              include_extra_directions,
+                                              ordering);
+           break;
 
-    stringstream text;
-    text << indent + "  type, " << parse_name()
-         << indent + "  order, " << snOrder
-         << indent + "end";
+        case GQ:
+           Result = new Galerkin_Ordinate_Space(dimension,
+                                                    geometry,
+                                                    ordinates,
+                                                    moment_expansion_order,
+                                                    include_extra_directions,
+                                                    ordering);
+           break;
 
-    return text.str();
+        default:
+            Insist(false, "bad case");
+    }
+
+    return Result;
 }
 
 } // end namespace rtt_quadrature

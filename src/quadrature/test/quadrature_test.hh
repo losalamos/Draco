@@ -1,71 +1,31 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   quadrature/test/quadrature_test.hh
- * \author Thomas M. Evans
- * \date   Tue Mar 26 12:34:44 2002
- * \brief  quadrature test infrastructure.
+ * \file   quadrature/quadrature_test.hh
+ * \author Kent G. Budge
+ * \brief  Define class quadrature_test
+ * \note   Copyright (C) 2007 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __quadrature_test_hh__
-#define __quadrature_test_hh__
+#ifndef quadrature_quadrature_test_hh
+#define quadrature_quadrature_test_hh
 
-#include <iostream>
-#include <string>
+#include "ds++/UnitTest.hh"
+#include "../Quadrature.hh"
 
-namespace rtt_quadrature_test
+namespace rtt_quadrature
 {
+using rtt_dsxx::UnitTest;
 
-//===========================================================================//
-// PASS/FAILURE LIMIT
-//===========================================================================//
+void quadrature_test(UnitTest &ut,
+                     Quadrature &quadrature);
 
-// Returns true for pass
-// Returns false for fail
-// Failure functions also set rtt_quadrature_test::passed to false
+} // end namespace rtt_quadrature
 
-// These can be used in any combination in a test to print output messages  
-// if no fail functions are called then the test will pass
-// (rtt_quadrature_test::passed will have its default value of true)
-
-// Needless to say, these can be used in many different combinations or
-// ways.  We do not constrain draco tests except that the output must be of
-// the form "Test: pass/fail"
-
-bool fail(int line);
-
-bool fail(int line, char *file);
-
-bool pass_msg(const std::string &);
-
-bool fail_msg(const std::string &);
+#endif // quadrature_quadrature_test_hh
 
 //---------------------------------------------------------------------------//
-// PASSING CONDITIONALS
-//---------------------------------------------------------------------------//
-
-extern bool passed;
-
-} // end namespace rtt_quadrature_test
-
-//===========================================================================//
-// TEST MACROS
-//
-// USAGE:
-// if (!condition) ITFAILS;
-//
-// These are a convenience only
-//===========================================================================//
-
-#define ITFAILS    rtt_quadrature_test::fail(__LINE__);
-#define FAILURE    rtt_quadrature_test::fail(__LINE__, __FILE__);
-#define PASSMSG(a) rtt_quadrature_test::pass_msg(a);
-#define FAILMSG(a) rtt_quadrature_test::fail_msg(a);
-
-#endif                          // __quadrature_test_hh__
-
-//---------------------------------------------------------------------------//
-//                              end of quadrature/test/quadrature_test.hh
+//              end of quadrature/quadrature_test.hh
 //---------------------------------------------------------------------------//

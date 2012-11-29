@@ -1,3 +1,24 @@
+2012-11-29  Kent G. Budge <kgbudge@lanl.gov>
+
+	Major refactor of the entire package. 
+
+	* QuadServices is eliminated.
+
+	* Angle_Operator is renamed to Ordinate_Space (since it is a
+	collection of operations on the ordinate space rather than just
+	the angle term in the advection operator) and it is specialized as
+	Sn_Ordinate_Space and Galerkin_Ordinate_Space.
+
+	* Quadrature becomes a factory class for Ordinate_Set and
+	Ordinate_Space. 
+
+	* The client can now override the default axis assignments for a
+	quadrature. That is, he can assign mu, eta, and xi to x, y, and z
+	at his pleasure -- though this will bork if he is in curvilinear
+	geometry and fails to assign a direction cosine with levels to the
+	axis of symmetry.
+	
+
 2006-07-07  Kelly Thompson  <kgt@lanl.gov>
 
 	* test/tQuadServices.cc (test_quad_services_with_3D_S4_quad):

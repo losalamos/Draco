@@ -1,0 +1,125 @@
+//----------------------------------*-C++-*----------------------------------------------//
+/*!
+ * \file   quadrature/Octant_Quadrature.hh
+ * \author Kelly Thompson
+ * \date   Wed Sep  1 10:19:52 2004
+ * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
+ * \note   Copyright 2004 The Regents of the University of California.
+ *
+ * Long description.
+ */
+//---------------------------------------------------------------------------------------//
+// $Id: Octant_Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
+//---------------------------------------------------------------------------------------//
+
+#ifndef quadrature_Octant_Quadrature_hh
+#define quadrature_Octant_Quadrature_hh
+
+#include "Quadrature.hh"
+
+namespace rtt_quadrature
+{
+
+//=======================================================================================//
+/*!
+ * \class Octant_Quadrature
+ * \brief This is an abstract class representing all quadratures over the unit
+ * sphere.
+ *
+ * At present, all our unit sphere quadratures are symmetric in
+ * octants, though we will likely relax this restriction in the future.
+ *
+ * For level quadratures, the levels must be in the xi direction cosine. The
+ * user may override the default axis assignments when he constructs an
+ * Ordinate_Set or an Ordinate_Space from the Octant_Quadrature.
+ */
+//=======================================================================================//
+
+class Octant_Quadrature : public Quadrature
+{
+  public:
+
+    // CREATORS
+
+    explicit Octant_Quadrature(QIM const qim)
+        :
+        Quadrature(qim),
+        has_axis_assignments_(false)
+    {
+    }
+
+    explicit Octant_Quadrature(QIM const qim,
+                               unsigned const mu_axis,
+                               unsigned const eta_axis)
+        :
+        Quadrature(qim),
+        has_axis_assignments_(true),
+        mu_axis_(mu_axis),
+        eta_axis_(eta_axis)
+    {
+    }
+
+    // ACCESSORS
+
+    // SERVICES
+        
+    Quadrature_Class quadrature_class() const;
+
+    // These functions override the virtual member functions specifed in the
+    // parent class Quadrature.
+
+  protected:
+
+    virtual string as_text(string const &indent) const = 0;
+
+    // IMPLEMENTATION
+    
+    //! Virtual hook for create_ordinate_set
+    virtual void create_octant_ordinates_(vector<double> &mu,
+                                          vector<double> &eta,
+                                          vector<double> &wt) const = 0;
+    
+    // STATICS
+    
+    static
+    void parse(Token_Stream &tokens,
+               QIM &qim,
+               bool &has_axis_assignments,
+               unsigned &mu_axis,
+               unsigned &eta_axis);
+
+  private:
+
+    // IMPLEMENTATION
+
+    using Quadrature::create_ordinates_;
+
+    //! Virtual hook for create_ordinates
+    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
+                                               Geometry,
+                                               double norm,
+                                               bool include_starting_directions,
+                                               bool include_extra_directions) const;
+
+    //! Virtual hook for create_ordinate_set
+    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
+                                               Geometry,
+                                               double norm,
+                                               unsigned mu_axis,
+                                               unsigned eta_axis,
+                                               bool include_starting_directions,
+                                               bool include_extra_directions) const;
+
+    // DATA
+    
+    bool has_axis_assignments_;
+    unsigned mu_axis_, eta_axis_;
+};
+
+} // end namespace rtt_quadrature
+
+#endif // quadrature_Octant_Quadrature_hh
+
+//---------------------------------------------------------------------------------------//
+//              end of quadrature/Octant_Quadrature.hh
+//---------------------------------------------------------------------------------------//

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file   quadrature/Quadrature.hh
  * \author Kelly Thompson
@@ -7,358 +7,199 @@
  * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
  *         reserved. 
  */
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 
 #ifndef __quadrature_Quadrature_hh__
 #define __quadrature_Quadrature_hh__
 
 #include <vector>
-#include "ds++/Assert.hh"
+
+#include "ds++/SP.hh"
+#include "parser/Token_Stream.hh"
+#include "Ordinate_Space.hh"
+#include "QIM.hh"
 
 namespace rtt_quadrature
 {
-
-using std::vector;
 using std::string;
+using std::vector;
+using rtt_dsxx::SP;
+using rtt_mesh_element::Geometry;
+using rtt_parser::Token_Stream;
 
-//===========================================================================//
+//=======================================================================================//
 /*!
  * \class Quadrature
  *
  * \brief A class to encapsulate the angular discretization.
  *
- * The Quadrature class provides services related to the angular
- * discretization scheme.  It creates a set of quadrature directions
- * (abscissas) and weights associated with a particular quadrature scheme
- * specified by the calling routine.
+ * The Quadrature class is an abstraction representation of an angular
+ * quadrature scheme. It can be used to generate an Ordinate_Set containing
+ * the correct set of ordinate directions for a given geometry. It can also
+ * be used to generate an Ordinate_Space describing both a discrete ordinate
+ * and a truncated moment representation of ordinate space.
  *
- * \example quadrature/test/tQuadrature.cc
- * 
- * Example of Quadrature usage and testing algorithm.  This test code
- * generates several different quadrature sets and demonstrates access to the 
- * member data and functions.
+ * All multi-dimensional quadratures (not interval quadratures) are expected
+ * to align any level structure they may have with the xi direction
+ * cosine.
  *
- * A QuadCreator object must be instatiated.  This object is
- * responsible for returning a Smart Pointer to the new Quadrature
- * object. 
+ * When an Ordinate_Set is constructed from the Quadrature, the direction
+ * cosines in the Quadrature must be mapped to coordinate axes in the problem
+ * geometry. By default, 1-D non-axisymmetric maps xi to the coordinate axis;
+ * 1-D axisymmetric maps mu to the coordinate axis ande xi to the
+ * (non-represented) symmetry axis; 2-D maps mu to the first coordinate axis
+ * and xi to the second coordinate axis; and 3-D maps mu to the first, eta to
+ * the second, and xi to the third coordinate axes. This is to ensure that the
+ * levels are placed on the axis of symmetry in reduced geometries.
  *
+ * The client may override these default assignments. However, if he assigns
+ * any direction cosine other than xi to the axis of symmetry in axisymmetric
+ * geometry, Bad Things Will Happen with any supported quadrature except
+ * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
-// revision history:
-// -----------------
-// 0) original
-// 1) Added lots of comments.
-//    Changed "getmu()" to "getMu()" because Tycho was already using
-//       the 2nd convention. 
-//    Added several accessors: getEta(), getXi(), getWt(), getMu(int),
-//       getEta(int), getXi(int), getWt(int), getOmega(int), name(),
-//       dimensionality(),getSnOrder(). 
-//    Implemented clients ability to specify norm == sumwt.
-//    Added checks to verify that 
-//       Integral(dOmega) = norm
-//       Integral(Omega*dOmega) = (0,0,0)
-//       Integral(Omega*Omega*dOmega) = norm/3 * ((1,0,0),(0,1,0),(0,0,1))
-//    Added use of the ds++/Assert class.
-// 
-//===========================================================================//
+//=======================================================================================//
 class Quadrature 
 {
   public:
 
-    //! Enumerate supported classes of quadratures 
-    enum Quadrature_Class 
-    {
-        ONE_DIM,             
-        TWO_DIM_TRIANGULAR,  
-        TWO_DIM_SQUARE,
-        THREE_DIM_TRIANGULAR
-    };
+    // ENUMERATIONS AND TYPEDEFS
 
-    //! Quadrature Interpolation Model: specifies how to compute the Discrete-to-Moment operator
-    enum QIM 
+    enum Quadrature_Class
     {
-        SN,  /*!< Use the standard SN method. */
-        GQ,  /*!< Use Morel's Galerkin Quadrature method. */
-        SVD  /*!< Let M be an approximate inverse of D. */
+        INTERVAL_QUADRATURE,
+        OCTANT_QUADRATURE,
+
+        END_QUADRATURE
     };
 
     // CREATORS
 
-    /*!
-     * \brief The default constructor for the quadrature class.
-     *
-     * The default constructor sets the SN Order and normalization values.
-     * This constructor complements the concrecte constructor for the
-     * quadrature class being instantiated.  The concrete class will also
-     * initialize the variable numOrdinates to an appropriate value.
-     *
-     * \param snOrder_ Integer specifying the order of the SN set to be
-     *                 constructed.  Number of ordinates = (snOrder+2)*snOrder.
-     * \param norm_    A normalization constant.  The sum of the quadrature
-     *                 weights will be equal to this value.  Its default
-     *                 value is set in QuadCreator.
-     */
-
-    Quadrature( size_t snOrder_, double norm_, QIM interpModel_)
-	: snOrder( snOrder_ ),
-          norm( norm_ ),
-          interpModel( interpModel_ ),
-          mu(), eta(), xi(), wt(), omega()          
-    { /* empty */ }
-
-    Quadrature();     // prevent defaults
+    explicit Quadrature(QIM const qim)
+        :
+        qim_(qim)
+    {
+    }
 
     //! Virtual destructor.
     virtual ~Quadrature() {/* empty */}
 
     // ACCESSORS
 
-    /*!
-     * \brief Return the mu vector.
-     *
-     * Retrieves a vector containing the first (mu) component of the
-     * direction vector.  The direction vector, Omega, in general has three
-     * components (mu, eta, xi).  
-     *
-     * Omega = mu * ex + eta * ey + xi * ey.
-     *
-     * mu  = cos(theta)*sin(phi)
-     * eta = sin(theta)*sin(phi)
-     * xi  = cos(phi)
-     *
-     * theta is the azimuthal angle.
-     * phi is the polar angle.
-     */
-    const vector<double>& getMu() const { return mu; }
+    QIM qim() const { return qim_; }
 
-    /*!
-     * \brief Return the eta vector.
-     * 
-     * Retrieves a vector whose elements contain the second (eta) components
-     * of the direction vector.  If this function is called for a 1D set an
-     * error will be issued.
-     *
-     * See comments for getMu().
-     */
-    const vector<double>& getEta() const 
-    {
-	// The quadrature set must have at least 2 dimensions to return eta.
-	Require( dimensionality() >= 2 );
-	return eta;
-    }
+    // SERVICES
 
-    /*!
-     * \brief Return the xi vector.
-     *
-     * Retrieves a vector whose elements contain the third (xi) components of
-     * the direction vector.  If this function is called for a 1D or a 2D set 
-     * an error will be issued.
-     *
-     * See comments for getMu().
-     */
-    const vector<double>& getXi() const 
-    {
-	return xi;
-    }
-
-    /*!
-     * \brief Return the wt vector.
-     *
-     * Retrieves a vector whose elements contain the weights associated with
-     * each direction omega_m. 
-     *
-     * See comments for getMu().
-     */
-    const vector<double>& getWt() const { return wt; }
-
-    /*!
-     * \brief Return the mu component of the direction Omega_m.
-     *
-     * Retrieves the m-th element of the mu component of the direction
-     * vector. 
-     *
-     * See comments for getMu().
-     *
-     * \param m The direction index must be contained in the range
-     *          (0,numOrdinates). 
-     */
-    double getMu( const size_t m ) const
-    {
-	// Ordinate index m must be greater than zero and less than numOrdinates.
-	Require( m < getNumOrdinates() );
-	// Die if the vector mu appears to be the wrong size.
-	Require( m < mu.size() );
-	return mu[m];
-    }
-
-    /*!
-     * \brief Return the eta component of the direction Omega_m.
-     *
-     * Retrieves the m-th element of the eta component of the direction
-     * vector.  If this accessor is called for a 1D set an error will be
-     * issued. 
-     *
-     * See comments for getMu().
-     *
-     * \param m The direction index must be contained in the range
-     *          (0,numOrdinates). 
-     */
-    double getEta( const size_t m ) const
-    {
-	// The quadrature set must have at least 2 dimensions to return eta.
-	Require( dimensionality() >= 2 );
-	// Ordinate index m must be greater than zero and less than numOrdinates.
-	Require( m < getNumOrdinates() ); 
-	return eta[m];
-    }
-
-    /*!
-     * \brief Return the xi component of the direction Omega_m.
-     * 
-     * Retrieves the m-th element of the xi component of the direction
-     * vector.  If this accessor is called for a 1D or a 2D set an error will 
-     * be issued.
-     *
-     * See comments for getMu().
-     *
-     * \param m The direction index must be contained in the range
-     *          (0,numOrdinates). 
-     */
-    double getXi( const size_t m ) const
-    {
-	// Ordinate index m must be greater than zero and less than numOrdinates.
-	Require( m < getNumOrdinates() ); 
-	return xi[m];
-    }
-
-    /*!
-     * \brief Return the weight associated with the direction Omega_m.
-     * 
-     * Retrieves the weight associated with the m-th element of the direction
-     * vector. 
-     *
-     * See comments for getMu().
-     *
-     * \param m The direction index must be contained in the range
-     *          (0,numOrdinates). 
-     */
-    double getWt( const size_t m ) const
-    {
-	// Ordinate index m must be greater than zero and less than numOrdinates.
-	Require( m < getNumOrdinates() ); 
-	return wt[m];
-    }
-
-    /*!
-     * \brief Returns the Omega vector for all directions.
-     *
-     * Returns a vector of length numOrdinates.  Each entry is a length three 
-     * vector of doubles that together represent the m-th discrete
-     * direction. 
-     */
-    const vector< vector<double> > &getOmega() const 
-    {
-	return omega;
-    }
-
-    /*!
-     * \brief Returns the Omega vector for a single direction.
-     *
-     * Returns the Omega direction vector associated with the client
-     * specified index.
-     *
-     * \param m The direction index must be contained in the range
-     * (0,numOrdinates). 
-     */
-    const vector<double> &getOmega( const size_t m ) const
-    {
-	Require( m < getNumOrdinates() );
-	return omega[m];
-    }
-
-    /*!
-     * \brief Returns the number of directions in the current quadrature set.
-     */
-    virtual size_t getNumOrdinates() const = 0;
-
-    /*!
-     * \brief Prints a table containing all quadrature directions and weights.
-     */
-    virtual void display() const = 0;
-
-    /*!
-     * \brief The sum of the quadrature weights will be normalized so
-     *        that they sum to this value.
-     */
-    double getNorm() const { return norm; }
-
-    QIM interpolation_model() const { return interpModel; }
-
-    /*!
-     * \brief Returns a string containing the name of the quadrature set.
-     */
+    //! Returns a string containing the name of the quadrature set.
     virtual string name() const = 0;
 
-    /*!
-     * \brief Returns a string containing the input deck name of the set.
-     */
+    //! Returns a string containing the input deck name of the set.
     virtual string parse_name() const = 0;
 
-    /*!
-     * \brief Returns the class of quadrature
-     */
-    virtual Quadrature_Class getClass() const = 0;
+    //! Is this an interval or octant (1-D or multi-D) quadrature?
+    virtual Quadrature_Class quadrature_class() const = 0;
 
-    /*!
-     * \brief Returns an integer containing the dimensionality of the quadrature set.
-     */
-    virtual size_t dimensionality() const = 0;
-
-    /*!
-     * \brief Returns an integer containing the Sn order of the quadrature set.
-     */
-    virtual size_t getSnOrder() const = 0;
-
-    //! \brief Integrates dOmega over the unit sphere. (The sum of quadrature weights.)
-    double iDomega() const;
-
-    //! \brief Integrates the vector Omega over the unit sphere. 
-    vector<double> iOmegaDomega() const;
-
-    //! \brief Integrates the tensor (Omega Omega) over the unit sphere. 
-    vector<double> iOmegaOmegaDomega() const;
-
-    //! \brief Re-normalize quadrature 
-    void renormalize(const double new_norm);
+    //! Number of level sets. A value of 0 indicates this is not a level set quadrature.
+    virtual unsigned number_of_levels() const = 0;
 
     //! Produce a text representation of the object
-    virtual string as_text(string const &indent) const;
+    virtual string as_text(string const &indent) const = 0;
+
+    vector<Ordinate> create_ordinates(unsigned dimension,
+                                      Geometry,
+                                      double norm,
+                                      unsigned mu_axis,
+                                      unsigned eta_axis,
+                                      bool include_starting_directions,
+                                      bool include_extra_directions) const;
+
+    vector<Ordinate> create_ordinates(unsigned dimension,
+                                      Geometry,
+                                      double norm,
+                                      bool include_starting_directions,
+                                      bool include_extra_directions) const;
+    
+    SP<Ordinate_Set> create_ordinate_set(unsigned dimension,
+                                         Geometry,
+                                         double norm,
+                                         unsigned mu_axis,
+                                         unsigned eta_axis,
+                                         bool include_starting_directions,
+                                         bool include_extra_directions,
+                                         Ordinate_Set::Ordering ordering) const;
+    
+    SP<Ordinate_Set> create_ordinate_set(unsigned dimension,
+                                         Geometry,
+                                         double norm,
+                                         bool include_starting_directions,
+                                         bool include_extra_directions,
+                                         Ordinate_Set::Ordering ordering) const;
+    
+    SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
+                                             Geometry,
+                                             unsigned moment_expansion_order,
+                                             bool include_extra_directions=false,
+                                             Ordinate_Set::Ordering ordering=
+                                               Ordinate_Set::LEVEL_ORDERED) const;
+    
+    SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
+                                                     Geometry,
+                                                     unsigned moment_expansion_order,
+                                                     unsigned mu_axis,
+                                                     unsigned eta_axis,
+                                                     bool include_extra_directions,
+                                                     Ordinate_Set::Ordering ordering) const;
+
+    // STATICS
+    
+    static void register_quadrature(string const &keyword,
+                                    SP<Quadrature> parse_function(Token_Stream&) );
+
+        static SP<Quadrature> parse(Token_Stream &);
 
   protected:
 
-    // DATA
+    // IMPLEMENTATION
 
-    const size_t snOrder; // defaults to 4.
+    void add_1D_starting_directions_(Geometry geometry,
+                                     bool add_starting_directions,
+                                     bool add_extra_starting_directions,
+                                     vector<Ordinate> &) const;
 
-    double norm; // 1D: defaults to 2.0.
-                 // 2D: defaults to 2*pi.
-                 // 3D: defaults to 4*pi.
+    void add_2D_starting_directions_(Geometry geometry,
+                                     bool add_starting_directions,
+                                     bool add_extra_starting_directions,
+                                     vector<Ordinate> &) const;
 
-    QIM interpModel;
+    void map_axes_(unsigned mu_axis, unsigned eta_axis,
+                   vector<double> &mu, vector<double> &eta, vector<double> &xi) const;
 
-    // Quadrature directions and weights.
-    vector<double> mu;
-    vector<double> eta; // will be an empty vector for all 1D sets.
-    vector<double> xi;  // will be an empty vector for all 1D and 2D sets.
-    vector<double> wt;
-    vector< vector< double > > omega;
+    //! Virtual hook for create_ordinates
+    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
+                                               Geometry,
+                                               double norm,
+                                               unsigned mu_axis,
+                                               unsigned eta_axis,
+                                               bool include_starting_directions,
+                                               bool include_extra_directions) const = 0;
+
+    //! Virtual hook for create_ordinates
+    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
+                                               Geometry,
+                                               double norm,
+                                               bool include_starting_directions,
+                                               bool include_extra_directions) const = 0;
+
+    // data
+
+    QIM qim_;
 };
 
 } // end namespace rtt_quadrature
 
 #endif // __quadrature_Quadrature_hh__
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 //                       end of quadrature/Quadrature.hh
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//

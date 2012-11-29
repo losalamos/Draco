@@ -166,7 +166,7 @@ class Parse_Table
     {}
 
     //! Construct a parse table with the specified keywords.
-    Parse_Table(Keyword const *table, size_t count);
+    Parse_Table(Keyword const *table, size_t count, unsigned flags=0);
 
     // MANIPULATORS
 
