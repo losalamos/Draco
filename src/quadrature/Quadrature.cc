@@ -3,17 +3,18 @@
  * \file   quadrature/Quadrature.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 15:38:56 2000
- * \brief  
+ * \brief  Copyright (C) 2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <algorithm>
-
 #include "Quadrature.hh"
 #include "Sn_Ordinate_Space.hh"
 #include "Galerkin_Ordinate_Space.hh"
+
+#include <algorithm>
 
 namespace rtt_quadrature
 {
@@ -162,7 +163,7 @@ void Quadrature::add_2D_starting_directions_(Geometry const geometry,
     {
         if( geometry ==  rtt_mesh_element::AXISYMMETRIC )
         {
-            sort(ordinates.begin(), ordinates.end(), Ordinate_Set::level_compare);
+            std::sort(ordinates.begin(), ordinates.end(), Ordinate_Set::level_compare);
 
             // Define an impossible value for a direction cosine.  We use
             // this to simplify the logic of determining when we are at

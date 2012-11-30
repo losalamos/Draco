@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file   quadrature/Octant_Quadrature.hh
- * \author Kelly Thompson
- * \date   Wed Sep  1 10:19:52 2004
+ * \author Kent Budge
+ * \date   Friday, Nov 30, 2012, 08:28 am
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * Long description.
  */

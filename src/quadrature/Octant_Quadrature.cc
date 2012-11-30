@@ -1,25 +1,26 @@
 //----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file   quadrature/Octant_Quadrature.cc
- * \author Kelly Thompson
- * \date   Wed Sep  1 10:19:52 2004
- * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \author Kent Budge
+ * \date   Friday, Nov 30, 2012, 08:27 am
+ * \brief  Implementation for Octant_Quadrature
+ * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Octant_Quadrature.cc 6718 2012-08-30 20:03:01Z warsa $
 //---------------------------------------------------------------------------------------//
-
-#include <iostream>
-#include <iomanip>
-#include <cmath>
-#include <algorithm>
 
 #include "Octant_Quadrature.hh"
 
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/to_string.hh"
 #include "units/PhysicalConstants.hh"
+
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <algorithm>
 
 namespace rtt_quadrature
 {
@@ -155,7 +156,7 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
 
         // Sort
 
-        sort(Result.begin(), Result.end(), Ordinate_Set::level_compare);
+        std::sort(Result.begin(), Result.end(), Ordinate_Set::level_compare);
 
         // Now sum around the axis.
         m = 0;
