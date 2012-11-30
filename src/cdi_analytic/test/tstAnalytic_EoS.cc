@@ -178,7 +178,29 @@ void analytic_eos_test( rtt_dsxx::UnitTest & ut )
         else
             FAILMSG("get_parameters() did not return the analytic expression coefficients.");
     }
-    
+   
+    // make an analytic model like Su-Olson (polynomial specific heats)
+    // elec specific heat = a + bT^c
+    // ion specific heat  = d + eT^f
+    SP<Polynomial_Model> so_model(new Polynomial_Model(0.0,54880.0,3.0,
+                                  0.2,0.0,0.0));
+    // make an analtyic eos
+    Analytic_EoS so_analytic(so_model);
+
+    // do a sanity check on the table lookups.
+    {
+        double rho = 1.0;  // not currently used by getElectronTemperature().
+        double Ue =  1.371999999e-20;
+        double Te = 1.0e-6;
+       
+        // First request the internal energy given the temperature 
+	double Ue0  = so_analytic.getSpecificElectronInternalEnergy(Te,rho);
+        if( ! soft_equiv( Ue, Ue0 ) ) ITFAILS;
+        // Next request the temperature given the internal energy (should match).
+        double T_new = so_analytic.getElectronTemperature( rho, Ue0, Te );
+        if( ! soft_equiv( T_new, Te ) ) ITFAILS;
+    }
+ 
     return;
 }
 
