@@ -222,7 +222,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension,
                                                     bool include_starting_directions,
                                                     bool include_extra_directions) const
 {
-    unsigned mu_axis, eta_axis;
+    unsigned mu_axis(0), eta_axis(0);
     if (has_axis_assignments_)
     {
         mu_axis = mu_axis_;

@@ -102,10 +102,8 @@ double Ordinate_Space::compute_azimuthalAngle( double const mu,
 void Ordinate_Space::compute_angle_operator_coefficients_()
 {
     vector<Ordinate> const &ordinates = this->ordinates();
-    unsigned const number_of_ordinates = ordinates.size();
-
+    unsigned         const number_of_ordinates = ordinates.size();
     rtt_mesh_element::Geometry const geometry = this->geometry();
-    unsigned const dimension = this->dimension();
 
     // Compute the ordinate derivative coefficients.
     
@@ -177,6 +175,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
         number_of_levels_ = C.size();
 
 #if DBC & 2
+        unsigned const dimension = this->dimension();
         if (dimension == 2)
             // Check that the level normalizations have the expected
             // properties. 
