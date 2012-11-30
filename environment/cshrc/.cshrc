@@ -29,19 +29,22 @@ case pi*.localdomain:
 #     if (! -d $TMPDIR ) then
 #        mkdir $TMPDIR
 #     endif
+    setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 case lu*.lanl.gov:
 case lu*.localdomain:
 case ty*.lanl.gov:
 case ty*.localdomain:
+    module unload openmpi-intel
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
     module load intel/12.1.5 openmpi
-    module load gsl/1.14-intel svn emacs
+    module load gsl/1.14-intel emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
+    setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 
 case ml-fey*.lanl.gov:
@@ -97,6 +100,7 @@ case ml*.localdomain:
     module load trilinos SuperLU_DIST/3.0-intel
     module load ParMetis/3.1.1-intel ndi random123 eospac
     alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
+    setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 case ct*:
 case ci*:
@@ -106,13 +110,14 @@ case ci*:
    # Move some environment out of the way.
    module unload PrgEnv-intel PrgEnv-pgi
    module unload cmake numdiff svn gsl
+   module unload papi perftools
    # load the Intel programming env, but then unloda libsci and totalview
    module load PrgEnv-intel
    module unload xt-libsci xt-totalview intel
    module load intel/13.0.1.117
    # draco modules start here.
    module load gsl/1.14 lapack/3.4.1-intel
-   module load cmake numdiff svn
+   module load cmake numdiff subversion
    module load trilinos SuperLU_DIST/3.0-intel 
    module load ParMetis/3.1.1-intel ndi random123 eospac
 
@@ -120,6 +125,7 @@ case ci*:
    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
    # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
    setenv KMP_AFFINITY none
+   setenv VENDOR_DIR /usr/projects/draco/vendors
    breaksw
 case rr-dev*:
 case rra[0-9][0-9][0-9]a*:
@@ -130,13 +136,14 @@ case rra[0-9][0-9][0-9]a*:
    module unload pgi openmpi-pgi
    module load cmake numdiff python openmpi-gcc/1.4.3
    module load gcc/4.7.1
+   setenv VENDOR_DIR /usr/projects/draco/vendors
    breaksw
 case rra[0-9][0-9][0-9][bcd]*:
    # source /usr/projects/crestone/dotfiles/Cshrc
    module use $DRACO_ENV_DIR/Modules/ppc64
    module load friendly-testing cellsdk
    module load cmake gsl-1.14 numdiff 
-   module load 
+   setenv VENDOR_DIR /usr/projects/draco/vendors
    breaksw
 case gondolin*:
     source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
