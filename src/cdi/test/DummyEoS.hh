@@ -242,6 +242,21 @@ class DummyEoS : public rtt_cdi::EoS
 	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const;
 
+    /*!
+     * \brief Retrieve an electron temperature associated with the provided
+     *        specific electron internal energy (kJ/g) and density (g/cm^3). 
+     *
+     * \param density Density of the material in g/cm^3
+     * \param SpecificElectronInternalEnergy in kJ/g
+     * \param Tguess  A guess for the resulting electron temperature to aid the
+     *                root finder.
+     * \return An electron (material) temperature in keV.
+     */
+    double getElectronTemperature(
+        double density,
+        double SpecificElectronInternalEnergy,
+        double Tguess ) const;
+    
     // Dummy pack function.
     std::vector<char> pack() const { return std::vector<char>(); }
 

@@ -368,6 +368,22 @@ class Eospac : public rtt_cdi::EoS
         std::vector< double > const & vdensity ) const;
 
     /*!
+     * \brief Retrieve an electron temperature based on the specific electron
+     *        internal energy. 
+     *
+     * \param density Density of the material in g/cm^3
+     * \param SpecificElectronInternalEnergy in kJ/g.
+     * \param Tguess Guess of the result to aid the root finder, K.  This is
+     *        required by the signature in cdi/EoS.hh but is not used for
+     *        cdi_eospac.
+     * \return temperature Temperature of the material in K.
+     */
+    double getElectronTemperature(
+        double density,
+        double SpecificElectronInternalEnergy,
+        double Tguess=1.0 ) const;
+    
+    /*!
      * \brief Interface for packing a derived EoS object.
      *
      * Note, the user hands the return value from this function to a derived
@@ -389,8 +405,8 @@ class Eospac : public rtt_cdi::EoS
      * Each of the public access functions calls either getF() or getdFdT()
      * after assigning the correct value to "returnType".
      *
-     * \param vdensity A vector of density values (g/cm^3).
-     * \param vtemperature A vector of temperature values (K).
+     * \param vx         A vector of independent values (e.g. temperature or density).
+     * \param vy         A vector of independent values (e.g. temperature or density).
      * \param returnType The integer index that corresponds to the type of
      *        data being retrieved from the EoS tables.
      */
@@ -414,7 +430,10 @@ class Eospac : public rtt_cdi::EoS
     bool     typeFound(  EOS_INTEGER returnType ) const;
     unsigned tableIndex( EOS_INTEGER returnType ) const;
 
-
+    //--------------------//
+    // Static Members     //
+    //--------------------//
+    
     //! Initialize list of available table info items
     static std::vector< EOS_INTEGER > initializeInfoItems(void);
 

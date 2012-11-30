@@ -24,6 +24,7 @@
 #include <cmath>
 #include <vector>
 #include <sstream>
+// #include <iomanip>
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
@@ -90,6 +91,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     // Also assign matID Al23714 for temperature-based electron thermal
     // conductivity (tconde).
     AlSt.Uic_DT( Al3717 ).Ktc_DT( Al23714 );
+    AlSt.T_DUe(  Al3717 ); // getElectronTemperature(rho,Ue)
     
     // Verify that the assignments were made correctly.
     
@@ -262,6 +264,24 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     else
         FAILMSG("getElectronThermalConductivity() test failed.");
 
+    // Test the getElectronTemperature function
+
+    double SpecificElectronInternalEnergy( 1.0 ); // kJ/g
+    double Tout = spEospac->getElectronTemperature(
+        density, SpecificElectronInternalEnergy ); // keV
+
+    double const Tgold( 0.000487303450297301 ); // keV
+    if( soft_equiv( Tout, Tgold ) )
+        PASSMSG("getElectronTemperature() test passed for scalar.");
+    else
+    {
+        std::ostringstream msg;
+        msg << "getElectronTemperature() test failed for scalar.\n"
+            << "\tTout  = " << Tout << " K\n"
+            << "\tTgold = " << Tgold << " K";
+        FAILMSG( msg.str() );
+    }
+    
     // --------------------------- //
     // Test vector access routines //
     // --------------------------- //
@@ -338,7 +358,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     std::vector<double> vUe(2);
     vUe = spEospac->getSpecificElectronInternalEnergy( vtemps, vdensities );
     
-    if ( soft_equiv( vUe[0], vUe[1], tol ) )
+    if( soft_equiv( vUe[0], vUe[1], tol ) )
         PASSMSG("getSpecificElectronInternalEnergy() test passed for vector.");
     else
         FAILMSG("getSpecificElectronInternalEnergy() test failed for vector.");
@@ -349,10 +369,11 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     std::vector<double> vUi(2);
     vUi = spEospac->getSpecificIonInternalEnergy( vtemps, vdensities );
     
-    if ( soft_equiv( vUe[0], vUe[1], tol ) )
+    if( soft_equiv( vUe[0], vUe[1], tol ) )
         PASSMSG("getSpecificIonInternalEnergy() test passed for vector.");
     else
         FAILMSG("getSpecificIonInternalEnergy() test failed for vector.");
+
 
     return;
 } // end of runTest()

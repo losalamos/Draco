@@ -310,6 +310,14 @@ class Analytic_EoS_Model
     virtual double calculate_elec_thermal_conductivity(double T, double rho)
 	const = 0;
 
+    /*! \brief Calculate the electron temperature given density, change in
+     *         Electron internal energy and the starting electron
+     *         temperature. 
+     */
+    virtual double calculate_elec_temperature( double rho,
+                                               double Ue,
+                                               double Tguess ) const = 0; 
+
     //! Return the model parameters.
     virtual sf_double get_parameters() const = 0;
 
@@ -475,12 +483,55 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     double calculate_elec_thermal_conductivity(double /*T*/, double /*rho*/) const
     { return 0.0; }
 
+    //!  Calculate the electron temperature given density and Electron
+    //!  internal energy and initial temperature.
+    double calculate_elec_temperature( double const /*rho*/,
+                                       double const Ue,
+                                       double const Te0 ) const;
+    
     //! Return the model parameters.
     sf_double get_parameters() const;
 
     //! Pack up the class for persistence.
     sf_char pack() const;
+
 };
+
+/*! \brief Functor used by calculate_Te_DU.
+ *
+ * This functor is associated with Polynomial_Specific_Heat_Analytic_EoS_Model
+ * and is used when solving for Ti via a root finding algorithm.
+ *
+ * We solve for the new T by minimizing the function \f$ f(T) \f$ :
+ *
+ * \f[
+ * f(T) = U_e(T_i) - \int_0^{T_i}{C_{v_e}(T) dT}
+ * \f]
+ * \f[
+ * f(T) = U_e(T_i) - a T_i - \frac{b}{c+1} T_i^{c+1} 
+ * \f]
+ *
+ */
+struct find_elec_temperature_functor
+{
+    //! ctor
+    find_elec_temperature_functor(
+        double const in_dUe, double const in_Te0,
+        double const in_a,   double const in_b, double const in_c)
+        : dUe(in_dUe), Te0(in_Te0), a(in_a), b(in_b), c(in_c) {/*empty*/}
+    
+    // DATA
+    
+    double const dUe; //!< Change in internal electron energy
+    double const Te0; //!< Initial electron temperature
+    double const a;   //!< \f$ C_{v_e} = a + bT^c \f$
+    double const b;   //!< \f$ C_{v_e} = a + bT^c \f$
+    double const c;   //!< \f$ C_{v_e} = a + bT^c \f$
+    
+    double operator()(double T) {
+        return dUe - a*(T-Te0) - b/(c+1)*(std::pow(T,c+1)-std::pow(Te0,c+1)); }
+};
+
 
 } // end namespace rtt_cdi_analytic
 

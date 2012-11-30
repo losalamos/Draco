@@ -4,17 +4,59 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 21 14:36:15 2001
  * \brief  Analytic_Models implementation file.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Models.hh"
+#include "roots/zbrent.hh"
 #include "ds++/Packing_Utils.hh"
 
 namespace rtt_cdi_analytic
 {
+
+//===========================================================================//
+// EOS_ANALYTIC_MODEL MEMBER DEFINITIONS
+//===========================================================================//
+
+/*! \brief Calculate the electron temperature given density and Electron internal
+ *         energy
+ *
+ * \f[
+ * U_e(T_i) = \int_{T=0}^{T_i}{C_v(\rho,T)dT}
+ * \f]
+ *
+ * Where we assume \f$ U_e(0) \equiv 0 \f$.
+ *
+ * We have chosen to use absolute electron energy instead of dUe to mimik the
+ * behavior of EOSPAC. 
+ *
+ * \todo Consider using GSL root finding with Newton-Raphson for improved
+ *       efficiency. 
+ */
+double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
+    double const /*rho*/,
+    double const Ue,
+    double const Te0 ) const
+{
+    find_elec_temperature_functor minimizeFunctor( Ue, Te0, a, b, c );
+
+    // New temperature should be nearby
+    double T_max( 100.0*Te0 );
+    double T_min( 0 );
+    double xtol( std::numeric_limits<double>::epsilon() );
+    double ytol( xtol );
+    unsigned iterations(100);
+    
+    // Search for the root
+    double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(
+        minimizeFunctor, T_min, T_max, iterations, xtol, ytol );
+        
+    return T_new;
+}
 
 //===========================================================================//
 // CONSTANT_ANALYTIC_MODEL MEMBER DEFINITIONS

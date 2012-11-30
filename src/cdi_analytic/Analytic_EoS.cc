@@ -489,6 +489,35 @@ Analytic_EoS::getElectronThermalConductivity(const sf_double &T,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Return the electron temperature given density and the specific
+ *        electron energy.
+ *
+ * Given density and specific electron energy fields, return an electron
+ * temperature.  The electron thermal conductivity is defined by the analytic
+ * model given to the constructor (Analytic_EoS()).
+ *
+ * \param rho density field in g/cm^3 (unused by the current analytic models)
+ * \param Ue specific electron energy (kJ/g)
+ * \param Tguess An electron temperature (keV) guess that can be used to help the root finder.
+ * \return electron temperature in keV.
+ */
+double Analytic_EoS::getElectronTemperature( double rho,
+                                             double Ue,
+                                             double Tguess ) const
+{
+    Require( Tguess >= 0.0 );
+    Require( Ue >= 0.0 );
+    Require( rho > 0.0 );
+
+    double T_new = analytic_model->calculate_elec_temperature( rho, Ue, Tguess );
+
+    Ensure( T_new >= 0.0 );
+    
+    return T_new;
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Pack an analytic EoS opacity.
  *
  * This function will pack up the Analytic_EoS into a char

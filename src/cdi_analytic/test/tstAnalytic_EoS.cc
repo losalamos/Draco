@@ -4,20 +4,22 @@
  * \author Thomas M. Evans
  * \date   Thu Oct  4 11:45:19 2001
  * \brief  Analytic_EoS test.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "cdi_analytic_test.hh"
 #include "../Analytic_EoS.hh"
-#include "ds++/Release.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
 #include "cdi/EoS.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "ds++/Release.hh"
 
 #include <iostream>
 #include <vector>
@@ -34,11 +36,15 @@ using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void analytic_eos_test()
+void analytic_eos_test( rtt_dsxx::UnitTest & ut )
 {
     typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -78,6 +84,17 @@ void analytic_eos_test()
 	// everything else is zero
 	if (analytic.getNumFreeElectronsPerIon(T,rho) != 0.0)         ITFAILS;
 	if (analytic.getElectronThermalConductivity(T,rho) != 0.0)    ITFAILS;
+    }
+
+    // Check the root finder for new Te, given delta Ue.
+    {
+        double rho = 3.0;  // not currently used by getElectronTemperature().
+        double Ue = 3.75;
+        double Tguess = 1.0;
+        
+        double T_new = analytic.getElectronTemperature( rho, Ue, Tguess );
+
+        if( ! soft_equiv( T_new, 2.0 ) ) ITFAILS;
     }
 
     // field check
@@ -137,9 +154,9 @@ void analytic_eos_test()
         SP<Polynomial_Model const> expected_model( model );
         
         if( expected_model == myEoS_model )
-            PASSMSG("get_Analytic_Model() returned the expected EoS model.")
+            PASSMSG("get_Analytic_Model() returned the expected EoS model.");
         else
-            FAILMSG("get_Analytic_Model() did not return the expected EoS model.")
+            FAILMSG("get_Analytic_Model() did not return the expected EoS model.");
     }
 
     // Test the get_parameters() members function
@@ -157,9 +174,9 @@ void analytic_eos_test()
         
         if( soft_equiv( params.begin(), params.end(),
                         expectedValue.begin(), expectedValue.end(), tol ) )
-        { PASSMSG("get_parameters() returned the analytic expression coefficients.");}
+            PASSMSG("get_parameters() returned the analytic expression coefficients.");
         else
-        { FAILMSG("get_parameters() did not return the analytic expression coefficients.");}
+            FAILMSG("get_parameters() did not return the analytic expression coefficients.");
     }
     
     return;
@@ -167,7 +184,7 @@ void analytic_eos_test()
 
 //---------------------------------------------------------------------------//
  
-void CDI_test()
+void CDI_test(rtt_dsxx::UnitTest & ut)
 {
     typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -305,7 +322,7 @@ void CDI_test()
 
 //---------------------------------------------------------------------------//
 
-void packing_test()
+void packing_test(rtt_dsxx::UnitTest & ut)
 {
     typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -352,7 +369,7 @@ void packing_test()
 	if (neos.getElectronThermalConductivity(T,rho) != 0.0)    ITFAILS;
     }
 
-    if (rtt_cdi_analytic_test::passed)
+    if( ut.numFails == 0 )
 	PASSMSG("Analytic EoS packing/unpacking test successfull.");
 
     return;
@@ -362,41 +379,30 @@ void packing_test()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	    return 0;
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	// >>> UNIT TESTS
-	analytic_eos_test();
-	CDI_test();
-
-	packing_test();
+	analytic_eos_test(ut);
+	CDI_test(ut);
+	packing_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-	cout << "While testing tstAnalytic_EoS, " << ass.what()
-	     << endl;
-	return 1;
+        std::cout << "ERROR: While testing " << argv[0] << ", "
+                  << err.what() << std::endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_analytic_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstAnalytic_EoS Test: PASSED" 
-	     << endl;
+        std::cout << "ERROR: While testing " << argv[0] << ", " 
+                  << "An unknown exception was thrown on processor "
+                  << std::endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstAnalytic_EoS." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAnalytic_EoS.cc
+// end of tstAnalytic_EoS.cc
 //---------------------------------------------------------------------------//

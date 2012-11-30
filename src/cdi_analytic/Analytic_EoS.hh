@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS class definition.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,7 +17,6 @@
 #include "Analytic_Models.hh"
 #include "cdi/EoS.hh"
 #include "ds++/SP.hh"
-#include <vector>
 
 namespace rtt_cdi_analytic
 {
@@ -103,14 +103,19 @@ class Analytic_EoS : public rtt_cdi::EoS
     sf_double getElectronThermalConductivity(const sf_double &, 
 					     const sf_double &) const;
 
+    // Get the new Te, given delta Ue, Te0.
+    double getElectronTemperature( double /*rho*/,
+                                   double Ue,
+                                   double Tguess=1.0 ) const;
+    
     // Pack the Analytic_EoS into a character string.
     sf_char pack() const;
 };
 
 } // end namespace rtt_cdi_analytic
 
-#endif                          // __cdi_analytic_Analytic_EoS_hh__
+#endif // __cdi_analytic_Analytic_EoS_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_analytic/Analytic_EoS.hh
+// end of cdi_analytic/Analytic_EoS.hh
 //---------------------------------------------------------------------------//

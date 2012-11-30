@@ -293,18 +293,18 @@ void test_CDI(rtt_dsxx::UnitTest & ut)
                                                   rtt_cdi::THOMSON,
                                                   6);
 
-    odfmg_planck_abs    = new DummyOdfmgOpacity(rtt_cdi::ABSORPTION,
-                                                rtt_cdi::PLANCK);
-    odfmg_iso_scatter   = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
-                                                rtt_cdi::ISOTROPIC);
+    odfmg_planck_abs  = new DummyOdfmgOpacity(rtt_cdi::ABSORPTION,
+                                              rtt_cdi::PLANCK);
+    odfmg_iso_scatter = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
+                                              rtt_cdi::ISOTROPIC);
     //odfmg with different group boundaries
-    odfmg_diff_bound    = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
-                                                rtt_cdi::THOMSON,
-                                                6, 5);
+    odfmg_diff_bound  = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
+                                              rtt_cdi::THOMSON,
+                                              6, 5);
     //odfmg with different band boundaries
-    odfmg_diff_bound2   = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
-                                                rtt_cdi::THOMSON,
-                                                4, 3);
+    odfmg_diff_bound2 = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
+                                              rtt_cdi::THOMSON,
+                                              4, 3);
 
 
     eos              = new DummyEoS();

@@ -4,26 +4,23 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  nGray_Analytic_MultigroupOpacity test.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
-#include "ds++/Release.hh"
 #include "../nGray_Analytic_MultigroupOpacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <string>
-#include <typeinfo>
-#include <algorithm>
 #include <sstream>
 
 using namespace std;
@@ -37,11 +34,15 @@ using rtt_cdi::MultigroupOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void multigroup_test()
+void multigroup_test( rtt_dsxx::UnitTest & ut )
 {
     // group structure
     vector<double> groups(4, 0.0);
@@ -191,9 +192,9 @@ void multigroup_test()
         SP<Analytic_Opacity_Model const> expected_model( models[0] );
         
         if( expected_model == my_mg_opacity_model )
-            PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.")
+            PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.");
         else
-            FAILMSG("get_Analytic_Model() did not return the expected MG Opacity model.")
+            FAILMSG("get_Analytic_Model() did not return the expected MG Opacity model.");
     }
 
     return;
@@ -201,7 +202,7 @@ void multigroup_test()
 
 //---------------------------------------------------------------------------//
 
-void test_CDI()
+void test_CDI( rtt_dsxx::UnitTest & ut )
 {
     // group structure
     vector<double> groups(4, 0.0);
@@ -276,7 +277,7 @@ void test_CDI()
 
 //---------------------------------------------------------------------------//
 
-void packing_test()
+void packing_test( rtt_dsxx::UnitTest & ut )
 {
     vector<char> packed;
 
@@ -422,45 +423,30 @@ void packing_test()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	// >>> UNIT TESTS
-	multigroup_test();
-
-	test_CDI();
-
-	packing_test();
+	multigroup_test(ut);
+	test_CDI(ut);
+	packing_test(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-	cout << "While testing tstnGray_Analytic_MultigroupOpacity, " << ass.what()
-	     << endl;
-	return 1;
+        std::cout << "ERROR: While testing " << argv[0] << ", "
+                  << err.what() << std::endl;
+        ut.numFails++;
     }
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_analytic_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstnGray_Analytic_MultigroupOpacity Test: PASSED" 
-	     << endl;
+        std::cout << "ERROR: While testing " << argv[0] << ", " 
+                  << "An unknown exception was thrown on processor "
+                  << std::endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstnGray_Analytic_MultigroupOpacity." << endl;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstnGray_Analytic_MultigroupOpacity.cc
+// end of tstnGray_Analytic_MultigroupOpacity.cc
 //---------------------------------------------------------------------------//

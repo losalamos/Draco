@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Fri Apr 13 16:15:59 2001
  * \brief  EoS class header file (an abstract class)
- * \note  Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,13 +23,12 @@ namespace rtt_cdi
 /*!
  * \class EoS
  *
- * \brief This is a pure virtual class that defines a standard
- *  interface for all derived EoS objects. 
+ * \brief This is a pure virtual class that defines a standard interface for
+ *  all derived EoS objects.
  *
- * Any derived EoS object must provide as a minumum the
- * functionality outlined in this routine.  This functionality
- * includes access to the data grid and the ability to return
- * interpolated opacity values.
+ * Any derived EoS object must provide as a minumum the functionality outlined
+ * in this routine.  This functionality includes access to the data grid and
+ * the ability to return interpolated opacity values.
  *
  * \example cdi/test/tDummyEoS.cc
  * \example cdi/test/tCDI.cc
@@ -39,8 +39,8 @@ class EoS
 {
     // DATA
 	
-    // There is no data for a pure virtual object.  This class
-    // provides an interface and does not preserve state.
+    // There is no data for a pure virtual object.  This class provides an
+    // interface and does not preserve state.
 	
   public:
 	
@@ -51,8 +51,8 @@ class EoS
     /*!
      * \brief Default EoS() destructor.
      *
-     * This is required to correctly release memory when any
-     * object derived from EoS is destroyed.
+     * This is required to correctly release memory when any object derived
+     * from EoS is destroyed.
      */
     virtual ~EoS() {/*empty*/};
 	
@@ -61,9 +61,8 @@ class EoS
     // --------- //
 	
     /*!
-     * \brief EoS accessor that returns a single specific electron 
-     *        internal energy that corresponds to the provided
-     *        temperature and density. 
+     * \brief EoS accessor that returns a single specific electron internal
+     *        energy that corresponds to the provided temperature and density.
      *
      * \param temperature The temperature value for which an
      *     opacity value is being requested (keV).
@@ -211,6 +210,21 @@ class EoS
 	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const = 0;
 
+    /*!
+     * \brief Retrieve an electron temperature associated with the provided
+     *        specific electron internal energy (kJ/g) and density (g/cm^3). 
+     *
+     * \param density Density of the material in g/cm^3
+     * \param SpecificElectronInternalEnergy in kJ/g
+     * \param Tguess  A guess for the resulting electron temperature to aid the
+     *                root finder.
+     * \return An electron (material) temperature in keV.
+     */
+    virtual double getElectronTemperature(
+        double density,
+        double SpecificElectronInternalEnergy,
+        double Tguess ) const = 0;
+    
     /*!
      * \brief Interface for packing a derived EoS object.
      *

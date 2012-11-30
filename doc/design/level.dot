@@ -138,7 +138,7 @@ digraph draco_level {
     viz         -> {traits}      [color=blue];
 
     /* level 4 */
-    cdianal     -> {parser cdi ode}        [color=blue];
+    cdianal     -> {parser cdi ode roots}  [color=blue];
     quad        -> {sf meshelement parser} [color=blue];
     rttread     -> {meshread}              [color=blue];
 

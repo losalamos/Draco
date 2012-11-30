@@ -17,18 +17,13 @@
 #include "../Pseudo_Line_Analytic_Odfmg_Opacity.hh"
 #include "cdi/CDI.hh"
 #include "parser/Constant_Expression.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <string>
-#include <typeinfo>
-#include <algorithm>
 #include <sstream>
 
 using namespace std;
@@ -39,6 +34,12 @@ using rtt_cdi::CDI;
 using rtt_cdi::OdfmgOpacity;
 using rtt_parser::Expression;
 using rtt_parser::Constant_Expression;
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
+//---------------------------------------------------------------------------//
 
 bool checkOpacityEquivalence( vector< vector<double> > sigma,
                               vector<double> ref)
@@ -621,34 +622,29 @@ void pseudo_line_opacity_test(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
     try
     {
-        ScalarUnitTest ut(argc, argv, release);
-        
         odfmg_test(ut);
-
         test_CDI(ut);
-
         packing_test(ut);
-
         pseudo_line_opacity_test(ut);
     }
-    catch (exception &err)
+    catch (rtt_dsxx::assertion &err)
     {
         cout << "ERROR: While testing " << argv[0] << ", "
              << err.what() << endl;
-        return EXIT_FAILURE;
+        ut.numFails++;
     }
     catch( ... )
     {
         cout << "ERROR: While testing " << argv[0] << ", " 
              << "An unknown exception was thrown." << endl;
-
-        return EXIT_FAILURE;
+        ut.numFails++;
     }
-    return EXIT_SUCCESS;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAnalytic_Odfmg_Opacity.cc
+// end of tstAnalytic_Odfmg_Opacity.cc
 //---------------------------------------------------------------------------//

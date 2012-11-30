@@ -4,23 +4,24 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
-#include "ds++/Release.hh"
 #include "../Analytic_Gray_Opacity.hh"
 #include "../nGray_Analytic_MultigroupOpacity.hh"
 #include "../Analytic_Models.hh"
 #include "cdi/CDI.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include <vector>
-#include <iostream>
 #include <string>
 #include <typeinfo>
 #include <algorithm>
@@ -39,11 +40,15 @@ using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void constant_test()
+void constant_test( rtt_dsxx::UnitTest & ut )
 {
     // make an analytic gray opacity that returns the total opacity for a
     // constant model
@@ -100,7 +105,7 @@ void constant_test()
 
 //---------------------------------------------------------------------------//
 
-void user_defined_test()
+void user_defined_test( rtt_dsxx::UnitTest & ut )
 {
     // make the user defined Marshak model
     SP<Analytic_Opacity_Model> model
@@ -158,7 +163,7 @@ void user_defined_test()
 
 //---------------------------------------------------------------------------//
 
-void CDI_test()
+void CDI_test( rtt_dsxx::UnitTest & ut )
 {
     // lets make a marshak model gray opacity for scattering and absorption
     SP<const GrayOpacity> absorption;
@@ -188,8 +193,8 @@ void CDI_test()
     }
 
 
-    if (!absorption) FAILMSG("Failed to build absorption analytic opacity")
-    if (!scattering) FAILMSG("Failed to build scattering analytic opacity")
+    if (!absorption) FAILMSG("Failed to build absorption analytic opacity");
+    if (!scattering) FAILMSG("Failed to build scattering analytic opacity");
 
 
     // make a CDI for scattering and absorption
@@ -251,7 +256,7 @@ void CDI_test()
 
 //---------------------------------------------------------------------------//
 
-void packing_test()
+void packing_test( rtt_dsxx::UnitTest & ut )
 {
     // test the packing
     vector<char> packed;
@@ -288,13 +293,13 @@ void packing_test()
 
 	double error = fabs(ngray.getOpacity(T[i], rho[i]) - ref);
 
-	if (error > 1.0e-12 * ref) ITFAILS; 
+	if (error > 1.0e-12 * ref)                      ITFAILS; 
     }
     
     if (ngray.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
-    if (ngray.getModelType() != rtt_cdi::ANALYTIC)      ITFAILS;
+    if (ngray.getModelType()    != rtt_cdi::ANALYTIC)   ITFAILS;
 
-    if (rtt_cdi_analytic_test::passed)
+    if( ut.numFails == 0 )
 	PASSMSG("Analytic_Gray_Opacity packing test passes.");
 
     return;
@@ -302,7 +307,7 @@ void packing_test()
 
 //---------------------------------------------------------------------------//
 
-void type_test()
+void type_test( rtt_dsxx::UnitTest & ut )
 {
     // make an analytic gray opacity that returns the total opacity for a
     // constant model
@@ -337,7 +342,7 @@ void type_test()
 }
 
 //---------------------------------------------------------------------------//
-void default_behavior_tests()
+void default_behavior_tests( rtt_dsxx::UnitTest & ut )
 {
     // make an analytic gray opacity that returns the total opacity for a
     // constant model
@@ -414,51 +419,33 @@ void default_behavior_tests()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	// >>> UNIT TESTS
-	constant_test();
-	user_defined_test();
-	CDI_test();
-
-	packing_test();
-
-	type_test();
-
-        default_behavior_tests();
+	constant_test(ut);
+	user_defined_test(ut);
+	CDI_test(ut);
+	packing_test(ut);
+	type_test(ut);
+        default_behavior_tests(ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-	cout << "While testing tstAnalytic_Gray_Opacity, " << ass.what()
-	     << endl;
-	return 1;
+        std::cout << "ERROR: While testing " << argv[0] << ", "
+                  << err.what() << std::endl;
+        ut.numFails++;
     }
-    
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_cdi_analytic_test::passed) 
+    catch( ... )
     {
-        cout << "**** tstAnalytic_Gray_Opacity Test: PASSED" 
-	     << endl;
+        std::cout << "ERROR: While testing " << argv[0] << ", " 
+                  << "An unknown exception was thrown on processor "
+                  << std::endl;
+        ut.numFails++;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstAnalytic_Gray_Opacity." << endl;
-
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAnalytic_Gray_Opacity.cc
+// end of tstAnalytic_Gray_Opacity.cc
 //---------------------------------------------------------------------------//

@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 16:25:09 2001
  * \brief  DummyEoS class header file (derived from ../EoS)
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -267,7 +269,17 @@ std::vector< double > DummyEoS::getElectronThermalConductivity(
 	ebtc[i] = 1000.0*vtemperature[i] + vdensity[i];
     return ebtc;
 }
-    
+
+//! Return Electron Temperature (keV) given Specific Electron Internal Energy (kJ/g).
+double DummyEoS::getElectronTemperature(
+    double /*density*/,
+    double SpecificElectronInternalEnergy,
+    double /*Tguess*/ ) const
+{
+    return 10.0*SpecificElectronInternalEnergy;
+}
+
+
 } // end namespace rtt_cdi_test
 
 //---------------------------------------------------------------------------//

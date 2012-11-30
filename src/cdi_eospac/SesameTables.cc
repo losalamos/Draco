@@ -129,6 +129,10 @@ SesameTables& SesameTables::Ogb( unsigned matID )
 {
     return addTable( EOS_Ogb, matID );
 }
+SesameTables& SesameTables::T_DUe( unsigned matID ) 
+{
+    return addTable( EOS_T_DUe, matID );
+}
 
 // Move functions out as they are needed by new code and add unit tests for each.
 #if 0
@@ -181,10 +185,7 @@ SesameTables& SesameTables::T_DPe( unsigned matID )
 {
     return addTable( EOS_T_DPe, matID );
 }
-SesameTables& SesameTables::T_DUe( unsigned matID ) 
-{
-    return addTable( EOS_T_DUe, matID );
-}
+
 SesameTables& SesameTables::Pe_DUe( unsigned matID ) 
 {
     return addTable( EOS_Pe_DUe, matID );
