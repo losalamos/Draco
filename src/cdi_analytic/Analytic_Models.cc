@@ -43,7 +43,7 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
     double const Ue,
     double const Te0 ) const
 {
-    find_elec_temperature_functor minimizeFunctor( Ue, Te0, a, b, c );
+    find_elec_temperature_functor minimizeFunctor( Ue, a, b, c );
 
     // New temperature should be nearby
     double T_max( 100.0*Te0 );

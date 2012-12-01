@@ -516,20 +516,19 @@ struct find_elec_temperature_functor
 {
     //! ctor
     find_elec_temperature_functor(
-        double const in_dUe, double const in_Te0,
+        double const in_dUe, 
         double const in_a,   double const in_b, double const in_c)
-        : dUe(in_dUe), Te0(in_Te0), a(in_a), b(in_b), c(in_c) {/*empty*/}
+        : dUe(in_dUe), a(in_a), b(in_b), c(in_c) {/*empty*/}
     
     // DATA
     
     double const dUe; //!< Change in internal electron energy
-    double const Te0; //!< Initial electron temperature
     double const a;   //!< \f$ C_{v_e} = a + bT^c \f$
     double const b;   //!< \f$ C_{v_e} = a + bT^c \f$
     double const c;   //!< \f$ C_{v_e} = a + bT^c \f$
     
     double operator()(double T) {
-        return dUe - a*(T-Te0) - b/(c+1)*(std::pow(T,c+1)-std::pow(Te0,c+1)); }
+        return dUe - a*T - b/(c+1)*std::pow(T,c+1); }
 };
 
 

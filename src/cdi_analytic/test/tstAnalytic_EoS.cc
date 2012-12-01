@@ -89,11 +89,10 @@ void analytic_eos_test( rtt_dsxx::UnitTest & ut )
     // Check the root finder for new Te, given delta Ue.
     {
         double rho = 3.0;  // not currently used by getElectronTemperature().
-        double Ue = 3.75;
-        double Tguess = 1.0;
+        double Ue = 4.0;
+        double Tguess = 2.0;
         
         double T_new = analytic.getElectronTemperature( rho, Ue, Tguess );
-
         if( ! soft_equiv( T_new, 2.0 ) ) ITFAILS;
     }
 
