@@ -198,6 +198,10 @@ void analytic_eos_test( rtt_dsxx::UnitTest & ut )
         // Next request the temperature given the internal energy (should match).
         double T_new = so_analytic.getElectronTemperature( rho, Ue0, Te );
         if( ! soft_equiv( T_new, Te ) ) ITFAILS;
+
+        // A request for Ue=0 should give T==0
+        double T0 = so_analytic.getElectronTemperature(rho, 0.0, 0.0);
+        if( ! soft_equiv( T0, 0.0, 1e-40) ) ITFAILS;
     }
  
     return;

@@ -43,22 +43,32 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
     double const Ue,
     double const Te0 ) const
 {
-    find_elec_temperature_functor minimizeFunctor( Ue, a, b, c );
 
-    // New temperature should be nearby
-    double T_max( 100.0*Te0 );
-    double T_min( 0.1*Te0 );
-    double xtol( Te0*std::numeric_limits<double>::epsilon() );
-    double ytol( Ue *std::numeric_limits<double>::epsilon() );
-    unsigned iterations(100);
-    // bracket the root
-    rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
-    
-    // Search for the root
-    double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(
-        minimizeFunctor, T_min, T_max, iterations, xtol, ytol );
-        
-    return T_new;
+    // Return T=0 given Ue <= 0 every time
+    if ( Ue > 0.0 )
+    {
+       // Set up the functor
+       find_elec_temperature_functor minimizeFunctor( Ue, a, b, c );
+
+       // New temperature should be nearby
+       double T_max( 100.0*Te0 );
+       double T_min( 0.1*Te0 );
+       double xtol( Te0*std::numeric_limits<double>::epsilon() );
+       double ytol( Ue *std::numeric_limits<double>::epsilon() );
+       unsigned iterations(100);
+       // bracket the root
+       rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
+       
+       // Search for the root
+       double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(
+           minimizeFunctor, T_min, T_max, iterations, xtol, ytol );
+     
+       return T_new;
+    }
+    else
+    { 
+       return 0.0;
+    }       
 }
 
 //===========================================================================//
