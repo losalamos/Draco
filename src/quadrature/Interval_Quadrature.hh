@@ -35,11 +35,6 @@ class Interval_Quadrature : public Quadrature
     
     // CREATORS
 
-    Interval_Quadrature()
-        :
-        Quadrature(SN)
-    {}
-
     // ACCESSORS
 
     virtual unsigned number_of_levels() const;

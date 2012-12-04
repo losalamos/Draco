@@ -2,10 +2,9 @@
 /*!
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
- * \date   Tue Feb 22 10:21:50 2000
- * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2000-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \brief  Parse routines for parsing a General_Octant_Quadrature specification.
+ * \note   © Copyright 2006-2012 LANSLLC All rights reserved.
+
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -19,6 +18,14 @@ namespace rtt_quadrature
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------------------//
+/*!
+ * The specification body must specify the number of ordinates and the number
+ * of levels. A quadrature class specification is optional; the default is
+ * octant. The mu, eta, xi, and weight of each ordinate is then
+ * specified before the terminating end.
+ *
+ * /param tokens Token stream from which to parse the specification.
+ */
 /*static*/
 SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
 {
@@ -35,19 +42,24 @@ SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
     unsigned number_of_levels = parse_unsigned_integer(tokens);
 
     token = tokens.lookahead();
-    
-    QIM qim = SN;
-    if (token.text()=="interpolation algorithm")
+
+    Quadrature::Quadrature_Class quadrature_class = Quadrature::OCTANT_QUADRATURE;
+    if (token.text()=="quadrature class")
     {
         tokens.shift();
         token = tokens.shift();
-        if (token.text()=="SN")
+        if (token.text()=="triangle")
         {
-            // default
+            quadrature_class = Quadrature::TRIANGLE_QUADRATURE;
         }
-        else if (token.text()=="GALERKIN")
+        else if (token.text()=="square")
         {
-            qim = GQ;
+            quadrature_class = Quadrature::SQUARE_QUADRATURE;
+        }
+        else
+        {
+            tokens.check_semantics(token.text()=="octant",
+                                   "unrecognized quadrature class");
         }
     }
 
@@ -65,7 +77,7 @@ SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
 
     return SP<Quadrature>(new General_Octant_Quadrature(mu, eta, xi, wt,
                                                         number_of_levels,
-                                                        qim));
+                                                        quadrature_class));
 }
 
 } // end namespace rtt_quadrature

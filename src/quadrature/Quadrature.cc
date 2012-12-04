@@ -55,7 +55,7 @@ Quadrature::create_ordinates(unsigned const dimension,
     Require(mu_axis<3 && eta_axis<3);
     Require(dimension>1 || mu_axis==0);
     Require(dimension==1 || mu_axis!=eta_axis);
-    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+    Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
     
     vector<Ordinate> Result = create_ordinates_(dimension,
                                                 geometry,
@@ -97,7 +97,7 @@ Quadrature::create_ordinate_set(unsigned const dimension,
 {
     Require(dimension>0 && dimension<4);
     Require(norm>0.0);
-    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+    Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
 
     vector<Ordinate> ordinates = create_ordinates_(dimension,
                                                    geometry,
@@ -275,21 +275,24 @@ void Quadrature::map_axes_(unsigned const mu_axis, unsigned const eta_axis,
  * be included in the ordinate set for each level?
  *
  * \param ordering What ordering should be imposed on the ordinates?
+ *
+ * \param qim What interpolation model should be used to generate the moment space?
  */
 SP<Ordinate_Space>
 Quadrature::create_ordinate_space(unsigned const dimension,
-                                      Geometry const geometry,
-                                      unsigned const moment_expansion_order,
-                                      unsigned const mu_axis,
-                                      unsigned const eta_axis,
-                                      bool const include_extra_directions,
-                                      Ordering const ordering) const
+                                  Geometry const geometry,
+                                  unsigned const moment_expansion_order,
+                                  unsigned const mu_axis,
+                                  unsigned const eta_axis,
+                                  bool const include_extra_directions,
+                                  Ordering const ordering,
+                                  QIM const qim) const
 {
     Require(dimension>0 && dimension<4);
     Require(mu_axis<3 && eta_axis<3);
     Require(dimension>1 || mu_axis==0);
     Require(dimension==1 || mu_axis!=eta_axis);
-    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+    Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
     
     vector<Ordinate> ordinates = create_ordinates_(dimension,
                                                    geometry,
@@ -300,25 +303,25 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                    include_extra_directions);
     
     SP<Ordinate_Space> Result;
-    switch (qim())
+    switch (qim)
     {
         case SN:
-           Result = new Sn_Ordinate_Space(dimension,
-                                              geometry,
-                                              ordinates,
-                                              moment_expansion_order,
-                                              include_extra_directions,
-                                              ordering);
-           break;
-
+            Result = new Sn_Ordinate_Space(dimension,
+                                           geometry,
+                                           ordinates,
+                                           moment_expansion_order,
+                                           include_extra_directions,
+                                           ordering);
+            break;
+            
         case GQ:
-           Result = new Galerkin_Ordinate_Space(dimension,
-                                                    geometry,
-                                                    ordinates,
-                                                    moment_expansion_order,
-                                                    include_extra_directions,
-                                                    ordering);
-           break;
+            Result = new Galerkin_Ordinate_Space(dimension,
+                                                 geometry,
+                                                 ordinates,
+                                                 moment_expansion_order,
+                                                 include_extra_directions,
+                                                 ordering);
+            break;
 
         default:
             Insist(false, "bad case");
@@ -341,16 +344,19 @@ Quadrature::create_ordinate_space(unsigned const dimension,
  * be included in the ordinate set for each level?
  *
  * \param ordering What ordering should be imposed on the ordinates?
+ *
+ * \param qim What interpolation model should be used to generate the moment space?
  */
 SP<Ordinate_Space>
 Quadrature::create_ordinate_space(unsigned const dimension,
-                                      Geometry const geometry,
-                                      unsigned const moment_expansion_order,
-                                      bool const include_extra_directions,
-                                      Ordering const ordering) const
+                                  Geometry const geometry,
+                                  unsigned const moment_expansion_order,
+                                  bool const include_extra_directions,
+                                  Ordering const ordering,
+                                  QIM const qim) const
 {
     Require(dimension>0 && dimension<4);
-    Require(dimension==1 || quadrature_class()==OCTANT_QUADRATURE);
+    Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
     
     vector<Ordinate> ordinates = create_ordinates_(dimension,
                                                    geometry,
@@ -359,7 +365,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                    include_extra_directions);
     
     SP<Ordinate_Space> Result;
-    switch (qim())
+    switch (qim)
     {
         case SN:
            Result = new Sn_Ordinate_Space(dimension,

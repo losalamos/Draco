@@ -26,12 +26,47 @@ namespace rtt_quadrature
 using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------------------//
+General_Octant_Quadrature::
+General_Octant_Quadrature(vector<double> const &mu,
+                          vector<double> const &eta,
+                          vector<double> const &xi,
+                          vector<double> const &wt,
+                          unsigned number_of_levels,
+                          Quadrature_Class const quadrature_class)
+    :
+    mu_(mu),
+    eta_(eta),
+    xi_(xi),
+    wt_(wt),
+    number_of_levels_(number_of_levels),
+    quadrature_class_(quadrature_class)
+    
+{
+    Require(mu.size()>0 && eta.size()==mu.size() && xi.size()==mu.size() &&
+            wt.size()==mu.size());
+
+    Require(quadrature_class != INTERVAL_QUADRATURE);
+
+    Require(quadrature_class != TRIANGLE_QUADRATURE ||
+            number_of_levels*(number_of_levels+2) == 8*mu.size());
+
+    Require(quadrature_class != SQUARE_QUADRATURE ||
+            2*number_of_levels*number_of_levels == 8*mu.size());
+}
+
+//---------------------------------------------------------------------------------------//
 string General_Octant_Quadrature::name() const { return "General Octant Quadrature"; }
 
 //---------------------------------------------------------------------------------------//
 string General_Octant_Quadrature::parse_name()  const
 { return "general octant quadrature"; }
-    
+        
+//---------------------------------------------------------------------------------------//
+Quadrature::Quadrature_Class General_Octant_Quadrature::quadrature_class() const
+{
+    return quadrature_class_;
+}
+
 //---------------------------------------------------------------------------------------//
 unsigned General_Octant_Quadrature::number_of_levels() const { return number_of_levels_; }
     
@@ -41,21 +76,6 @@ string General_Octant_Quadrature::as_text(string const &indent) const
     string Result = indent + "  type = general octant quadrature";
     Result += indent + "  number of ordinates = " + to_string(mu_.size());
     Result += indent + "  number of levels = " + to_string(number_of_levels_);
-
-    Result += indent + "  interpolation algorithm = ";
-    switch(qim())
-    {
-        case SN:
-            Result += indent + "SN";
-            break;
-            
-        case GQ:
-            Result += indent + "GALERKIN";
-            break;
-            
-        default:
-            Insist(false, "bad case");
-    }
  
     unsigned const N = mu_.size();
     for (unsigned i=0; i<N; ++i)

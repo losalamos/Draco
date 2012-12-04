@@ -30,7 +30,13 @@ string Level_Symmetric::name() const { return "Level Symmetric"; }
 
 //---------------------------------------------------------------------------------------//
 string Level_Symmetric::parse_name()  const { return "level symmetric"; }
-    
+        
+//---------------------------------------------------------------------------------------//
+Quadrature::Quadrature_Class Level_Symmetric::quadrature_class() const
+{
+    return TRIANGLE_QUADRATURE;
+}
+
 //---------------------------------------------------------------------------------------//
 unsigned Level_Symmetric::number_of_levels() const { return sn_order_; }
     
@@ -40,23 +46,7 @@ string Level_Symmetric::as_text(string const &indent) const
     string Result =
         indent + "type = level symmetric" +
         indent + "  order = " + to_string(sn_order_) +
-        indent + "  interpolation algorithm = ";
-
-    switch(qim())
-    {
-        case SN:
-            Result += "SN";
-            break;
-            
-        case GQ:
-            Result += "GALERKIN";
-            break;
-            
-        default:
-            Insist(false, "bad case");
-    }
-    
-    Result += indent + "end";
+        indent + "end";
 
     return Result;
 }

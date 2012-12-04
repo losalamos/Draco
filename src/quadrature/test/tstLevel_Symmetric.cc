@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try
     {
-        Level_Symmetric quadrature(8, SN); // SN order = 8
+        Level_Symmetric quadrature(8); // SN order = 8
 
         quadrature_test(ut, quadrature);
     }

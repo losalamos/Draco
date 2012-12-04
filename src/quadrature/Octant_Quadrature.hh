@@ -42,18 +42,15 @@ class Octant_Quadrature : public Quadrature
 
     // CREATORS
 
-    explicit Octant_Quadrature(QIM const qim)
+    Octant_Quadrature()
         :
-        Quadrature(qim),
         has_axis_assignments_(false)
     {
     }
 
-    explicit Octant_Quadrature(QIM const qim,
-                               unsigned const mu_axis,
-                               unsigned const eta_axis)
+    Octant_Quadrature(unsigned const mu_axis,
+                      unsigned const eta_axis)
         :
-        Quadrature(qim),
         has_axis_assignments_(true),
         mu_axis_(mu_axis),
         eta_axis_(eta_axis)
@@ -63,11 +60,6 @@ class Octant_Quadrature : public Quadrature
     // ACCESSORS
 
     // SERVICES
-        
-    Quadrature_Class quadrature_class() const;
-
-    // These functions override the virtual member functions specifed in the
-    // parent class Quadrature.
 
   protected:
 
@@ -84,7 +76,6 @@ class Octant_Quadrature : public Quadrature
     
     static
     void parse(Token_Stream &tokens,
-               QIM &qim,
                bool &has_axis_assignments,
                unsigned &mu_axis,
                unsigned &eta_axis);

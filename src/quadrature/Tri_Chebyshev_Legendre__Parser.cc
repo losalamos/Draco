@@ -28,19 +28,16 @@ SP<Quadrature> Tri_Chebyshev_Legendre::parse(Token_Stream &tokens)
     unsigned sn_order = parse_positive_integer(tokens);
     tokens.check_semantics(sn_order%2==0, "order must be even");
 
-    QIM qim;
     bool has_axis_assignments;
     unsigned mu_axis, eta_axis;
-    Octant_Quadrature::parse(tokens, qim, has_axis_assignments, mu_axis, eta_axis);
+    Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
 
     if (has_axis_assignments)
         return SP<Quadrature>(new Tri_Chebyshev_Legendre(sn_order,
-                                                         qim,
                                                          mu_axis,
                                                          eta_axis));
     else
-        return SP<Quadrature>(new Tri_Chebyshev_Legendre(sn_order,
-                                                         qim));
+        return SP<Quadrature>(new Tri_Chebyshev_Legendre(sn_order));
 }
 
 } // end namespace rtt_quadrature

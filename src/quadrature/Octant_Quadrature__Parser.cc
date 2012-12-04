@@ -30,28 +30,11 @@ using namespace rtt_parser;
 
 /*static*/
 void Octant_Quadrature::parse(Token_Stream &tokens,
-                              QIM &qim,
                               bool &has_axis_assignments,
                               unsigned &mu_axis,
                               unsigned &eta_axis)
 {
     Token token = tokens.shift();
-
-    qim = SN;
-    if (token.text()=="interpolation algorithm")
-    {
-        token = tokens.shift();
-        if (token.text()=="SN")
-        {
-            // default
-        }
-        else if (token.text()=="GALERKIN")
-        {
-            qim = GQ;
-        }
-
-        token = tokens.shift();
-    }
     
     has_axis_assignments = false;
     if (token.text()=="axis assignments")

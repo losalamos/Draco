@@ -26,28 +26,11 @@ SP<Quadrature> Level_Symmetric::parse(Token_Stream &tokens)
     tokens.check_syntax(token.text()=="order", "expected an order");
 
     unsigned sn_order = parse_positive_integer(tokens);
-
     tokens.check_semantics(sn_order%2==0, "order must be even");
-    
-    QIM qim = SN;
-    token = tokens.shift();
-    if (token.text()=="interpolation algorithm")
-    {
-        token = tokens.shift();
-        if (token.text()=="SN")
-        {
-            // default
-        }
-        else if (token.text()=="GALERKIN")
-        {
-            qim = GQ;
-        }
 
-        token = tokens.shift();
-    }
-    tokens.check_syntax(token.type()==END, "missing end?");
+    tokens.check_syntax(tokens.shift().type()==END, "missing end?");
 
-    return SP<Quadrature>(new Level_Symmetric(sn_order, qim));
+    return SP<Quadrature>(new Level_Symmetric(sn_order));
 }
 
 } // end namespace rtt_quadrature

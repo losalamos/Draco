@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try
     {
-        Tri_Chebyshev_Legendre quadrature(8, SN); // SN order = 8
+        Tri_Chebyshev_Legendre quadrature(8); // SN order = 8
 
         quadrature_test(ut, quadrature);
     }

@@ -33,21 +33,12 @@ class General_Octant_Quadrature : public Octant_Quadrature
 
     // CREATORS
 
-    // The default values for snOrder_ and norm_ were set in QuadCreator.
-    explicit General_Octant_Quadrature(vector<double> const &mu,
-                                       vector<double> const &eta,
-                                       vector<double> const &xi,
-                                       vector<double> const &wt,
-                                       unsigned number_of_levels,
-                                       QIM const qim)
-        :
-        Octant_Quadrature(qim),
-        mu_(mu), eta_(eta), xi_(xi), wt_(wt), number_of_levels_(number_of_levels)
-        
-    {
-        Require(mu.size()>0 && eta.size()==mu.size() && xi.size()==mu.size() &&
-                wt.size()==mu.size());
-    }
+    General_Octant_Quadrature(vector<double> const &mu,
+                              vector<double> const &eta,
+                              vector<double> const &xi,
+                              vector<double> const &wt,
+                              unsigned number_of_levels,
+                              Quadrature_Class);
 
     General_Octant_Quadrature();    // disable default construction
 
@@ -66,7 +57,9 @@ class General_Octant_Quadrature : public Octant_Quadrature
     string name()        const;
     
     string parse_name()  const;
-    
+        
+    Quadrature_Class quadrature_class() const;
+
     unsigned number_of_levels() const;
     
     string as_text(string const &indent) const;
@@ -87,6 +80,7 @@ class General_Octant_Quadrature : public Octant_Quadrature
     // DATA
     vector<double> mu_, eta_, xi_, wt_;
     unsigned number_of_levels_;
+    Quadrature_Class quadrature_class_;
 };
 
 } // end namespace rtt_quadrature

@@ -41,20 +41,25 @@ int main(int argc, char *argv[])
     {
         double const V = 1/sqrt(3.0);
         vector<double> mu(1, V), eta(1, V), xi(1, V), wt(1, 1.0);
-        General_Octant_Quadrature quadrature(mu, eta, xi, wt, 1, SN);
+        General_Octant_Quadrature quadrature(mu,
+                                             eta,
+                                             xi,
+                                             wt,
+                                             2,
+                                             Quadrature::TRIANGLE_QUADRATURE);
 
         quadrature_test(ut, quadrature);
     }
     catch (std::exception &err)
     {
-        std::cout << "ERROR: While testing tstGaussLegendre, " 
+        std::cout << "ERROR: While testing tstGereral_Octant_Quadrature, " 
                   << err.what()
                   << endl;
         ut.numFails++;
     }
     catch( ... )
     {
-        std::cout << "ERROR: While testing tstGaussLegendre, " 
+        std::cout << "ERROR: While testing tstGereral_Octant_Quadrature, " 
                   << "An unknown exception was thrown."
                   << endl;
         ut.numFails++;

@@ -68,26 +68,21 @@ class Quadrature
 
     enum Quadrature_Class
     {
-        INTERVAL_QUADRATURE,
-        OCTANT_QUADRATURE,
+        INTERVAL_QUADRATURE,  //!< 1-D quadratures
+
+        TRIANGLE_QUADRATURE,  //!< 3-D triangular quadrature
+        SQUARE_QUADRATURE,    //!< 3-D square quadrature
+        OCTANT_QUADRATURE,    //!< 3-D octant quadrature, not triangular nor square
 
         END_QUADRATURE
     };
 
     // CREATORS
 
-    explicit Quadrature(QIM const qim)
-        :
-        qim_(qim)
-    {
-    }
-
     //! Virtual destructor.
     virtual ~Quadrature() {/* empty */}
 
     // ACCESSORS
-
-    QIM qim() const { return qim_; }
 
     // SERVICES
 
@@ -139,24 +134,25 @@ class Quadrature
     SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
                                              Geometry,
                                              unsigned moment_expansion_order,
-                                             bool include_extra_directions=false,
-                                             Ordinate_Set::Ordering ordering=
-                                               Ordinate_Set::LEVEL_ORDERED) const;
+                                             bool include_extra_directions,
+                                             Ordinate_Set::Ordering ordering,
+                                             QIM qim) const;
     
     SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
-                                                     Geometry,
-                                                     unsigned moment_expansion_order,
-                                                     unsigned mu_axis,
-                                                     unsigned eta_axis,
-                                                     bool include_extra_directions,
-                                                     Ordinate_Set::Ordering ordering) const;
+                                             Geometry,
+                                             unsigned moment_expansion_order,
+                                             unsigned mu_axis,
+                                             unsigned eta_axis,
+                                             bool include_extra_directions,
+                                             Ordinate_Set::Ordering ordering,
+                                             QIM qim) const;
 
     // STATICS
     
     static void register_quadrature(string const &keyword,
                                     SP<Quadrature> parse_function(Token_Stream&) );
 
-        static SP<Quadrature> parse(Token_Stream &);
+    static SP<Quadrature> parse(Token_Stream &);
 
   protected:
 
@@ -192,8 +188,6 @@ class Quadrature
                                                bool include_extra_directions) const = 0;
 
     // data
-
-    QIM qim_;
 };
 
 } // end namespace rtt_quadrature

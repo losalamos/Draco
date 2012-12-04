@@ -25,12 +25,6 @@
 namespace rtt_quadrature
 {
 using namespace rtt_dsxx;
-    
-//---------------------------------------------------------------------------------------//
-Quadrature::Quadrature_Class Octant_Quadrature::quadrature_class() const
-{
-    return OCTANT_QUADRATURE;
-}
 
 //---------------------------------------------------------------------------------------//
 vector<Ordinate>
@@ -279,23 +273,8 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension,
 
 string Octant_Quadrature::as_text(string const &indent) const
 {
-    string Result =
-        indent + "  interpolation algorithm = ";
-
-    switch(qim())
-    {
-        case SN:
-            Result += "SN";
-            break;
-            
-        case GQ:
-            Result += "GALERKIN";
-            break;
-            
-        default:
-            Insist(false, "bad case");
-    }
-
+    string Result;
+    
     if (has_axis_assignments_)
     {
         Result += indent + "  axis assignments, mu = " + to_string(mu_axis_)

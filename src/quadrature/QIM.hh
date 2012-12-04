@@ -13,18 +13,26 @@
 #ifndef quadrature_QIM_hh
 #define quadrature_QIM_hh
 
+#include "parser/Token_Stream.hh"
+
 namespace rtt_quadrature
 {
+using rtt_parser::Token_Stream;
 
 //! Quadrature Interpolation Model: specifies how to compute the
-//! Discrete-to-Moment operator. This is used by input parsers.
+//! Discrete-to-Moment operator.
 
 enum QIM 
 {
     SN,  /*!< Use the standard SN method. */
     GQ,  /*!< Use Morel's Galerkin Quadrature method. */
-    SVD  /*!< Let M be an approximate inverse of D. */
+    SVD, /*!< Let M be an approximate inverse of D. */
+
+    END_QIM  //!< Sentinel value
 };
+
+void parse_quadrature_interpolation_model(Token_Stream &,
+                                          QIM &);
 
 } // end namespace rtt_quadrature
 

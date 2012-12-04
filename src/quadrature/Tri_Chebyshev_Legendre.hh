@@ -34,10 +34,8 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
     // CREATORS
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
-    explicit Tri_Chebyshev_Legendre( unsigned sn_order,
-                                     QIM const qim = SN)
+    explicit Tri_Chebyshev_Legendre( unsigned sn_order)
         :
-        Octant_Quadrature(qim),
         sn_order_( sn_order )
         
     {
@@ -46,11 +44,10 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
 
     // The default values for snOrder_ and norm_ were set in QuadCreator.
     explicit Tri_Chebyshev_Legendre( unsigned sn_order,
-                                     QIM const qim,
                                      unsigned const mu_axis,
                                      unsigned const eta_axis)
         :
-        Octant_Quadrature(qim, mu_axis, eta_axis),
+        Octant_Quadrature(mu_axis, eta_axis),
         sn_order_( sn_order )
         
     {
@@ -72,6 +69,8 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
     
     string parse_name()  const;
     
+    Quadrature_Class quadrature_class() const;
+
     unsigned number_of_levels() const;
     
     string as_text(string const &indent) const;
