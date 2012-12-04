@@ -52,6 +52,30 @@ General_Octant_Quadrature(vector<double> const &mu,
 
     Require(quadrature_class != SQUARE_QUADRATURE ||
             2*number_of_levels*number_of_levels == 8*mu.size());
+
+    Ensure(check_class_invariants());
+    Ensure(this->mu()==mu);
+    Ensure(this->eta()==eta);
+    Ensure(this->xi()==xi);
+    Ensure(this->wt()==wt);
+    Ensure(this->number_of_levels()==number_of_levels);
+    Ensure(this->quadrature_class()==quadrature_class);
+}
+
+//---------------------------------------------------------------------------------------//
+bool General_Octant_Quadrature::check_class_invariants() const
+{
+    return
+        (mu_.size()>0 && eta_.size()==mu_.size() && xi_.size()==mu_.size() &&
+         wt_.size()==mu_.size()) &&
+        
+        (quadrature_class_ != INTERVAL_QUADRATURE) &&
+        
+        (quadrature_class_ != TRIANGLE_QUADRATURE ||
+         number_of_levels_*(number_of_levels_+2) == 8*mu_.size()) &&
+        
+        (quadrature_class_ != SQUARE_QUADRATURE ||
+         2*number_of_levels_*number_of_levels_ == 8*mu_.size());  
 }
 
 //---------------------------------------------------------------------------------------//

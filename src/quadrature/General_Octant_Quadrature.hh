@@ -63,6 +63,8 @@ class General_Octant_Quadrature : public Octant_Quadrature
     unsigned number_of_levels() const;
     
     string as_text(string const &indent) const;
+
+    bool check_class_invariants() const;
     
     // STATICS
 

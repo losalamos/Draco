@@ -192,6 +192,24 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension,
         default:
             Insist(false, "bad case");
     }
+
+    Ensure(check_class_invariants());
+    Ensure(this->has_starting_directions() == has_starting_directions);
+    Ensure(this->has_extra_starting_directions() == has_extra_starting_directions);
+    Ensure(this->ordering() == ordering);
+}
+
+//---------------------------------------------------------------------------------------//
+bool Ordinate_Set::check_class_invariants() const
+{
+    return
+        (dimension_>=1 && dimension_<=3) &&
+        (geometry_!=rtt_mesh_element::AXISYMMETRIC || dimension_<3) &&
+        (geometry_!=rtt_mesh_element::SPHERICAL || dimension_<2) &&
+        (has_starting_directions_ || !has_extra_starting_directions_) &&
+        (dimension_>1 || geometry_==rtt_mesh_element::SPHERICAL || check_4(ordinates_)) &&
+        (dimension_!=2 || check_2(ordinates_));
+
 }
 
 //---------------------------------------------------------------------------//

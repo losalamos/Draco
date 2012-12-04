@@ -396,6 +396,7 @@ Ordinate_Space::Ordinate_Space( unsigned const  dimension,
     compute_reflection_maps_();
 
     Ensure(check_class_invariants());
+    Ensure(has_extra_starting_directions()==extra_starting_directions);
 }
 
 //---------------------------------------------------------------------------------------//
