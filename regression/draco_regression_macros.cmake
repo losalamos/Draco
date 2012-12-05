@@ -225,6 +225,13 @@ macro( parse_args )
      elseif( ${my_cxx_compiler} MATCHES "pgCC")
         set( compiler_short_name "pgi" )
      endif()
+     if( ${work_dir} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+        string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
+           compiler_version ${work_dir} )
+     endif()
+     if( NOT "${compiler_version}x" STREQUAL "x" )
+        set( compiler_short_name "${compiler_short_name}-${compiler_version}" )
+     endif()
   endif()
 
   # maybe just gcc?
