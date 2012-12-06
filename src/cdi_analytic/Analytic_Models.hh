@@ -310,14 +310,20 @@ class Analytic_EoS_Model
     virtual double calculate_elec_thermal_conductivity(double T, double rho)
 	const = 0;
 
-    /*! \brief Calculate the electron temperature given density, change in
-     *         Electron internal energy and the starting electron
-     *         temperature. 
+    /*! \brief Calculate the electron temperature given density, Electron
+     *         internal energy and the starting electron temperature.
      */
     virtual double calculate_elec_temperature( double rho,
                                                double Ue,
                                                double Tguess ) const = 0; 
 
+    /*! \brief Calculate the ion temperature given density, Ion internal
+     *         energy and the starting ion temperature.
+     */
+    virtual double calculate_ion_temperature( double rho,
+                                              double Uic,
+                                              double Tguess ) const = 0;
+    
     //! Return the model parameters.
     virtual sf_double get_parameters() const = 0;
 
@@ -488,7 +494,12 @@ class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
     double calculate_elec_temperature( double const /*rho*/,
                                        double const Ue,
                                        double const Te0 ) const;
-    
+
+    //!  Calculate the ion temperature given density and ion internal energy
+    //!  and initial temperature.
+    double calculate_ion_temperature( double const /*rho*/,
+                                      double const Uic,
+                                      double const Ti0 ) const;
     //! Return the model parameters.
     sf_double get_parameters() const;
 

@@ -232,6 +232,39 @@ void check_CDI( rtt_dsxx::UnitTest & ut, CDI const &cdi)
         FAILMSG(message.str());
     }
 
+    double U = 3.1415;
+    double Ti = cdi.eos()->getIonTemperature(dens,U,1.0);
+    double Te = cdi.eos()->getElectronTemperature(dens,U,1.0);
+
+    if( rtt_dsxx::soft_equiv( Ti, 1.772427713617681 ) )
+    {
+        ostringstream message;
+        message << "CDI.eos()->getIonTemperature( dbl, dbl )\n\t"
+                << "returned a value that matched the reference value.";
+        PASSMSG(message.str());
+    }
+    else
+    {
+        ostringstream message;
+        message << "CDI.eos()->getIonTemperature( dbl, dbl )\n\t"
+                << "returned a value that was out of spec.";
+        FAILMSG(message.str());
+    }
+    if( rtt_dsxx::soft_equiv( Te, 31.415 ) )
+    {
+        ostringstream message;
+        message << "CDI.eos()->getElectronTemperature( dbl, dbl )\n\t"
+                << "returned a value that matched the reference value.";
+        PASSMSG(message.str());
+    }
+    else
+    {
+        ostringstream message;
+        message << "CDI.eos()->getElectronTemperature( dbl, dbl )\n\t"
+                << "returned a value that was out of spec.";
+        FAILMSG(message.str());
+    }
+    
     // Print the material ID string
 
     // Test Rosseland integration with MG opacities.

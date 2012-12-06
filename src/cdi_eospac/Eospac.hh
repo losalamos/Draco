@@ -382,7 +382,23 @@ class Eospac : public rtt_cdi::EoS
         double density,
         double SpecificElectronInternalEnergy,
         double Tguess=1.0 ) const;
-    
+
+    /*!
+     * \brief Retrieve an ion temperature based on the specific ion
+     *        internal energy. 
+     *
+     * \param density Density of the material in g/cm^3
+     * \param SpecificIonInternalEnergy in kJ/g.
+     * \param Tguess Guess of the result to aid the root finder, K.  This is
+     *        required by the signature in cdi/EoS.hh but is not used for
+     *        cdi_eospac.
+     * \return temperature Temperature of the material in K.
+     */
+    double getIonTemperature(
+        double density,
+        double SpecificIonInternalEnergy,
+        double Tguess=1.0 ) const;
+
     /*!
      * \brief Interface for packing a derived EoS object.
      *

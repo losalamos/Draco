@@ -115,8 +115,12 @@ class SesameTables
     SesameTables& Ogb( unsigned matID );
     //! Temperature (K)
     SesameTables& T_DUe( unsigned matID );
+    //! Temperature (K)
+    SesameTables& T_DUic( unsigned matID ); 
 
 #if 0
+    //! Temperature (K)
+    SesameTables& T_DUiz( unsigned matID ); 
     //! Thermoelectric Coefficient (1/cm^2/s)
     SesameTables& B_DT( unsigned matID );
     //! Shear Modulus (Gpa)
@@ -153,8 +157,6 @@ class SesameTables
     SesameTables& T_DPic( unsigned matID );
     //! Temperature (K)
     SesameTables& T_DPt( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DUic( unsigned matID ); 
     //! Temperature (K)
     SesameTables& T_DUt( unsigned matID );
     //! Freeze Temperature (eV)

@@ -256,7 +256,22 @@ class DummyEoS : public rtt_cdi::EoS
         double density,
         double SpecificElectronInternalEnergy,
         double Tguess ) const;
-    
+
+    /*!
+     * \brief Retrieve an ion temperature associated with the provided
+     *        specific ion internal energy (kJ/g) and density (g/cm^3). 
+     *
+     * \param density Density of the material in g/cm^3
+     * \param SpecificIonInternalEnergy in kJ/g
+     * \param Tguess  A guess for the resulting ion temperature to aid the
+     *                root finder.
+     * \return Ionic temperature in keV.
+     */
+    double getIonTemperature(
+        double density,
+        double SpecificIonInternalEnergy,
+        double Tguess ) const;
+
     // Dummy pack function.
     std::vector<char> pack() const { return std::vector<char>(); }
 

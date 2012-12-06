@@ -24,7 +24,7 @@
 #include <cmath>
 #include <vector>
 #include <sstream>
-// #include <iomanip>
+#include <iomanip>
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
@@ -92,6 +92,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     // conductivity (tconde).
     AlSt.Uic_DT( Al3717 ).Ktc_DT( Al23714 );
     AlSt.T_DUe(  Al3717 ); // getElectronTemperature(rho,Ue)
+    AlSt.T_DUic(  Al3717 ); // getIonTemperature(rho,Ue)
     
     // Verify that the assignments were made correctly.
     
@@ -108,8 +109,7 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     // to test this funcitonality.
     
     if ( AlSt.matID( EOS_Ktc_DT ) != 23714 )
-        FAILMSG("AlSt.matID(27) points to the wrong matID.");
-    
+        FAILMSG("AlSt.matID(27) points to the wrong matID.");    
     
     // ----------------------- //
     // Create an Eospac object //
@@ -270,17 +270,38 @@ void cdi_eospac_test( rtt_dsxx::UnitTest & ut )
     double Tout = spEospac->getElectronTemperature(
         density, SpecificElectronInternalEnergy ); // keV
 
-    double const Tgold( 0.000487303450297301 ); // keV
-    if( soft_equiv( Tout, Tgold ) )
+    double const Tegold( 0.000487303450297301 ); // keV
+    if( soft_equiv( Tout, Tegold ) )
         PASSMSG("getElectronTemperature() test passed for scalar.");
     else
     {
         std::ostringstream msg;
         msg << "getElectronTemperature() test failed for scalar.\n"
-            << "\tTout  = " << Tout << " K\n"
-            << "\tTgold = " << Tgold << " K";
+            << "\tTout  = " << std::setprecision(16) << Tout << " keV\n"
+            << "\tTegold = " << Tegold << " keV";
         FAILMSG( msg.str() );
     }
+
+    // Test the getElectronTemperature function
+
+    // spEospac->printTableInformation( EOS_T_DUic, std::cout );
+    
+    double SpecificIonInternalEnergy( 10.0 ); // kJ/g
+    Tout = spEospac->getIonTemperature(
+        density, SpecificIonInternalEnergy ); // keV
+
+    double const Tigold( 0.001205608722470064 ); // keV
+    if( soft_equiv( Tout, Tigold ) )
+        PASSMSG("getIonTemperature() test passed for scalar.");
+    else
+    {
+        std::ostringstream msg;
+        msg << "getIonTemperature() test failed for scalar.\n"
+            << "\tTout  = " << std::setprecision(16) << Tout << " keV\n"
+            << "\tTigold = " << Tigold << " keV";
+        FAILMSG( msg.str() );
+    }
+
     
     // --------------------------- //
     // Test vector access routines //

@@ -12,6 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
+#include <cmath>
 
 namespace rtt_cdi_test
 {
@@ -277,6 +278,15 @@ double DummyEoS::getElectronTemperature(
     double /*Tguess*/ ) const
 {
     return 10.0*SpecificElectronInternalEnergy;
+}
+
+//! Return Ion Temperature (keV) given Specific Ion Internal Energy (kJ/g).
+double DummyEoS::getIonTemperature(
+    double /*density*/,
+    double SpecificIonInternalEnergy,
+    double /*Tguess*/ ) const
+{
+    return std::sqrt(SpecificIonInternalEnergy);
 }
 
 

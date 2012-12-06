@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS member definitions.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -512,7 +513,35 @@ double Analytic_EoS::getElectronTemperature( double rho,
     double T_new = analytic_model->calculate_elec_temperature( rho, Ue, Tguess );
 
     Ensure( T_new >= 0.0 );
-    
+    return T_new;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the ion temperature given density and the specific ion
+ *        energy.
+ *
+ * Given density and specific ion energy fields, return an ion temperature.
+ * The ion thermal conductivity is defined by the analytic model given to
+ * the constructor (Analytic_EoS()).
+ *
+ * \param rho density field in g/cm^3 (unused by the current analytic models)
+ * \param Uic specific ion energy plus cold curve energy density (kJ/g)
+ * \param Tguess An ion temperature (keV) guess that can be used to help the
+ *        root finder.
+ * \return ion temperature in keV.
+ */
+double Analytic_EoS::getIonTemperature( double rho,
+                                        double Uic,
+                                        double Tguess ) const
+{
+    Require( Tguess >= 0.0 );
+    Require( Uic >= 0.0 );
+    Require( rho > 0.0 );
+
+    double T_new = analytic_model->calculate_ion_temperature( rho, Uic, Tguess );
+
+    Ensure( T_new >= 0.0 );
     return T_new;
 }
 

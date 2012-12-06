@@ -94,6 +94,9 @@ void analytic_eos_test( rtt_dsxx::UnitTest & ut )
         
         double T_new = analytic.getElectronTemperature( rho, Ue, Tguess );
         if( ! soft_equiv( T_new, 2.0 ) ) ITFAILS;
+
+        T_new = analytic.getIonTemperature( rho, Ue, Tguess );
+        if( ! soft_equiv( T_new, 20.0 ) ) ITFAILS;
     }
 
     // field check

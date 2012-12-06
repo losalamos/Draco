@@ -107,7 +107,12 @@ class Analytic_EoS : public rtt_cdi::EoS
     double getElectronTemperature( double /*rho*/,
                                    double Ue,
                                    double Tguess=1.0 ) const;
-    
+
+    // Get the new Ti, given delta Uic, Ti0.
+    double getIonTemperature( double /*rho*/,
+                              double Uic,
+                              double Tguess=1.0 ) const;
+
     // Pack the Analytic_EoS into a character string.
     sf_char pack() const;
 };

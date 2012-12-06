@@ -226,6 +226,21 @@ class EoS
         double Tguess ) const = 0;
     
     /*!
+     * \brief Retrieve an ion temperature associated with the provided
+     *        specific ion internal energy (kJ/g) and density (g/cm^3).
+     *
+     * \param density Density of the material in g/cm^3
+     * \param SpecificIonInternalEnergy in kJ/g
+     * \param Tguess  A guess for the resulting ion temperature to aid the
+     *                root finder.
+     * \return Ionic temperature in keV.
+     */
+    virtual double getIonTemperature(
+        double density,
+        double SpecificIonInternalEnergy,
+        double Tguess ) const = 0;
+
+    /*!
      * \brief Interface for packing a derived EoS object.
      *
      * Note, the user hands the return value from this function to a derived

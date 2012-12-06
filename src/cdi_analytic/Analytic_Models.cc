@@ -71,6 +71,53 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
     }       
 }
 
+/*! \brief Calculate the ion temperature given density and ion internal energy
+ *
+ * \f[
+ * U_ic(T_n) = \int_{T=0}^{T_n}{C_v(\rho,T)dT}
+ * \f]
+ *
+ * Where we assume \f$ U_ic(0) \equiv 0 \f$.
+ *
+ * We have chosen to use absolute electron energy instead of dUe to mimik the
+ * behavior of EOSPAC. 
+ *
+ * \todo Consider using GSL root finding with Newton-Raphson for improved
+ *       efficiency. 
+ */
+double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
+    double const /*rho*/,
+    double const Uic,
+    double const Ti0 ) const
+{
+
+    // Return T=0 given Uic <= 0 every time
+    if ( Uic > 0.0 )
+    {
+       // Set up the functor
+       find_elec_temperature_functor minimizeFunctor( Uic, d, e, f );
+
+       // New temperature should be nearby
+       double T_max( 100.0*Ti0 );
+       double T_min( 0.1*Ti0 );
+       double xtol( Ti0 * std::numeric_limits<double>::epsilon() );
+       double ytol( Uic * std::numeric_limits<double>::epsilon() );
+       unsigned iterations(100);
+       // bracket the root
+       rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
+       
+       // Search for the root
+       double T_new = rtt_roots::zbrent<find_elec_temperature_functor>(
+           minimizeFunctor, T_min, T_max, iterations, xtol, ytol );
+     
+       return T_new;
+    }
+    else
+    { 
+       return 0.0;
+    }       
+}
+
 //===========================================================================//
 // CONSTANT_ANALYTIC_MODEL MEMBER DEFINITIONS
 //===========================================================================//

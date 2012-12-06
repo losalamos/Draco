@@ -133,10 +133,18 @@ SesameTables& SesameTables::T_DUe( unsigned matID )
 {
     return addTable( EOS_T_DUe, matID );
 }
+SesameTables& SesameTables::T_DUic( unsigned matID ) 
+{
+    return addTable( EOS_T_DUic, matID );
+}
 
 // Move functions out as they are needed by new code and add unit tests for each.
 #if 0
 
+SesameTables& SesameTables::T_DUiz( unsigned matID ) 
+{
+    return addTable( EOS_T_DUiz, matID );
+}
 SesameTables& SesameTables::Ut_DT( unsigned matID )
 {
     return addTable( EOS_Ut_DT, matID );
@@ -164,10 +172,6 @@ SesameTables& SesameTables::Pic_DT( unsigned matID )
 SesameTables& SesameTables::T_DPic( unsigned matID ) 
 {
     return addTable( EOS_T_DPic, matID );
-}
-SesameTables& SesameTables::T_DUic( unsigned matID ) 
-{
-    return addTable( EOS_T_DUic, matID );
 }
 SesameTables& SesameTables::Pic_DUic( unsigned matID ) 
 {
