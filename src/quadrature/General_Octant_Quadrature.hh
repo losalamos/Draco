@@ -64,6 +64,8 @@ class General_Octant_Quadrature : public Octant_Quadrature
     
     string as_text(string const &indent) const;
 
+    bool is_open_interval() const;
+
     bool check_class_invariants() const;
     
     // STATICS
@@ -83,6 +85,7 @@ class General_Octant_Quadrature : public Octant_Quadrature
     vector<double> mu_, eta_, xi_, wt_;
     unsigned number_of_levels_;
     Quadrature_Class quadrature_class_;
+    bool is_open_interval_;
 };
 
 } // end namespace rtt_quadrature

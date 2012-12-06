@@ -449,6 +449,12 @@ bool Galerkin_Ordinate_Space::check_class_invariants() const
         M_.size() == ordinates().size() * moments().size();
 }
 
+//---------------------------------------------------------------------------------------//
+QIM Galerkin_Ordinate_Space::quadrature_interpolation_model() const
+{
+    return GQ;
+}
+
 
 //---------------------------------------------------------------------------------------//
 /*!

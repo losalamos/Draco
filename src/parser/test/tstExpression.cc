@@ -324,6 +324,52 @@ void tstExpression(UnitTest &ut)
             ut.failure("units NOT correctly set");
         }
     }
+
+    {
+        tokens = String_Token_Stream("(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(m*s)");
+        
+        SP<Expression> expression = Expression::parse(4, variable_map, tokens);
+        
+        if (expression->is_constant(0))
+        {
+            ut.passes("expression successfully const tested");
+        }
+        else
+        {
+            ut.failure("expression NOT successfully const tested");
+        }
+        
+        ostringstream expression_text_copy;
+        expression->write(vars, expression_text_copy);
+
+        cout << expression_text_copy << endl;
+            
+        char const * expression_text_raw =
+            "(log(1)+cos(2)+exp(3)+sin(4))/(m*s)";
+        // changes slightly due to stripping of extraneous whitespace,
+        // parentheses, and positive prefix
+        if (expression_text_copy.str()==expression_text_raw)
+        {
+            ut.passes("expression successfully rendered as text");
+        }
+        else
+        {
+            ut.failure("expression NOT successfully rendered as text");
+            cerr << expression_text_raw << endl;
+            cerr << expression_text_copy.str() << endl;
+        }
+
+
+        expression->set_units(J);
+        if (is_compatible(J, expression->units()))
+        {
+            ut.passes("units correctly set");
+        }
+        else
+        {
+            ut.failure("units NOT correctly set");
+        }
+    }
 }
 
 //---------------------------------------------------------------------------//

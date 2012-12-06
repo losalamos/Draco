@@ -61,6 +61,8 @@ class Octant_Quadrature : public Quadrature
 
     // SERVICES
 
+    virtual bool has_axis_assignments() const;
+
   protected:
 
     virtual string as_text(string const &indent) const = 0;

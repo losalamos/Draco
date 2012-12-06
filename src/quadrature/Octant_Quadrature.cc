@@ -27,6 +27,13 @@ namespace rtt_quadrature
 using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------------------//
+
+bool Octant_Quadrature::has_axis_assignments() const
+{
+    return has_axis_assignments_;
+}
+
+//---------------------------------------------------------------------------------------//
 vector<Ordinate>
 Octant_Quadrature::create_ordinates_(unsigned const dimension,
                                    Geometry const geometry,
@@ -101,12 +108,12 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
     for(size_t n=0;n<=4*octantOrdinates-1;++n)
         xi[n+4*octantOrdinates] = -xi[n];
 
-    map_axes_(mu_axis, eta_axis, mu, eta, xi);
-
     vector<Ordinate> Result;   
 
     if (dimension==3)
     {
+        map_axes_(mu_axis, eta_axis, mu, eta, xi);
+
         // Copy all ordinates into the result vector.
         Result.resize( numOrdinates );
         for ( size_t i=0; i<numOrdinates; ++i )
@@ -116,6 +123,8 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
     }
     else if (dimension == 2 || geometry == rtt_mesh_element::AXISYMMETRIC)
     {
+        map_axes_(mu_axis, eta_axis, mu, eta, xi);
+
         // Copy the half-sphere
         Result.resize( 4*octantOrdinates );
         unsigned m=0;
@@ -135,6 +144,9 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
     else
     {
         Check(dimension==1 && geometry != rtt_mesh_element::AXISYMMETRIC);
+        Check(mu_axis==2);
+
+        map_axes_(0, 2, mu, eta, xi);
 
         // Only need the quarter sphere
         Result.resize( numOrdinates/4 );

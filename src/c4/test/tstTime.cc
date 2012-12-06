@@ -199,6 +199,25 @@ void wall_clock_test()
         PASSMSG("Found the expected number of intervals.")
     else
         FAILMSG("Did not find the expected number of intervals.")
+                
+          
+    //------------------------------------------------------//
+    // Check the merge method
+    //------------------------------------------------------//
+
+    double old_wall_time = t.sum_wall_clock();
+    double old_system_time = t.sum_system_cpu();
+    double old_user_time = t.sum_user_cpu();
+    double old_intervals = t.intervals();
+    t.merge(t);
+   
+    if (2*old_wall_time==t.sum_wall_clock() &&
+        2*old_system_time==t.sum_system_cpu() &&
+        2*old_user_time==t.sum_user_cpu() &&
+        2*old_intervals==t.intervals())
+        PASSMSG("merge okay")
+    else
+        FAILMSG("merge NOT okay")
     
     return;
 }

@@ -728,6 +728,51 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT parse quantity correctly");
         }
     }
+    {
+        String_Token_Stream string("278*K");
+        map<std::string, pair<unsigned, Unit> > variable_map;
+        SP<Expression> T = parse_temperature(string, 0, variable_map);
+        vector<double> x;
+        if (soft_equiv((*T)(x), 278.))
+        {
+            ut.passes("parsed temperature correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse temperature correctly");
+        }
+        
+    }
+    {
+        String_Token_Stream string("J");
+        map<std::string, pair<unsigned, Unit> > variable_map;
+        SP<Expression> T = parse_temperature(string, 0, variable_map);
+        vector<double> x;
+        if (soft_equiv((*T)(x), 1.0/rtt_units::boltzmannSI))
+        {
+            ut.passes("parsed temperature correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse temperature correctly");
+        }
+        
+    }
+    {
+        String_Token_Stream string("278*K");
+        map<std::string, pair<unsigned, Unit> > variable_map;
+        SP<Expression> T = parse_quantity(string, J, "energy", 0, variable_map);
+        vector<double> x;
+        if (soft_equiv((*T)(x), 278.))
+        {
+            ut.passes("parsed temperature correctly");
+        }
+        else
+        {        
+            ut.failure("did NOT parse temperature correctly");
+        }
+        
+    }
 }
 
 //---------------------------------------------------------------------------//

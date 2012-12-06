@@ -32,6 +32,11 @@ double func(double const x)
     return x*x;
 }
 
+double func3(double const x)
+{
+    return (x+1)*x*(x-1);
+}
+
 //---------------------------------------------------------------------------//
 void tstmnbrak(UnitTest &ut)
 {

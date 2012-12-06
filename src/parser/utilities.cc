@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file utilities.cc
  * \author Kent G. Budge
@@ -6,9 +6,9 @@
  * \brief Definitions of parsing utility functions.
  * \note   Copyright © 2006 Los Alamos National Security, LLC
  */
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 
 #include <sstream>
 #include <ctype.h>
@@ -21,7 +21,7 @@ namespace rtt_parser
 {
 using namespace std;
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -51,7 +51,7 @@ unsigned parse_unsigned_integer(Token_Stream &tokens)
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -72,7 +72,7 @@ unsigned parse_positive_integer(Token_Stream &tokens)
     return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -113,7 +113,7 @@ int parse_integer(Token_Stream &tokens)
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * This function does not move the cursor in the token stream.
  * 
@@ -132,7 +132,7 @@ bool at_real(Token_Stream &tokens)
     return (token.type()==REAL || token.type()==INTEGER);
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * We permit an integer token to appear where a real is expected, consistent
  * with the integers being a subset of reals, and with about five decades of
@@ -176,7 +176,7 @@ double parse_real(Token_Stream &tokens)
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -197,7 +197,7 @@ double parse_positive_real(Token_Stream &tokens)
     return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -218,7 +218,7 @@ double parse_nonnegative_real(Token_Stream &tokens)
     return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -254,7 +254,7 @@ void parse_vector(Token_Stream &tokens, double x[])
 }
 
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -285,7 +285,7 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size)
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \brief Are we at a unit term?
  * 
@@ -401,7 +401,7 @@ bool at_unit_term(Token_Stream &tokens, unsigned position = 0)
 
 Unit parse_unit(Token_Stream &tokens);
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \brief Parse a unit name.
  * 
@@ -605,7 +605,7 @@ static Unit parse_unit_name(Token_Stream &tokens)
     return dimensionless;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \brief Parse a unit term.
  * 
@@ -629,7 +629,7 @@ static Unit parse_unit_term(Token_Stream &tokens)
     return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * A unit expression is a sequence of tokens with a form such as "kg-m/sec" or
  * "erg/cm^2/sec/Hz" that gives the dimensions of a physical quantity.  This
@@ -676,7 +676,7 @@ Unit parse_unit(Token_Stream &tokens)
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * This function parses a quantity having dimensions. It is assumed that the
  * client expects certain dimensions for the quantity, and an exception is
@@ -710,7 +710,7 @@ double parse_quantity(Token_Stream &tokens,
     return  value*unit.conv/target_unit.conv;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \brief Parse a temperature specification 
  *
@@ -756,7 +756,7 @@ double parse_temperature(Token_Stream &tokens)
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \brief Parse a temperature specification 
  *
@@ -794,19 +794,17 @@ parse_temperature(Token_Stream &tokens,
     {
         T->set_units(u);
     }
-    else if (is_compatible(u, J))
-    {
-        T->set_units(u*K/(J*rtt_units::boltzmannSI));
-    }
     else
     {
-	tokens.report_syntax_error("expected quantity with units of "
-				   "temperature");
+        tokens.check_syntax(is_compatible(u, J),
+                            "expected quantity with units of temperature");
+        
+        T->set_units(u*K/(J*rtt_units::boltzmannSI));
     }
     return T;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * Parses a STRING token and strips the delimiting quotation marks.
  *
@@ -830,7 +828,7 @@ std::string parse_manifest_string(Token_Stream &tokens)
     return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \brief Parse a geometry specification.
  * 
@@ -880,7 +878,7 @@ void parse_geometry(Token_Stream &tokens,
     return;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
@@ -897,16 +895,12 @@ bool parse_bool(Token_Stream &tokens)
     }
     else if (token.text()=="false")
     {
+        tokens.check_syntax(token.text()=="false", "expected 'true' or 'false'");
         return false;
-    }
-    else
-    {
-        tokens.report_syntax_error("expected 'true' or 'false'");
-        return true; // to turn off warning; never reached
     }
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*! 
  * This function parses an expression having dimensions. It is assumed that the
  * client expects certain dimensions for the quantity, and an exception is
@@ -953,6 +947,6 @@ SP<Expression> parse_quantity(Token_Stream &tokens,
 }
 
 } // rtt_parser
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 //                          end of utilities.cc
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//

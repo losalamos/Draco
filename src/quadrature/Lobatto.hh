@@ -41,11 +41,20 @@ class Lobatto : public Interval_Quadrature
 
     // ACCESSORS
 
+    unsigned sn_order() const
+    {
+        return sn_order_;
+    }
+
+    // SERVICES
+
     virtual string name() const;
 
     virtual string parse_name() const;
 
     virtual string as_text(string const &indent) const;
+
+    virtual bool is_open_interval() const;
 
     bool check_class_invariants() const;
 

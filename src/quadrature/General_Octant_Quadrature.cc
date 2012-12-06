@@ -53,6 +53,9 @@ General_Octant_Quadrature(vector<double> const &mu,
     Require(quadrature_class != SQUARE_QUADRATURE ||
             2*number_of_levels*number_of_levels == 8*mu.size());
 
+    is_open_interval_ =
+        soft_equiv(*min_element(xi.begin(), xi.end()), -1.0);
+
     Ensure(check_class_invariants());
     Ensure(this->mu()==mu);
     Ensure(this->eta()==eta);
@@ -124,6 +127,12 @@ void General_Octant_Quadrature::create_octant_ordinates_(vector<double> &mu,
     mu = mu_;
     eta = eta_;
     wt = wt_;
+}
+
+//---------------------------------------------------------------------------------------//
+bool General_Octant_Quadrature::is_open_interval() const
+{
+    return is_open_interval_;
 }
 
 } // end namespace rtt_quadrature

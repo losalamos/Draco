@@ -101,6 +101,12 @@ class Quadrature
     //! Produce a text representation of the object
     virtual string as_text(string const &indent) const = 0;
 
+    //! Are the axes assigned?
+    virtual bool has_axis_assignments() const = 0;
+
+    //! Is the quadrature an open interval quadrature?
+    virtual bool is_open_interval() const;
+
     vector<Ordinate> create_ordinates(unsigned dimension,
                                       Geometry,
                                       double norm,

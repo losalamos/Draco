@@ -119,6 +119,30 @@ void tstSlice(UnitTest &ut)
     }
 
     Slice<vector<unsigned>::iterator>::const_iterator ci = s.begin();
+    if (ci.first()==v.begin()+1)
+    {
+	ut.passes("first is correct");
+    }
+    else
+    {
+	ut.failure("first is NOT correct");
+    }
+    if (ci.offset()==0)
+    {
+	ut.passes("offset is correct");
+    }
+    else
+    {
+	ut.failure("offset is NOT correct");
+    }
+    if (ci.stride()==2)
+    {
+	ut.passes("stride is correct");
+    }
+    else
+    {
+	ut.failure("stride is NOT correct");
+    }
     if (*ci == 1)
     {
 	ut.passes("deref of begin is correct");

@@ -328,6 +328,13 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
         else
             FAILMSG( std::string("Failed to create directory = ") + dummyDir1 );
 
+        // Check for nonexistent directory
+
+        if (!isDirectory("no such path"))
+            PASSMSG("reported nonexistent path as not directory");
+        else
+            FAILMSG("did NOT report nonexistent path as not directory");
+
         // Create files
 
         std::ofstream outfile1( dummyFile1.c_str() );

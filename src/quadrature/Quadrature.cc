@@ -70,6 +70,43 @@ Quadrature::create_ordinates(unsigned const dimension,
 
 //---------------------------------------------------------------------------------------//
 /*!
+ * Create a set of ordinates from the Quadrature.
+ *
+ * \param dimension Dimension of the problem.
+
+ * \param geometry Geometry of the problem.
+ *
+ * \param norm Norm for the ordinate weights.
+ *
+ * \param include_starting_directions Should starting directions be included
+ * in the ordinate set for each level? This argument is ignored for Cartesian
+ * geometries.
+ *
+ * \param include_extra_starting_directions Should extra starting directions
+ * be included in the ordinate set for each level?
+ */
+vector<Ordinate>
+Quadrature::create_ordinates(unsigned const dimension,
+                             Geometry const geometry,
+                             double const norm,
+                             bool const include_starting_directions,
+                             bool const include_extra_directions) const
+{
+    Require(dimension>0 && dimension<4);
+    Require(norm>0.0);
+    Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
+    
+    vector<Ordinate> Result = create_ordinates_(dimension,
+                                                geometry,
+                                                norm,
+                                                include_starting_directions,
+                                                include_extra_directions);
+
+    return Result;
+}
+
+//---------------------------------------------------------------------------------------//
+/*!
  * Create an ordinate set from the Quadrature.
  *
  * \param dimension Dimension of the problem.
@@ -127,7 +164,7 @@ void Quadrature::add_1D_starting_directions_(Geometry const geometry,
 
     if (add_starting_directions)
     {
-        if( geometry ==  rtt_mesh_element::SPHERICAL )
+        if( geometry ==  rtt_mesh_element::SPHERICAL)
         {
             // insert mu=-1 starting direction
             vector<Ordinate>::iterator a = ordinates.begin();
@@ -294,13 +331,13 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     Require(dimension==1 || mu_axis!=eta_axis);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
     
-    vector<Ordinate> ordinates = create_ordinates_(dimension,
-                                                   geometry,
-                                                   1.0,  // hardwired norm
-                                                   mu_axis,
-                                                   eta_axis,
-                                                   true, // include starting directions
-                                                   include_extra_directions);
+    vector<Ordinate> ordinates = create_ordinates(dimension,
+                                                  geometry,
+                                                  1.0,  // hardwired norm
+                                                  mu_axis,
+                                                  eta_axis,
+                                                  true, // include starting directions
+                                                  include_extra_directions);
     
     SP<Ordinate_Space> Result;
     switch (qim)
@@ -358,11 +395,11 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     Require(dimension>0 && dimension<4);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
     
-    vector<Ordinate> ordinates = create_ordinates_(dimension,
-                                                   geometry,
-                                                   1.0,  // hardwired norm
-                                                   true, // include starting directions
-                                                   include_extra_directions);
+    vector<Ordinate> ordinates = create_ordinates(dimension,
+                                                  geometry,
+                                                  1.0,  // hardwired norm
+                                                  true, // include starting directions
+                                                  include_extra_directions);
     
     SP<Ordinate_Space> Result;
     switch (qim)
@@ -390,6 +427,15 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     }
 
     return Result;
+}
+
+//---------------------------------------------------------------------------------------//
+bool Quadrature::is_open_interval() const
+{
+    // The great majority are. Lobatto and certain cases of General Octant are
+    // at present our only exceptions.
+
+    return true;
 }
 
 } // end namespace rtt_quadrature

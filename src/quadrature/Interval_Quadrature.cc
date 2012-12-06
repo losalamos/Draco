@@ -32,6 +32,13 @@ unsigned Interval_Quadrature::number_of_levels() const
 }
 
 //---------------------------------------------------------------------------------------//
+
+bool Interval_Quadrature::has_axis_assignments() const
+{
+    return false; // cannot override default assignments
+}
+
+//---------------------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate>
 Interval_Quadrature::create_ordinates_(unsigned const /*dimension*/,

@@ -83,7 +83,9 @@ class Expression
         DIFFERENCE_PRECEDENCE = SUM_PRECEDENCE,
 
         PRODUCT_PRECEDENCE,
-        QUOTIENT_PRECEDENCE = PRODUCT_PRECEDENCE,
+        QUOTIENT_PRECEDENCE, // = PRODUCT_PRECEDENCE,
+        // Quotient must have higher precedence to handle products in
+        // denominator right.
 
         NOT_PRECEDENCE,
         NEGATE_PRECEDENCE = NOT_PRECEDENCE,

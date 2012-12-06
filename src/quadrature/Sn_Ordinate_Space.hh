@@ -54,6 +54,8 @@ class Sn_Ordinate_Space : public Ordinate_Space
     bool check_class_invariants() const;
 
     // SERVICES
+    
+    virtual QIM quadrature_interpolation_model() const;
 
     //! Return the discrete to moment transform matrix
     virtual vector<double> D() const;

@@ -116,6 +116,9 @@ Lobatto::Lobatto(unsigned sn_order)
         wt_[ m ]                 = 2.0/N/(N-1)/p/p;
         wt_[ numGaussPoints-m-1] = wt_[m];
     }
+
+    Ensure(check_class_invariants());
+    Ensure(this->sn_order()==sn_order);
 }
 
 //---------------------------------------------------------------------------------------//
@@ -172,6 +175,13 @@ Lobatto::create_level_ordinates_(double const norm) const
     }
 
     return Result;
+}
+
+//---------------------------------------------------------------------------------------//
+bool Lobatto::is_open_interval() const
+{
+    // Lobatto is one of our few closed interval quadratures.
+    return false;
 }
 
 } // end namespace rtt_quadrature

@@ -934,7 +934,7 @@ class Quotient_Expression : public Expression
         {
             out << '(';
         }
-        e1_->write(QUOTIENT_PRECEDENCE, vars, out);
+        e1_->write(PRODUCT_PRECEDENCE, vars, out);
         out << "/";
         e2_->write(QUOTIENT_PRECEDENCE, vars, out);
         if (p>QUOTIENT_PRECEDENCE)

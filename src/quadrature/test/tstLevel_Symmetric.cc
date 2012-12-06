@@ -40,7 +40,10 @@ int main(int argc, char *argv[])
     try
     {
         Level_Symmetric quadrature(8); // SN order = 8
-
+        if (quadrature.sn_order()!=8)
+        {
+            ut.failure("NOT correct SN order");
+        }
         quadrature_test(ut, quadrature);
     }
     catch (std::exception &err)

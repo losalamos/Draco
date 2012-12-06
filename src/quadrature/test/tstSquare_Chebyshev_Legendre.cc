@@ -39,9 +39,18 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try
     {
-        Square_Chebyshev_Legendre quadrature(8); // SN order = 8
-
-        quadrature_test(ut, quadrature);
+        {
+            Square_Chebyshev_Legendre quadrature(8); // SN order = 8
+            if (quadrature.sn_order()!=8)
+            {
+                ut.failure("NOT correct SN order");
+            }
+            quadrature_test(ut, quadrature);
+        }
+        {
+            Square_Chebyshev_Legendre quadrature(8, 1, 2);
+            quadrature_test(ut, quadrature);
+        }
     }
     catch (std::exception &err)
     {

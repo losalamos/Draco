@@ -127,6 +127,10 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
 	ITFAILS;
 
+    // Check incompatible size
+    if (soft_equiv(reference.begin(), reference.end(), &v[1], &v[3]))
+	ITFAILS;
+
     // modify one value (delta < tolerance )
     v[1] += 1.0e-13;
     if (!soft_equiv(&v[0], v+3,
@@ -225,6 +229,12 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
     
     if (soft_equiv_deep<3>().equiv(val.begin(), val.end(),
                                    ref.begin(), ref.end()))
+        PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
+    else
+        ITFAILS;
+    
+    if (!soft_equiv_deep<3>().equiv(val.begin(), val.end(),
+                                   ref.begin()+1, ref.end()))
         PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
     else
         ITFAILS;

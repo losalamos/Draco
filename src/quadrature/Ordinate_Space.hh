@@ -15,6 +15,7 @@
 
 #include "Moment.hh"
 #include "Ordinate_Set.hh"
+#include "QIM.hh"
 
 namespace rtt_quadrature
 {
@@ -243,6 +244,9 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     bool check_class_invariants() const;
 
     // SERVICES
+
+    //! What was the quadrature interpolation model?
+    virtual QIM quadrature_interpolation_model() const = 0;
 
     //! Return the discrete to moment transform matrix
     virtual vector<double> D() const = 0;

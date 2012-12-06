@@ -41,6 +41,8 @@ class Interval_Quadrature : public Quadrature
 
     virtual Quadrature_Class quadrature_class() const;
 
+    virtual bool has_axis_assignments() const;
+
     // STATICS
 
   protected:

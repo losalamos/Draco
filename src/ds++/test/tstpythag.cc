@@ -34,6 +34,22 @@ void tstpythag( UnitTest & ut )
     {
 	ut.failure("pythag NOT correct");
     }
+    if (soft_equiv(pythag(4.0e307, 3.0e307), 5.0e307))
+    {
+	ut.passes("pythag correct");
+    }
+    else
+    {
+	ut.failure("pythag NOT correct");
+    }
+    if (soft_equiv(pythag(0.0, 0.0), 0.0))
+    {
+	ut.passes("pythag correct");
+    }
+    else
+    {
+	ut.failure("pythag NOT correct");
+    }
 }
 
 //---------------------------------------------------------------------------//

@@ -43,9 +43,19 @@ class Double_Gauss : public Interval_Quadrature
         : sn_order_(sn_order) 
     {
         Require(sn_order>0 && sn_order%2==0);
+
+        Ensure(check_class_invariants());
+        Ensure(this->sn_order()==sn_order);
     }
 
     // ACCESSORS
+
+    unsigned sn_order() const
+    {
+        return sn_order_;
+    }
+
+    // SERVICES
 
     virtual string name() const;
 

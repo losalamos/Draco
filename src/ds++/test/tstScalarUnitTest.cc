@@ -18,6 +18,7 @@
 #include <map>
 #include <cstdlib>
 #include <fstream>
+#include <cstring>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -196,6 +197,46 @@ void tstdbcsettersandgetters( UnitTest & unitTest, int argc, char *argv[] )
     return;
 }
 
+//---------------------------------------------------------------------------------------//
+void tstVersion(UnitTest &ut, char *test)
+{
+    // Check version construction
+
+    char version[strlen("--version")+1];
+    strcpy(version, "--version");
+    char *ptr1 = version;
+    char *pptr[3];
+    pptr[0] = test;
+    pptr[2] = ptr1;
+    char argument[2];
+    argument[0] = 'a';
+    char *ptr2 = argument;
+    pptr[1] = ptr2;
+    
+    int argc = 3;
+    char **argv = pptr;
+    try
+    {
+        ScalarUnitTest(argc, argv, release);
+        ut.failure("version construction NOT correct");
+    }
+    catch (assertion &err)
+    {
+        if (!strcmp(err.what(), "Success"))
+        {
+            ut.passes("version construction correct");
+        }
+        else
+        {
+            ut.failure("version construction NOT correct");
+        }
+    }
+    catch (...)
+    {
+        ut.failure("version construction NOT correct");
+    }
+}
+
 //---------------------------------------------------------------------------//
 
 int main( int argc, char *argv[] )
@@ -221,6 +262,8 @@ int main( int argc, char *argv[] )
         tstGetWordCountFile( ut );
         
         tstdbcsettersandgetters( ut, argc, argv );
+
+        tstVersion(ut, argv[0]);
     }
     catch( rtt_dsxx::assertion &err )
     {
