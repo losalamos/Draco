@@ -37,8 +37,6 @@ class Interval_Quadrature : public Quadrature
 
     // ACCESSORS
 
-    virtual unsigned number_of_levels() const;
-
     virtual Quadrature_Class quadrature_class() const;
 
     virtual bool has_axis_assignments() const;

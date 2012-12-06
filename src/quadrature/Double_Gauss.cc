@@ -38,6 +38,13 @@ string Double_Gauss::parse_name() const
 }
 
 //---------------------------------------------------------------------------------------//
+/* virtual */
+unsigned Double_Gauss::number_of_levels() const
+{
+    return sn_order_;
+}
+
+//---------------------------------------------------------------------------------------//
 /* virtual */ string Double_Gauss::as_text(string const &indent) const
 {
     string Result =

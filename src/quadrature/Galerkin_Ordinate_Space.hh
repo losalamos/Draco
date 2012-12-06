@@ -44,11 +44,13 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
 
     //! Specify the ordinate quadrature with defaults.
     Galerkin_Ordinate_Space(unsigned dimension,
-                   Geometry geometry,
-                   vector<Ordinate> const &,
-                   unsigned expansion_order,
-                   bool extra_starting_directions=false,
-                   Ordering ordering=LEVEL_ORDERED);
+                            Geometry geometry,
+                            vector<Ordinate> const &,
+                            Quadrature_Class,
+                            unsigned sn_order,
+                            unsigned expansion_order,
+                            bool extra_starting_directions=false,
+                            Ordering ordering=LEVEL_ORDERED);
 
     // MANIPULATORS
 
@@ -77,10 +79,17 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
     virtual void compute_M();
     virtual void compute_D();
     
-    virtual vector<Moment> compute_n2lk_1D_( unsigned L );
-    virtual vector<Moment> compute_n2lk_1Da_( unsigned L );
-    virtual vector<Moment> compute_n2lk_2D_( unsigned L );
-    virtual vector<Moment> compute_n2lk_3D_( unsigned L );
+    virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
+                                            unsigned sn_order);
+    
+    virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
+                                             unsigned sn_order);
+    
+    virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
+                                            unsigned sn_order);
+    
+    virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
+                                            unsigned sn_order);
 
   private:
 

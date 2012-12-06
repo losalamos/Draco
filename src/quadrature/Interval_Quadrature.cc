@@ -19,16 +19,9 @@ using namespace std;
 
 //---------------------------------------------------------------------------------------//
 /* virtual */
-Quadrature::Quadrature_Class Interval_Quadrature::quadrature_class() const
+Quadrature_Class Interval_Quadrature::quadrature_class() const
 {
     return INTERVAL_QUADRATURE;
-}
-
-//---------------------------------------------------------------------------------------//
-/* virtual */
-unsigned Interval_Quadrature::number_of_levels() const
-{
-    return 0;  // No interval quadrature is a level set quadrature.
 }
 
 //---------------------------------------------------------------------------------------//

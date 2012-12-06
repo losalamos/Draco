@@ -27,14 +27,15 @@ namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Galerkin_Ordinate_Space::compute_n2lk_1D_( unsigned const L )
+Galerkin_Ordinate_Space::compute_n2lk_1D_( Quadrature_Class,
+                                           unsigned const L )
 {
     vector< Moment > result;
 
     // Choose: l= 0, ..., L-1, k = 0
     int k(0); // k is always zero for 1D.
 
-    for( unsigned ell=0; ell<=L; ++ell )
+    for( unsigned ell=0; ell<L; ++ell )
         result.push_back( Moment(ell,k) );
 
     return result;
@@ -42,7 +43,8 @@ Galerkin_Ordinate_Space::compute_n2lk_1D_( unsigned const L )
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Galerkin_Ordinate_Space::compute_n2lk_1Da_( unsigned const L )
+Galerkin_Ordinate_Space::compute_n2lk_1Da_( Quadrature_Class,
+                                            unsigned const L )
 {
     std::vector< Moment > result;
     
@@ -56,7 +58,7 @@ Galerkin_Ordinate_Space::compute_n2lk_1Da_( unsigned const L )
                 result.push_back( Moment(ell,k) );
 
     // Add ell=N and k>0, k odd
-    int ell( L+1 );
+    int ell = L;
     for( int k=1; k<=ell; k+=2 )
         if ((ell-k)%2 == 0)
             result.push_back( Moment(ell,k) );
@@ -69,36 +71,22 @@ Galerkin_Ordinate_Space::compute_n2lk_1Da_( unsigned const L )
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 vector< Moment >
-Galerkin_Ordinate_Space::compute_n2lk_3D_(unsigned const L)
+Galerkin_Ordinate_Space::compute_n2lk_2D_( Quadrature_Class,
+                                           unsigned const L )
 {
-    vector< Moment > result;
-
-    // Choose: l= 0, ..., L-1, k = -l, ..., l
-    for( unsigned ell=0; ell<= L; ++ell )
-	for( int k = -ell; k <= static_cast<int>(ell); ++k )
+    std::vector< Moment > result;
+    
+    // Choose: l= 0, ..., N-1, k = 0, ..., l  to eliminate moments even in xi,
+    // which are identically zero by symmetry.
+    for( unsigned ell=0; ell<L; ++ell )
+	for( int k=0; k<=static_cast<int>(ell); ++k )
 	    result.push_back( Moment(ell,k) );
 
-    // Add ell=L and k<0
-    {
-	unsigned ell( L+1 );
-	for( int k(-1*static_cast<int>(ell)); k<0; ++k )
-	    result.push_back( Moment(ell,k) );
-    }
-
-    // Add ell=L, k>0, k odd
-    {
-	int ell( L+1 );
-	for( int k=1; k<=ell; k+=2 )
-	    result.push_back( Moment(ell,k) );
-    }
-
-    // Add ell=L+1 and k<0, k even
-    {
-	unsigned ell( L+2 );
-	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2 )
-	    result.push_back( Moment(ell,k) );
-    }
-
+    // Add ell=N and k>0, k odd
+    int ell = L;
+    for( int k=1; k<=ell; k+=2 )
+        result.push_back( Moment(ell,k) );
+    
     return result;
 }
 
@@ -107,21 +95,37 @@ Galerkin_Ordinate_Space::compute_n2lk_3D_(unsigned const L)
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 vector< Moment >
-Galerkin_Ordinate_Space::compute_n2lk_2D_( unsigned const L )
+Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
+                                          unsigned const L)
 {
-    std::vector< Moment > result;
-    
-    // Choose: l= 0, ..., N-1, k = 0, ..., l  to eliminate moments even in xi,
-    // which are identically zero by symmetry.
-    for( unsigned ell=0; ell<=L; ++ell )
-	for( int k=0; k<=static_cast<int>(ell); ++k )
+    vector< Moment > result;
+
+    // Choose: l= 0, ..., L-1, k = -l, ..., l
+    for( unsigned ell=0; ell<L; ++ell )
+	for( int k = -ell; k <= static_cast<int>(ell); ++k )
 	    result.push_back( Moment(ell,k) );
 
-    // Add ell=N and k>0, k odd
-    int ell( L+1 );
-    for( int k=1; k<=ell; k+=2 )
-        result.push_back( Moment(ell,k) );
-    
+    // Add ell=L and k<0
+    {
+	unsigned ell( L );
+	for( int k(-1*static_cast<int>(ell)); k<0; ++k )
+	    result.push_back( Moment(ell,k) );
+    }
+
+    // Add ell=L, k>0, k odd
+    {
+	int ell( L );
+	for( int k=1; k<=ell; k+=2 )
+	    result.push_back( Moment(ell,k) );
+    }
+
+    // Add ell=L+1 and k<0, k even
+    {
+	unsigned ell( L+1 );
+	for( int k(-1*static_cast<int>(ell)+1); k<0; k+=2 )
+	    result.push_back( Moment(ell,k) );
+    }
+
     return result;
 }
 
@@ -358,6 +362,7 @@ void Galerkin_Ordinate_Space::compute_D()
             else
                 indexes.push_back(0);
         }
+        unsigned numCartOrdinates = cartesian_ordinates.size();
 
         // And compute the operators for these ordinates only
 
@@ -373,7 +378,7 @@ void Galerkin_Ordinate_Space::compute_D()
         // Now augment the matrix and store it appropriately
 
         unsigned const numMoments = n2lk.size();
-        D.resize(numMoments*ordinates.size()); 
+        D.resize(numMoments*numOrdinates); 
         
         for( unsigned m=0; m<numOrdinates; ++m )
         {
@@ -381,7 +386,7 @@ void Galerkin_Ordinate_Space::compute_D()
             {
                 if (ordinates[m].wt() != 0)
                 {
-                    D[ m + n*numOrdinates ] = cartesian_D[indexes[m] + n*numOrdinates];
+                    D[ m + n*numOrdinates ] = cartesian_D[indexes[m] + n*numCartOrdinates];
                 }
                 else
                 {
@@ -406,6 +411,12 @@ void Galerkin_Ordinate_Space::compute_D()
  *
  * \param ordinates Set of ordinate directions
  *
+ * \param quadrature_class Class of the quadrature used to generate the
+ * ordinate set. At presente, only TRIANGLE_QUADRATURE is supported.
+ *
+ * \param sn_order Order of the quadrature. This is equal to the number of
+ * levels for triangular and square quadratures.
+ *
  * \param expansion_order Expansion order of the desired scattering moment
  * space.
  *
@@ -420,11 +431,13 @@ void Galerkin_Ordinate_Space::compute_D()
  */
 
 Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
-                                Geometry const  geometry,
-                                vector<Ordinate> const &ordinates,
-                                unsigned const  expansion_order,
-                                bool const  extra_starting_directions,
-                                Ordering const ordering)
+                                                  Geometry const  geometry,
+                                                  vector<Ordinate> const &ordinates,
+                                                  Quadrature_Class quadrature_class,
+                                                  unsigned sn_order,
+                                                  unsigned const  expansion_order,
+                                                  bool const  extra_starting_directions,
+                                                  Ordering const ordering)
     : Ordinate_Space(dimension,
                          geometry,
                          ordinates,
@@ -434,8 +447,12 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
 {
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);
+    Require(expansion_order<=sn_order);  // May be relaxed in the future
+    Require(quadrature_class == TRIANGLE_QUADRATURE || dimension==1);
+    Require(sn_order>0 && sn_order%2==0);
 
-    compute_moments_(expansion_order);
+    compute_moments_(quadrature_class,
+                     sn_order);
 
     Ensure(check_class_invariants());
 }

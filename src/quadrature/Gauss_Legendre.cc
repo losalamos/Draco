@@ -38,6 +38,13 @@ string Gauss_Legendre::parse_name() const
 }
 
 //---------------------------------------------------------------------------------------//
+/* virtual */
+unsigned Gauss_Legendre::number_of_levels() const
+{
+    return sn_order_;
+}
+
+//---------------------------------------------------------------------------------------//
 /* virtual */ string Gauss_Legendre::as_text(string const &indent) const
 {
     string Result =

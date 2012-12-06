@@ -31,7 +31,7 @@ string Square_Chebyshev_Legendre::name() const { return "Square Chebyshev Legend
 string Square_Chebyshev_Legendre::parse_name()  const { return "square cl"; }
         
 //---------------------------------------------------------------------------------------//
-Quadrature::Quadrature_Class Square_Chebyshev_Legendre::quadrature_class() const
+Quadrature_Class Square_Chebyshev_Legendre::quadrature_class() const
 {
     return SQUARE_QUADRATURE;
 }

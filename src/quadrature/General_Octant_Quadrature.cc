@@ -89,7 +89,7 @@ string General_Octant_Quadrature::parse_name()  const
 { return "general octant quadrature"; }
         
 //---------------------------------------------------------------------------------------//
-Quadrature::Quadrature_Class General_Octant_Quadrature::quadrature_class() const
+Quadrature_Class General_Octant_Quadrature::quadrature_class() const
 {
     return quadrature_class_;
 }

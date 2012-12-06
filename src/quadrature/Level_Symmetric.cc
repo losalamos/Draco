@@ -32,7 +32,7 @@ string Level_Symmetric::name() const { return "Level Symmetric"; }
 string Level_Symmetric::parse_name()  const { return "level symmetric"; }
         
 //---------------------------------------------------------------------------------------//
-Quadrature::Quadrature_Class Level_Symmetric::quadrature_class() const
+Quadrature_Class Level_Symmetric::quadrature_class() const
 {
     return TRIANGLE_QUADRATURE;
 }

@@ -74,10 +74,17 @@ class Sn_Ordinate_Space : public Ordinate_Space
     virtual void compute_M();
     virtual void compute_D();
     
-    virtual vector<Moment> compute_n2lk_1D_( unsigned L );
-    virtual vector<Moment> compute_n2lk_1Da_( unsigned L );
-    virtual vector<Moment> compute_n2lk_2D_( unsigned L );
-    virtual vector<Moment> compute_n2lk_3D_( unsigned L );
+    virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
+                                            unsigned sn_order);
+    
+    virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
+                                             unsigned sn_order);
+    
+    virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
+                                            unsigned sn_order);
+    
+    virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
+                                            unsigned sn_order);
 
   private:
 

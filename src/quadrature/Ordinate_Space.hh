@@ -16,6 +16,7 @@
 #include "Moment.hh"
 #include "Ordinate_Set.hh"
 #include "QIM.hh"
+#include "Quadrature_Class.hh"
 
 namespace rtt_quadrature
 {
@@ -266,17 +267,26 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     // IMPLEMENTATION
 
-    void compute_moments_(unsigned expansion_order);
+    void compute_moments_(Quadrature_Class,
+                          unsigned sn_order);
 
-    vector<Moment> compute_n2lk_(unsigned L);
+    vector<Moment> compute_n2lk_(Quadrature_Class,
+                                 unsigned sn_order);
 
     virtual void compute_M() = 0;
     virtual void compute_D() = 0;
     
-    virtual vector<Moment> compute_n2lk_1D_( unsigned L ) = 0;
-    virtual vector<Moment> compute_n2lk_1Da_( unsigned L ) = 0;
-    virtual vector<Moment> compute_n2lk_2D_( unsigned L ) = 0;
-    virtual vector<Moment> compute_n2lk_3D_( unsigned L ) = 0;
+    virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
+                                            unsigned sn_order) = 0;
+    
+    virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
+                                             unsigned sn_order) = 0;
+    
+    virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
+                                            unsigned sn_order) = 0;
+    
+    virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
+                                            unsigned sn_order) = 0;
     
   private:
 

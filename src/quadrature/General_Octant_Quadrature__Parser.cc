@@ -43,18 +43,18 @@ SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
 
     token = tokens.lookahead();
 
-    Quadrature::Quadrature_Class quadrature_class = Quadrature::OCTANT_QUADRATURE;
+    Quadrature_Class quadrature_class = OCTANT_QUADRATURE;
     if (token.text()=="quadrature class")
     {
         tokens.shift();
         token = tokens.shift();
         if (token.text()=="triangle")
         {
-            quadrature_class = Quadrature::TRIANGLE_QUADRATURE;
+            quadrature_class = TRIANGLE_QUADRATURE;
         }
         else if (token.text()=="square")
         {
-            quadrature_class = Quadrature::SQUARE_QUADRATURE;
+            quadrature_class = SQUARE_QUADRATURE;
         }
         else
         {

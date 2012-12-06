@@ -61,6 +61,8 @@ class Double_Gauss : public Interval_Quadrature
 
     virtual string parse_name() const;
 
+    virtual unsigned number_of_levels() const;
+
     virtual string as_text(string const &indent) const;
 
     bool check_class_invariants() const;

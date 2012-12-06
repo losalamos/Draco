@@ -20,6 +20,7 @@
 #include "parser/Token_Stream.hh"
 #include "Ordinate_Space.hh"
 #include "QIM.hh"
+#include "Quadrature_Class.hh"
 
 namespace rtt_quadrature
 {
@@ -65,17 +66,6 @@ class Quadrature
   public:
 
     // ENUMERATIONS AND TYPEDEFS
-
-    enum Quadrature_Class
-    {
-        INTERVAL_QUADRATURE,  //!< 1-D quadratures
-
-        TRIANGLE_QUADRATURE,  //!< 3-D triangular quadrature
-        SQUARE_QUADRATURE,    //!< 3-D square quadrature
-        OCTANT_QUADRATURE,    //!< 3-D octant quadrature, not triangular nor square
-
-        END_QUADRATURE
-    };
 
     // CREATORS
 

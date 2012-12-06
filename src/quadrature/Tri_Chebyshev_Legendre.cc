@@ -31,7 +31,7 @@ string Tri_Chebyshev_Legendre::name() const { return "Tri Chebyshev Legendre"; }
 string Tri_Chebyshev_Legendre::parse_name()  const { return "tri cl"; }
     
 //---------------------------------------------------------------------------------------//
-Quadrature::Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const
+Quadrature_Class Tri_Chebyshev_Legendre::quadrature_class() const
 {
     return TRIANGLE_QUADRATURE;
 }

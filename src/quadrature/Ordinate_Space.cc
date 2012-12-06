@@ -299,26 +299,31 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
 }
 
 //---------------------------------------------------------------------------------------//
-vector<Moment> Ordinate_Space::compute_n2lk_(unsigned const L)
+vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
+                                             unsigned const sn_order)
 {
     unsigned const dim = dimension();
     Geometry const geometry = this->geometry();
     
     if( dim == 3 )
     {
-        return compute_n2lk_3D_(L);
+        return compute_n2lk_3D_(quadrature_class,
+                                sn_order);
     }
     else if( dim == 2)
     {
-        return compute_n2lk_2D_(L);
+        return compute_n2lk_2D_(quadrature_class,
+                                sn_order);
     }
     else
     {
         Check( dim == 1 );
         if (geometry == rtt_mesh_element::AXISYMMETRIC)
-            return compute_n2lk_1Da_(L);
+            return compute_n2lk_1Da_(quadrature_class,
+                                     sn_order);
         else
-            return compute_n2lk_1D_(L);
+            return compute_n2lk_1D_(quadrature_class,
+                                    sn_order);
     }
 }
 
@@ -330,16 +335,20 @@ vector<Moment> Ordinate_Space::compute_n2lk_(unsigned const L)
  * class that are not set up until the child class is constructed.
  */
 
-void Ordinate_Space::compute_moments_(unsigned const L)
+void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
+                                      unsigned const sn_order)
 {
-    moments_ = compute_n2lk_(L);
+    unsigned const Lmax = expansion_order_;
+    
+    moments_ = compute_n2lk_(quadrature_class,
+                             sn_order);
             
-    moments_per_order_.resize(L+1, 0U);
+    moments_per_order_.resize(Lmax+1, 0U);
     number_of_moments_ = 0;
     for(unsigned n=0; n<moments_.size(); ++n)
     {
         unsigned const l = moments_[n].L();
-        if (l<L+1)
+        if (l<=Lmax)
         {
             moments_per_order_[l] += 1;
             number_of_moments_++;

@@ -27,9 +27,12 @@ namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Sn_Ordinate_Space::compute_n2lk_1D_( unsigned const L )
+Sn_Ordinate_Space::compute_n2lk_1D_( Quadrature_Class,
+                                     unsigned )
 {
     vector< Moment > result;
+
+    unsigned const L = expansion_order();
 
     // Choose: l= 0, ..., L-1, k = 0
     int k(0); // k is always zero for 1D.
@@ -42,9 +45,12 @@ Sn_Ordinate_Space::compute_n2lk_1D_( unsigned const L )
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Sn_Ordinate_Space::compute_n2lk_1Da_( unsigned const L )
+Sn_Ordinate_Space::compute_n2lk_1Da_( Quadrature_Class,
+                                      unsigned )
 {
     vector< Moment > result;
+
+    unsigned const L = expansion_order();
 
     // Choose: l= 0, ..., N, k = 0, ..., l
     for( int ell=0; ell<=static_cast<int>(L); ++ell )
@@ -57,9 +63,12 @@ Sn_Ordinate_Space::compute_n2lk_1Da_( unsigned const L )
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Sn_Ordinate_Space::compute_n2lk_2D_( unsigned const L )
+Sn_Ordinate_Space::compute_n2lk_2D_( Quadrature_Class,
+                                     unsigned )
 {
     vector< Moment > result;
+
+    unsigned const L = expansion_order();
 
     // Choose: l= 0, ..., N, k = 0, ..., l
     for( int ell=0; ell<=static_cast<int>(L); ++ell )
@@ -71,9 +80,12 @@ Sn_Ordinate_Space::compute_n2lk_2D_( unsigned const L )
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Sn_Ordinate_Space::compute_n2lk_3D_( unsigned const L )
+Sn_Ordinate_Space::compute_n2lk_3D_( Quadrature_Class,
+                                     unsigned )
 {
     vector< Moment > result;
+
+    unsigned const L = expansion_order();
 
     // Choose: l= 0, ..., L, k = -l, ..., l
     for( int ell=0; ell<=static_cast<int>(L); ++ell )
@@ -208,7 +220,8 @@ Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);
 
-    compute_moments_(expansion_order);
+    compute_moments_(END_QUADRATURE,   // not used by Sn
+                     expansion_order); // also not actually used
 
     Ensure(check_class_invariants());
 }

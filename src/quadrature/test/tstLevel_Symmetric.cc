@@ -39,12 +39,17 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try
     {
-        Level_Symmetric quadrature(8); // SN order = 8
-        if (quadrature.sn_order()!=8)
+        for (unsigned N=2; N<18; N+=2)
+            // Pathological in curvilinear geometry at N>=18
         {
-            ut.failure("NOT correct SN order");
+            cout << "Order " << N << ':' << endl;
+            Level_Symmetric quadrature(N);
+            if (quadrature.sn_order()!=N)
+            {
+                ut.failure("NOT correct SN order");
+            }
+            quadrature_test(ut, quadrature);
         }
-        quadrature_test(ut, quadrature);
     }
     catch (std::exception &err)
     {

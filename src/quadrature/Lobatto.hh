@@ -52,6 +52,8 @@ class Lobatto : public Interval_Quadrature
 
     virtual string parse_name() const;
 
+    virtual unsigned number_of_levels() const;
+
     virtual string as_text(string const &indent) const;
 
     virtual bool is_open_interval() const;

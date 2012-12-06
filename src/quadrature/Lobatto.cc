@@ -136,6 +136,13 @@ string Lobatto::parse_name() const
 }
 
 //---------------------------------------------------------------------------------------//
+/* virtual */
+unsigned Lobatto::number_of_levels() const
+{
+    return sn_order_;
+}
+
+//---------------------------------------------------------------------------------------//
 /* virtual */ string Lobatto::as_text(string const &indent) const
 {
     string Result =

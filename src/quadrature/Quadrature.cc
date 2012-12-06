@@ -355,6 +355,8 @@ Quadrature::create_ordinate_space(unsigned const dimension,
             Result = new Galerkin_Ordinate_Space(dimension,
                                                  geometry,
                                                  ordinates,
+                                                 quadrature_class(),
+                                                 number_of_levels(),
                                                  moment_expansion_order,
                                                  include_extra_directions,
                                                  ordering);
@@ -405,22 +407,24 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     switch (qim)
     {
         case SN:
-           Result = new Sn_Ordinate_Space(dimension,
-                                              geometry,
-                                              ordinates,
-                                              moment_expansion_order,
-                                              include_extra_directions,
-                                              ordering);
-           break;
+            Result = new Sn_Ordinate_Space(dimension,
+                                           geometry,
+                                           ordinates,
+                                           moment_expansion_order,
+                                           include_extra_directions,
+                                           ordering);
+            break;
 
         case GQ:
-           Result = new Galerkin_Ordinate_Space(dimension,
-                                                    geometry,
-                                                    ordinates,
-                                                    moment_expansion_order,
-                                                    include_extra_directions,
-                                                    ordering);
-           break;
+            Result = new Galerkin_Ordinate_Space(dimension,
+                                                 geometry,
+                                                 ordinates,
+                                                 quadrature_class(),
+                                                 number_of_levels(),
+                                                 moment_expansion_order,
+                                                 include_extra_directions,
+                                                 ordering);
+            break;
 
         default:
             Insist(false, "bad case");

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
                                              xi,
                                              wt,
                                              2,
-                                             Quadrature::TRIANGLE_QUADRATURE);
+                                             TRIANGLE_QUADRATURE);
 
         quadrature_test(ut, quadrature);
     }
