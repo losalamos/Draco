@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: General_Octant_Quadrature.cc 6718 2012-08-30 20:03:01Z warsa $
@@ -54,7 +55,7 @@ General_Octant_Quadrature(vector<double> const &mu,
             2*number_of_levels*number_of_levels == 8*mu.size());
 
     is_open_interval_ =
-        soft_equiv(*min_element(xi.begin(), xi.end()), -1.0);
+        soft_equiv(*std::min_element(xi.begin(), xi.end()), -1.0);
 
     Ensure(check_class_invariants());
     Ensure(this->mu()==mu);
