@@ -4,28 +4,29 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
- * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Release.hh"
-#include "../global.hh"
-#include "../SpinLock.hh"
+#include "../ParallelUnitTest.hh"
 #include "../Timer.hh"
-#include "c4_test.hh"
+#include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <iostream>
-#include <vector>
-#include <cmath>
 #include <sstream>
+
+// helper macros.
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void wall_clock_test()
+void wall_clock_test( rtt_dsxx::UnitTest &ut )
 {
     using std::endl;
     using std::cout;
@@ -190,16 +191,27 @@ void wall_clock_test()
 
     t.print( cout, 6 );
 
+    // Test the single line printout
+    if( rtt_c4::node() == 0 )
+    {
+        std::ostringstream timingsingleline;
+        t.printline( timingsingleline, 4, 8 );
+        // std::cout << "\"" <<  timingsingleline.str() << "\"" << std::endl;
+        if( timingsingleline.str().length() == 26 )
+            PASSMSG( "printline() returned a single line of the expected length." );
+        else
+            FAILMSG( "printline() did not return a line of the expected length." );
+    }
+    
     //------------------------------------------------------//
     // Check the number of intervals
     //------------------------------------------------------//
 
     int const expectedNumberOfIntervals(2);
     if( t.intervals() == expectedNumberOfIntervals )
-        PASSMSG("Found the expected number of intervals.")
+        PASSMSG("Found the expected number of intervals.");
     else
-        FAILMSG("Did not find the expected number of intervals.")
-                
+        FAILMSG("Did not find the expected number of intervals.");
           
     //------------------------------------------------------//
     // Check the merge method
@@ -215,9 +227,36 @@ void wall_clock_test()
         2*old_system_time==t.sum_system_cpu() &&
         2*old_user_time==t.sum_user_cpu() &&
         2*old_intervals==t.intervals())
-        PASSMSG("merge okay")
+        PASSMSG("merge okay");
     else
-        FAILMSG("merge NOT okay")
+        FAILMSG("merge NOT okay");
+
+    //------------------------------------------------------------//
+    // Check PAPI data
+    //------------------------------------------------------------//
+
+    long long cachemisses = t.sum_L2_cache_misses();
+    long long cachehits   = t.sum_L2_cache_hits();
+    long long flops       = t.sum_floating_operations();
+
+#ifdef HAVE_PAPI
+    
+    std::cout << "PAPI metrics report:\n"
+              << "   Cache misses : " << cachemisses << "\n"
+              << "   Cache hits   : " << cachehits << "\n"
+              << "   FLOP         : " s<< flops << std::endl;
+
+    if( cachemisses == 0 && cachehits == 0  && flops == 0 )
+        FAILMSG( "PAPI metrics returned 0 when PAPI was available.");
+    else
+        PASSMSG( "PAPI metrics returned >0 values when PAPI is available.");
+    
+#else
+    if( cachemisses == 0 && cachehits == 0  && flops == 0 )
+        PASSMSG( "PAPI metrics return 0 when PAPI is not available.");
+    else
+        FAILMSG( "PAPI metrics did not return 0 when PAPI was not available.");
+#endif
     
     return;
 }
@@ -226,56 +265,25 @@ void wall_clock_test()
 
 int main( int argc, char *argv[] )
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-    
-    rtt_c4::initialize( argc, argv );
-
-    // version tag
-    if( rtt_c4::node() == 0 )
-        cout << argv[0] << ": version " << rtt_dsxx::release() 
-             << endl;
-
-    for( int arg = 1; arg < argc; arg++ )
-	if( string( argv[arg] ) == "--version" )
-	{
-	    rtt_c4::finalize();
-	    return 0;
-	}
-
-//---------------------------------------------------------------------------//
-// UNIT TESTS
-//---------------------------------------------------------------------------//
-    try 
-    { 		
-	wall_clock_test();
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
+    try
+    {   // UNIT TESTS
+      	wall_clock_test(ut);
     }
-    catch( rtt_dsxx::assertion &assert )
+    catch (std::exception &err)
     {
-	cout << "While testing tstTime, " << assert.what()
-	     << endl;
-	rtt_c4::abort();
-	return 1;
+        std::cout << "ERROR: While testing tstTime, " 
+                  << err.what() << std::endl;
+        ut.numFails++;
     }
-
-//---------------------------------------------------------------------------//
-// Print status of test
-//---------------------------------------------------------------------------//
+    catch( ... )
     {
-	// status of test
-	cout <<   "\n*********************************************\n";
-	if( rtt_c4_test::passed )
-	    cout << "**** tstTime Test: PASSED on " << rtt_c4::node() << endl;
-        else
-            cout << "**** tstTime Test: FAILED on " << rtt_c4::node() << endl;
-	cout <<     "*********************************************\n" << endl;
+        std::cout << "ERROR: While testing tstTime, " 
+                  << "An unknown exception was thrown."
+                  << std::endl;
+        ut.numFails++;
     }
-
-    rtt_c4::global_barrier();
-    cout << "Done testing tstTime on " << rtt_c4::node() << endl;
-    rtt_c4::finalize();
-    return 0;
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

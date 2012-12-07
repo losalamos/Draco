@@ -4,25 +4,25 @@
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <sstream>
+#include "../C4_Traits.hh"
+#include "../global.hh"
+#include "../SpinLock.hh"
+#include "../ParallelUnitTest.hh"
 
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-#include "c4_test.hh"
-#include "../C4_Traits.hh"
 #include "ds++/Release.hh"
-#include "../global.hh"
-#include "../SpinLock.hh"
+
+#include <iostream>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -31,11 +31,15 @@ using rtt_c4::C4_Traits;
 using rtt_c4::broadcast;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_simple()
+void test_simple( rtt_dsxx::UnitTest &ut )
 {
     using std::vector;
     
@@ -76,22 +80,26 @@ void test_simple()
     
     rtt_c4::global_barrier();
 
-    if (rtt_c4_test::passed)
+    if( ut.numFails == 0 )
     {
 	ostringstream m;
 	m << "test_simple() ok on " << rtt_c4::node();
 	PASSMSG(m.str());
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 //  By adjusting the parameters below, this test will overflow the MPI memory
 //  buffers.  Read the comments below if you'd like to do this.
-void test_loop()
+void test_loop( rtt_dsxx::UnitTest &ut )
 {
+    // save state
+    unsigned const nf (ut.numFails);
+    
     // >>> kmax controls how much data is broadcast.  If kmax is too big
     // >>> (like 10000000), shmem will fail.
-    const int kmax = 10;
+    int const kmax = 10;
     
     if (rtt_c4::node() == 0) // host proc
     {
@@ -124,65 +132,39 @@ void test_loop()
 	}
     }
 
-    if (rtt_c4_test::passed)
+    if( ut.numFails == nf )
     {
 	ostringstream m;
 	m << "test_loop() ok on " << rtt_c4::node();
 	PASSMSG(m.str());
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " << rtt_dsxx::release()
-		     << endl;
-	    rtt_c4::finalize();
-	    return 0;
-	}
-
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-	// >>> UNIT TESTS
-	test_simple();
-	test_loop();
+        // Unit tests
+        test_simple(ut);
+        test_loop(  ut);
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (std::exception &err)
     {
-	cout << "While testing tstBroadcast, " << ass.what()
-	     << endl;
-	rtt_c4::abort();
-	return 1;
+        std::cout << "ERROR: While testing tstBroadcast, " 
+                  << err.what() << std::endl;
+        ut.numFails++;
     }
-
+    catch( ... )
     {
-	rtt_c4::HTSyncSpinLock slock;
-
-	// status of test
-	cout << endl;
-	cout <<     "*********************************************" << endl;
-	if (rtt_c4_test::passed) 
-	{
-	    cout << "**** tstBroadcast Test: PASSED on " 
-		 << rtt_c4::node() << endl;
-	}
-	cout <<     "*********************************************" << endl;
-	cout << endl;
+        std::cout << "ERROR: While testing tstBroadcast, " 
+                  << "An unknown exception was thrown." << std::endl;
+        ut.numFails++;
     }
-    
-    rtt_c4::global_barrier();
-
-    cout << "Done testing tstBroadcast on " << rtt_c4::node() << endl;
-    
-    rtt_c4::finalize();
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

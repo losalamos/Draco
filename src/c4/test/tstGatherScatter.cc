@@ -4,20 +4,17 @@
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test c4::gather and c4::scatter functions
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "../ParallelUnitTest.hh"
-#include "../global.hh"
 #include "../gatherv.hh"
 #include "../scatterv.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
-#include <iostream>
-#include <vector>
 #include <cmath>
 
 using namespace std;
@@ -41,58 +38,47 @@ void tstDeterminateGatherScatter(UnitTest &ut)
     gather(&pid, &pids[0], 1);
 
     if (pid == 0)
-    {
         for (unsigned i=1; i<number_of_processors; ++i)
-        {
             pids[i] += pids[i-1];
-        }
-    }
 
     unsigned base;
     scatter(&pids[0], &base, 1);
 
     if (base == pid*(pid+1)/2)
-    {
-        ut.passes("correct base summation in gather/scatter");
-    }
+        PASSMSG("correct base summation in gather/scatter");
     else
-    {
-        ut.failure("NOT correct base summation in gather/scatter");
-    }
+        FAILMSG("NOT correct base summation in gather/scatter");
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
-void tstIndeterminateGatherScatterv(UnitTest &ut)
+void tstIndeterminateGatherScatterv( UnitTest &ut )
 {
-    unsigned pid = node();
+    unsigned const pid = node();
     unsigned const number_of_processors = nodes();
-    vector<unsigned> send(pid, pid);
+    
+    vector<unsigned>          send(pid, pid);
     vector<vector<unsigned> > receive;
+
     indeterminate_gatherv(send, receive);
+    PASSMSG("No exception thrown");
 
-    ut.passes("No exception thrown");
-
-    if (pid==0)
+    if( pid==0 )
     {
         if (receive.size() == number_of_processors)
-        {
-            ut.passes("correct number of processors in gatherv");
-        }
+            PASSMSG("correct number of processors in gatherv");
         else
-        {
-            ut.failure("NOT correct number of processors in gatherv");
-        }
+            FAILMSG("NOT correct number of processors in gatherv");
         for (unsigned p=0; p<number_of_processors; ++p)
         {
             if (receive[p].size() != p)
             {
-                ut.failure("NOT correct number of elements in gatherv");
+                FAILMSG("NOT correct number of elements in gatherv");
                 for (unsigned i=0; i<p; ++i)
                 {
                     if (receive[p][i] != p)
-                    {
-                        ut.failure("NOT correct values in gatherv");
-                    }
+                        FAILMSG("NOT correct values in gatherv");
                 }
             }
             // Prepare for next test
@@ -104,20 +90,35 @@ void tstIndeterminateGatherScatterv(UnitTest &ut)
     indeterminate_scatterv(receive, send);
 
     if (send.size() == 2*pid)
-    {
-        ut.passes("correct number of processors in scatterv");
-    }
+        PASSMSG("correct number of processors in scatterv");
     else
-    {
-        ut.failure("NOT correct number of processors in scatterv");
-    }
+        FAILMSG("NOT correct number of processors in scatterv");
     for (unsigned i=0; i<2*pid; ++i)
     {
         if (send[i] != 3*pid)
-        {
-            ut.failure("NOT correct values in scatterv");
-        }
+            FAILMSG("NOT correct values in scatterv");
     }
+
+    // Test with empty container
+    {
+        vector<unsigned>          emptysend;
+        vector<vector<unsigned> > emptyreceive;
+
+        indeterminate_gatherv(emptysend, emptyreceive);
+        PASSMSG("No exception thrown for indeterminate_gatherv with empty containers.");
+
+        if( emptysend.size() !=0 )                        ITFAILS;
+        if( emptyreceive.size() != number_of_processors ) ITFAILS;
+        if( emptyreceive[pid].size() != 0 )               ITFAILS;
+
+        indeterminate_scatterv( emptyreceive, emptysend );
+
+        if( emptysend.size() !=0 )                        ITFAILS;
+        if( emptyreceive.size() != number_of_processors ) ITFAILS;
+        if( emptyreceive[pid].size() != 0 )               ITFAILS;
+    }
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -133,29 +134,23 @@ void tstDeterminateGatherScatterv(UnitTest &ut)
     }
     determinate_gatherv(send, receive);
 
-    ut.passes("No exception thrown");
+    PASSMSG("No exception thrown");
 
     if (pid==0)
     {
         if (receive.size() == number_of_processors)
-        {
-            ut.passes("correct number of processors in gatherv");
-        }
+            PASSMSG("correct number of processors in gatherv");
         else
-        {
-            ut.failure("NOT correct number of processors in gatherv");
-        }
+            FAILMSG("NOT correct number of processors in gatherv");
         for (unsigned p=0; p<number_of_processors; ++p)
         {
             if (receive[p].size() != p)
             {
-                ut.failure("NOT correct number of elements in gatherv");
+                FAILMSG("NOT correct number of elements in gatherv");
                 for (unsigned i=0; i<p; ++i)
                 {
                     if (receive[p][i] != p)
-                    {
-                        ut.failure("NOT correct values in gatherv");
-                    }
+                        FAILMSG("NOT correct values in gatherv");
                 }
             }
             // Prepare for next test
@@ -166,24 +161,21 @@ void tstDeterminateGatherScatterv(UnitTest &ut)
 
     send.resize(2*pid);
 
-    indeterminate_scatterv(receive, send);
+    // indeterminate_scatterv(receive, send);
+    determinate_scatterv(receive, send);
 
     if (send.size() == 2*pid)
-    {
-        ut.passes("correct number of processors in scatterv");
-    }
+        PASSMSG("correct number of processors in scatterv");
     else
-    {
-        ut.failure("NOT correct number of processors in scatterv");
-    }
+        FAILMSG("NOT correct number of processors in scatterv");
     for (unsigned i=0; i<2*pid; ++i)
     {
         if (send[i] != 3*pid)
-        {
-            ut.failure("NOT correct values in scatterv");
-        }
+            FAILMSG("NOT correct values in scatterv");
     }
+    return;
 }
+
 //---------------------------------------------------------------------------//
 
 void topology_report(UnitTest &ut)
@@ -260,7 +252,7 @@ void topology_report(UnitTest &ut)
         std::cout << std::endl;        
         
     }
-        
+    return;        
 }
 
 //---------------------------------------------------------------------------//
@@ -278,8 +270,7 @@ int main(int argc, char *argv[])
     catch (std::exception &err)
     {
         std::cout << "ERROR: While testing tstGatherScatter, " 
-                  << err.what()
-                  << endl;
+                  << err.what() << endl;
         ut.numFails++;
     }
     catch( ... )

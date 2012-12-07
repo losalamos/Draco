@@ -426,10 +426,13 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
+        std::cout << "This is " << rtt_c4::processor_name() << std::endl;        
+
         blocking_ping_pong();
         non_blocking_ping_pong();
         probe_ping_pong();
-        tstC4_Req_free();        
+        tstC4_Req_free();
+
     }
     catch (rtt_dsxx::assertion &error)
     {

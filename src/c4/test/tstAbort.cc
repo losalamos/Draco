@@ -4,22 +4,18 @@
  * \author Thomas M. Evans
  * \date   Thu Jun  2 09:28:02 2005
  * \brief  C4 Abort test.
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2012 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
-#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
-#include "c4_test.hh"
+#include "ds++/Assert.hh"
+#include "ds++/Release.hh"
+#include <iostream>
 
 using namespace std;
 
@@ -39,6 +35,7 @@ void abort_test()
         cout << "Aborting from processor 0" << endl;
         rtt_c4::abort();
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -74,12 +71,9 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 	std::cout <<     "*********************************************" 
                   << std::endl;
-	if (rtt_c4_test::passed) 
-	{
-	    std::cout << "**** tstAbort Test: PASSED on " 
-                      << rtt_c4::node() 
-                      << std::endl;
-	}
+        std::cout << "**** tstAbort Test: PASSED on " 
+                  << rtt_c4::node() 
+                  << std::endl;
 	std::cout <<     "*********************************************" 
                   << std::endl;
 	std::cout << std::endl;
@@ -102,5 +96,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAbort.cc
+// end of tstAbort.cc
 //---------------------------------------------------------------------------//

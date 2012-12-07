@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI determinate and indeterminate scatterv instantiations.
+ * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,24 +25,23 @@ using std::vector;
 //---------------------------------------------------------------------------//
 
 template
-void indeterminate_scatterv(vector<std::vector<unsigned> > &outgoing_data,
-                            vector<unsigned> &incoming_data);
+void indeterminate_scatterv( vector<vector<unsigned> > &outgoing_data,
+                             vector<unsigned>          &incoming_data );
 
 template
-void determinate_scatterv(vector<std::vector<unsigned> > &outgoing_data,
-                          vector<unsigned> &incoming_data);
+void determinate_scatterv( vector<vector<unsigned> > &outgoing_data,
+                           vector<unsigned>          &incoming_data);
 
 template
-void determinate_scatterv(vector<std::vector<int> > &outgoing_data,
-                          vector<int> &incoming_data);
+void determinate_scatterv( vector<vector<int> > &outgoing_data,
+                           vector<int>          &incoming_data);
 
 template
-void determinate_scatterv(vector<std::vector<double> > &outgoing_data,
-                          vector<double> &incoming_data);
+void determinate_scatterv( vector<vector<double> > &outgoing_data,
+                           vector<double>          &incoming_data);
 
 } // end namespace rtt_c4
 
-
 //---------------------------------------------------------------------------//
-//                              end of C4_MPI_scatterv_pt.cc
+// end of C4_MPI_scatterv_pt.cc
 //---------------------------------------------------------------------------//

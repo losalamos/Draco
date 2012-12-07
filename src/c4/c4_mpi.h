@@ -1,9 +1,14 @@
 /*-----------------------------------*-C-*-----------------------------------*/
-/* c4_mpi.h */
-/* Thomas M. Evans */
-/* Fri Jan  8 15:06:30 1999 */
+/*!
+ * \file   c4_mpi.h 
+ * \author Thomas M. Evans 
+ * \date   Fri Jan  8 15:06:30 1999
+ * \brief  put the right includes for MPI header files
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
 /*---------------------------------------------------------------------------*/
-/* @> put the right includes for MPI header files                            */
+/* $Id$ */
 /*---------------------------------------------------------------------------*/
 
 #ifndef rtt_c4_c4_mpi_h

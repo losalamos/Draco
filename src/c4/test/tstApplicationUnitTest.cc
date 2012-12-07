@@ -4,15 +4,15 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Test the Draco class ApplicationUnitTest
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Release.hh"
 #include "../ApplicationUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/path.hh"
 #include <iostream>
 #include <sstream>
@@ -60,6 +60,12 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
         unitTest.failure( msg2.str() );
     }
     cout << endl;
+
+    std::cout << "Should we report timings? ";
+    if( unitTest.reportTimingsI() ) std::cout << "yes";
+    else std::cout << "no";
+    std::cout << std::endl;
+    
     return;
 }
 

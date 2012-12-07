@@ -3,7 +3,8 @@
  * \file   c4/Processor_Group.hh
  * \author Kent Budge
  * \brief  Definition of class Processor_Group
- * \note   Copyright (C) 2006-2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,10 +14,11 @@
 #define c4_Processor_Group_hh
 
 #include "c4/config.h"
+
 #ifdef C4_MPI
 
-#include <vector>
 #include "c4_mpi.h"
+#include <vector>
 
 namespace rtt_c4
 {

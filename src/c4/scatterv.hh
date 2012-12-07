@@ -28,7 +28,7 @@ namespace rtt_c4
  * This subroutine handles the case where the lengths of each processor's
  * message are known in advance.
  *
- * \param outgoing_data Data to be send from root processor. Ignored on any
+ * \param outgoing_data Data to be sent from root processor. Ignored on any
  * processor but the root processor.
  *
  * \param incoming_data On entry, the size of each subarray must be set to the
@@ -46,7 +46,7 @@ void determinate_scatterv(std::vector<std::vector<T> > &outgoing_data,
  * This subroutine handles the case where the lengths of each processor's
  * message are not known in advance.
  *
- * \param outgoing_data Data to be send from root processor. Ignored on all
+ * \param outgoing_data Data to be sent from root processor. Ignored on all
  * other processors.
  *
  * \param incoming_data On return, contains the scattered data.

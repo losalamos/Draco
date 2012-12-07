@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
+ * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -127,6 +129,7 @@ void send_is(C4_Req  &request,
   
   return;
 }
+
 //---------------------------------------------------------------------------//
 
 template<class T>

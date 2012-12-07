@@ -60,12 +60,22 @@ void indeterminate_scatterv(vector<vector<T> >  &outgoing_data,
                      sendbuf.begin()+displs[p]);
             }
             if( total_count > 0 )
-                rtt_c4::scatterv(
-                    (sendbuf.size()>0 ? &sendbuf[0]: NULL),
-                    (counts.size() >0 ? &counts[0] : NULL),
-                    (displs.size() >0 ? &displs[0] : NULL),
-                    (incoming_data.size()>0?&incoming_data[0]:NULL),
-                    count);
+            {
+                // if we get here, then the sendbuf must have data.
+                // rtt_c4::scatterv(
+                //     (sendbuf.size()>0 ? &sendbuf[0]: NULL),
+                //     (counts.size() >0 ? &counts[0] : NULL),
+                //     (displs.size() >0 ? &displs[0] : NULL),
+                //     (incoming_data.size()>0?&incoming_data[0]:NULL),
+                //     count);
+                Check( sendbuf.size()>0 );
+                Check( counts.size() >0 );
+                Check( displs.size() >0 );
+                // Check( incoming_data.size()>0 );
+                Check( incoming_data.size()==0 );
+                rtt_c4::scatterv( &sendbuf[0], &counts[0], &displs[0],
+                                  &incoming_data[0], count);
+            }
         }
         else
         {
@@ -95,7 +105,7 @@ template<class T>
 void determinate_scatterv(vector<vector<T> >  &outgoing_data,
                           vector<T>           &incoming_data)
 {
-    Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
+    Require( static_cast<int>(outgoing_data.size())==rtt_c4::nodes() );
     
 #ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar 
@@ -128,8 +138,6 @@ void determinate_scatterv(vector<vector<T> >  &outgoing_data,
                              &displs[0],
                              &incoming_data[0],
                              count);
-            
-
         }
         else
         {

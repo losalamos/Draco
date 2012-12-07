@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  C4 Communication Functions.
+ * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This file contains the declarations for communication functions provided
  * by C4.
@@ -109,7 +111,7 @@ void global_barrier();
 /*!
  * \brief Do a point-to-point, blocking send.
  */
-template<class T>
+template<typename T>
 int send(const T *buffer, int size, int destination,
 	 int tag = C4_Traits<T*>::tag);
 
@@ -117,7 +119,7 @@ int send(const T *buffer, int size, int destination,
 /*!
  * \brief Do a point-to-point, blocking receive.
  */
-template<class T>
+template<typename T>
 int receive(T *buffer, int size, int source, int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
@@ -128,13 +130,13 @@ int receive(T *buffer, int size, int source, int tag = C4_Traits<T*>::tag);
  *
  * \return C4_Req object to handle communciation requests
  */
-template<class T>
+template<typename T>
 C4_Req send_async( T const * buffer,
                    int       size,
                    int       destination,
                    int       tag );
 
-template<class T>
+template<typename T>
 C4_Req send_async( T const * buffer,
                    int       size,
                    int       destination )
@@ -148,7 +150,7 @@ C4_Req send_async( T const * buffer,
 //    error: specifying a default argument when redeclaring an unreferenced 
 //    function template is nonstandard 
 
-// template<class T>
+// template<typename T>
 // C4_Req send_async( T const * buffer,
 //                    int       size,
 //                    int       destination,
@@ -158,13 +160,13 @@ C4_Req send_async( T const * buffer,
 /*!
  * \brief Do a point-to-point, non-blocking send.
  */
-template<class T>
+template<typename T>
 void send_async( C4_Req       & request,
                  T      const * buffer,
                  int            size,
                  int            destination,
                  int            tag );
-template<class T>
+template<typename T>
 void send_async( C4_Req       & request,
                  T      const * buffer,
                  int            size,
@@ -180,7 +182,7 @@ void send_async( C4_Req       & request,
 //    error: specifying a default argument when redeclaring an unreferenced 
 //    function template is nonstandard 
 
-// template<class T>
+// template<typename T>
 // void send_async( C4_Req       & request,
 //                  T      const * buffer,
 //                  int            size,
@@ -191,13 +193,13 @@ void send_async( C4_Req       & request,
 /*!
  * \brief Do a point-to-point, non-blocking synchronous send.
  */
-template<class T>
+template<typename T>
 void send_is(C4_Req       & request,
              T      const * buffer,
              int            size,
              int            destination,
              int            tag );
-template<class T>
+template<typename T>
 void send_is(C4_Req       & request,
              T      const * buffer,
              int            size,
@@ -212,7 +214,7 @@ void send_is(C4_Req       & request,
 // However, I expect that PGI-10 doesn't like this syntax for the same reason
 // that it doesn't like the syntax for send_async above.
 
-// template<class T>
+// template<typename T>
 // void send_is(C4_Req       & request,
 //              T      const * buffer,
 //              int            size,
@@ -226,12 +228,12 @@ void send_is(C4_Req       & request,
  * \return C4_Req object to handle communciation requests
  */
 
-template<class T>
+template<typename T>
 C4_Req receive_async( T   * buffer,
                       int   size,
                       int   source,
                       int   tag );
-template<class T>
+template<typename T>
 C4_Req receive_async( T   * buffer,
                       int   size,
                       int   source )
@@ -245,7 +247,7 @@ C4_Req receive_async( T   * buffer,
 //    error: specifying a default argument when redeclaring an unreferenced 
 //    function template is nonstandard 
 
-// template<class T>
+// template<typename T>
 // C4_Req receive_async( T   * buffer,
 //                       int   size,
 //                       int   source,
@@ -255,13 +257,13 @@ C4_Req receive_async( T   * buffer,
 /*!
  * \brief Do a point-to-point, non-blocking receive.
  */
-template<class T>
+template<typename T>
 void receive_async( C4_Req & request,
                     T      * buffer,
                     int      size,
                     int      source,
                     int      tag );
-template<class T>
+template<typename T>
 void receive_async( C4_Req & request,
                     T      * buffer,
                     int      size,
@@ -277,7 +279,7 @@ void receive_async( C4_Req & request,
 //    error: specifying a default argument when redeclaring an unreferenced 
 //    function template is nonstandard 
 
-// template<class T>
+// template<typename T>
 // void receive_async( C4_Req & request,
 //                     T      * buffer,
 //                     int      size,
@@ -287,7 +289,7 @@ void receive_async( C4_Req & request,
 // BROADCAST
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 int broadcast(T *buffer, int size, int root);
 
 
@@ -304,20 +306,20 @@ void broadcast(ForwardIterator first,
 // GATHER/SCATTER
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 int gather(T *send_buffer, T *receive_buffer, int size);
 
-template<class T>
+template<typename T>
 int gatherv(T *send_buffer,
             int send_size,
             T *receive_buffer,
             int *receive_sizes,
             int *receive_displs);
 
-template<class T>
+template<typename T>
 int scatter(T *send_buffer, T *receive_buffer, int size);
 
-template<class T>
+template<typename T>
 int scatterv(T *send_buffer,
              int *send_sizes,
              int *send_displs,
@@ -330,56 +332,56 @@ int scatterv(T *send_buffer,
 /*!
  * \brief Do a global sum of a scalar variable.
  */
-template<class T> 
+template<typename T> 
 void global_sum(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global product of a scalar variable.
  */
-template<class T>
+template<typename T>
 void global_prod(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global minimum of a scalar variable.
  */
-template<class T> 
+template<typename T> 
 void global_min(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global maximum of a scalar variable.
  */
-template<class T> 
+template<typename T> 
 void global_max(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global sum of an array.
  */
-template<class T> 
+template<typename T> 
 void global_sum(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global product of an array.
  */
-template<class T>
+template<typename T>
 void global_prod(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global minimum of an array.
  */
-template<class T> 
+template<typename T> 
 void global_min(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global maximum of an array.
  */
-template<class T> 
+template<typename T> 
 void global_max(T *x, int n);
 
 //---------------------------------------------------------------------------//

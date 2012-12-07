@@ -4,21 +4,25 @@
  * \author Kent Budge
  * \date   Tue Sep 21 11:45:44 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
+#include "../Termination_Detector.hh"
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../Termination_Detector.hh"
+#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
+
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -38,17 +42,13 @@ void tstTermDet( UnitTest & ut )
     for (unsigned c=0; c<5; ++c)
     {
         if( td.is_terminated() )
-        {
-            ut.failure("Termination_Detection did NOT detect nontermination.");
-        }
+            FAILMSG("Termination_Detection did NOT detect nontermination.");
         else
-        {
-            ut.passes("Termination_Detection detected nontermination.");
-        }
+            PASSMSG("Termination_Detection detected nontermination.");
     }
 
-    // Will hang if the unit fails.  Unfortunately, there's no other
-    // portable way to test.
+    // Will hang if the unit fails.  Unfortunately, there's no other portable
+    // way to test.
     td.update_receive_count(1);
 
     while (!td.is_terminated()) {/* do nothing */};

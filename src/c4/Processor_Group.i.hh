@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Fri Oct 20 13:49:10 2006
  * \brief  Template method definitions of class Processor_Group
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,9 +14,10 @@
 #ifndef c4_Processor_Group_i_hh
 #define c4_Processor_Group_i_hh
 
-#include "ds++/Assert.hh"
 #include "MPI_Traits.hh"
 #include "c4/config.h"
+#include "ds++/Assert.hh"
+
 #ifdef C4_MPI
 namespace rtt_c4
 {
@@ -40,7 +42,7 @@ void Processor_Group::sum(std::vector<T> &x)
 //---------------------------------------------------------------------------//
 template<class T>
 void Processor_Group::assemble_vector(std::vector<T> const &local,
-                                      std::vector<T> &global) const
+                                      std::vector<T>       &global) const
 {
     global.resize(local.size()*size());
     
