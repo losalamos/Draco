@@ -206,7 +206,42 @@ void analytic_eos_test( rtt_dsxx::UnitTest & ut )
         double T0 = so_analytic.getElectronTemperature(rho, 0.0, 0.0);
         if( ! soft_equiv( T0, 0.0, 1e-40) ) ITFAILS;
     }
- 
+
+    // need to handle really small temperatures
+    {
+        double rho = 1.0;  // not currently used by getElectronTemperature().
+        double Ue =  1.372e-60; // for T=1e-16
+        double Te = 1.0e-6;
+       
+        double T_new = so_analytic.getElectronTemperature( rho, Ue, Te );
+        if ( T_new <= 0.0 ) ITFAILS;
+        if( ! soft_equiv( T_new, 1.0e-16, 1e-14 ) ) ITFAILS;
+    } 
+
+    // need to handle 0.0 initial guess
+    {
+        double rho = 1.0;  // not currently used by getElectronTemperature().
+        double Ue =  1.372e-60; // for T=1e-16
+        double Te = 0.0;
+       
+        double T_new = so_analytic.getElectronTemperature( rho, Ue, Te );
+        if ( T_new <= 0.0 ) ITFAILS;
+        if( ! soft_equiv( T_new, 1.0e-16, 1e-14 ) ) ITFAILS;
+    } 
+
+
+
+
+    // need to handle insanely high initial guesses/temperatures 
+    {
+        double rho = 1.0;  // not currently used by getElectronTemperature().
+        double Ue0 = 1407.8669; // for T = 0.566 or so
+        double Te  = 4.0088e43; 
+
+        double T_new = so_analytic.getElectronTemperature( rho, Ue0, Te );
+        if( ! soft_equiv( T_new, 0.56598102556928676 ) ) ITFAILS;
+    } 
+
     return;
 }
 

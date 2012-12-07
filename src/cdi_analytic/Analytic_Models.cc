@@ -50,12 +50,13 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
        // Set up the functor
        find_elec_temperature_functor minimizeFunctor( Ue, a, b, c );
 
+       double const epsilon( std::numeric_limits<double>::epsilon() );
        // New temperature should be nearby
-       double T_max( 100.0*Te0 );
-       double T_min( 0.1*Te0 );
-       double xtol( Te0*std::numeric_limits<double>::epsilon() );
+       double T_max( std::max(1e-18, 100.0*Te0) ); // no zero max
+       double T_min( 1e-20 );
+       double xtol( std::min(epsilon, Te0*epsilon) );
        double ytol( Ue *std::numeric_limits<double>::epsilon() );
-       unsigned iterations(100);
+       unsigned iterations(1000);
        // bracket the root
        rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
        
@@ -97,12 +98,13 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
        // Set up the functor
        find_elec_temperature_functor minimizeFunctor( Uic, d, e, f );
 
+       double const epsilon( std::numeric_limits<double>::epsilon() );
        // New temperature should be nearby
-       double T_max( 100.0*Ti0 );
-       double T_min( 0.1*Ti0 );
-       double xtol( Ti0 * std::numeric_limits<double>::epsilon() );
-       double ytol( Uic * std::numeric_limits<double>::epsilon() );
-       unsigned iterations(100);
+       double T_max( std::max(1e-18, 100.0*Ti0) ); // no zero max
+       double T_min( 1e-20 );
+       double xtol( std::min(epsilon, Ti0*epsilon) );
+       double ytol( Uic *std::numeric_limits<double>::epsilon() );
+       unsigned iterations(1000);
        // bracket the root
        rtt_roots::zbrac<find_elec_temperature_functor>(minimizeFunctor, T_min, T_max);
        
