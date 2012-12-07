@@ -893,7 +893,7 @@ bool parse_bool(Token_Stream &tokens)
     {
         return true;
     }
-    else if (token.text()=="false")
+    else
     {
         tokens.check_syntax(token.text()=="false", "expected 'true' or 'false'");
         return false;
