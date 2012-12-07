@@ -28,7 +28,7 @@ namespace rtt_quadrature
 //---------------------------------------------------------------------------------------//
 vector< Moment >
 Sn_Ordinate_Space::compute_n2lk_1D_( Quadrature_Class,
-                                     unsigned )
+                                     unsigned /*N*/)
 {
     vector< Moment > result;
 
@@ -46,7 +46,7 @@ Sn_Ordinate_Space::compute_n2lk_1D_( Quadrature_Class,
 //---------------------------------------------------------------------------------------//
 vector< Moment >
 Sn_Ordinate_Space::compute_n2lk_1Da_( Quadrature_Class,
-                                      unsigned )
+                                      unsigned /*N*/)
 {
     vector< Moment > result;
 
@@ -55,7 +55,7 @@ Sn_Ordinate_Space::compute_n2lk_1Da_( Quadrature_Class,
     // Choose: l= 0, ..., N, k = 0, ..., l
     for( int ell=0; ell<=static_cast<int>(L); ++ell )
         for( int k=0; k<=ell; ++k )
-            if ((ell-k)%2 == 0)
+            if ((ell+k)%2 == 0)
                 result.push_back( Moment(ell,k) );
 
     return result;
@@ -64,7 +64,24 @@ Sn_Ordinate_Space::compute_n2lk_1Da_( Quadrature_Class,
 //---------------------------------------------------------------------------------------//
 vector< Moment >
 Sn_Ordinate_Space::compute_n2lk_2D_( Quadrature_Class,
-                                     unsigned )
+                                     unsigned /*N*/)
+{
+    vector< Moment > result;
+
+    unsigned const L = expansion_order();
+
+    // Choose: l= 0, ..., N, k = 0, ..., l
+    for( int ell=0; ell<=static_cast<int>(L); ++ell )
+        for( int k=0; k<=ell; ++k )
+            result.push_back( Moment(ell,k) );
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------//
+vector< Moment >
+Sn_Ordinate_Space::compute_n2lk_2Da_( Quadrature_Class,
+                                     unsigned /*N*/)
 {
     vector< Moment > result;
 
@@ -81,7 +98,7 @@ Sn_Ordinate_Space::compute_n2lk_2D_( Quadrature_Class,
 //---------------------------------------------------------------------------------------//
 vector< Moment >
 Sn_Ordinate_Space::compute_n2lk_3D_( Quadrature_Class,
-                                     unsigned )
+                                     unsigned /*N*/)
 {
     vector< Moment > result;
 
@@ -140,9 +157,16 @@ Sn_Ordinate_Space::compute_M()
 }
 
 //---------------------------------------------------------------------------------------//
+/*! This computation requires that the moment-to-discrete matrix M
+ *  is already created.
+ */
+
 void
 Sn_Ordinate_Space::compute_D()
 {
+
+    Insist(!M_.empty(), "The SN ordinate space computation for D requires that M be available.");
+
     vector<Ordinate> const &ordinates = this->ordinates();
     unsigned const numOrdinates = ordinates.size();
     vector<Moment> const &n2lk = this->moments();

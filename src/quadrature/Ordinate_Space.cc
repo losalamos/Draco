@@ -28,10 +28,9 @@ namespace rtt_quadrature
 /*!
  * \brief Compute the Azimuthal angle for the current quadrature direction.
  */
-/* static */
 double Ordinate_Space::compute_azimuthalAngle( double const mu,
-                                                   double const eta,
-                                                   double const Remember(xi) )
+                                               double const eta,
+                                               double const Remember(xi) )
 {
     using rtt_units::PI;
     using rtt_dsxx::soft_equiv;
@@ -44,6 +43,9 @@ double Ordinate_Space::compute_azimuthalAngle( double const mu,
 
 //-------------------------------------------------------------
 
+    double azimuthalAngle ( std::atan2( eta, mu) );
+
+    // For axisymmetric cooridnates only, the azimuthal angle is on [0, 2\pi]
     // It is important to remember that the positive mu axis points to the
     // left and the positive eta axis points up, when the unit sphere is
     // projected on the plane of the mu- and eta-axis. In this case, phi is
@@ -54,41 +56,9 @@ double Ordinate_Space::compute_azimuthalAngle( double const mu,
     // here consistent with the discretization by using the eta and mu
     // ordinates to define phi.
 
-    double azimuthalAngle ( std::atan2( eta, mu) );
-
-    if( azimuthalAngle < 0.0 )
+    if( this->geometry() == rtt_mesh_element::AXISYMMETRIC && azimuthalAngle < 0.0)
         azimuthalAngle += 2*PI;
 
-//-------------------------------------------------------------
-//     // For 2D sets, reconstruct xi from known information:
-//     // xi*xi = 1.0 - eta*eta - mu*mu
-//     // Always use positive value for xi.
-//     double local_xi( xi );
-//     if( soft_equiv( local_xi,  0.0 ) )
-//      local_xi = std::sqrt( 1.0 - mu*mu - eta*eta );
-//
-//     double azimuthalAngle(999.0);
-//
-//     if( local_xi > 0.0 )
-//     {
-//      if( eta > 0.0 )
-//          azimuthalAngle = std::atan(xi/eta);
-//      else
-//          azimuthalAngle = PI - std::atan(xi/std::abs(eta));
-//     }
-//     else
-//     {
-//      if( eta > 0 )
-//          azimuthalAngle = 2*PI - std::atan(std::abs(xi)/eta);
-//      else
-//          azimuthalAngle = PI + std::atan(xi/eta);
-//     }
-//-------------------------------------------------------------
-
-    // Ensure that theta is in the range 0...2*PI.
-    Ensure( azimuthalAngle >= 0 );
-    Ensure( azimuthalAngle <= 2*PI );
-   
     return azimuthalAngle;
 }
 
@@ -312,8 +282,12 @@ vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_c
     }
     else if( dim == 2)
     {
-        return compute_n2lk_2D_(quadrature_class,
-                                sn_order);
+        if (geometry == rtt_mesh_element::AXISYMMETRIC)
+            return compute_n2lk_2Da_(quadrature_class,
+                                     sn_order);
+        else
+            return compute_n2lk_2D_(quadrature_class,
+                                    sn_order);
     }
     else
     {

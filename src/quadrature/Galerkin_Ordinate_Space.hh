@@ -31,6 +31,21 @@ using std::ostream;
  * higher moment terms are then discarded, but the non-square D and M retain
  * the property that DM is the identity. This stabilizes the moment to
  * discrete and discrete to moment operations at high scattering orders.
+ *
+ * When the additional moments are added, the SN quadrature order is provided,
+ * and additional moments added based on the assumption that we are using
+ * triangular quadrature sets. If an expansion order L < N-1 is
+ * requested, both D and M wlll be appropriately truncated. If an expansion
+ * order L > N-1 is requested, the computation cannot proceed and an exception
+ * thrown.
+ *
+ * \todo For triangular sets, we assume L = N-1. The other two cases, L > N-1
+ * and L < N-1 need to be handled.
+ *
+ * \todo The Galerkin quadrature is only currently implemented for triangular
+ * quadratures, such that it will be necessary to extend the method to include
+ * square (product) quadratures.
+ *
  */
 //=======================================================================================//
 
@@ -45,8 +60,8 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
     //! Specify the ordinate quadrature with defaults.
     Galerkin_Ordinate_Space(unsigned dimension,
                             Geometry geometry,
-                            vector<Ordinate> const &,
-                            Quadrature_Class,
+                            vector<Ordinate> const &ordinates,
+                            Quadrature_Class quadrature_class,
                             unsigned sn_order,
                             unsigned expansion_order,
                             bool extra_starting_directions=false,
@@ -87,6 +102,9 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
     
     virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
                                             unsigned sn_order);
+
+    virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
+                                             unsigned sn_order);
     
     virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
                                             unsigned sn_order);

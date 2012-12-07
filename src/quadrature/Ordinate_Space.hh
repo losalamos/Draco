@@ -141,11 +141,11 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     //! Specify the ordinate quadrature with defaults.
     Ordinate_Space(unsigned dimension,
-                       Geometry geometry,
-                       vector<Ordinate> const &,
-                       unsigned expansion_order,
-                       bool extra_starting_directions=false,
-                       Ordering ordering=LEVEL_ORDERED);
+                   Geometry geometry,
+                   vector<Ordinate> const &,
+                   unsigned expansion_order,
+                   bool extra_starting_directions=false,
+                   Ordering ordering=LEVEL_ORDERED);
 
     // MANIPULATORS
 
@@ -257,9 +257,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     // STATICS
     
-    static double compute_azimuthalAngle( double mu,
-                                          double eta,
-                                          double xi );
+    double compute_azimuthalAngle( double mu, double eta, double xi ); 
 
   protected:
 
@@ -284,6 +282,9 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     
     virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
+    
+    virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
+                                             unsigned sn_order) = 0;
     
     virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
