@@ -16,6 +16,7 @@
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
+#include <vector>
 
 // helper macros.
 #define PASSMSG(m) ut.passes(m)

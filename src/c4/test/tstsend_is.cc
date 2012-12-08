@@ -14,6 +14,7 @@
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include <sstream>
+#include <vector>
 
 #define PASSMSG(A) ut.passes(A)
 #define FAILMSG(A) ut.failure(A)
