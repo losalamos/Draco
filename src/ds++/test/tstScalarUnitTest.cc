@@ -19,6 +19,8 @@
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -29,6 +31,16 @@ using namespace rtt_dsxx;
 #define ITFAILS    unitTest.failure(__LINE__);
 #define FAILURE    unitTest.failure(__LINE__, __FILE__);
 #define FAILMSG(a) unitTest.failure(a);
+
+//---------------------------------------------------------------------------//
+// Helper
+//---------------------------------------------------------------------------//
+char *convert_string_to_char_ptr( std::string const & s )
+{
+    char *pc = new char[s.size()+1];
+    std::strcpy(pc, s.c_str());
+    return pc;
+}
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -198,43 +210,48 @@ void tstdbcsettersandgetters( UnitTest & unitTest, int argc, char *argv[] )
 }
 
 //---------------------------------------------------------------------------------------//
-void tstVersion(UnitTest &ut, char *test)
+void tstVersion(UnitTest &unitTest, char *test)
 {
     // Check version construction
 
-    char version[strlen("--version")+1];
-    strcpy(version, "--version");
-    char *ptr1 = version;
-    char *pptr[3];
-    pptr[0] = test;
-    pptr[2] = ptr1;
-    char argument[2];
-    argument[0] = 'a';
-    char *ptr2 = argument;
-    pptr[1] = ptr2;
+    // 3 arguments in argv: {'tstScalarUnittest','a','--version'}
+    int argc(3);
+    // char *pptr[3];
+    std::vector<string> vs_arguments(argc);
     
-    int argc = 3;
-    char **argv = pptr;
+    // Initialize the argument list
+    vs_arguments[0] = std::string(test);
+    vs_arguments[1] = std::string("a");
+    vs_arguments[2] = std::string("--version");
+
+    // Convert to 'char *'
+    // We can then use &vc[0] as type char**
+    std::vector<char *> vc;
+    std::transform( vs_arguments.begin(), vs_arguments.end(),
+                    std::back_inserter(vc), convert_string_to_char_ptr );
+
+    char ** argv = &vc[0];
     try
     {
         ScalarUnitTest(argc, argv, release);
-        ut.failure("version construction NOT correct");
+        FAILMSG("version construction NOT correct");
     }
     catch (assertion &err)
     {
         if (!strcmp(err.what(), "Success"))
-        {
-            ut.passes("version construction correct");
-        }
+            PASSMSG("version construction correct");
         else
-        {
-            ut.failure("version construction NOT correct");
-        }
+            FAILMSG("version construction NOT correct");
     }
     catch (...)
     {
-        ut.failure("version construction NOT correct");
+        FAILMSG("version construction NOT correct");
     }
+
+    // clean-up memory
+    for( size_t i = 0 ; i < vc.size() ; i++ )
+        delete [] vc[i];
+    return;
 }
 
 //---------------------------------------------------------------------------//
