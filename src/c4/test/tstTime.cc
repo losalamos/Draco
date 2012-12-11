@@ -197,8 +197,13 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     {
         std::ostringstream timingsingleline;
         t.printline( timingsingleline, 4, 8 );
-        // std::cout << "\"" <<  timingsingleline.str() << "\"" << std::endl;
+        // std::cout << "\"" <<  timingsingleline.str() << ".\"" << std::endl;
+        // std::cout << "len = " << timingsingleline.str().length() << std::endl;
+#ifdef HAVE_PAPI
+        if( timingsingleline.str().length() == 42 )
+#else
         if( timingsingleline.str().length() == 26 )
+#endif
             PASSMSG( "printline() returned a single line of the expected length." );
         else
             FAILMSG( "printline() did not return a line of the expected length." );
@@ -245,7 +250,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     std::cout << "PAPI metrics report:\n"
               << "   Cache misses : " << cachemisses << "\n"
               << "   Cache hits   : " << cachehits << "\n"
-              << "   FLOP         : " s<< flops << std::endl;
+              << "   FLOP         : " << flops << std::endl;
 
     if( cachemisses == 0 && cachehits == 0  && flops == 0 )
         FAILMSG( "PAPI metrics returned 0 when PAPI was available.");

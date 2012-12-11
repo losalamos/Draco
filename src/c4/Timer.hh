@@ -34,6 +34,7 @@ namespace rtt_c4
  * On systems where the PAPI performance tool is available, the Timer class
  * also records some basic cache perfomance statistics. This is much less
  * portable, but is also not as important.
+ * \sa http://icl.cs.utk.edu/projects/papi/wiki/Timers
  *
  * Usage:
  * \code
@@ -165,6 +166,26 @@ class Timer
     static unsigned papi_num_counters_;
     static long long papi_raw_counts_[papi_max_counters_];
     static int papi_events_[papi_max_counters_];
+
+    // wall clock time
+    long long papi_wc_start_cycle;
+    long long papi_wc_end_cycle;
+    long long papi_wc_start_usec;
+    long long papi_wc_end_usec;
+    // virtual time
+    long long papi_virt_start_cycle;
+    long long papi_virt_end_cycle;
+    long long papi_virt_start_usec;
+    long long papi_virt_end_usec;
+
+    // sum of papi wall clock cycles
+    long long sum_papi_wc_cycle;
+    // sum of papi wall clock time (microseconds)
+    long long sum_papi_wc_usec;
+    // sum of papi virtual cycles
+    long long sum_papi_virt_cycle;
+    // sum of papi virtual time (microseconds)
+    long long sum_papi_virt_usec;
 #endif
 
   public:
@@ -197,10 +218,18 @@ class Timer
     long long sum_L2_cache_misses()     const { return papi_counts_[0]; }
     long long sum_L2_cache_hits()       const { return papi_counts_[1]; }
     long long sum_floating_operations() const { return papi_counts_[2]; }
+    long long sum_papi_wc_cycles()      const { return sum_papi_wc_cycle; }
+    long long sum_papi_wc_usecs()       const { return sum_papi_wc_usec; }
+    long long sum_papi_virt_cycles()    const { return sum_papi_virt_cycle; }
+    long long sum_papi_virt_usecs()     const { return sum_papi_virt_usec; }
 #else
     long long sum_L2_cache_misses()     const { return 0; }
     long long sum_L2_cache_hits()       const { return 0; }
     long long sum_floating_operations() const { return 0; }
+    long long sum_papi_wc_cycles()      const { return 0; }
+    long long sum_papi_wc_usecs()       const { return 0; }
+    long long sum_papi_virt_cycles()    const { return 0; }
+    long long sum_papi_virt_usecs()     const { return 0; }
 #endif
 
     inline void reset();
@@ -228,9 +257,13 @@ void Timer::start()
 #ifdef HAVE_PAPI
     status_ = PAPI_accum_counters(papi_raw_counts_, papi_num_counters_);
     for (unsigned i=0; i<papi_num_counters_; ++i)
-      {
+    {
 	papi_start_[i] = papi_raw_counts_[i];
-      }
+    }
+    papi_wc_start_cycle = PAPI_get_real_cyc();
+    papi_wc_start_usec  = PAPI_get_real_usec();
+    papi_virt_start_cycle = PAPI_get_real_cyc();
+    papi_virt_start_usec  = PAPI_get_real_usec();
 #endif
 
     // set both begin and tms_begin.
@@ -253,11 +286,22 @@ void Timer::stop()
 #ifdef HAVE_PAPI
     status_ = PAPI_accum_counters(papi_raw_counts_, papi_num_counters_);
     for (unsigned i=0; i<papi_num_counters_; ++i)
-      {
+    {
 	papi_stop_[i] = papi_raw_counts_[i];
 	papi_counts_[i] += papi_stop_[i]-papi_start_[i];
-      }
+    }
+    papi_wc_end_cycle = PAPI_get_real_cyc();
+    papi_wc_end_usec  = PAPI_get_real_usec();
+    papi_virt_end_cycle = PAPI_get_real_cyc();
+    papi_virt_end_usec  = PAPI_get_real_usec();
+
+    sum_papi_wc_cycle += papi_wc_end_cycle - papi_wc_start_cycle;
+    sum_papi_wc_usec  += papi_wc_end_usec -  papi_wc_start_usec;
+    sum_papi_virt_cycle += papi_virt_end_cycle - papi_virt_start_cycle;
+    sum_papi_virt_usec  += papi_virt_end_usec -  papi_virt_start_usec;
 #endif
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -318,6 +362,10 @@ void Timer::reset()
 #ifdef HAVE_PAPI
     for (unsigned i=0; i<papi_num_counters_; ++i)
 	papi_counts_[i] = 0;
+    papi_wc_start_cycle = 0;
+    papi_wc_end_cycle   = 0;
+    papi_virt_start_usec  = 0;
+    papi_virt_end_usec    = 0;
 #endif
 
     return;

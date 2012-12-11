@@ -3,16 +3,18 @@
  * \file   c4/Timer.cc
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:56:11 2002
+ * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include "C4_sys_times.h"
 #include "Timer.hh"
 #include <iomanip>
 #include <cstdlib>
+#include <iostream>
 
 namespace rtt_c4
 {
@@ -101,6 +103,15 @@ Timer::Timer()
             exit(EXIT_FAILURE);
         }
 
+        // sum of papi wall clock cycles
+        sum_papi_wc_cycle = 0;
+        // sum of papi wall clock time (microseconds)
+        sum_papi_wc_usec = 0;
+        // sum of papi virtual cycles
+        sum_papi_virt_cycle = 0;
+        // sum of papi virtual time (microseconds)
+        sum_papi_virt_usec = 0;
+        
 	first_time = false;
     }
 #endif
@@ -143,10 +154,33 @@ void Timer::print( std::ostream &out, int p ) const
 #ifdef HAVE_PAPI
         double const miss = sum_L2_cache_misses();
         double const hit  = sum_L2_cache_hits();
-        out << setw(20) << "L2 Cache misses: " << sum_L2_cache_misses()     << "\n"
-            << setw(20) << "L2 Cache hits  : " << sum_L2_cache_hits()       << "\n"
-            << setw(20) << "Percent hit    : " << 100.0 * hit / (miss+hit)  << "\n"
-            << setw(20) << "FP operations  : " << sum_floating_operations() << "\n\n";
+        out << "PAPI Events:\n"
+
+            << setw(26) << "L2 Cache misses  : "
+            << sum_L2_cache_misses()     << "\n"
+
+            << setw(26) << "L2 Cache hits    : "
+            << sum_L2_cache_hits()       << "\n"
+
+            << setw(26) << "Percent hit      : "
+            << 100.0 * hit / (miss+hit)  << "\n"
+
+            << setw(26) << "FP operations    : "
+            << sum_floating_operations() << "\n"
+            
+            << setw(26) << "Wall Clock cycles: "
+            << sum_papi_wc_cycles() << "\n"
+
+            << setw(26) << "Wall Clock time (us): "
+            << sum_papi_wc_usecs() << "\n"
+
+            << setw(26) << "Virtual cycles: "
+            << sum_papi_virt_cycles() << "\n"
+
+            << setw(26) << "Virtual time (us): "
+            << sum_papi_virt_usecs() << "\n"
+
+            << std::endl;
 #endif
     }
     
