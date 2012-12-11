@@ -62,7 +62,13 @@ macro( setupMPILibrariesUnix )
       endif()
       if( DEFINED MPIEXEC_NUMPROC_FLAG )
          set( MPIEXEC_NUMPROC_FLAG ${MPIEXEC_NUMPROC_FLAG} CACHE
-      STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
+            STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
+      endif()
+
+      # On CT, only look for .a MPI libraries when build type is STATIC
+      if( "${SITE}" MATCHES "c[it]" AND
+            "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
+         set( CMAKE_FIND_LIBRARY_SUFFIXES .a )
       endif()
 
       # First attempt to find mpi
@@ -76,25 +82,25 @@ macro( setupMPILibrariesUnix )
       # findMPI.cmake will conly return shared libraries.  Force
       # conversion to static iff CT with STATIC and openmpi are
       # selected.
-      if( "${SITE}" MATCHES "c[it]" AND
-            "${MPIEXEC}" MATCHES "openmpi" AND
-            "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
-         foreach( VAR MPI_CXX_LIBRARIES MPI_C_LIBRARIES 
-               MPI_Fortran_LIBRARIES MPI_EXTRA_LIBRARY MPI_LIBRARIES )
-            string( REGEX REPLACE "mpi_cxx[.]so" "mpi_cxx.a" ${VAR} "${${VAR}}" )
-            string( REGEX REPLACE "mpi[.]so" "mpi.a" ${VAR} "${${VAR}}" )
-            string( REGEX REPLACE "mpi_mpifh[.]so" "mpi_mpifh.a" ${VAR} "${${VAR}}" )
-            string( REGEX REPLACE "mpi_usempif08[.]so" "mpi_usempif08.a" ${VAR} "${${VAR}}" )
-            string( REGEX REPLACE "pmi[.]so" "pmi.a" ${VAR} "${${VAR}}" )
-            set( ${VAR} "${${VAR}}" CACHE STRING
-               "MPI libraries to link against." FORCE )
-      endif()
+#       if( "${SITE}" MATCHES "c[it]" AND
+#             "${MPIEXEC}" MATCHES "openmpi" AND
+#             "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
+#          foreach( VAR MPI_CXX_LIBRARIES MPI_C_LIBRARIES 
+#                MPI_Fortran_LIBRARIES MPI_EXTRA_LIBRARY MPI_LIBRARIES )
+#             string( REGEX REPLACE "mpi_cxx[.]so" "mpi_cxx.a" ${VAR} "${${VAR}}" )
+#             string( REGEX REPLACE "mpi[.]so" "mpi.a" ${VAR} "${${VAR}}" )
+#             string( REGEX REPLACE "mpi_mpifh[.]so" "mpi_mpifh.a" ${VAR} "${${VAR}}" )
+#             string( REGEX REPLACE "mpi_usempif08[.]so" "mpi_usempif08.a" ${VAR} "${${VAR}}" )
+#             string( REGEX REPLACE "pmi[.]so" "pmi.a" ${VAR} "${${VAR}}" )
+#             set( ${VAR} "${${VAR}}" CACHE STRING
+#                "MPI libraries to link against." FORCE )
+#       endif()
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
          set( DRACO_C4 "MPI" )  
          if( NOT MPIEXEC )
-            if( "${SITE}" MATCHES "c[it]" )
+            if( "${SITE}" MATCHES "c[it]" ) # AND "${MPIEXEC}" MATCHES "openmpi"
                set( MPIEXEC aprun )
             else()
                message( FATAL_ERROR 
