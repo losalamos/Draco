@@ -29,19 +29,33 @@ if( NOT DEFINED USE_OPENMP )
    option( USE_OPENMP "Turn on OpenMP features?" ON )
 endif()
 
+# ----------------------------------------
+# PAPI
+# ----------------------------------------
 if( EXISTS $ENV{PAPI_HOME} )
     set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
     set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH 
        "PAPI headers at this location" )
     set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
        "PAPI library." )
+endif()
+# PAPI 4.2 on CT uses a different setup.
+if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
+    set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
+    string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE
+       $ENV{PAPI_INCLUDE_OPTS} )
+    string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR
+       $ENV{PAPI_POST_LINK_OPTS} )
+endif()
+if( HAVE_PAPI )
+    set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH 
+       "PAPI headers at this location" )
+    set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
+       "PAPI library." )
     if( NOT EXISTS ${PAPI_LIBRARY} )
-       message( FATAL_ERROR "PAPI requested, but library not found.
-    If on Turing, set PAPI_LIBDIR to correct path (module file is
-    broken)." )
+       message( FATAL_ERROR "PAPI requested, but library not found.  Set PAPI_LIBDIR to correct path." )
     endif()
     mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
-
     add_feature_info( HAVE_PAPI HAVE_PAPI 
        "Provide PAPI hardware counters if available." )
 endif()
