@@ -161,7 +161,6 @@ void tstDeterminateGatherScatterv(UnitTest &ut)
 
     send.resize(2*pid);
 
-    // indeterminate_scatterv(receive, send);
     determinate_scatterv(receive, send);
 
     if (send.size() == 2*pid)

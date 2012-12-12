@@ -18,6 +18,7 @@
 #include "../SpinLock.hh"
 // #include "ds++/Release.hh"
 #include "c4_test.hh"
+#include "C4_Functions.hh"
 
 #ifdef C4_MPI
 #include "../MPI_Traits.hh"
@@ -98,6 +99,54 @@ void tstTraits()
     return;
 }
 
+//---------------------------------------------------------------------------------------//
+void tstWait()
+{
+    using namespace rtt_c4;
+    
+    if (rtt_c4::node()>0)
+    {
+        cout << "sending from processor " << processor_name() << ':' << endl;
+        int buffer[1];
+        buffer[0] = node();
+        C4_Req outgoing = send_async(buffer, 1U, 0);
+        unsigned result = wait_any(1U, &outgoing);
+        if (result!=0)
+        {
+            ITFAILS;
+        }
+    }
+    else
+    {
+        cout << "receiving to processor " << processor_name() << ':' << endl;
+        Check(rtt_c4::nodes()<5);
+        C4_Req requests[4];
+        bool done[4];
+        for (int p=1; p<nodes(); ++p)
+        {
+            int buffer[4][1];
+            requests[p] = receive_async(buffer[p], 1U, p);
+            done[p] = false;
+        }
+        for (int c=1; c<nodes(); ++c)
+        {
+            unsigned result = wait_any(nodes(), requests);
+            if (done[result])
+            {
+                ITFAILS;
+            }
+            done[result] = true;
+        }
+        for (int p=1; p<nodes(); ++p)
+        {
+            if (!done[p])
+            {
+                ITFAILS;
+            }
+        }
+    }
+}
+
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -114,6 +163,7 @@ int main(int argc, char *argv[])
         // >>> UNIT TESTS
         tstCopyConstructor();
         tstTraits();
+        tstWait();
     }
     catch (std::exception &err)
     {
