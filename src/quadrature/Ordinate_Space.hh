@@ -271,9 +271,6 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     vector<Moment> compute_n2lk_(Quadrature_Class,
                                  unsigned sn_order);
 
-    virtual void compute_M() = 0;
-    virtual void compute_D() = 0;
-    
     virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
     

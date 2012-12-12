@@ -70,6 +70,8 @@ class Ordinate
     double xi()  const { return xi_; };
     double wt()  const { return wt_; };
 
+    void set_wt(double const wt) { wt_ = wt; };
+
     double const *cosines() const
     {
         // This is a little krufty, but guaranteed to work according to C++

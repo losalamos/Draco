@@ -91,9 +91,6 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
 
     // IMPLEMENTATION
 
-    virtual void compute_M();
-    virtual void compute_D();
-    
     virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
                                             unsigned sn_order);
     
@@ -115,18 +112,22 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
 
     // IMPLEMENTATION
     
-    
-    vector<double>  compute_M_GQ(vector<Ordinate> const &ordinates,
-                                 vector< Moment > const &n2lk,
-                                 unsigned const dim,
-                                 double const sumwt);
-    
-    vector<double> compute_D_GQ(vector<Ordinate> const &ordinates,
-                                vector< Moment > const &n2lk,
-                                vector<double> const &mM,
-                                unsigned const,
-                                double const);
+    void compute_operators();
 
+    vector<double>  compute_M_SN(vector<Ordinate> const &ordinates);
+    vector<double>  compute_D_SN(vector<Ordinate> const &ordinates,
+                                 vector<double> const &Min);
+
+    vector<double> compute_inverse(unsigned const m,
+                                   unsigned const n,
+                                   vector<double> const &Ain);
+
+    vector<double> augment_D(vector<unsigned> const &indexes,
+                             unsigned const numCartesianOrdinates,
+                             vector<double> const &D);
+    
+    vector<double> augment_M(vector<unsigned> const &indexes,
+                             vector<double> const &M);
     // DATA
 
     //! Discrete to moment matrix

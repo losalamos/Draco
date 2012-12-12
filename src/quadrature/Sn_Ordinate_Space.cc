@@ -80,18 +80,11 @@ Sn_Ordinate_Space::compute_n2lk_2D_( Quadrature_Class,
 
 //---------------------------------------------------------------------------------------//
 vector< Moment >
-Sn_Ordinate_Space::compute_n2lk_2Da_( Quadrature_Class,
-                                     unsigned /*N*/)
+Sn_Ordinate_Space::compute_n2lk_2Da_( Quadrature_Class quadrature_class,
+                                      unsigned N)
 {
-    vector< Moment > result;
-
-    unsigned const L = expansion_order();
-
-    // Choose: l= 0, ..., N, k = 0, ..., l
-    for( int ell=0; ell<=static_cast<int>(L); ++ell )
-        for( int k=0; k<=ell; ++k )
-            result.push_back( Moment(ell,k) );
-
+    // This is the same as the X-Y moment mapping
+    vector< Moment > result=compute_n2lk_2D_(quadrature_class, N);
     return result;
 }
 
@@ -246,6 +239,10 @@ Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
 
     compute_moments_(END_QUADRATURE,   // not used by Sn
                      expansion_order); // also not actually used
+
+    // compute the operators; MUST be called in this order
+    compute_M();
+    compute_D();
 
     Ensure(check_class_invariants());
 }

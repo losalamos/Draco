@@ -66,6 +66,9 @@ class Ordinate_Set
     //! Return the ordinates.
     vector<Ordinate> const &ordinates() const { return ordinates_; }
 
+    //! Return the ordinates.
+    vector<Ordinate> &ordinates() { return ordinates_; }
+
     //! Return the geometry.
     Geometry geometry() const { return geometry_; }
 

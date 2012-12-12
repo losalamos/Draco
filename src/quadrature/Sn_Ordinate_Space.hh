@@ -71,9 +71,6 @@ class Sn_Ordinate_Space : public Ordinate_Space
 
     // IMPLEMENTATION
 
-    virtual void compute_M();
-    virtual void compute_D();
-    
     virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
                                             unsigned sn_order);
     
@@ -94,29 +91,10 @@ class Sn_Ordinate_Space : public Ordinate_Space
     // NESTED CLASSES AND TYPEDEFS
 
     // IMPLEMENTATION
-    
-    vector<double>  compute_M_GQ(vector<Ordinate> const &ordinates,
-                                 vector< Moment > const &n2lk,
-                                 unsigned const dim,
-                                 double const sumwt);
-    
-    vector<double> compute_D_GQ(vector<Ordinate> const &ordinates,
-                                vector< Moment > const &n2lk,
-                                vector<double> const &mM,
-                                unsigned const,
-                                double const);
-    
-    vector<double>  compute_M_SV(vector<Ordinate> const &ordinates,
-                                 vector< Moment > const &n2lk,
-                                 unsigned const dim,
-                                 double const sumwt);
-    
-    vector<double> compute_D_SV(vector<Ordinate> const &ordinates,
-                                vector< Moment > const &n2lk,
-                                vector<double> const &mM,
-                                unsigned const,
-                                double const);
 
+    void compute_M();
+    void compute_D();
+    
     // DATA
 
     vector<double> D_;

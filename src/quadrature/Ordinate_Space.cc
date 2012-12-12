@@ -328,9 +328,6 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
             number_of_moments_++;
         }
     }
-
-    compute_M();
-    compute_D();          
 }
 
 //---------------------------------------------------------------------------------------//
