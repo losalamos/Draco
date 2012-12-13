@@ -23,6 +23,7 @@
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
 
+/*
 static
 void print_matrix( std::string const & matrix_name,
                    std::vector<double> const & x,
@@ -52,6 +53,7 @@ void print_matrix( std::string const & matrix_name,
     cout << endl;
     return;
 }
+*/
 
 using namespace rtt_units;
 
@@ -240,10 +242,6 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
 //---------------------------------------------------------------------------------------//
 bool Galerkin_Ordinate_Space::check_class_invariants() const
 {
-    std::cout << " D_.size() = " << D_.size() << " expect " << ordinates().size() * this->moments().size()
-              << std::endl;
-    std::cout << " M_.size() = " << M_.size() << " expect " << ordinates().size() * this->moments().size()
-              << std::endl;
     return
         D_.size() == ordinates().size() * this->moments().size() &&
         M_.size() == ordinates().size() * this->moments().size();
@@ -360,9 +358,9 @@ void Galerkin_Ordinate_Space::compute_operators()
 
         for (unsigned i=0; i<numCartesianOrdinates; ++i)
         {
-            std::cout << " changing weight from " << cartesian_ordinates[i].wt();
+            //std::cout << " changing weight from " << cartesian_ordinates[i].wt();
             cartesian_ordinates[i].set_wt(temp_D[ i + 0*numCartesianOrdinates ]);
-            std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
+            //std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
         }
 
         // and reset ordinate weights to the first row of D
@@ -373,7 +371,7 @@ void Galerkin_Ordinate_Space::compute_operators()
             if (ordinates[i].wt() != 0)
             {
                 ordinates[i].set_wt(temp_D[ indexes[i] + 0*numCartesianOrdinates ]);
-                std::cout << " setting weight to " << this->ordinates()[i].wt() << std::endl;
+                //std::cout << " setting weight to " << this->ordinates()[i].wt() << std::endl;
             }
         }
 
