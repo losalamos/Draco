@@ -65,7 +65,7 @@ check_c_compiler_flag(-xHost HAS_XHOST)
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -fp-model precise" )
+  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -fp-model precise -ftz" )
   if (HAS_XHOST)
      set( CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} -xHost" )
   endif()
