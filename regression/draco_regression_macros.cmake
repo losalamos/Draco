@@ -475,8 +475,25 @@ macro( setup_for_code_coverage )
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
+            execute_process( 
+               COMMAND /home/regress/cmake_draco/regression/cloc
+               --exclude-dir=test
+               --exclude-dir=heterogeneous
+               --exclude-dir=chimpy
+               --progress-rate=0 
+               --report-file=lines-of-code-notest.log 
+               --read-lang-def=/home/regress/cmake_draco/regression/cloc-lang.defs
+               ${CTEST_SOURCE_DIRECTORY}
+               #  --3 
+               #  --diff
+               WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+               )
+
+
             message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
-            set( CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" )
+            set( CTEST_NOTES_FILES 
+               "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
+               "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
 
          endif()
       endif()

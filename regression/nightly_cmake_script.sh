@@ -54,6 +54,7 @@ else
     dashboard_type=Experimental
     base_dir=/var/tmp/${USER}/regress/cmake_draco
     script_dir=/ccs/codes/radtran/regress-homedir/cmake_draco
+    # script_dir=/home/kellyt/draco
 fi
 
 # compiler
