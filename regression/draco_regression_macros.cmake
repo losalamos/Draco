@@ -477,9 +477,7 @@ macro( setup_for_code_coverage )
                )
             execute_process( 
                COMMAND /home/regress/cmake_draco/regression/cloc
-               --exclude-dir=test
-               --exclude-dir=heterogeneous
-               --exclude-dir=chimpy
+               --exclude-dir=test,heterogeneous,chimpy
                --progress-rate=0 
                --report-file=lines-of-code-notest.log 
                --read-lang-def=/home/regress/cmake_draco/regression/cloc-lang.defs
