@@ -345,6 +345,27 @@ void Galerkin_Ordinate_Space::compute_operators()
 
         cartesian_M.swap(cartesian_M_SN); 
         cartesian_D = compute_inverse(numMoments, numCartesianOrdinates, cartesian_M);
+
+        // set cartesian_ordinate weights to the first row of D
+
+        for (unsigned i=0; i<numCartesianOrdinates; ++i)
+        {
+            std::cout << " changing weight from " << cartesian_ordinates[i].wt();
+            cartesian_ordinates[i].set_wt(cartesian_D[ i + 0*numCartesianOrdinates ]);
+            std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
+        }
+
+        // and reset ordinate weights to the first row of D
+
+        vector<Ordinate> &ordinates(this->ordinates());
+        for (unsigned i=0; i<numOrdinates; ++i)
+        {
+            if (ordinates[i].wt() != 0)
+            {
+                ordinates[i].set_wt(cartesian_D[ indexes[i] + 0*numCartesianOrdinates ]);
+                //std::cout << " setting weight to " << this->ordinates()[i].wt() << std::endl;
+            }
+        }
     }
     else
     {
