@@ -50,7 +50,7 @@ using namespace r123;
 
 #if !R123_USE_SSE
 int main(void){
-    std::cout << "No SSE support.  This test is not compiled\n";
+    std::cout << "No SSE support.  This test is not compiled.  OK\n";
     return 0;
 }
 #else

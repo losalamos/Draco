@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if !R123_USE_SSE
 int main(int argc, char **argv){
-    printf("No SSE support.  This test is not compiled\n");
+    printf("No SSE support.  This test is not compiled.  OK\n");
     return 0;
 }
 #else

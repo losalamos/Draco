@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Random123/features/compilerfeatures.h>
 #if !R123_USE_SSE
 #include <stdio.h>
-int main(){ printf("No SSE.  Nothing to check\n"); return 0; }
+int main(){ printf("No SSE.  Nothing to check.  OK\n"); return 0; }
 #else
 
 #include "ut_M128.hh"
