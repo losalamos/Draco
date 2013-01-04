@@ -96,6 +96,16 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
    }
    return 0.;
 }
+#elif defined(__bgq__)
+/* Return BG/Q values.  I looked through BG/Q-specific headers for a while but
+ * didn't find a way to query the system for these values.  The __bgq__ macro
+ * seems pretty specific though; for example, it's only set by the
+ * BG/Q-specific XL wrappers. */
+static double clockspeedHz(int *ncores, char **modelnamep){
+    if(ncores) *ncores = 16;
+    if(modelnamep) *modelnamep = ntcsdup("A2");
+    return 1.6e9;
+}
 #elif defined(__APPLE__)
 static double clockspeedHz(int *ncores, char **modelnamep){
     FILE *fp = popen("sysctl hw.cpufrequency", "r");
