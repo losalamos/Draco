@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:16 2002
  * \brief  C4 MPI function declarations.
- * \note   Copyright (C) 2002-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -43,7 +43,7 @@ extern const int proc_null;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-template<class Comm>
+template<typename Comm>
 void inherit(const Comm &comm)
 {
     Remember(int result = )
@@ -56,7 +56,7 @@ void inherit(const Comm &comm)
  * Broadcast the range [first, last) from proc 0 
  * into [result, ...) on all other processors.
  */
-template<class ForwardIterator, class OutputIterator>
+template<typename ForwardIterator, typename OutputIterator>
 void broadcast(ForwardIterator first,
 	       ForwardIterator last,
 	       OutputIterator  result)
@@ -70,32 +70,42 @@ void broadcast(ForwardIterator first,
 
     diff_type size;
     if( rtt_c4::node() == 0)
-    {
 	size = std::distance(first, last);
-    }
     broadcast(&size, 1, 0);
-
+    
     value_type *buf = new value_type[size];
     if ( rtt_c4::node() == 0)
-    {
 	std::copy(first, last, buf);
-    }
     broadcast(buf, size, 0);
-    
+
     if ( rtt_c4::node() != 0)
-    {
 	std::copy(buf, buf+size, result);
-    }
     
     delete [] buf;
+    return;
+}
+
+// safer version of broadcast using stl ranges
+template<typename ForwardIterator, typename OutputIterator>
+void broadcast(ForwardIterator first,
+	       ForwardIterator last,
+	       OutputIterator  result,
+               OutputIterator  result_end)
+{
+    // Check that the result is large enough to hold the data that is
+    // currently in buf.
+    Insist( std::distance(first,last) == std::distance(result,result_end),
+            "Destination must be same size as source data." );
+    broadcast(first,last,result);    
+    return;
 }
 
 } // end namespace rtt_c4
 
 #endif // C4_MPI
 
-#endif                          // c4_C4_MPI_hh
+#endif // c4_C4_MPI_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/C4_MPI.hh
+// end of c4/C4_MPI.hh
 //---------------------------------------------------------------------------//

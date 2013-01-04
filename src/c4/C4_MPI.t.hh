@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -31,7 +31,7 @@ namespace rtt_c4
 // BLOCKING SEND/RECEIVE OPERATIONS
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 int send(const T *buffer, 
 	 int      size,
 	 int      destination, 
@@ -44,7 +44,7 @@ int send(const T *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 int receive(T   *buffer, 
 	    int  size, 
 	    int  source, 
@@ -68,7 +68,7 @@ int receive(T   *buffer,
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 C4_Req send_async(const T *buffer, 
 		  int      size, 
 		  int      destination, 
@@ -90,7 +90,7 @@ C4_Req send_async(const T *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 void send_async(C4_Req  &request, 
 		const T *buffer, 
 		int      size, 
@@ -109,7 +109,7 @@ void send_async(C4_Req  &request,
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 void send_is(C4_Req  &request, 
 	     const T *buffer, 
 	     int      size, 
@@ -132,7 +132,7 @@ void send_is(C4_Req  &request,
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 C4_Req receive_async(T   *buffer, 
 		     int  size, 
 		     int  source, 
@@ -154,7 +154,7 @@ C4_Req receive_async(T   *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 void receive_async(C4_Req &request, 
 		   T      *buffer, 
 		   int     size, 
@@ -178,7 +178,7 @@ void receive_async(C4_Req &request,
 // BROADCAST
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 int broadcast(T   *buffer, 
 	      int size,
 	      int root)
@@ -188,13 +188,11 @@ int broadcast(T   *buffer,
     return r;
 }
 
-
-
 //---------------------------------------------------------------------------//
 // GATHER/SCATTER
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 int gather(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Gather(send_buffer,
@@ -209,7 +207,7 @@ int gather(T *send_buffer, T *receive_buffer, int size)
     return Result;
 }
 
-template<class T>
+template<typename T>
 int scatter(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Scatter(send_buffer,
@@ -224,7 +222,7 @@ int scatter(T *send_buffer, T *receive_buffer, int size)
     return Result;
 }
 
-template<class T>
+template<typename T>
 int gatherv(T *send_buffer,
             int send_size,
             T *receive_buffer,
@@ -244,7 +242,7 @@ int gatherv(T *send_buffer,
     return Result;
 }
 
-template<class T>
+template<typename T>
 int scatterv(T *send_buffer,
              int *send_sizes,
              int *send_displs,
@@ -270,7 +268,7 @@ int scatterv(T *send_buffer,
 // GLOBAL REDUCTIONS
 //---------------------------------------------------------------------------//
 
-template<class T> 
+template<typename T> 
 void global_sum(T &x)
 {
     // copy data into send buffer
@@ -283,7 +281,7 @@ void global_sum(T &x)
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 void global_prod(T &x)
 {
      // copy data into send buffer
@@ -296,7 +294,7 @@ void global_prod(T &x)
 
 //---------------------------------------------------------------------------//
 
-template<class T> 
+template<typename T> 
 void global_min(T &x)
 {
      // copy data into send buffer
@@ -309,7 +307,7 @@ void global_min(T &x)
 
 //---------------------------------------------------------------------------//
 
-template<class T> 
+template<typename T> 
 void global_max(T &x)
 {
      // copy data into send buffer
@@ -322,7 +320,7 @@ void global_max(T &x)
 
 //---------------------------------------------------------------------------//
 
-template<class T> 
+template<typename T> 
 void global_sum(T *x, int n)
 {
     // copy data into a send buffer
@@ -336,7 +334,7 @@ void global_sum(T *x, int n)
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 void global_prod(T *x, int n)
 {
     // copy data into a send buffer
@@ -350,7 +348,7 @@ void global_prod(T *x, int n)
 
 //---------------------------------------------------------------------------//
 
-template<class T> 
+template<typename T> 
 void global_min(T *x, int n)
 {
     // copy data into a send buffer
@@ -364,7 +362,7 @@ void global_min(T *x, int n)
 
 //---------------------------------------------------------------------------//
 
-template<class T> 
+template<typename T> 
 void global_max(T *x, int n)
 {
     // copy data into a send buffer

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
- * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -52,6 +52,7 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     vector<double> v(10,0.0);
     string msgref("hello, world!");
     string msg;
+    string badmsg; // length never set.
     
     // assign on node 0
     if (rtt_c4::node() == 0)
@@ -90,6 +91,27 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     // check array values
     if (!soft_equiv(v.begin(),v.end(),vref.begin(),vref.end()))  ITFAILS;
     if ( msg != msgref )      ITFAILS;
+
+    // safer 4 argument form (in case msg has not been resized).
+    if( rtt_c4::node() != 0 )
+        msg = "foo bar baz 9"; // same length as msgref.
+    broadcast(msg.begin(),msg.end(),msg.begin(),msg.end());
+    if ( msg != msgref )      ITFAILS;
+
+    try
+    {
+        string badmsg; // length never set.
+        broadcast(msg.begin(),msg.end(),badmsg.begin(),badmsg.end());
+        // The above command should throw on all procs.
+        if( rtt_c4::node() != 0 ) ITFAILS;
+    }
+    catch( std::exception &err )
+    {
+        std::ostringstream msg;
+        msg << "Successfully caught a range violation in broadcast on PE "
+            << rtt_c4::node();
+        PASSMSG( msg.str() );
+    }    
     
     rtt_c4::global_barrier();
 
