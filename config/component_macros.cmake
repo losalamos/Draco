@@ -238,7 +238,7 @@ macro( register_scalar_test targetname runcmd command cmd_args )
          COMMAND ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};./${command} ${cmd_args})" )
    else()
       # Cielito needs the ./ in front of the binary name.
-      if( "${MPIEXEC}" MATCHES "aprun" )
+      if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" )
          set( APT_TARGET_FILE_PREFIX "./" )
       endif()
       separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
