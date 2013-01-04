@@ -47,7 +47,7 @@ if( USE_OPENMP )
    set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qsmp=omp" )
 endif()
 
-set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -qcheck" )
+set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -qnosmp -qcheck" )
 SET( CMAKE_Fortran_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
 SET( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
 SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
