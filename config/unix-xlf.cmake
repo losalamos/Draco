@@ -42,7 +42,7 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "XL" )
 #                 eXtension (QPX) units.
 # -qsmp=omp       Enable parallelization using OpenMP pragmas.
 
-set( CMAKE_Fortran_FLAGS    "-qlanglvl=2003std -qinfo=all -qflag=i:w" )
+set( CMAKE_Fortran_FLAGS    "-qlanglvl=2003std -qinfo=all -qflag=i:w -qarch=auto" )
 if( USE_OPENMP )
    set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qsmp=omp" )
 endif()

@@ -41,11 +41,13 @@
 # -qsuppress  Suppress specific informational or warning messages.
 #  1540-0072: The attribute [...] is not supported on the target
 #             platform. The attribute is ignored.
+#  1506-1197: The use of ':' in designated initializer syntax is
+#             non-portable.  (Triggered by BG/Q system headers.)
 
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-qinfo=all -qflag=i:w -qsuppress=1540-0072" )
+   set( CMAKE_C_FLAGS                "-qinfo=all -qflag=i:w -qsuppress=1540-0072 -qsuppress=1506-1197 -qarch=auto" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -qcheck -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
