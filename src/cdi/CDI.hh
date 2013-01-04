@@ -80,7 +80,7 @@ static double const NORM_FACTOR = 0.25*coeff;         // 15/(4*pi^4);
  * \return The integral value.
  */
 
-inline double taylor_series_planck(double x)
+static inline double taylor_series_planck(double x)
 {
 
     Require( x >= 0.0 );
@@ -128,7 +128,7 @@ inline double taylor_series_planck(double x)
 /* --------------------------------------------------------------------------- */
 //! \brief return the 10-term Polylogarithmic expansion (minus one) for the
 //         Planck integral given \f$ x \f$ and \f$ e^{-x} \f$ (for efficiency)
-double polylog_series_minus_one_planck(double const x, double const eix)
+static double polylog_series_minus_one_planck(double const x, double const eix)
 {
 
     Require (x >= 0.0);
@@ -210,7 +210,7 @@ double polylog_series_minus_one_planck(double const x, double const eix)
 
 
 
-double Planck2Rosseland(double const freq, double const exp_freq)
+static double Planck2Rosseland(double const freq, double const exp_freq)
 {
 
     Check(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
