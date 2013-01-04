@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 #include <cxxabi.h>
 #endif
-#ifdef __PGI
+#if defined(__PGI) || defined(__xlC__)
 #include <typeinfo>
 #endif
 
