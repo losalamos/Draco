@@ -50,6 +50,8 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     double d = 0;
     vector<double> vref(10,3.1415);
     vector<double> v(10,0.0);
+    string msgref("hello, world!");
+    string msg;
     
     // assign on node 0
     if (rtt_c4::node() == 0)
@@ -60,6 +62,12 @@ void test_simple( rtt_dsxx::UnitTest &ut )
 	f = 1.5;
 	d = 2.5;
         v = vref;
+        msg = msgref;
+    }
+    else
+    {
+        // reserve enough space to receive the broadcast string.
+        msg.resize(msgref.length());
     }
     
     // send out data, using node 0 as root
@@ -68,15 +76,20 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     broadcast(&l, 1, 0);
     broadcast(&f, 1, 0);
     broadcast(&d, 1, 0);
-    broadcast(v.begin(),v.end(),v.begin());
+    
+    broadcast(  v.begin(),  v.end(),  v.begin());
+    broadcast(msg.begin(),msg.end(),msg.begin());
 
-    // check values
+    // check scalar values
     if (c != 'A')             ITFAILS;
     if (i != 1)               ITFAILS;
     if (l != 1000)            ITFAILS;
     if (!soft_equiv(f, 1.5f)) ITFAILS;
     if (!soft_equiv(d, 2.5))  ITFAILS;
+
+    // check array values
     if (!soft_equiv(v.begin(),v.end(),vref.begin(),vref.end()))  ITFAILS;
+    if ( msg != msgref )      ITFAILS;
     
     rtt_c4::global_barrier();
 
