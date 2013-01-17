@@ -310,6 +310,9 @@ template<typename T>
 int gather(T *send_buffer, T *receive_buffer, int size);
 
 template<typename T>
+int allgather(T *send_buffer, T *receive_buffer, int size);
+
+template<typename T>
 int gatherv(T *send_buffer,
             int send_size,
             T *receive_buffer,

@@ -40,6 +40,13 @@ int gather<char>(char * send_buffer,
 //----------//
 
 template
+int allgather<int>(int * send_buffer,
+                   int * receive_buffer,
+                   int   size);
+
+//----------//
+
+template
 int gatherv<unsigned>(unsigned * send_buffer,
                       int        send_size,
                       unsigned * receive_buffer,

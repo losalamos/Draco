@@ -208,6 +208,20 @@ int gather(T *send_buffer, T *receive_buffer, int size)
 }
 
 template<typename T>
+int allgather(T *send_buffer, T *receive_buffer, int size)
+{
+    int Result = MPI_Allgather(send_buffer,
+                               size,
+                               MPI_Traits<T>::element_type(),
+                               receive_buffer,
+                               size,
+                               MPI_Traits<T>::element_type(),
+                               communicator);
+
+    return Result;
+}
+
+template<typename T>
 int scatter(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Scatter(send_buffer,

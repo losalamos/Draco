@@ -30,6 +30,37 @@ using namespace rtt_c4;
 // TESTS
 //---------------------------------------------------------------------------//
 
+void tstAllgather(UnitTest &ut)
+{
+    int mypid = rtt_c4::node();
+    vector<int> allpid(rtt_c4::nodes());
+    int status = allgather(&mypid, &allpid[0], 1);
+    if (status == 0)
+    {
+        PASSMSG("status is okay from allgather");
+        status = 0;
+        for (int i=0; i<rtt_c4::nodes(); ++i)
+        {
+            if (allpid[i] != i)
+            {
+                status = 1;
+                break;
+            }
+        }
+        if (status == 0)
+        {
+            PASSMSG("gathered values are okay for allgather");
+        }
+        else
+        {
+            FAILMSG("gathered values are NOT okay for allgather");
+        }
+    }
+    else
+        FAILMSG("status is NOT okay from allgather");
+}
+
+//---------------------------------------------------------------------------------------//
 void tstDeterminateGatherScatter(UnitTest &ut)
 {
     unsigned pid = node();
@@ -261,6 +292,7 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
+        tstAllgather(ut);
         tstDeterminateGatherScatter(ut);
         tstIndeterminateGatherScatterv(ut);
         tstDeterminateGatherScatterv(ut);
