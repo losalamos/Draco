@@ -3,7 +3,7 @@
 # author Kelly Thompson 
 # date   2010 Nov 1
 # brief  Establish flags for Linux64 - Intel C++
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -13,14 +13,6 @@
 # ----------------------------------------
 # 7/20/11 - Use -O3 for Release builds but reduce -fp-model from
 #           strict to precise to eliminate warning 1678.
-
-#
-# Sanity Checks
-# 
-
-if( NOT __LINUX_COMPILER_INTEL )
-  message( FATAL_ERROR "If CXX is not Intel C++, then we shouldn't have ended up here.  Something is really wrong with the build system. " )
-endif()
 
 #
 # Compiler Flags

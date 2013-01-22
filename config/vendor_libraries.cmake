@@ -66,10 +66,10 @@ macro( setupMPILibrariesUnix )
       endif()
 
       # On CT, only look for .a MPI libraries when build type is STATIC
-      if( "${SITE}" MATCHES "c[it]" AND
-            "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
-         set( CMAKE_FIND_LIBRARY_SUFFIXES .a )
-      endif()
+      # if( "${SITE}" MATCHES "c[it]" AND
+      #       "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
+      #    set( CMAKE_FIND_LIBRARY_SUFFIXES .a ) # automatic for Catamount.cmake
+      # endif()
 
       # First attempt to find mpi
       # bug #75: This package will print to std:

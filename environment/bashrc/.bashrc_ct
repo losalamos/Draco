@@ -23,7 +23,7 @@ export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 #
 # Use this module command when running bash.
 # function module() { eval `/usr/bin/modulecmd bash $*`; }
-source /opt/modules/3.2.6.6/init/bash
+source /opt/modules/3.2.6.7/init/bash
 
 # Use modules found in the draco directory
 module use $DRACO_MODULE_DIR/hpc
@@ -31,14 +31,16 @@ module use $DRACO_MODULE_DIR/ct-fe
 
 # modules
 module unload PrgEnv-intel PrgEnv-pgi
-module unload cmake numdiff svn gsl
+module unload cmake numdiff gsl
+# svn
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
 module unload xt-libsci xt-totalview intel
-module load intel/13.0.1.117
+module load intel/13.0.1.117 xt-mpich2
+module load emacs cmake subversion # gsl/1.15
 # draco modules start here.
 module load gsl/1.14 lapack/3.4.1-intel
-module load cmake numdiff svn
+module load numdiff svn
 module load trilinos SuperLU_DIST/3.0-intel 
 module load ParMetis/3.1.1-intel ndi random123 eospac
 

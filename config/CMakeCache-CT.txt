@@ -8,6 +8,9 @@ CMAKE_INSTALL_PREFIX:PATH=/scratch/moniker/ct/pgi-mpid/t
 #---------------------------------------------------------------------------#
 # CT/CI settings
 #---------------------------------------------------------------------------#
+# Don't assume Linux to avoid -rdynamic flag when linking...
+CMAKE_SYSTEM_NAME:STRING=Catamount
+
 # Keyword for creating new libraries (STATIC or SHARED).
 DRACO_LIBRARY_TYPE:STRING=STATIC
 
@@ -19,9 +22,15 @@ CMAKE_Fortran_COMPILER:FILEPATH=ftn
 # Help find vendor software
 MPIEXEC:FILEPATH=/usr/bin/aprun
 MPIEXEC_NUMPROC_FLAG:STRING=-n
+
 MPI_C_LIBRARIES:FILEPATH=
 MPI_CXX_LIBRARIES:FILEPATH=
 MPI_Fortran_LIBRARIES:FILEPATH=
+
 MPI_C_INCLUDE_PATH:PATH=
 MPI_CXX_INCLUDE_PATH:PATH=
 MPI_Fortran_INCLUDE_PATH:PATH=
+
+MPI_CXX_COMPILER:PATH=
+MPI_C_COMPILER:PATH=
+MPI_Fortran_COMPILER:PATH=
