@@ -91,7 +91,7 @@ cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR )
 #       Support for Xcode 4.3
 project( Draco CXX C )
 
-if (NOT ${CMAKE_GENERATOR} MATCHES Xcode )
+if (NOT "${CMAKE_GENERATOR}" MATCHES Xcode AND NOT "${CMAKE_GENERATOR}" MATCHES "Visual Studio")
    enable_language( Fortran OPTIONAL )
 endif()
 

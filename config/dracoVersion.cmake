@@ -31,22 +31,31 @@ macro( set_ccs2_software_version PROJNAME )
       execute_process( 
          COMMAND         date +%m/%d/%Y
          OUTPUT_VARIABLE configureDate )
+      # Format the configureDate
+      string( REGEX REPLACE 
+         ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+         "\\3" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
+      string( REGEX REPLACE 
+         ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+         "\\1" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
+      string( REGEX REPLACE 
+         ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+         "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
    elseif( WIN32 )
       execute_process( 
          COMMAND         "cmd" "/c" "date" "/t"
          OUTPUT_VARIABLE configureDate )
+      # Format the configureDate
+      string( REGEX REPLACE 
+        ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+        "\\1" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
+      string( REGEX REPLACE 
+         ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+         "\\2" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
+      string( REGEX REPLACE 
+         ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+         "\\3" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
    endif()
-   
-   # Format the configureDate
-   string( REGEX REPLACE 
-      ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-      "\\3" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
-   string( REGEX REPLACE 
-      ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-      "\\1" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
-   string( REGEX REPLACE 
-      ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-      "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
    
    set( ${PROJNAME}_BUILD_DATE
       "${${PROJNAME}_DATE_STAMP_YEAR}/${${PROJNAME}_DATE_STAMP_MONTH}/${${PROJNAME}_DATE_STAMP_DAY}" )
