@@ -87,11 +87,11 @@ void random_existence(UnitTest &ut){
     if(soft_equiv(r0n0, r0n2)) ITFAILS;
     if(soft_equiv(r0n1, r0n2)) ITFAILS;
     //check alternate (seed,streamnum) constructor
-    Counter_RNG aynRand5(0xcafebabe,0xbaddecaf, 0);
-    if(aynRand5.get_num() != 0xbaddecaf) ITFAILS;
+    Counter_RNG aynRand5(0xcafe,0xdecaf, 0);
+    if(aynRand5.get_num() != 0xdecaf) ITFAILS;
     //check counter default value
     if(aynRand5.begin()[0] != 0) ITFAILS;
-    if(aynRand5.begin()[1] != 0xcafebabe) ITFAILS;
+    if(aynRand5.begin()[1] != 0xcafe) ITFAILS;
     //check counter after incrementing
     aynRand5.ran();
     if(aynRand5.begin()[0] != 1) ITFAILS;
@@ -99,7 +99,7 @@ void random_existence(UnitTest &ut){
     aynRand5.begin()[0] = 0xffffffffffffffff;
     aynRand5.ran();
     if(aynRand5.begin()[0] != 0) ITFAILS;
-    if(aynRand5.begin()[1] != 0xcafebabf) ITFAILS;
+    if(aynRand5.begin()[1] != 0xcaff) ITFAILS;
     //check function size()
     if (aynRand0.size() != 4) ITFAILS;
     //check function size_bytes()
