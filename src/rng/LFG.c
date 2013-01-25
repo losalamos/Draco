@@ -59,7 +59,7 @@
   June 28, 2006 
 */
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || (__ICC == 1300)
 #define LFG_RESTRICT  
 #else
 #define LFG_RESTRICT __restrict__
