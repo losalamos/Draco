@@ -112,10 +112,10 @@ set_ccs2_software_version( DRACO )
 #
 include(dracoTesting) 
 # Top level test
-add_test( SystemInformationNew 
-	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
-set_tests_properties( SystemInformationNew
-   PROPERTIES LABELS "nomemcheck" )
+#add_test( SystemInformationNew 
+#	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
+#set_tests_properties( SystemInformationNew
+#   PROPERTIES LABELS "nomemcheck" )
 
 # Set default compile environment:
 
