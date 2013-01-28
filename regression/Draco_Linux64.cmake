@@ -14,6 +14,7 @@ cmake_minimum_required(VERSION 2.6.3 FATAL_ERROR)
 #     [Debug[,Coverage]|Release|RelWithDebInfo]
 
 set( CTEST_PROJECT_NAME "Draco" )
+message("source ${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 set_defaults()
 parse_args() 
@@ -55,7 +56,7 @@ ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
 
 message("
---> Draco_gcc.cmake modes:
+--> Draco_Linux64.cmake modes:
     CTEST_CONFIGURE = ${CTEST_CONFIGURE}
     CTEST_BUILD     = ${CTEST_BUILD}
     CTEST_TEST      = ${CTEST_TEST}
