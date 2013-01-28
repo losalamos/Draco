@@ -189,12 +189,19 @@ macro( parse_args )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
   
   # Post options: SubmitOnly or NoSubmit
-  if( ${CTEST_SCRIPT_ARG} MATCHES NoSubmit )
-     set( CTEST_NOSUBMIT "ON" )
-  elseif( ${CTEST_SCRIPT_ARG} MATCHES SubmitOnly )
-     set( CTEST_SUBMITONLY "ON" )
+  if( ${CTEST_SCRIPT_ARG} MATCHES Configure )
+     set( CTEST_CONFIGURE "ON" )
   endif()
-
+  if( ${CTEST_SCRIPT_ARG} MATCHES Build )
+     set( CTEST_BUILD "ON" )
+  endif()
+  if( ${CTEST_SCRIPT_ARG} MATCHES Test )
+     set( CTEST_TEST "ON" )
+  endif()
+  if( ${CTEST_SCRIPT_ARG} MATCHES Submit )
+     set( CTEST_SUBMIT "ON" )
+  endif()
+  
   set( compiler_short_name "gcc" )
   if( $ENV{CXX} MATCHES "pgCC" )
      set( compiler_short_name "pgi" )
@@ -208,8 +215,6 @@ macro( parse_args )
      else()
         set( compiler_short_name "intel-${compiler_version}" )
      endif()
-  elseif($ENV{CXX} MATCHES "ppu-g[+][+]" )
-     set( compiler_short_name "ppu-gcc" )
   elseif($ENV{CXX} MATCHES "xt-asyncpe" )
      # Ceilo (catamount) uses a wrapper script
      # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
@@ -284,14 +289,14 @@ macro( parse_args )
   
   if( NOT quiet_mode )
     message("
-CTEST_MODEL               = ${CTEST_MODEL}
-CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
-compiler_short_name       = ${compiler_short_name}
-CTEST_BUILD_NAME          = ${CTEST_BUILD_NAME}
-ENABLE_C_CODECOVERAGE     = ${ENABLE_C_CODECOVERAGE}
+CTEST_MODEL                 = ${CTEST_MODEL}
+CTEST_BUILD_CONFIGURATION   = ${CTEST_BUILD_CONFIGURATION}
+compiler_short_name         = ${compiler_short_name}
+CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
+ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
-CTEST_USE_LAUNCHER        = ${CTEST_USE_LAUNCHER}
-MPIEXEC_MAX_NUMPROCS      = ${MPIEXEC_MAX_NUMPROCS}
+CTEST_USE_LAUNCHER          = ${CTEST_USE_LAUNCHER}
+MPIEXEC_MAX_NUMPROCS        = ${MPIEXEC_MAX_NUMPROCS}
 ")
   endif()
 
@@ -533,7 +538,9 @@ macro(platform_customization)
 #      set( TOOLCHAIN_SETUP
 #         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake"
 # )
-      set(CT_CUSTOM_VARS "DRACO_LIBRARY_TYPE:STRING=STATIC
+      set(CT_CUSTOM_VARS 
+"DRACO_LIBRARY_TYPE:STRING=STATIC
+CMAKE_SYSTEM_NAME:STRING=Catamount
 CMAKE_C_COMPILER:FILEPATH=cc
 CMAKE_CXX_COMPILER:FILEPATH=CC 
 CMAKE_Fortran_COMPILER:FILEPATH=ftn
@@ -545,20 +552,8 @@ MPI_Fortran_LIBRARIES:FILEPATH=
 MPI_C_INCLUDE_PATH:PATH=
 MPI_CXX_INCLUDE_PATH:PATH=
 MPI_Fortran_INCLUDE_PATH:PATH=")
-   elseif( "${sitename}" MATCHES "RoadRunner" )
-      if( "$ENV{CXX}" MATCHES "ppu-g[+][+]" )
-         set( TOOLCHAIN_SETUP
-            "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-roadrunner-ppe.cmake" )
-      else()
-         string( REGEX REPLACE "g[+][+]" "ppu-g++" PPE_PREFIX
-            $ENV{work_dir} )
-         set( INIT_CACHE_PPE_PREFIX
-            "PPE_PREFIX:PATH=${PPE_PREFIX}/target" )
-      endif()
    endif()
 endmacro(platform_customization)
-
-
 
 # ------------------------------------------------------------
 # Special default settings for a couple of platforms
