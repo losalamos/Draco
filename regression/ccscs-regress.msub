@@ -1,0 +1,172 @@
+#!/bin/bash -l
+
+#----------------------------------------------------------------------#
+# The script starts here
+#----------------------------------------------------------------------#
+
+# Sanity Check
+# ----------------------------------------
+if test "${subproj}x" == "x"; then
+   echo "Fatal Error, subproj not found in environment."
+   exit 1
+fi
+if test "${regdir}x" == "x"; then
+   echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${build_type}x" == "x"; then
+   echo "Fatal Error, build_type not found in environment."
+   exit 1
+fi
+
+# Environment setup
+# ----------------------------------------
+umask 0002
+unset http_proxy
+unset HTTP_PROXY
+export VENDOR_DIR=/ccs/codes/radtran/vendors
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then
+       eval $1
+    fi
+}
+
+# Header
+# ----------------------------------------
+machine=`uname -n`
+case $machine in
+ccscs[0-9].*) 
+    ctestparts=Configure,Build,Test,Submit
+    # Force new log file (vs appending)
+    echo "     " > ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-cbts.log 
+    echo "==========================================================================="
+    echo "Moonlight Regression: ${ctestparts} from ${machine}."
+    echo "                      ${subproj}-${build_type}-${extra_params}"
+    echo "==========================================================================="
+    ;;
+#ccscs-fey*)
+#    ctestparts=Submit ;;
+*)
+    echo "FATAL ERROR: Machine ( $machine ) unknown by regression system"
+    exit 1 ;;
+esac
+
+# Modules
+# ----------------------------------------
+if test -z "$MODULESHOME"; then
+ if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
+    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
+ fi
+fi
+run "module purge"
+run "module load gcc gsl openmpi cmake"
+run "module load valgrind numdiff svn random123"
+run "module load eospac grace lapack valgrind"
+run "module load SCALAPACK SuperLU_DIST hypre/2.0.0"
+run "module load BLACS ndi ParMetis trilinos"
+comp=gcc
+
+case $extra_params in
+none)
+    # no-op
+    ;;
+coverage)
+    echo "Coverage option selected."
+    build_type=Coverage
+    run "module load bullseyecoverage/8.7.17"
+    CXX=`which g++`
+    CC=`which gcc`
+    ;;
+intel13)
+    echo "Regression system incomplete for option 'intel13'"
+    exit 1
+    module unload openmpi/1.4.5 cudatoolkit intel/12.1.5
+    module load intel/13.0.1 openmpi
+    comp="intel-13.0.1"
+    ;;
+pgi)
+    echo "Regression system incomplete for option 'pgi'"
+    exit 1
+    module unload eospac ParMetis trilinos SuperLU_DIST gsl
+    module unload lapack cudatoolkit openmpi intel
+    module load pgi openmpi gsl/1.14-pgi
+    comp=`basename $CXX`
+    ;;
+*)
+    echo "FATAL ERROR"
+    echo "Extra parameter = ${extra_param} requested but is unknown to"
+    echo "the regression system."
+    exit 1
+    ;;
+esac
+run "module list"
+
+# ----------------------------------------
+# Run the CTest script:
+# ----------------------------------------
+# This script will take the following build steps: 
+# 1. cvs update
+# 2. run cmake to build Makefiles
+# 3. run make to build libraries and tests
+# 4. Run the unit tests
+# 5. Post the results to coder.lanl.gov/cdash
+#
+# Options are:
+# Regression type: Experimental (default), Nightly, Continuous
+# Build type     : Release, Debug, Coverage
+
+if test "${dashboard_type}x" == "x"; then
+   dashboard_type=Nightly
+fi
+base_dir=/home/regress
+
+echo " "
+echo "ccscs-regress.msub: dashboard_type = $dashboard_type"
+echo "ccscs-regress.msub: base_dir       = $base_dir"
+echo "ccscs-regress.msub: build_type     = $build_type"
+echo "ccscs-regress.msub: comp           = $comp"
+
+#----------------------------------------------------------------------#
+# CTest
+#----------------------------------------------------------------------#
+
+if test "${subproj}" == draco; then
+    script_dir=${regdir}/draco/regression
+    script_name=Draco_Linux64.cmake
+elif test "${subproj}" == clubimc; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=ClubIMC_Linux64.cmake
+elif test "${subproj}" == wedgehog; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Wedgehog_Linux64.cmake
+elif test "${subproj}" == milagro; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Milagro_Linux64.cmake
+elif test "${subproj}" == capsaicin; then
+    script_dir=${regdir}/capsaicin/scripts
+    script_name=Capsaicin_Linux64.cmake
+fi
+
+export work_dir=${base_dir}/work/${subproj}/${dashboard_type}_${comp}/${build_type}
+echo "ccscs-regress.msub: work_dir = ${work_dir}"
+echo " "
+setup_dirs=`echo $ctestparts | grep Configure`
+if ! test "${setup_dirs}x" = "x"; then
+   if ! test -d ${work_dir}; then
+      /usr/bin/install -d ${work_dir}/source
+      /usr/bin/install -d ${work_dir}/build
+      /usr/bin/install -d ${work_dir}/target
+   else
+      if test -d ${work_dir}/target/lib; then
+         rm -rf ${work_dir}/target/*
+      fi
+      # keep the purger from removing the source files.
+      # find ${work_dir}/source/ -exec touch {} \;
+   fi
+fi
+
+echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+

@@ -1,0 +1,19 @@
+# crontab for ccscs8
+
+01 22 * * 0-6 /home/regress/jayenne/regression/update_regression_scripts.sh &> /home/regress/logs/update_regression_scripts.log
+
+01 01 * * 0-6 /home/regress/jayenne/regress/ccscs-master.csh Debug &> /home/regress/logs/ccscs-Debug-master.log
+
+01 01 * * 0-6 /home/regress/jayenne/regress/ccscs-master.csh Release &> /home/regress/logs/ccscs-Release-master.log
+
+01 01 * * 0-6 /home/regress/jayenne/regress/ccscs-master.csh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
+
+
+# |    |    |    |    |   |
+# |    |    |    |    |   +- command 
+# |    |    |    |    +----- day of week (0 - 6) (Sunday=0)
+# |    |    |    +---------- month (1 - 12)
+# |    |    +--------------- day of month (1 - 31)
+# |    +-------------------- hour (0 - 23)
+# +------------------------- min (0 - 59)
+#

@@ -1,0 +1,198 @@
+#!/bin/bash -l
+
+#MSUB -l walltime=08:00:00
+#MSUB -l nodes=1:ppn=16
+
+#----------------------------------------------------------------------#
+# The script starts here
+#----------------------------------------------------------------------#
+
+# Sanity Check
+# ----------------------------------------
+if test "${subproj}x" == "x"; then
+   echo "Fatal Error, subproj not found in environment."
+   exit 1
+fi
+if test "${regdir}x" == "x"; then
+   echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${build_type}x" == "x"; then
+   echo "Fatal Error, build_type not found in environment."
+   exit 1
+fi
+
+# work around: the CT batch system is appending $regdir with the
+# string "NACCESSPOLICY=singlejob" (change.lanl.gov ticket #72119).
+# Strip this string to allow the job to run:
+regdir=`echo $regdir | sed -e 's/NACCESS.*//'`
+subproj=`echo $subproj | sed -e 's/NACCESS.*//'`
+
+# Environment setup
+# ----------------------------------------
+umask 0002
+unset http_proxy
+unset HTTP_PROXY
+export VENDOR_DIR=/usr/projects/draco/vendors
+
+machine=`uname -n`
+case $machine in
+ct-login[0-9].localdomain) 
+    ctestparts=Test,Submit
+    # Force create of a new log file (don't append)
+    echo "Purging ${regdir}/logs/ct-${build_type}-${subproj}-${extra_params}-ts.log"
+    echo "    " > ${regdir}/logs/ct-${build_type}-${subproj}-${extra_params}-ts.log
+    echo "==========================================================================="
+    echo "Cielito regression: ${ctestparts} from ${machine}."
+    echo "                    ${subproj}-${build_type}-${extra_params}"
+    echo "==========================================================================="
+    ;;
+ct-fe1*)
+    ctestparts=Configure,Build 
+    echo "==========================================================================="
+    echo "Cielito regression: ${ctestparts} from ${machine}."
+    echo "                    ${subproj}-${build_type}-${extra_params}"
+    echo "==========================================================================="
+    ;;
+esac
+
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+# Modules
+# ----------------------------------------
+result=`fn_exists module`
+#echo "result = $result"
+if test $result -eq 0; then 
+    echo 'module function is defined'
+else
+    echo 'module function does not exist. defining a local function ...'
+    module () 
+    { 
+        eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
+    }
+fi
+
+dirs="Modules/hpc Modules/ct-fe"
+for dir in $dirs; do 
+  if test -z `echo $MODULEPATH | grep $dir`; then 
+    echo "module use ${regdir}/$dir"
+    module use ${regdir}/$dir
+  fi
+done
+
+module unload PrgEnv-intel PrgEnv-pgi
+module unload cmake numdiff svn gsl
+module load PrgEnv-intel
+module unload intel
+module load intel/12.1.5.339
+module load gsl/1.14 lapack/3.4.1-intel
+module load cmake numdiff svn
+module load trilinos/10.12.2-intel SuperLU_DIST/3.0-intel 
+module load random123 
+module load eospac
+module load ParMetis/3.1.1-intel ndi
+
+export CC=`which cc`
+export CXX=`which CC`
+export FC=`which ftn`
+comp=CC
+
+case $extra_params in
+none)
+    # revert to intel/12 as the default setup.
+    module unload intel
+    module load intel/12.1.5.339
+    ;;
+intel13)
+    # intel/13 is the default for PrgEnv-intel
+    module unload intel
+    module load intel/13.0.1.117
+    comp="intel-13.0.1"
+    ;;
+*)
+    echo "FATAL ERROR"
+    echo "Extra parameter = ${extra_param} requested but is unknown to"
+    echo "the regression system."
+    exit 1
+    ;;
+esac
+module unload xt-totalview xt-libsci 
+module list
+
+# ----------------------------------------
+# Run the CTest script:
+# ----------------------------------------
+# This script will take the following build steps: 
+# 1. cvs update
+# 2. run cmake to build Makefiles
+# 3. run make to build libraries and tests
+# 4. Run the unit tests
+# 5. Post the results to coder.lanl.gov/cdash
+#
+# Options are:
+# Regression type: Experimental (default), Nightly, Continuous
+# Build type     : Release, Debug
+
+if test "${dashboard_type}x" == "x"; then
+   dashboard_type=Nightly
+fi
+base_dir=/lscratch1/kellyt/cdash/ct
+
+echo " "
+echo "ct-regress.msub: dashboard_type = $dashboard_type"
+echo "ct-regress.msub: base_dir       = $base_dir"
+echo "ct-regress.msub: build_type     = $build_type"
+echo "ct-regress.msub: comp           = $comp"
+echo "ct-regress.msub: machine        = $machine"
+echo "ct-regress.msub: subproj        = $subproj"
+#----------------------------------------------------------------------#
+# CTest
+#----------------------------------------------------------------------#
+
+if test "${subproj}" == draco; then
+    script_dir=${regdir}/draco/regression
+    script_name=Draco_Linux64.cmake
+elif test "${subproj}" == clubimc; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=ClubIMC_Linux64.cmake
+elif test "${subproj}" == wedgehog; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Wedgehog_Linux64.cmake
+elif test "${subproj}" == milagro; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Milagro_Linux64.cmake
+elif test "${subproj}" == capsaicin; then
+    script_dir=${regdir}/capsaicin/scripts
+    script_name=Capsaicin_Linux64.cmake
+fi
+
+export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+echo "ct-regress.msub: work_dir       = ${work_dir}"
+echo " "
+if test "${ctestparts}" = "Configure,Build"; then
+   if ! test -d ${work_dir}; then
+      /usr/bin/install -d ${work_dir}/source
+      /usr/bin/install -d ${work_dir}/build
+      /usr/bin/install -d ${work_dir}/target
+   else
+      if test -d ${work_dir}/target/lib; then
+         rm -rf ${work_dir}/target/*
+      fi
+      # keep the purger from removing the source files.
+      find ${work_dir}/source/ -exec touch {} \;
+   fi
+fi
+
+echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+##---------------------------------------------------------------------------##
+## End of script
+##---------------------------------------------------------------------------##
+
