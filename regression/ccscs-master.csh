@@ -105,14 +105,14 @@ while ($i < $#projects)
     echo " "
     echo "Regression for ${subproj} (${build_type}, fork=${fork})."
     echo " "
-    echo "${regdir}/jayenne/regression/ccscs-job-launch.csh "
+    echo "${regdir}/draco/regression/ccscs-job-launch.csh "
     echo ">& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-joblaunch.log"
         
     if( $fork == "yes" ) then
-        ${regdir}/jayenne/regression/ccscs-job-launch.csh \
+        ${regdir}/draco/regression/ccscs-job-launch.csh \
         >& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-joblaunch.log &
     else
-        ${regdir}/jayenne/regression/ccscs-job-launch.csh \
+        ${regdir}/draco/regression/ccscs-job-launch.csh \
         >& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-joblaunch.log
     endif
 end
