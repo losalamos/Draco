@@ -120,7 +120,7 @@ run "module list"
 if test "${dashboard_type}x" == "x"; then
    dashboard_type=Nightly
 fi
-base_dir=/home/regress
+base_dir=/var/tmp/regress
 
 echo " "
 echo "ccscs-regress.msub: dashboard_type = $dashboard_type"
@@ -149,7 +149,7 @@ elif test "${subproj}" == capsaicin; then
     script_name=Capsaicin_Linux64.cmake
 fi
 
-export work_dir=${base_dir}/work/${subproj}/${dashboard_type}_${comp}/${build_type}
+export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 echo "ccscs-regress.msub: work_dir       = ${work_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`

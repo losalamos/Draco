@@ -22,6 +22,7 @@ run () {
 
 run "cd /home/regress/draco/config; svn update"
 run "cd /home/regress/draco/regression; svn update"
+run "cd /home/regress/draco/environment; svn update"
 run "cd /home/regress/jayenne/regression; svn update"
 run "cd /home/regress/capsaicin/scripts; svn update"
 
