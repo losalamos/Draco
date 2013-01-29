@@ -2,9 +2,10 @@
 
 # Use:
 # - Call from crontab using
-#   <path>/ct-master.csh <build_type>
+#   <path>/ct-master.csh <build_type> <extra_params>
 #
 # - <build_type> = {Debug, Release}
+# - <extra_params = {intel13}
 
 #Banner
 echo "==========================================================================="
@@ -65,8 +66,8 @@ endsw
 #       --> clubimc --> wedgehog
 #                   --> milagro
 
-set projects = (  "draco" "capsaicin" "clubimc" ) # "wedgehog" "milagro" )
-set forkbuild = ( "no"    "yes"       "no"      ) # "yes"      "yes" )
+set projects = (  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
+set forkbuild = ( "no"    "yes"       "no"      "yes"      "yes" )
 
 # special cases
 switch( $extra_params )
