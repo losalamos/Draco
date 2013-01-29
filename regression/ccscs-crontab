@@ -2,11 +2,11 @@
 
 01 22 * * 0-6 /home/regress/draco/regression/update_regression_scripts.sh &> /home/regress/logs/update_regression_scripts.log
 
-01 01 * * 0-6 /home/regress/draco/regress/ccscs-master.csh Debug &> /home/regress/logs/ccscs-Debug-master.log
+01 01 * * 0-6 /home/regress/draco/regression/ccscs-master.csh Debug &> /home/regress/logs/ccscs-Debug-master.log
 
-01 01 * * 0-6 /home/regress/draco/regress/ccscs-master.csh Release &> /home/regress/logs/ccscs-Release-master.log
+01 01 * * 0-6 /home/regress/draco/regression/ccscs-master.csh Release &> /home/regress/logs/ccscs-Release-master.log
 
-01 01 * * 0-6 /home/regress/draco/regress/ccscs-master.csh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
+01 01 * * 0-6 /home/regress/draco/regression/ccscs-master.csh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
 
 
 # |    |    |    |    |   |

@@ -150,7 +150,7 @@ elif test "${subproj}" == capsaicin; then
 fi
 
 export work_dir=${base_dir}/work/${subproj}/${dashboard_type}_${comp}/${build_type}
-echo "ccscs-regress.msub: work_dir = ${work_dir}"
+echo "ccscs-regress.msub: work_dir       = ${work_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
 if ! test "${setup_dirs}x" = "x"; then
@@ -167,6 +167,10 @@ if ! test "${setup_dirs}x" = "x"; then
    fi
 fi
 
+if test "${build_type}" = "Coverage"; then
+   # Coverage build imply Debug builds.
+   build_type="Debug,${build_type}"
+fi
+
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
-
