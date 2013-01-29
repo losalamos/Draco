@@ -1,24 +1,24 @@
-#!/bin/tcsh
+#!/bin/bash
 
-# called from ccscs-master.csh
-# assumes the following variables are defined in ccscs-master.csh:
+# called from ccscs-master.cs
+# assumes the following variables are defined in ccscs-master.cs:
 #    $regdir     - /home/regress
 #    $subproj    - 'draco', 'clubimc', etc.
 #    $build_type - 'Debug', 'Release', 'Coverage'
 
 # sanity check
-if( "${regdir}x" == "x" ) then
-    echo "FATAL ERROR in ccscs-job-launch.csh: You did not set 'regdir' in the environment!"
+if test "${regdir}x" = "x"; then
+    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'regdir' in the environment!"
     exit 1
-endif
-if( "${subproj}x" == "x" ) then
-    echo "FATAL ERROR in ccscs-job-launch.csh: You did not set 'subproj' in the environment!"
+fi
+if test "${subproj}x" = "x"; then
+    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'subproj' in the environment!"
     exit 1
-endif
-if( "${build_type}x" == "x" ) then
-    echo "FATAL ERROR in ccscs-job-launch.csh: You did not set 'build_type' in the environment!"
+fi
+if test "${build_type}x" = "x"; then
+    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'build_type' in the environment!"
     exit 1
-endif
+fi
 
 # Banner
 echo "==========================================================================="
@@ -31,4 +31,7 @@ echo "    >& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-cbts.
 ${regdir}/draco/regression/ccscs-regress.msub \
 >& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-cbts.log
 
+##---------------------------------------------------------------------------##
+## End of ccscs-job-launch.sh
+##---------------------------------------------------------------------------##
 

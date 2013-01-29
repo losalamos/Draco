@@ -1,4 +1,4 @@
-#!/bin/tcsh
+#!/bin/bash
 
 # Use:
 # - Call from crontab using
@@ -7,61 +7,65 @@
 # - <build_type>   = {Debug, Release}
 # - <extra_params> = coverage
 
+##---------------------------------------------------------------------------##
+## Support functions
+##---------------------------------------------------------------------------##
+print_error()
+{
+    echo "FATAL ERROR"
+    echo " "
+    echo "Usage: $0 <build_type> [extra_params]"
+    echo " "
+    echo "   <build_type>   = { Debug, Release }."
+    echo "   [extra_params] = { coverage }."
+    exit 1
+}
+
+##---------------------------------------------------------------------------##
+## Main
+##---------------------------------------------------------------------------##
+
 #Banner
 echo "==========================================================================="
-echo "ccscs-master.csh: Regression for Linux64 on CCS LAN"
+echo "ccscs-master.sh: Regression for Linux64 on CCS LAN"
 
 # Arguments
-switch ( $#argv )
-case 1:
-    setenv build_type $1
-    setenv extra_params none
+case $# in
+1 )
+    export build_type=$1
+    export extra_params=none
     echo "Build: ${build_type}"
-    breaksw
-case 2:
-    setenv build_type $1
-    setenv extra_params $2
+;;
+2 )
+    export build_type=$1
+    export extra_params=$2
     echo "Build: ${build_type}     Extra Params: $extra_params"
-    breaksw
-default:
+;;
+* )
     echo "Wrong number of arguments provided to ccscs-master.csh."
-    goto error
-endsw
+    print_error
+    ;; 
+esac
 
 date
 echo "==========================================================================="
-
-switch ( "${build_type}" )
-case Debug:
-case Release:
-    # known $build_type, continue
-    breaksw
-default:
-    echo "unsupported build_type = ${build_type}"
-    goto error
-endsw
-
-# printenv
-
-setenv regdir /home/regress
-setenv host   `echo $HOST | sed -e 's/[.].*//g'`
-
 echo " "
-switch ( "${host}" )
-case ccscs8*:
-    breaksw
-case ccscs9*:
-    #set projects = (  "capsaicin" )
-    #set forkbuild = ( "yes"       )
-    breaksw
-default:
-    echo "I don't know how to run regression on host = ${host}."
-    goto error
-    breaksw
-endsw
 
-set projects = (  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
-set forkbuild = ( "no"    "yes"       "no"      "yes"      "yes" )
+export regdir=/home/regress
+export host=`uname -n | sed -e 's/[.].*//g'`
+
+case ${host} in
+ccscs[0-9])
+    # no-op
+    ;;
+*)
+    echo "I don't know how to run regression on host = ${host}."
+    print_error
+    ;;
+esac
+
+projects=(  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
+forkbuild=( "no"    "yes"       "no"      "yes"      "yes" )
 
 
 # use forking to reduce total wallclock runtime, but do not fork
@@ -72,32 +76,31 @@ set forkbuild = ( "no"    "yes"       "no"      "yes"      "yes" )
 #                   --> milagro
 
 # special cases
-switch( $extra_params )
-case coverage:
+case $extra_params in
+coverage)
     # no-op right now.
-    breaksw
-# case intel13:
+    ;;
+# intel13)
 #     # RNG fails for Release+Intel-13 so no Jayenne software
 #     if ( "${build_type}" == "Release" ) then
 #         set projects = (  "draco" "capsaicin" )
 #         set forkbuild = ( "no"    "yes"       )
 #     endif
 #     breaksw
-# case pgi:
+# case pgi)
 #     # Capsaicin does not support building with PGI (lacking vendor installations!)
 #     set projects = (  "draco" "clubimc" "wedgehog" "milagro" )
 #     set forkbuild = ( "no"    "no"      "yes"      "yes" )
 #     breaksw
-case none;
+*)
     # No-op
-    breaksw
-endsw
+    ;;
+esac
 
-set i = 0
-while ($i < $#projects)
-    @ i = $i + 1
-    setenv subproj ${projects[$i]}
-    set fork    = ${forkbuild[$i]}
+for (( i=0 ; i < ${#projects[@]} ; ++i )); do
+
+    export subproj=${projects[$i]}
+    export fork=${forkbuild[$i]}
 
     # ccscs-job-launch.csh requires the following variables:
     # $regdir, $subproj, $build_type
@@ -105,28 +108,18 @@ while ($i < $#projects)
     echo " "
     echo "Regression for ${subproj} (${build_type}, fork=${fork})."
     echo " "
-    echo "${regdir}/draco/regression/ccscs-job-launch.csh "
+    echo "${regdir}/draco/regression/ccscs-job-launch.sh "
     echo ">& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-joblaunch.log"
         
-    if( $fork == "yes" ) then
-        ${regdir}/draco/regression/ccscs-job-launch.csh \
+    if test $fork = "yes"; then
+        ${regdir}/draco/regression/ccscs-job-launch.sh \
         >& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-joblaunch.log &
     else
-        ${regdir}/draco/regression/ccscs-job-launch.csh \
+        ${regdir}/draco/regression/ccscs-job-launch.sh \
         >& ${regdir}/logs/ccscs-${build_type}-${subproj}-${extra_params}-joblaunch.log
-    endif
-end
+    fi
+done
 
-## Labels to jump to exit OK (done) or not OK (error)
-done:
-    exit 0
-
-error:  
-    echo "FATAL ERROR"
-    echo " "
-    echo "Usage: $0 <build_type> [extra_params]"
-    echo " "
-    echo "   <build_type>   = { Debug, Release }."
-    echo "   [extra_params] = { coverage }."
-    exit 1
-
+##---------------------------------------------------------------------------##
+## End of ccscs-master.sh
+##---------------------------------------------------------------------------##
