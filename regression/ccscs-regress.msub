@@ -125,7 +125,8 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   base_dir=/var/tmp/regress
+   moniker=`whoami`
+   base_dir=/var/tmp/${moniker}
 fi
 
 echo " "

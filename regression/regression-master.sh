@@ -24,6 +24,11 @@ print_use()
 ## Main
 ##---------------------------------------------------------------------------##
 
+# Defaults
+if test "${dashboard_type}x" = "x"; the
+    export dashboard_type=Nightly
+fi
+
 # Arguments
 case $# in
 1 )
@@ -104,6 +109,17 @@ case ${build_type} in
     print_use
     exit 1
     ;; 
+esac
+
+case ${dashboard_type} in
+Nightly | Experimental)
+    # known dashboard_type, continue
+    ;;
+*)
+    echo "FATAL ERROR: unknown dashboard_type = ${dashboard_type}"
+    print_use
+    exit 1
+    ;;
 esac
 
 # use forking to reduce total wallclock runtime, but do not fork
