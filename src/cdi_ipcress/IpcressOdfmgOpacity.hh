@@ -118,7 +118,7 @@ class IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity
     // The IPCRESS file only holds specific data for each of its materials.
 
     // Number of types of data found in the IPCRESS file.
-    size_t numKeys;
+    //size_t numKeys;
 
     //! A list of keys known by the IPCRESS file.
     std::vector< std::string > vKnownKeys;

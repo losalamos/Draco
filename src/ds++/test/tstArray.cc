@@ -83,9 +83,9 @@ void array_tests( UnitTest &ut )
        *it=++k;
 
    // Bounds checking on access.  Require must be enabled to catch
-   // out-of-bounds error. (DBC && 1) must be true.
+   // out-of-bounds error. (DBC & 1) must be true.
    
-   if( (DBC && 1) && !(DBC && 8) )
+   if( (DBC & 1) & !(DBC & 8) )
    {
        try
        {

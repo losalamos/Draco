@@ -215,7 +215,7 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
 
     SP< GrayOpacity > spDGO;
 
-    if ( spDGO = new rtt_cdi_test::DummyGrayOpacity() )
+    if ( (spDGO = new rtt_cdi_test::DummyGrayOpacity()) )
         PASSMSG("SP to new GrayOpacity object created.");
     else
         FAILMSG("Unable to create a SP to new GrayOpacity object.");
@@ -317,7 +317,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
 
     SP< MultigroupOpacity > spDmgO;
 
-    if ( spDmgO = new rtt_cdi_test::DummyMultigroupOpacity() )
+    if ( (spDmgO = new rtt_cdi_test::DummyMultigroupOpacity()) )
     {
         ostringstream message;
         message << "SP to new MultigroupOpacity object created.";
@@ -445,7 +445,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
     // CDI. 
 
     SP< rtt_cdi_test::DummyMultigroupOpacity > spDumMgOp;
-    if ( spDumMgOp = new rtt_cdi_test::DummyMultigroupOpacity() )
+    if ( (spDumMgOp = new rtt_cdi_test::DummyMultigroupOpacity()) )
     {
         ostringstream message;
         message << "SP to new DummyMultigroupOpacity object created.";
@@ -507,7 +507,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
 
     SP< OdfmgOpacity > spDumOdfmgOpacity;
 
-    if ( spDumOdfmgOpacity = new rtt_cdi_test::DummyOdfmgOpacity() )
+    if ( (spDumOdfmgOpacity = new rtt_cdi_test::DummyOdfmgOpacity()) )
     {
         ostringstream message;
         message << "SP to new OdfmgOpacity object created.";
@@ -672,7 +672,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
     // CDI. 
 
     SP< rtt_cdi_test::DummyOdfmgOpacity > spDumMgOp;
-    if ( spDumMgOp = new rtt_cdi_test::DummyOdfmgOpacity() )
+    if ( (spDumMgOp = new rtt_cdi_test::DummyOdfmgOpacity()) )
     {
         ostringstream message;
         message << "SP to new DummyOdfmgOpacity object created.";

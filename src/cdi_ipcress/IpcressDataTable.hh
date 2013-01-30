@@ -93,7 +93,7 @@ class IpcressDataTable
      * \brief The number of entries in the opacity table.  This should be
      *     equal to numTemperatures * numDensities * (numGroupBoundaries - 1).
      */
-    size_t mutable numOpacities;
+    //size_t mutable numOpacities;
 
 
     // Data Tables:

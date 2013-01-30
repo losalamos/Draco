@@ -132,7 +132,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     // ----------------- //
 	    
     SP< CDI > spCDI_Analytic;
-    if ( spCDI_Analytic = new CDI() )
+    if ( (spCDI_Analytic = new CDI()) )
     {
 	ostringstream message;
 	message << "SP to CDI object created successfully (GrayOpacity).";

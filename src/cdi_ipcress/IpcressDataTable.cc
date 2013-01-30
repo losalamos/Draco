@@ -70,7 +70,7 @@ IpcressDataTable::IpcressDataTable(
       opacityReaction( in_opacityReaction ),
       fieldNames ( in_fieldNames ),
       matID ( in_matID ),
-      numOpacities( 0 ),
+      // numOpacities( 0 ),
       logTemperatures(),
       temperatures(),
       logDensities(),

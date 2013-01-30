@@ -39,14 +39,12 @@ class SideData
 
     const Dims & dims;
     vector_vector_dbl data; 
-    const Sides & sidesClass;
 
   public:
-    SideData(const Dims & dims_, const Sides & sidesClass_) 
+    SideData(const Dims & dims_) 
 	: dims(dims_),
 	  data(dims.get_nsides(), 
-	       vector_dbl(dims.get_nside_data())),
-	  sidesClass(sidesClass_)
+	       vector_dbl(dims.get_nside_data()))
     {}
     ~SideData() {}
 

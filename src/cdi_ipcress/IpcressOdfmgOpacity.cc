@@ -43,7 +43,7 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(
     size_t            numBands)
     : spIpcressFile( in_spIpcressFile ),
       materialID(    in_materialID ),
-      numKeys( 0 ),
+      //numKeys( 0 ),
       vKnownKeys(),
       opacityModel(    in_opacityModel ),
       opacityReaction( in_opacityReaction ),
@@ -85,7 +85,7 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(
     std::vector<char> const & packed)
     : spIpcressFile(),
       materialID(0),
-      numKeys(0),
+      //numKeys(0),
       vKnownKeys(),
       opacityModel(),
       opacityReaction(),

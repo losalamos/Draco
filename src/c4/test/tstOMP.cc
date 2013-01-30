@@ -97,7 +97,7 @@ bool topology_report(void)
 
 //---------------------------------------------------------------------------//
 
-void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
+void topo_report(rtt_dsxx::UnitTest &/*ut*/, bool & one_mpi_rank_per_node )
 {
     // Determine if MPI ranks are on unique machine nodes:
     //
@@ -172,7 +172,7 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
 }
 
 //---------------------------------------------------------------------------//
-void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
+void sample_sum( rtt_dsxx::UnitTest &ut, bool const  )
 {
     if( rtt_c4::node() == 0 )
         std::cout << "Begin test sample_sum()...\n" << std::endl;

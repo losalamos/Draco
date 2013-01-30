@@ -156,9 +156,8 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 
 # Toggle for OpenMP
 # consider:
-#   find_package(OpenMP)
-#   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_CXX_FLAGS}" "C;CXX;EXE_LINKER" "" )
-toggle_compiler_flag( USE_OPENMP "-fopenmp" "C;CXX;EXE_LINKER" "" )
+#find_package(OpenMP)
+# toggle_compiler_flag( USE_OPENMP "-fopenmp" "C;CXX;EXE_LINKER" "" )
 
 # Toggle for C++11 support
 # can use -std=c++11 with version 4.7+

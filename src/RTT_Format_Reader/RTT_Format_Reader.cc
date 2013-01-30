@@ -109,11 +109,11 @@ void RTT_Format_Reader::createMembers()
     spCellDataIds = new CellDataIDs(dims);
     spCellDefs = new CellDefs(dims);
     spNodes = new Nodes(* spNodeFlags, dims);
-    spSides = new Sides(* spSideFlags, dims, * spCellDefs, * spNodes);
-    spCells = new Cells(* spCellFlags, dims, * spCellDefs, * spNodes);
-    spNodeData = new NodeData(dims, * spNodes);
-    spSideData = new SideData(dims, * spSides);
-    spCellData = new CellData(dims, * spCells);
+    spSides = new Sides(* spSideFlags, dims, * spCellDefs);
+    spCells = new Cells(* spCellFlags, dims, * spCellDefs);
+    spNodeData = new NodeData(dims);
+    spSideData = new SideData(dims);
+    spCellData = new CellData(dims);
 }
 
 /*!

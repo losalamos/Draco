@@ -41,16 +41,15 @@ class Cells
     const CellFlags & cellFlags;
     const Dims & dims;
     const CellDefs & cellDefs;
-    const Nodes & nodesClass;
     vector_int cellType;
     vector_vector_int nodes;
     vector_vector_int flags;
 
   public:
     Cells(const CellFlags & cellFlags_, const Dims & dims_,
-	  const CellDefs & cellDefs_, const Nodes & nodesClass_) :
+	  const CellDefs & cellDefs_) :
 	 cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
-         nodesClass(nodesClass_), cellType(dims.get_ncells()),
+         cellType(dims.get_ncells()),
          nodes(dims.get_ncells()), flags(dims.get_ncells(), 
          vector_int(dims.get_ncell_flag_types())) {}
     ~Cells() {}

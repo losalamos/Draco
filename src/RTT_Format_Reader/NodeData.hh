@@ -39,14 +39,12 @@ class NodeData
 
     const Dims & dims;
     vector_vector_dbl data;
-    const Nodes & nodesClass;
 
   public:
-    NodeData(const Dims & dims_, const Nodes & nodesClass_) 
+    NodeData(const Dims & dims_) 
 	: dims(dims_), 
 	  data(dims.get_nnodes(), 
-	       vector_dbl(dims.get_nnode_data())),
-	  nodesClass(nodesClass_)
+	       vector_dbl(dims.get_nnode_data()))
     {}
     ~NodeData() {}
 

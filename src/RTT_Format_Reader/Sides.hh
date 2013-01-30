@@ -38,17 +38,15 @@ class Sides
     const SideFlags & sideFlags;
     const Dims & dims;
     const CellDefs & cellDefs;
-    const Nodes & nodesClass;
     vector_int sideType;
     vector_vector_int nodes;
     vector_vector_int flags;
 
   public:
     Sides(const SideFlags & sideFlags_, const Dims & dims_,
-	  const CellDefs & cellDefs_, const Nodes & nodesClass_) : 
+	  const CellDefs & cellDefs_) : 
         sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_), 
-	nodesClass(nodesClass_), sideType(dims.get_nsides()),
-	nodes(dims.get_nsides()),
+	sideType(dims.get_nsides()), nodes(dims.get_nsides()),
 	flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types())) {}
     ~Sides() {}
 
