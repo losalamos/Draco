@@ -25,7 +25,7 @@ print_use()
 ##---------------------------------------------------------------------------##
 
 # Defaults
-if test "${dashboard_type}x" = "x"; the
+if test "${dashboard_type}x" = "x"; then
     export dashboard_type=Nightly
 fi
 
