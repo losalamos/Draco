@@ -468,24 +468,25 @@ macro( setup_for_code_coverage )
             # Process and save lines of code 
             message(  "Generating lines of code statistics...")
             execute_process( 
-               COMMAND /home/regress/cmake_draco/regression/cloc
+               COMMAND /home/regress/draco/regression/cloc
+               --exclude-dir=chimpy
                --categorize=cloc-categorize.log 
                --counted=cloc-counted.log 
                --ignored=cloc-ignored.log 
                --progress-rate=0 
                --report-file=lines-of-code.log 
-               --read-lang-def=/home/regress/cmake_draco/regression/cloc-lang.defs
+               --read-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3 
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
             execute_process( 
-               COMMAND /home/regress/cmake_draco/regression/cloc
+               COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=test,heterogeneous,chimpy
                --progress-rate=0 
                --report-file=lines-of-code-notest.log 
-               --read-lang-def=/home/regress/cmake_draco/regression/cloc-lang.defs
+               --read-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3 
                #  --diff
