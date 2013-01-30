@@ -143,8 +143,7 @@ by the \comp{\$} symbol.
 \label{sec:procurement}
 \index{Build System!Procurement} \index{Build System!Support}
 
-Questions about procuring a copy of the DBS or its use can be
-directed to:
+Questions about procuring a copy of the DBS or its use can be directed to:
 \begin{center}
   \begin{tabular}{llcl}\hline\hline
     \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
@@ -153,8 +152,7 @@ directed to:
     Jae Chang      & jhchang@lanl.gov & CCS--2 & Capsaicin \\ \hline\hline
   \end{tabular}
 \end{center} \index{Jayenne} \index{Capsaicin}
-Additional information is available on the \draco\ \soft{TeamForge} \index{TeamForge}
-site, \href{https://tf.lanl.gov/draco}{https://tf.lanl.gov/draco}.  Also note that the \draco\ team 
+Additional information is available on the \draco\ \soft{TeamForge} \index{TeamForge}, \href{https://tf.lanl.gov/draco}{https://tf.lanl.gov/draco}, and \soft{Redmine} \index{Redmine}, \href{http://coder.lanl.gov/redmine}{http://coder.lanl.gov/redmine}, sites.  Also note that the \draco\ team 
 maintains a a \sys{UNIX} file sharing group, \index{Unix file sharing group} \comp{draco}.  
 Developers wishing to access \draco\ source code or development environment files must be members of this file sharing group. 
 Membership is controlled by the current super-users of the group as listed on \href{https://register.lanl.gov}{https://register.lanl.gov} 
@@ -205,7 +203,16 @@ whole unit. Tables~\ref{tab:draco_package} and \ref{tab:draco_system}
       Rob Lowrie & lowrie@lanl.gov & CCS--2 \\
 %      Shawn Pautz & pautz@lanl.gov & XTM \\ 
 %      Randy Roberts & rsqrd@lanl.gov & XTM \\
-      Todd Urbatsch & tmonster@lanl.gov &  CCS--2 \\ \hline\hline
+      Todd Urbatsch & tmonster@lanl.gov &  CCS--2 \\
+      Jon Dahl & dahl@lanl.gov & CCS--2 \\
+      Aimee Hungerford & aimee@lanl.gov & XTD--6 \\
+      Tim Kelley & tkelley@lanl.gov & CCS--7 \\
+      Robert Lowrie & lowrie@lanl.gov & CCS--2 \\
+      Randy Baker & rsb@lanl.gov & CCS--2 \\
+      Massimiliano Rosa & maxrosa@lanl.gov & CCS--2 \\
+      Erin Fichtl & efichtl@lanl.gov & CCS--2 \\
+      Robert Zerr & rzerr@lanl.gov & CCS--2 \\
+       \hline\hline
       \multicolumn{3}{l}{$^{\ast}$\draco\ project leader.} \\
     \end{tabular}
   \end{center}
@@ -220,6 +227,7 @@ whole unit. Tables~\ref{tab:draco_package} and \ref{tab:draco_system}
       Kelly Thompson & kgt@lanl.gov & CCS--2 \\
       Allan Wollaber & wollaber@lanl.gov & CCS--2 \\
       Jae Chang & jhchang@lanl.gov & CCS--2 \\
+      Gabe Rockefeller& gaber@lanl.gov & CCS--2 \\
 %      Tom Evans & tme@lanl.gov & XTM \\
   %    Randy Roberts & rsqrd@lanl.gov & XTM \\ 
 \hline\hline
@@ -288,12 +296,12 @@ is necessary for \draco\ package developers.
           \hline
           Repository & \url{svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/} \\
           Archival storage & \url{HPSS://hpss/jayenne/} \\
-          Wiki$^a$ & \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
-          Bug Tracker$^a$ &  \href{http://tf.lanl.gov}{http://tf.lanl.gov} \\
-          Regression files & \url{ccscs8://home/regress/cmake_draco} and \url{hpc://usr/projects/jayenne/regress} \\
+          Wiki$^a$ & \href{http://coder.lanl.gov/redmine}{http://coder.lanl.gov/redmine} \\
+          Bug Tracker$^a$ &  \href{http://coder.lanl.gov/redmine}{http://coder.lanl.gov/redmine} \\
+          Regression files & \url{ccscs8://home/regress/} and \url{hpc://usr/projects/jayenne/regress/} \\
           Regression Dashboard & \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash} \\
   	\hline \hline
-      \multicolumn{2}{p{0.85\linewidth}}{$^a$The \draco\ team is considering adoption of Redmine for Wiki and Tracker support.  The location of this tool is \url{http://coder.lanl.gov/redmine} } \\
+      \multicolumn{2}{p{0.85\linewidth}}{$^a$The \draco\ team previously used the LANL SourceForge system for Wiki and Tracker support.  Some older material remains on this site located at \url{http://tf.lanl.gov}. } \\
     \end{tabular}
   \end{center}
 \end{table} \index{Repository} \index{archival storage} \index{wiki} \index{bug tracker} \index{regression files} \index{regression dashboard} \index{Redmine}
@@ -304,7 +312,7 @@ with the body \comp{'subscribe draco'}. For
 more information about mailing lists at LANL you can send an email to the same address with the message
 \comp{'help'}. Some list management functions can also be completed by visiting \url{https://register.lanl.gov}.
 If you are not sure if you are subscribed or not you can send the command \comp{'which'} to \url{listmanger@listserv.lanl.gov} to see what LANL lists you are subscribed to.
-Table~\ref{tab:email-lists} lists a few other mailing lists that may be useful for \draco\ developers to subscribe to.
+Table~\ref{tab:email-lists} lists a few other mailing lists that may be useful for \draco\ developers to be subscribed.
 \begin{table}
   \begin{center}
     \caption{Suggested email lists for \draco\ developers}
@@ -328,7 +336,7 @@ Table~\ref{tab:email-lists} lists a few other mailing lists that may be useful f
 \draco\ maintains a regression dashboard at \href{http://coder.lanl.gov/cdash}{http://coder.lanl.gov/cdash}. \draco\ developers are encouraged to visit the dashboard regularly to view the nightly reports.  You may need to contact one of the \draco\ group super-users (see Sec.~\ref{sec:procurement}) to gain access to the the dashboard.  You can configure the dashboard to send email for various situations like failing unit tests. \index{regression dashboard}
 
 \subsection{Issue Tracking}
-\draco\ uses the LANL \soft{Team Forge} bug tracking system to manage issue, bug and feature tracking. \soft{Team Forge} can be accessed by opening a web browser from the Yellow network (i.e.: inside the LANL firewall) to \url{https://tf.lanl.gov}. You are encouraged to browse the list of known bugs/issues of the project you are working on.
+\draco\ uses the \soft{Redmine} \index{Redmine} issue tracking system to manage issue, bug and feature tracking. \soft{Redmine} can be accessed by opening a web browser from the Yellow network (i.e.: inside the LANL firewall) to \url{https://coder.lanl.gov/redmine}. You are encouraged to browse the list of known bugs/issues of the project you are working on.
 
 %%---------------------------------------------------------------------------%%
 
