@@ -64,6 +64,7 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
                             Quadrature_Class quadrature_class,
                             unsigned sn_order,
                             unsigned expansion_order,
+                            unsigned method,
                             bool extra_starting_directions=false,
                             Ordering ordering=LEVEL_ORDERED);
 
@@ -130,6 +131,8 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
                              vector<double> const &M);
     // DATA
 
+    unsigned const method_;
+    
     //! Discrete to moment matrix
     vector<double> D_;
     //! Moment to discrete matrix

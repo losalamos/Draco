@@ -29,15 +29,13 @@ namespace rtt_quadrature
  * \brief Compute the Azimuthal angle for the current quadrature direction.
  */
 double Ordinate_Space::compute_azimuthalAngle( double const mu,
-                                               double const eta,
-                                               double const Remember(xi) )
+                                               double const eta )
 {
     using rtt_units::PI;
     using rtt_dsxx::soft_equiv;
 
     Require( std::abs(mu)  <= 1.0 );
     Require( std::abs(eta) <= 1.0 );
-    Require( std::abs(xi)  <= 1.0 );
 
     if( soft_equiv( eta, 0.0 ) ) return PI;
 
@@ -56,9 +54,9 @@ double Ordinate_Space::compute_azimuthalAngle( double const mu,
     // here consistent with the discretization by using the eta and mu
     // ordinates to define phi.
 
-    if( this->geometry() == rtt_mesh_element::AXISYMMETRIC && azimuthalAngle < 0.0)
+    if (this->geometry() == rtt_mesh_element::AXISYMMETRIC && azimuthalAngle < 0.0)
         azimuthalAngle += 2*PI;
-
+    
     return azimuthalAngle;
 }
 

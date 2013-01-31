@@ -351,13 +351,26 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                            ordering);
             break;
             
-        case GQ:
+        case GQ1:
             Result = new Galerkin_Ordinate_Space(dimension,
                                                  geometry,
                                                  ordinates,
                                                  quadrature_class(),
                                                  number_of_levels(),
                                                  moment_expansion_order,
+                                                 1,
+                                                 include_extra_directions,
+                                                 ordering);
+            break;
+
+        case GQ2:
+            Result = new Galerkin_Ordinate_Space(dimension,
+                                                 geometry,
+                                                 ordinates,
+                                                 quadrature_class(),
+                                                 number_of_levels(),
+                                                 moment_expansion_order,
+                                                 1,
                                                  include_extra_directions,
                                                  ordering);
             break;
@@ -415,13 +428,26 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                            ordering);
             break;
 
-        case GQ:
+        case GQ1:
             Result = new Galerkin_Ordinate_Space(dimension,
                                                  geometry,
                                                  ordinates,
                                                  quadrature_class(),
                                                  number_of_levels(),
                                                  moment_expansion_order,
+                                                 1,
+                                                 include_extra_directions,
+                                                 ordering);
+            break;
+
+        case GQ2:
+            Result = new Galerkin_Ordinate_Space(dimension,
+                                                 geometry,
+                                                 ordinates,
+                                                 quadrature_class(),
+                                                 number_of_levels(),
+                                                 moment_expansion_order,
+                                                 2,
                                                  include_extra_directions,
                                                  ordering);
             break;

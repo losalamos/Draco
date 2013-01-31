@@ -25,7 +25,8 @@ using rtt_parser::Token_Stream;
 enum QIM 
 {
     SN,  /*!< Use the standard SN method. */
-    GQ,  /*!< Use Morel's Galerkin Quadrature method. */
+    GQ1, /*!< Use Morel's Galerkin Quadrature method. */
+    GQ2, /*!< Use Warsa/Prinja Galerkin Quadrature method. */
     SVD, /*!< Let M be an approximate inverse of D. */
 
     END_QIM  //!< Sentinel value

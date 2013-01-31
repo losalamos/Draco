@@ -306,11 +306,10 @@ void test_either(UnitTest &ut,
         cout << "Ordinates:" << endl;
         for (unsigned i=0; i<N; ++i)
         {
-            cout << "  mu = "
-                 << setprecision(10) << ordinates[i].mu()<< "  eta = "
-                 << setprecision(10) << ordinates[i].eta()<< "  xi = "
-                 << setprecision(10) << ordinates[i].xi() << " weight = "
-                 << setprecision(10) << ordinates[i].wt() << endl;
+            cout << "  mu = " << setprecision(10) << ordinates[i].mu()
+                 << "  eta = " << setprecision(10) << ordinates[i].eta()
+                 << "  xi = " << setprecision(10) << ordinates[i].xi()
+                 << " weight = " << setprecision(10) << ordinates[i].wt() << endl;
             
             J += MAGIC * ordinates[i].wt();
             Fx += MAGIC * ordinates[i].mu()*ordinates[i].wt();
@@ -330,10 +329,11 @@ void test_either(UnitTest &ut,
         }
         if (soft_equiv(Fx, 0.0))
         {
-            ut.passes("xF okay");
+            ut.passes("Fx okay");
         }
         else
         {
+            std::cout << "Fx = " << Fx << std::endl;
             ut.failure("Fx NOT okay");
         }
         if (soft_equiv(Fx2, MAGIC/3.0))
@@ -410,7 +410,8 @@ void test_either(UnitTest &ut,
             ut.failure("D does NOT have right size");
         }
 
-        if (ordinate_space->quadrature_interpolation_model()==GQ)
+        if ((ordinate_space->quadrature_interpolation_model()==GQ1) ||
+            (ordinate_space->quadrature_interpolation_model()==GQ2) )
         {
             for (unsigned m=0; m<number_of_moments; ++m)
             {
@@ -679,7 +680,7 @@ void quadrature_test(UnitTest &ut,
                      1U, // dimension,
                      rtt_mesh_element::CARTESIAN,
                      1U, // expansion_order,
-                     "GALERKIN",
+                     "GQ1",
                      false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
         
@@ -701,7 +702,7 @@ void quadrature_test(UnitTest &ut,
                          1U, // dimension,
                          rtt_mesh_element::SPHERICAL,
                          1U, // expansion_order,
-                         "GALERKIN",
+                         "GQ1",
                          false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
         }
@@ -765,7 +766,7 @@ void quadrature_test(UnitTest &ut,
                          2U, // dimension,
                          rtt_mesh_element::CARTESIAN,
                          min(8U, quadrature.number_of_levels()), // expansion_order,
-                         "GALERKIN",
+                         "GQ1",
                          false, // add_extra_directions,
                          Ordinate_Set::OCTANT_ORDERED);
             
@@ -774,7 +775,7 @@ void quadrature_test(UnitTest &ut,
                          3U, // dimension,
                          rtt_mesh_element::CARTESIAN,
                          quadrature.number_of_levels()-1, // expansion_order,
-                         "GALERKIN",
+                         "GQ1",
                          false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
         }
@@ -791,7 +792,7 @@ void quadrature_test(UnitTest &ut,
                              1U, // dimension,
                              rtt_mesh_element::AXISYMMETRIC,
                              min(8U, quadrature.number_of_levels()), // expansion_order,
-                             "GALERKIN",
+                             "GQ1",
                              false, // add_extra_directions,
                              Ordinate_Set::LEVEL_ORDERED);
             }

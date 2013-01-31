@@ -36,12 +36,12 @@ bool Octant_Quadrature::has_axis_assignments() const
 //---------------------------------------------------------------------------------------//
 vector<Ordinate>
 Octant_Quadrature::create_ordinates_(unsigned const dimension,
-                                   Geometry const geometry,
-                                   double const norm,
-                                   unsigned const mu_axis,
-                                   unsigned const eta_axis,
-                                   bool const include_starting_directions,
-                                   bool const include_extra_directions) const
+                                     Geometry const geometry,
+                                     double const norm,
+                                     unsigned const mu_axis,
+                                     unsigned const eta_axis,
+                                     bool const include_starting_directions,
+                                     bool const include_extra_directions) const
 {
     using rtt_dsxx::soft_equiv;
 
@@ -224,10 +224,10 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
 
 //---------------------------------------------------------------------------------------//
 vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension,
-                                                    Geometry geometry,
-                                                    double norm,
-                                                    bool include_starting_directions,
-                                                    bool include_extra_directions) const
+                                                      Geometry geometry,
+                                                      double norm,
+                                                      bool include_starting_directions,
+                                                      bool include_extra_directions) const
 {
     unsigned mu_axis(0), eta_axis(0);
     if (has_axis_assignments_)
@@ -246,14 +246,14 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(unsigned dimension,
                         mu_axis = 0;
                         eta_axis = 2;
                         break;
-
+                        
                     default:
                         mu_axis = 2;
                         eta_axis = 1;
                         break;
                 }
                 break;
-
+                
             case 2:
                 mu_axis = 0;
                 eta_axis = 2;

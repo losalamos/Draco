@@ -257,7 +257,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     // STATICS
     
-    double compute_azimuthalAngle( double mu, double eta, double xi ); 
+    double compute_azimuthalAngle( double mu, double eta ); 
 
   protected:
 

@@ -33,16 +33,20 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens,
     
     Token token = tokens.shift();
 
-    tokens.check_semantics(token.text()=="SN" || token.text()=="GALERKIN",
+    tokens.check_semantics(token.text()=="SN" || token.text()=="GQ1" || token.text()=="GQ2",
                            "unrecognized quadrature interpolation model");
     
     if (token.text()=="SN")
     {
         qim = SN;
     }
-    else if (token.text()=="GALERKIN")
+    else if (token.text()=="GQ1")
     {
-        qim = GQ;
+        qim = GQ1;
+    }
+    else if (token.text()=="GQ2")
+    {
+        qim = GQ2;
     }
 }
 

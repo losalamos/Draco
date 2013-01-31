@@ -10,6 +10,9 @@
 // $Id: Sn_Ordinate_Space.cc 6855 2012-11-06 16:39:27Z kellyt $
 //---------------------------------------------------------------------------------------//
 
+#include <iostream>
+#include <iomanip>
+
 // Vendor software
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
@@ -18,9 +21,39 @@
 #include "Sn_Ordinate_Space.hh"
 
 #include "special_functions/Ylm.hh"
-//#include "units/PhysicalConstants.hh"
+#include "units/PhysicalConstants.hh"
 
-//using namespace rtt_units;
+/*
+static
+void print_matrix( std::string const & matrix_name,
+                   std::vector<double> const & x,
+                   std::vector<unsigned> const & dims )
+{
+    using std::cout;
+    using std::endl;
+    using std::string;
+
+    Require( dims[0]*dims[1] == x.size() );
+
+    unsigned pad_len( matrix_name.length()+2 );
+    string padding( pad_len, ' ' );
+    cout << matrix_name << " =";
+    // row
+    for( unsigned i=0; i<dims[1]; ++i )
+    {
+        if( i != 0 ) cout << padding;
+
+        cout << "{ ";
+
+        for( unsigned j=0; j<dims[0]-1; ++j )
+            cout << std::setprecision(10) << x[j+dims[0]*i] << ", ";
+
+        cout << std::setprecision(10) << x[dims[0]-1+dims[0]*i] << " }." << endl;
+    }
+    cout << endl;
+    return;
+}
+*/
 
 namespace rtt_quadrature
 {
@@ -114,39 +147,105 @@ Sn_Ordinate_Space::compute_M()
 
     vector<Ordinate> const &ordinates = this->ordinates();
     unsigned const numOrdinates = ordinates.size();
+
     vector<Moment> const &n2lk = this->moments();
     unsigned const numMoments = n2lk.size();
+
     unsigned const dim = dimension();
-    Geometry const geometry = this->geometry();
-    double const sumwt = 1.0;
+    Geometry const geometry(this->geometry());
+    double const sumwt(norm());
 
     // resize the M matrix.
-    M_.resize( numMoments*numOrdinates, -9999.0 );
-
+    M_.resize( numMoments*numOrdinates );
+    
+//    double polar, azimuthal;
     for( unsigned n=0; n<numMoments; ++n )
     {
         for( unsigned m=0; m<numOrdinates; ++m )
         {
-            unsigned const ell ( n2lk[n].L()  );
-            int      const k   ( n2lk[n].M() );
-
-            if( dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC)
-                // 1D mesh, 1D quadrature: Mu cosine maps to R/X axis, others irrelevant.
-            {
+            unsigned const ell ( n2lk[n].L() );
+            int      const k   ( n2lk[n].M() ); 
+        
+            if( dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature 
+            { 
                 double mu ( ordinates[m].mu() );
                 M_[ n + m*numMoments ] = Ylm( ell, k, mu, 0.0, sumwt );
+
+//                polar = mu;
+//                azimuthal = 0.0;
             }
-            else
+            else 
             {
                 double mu ( ordinates[m].mu() );
                 double eta( ordinates[m].eta() );
                 double xi(  ordinates[m].xi() );
+                
+                if (geometry == rtt_mesh_element::AXISYMMETRIC)
+                {
+                    // R-Z coordinate system
+                    //
+                    // It is important to remember here that the positive mu axis points to the
+                    // left and the positive eta axis points up, when the unit sphere is
+                    // projected on the plane of the mu- and eta-axis in R-Z. In this case, phi is
+                    // measured from the mu-axis counterclockwise.
+                    //
+                    // This accounts for the fact that the aziumuthal angle is discretized
+                    // on levels of the xi-axis, making the computation of the azimuthal angle
+                    // here consistent with the discretization by using the eta and mu
+                    // ordinates to define phi.
 
-                double phi( compute_azimuthalAngle(mu, xi, eta) );
-                M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
-            }
-        } // n: end moment loop
-    } // m: end ordinate loop
+                    double phi( compute_azimuthalAngle(mu, xi) );
+                    M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
+
+//                    polar = eta;
+//                    azimuthal = phi;
+                }
+                else if (geometry == rtt_mesh_element::CARTESIAN)
+                {
+                    // X-Y coordinate system
+                    //
+                    // Note that we choose the same moments and spherical
+                    // harmonics as for R-Z in this case, unlike the Galerkin
+                    // method.
+                    //
+                    // This is because we choose the "front" of the
+                    // hemisphere, here, so that the spherical harmoincs
+                    // chosen are even in the azimuthal angle (symmetry from
+                    // front to back) and not even in the polar angle.
+                    // Thus, in this case, the polar angle is measured from the
+                    // eta-axis [0, Pi], and the azimuthal angle is measured
+                    // from the mu-axis [0,Pi].
+                    //
+                    // In contrast, the Galerkin methods chooses the "top"
+                    // hemisphere, and projects down onto the x-y plane.
+                    // Hence the polar angle in that case is xi and extends from
+                    // [0,Pi/2] while the azimuthal angle is on [0, 2 Pi].
+                    // Therefore, in that case, the spherical harmonics must
+                    // be those that are even in the polar angle.
+                    // That may be determined by considering the even-ness
+                    // of the associated legendre polynomials.
+
+                    double phi( compute_azimuthalAngle(mu, xi) );
+                    M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
+
+//                    polar = mu;
+//                    azimuthal = phi;
+                }
+            }        
+/*
+            if (n == 0)
+                    std::cout << "   " << m
+                              << "   " << ordinates[m].mu() 
+                              << "   " << ordinates[m].eta() 
+                              << "   " << ordinates[m].xi() 
+                              << "   " << ordinates[m].wt() 
+                              << "   " << polar
+                              << "   " << azimuthal*180.0/3.141592653589793238462643383279
+                              << std::endl;
+*/
+        } // ordinate loop
+    } // moment loop
+
 }
 
 //---------------------------------------------------------------------------------------//
@@ -243,6 +342,40 @@ Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
     // compute the operators; MUST be called in this order
     compute_M();
     compute_D();
+
+/*
+    unsigned const numOrdinates(this->ordinates().size());
+    unsigned const numMoments(this->moments().size());
+
+    for( unsigned n=0; n<numMoments; ++n )
+    {
+        unsigned const ell ( moments()[n].L() );
+        int      const k   ( moments()[n].M() ); 
+        
+        std::cout << " moment " << n
+                  << "     l = " << ell << " k = " << k
+                  << std::endl;
+    }
+
+    std::vector< unsigned > dimsM;
+    dimsM.push_back( numMoments );
+    dimsM.push_back( numOrdinates );
+    print_matrix( "M", M_, dimsM );
+        
+    std::vector< unsigned > dimsD;
+    dimsD.push_back( numOrdinates );
+    dimsD.push_back( numMoments );
+    print_matrix( "D", D_, dimsD );
+
+    std::cout << " Ordinate Set (may differ from quadrature) " << std::endl; 
+    for (unsigned i=0; i<numOrdinates; ++i)
+        std::cout << "   " << i
+                  << "   " << ordinates[i].mu() 
+                  << "   " << ordinates[i].eta() 
+                  << "   " << ordinates[i].xi() 
+                  << "   " << ordinates[i].wt() 
+                  << std::endl;
+*/
 
     Ensure(check_class_invariants());
 }

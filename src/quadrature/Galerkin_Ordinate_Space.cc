@@ -23,7 +23,6 @@
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
 
-/*
 static
 void print_matrix( std::string const & matrix_name,
                    std::vector<double> const & x,
@@ -53,7 +52,6 @@ void print_matrix( std::string const & matrix_name,
     cout << endl;
     return;
 }
-*/
 
 using namespace rtt_units;
 
@@ -212,6 +210,7 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
                                                   Quadrature_Class quadrature_class,
                                                   unsigned sn_order,
                                                   unsigned const  expansion_order,
+                                                  unsigned const method,
                                                   bool const  extra_starting_directions,
                                                   Ordering const ordering)
     : Ordinate_Space(dimension,
@@ -219,7 +218,8 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
                      ordinates,
                      expansion_order,
                      extra_starting_directions,
-                     ordering)
+                     ordering),
+      method_(method)
 {
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);
@@ -250,7 +250,14 @@ bool Galerkin_Ordinate_Space::check_class_invariants() const
 //---------------------------------------------------------------------------------------//
 QIM Galerkin_Ordinate_Space::quadrature_interpolation_model() const
 {
-    return GQ;
+    QIM result=GQ1;
+
+    if (method_ == 2)
+        result = GQ2;
+    else if (method_ != 1)
+        Insist(false, "Could not identify the particular Galerkin Quadrature method specified."); 
+
+    return result;
 }
 
 
@@ -335,9 +342,7 @@ void Galerkin_Ordinate_Space::compute_operators()
     vector<double> cartesian_M;
     vector<double> cartesian_D;
 
-    unsigned method(1);
-
-    if (method == 1)
+    if (method_ == 1)
     {
         // -----------------------------------------------------------------------------------------
         // invert the (m x n) moment-to-discrete matrix M to compute the discrete-to-moment matrix D
@@ -350,9 +355,9 @@ void Galerkin_Ordinate_Space::compute_operators()
 
         for (unsigned i=0; i<numCartesianOrdinates; ++i)
         {
-            std::cout << " changing weight from " << cartesian_ordinates[i].wt();
+            //std::cout << " changing weight from " << cartesian_ordinates[i].wt();
             cartesian_ordinates[i].set_wt(cartesian_D[ i + 0*numCartesianOrdinates ]);
-            std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
+            //std::cout << " to " << cartesian_ordinates[i].wt() << std::endl;
         }
 
         // and reset ordinate weights to the first row of D
@@ -367,7 +372,7 @@ void Galerkin_Ordinate_Space::compute_operators()
             }
         }
     }
-    else
+    else if (method_ == 2)
     {
         // first get new ordinate weights from the usual GQ method,
         // needed to accurately integrate all moments
@@ -407,6 +412,8 @@ void Galerkin_Ordinate_Space::compute_operators()
         cartesian_D = compute_D_SN(cartesian_ordinates, temp_M);
         cartesian_M = compute_inverse(numCartesianOrdinates,numMoments,cartesian_D);
     }
+    else 
+        Insist(false, "Could not identify Galerkin Quadrature method."); 
 
     // store the final form of the operators in M_ and D_
 
@@ -422,6 +429,16 @@ void Galerkin_Ordinate_Space::compute_operators()
     }
 
 /*
+    for( unsigned n=0; n<numMoments; ++n )
+    {
+        unsigned const ell ( moments()[n].L() );
+        int      const k   ( moments()[n].M() ); 
+        
+        std::cout << " moment " << n
+                  << "     l = " << ell << " k = " << k
+                  << std::endl;
+    }
+
     std::vector< unsigned > dimsM;
     dimsM.push_back( numMoments );
     dimsM.push_back( numOrdinates );
@@ -495,26 +512,23 @@ Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
     
     for( unsigned n=0; n<numMoments; ++n )
     {
-        for( unsigned n=0; n<numMoments; ++n )
+        unsigned const ell ( n2lk[n].L() );
+        int      const k   ( n2lk[n].M() );
+        
+        for( unsigned m=0; m<numOrdinates; ++m )
         {
-            unsigned const ell ( n2lk[n].L() );
-            int      const k   ( n2lk[n].M() );
-
-            for( unsigned m=0; m<numOrdinates; ++m )
+            if (ordinates[m].wt() != 0)
             {
-                if (ordinates[m].wt() != 0)
-                {
-                    M_new[ n + m*numMoments ] = M[n + indexes[m]*numMoments ];
-                }
-                else
-                {
-                    double mu ( ordinates[m].mu() );
-                    double eta( ordinates[m].eta() );
-                    double xi(  ordinates[m].xi() );
-                    
-                    double phi( compute_azimuthalAngle(mu, xi, eta) );
-                    M_new[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt);
-                }
+                M_new[ n + m*numMoments ] = M[n + indexes[m]*numMoments ];
+            }
+            else
+            {
+                double mu ( ordinates[m].mu() );
+                double eta( ordinates[m].eta() );
+                double xi(  ordinates[m].xi() );
+                
+                double phi( compute_azimuthalAngle(mu, xi) );
+                M_new[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt);
             }
         }
     }
@@ -539,6 +553,7 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates)
     // resize the M matrix.
     std::vector< double > M( numMoments*numOrdinates );
 
+//    double polar, azimuthal;
     for( unsigned n=0; n<numMoments; ++n )
     {
         unsigned const ell ( n2lk[n].L() );
@@ -546,10 +561,13 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates)
         
         for( unsigned m=0; m<numOrdinates; ++m )
         {
-            if( dim == 1  && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature 
+            if( dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature 
             { 
                 double mu ( ordinates[m].mu() );
                 M[ n + m*numMoments ] = Ylm( ell, k, mu, 0.0, sumwt );
+
+//                polar = mu;
+//                azimuthal = 0.0;
             }
             else 
             {
@@ -571,8 +589,11 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates)
                     // here consistent with the discretization by using the eta and mu
                     // ordinates to define phi.
 
-                    double phi( compute_azimuthalAngle(mu, xi, eta) );
+                    double phi( compute_azimuthalAngle(mu, xi) );
                     M[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
+
+//                    polar = eta;
+//                    azimuthal = phi;
                 }
                 else if (geometry == rtt_mesh_element::CARTESIAN)
                 {
@@ -581,13 +602,28 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates)
                     // In order to make the harmonic trial space is correctly oriented with
                     // respect to the moments chosen, the value of xi and eta are swapped.
 
-                    double phi( compute_azimuthalAngle(mu, eta, xi) );
+                    double phi( compute_azimuthalAngle(mu, eta) );
                     M[ n + m*numMoments ] = Ylm( ell, k, xi, phi, sumwt );
+
+//                    polar = xi;
+//                    azimuthal = phi;
                 }
             }
 
-        } // n: end moment loop
-    } // m: end ordinate loop
+/*
+            if (n == 0)
+                    std::cout << "   " << m
+                              << "   " << ordinates[m].mu() 
+                              << "   " << ordinates[m].eta() 
+                              << "   " << ordinates[m].xi() 
+                              << "   " << ordinates[m].wt() 
+                              << "   " << polar
+                              << "   " << azimuthal*180.0/3.141592653589793238462643383279
+                              << std::endl;
+*/
+
+        } // ordinate loop
+    } // moment loop
 
     return M;
 }
