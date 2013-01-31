@@ -41,8 +41,8 @@ endif
 
 # # Ensure correct svn is available in the environment
 # if ( -d /users/kellyt/draco/environment/Modules ) then
-#     module use /users/kellyt/draco/environment/Modules/hpc
-#     module use /users/kellyt/draco/environment/Modules/ct-fe
+#     module use /usr/projects/jayenne/regress/draco/environment/Modules/hpc
+#     module use /usr/projects/jayenne/regress/draco/environment/Modules/tu-fe
 #     module load svn
 # endif
 # if ( "$MYHOSTNAME" == "ct-fe1" ) then
@@ -58,8 +58,8 @@ svn update
 echo "cd /usr/projects/jayenne/regress/draco/regression; svn update"
 cd /usr/projects/jayenne/regress/draco/regression
 svn update
-echo "cd /usr/projects/jayenne/regress/Modules; svn update"
-cd /usr/projects/jayenne/regress/Modules
+echo "cd /usr/projects/jayenne/regress/draco/environment; svn update"
+cd /usr/projects/jayenne/regress/draco/environment
 svn update
 
 # SVN portions
