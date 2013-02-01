@@ -48,7 +48,7 @@ esac
 
 echo "==========================================================================="
 echo "Moonlight regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}-${extra_params}"
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
 
 fn_exists()
@@ -67,10 +67,11 @@ if test $result -eq 0; then
     echo 'module function is defined'
 else
     echo 'module function does not exist. defining a local function ...'
-    module () 
-    { 
-        eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
-    }
+    source /usr/share/Modules/init/bash
+    # module () 
+    # { 
+    #     eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
+    # }
 fi
 
 # Use modules found in the draco directory

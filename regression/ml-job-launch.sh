@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 
 # called from ml-master.cs
 # assumes the following variables are defined in ml-master.cs:
@@ -45,6 +45,8 @@ fi
 cmd="/opt/MOAB/bin/msub -A access -j oe -V -o ${regdir}/logs/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/ml-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
+# trim extra whitespace from number
+jobid=`echo ${jobid//[^0-9]/}`
 
 # Wait for CBT (Config, build, test) to finish
 sleep 1m

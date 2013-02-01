@@ -45,8 +45,8 @@ case $machine in
 ct-login[0-9].localdomain) 
     ctestparts=Test,Submit
     # Force create of a new log file (don't append)
-    echo "Purging ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}-${subproj}-ts.log"
-    echo "    " > ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subprojc}-ts.log
+    echo "Purging ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-ts.log"
+    echo "    " > ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-ts.log
     ;;
 ct-fe1*)
     ctestparts=Configure,Build 
@@ -80,11 +80,11 @@ else
     }
 fi
 
-moddirs="hpc ct-fe"
+moddirs="Modules/hpc Modules/ct-fe"
 for dir in $moddirs; do 
   if test -z `echo $MODULEPATH | grep $dir`; then 
-    echo "module use ${regdir}/draco/environment/Modules/$dir"
-    module use ${regdir}/$dir
+    echo "module use ${regdir}/draco/environment/$dir"
+    module use ${regdir}/draco/environment/$dir
   fi
 done
 
@@ -145,8 +145,8 @@ if test "${dashboard_type}x" == "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   #base_dir=/lscratch1/kellyt/cdash/ct
-   base_dir=/usr/projects/jayenne/regress/ct
+   base_dir=/lscratch1/kellyt/cdash/ct
+   #base_dir=/usr/projects/jayenne/regress/ct
 fi
 
 echo " "
@@ -195,7 +195,11 @@ if test "${ctestparts}" = "Configure,Build"; then
    fi
 fi
 
+echo "--------------------------------------------------------------------------------"
+echo "Starting ctest at..."
+date
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
 ##---------------------------------------------------------------------------##

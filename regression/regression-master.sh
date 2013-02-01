@@ -20,6 +20,14 @@ print_use()
     echo "   ENV{base_dir}       = {/var/tmp/$USER/cdash, /scratch/$USER/cdash}"
 }
 
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
 ##---------------------------------------------------------------------------##
 ## Main
 ##---------------------------------------------------------------------------##
@@ -61,6 +69,17 @@ ct-*)
 ml-*)
     machine_name_long=Moonlight
     machine_name_short=ml
+    result=`fn_exists module`
+    if test $result -eq 0; then 
+        echo 'module function is defined'
+    else
+        echo 'module function does not exist. defining a local function ...'
+        source /usr/share/Modules/init/bash
+        # module () 
+        # { 
+        #     eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
+        # }
+    fi
     module purge
     export regdir=/usr/projects/jayenne/regress
     # We don't include capsaicin in the Intel-12 based builds.

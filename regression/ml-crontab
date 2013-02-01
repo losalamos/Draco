@@ -14,7 +14,6 @@
 
 01 01 * * 4 /users/kellyt/bin/weekly_report.sh
 
-
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command 
 # |    |    |    |    +----- day of week (0 - 6) (Sunday=0)

@@ -1,8 +1,8 @@
 # crontab for ct-fe1
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh Debug intel13 &> /usr/projects/jayenne/regress/logs/ct-Debug-intel13-master.log
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh Debug intel13 &> /usr/projects/jayenne/regress/logs/ct-Debug-intel13-master.log
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh Release intel13 &> /usr/projects/jayenne/regress/logs/ct-Release-intel13-master.log
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh Release intel13 &> /usr/projects/jayenne/regress/logs/ct-Release-intel13-master.log
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command 
