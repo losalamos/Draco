@@ -4,9 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
- *
- * Long description.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -74,17 +73,6 @@ int main(int argc, char *argv[])
  * \test All of the member functions of this class are tested by
  * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
  * \c --version on the command line.
- *
- * \warning The output from this class is closely tied to the DBS python
- * script \c tools/regression_filter.py that is used during \c gmake \c check.
- * Changing the format or keyword in the output streams from this class should
- * be coordinated with the regular expression matches found in \c
- * tools/regression_filter.py.
- *
- * \warning The differences between ScalarUnitTest, ParallelUnitTest and
- * ApplicationUnitTest are correlated to the DBS m4 macros \c AC_RUNTESTS and
- * \c AC_TEST_APPLICATION.  Changes to these classes should be coordinated with
- * changes to these DBS m4 macro commands.
  */
 /*!
  * \example ds++/test/tstScalarUnitTest.cc
@@ -100,7 +88,7 @@ class DLL_PUBLIC ScalarUnitTest : public UnitTest
     
     //! Default constructors.
     ScalarUnitTest( int & argc, char **&argv, string_fp_void release_,
-              std::ostream & out_ = std::cout );
+                    std::ostream & out_ = std::cout );
 
     //! The copy constructor is disabled.
     ScalarUnitTest(const ScalarUnitTest &rhs);

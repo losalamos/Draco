@@ -364,7 +364,19 @@ Ordinate_Space::Ordinate_Space( unsigned const  dimension,
                    extra_starting_directions,
                    ordering),
       expansion_order_(expansion_order),
-      has_extra_starting_directions_(extra_starting_directions)
+      has_extra_starting_directions_(extra_starting_directions),
+      number_of_levels_(0),
+      levels_(),
+      first_angles_(),
+      is_dependent_(false),
+      reflect_mu_(),
+      reflect_eta_(),
+      reflect_xi_(),
+      alpha_(),
+      tau_(),
+      number_of_moments_(0),
+      moments_(),
+      moments_per_order_()
 {
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);

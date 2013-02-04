@@ -3,7 +3,8 @@
  * \file   parser/Abstract_Class_Parser.hh
  * \author Kent Budge
  * \brief  Define class Abstract_Class_Parser
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +13,10 @@
 #ifndef parser_Abstract_Class_Parser_hh
 #define parser_Abstract_Class_Parser_hh
 
-#include <cstring>
-#include "ds++/SP.hh"
 #include "Token_Stream.hh"
 #include "Parse_Table.hh"
+#include "ds++/SP.hh"
+#include <cstring>
 
 namespace rtt_parser
 {
@@ -45,6 +46,9 @@ class Abstract_Class_Parser_Base
 
         ~c_string_vector();
     };
+
+    // provide a virtual destrcutor for the base class.
+    virtual ~Abstract_Class_Parser_Base();
 
     // DATA
 

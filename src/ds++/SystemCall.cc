@@ -127,7 +127,7 @@ std::string draco_getcwd(void)
  *    http://en.wikipedia.org/wiki/Stat_%28system_call%29
  */
 draco_getstat::draco_getstat( std::string const & fqName )
-    : stat_return_code(0)
+    : stat_return_code(0), buf()
 {
 #ifdef WIN32
     /*! \note If path contains the location of a directory, it cannot 
@@ -141,7 +141,7 @@ draco_getstat::draco_getstat( std::string const & fqName )
         clean_fqName=fqName;
     
     std::cout << "fqName = " << fqName 
-            << "\nclean_fqName = " << clean_fqName << std::endl;
+              << "\nclean_fqName = " << clean_fqName << std::endl;
     stat_return_code = _stat(clean_fqName.c_str(), &buf);
 #else
     stat_return_code = stat(fqName.c_str(), &buf);

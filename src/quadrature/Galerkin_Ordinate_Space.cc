@@ -4,54 +4,52 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Galerkin_Ordinate_Space
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Galerkin_Ordinate_Space.cc 6855 2012-11-06 16:39:27Z kellyt $
 //---------------------------------------------------------------------------------------//
 
-#include <iostream>
-#include <iomanip>
+#include "Galerkin_Ordinate_Space.hh"
+#include "special_functions/Ylm.hh"
+#include "units/PhysicalConstants.hh"
 
 // Vendor software
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
-// #include <gsl/gsl_sf_legendre.h>
 
-#include "Galerkin_Ordinate_Space.hh"
+#include <iostream>
+#include <iomanip>
 
-#include "special_functions/Ylm.hh"
-#include "units/PhysicalConstants.hh"
+// static
+// void print_matrix( std::string const & matrix_name,
+//                    std::vector<double> const & x,
+//                    std::vector<unsigned> const & dims )
+// {
+//     using std::cout;
+//     using std::endl;
+//     using std::string;
 
-static
-void print_matrix( std::string const & matrix_name,
-                   std::vector<double> const & x,
-                   std::vector<unsigned> const & dims )
-{
-    using std::cout;
-    using std::endl;
-    using std::string;
+//     Require( dims[0]*dims[1] == x.size() );
 
-    Require( dims[0]*dims[1] == x.size() );
+//     unsigned pad_len( matrix_name.length()+2 );
+//     string padding( pad_len, ' ' );
+//     cout << matrix_name << " =";
+//     // row
+//     for( unsigned i=0; i<dims[1]; ++i )
+//     {
+//         if( i != 0 ) cout << padding;
 
-    unsigned pad_len( matrix_name.length()+2 );
-    string padding( pad_len, ' ' );
-    cout << matrix_name << " =";
-    // row
-    for( unsigned i=0; i<dims[1]; ++i )
-    {
-        if( i != 0 ) cout << padding;
+//         cout << "{ ";
 
-        cout << "{ ";
+//         for( unsigned j=0; j<dims[0]-1; ++j )
+//             cout << std::setprecision(10) << x[j+dims[0]*i] << ", ";
 
-        for( unsigned j=0; j<dims[0]-1; ++j )
-            cout << std::setprecision(10) << x[j+dims[0]*i] << ", ";
-
-        cout << std::setprecision(10) << x[dims[0]-1+dims[0]*i] << " }." << endl;
-    }
-    cout << endl;
-    return;
-}
+//         cout << std::setprecision(10) << x[dims[0]-1+dims[0]*i] << " }." << endl;
+//     }
+//     cout << endl;
+//     return;
+// }
 
 using namespace rtt_units;
 
@@ -219,7 +217,9 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
                      expansion_order,
                      extra_starting_directions,
                      ordering),
-      method_(method)
+      method_(method),
+      D_(),
+      M_()
 {
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);

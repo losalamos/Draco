@@ -40,8 +40,8 @@ General_Octant_Quadrature(vector<double> const &mu,
     xi_(xi),
     wt_(wt),
     number_of_levels_(number_of_levels),
-    quadrature_class_(quadrature_class)
-    
+    quadrature_class_(quadrature_class),
+    is_open_interval_( soft_equiv(*std::min_element(xi.begin(), xi.end()), -1.0) )
 {
     Require(mu.size()>0 && eta.size()==mu.size() && xi.size()==mu.size() &&
             wt.size()==mu.size());
@@ -54,8 +54,8 @@ General_Octant_Quadrature(vector<double> const &mu,
     Require(quadrature_class != SQUARE_QUADRATURE ||
             2*number_of_levels*number_of_levels == 8*mu.size());
 
-    is_open_interval_ =
-        soft_equiv(*std::min_element(xi.begin(), xi.end()), -1.0);
+    // is_open_interval_ =
+    //     soft_equiv(*std::min_element(xi.begin(), xi.end()), -1.0);
 
     Ensure(check_class_invariants());
     Ensure(this->mu()==mu);

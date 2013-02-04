@@ -4,24 +4,23 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Sn_Ordinate_Space
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Sn_Ordinate_Space.cc 6855 2012-11-06 16:39:27Z kellyt $
 //---------------------------------------------------------------------------------------//
 
-#include <iostream>
-#include <iomanip>
-
-// Vendor software
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_blas.h>
-// #include <gsl/gsl_sf_legendre.h>
-
 #include "Sn_Ordinate_Space.hh"
 
 #include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
+
+// Vendor software
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_blas.h>
+
+#include <iostream>
+#include <iomanip>
 
 /*
 static
@@ -327,11 +326,13 @@ Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
                                 bool const  extra_starting_directions,
                                 Ordering const ordering)
     : Ordinate_Space(dimension,
-                         geometry,
-                         ordinates,
-                         expansion_order,
-                         extra_starting_directions,
-                         ordering)
+                     geometry,
+                     ordinates,
+                     expansion_order,
+                     extra_starting_directions,
+                     ordering),
+      D_(),
+      M_()
 {
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);

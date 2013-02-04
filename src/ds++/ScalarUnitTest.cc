@@ -4,17 +4,17 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:08:54 2006
  * \brief  Provide services for scalar unit tests.
- * \note   © Copyright 2006-2010 LANSLLC, All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-
 #include "ScalarUnitTest.hh"
 #include "Assert.hh"
+#include <iostream>
+#include <sstream>
 
 namespace rtt_dsxx
 {
@@ -56,7 +56,7 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
     // exit if command line contains "--version"
     
     for( int arg = 1; arg < argc; arg++ )
-        if( string( argv[arg] ) == "--version" )
+        if( string( argv[arg] ) == string("--version") )
             throw rtt_dsxx::assertion( string( "Success" ) );
     
     Ensure( numPasses == 0 );
@@ -69,5 +69,5 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
-//                 end of ScalarUnitTest.cc
+// end of ScalarUnitTest.cc
 //---------------------------------------------------------------------------//

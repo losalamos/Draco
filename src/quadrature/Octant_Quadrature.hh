@@ -44,9 +44,10 @@ class Octant_Quadrature : public Quadrature
 
     Octant_Quadrature()
         :
-        has_axis_assignments_(false)
-    {
-    }
+        has_axis_assignments_(false),
+        mu_axis_(0),
+        eta_axis_(0)        
+    { /* empty */ }
 
     Octant_Quadrature(unsigned const mu_axis,
                       unsigned const eta_axis)
@@ -54,8 +55,7 @@ class Octant_Quadrature : public Quadrature
         has_axis_assignments_(true),
         mu_axis_(mu_axis),
         eta_axis_(eta_axis)
-    {
-    }
+    { /* empty */ }
 
     // ACCESSORS
 

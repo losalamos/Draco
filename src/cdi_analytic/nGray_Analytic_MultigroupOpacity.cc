@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_MultigroupOpacity class member definitions.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -64,7 +65,8 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
 nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_char &packed)
     :
-    Analytic_MultigroupOpacity(packed)
+    Analytic_MultigroupOpacity(packed),
+    group_models()
 {
     // get the number of group boundaries
     sf_double const &group_boundaries = getGroupBoundaries();

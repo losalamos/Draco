@@ -114,6 +114,8 @@ namespace rtt_dsxx
  * compilers which are incapable of compiling exception code.  From here
  * forward, exceptions are assumed to be available.  And thereby we do our
  * part to promote "standard C++".
+ *
+ * \sa http://akrzemi1.wordpress.com/2013/01/04/preconditions-part-i/
  */
 //===========================================================================//
 

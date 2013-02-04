@@ -4,6 +4,8 @@
  * \author Kent G. Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -62,19 +64,13 @@ void indeterminate_scatterv(vector<vector<T> >  &outgoing_data,
             if( total_count > 0 )
             {
                 // if we get here, then the sendbuf must have data.
-                // rtt_c4::scatterv(
-                //     (sendbuf.size()>0 ? &sendbuf[0]: NULL),
-                //     (counts.size() >0 ? &counts[0] : NULL),
-                //     (displs.size() >0 ? &displs[0] : NULL),
-                //     (incoming_data.size()>0?&incoming_data[0]:NULL),
-                //     count);
                 Check( sendbuf.size()>0 );
                 Check( counts.size() >0 );
                 Check( displs.size() >0 );
-                // Check( incoming_data.size()>0 );
                 Check( incoming_data.size()==0 );
                 rtt_c4::scatterv( &sendbuf[0], &counts[0], &displs[0],
-                                  &incoming_data[0], count);
+                                  (incoming_data.size()>0 ? &incoming_data[0] : NULL),
+                                  count);
             }
         }
         else
@@ -133,11 +129,12 @@ void determinate_scatterv(vector<vector<T> >  &outgoing_data,
                      outgoing_data[p].end(),
                      sendbuf.begin()+displs[p]);
             }
-            rtt_c4::scatterv(&sendbuf[0],
-                             &counts[0],
-                             &displs[0],
-                             &incoming_data[0],
-                             count);
+            rtt_c4::scatterv(
+                (sendbuf.size()>0 ? &sendbuf[0]: NULL),
+                &counts[0],
+                &displs[0],
+                (incoming_data.size()>0?&incoming_data[0]:NULL),
+                count);
         }
         else
         {
@@ -164,5 +161,5 @@ void determinate_scatterv(vector<vector<T> >  &outgoing_data,
 #endif // c4_scatterv_t_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/scatterv.t.hh
+// end of c4/scatterv.t.hh
 //---------------------------------------------------------------------------//

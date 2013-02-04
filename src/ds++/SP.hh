@@ -4,7 +4,8 @@
  * \author Geoffrey Furnish, Thomas Evans
  * \date   Tue Feb  4 11:27:53 2003
  * \brief  Smart Point class file.
- * \note   Copyright © 2003-2010  Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,8 +14,8 @@
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
 
-#include <typeinfo>
 #include "Assert.hh"
+#include <typeinfo>
 
 namespace rtt_dsxx
 {

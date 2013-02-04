@@ -163,6 +163,7 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension,
     has_starting_directions_(has_starting_directions),
     has_extra_starting_directions_(has_extra_starting_directions),
     ordering_(ordering),
+    norm_(0.0),
     ordinates_(ordinates)
 {
     Require(dimension>=1 && dimension<=3);
