@@ -303,14 +303,9 @@ void test_either(UnitTest &ut,
         double Fx = 0.0, Fy=0.0, Fz=0.0;
         double Fx2 = 0.0, Fy2=0.0, Fz2=0.0;
         double const MAGIC = 2.32; // avoid numerical coincidences
-        cout << "Ordinates:" << endl;
+
         for (unsigned i=0; i<N; ++i)
         {
-            cout << "  mu = " << setprecision(10) << ordinates[i].mu()
-                 << "  eta = " << setprecision(10) << ordinates[i].eta()
-                 << "  xi = " << setprecision(10) << ordinates[i].xi()
-                 << " weight = " << setprecision(10) << ordinates[i].wt() << endl;
-            
             J += MAGIC * ordinates[i].wt();
             Fx += MAGIC * ordinates[i].mu()*ordinates[i].wt();
             Fx2 += MAGIC * ordinates[i].mu()*ordinates[i].mu()*ordinates[i].wt();
@@ -319,6 +314,7 @@ void test_either(UnitTest &ut,
             Fz += MAGIC * ordinates[i].xi()*ordinates[i].wt();
             Fz2 += MAGIC * ordinates[i].xi()*ordinates[i].xi()*ordinates[i].wt();
         }
+
         if (soft_equiv(J, MAGIC))
         {
             ut.passes("J okay");
@@ -510,6 +506,74 @@ void test_axis(UnitTest &ut,
                 ordinate_space,
                 quadrature,
                 expansion_order);
+}
+
+//---------------------------------------------------------------------------------------//
+void quadrature_integration_test(UnitTest &ut,
+                                 Quadrature &quadrature)
+{
+
+    if (quadrature.quadrature_class() !=  INTERVAL_QUADRATURE)
+    {
+        // Build an ordinate set
+        SP<Ordinate_Set> ordinate_set =
+            quadrature.create_ordinate_set(3U, // dimension
+                                           rtt_mesh_element::CARTESIAN,
+                                           1.0, // norm,
+                                           false, // add_starting_directions
+                                           false, // add_extra_directions,
+                                           Ordinate_Set::LEVEL_ORDERED);
+
+        vector<Ordinate> const &ordinates = ordinate_set->ordinates();
+        unsigned const N = ordinates.size();
+        
+        double test_int8=0.0;
+        double test_int6=0.0;
+        double test_int4=0.0;
+        double test_int2=0.0;
+        
+        std::cout << "Testing S-" << quadrature.sn_order() << " quadrature integration" << std::endl;
+    
+        for (unsigned i=0; i<N; ++i)
+        {
+            //cout << "  mu = " << setprecision(10) << ordinates[i].mu()
+            //     << "  eta = " << setprecision(10) << ordinates[i].eta()
+            //     << "  xi = " << setprecision(10) << ordinates[i].xi()
+            //     << " weight = " << setprecision(10) << ordinates[i].wt() << endl;
+            
+            if (ordinates[i].xi() > 0)
+            {
+                test_int2 += ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].wt();
+                test_int4 += ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].wt();
+                test_int6 += ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].wt();
+                test_int8 += ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].mu()*ordinates[i].mu()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].eta()*ordinates[i].eta()
+                             *ordinates[i].wt();
+            }
+        }
+        std::cout << " test int (2) = " << test_int2 << "( " << test_int2*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (4) = " << test_int4 << "( " << test_int4*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (6) = " << test_int6 << "( " << test_int6*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (8) = " << test_int8 << "( " << test_int8*4*3.1415926535897932384 << " )" << std::endl;
+    }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -785,7 +849,6 @@ void quadrature_test(UnitTest &ut,
             // levels are only guaranteed on the xi axis.
         {
             if (false && quadrature.quadrature_class() ==  TRIANGLE_QUADRATURE)
-                // 1-D axisymmetric Galerkin is a reasearch topic.
             {
                 test_no_axis(ut,
                              quadrature,

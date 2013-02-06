@@ -35,6 +35,10 @@ class Interval_Quadrature : public Quadrature
     
     // CREATORS
 
+    Interval_Quadrature(unsigned const sn_order)
+        : Quadrature(sn_order)
+    {/*empty*/};
+
     // ACCESSORS
 
     virtual Quadrature_Class quadrature_class() const;

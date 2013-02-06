@@ -33,7 +33,8 @@ class General_Octant_Quadrature : public Octant_Quadrature
 
     // CREATORS
 
-    General_Octant_Quadrature(vector<double> const &mu,
+    General_Octant_Quadrature(unsigned const sn_order,
+                              vector<double> const &mu,
                               vector<double> const &eta,
                               vector<double> const &xi,
                               vector<double> const &wt,
@@ -67,7 +68,7 @@ class General_Octant_Quadrature : public Octant_Quadrature
     bool is_open_interval() const;
 
     bool check_class_invariants() const;
-    
+
     // STATICS
 
     static SP<Quadrature> parse(Token_Stream &tokens);

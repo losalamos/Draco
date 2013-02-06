@@ -22,6 +22,10 @@ using rtt_dsxx::UnitTest;
 void quadrature_test(UnitTest &ut,
                      Quadrature &quadrature);
 
+void quadrature_integration_test(UnitTest &ut,
+                                 Quadrature &quadrature);
+
+
 } // end namespace rtt_quadrature
 
 #endif // quadrature_quadrature_test_hh

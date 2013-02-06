@@ -20,9 +20,12 @@ using namespace rtt_parser;
 //---------------------------------------------------------------------------------------//
 /*!
  * The specification body must specify the number of ordinates and the number
- * of levels. A quadrature class specification is optional; the default is
- * octant. The mu, eta, xi, and weight of each ordinate is then
- * specified before the terminating end.
+ * of levels.
+ * If it's organized in levels, then there is an sn order 
+ * with which it can be associated naturally.
+ * A quadrature class specification is optional; the default is octant.
+ * The mu, eta, xi, and weight of each ordinate is then specified before
+ * the terminating "end" statement.
  *
  * /param tokens Token stream from which to parse the specification.
  */
@@ -30,6 +33,12 @@ using namespace rtt_parser;
 SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
 {
     Token token = tokens.shift();
+    tokens.check_syntax(token.text()=="sn order", "expected sn order");
+
+    unsigned sn_order = parse_positive_integer(tokens);
+
+
+    token = tokens.shift();
     tokens.check_syntax(token.text()=="number of ordinates",
                         "expected number of ordinates");
 
@@ -75,7 +84,8 @@ SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
 
     tokens.check_syntax(tokens.shift().type()==END, "missing end?");
 
-    return SP<Quadrature>(new General_Octant_Quadrature(mu, eta, xi, wt,
+    return SP<Quadrature>(new General_Octant_Quadrature(sn_order,
+                                                        mu, eta, xi, wt,
                                                         number_of_levels,
                                                         quadrature_class));
 }

@@ -44,7 +44,7 @@ string Square_Chebyshev_Legendre::as_text(string const &indent) const
 {
     string Result =
         indent + "type = square cl" +
-        indent + "  order = " + to_string(sn_order_) +
+        indent + "  order = " + to_string(sn_order()) +
         Octant_Quadrature::as_text(indent);
 
     return Result;
@@ -53,8 +53,8 @@ string Square_Chebyshev_Legendre::as_text(string const &indent) const
 //---------------------------------------------------------------------------------------//
 void
 Square_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu,
-                                                 vector<double> &eta,
-                                                 vector<double> &wt) const
+                                                    vector<double> &eta,
+                                                    vector<double> &wt) const
 {
     using std::fabs;
     using std::sqrt;
@@ -62,7 +62,7 @@ Square_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu,
     using rtt_dsxx::soft_equiv;
 
     // The number of quadrature levels is equal to the requested SN order.
-    size_t levels = sn_order_;
+    size_t levels = sn_order();
 
     // We build the 3-D first, then edit as appropriate.
 
@@ -77,7 +77,7 @@ Square_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu,
     double const mu2 = 1;
     vector<double> GLmu(levels);
     vector<double> GLwt(levels);
-    gauleg( mu1, mu2, GLmu, GLwt, sn_order_ );
+    gauleg( mu1, mu2, GLmu, GLwt, sn_order() );
 
     // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
 

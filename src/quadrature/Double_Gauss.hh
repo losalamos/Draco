@@ -40,7 +40,7 @@ class Double_Gauss : public Interval_Quadrature
     // CREATORS
 
     explicit Double_Gauss(unsigned sn_order)
-        : sn_order_(sn_order) 
+        : Interval_Quadrature(sn_order) 
     {
         Require(sn_order>0 && sn_order%2==0);
 
@@ -49,11 +49,6 @@ class Double_Gauss : public Interval_Quadrature
     }
 
     // ACCESSORS
-
-    unsigned sn_order() const
-    {
-        return sn_order_;
-    }
 
     // SERVICES
 

@@ -68,11 +68,15 @@ class Quadrature
     // ENUMERATIONS AND TYPEDEFS
 
     // CREATORS
+    Quadrature(unsigned const sn_order)
+        : sn_order_(sn_order)
+    {/* empty */}
 
     //! Virtual destructor.
     virtual ~Quadrature() {/* empty */}
 
     // ACCESSORS
+    unsigned sn_order() const {return sn_order_;};
 
     // SERVICES
 
@@ -184,6 +188,8 @@ class Quadrature
                                                bool include_extra_directions) const = 0;
 
     // data
+
+    unsigned const sn_order_;
 };
 
 } // end namespace rtt_quadrature

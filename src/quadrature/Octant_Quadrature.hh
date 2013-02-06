@@ -42,16 +42,18 @@ class Octant_Quadrature : public Quadrature
 
     // CREATORS
 
-    Octant_Quadrature()
+    Octant_Quadrature(unsigned const sn_order)
         :
-        has_axis_assignments_(false),
-        mu_axis_(0),
-        eta_axis_(0)        
-    { /* empty */ }
+        Quadrature(sn_order),
+        has_axis_assignments_(false)
+    {
+    }
 
-    Octant_Quadrature(unsigned const mu_axis,
+    Octant_Quadrature(unsigned const sn_order,
+                      unsigned const mu_axis,
                       unsigned const eta_axis)
         :
+        Quadrature(sn_order),
         has_axis_assignments_(true),
         mu_axis_(mu_axis),
         eta_axis_(eta_axis)

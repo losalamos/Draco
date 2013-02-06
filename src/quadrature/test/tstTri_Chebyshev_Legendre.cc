@@ -51,6 +51,14 @@ int main(int argc, char *argv[])
             Tri_Chebyshev_Legendre quadrature(8, 1, 2); // SN order = 8, mu=1, eta=2
             quadrature_test(ut, quadrature);
         }
+        Tri_Chebyshev_Legendre quadrature4(4); 
+        quadrature_integration_test(ut, quadrature4);
+        Tri_Chebyshev_Legendre quadrature8(8); 
+        quadrature_integration_test(ut, quadrature8);
+        Tri_Chebyshev_Legendre quadrature12(12); 
+        quadrature_integration_test(ut, quadrature12);
+        Tri_Chebyshev_Legendre quadrature16(16); 
+        quadrature_integration_test(ut, quadrature16);
     }
     catch (std::exception &err)
     {

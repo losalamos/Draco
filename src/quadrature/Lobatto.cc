@@ -26,7 +26,7 @@ using rtt_dsxx::to_string;
 //---------------------------------------------------------------------------------------//
 Lobatto::Lobatto(unsigned sn_order)
     :
-    sn_order_(sn_order),
+    Interval_Quadrature(sn_order),
     mu_(sn_order),
     wt_(sn_order)
 {
@@ -147,7 +147,7 @@ unsigned Lobatto::number_of_levels() const
 {
     string Result =
         indent + "type = lobatto" +
-        indent + "  order = " + to_string(sn_order_) +
+        indent + "  order = " + to_string(sn_order()) +
         indent + "end";
 
     return Result;
@@ -156,7 +156,7 @@ unsigned Lobatto::number_of_levels() const
 //---------------------------------------------------------------------------------------//
 bool Lobatto::check_class_invariants() const
 {
-    return sn_order_>0 && sn_order_%2==0;
+    return sn_order()>0 && sn_order()%2==0;
 }
 
 //---------------------------------------------------------------------------------------//
@@ -167,15 +167,17 @@ Lobatto::create_level_ordinates_(double const norm) const
 
     // Sanity Checks: none at present
 
+    unsigned const numPoints(sn_order());
+
     double sumwt = 0.0;
-    for ( size_t i = 0; i < sn_order_; ++i )
+    for ( size_t i = 0; i < numPoints; ++i )
 	sumwt += wt_[i];
 
     double c = norm/sumwt;
     
     // build the set of ordinates
-    vector<Ordinate> Result( sn_order_ );
-    for ( size_t i=0; i<sn_order_; ++i )
+    vector<Ordinate> Result( numPoints);
+    for ( size_t i=0; i<numPoints; ++i )
     {
 	// This is a 1D set.
 	Result[i] = Ordinate(mu_[i], c*wt_[i]);

@@ -41,7 +41,7 @@ string Double_Gauss::parse_name() const
 /* virtual */
 unsigned Double_Gauss::number_of_levels() const
 {
-    return sn_order_;
+    return sn_order();
 }
 
 //---------------------------------------------------------------------------------------//
@@ -49,7 +49,7 @@ unsigned Double_Gauss::number_of_levels() const
 {
     string Result =
         indent + "type = double gauss" +
-        indent + "  order = " + to_string(sn_order_) +
+        indent + "  order = " + to_string(sn_order()) +
         indent + "end";
 
     return Result;
@@ -58,7 +58,7 @@ unsigned Double_Gauss::number_of_levels() const
 //---------------------------------------------------------------------------------------//
 bool Double_Gauss::check_class_invariants() const
 {
-    return sn_order_>0 && sn_order_%2==0;
+    return sn_order()>0 && sn_order()%2==0;
 }
 
 //---------------------------------------------------------------------------------------//
@@ -68,7 +68,7 @@ Double_Gauss::create_level_ordinates_(double const norm) const
 {
     // Preconditions checked in create_ordinate_set
 
-    unsigned const numGaussPoints = sn_order_;
+    unsigned const numGaussPoints = sn_order();
     unsigned const n(numGaussPoints);
     unsigned const n2(n/2);
 
@@ -129,8 +129,8 @@ Double_Gauss::create_level_ordinates_(double const norm) const
     }
 
     // build the set of ordinates
-    vector<Ordinate> Result( sn_order_ );
-    for ( size_t i=0; i<sn_order_; ++i )
+    vector<Ordinate> Result( numGaussPoints ); // sn_order
+    for ( size_t i=0; i<numGaussPoints; ++i )
     {
 	// This is a 1D set.
 	Result[i] = Ordinate(mu[i], wt[i]);

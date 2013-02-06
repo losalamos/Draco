@@ -36,7 +36,7 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
     // The default values for snOrder_ and norm_ were set in QuadCreator.
     explicit Tri_Chebyshev_Legendre( unsigned sn_order)
         :
-        sn_order_( sn_order )
+        Octant_Quadrature(sn_order)
         
     {
         Require(sn_order>0 && sn_order%2==0);
@@ -47,8 +47,7 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
                                      unsigned const mu_axis,
                                      unsigned const eta_axis)
         :
-        Octant_Quadrature(mu_axis, eta_axis),
-        sn_order_( sn_order )
+        Octant_Quadrature(sn_order, mu_axis, eta_axis)
         
     {
         Require(sn_order>0 && sn_order%2==0);
@@ -58,8 +57,6 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
 
     // ACCESSORS
     
-    unsigned sn_order()     const { return sn_order_; }
-
     // SERVICES
     
     // These functions override the virtual member functions specifed in the
@@ -90,7 +87,6 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
 
 
     // DATA
-    unsigned sn_order_;
 };
 
 } // end namespace rtt_quadrature

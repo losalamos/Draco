@@ -36,7 +36,7 @@ class Level_Symmetric : public Octant_Quadrature
     // The default values for snOrder_ and norm_ were set in QuadCreator.
     explicit Level_Symmetric( unsigned sn_order)
         :
-        sn_order_( sn_order)
+        Octant_Quadrature( sn_order)
         
     {
         Require(sn_order>0 && sn_order%2==0);
@@ -45,8 +45,6 @@ class Level_Symmetric : public Octant_Quadrature
     Level_Symmetric();    // disable default construction
 
     // ACCESSORS
-    
-    unsigned sn_order()     const { return sn_order_; }
 
     // SERVICES
     
@@ -77,7 +75,6 @@ class Level_Symmetric : public Octant_Quadrature
                                           vector<double> &wt) const;
 
     // DATA
-    unsigned sn_order_;
 };
 
 } // end namespace rtt_quadrature

@@ -28,13 +28,15 @@ using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------------------//
 General_Octant_Quadrature::
-General_Octant_Quadrature(vector<double> const &mu,
+General_Octant_Quadrature(unsigned const sn_order,
+                          vector<double> const &mu,
                           vector<double> const &eta,
                           vector<double> const &xi,
                           vector<double> const &wt,
                           unsigned number_of_levels,
                           Quadrature_Class const quadrature_class)
     :
+    Octant_Quadrature(sn_order),
     mu_(mu),
     eta_(eta),
     xi_(xi),
@@ -102,6 +104,7 @@ unsigned General_Octant_Quadrature::number_of_levels() const { return number_of_
 string General_Octant_Quadrature::as_text(string const &indent) const
 {
     string Result = indent + "  type = general octant quadrature";
+    Result += indent + "  sn order = " + to_string(sn_order());
     Result += indent + "  number of ordinates = " + to_string(mu_.size());
     Result += indent + "  number of levels = " + to_string(number_of_levels_);
  

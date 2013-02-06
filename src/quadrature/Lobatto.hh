@@ -41,11 +41,6 @@ class Lobatto : public Interval_Quadrature
 
     // ACCESSORS
 
-    unsigned sn_order() const
-    {
-        return sn_order_;
-    }
-
     // SERVICES
 
     virtual string name() const;
@@ -70,7 +65,6 @@ class Lobatto : public Interval_Quadrature
 
     // DATA
 
-    unsigned sn_order_;
     vector<double> mu_, wt_;
 };
 

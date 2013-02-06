@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
     {
         double const V = 1/sqrt(3.0);
         vector<double> mu(1, V), eta(1, V), xi(1, V), wt(1, 1.0);
-        General_Octant_Quadrature quadrature(mu,
+        General_Octant_Quadrature quadrature(2,
+                                             mu,
                                              eta,
                                              xi,
                                              wt,

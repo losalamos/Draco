@@ -37,7 +37,7 @@ class Gauss_Legendre : public Interval_Quadrature
     // CREATORS
 
     explicit Gauss_Legendre(unsigned sn_order)
-        : sn_order_(sn_order) 
+        : Interval_Quadrature(sn_order)
     {
         Require(sn_order>0 && sn_order%2==0);
 
@@ -47,10 +47,6 @@ class Gauss_Legendre : public Interval_Quadrature
 
     // ACCESSORS
 
-    unsigned sn_order() const
-    {
-        return sn_order_;
-    }
 
     // SERVICES
 
@@ -74,7 +70,6 @@ class Gauss_Legendre : public Interval_Quadrature
 
     // DATA
 
-    unsigned sn_order_;
 };
 
 } // end namespace rtt_quadrature
