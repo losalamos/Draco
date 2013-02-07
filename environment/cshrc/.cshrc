@@ -47,6 +47,12 @@ case ty*.localdomain:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 
+case redfta[0-9]*:
+    module use $DRACO_ENV_DIR/Modules/hpc
+    module use $DRACO_ENV_DIR/Modules/tu-fe
+    module load git svn
+    breaksw
+
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
 
