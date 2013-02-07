@@ -509,7 +509,7 @@ void test_axis(UnitTest &ut,
 }
 
 //---------------------------------------------------------------------------------------//
-void quadrature_integration_test(UnitTest &ut,
+void quadrature_integration_test(UnitTest &/*ut*/,
                                  Quadrature &quadrature)
 {
 
