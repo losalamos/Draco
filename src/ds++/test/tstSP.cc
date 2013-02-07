@@ -662,7 +662,7 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
-#ifdef HAS_CXX_SHARED_PTR
+#ifdef HAS_CXX11_SHARED_PTR
 void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
@@ -1108,7 +1108,7 @@ int main(int argc, char *argv[])
         list_test(ut);       cout << endl;
         CHECK_0_OBJECTS;
 
-#ifdef HAS_CXX_SHARED_PTR
+#ifdef HAS_CXX11_SHARED_PTR
         type_T_test_shared_ptr(ut);
         type_X_test_shared_ptr(ut);
         CHECK_0_OBJECTS;        
