@@ -146,11 +146,17 @@ if( DOXYGEN_FOUND )
   # Target for building doxygen files.
   add_custom_target( autodoc
     DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
-    COMMENT "Building Doxygen based autodocs (HTML)...  "
-    )
+    COMMENT "Building Doxygen based autodocs (HTML)...  
+
+*** Autodoc HTML pages are at
+    file://${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
+
+" )
 
 endif( DOXYGEN_FOUND )
   
 # To Do:
-# 1.  How to 'make clean'?
+# 1. How to 'make clean'?
+# 2. Consider using tagfiles and building each component as an thread
+#    to decrease wall clock time needed to build docs.
 
