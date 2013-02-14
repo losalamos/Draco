@@ -90,6 +90,10 @@ bool Ordinate_Set::level_compare(Ordinate const &a, Ordinate const &b)
 //---------------------------------------------------------------------------------------//
 bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b)
 {
+    // We initially sort by octant. Only the +++ octant is actually used by
+    // PARTISN-type sweepers that assume all quadratures are octant
+    // quadratures.
+    
     if (a.xi()<0 && b.xi()>0)
     {
         return true;
@@ -114,9 +118,11 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b)
     {
         return false;
     }
+    // Within an octant, we sort by decreasing absolute xi, then increasing
+    // absolute eta, to be consistent with PARTISN.
     else if (!soft_equiv(fabs(a.xi()), fabs(b.xi()), 1.0e-14))
     {
-        return (fabs(a.xi()) < fabs(b.xi()));
+        return (fabs(a.xi()) > fabs(b.xi()));
     }
     else if (!soft_equiv(fabs(a.eta()), fabs(b.eta()), 1.0e-14))
     {
@@ -125,7 +131,7 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b)
     else
     {
 	return (!soft_equiv(fabs(a.mu()), fabs(b.mu()), 1.0e-14) &&
-                fabs(a.mu()) < fabs(b.mu()));
+                fabs(a.mu()) > fabs(b.mu()));
     }
 }
 
