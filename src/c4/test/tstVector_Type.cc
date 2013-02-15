@@ -60,12 +60,12 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     {
         for (unsigned p=1; p<nproc; ++p)
         {
-            send(array+(1+4*2), 1, p, data_type);
+            send_udt(array+(1+4*2), 1, p, data_type);
         }
     }
     else
     {
-        receive(array+(1+4*2), 1, 0, data_type);
+        receive_udt(array+(1+4*2), 1, 0, data_type);
         for (unsigned j=0; j<6; ++j)
         {
             for (unsigned i=0; i<4; ++i)

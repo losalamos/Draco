@@ -66,11 +66,11 @@ int receive(T   *buffer,
 
 //---------------------------------------------------------------------------------------//
 template<typename T>
-int send(const T     *buffer, 
-	 int          size,
-	 int          destination,
-         C4_Datatype &data_type,
-	 int          tag)
+int send_udt(const T     *buffer, 
+             int          size,
+             int          destination,
+             C4_Datatype &data_type,
+             int          tag)
 {
     MPI_Send(const_cast<T *>(buffer), size, data_type,
 	     destination, tag, communicator);
@@ -80,11 +80,11 @@ int send(const T     *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-int receive(T           *buffer, 
-	    int          size, 
-	    int          source, 
-            C4_Datatype &data_type,
-	    int          tag)
+int receive_udt(T           *buffer, 
+                int          size, 
+                int          source, 
+                C4_Datatype &data_type,
+                int          tag)
 {
     int count = 0;
 

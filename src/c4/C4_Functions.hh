@@ -148,16 +148,16 @@ int receive(T *buffer, int size, int source, int tag = C4_Traits<T*>::tag);
  * \brief Do a point-to-point, blocking send of a user-defined type.
  */
 template<typename T>
-int send(const T *buffer, int size, int destination, C4_Datatype &,
-	 int tag = C4_Traits<T*>::tag);
+int send_udt(const T *buffer, int size, int destination, C4_Datatype &,
+             int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a point-to-point, blocking receive of a user-defined type.
  */
 template<typename T>
-int receive(T *buffer, int size, int source,  C4_Datatype &,
-            int tag = C4_Traits<T*>::tag);
+int receive_udt(T *buffer, int size, int source,  C4_Datatype &,
+                int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
