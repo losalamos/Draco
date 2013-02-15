@@ -78,7 +78,7 @@ SesameTables& SesameTables::addTable( EOS_INTEGER const tableID,
                                       unsigned    const matID )
 {
     // matMap is a one-to-one map.  We don't allow re-mapping.
-    Require( matMap.count( tableID ) == 0 );
+    //Require( matMap.count( tableID ) == 0 );
 
     // insert a new entry into the matMap.
     matMap[ tableID ] = matID;
