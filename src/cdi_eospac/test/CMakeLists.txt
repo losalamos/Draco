@@ -35,7 +35,7 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}" 
-   DEPS    "Lib_cdi;${EOSPAC_LIBRARY}" 
+   DEPS    "Lib_cdi" 
    )
 
 add_test( 

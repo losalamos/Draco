@@ -57,9 +57,12 @@ add_component_library(
    TARGET       Lib_cdi_eospac
    TARGET_DEPS  Lib_cdi
    LIBRARY_NAME cdi_eospac
-   SOURCES      "${sources}"  )
+   SOURCES      "${sources}" 
+   VENDOR_LIST "EOSPAC"
+   VENDOR_LIBS "${EOSPAC_LIBRARY}"
+   VENDOR_INCLUDE_DIRS "${EOSPAC_INCLUDE_DIR}" )
 add_executable( Exe_QueryEospac QueryEospac.cc )
-target_link_libraries( Exe_QueryEospac Lib_cdi_eospac;${EOSPAC_LIBRARY} )
+target_link_libraries( Exe_QueryEospac Lib_cdi_eospac )
 set_target_properties( Exe_QueryEospac
    PROPERTIES OUTPUT_NAME bin/QueryEospac )
 
