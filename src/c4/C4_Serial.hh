@@ -42,6 +42,14 @@ void inherit(const Comm &/*comm*/)
 {
 }
 
+template<class T>
+int create_vector_type(unsigned /*e1*/, unsigned /*e2*/,
+                       unsigned /*v1*/, unsigned /*v2*/,
+                       unsigned /*stride*/,
+                       C4_Datatype &/*new_type*/)
+{
+}
+
 //---------------------------------------------------------------------------//
 // BLOCKING SEND/RECEIVE OPERATIONS
 //---------------------------------------------------------------------------//
@@ -50,6 +58,16 @@ template<class T>
 int send(const T */* buffer*/, 
          int      /* size */,
          int      /* destination */, 
+         int      /* tag */)
+{
+    return C4_SUCCESS;
+}
+
+template<class T>
+int send(const T */* buffer*/, 
+         int      /* size */,
+         int      /* destination */,
+         C4_Datatype &/*data_type*/,
          int      /* tag */)
 {
     return C4_SUCCESS;
@@ -69,6 +87,16 @@ template<class T>
 int receive(T   */* buffer */, 
 	    int  /* size */, 
 	    int  /* source */, 
+	    int  /* tag */)
+{
+    return C4_SUCCESS;
+}
+
+template<class T>
+int receive(T   */* buffer */, 
+	    int  /* size */, 
+	    int  /* source */, 
+            C4_Datatype &/*data_type*/,
 	    int  /* tag */)
 {
     return C4_SUCCESS;

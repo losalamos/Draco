@@ -20,6 +20,7 @@
 #ifdef C4_MPI
 
 #include "C4_Functions.hh"
+#include "MPI_Traits.hh"
 #include "ds++/Assert.hh"
 #include "c4_mpi.h"
 
@@ -50,6 +51,25 @@ void inherit(const Comm &comm)
         MPI_Comm_dup(comm, &communicator);
     Check (result == MPI_SUCCESS);
 }
+
+template<class T>
+int create_vector_type(unsigned count,
+                       unsigned blocklength,
+                       unsigned stride,
+                       C4_Datatype &new_type)
+{
+    int info = MPI_Type_vector(count, blocklength, stride,
+                               MPI_Traits<T>::element_type(),
+                               &new_type);
+
+    if (info != C4_SUCCESS)
+        return info;
+
+    info = MPI_Type_commit(&new_type);
+
+    return info;
+}
+
 
 //---------------------------------------------//
 /*!

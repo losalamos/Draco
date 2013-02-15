@@ -35,6 +35,8 @@ template int send<unsigned long long>(const unsigned long long *, int, int, int)
 template int send<float>(const float *, int, int, int);
 template int send<double>(const double *, int, int, int); 
 template int send<long double>(const long double *, int, int, int);
+
+template int send<double>(const double *, int, int, C4_Datatype &, int);
     
 
 template int receive<char>(char *, int, int, int);
@@ -50,6 +52,8 @@ template int receive<unsigned long long>(unsigned long long *, int, int, int);
 template int receive<float>(float *, int, int, int);
 template int receive<double>(double *, int, int, int); 
 template int receive<long double>(long double *, int, int, int);
+
+template int receive<double>(double *, int, int, C4_Datatype &, int); 
 
 template int broadcast<char>(char *, int, int);
 template int broadcast<unsigned char>(unsigned char *, int, int);

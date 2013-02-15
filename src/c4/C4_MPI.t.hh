@@ -64,6 +64,42 @@ int receive(T   *buffer,
     return count;
 }
 
+//---------------------------------------------------------------------------------------//
+template<typename T>
+int send(const T     *buffer, 
+	 int          size,
+	 int          destination,
+         C4_Datatype &data_type,
+	 int          tag)
+{
+    MPI_Send(const_cast<T *>(buffer), size, data_type,
+	     destination, tag, communicator);
+    return C4_SUCCESS;
+}
+
+//---------------------------------------------------------------------------//
+
+template<typename T>
+int receive(T           *buffer, 
+	    int          size, 
+	    int          source, 
+            C4_Datatype &data_type,
+	    int          tag)
+{
+    int count = 0;
+
+    // get a handle to the MPI_Status
+    MPI_Status status;
+
+    // do the blocking receive
+    MPI_Recv(buffer, size, data_type, source, tag,
+	     communicator, &status);
+
+    // get the count of received data
+    MPI_Get_count(&status, data_type, &count);
+    return count;
+}
+
 //---------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
 //---------------------------------------------------------------------------//

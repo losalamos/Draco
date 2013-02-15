@@ -18,6 +18,7 @@
 #define c4_C4_Functions_hh
 
 #include "C4_sys_times.h"
+#include "C4_Datatype.hh"
 #include "C4_Traits.hh"
 #include "C4_Req.hh"
 #include <string>
@@ -77,6 +78,26 @@ void inherit(const Comm &);
 void free_inherited_comm();
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief Create up a new vector type.
+ *
+ * \param count Number of blocks in the data type
+ * \param blocklength Length of each block (in units of base type)
+ * \param stride Spacing between start of each block (in units of base type)
+ * \param new_type On return, contains the new type descriptor.
+ */
+template<class T>
+int create_vector_type(unsigned count,
+                       unsigned blocklength,
+                       unsigned stride,
+                       C4_Datatype &new_type);
+
+//---------------------------------------------------------------------------------------//
+//! Free a user defined type, such as a vector type.
+
+void type_free(C4_Datatype &old_type);
+
+//---------------------------------------------------------------------------//
 // QUERY FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
@@ -121,6 +142,22 @@ int send(const T *buffer, int size, int destination,
  */
 template<typename T>
 int receive(T *buffer, int size, int source, int tag = C4_Traits<T*>::tag);
+
+//---------------------------------------------------------------------------------------//
+/*!
+ * \brief Do a point-to-point, blocking send of a user-defined type.
+ */
+template<typename T>
+int send(const T *buffer, int size, int destination, C4_Datatype &,
+	 int tag = C4_Traits<T*>::tag);
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Do a point-to-point, blocking receive of a user-defined type.
+ */
+template<typename T>
+int receive(T *buffer, int size, int source,  C4_Datatype &,
+            int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
