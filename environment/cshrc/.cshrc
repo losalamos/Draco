@@ -2,7 +2,7 @@
 
 # Use: In ~/.cshrc add the following code:
 #
-# setenv DRACO_ENV_DIR ~/draco/environment
+ setenv DRACO_ENV_DIR ~/draco/environment
 # source $DRACO_ENV_DIR/cshrc/.cshrc
 #
 
@@ -100,11 +100,11 @@ case ml*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/12.1.5 openmpi cudatoolkit
-    module load cmake gsl/1.14-intel svn 
-    module load numdiff lapack/3.4.1-intel
+    module load intel/13.0.1 openmpi cudatoolkit
+    module load cmake gsl/1.14-intel svn fstools 
+    module load numdiff lapack/3.4.1-intel totalview
     module load trilinos SuperLU_DIST/3.0-intel
-    module load ParMetis/3.1.1-intel ndi random123 eospac
+    module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-moonlight
     alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
     setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
@@ -125,7 +125,7 @@ case ci*:
    module load gsl/1.14 lapack/3.4.1-intel
    module load cmake numdiff subversion
    module load trilinos SuperLU_DIST/3.0-intel 
-   module load ParMetis/3.1.1-intel ndi random123 eospac
+   module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-cielito
 
    # Avoid run time messages of the form:
    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
