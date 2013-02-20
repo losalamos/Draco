@@ -12,6 +12,8 @@ setenv PATH $DRACO_ENV_DIR/bin:$PATH
 switch ("`uname -n`")
 case pi-fey*.lanl.gov:
 case pi*.localdomain:
+case mu-fey*.lanl.gov:
+case mu*.localdomain:
 
 #    source /usr/projects/crestone/dotfiles/Cshrc
     source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
