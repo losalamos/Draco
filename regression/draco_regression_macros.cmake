@@ -119,6 +119,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
       c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
       c:/vendors
       )
+   set( AUTODOCDIR "${VENDOR_DIR}/../autodoc" )
+   get_filename_component( AUTODOCDIR "${AUTODOCDIR}" ABSOLUTE )
 
    set( VERBOSE ON )
    set( CTEST_OUTPUT_ON_FAILURE ON )
