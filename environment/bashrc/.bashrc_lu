@@ -18,6 +18,13 @@ ulimit -s unlimited
 _BINDIR=`dirname "$BASH_ARGV"`
 export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
+# Where is the vendor directory
+if test "${VENDOR_DIR}x" == "x"; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+   fi
+fi
+
 #
 # MODULES
 #

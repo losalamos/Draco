@@ -1,10 +1,10 @@
 ##-*- Mode: sh -*-
 ##---------------------------------------------------------------------------##
-## .bashrc_ccs4_linux - my bash configuration file upon bash login
+## .bashrc_linux32 - my bash configuration file upon bash login
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
-   echo "In .bashrc_linux64"
+   echo "In .bashrc_linux32"
 fi
 
 ##---------------------------------------------------------------------------##
@@ -16,7 +16,7 @@ ulimit -s unlimited
 
 # Locate the vendor directory
 if test "${VENDOR_DIR}x" == "x"; then
-   export VENDOR_DIR=/ccs/codes/radtran/vendors
+   export VENDOR_DIR=/ccs/codes/radtran/vendors/Linux32
    if test -d /var/tmp/vendors; then
       export VENDOR_DIR=/var/tmp/vendors
    fi
@@ -24,14 +24,11 @@ fi
 
 # modules
 if test -z "$MODULESHOME"; then
-  if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
-    source ${VENDOR_DIR}/modules-3.2.9/init/bash
+  if test -f ${VENDOR_DIR}/modules-3.2.10/init/bash; then
+    source ${VENDOR_DIR}/modules-3.2.10/init/bash
   fi
 fi
-module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
-module load ndi openmpi emacs random123 eospac
-module load ParMetis trilinos totalview cmake numdiff git svn
-module load dia graphviz doxygen git valgrind
+module load emacs doxygen numdiff
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
@@ -55,5 +52,5 @@ done
 unset extradirs
 
 ##---------------------------------------------------------------------------##
-## end of .bashrc_linux64
+## end of .bashrc_linux32
 ##---------------------------------------------------------------------------##

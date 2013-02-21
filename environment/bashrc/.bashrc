@@ -100,8 +100,8 @@ case ${-} in
 
    # Generic Settings
 
-   alias ll='ls -Fl'
-   alias lt='ls -Flt'
+   alias ll='ls -Flh'
+   alias lt='ls -Flth'
    alias ls='ls -F'
    alias l.='ls -h -d .*'
 
@@ -145,10 +145,10 @@ case ${-} in
    if test "${TERM}" != emacs && 
        test "${TERM}" != dumb; then
    # replace list aliases with ones that include colorized output.
-       alias ll='ls --color -Fl'
-       alias l.='ls --color -aFl'
-       alias lt='ls --color -Flt'
-       alias lt.='ls --color -aFlt'
+       alias ll='ls --color -Flh'
+       alias l.='ls --color -hd .*'
+       alias lt='ls --color -Flth'
+       alias lt.='ls --color -Flth .*'
        alias ls='ls --color -F'
    fi
 
@@ -205,30 +205,20 @@ darwin | cn[0-9]*)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_darwin
    ;; 
 
-# RoadRunner machines
-rra[0-9]*a)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rr
-    ;;
-rr-dev-fe)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rr_dev
-    ;;
-
 #TLCC machines
 ty-fe* | ty[0-9]*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
     ;;
 
-# Cielito
-ct-fe[0-9] | ct-login[0-9])
+# Cielito | Cielo
+ct-fe[0-9] | ct-login[0-9] | ci-fe[0-9] | ci-login[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
-# Luna
-lu-fe[0-9] | lua[0-9]* | ml-fey | ml*)
+# Luna | Moonlight | Mustang
+lu-fe[0-9] | lua[0-9]* | ml-fey | ml* | mu-fey | mu*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
-
-# Mapache
 
 # Assume CCS machine (ccscs[0-9] or personal workstation)
 *)
@@ -238,22 +228,26 @@ lu-fe[0-9] | lua[0-9]* | ml-fey | ml*)
           # draco environment only supports 64-bit linux...
           source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
         else
-          echo "Draco's environment no longer supports 32-bit Linux."
-          echo "Module support not available. Email kgt@lanl.gov for more information."
+          echo "Draco's environment is not fully supported on 32-bit Linux."
+          echo "Module support may not be available. Email kgt@lanl.gov for more information."
+          source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux32          
         fi
     fi
+    export NoModules=1
     ;;
 
 esac
 
 # Only print the loaded modules if this is an interactive session.
-case ${-} in 
-*i*)
+if ! test "${NoModules}" == "1"; then
+  case ${-} in 
+  *i*)
     if test -n "$MODULESHOME"; then
       module list
     fi
     ;;
-esac
+  esac
+fi
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
