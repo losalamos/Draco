@@ -28,10 +28,16 @@ macro( dbsSetDefaults )
   # Provide default value for install_prefix
   if( "${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local" OR
       "${CMAKE_INSTALL_PREFIX}" MATCHES "C:/Program Files" )
-    set( CMAKE_INSTALL_PREFIX "${Draco_BINARY_DIR}/install" CACHE PATH 
-       "Install path prefix, prepended onto install directories" FORCE)
+     if( "${CMAKE_CURRENT_BINARY_DIR}" MATCHES "src" )
+        set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/../install" )
+     else()
+        set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/install" )
+     endif()
+     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+        ABSOLUTE )
+     set( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH 
+        "Install path prefix, prepended onto install directories" FORCE)
   endif()
-  
   mark_as_advanced( EXECUTABLE_OUTPUT_PATH )
   mark_as_advanced( LIBRARY_OUTPUT_PATH )
   mark_as_advanced( DART_TESTING_TIMEOUT )
