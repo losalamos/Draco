@@ -4,7 +4,8 @@
  * \author Thomas M. Evans, Geoffrey Furnish
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req class definition.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +13,10 @@
 
 #ifndef c4_C4_Req_hh
 #define c4_C4_Req_hh
-#include <ds++/Assert.hh>
 
 // C4 package configure
 #include "c4/config.h"
+#include "ds++/Assert.hh"
 
 #ifdef C4_MPI
 #include "c4_mpi.h"
@@ -40,8 +41,8 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class C4_ReqRefRep {
-
+class C4_ReqRefRep
+{
     friend class C4_Req;
     
     int n;
@@ -103,8 +104,8 @@ class C4_ReqRefRep {
  */
 //===========================================================================//
 
-class C4_Req {
-
+class C4_Req
+{
     //! Request handle.
     C4_ReqRefRep *p;
 

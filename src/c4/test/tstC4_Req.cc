@@ -4,26 +4,25 @@
  * \author Kelly Thompson
  * \date   Tue Nov  1 15:49:44 2005
  * \brief  Unit test for C4_Req class.
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
-#include "ds++/Assert.hh"
-#include "../global.hh"
-#include "../SpinLock.hh"
-// #include "ds++/Release.hh"
 #include "c4_test.hh"
 #include "C4_Functions.hh"
+#include "../global.hh"
+#include "../SpinLock.hh"
 
 #ifdef C4_MPI
 #include "../MPI_Traits.hh"
 #include <mpi.h>
 #endif
+
+#include "ds++/Assert.hh"
+#include <iostream>
 
 using namespace std;
 
@@ -87,12 +86,12 @@ void tstTraits()
         using rtt_c4::MPI_Traits;
         rtt_c4::TSyncSpinLock tailsyncspinlock;
         
-        if( MPI_Traits<unsigned char>::element_type()  != MPI_UNSIGNED_CHAR ) ITFAILS;
-        if( MPI_Traits<short>::element_type()          != MPI_SHORT ) ITFAILS;
+        if( MPI_Traits<unsigned char>::element_type()  != MPI_UNSIGNED_CHAR )  ITFAILS;
+        if( MPI_Traits<short>::element_type()          != MPI_SHORT )          ITFAILS;
         if( MPI_Traits<unsigned short>::element_type() != MPI_UNSIGNED_SHORT ) ITFAILS;
-        if( MPI_Traits<unsigned int>::element_type()   != MPI_UNSIGNED ) ITFAILS;
-        if( MPI_Traits<unsigned long>::element_type()  != MPI_UNSIGNED_LONG ) ITFAILS;
-        if( MPI_Traits<long double>::element_type()    != MPI_LONG_DOUBLE ) ITFAILS;
+        if( MPI_Traits<unsigned int>::element_type()   != MPI_UNSIGNED )       ITFAILS;
+        if( MPI_Traits<unsigned long>::element_type()  != MPI_UNSIGNED_LONG )  ITFAILS;
+        if( MPI_Traits<long double>::element_type()    != MPI_LONG_DOUBLE )    ITFAILS;
     }
 #endif
     
@@ -202,5 +201,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstC4_Req.cc
+// end of tstC4_Req.cc
 //---------------------------------------------------------------------------//

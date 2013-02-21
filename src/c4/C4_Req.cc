@@ -4,7 +4,8 @@
  * \author Thomas M. Evans, Geoffrey Furnish
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req member definitions.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -128,14 +129,10 @@ C4_ReqRefRep::C4_ReqRefRep()
  */
 //---------------------------------------------------------------------------//
 
-C4_ReqRefRep::~C4_ReqRefRep()
-{
-}
+C4_ReqRefRep::~C4_ReqRefRep() { /* empty */ }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Wait for an asynchronous message to complete.
- */
+//! Wait for an asynchronous message to complete.
 //---------------------------------------------------------------------------//
 
 void C4_ReqRefRep::wait()
@@ -171,9 +168,7 @@ void C4_ReqRefRep::free()
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Tests for the completion of a non blocking operation.
- */
+//! Tests for the completion of a non blocking operation.
 //---------------------------------------------------------------------------//
 
 bool C4_ReqRefRep::complete()
@@ -197,9 +192,7 @@ bool C4_ReqRefRep::complete()
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Return the number of items returned on the last complete operation.
- */
+//! Return the number of items returned on the last complete operation.
 //---------------------------------------------------------------------------//
 
 unsigned C4_ReqRefRep::count()
@@ -216,5 +209,5 @@ unsigned C4_ReqRefRep::count()
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                 end of C4_Req.cc
+// end of C4_Req.cc
 //---------------------------------------------------------------------------//
