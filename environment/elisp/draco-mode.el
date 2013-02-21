@@ -107,6 +107,8 @@ to anything else will generate errors."
 
 ;; XEmacs Accessories
 (define-key draco-mode-map [(f11)]    'grep)
+;; support for F11 on sunray 2F
+(define-key draco-mode-map [(SunF36)] 'grep)
 (define-key draco-mode-map [(control f11)] 'speedbar)
 (define-key draco-mode-map "\C-csb"        'speedbar)
 

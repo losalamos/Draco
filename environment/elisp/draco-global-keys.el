@@ -27,6 +27,10 @@
 ;; Comments
 (define-key global-map [(f2)]               'comment-region)
 
+;; Search
+(define-key global-map [(f3)]               'isearch-forward)
+(define-key global-map [(shift f3)]         'isearch-backward)
+
 ; Refresh
 (define-key global-map [(f5)]               'font-lock-fontify-buffer)
 
