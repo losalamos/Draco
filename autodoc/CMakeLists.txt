@@ -15,8 +15,18 @@ find_package( Doxygen QUIET )
 
 if( DOXYGEN_FOUND )
 
-  set( DOXYGEN_OUTPUT_DIR
-    ${CMAKE_INSTALL_PREFIX}/autodoc )
+   # if AUTODOCDIR is set in environment (or make command line),
+   # create a CMake variable with this value.
+   if( NOT "$ENV{AUTODOCDIR}x" STREQUAL "x" )
+      set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
+   endif()
+   # if AUTODOCDIR is set, use it, otherwise, default to
+   # CMAKE_INSTALL_PREFIX. 
+   if( "${AUTODOCDIR}x" STREQUAL "x" )
+      set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc )
+   else()
+      set( DOXYGEN_OUTPUT_DIR "${AUTODOCDIR}" )
+   endif()
 
   # Source directories that should be examined by doxygen Sets
   # ${DOXYGEN_INPUT}.  This value is embedded in the doxygen_config
