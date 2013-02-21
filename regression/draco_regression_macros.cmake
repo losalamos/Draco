@@ -469,7 +469,7 @@ macro( setup_for_code_coverage )
             message(  "Generating lines of code statistics...")
             execute_process( 
                COMMAND /home/regress/draco/regression/cloc
-               --exclude-dir=chimpy
+               --exclude-dir=heterogeneous,chimpy
                --categorize=cloc-categorize.log 
                --counted=cloc-counted.log 
                --ignored=cloc-ignored.log 
@@ -492,7 +492,6 @@ macro( setup_for_code_coverage )
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
-
 
             message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
             set( CTEST_NOTES_FILES 
