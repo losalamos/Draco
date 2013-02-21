@@ -40,6 +40,11 @@ if test "$mach" != "ccscs8.lanl.gov"; then
    exit 1
 fi
 
+if test "${USER}x" == "x"; then
+   echo "FATAL ERROR: ENV{USER} not set.  Contact Kelly Thompson <kgt@lanl.gov>."
+   exit 1
+fi
+
 # Ensure the work directory exists
 if ! test -d /var/tmp/${USER}; then
    mkdir -p /var/tmp/${USER}
