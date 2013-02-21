@@ -46,8 +46,8 @@ ccscs[0-9].*)
     # Force new log file (vs appending)
     echo "     " > ${regdir}/logs/ccscs-${build_type}${epdash}${extra_params}-${subproj}-cbts.log 
     echo "==========================================================================="
-    echo "Moonlight Regression: ${ctestparts} from ${machine}."
-    echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
+    echo "CCSCS8 Regression: ${ctestparts} from ${machine}."
+    echo "                   ${subproj}-${build_type}${epdash}${extra_params}"
     echo "==========================================================================="
     ;;
 #ccscs-fey*)
