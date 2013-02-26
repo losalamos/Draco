@@ -70,6 +70,7 @@ run "module load valgrind numdiff svn random123"
 run "module load eospac grace lapack valgrind"
 run "module load SCALAPACK SuperLU_DIST hypre/2.0.0"
 run "module load BLACS ndi ParMetis trilinos"
+run "module load doxygen graphviz"
 comp=gcc
 
 case $extra_params in
