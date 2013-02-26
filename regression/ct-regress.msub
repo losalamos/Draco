@@ -55,7 +55,7 @@ esac
 
 echo "==========================================================================="
 echo "Cielito regression: ${ctestparts} from ${machine}."
-echo "                    ${subproj}-${build_type}-${extra_params}"
+echo "                    ${subproj}-${build_type}$${epdash}${extra_params}"
 echo "==========================================================================="
 
 fn_exists()
@@ -91,16 +91,12 @@ done
 module unload PrgEnv-intel PrgEnv-pgi
 module unload cmake numdiff svn gsl
 module load PrgEnv-intel
-module unload intel
-module load intel/12.1.5.339
 module load gsl/1.14 lapack/3.4.1-intel
 module load cmake numdiff svn
 module load trilinos/10.12.2-intel SuperLU_DIST/3.0-intel 
 module load random123 
 module load eospac
 module load ParMetis/3.1.1-intel ndi
-module unload intel
-module load intel/12.1.5.339
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`

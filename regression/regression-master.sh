@@ -5,6 +5,13 @@
 #   <path>/regression-master.sh <build_type> <extra_params>
 
 ##---------------------------------------------------------------------------##
+## Environment
+##---------------------------------------------------------------------------##
+
+# Enable job control
+set -m
+
+##---------------------------------------------------------------------------##
 ## Support functions
 ##---------------------------------------------------------------------------##
 print_use()
@@ -13,7 +20,7 @@ print_use()
     echo "Usage: $0 <build_type> [extra_params]"
     echo " "
     echo "   <build_type>   = { Debug, Release }."
-    echo "   [extra_params] = { intel13, pgi, coverage }."
+    echo "   [extra_params] = { intel13, pgi, coverage, cuda }."
     echo " "
     echo "Extra parameters read from environment:"
     echo "   ENV{dashboard_type} = {Nightly, Experimental}"
@@ -54,6 +61,10 @@ case $# in
     ;; 
 esac
 
+# Build everything as the default action
+projects=(  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
+forkbuild=( "no"    "yes"        "no"      "yes"      "yes" )
+
 # Host based variables
 export host=`uname -n | sed -e 's/[.].*//g'`
 
@@ -62,9 +73,7 @@ ct-*)
     machine_name_long=Cielito
     machine_name_short=ct
     export regdir=/usr/projects/jayenne/regress
-    # We don't include capsaicin in the Intel-12 based builds.
-    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "no"      "yes"      "yes" )
+    # 
     ;;
 ml-*)
     machine_name_long=Moonlight
@@ -75,23 +84,14 @@ ml-*)
     else
         echo 'module function does not exist. defining a local function ...'
         source /usr/share/Modules/init/bash
-        # module () 
-        # { 
-        #     eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
-        # }
     fi
     module purge
     export regdir=/usr/projects/jayenne/regress
-    # We don't include capsaicin in the Intel-12 based builds.
-    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "no"      "yes"      "yes" )
     ;;
 ccscs[0-9])
     machine_name_long="Linux64 on CCS LAN"
     machine_name_short=ccscs
     export regdir=/home/regress
-    projects=(  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "yes"       "no"      "yes"      "yes" )
     ;;
 *)
     echo "FATAL ERROR: I don't know how to run regression on host = ${host}."
@@ -150,6 +150,15 @@ esac
 
 # special cases
 case $extra_params in
+coverage)
+    epdash="-"
+    ;;
+cuda)
+    # do not build capsaicin with CUDA
+    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
+    forkbuild=( "no"    "no"      "yes"      "yes" )
+    epdash="-"
+    ;;
 intel13)
     # also build capsaicin
     projects=(  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
@@ -160,9 +169,6 @@ pgi)
     # Capsaicin does not support building with PGI (lacking vendor installations!)
     projects=(  "draco" "clubimc" "wedgehog" "milagro" )
     forkbuild=( "no"    "no"      "yes"      "yes" )
-    epdash="-"
-    ;;
-coverage)
     epdash="-"
     ;;
 *)
@@ -186,11 +192,18 @@ for (( i=0 ; i < ${#projects[@]} ; ++i )); do
     echo "${cmd}"
         
     if test $fork = "yes"; then
-        eval ${cmd} &
+        eval "${cmd} &"
     else
         eval ${cmd}
     fi
 done
+
+# Wait for all parallel jobs to finish
+while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
+
+# set permissions
+chgrp -R draco ${regdir}/logs
+chmod -R g+rwX ${regdir}/logs
 
 ##---------------------------------------------------------------------------##
 ## End of regression-master.sh

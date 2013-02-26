@@ -211,6 +211,8 @@ macro( parse_args )
      if( ${work_dir} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
         string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
            compiler_version ${work_dir} )
+     elseif( ${work_dir} MATCHES ".*cuda.*" )
+        set( compiler_version "cuda" )
      endif()
      if( "${compiler_version}x" STREQUAL "x" )
         set( compiler_short_name "intel" )
