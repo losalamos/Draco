@@ -161,9 +161,9 @@ cuda)
     epdash="-"
     ;;
 fulldiagnostics)
-    # do not build capsaicin with CUDA
-    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "no"      "yes"      "yes" )
+    # do not build capsaicin or milagro with full diagnostics turned on.
+    projects=(  "draco" "clubimc" "wedgehog" )
+    forkbuild=( "no"    "no"      "yes"      )
     epdash="-"
     ;;
 intel13)
