@@ -84,22 +84,25 @@ coverage)
     CXX=`which g++`
     CC=`which gcc`
     ;;
-intel13)
-    echo "Regression system incomplete for option 'intel13'"
-    exit 1
-    module unload openmpi/1.4.5 cudatoolkit intel/12.1.5
-    module load intel/13.0.1 openmpi
-    comp="intel-13.0.1"
+fulldiagnostics)
+    comp="intel-fulldiagnostics"
     ;;
-pgi)
-    echo "Regression system incomplete for option 'pgi'"
-    exit 1
-    module unload eospac ParMetis trilinos SuperLU_DIST gsl
-    module unload lapack cudatoolkit openmpi intel
-    module load pgi openmpi gsl/1.14-pgi
-    comp=`basename $CXX`
-    ;;
-*)
+# intel13)
+#     echo "Regression system incomplete for option 'intel13'"
+#     exit 1
+#     module unload openmpi/1.4.5 cudatoolkit intel/12.1.5
+#     module load intel/13.0.1 openmpi
+#     comp="intel-13.0.1"
+#     ;;
+# pgi)
+#     echo "Regression system incomplete for option 'pgi'"
+#     exit 1
+#     module unload eospac ParMetis trilinos SuperLU_DIST gsl
+#     module unload lapack cudatoolkit openmpi intel
+#     module load pgi openmpi gsl/1.14-pgi
+#     comp=`basename $CXX`
+#     ;;
+# *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
     echo "the regression system."

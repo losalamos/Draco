@@ -20,7 +20,8 @@ print_use()
     echo "Usage: $0 <build_type> [extra_params]"
     echo " "
     echo "   <build_type>   = { Debug, Release }."
-    echo "   [extra_params] = { intel13, pgi, coverage, cuda }."
+    echo "   [extra_params] = { intel13, pgi, coverage, cuda,"
+    echo "                      fulldiagnostics }."
     echo " "
     echo "Extra parameters read from environment:"
     echo "   ENV{dashboard_type} = {Nightly, Experimental}"
@@ -154,6 +155,12 @@ coverage)
     epdash="-"
     ;;
 cuda)
+    # do not build capsaicin with CUDA
+    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
+    forkbuild=( "no"    "no"      "yes"      "yes" )
+    epdash="-"
+    ;;
+fulldiagnostics)
     # do not build capsaicin with CUDA
     projects=(  "draco" "clubimc" "wedgehog" "milagro" )
     forkbuild=( "no"    "no"      "yes"      "yes" )
