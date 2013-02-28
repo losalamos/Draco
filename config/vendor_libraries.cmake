@@ -252,30 +252,34 @@ macro( setupLAPACKLibrariesUnix )
 endmacro()
 
 #------------------------------------------------------------------------------
-# Helper macros for setup_global_libraries()
+# Helper macros for CUDA/Unix
+#
+# Processes FindCUDA.cmake from the standard CMake Module location.
+# This standard file establishes many macros and variables used by the
+# build system for compiling CUDA code.
+# (try 'cmake --help-module FindCUDA' for details) 
+#
+# Override the FindCUDA defaults in a way that is standardized for
+# Draco and Draco clients.
+#
+# Provided macros:
+#    cuda_add_library(    target )
+#    cuda_add_executable( target )
+#    ...
+# 
+# Provided variables:
+#    CUDA_FOUND
+#    CUDA_PROPAGATE_HOST_FLAGS
+#    CUDA_NVCC_FLAGS
+#    CUDA_SDK_ROOT_DIR
+#    CUDA_VERBOSE_BUILD
+#    CUDA_TOOLKIT_ROOT_DIR
+#    CUDA_BUILD_CUBIN
+#    CUDA_BUILD_EMULATION
+#    ...
 #------------------------------------------------------------------------------
-macro( SetupVendorLibrariesUnix )
+macro( setupCudaEnv )
 
-   # GSL ----------------------------------------------------------------------
-   # message( STATUS "Looking for GSL...")
-   if( DRACO_LIBRARY_TYPE MATCHES "STATIC" )
-      set( GSL_STATIC ON )
-   endif()
-   find_package( GSL QUIET )
-
-   # Random123 ----------------------------------------------------------------
-   # message( STATUS "Looking for Random123...")
-   find_package( Random123 QUIET )
-
-   # GRACE ------------------------------------------------------------------
-   find_package( Grace QUIET )
-   set_package_properties( Grace PROPERTIES
-      DESCRIPTION "A WYSIWYG 2D plotting tool."
-      TYPE OPTIONAL
-      PURPOSE "Required for bulding the plot2D component."
-      )
-
-   # CUDA ------------------------------------------------------------------
    find_package( CUDA QUIET )
    set_package_properties( CUDA PROPERTIES
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
@@ -300,6 +304,36 @@ macro( SetupVendorLibrariesUnix )
       CUDA_BUILD_CUBIN
       CUDA_BUILD_EMULATION
       )
+
+endmacro()
+
+#------------------------------------------------------------------------------
+# Helper macros for setup_global_libraries()
+#------------------------------------------------------------------------------
+macro( SetupVendorLibrariesUnix )
+
+   # GSL ----------------------------------------------------------------------
+   # message( STATUS "Looking for GSL...")
+   if( DRACO_LIBRARY_TYPE MATCHES "STATIC" )
+      set( GSL_STATIC ON )
+   endif()
+   find_package( GSL QUIET )
+
+   # Random123 ----------------------------------------------------------------
+   # message( STATUS "Looking for Random123...")
+   find_package( Random123 QUIET )
+
+   # GRACE ------------------------------------------------------------------
+   find_package( Grace QUIET )
+   set_package_properties( Grace PROPERTIES
+      DESCRIPTION "A WYSIWYG 2D plotting tool."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the plot2D component."
+      )
+
+   # CUDA ------------------------------------------------------------------
+   setupCudaEnv()
+   
 endmacro()
 
 #------------------------------------------------------------------------------

@@ -42,7 +42,7 @@ set( CMake_src
    unix-spu.cmake
    unix-xl.cmake
    unix-xlf.cmake
-#   vendor_libraries.cmake
+   vendor_libraries.cmake
    windows-cl.cmake
    windows-ifort.cmake
 )
