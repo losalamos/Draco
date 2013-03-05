@@ -119,16 +119,16 @@ endmacro()
 ## Query sizes of PODTs.
 ##---------------------------------------------------------------------------##
 
-macro( determine_word_types )
-   include(CheckTypeSize)
-   check_type_size( "int"       SIZEOF_INT )
-   check_type_size( "long"      SIZEOF_LONG )
-   check_type_size( "long long" SIZEOF_LONG_LONG )
+# macro( determine_word_types )
+#    include(CheckTypeSize)
+#    check_type_size( "int"       SIZEOF_INT )
+#    check_type_size( "long"      SIZEOF_LONG )
+#    check_type_size( "long long" SIZEOF_LONG_LONG )
    
-   check_type_size( "float"       SIZEOF_FLOAT )
-   check_type_size( "double"      SIZEOF_DOUBLE )
-   check_type_size( "long double" SIZEOF_LONG_DOUBLE )
-endmacro()
+#    check_type_size( "float"       SIZEOF_FLOAT )
+#    check_type_size( "double"      SIZEOF_DOUBLE )
+#    check_type_size( "long double" SIZEOF_LONG_DOUBLE )
+# endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Check 8-byte int type
@@ -160,29 +160,29 @@ endmacro()
 ## Wedgehog types
 ##---------------------------------------------------------------------------##
 
-macro( wedgehog_types )
-   if( "${HOST_INT_SIZE}" STREQUAL "${SIZEOF_INT}" )
-      set( HOST_INT "int" )
-   elseif( "${HOST_INT_SIZE}" STREQUAL "${SIZEOF_LONG}" )
-      set( HOST_INT "long" )
-   elseif( "${HOST_INT_SIZE}" STREQUAL "${SIZEOF_LONG_LONG}" )
-      set( HOST_INT "long long" )
-   endif()
+# macro( wedgehog_types )
+#    if( "${HOST_INT_SIZE}" STREQUAL "${SIZEOF_INT}" )
+#       set( HOST_INT "int" )
+#    elseif( "${HOST_INT_SIZE}" STREQUAL "${SIZEOF_LONG}" )
+#       set( HOST_INT "long" )
+#    elseif( "${HOST_INT_SIZE}" STREQUAL "${SIZEOF_LONG_LONG}" )
+#       set( HOST_INT "long long" )
+#    endif()
 
-   if( "${EIGHT_BYTE_INT_SIZE}" STREQUAL "${SIZEOF_INT}" )
-      set( EIGHT_BYTE_INT "int" )
-   elseif( "${EIGHT_BYTE_INT_SIZE}" STREQUAL "${SIZEOF_LONG}" )
-      set( EIGHT_BYTE_INT "long" )
-   elseif( "${EIGHT_BYTE_INT_SIZE}" STREQUAL "${SIZEOF_LONG_LONG}" )
-      set( EIGHT_BYTE_INT "long long" )
-   endif()
+#    if( "${EIGHT_BYTE_INT_SIZE}" STREQUAL "${SIZEOF_INT}" )
+#       set( EIGHT_BYTE_INT "int" )
+#    elseif( "${EIGHT_BYTE_INT_SIZE}" STREQUAL "${SIZEOF_LONG}" )
+#       set( EIGHT_BYTE_INT "long" )
+#    elseif( "${EIGHT_BYTE_INT_SIZE}" STREQUAL "${SIZEOF_LONG_LONG}" )
+#       set( EIGHT_BYTE_INT "long long" )
+#    endif()
 
-   if( "${HOST_FLOAT_SIZE}" STREQUAL "${SIZEOF_FLOAT}" )
-      set( HOST_FLOAT "float" )
-   elseif( "${HOST_FLOAT_SIZE}" STREQUAL "${SIZEOF_DOUBLE}" )
-      set( HOST_FLOAT "double" )
-   endif()
-endmacro()
+#    if( "${HOST_FLOAT_SIZE}" STREQUAL "${SIZEOF_FLOAT}" )
+#       set( HOST_FLOAT "float" )
+#    elseif( "${HOST_FLOAT_SIZE}" STREQUAL "${SIZEOF_DOUBLE}" )
+#       set( HOST_FLOAT "double" )
+#    endif()
+# endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Sample platform checks
