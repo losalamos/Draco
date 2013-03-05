@@ -57,6 +57,7 @@ echo "Test and Submit from the login node..."
 cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-ts.log ${regdir}/draco/regression/ct-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
+echo "jobid = ${jobid}"
 
 # Submit from the front end
 echo "Jobs done on ct."
