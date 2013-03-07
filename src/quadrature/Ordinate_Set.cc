@@ -186,7 +186,7 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension,
         norm_ += ordinates[i].wt();
     }
 
-    std::cout << " RE-ORDERING QUADRATURE SET " << std::endl;
+    //std::cout << " RE-ORDERING QUADRATURE SET " << std::endl;
     switch (ordering)
     {
         case LEVEL_ORDERED:
