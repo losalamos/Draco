@@ -63,8 +63,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    kat_opencl_kernel.i, which is thein #include-ed by kat_opencl.c.
    
 */
-#include "kat.h"
 #include "util.h"
+#include "kat.h"
 
 #define LINESIZE 1024
 

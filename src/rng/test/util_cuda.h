@@ -32,10 +32,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef UTIL_CUDA_H__
 #define UTIL_CUDA_H__
 
+#include "util.h"
+
 #include <cuda.h>
 #include <cuda_runtime_api.h>
-
-#include "util.h"
 
 // utility macros to check return codes and complain/exit on failure
 #define CHECKLAST(MSG) 	do { cudaError_t e = cudaGetLastError(); if (e != cudaSuccess) {fprintf(stderr, "%s:%d: CUDA Error: %s: %s\n", __FILE__, __LINE__, (MSG), cudaGetErrorString(e)); exit(1); }} while(0)
@@ -71,6 +71,9 @@ static CUDAInfo *cuda_init(const char *devstr)
 	} else if (cu.major == 2 && cu.minor == 1) {
 	    // 2.1 (GF104, GF114, GF116 aka GTX [45][56]0)
 	    cores *= 48;
+	} else if (cu.major == 3 && cu.minor == 0) {
+	    // 3.0 (Kepler GK104 aka GTX 680)
+	    cores *= 192;
 	} else {
 	    fprintf(stderr, "Unknown # of cores per MP for this device, assuming 1, so cpb will be wrong\n");
 	}

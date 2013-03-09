@@ -33,29 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define UTIL_CPU_H__ 1
 
 #include "util.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#define MAXFILESIZE 65000
-
-static char *readfile(const char *filename)
-{
-    FILE *fp;
-    size_t sz;
-    char *src;
-    if ((fp = fopen(filename, "r")) == NULL)
-	return NULL;
-    sz = MAXFILESIZE;
-    CHECKNOTZERO(src = (char *)malloc(sz + 1));
-    dprintf(("allocated %lu\n", (unsigned long)sz));
-    if ((sz = fread(src, 1, sz, fp)) == 0 || ferror(fp)) {
-	fprintf(stderr, "%s: error reading %s: %s\n", progname, filename, strerror(errno));
-	exit(1);
-    }
-    src[sz] = '\0';
-    CHECKZERO(fclose(fp));
-    return src;
-}
 
 /*
  * burn a little CPU by computing a logistic map function
@@ -135,41 +112,41 @@ static double clockspeedHz(int *ncores, char  **modelnamep){
 #elif defined(__linux__)
 /* Read the clock speed from /proc/cpuinfo - Linux-specific! */
 static double clockspeedHz(int *ncores, char **modelnamep){
-    char *cpuinfo, *s;
+    char *s, buf[1024]; /* long enough for any /proc/cpuinfo line */
     double Mhz = 0.;
     double xMhz;
     int i;
     double d = warmupCPU(100L*1000L*1000L);
-    if ((cpuinfo = readfile("/proc/cpuinfo")) == NULL) {
+    FILE *fp;
+    if ((fp = fopen("/proc/cpuinfo", "r")) == NULL) {
 	if (ncores) *ncores = 1;
 	if (modelnamep) *modelnamep = ntcsdup("unknown");
 	return 0.;
     }
     if (ncores) *ncores = 0;
-    if (modelnamep) {
-	CHECKNOTZERO(s = strstr(cpuinfo, "model name"));
-	CHECKNOTZERO(s = strchr(s, ':'));
-	while (*++s == ' ')
-	    ;
-	i = strchr(s, '\n') - s;
-	*modelnamep = (char *)malloc(i + 1);
-	memcpy(*modelnamep, s, i);
-	(*modelnamep)[i] = '\0';
-	dprintf(("raw modelname is %d bytes: %s\n", i, *modelnamep));
-	nameclean(*modelnamep);
-	dprintf(("cleaned modelname is %s\n", *modelnamep));
-    }
-    s = cpuinfo;
-    while ((s = strstr(s, "cpu MHz")) != NULL) {
-	CHECKNOTZERO(sscanf(s, "cpu MHz : %lf %n", &xMhz, &i));
-	dprintf(("parsed %f %d\n", xMhz, i));
-	if (xMhz > Mhz) Mhz = xMhz;
-	s += i;
-	if (ncores) *ncores += 1;
+    while (fgets(buf, sizeof buf, fp) != NULL) {
+	if (modelnamep && (s = strstr(buf, "model name")) != NULL) {
+	    CHECKNOTZERO(s = strchr(s, ':'));
+	    while (*++s == ' ')
+		;
+	    i = strchr(s, '\n') - s;
+	    *modelnamep = (char *)malloc(i + 1);
+	    memcpy(*modelnamep, s, i);
+	    (*modelnamep)[i] = '\0';
+	    dprintf(("raw modelname is %d bytes: %s\n", i, *modelnamep));
+	    nameclean(*modelnamep);
+	    dprintf(("cleaned modelname is %s\n", *modelnamep));
+	}
+	if ((s = strstr(buf, "cpu MHz")) != NULL) {
+	    CHECKNOTZERO(sscanf(s, "cpu MHz : %lf %n", &xMhz, &i));
+	    dprintf(("parsed %f %d\n", xMhz, i));
+	    if (xMhz > Mhz) Mhz = xMhz;
+	    s += i;
+	    if (ncores) *ncores += 1;
+	}
     }
     d = Mhz*1e6;
     dprintf(("clockspeed is %f\n", d));
-    free(cpuinfo);
     return d;
 }
 #elif defined(__FreeBSD__)

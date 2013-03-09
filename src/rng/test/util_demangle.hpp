@@ -31,20 +31,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef demangle_dot_hpp_
 #include <string>
-#ifdef __GNUC__
-#include <cxxabi.h>
-#endif
-#if defined(__PGI) || defined(__xlC__)
-#include <typeinfo>
-#endif
 
 // Every compiler has a demangling library *somewhere*.  Unfortunately, they're
 // all different...
+
+#ifdef __GNUC__
+ // Clang defines __GNUC__, but clang3.1 with -stdlib=libc++ can't
+ // find a <cxxabi.h> even though it *can* find the symbols at link
+ // time.  I suspect this is a bug/oversight in the installation
+ // process (which, in June 2012 is still pretty fluid for libc++), so
+ // it might be fixed in the future.  On the other hand, the API in
+ // cxxabi.h is locked down pretty tightly, so writing out an explicit
+ // extern declaration is pretty safe, and avoids a rats nest of
+ // ifdefs.  It is tempting to use clang's __has_include(<cxxabi.h>),
+ // but it feels like more #ifdefs with no obvious upside.
+ //
+ // #include <cxxabi.h>
+extern "C"{
+  char*
+  __cxa_demangle(const char* __mangled_name, char* __output_buffer,
+		 size_t* __length, int* __status);
+}
+#endif
+#include <typeinfo>
+
 template <typename T>
-static std::string demangle(const T& ignored){
+std::string demangle(const T& ignored){
 #ifdef __GNUC__
     int status;
-    char *realname = abi::__cxa_demangle(typeid(ignored).name(), 0, 0, &status);
+    char *realname = __cxa_demangle(typeid(ignored).name(), 0, 0, &status);
     std::string ret;
     if(status!=0 || realname==0)
         ret = typeid(ignored).name();

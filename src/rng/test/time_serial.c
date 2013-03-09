@@ -34,10 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Uses macros and util_expandtpl.h to "templatize" over all the
  * different permutations of RNGs and NxW and R.
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include "util.h"
 
 #include "time_serial.h"

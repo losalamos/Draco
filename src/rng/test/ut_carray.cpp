@@ -306,7 +306,7 @@ void doit(size_t N, size_t W){
 }
 
 
-int main(void){
+int main(int, char **){
 #if R123_USE_SSE
     doit<r123array1xm128i>(1, 128);
 #endif

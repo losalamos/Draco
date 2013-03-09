@@ -38,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if !R123_USE_SSE
 int main(int argc, char **argv){
+    (void)argc; (void)argv; /* unused */
     printf("No SSE support.  This test is not compiled.  OK\n");
     return 0;
 }
@@ -51,9 +52,6 @@ main(int argc, char **argv)
     struct r123array1xm128i c, k, ret;
     char m128str[M128_STR_SIZE], *kat;
 #endif
-
-    /* Silence an unused-parameter warning. */
-    (void)argc;
 
 #if R123_USE_AES_NI
     if (haveAESNI()) {
@@ -81,6 +79,7 @@ main(int argc, char **argv)
 #else
     printf("%s: no AES-NI compiled into this program\n", argv[0]);
 #endif
+    (void)argc; (void)argv; /* unused */
     printf("ut_ars: all OK\n");
     return 0;
 }

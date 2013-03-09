@@ -48,6 +48,7 @@ int main(int argc, char **argv){
     unsigned long save, x;
     unsigned long saved[5];
     double sum = 0.;
+    (void)argc; (void)argv; /* unused */
 
     /* Silence an unused-parameter warning. */
     (void)argc;

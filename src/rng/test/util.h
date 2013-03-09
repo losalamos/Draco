@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef UTIL_H__
 #define UTIL_H__
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -237,7 +238,7 @@ hextod(const char *cp)
 #define ALLZEROS(x, K, N) \
 do { \
     int allzeros = 1; \
-    size_t xi, xj; \
+    int xi, xj; \
     for (xi = 0; xi < (K); xi++) \
 	for (xj = 0; xj < (N); xj++) \
 	    allzeros = allzeros & ((x)[xi].v[xj] == 0); \

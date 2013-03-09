@@ -40,9 +40,9 @@ int main(){ printf("No SSE.  Nothing to check.  OK\n"); return 0; }
 #include "ut_M128.hh"
 #include <sstream>
 
-int main(void){
+int main(int, char **){
     __m128i zm = _mm_setzero_si128();
-#if R123_USE_CXX0X
+#if R123_USE_CXX1X_UNRESTRICTED_UNIONS
     r123m128i zM(zm);
 #else
     r123m128i zM; zM.m = zm;
