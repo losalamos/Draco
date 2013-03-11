@@ -3,7 +3,8 @@
  * \file   ds++/Assert.hh
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
- * \note   Copyright (C) 1993-2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 1993-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -19,8 +20,10 @@
 // This warning is issued because we chose to derive from std::logic_error 
 // (IS-A) instead of creating a class that 'HAS-A' std::logic_error.object.
 #if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4275) // non dll-interface class 'std::logic_error' used as base for dll-interface class 'rtt_dsxx::assertion'
+#pragma warning (push)
+// non dll-interface class 'std::logic_error' used as base for 
+// dll-interface class 'rtt_dsxx::assertion'
+#pragma warning (disable:4275)
 #endif
 
 namespace rtt_dsxx

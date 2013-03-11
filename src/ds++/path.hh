@@ -121,7 +121,9 @@ void draco_walk_directory_tree( std::string const & dirname, T const & myOperato
                   << "\"does not exist.  Continuing..." << std::endl;
         return;
     }
-
+#ifdef WIN32
+	Insist(false,"draco_walk_directory not yet implemented for WIN32");
+#else
     // If this is not a directory, no recursion is needed:
     if( isDirectory( dirname ) )
     {
@@ -165,7 +167,8 @@ void draco_walk_directory_tree( std::string const & dirname, T const & myOperato
         }
         closedir(dir);
     }
-    
+#endif 
+
     // Perform action on the top level entry
     myOperator(dirname);
 
@@ -174,9 +177,9 @@ void draco_walk_directory_tree( std::string const & dirname, T const & myOperato
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-void draco_remove( std::string const & path );
+DLL_PUBLIC void draco_remove( std::string const & path );
 //! Recursively print a directory tree.
-void draco_dir_print( std::string const & path );
+DLL_PUBLIC void draco_dir_print( std::string const & path );
 
 } // end namespace rtt_dsxx
 

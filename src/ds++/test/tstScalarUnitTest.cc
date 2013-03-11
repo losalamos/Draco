@@ -13,14 +13,13 @@
 
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
-#include <iostream>
 #include <sstream>
-#include <map>
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
 #include <vector>
 #include <algorithm>
+#include <iterator> // std::back_inserter
 
 using namespace std;
 using namespace rtt_dsxx;

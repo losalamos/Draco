@@ -143,6 +143,13 @@ draco_getstat::draco_getstat( std::string const & fqName )
     std::cout << "fqName = " << fqName 
               << "\nclean_fqName = " << clean_fqName << std::endl;
     stat_return_code = _stat(clean_fqName.c_str(), &buf);
+    // error codes:
+    // ENOENT - File not found.
+    // EINVAL - Invalid parameter given to _stat.
+
+    // buf.st_size - file size
+    // buf.st_dev - Drive letter (e.g.: "c:\")
+    // ctime_s(timebuf, 26, &buf.st_mtime) - modification time.
 #else
     stat_return_code = stat(fqName.c_str(), &buf);
 #endif
@@ -153,8 +160,21 @@ bool draco_getstat::isreg()
 {
 #if WIN32
     Insist( false, "draco_getstat::isreg() not implemented for WIN32" );
+	return false;
 #else
     bool b = S_ISREG(buf.st_mode);
+    return b;
+#endif
+}
+
+//! Is this a directory?
+bool draco_getstat::isdir()
+{
+#if WIN32
+    Insist( false, "draco_getstat::isdir() not implemented for WIN32" );
+	return false;
+#else
+    bool b = S_ISDIR(buf.st_mode);
     return b;
 #endif
 }
@@ -165,6 +185,7 @@ bool draco_getstat::has_permission_bit( int mask )
     Insist( isreg(), "Can only check permission bit for regular files." );
 #if WIN32
     Insist( false, "draco_getstat::hsa_permission_bit() not implemented for WIN32" );
+	return false;
 #else
     // check execute bit (buf.st_mode & 0111)
     return (buf.st_mode & mask);

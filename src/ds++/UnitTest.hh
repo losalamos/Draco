@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,10 +15,14 @@
 #define dsxx_UnitTest_hh
 
 #include "Assert.hh"
-#include <string>
 #include <list>
 #include <iostream>
 #include <map>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  warning C4251: 'rtt_dsxx::UnitTest::testName' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::UnitTest'
+#endif
 
 namespace rtt_dsxx
 {
@@ -86,6 +90,21 @@ int main(int argc, char *argv[])
 }  
  * \endcode
  *
+ * Or you can use the UT_EPILOG to shorten the test main() function:
+ *
+ * \code
+int main(int argc, char *argv[])
+{
+    rtt_utils::ScalarUnitTest ut( argc, argv, release );
+    try
+    {
+        // Test ctor for ScalarUnitTest (also tests UnitTest ctor)
+        tstOne(ut);
+    }
+    UT_EPILOG(ut);
+}
+ * \endcode
+ *
  * \test All of the member functions of this class are tested by
  * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
  * \c --version on the command line.
@@ -149,7 +168,7 @@ class DLL_PUBLIC UnitTest
     bool dbcCheck(void)   const { return m_dbcCheck;   }
     bool dbcEnsure(void)  const { return m_dbcEnsure;  }
     bool dbcNothrow(void) const { return m_dbcNothrow; }
-    bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; } 
+    bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
 
     // DATA
     //! The number of passes found for this test.
@@ -187,13 +206,31 @@ class DLL_PUBLIC UnitTest
     bool m_dbcRequire;
     bool m_dbcCheck;
     bool m_dbcEnsure;
-    bool m_dbcNothrow;    
+    bool m_dbcNothrow;
 };
 
 } // end namespace rtt_dsxx
 
+// #define PASSMSG(m) ut.passes(m)
+// #define FAILMSG(m) ut.failure(m)
+// #define ITFAILS    ut.failure( __LINE__, __FILE__ )
+// #define FAILURE    ut.failure(__LINE__, __FILE__);
+// #define UT_PROLOG(foo) typedef ut foo
+#define UT_EPILOG(foo) catch (rtt_dsxx::assertion &err) {     \
+std::cout << "ERROR: While testing " << argv[0] << ", " \
+          << err.what() << std::endl; \
+foo.numFails++; } catch( ... ) { \
+std::cout << "ERROR: While testing " << argv[0] << ", " \
+          << "An unknown exception was thrown on processor " \
+          << std::endl; foo.numFails++; }; return foo.numFails; 
+
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // dsxx_UnitTest_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/UnitTest.hh
+// end of ds++/UnitTest.hh
 //---------------------------------------------------------------------------//

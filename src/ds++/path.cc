@@ -156,16 +156,11 @@ bool isDirectory( std::string const & path )
 {
     // If the path does not exist, then it cannot be a directory.
     if( ! fileExists(path) ) return false;
-    
-    struct stat stFileInfo;
+
     bool retVal( false );
-
-    // Attempt to get the file attributes
-    Remember( int intStat = ) stat( path.c_str(), &stFileInfo );
-    Check( intStat == 0 );
-
-    if( S_ISDIR( stFileInfo.st_mode) ) retVal=true;
-
+    draco_getstat fileStatus( path.c_str() );
+    Check( fileStatus.valid() );
+    retVal = fileStatus.isdir();
     return retVal;
 }
 

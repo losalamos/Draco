@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -13,8 +13,6 @@
 
 #include "UnitTest.hh"
 #include "path.hh"
-#include "Assert.hh"
-#include <iostream>
 #include <fstream>
 #include <sstream>
 

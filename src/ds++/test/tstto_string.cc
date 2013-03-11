@@ -11,11 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds++/config.h"
 #include "../to_string.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Soft_Equivalence.hh"
 #include "../Release.hh"
-// #include <cmath>
 #include <cstdlib> // M_PI
 
 using namespace std;

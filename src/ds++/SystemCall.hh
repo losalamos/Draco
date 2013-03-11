@@ -72,9 +72,7 @@ DLL_PUBLIC int draco_getpid( void );
 DLL_PUBLIC std::string draco_getcwd( void );
 
 //! Return the stat value for a file
-// DLL_PUBLIC
-// int draco_getstat( std::string const &  fqName );
-class draco_getstat
+class DLL_PUBLIC  draco_getstat
 {
   private:
     int stat_return_code;
@@ -90,6 +88,7 @@ class draco_getstat
     //! If the call to stat failed, this function will return false.
     bool valid(void){ return stat_return_code==0; };
     bool isreg(void);
+    bool isdir(void);
     /*!
      * \brief Determine if the file has the requested permission bits set.
      * \note The leading zero for the mask is important.

@@ -20,6 +20,11 @@
 #include <cstring>
 #include <string>
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
+#endif
+
 namespace rtt_dsxx
 {
 
@@ -263,6 +268,10 @@ File_Input& File_Input::operator>>(T &i)
 }
 
 } // end namespace rtt_dsxx
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // rtt_dsxx_File_Streams_hh
 
