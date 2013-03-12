@@ -79,7 +79,7 @@ static double clockspeedHz(int *ncores, char **modelnamep) {
  * seems pretty specific though; for example, it's only set by the
  * BG/Q-specific XL wrappers. */
 static double clockspeedHz(int *ncores, char **modelnamep){
-    if(ncores) *ncores = 16;
+    if(ncores) *ncores = 64;
     if(modelnamep) *modelnamep = ntcsdup("A2");
     return 1.6e9;
 }
