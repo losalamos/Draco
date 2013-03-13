@@ -4,7 +4,7 @@
  * \brief  Implementation for the Draco wrapper for system calls. This 
            routine attempts to hide differences between Unix/Windows system 
            calls.
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */
@@ -21,9 +21,10 @@
 #include <unistd.h>     // gethostname
 #endif
 #ifdef WIN32
-#include <winsock2.h>  // gethostname
+// #include <winsock2.h>  // gethostname
 #include <process.h>   // _getpid
 #include <direct.h>    // _getcwd
+#include <sstream>
 #endif
 
 #include <iostream>
@@ -127,7 +128,7 @@ std::string draco_getcwd(void)
  *    http://en.wikipedia.org/wiki/Stat_%28system_call%29
  */
 draco_getstat::draco_getstat( std::string const & fqName )
-    : stat_return_code(0), buf()
+    : stat_return_code(0), filefound(true), buf()
 {
 #ifdef WIN32
     /*! \note If path contains the location of a directory, it cannot 
@@ -140,45 +141,65 @@ draco_getstat::draco_getstat( std::string const & fqName )
     else
         clean_fqName=fqName;
     
-    std::cout << "fqName = " << fqName 
-              << "\nclean_fqName = " << clean_fqName << std::endl;
     stat_return_code = _stat(clean_fqName.c_str(), &buf);
-    // error codes:
-    // ENOENT - File not found.
-    // EINVAL - Invalid parameter given to _stat.
+    if( stat_return_code != 0 )
+    {
+       switch( errno )
+       {
+       case ENOENT: // file not found
+           filefound = false;
+           break;
+       case EINVAL: 
+           Insist( stat_return_code == 0, "invalid parameter given to _stat.");
+           break;
+       default:
+           /* should never get here */
+           Insist( stat_return_code == 0, "_stat returned an error.");
+       }
+    }
 
-    // buf.st_size - file size
-    // buf.st_dev - Drive letter (e.g.: "c:\")
-    // ctime_s(timebuf, 26, &buf.st_mtime) - modification time.
+    if( filefound )
+    {
+        // Handle to directory
+        HANDLE hFile = ::FindFirstFile( clean_fqName.c_str(), &FileInformation );
+        // sanity check
+        Insist( hFile != INVALID_HANDLE_VALUE, "Invalid file handle." ); 
+        // Close handle
+        ::FindClose(hFile);
+    }
+
 #else
     stat_return_code = stat(fqName.c_str(), &buf);
 #endif
 }
 
+//---------------------------------------------------------------------------//
 //! Is this a regular file?
 bool draco_getstat::isreg()
 {
 #if WIN32
-    Insist( false, "draco_getstat::isreg() not implemented for WIN32" );
-	return false;
+    bool b = FileInformation.dwFileAttributes & FILE_ATTRIBUTE_NORMAL;
+	return filefound && b;
 #else
     bool b = S_ISREG(buf.st_mode);
     return b;
 #endif
 }
 
+//---------------------------------------------------------------------------//
 //! Is this a directory?
 bool draco_getstat::isdir()
 {
 #if WIN32
-    Insist( false, "draco_getstat::isdir() not implemented for WIN32" );
-	return false;
+    bool b = FileInformation.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
+	return filefound && b;
 #else
     bool b = S_ISDIR(buf.st_mode);
     return b;
 #endif
 }
 
+//---------------------------------------------------------------------------//
 //! Is a Unix permission bit set?
 bool draco_getstat::has_permission_bit( int mask )
 {
@@ -218,13 +239,104 @@ std::string draco_getrealpath( std::string const & path )
  */
 void draco_mkdir( std::string const & path )
 {
-    // Insist( ! fileExists( path ), "That path already exists." );
 #ifdef WIN32
-    _mkdir( path.c_str() );
+    
+    draco_getstat dirInfo(path);
+    if( ! dirInfo.isdir() )
+    {
+        /*! \note If path contains the location of a directory, it cannot 
+         * contain a trailing backslash. If it does, -1 will be returned and 
+         * errno will be set to ENOENT. */
+        std::string clean_fqName;
+        if( path[path.size()-1] == rtt_dsxx::WinDirSep ||
+            path[path.size()-1] == rtt_dsxx::UnixDirSep )
+            clean_fqName=path.substr(0,path.size()-1);
+        else
+            clean_fqName=path;
+
+        // make the directory
+        int errorCode = _mkdir( clean_fqName.c_str() );
+        if( errorCode == -1 )
+        {
+           switch( errno )
+           {
+           case EEXIST: 
+                Insist( errno != EEXIST, "ERROR: Unable to create directory,"
+                + clean_fqName + ", because it already exists.");
+               break;
+           case ENOENT: 
+               Insist( errno != ENOENT, "ERROR: Unable to create directory,"
+                + clean_fqName + ", because the path is not found.");    
+               break;
+           default:
+               /* should never get here */
+               Insist( errno == 0, "ERROR: Unable to create directory, "
+                + clean_fqName );
+           }          
+        }
+    }
 #else
     mkdir( path.c_str(), 0700 );
     // S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
 #endif    
+}
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief Delete a single file or directory (not recursive)
+ *
+ * \sa wdtOpRemove
+ *
+ * Sample implementation for Win32 (uses Win API which I don't want to do)
+ * http://forums.codeguru.com/showthread.php?239271-Windows-SDK-File-System-How-to-delete-a-directory-and-subdirectories
+ * http://stackoverflow.com/questions/1468774/recursive-directory-deletion-with-win32
+ * http://msdn.microsoft.com/en-us/library/aa365488%28VS.85%29.aspx
+ *
+ * Sample implementation for Unix
+ * http://www.linuxquestions.org/questions/programming-9/deleting-a-directory-using-c-in-linux-248696/
+ *
+ * Consider using Boost.FileSystem
+ */
+void draco_remove( std::string const & dirpath )
+{
+    // remove() works for all unix items but only for files 
+    // (not directories) for windows.
+    if( draco_getstat( dirpath ).isdir() )
+    {
+#ifdef WIN32
+        // Clear any special directory attributes.
+        bool ok = ::SetFileAttributes( dirpath.c_str(),
+                                       FILE_ATTRIBUTE_NORMAL );
+        if( !ok )
+        {
+            int myerr = ::GetLastError();
+            std::ostringstream msg;
+            msg << "ERROR: File attribute not normal. myerr = "
+                << myerr << ", file = " << dirpath;
+            Insist( ok, msg.str() );
+        }
+
+        // Delete directory
+        ok = ::RemoveDirectory( dirpath.c_str() );
+        if( !ok )
+        {
+            int myerr = ::GetLastError();
+            std::ostringstream msg;
+            msg << "ERROR: Error deteting file, myerr = " 
+                << myerr << ", file = " << dirpath;
+            Insist( ok, msg.str() );
+        }
+#else
+        remove( dirpath.c_str() );
+#endif
+    }
+    else
+    {
+        remove( dirpath.c_str() );
+    }
+    // If the file still exists this check will fail.
+    Ensure( ! draco_getstat( dirpath ).valid() );
+    return;
 }
 
 } // end of namespace rtt_dsxx

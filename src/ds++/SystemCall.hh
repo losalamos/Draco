@@ -3,7 +3,7 @@
  * \file   ds++/SystemCall.hh
  * \brief  Wrapper for system calls. Hide differences between Unix/Windows 
  *         system calls.
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */
@@ -16,6 +16,8 @@
 #include <string>
 #ifdef WIN32
 #include <sys/types.h> // _stat
+#include <WinSock2.h> // Must be included before Windows.h
+#include <Windows.h>  // WIN32_FIND_DATA
 #endif
 #include <sys/stat.h>   // stat (UNIX) or _stat (WIN32)
 
@@ -72,12 +74,14 @@ DLL_PUBLIC int draco_getpid( void );
 DLL_PUBLIC std::string draco_getcwd( void );
 
 //! Return the stat value for a file
-class DLL_PUBLIC  draco_getstat
+class DLL_PUBLIC draco_getstat
 {
   private:
     int stat_return_code;
+    bool filefound;
 #ifdef WIN32
     struct _stat buf;
+    WIN32_FIND_DATA FileInformation; // Additional file information
 #else
     struct stat buf;
 #endif
@@ -89,6 +93,7 @@ class DLL_PUBLIC  draco_getstat
     bool valid(void){ return stat_return_code==0; };
     bool isreg(void);
     bool isdir(void);
+    int errorCode(void) { return stat_return_code; }
     /*!
      * \brief Determine if the file has the requested permission bits set.
      * \note The leading zero for the mask is important.
@@ -101,6 +106,14 @@ DLL_PUBLIC std::string draco_getrealpath( std::string const & path );
 
 //! Create a directory
 DLL_PUBLIC void draco_mkdir( std::string const & path );
+
+/*! 
+ * \brief Remove file or directory (not recursive)
+ *
+ * For recursive directory delete, see path.hh's walk_directory_tree and 
+ * the functor wdtOpRemove.
+ */
+DLL_PUBLIC void draco_remove( std::string const & path );
 
 } // end of rtt_dsxx
 

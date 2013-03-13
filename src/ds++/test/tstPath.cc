@@ -4,20 +4,16 @@
  * \author Kelly Thompson
  * \date   Tue Jul 12 16:00:59 2011
  * \brief  Test functions found in ds++/path.hh and path.cc
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/config.h"
-#include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../path.hh"
-#include "../SystemCall.hh"
-#include <cstdlib> // system()
 #include <fstream>
 
 using namespace std;
@@ -174,27 +170,13 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
         if( realpath.size() > 0 ) PASSMSG( "FC_REALPATH has length > 0.");
         else                      FAILMSG( "FC_REALPATH has length <= 0.");
 
-        std::string exeExists( realpath + myname ); 
-
-        // debug
-        std::cout << "fqp         = " << fqp
-                  << "\nrealpath  = " << realpath
-                  << "\nexeExists = " << exeExists 
-                  << std::endl;
-        
-        // might need to append .exe
-
-        if( ! draco_getstat( exeExists ).valid() && 
-            draco_getstat( exeExists+exeExtension ).valid() )
-            exeExists = exeExists + exeExtension;
-
         // draco_getstat rpstatus( exeExists );
 
-         if( std::ifstream( exeExists.c_str() ) )
+         if( std::ifstream( realpath.c_str() ) )
             PASSMSG( "FC_REALPATH points to a valid executable." );
          else
             FAILMSG( string("FC_REALPATH is invalid or not executable.") +
-                     string("  exeExists = ") + exeExists );
+                     string("  realpath = ") + realpath );
     }
 #else             
     { // The binary should exist and marked by the filesystem as executable.  
@@ -298,9 +280,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
 
         // Did we create the file?
         if( fileExists( dummyFile ) )
-        {
             PASSMSG( string("Successfully created file = ") + dummyFile );
-        }
         else
         {
             FAILMSG( string("Failed to create file = ") + dummyFile );
@@ -309,7 +289,8 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
         }
 
         // Remove the file
-        draco_remove( dummyFile );
+        draco_dir_print( dummyFile );
+        draco_remove_dir( dummyFile );
         if( fileExists( dummyFile ) )
             FAILMSG( string("Failed to remove file = ") + dummyFile );
         else
@@ -319,7 +300,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
     {
         // Test a more complex sytem of directories and files.
     
-        std::cout << "Creating files in a directory structure..." << std::endl;
+        std::cout << "\nCreating files in a directory structure...\n" << std::endl;
 
         std::string dummyFile1("dummydir/d1/dummyFile1.txt");
         std::string dummyFile2("dummydir/d1/dummyFile2.txt");
@@ -330,12 +311,11 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
         // Create directories.
         
         draco_mkdir( dummyDir2 ); // "dummydir"
-        draco_mkdir( dummyDir1 ); // "dummydir/d1"
         if( isDirectory( dummyDir2 ) )
             PASSMSG( std::string("Successfully created directory = ") + dummyDir2 );
         else
             FAILMSG( std::string("Failed to create directory = ") + dummyDir2 );
-        draco_mkdir( dummyDir1 );
+        draco_mkdir( dummyDir1 );  // "dummydir/d1"
         if( isDirectory( dummyDir1 ) )
             PASSMSG( std::string("Successfully created directory = ") + dummyDir1 );
         else
@@ -379,7 +359,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
         
         // Recursively remove the file and subdirectory.
         std::cout << "Removing all entries in " << dummyDir2 << std::endl;
-        draco_remove( dummyDir2 );
+        draco_remove_dir( dummyDir2 );
         if( fileExists( dummyDir2 ) )
             FAILMSG( string("Failed to remove directory = ") + dummyDir2 );
         else
@@ -406,20 +386,9 @@ int main(int argc, char *argv[])
 
         test_draco_remove(ut);
     }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing tstPath, " << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing tstPath, " 
-             << "An unknown exception was thrown." << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstPath.cc
+// end of tstPath.cc
 //---------------------------------------------------------------------------//

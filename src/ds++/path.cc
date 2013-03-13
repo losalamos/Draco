@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/path.cc
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright © 2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */
@@ -15,7 +15,7 @@
 #include <sstream>
 #include <sys/stat.h>   // stat
 #ifdef UNIX
-#include <dirent.h> // struct DIR
+#include <dirent.h>     // struct DIR
 #endif
 
 namespace rtt_dsxx
@@ -122,31 +122,17 @@ std::string getFilenameComponent( std::string const & fqName,
 
 //---------------------------------------------------------------------------//
 /*! \brief Does the file exist?
+ *
+ * 1. Read the file attributes using stat.
+ * 2. If we were able to get the file attributes so the file obviously exists.
+ * 3. If we were not able to get the file attributes.  This may mean that we
+ *    don't have permission to access the folder which contains this
+ *    file. If you need to do that level of checking, lookup the return
+ *    values of stat which will give you more details on why stat failed.
  */
 bool fileExists( std::string const & strFilename )
 {
-    struct stat stFileInfo;
-    bool retVal( false );
-    int intStat;
-
-    // Attempt to get the file attributes
-    intStat = stat( strFilename.c_str(), &stFileInfo );
-    if(intStat == 0)
-    {
-        // We were able to get the file attributes so the file obviously
-        // exists.
-        retVal = true;
-    }
-    else
-    {
-        // We were not able to get the file attributes.  This may mean that we
-        // don't have permission to access the folder which contains this
-        // file. If you need to do that level of checking, lookup the return
-        // values of stat which will give you more details on why stat failed.
-        retVal = false;
-    } 
-    
-    return retVal;
+    return draco_getstat( strFilename ).errorCode() == 0;
 }
 
 //---------------------------------------------------------------------------//
@@ -166,7 +152,7 @@ bool isDirectory( std::string const & path )
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-void draco_remove( std::string const & path )
+void draco_remove_dir( std::string const & path )
 {
     draco_walk_directory_tree( path, wdtOpRemove() );
     return;
