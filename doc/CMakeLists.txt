@@ -47,6 +47,8 @@ project( draco_doc_dir )
 
 # Process each directory as an independent cmake project.
 
+if( NOT "${CMAKE_GENERATOR}" MATCHES "Visual" )
+
 set( docdirs
    build matprops mesh purify release releases 
    reorganization_VisScope system )
@@ -77,6 +79,8 @@ endforeach()
 
 # A 'build-all' documents target
 add_custom_target( alldocs DEPENDS ${all_doc_targets} )
+
+endif() # NOT "${CMAKE_GENERATOR}" MATCHES "Visual" 
 
 ##---------------------------------------------------------------------------##
 ## End of doc/CMakeLists.txt
