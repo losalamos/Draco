@@ -286,12 +286,8 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	// point.  Now, wipe out files that we might have created in there...
 	if(!stat_ret)
 	{
-	    // This is probably too agressive...
-	    // std::ostringstream cmd;
-            // cmd << DRACO_RMDIR << d_prefix;
-	    // system(cmd.str().c_str());
-            rtt_dsxx::draco_remove( d_prefix );
-            rtt_dsxx::draco_mkdir( d_prefix );
+            rtt_dsxx::draco_remove_dir( d_prefix );
+            rtt_dsxx::draco_mkdir(      d_prefix );
 	}
     }
     else

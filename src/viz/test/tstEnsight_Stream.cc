@@ -4,29 +4,25 @@
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:52:46 2004
  * \brief  Test for Ensight_Stream.
- * \note   Copyright 2004-2006 The Regents of the University of California.
- *         Copyright 2006-2010 LANS, LLC.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-
-#include "ds++/Assert.hh"
+#include "../Ensight_Stream.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/Release.hh"
-#include "viz_test.hh"
-
-#include "../Ensight_Stream.hh"
 
 using namespace std;
 using rtt_viz::Ensight_Stream;
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // Utility functions
@@ -91,13 +87,13 @@ void readit(ifstream &stream,
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_simple(const bool binary)
+void test_simple( rtt_dsxx::UnitTest & ut, bool const binary )
 {
     // Dump a few values into the stream
 
-    const int i = 20323;
+    const int    i(20323);
     const string s("dog");
-    const double d = 112.3;
+    const double d(112.3);
     const string file("ensight_stream.out");
     
     {
@@ -124,69 +120,39 @@ void test_simple(const bool binary)
     
     int i_in;
     readit(in, binary, i_in);
-    UNIT_TEST(i == i_in);
+    if(i != i_in) ITFAILS;
     
     double d_in;
     readit(in, binary, d_in);
-    UNIT_TEST(rtt_dsxx::soft_equiv(d, d_in, 0.01)); // floats are inaccurate
-
+    // floats are inaccurate
+    if( !rtt_dsxx::soft_equiv(d, d_in, 0.01) ) ITFAILS;
+    
     string s_in;
     readit(in, binary, s_in);
     for ( size_t k = 0; k < s.size(); ++k )
-	UNIT_TEST(s[k] == s_in[k]);
+	if(s[k] != s_in[k]) ITFAILS;
+
+    if( ut.numFails == 0 )
+        PASSMSG("test_simple() completed successfully.");
+    else
+        FAILMSG("test_simple() did not complet successfully.");
+    
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    // version tag
-    std::cout << argv[0] << ": version " << rtt_dsxx::release() 
-              << std::endl;
-    for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
-	    return 0;
-    
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
-    {
-	// >>> UNIT TESTS
-
-	test_simple(true);  // test binary
-	test_simple(false); // test ascii
-	test_simple(true);  // test binary again
+    {	// >>> UNIT TESTS
+	test_simple(ut, true);  // test binary
+	test_simple(ut, false); // test ascii
+	test_simple(ut, true);  // test binary again
     }
-    catch (std::exception &err)
-    {
-	std::cout << "ERROR: While testing tstEnsight_Stream, " 
-		  << err.what()
-		  << std::endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	std::cout << "ERROR: While testing tstEnsight_Stream, " 
-		  << "An unknown exception was thrown."
-		  << std::endl;
-	return 1;
-    }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    if (rtt_viz_test::passed) 
-    {
-        std::cout << "**** tstEnsight_Stream Test: PASSED" 
-		  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    std::cout << std::endl;
-    
-    std::cout << "Done testing tstEnsight_Stream." << std::endl;
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstEnsight_Stream.cc
+// end of tstEnsight_Stream.cc
 //---------------------------------------------------------------------------//

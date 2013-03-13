@@ -4,33 +4,27 @@
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
- * \note   Copyright (C) 2000-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "viz_test.hh"
 #include "../Ensight_Translator.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
-
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <cmath>
-#include <cstdlib>
 
 using namespace std;
 using rtt_viz::Ensight_Translator;
 
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
+
 //---------------------------------------------------------------------------//
 
-void ensight_dump_test(bool const binary)
+void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 {
     if( binary )
         cout << "\nGenerating binary files...\n" << endl;
@@ -238,6 +232,11 @@ void ensight_dump_test(bool const binary)
 			       g_vrtx_indices[i], g_cell_indices[i]);
 
     translator5.close();
+    if( ut.numFails == 0 )
+        PASSMSG("ensight_dump_test finished successfully.");
+    else
+        FAILMSG("ensight_dump_test did not finish successfully.");
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -245,7 +244,7 @@ void ensight_dump_test(bool const binary)
 //---------------------------------------------------------------------------//
 
 
-void checkOutputFiles( bool const binary )
+void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
 {
     string desc;
     vector<string> prefixes;
@@ -308,56 +307,25 @@ void checkOutputFiles( bool const binary )
     return;
 }
 
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-    {
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() << endl; 
-	    return 0;
-	}
-    }
-    
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
-    {
-        // tests
+    {   // tests
         
         { // ASCII dumps
-            ensight_dump_test(false); 
-            checkOutputFiles( false );
+            ensight_dump_test(ut, false); 
+            checkOutputFiles( ut, false );
         }
 
         { // Binary dumps
-            ensight_dump_test(true);
-            checkOutputFiles( true );
+            ensight_dump_test(ut, true);
+            checkOutputFiles( ut, true );
         }
             
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        cout << "Caught an exception: " << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "An unknown exception was thrown." << endl;
-        return 1;
-    }
-
-    // status of test
-    cout <<     "\n**********************************************";
-    if (rtt_viz_test::passed) 
-        cout << "\n**** Ensight_Translator Self Test: PASSED ****";
-    else
-        cout << "\n**** Ensight_Translator Self Test: FAILED ****";
-    cout <<     "\n**********************************************\n"
-         <<     "\nDone testing Ensight_Translator." << endl;
-    return 0;
+    UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//
