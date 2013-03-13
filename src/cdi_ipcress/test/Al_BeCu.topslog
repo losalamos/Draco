@@ -1,0 +1,50 @@
+This version of TOPS was last modified on 01/11/00
+It is version tops57
+
+command
+f 1.0 al
+
+  1.0000E+00   n13718   2.6980E+01
+
+command
+tby 5
+
+   10  temperatures kept
+ 5.000E-04 1.500E-03 4.000E-03 1.250E-02 4.000E-02 1.25E-01 4.000E-01
+ 1.250E+00 4.000E+00 1.500E+01
+
+command
+mgid 10001
+
+command
+rlog 5 0.01 100.0
+
+command
+go
+
+command 
+f 0.91 Be 0.09 Cu
+
+  9.1000E-01   n12025   9.0130E+00
+  9.0000E-02   n13331   6.3540E+01
+
+command
+tby 5
+
+   10  temperatures kept
+ 5.000E-04 1.500E-03 4.000E-03 1.250E-02 4.000E-02 1.25E-01 4.000E-01
+ 1.250E+00 4.000E+00 1.500E+01
+
+command
+mgid 10002
+
+command
+rlog 5 0.01 100.0
+
+command
+go
+
+command
+end
+
+

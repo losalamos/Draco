@@ -13,8 +13,8 @@
 <a href="mailto:lowrie@lanl.gov">Robert Lowrie</a>
 <a href="mailto:warsa@lanl.gov">Jim Warsa</a>,
 <a href="mailto:gaber@lanl.gov">Gabe Rockefeller</a>,
-<a href="mailto:jhchang@lanl.gov">Jae Chang</a>,
 <a href="mailto:wollaber@lanl.gov">Allan Wollaber</a>,
+<a href="mailto:jhchang@lanl.gov">Jae Chang</a>,
 
 \par Executive Summary
 Draco is a C++ radiation transport component library developed by CCS-2, Los
@@ -28,9 +28,11 @@ and architecture of Draco.
 To get started building Draco see \ref build_system.  Package
 overviews can be found in the <a href="pages.html">Related Pages</a>
 section of the documentation. Also see:
-- <a href=http://tf.lanl.gov/projects/draco>Draco on TeamForge</a>.
+- <a href=http://coder.lanl.gov/redmine/projects/draco>Draco project
+  management (Redmine) </a>.
 - <a href=http://coder.lanl.gov/cdash>Draco regression reporting on CDash</a>.
 - <a href="mailto:draco@lanl.gov">Draco mailing list</a>.
+- (defunct) <a href=http://tf.lanl.gov/projects/draco>Draco on TeamForge</a>.
 
 <!--
 \par Code Access

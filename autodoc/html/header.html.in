@@ -11,10 +11,13 @@
   </head>
 <body onload='searchBox.OnSelectItem(0);'>
 <table border=0, cellpadding=2 cellspacing=2 width="50%" align="right"><tr>
-<td align="right">
-  <a href="@rel_package_html@/index.html"> Draco Autodoc Home </a>
+<td align="left">
+  <a href="http://coder.lanl.gov/redmine"> Redmine </a>
   &nbsp; | &nbsp;
-  <a href="./index.html"> Main Index </a>
+  <a href="http://coder.lanl.gov/cdash"> CDash </a>
+</td>
+<td align="right">
+  <a href="../../autodoc/draco/index.html"> Draco Autodoc Home </a>
 </td>
 </tr></table>
 <br clear="all">
