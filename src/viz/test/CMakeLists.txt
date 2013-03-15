@@ -34,7 +34,6 @@ include_directories(
 if( NOT APPLE )
    # numdiff/ndselect crashes when run on OS/X so don't try to run the
    # tests.
-   message("${test_sources}")
    add_scalar_tests(
       SOURCES "${test_sources}"
       DEPS    "Lib_viz;Lib_dsxx" 

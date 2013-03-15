@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Friday, Nov 30, 2012, 08:28 am
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * Long description.
@@ -27,8 +27,8 @@ namespace rtt_quadrature
  * \brief This is an abstract class representing all quadratures over the unit
  * sphere.
  *
- * At present, all our unit sphere quadratures are symmetric in
- * octants, though we will likely relax this restriction in the future.
+ * At present, all our unit sphere quadratures are symmetric in octants,
+ * though we will likely relax this restriction in the future.
  *
  * For level quadratures, the levels must be in the xi direction cosine. The
  * user may override the default axis assignments when he constructs an
@@ -45,9 +45,10 @@ class Octant_Quadrature : public Quadrature
     Octant_Quadrature(unsigned const sn_order)
         :
         Quadrature(sn_order),
-        has_axis_assignments_(false)
-    {
-    }
+        has_axis_assignments_(false),
+        mu_axis_(),
+        eta_axis_()
+    { /* empty */ }
 
     Octant_Quadrature(unsigned const sn_order,
                       unsigned const mu_axis,
@@ -117,5 +118,5 @@ class Octant_Quadrature : public Quadrature
 #endif // quadrature_Octant_Quadrature_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/Octant_Quadrature.hh
+// end of quadrature/Octant_Quadrature.hh
 //---------------------------------------------------------------------------------------//

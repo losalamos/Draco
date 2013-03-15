@@ -4,21 +4,16 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief
- * \note   Copyright (C) 2003-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "parser_test.hh"
+#include "../utilities.hh"
 #include "../File_Token_Stream.hh"
 #include "../String_Token_Stream.hh"
-#include "../utilities.hh"
-#include "../Unit.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include <limits>
@@ -764,52 +759,20 @@ void tstutilities(UnitTest &ut)
         SP<Expression> T = parse_quantity(string, J, "energy", 0, variable_map);
         vector<double> x;
         if (soft_equiv((*T)(x), 278.))
-        {
             ut.passes("parsed temperature correctly");
-        }
         else
-        {        
             ut.failure("did NOT parse temperature correctly");
-        }
-        
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-	// >>> UNIT TESTS
-        ScalarUnitTest ut(argc, argv, release);
-        tstutilities(ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    ScalarUnitTest ut(argc, argv, release);
+    try { tstutilities(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
