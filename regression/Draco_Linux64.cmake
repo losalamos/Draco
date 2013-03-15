@@ -116,6 +116,7 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
    ctest_build( 
       TARGET install
       RETURN_VALUE res
+      APPEND
       NUMBER_ERRORS num_errors
       NUMBER_WARNINGS num_warnings
       )
