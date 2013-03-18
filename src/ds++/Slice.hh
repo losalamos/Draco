@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   container/Slice.hh
+ * \file   ds++/Slice.hh
  * \author Kent Budge
  * \date   Thu Jul  8 08:06:53 2004
  * \brief  Definition of Slice template
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,8 +14,8 @@
 #ifndef container_Slice_hh
 #define container_Slice_hh
 
-#include <iterator>
 #include "Assert.hh"
+#include <iterator>
 
 namespace rtt_dsxx
 {
@@ -340,5 +341,5 @@ Slice<Ran> slice(Ran const first,
 #endif // container_Slice_hh
 
 //---------------------------------------------------------------------------//
-//              end of container/Slice.hh
+// end of container/Slice.hh
 //---------------------------------------------------------------------------//

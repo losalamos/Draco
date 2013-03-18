@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:06 2000
  * \brief  CDI class header file.
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,12 +18,8 @@
 #include "MultigroupOpacity.hh"
 #include "OdfmgOpacity.hh"
 #include "EoS.hh"
-//#include "OpacityCommon.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-//#include <vector>
-//#include <string>
-//#include <cmath>
 
 //---------------------------------------------------------------------------//
 // UNNAMED NAMESPACE
@@ -30,7 +27,6 @@
 // Nested unnamed namespace that holds data and services used by the
 // Planckian integration routines.  The data in this namespace is accessible
 // by the methods in this file only (internal linkage).
-
 
 namespace
 {
@@ -51,8 +47,6 @@ static double const coeff_21 = 43.867 / 107290978560589824.0;
 static double const coeff       = 0.1539897338202651; // 15/pi^4
 static double const NORM_FACTOR = 0.25*coeff;         // 15/(4*pi^4);
 
-
-
 //---------------------------------------------------------------------------//
 /*!
  * \fn inline double taylor_series_planck(double x)
@@ -71,7 +65,7 @@ static double const NORM_FACTOR = 0.25*coeff;         // 15/(4*pi^4);
  * \code
  * I(x) = c0 x^3 ( c3 + x ( c4 + x (c5 + x^2 ( c7 + x^2 ( c9 + x^2 ( c11 + x^2
  * ( c13 + x^2 ( c15 + x^2 ( c17 + x^2 ( c19 + x^2 c21 ) ) ) ) ) ) ) ) ) )
- * \code
+ * \endcode
  * the evaluation can be done with 13 multiplications. Furthermore, we do not
  * need to worry about overflow on large powers of \f$ x \f$, since the
  * largest power we compute is \f$ x^3 \f$.

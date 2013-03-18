@@ -31,8 +31,9 @@ namespace rtt_dsxx
 
 //===========================================================================//
 /*!
- * \class assertion Exception notification class for Draco specific
- * assertions.
+ * \class assertion
+ *
+ * Exception notification class for Draco specific assertions.
  *
  * This class is derived from std::runtime_error.  In fact, this class
  * provides no significant change in functionality from std::runtime_error.

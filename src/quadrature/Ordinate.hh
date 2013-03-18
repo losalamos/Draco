@@ -28,7 +28,7 @@ using rtt_dsxx::soft_equiv;
  *
  * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x +
  * \eta_m \mathbf e_y + \xi_m \mathbf e_z \f$ plus the associated point weight,
- * $\f w_m \f$. We could represent this as a simple 4-tuple of doubles, but
+ * \f$ w_m \f$. We could represent this as a simple 4-tuple of doubles, but
  * the ordinates must satisfy certain invariants that are protected by the
  * class representation.
  */

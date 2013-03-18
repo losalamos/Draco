@@ -4,7 +4,8 @@
  * \author Thomas M. Evans, Rob Lowrie
  * \date   Mon Jan 26 15:12:22 2004
  * \brief  Reference Counted Field class definition file.
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -369,7 +370,7 @@ typename RCF<Field_t>::iterator RCF<Field_t>::end()
 }
 
 //===========================================================================//
-/*!
+/*
  * \class RCF<const Field_t>
  *
  * \brief Specialization of RCF on const Field_t.
@@ -609,5 +610,5 @@ RCF<const Field_t>::RCF( RCF<const Field_t> const & rhs)
 #endif // rtt_ds_RCF_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/RCF.hh
+// end of ds++/RCF.hh
 //---------------------------------------------------------------------------//

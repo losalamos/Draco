@@ -64,7 +64,7 @@ template <typename T, unsigned N> class Array;
  *    *it = ++ival;
  * \endcode
  *
- * \example utils/test/tstArray.cc  
+ * \example test/tstArray.cc  
  * Unit test for Array, RefArray and ArraySizes.
  */
 // revision history:
@@ -287,5 +287,5 @@ bool operator != (const RefArray<T,N> & A, const RefArray<T,N> & B)
 #endif // rtt_dsxx_RefArray_hh
 
 //---------------------------------------------------------------------------//
-//                        end of ds++/RefArray.hh
+// end of ds++/RefArray.hh
 //---------------------------------------------------------------------------//

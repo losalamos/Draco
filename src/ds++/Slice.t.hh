@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   container/Slice.t.hh
+ * \file   ds++/Slice.t.hh
  * \author Kent Budge
  * \date   Thu Jul  8 08:06:53 2004
  * \brief  Definitions of nontrivial methods of template class Slice.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -73,5 +74,5 @@ inline typename Slice<R>::const_reference Slice<R>::back() const
 #endif // container_Slice_t_hh
 
 //---------------------------------------------------------------------------//
-//                   end of container/Slice.t.hh
+// end of container/Slice.t.hh
 //---------------------------------------------------------------------------//

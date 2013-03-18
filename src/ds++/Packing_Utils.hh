@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Jul 19 11:27:46 2001
  * \brief  Packing Utilities, classes for packing stuff.
- * \note   Copyright (C) 2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -34,14 +34,11 @@ namespace rtt_dsxx
 
  * \arg \b Packer packing class
  * \arg \b Unpacker unpacking class
-
  */
 
 /*!
  * \example ds++/test/tstPacking_Utils.cc
-
  * Test the Packer and Unpacker classes.
-
  */
 //===========================================================================//
  
@@ -69,8 +66,8 @@ namespace rtt_dsxx
 
  * This class returns real char * pointers through its query functions.  We
  * do not use the STL iterator notation, even though that is how the pointers
- * are used, so as not to confuse the fact that these char * streams are \i
- * continuous \i data byte-streams.  The pointers that are used to "iterate"
+ * are used, so as not to confuse the fact that these char * streams are \e 
+ * continuous \e data byte-streams.  The pointers that are used to "iterate"
  * through the streams are real pointers, not an abstract iterator class.  So
  * one could think of these as iterators (they act like iterators) but they
  * are real pointers into a continguous memory char * stream.
@@ -336,8 +333,8 @@ inline Packer& operator<<(Packer &p, const T &value)
 
  * This class returns real char * pointers through its query functions.  We
  * do not use the STL iterator notation, even though that is how the pointers
- * are used, so as not to confuse the fact that these char * streams are \i
- * continuous \i data byte-streams.  The pointers that are used to "iterate"
+ * are used, so as not to confuse the fact that these char * streams are \e
+ * continuous \e data byte-streams.  The pointers that are used to "iterate"
  * through the streams are real pointers, not an abstract iterator class.  So
  * one could think of these as iterators (they act like iterators) but they
  * are real pointers into a continguous memory char * stream.
@@ -838,8 +835,8 @@ void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,
 
 } // end namespace rtt_dsxx
 
-#endif                          // rtt_ds_Packing_Utils_hh
+#endif // rtt_ds_Packing_Utils_hh
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/Packing_Utils.hh
+// end of ds++/Packing_Utils.hh
 //---------------------------------------------------------------------------//

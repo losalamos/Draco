@@ -1,18 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   fit/svdfit.cc
+ * \file   fit/svdfit_pt.cc
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of svdfit
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
-
 #include "svdfit.i.hh"
+#include <vector>
 
 namespace rtt_fit
 {
@@ -33,5 +33,5 @@ void svdfit(vector<double> const &x,
 } // end namespace rtt_fit
 
 //---------------------------------------------------------------------------//
-//                 end of svdfit.cc
+// end of svdfit_pt.cc
 //---------------------------------------------------------------------------//

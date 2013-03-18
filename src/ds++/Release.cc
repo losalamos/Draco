@@ -4,7 +4,8 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
- * \note   Copyright (C) 1999-2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 1999-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -55,6 +56,7 @@ const std::string release()
  * % for name in $user_list; do numlines=`grep $name file_list | wc -l`;   \
         echo "$numlines: $name"; done > author_loc
  * % cat author_loc | sort -rn
+ * \endcode
  *
  * Note 1: the annotate step can take a long time (do this on a local disk!)
  *
@@ -121,5 +123,5 @@ extern "C" void ec_release( char * release_string, size_t maxlen )
 }
 
 //---------------------------------------------------------------------------//
-//                              end of Release.cc
+// end of Release.cc
 //---------------------------------------------------------------------------//

@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   utils/svdfit.hh
+ * \file   fit/svdfit.hh
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate a generalized least squares fit.
- * \note   © Copyright 2006-2007 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -35,5 +36,5 @@ void svdfit(RandomContainer const &x,
 #endif // utils_svdfit_hh
 
 //---------------------------------------------------------------------------//
-//              end of utils/svdfit.hh
+// end of utils/svdfit.hh
 //---------------------------------------------------------------------------//

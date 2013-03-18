@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   des++/pythag.hh
+ * \file   ds++/pythag.hh
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate hypotenuse of a right triangle.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -58,5 +59,5 @@ inline double pythag(Real a, Real b)
 #endif // dsxx_pythag_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/pythag.hh
+// end of ds++/pythag.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  Array template implementation.
- * \note   Copyright (C) 2003-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -110,7 +111,6 @@ typename RefArray<T,N>::size_type RefArray<T,N>::size( size_t Dim ) const
  * \param pSubArrayLen SubArray dimensions
  * \return RefArray
  */
-
 template<typename T>
 RefArray<T,1>::RefArray( T            * pElements,
 			 size_t const * pNDimensions,

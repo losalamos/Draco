@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/to_string_pt.hh
+ * \file   ds++/to_string_pt.cc
  * \author Kent Budge
  * \brief  Instantiate class to_string
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -26,5 +27,5 @@ string to_string(double num, unsigned precision );
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
-//              end of ds++/to_string_pt.hh
+// end of ds++/to_string_pt.hh
 //---------------------------------------------------------------------------//

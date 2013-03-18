@@ -44,11 +44,11 @@ std::string const exeExtension( "" );
  * The selection of a value for HOST_NAME_MAX is completed by 
    ds++/CMakeLists.txt and ds++/config.h.in.
  *
- * - For most Linux platforms, \c HOST_NAME_MAX is defined in \c <limits.h>.  
+ * - For most Linux platforms, \c HOST_NAME_MAX is defined in \c \<limits.h\>.  
  *   However, according to the POSIX standard, \c HOST_NAME_MAX is a 
  *   \em possibly \em indeterminate definition meaning that it
  *
- * \note ...shall be omitted from \c <limits.h> on specific implementations 
+ * \note ...shall be omitted from \c \<limits.h\> on specific implementations 
  *       where the corresponding value is equal to or greater than the stated
  *       minimum, but is unspecified. 
  * 

@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/Save_Divide.hh
+ * \file   ds++/Safe_Divide.hh
  * \author Mike Buksas
  * \date   Tue Jun 21 15:35:05 2005
  * \brief  Provide protected division functions.
- * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -86,5 +87,5 @@ inline FT safe_divide(const FT& dividend, const FT& divisor)
 #endif // dsxx_Save_Divide_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Save_Divide.hh
+// end of ds++/Save_Divide.hh
 //---------------------------------------------------------------------------//

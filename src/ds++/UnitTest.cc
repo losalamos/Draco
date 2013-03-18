@@ -220,10 +220,8 @@ UnitTest::get_word_count( std::string const & filename, bool verbose )
     return UnitTest::get_word_count( data, verbose );
 }
 
-
-
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
-//                 end of UnitTest.cc
+// end of UnitTest.cc
 //---------------------------------------------------------------------------//

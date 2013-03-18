@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/Range_finder.hh
+ * \file   ds++/Range_Finder.hh
  * \author Mike Buksas
  * \date   Thu Feb  6 12:10:56 2003
  * \brief  Header file for Range_finder
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
+ * \note   Copyright C 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -194,8 +195,8 @@ int Range_finder_catch_end(
 
 } // end namespace rtt_dsxx
 
-#endif                          // __dsxx_Range_finder_hh__
+#endif // __dsxx_Range_finder_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of dsxx/Range_finder.hh
+// end of dsxx/Range_finder.hh
 //---------------------------------------------------------------------------//

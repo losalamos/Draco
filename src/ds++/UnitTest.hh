@@ -109,12 +109,6 @@ int main(int argc, char *argv[])
  * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
  * \c --version on the command line.
  */
-                                                            
-/*!
- * \example ds++/test/tstScalarUnitTest.cc 
- * This unit test demonstrates how to use the ScalarUnit object to simply
- * create a new unit test.
- */
 //===========================================================================//
 
 class DLL_PUBLIC UnitTest 
@@ -158,7 +152,7 @@ class DLL_PUBLIC UnitTest
     bool failure(int line);
     bool failure(int line, char const *file);
     bool failure( std::string const &failmsg );
-    bool passes(  std::string const &failmsg );
+    bool passes(  std::string const &passmsg );
     //! This pure virtual function must be provided by the inherited class.
     //It should provide output concerning the status of UnitTest.
     void status(void) const { out << resultMessage() << std::endl; return; }
