@@ -54,11 +54,11 @@ if( DOXYGEN_FOUND )
   # placed in the BINARY_DIR.
   file( GLOB package_list ${PROJECT_BINARY_DIR}/src/* )
   foreach( package ${package_list} )
-     message( "Looking at ${package}")
+     # message( "Looking at ${package}")
      # pick up processed .dcc files
      if( EXISTS ${package}/autodoc )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
-        message( "Doxygen will process ${package}/autodoc" )
+        # message( "Doxygen will process ${package}/autodoc" )
      endif()
   endforeach()  
 
@@ -165,6 +165,12 @@ if( DOXYGEN_FOUND )
     file://${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
 
 " )
+
+  add_custom_target( installandautodoc 
+     COMMAND ${CMAKE_MAKE_PROGRAM} install
+     COMMAND ${CMAKE_MAKE_PROGRAM} autodoc
+     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+  )
 
 endif( DOXYGEN_FOUND )
   
