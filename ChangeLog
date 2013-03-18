@@ -1,3 +1,285 @@
+2013-03-18  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* draco: Release draco-6_6_0.  This is a minor Draco release.
+	  http://coder.lanl.gov/redmine/versions/6
+
+	* This release was required by Jayenne and Capsaicin.  It is
+          linked to:
+	  - Jayenne-7_0_0,    http://coder/redmine/versions/5
+	  - Capsaicin-3_4_0
+
+	* Platforms:
+	  PI/ML/TY/LU    Intel 12.1.5    OpenMPI-1.4.5
+	                 Intel 13.1      OpenMPI-1.6.3
+	  CT/CI          Intel 13.0.1    MPICH2-5.4.2
+
+	* Summary of changes:
+	  - 371 files changed, added or removed in 190 commits.
+	  - Began using the C99 standard by default.
+	  - Provided a CMake-based version of ApplicationUnitTest.
+	  - Regression system refactored for improved modularity,
+	    extensibility and concurrent operation.
+	  - Quadrature component completely rewritten.
+	  - Initial support for IBM BluGene provided.
+	  - Support for user-defined-types added in c4.
+	  - New inverse-table lookups getElectronTemperature and
+	    getIonTemperature provided by cdi_eospac.
+	  - Support for Random123 enhanced.
+
+	* Details per package:
+
+	Build System:
+	  - Added preliminary support for IBM XL C++ and Fortran
+	    compilers.
+	  - When C99 is enabled, also define _XOPEN_SOURCE=600.
+	  - Define _POSIX_C_SOURCE=200112, to enable POSIX.1-2001
+	    features. This grew out of an attempt to add -std=c99 to
+	    CFLAGS.  Understandably (in hindsight), gcc defines
+	    _POSIX_C_SOURCE by default only when GNU dialects of C
+	    standards are enabled, which means that constants like
+	    HOST_NAME_MAX are not available when building with -std=c99,
+	    unless some level of POSIX functionality is specifically
+	    requested via the _POSIX_C_SOURCE feature test macro.  See the
+	    feature_test_macros(7) man page and /usr/include/features.h
+	    for more options.
+	  - Created a up a prototype cmake-based ApplicationUnitTest
+	    feature for the build system.  The IBM Blue Gene machines
+	    don't allow calls to 'system' (used by
+	    c4/ApplicationUnitTest.cc).  This script based approach may
+	    offer an alternative method.
+	  - Add -debug inline-debug-info to Intel RelWithDebInfo
+	    builds. This option "generates enhanced debug information for
+	    inlined code", according to the icpc man page; it associates
+	    symbols from inlined functions with the source of the called
+	    function (i.e., the inlined function), rather than with the
+	    caller.  Intel 13 enables this option by default when -g and
+	    an optimization flag are both specified; Intel 12 seems to
+	    leave it off by default. The HPCToolkit manual recommends
+	    enabling it, and it does improve attribution of calls to
+	    inline functions.
+	  - A new build environment, AUTODOCDIR, can be set to specify the
+	    location to install doxygen generated files (default location
+	    is $CMAKE_INSTALL_PREFIX/autodoc.
+	  - No longer set the aprun option '-cc none'.  This was in place
+	    to allow oversubscription of the nodes but appears to be
+	    causing issues with ctest in ClubIMC and especially with
+	    Capsaicin. #31
+
+	Developer Environment:
+	  - Documentation and comments updated in various files.
+	  - Begin using Intel/13.0.1 by default on CI/CT.
+	  - Begin using Intel/13.0.1 by default on PI/MU/ML/LU/TY.
+	  - When using intel compilers add the flag -ftz (r6952).
+	  - Regression scripts rewritten to improve modularity,
+	    extensibility and concurent operation.
+	  - Autodoc pages are now published from the nightly build at
+	    http://coder/autodoc.
+
+	Documentation:
+
+	c4:
+	  - Wait on all receive requests. TigsTrace methods now use C4_Req
+	    objects to track receives, but they still included conditional
+	    logic to avoid trying to "receive from self" while waiting on
+	    outstanding receives.  Because the TigsTrace methods avoid
+	    creating C4_Req objects for self-receives in the first place,
+	    the conditionals were incorrectly skipping legitimate
+	    receives. This commit eliminates those conditionals and waits
+	    for all outstanding receives to complete.
+	  - Added simple wrapper for MPI_allgather analogous to wrapper
+	    for MPI_Gather, r6966.
+	  - Extended c4 to begin supporting MPI user-defined vector types
+	    (r7006):
+	    . create_data_vector is basically a wrapper for the
+	      MPI_Type_vector and MPI_Type_commit functions. It creates an
+	      MPI user defined vector type.
+	    . typedef'd C4_Datatype to be MPI_Datatype unless we're in
+	      scalar build, in which case C4_Database is typedef'd as void*
+	      (these functions are all no-ops in scalar mode.)
+	    . send (with an added C4_Database argument) and receive (with
+	      an added C4_Database argument) use the type for actual
+	      blocked send and receive.
+
+	diagnostics:
+	  - Provided a new binary 'draco_info' that can be run from an
+	    installation directory to query information about the draco
+	    installation.  All of this can be found by parsing through
+	    various config.h files but I thought it would be convenient to
+	    have it all in one place.
+
+	ds++:
+	  - Provided pack_data and unpack_data routines for containers of
+	    the form map<T1,vector<T2>>.  These will be used by
+	    cdi_eospac.  Added tests for new pack/unpack routines. Added
+	    tests for packing/unpacking size_t and uint64_t.
+	  - Eliminated a call to system() that was executing "test -x
+	    $file" to determine if a file has the execute bit turned on.
+	    To implement this change the draco_getstat() function was
+	    refactored into a class that takes a filename as an argument
+	    to its constructor.  The new design is extensible.  Member
+	    functions that are currently provided include:
+	    valid() - the error code returned by the stat call.
+	    isreg() - is the file a regular file (determined by POSIX
+	       S_ISREG macro).
+	    has_permission_bit(int) - does the file have the permissions
+	       bit set.  For example, ds.has_permission_bit( 0111 ) will
+	       return true if the execute bit is set for user, group and
+	       other.
+
+	cdi_eospac:
+	  - Provided a very simple interactive query tool for EOSPAC data.
+	  - Updated SesameTable class to use maps intead of vector to
+	    store relationship between registered materials and data
+	    tables.
+	  - Updated pack/unpack routines to support map<T1,T2> and
+	    map<T1,vector<T2>> containers.
+	  - Added a new EoS accessor to cdi, cdi_analytic and cdi_eospac:
+
+	    getElectronTemperature( density, SpecificInternalElectronEnergy, Tguess )
+	    getIonTemperature(      density, Uic,	     Tguess)
+
+	    The cdi_eospac implementation uses EOS_T_DUe table from
+	    EOSPAC.  The cdi_analytic implemenation uses the
+	    rtt_roots::zbrent solver to find the new temperature based on
+	    the analytic Cve = a+bT^c model.
+
+	quadrature:
+	  - Major refactor of the entire package.
+	    . QuadServices is eliminated.
+	    . Angle_Operator is renamed to Ordinate_Space (since it is a
+	      collection of operations on the ordinate space rather than
+	      just the angle term in the advection operator) and it is
+	      specialized as Sn_Ordinate_Space and
+	      Galerkin_Ordinate_Space.
+	    . Quadrature becomes a factory class for Ordinate_Set and
+	      Ordinate_Space.
+	    . The client can now override the default axis assignments for
+	      a quadrature. That is, he can assign mu, eta, and xi to x,
+	      y, and z at his pleasure -- though this will bork if he is
+	      in curvilinear geometry and fails to assign a direction
+	      cosine with levels to the axis of symmetry.
+	  - Remove quadrature interpolation model specification from
+	    Quadrature and let it be specified instead as an argument to
+	    the Quadrature::create_ordinate_space methods.
+
+	rng:
+	  - Continued development/implementation of Random123 features.
+
+	* Corrected defects:
+
+	  #51  ClubIMC builds fail on OSX with CUDA.
+	  #74  Update ds++/Packing_Utils to support size_t, uint64_t and std::map.
+	  #75  getFilenameComponent() inadvertantly stripping the filename
+	       from the fully qualified path for FC_REALPATH.
+	  #84  Draco build system draco-config.cmake has build directory
+	       paths instead of install locations for libraries.
+	  #108 Draco build is broken on CI/CT after upgrade to CLE 4.1
+	  #127 valgrind reports a memory leak in libeospac6.a
+	  #130 kat_cuda_generated_kat_cuda.cu.o fails to build with Intel/13.1.0 and cudatoolkit/4.2 on ML
+
+	* New features
+
+	  #73: Provide support for PAPI timers from c4/Timer
+	  #85: Should draco build system allow client RelWithDebInfo builds linking to Draco Debug builds?
+	  #86: Prototype a cmake-script based unit test that emulates ApplicationUnitTest
+	  #90: New function request for rtt_cdi::eos; get T given electron internal energy U, density \rho
+	  #119: Consider building autodoc nightly (and publishing it?)
+	  #126: Provide better regression testing for diagnostics
+
+	* Known defects:
+
+	  #94  CDI should provide a way to collapse MG opacity data to gray.
+
+	* Statistics (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+69014: kellyt
+50255: kgbudge
+13141: tme
+7091: lowrie
+6137: bta
+5048: mwbuksas
+4803: gaber
+4360: mcghee
+2305: phenning
+2170: rsqrd
+1436: warsa
+957: sethrj
+876: wollaber
+693: kgt
+476: furnish
+463: talbotp
+327: pahrens
+131: bergen
+106: jhchang
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             457          12726          21404          66788
+C/C++ Header                    379           8472          23085          21747
+Lisp                             13           1802           2519          11919
+Perl                              2           1294           1009           8330
+CMake                           123           1944           5238           7071
+XML                               2            933              0           2418
+Python                           26           1210           1343           2197
+C                                17            311            658            893
+Bourne Shell                     12            196            534            807
+Bourne Again Shell                4             95            208            538
+CSS                               1            113             37            395
+C Shell                           3             47             87            262
+make                              7            105             69            205
+Fortran 90                        3             38             68            118
+HTML                              2              8             15             48
+--------------------------------------------------------------------------------
+SUM:                           1051          29294          56274         123736
+--------------------------------------------------------------------------------
+
+
+ 
+Code coverage
+-------------
+ 
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  82 /    82 = 100%      58 /    58 = 100%
+../source/src/traits/                 16 /    16 = 100%       0 /     0       
+../source/src/special_functions/      31 /    31 = 100%     208 /   218 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ds++/                  477 /   477 = 100%     462 /   497 =  92%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/cdi/                    39 /    39 = 100%      27 /    30 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+../source/src/cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/diagnostics/             9 /     9 = 100%       5 /     8 =  62%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/fpe_trap/                2 /     2 = 100%       4 /    11 =  36%
+../source/src/parser/                268 /   269 =  99%    1083 /  1353 =  80%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/quadrature/            185 /   188 =  98%     493 /   624 =  79%
+../source/src/                      2231 /  2268 =  98%    4971 /  6116 =  81%
+../source/src/cdi_eospac/             52 /    53 =  98%      62 /   132 =  46%
+../source/src/c4/                    194 /   199 =  97%     503 /   550 =  91%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/viz/                    24 /    25 =  96%     129 /   168 =  76%
+../source/src/rng/                    87 /    91 =  95%      65 /    70 =  92%
+../source/src/cdi_analytic/          140 /   147 =  95%     164 /   196 =  83%
+../source/src/plot2D/                 22 /    29 =  75%      46 /    76 =  60%
+../source/src/lapack_wrap/            12 /    16 =  75%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2231 /  2268 =  98%    4971 /  6116 =  81%
+
+
+
 2012-11-06  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* draco: Release draco-6_5_0.  This is a minor Draco release.

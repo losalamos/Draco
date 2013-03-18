@@ -75,21 +75,21 @@ const std::string author_list()
           << "B. Todd Adams, "
           << "Mike W. Buksas,"
           << "\n    "
-          << "James S. Warsa, "
-          << "John McGhee, "
           << "Gabriel M. Rockefeller,"
-          << "\n    "
+          << "John McGhee, "
           << "Paul J. Henning, "
+          << "\n    "
           << "Randy M. Roberts, "
+          << "James S. Warsa, "
           << "Seth R. Johnson,"
           << "\n    "
           << "Allan B. Wollaber, "
-          << "Peter Ahrens, "
           << "Jeff Furnish,"
-          << "\n    "
           << "Paul W. Talbot, "
-          << "Jae H. Chang, "
-          << "and Benjamin K. Bergen.";
+          << "\n    "
+          << "Peter Ahrens, "
+          << "Benjamin K. Bergen."
+          << "and Jae H. Chang.";
     return alist.str();
 }
 
@@ -102,7 +102,7 @@ const std::string copyright()
 
     msg << "Draco Contributers: \n"
         << author_list() << "\n\n"
-        << "Copyright (C) 1995-2012 LANS, LLC" << std::endl;
+        << "Copyright (C) 1995-2013 LANS, LLC" << std::endl;
   
     return msg.str();
 }
