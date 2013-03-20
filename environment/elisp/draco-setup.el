@@ -60,13 +60,10 @@ elisp files: \n\t(setq draco-env-dirs (cons \"/path/to/extra/dir/\"))"
 
 (if (not draco-env-dirs)
     (setq draco-env-dirs
-	  (list (concat my-home-dir "draco/environment/")
-		(concat my-home-dir "capsaicin/environment/")	
-		(concat my-home-dir "marmot/environment/")	
-		(concat my-home-dir "clubimc/environment/")	
+	  (list (concat my-draco-env-dir "elisp/")
+                (concat my-home-dir "draco/environment/")
 		(concat my-home-dir ".xemacs/")
-		"/usr/projects/draco/environment/"
-		"/codes/radtran/vendors/environment/" )))
+		"/usr/projects/draco/environment/" )))
 
 (defcustom draco-env-dir nil
 "\nDirectory that contains Draco environment files.

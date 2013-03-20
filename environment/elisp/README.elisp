@@ -22,21 +22,14 @@ the first two entries.
 
 ;; Load Draco Elisp files
 
-(setq draco-env-dirs (list
-	"/codes/radtran/vendors/environment/"
-	"~/draco/environment/"
-	"~/.xemacs" ))
-(load-library "~/draco/environment/elisp/draco-setup")
+(setq my-draco-env-dir "~/draco/environment/" )
+(load-library (concat my-draco-env-dir "/elisp/draco-setup"))
 
 It is recommended that you compile the .el files located at
-draco/environment/elisp for better XEmacs performance.  Simply run the
-script "./compile-elisp".  If you have a lot of elisp commands in your
-~/.xemacs directory, you may want to compile those files too.
-
-Retired Elisp Features
-==============================
-
-nml-mode
+draco/environment/elisp for better XEmacs performance.  Simply run
+'make' from the draco/environment/elisp directory.  If you have a lot
+of elisp commands in your ~/.emacs.d directory, you may want to compile
+those files too.
 
 Useful Keybindings
 ==============================
