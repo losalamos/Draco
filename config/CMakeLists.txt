@@ -18,8 +18,8 @@ set( CMake_src
 #   FindLIBSCI.cmake
 #   FindRandom123.cmake
 #   Toolchain-catamount.cmake
-   Toolchain-roadrunner-ppe.cmake
-   Toolchain-roadrunner-spu.cmake
+   # Toolchain-roadrunner-ppe.cmake
+   # Toolchain-roadrunner-spu.cmake
    apple-clang.cmake
    buildEnv.cmake
    compilerEnv.cmake
@@ -31,15 +31,15 @@ set( CMake_src
    dracoVersion.cmake
    parse_arguments.cmake
    platform_checks.cmake
-   platform_customization_roadrunner_ppe.cmake
+   # platform_customization_roadrunner_ppe.cmake
    unix-g++.cmake
    unix-gfortran.cmake
    unix-ifort.cmake
    unix-intel.cmake
    unix-pgf90.cmake
    unix-pgi.cmake
-   unix-ppu.cmake
-   unix-spu.cmake
+   #unix-ppu.cmake
+   #unix-spu.cmake
    unix-xl.cmake
    unix-xlf.cmake
    vendor_libraries.cmake
