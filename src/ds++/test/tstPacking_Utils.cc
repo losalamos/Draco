@@ -5,7 +5,7 @@
  * \date   Wed Nov  7 15:58:08 2001
  * \brief  Test the routines used for serializing and de-serializing C++
  *         objects. 
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved
  */
 //---------------------------------------------------------------------------//
@@ -16,13 +16,9 @@
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Packing_Utils.hh"
-#include "../Assert.hh"
 #include "../Soft_Equivalence.hh"
 
-#include <iostream>
-#include <vector>
 #include <cmath>
-#include <string>
 #include <sstream>
 #include <typeinfo>
 
@@ -334,7 +330,7 @@ void packing_test_c90( rtt_dsxx::UnitTest & ut)
     size_t iz     = 12;
 
     // make 2 buffers for data
-    size_t s1 = 2 * sizeof(double) + 2 * sizeof(size_t);
+    size_t s1 = 2 * sizeof(double) + sizeof(size_t) + sizeof(uint64_t);
     //char *b1  = new char[s1];
     vector<char> b1(s1);
     size_t s2 = sizeof(double) + sizeof(size_t);
@@ -724,19 +720,7 @@ int main(int argc, char *argv[])
         endian_conversion_test(ut);
         packing_map_test(ut);
     }
-    catch (rtt_dsxx::assertion &error)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << error.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

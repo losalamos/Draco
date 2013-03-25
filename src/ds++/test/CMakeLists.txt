@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building ds++/test level Makefile.
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -60,7 +60,7 @@ add_scalar_tests(
    #         ^^^ this space before the semicolon is important!
    # The 2nd case does not print "PASS" so we register the following
    # regex as PASS message.
-   PASS_REGEX "tstScalarUnitTest: version"
+   PASS_REGEX "tstScalarUnitTest[.ex]*: version"
 )
 list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/tstScalarUnitTest.cc )
@@ -69,6 +69,4 @@ list( REMOVE_ITEM test_sources
 add_scalar_tests( 
    SOURCES "${test_sources}" 
    )
-
-
-
+   
