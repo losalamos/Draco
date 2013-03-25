@@ -4,7 +4,8 @@
 # date   2010 Dec 1
 # brief  Provide extra macros to simplify CMakeLists.txt for component
 #        directories. 
-# note   Copyright © 2010-2011 LANS, LLC  
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$ 
 #------------------------------------------------------------------------------#
@@ -84,7 +85,7 @@ macro( add_component_library )
    # This is a test library.  Find the component name
    string( REPLACE "_test" "" comp_target ${acl_TARGET} )
    # extract project name, minus leading "Lib_"
-   string( REPLACE "Lib_" "" folder_name ${comp_target} )
+   string( REPLACE "Lib_" "" folder_name ${acl_TARGET} )
 
    add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
    if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
@@ -106,28 +107,10 @@ macro( add_component_library )
    endif()
 
    #
-   # Special post-build options for Win32 platforms
-   #
-
-   if( ${acl_TARGET} MATCHES "_test" )
-      # For Win32 with shared libraries, the package dll must be
-      # located in the test directory.
-
-      get_target_property( ${comp_target}_loc ${comp_target} LOCATION )
-      if( WIN32 )
-         add_custom_command( TARGET ${acl_TARGET}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-      endif()
-   endif()
-
-   #
    # Generate properties related to library dependencies
    #
    if( NOT "${acl_TARGET_DEPS}x" STREQUAL "x" )
       target_link_libraries( ${acl_TARGET} ${acl_TARGET_DEPS} )
-      # add_dependencies( ${acl_TARGET} ${acl_TARGET_DEPS} )
    endif()
    if( NOT "${acl_VENDOR_LIBS}x" STREQUAL "x" )
       target_link_libraries( ${acl_TARGET} ${acl_VENDOR_LIBS} )
@@ -217,6 +200,36 @@ set_target_properties(${acl_TARGET} PROPERTIES
          "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
 
    endif()
+   
+   #
+   # Special post-build options for Win32 platforms
+   #
+  
+   if( WIN32 AND ${acl_TARGET} MATCHES "_test" )
+      # For Win32 with shared libraries, the package dll must be
+      # located in the test directory.
+      # get_target_property( ${comp_target}_loc ${comp_target} LOCATION )
+      unset( copy_lib_command )
+      foreach( lib ${${acl_PREFIX}_LIBRARIES} )
+         unset( ${comp_target}_loc )
+         get_target_property( ${comp_target}_loc ${lib} LOCATION )
+         #set( copy_lib_command "${copy_lib_command} COMMAND ${CMAKE_COMMAND} -E copy_if_different \"${${comp_target}_loc}\" #${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}" )
+         add_custom_command( TARGET ${acl_TARGET}
+            POST_BUILD 
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+                    )
+message("
+         add_custom_command( TARGET ${acl_TARGET}
+            POST_BUILD 
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+                    )
+")
+      endforeach()
+                    
+   endif()
+   
 endmacro()
 
 # ------------------------------------------------------------
@@ -473,7 +486,7 @@ macro( add_scalar_tests test_sources )
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
-           FOLDER ${compname}
+           FOLDER      ${compname}_test
          )
       # Do we need to use the Fortran compiler as the linker?
       if( addscalartest_LINK_WITH_FORTRAN )
@@ -598,7 +611,7 @@ macro( add_parallel_tests )
          PROPERTIES 
            OUTPUT_NAME ${testname} 
            VS_KEYWORD  ${testname}
-           FOLDER ${compname}
+           FOLDER      ${compname}_test
          )
       if( addparalleltest_MPI_PLUS_OMP )
          if( ${CMAKE_GENERATOR} MATCHES Xcode )

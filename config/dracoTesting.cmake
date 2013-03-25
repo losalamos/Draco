@@ -27,7 +27,7 @@ endif()
 if( BUILD_TESTING )
   include(CTest)
   enable_testing()
-  if( "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )
+  if( WIN32 OR "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )
      add_custom_target( check
         COMMAND ${CMAKE_MAKE_PROGRAM}  
         COMMAND ${CMAKE_CTEST_COMMAND} )   
