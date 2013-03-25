@@ -16,6 +16,7 @@
 #include <cstring>      // strncpy()
 #include <cerrno>       // errno
 #include <cstdlib>      // _fullpath
+#include <cstdio>       // remove()
 #ifdef UNIX
 #include <sys/param.h>  // MAXPATHLEN
 #include <unistd.h>     // gethostname
