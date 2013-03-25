@@ -208,43 +208,42 @@ void Packer::set_buffer(unsigned int size_in, pointer buffer)
  * accessible using the sizeof() operator.
 
  * Example using compute_buffer_size_mode():
-   \code
-   double d1 = 5.0, d2 = 10.3;         // data to be packed
-   Packer p;
-   p.compute_buffer_size_mode();
-   p << d1 << d2;                      // computes required size
-   vector<char> buffer(p.size());      // allocate buffer
-   p.set_buffer(p.size(), &buffer[0]);
-   p << d1 << d2;                      // packs d1 and d2 into buffer
-   \endcode
+ \code
+ double d1 = 5.0, d2 = 10.3;         // data to be packed
+ Packer p;
+ p.compute_buffer_size_mode();
+ p << d1 << d2;                      // computes required size
+ vector<char> buffer(p.size());      // allocate buffer
+ p.set_buffer(p.size(), &buffer[0]);
+ p << d1 << d2;                      // packs d1 and d2 into buffer
+ \endcode
    
  * Example not using compute_buffer_size_mode():
-   \code
-   double d1 = 5.0, d2 = 10.3;
-   Packer p;
-   unsigned int bsize = 2 * sizeof(double);  // compute buffer size
-   vector<char> buffer(bsize);
-   p.set_buffer(bsize, &buffer[0]);
-   p << d1 << d2;                            // packs d1 and d2 into buffer
-   \endcode
-
- */
+ \code
+ double d1 = 5.0, d2 = 10.3;
+ Packer p;
+ unsigned int bsize = 2 * sizeof(double);  // compute buffer size
+ vector<char> buffer(bsize);
+ p.set_buffer(bsize, &buffer[0]);
+ p << d1 << d2;                            // packs d1 and d2 into buffer
+ \endcode
+*/
 template<typename T>
-void Packer::pack(const T &value)
+void Packer::pack( T const &value )
 {
-    if ( size_mode )
-	stream_size += sizeof(T);
+    if( size_mode )
+        stream_size += sizeof(T);
     else
     {
-	Require (begin_ptr);
- 	Ensure (ptr >= begin_ptr);
- 	Ensure (ptr + sizeof(T) <= end_ptr);
+        Require( begin_ptr );
+        Ensure ( ptr >= begin_ptr );
+        Ensure ( ptr + sizeof(T) <= end_ptr );
 	
-	// copy value into the buffer
-	std::memcpy(ptr, &value, sizeof(T));
+        // copy value into the buffer
+        std::memcpy( ptr, &value, sizeof(T) );
 	
-	// advance the iterator pointer to the next location
-	ptr += sizeof(T);
+        // advance the iterator pointer to the next location
+        ptr += sizeof(T);
     }
     return;
 }
@@ -270,7 +269,7 @@ void Packer::accept(unsigned int bytes, IT data)
 
         while (bytes-- > 0) *(ptr++) = *(data++);
     }
-    
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -285,7 +284,7 @@ void Packer::pad(unsigned int bytes)
 {
 
     while (bytes-- > 0) pack(char(0));
-
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -826,7 +825,7 @@ void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,
         unpacked_map[(*it).first].resize(numdata);
         for( typename std::vector<dataT>::iterator
                  itr = (*it).second.begin(); itr != (*it).second.end(); itr++ )
-	unpacker >> *itr;
+            unpacker >> *itr;
     }
 
     Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );

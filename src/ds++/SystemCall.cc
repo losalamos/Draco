@@ -21,7 +21,6 @@
 #include <unistd.h>     // gethostname
 #endif
 #ifdef WIN32
-// #include <winsock2.h>  // gethostname
 #include <process.h>   // _getpid
 #include <direct.h>    // _getcwd
 #include <sstream>

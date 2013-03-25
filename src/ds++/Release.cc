@@ -66,30 +66,14 @@ const std::string release()
 const std::string author_list()
 {
     std::stringstream alist;
-    alist << "    "
-          << "Kelly G. Thompson, "
-          << "Kent G. Budge, "
-          << "Tom M. Evans,"
-          << "\n    "
-          << "Rob Lowrie, "
-          << "B. Todd Adams, "
-          << "Mike W. Buksas,"
-          << "\n    "
-          << "Gabriel M. Rockefeller,"
-          << "John McGhee, "
-          << "Paul J. Henning, "
-          << "\n    "
-          << "Randy M. Roberts, "
-          << "James S. Warsa, "
-          << "Seth R. Johnson,"
-          << "\n    "
-          << "Allan B. Wollaber, "
-          << "Jeff Furnish,"
-          << "Paul W. Talbot, "
-          << "\n    "
-          << "Peter Ahrens, "
-          << "Benjamin K. Bergen."
-          << "and Jae H. Chang.";
+//            0         1         2         3         4         5         6         7
+//            01234567890123456789012345678901234567890123456789012345678901234567890123456789
+    alist << "    Kelly G. Thompson,      Kent G. Budge,        Tom M. Evans,\n"
+          << "    Rob Lowrie,             B. Todd Adams,        Mike W. Buksas,\n"
+          << "    Gabriel M. Rockefeller, John McGhee,          Paul J. Henning,\n"
+          << "    Randy M. Roberts,       James S. Warsa,       Seth R. Johnson,\n"
+          << "    Allan B. Wollaber,      Jeff Furnish,         Paul W. Talbot,\n"
+          << "    Peter Ahrens,           Benjamin K. Bergen,   Jae H. Chang.";
     return alist.str();
 }
 
@@ -102,7 +86,8 @@ const std::string copyright()
 
     msg << "Draco Contributers: \n"
         << author_list() << "\n\n"
-        << "Copyright (C) 1995-2013 LANS, LLC" << std::endl;
+        << "Copyright (C) 1995-2013 Los Alamos National Security, LLC."
+        << std::endl;
   
     return msg.str();
 }

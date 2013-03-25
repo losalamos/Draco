@@ -16,7 +16,6 @@
 
 #include "UnitTest.hh"
 #include "ds++/config.h"
-#include <iostream>
 
 namespace rtt_dsxx
 {
