@@ -176,7 +176,13 @@ void global_merge(map<IndexType, ElementType> &local_map)
 }
 
 //---------------------------------------------------------------------------//
-
+/* We have specialized the case of bool map elements because the standard C++
+ * STL library does "clever" things with bool containers that don't play well
+ * with the generic implementation. In particular, the communications steps
+ * promote the bool elements to int to ensure correct communication. Char
+ * might work as well and be more efficient; we can experiment with this if
+ * this code ever proves a computational bottleneck.
+ */
 template<class IndexType>
 void global_merge(map<IndexType, bool> &local_map)
 {
@@ -186,7 +192,8 @@ void global_merge(map<IndexType, bool> &local_map)
     unsigned number_of_processors = nodes();
     if (number_of_processors<2) return;
 
-    // Flatten the maps
+    // Flatten the maps, promoting the bool elements to int so they will play
+    // well with C4.
     unsigned const number_of_local_elements = local_map.size();
     vector<IndexType> local_indices(number_of_local_elements);
     vector<int> local_elements(number_of_local_elements);    
@@ -226,7 +233,7 @@ void global_merge(map<IndexType, bool> &local_map)
                 IndexType const &index = other_index[i];
                 
                 if (local_map.find(index)!=local_map.end() &&
-                    local_map[index] != other_elements[i])
+                    local_map[index] != static_cast<bool>(other_elements[i]))
                 {
                     throw invalid_argument("inconsistent global map");
                 }
@@ -253,11 +260,12 @@ void global_merge(map<IndexType, bool> &local_map)
     broadcast(&index[0], number_of_elements, 0);
     broadcast(&elements[0], number_of_elements, 0);
 
+    // Build the final map, converting the ints back to bool.
     if (node()!=0)
     {            
         for (unsigned i=0; i<number_of_elements; ++i)
         {
-            local_map[index[i]] = elements[i];
+            local_map[index[i]] = static_cast<bool>(elements[i]);
         }
     }
 }
