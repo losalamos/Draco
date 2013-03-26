@@ -4,30 +4,30 @@
  * \author Mike Buksas
  * \date   Tue Jun 21 16:02:52 2005
  * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "../Safe_Divide.hh"
-#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
-#include "ds_test.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-void test()
+void test( rtt_dsxx::UnitTest & ut )
 {
-
     double max = numeric_limits<double>::max();
 
     double big  = 1.0e200;
@@ -45,64 +45,23 @@ void test()
     if (safe_divide (-10.0,  5.0) != -2.0) ITFAILS;
     if (safe_divide (-10.0, -5.0) !=  2.0) ITFAILS;
     if (safe_divide ( 10.0, -5.0) != -2.0) ITFAILS;
-    
+
+    if( ut.numFails==0 ) PASSMSG("done with test().");
+    return;
 }
-
-
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " 
-		 << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-	// >>> UNIT TESTS
-	test();
+	test(ut);
     }
-    catch (std::exception &err)
-    {
-	std::cout << "ERROR: While testing tstSafe_Divide, " 
-		  << err.what()
-		  << std::endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	std::cout << "ERROR: While testing tstSafe_Divide, " 
-		  << "An unknown exception was thrown"
-                  << std::endl;
-	return 1;
-    }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    if (rtt_ds_test::passed) 
-    {
-	std::cout << "**** tstSafe_Divide Test: PASSED" 
-		  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    std::cout << std::endl;
-
-    std::cout << "Done testing tstSafe_Divide "
-              << std::endl;
-    
-    return 0;
+    UT_EPILOG(ut)
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstSafe_Divide.cc
+//  end of tstSafe_Divide.cc
 //---------------------------------------------------------------------------//

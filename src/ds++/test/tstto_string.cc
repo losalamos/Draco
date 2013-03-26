@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Fri Jul 25 08:49:48 2008
  * \brief  
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -57,21 +57,9 @@ int main(int argc, char *argv[])
     {
         tstto_string(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstto_string, " 
-                  << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstto_string, " 
-                  << "An unknown exception was thrown." << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstto_string.cc
+// end of tstto_string.cc
 //---------------------------------------------------------------------------//

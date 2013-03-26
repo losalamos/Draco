@@ -3,8 +3,9 @@
  * \file   test/ds++/tstSortPermutation.cc
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
- * \note   Copyright (c) 2000-2010 Los Alamos National Security, LLC
  * \brief  
+ * \note   Copyright (c) 2000-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,24 +14,14 @@
 #include "../SortPermutation.hh"
 #include "../isSorted.hh"
 #include "../Release.hh"
-
 #include <iostream>
-#include <string>
-#include <vector>
 #include <list>
-#include <algorithm>
 
 namespace
 {
 
 using std::cout;
 using std::endl;
-
-void printVersion(const std::string &progname)
-{
-    std::string version = rtt_dsxx::release();
-    cout << progname << ": version " << version << endl;
-}
 
 void printStatus(const std::string &name, bool passed)
 {
@@ -163,30 +154,11 @@ struct evenIsLess
     }
 };
 
-//---------------------------------------------------------------------------//
-// void moreTests()
-// {
-//     using rtt_dsxx::SortPermutation;
-//     // 
-//     {
-//         //
-//     }
-//     return;
-// }
-
-    
+  
 //---------------------------------------------------------------------------//
 
-int main( int argc, char *argv[] )
+int main( int /*argc*/, char * /*argv*/ [] )
 {
-    for (int arg=1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            std::string prog = argv[0];
-            printVersion(prog);
-            return 0;
-        }
-
     cout << "Initiating test of the SortPermutation.\n";
 
     std::string name = "SortPermutation";
@@ -243,8 +215,6 @@ int main( int argc, char *argv[] )
                          std::greater<FooGT>());
         printStatus(name, passed);
 
-//  moreTests();
-
     }
     catch( rtt_dsxx::assertion& a )
     {
@@ -263,5 +233,5 @@ int main( int argc, char *argv[] )
 }
 
 //---------------------------------------------------------------------------//
-//                              end of tstSortPermutation.cc
+// end of tstSortPermutation.cc
 //---------------------------------------------------------------------------//

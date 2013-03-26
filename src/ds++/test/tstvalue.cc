@@ -4,17 +4,13 @@
  * \author Kent G. Budge
  * \date   Wed Nov 10 14:27:59 2010
  * \brief  Test the value function template
- * \note   Copyright (C) 2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../value.hh"
@@ -92,23 +88,9 @@ int main(int argc, char *argv[])
     {
         tstvalue(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstvalue, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstvalue, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstvalue.cc
+// end of tstvalue.cc
 //---------------------------------------------------------------------------//

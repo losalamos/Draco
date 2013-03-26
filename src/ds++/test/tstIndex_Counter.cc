@@ -4,25 +4,25 @@
  * \author Mike Buksas
  * \date   Wed Feb  1 08:58:48 2006
  * \brief  Unit test for Index_Counter
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "../Assert.hh"
 #include "../Release.hh"
-#include "ds_test.hh"
-
+#include "../ScalarUnitTest.hh"
 #include "../Index_Converter.hh"
 #include "../Index_Counter.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 /*
@@ -46,14 +46,10 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_index_counter()
+void test_index_counter( rtt_dsxx::UnitTest & ut )
 {
-    
     unsigned dimensions[] = {3,4,5};
-    
-
     Index_Converter<3,1> box(dimensions);
-
     Index_Converter<3,1>::Counter it = box.counter();
 
     if (it.get_index()  != 1) ITFAILS;
@@ -82,13 +78,14 @@ void test_index_counter()
 
     if (it.is_in_range()) ITFAILS;
 
+    if( ut.numFails==0) PASSMSG( "done with test_index_counter().");
+    return;
 }
 
-void test_looping()
+//---------------------------------------------------------------------------------------//
+void test_looping( rtt_dsxx::UnitTest & ut )
 {
-
     unsigned dimensions[] = {3,4,5};
-
     Index_Converter<3,1> box(dimensions);
 
     int index = 1;
@@ -102,93 +99,40 @@ void test_looping()
         // Check the first and last index directly.
         if ( (it_index-1) %  3 + 1 != it.get_index(0) ) ITFAILS;
         if ( (it_index-1) / 12 + 1 != it.get_index(2) ) ITFAILS;
-
-        
     }
-
-
+    return;
 }
 
-void test_next_index()
+//---------------------------------------------------------------------------------------//
+void test_next_index( rtt_dsxx::UnitTest & ut )
 {
-
     unsigned dimensions[] = {3,4,5};
-
     Index_Converter<3,1> box(dimensions);
-
     Index_Counter<3,1> it = box.counter();
 
     if (it.get_index() != 1) ITFAILS;
-
     if (box.get_next_index(it,1) != -1) ITFAILS;
     if (box.get_next_index(it,2) !=  2) ITFAILS;
     if (box.get_next_index(it,3) != -1) ITFAILS;
     if (box.get_next_index(it,4) !=  4) ITFAILS;
     if (box.get_next_index(it,5) != -1) ITFAILS;
     if (box.get_next_index(it,6) != 13) ITFAILS;
-
+    return;
 }
 
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " 
-                 << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
-        test_index_counter();
-
-        test_looping();
-
-        test_next_index();
+        test_index_counter(ut);
+        test_looping(ut);
+        test_next_index(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstIndex_Counter, " 
-                  << err.what()
-                  << std::endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstIndex_Counter, " 
-		  << "An unknown exception was thrown"
-                  << std::endl;
-        return 1;
-    }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    if (rtt_ds_test::passed) 
-    {
-        std::cout << "**** tstIndex_Counter Test: PASSED"
-                  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    std::cout << std::endl;
-    
-
-    std::cout << "Done testing tstIndex_Counter"
-              << std::endl;
-    
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstIndex_Counter.cc
+// end of tstIndex_Counter.cc
 //---------------------------------------------------------------------------//

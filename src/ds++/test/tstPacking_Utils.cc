@@ -17,10 +17,7 @@
 #include "../Release.hh"
 #include "../Packing_Utils.hh"
 #include "../Soft_Equivalence.hh"
-
-#include <cmath>
 #include <sstream>
-#include <typeinfo>
 
 using namespace std;
 

@@ -3,15 +3,12 @@
  * \file   ds++/test/tstdbc.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  Copyright © 2006 Los Alamos National Security, LLC
+ * \brief  Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-
-#include <iostream>
-#include <vector>
-#include <utility>
 
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
@@ -218,27 +215,15 @@ void isFinite_test( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
+    ScalarUnitTest ut( argc, argv, release );
     try
     {
-        ScalarUnitTest ut( argc, argv, release );
 	dbc_test(ut);
 	isFinite_test(ut);
     }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown. " << endl;
-        return 1;
-    }
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstdbc.cc
+// end of tstdbc.cc
 //---------------------------------------------------------------------------//

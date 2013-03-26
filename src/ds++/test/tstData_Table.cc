@@ -14,13 +14,6 @@
 #include "../Release.hh"
 #include "../Data_Table.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <cstdlib>
-#include <typeinfo>
-#include <sstream>
-
 using namespace std;
 using rtt_dsxx::Data_Table;
 

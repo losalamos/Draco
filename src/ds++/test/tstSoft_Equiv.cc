@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:55:54 2001
  * \brief  Soft_Equiv header testing utilities.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,7 +14,6 @@
 #include "ds++/config.h"
 #include "../Release.hh"
 #include "../Soft_Equivalence.hh"
-#include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include <vector>
 #include <deque>
@@ -260,20 +259,7 @@ int main(int argc, char *argv[])
 #endif
 #endif
     }
-    catch (rtt_dsxx::assertion &excpt)
-    {
-        std::cout << "ERROR: While testing tstSoft_Equiv, "
-                  << excpt.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstSoft_Equiv, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

@@ -4,17 +4,13 @@
  * \author Kent G. Budge
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../abs.hh"
@@ -62,6 +58,7 @@ void tstabs(UnitTest &ut)
     {
         ut.failure("Did NOT correctly calculate abs(long)");
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -73,23 +70,9 @@ int main(int argc, char *argv[])
     {
         tstabs(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstabs, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstabs, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstabs.cc
+// end of tstabs.cc
 //---------------------------------------------------------------------------//

@@ -14,12 +14,7 @@ project( dsxx_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/ds_test.cc 
-   ${PROJECT_SOURCE_DIR}/ds_test.hh
-)
 file( GLOB test_sources *.cc )
-list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # BUG: artf21615 (tf.lanl.gov): Safe_Ptr has a design defect
 list( REMOVE_ITEM test_sources 
@@ -36,16 +31,6 @@ include_directories(
    ${PROJECT_BINARY_DIR}/.. ) # config.h
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-add_component_library( 
-   TARGET       Lib_dsxx_test
-   TARGET_DEPS  Lib_dsxx
-   LIBRARY_NAME ds++_test 
-   SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
@@ -54,6 +39,7 @@ add_component_library(
 # '--version' command line argument
 add_scalar_tests(
    SOURCES ${PROJECT_SOURCE_DIR}/tstScalarUnitTest.cc
+   DEPS    Lib_dsxx
    # Run first case without arguments
    # Run second case with the '--version' argument.
    TEST_ARGS " ;--version"
@@ -67,6 +53,6 @@ list( REMOVE_ITEM test_sources
 
 # The remaining tests
 add_scalar_tests( 
-   SOURCES "${test_sources}" 
+   SOURCES "${test_sources}"
+   DEPS    Lib_dsxx
    )
-   

@@ -4,20 +4,16 @@
  * \author Kent Budge
  * \date   Wed Dec  2 07:48:27 2009
  * \brief  
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Safe_Ptr.hh"
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <cstdlib>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -573,22 +569,9 @@ int main(int argc, char *argv[])
         test_exception_cleanup(ut);
         test_raw(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstSafe_Ptr, " 
-                  << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstSafe_Ptr, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstSafe_Ptr.cc
+// end of tstSafe_Ptr.cc
 //---------------------------------------------------------------------------//

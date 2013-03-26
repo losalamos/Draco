@@ -4,33 +4,33 @@
  * \author Rob Lowrie
  * \date   Sun Nov 21 19:36:12 2004
  * \brief  Tests File_Input and File_Output.
- * \note   Copyright 2004-2010 Los Alamos National Security, LLC
+ * \note   Copyright 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../File_Streams.hh"
 #include "../Soft_Equivalence.hh"
-#include "ds_test.hh"
-
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <cmath>
 
 using namespace std;
 using rtt_dsxx::File_Input;
 using rtt_dsxx::File_Output;
 using rtt_dsxx::soft_equiv;
 
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_fileio(const bool binary)
+void test_fileio( rtt_dsxx::UnitTest & ut, const bool binary )
 {
     string filename("file_streams.");
 
@@ -72,24 +72,24 @@ void test_fileio(const bool binary)
 	File_Input f(filename);
 	f >> i_in;
 
-	UNIT_TEST(i == i_in);
+	if(i != i_in) ITFAILS;
 
 	// here's how you read strings:
 	int ssize;
 	f >> ssize;
-	UNIT_TEST(ssize == int(s.size()));
+	if(ssize != int(s.size())) ITFAILS;
 	s_in.resize(ssize);
 	for ( int k = 0; k < ssize; k++ )
 	    f >> s_in[k];
 
-	UNIT_TEST(s == s_in);
+	if(s != s_in) ITFAILS;
 
 	f >> x_in >> bf_in >> bt_in;
 
-	UNIT_TEST(soft_equiv(x, x_in));
-	UNIT_TEST(bf == bf_in);
-	UNIT_TEST(bt == bt_in);
-
+	if(!soft_equiv(x, x_in)) ITFAILS;
+	if(bf != bf_in) ITFAILS;
+	if(bt != bt_in) ITFAILS;
+        
         File_Input fnull("");
     }
 
@@ -106,11 +106,11 @@ void test_fileio(const bool binary)
         File_Input fr("File_Stream_last_was_char.txt");
         char c;
         fr >> c;
-        UNIT_TEST(c=='c');
-
+        if(c!='c') ITFAILS;
+        
         fr.open("File_Stream_last_was_char.txt");
         fr >> c;
-        UNIT_TEST(c=='c');
+        if(c!='c') ITFAILS;
         
         f.open("File_Stream_last_was_char.txt", false);
         f.open("File_Stream_last_was_char.txt", false);
@@ -118,10 +118,10 @@ void test_fileio(const bool binary)
         f.close();
         fr.open("File_Stream_last_was_char.txt");
         fr >> c;
-        UNIT_TEST(c=='c');
+        if(c!='c') ITFAILS;
     }
 
-    if ( rtt_ds_test::passed )
+    if ( ut.numFails==0 )
     {
 	ostringstream m;
 	m << "test_fileio(";
@@ -132,61 +132,22 @@ void test_fileio(const bool binary)
 	m << ") ok.";
 	PASSMSG(m.str());
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
-	{
-	    std::cout << argv[0] << ": version " 
-		      << rtt_dsxx::release() 
-		      << std::endl;
-	    return 0;
-	}
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );    
     try
     {
-	// >>> UNIT TESTS
-
-	test_fileio(false); // ascii
-	test_fileio(true);  // binary
+	test_fileio(ut,false); // ascii
+	test_fileio(ut,true);  // binary
     }
-    catch (std::exception &err)
-    {
-	std::cout << "ERROR: While testing tstFile_Streams, " 
-		  << err.what()
-		  << std::endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	std::cout << "ERROR: While testing tstFile_Streams, " 
-		  << "An unknown exception was thrown."
-		  << std::endl;
-	return 1;
-    }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    if (rtt_ds_test::passed) 
-    {
-        std::cout << "**** tstFile_Streams Test: PASSED" 
-		  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    std::cout << std::endl;
-    
-    std::cout << "Done testing tstFile_Streams." << std::endl;
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstFile_Streams.cc
+// end of tstFile_Streams.cc
 //---------------------------------------------------------------------------//

@@ -14,12 +14,10 @@
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include <sstream>
-#include <cstdlib>
 #include <fstream>
 #include <cstring>
 #include <vector>
 #include <algorithm>
-#include <iterator> // std::back_inserter
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -49,12 +47,10 @@ void tstOne( UnitTest &unitTest )
 {
     unitTest.passes("Looks like the passes member function is working.");
     PASSMSG("Looks like the PASSMSG macro is working as a member function.");
-    
     return;
 }
 
 //---------------------------------------------------------------------------//
-
 void tstTwo( UnitTest &unitTest )
 {
     unitTest.failure("Looks like the failure member function is working.");
@@ -69,8 +65,6 @@ void tstTwo( UnitTest &unitTest )
     PASSMSG("Done with tstTwo.");
     return;
 }
-
-
 
 //---------------------------------------------------------------------------//
 void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
@@ -262,8 +256,8 @@ int main( int argc, char *argv[] )
         // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
         // function setTestName).
         ScalarUnitTest ut( argc, argv, release );
-
-        // Also try to print the copyright and author list
+    
+        // Try to print the copyright and author list
         std::cout << copyright() << std::endl;
 
         tstOne(ut);
@@ -274,13 +268,11 @@ int main( int argc, char *argv[] )
         tstTwo(sut);
 
         tstTwoCheck( ut, messages );
-
         tstGetWordCountFile( ut );
-        
         tstdbcsettersandgetters( ut, argc, argv );
-
         tstVersion(ut, argv[0]);
     }
+
     catch( rtt_dsxx::assertion &err )
     {
         string msg = err.what();
@@ -309,5 +301,5 @@ int main( int argc, char *argv[] )
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstScalarUnitTest.cc
+// end of tstScalarUnitTest.cc
 //---------------------------------------------------------------------------//

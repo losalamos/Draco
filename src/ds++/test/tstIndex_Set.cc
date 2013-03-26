@@ -4,31 +4,31 @@
  * \author Mike Buksas
  * \date   Thu Feb  2 13:46:36 2006
  * \brief  
- * \note   Copyright 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "../Index_Set.hh"
-#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
-#include "ds_test.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
 using namespace std;
 using namespace rtt_dsxx;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-void test_index_set()
+void test_index_set( rtt_dsxx::UnitTest & ut )
 {
-
     unsigned dimensions[] = {3,4,5};
-    
     Index_Set<3,1> box(dimensions);
 
     // Check the sizes and ranges of each dimensions
@@ -125,7 +125,8 @@ void test_index_set()
     if (csquare.min_of_index() !=  0) ITFAILS;
     if (csquare.max_of_index() != 15) ITFAILS;
 
-
+    if( ut.numFails==0 ) PASSMSG( "done with test_index_set().");    
+    return;
 }
 
 
@@ -133,57 +134,14 @@ void test_index_set()
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " 
-                 << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
-        test_index_set();
+        test_index_set(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstIndex_Set, " 
-                  << err.what()
-                  << std::endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstIndex_Set, " 
-		  << "An unknown exception was thrown"
-                  << std::endl;
-        return 1;
-    }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    if (rtt_ds_test::passed) 
-    {
-        std::cout << "**** tstIndex_Set Test: PASSED"
-                  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    std::cout << std::endl;
-    
-
-    std::cout << "Done testing tstIndex_Set"
-              << std::endl;
-    
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstIndex_Set.cc
+// end of tstIndex_Set.cc
 //---------------------------------------------------------------------------//

@@ -3,25 +3,28 @@
  * \file   ds++/test/tstDBC_Ptr.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC
+ * \note   Copyright (c) 1997-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../DBC_Ptr.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <cstdlib>
-#include <typeinfo>
-#include <sstream>
-
 using namespace std;
 using rtt_dsxx::DBC_Ptr;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
+
+//---------------------------------------------------------------------------//
+// TEST HELPERS
+//---------------------------------------------------------------------------//
 
 struct Base_Class
 {
@@ -45,35 +48,35 @@ struct Owner
 
 //---------------------------------------------------------------------------//
 
-void test_basic()
+void test_basic( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     try
     {
 	DBC_Ptr<double> foo(new double);
-        if ( ! foo ) ITFAILS;
+        if ( ! foo )          ITFAILS;
         
 	{ // copy ctor
             DBC_Ptr<double> bar(foo);
             if ( foo != bar ) ITFAILS;
             bar.release_data();
-            if ( bar ) ITFAILS;
-            if ( ! foo ) ITFAILS;
+            if ( bar )        ITFAILS;
+            if ( ! foo )      ITFAILS;
         }
 
 	{ // assignment
             DBC_Ptr<double> bar;
             bar = foo;
-            if ( ! foo ) ITFAILS;
+            if ( ! foo )      ITFAILS;
             if ( foo != bar ) ITFAILS;
             bar.release_data();
-            if ( bar ) ITFAILS;
-            if ( ! foo ) ITFAILS;
+            if ( bar )        ITFAILS;
+            if ( ! foo )      ITFAILS;
             bar = foo;
             bar = foo;
             bar.release_data();
-            if ( bar ) ITFAILS;
-            if ( ! foo ) ITFAILS;
+            if ( bar )        ITFAILS;
+            if ( ! foo )      ITFAILS;
         }
         
         foo.delete_data();
@@ -85,7 +88,7 @@ void test_basic()
     }
     if(caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
 	PASSMSG("test_basic");
     else
 	FAILMSG("test_basic FAILED!");
@@ -101,7 +104,7 @@ DBC_Ptr<Derived_Class> make_derived()
     return dc;
 }
 
-void test_retval_compiles()
+void test_retval_compiles( rtt_dsxx::UnitTest & ut )
 {
     DBC_Ptr<Derived_Class> result;
     result = make_derived();
@@ -111,7 +114,7 @@ void test_retval_compiles()
 
 //---------------------------------------------------------------------------//
 
-void test_undeleted()
+void test_undeleted( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     Base_Class *memory_cleanup(0);
@@ -129,7 +132,7 @@ void test_undeleted()
 
     if(!caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         PASSMSG("test_undeleted");
     else
         FAILMSG("test_undeleted FAILED!");
@@ -137,7 +140,7 @@ void test_undeleted()
 
 //---------------------------------------------------------------------------//
 
-void test_over_deleted()
+void test_over_deleted( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     try
@@ -153,7 +156,7 @@ void test_over_deleted()
 
     if(!caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
 	PASSMSG("test_over_deleted");
     else
 	FAILMSG("test_over_deleted FAILED!");
@@ -173,7 +176,7 @@ DBC_Ptr<int> gen_func()
 // Make sure that, when a DBC_Ptr is created and returned from another
 // function, the reference counts get adjusted when the variable in the other
 // function (retval) goes out of scope.
-void test_function_return()
+void test_function_return( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     try
@@ -188,7 +191,7 @@ void test_function_return()
 
     if(caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
 	PASSMSG("test_function_return");
     else
 	FAILMSG("test_function_return FAILED!");
@@ -204,7 +207,7 @@ void update_func(DBC_Ptr<int>& foo)
 }
 
 // Make sure that you can pass a DBC_Ptr by reference
-void test_pass_by_ref()
+void test_pass_by_ref( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     try
@@ -221,7 +224,7 @@ void test_pass_by_ref()
 
     if(caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
 	PASSMSG("test_pass_by_ref");
     else
 	FAILMSG("test_pass_by_ref FAILED!");
@@ -233,7 +236,7 @@ void test_pass_by_ref()
 // Ensure that the reference counting system catches a dangling reference
 // (deleting through one pointer while another pointer still points at the
 // object).
-void test_dangling()
+void test_dangling( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     int *memory_cleanup(0);
@@ -262,7 +265,7 @@ void test_dangling()
 
     if(!caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         PASSMSG("test_dangling");
     else
         FAILMSG("test_dangling FAILED!");
@@ -272,7 +275,7 @@ void test_dangling()
 //---------------------------------------------------------------------------//
 
 
-void test_nested()
+void test_nested( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     int *memory_cleanup(0);
@@ -297,7 +300,7 @@ void test_nested()
 
     if(!caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         PASSMSG("test_nested");
     else
         FAILMSG("test_nested FAILED!");
@@ -306,7 +309,7 @@ void test_nested()
 //---------------------------------------------------------------------------//
 
 
-void test_void()
+void test_void( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     try
@@ -337,7 +340,7 @@ void test_void()
 
     if(caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         PASSMSG("test_void");
     else
         FAILMSG("test_void FAILED!");
@@ -345,7 +348,7 @@ void test_void()
 
 //---------------------------------------------------------------------------//
 
-void test_polymorph()
+void test_polymorph( rtt_dsxx::UnitTest & ut )
 {
     bool caught = false;
     try
@@ -355,9 +358,9 @@ void test_polymorph()
         if (base->a != 1) ITFAILS;
         base.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion & error)
     {
-        std::cout << ass.what() << std::endl;
+        std::cout << error.what() << std::endl;
         caught = true;
     }
     if(caught) ITFAILS;
@@ -373,15 +376,15 @@ void test_polymorph()
         base.release_data();
         derv.delete_data();
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion &error)
     {
-        std::cout << ass.what() << std::endl;
+        std::cout << error.what() << std::endl;
         caught = true;
     }
     
     if(caught) ITFAILS;
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         PASSMSG("test_polymorph");
     else
         FAILMSG("test_polymorph FAILED!");
@@ -393,7 +396,7 @@ void test_polymorph()
 // Make sure that we don't obscure a real exception with a complaint about
 // dangling memory.
 void
-test_exception_cleanup()
+test_exception_cleanup( rtt_dsxx::UnitTest & ut )
 {
 
     try
@@ -404,9 +407,9 @@ test_exception_cleanup()
 
         // the base dtor will get called
     }
-    catch(rtt_dsxx::assertion &ass)
+    catch(rtt_dsxx::assertion &error)
     {
-        std::cout << ass.what() << std::endl;
+        std::cout << error.what() << std::endl;
         ITFAILS;
     }
     catch(...)
@@ -414,7 +417,7 @@ test_exception_cleanup()
         std::cout << "caught other exception" << std::endl;
     }
 
-    if(rtt_ds_test::passed)
+    if(ut.numFails==0)
         PASSMSG("test_exception_cleanup");
     else
         FAILMSG("test_exception_cleanup");
@@ -427,7 +430,7 @@ test_exception_cleanup()
 
 
 void
-test_vector_of_ptrs()
+test_vector_of_ptrs( rtt_dsxx::UnitTest & ut )
 {
 
     // Create a vector with one pointer
@@ -458,7 +461,7 @@ test_vector_of_ptrs()
     }
 
 
-    if(rtt_ds_test::passed)
+    if(ut.numFails==0)
         PASSMSG("test_vector_of_ptrs");
     else
         FAILMSG("test_vector_of_ptrs");
@@ -471,7 +474,7 @@ test_vector_of_ptrs()
 
 
 void
-test_overload()
+test_overload( rtt_dsxx::UnitTest & ut )
 {
 
     // Create a vector with one pointer
@@ -482,80 +485,39 @@ test_overload()
 
     v.delete_data();
 
-    if(rtt_ds_test::passed)
+    if(ut.numFails==0)
         PASSMSG("test_overload");
     else
         FAILMSG("test_overload");
 
 }
 
-
-
 //---------------------------------------------------------------------------//
-
-int 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-
-#if DBC
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
         // >>> UNIT TESTS
-        test_basic();
-        test_retval_compiles();
-        test_undeleted();
-        test_over_deleted();
-        test_dangling();
-        test_function_return();
-        test_pass_by_ref();
-        test_polymorph();
-        test_void();
-        test_nested();
-        test_vector_of_ptrs();
-        test_exception_cleanup();
-        test_overload();
-    }
-    catch (rtt_dsxx::assertion &error)
-    {
-        cout << "While testing tstDBC_Ptr, " << error.what()
-             << endl;
-        return 1;
-    }
-
-    catch (...)
-    {
-        cout << "caught uncaught exception" << std::endl;
-        return 10;
-    }
-#else
-    // Tests without DBC.
-    test_basic();
-    test_retval_compiles();
+        test_basic(ut);
+        test_retval_compiles(ut);
+#if DBC
+        test_undeleted(ut);
+        test_over_deleted(ut);
+        test_dangling(ut);
+        test_function_return(ut);
+        test_pass_by_ref(ut);
+        test_polymorph(ut);
+        test_void(ut);
+        test_nested(ut);
+        test_vector_of_ptrs(ut);
+        test_exception_cleanup(ut);
+        test_overload(ut);
 #endif
-
-    // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
-    if (rtt_ds_test::passed) 
-    {
-        cout << "**** tstDBC_Ptr Test: PASSED" 
-             << endl;
     }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstDBC_Ptr." << endl;
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstDBC_Ptr.cc
+// end of tstDBC_Ptr.cc
 //---------------------------------------------------------------------------//

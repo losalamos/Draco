@@ -4,22 +4,16 @@
  * \author Mike Buksas
  * \date   Tue Oct 23 16:20:59 2007
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Assert.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Endian.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <iterator>
-#include <limits>
 #include <sstream>
 
 using namespace std;
@@ -150,23 +144,9 @@ int main(int argc, char *argv[])
         test_ieee_float(ut);
         ut.passes("Just Because.");
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstEndian, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstEndian, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstEndian.cc
+// end of tstEndian.cc
 //---------------------------------------------------------------------------//

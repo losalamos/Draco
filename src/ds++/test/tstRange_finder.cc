@@ -4,21 +4,16 @@
  * \author Mike Buksas
  * \date   Thu Feb  6 12:43:22 2003
  * \brief  
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
 #include "../Release.hh"
-#include "../Assert.hh"
-#include "../Range_Finder.hh"
 #include "../ScalarUnitTest.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <vector>
+#include "../Range_Finder.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -89,6 +84,7 @@ void test_range_finder_left(UnitTest &ut)
     {
         ut.passes("validate caught out of range result");
     }
+    return;
 }
 
 void test_range_finder_right(UnitTest &ut)
@@ -111,6 +107,7 @@ void test_range_finder_right(UnitTest &ut)
 
     index = Range_finder_catch_end(v, v+10, 0.0, RIGHT);
     if (index != 0) ut.failure("test FAILS");
+    return;
 }
 
 
@@ -118,41 +115,15 @@ void test_range_finder_right(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
+    ScalarUnitTest ut( argc, argv, release );
     try
     {
-        ScalarUnitTest ut( argc, argv, release );
-
 	test_range_finder_left(ut);
-
 	test_range_finder_right(ut);
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstRange_finder.cc
+// end of tstRange_finder.cc
 //---------------------------------------------------------------------------//

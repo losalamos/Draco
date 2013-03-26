@@ -12,13 +12,8 @@
 #include "../ScalarUnitTest.hh"
 #include "../DBC_Array.hh"
 #include "../Release.hh"
-#include <string>
 #include <sstream>
-#include <iostream>
-#include <vector>
 #include <set>
-#include <algorithm>
-#include <time.h>
 
 using std::cout;
 using std::endl;
@@ -29,6 +24,10 @@ using std::string;
 #define ITFAILS    ut.failure(__LINE__);
 #define FAILURE    ut.failure(__LINE__, __FILE__);
 #define FAILMSG(a) ut.failure(a);
+
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
 
 typedef DBC_Array<int> AInt;
 
@@ -489,19 +488,7 @@ int main(int argc, char *argv[])
         test_resize(ut);
         test_comparisons(ut);
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

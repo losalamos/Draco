@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Wed Jan 28 10:53:26 2004
  * \brief  Test of RCF (reference counted field) class.
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,11 +15,7 @@
 #include "../Soft_Equivalence.hh"
 #include "../RCF.hh"
 #include "../ScalarUnitTest.hh"
-#include "ds_test.hh"
-#include <iostream>
 #include <vector>
-#include <cmath>
-#include <algorithm>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -250,7 +247,7 @@ void test_simple_construction_copy(UnitTest &ut)
         }
     }
     
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         ut.passes("Simple construction and copy ok.");
 }
 
@@ -307,7 +304,7 @@ void test_counting(UnitTest &ut)
 
     if (nfields != 1) ut.failure("test fails");
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         ut.passes("Reference counting and copy construction ok.");
 }
 
@@ -357,7 +354,7 @@ void test_constness(UnitTest &ut)
 
     if (nfields != 1) ut.failure("test fails");
 
-    if (rtt_ds_test::passed)
+    if (ut.numFails==0)
         ut.passes("Constness tests ok.");
 }
 
@@ -365,53 +362,22 @@ void test_constness(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
+    ScalarUnitTest ut( argc, argv, release );
     try
     {
-	// >>> UNIT TESTS
-
-        ScalarUnitTest ut( argc, argv, release );
-
         test_simple_construction_copy(ut);
         test_counting(ut);
         test_constness(ut);
 
         // make sure that the field number is zero
         if (nfields == 0)
-        {
             ut.passes("All fields destroyed.");
-        }
         else
-        {
             ut.failure("Error in reference counting of fields.");
-        }
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstRCF.cc
+// end of tstRCF.cc
 //---------------------------------------------------------------------------//

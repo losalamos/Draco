@@ -4,7 +4,7 @@
  * \author Giovanni Bavestrelli
  * \date   Mon Apr 21 16:00:24 MDT 2003
  * \brief  Array unit test.
- * \note   Copyright (c) 2003-2010 Los Alamos National Security, LLC
+ * \note   Copyright (c) 2003-2013 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -25,38 +25,15 @@ void array_tests( UnitTest &unitTest );
 
 int main(int argc, char *argv[])
 {
+    // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
+    // function setTestName).
+    ScalarUnitTest ut( argc, argv, release );
     try
     {
-        // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
-        // function setTestName).
-        ScalarUnitTest ut( argc, argv, release );
         array_tests(ut);
         ut.status();
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

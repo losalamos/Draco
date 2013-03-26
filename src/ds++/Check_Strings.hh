@@ -2,9 +2,10 @@
 /*!
  * \file   ds++/Check_Strings.hh
  * \author John McGhee
- * \date   Sun Jan 30 14:57:09 2000
- *
+ * \date   Sun Jan 30 14:57:09 2000 *
  * \brief  Provides some utilities to check containers of strings. 
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * Functions are provided to examine a container of strings: 1) for the
  * occurrence of certain characters, 2) for the length of each string
@@ -12,15 +13,10 @@
  * duplicate strings in the container. Return value is a vector of 
  * iterators which point to any strings which are selected.
  *
- */
-
-/*!
  * \example ds++/test/tstCheck_Strings.cc
- *
- *          The following code provides examples of how to use the 
- *          Check_Strings utilities.
+ * The following code provides examples of how to use the Check_Strings
+ * utilities. 
  */
-
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -35,13 +31,6 @@
 namespace rtt_dsxx
 {
  
-//===========================================================================//
-// revision history:
-// -----------------
-// 0) original
-// 
-//===========================================================================//
-
 // Private functors for internal use by string checking utilities.
 
 struct char_in_string
@@ -80,14 +69,14 @@ struct strings_equal
 };
 
 /*!
- * \brief Looks through a container of strings to see if any
- *        of the strings in the container use any of
- *        the characters specified in the input parameter "match_chars".
+ * \brief Looks through a container of strings to see if any of the strings in
+ *        the container use any of the characters specified in the input
+ *        parameter "match_chars".
  *
- * For example, if you want to create a set of files or directories
- *     from a list of strings, this function can be used to 
- *     check for characters (like "*" for instance) that really
- *     shouldn't be used for file or directory names.
+ * For example, if you want to create a set of files or directories from a
+ *     list of strings, this function can be used to check for characters
+ *     (like "*" for instance) that really shouldn't be used for file or
+ *     directory names.
  *
  * \param first iterator for the first string in the container to
  *        be checked.
@@ -176,11 +165,11 @@ std::vector<IT> check_string_lengths( IT  const & first,
 }
 
 /*!
- * \brief Looks through a container of strings to see if there
- *        are any duplicates.
+ * \brief Looks through a container of strings to see if there are any
+ *        duplicates.
  * 
- * If a string is duplicated more than once, it will appear in 
- *        the output vector more than once. 
+ * If a string is duplicated more than once, it will appear in the output
+ *        vector more than once.
  *
  * \param first iterator for the first string in the container to
  *        be checked. 
@@ -218,8 +207,8 @@ std::vector<IT> check_strings_unique( IT first,
 
 } // end namespace rtt_dsxx
 
-#endif                          // __ds_Check_Strings_hh__
+#endif // __ds_Check_Strings_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/Check_Strings.hh
+// end of ds++/Check_Strings.hh
 //---------------------------------------------------------------------------//

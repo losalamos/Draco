@@ -4,34 +4,32 @@
  * \author Mike Buksas
  * \date   Fri Jan 20 15:53:51 2006
  * \brief  
- * \note   Copyright 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "../Index_Converter.hh"
-
-#include "../Assert.hh"
+#include "../ScalarUnitTest.hh"
 #include "../Release.hh"
-#include "ds_test.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
 
 using namespace std;
 using namespace rtt_dsxx;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_index_converter()
+void test_index_converter( rtt_dsxx::UnitTest & ut )
 {
-
     std::vector<int> result(3);
-
     unsigned dimensions[] = {3,4,5};
 
     {
@@ -58,7 +56,6 @@ void test_index_converter()
         if (box.get_single_index(one_index, 0) != indices[0]) ITFAILS;
         if (box.get_single_index(one_index, 1) != indices[1]) ITFAILS;
         if (box.get_single_index(one_index, 2) != indices[2]) ITFAILS;
-
     }
 
     {
@@ -95,74 +92,29 @@ void test_index_converter()
         
         Index_Converter<3,0> copy(box);
         if (copy != box) ITFAILS;
-
     }
-
 
     {
         Index_Converter<5,1> big_box(10);
         if (big_box.get_size(3) != 10)     ITFAILS;
         if (big_box.get_size()  != 100000) ITFAILS;
     }
-
+    if( ut.numFails==0) PASSMSG( "done with test_index_converter()" );
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " 
-                 << rtt_dsxx::release() 
-                 << endl;
-            return 0;
-        }
-
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
-        test_index_converter();
-
+        test_index_converter(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstIndex_Converter, " 
-                  << err.what()
-                  << std::endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstIndex_Converter, " 
-		  << "An unknown exception was thrown"
-                  << std::endl;
-        return 1;
-    }
-
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    if (rtt_ds_test::passed) 
-    {
-        std::cout << "**** tstIndex_Converter Test: PASSED"
-                  << std::endl;
-    }
-    std::cout <<     "*********************************************" 
-              << std::endl;
-    std::cout << std::endl;
-    
-
-    std::cout << "Done testing tstIndex_Converter"
-              << std::endl;
-    
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstIndex_Converter.cc
+// end of tstIndex_Converter.cc
 //---------------------------------------------------------------------------//

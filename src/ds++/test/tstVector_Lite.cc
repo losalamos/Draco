@@ -3,12 +3,14 @@
  * \file    ds++/test/tstVector_Lite.cc
  * \author  lowrie
  * \brief   Test for Vector_Lite class
- * \note    Copyright (c) 2009-2010 Los Alamos National Security, LLC
+ * \note    Copyright (C) 2009-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  * \version $Id$
  */
 //---------------------------------------------------------------------------//
 
-#include "ds_test.hh"
+#include "../ScalarUnitTest.hh"
+#include "../Release.hh"
 #include "../Vector_Lite.hh"
 #include "../Soft_Equivalence.hh"
 
@@ -19,30 +21,29 @@ using rtt_dsxx::Vector_Lite;
 using rtt_dsxx::soft_equiv;
 using namespace std;
 
-// Prototypes
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__);
+#define FAILURE    ut.failure(__LINE__, __FILE__);
+#define FAILMSG(a) ut.failure(a);
 
-int main( int argc, char *argv[] );
-
-
-// Main for test
-int main( int /* argc */, char * /* *argv */ [] )
+//---------------------------------------------------------------------------------------//
+void test_vec_lite( rtt_dsxx::UnitTest &ut )
 {
     size_t const m( 5 );
 
     cout << "constructor from scalar" << endl;
     Vector_Lite<double, m> x(0.0);
-    UNIT_TEST( std::count(x.begin(), x.end(), 0.0) == static_cast<int>(m) );
-    UNIT_TEST( ! x.empty() );
-    UNIT_TEST( x.max_size() == m );
+    if( std::count(x.begin(), x.end(), 0.0) != static_cast<int>(m) ) ITFAILS;
+    if( x.empty() ) ITFAILS;
+    if( x.max_size() != m ) ITFAILS;
 
     {
         cout << "fill in from C array" << endl;
         double v1[5];
         for (size_t i=0; i<5; i++) {v1[i] = 1.*i;}
         Vector_Lite<double, 5> v2; v2.fill(v1);
-        for (size_t i=0; i<5; i++) {
-            UNIT_TEST(v1[i] == v2[i]);
-        }
+        for (size_t i=0; i<5; i++)
+            if(v1[i] != v2[i]) ITFAILS;
     }
 
     cout << "assignment from another Vector_Lite" << endl;
@@ -51,81 +52,81 @@ int main( int /* argc */, char * /* *argv */ [] )
     iy    = ix;
     ix[1] = 4;
     {
-        UNIT_TEST(ix[0] == 0);
-        UNIT_TEST(ix[1] == 4);
-        UNIT_TEST(ix[2] == 2);
-        UNIT_TEST(iy[0] == 0);
-        UNIT_TEST(iy[1] == 1);
-        UNIT_TEST(iy[2] == 2);
+        if(ix[0] != 0) ITFAILS;
+        if(ix[1] != 4) ITFAILS;
+        if(ix[2] != 2) ITFAILS;
+        if(iy[0] != 0) ITFAILS;
+        if(iy[1] != 1) ITFAILS;
+        if(iy[2] != 2) ITFAILS;
     }
 
     {
         cout << "constructor for N = 4" << endl;
         Vector_Lite<int, 4> ix(0, 1, 2, 3);
-        UNIT_TEST(ix[0] == 0);
-        UNIT_TEST(ix[1] == 1);
-        UNIT_TEST(ix[2] == 2);
-        UNIT_TEST(ix[3] == 3);
+        if(ix[0] != 0) ITFAILS;
+        if(ix[1] != 1) ITFAILS;
+        if(ix[2] != 2) ITFAILS;
+        if(ix[3] != 3) ITFAILS;
     }
 
     cout << "assignment to scalar" << endl;
     double c1 = 3.0;
     x = c1;
     cout << "x = " << x << endl;
-    UNIT_TEST( std::count(x.begin(), x.end(), c1) == static_cast<int>(m) );
-
+    if( std::count(x.begin(), x.end(), c1) != static_cast<int>(m) ) ITFAILS;
+    
     {
         ostringstream out;
         out << x;
         istringstream in(out.str());
         Vector_Lite<double, m> y;
         in >> y;
-        UNIT_TEST(x==y);
+        if(x!=y) ITFAILS;
     }
 
     cout << "operator==" << endl;
-    UNIT_TEST(x == x);
+    if(x != x) ITFAILS;
     {
         Vector_Lite<double, m> y;
         y = x;
         y = y;
-        UNIT_TEST(x==y);
+        if(x!=y) ITFAILS;
         y = x+1.0;
-        UNIT_TEST(!(y==x));
+        if(y==x) ITFAILS;
     }
 
     cout << "operator<" << endl;
-    UNIT_TEST(!(x < x));
+    if(x < x) ITFAILS;
     {
         Vector_Lite<double, m> y = x+1.0;
-        UNIT_TEST(x<y);
+        if(!(x<y)) ITFAILS;
     }
 
     cout << "operator!=" << endl;
-    UNIT_TEST(!(x != x));
+    if(x != x) ITFAILS;
 
     cout << "operator<=" << endl;
-    UNIT_TEST((x <= x));
+    if(!(x <= x)) ITFAILS;
 
     cout << "operator>=" << endl;
-    UNIT_TEST((x >= x));
+    if(!(x >= x)) ITFAILS;
 
     {
         cout << "operator*" << endl;
         Vector_Lite<double, m> y = x*x;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == x[i]*x[i]);
+            if(y[i] != x[i]*x[i]) ITFAILS;
         }
         y = 2.2*x;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == 2.2*x[i]);
+            if(y[i] != 2.2*x[i]) ITFAILS;
         }
         y = x*2.2;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == 2.2*x[i]);
+            if(y[i] != 2.2*x[i]) ITFAILS;
         }
     }
     {
@@ -133,17 +134,17 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<double, m> y = x+x;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == x[i]+x[i]);
+            if(y[i] != x[i]+x[i]) ITFAILS;
         }
         y = 2.2+x;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == 2.2+x[i]);
+            if(y[i] != 2.2+x[i]) ITFAILS;
         }
         y = x+2.2;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == 2.2+x[i]);
+            if(y[i] != 2.2+x[i]) ITFAILS;
         }
     }
     {
@@ -151,17 +152,17 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<double, m> y = x-x;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == x[i]-x[i]);
+            if(y[i] != x[i]-x[i]) ITFAILS;
         }
         y = 2.2-x;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == 2.2-x[i]);
+            if(y[i] != 2.2-x[i]) ITFAILS;
         }
         y = x-2.2;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == x[i]-2.2);
+            if(y[i] != x[i]-2.2) ITFAILS;
         }
     }
     {
@@ -169,7 +170,7 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<double, m> y = x/(x+1.0);
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(y[i] == x[i]/(x[i]+1.0));
+            if(y[i] != x[i]/(x[i]+1.0)) ITFAILS;
         }
         //         y = 2.2/x;
         //         for (unsigned i=0; i<m; ++i)
@@ -179,14 +180,14 @@ int main( int /* argc */, char * /* *argv */ [] )
         y = x/2.2;
         for (unsigned i=0; i<m; ++i)
         {
-            UNIT_TEST(soft_equiv(y[i], x[i]/2.2));
+            if(!soft_equiv(y[i], x[i]/2.2)) ITFAILS;
         }
     }
 
     {
         cout << "copy constructor" << endl;
         Vector_Lite<double, m> xCopy(x);
-        UNIT_TEST(x == xCopy);
+        if(x != xCopy) ITFAILS;
     }
 
     cout << "operator+=, scalar" << endl;
@@ -194,26 +195,26 @@ int main( int /* argc */, char * /* *argv */ [] )
     c1 += dc1;
     x += dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST( std::count(x.begin(), x.end(), c1) == static_cast<int>(m) );
-
+    if( std::count(x.begin(), x.end(), c1) != static_cast<int>(m) ) ITFAILS;
+    
     cout << "operator-=, scalar" << endl;
     c1 -= dc1;
     x -= dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == static_cast<int>(m) );
-
+    if(std::count(x.begin(), x.end(), c1) != static_cast<int>(m) ) ITFAILS;
+    
     cout << "operator*=, scalar" << endl;
     c1 *= dc1;
     x *= dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == static_cast<int>(m));
-
+    if(std::count(x.begin(), x.end(), c1) != static_cast<int>(m)) ITFAILS;
+    
     cout << "operator/=, scalar" << endl;
     c1 /= dc1;
     x /= dc1;
     cout << " x = " << x << endl;
-    UNIT_TEST(std::count(x.begin(), x.end(), c1) == static_cast<int>(m));
-
+    if(std::count(x.begin(), x.end(), c1) != static_cast<int>(m)) ITFAILS;
+    
     double y0 = 2.0;
     double y1 = 1.0;
     double y2 = 0.3;
@@ -227,14 +228,14 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<double, m> ans(c1*y0, c1*y1, c1*y2, c1*y3, c1*y4);
         z *= y;
         cout << " z = " << z << endl;
-        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-                                       ans.begin(), ans.end()));
-
+        if(!rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                 ans.begin(), ans.end())) ITFAILS;
+        
         cout << "operator/=" << endl;
         z /= y;
         cout << " z = " << z << endl;
-        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-                                       x.begin(), x.end()));
+        if(!rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                 x.begin(), x.end())) ITFAILS;
     }
 
     {
@@ -243,14 +244,14 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<double, m> ans(c1+y0, c1+y1, c1+y2, c1+y3, c1+y4);
         z += y;
         cout << " z = " << z << endl;
-        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-                                       ans.begin(), ans.end()));
-
+        if(!rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                 ans.begin(), ans.end())) ITFAILS;
+        
         cout << "operator-=" << endl;
         z -= y;
         cout << " z = " << z << endl;
-        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-                                       x.begin(), x.end()));
+        if(!rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                 x.begin(), x.end())) ITFAILS;
     }
 
     {
@@ -259,15 +260,15 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<double, m> ans(-c1);
         z = -x;
         cout << " z = " << z << endl;
-        UNIT_TEST(rtt_dsxx::soft_equiv(z.begin(), z.end(),
-                                       ans.begin(), ans.end()));
+        if(!rtt_dsxx::soft_equiv(z.begin(), z.end(),
+                                 ans.begin(), ans.end())) ITFAILS;
     }
 
     {
         cout << "Inner product" << endl;
         Vector_Lite<double, 2> x1(1.0, 2.0);
         Vector_Lite<double, 2> x2(4.0, 6.0);
-        UNIT_TEST(rtt_dsxx::inner_product(x1, x2) == 16.0);
+        if(rtt_dsxx::inner_product(x1, x2) != 16.0) ITFAILS;
     }
 
     {
@@ -275,9 +276,9 @@ int main( int /* argc */, char * /* *argv */ [] )
         Vector_Lite<Vector_Lite<double, m>, 3> xNest(x);
         xNest(1) = y;
         cout << xNest << endl;
-        UNIT_TEST(xNest(0) == x);
-        UNIT_TEST(xNest(1) == y);
-        UNIT_TEST(xNest(2) == x);
+        if(xNest(0) != x) ITFAILS;
+        if(xNest(1) != y) ITFAILS;
+        if(xNest(2) != x) ITFAILS;
     }
 
     int i = -1;
@@ -286,11 +287,10 @@ int main( int /* argc */, char * /* *argv */ [] )
         x(i);
     }
     catch ( rtt_dsxx::assertion & /* error */ ) {
-        UNIT_TEST(1);
+        PASSMSG("negative bounds check ok");
     }
     catch (...) {
-        cout << "Unknown error thrown.\n";
-        UNIT_TEST(0);
+        ITFAILS;
     }
 
     Vector_Lite<double, m>::size_type iu(i);
@@ -299,11 +299,10 @@ int main( int /* argc */, char * /* *argv */ [] )
         x(iu);
     }
     catch ( rtt_dsxx::assertion & /* error */ ) {
-        UNIT_TEST(1);
+        PASSMSG( "Negative bounds check, unsigned x, ok" );
     }
     catch (...) {
-        cout << "Unknown error thrown.\n";
-        UNIT_TEST(0);
+        ITFAILS;
     }
 
     i = x.size();
@@ -312,30 +311,26 @@ int main( int /* argc */, char * /* *argv */ [] )
         x(i);
     }
     catch ( rtt_dsxx::assertion & /* error */ ) {
-        UNIT_TEST(1);
+        PASSMSG( "Positive bounds check x ok" );
     }
     catch (...) {
-        cout << "Unknown error thrown.\n";
-        UNIT_TEST(0);
+        ITFAILS;
     }
 	
-    std::ostringstream msg;
-    msg << "\n*********************************************\n";
-    std::string testName( "tstVector_Lite" );
-    int returnCode(0);
-    if( rtt_ds_test::passed ) 
+    return;
+}
+
+
+//---------------------------------------------------------------------------------------//
+// Main for test
+int main( int argc, char *argv[] )
+{
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release );
+    try
     {
-        msg << "**** " << testName << " Test: PASSED.\n";
+        test_vec_lite(ut);
     }
-    else
-    {
-        msg << "**** " << testName << " Test: FAILED.\n";
-        returnCode = 1;
-    }
-    msg << "*********************************************\n";
-    cout << msg.str() << endl;
-	
-    return(returnCode);
+    UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

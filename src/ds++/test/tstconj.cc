@@ -4,20 +4,19 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-
-#include <iostream>
-#include <complex>
 
 #include "../ScalarUnitTest.hh"
 #include "../Soft_Equivalence.hh"
 #include "../Release.hh"
 #include "../conj.hh"
 #include "../square.hh"
+#include <complex>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -52,25 +51,14 @@ void tstconj(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
+    ScalarUnitTest ut( argc,argv,release );
     try
     {
-        ScalarUnitTest ut( argc,argv,release );
 	tstconj(ut);
     }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstconj, " << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstconj, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstconj.cc
+// end of tstconj.cc
 //---------------------------------------------------------------------------//
