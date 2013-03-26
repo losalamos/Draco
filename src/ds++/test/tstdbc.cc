@@ -15,6 +15,7 @@
 #include "../dbc.hh"
 #include "../abs.hh"
 #include "../isFinite.hh"
+#include <vector>
 
 using namespace std;
 using namespace rtt_dsxx;

@@ -14,6 +14,7 @@
 #include "../Release.hh"
 #include "../ScalarUnitTest.hh"
 #include "../Range_Finder.hh"
+#include <vector>
 
 using namespace std;
 using namespace rtt_dsxx;

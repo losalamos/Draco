@@ -15,6 +15,7 @@
 #include "../Release.hh"
 #include "../Endian.hh"
 #include <sstream>
+#include <limits>
 
 using namespace std;
 using namespace rtt_dsxx;

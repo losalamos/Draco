@@ -14,6 +14,7 @@
 #include "../Release.hh"
 #include <sstream>
 #include <set>
+#include <vector>
 
 using std::cout;
 using std::endl;
