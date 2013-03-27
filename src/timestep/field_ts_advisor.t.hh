@@ -45,7 +45,7 @@ void field_ts_advisor::set_floor(const FT &y1, double frac)
 
     // All process will get the same floor_value.
 
-    C4::gmin(floor_value);
+    rtt_c4::global_min(floor_value);
 
     Ensure(invariant_satisfied());
 }
@@ -120,12 +120,12 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
     
     if ( update_method == inf_norm)
     {
-	C4::gmax(x1);
+        rtt_c4::global_max(x1);
     }
     else
     {
-	C4::gsum(x1);
-	C4::gsum(x2);
+        rtt_c4::global_sum(x1);
+        rtt_c4::global_sum(x2);
     }
     
     if (x1 < ts_small()) 
