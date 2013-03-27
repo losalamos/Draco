@@ -1,0 +1,59 @@
+Release of Draco-6_6_0
+
+Draco has been updated to version 6_6_0 and is tied to the release of
+Jayenne-7_0_0 and Capsaicin-3_4_0.  This release was completed on the
+following platforms/toolsets:
+
+Platform         Compiler          MPI              
+MU/PI/ML/TY/LU   Intel 12.1.5      OpenMPI-1.4.5
+                 Intel 13.1.0      OpenMPI-1.6.3
+CT/CI            Intel 13.0.1      MPICH2-5.6.0
+
+Summary of changes:
+ * 371 files where changed, added or removed in 190 commits.
+ * Began using the C99 standard by default.
+ * Provided a CMake-based version of ApplicationUnitTest.
+ * Regression system refactored for improved modularity, extensibility
+   and concurrent operation. 
+ * Quadrature component completely rewritten.
+ * Initial support for IBM BluGene provided.
+ * Support for user-defined-types added in c4.
+ * New inverse-table lookups getElectronTemperature and
+   getIonTemperature provided by cdi_eospac. 
+ * Support for Random123 enhanced.
+
+A more complete list of changes can be found in the ChangeLog or on
+the Redmine site: http://coder.lanl.gov/redmine/versions/6. If you
+need a Redmine account please send email Kelly Thompson (kgt@lanl.gov).
+
+Corrected defects:
+
+  #51  ClubIMC builds fail on OSX with CUDA.
+  #74  Update ds++/Packing_Utils to support size_t, uint64_t and std::map.
+  #75  getFilenameComponent() inadvertantly stripping the filename
+       from the fully qualified path for FC_REALPATH. 
+  #84  Draco build system draco-config.cmake has build directory paths
+       instead of install locations for libraries. 
+  #108 Draco build is broken on CI/CT after upgrade to CLE 4.1
+  #127 valgrind reports a memory leak in libeospac6.a
+  #130 kat_cuda_generated_kat_cuda.cu.o fails to build with
+       Intel/13.1.0 and cudatoolkit/4.2 on ML 
+
+New features:
+
+  #73: Provide support for PAPI timers from c4/Timer
+  #85: Should draco build system allow client RelWithDebInfo builds
+       linking to Draco Debug builds? 
+  #86: Prototype a cmake-script based unit test that emulates
+       ApplicationUnitTest 
+  #90: New function request for rtt_cdi::eos; get T given electron
+       internal energy U, density \rho 
+  #119: Consider building autodoc nightly (and publishing it?)
+  #126: Provide better regression testing for diagnostics
+
+Known defects:
+
+  #94  CDI should provide a way to collapse MG opacity data to gray.
+
+Please direct your questions or concerns to myself or the Draco team
+(draco@lanl.gov). 
