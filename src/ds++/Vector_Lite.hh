@@ -2,7 +2,8 @@
 /*!
  * \file   ds++/Vector_Lite.hh
  * \brief  Header for Vector_Lite.
- * \note   Copyright (C) 2003-2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  * \version $Id$
  */
 //---------------------------------------------------------------------------//

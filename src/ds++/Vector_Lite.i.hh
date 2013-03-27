@@ -4,7 +4,8 @@
  * \brief  Implementation of functions for Vector_Lite.
  * \author Rob Lowrie
  * \date   2002-10-19
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

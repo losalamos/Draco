@@ -13,7 +13,7 @@
 #ifndef c4_Termination_Detector_hh
 #define c4_Termination_Detector_hh
 
-#include "C4_Req.hh"
+#include "ds++/config.h"
 
 namespace rtt_c4
 {
