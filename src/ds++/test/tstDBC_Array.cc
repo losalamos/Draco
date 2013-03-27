@@ -3,7 +3,7 @@
   \file    ds++/test/tstArray.cc
   \author  Paul Henning
   \brief   Test of the rtt_dsxx::DBC_Array class
-  \note    Copyright (C) 2005-20102  Los Alamos National Security, LLC
+  \note    Copyright (C) 2005-20103 Los Alamos National Security, LLC.
            All rights reserved.
   \version $Id$
 */
@@ -15,6 +15,7 @@
 #include <sstream>
 #include <set>
 #include <vector>
+#include <ctime>
 
 using std::cout;
 using std::endl;
