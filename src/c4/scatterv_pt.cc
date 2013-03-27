@@ -24,19 +24,19 @@ using std::vector;
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
-template
+template DLL_PUBLIC
 void indeterminate_scatterv( vector<vector<unsigned> > &outgoing_data,
                              vector<unsigned>          &incoming_data );
 
-template
+template DLL_PUBLIC
 void determinate_scatterv( vector<vector<unsigned> > &outgoing_data,
                            vector<unsigned>          &incoming_data);
 
-template
+template DLL_PUBLIC
 void determinate_scatterv( vector<vector<int> > &outgoing_data,
                            vector<int>          &incoming_data);
 
-template
+template DLL_PUBLIC
 void determinate_scatterv( vector<vector<double> > &outgoing_data,
                            vector<double>          &incoming_data);
 

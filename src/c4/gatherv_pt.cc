@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI determinate and indeterminate gatherv instantiations.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,51 +24,50 @@ using std::vector;
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
-template
+template DLL_PUBLIC 
 void indeterminate_gatherv<unsigned>(
     std::vector<unsigned> &outgoing_data,
     std::vector<std::vector<unsigned> > &incoming_data);
 
-template
+template DLL_PUBLIC 
 void indeterminate_gatherv<int>(
     std::vector<int> &outgoing_data,
     std::vector<std::vector<int> > &incoming_data);
 
-template
+template DLL_PUBLIC 
 void indeterminate_gatherv<double>(
     std::vector<double> &outgoing_data,
     std::vector<std::vector<double> > &incoming_data);
 
-template
+template DLL_PUBLIC 
 void indeterminate_gatherv<char>(
     std::vector<char> &outgoing_data,
     std::vector<std::vector<char> > &incoming_data);
 
 //---------------------------------------------------------------------------//
 
-template
+template DLL_PUBLIC
 void determinate_gatherv<unsigned>(
     std::vector<unsigned> &outgoing_data,
     std::vector<std::vector<unsigned> > &incoming_data);
 
-template
+template DLL_PUBLIC
 void determinate_gatherv<int>(
     std::vector<int> &outgoing_data,
     std::vector<std::vector<int> > &incoming_data);
 
-template
+template DLL_PUBLIC
 void determinate_gatherv<double>(
     std::vector<double> &outgoing_data,
     std::vector<std::vector<double> > &incoming_data);
 
-template
+template DLL_PUBLIC
 void determinate_gatherv<char>(
     std::vector<char> &outgoing_data,
     std::vector<std::vector<char> > &incoming_data);
 
 } // end namespace rtt_c4
 
-
 //---------------------------------------------------------------------------//
-//                              end of C4_MPI_gatherv_pt.cc
+// end of C4_MPI_gatherv_pt.cc
 //---------------------------------------------------------------------------//

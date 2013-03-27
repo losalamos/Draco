@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Timer, a POSIX standard timer.
- * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,9 +14,9 @@
 #ifndef __c4_Timer_hh__
 #define __c4_Timer_hh__
 
-#include <iostream>
-#include "C4_Functions.hh"
 #include <c4/config.h>
+#include "C4_Functions.hh"
+#include <iostream>
 
 namespace rtt_c4
 {
@@ -115,7 +115,7 @@ namespace rtt_c4
 // 
 //===========================================================================//
 
-class Timer 
+class DLL_PUBLIC Timer 
 {
   private:
     //! Beginning wall clock time.

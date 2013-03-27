@@ -74,7 +74,7 @@ int send(const T */* buffer*/,
 }
 
 template<class T>
-void send_is(C4_Req  &/*request*/, 
+DLL_PUBLIC void send_is(C4_Req  &/*request*/, 
              const T * /*buffer*/, 
              int      /* size*/, 
              int      /*destination*/,
@@ -119,7 +119,7 @@ C4_Req send_async(T const * /* buffer */,
 
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<class T> DLL_PUBLIC
 void send_async(C4_Req  & Remember(request), 
                 T const * /* buffer */, 
                 int       /* size   */, 
@@ -235,56 +235,56 @@ int scatterv(T *send_buffer,
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_sum(T &/*x*/)
+DLL_PUBLIC void global_sum(T &/*x*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T>
-void global_prod(T &/*x*/)
+DLL_PUBLIC void global_prod(T &/*x*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_min(T &/*x*/)
+DLL_PUBLIC void global_min(T &/*x*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_max(T &/*x*/)
+DLL_PUBLIC void global_max(T &/*x*/)
 {  /* empty */ 
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_sum(T */*x*/, int /*n*/)
+DLL_PUBLIC void global_sum(T */*x*/, int /*n*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T>
-void global_prod(T * /*x*/, int /*n*/)
+DLL_PUBLIC void global_prod(T * /*x*/, int /*n*/)
 { /* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_min(T * /*x*/, int /*n*/)
+DLL_PUBLIC void global_min(T * /*x*/, int /*n*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-void global_max(T * /*x*/, int /*n*/)
+DLL_PUBLIC void global_max(T * /*x*/, int /*n*/)
 {/* empty */
 }
 
@@ -295,5 +295,5 @@ void global_max(T * /*x*/, int /*n*/)
 #endif  // __c4_C4_Serial_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/C4_Serial.hh
+// end of c4/C4_Serial.hh
 //---------------------------------------------------------------------------//

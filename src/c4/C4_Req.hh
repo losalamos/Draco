@@ -104,7 +104,7 @@ class C4_ReqRefRep
  */
 //===========================================================================//
 
-class C4_Req
+class DLL_PUBLIC C4_Req
 {
     //! Request handle.
     C4_ReqRefRep *p;
@@ -150,23 +150,23 @@ class C4_Req
 
 #ifdef C4_MPI
     template<class T>
-    friend C4_Req send_async(const T *buf, int nels, int dest, int tag);
+    friend DLL_PUBLIC C4_Req send_async(const T *buf, int nels, int dest, int tag);
     
     template<class T>
     friend C4_Req receive_async(T *buf, int nels, int source, int tag);
 
     template<class T>
-    friend void send_async(C4_Req &r, const T *buf, int nels, int dest,
+    friend DLL_PUBLIC void send_async(C4_Req &r, const T *buf, int nels, int dest,
 			   int tag);
     template<class T>
-    friend void send_is(C4_Req &r, const T *buf, int nels, int dest,
+    friend DLL_PUBLIC void send_is(C4_Req &r, const T *buf, int nels, int dest,
 			   int tag);
     template<class T>
-    friend void receive_async(C4_Req &r, T *buf, int nels, int source, 
+    friend DLL_PUBLIC void receive_async(C4_Req &r, T *buf, int nels, int source, 
 			      int tag);
 
-    friend void     wait_all(int count, C4_Req *requests);
-    friend unsigned wait_any(int count, C4_Req *requests);
+    friend DLL_PUBLIC void     wait_all(int count, C4_Req *requests);
+    friend DLL_PUBLIC unsigned wait_any(int count, C4_Req *requests);
 #endif
 };
 
@@ -175,5 +175,5 @@ class C4_Req
 #endif // c4_C4_Req_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/C4_Req.hh
+// end of c4/C4_Req.hh
 //---------------------------------------------------------------------------//

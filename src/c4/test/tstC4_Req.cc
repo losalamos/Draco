@@ -11,26 +11,29 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "c4_test.hh"
-#include "C4_Functions.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
+#include "../ParallelUnitTest.hh"
+#include "ds++/Release.hh"
 
-#ifdef C4_MPI
-#include "../MPI_Traits.hh"
-#include <mpi.h>
-#endif
+//#ifdef C4_MPI
+//#include "../MPI_Traits.hh"
+//#include <mpi.h>
+//#endif
 
-#include "ds++/Assert.hh"
 #include <iostream>
 
 using namespace std;
+
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstCopyConstructor()
+void tstCopyConstructor(rtt_dsxx::UnitTest &ut)
 {
     using rtt_c4::C4_Req;
     
@@ -41,31 +44,26 @@ void tstCopyConstructor()
     // not been used (inuse() returns 0) then requestA != requestB.
     
     if( requestA.inuse() == 0 && requestA == requestB  )
-    {
         FAILMSG("requestA.inuse()==0, so requestA cannot == requestB.");
-    }
 
     if( requestA.inuse() == 0 && requestA != requestB  )
-    {
         PASSMSG("requestA.inuse()==0 and requestA != requestB.");
-    }
 
     if( requestA.inuse() == 1 && requestA == requestB  )
-    {
         PASSMSG("requestA.inuse()=1 and requestA == requestB.");
-    }
 
     if( requestA.inuse() == 1 && requestA != requestB  )
-    {
         FAILMSG("requestA.inuse()=1, so requestA must == requestB.");
-    }
+
+    if( ut.numFails == 0 ) 
+        PASSMSG("tstCopyConstructor() is okay.");
     
     return;
 }
 
 //---------------------------------------------------------------------------//
 
-void tstTraits()
+void tstTraits(rtt_dsxx::UnitTest &ut)
 {
     using std::cout;
     using std::endl;
@@ -99,7 +97,7 @@ void tstTraits()
 }
 
 //---------------------------------------------------------------------------------------//
-void tstWait()
+void tstWait(rtt_dsxx::UnitTest &ut)
 {
     using namespace rtt_c4;
     
@@ -144,60 +142,22 @@ void tstWait()
             }
         }
     }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-
-    // Use deprecated form of  rtt_c4::initialize(argc, argv) to ensure that
-    // it gets tested:
-    C4::Init(argc,argv);
-
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
         // >>> UNIT TESTS
-        tstCopyConstructor();
-        tstTraits();
-        tstWait();
+        tstCopyConstructor(ut);
+        tstTraits(ut);
+        tstWait(ut);
     }
-    catch (std::exception &err)
-    {
-        cout << "ERROR: While testing tstC4_Req, " 
-                  << err.what() << endl;
-        rtt_c4::abort();
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing tstC4_Req, " 
-                  << "An unknown exception was thrown on processor "
-                  << rtt_c4::node() << endl;
-        rtt_c4::abort();
-        return 1;
-    }
-
-    {
-        rtt_c4::HTSyncSpinLock slock;
-
-        // status of test
-        cout <<   "\n*********************************************\n";
-        if (rtt_c4_test::passed) 
-            cout << "**** tstC4_Req Test: PASSED on " << rtt_c4::node();
-        cout <<   "\n*********************************************\n" << endl;
-    }
-    
-    // Use depreicated form of rtt_c4::global_barrier() to ensure that it gets
-    // tested:
-    C4::gsync();
-    cout << "Done testing tstC4_Req on " << rtt_c4::node() << endl;
-    // Use depreicated form of rtt_c4::finalize() to ensure that it gets
-    // tested.
-    C4::Finalize();
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

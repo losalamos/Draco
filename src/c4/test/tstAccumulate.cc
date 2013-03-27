@@ -4,19 +4,18 @@
  * \author Kelly Thompson
  * \date   Thursday, Nov 01, 2012, 09:14 am
  * \brief  Test c4::accumulatev function
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: tstAccumulate.cc 6288 2011-12-04 03:43:52Z kellyt $
 //---------------------------------------------------------------------------//
 
 #include "../ParallelUnitTest.hh"
-#include "../global.hh"
 #include "../accumulatev.hh"
 #include "../Functors.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -62,7 +61,7 @@ void tstAccumulate(UnitTest &ut)
 
         // Accumulate 'min' data across PEs
         double initval(10000.0);
-        accumulatev( data.begin(), data.end(), initval, rtt_c4::min<int>() );
+        accumulatev( data.begin(), data.end(), initval, rtt_c4::min<double>() );
         
         std::vector<double> expected(number_of_processors,
                                      number_of_processors>1?-1.0:1000.0);
@@ -85,21 +84,7 @@ int main(int argc, char *argv[])
     {
         tstAccumulate(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstAccumulate, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstAccumulate, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

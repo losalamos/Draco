@@ -31,7 +31,7 @@ namespace rtt_c4
 // MPI Communicator
 //---------------------------------------------------------------------------//
 
-extern MPI_Comm communicator;
+DLL_PUBLIC extern MPI_Comm communicator;
 extern bool initialized;
 
 //---------------------------------------------------------------------------//
@@ -70,16 +70,16 @@ int create_vector_type(unsigned count,
     return info;
 }
 
-
 //---------------------------------------------//
 /*!
  * Broadcast the range [first, last) from proc 0 
  * into [result, ...) on all other processors.
  */
 template<typename ForwardIterator, typename OutputIterator>
-void broadcast(ForwardIterator first,
-	       ForwardIterator last,
-	       OutputIterator  result)
+void broadcast(
+    ForwardIterator first,
+    ForwardIterator last,
+    OutputIterator  result)
 {
     typedef typename std::iterator_traits<ForwardIterator>::value_type
 	value_type;

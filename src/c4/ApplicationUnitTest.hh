@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco unit test for applications. 
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This file provides a definition for ApplicationUnitTest.  The purpose of
  * this class is to encapsulate the keywords and behavior of DBS application
@@ -21,6 +22,11 @@
 #include "ds++/UnitTest.hh"
 #include "Timer.hh"
 #include <iostream>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  warning C4251: 'rtt_c4::ApplicationUnitTest::applicationName' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_c4::ApplicationUnitTest'
+#endif
 
 namespace rtt_c4
 {
@@ -89,7 +95,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class ApplicationUnitTest : public rtt_dsxx::UnitTest
+class DLL_PUBLIC ApplicationUnitTest : public rtt_dsxx::UnitTest
 {
   public:
 
@@ -190,8 +196,12 @@ class ApplicationUnitTest : public rtt_dsxx::UnitTest
 
 } // end namespace rtt_c4
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // c4_ApplicationUnitTest_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/ApplicationUnitTest.hh
+// end of c4/ApplicationUnitTest.hh
 //---------------------------------------------------------------------------//

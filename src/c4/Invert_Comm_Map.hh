@@ -4,7 +4,8 @@
  * \author Mike Buksas
  * \date   Mon Nov 19 10:09:10 2007
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,15 +14,15 @@
 #ifndef c4_Invert_Comm_Map_hh
 #define c4_Invert_Comm_Map_hh
 
-#include <vector>
 #include "global.hh"
+#include <vector>
+#include <iterator> // back_inserter
 
 namespace rtt_c4
 {
 
-void master_impl(const std::vector<int> &, std::vector<int>&);
-void slave_impl(const std::vector<int> &, std::vector<int>&);
-
+DLL_PUBLIC void master_impl(const std::vector<int> &, std::vector<int>&);
+DLL_PUBLIC void slave_impl( const std::vector<int> &, std::vector<int>&);
 
 //---------------------------------------------------------------------------//
 /**
@@ -33,12 +34,10 @@ void slave_impl(const std::vector<int> &, std::vector<int>&);
  *
  * E.g. if the argument contains "communicate to" node values. The result
  * contains the "receive from" node values.
- * 
  */
 template <typename T>
 void invert_comm_map(const T& to_values, T& from_values)
 {
-
     const int node = rtt_c4::node();
 
     // Copy the provided container to a std::vector<int>
@@ -52,10 +51,8 @@ void invert_comm_map(const T& to_values, T& from_values)
         slave_impl(to_data, from_data);
 
     // Append the results to the end of the provided container.
-    std::copy(from_data.begin(), from_data.end(), back_inserter(from_values));
-
+    std::copy(from_data.begin(), from_data.end(), std::back_inserter(from_values));
 }
-
 
 //---------------------------------------------------------------------------//
 /**
@@ -75,13 +72,10 @@ inline void invert_comm_map(const std::vector<int>& to_values,
 
 }
 
-
-
-
 } // end namespace rtt_c4
 
 #endif // c4_Invert_Comm_Map_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/Invert_Comm_Map.hh
+// end of c4/Invert_Comm_Map.hh
 //---------------------------------------------------------------------------//

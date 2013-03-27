@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Mar 24 09:26:31 2008
  * \brief  Member definitions of class global_containers
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2008-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,14 +16,15 @@
 
 #ifdef C4_MPI
 
-#include <vector>
-#include <stdexcept>
-#include <string>
-#include "ds++/Assert.hh"
 #include "C4_Functions.hh"
 #include "C4_Req.hh"
 #include "gatherv.hh"
 #include "global_containers.hh"
+#include "ds++/Assert.hh"
+
+// #include <vector>
+// #include <stdexcept>
+// #include <string>
 
 namespace rtt_c4
 {
@@ -117,9 +119,9 @@ void global_merge(map<IndexType, ElementType> &local_map)
 
     // Gather the elements
     vector<vector<ElementType> > global_elements(number_of_processors);
-    for (unsigned i=0; i<number_of_processors; ++i)
+    for (unsigned ip=0; ip<number_of_processors; ++ip)
     {
-        global_elements[i].resize(global_indices[i].size());
+        global_elements[ip].resize(global_indices[ip].size());
     }
     determinate_gatherv(local_elements, global_elements);
 
@@ -211,21 +213,21 @@ void global_merge(map<IndexType, bool> &local_map)
 
     // Gather the elements
     vector<vector<int> > global_elements(number_of_processors);
-    for (unsigned i=0; i<number_of_processors; ++i)
+    for (unsigned ip=0; ip<number_of_processors; ++ip)
     {
-        global_elements[i].resize(global_indices[i].size());
+        global_elements[ip].resize(global_indices[ip].size());
     }
     determinate_gatherv(local_elements, global_elements);
 
-    unsigned number_of_elements;
+    unsigned          number_of_elements;
     vector<IndexType> index;
-    vector<int> elements;
+    vector<int>       elements;
     if (node()==0)
     {
         for (unsigned p=1; p<number_of_processors; ++p)
         {
-            vector<IndexType> const &other_index = global_indices[p];
-            vector<int> const &other_elements = global_elements[p];
+            vector<IndexType> const &other_index    = global_indices[p];
+            vector<int>       const &other_elements = global_elements[p];
             unsigned const number_of_other_elements = other_index.size();
             Check(other_index.size() == other_elements.size());
             for (unsigned i=0; i<number_of_other_elements; ++i)
@@ -277,5 +279,5 @@ void global_merge(map<IndexType, bool> &local_map)
 #endif // c4_global_containers_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/global_containers.i.hh
+// end of c4/global_containers.i.hh
 //---------------------------------------------------------------------------//

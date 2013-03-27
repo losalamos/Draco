@@ -32,10 +32,10 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 
 template<typename T>
-int send(const T *buffer, 
-	 int      size,
-	 int      destination, 
-	 int      tag)
+DLL_PUBLIC int send(const T *buffer, 
+                    int      size,
+                    int      destination, 
+                    int      tag)
 {
     MPI_Send(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
 	     destination, tag, communicator);
@@ -45,10 +45,10 @@ int send(const T *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-int receive(T   *buffer, 
-	    int  size, 
-	    int  source, 
-	    int  tag)
+DLL_PUBLIC int receive(T   *buffer, 
+                       int  size, 
+                       int  source, 
+                       int  tag)
 {
     int count = 0;
 
@@ -66,11 +66,11 @@ int receive(T   *buffer,
 
 //---------------------------------------------------------------------------------------//
 template<typename T>
-int send_udt(const T     *buffer, 
-             int          size,
-             int          destination,
-             C4_Datatype &data_type,
-             int          tag)
+DLL_PUBLIC int send_udt(const T     *buffer, 
+                        int          size,
+                        int          destination,
+                        C4_Datatype &data_type,
+                        int          tag)
 {
     MPI_Send(const_cast<T *>(buffer), size, data_type,
 	     destination, tag, communicator);
@@ -80,11 +80,11 @@ int send_udt(const T     *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-int receive_udt(T           *buffer, 
-                int          size, 
-                int          source, 
-                C4_Datatype &data_type,
-                int          tag)
+DLL_PUBLIC int receive_udt(T           *buffer, 
+                           int          size, 
+                           int          source, 
+                           C4_Datatype &data_type,
+                           int          tag)
 {
     int count = 0;
 
@@ -105,19 +105,19 @@ int receive_udt(T           *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-C4_Req send_async(const T *buffer, 
-		  int      size, 
-		  int      destination, 
-		  int      tag)
+DLL_PUBLIC C4_Req send_async(const T *buffer, 
+                             int      size, 
+                             int      destination, 
+                             int      tag)
 {
     // make a c4 request handle
     C4_Req request;
     
     // do an MPI_Isend (non-blocking send)
     Remember( int const retval = )
-    MPI_Isend(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
-	      destination, tag, communicator, &request.r());
-  Check(retval == MPI_SUCCESS);
+        MPI_Isend(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
+                  destination, tag, communicator, &request.r());
+    Check(retval == MPI_SUCCESS);
 
     // set the request to active
     request.set();
@@ -126,7 +126,7 @@ C4_Req send_async(const T *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<typename T>
+template<typename T> DLL_PUBLIC
 void send_async(C4_Req  &request, 
 		const T *buffer, 
 		int      size, 
@@ -145,25 +145,25 @@ void send_async(C4_Req  &request,
 
 //---------------------------------------------------------------------------//
 
-template<typename T>
+template<typename T> DLL_PUBLIC 
 void send_is(C4_Req  &request, 
 	     const T *buffer, 
 	     int      size, 
 	     int      destination,
 	     int      tag)
 {
-  Require (!request.inuse());
+    Require (!request.inuse());
   
-  // set the request
-  request.set();
+    // set the request
+    request.set();
   
-  Remember( int const retval = )
-      MPI_Issend(const_cast<T *>(buffer), size, 
-                 MPI_Traits<T>::element_type(),
-                 destination, tag, communicator, &request.r());  
-  Check(retval == MPI_SUCCESS);
+    Remember( int const retval = )
+        MPI_Issend(const_cast<T *>(buffer), size, 
+                   MPI_Traits<T>::element_type(),
+                   destination, tag, communicator, &request.r());  
+    Check(retval == MPI_SUCCESS);
   
-  return;
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -179,8 +179,8 @@ C4_Req receive_async(T   *buffer,
     
     // post an MPI_Irecv (non-blocking receive)
     Remember( int const retval = )
-    MPI_Irecv(buffer, size, MPI_Traits<T>::element_type(), source, tag, 
-	      communicator, &request.r());
+        MPI_Irecv(buffer, size, MPI_Traits<T>::element_type(), source, tag, 
+                  communicator, &request.r());
     Check(retval == MPI_SUCCESS);
     
     // set the request to active
@@ -190,7 +190,7 @@ C4_Req receive_async(T   *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<typename T>
+template<typename T> DLL_PUBLIC
 void receive_async(C4_Req &request, 
 		   T      *buffer, 
 		   int     size, 
@@ -204,8 +204,8 @@ void receive_async(C4_Req &request,
 
     // post an MPI_Irecv
     Remember( int const retval = )
-    MPI_Irecv(buffer, size, MPI_Traits<T>::element_type(), source, tag, 
-	      communicator, &request.r());
+        MPI_Irecv(buffer, size, MPI_Traits<T>::element_type(), source, tag, 
+                  communicator, &request.r());
     Check(retval == MPI_SUCCESS);
     return;
 }
@@ -215,9 +215,10 @@ void receive_async(C4_Req &request,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-int broadcast(T   *buffer, 
-	      int size,
-	      int root)
+DLL_PUBLIC int broadcast(
+    T   *buffer, 
+    int size,
+    int root)
 {
     int r = MPI_Bcast(buffer, size, MPI_Traits<T>::element_type(),
 		      root, communicator);
@@ -229,7 +230,7 @@ int broadcast(T   *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-int gather(T *send_buffer, T *receive_buffer, int size)
+DLL_PUBLIC int gather(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Gather(send_buffer,
                             size,
@@ -244,7 +245,7 @@ int gather(T *send_buffer, T *receive_buffer, int size)
 }
 
 template<typename T>
-int allgather(T *send_buffer, T *receive_buffer, int size)
+DLL_PUBLIC int allgather(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Allgather(send_buffer,
                                size,
@@ -258,7 +259,7 @@ int allgather(T *send_buffer, T *receive_buffer, int size)
 }
 
 template<typename T>
-int scatter(T *send_buffer, T *receive_buffer, int size)
+DLL_PUBLIC int scatter(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Scatter(send_buffer,
                              size,
@@ -319,7 +320,7 @@ int scatterv(T *send_buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-void global_sum(T &x)
+DLL_PUBLIC void global_sum(T &x)
 {
     // copy data into send buffer
     T y = x;
@@ -327,14 +328,15 @@ void global_sum(T &x)
     // do global MPI reduction (result is on all processors) into x
     MPI_Allreduce(&y, &x, 1, MPI_Traits<T>::element_type(), MPI_SUM,
 		  communicator);
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 template<typename T>
-void global_prod(T &x)
+DLL_PUBLIC void global_prod(T &x)
 {
-     // copy data into send buffer
+    // copy data into send buffer
     T y = x;
     
     // do global MPI reduction (result is on all processors) into x
@@ -345,9 +347,9 @@ void global_prod(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-void global_min(T &x)
+DLL_PUBLIC void global_min(T &x)
 {
-     // copy data into send buffer
+    // copy data into send buffer
     T y = x;
     
     // do global MPI reduction (result is on all processors) into x
@@ -358,9 +360,9 @@ void global_min(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-void global_max(T &x)
+DLL_PUBLIC void global_max(T &x)
 {
-     // copy data into send buffer
+    // copy data into send buffer
     T y = x;
     
     // do global MPI reduction (result is on all processors) into x
@@ -371,7 +373,7 @@ void global_max(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-void global_sum(T *x, int n)
+DLL_PUBLIC void global_sum(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -385,7 +387,7 @@ void global_sum(T *x, int n)
 //---------------------------------------------------------------------------//
 
 template<typename T>
-void global_prod(T *x, int n)
+DLL_PUBLIC void global_prod(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -399,7 +401,7 @@ void global_prod(T *x, int n)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-void global_min(T *x, int n)
+DLL_PUBLIC void global_min(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -413,7 +415,7 @@ void global_min(T *x, int n)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-void global_max(T *x, int n)
+DLL_PUBLIC void global_max(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -428,8 +430,8 @@ void global_max(T *x, int n)
 
 #endif // C4_MPI
 
-#endif                         // c4_C4_MPI_t_hh
+#endif // c4_C4_MPI_t_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/C4_MPI.t.hh
+// end of c4/C4_MPI.t.hh
 //---------------------------------------------------------------------------//

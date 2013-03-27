@@ -4,23 +4,20 @@
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "c4_test.hh"
-#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-#include <iostream>
-#include <vector>
 #include <sstream>
-#include <cstdlib>
 
 using namespace std;
 
@@ -60,7 +57,7 @@ void blocking_ping_pong()
         // send out data
         // Test both active and depricated forms of the send command. 
         send(&c, 1, 1);
-        C4::Send(&i, 1, 1);  // This form is deprecated.
+        send(&i, 1, 1);  
         send(&l, 1, 1);
         send(&f, 1, 1);
         send(&d, 1, 1);
@@ -68,7 +65,7 @@ void blocking_ping_pong()
         // receive back
         // Test both active and depricated forms of the receive command.
         receive(&c, 1, 1);
-        C4::Recv(&i, 1, 1); // This form is deprecated.
+        receive(&i, 1, 1); 
         receive(&l, 1, 1);
         receive(&f, 1, 1);
         receive(&d, 1, 1);
@@ -164,8 +161,8 @@ void non_blocking_ping_pong()
 
        receive_async(crr, &cr, 1, 1);
        irr = receive_async(&ir, 1, 1);
-       C4::RecvAsync(lrr, &lr, 1, 1);
-       frr = C4::RecvAsync(&fr, 1, 1);
+       receive_async(lrr, &lr, 1, 1);
+       frr = receive_async(&fr, 1, 1);
        receive_async(drr, &dr, 1, 1);
 
        // give values to the send data
@@ -180,8 +177,8 @@ void non_blocking_ping_pong()
        // form (namespace C4::)
        send_async(crs, &c, 1, 1);
        irs = send_async( &i, 1, 1);
-       C4::SendAsync(lrs, &l, 1, 1);
-       frs = C4::SendAsync(&f,1,1);
+       send_async(lrs, &l, 1, 1);
+       frs = send_async(&f,1,1);
        send_async(drs, &d, 1, 1);
 
        // wait for sends to be finished
@@ -206,7 +203,7 @@ void non_blocking_ping_pong()
        if (!soft_equiv(fr, 2.5f)) ITFAILS;
        if (!soft_equiv(dr, 3.5))  ITFAILS;
 
-       if (crr.count() != 1) ITFAILS;
+       if (crr.count() != 1)              ITFAILS;
        if (irr.count() != sizeof(int))    ITFAILS;
        if (lrr.count() != sizeof(long))   ITFAILS;
        if (frr.count() != sizeof(float))  ITFAILS;
@@ -405,24 +402,8 @@ void probe_ping_pong()
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
-{
-    std::cout << "starting main" << std::endl;
-    
+{    
     rtt_c4::initialize(argc, argv);
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-    {
-        if (string(argv[arg]) == "--version")
-        {
-            if (rtt_c4::node() == 0)
-                cout << argv[0] << ": version " << rtt_dsxx::release() 
-                << endl;
-            rtt_c4::finalize();
-            return 0;
-        }
-    }
-
     try
     {
         // >>> UNIT TESTS

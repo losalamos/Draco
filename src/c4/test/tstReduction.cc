@@ -10,9 +10,9 @@
 //---------------------------------------------------------------------------//
 
 #include "c4_test.hh"
-#include "ds++/Release.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 
@@ -46,7 +46,7 @@ void elemental_reduction()
 
     // Test with deprecated form of global_sum
     xint = rtt_c4::node() + 1;
-    C4::gsum(xint);
+    global_sum(xint);
     if (xint != int_answer) ITFAILS;
 
     // test longs
@@ -81,7 +81,7 @@ void elemental_reduction()
 
     // Test with deprecated form of global_prod
     xlong = rtt_c4::node() + 1;
-    C4::gprod(xlong);
+    global_prod(xlong);
     if (xlong != long_answer) ITFAILS;
     
     // test min
@@ -92,7 +92,7 @@ void elemental_reduction()
 
     // Test with deprecated form of global_min
     xdbl = rtt_c4::node() + 0.5;
-    C4::gmin(xdbl);
+    global_min(xdbl);
     if (!soft_equiv(xdbl, 0.5)) ITFAILS;
 
     // test max
@@ -103,7 +103,7 @@ void elemental_reduction()
 
     // Test with deprecated form of global_max
     xdbl = 0.7 + rtt_c4::node();
-    C4::gmax(xdbl);
+    global_max(xdbl);
     if (!soft_equiv(xdbl, rtt_c4::nodes() - 0.3)) ITFAILS;
     
     if (rtt_c4_test::passed)
@@ -160,30 +160,29 @@ void array_reduction()
 
     {
         c = x;
-        C4::gsum(&c[0], 100);
+        global_sum(&c[0], 100);
         if (!soft_equiv(c.begin(), c.end(), sum.begin(), sum.end())) ITFAILS;
         
         c = x;
-        C4::gprod(&c[0], 100);
+        global_prod(&c[0], 100);
         if (!soft_equiv(c.begin(), c.end(), prod.begin(), prod.end())) ITFAILS;
         
         c = x;
-        C4::gmin(&c[0], 100);
+        global_min(&c[0], 100);
         if (!soft_equiv(c.begin(), c.end(), lmin.begin(), lmin.end())) ITFAILS;
         
         c = x;
-        C4::gmax(&c[0], 100);
+        global_max(&c[0], 100);
         if (!soft_equiv(c.begin(), c.end(), lmax.begin(), lmax.end())) ITFAILS;
         
     }
     
     if (rtt_c4_test::passed)
 	PASSMSG("Array reductions ok.");
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
-
 int main(int argc, char *argv[])
 {
     rtt_c4::initialize(argc, argv);
@@ -233,5 +232,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstReduction.cc
+// end of tstReduction.cc
 //---------------------------------------------------------------------------//

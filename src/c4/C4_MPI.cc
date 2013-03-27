@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI implementation.
- * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -28,7 +28,7 @@ namespace rtt_c4
 // MPI COMMUNICATOR
 //---------------------------------------------------------------------------//
 
-MPI_Comm communicator = MPI_COMM_WORLD;
+DLL_PUBLIC MPI_Comm communicator = MPI_COMM_WORLD;
 bool initialized(false);
 
 //---------------------------------------------------------------------------//
@@ -41,7 +41,7 @@ const int proc_null = MPI_PROC_NULL;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void initialize(int &argc, char **&argv)
+DLL_PUBLIC void initialize(int &argc, char **&argv)
 {
     int result = MPI_Init(&argc, &argv);
     initialized = (result == MPI_SUCCESS);
@@ -55,25 +55,27 @@ void initialize(int &argc, char **&argv)
 
 //---------------------------------------------------------------------------//
 
-void finalize()
+DLL_PUBLIC void finalize()
 {
     MPI_Finalize();
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void free_inherited_comm()
+DLL_PUBLIC void free_inherited_comm()
 {
     if (communicator != MPI_COMM_WORLD)
     {
 	MPI_Comm_free(&communicator);
 	communicator = MPI_COMM_WORLD;
     }
+    return;
 }
 
 //---------------------------------------------------------------------------------------//
 
-void type_free(C4_Datatype &old_type)
+DLL_PUBLIC void type_free(C4_Datatype &old_type)
 {
     MPI_Type_free(&old_type);
 }
@@ -82,7 +84,7 @@ void type_free(C4_Datatype &old_type)
 // QUERY FUNCTIONS
 //---------------------------------------------------------------------------//
 
-int node()
+DLL_PUBLIC int node()
 {
     int node = 0; 
     MPI_Comm_rank(communicator, &node);
@@ -92,7 +94,7 @@ int node()
 
 //---------------------------------------------------------------------------//
 
-int nodes()
+DLL_PUBLIC int nodes()
 {
     int nodes = 0;
     MPI_Comm_size(communicator, &nodes);
@@ -102,7 +104,7 @@ int nodes()
 
 //---------------------------------------------------------------------------//
 
-std::string processor_name()
+DLL_PUBLIC std::string processor_name()
 {
     int namelen;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
@@ -117,9 +119,10 @@ std::string processor_name()
 // BARRIER FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void global_barrier()
+DLL_PUBLIC void global_barrier()
 {
     MPI_Barrier(communicator);
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -127,7 +130,7 @@ void global_barrier()
 //---------------------------------------------------------------------------//
 
 // overloaded function (no args)
-double wall_clock_time()
+DLL_PUBLIC double wall_clock_time()
 {
     return MPI_Wtime();
 }
@@ -147,7 +150,7 @@ double wall_clock_time( DRACO_TIME_TYPE & now )
 
 //---------------------------------------------------------------------------//
 
-double wall_clock_resolution()
+DLL_PUBLIC double wall_clock_resolution()
 {
     return MPI_Wtick();
 }
@@ -156,9 +159,9 @@ double wall_clock_resolution()
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-bool probe(int  source, 
-	   int  tag,
-	   int &message_size)
+DLL_PUBLIC bool probe(int  source, 
+                      int  tag,
+                      int &message_size)
 {
     Require(source>=0 && source<nodes());
 
@@ -176,9 +179,9 @@ bool probe(int  source,
 }
 
 //---------------------------------------------------------------------------//
-void blocking_probe(int  source, 
-                    int  tag,
-                    int &message_size)
+DLL_PUBLIC void blocking_probe(int  source, 
+                               int  tag,
+                               int &message_size)
 {
     Require(source>=0 && source<nodes());
 
@@ -188,8 +191,8 @@ void blocking_probe(int  source,
 }
 
 //---------------------------------------------------------------------------//
-void wait_all(int count,
-              C4_Req *requests)
+DLL_PUBLIC void wait_all(int count,
+                         C4_Req *requests)
 {
     using std::vector;
     
@@ -205,8 +208,8 @@ void wait_all(int count,
 }
 
 //---------------------------------------------------------------------------//
-unsigned wait_any(int count,
-                  C4_Req *requests)
+DLL_PUBLIC unsigned wait_any(int count,
+                             C4_Req *requests)
 {
     using std::vector;
     
@@ -232,7 +235,7 @@ unsigned wait_any(int count,
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
-int abort(int error)
+DLL_PUBLIC int abort(int error)
 {
     // This test is not recorded as tested by BullseyeCoverage because abort
     // terminates the execution and BullseyeCoverage only reports coverage for
@@ -245,7 +248,7 @@ int abort(int error)
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-bool isScalar()
+DLL_PUBLIC bool isScalar()
 {
     return ! initialized;
 }
@@ -253,7 +256,7 @@ bool isScalar()
 //---------------------------------------------------------------------------//
 // get_processor_name
 //---------------------------------------------------------------------------//
-std::string get_processor_name()
+DLL_PUBLIC std::string get_processor_name()
 {
     int namelen(0);
     char processor_name[DRACO_MAX_PROCESSOR_NAME];
@@ -263,11 +266,10 @@ std::string get_processor_name()
     return pname;
 }
 
-
 } // end namespace rtt_c4
 
 #endif // C4_MPI
 
 //---------------------------------------------------------------------------//
-//                              end of C4_MPI.cc
+// end of C4_MPI.cc
 //---------------------------------------------------------------------------//

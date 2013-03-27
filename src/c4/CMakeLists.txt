@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -59,7 +59,7 @@ list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} )
+   list( APPEND sources ${headers} ${template_implementations} )
 endif()
 
 # ---------------------------------------------------------------------------- #

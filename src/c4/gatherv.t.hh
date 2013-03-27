@@ -4,8 +4,8 @@
  * \author Thomas M. Evans, Kent Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.  All
- *         rights reserved.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.  
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -30,8 +30,9 @@ using std::copy;
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-void indeterminate_gatherv( std::string              & outgoing_data,
-                            std::vector<std::string> & incoming_data )
+DLL_PUBLIC void indeterminate_gatherv(
+    std::string              & outgoing_data,
+    std::vector<std::string> & incoming_data )
 {
     // convert from string to vector<char>
     std::vector<char> outgoing_data_vc( outgoing_data.size() );
@@ -58,12 +59,12 @@ void indeterminate_gatherv( std::string              & outgoing_data,
     
     return;
 }
-
     
 //---------------------------------------------------------------------------//
 template<class T>
-void indeterminate_gatherv( vector<T>          & outgoing_data,
-                            vector<vector<T> > & incoming_data )
+DLL_PUBLIC void indeterminate_gatherv(
+    vector<T>          & outgoing_data,
+    vector<vector<T> > & incoming_data )
 {
 #ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar 
@@ -135,8 +136,9 @@ void indeterminate_gatherv( vector<T>          & outgoing_data,
 
 //---------------------------------------------------------------------------//
 template<class T>
-void determinate_gatherv(vector<T>           &outgoing_data,
-                         vector<vector<T> >  &incoming_data)
+DLL_PUBLIC void determinate_gatherv(
+    vector<T>           &outgoing_data,
+    vector<vector<T> >  &incoming_data)
 {
     Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
     
@@ -198,11 +200,10 @@ void determinate_gatherv(vector<T>           &outgoing_data,
     return;
 }
 
-
 } // end namespace rtt_c4
 
 #endif // c4_gatherv_t_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/gatherv.t.hh
+// end of c4/gatherv.t.hh
 //---------------------------------------------------------------------------//

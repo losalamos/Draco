@@ -74,7 +74,7 @@ void global_barrier() { /* empty */ }
 //---------------------------------------------------------------------------//
 
 #if defined( WIN32 )
-double wall_clock_time()
+DLL_PUBLIC double wall_clock_time()
 {
     __timeb64 now;
     return _ftime64_s( &now );
@@ -84,7 +84,7 @@ double wall_clock_time( __timeb64 & now )
     return _ftime64_s( &now );
 }
 #else
-double wall_clock_time()
+DLL_PUBLIC double wall_clock_time()
 {
     tms now;
     return times( &now ) / wall_clock_resolution();
@@ -97,7 +97,7 @@ double wall_clock_time( tms & now )
 
 //---------------------------------------------------------------------------//
 
-double wall_clock_resolution()
+DLL_PUBLIC double wall_clock_resolution()
 {
     return static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
@@ -106,14 +106,14 @@ double wall_clock_resolution()
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-bool probe(int  /* source */, 
+DLL_PUBLIC bool probe(int  /* source */, 
 	   int  /* tag */,
 	   int &/* message_size */)
 {    
     return false;
 }
 
-void blocking_probe(int  /* source */, 
+DLL_PUBLIC void blocking_probe(int  /* source */, 
                     int  /* tag */,
                     int &/* message_size */)
 {    
@@ -137,7 +137,7 @@ int abort(int error)
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-bool isScalar()
+DLL_PUBLIC bool isScalar()
 {
     return true;
 }

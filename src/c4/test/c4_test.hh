@@ -12,6 +12,7 @@
 #ifndef __c4_test_hh__
 #define __c4_test_hh__
 
+#include "ds++/config.h"
 #include <iostream>
 #include <string>
 
@@ -34,19 +35,19 @@ namespace rtt_c4_test
 // ways.  We do not constrain draco tests except that the output must be of
 // the form "Test: pass/fail"
 
-bool fail(int line);
+DLL_PUBLIC bool fail(int line);
 
-bool fail(int line, char *file);
+DLL_PUBLIC bool fail(int line, char *file);
 
-bool pass_msg(const std::string &);
+DLL_PUBLIC bool pass_msg(const std::string &);
 
-bool fail_msg(const std::string &);
+DLL_PUBLIC bool fail_msg(const std::string &);
 
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
 
-extern bool passed;
+extern DLL_PUBLIC bool passed;
 
 } // end namespace rtt_c4_test
 

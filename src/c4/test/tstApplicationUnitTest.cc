@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Test the Draco class ApplicationUnitTest
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -46,7 +46,7 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
     // file path manipulation, including finding the cwd.
     
     string const logFilename( unitTest.logFileName() );
-    ostringstream msg;
+    std::ostringstream msg;
     msg << appPath << "phw_hello-" << unitTest.nodes() <<".out";
     string const expLogFilename( msg.str() );
     if( expLogFilename == logFilename )
@@ -184,5 +184,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstApplicationUnitTest.cc.cc
+// end of tstApplicationUnitTest.cc.cc
 //---------------------------------------------------------------------------//

@@ -4,31 +4,30 @@
  * \author Thomas M. Evans
  * \date   Thu Jul 18 11:10:10 2002
  * \brief  test Communicator Duplication
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "c4_test.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
+#include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
 #include <sstream>
 
 using namespace std;
+
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_mpi_comm_dup()
+void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
 {
     // we only run this particular test when mpi is on
 #ifdef C4_MPI
@@ -44,18 +43,18 @@ void test_mpi_comm_dup()
 	
     if (node == 1)
     {
-	MPI_Comm_split(MPI_COMM_WORLD, 0, 0, &new_comm);
-	MPI_Comm_rank(new_comm, &snode);
+        MPI_Comm_split(MPI_COMM_WORLD, 0, 0, &new_comm);
+        MPI_Comm_rank(new_comm, &snode);
     }
     else if (node == 3)
     {
-	MPI_Comm_split(MPI_COMM_WORLD, 0, 0, &new_comm);
-	MPI_Comm_rank(new_comm, &snode);
+        MPI_Comm_split(MPI_COMM_WORLD, 0, 0, &new_comm);
+        MPI_Comm_rank(new_comm, &snode);
     }
     else
     {
-	MPI_Comm_split(MPI_COMM_WORLD, 1, 0, &new_comm);
-	MPI_Comm_rank(new_comm, &snode);
+        MPI_Comm_split(MPI_COMM_WORLD, 1, 0, &new_comm);
+        MPI_Comm_rank(new_comm, &snode);
     }
     
     // we haven't set the communicator yet so we should still have 4 nodes
@@ -73,35 +72,35 @@ void test_mpi_comm_dup()
     // do some tests on each processor
     if (node == 0)
     {
-	if (rtt_c4::node() != 0) ITFAILS;
+        if (rtt_c4::node() != 0) ITFAILS;
 
-	// set data to 10 and send it out
-	data = 10;
-	rtt_c4::send(&data, 1, 1, 100);
+        // set data to 10 and send it out
+        data = 10;
+        rtt_c4::send(&data, 1, 1, 100);
     }
     else if (node == 1)
     {
-	if (rtt_c4::node() != 0) ITFAILS;
+        if (rtt_c4::node() != 0) ITFAILS;
 
-	// set data to 20 and send it out
-	data = 20;
-	rtt_c4::send(&data, 1, 1, 100);
+        // set data to 20 and send it out
+        data = 20;
+        rtt_c4::send(&data, 1, 1, 100);
     }
     else if (node == 2)
     {
-	if (rtt_c4::node() != 1) ITFAILS;
+        if (rtt_c4::node() != 1) ITFAILS;
 
-	if (data != 0) ITFAILS;
-	rtt_c4::receive(&data, 1, 0, 100);
-	if (data != 10) ITFAILS;
+        if (data != 0) ITFAILS;
+        rtt_c4::receive(&data, 1, 0, 100);
+        if (data != 10) ITFAILS;
     }
     else if (node == 3) 
     {
-	if (rtt_c4::node() != 1) ITFAILS;
+        if (rtt_c4::node() != 1) ITFAILS;
 
-	if (data != 0) ITFAILS;
-	rtt_c4::receive(&data, 1, 0, 100);
-	if (data != 20) ITFAILS;
+        if (data != 0) ITFAILS;
+        rtt_c4::receive(&data, 1, 0, 100);
+        if (data != 20) ITFAILS;
     }
 
     // now free the communicator on each processor
@@ -123,12 +122,12 @@ void test_mpi_comm_dup()
     { // generate a sync point here and at end of block.
 	rtt_c4::HTSyncSpinLock slock;
 
-	if (rtt_c4_test::passed)
-	{
-	    ostringstream m;
-	    m << "Communicator duplicated successfully on " << rtt_c4::node();
-	    PASSMSG(m.str());
-	}
+        if (ut.numFails==0)
+        {
+            std::ostringstream m;
+            m << "Communicator duplicated successfully on " << rtt_c4::node();
+            PASSMSG(m.str());
+        }
     }
 
     rtt_c4::global_barrier();
@@ -136,11 +135,12 @@ void test_mpi_comm_dup()
     MPI_Comm_free(&new_comm);
 
 #endif
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
-void test_comm_dup()
+void test_comm_dup(rtt_dsxx::UnitTest &ut)
 {
     // we only run this test scalar
 #ifdef C4_SCALAR
@@ -188,10 +188,11 @@ void test_comm_dup()
     rtt_c4::global_sum(y);
     if (y != 20 * nodes) ITFAILS;
 
-    if (rtt_c4_test::passed)
-	PASSMSG("MPI_COMM_WORLD Comm duplication/free works ok."); 
+    if (ut.numFails==0)
+        PASSMSG("MPI_COMM_WORLD Comm duplication/free works ok."); 
     
 #endif
+    return;
 }
 
 
@@ -199,57 +200,18 @@ void test_comm_dup()
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " << rtt_dsxx::release()
-		     << endl;
-	    rtt_c4::finalize();
-	    return 0;
-	}
-
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-	// >>> UNIT TESTS
-	if (rtt_c4::nodes() == 4)
-	    test_mpi_comm_dup();
+        // >>> UNIT TESTS
+        if (rtt_c4::nodes() == 4)
+            test_mpi_comm_dup(ut);
 
-	test_comm_dup();
+        test_comm_dup(ut);
     }
-    catch (rtt_dsxx::assertion &expt)
-    {
-	cout << "While testing tstComm_Dup, " << expt.what()
-	     << endl;
-	rtt_c4::abort();
-	return 1;
-    }
-
-    {
-	rtt_c4::HTSyncSpinLock slock;
-
-	// status of test
-	cout << endl;
-	cout <<     "*********************************************" << endl;
-	if (rtt_c4_test::passed) 
-	{
-	    cout << "**** tstComm_Dup Test: PASSED on " 
-		 << rtt_c4::node() << endl;
-	}
-	cout <<     "*********************************************" << endl;
-	cout << endl;
-    }
-    
-    rtt_c4::global_barrier();
-
-    cout << "Done testing tstComm_Dup on " << rtt_c4::node() << endl;
-    
-    rtt_c4::finalize();
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstComm_Dup.cc
+// end of tstComm_Dup.cc
 //---------------------------------------------------------------------------//

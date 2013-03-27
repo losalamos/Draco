@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test c4::gather and c4::scatter functions
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,7 +15,6 @@
 #include "../gatherv.hh"
 #include "../scatterv.hh"
 #include "ds++/Release.hh"
-#include <cmath>
 
 using namespace std;
 using namespace rtt_dsxx;

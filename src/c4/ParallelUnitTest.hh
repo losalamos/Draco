@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco parallel unit tests.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
  * class is to encapsulate the keywords and behavior of DBS parallel unit
@@ -46,21 +47,7 @@ int main(int argc, char *argv[])
         tstOne(ut);
         tstTwo(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstSwap, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstSwap, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }
  * \endcode
  *
@@ -85,7 +72,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class ParallelUnitTest : public rtt_dsxx::UnitTest
+class DLL_PUBLIC ParallelUnitTest : public rtt_dsxx::UnitTest
 {
   public:
 
@@ -112,15 +99,6 @@ class ParallelUnitTest : public rtt_dsxx::UnitTest
     
     //! Provide a report of the number of unit test passes and fails.
     void status(void);
-    
-  private:
-
-    // NESTED CLASSES AND TYPEDEFS
-
-    // IMPLEMENTATION
-
-    // DATA
-
 };
 
 } // end namespace rtt_c4
@@ -128,5 +106,5 @@ class ParallelUnitTest : public rtt_dsxx::UnitTest
 #endif // c4_ParallelUnitTest_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/ParallelUnitTest.hh
+// end of c4/ParallelUnitTest.hh
 //---------------------------------------------------------------------------//

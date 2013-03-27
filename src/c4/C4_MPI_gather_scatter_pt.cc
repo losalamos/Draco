@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI non-blocking send/recv instantiations.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,24 +24,24 @@ namespace rtt_c4
 // EXPLICIT INSTANTIATIONS OF GATHER/SCATTER
 //---------------------------------------------------------------------------//
 
-template
+template DLL_PUBLIC 
 int gather<unsigned>(unsigned * send_buffer,
                      unsigned * receive_buffer,
                      int        size);
 
-template
+template DLL_PUBLIC 
 int gather<int>(int * send_buffer,
                 int * receive_buffer,
                 int   size);
 
-template
+template DLL_PUBLIC 
 int gather<char>(char * send_buffer,
                  char * receive_buffer,
                  int          size);
 
 //----------//
 
-template
+template DLL_PUBLIC 
 int allgather<int>(int * send_buffer,
                    int * receive_buffer,
                    int   size);
@@ -75,12 +77,12 @@ int gatherv<char>(  char * send_buffer,
 
 //----------//
 
-template
+template DLL_PUBLIC 
 int scatter<unsigned>(unsigned * send_buffer,
                       unsigned * receive_buffer,
                       int        size);
 
-template
+template DLL_PUBLIC 
 int scatter<int>(int * send_buffer,
                  int * receive_buffer,
                  int   size);

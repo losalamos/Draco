@@ -4,7 +4,8 @@
  * \author Maurice LeBrun
  * \date   Wed Jan 25 16:04:40 1995
  * \brief  Classes for forcing a global sync at the head and/or tail of a block.
- * \note   Copyright (C) 1995-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1995-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +13,8 @@
 
 #ifndef __c4_Sync_hh__
 #define __c4_Sync_hh__
+
+#include "ds++/config.h"
 
 namespace rtt_c4
 {
@@ -23,7 +26,7 @@ namespace rtt_c4
 // the ctor.
 //===========================================================================//
 
-class HSync
+class DLL_PUBLIC HSync
 {
     HSync( const HSync& );
     HSync& operator=( const HSync& );
@@ -40,16 +43,15 @@ class HSync
 // the dtor.
 //===========================================================================//
 
-class TSync
+class DLL_PUBLIC TSync
 {
-
     TSync( const TSync& );
     TSync& operator=( const TSync& );
 
     int sync;
 
   public:
-    TSync( int s =1 ) : sync(s) {}
+    explicit TSync( int s =1 ) : sync(s) {}
     virtual ~TSync(void);
 };
 
@@ -77,8 +79,8 @@ class TSync
 
 } // end of rtt_c4
 
-#endif                          // __c4_Sync_hh__
+#endif // __c4_Sync_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/Sync.hh
+// end of c4/Sync.hh
 //---------------------------------------------------------------------------//

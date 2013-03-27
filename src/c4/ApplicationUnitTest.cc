@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco application unit tests.
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -12,9 +12,8 @@
 //---------------------------------------------------------------------------//
 
 #include "ApplicationUnitTest.hh"
-#include "c4/config.h"
 #include "ds++/path.hh"
-#include <iostream>
+#include "ds++/config.h"
 #include <sstream>
 #include <cstdlib>
 #include <fstream>
@@ -183,7 +182,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
              numProcs == std::string("serial") ||
              std::atoi( numProcs.c_str() ) > 0 );
 
-#if defined( draco_isWin )
+#ifdef MSVC
     { // The binary should exist.  Windows does not provide an execute bit.  
          std::string exeExists( applicationPath + applicationName + ".exe" );
          Require( std::ifstream( exeExists.c_str() ) );
@@ -309,5 +308,5 @@ void ApplicationUnitTest::runTests()
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                 end of ApplicationUnitTest.cc
+// end of ApplicationUnitTest.cc
 //---------------------------------------------------------------------------//

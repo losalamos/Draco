@@ -4,31 +4,27 @@
  * \author Mike Buksas
  * \date   Mon Nov 19 10:09:11 2007
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-
 #include "Invert_Comm_Map.hh"
 #include "ds++/Assert.hh"
-#include <vector>
 #include <map>
-#include <iostream>
-#include <iterator> // back_inserter
 
 namespace rtt_c4
 {
 
 const int SIZE_CHANNEL = 325;
 const int MAP_CHANNEL  = 326;
-
 const int HOST = 0;
 
 typedef std::map<int, std::vector<int> > map_type;
 
-void master_impl(const std::vector<int> &in, std::vector<int> &out)
+DLL_PUBLIC void master_impl(const std::vector<int> &in, std::vector<int> &out)
 {
 
     const int nodes = rtt_c4::nodes();
@@ -104,8 +100,7 @@ void master_impl(const std::vector<int> &in, std::vector<int> &out)
 
 }
 
-
-void slave_impl(const std::vector<int> &in, std::vector<int> &out)
+DLL_PUBLIC void slave_impl(const std::vector<int> &in, std::vector<int> &out)
 {
 
     // Send size of in map and, if > 0, contents
@@ -131,10 +126,8 @@ void slave_impl(const std::vector<int> &in, std::vector<int> &out)
     
 }
 
-
-
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                 end of Invert_Comm_Map.cc
+// end of Invert_Comm_Map.cc
 //---------------------------------------------------------------------------//

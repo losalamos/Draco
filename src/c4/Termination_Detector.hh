@@ -3,7 +3,8 @@
  * \file   c4/Termination_Detector.hh
  * \author Kent Budge
  * \brief  Definition of class Termination_Detector
- * \note   © Copyright 2006-2007 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -51,7 +52,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class Termination_Detector 
+class DLL_PUBLIC Termination_Detector 
 {
   public:
 
@@ -145,5 +146,5 @@ class Termination_Detector
 #endif // c4_Termination_Detector_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/Termination_Detector.hh
+// end of c4/Termination_Detector.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Kelly Thompson, Bob Webster, Thomas M. Evans
  * \date   Fri Sep 30 12:53:25 2005
  * \brief  TigsTrace class definitions.
- * \note   Copyright (C) 2004-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * These comm classes are used to perform gather/scatter operations.  They
@@ -19,8 +19,16 @@
 #ifndef c4_TigsTrace_hh
 #define c4_TigsTrace_hh
 
+#include "ds++/config.h"
 #include <map>
 #include <vector>
+
+#if defined(MSVC)
+#pragma warning (push)
+// class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by 
+// clients of class 'rtt_c4::TigsTrace'
+#pragma warning (disable:4251)
+#endif
 
 namespace rtt_c4
 {
@@ -34,7 +42,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class TigsTrace 
+class DLL_PUBLIC TigsTrace 
 {
   public:
     // Useful typedefs.
@@ -61,7 +69,7 @@ class TigsTrace
 
     // These variables store the indirection information for the
     // serial, or single processor case.
-    TigsComm_map IM;
+    std::map<int, std::vector<int> > IM;
     std::vector<int> IMV;
     std::vector<unsigned> counts;
 
@@ -144,6 +152,10 @@ class TigsTrace
 //---------------------------------------------------------------------------//
 
 #include "TigsTrace.i.hh"
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // c4_TigsTrace_hh
 

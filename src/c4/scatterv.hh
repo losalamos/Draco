@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  Data scatterv functions
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This file contains the declarations for determinate and indeterminate
  * variable length scatter functions.
@@ -36,8 +38,9 @@ namespace rtt_c4
  * data.
  */
 template<class T>
-void determinate_scatterv(std::vector<std::vector<T> > &outgoing_data,
-                          std::vector<T>               &incoming_data);
+DLL_PUBLIC void determinate_scatterv(
+    std::vector<std::vector<T> > &outgoing_data,
+    std::vector<T>               &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -52,13 +55,14 @@ void determinate_scatterv(std::vector<std::vector<T> > &outgoing_data,
  * \param incoming_data On return, contains the scattered data.
  */
 template<class T>
-void indeterminate_scatterv(std::vector<std::vector<T> > &outgoing_data,
-                            std::vector<T>               &incoming_data);
+DLL_PUBLIC void indeterminate_scatterv(
+    std::vector<std::vector<T> > &outgoing_data,
+    std::vector<T>               &incoming_data);
 
 } // end namespace rtt_c4
 
-#endif                          // c4_scatterv_hh
+#endif // c4_scatterv_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/scatterv.hh
+// end of c4/scatterv.hh
 //---------------------------------------------------------------------------//

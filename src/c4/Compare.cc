@@ -4,7 +4,8 @@
  * \author Mike Buksas
  * \date   Thu May  1 14:42:10 2008
  * \brief  
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -29,7 +30,7 @@ namespace rtt_c4
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-bool check_global_equiv(int local_value)
+DLL_PUBLIC bool check_global_equiv(int local_value)
 {
 
     const int node  = rtt_c4::node();
@@ -87,7 +88,7 @@ bool check_global_equiv(int local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-bool check_global_equiv(unsigned long local_value)
+DLL_PUBLIC bool check_global_equiv(unsigned long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -145,7 +146,7 @@ bool check_global_equiv(unsigned long local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-bool check_global_equiv(unsigned long long local_value)
+DLL_PUBLIC bool check_global_equiv(unsigned long long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -203,7 +204,7 @@ bool check_global_equiv(unsigned long long local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-bool check_global_equiv(long local_value)
+DLL_PUBLIC bool check_global_equiv(long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -262,7 +263,7 @@ bool check_global_equiv(long local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-bool check_global_equiv(long long local_value)
+DLL_PUBLIC bool check_global_equiv(long long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -320,7 +321,7 @@ bool check_global_equiv(long long local_value)
  * \param eps precision of double, default 1e-8
  * \return true if equivalent across all processors; false if not 
  */
-bool check_global_equiv(double local_value, double eps)
+DLL_PUBLIC bool check_global_equiv(double local_value, double eps)
 {
     using rtt_dsxx::soft_equiv;
 
@@ -336,29 +337,29 @@ bool check_global_equiv(double local_value, double eps)
 	pass = true;
     else
     {
-	// value from processor above local processor
-	double neighbors_value = local_value - 1;
+        // value from processor above local processor
+        double neighbors_value = local_value - 1;
 
-	if (node > 0 && node < nodes - 1)
-	{
+        if (node > 0 && node < nodes - 1)
+        {
             rtt_c4::send(&local_value, 1, node - 1, 600);
             rtt_c4::receive(&neighbors_value, 1, node + 1, 600);
-	    pass = soft_equiv(neighbors_value, local_value, eps);
-	}
-	else if (node == nodes - 1)
-	{
+            pass = soft_equiv(neighbors_value, local_value, eps);
+        }
+        else if (node == nodes - 1)
+        {
             rtt_c4::send(&local_value, 1, node - 1, 600);
-	    pass = true;
-	}
-	else if (node == 0)
-	{
+            pass = true;
+        }
+        else if (node == 0)
+        {
             rtt_c4::receive(&neighbors_value, 1, node + 1, 600);
-	    pass = soft_equiv(neighbors_value, local_value, eps);
-	}
-	else
-	{
-	    Insist(0, "Something is wrong with nodes!");
-	}
+            pass = soft_equiv(neighbors_value, local_value, eps);
+        }
+        else
+        {
+            Insist(0, "Something is wrong with nodes!");
+        }
     }
 
     // sync everything so we don't leave before all processors are finished
@@ -368,11 +369,8 @@ bool check_global_equiv(double local_value, double eps)
     return pass;
 }
 
-
-
-
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                 end of Compare.cc
+// end of Compare.cc
 //---------------------------------------------------------------------------//

@@ -4,7 +4,8 @@
  * \author Geoffrey Furnish
  * \date   Fri Dec 16 13:29:01 1994
  * \brief  A spin lock class.  Serializes execution of a blcok.
- * \note   Copyright (C) 1995-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1995-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -28,7 +29,7 @@ namespace rtt_c4
 // finished.
 //===========================================================================//
 
-class SpinLock : public NodeInfo
+class DLL_PUBLIC SpinLock : public NodeInfo
 {
     SpinLock( const SpinLock& );
     SpinLock& operator=( const SpinLock& );

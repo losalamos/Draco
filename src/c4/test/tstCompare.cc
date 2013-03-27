@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Thu May  1 14:47:00 2008
  * \brief  
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2008-2013 Los Alamos National Security, LLC
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -16,10 +16,6 @@
 #include "../SpinLock.hh"
 #include "../Compare.hh"
 #include "ds++/Release.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
 
 using namespace std;
 using namespace rtt_c4;
@@ -37,8 +33,7 @@ void test_equivalence(const T value, const T alt_value)
     if (rtt_c4::nodes() > 1)
     {
         // at this point all processors should have the same value
-        if (!check_global_equiv(local_value)) ITFAILS;
-        
+        if (!check_global_equiv(local_value)) ITFAILS;        
 
         // now change the first processor's value
         if (rtt_c4::node() == 0)

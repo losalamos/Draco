@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Sep 20 21:54:18 2010
  * \brief  Encapsulate system headers for timing information.
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,6 +17,7 @@
 #include "ds++/config.h"
 
 #if defined(WIN32) || defined(MINGW)
+#  include <WinSock2.h> // Must be included before Windows.h
 #  include <windows.h>
 #  include <time.h>
 #else

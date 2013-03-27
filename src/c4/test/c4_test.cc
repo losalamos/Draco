@@ -19,7 +19,7 @@ namespace rtt_c4_test
 // PASS/FAILURE
 //===========================================================================//
 
-bool fail(int line)
+DLL_PUBLIC bool fail(int line)
 {
     std::cout << "Test: failed on line " << line << std::endl;
     passed = false;
@@ -28,7 +28,7 @@ bool fail(int line)
 
 //---------------------------------------------------------------------------//
 
-bool fail(int line, char *file)
+DLL_PUBLIC bool fail(int line, char *file)
 {
     std::cout << "Test: failed on line " << line << " in " << file
 	      << std::endl;
@@ -38,7 +38,7 @@ bool fail(int line, char *file)
 
 //---------------------------------------------------------------------------//
 
-bool pass_msg(const std::string &passmsg)
+DLL_PUBLIC bool pass_msg(const std::string &passmsg)
 {
     std::cout << "Test: passed" << std::endl;
     std::cout << "     " << passmsg << std::endl;
@@ -47,7 +47,7 @@ bool pass_msg(const std::string &passmsg)
 
 //---------------------------------------------------------------------------//
 
-bool fail_msg(const std::string &failmsg)
+DLL_PUBLIC bool fail_msg(const std::string &failmsg)
 {
     std::cout << "Test: failed" << std::endl;
     std::cout << "     " << failmsg << std::endl;
@@ -59,7 +59,7 @@ bool fail_msg(const std::string &failmsg)
 // BOOLEAN PASS FLAG
 //---------------------------------------------------------------------------//
 
-bool passed = true;
+DLL_PUBLIC bool passed = true;
 
 } // end namespace rtt_c4_test
 

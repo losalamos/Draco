@@ -39,7 +39,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     using rtt_c4::Timer;
 
     double const wcr( rtt_c4::wall_clock_resolution() );
-    double const wcrDeprecated( C4::Wtick() );
+    // double const wcrDeprecated( C4::Wtick() );
     if( wcr > 0.0 && wcr <= 100.0)
     {
         ostringstream msg;
@@ -55,53 +55,53 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
             << endl;
         FAILMSG(msg.str());
     }
-    double tolerance(1.0e-14);
-    if( rtt_dsxx::soft_equiv( wcr, wcrDeprecated, tolerance ) )
-    {
-        ostringstream msg;
-        msg << "Wtick() and wall_clock_resolution() returned equivalent "
-            << "values (tolerance = " << tolerance << ")." << endl;
-        PASSMSG(msg.str());
-    }
-    else
-    {
-        ostringstream msg;
-        msg << "The function wall_clock_resolution() returned a value of "
-            << wcr << " ticks, but the equivalent deprecated function "
-            << "Wtick() returned a value of " << wcrDeprecated
-            << " ticks.  These values are not equivalent as they should be."
-            << endl;
-        FAILMSG(msg.str());
-    }
+    // double tolerance(1.0e-14);
+    // if( rtt_dsxx::soft_equiv( wcr, wcrDeprecated, tolerance ) )
+    // {
+    //     ostringstream msg;
+    //     msg << "Wtick() and wall_clock_resolution() returned equivalent "
+    //         << "values (tolerance = " << tolerance << ")." << endl;
+    //     PASSMSG(msg.str());
+    // }
+    // else
+    // {
+    //     ostringstream msg;
+    //     msg << "The function wall_clock_resolution() returned a value of "
+    //         << wcr << " ticks, but the equivalent deprecated function "
+    //         << "Wtick() returned a value of " << wcrDeprecated
+    //         << " ticks.  These values are not equivalent as they should be."
+    //         << endl;
+    //     FAILMSG(msg.str());
+    // }
     
     Timer t;
 
     double const prec( 1.8*t.posix_err() );
     
     double begin           = rtt_c4::wall_clock_time();
-    double beginDeprecated = C4::Wtime();
+    //double beginDeprecated = C4::Wtime();
 
-    if( rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
-    {
-        PASSMSG("Wtime() and wall_clock_time() returned equivalent values.");
-    }
-    else
-    {
-        ostringstream msg;
-        msg << "Wtime() and wall_clock_time() failed to return "
-            << "equivalent values.";
-        cout.precision(14);
-        if( beginDeprecated < begin )
-            msg << "\n\tFound begin < beginDeprecated."
-                << "\n\tbegin           = " << begin
-                << "\n\tbeginDeprecated = " << beginDeprecated;
-        else
-            msg << "\n\tFound begin != beginDeprecated."
-                << "\n\tbegin           = " << begin
-                << "\n\tbeginDeprecated = " << beginDeprecated;
-        msg << endl;
-        FAILMSG(msg.str());
-    }
+    // if( rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
+    // {
+    //     PASSMSG("Wtime() and wall_clock_time() returned equivalent values.");
+    // }
+    // else
+    // {
+    //     ostringstream msg;
+    //     msg << "Wtime() and wall_clock_time() failed to return "
+    //         << "equivalent values.";
+    //     cout.precision(14);
+    //     if( beginDeprecated < begin )
+    //         msg << "\n\tFound begin < beginDeprecated."
+    //             << "\n\tbegin           = " << begin
+    //             << "\n\tbeginDeprecated = " << beginDeprecated;
+    //     else
+    //         msg << "\n\tFound begin != beginDeprecated."
+    //             << "\n\tbegin           = " << begin
+    //             << "\n\tbeginDeprecated = " << beginDeprecated;
+    //     msg << endl;
+    //     FAILMSG(msg.str());
+    // }
     t.start();
 
     // do some work

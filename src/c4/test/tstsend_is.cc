@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Friday, Dec 07, 2012, 14:02 pm
  * \brief  Unit tests for rtt_c4::send_is()
- * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -33,7 +33,7 @@ void test_simple( rtt_dsxx::UnitTest &ut )
                   << std::endl;
 
     // C4_Req communication handles.
-    std::vector<C4::C4_Req> comm_int(2);
+    std::vector<rtt_c4::C4_Req> comm_int(2);
 
     // for point-to-point communiction we need to know neighbor's identifiers:
     // left, right.

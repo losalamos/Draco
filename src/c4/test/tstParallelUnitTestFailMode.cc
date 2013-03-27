@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 1 17:42:58 2006
  * \brief  Test the functionality of the class ParallelUnitTest
- * \note   Copyright (C) 2006-2011 Los Alamos National Securities, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Securities, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -19,15 +19,15 @@
  * be exposed during normal use.
  */
 
+#include "../ParallelUnitTest.hh"
+#include "../global.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/SystemCall.hh"
 
-#include <iostream>
+//#include <iostream>
 #include <string>
 #include <sstream>
-
-#include "../ParallelUnitTest.hh"
-#include "ds++/ScalarUnitTest.hh"
-#include "../global.hh"
-#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -222,8 +222,8 @@ int main(int argc, char *argv[])
     int retval(0);
     if( numnodes_gt_1 && node_is_0 )
     {
-        string const expectedOutput("tstParallelUnitTestFailMode Test: FAILED.");
-        //debug: cout << msg << endl;
+        string const expectedOutput = string("tstParallelUnitTestFailMode")
+            + rtt_dsxx::exeExtension + string(" Test: FAILED.");
         size_t found = msg.find( expectedOutput );
         if( found != string::npos )
             tstTwoPass = true;
@@ -254,5 +254,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                   end of tstunit_test.cc
+// end of tstunit_test.cc
 //---------------------------------------------------------------------------//

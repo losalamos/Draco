@@ -4,21 +4,16 @@
  * \author Mike Buksas
  * \date   Mon Nov 19 16:33:08 2007
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "../Invert_Comm_Map.hh"
-#include "ds++/Assert.hh"
-#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <iterator>
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_c4;

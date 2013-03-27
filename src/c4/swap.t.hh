@@ -27,7 +27,7 @@ using std::vector;
 
 #ifdef C4_MPI
     
-template<class T>
+template<class T> DLL_PUBLIC 
 void determinate_swap(vector<unsigned>   const &outgoing_pid,
                       vector<vector<T> > const &outgoing_data,
                       vector<unsigned>   const &incoming_pid,
@@ -80,7 +80,7 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
 }
 
 //---------------------------------------------------------------------------//
-template<class T>
+template<class T> DLL_PUBLIC 
 void determinate_swap(vector<vector<T> > const &outgoing_data,
                       vector<vector<T> >       &incoming_data,
                       int tag )
@@ -133,7 +133,7 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
     return;
 }
 //---------------------------------------------------------------------------//
-template<class T>
+template<class T> DLL_PUBLIC 
 void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
                           vector<vector<T> > const &outgoing_data,
                           vector<unsigned>   const &incoming_pid,
@@ -206,17 +206,17 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
 //---------------------------------------------------------------------------//
 #else 
 
-template<class T>
+template<class T> DLL_PUBLIC 
 void determinate_swap(vector<unsigned>   const & /*outgoing_pid*/,
                       vector<vector<T> > const & /*outgoing_data*/,
                       vector<unsigned>   const & /*incoming_pid*/,
                       vector<vector<T> >       & /*incoming_data*/,
                       int /*tag*/ ) { return; }
-template<class T>
+template<class T> DLL_PUBLIC 
 void determinate_swap(vector<vector<T> > const & /*outgoing_data*/,
                       vector<vector<T> >       & /*incoming_data*/,
                       int /*tag*/ ) { return; }
-template<class T>
+template<class T> DLL_PUBLIC 
 void semideterminate_swap(vector<unsigned>   const &/*outgoing_pid*/,
                           vector<vector<T> > const &/*outgoing_data*/,
                           vector<unsigned>   const &/*incoming_pid*/,

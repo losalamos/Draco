@@ -11,7 +11,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../C4_Traits.hh"
 #include "../global.hh"
 #include "../SpinLock.hh"
 #include "../ParallelUnitTest.hh"
@@ -187,21 +186,9 @@ int main(int argc, char *argv[])
         test_simple(ut);
         test_loop(  ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstBroadcast, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstBroadcast, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstBroadcast.cc
+// end of tstBroadcast.cc
 //---------------------------------------------------------------------------//

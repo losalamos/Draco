@@ -1,9 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-// Sync.cc
-// Maurice LeBrun
-// Wed Jan 25 16:04:40 1995
-//---------------------------------------------------------------------------//
-// @> Classes for forcing a global sync at the head and/or tail of a block.
+/*! \file  Sync.cc
+ * \author Maurice LeBrun
+ * \date   Wed Jan 25 16:04:40 1995
+ * \brief  Classes for forcing a global sync at the head and/or tail of a block.
+ * \note   Copyright (C) 1995-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
 //---------------------------------------------------------------------------//
 
 #include "Sync.hh"
@@ -18,8 +20,7 @@ namespace rtt_c4
 
 HSync::HSync( int s /*=1*/ )
 {
-    if (s)
-	global_barrier();
+    if (s) global_barrier();
 }
 
 //---------------------------------------------------------------------------//
@@ -28,12 +29,11 @@ HSync::HSync( int s /*=1*/ )
 
 TSync::~TSync()
 {
-    if (sync)
-	global_barrier();
+    if (sync) global_barrier();
 }
 
 } // end of rtt_c4
 
 //---------------------------------------------------------------------------//
-//                              end of Sync.cc
+// end of Sync.cc
 //---------------------------------------------------------------------------//

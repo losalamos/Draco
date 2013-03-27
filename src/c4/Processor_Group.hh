@@ -3,7 +3,7 @@
  * \file   c4/Processor_Group.hh
  * \author Kent Budge
  * \brief  Definition of class Processor_Group
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -35,7 +35,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class Processor_Group 
+class DLL_PUBLIC Processor_Group 
 {
   public:
 
@@ -93,5 +93,5 @@ class Processor_Group
 #endif // c4_Processor_Group_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/Processor_Group.hh
+// end of c4/Processor_Group.hh
 //---------------------------------------------------------------------------//

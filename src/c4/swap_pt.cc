@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 14:44:54 2002
  * \brief  C4 MPI determinate and indeterminate swap instantiations.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,35 +24,34 @@ using std::vector;
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
-template
+template DLL_PUBLIC 
 void determinate_swap(vector<unsigned>          const &outgoing_pid,
                       vector<vector<unsigned> > const &outgoing_data,
                       vector<unsigned>          const &incoming_pid,
                       vector<vector<unsigned> >       &incoming_data,
                       int tag);
 
-template
+template DLL_PUBLIC 
 void determinate_swap(vector<unsigned>          const &outgoing_pid,
                       vector<vector<double> >   const &outgoing_data,
                       vector<unsigned>          const &incoming_pid,
                       vector<vector<double> >         &incoming_data,
                       int tag);
 
-template
+template DLL_PUBLIC 
 void semideterminate_swap(vector<unsigned>          const &outgoing_pid,
                           vector<vector<unsigned> > const &outgoing_data,
                           vector<unsigned>          const &incoming_pid,
                           vector<vector<unsigned> >       &incoming_data,
                           int tag);
 
-template
+template DLL_PUBLIC 
 void determinate_swap(vector<vector<unsigned> > const &outgoing_data,
                       vector<vector<unsigned> >       &incoming_data,
                       int tag);
 
 } // end namespace rtt_c4
 
-
 //---------------------------------------------------------------------------//
-//                              end of C4_MPI_swap_pt.cc
+// end of C4_MPI_swap_pt.cc
 //---------------------------------------------------------------------------//

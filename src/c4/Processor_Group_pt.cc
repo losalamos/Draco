@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Fri Oct 20 13:49:10 2006
  * \brief  Member definitions of class Processor_Group
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -20,15 +21,16 @@ namespace rtt_c4
 {
 using namespace std;
 
-template void Processor_Group::sum(vector<double> &values);
+template DLL_PUBLIC void Processor_Group::sum(vector<double> &values);
 
-template void Processor_Group::assemble_vector(vector<double> const &local,
-                                               vector<double> &global) const;
+template DLL_PUBLIC void Processor_Group::assemble_vector(
+    vector<double> const &local,
+    vector<double> &global) const;
 
 } // end namespace rtt_c4
 
-#endif  //C4_MPI
+#endif //C4_MPI
 
 //---------------------------------------------------------------------------//
-//              end of c4/Processor_Group_pt.hh
+// end of c4/Processor_Group_pt.hh
 //---------------------------------------------------------------------------//
