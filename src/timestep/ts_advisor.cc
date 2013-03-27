@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Defines the base class time-step advisor.
- * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -26,7 +26,6 @@ namespace rtt_timestep
 ts_advisor::ts_advisor(const string &name_,
 		       const usage_flag usage_,
 		       const bool active_)
-
     : name(name_), usage(usage_), active(active_) 
 {
 // empty
@@ -34,7 +33,7 @@ ts_advisor::ts_advisor(const string &name_,
 
 void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
 {
-    if (C4::node() != 0)
+    if (rtt_c4::node() != 0)
 	return;
     
     string status = advisor_usable(tsm) ? "true " : "false";
@@ -42,12 +41,12 @@ void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
     string cflag = controlling ? "  ==> " : "      ";
     cout << cflag ;
     cout.width(12);
-    cout << get_dt_rec(tsm) << space << 
-	status << space << name << endl;
+    cout << get_dt_rec(tsm) << space
+         << status << space << name << endl;
 }
 
 } //end of rtt_timestep namespace    
 
 //---------------------------------------------------------------------------//
-//                              end of ts_advisor.cc
+// end of ts_advisor.cc
 //---------------------------------------------------------------------------//

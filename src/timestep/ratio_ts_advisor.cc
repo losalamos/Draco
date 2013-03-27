@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Defines the ratio time-step advisor.
- * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */
@@ -49,7 +49,7 @@ double ratio_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 
 void ratio_ts_advisor::print_state( std::ostream & out ) const
 {
-    if (C4::node() != 0)
+    if (rtt_c4::node() != 0)
 	return;
     
     std::string status = is_active() ? "true " : "false";
@@ -72,5 +72,5 @@ bool ratio_ts_advisor::invariant_satisfied() const
 } //end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
-//                              end of ratio_ts_advisor.cc
+// end of ratio_ts_advisor.cc
 //---------------------------------------------------------------------------//

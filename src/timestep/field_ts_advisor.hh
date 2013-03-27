@@ -1,9 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  * \file   timestep/field_ts_advisor.hh
- * \author <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the field time-step advisor class.
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
