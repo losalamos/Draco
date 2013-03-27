@@ -316,12 +316,12 @@ void test_vec_lite( rtt_dsxx::UnitTest &ut )
     catch (...) {
         ITFAILS;
     }
-	
+
+    if( ut.numFails==0 ) PASSMSG("All tests in test_vec_lite() pass.");
     return;
 }
 
-
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // Main for test
 int main( int argc, char *argv[] )
 {
