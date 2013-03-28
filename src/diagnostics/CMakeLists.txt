@@ -63,9 +63,6 @@ include_directories(
    ${c4_BINARY_DIR}   # c4/config.h
    )
 
-# setup binary directory
-file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -79,7 +76,7 @@ add_component_library(
 add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info.cc )
 target_link_libraries( Exe_draco_info Lib_dsxx  )
 set_target_properties( Exe_draco_info
-   PROPERTIES OUTPUT_NAME bin/draco_info )
+   PROPERTIES OUTPUT_NAME draco_info )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

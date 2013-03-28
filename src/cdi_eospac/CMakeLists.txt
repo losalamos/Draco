@@ -46,9 +46,6 @@ include_directories(
    ${EOSPAC_INCLUDE_DIR}
 ) 
 
-# setup binary directory
-file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -64,7 +61,7 @@ add_component_library(
 add_executable( Exe_QueryEospac QueryEospac.cc )
 target_link_libraries( Exe_QueryEospac Lib_cdi_eospac )
 set_target_properties( Exe_QueryEospac
-   PROPERTIES OUTPUT_NAME bin/QueryEospac )
+   PROPERTIES OUTPUT_NAME QueryEospac )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

@@ -47,9 +47,6 @@ include_directories(
    ${dsxx_BINARY_DIR}         # ds++/config.h
 ) 
 
-# setup binary directory
-file( MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -67,7 +64,7 @@ target_link_libraries(
    ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY})
 set_target_properties( 
    Exe_Ipcress_Interpreter 
-   PROPERTIES OUTPUT_NAME bin/Ipcress_Interpreter )
+   PROPERTIES OUTPUT_NAME Ipcress_Interpreter )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
