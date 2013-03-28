@@ -192,9 +192,6 @@ class DLL_PUBLIC Timer
     
     Timer();
     virtual ~Timer() { /* empty */ };
-    // Disable copy and assignment operators
-    Timer( Timer const & rhs );
-    Timer const & operator=( Timer const & rhs );
     inline void start();
     inline void stop();
     inline double wall_clock() const;
