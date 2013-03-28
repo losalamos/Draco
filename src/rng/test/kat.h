@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rng/config.h"
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(NVCC)
 #pragma GCC system_header
 #endif
 
