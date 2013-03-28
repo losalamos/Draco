@@ -89,6 +89,9 @@ macro( dbsSetDefaults )
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
 
+  # Set replacement RPATH for installed libraries and executables
+  set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+
 endmacro()
 
 ##---------------------------------------------------------------------------##
