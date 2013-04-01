@@ -4,14 +4,15 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:57:58 2005
  * \brief  Implementation of Index_Proc.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "Index_Proc.hh"
-#include <c4/global.hh>
+#include "c4/C4_Functions.hh"
 
 namespace rtt_norms
 {
@@ -40,5 +41,5 @@ bool Index_Proc::operator==(const Index_Proc &rhs) const
 } // end namespace rtt_norms
 
 //---------------------------------------------------------------------------//
-//                 end of Index_Proc.cc
+// enc of Index_Proc.cc
 //---------------------------------------------------------------------------//

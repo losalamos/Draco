@@ -13,7 +13,7 @@
 #ifndef __c4_NodeInfo_hh__
 #define __c4_NodeInfo_hh__
 
-#include "global.hh"
+#include "C4_Functions.hh"
 
 namespace rtt_c4
 {

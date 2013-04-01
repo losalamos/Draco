@@ -16,7 +16,7 @@
 
 #include "Index_Labeled.hh"
 #include "Index_Proc.hh"
-#include "c4/global.hh"
+#include "c4/C4_Functions.hh"
 
 namespace rtt_norms
 {

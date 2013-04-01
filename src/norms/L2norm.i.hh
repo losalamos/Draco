@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 18 08:22:09 2007
  * \brief  Member definitions of class L2norm
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This class is deprecated. New code should use Norm_Index instead.
  */
@@ -15,11 +16,11 @@
 #ifndef norms_L2norm_i_hh
 #define norms_L2norm_i_hh
 
+#include "c4/C4_Functions.hh"
+#include "norm.hh"
 #include <cmath>
 #include <numeric>
 #include <iostream>
-#include "c4/global.hh"
-#include "norm.hh"
 
 namespace rtt_norms
 {
@@ -71,5 +72,5 @@ double L2norm(In const &x)
 #endif // norms_L2norm_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/L2norm.i.hh
+// end of norms/L2norm.i.hh
 //---------------------------------------------------------------------------//

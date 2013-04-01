@@ -4,7 +4,7 @@
  * \author Geoffrey Furnish
  * \date   Fri Dec 16 13:29:01 1994
  * \brief  A spin lock class.  Serializes execution of a blcok.
- * \note   Copyright (C) 1995-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1994-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -22,16 +22,18 @@ namespace rtt_c4
 {
 
 //===========================================================================//
-// class SpinLock - Serialize execution of a block.
-
-// This class enables you to get a block of code to execute serially.  Each
-// processor begins to executes the block only after the one before it is
-// finished.
+/*! \class SpinLock Serialize execution of a block.
+ *
+ * This class enables you to get a block of code to execute serially.  Each
+ * processor begins to executes the block only after the one before it is
+ * finished.
+ */
 //===========================================================================//
 
 class DLL_PUBLIC SpinLock : public NodeInfo
 {
-    SpinLock( const SpinLock& );
+    // Disable copy constructor and assignment operators.
+    SpinLock(            const SpinLock& );
     SpinLock& operator=( const SpinLock& );
 
     enum { SL_Next = 92874 };
@@ -40,14 +42,24 @@ class DLL_PUBLIC SpinLock : public NodeInfo
     int lock;
 
   public:
-    SpinLock( int _lock =1 );
-    ~SpinLock();
+    /*! \brief Constructor.  Waits for the preceeding processor to finish
+     *  before continuing. */
+    SpinLock( int _lock =1 )
+        : trash(0), lock(_lock) {
+            if (lock && node) receive( &trash, 0, node-1, SL_Next ); }
+    
+    /*! \brief Destructor Here we notify the next processor in the chain that
+     *   he can proceed to execute the block, and we go ahead about our
+     *  business. */
+    ~SpinLock() {
+        if (lock && node < lastnode) send( &trash, 0, node+1, SL_Next ); }
 };
 
 //===========================================================================//
-// class HSyncSpinLock - Serialize a block, syncing at top.
-
-// A spinlock that forces a global sync at the head of the block.
+/*! \class HSyncSpinLock Serialize a block, syncing at top.
+ *
+ * A spinlock that forces a global sync at the head of the block.
+ */
 //===========================================================================//
 
 class HSyncSpinLock : public HSync, public SpinLock {
@@ -60,9 +72,10 @@ class HSyncSpinLock : public HSync, public SpinLock {
 };
 
 //===========================================================================//
-// class TSyncSpinLock - Serialize a block, syncing at bottom.
-
-// A spinlock that forces a global sync at the tail of the block.
+/*! \class TSyncSpinLock Serialize a block, syncing at bottom.
+ *
+ * A spinlock that forces a global sync at the tail of the block.
+ */
 //===========================================================================//
 
 class TSyncSpinLock : public TSync, public SpinLock {
@@ -75,9 +88,10 @@ class TSyncSpinLock : public TSync, public SpinLock {
 };
 
 //===========================================================================//
-// class HTSyncSpinLock - Serialize a block, syncing at top and bottom.
-
-// A spinlock that forces a global sync at the head and tail of the block.
+/*! \class HTSyncSpinLock Serialize a block, syncing at top and bottom.
+ *
+ * A spinlock that forces a global sync at the head and tail of the block.
+ */
 //===========================================================================//
 
 class HTSyncSpinLock : public HSync, public TSync, public SpinLock {
@@ -100,20 +114,8 @@ class HTSyncSpinLock : public HSync, public TSync, public SpinLock {
 
 } // end of rtt_c4
 
-//---------------------------------------------------------------------------//
-// Backwards compatibility
-
-namespace C4
-{
-
-using rtt_c4::HSyncSpinLock;
-using rtt_c4::TSyncSpinLock;
-using rtt_c4::HTSyncSpinLock;
-
-}
-
-#endif                          // __c4_SpinLock_hh__
+#endif // __c4_SpinLock_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/SpinLock.hh
+// end of c4/SpinLock.hh
 //---------------------------------------------------------------------------//

@@ -13,10 +13,7 @@
 
 #include "ApplicationUnitTest.hh"
 #include "ds++/path.hh"
-#include "ds++/config.h"
 #include <sstream>
-#include <cstdlib>
-#include <fstream>
 
 namespace rtt_c4
 {

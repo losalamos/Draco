@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
  * \file    timestep/ts_manager.hh
- * \author  <a href="http://www.lanl.gov/home/mcghee">John McGhee</a>
+ * \author  John McGhee
  * \date    Mon Apr  6 17:22:53 1998
  * \brief   Header file for the manager utility for time-step advisors.
- * \note    Copyright © 1998-2010 Los Alamos National Security, LLC. 
+ * \note    Copyright (C) 1998-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  * \version $Id$
  */
 //---------------------------------------------------------------------------//
@@ -16,7 +17,6 @@
 
 #include "ts_advisor.hh"
 #include "ds++/SP.hh"
-#include <string>
 #include <list>
 
 namespace rtt_timestep

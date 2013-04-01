@@ -7,8 +7,11 @@
  * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
- * This file contains the declarations for communication functions provided
- * by C4.
+ * This file contains the declarations for communication functions provided by
+ * C4. This file allows the client to include the message passing services
+ * provided by C4.  The function declarations and class definitions are
+ * contained in the rtt_c4 namespace.  For backwards compatibility, the
+ * old-style C4 functions and classes are declared in the C4 namespace.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,11 +20,11 @@
 #ifndef c4_C4_Functions_hh
 #define c4_C4_Functions_hh
 
+#include "c4/config.h"
 #include "C4_sys_times.h"
 #include "C4_Datatype.hh"
 #include "C4_Traits.hh"
 #include "C4_Req.hh"
-#include <string>
 
 namespace rtt_c4
 {
@@ -510,8 +513,19 @@ DLL_PUBLIC bool isScalar();
 //! Return the processor name for each rank.
 DLL_PUBLIC std::string get_processor_name();
 
-
 } // end namespace rtt_c4
+
+//---------------------------------------------------------------------------//
+// Include the appropriate header for an underlying message passing
+// implementation.  
+
+#ifdef C4_SCALAR
+#include "C4_Serial.hh"
+#endif
+
+#ifdef C4_MPI
+#include "C4_MPI.hh"
+#endif
 
 #endif // c4_C4_Functions_hh
 

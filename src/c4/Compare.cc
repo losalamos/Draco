@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Compare.hh"
-#include "global.hh"
+#include "C4_Functions.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_c4

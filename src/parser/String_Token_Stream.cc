@@ -1,20 +1,19 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file String_Token_Stream.cc
+ * \file   String_Token_Stream.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
- * \brief Definitions of String_Token_Stream methods.
- * \note   Copyright @ 2005 The Regents of the University of California.
+ * \date   Wed Jan 22 15:18:23 MST 2003
+ * \brief  Definitions of String_Token_Stream methods.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include "c4/global.hh"
 #include "String_Token_Stream.hh"
+#include "c4/C4_Functions.hh"
+#include <sstream>
 
 namespace rtt_parser 
 {
@@ -23,7 +22,6 @@ using namespace rtt_dsxx;
 
 //-------------------------------------------------------------------------//
 /*!
- *
  * Construct a String_Token_Stream that derives its text from the specified
  * string. Use the default Text_Token_Stream user-defined whitespace
  * characters.
@@ -44,7 +42,6 @@ String_Token_Stream::String_Token_Stream(string const &text)
 
 //-------------------------------------------------------------------------//
 /*!
- * 
  * Construct a String_Token_Stream that derives its text from the specified
  * string.
  *
@@ -175,6 +172,7 @@ bool String_Token_Stream::check_class_invariants() const
 }
 
 }  // namespace rtt_parser
+
 //---------------------------------------------------------------------------//
-//                      end of String_Token_Stream.cc
+// end of String_Token_Stream.cc
 //---------------------------------------------------------------------------//

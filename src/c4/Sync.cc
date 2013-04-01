@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Sync.hh"
-#include "global.hh"  
+#include "C4_Functions.hh"  
 
 namespace rtt_c4
 {

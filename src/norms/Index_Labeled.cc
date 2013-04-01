@@ -4,14 +4,15 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:57:58 2005
  * \brief  Implementation of Index_Labeled.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "Index_Labeled.hh"
-#include <c4/global.hh>
+#include "c4/C4_Functions.hh"
 
 namespace rtt_norms
 {

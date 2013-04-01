@@ -12,20 +12,15 @@
 //---------------------------------------------------------------------------//
 
 #include "ts_advisor.hh"
-#include "c4/global.hh"
-#include "ds++/config.h"
-#include <iostream>
-
-using std::string; 
-using std::cout;
-using std::endl;
+#include "c4/C4_Functions.hh"
+#include <string>
 
 namespace rtt_timestep
 {
 
-ts_advisor::ts_advisor(const string &name_,
-		       const usage_flag usage_,
-		       const bool active_)
+ts_advisor::ts_advisor(const std::string & name_,
+		       const usage_flag    usage_,
+		       const bool          active_)
     : name(name_), usage(usage_), active(active_) 
 {
 // empty
@@ -33,6 +28,10 @@ ts_advisor::ts_advisor(const string &name_,
 
 void ts_advisor::print(const ts_manager &tsm, const bool controlling) const
 {
+    using std::string; 
+    using std::cout;
+    using std::endl;
+
     if (rtt_c4::node() != 0)
 	return;
     

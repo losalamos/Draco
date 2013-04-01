@@ -187,10 +187,13 @@ class DLL_PUBLIC Timer
     // sum of papi virtual time (microseconds)
     long long sum_papi_virt_usec;
 #endif
-
+    
   public:
     
-    Timer();
+    Timer(); //! default constructor
+    // Use default copy constructor and assignment operator
+    // Timer const & operator=( Timer const & rhs ); //! assignment operator
+    // Timer( Timer const & rhs ); //! copy constructor
     virtual ~Timer() { /* empty */ };
     inline void start();
     inline void stop();

@@ -12,12 +12,7 @@
 
 #include "target_ts_advisor.hh"
 #include "ts_manager.hh"
-#include "ds++/Assert.hh"
-#include "c4/global.hh"
-#include <iostream>
-
-using std::cout;
-using std::endl;
+#include "c4/C4_Functions.hh"
 
 namespace rtt_timestep
 {
@@ -49,6 +44,7 @@ double target_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 
 void target_ts_advisor::print_state( std::ostream & out ) const
 {
+    using std::endl;
     if (rtt_c4::node() != 0)
 	return;
     

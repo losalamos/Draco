@@ -4,15 +4,14 @@
  * \author Kent Budge
  * \date   Thu Jan 12 10:27:45 2006
  * \brief  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include "ds++/Assert.hh"
-#include "global.hh"
+#include "C4_Functions.hh"
 #include "Termination_Detector.hh"
 
 #undef PRINTF_DEBUG
@@ -386,5 +385,5 @@ bool Termination_Detector::is_terminated()
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                 end of Termination_Detector.cc
+// end of Termination_Detector.cc
 //---------------------------------------------------------------------------//

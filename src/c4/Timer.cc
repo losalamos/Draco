@@ -47,12 +47,12 @@ Timer::Timer()
       tms_begin( DRACO_TIME_TYPE() ),
       tms_end(   DRACO_TIME_TYPE() ),
       posix_clock_ticks_per_second( DRACO_CLOCKS_PER_SEC ),
-      timer_on(          false ),
+      timer_on(  false ),
       isMPIWtimeAvailable( setIsMPIWtimeAvailable() ),
-      sum_wall( 0.0 ),
-      sum_system( 0.0 ),
-      sum_user( 0.0 ),
-      num_intervals( 0 )
+      sum_wall(      0.0 ),
+      sum_system(    0.0 ),
+      sum_user(      0.0 ),
+      num_intervals( 0   )
 {
 #ifdef HAVE_PAPI
     
@@ -235,5 +235,5 @@ bool Timer::setIsMPIWtimeAvailable() const
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                              end of Timer.cc
+// end of Timer.cc
 //---------------------------------------------------------------------------//

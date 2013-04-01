@@ -89,16 +89,16 @@ void broadcast(
     // Proc 0 does not copy any data into the result iterator.
 
     diff_type size;
-    if( rtt_c4::node() == 0)
+    if( node() == 0)
 	size = std::distance(first, last);
     broadcast(&size, 1, 0);
     
     value_type *buf = new value_type[size];
-    if ( rtt_c4::node() == 0)
+    if ( node() == 0)
 	std::copy(first, last, buf);
     broadcast(buf, size, 0);
 
-    if ( rtt_c4::node() != 0)
+    if ( node() != 0)
 	std::copy(buf, buf+size, result);
     
     delete [] buf;

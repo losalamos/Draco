@@ -4,7 +4,7 @@
  * \author Bob Webster, Thomas M. Evans
  * \date   Fri Sep 30 12:53:25 2005
  * \brief  Member definitions of class TigsTrace
- * \note   Copyright (C) 2004-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,8 +14,7 @@
 #ifndef c4_TigsTrace_i_hh
 #define c4_TigsTrace_i_hh
 
-#include "global.hh"
-#include "ds++/Assert.hh"
+#include "C4_Functions.hh"
 
 namespace rtt_c4
 {

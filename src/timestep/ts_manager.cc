@@ -4,19 +4,15 @@
  * \author John McGhee
  * \date   Mon Apr  6 17:22:53 1998
  * \brief  Defines a manager utility for time-step advisors.
- * \note   Copyright © 1998-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "ts_manager.hh"
-#include "ds++/Assert.hh"
-#include "ds++/config.h"
-#include "c4/global.hh"
-#include <functional>
-#include <stdexcept>
-#include <iostream>
+#include "c4/C4_Functions.hh"
 
 using std::list;
 using std::endl;
@@ -318,5 +314,5 @@ bool ts_manager::invariant_satisfied() const
 } // end of rtt_timestep namespace
 
 //---------------------------------------------------------------------------//
-//                              end of ts_manager.cc
+// end of ts_manager.cc
 //---------------------------------------------------------------------------//

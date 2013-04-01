@@ -4,19 +4,17 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of Parallel_File_Token_Stream methods.
- * \note   Copyright © 2007-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "c4/global.hh"
-#include "ds++/config.h"
 #include "Parallel_File_Token_Stream.hh"
-#include <iostream>
+#include "c4/C4_Functions.hh"
 #include <sstream>
-#include <vector>
-#include <limits>
+#include <iostream>
 
 namespace rtt_parser 
 {
@@ -362,6 +360,7 @@ bool Parallel_File_Token_Stream::check_class_invariants() const
 }
 
 }  // namespace rtt_parser
+
 //---------------------------------------------------------------------------//
-//                      end of Parallel_File_Token_Stream.cc
+// end of Parallel_File_Token_Stream.cc
 //---------------------------------------------------------------------------//

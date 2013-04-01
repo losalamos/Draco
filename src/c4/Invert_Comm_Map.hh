@@ -14,7 +14,7 @@
 #ifndef c4_Invert_Comm_Map_hh
 #define c4_Invert_Comm_Map_hh
 
-#include "global.hh"
+#include "C4_Functions.hh"
 #include <vector>
 #include <iterator> // back_inserter
 

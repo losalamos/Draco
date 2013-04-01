@@ -4,6 +4,8 @@
  * \author John McGhee
  * \date   Mon Aug 24 07:48:00 1998
  * \brief  Contains the template methods for the field ts_advisor class.
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -11,14 +13,7 @@
 
 #include "field_ts_advisor.hh"
 #include "ts_manager.hh"
-
-#include "ds++/Assert.hh"
-#include "ds++/config.h"
-#include "c4/global.hh"
-
-#include <algorithm>
-#include <stdexcept>
-#include <cmath>
+#include "c4/C4_Functions.hh"
 
 namespace rtt_timestep
 {
@@ -152,9 +147,8 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm,
 
 } // end of rtt_timestep namespace
 
-
 //---------------------------------------------------------------------------//
-//                        end of field_ts_advisor.t.hh
+// end of field_ts_advisor.t.hh
 //---------------------------------------------------------------------------//
 
 

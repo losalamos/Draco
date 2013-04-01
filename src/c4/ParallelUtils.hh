@@ -4,6 +4,8 @@
  * \author Randy M. Roberts
  * \date   Tue Feb 22 16:38:51 2000
  * \brief  
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +14,7 @@
 #ifndef __c4_ParallelUtils_hh__
 #define __c4_ParallelUtils_hh__
 
-#include "global.hh"
-
-#include <iterator>
-#include <algorithm>
+#include "C4_Functions.hh"
 
 namespace C4
 {
@@ -228,8 +227,8 @@ inline void collate(InputIterator first, InputIterator last,
 
 } // end namespace C4
 
-#endif                          // __c4_ParallelUtils_hh__
+#endif // __c4_ParallelUtils_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/ParallelUtils.hh
+// end of c4/ParallelUtils.hh
 //---------------------------------------------------------------------------//

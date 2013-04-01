@@ -18,10 +18,8 @@
 #ifndef c4_ApplicationUnitTest_hh
 #define c4_ApplicationUnitTest_hh
 
-#include "c4/config.h"
 #include "ds++/UnitTest.hh"
 #include "Timer.hh"
-#include <iostream>
 
 #if defined(MSVC)
 #   pragma warning (push)

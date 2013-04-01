@@ -12,13 +12,7 @@
 
 #include "ratio_ts_advisor.hh"
 #include "ts_manager.hh"
-#include "ds++/Assert.hh"
-#include "ds++/config.h"
 #include "c4/global.hh"
-#include <iostream>
-
-using std::cout;
-using std::endl;
 
 namespace rtt_timestep
 {
@@ -49,6 +43,7 @@ double ratio_ts_advisor::get_dt_rec(const ts_manager &tsm) const
 
 void ratio_ts_advisor::print_state( std::ostream & out ) const
 {
+    using std::endl;
     if (rtt_c4::node() != 0)
 	return;
     

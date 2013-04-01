@@ -19,7 +19,6 @@
 #define c4_ParallelUnitTest_hh
 
 #include "SpinLock.hh"
-#include "global.hh"
 #include "ds++/UnitTest.hh"
 #include <iostream>
 
