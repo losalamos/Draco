@@ -111,11 +111,6 @@ set_ccs2_software_version( DRACO )
 # Unit Test Setup
 #
 include(dracoTesting) 
-# Top level test
-#add_test( SystemInformationNew 
-#	"${CMAKE_COMMAND}" --system-information  -G "${CMAKE_GENERATOR}" )
-#set_tests_properties( SystemInformationNew
-#   PROPERTIES LABELS "nomemcheck" )
 
 # Set default compile environment:
 
@@ -129,11 +124,6 @@ dbsInitExportTargets( "Draco" )
 # Save config info
 dbsConfigInfo()
 
-# Build only for Opteron? Or PPE also?
-if( "${SITE}" MATCHES "^rr.*" ) # rr-dev-fe, rro*
-   include( platform_customization_roadrunner_ppe )
-endif()
-
 # Set compiler options
 include( compilerEnv )
 dbsSetupCompilers()
@@ -142,9 +132,7 @@ dbsSetupCxx()
 # Is Fortran enabled (it is considered 'optional' for draco)?
 get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
 if( _LANGUAGES_ MATCHES Fortran )
-   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" )
-      dbsSetupFortran()
-   endif()
+   dbsSetupFortran()
 endif()
 
 include( FeatureSummary )
