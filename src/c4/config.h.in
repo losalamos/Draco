@@ -43,7 +43,7 @@
 /* Turn off C++ bindings */
 #undef MPI_NO_CPPBIND
 #define MPICH_SKIP_MPICXX 
-/* #define OMPI_SKIP_MPICXX */
+#define OMPI_SKIP_MPICXX
 
 /* Add version check for Compaq ALASKA MPI releases */
 #undef MPI_VERSION_CHECK
