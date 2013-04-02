@@ -14,6 +14,7 @@
 #include "field_ts_advisor.hh"
 #include "ts_manager.hh"
 #include "c4/C4_Functions.hh"
+#include <cmath>
 
 namespace rtt_timestep
 {

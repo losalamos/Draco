@@ -15,6 +15,8 @@
 #include "c4/C4_Functions.hh"
 #include <sstream>
 #include <iostream>
+#include <vector>
+#include <limits>
 
 namespace rtt_parser 
 {
