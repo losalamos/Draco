@@ -19,12 +19,6 @@ if( BUILD_SHARED_LIBS )
   message( FATAL_ERROR "Feature not available - yell at KT." )
 endif( BUILD_SHARED_LIBS )
 
-if( DRACO_ENABLE_CXX11 )
-   message( FATAL_ERROR 
-      "PGI does not provide support for the C++11 standard.  Please "
-      "set DRACO_ENABLE_CXX11=OFF.")
-endif()
-
 # Disable OpenMP for now (it doesn't appear to be working correctly.)
 set( USE_OPENMP NO )
 
@@ -138,6 +132,17 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 # Do we add '-ansi -pedantic'?
 toggle_compiler_flag( DRACO_ENABLE_C99         "-c99"   "C"   "" )
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-Xa -A" "CXX" "" )
+
+# Support for C++ enabled in PGI 13+
+if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13.0 )
+   toggle_compiler_flag( DRACO_ENABLE_CXX11 "--c++11" "CXX" "") 
+else()
+   if( DRACO_ENABLE_CXX11 )
+      message( FATAL_ERROR 
+         "PGI < v13 does not provide support for the C++11 standard.  Please "
+         "set DRACO_ENABLE_CXX11=OFF.")
+   endif()
+endif()
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgi.cmake
