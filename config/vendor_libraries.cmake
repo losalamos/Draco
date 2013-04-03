@@ -219,7 +219,13 @@ macro( setupMPILibrariesUnix )
    # We use variables like ${MPI_CXX_INCLUDE_PATH} with the
    # assumption that the stirng will be empty if MPI is not found.
    # Make sure the string is empty...
-   if( "${MPI_HEADER_PATH}" STREQUAL "MPI_HEADER_PATH-NOTFOUND")
+
+   message("
+MPI_HEADER_PATH      = ${MPI_HEADER_PATH}
+MPI_CXX_INCLUDE_PATH = ${MPI_CXX_INCLUDE_PATH}
+")
+
+   if( "${MPI_CXX_INCLUDE_PATH}" STREQUAL "MPI_CXX_INCLUDE_PATH-NOTFOUND")
       set( MPI_HEADER_PATH "" CACHE PATH 
          "MPI not found, empty value." FORCE )
       set( MPI_CXX_INCLUDE_PATH "" CACHE PATH 
