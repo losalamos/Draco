@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:06:25 2002
  * \brief  Implementation of C4 serial option.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -31,19 +33,25 @@ const int proc_null = -1;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void initialize(int &/* argc */, char **&/*argv */)
+DLL_PUBLIC void initialize(int &/* argc */, char **&/*argv */)
 {
 }
 
 //---------------------------------------------------------------------------//
 
-void finalize()
+DLL_PUBLIC void finalize()
 {
 }
 
 //---------------------------------------------------------------------------//
 
-void free_inherited_comm()
+DLL_PUBLIC void free_inherited_comm()
+{
+}
+
+//---------------------------------------------------------------------------------------//
+
+DLL_PUBLIC void type_free(C4_Datatype &old_type)
 {
 }
 
@@ -107,17 +115,31 @@ DLL_PUBLIC double wall_clock_resolution()
 //---------------------------------------------------------------------------//
 
 DLL_PUBLIC bool probe(int  /* source */, 
-	   int  /* tag */,
-	   int &/* message_size */)
+                      int  /* tag */,
+                      int &/* message_size */)
 {    
     return false;
 }
 
 DLL_PUBLIC void blocking_probe(int  /* source */, 
-                    int  /* tag */,
-                    int &/* message_size */)
+                               int  /* tag */,
+                               int &/* message_size */)
 {    
     Insist(false, "no messages expected in serial programs!");
+}
+
+DLL_PUBLIC void wait_all(int      /*count*/,
+                         C4_Req * /*requests*/)
+{
+    // Insist(false, "no messages expected in serial programs!");
+    return;
+}
+
+DLL_PUBLIC unsigned wait_any(int      /*count*/,
+                             C4_Req * /*requests*/)
+{
+    Insist(false, "no messages expected in serial programs!");
+    return 0;
 }
 
 //---------------------------------------------------------------------------//

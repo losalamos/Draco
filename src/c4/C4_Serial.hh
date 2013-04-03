@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:06:25 2002
  * \brief  Serial implementation of C4.
- * \note   Copyright (C) 2002-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -43,11 +43,12 @@ void inherit(const Comm &/*comm*/)
 }
 
 template<class T>
-int create_vector_type(unsigned /*e1*/, unsigned /*e2*/,
-                       unsigned /*v1*/, unsigned /*v2*/,
-                       unsigned /*stride*/,
-                       C4_Datatype &/*new_type*/)
+int create_vector_type( unsigned      /*count*/,
+                        unsigned      /*blocklength*/,
+                        unsigned      /*stride*/,
+                        C4_Datatype & /*new_type*/ )
 {
+    return C4_SUCCESS;
 }
 
 //---------------------------------------------------------------------------//
@@ -79,7 +80,21 @@ DLL_PUBLIC void send_is(C4_Req  &/*request*/,
              int      /* size*/, 
              int      /*destination*/,
              int      /*tag*/)
-{/* empty */}
+{
+    Insist(false,
+           "send_is is not support for C4_SCALAR builds.");
+}
+
+
+template<typename T>
+DLL_PUBLIC int send_udt(const T     * /*buffer*/, 
+                        int           /*size*/,
+                        int           /*destination*/,
+                        C4_Datatype & /*data_type*/,
+                        int           /*tag*/)
+{
+    return C4_SUCCESS;
+}
 
 //---------------------------------------------------------------------------//
 
@@ -98,6 +113,16 @@ int receive(T   */* buffer */,
 	    int  /* source */, 
             C4_Datatype &/*data_type*/,
 	    int  /* tag */)
+{
+    return C4_SUCCESS;
+}
+
+template<typename T>
+DLL_PUBLIC int receive_udt( T           * /*buffer*/, 
+                            int           /*size*/,
+                            int           /*destination*/,
+                            C4_Datatype & /*data_type*/,
+                            int           /*tag*/)
 {
     return C4_SUCCESS;
 }
@@ -175,7 +200,16 @@ void broadcast(ForwardIterator /* first  */,
     return;
 }
 
-
+// safer version of broadcast using stl ranges
+template<typename ForwardIterator, typename OutputIterator>
+void broadcast(ForwardIterator /*first*/,
+	       ForwardIterator /*last*/,
+	       OutputIterator  /*result*/,
+               OutputIterator  /*result_end*/)
+{
+    // No communication needed for Serial use.    
+    return;
+}
 
 //---------------------------------------------------------------------------//
 // GATHER/SCATTER

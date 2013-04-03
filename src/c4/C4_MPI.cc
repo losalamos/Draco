@@ -103,19 +103,6 @@ DLL_PUBLIC int nodes()
 }
 
 //---------------------------------------------------------------------------//
-
-DLL_PUBLIC std::string processor_name()
-{
-    int namelen;
-    char processor_name[MPI_MAX_PROCESSOR_NAME];
-    
-    MPI_Get_processor_name( processor_name, &namelen );
-    std::string procname( processor_name );
-    Check( static_cast<size_t>(namelen) == procname.size() );
-    return procname;
-}
-
-//---------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
 //---------------------------------------------------------------------------//
 
@@ -159,9 +146,9 @@ DLL_PUBLIC double wall_clock_resolution()
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC bool probe(int  source, 
-                      int  tag,
-                      int &message_size)
+DLL_PUBLIC bool probe(int   source, 
+                      int   tag,
+                      int & message_size)
 {
     Require(source>=0 && source<nodes());
 
@@ -179,9 +166,9 @@ DLL_PUBLIC bool probe(int  source,
 }
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC void blocking_probe(int  source, 
-                               int  tag,
-                               int &message_size)
+DLL_PUBLIC void blocking_probe(int   source, 
+                               int   tag,
+                               int & message_size)
 {
     Require(source>=0 && source<nodes());
 
@@ -191,8 +178,8 @@ DLL_PUBLIC void blocking_probe(int  source,
 }
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC void wait_all(int count,
-                         C4_Req *requests)
+DLL_PUBLIC void wait_all(int      count,
+                         C4_Req * requests)
 {
     using std::vector;
     
@@ -208,8 +195,8 @@ DLL_PUBLIC void wait_all(int count,
 }
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC unsigned wait_any(int count,
-                             C4_Req *requests)
+DLL_PUBLIC unsigned wait_any(int      count,
+                             C4_Req * requests)
 {
     using std::vector;
     
@@ -217,13 +204,9 @@ DLL_PUBLIC unsigned wait_any(int count,
     for (int i=0; i<count; ++i)
     {
         if (requests[i].inuse())
-        {
             array_of_requests[i] = requests[i].r();
-        }
         else
-        {
             array_of_requests[i] = MPI_REQUEST_NULL;
-        }
     }
     int index;
     MPI_Waitany(count, &array_of_requests[0], &index, MPI_STATUSES_IGNORE);

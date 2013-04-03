@@ -15,12 +15,6 @@
 #include "../SpinLock.hh"
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-
-//#ifdef C4_MPI
-//#include "../MPI_Traits.hh"
-//#include <mpi.h>
-//#endif
-
 #include <iostream>
 
 using namespace std;
@@ -103,19 +97,16 @@ void tstWait(rtt_dsxx::UnitTest &ut)
     
     if (rtt_c4::node()>0)
     {
-        cout << "sending from processor " << processor_name() << ':' << endl;
+        cout << "sending from processor " << get_processor_name() << ':' << endl;
         int buffer[1];
         buffer[0] = node();
         C4_Req outgoing = send_async(buffer, 1U, 0);
         unsigned result = wait_any(1U, &outgoing);
-        if (result!=0)
-        {
-            ITFAILS;
-        }
+        if (result!=0) ITFAILS;
     }
     else
     {
-        cout << "receiving to processor " << processor_name() << ':' << endl;
+        cout << "receiving to processor " << get_processor_name() << ':' << endl;
         Check(rtt_c4::nodes()<5);
         C4_Req requests[4];
         bool done[4];
@@ -128,19 +119,11 @@ void tstWait(rtt_dsxx::UnitTest &ut)
         for (int c=1; c<nodes(); ++c)
         {
             unsigned result = wait_any(nodes(), requests);
-            if (done[result])
-            {
-                ITFAILS;
-            }
+            if (done[result]) ITFAILS;
             done[result] = true;
         }
         for (int p=1; p<nodes(); ++p)
-        {
-            if (!done[p])
-            {
-                ITFAILS;
-            }
-        }
+            if (!done[p]) ITFAILS;
     }
     return;
 }

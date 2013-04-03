@@ -157,14 +157,6 @@ macro( setupMPILibrariesUnix )
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
          endif()
                
-         # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
-         # This is required on Turning when running 'ctest -j16'.  See
-         # notes in component_macros.cmake.
-         if( NOT "${SITE}" MATCHES "rr" )
-            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
-            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
-         endif()
-         
          # Find cores/cpu and cpu/node.
          set( MPI_CORES_PER_CPU 4 )
          if( EXISTS "/proc/cpuinfo" )
@@ -209,11 +201,6 @@ macro( setupMPILibrariesUnix )
          set( MPIEXEC_POSTFLAGS_STRING ${MPIEXEC_POSTFLAGS_STRING}
             CACHE STRING "extra mpirun flags (string)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
-      # elseif( "${MPIEXEC}" MATCHES aprun)
-      #    set( MPIEXEC_POSTFLAGS -cc none CACHE
-      #       STRING "extra mpirun flags (list)." FORCE)
-      #    set( MPIEXEC_POSTFLAGS_STRING "-cc none" CACHE
-      #       STRING "extra mpirun flags (string)." FORCE)
       elseif( "${MPIEXEC}" MATCHES srun)
          set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
             STRING "flag used to specify number of processes." FORCE)
@@ -228,6 +215,18 @@ macro( setupMPILibrariesUnix )
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
    set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+
+   # We use variables like ${MPI_CXX_INCLUDE_PATH} with the
+   # assumption that the stirng will be empty if MPI is not found.
+   # Make sure the string is empty...
+   if( "${MPI_HEADER_PATH}" STREQUAL "MPI_HEADER_PATH-NOTFOUND")
+      set( MPI_HEADER_PATH "" CACHE PATH 
+         "MPI not found, empty value." FORCE )
+      set( MPI_CXX_INCLUDE_PATH "" CACHE PATH 
+         "MPI not found, empty value." FORCE )
+      set( MPI_C_INCLUDE_PATH "" CACHE PATH 
+         "MPI not found, empty value." FORCE )
+   endif()
 
 endmacro()
 
@@ -293,6 +292,10 @@ macro( setupCudaEnv )
       option( USE_CUDA "If CUDA is available, should we use it?" ON )
       set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
       set( CUDA_NVCC_FLAGS "-arch=sm_21" )
+      string( TOUPPER ${CMAKE_BUILD_TYPE} UC_CMAKE_BUILD_TYPE )
+      if( ${UC_CMAKE_BUILD_TYPE} MATCHES DEBUG )
+         set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
+      endif()
       set( cudalibs ${CUDA_CUDART_LIBRARY} )
       set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
          "static or shared (dll) libraries" FORCE )

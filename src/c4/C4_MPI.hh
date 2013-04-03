@@ -53,10 +53,10 @@ void inherit(const Comm &comm)
 }
 
 template<class T>
-int create_vector_type(unsigned count,
-                       unsigned blocklength,
-                       unsigned stride,
-                       C4_Datatype &new_type)
+int create_vector_type(unsigned      count,
+                       unsigned      blocklength,
+                       unsigned      stride,
+                       C4_Datatype & new_type)
 {
     int info = MPI_Type_vector(count, blocklength, stride,
                                MPI_Traits<T>::element_type(),

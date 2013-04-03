@@ -12,9 +12,8 @@
 //---------------------------------------------------------------------------//
 
 #include "../global.hh"
-
-#include "ds++/Release.hh"
 #include "../ParallelUnitTest.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_c4;
@@ -30,13 +29,9 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     int ierr = create_vector_type<double>(3, 2, 4, data_type);
 
     if (ierr == C4_SUCCESS)
-    {
         ut.passes("created vector type successfully");
-    }
     else
-    {
         ut.failure("did NOT create vector type successfully");
-    }
 
     // try sending a couple
 
@@ -59,9 +54,7 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     if (proc==0)
     {
         for (unsigned p=1; p<nproc; ++p)
-        {
             send_udt(array+(1+4*2), 1, p, data_type);
-        }
     }
     else
     {
@@ -95,30 +88,13 @@ void test_simple( rtt_dsxx::UnitTest &ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {
-        // Unit tests
-        test_simple(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstVector_Type, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstVector_Type, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { test_simple(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstVector_Type.cc
+// end of tstVector_Type.cc
 //---------------------------------------------------------------------------//

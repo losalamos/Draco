@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Jul 18 11:10:10 2002
  * \brief  test Communicator Duplication
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -139,7 +139,6 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
 }
 
 //---------------------------------------------------------------------------//
-
 void test_comm_dup(rtt_dsxx::UnitTest &ut)
 {
     // we only run this test scalar
@@ -158,7 +157,7 @@ void test_comm_dup(rtt_dsxx::UnitTest &ut)
     // check the number of nodes
     if (rtt_c4::nodes() != 1) ITFAILS;
 
-    if (rtt_c4_test::passed)
+    if (ut.numFails==0)
 	PASSMSG("Scalar Comm duplication/free works ok.");
 
 #endif
@@ -195,9 +194,7 @@ void test_comm_dup(rtt_dsxx::UnitTest &ut)
     return;
 }
 
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);

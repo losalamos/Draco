@@ -52,30 +52,41 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     // post asynchronous receives.
     comm_int[0] = rtt_c4::receive_async( &buffer2[0], buffer2.size(), left );
 
-    // send data using non-blocking synchronous send.
-    rtt_c4::send_is( comm_int[1], &buffer1[0], buffer1.size(), right );
+    try
+    {
+        // send data using non-blocking synchronous send.
+        rtt_c4::send_is( comm_int[1], &buffer1[0], buffer1.size(), right );
     
-    // wait for all communication to finish
-    rtt_c4::wait_all( comm_int.size(), &comm_int[0] );
-
-    // exected results
-    std::vector<int> expected(bsize);
-    for( size_t i=0;i<bsize;++i )
-        expected[i] = 1000*left+i;
-
-    if( expected == buffer2 )
-    {
-        std::ostringstream msg;
-        msg << "Expected data found after send_is() on node " << rtt_c4::node()
-            << ".";
-        PASSMSG( msg.str() );
+        // wait for all communication to finish
+        rtt_c4::wait_all( comm_int.size(), &comm_int[0] );
+        
+        // exected results
+        std::vector<int> expected(bsize);
+        for( size_t i=0;i<bsize;++i )
+            expected[i] = 1000*left+i;
+        
+        if( expected == buffer2 )
+        {
+            std::ostringstream msg;
+            msg << "Expected data found after send_is() on node "
+                << rtt_c4::node() << ".";
+            PASSMSG( msg.str() );
+        }
+        else
+        {
+            std::ostringstream msg;
+            msg << "Did not find expected data after send_is() on node "
+                << rtt_c4::node() << ".";
+            FAILMSG( msg.str() );
+        }
     }
-    else
+    catch( rtt_dsxx::assertion const & error )
     {
-        std::ostringstream msg;
-        msg << "Did not find expected data after send_is() on node " << rtt_c4::node()
-            << ".";
-        FAILMSG( msg.str() );
+#ifdef C4_SCALAR
+        PASSMSG("Successfully caught a ds++ exception while trying to use send_is() in a C4_SCALAR build.");
+#else
+        FAILMSG("Encountered a ds++ exception while testing send_is().");
+#endif
     }
     
     return;
@@ -91,21 +102,9 @@ int main(int argc, char *argv[])
         // Unit tests
         test_simple(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstsend_is, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstsend_is, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstsend_is.cc
+// end of tstsend_is.cc
 //---------------------------------------------------------------------------//

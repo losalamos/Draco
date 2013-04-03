@@ -118,8 +118,6 @@ DLL_PUBLIC int node();
  */
 DLL_PUBLIC int nodes();
 
-DLL_PUBLIC std::string processor_name();
-
 //---------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
 //---------------------------------------------------------------------------//
@@ -134,25 +132,25 @@ DLL_PUBLIC void global_barrier();
 //! Do a point-to-point, blocking send.
 template<typename T>
 DLL_PUBLIC int send(const T *buffer, int size, int destination,
-	 int tag = C4_Traits<T*>::tag);
+                    int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive.
 template<typename T>
 DLL_PUBLIC int receive(T *buffer, int size, int source, 
-    int tag = C4_Traits<T*>::tag);
+                       int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send of a user-defined type.
 template<typename T>
 DLL_PUBLIC int send_udt(const T *buffer, int size, int destination, C4_Datatype &,
-             int tag = C4_Traits<T*>::tag);
+                        int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive of a user-defined type.
 template<typename T>
 DLL_PUBLIC int receive_udt(T *buffer, int size, int source,  C4_Datatype &,
-                int tag = C4_Traits<T*>::tag);
+                           int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
@@ -331,8 +329,8 @@ DLL_PUBLIC int broadcast(T *buffer, int size, int root);
 template<typename ForwardIterator, typename OutputIterator>
 void broadcast(
     ForwardIterator first,
-	ForwardIterator last,
-	OutputIterator result);
+    ForwardIterator last,
+    OutputIterator result);
 
 //---------------------------------------------------------------------------//
 // GATHER/SCATTER
