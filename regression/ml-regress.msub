@@ -84,8 +84,8 @@ module use ${regdir}/draco/environment/Modules/hpc
 module load friendly-testing 
 module load intel/13.1.0 openmpi/1.6.3
 module load gsl/1.14-intel lapack/3.4.1-intel
-module load trilinos/10.12.2-intel SuperLU_DIST/3.0-intel
-module load ParMetis/3.1.1-intel ndi
+module load trilinos/10.12.2-openmpi163-intel1310 SuperLU_DIST/3.0-openmpi163-intel1310
+module load ParMetis/3.1.1-openmpi163-intel1310 ndi
 module load cmake numdiff svn random123 eospac
 comp=`basename $CXX`
 
