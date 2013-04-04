@@ -22,6 +22,12 @@ endif( BUILD_SHARED_LIBS )
 # Disable OpenMP for now (it doesn't appear to be working correctly.)
 set( USE_OPENMP NO )
 
+# Disable DRACO_ENABLE_CXX11 if the compiler version < 13.  pgCC did
+# not support C++11 prior to version 13.
+if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0 )
+   set( DRACO_ENABLE_CXX11 OFF )
+endif()
+
 #
 # C++ libraries required by Fortran linker
 # 
