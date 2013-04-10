@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Nov 19 12:42:18 2004
  * \brief  Header for File_Output and File_Input.
- * \note   Copyright © 2004-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -217,16 +218,16 @@ File_Output& File_Output::operator<<(const T i)
 
     if ( d_binary )
     {
-	char buffer[sizeof(T)];
-	std::memcpy(buffer, const_cast<T*>(&i), sizeof(T));
-	d_stream.write(buffer, sizeof(T));
+        char buffer[sizeof(T)];
+        std::memcpy(buffer, const_cast<T*>(&i), sizeof(T));
+        d_stream.write(buffer, sizeof(T));
     }
     else // ascii mode
     {
-	if ( d_last_was_char ) d_stream << '\n';
+        if ( d_last_was_char ) d_stream << '\n';
 
-	d_last_was_char = false;
-	d_stream << i << '\n';
+        d_last_was_char = false;
+        d_stream << i << '\n';
     }
 
     Ensure(d_stream.good());
@@ -248,18 +249,18 @@ File_Input& File_Input::operator>>(T &i)
 
     if ( d_binary )
     {
-	char buffer[sizeof(T)];
-	d_stream.read(buffer, sizeof(T));
-	std::memcpy(&i, buffer, sizeof(T));
+        char buffer[sizeof(T)];
+        d_stream.read(buffer, sizeof(T));
+        std::memcpy(&i, buffer, sizeof(T));
     }
     else // ascii mode
     {
-	std::getline(d_stream, d_line);
-	Check(! d_line.empty());
-	std::istringstream s(d_line);
+        std::getline(d_stream, d_line);
+        Check(! d_line.empty());
+        std::istringstream s(d_line);
 
-	s >> i;
-	d_char_line = -1;
+        s >> i;
+        d_char_line = -1;
     }
 
     Ensure(d_stream.good());
@@ -276,5 +277,5 @@ File_Input& File_Input::operator>>(T &i)
 #endif // rtt_dsxx_File_Streams_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/File_Streams.hh
+// end of ds++/File_Streams.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:17:24 2006
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -18,6 +18,7 @@
 #include <cstring>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
 using namespace std;
 using namespace rtt_dsxx;

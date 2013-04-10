@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/Assert.cc
  * \brief  Helper functions for the Assert facility.
- * \note   Copyright (C) 1997-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1997-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */
@@ -152,5 +152,5 @@ std::string verbose_error(std::string const & message)
 } // end of rtt_dsxx
 
 //---------------------------------------------------------------------------//
-//                              end of Assert.cc
+// end of Assert.cc
 //---------------------------------------------------------------------------//
