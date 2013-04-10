@@ -134,12 +134,15 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
             
             raw.push_back(pair<double, double>(monoOpacity(x, T), weight));
         }
-        sort(raw.begin(), raw.end());
 
         switch (averaging_)
         {
             case NONE:
             {
+                if (bands_per_group>1)
+                {
+                    sort(raw.begin(), raw.end());
+                }
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {
@@ -153,6 +156,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
             
             case ROSSELAND:
             {
+                sort(raw.begin(), raw.end());
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {
@@ -175,6 +179,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
             
             case PLANCK:
             {
+                sort(raw.begin(), raw.end());
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {

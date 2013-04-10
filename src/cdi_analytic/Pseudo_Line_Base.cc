@@ -14,6 +14,7 @@
 #include "Pseudo_Line_Base.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/cube.hh"
+#include "c4/C4_Functions.hh"
 #include "cdi/CDI.hh"
 
 
@@ -56,8 +57,14 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     Require(edge_ratio>=0.0);
     Require(emin>=0.0);
     Require(emax>emin);
+    // Require parameter (other than emin and emax) to be same on all processors
     
     srand(seed);
+
+    // Get global range of energy
+
+    rtt_c4::global_min(emin);
+    rtt_c4::global_max(emax);
 
     for (unsigned i=0; i<number_of_lines; ++i)
     {

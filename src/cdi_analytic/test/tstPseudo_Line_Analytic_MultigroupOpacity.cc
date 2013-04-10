@@ -16,10 +16,11 @@
 #include <cmath>
 
 #include "ds++/Assert.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "../Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "parser/Constant_Expression.hh"
+#include "parser/String_Token_Stream.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -41,12 +42,22 @@ Pseudo_Line_Analytic_MultigroupOpacity::Averaging const PLANCK =
 
 void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
 {
-    unsigned const NG = 10; // 2000; // 300 for full resolution
+    unsigned const NG = 10000; // 10;
     unsigned const number_of_lines = 200;
     unsigned const number_of_edges = 10;
     unsigned seed = 1;
 
-    SP<Expression const> const continuum(new Constant_Expression(1,1.0e-2));;
+//    SP<Expression const> const continuum(new Constant_Expression(1,1.0e-2));;
+
+    SP<Expression const> continuum;
+    {
+        map<string, pair<unsigned, Unit> > variables;
+        variables["x"] = pair<unsigned, Unit>(0, raw);
+        
+        String_Token_Stream expr("1.0e-2 + 20/(x+1)^3 + 1e-4*x*x*x*x");
+        continuum = Expression::parse(1, variables, expr);
+    }
+    
     double const peak = 1e1;
     double const width = 0.002; // keV
     double const edge_ratio = 10.0; 
@@ -214,7 +225,7 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
-    ScalarUnitTest ut(argc, argv, release);
+    rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
         tstPseudo_Line_Analytic_MultigroupOpacity(ut);

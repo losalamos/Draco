@@ -17,7 +17,7 @@
 #include "../Pseudo_Line_Analytic_Odfmg_Opacity.hh"
 #include "cdi/CDI.hh"
 #include "parser/Constant_Expression.hh"
-#include "ds++/ScalarUnitTest.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -622,7 +622,7 @@ void pseudo_line_opacity_test(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
-    rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
+    rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
         odfmg_test(ut);
