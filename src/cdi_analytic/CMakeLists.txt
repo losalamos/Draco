@@ -34,6 +34,7 @@ include_directories(
    ${c4_BINARY_DIR}           # c4/config.h
    ${ode_BINARY_DIR}          # ode/config.h
    ${parser_BINARY_DIR}
+   ${MPI_CXX_INCLUDE_PATH}
 ) 
 
 # ---------------------------------------------------------------------------- #

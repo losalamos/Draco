@@ -5,6 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_MultigroupOpacity class definition.
  * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -78,7 +79,7 @@ namespace rtt_cdi_analytic
                                rtt_cdi::Model = rtt_cdi::ANALYTIC);
 
     // Constructor for packed Analytic_Multigroup_Opacities
-    explicit Analytic_MultigroupOpacity(const sf_char &);
+    explicit Analytic_MultigroupOpacity(const sf_char & packed);
 
     // Get the packed size of the object
     unsigned packed_size() const;
@@ -175,8 +176,8 @@ Analytic_MultigroupOpacity::getDataFilename() const
 
 } // end namespace rtt_cdi_analytic
 
-#endif              // __cdi_analytic_Analytic_MultigroupOpacity_hh__
+#endif // __cdi_analytic_Analytic_MultigroupOpacity_hh__
 
 //---------------------------------------------------------------------------//
-//            end of cdi_analytic/Analytic_MultigroupOpacity.hh
+// end of cdi_analytic/Analytic_MultigroupOpacity.hh
 //---------------------------------------------------------------------------//

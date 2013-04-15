@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity class definition.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -141,14 +142,14 @@ class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
     // Pack the Analytic_Gray_Opacity into a character string.
     sf_char pack() const;
 
-	/*!
-	 * \brief Returns the general opacity model type, defined in OpacityCommon.hh
-	 *
-	 * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
-	 */
-	rtt_cdi::OpacityModelType getOpacityModelType() const {
-		return rtt_cdi::ANALYTIC_TYPE;
-	}
+    /*!
+     * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+     *
+     * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
+     */
+    rtt_cdi::OpacityModelType getOpacityModelType() const {
+        return rtt_cdi::ANALYTIC_TYPE;
+    }
 };
 
 //---------------------------------------------------------------------------//
@@ -180,9 +181,7 @@ Analytic_Gray_Opacity::getDataDescriptor() const
     else if (reaction == rtt_cdi::SCATTERING)
 	descriptor = "Analytic Gray Scattering";
     else
-    {
 	Insist (0, "Invalid analytic gray model opacity!");
-    }
 
     return descriptor;
 }
@@ -199,8 +198,8 @@ Analytic_Gray_Opacity::getDataFilename() const
 
 } // end namespace rtt_cdi_analytic
 
-#endif                          // __cdi_analytic_Analytic_Gray_Opacity_hh__
+#endif // __cdi_analytic_Analytic_Gray_Opacity_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_analytic/Analytic_Gray_Opacity.hh
+// end of cdi_analytic/Analytic_Gray_Opacity.hh
 //---------------------------------------------------------------------------//

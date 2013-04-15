@@ -5,6 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_MultigroupOpacity class member definitions.
  * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -169,5 +170,5 @@ unsigned Analytic_MultigroupOpacity::packed_size() const
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                 end of Analytic_MultigroupOpacity.cc
+// end of Analytic_MultigroupOpacity.cc
 //---------------------------------------------------------------------------//
