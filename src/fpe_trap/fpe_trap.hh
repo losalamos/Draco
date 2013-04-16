@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Thu Oct 13 16:36:09 2005
  * \brief  Contains functions in the fpe_trap namespace.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +13,8 @@
 
 #ifndef fpe_trap_hh
 #define fpe_trap_hh
+
+#include "ds++/config.h"
 
 namespace rtt_fpe_trap
 {
@@ -41,12 +44,12 @@ namespace rtt_fpe_trap
   A \b false return value is typically because the platform is not
   supported.
 */
-bool enable_fpe();
+DLL_PUBLIC bool enable_fpe();
 
 } // end namespace rtt_fpe_trap
 
 #endif // fpe_trap_hh
 
 //---------------------------------------------------------------------------//
-//              end of fpe_trap/fpe_trap.hh
+// end of fpe_trap/fpe_trap.hh
 //---------------------------------------------------------------------------//

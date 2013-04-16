@@ -23,7 +23,7 @@ set_package_properties( PythonInterp PROPERTIES
    PURPOSE "Required for running the fpe_trap tests." 
 )
 
-if( PYTHONINTERP_FOUND AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]")
+if( PYTHONINTERP_FOUND )
 
     # ---------------------------------------------------------------------------- #
     # Source files
@@ -69,5 +69,23 @@ if( PYTHONINTERP_FOUND AND NOT "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]")
          LABELS                  "nomemcheck"
     )
 
-endif( )
+   # Special post-build options for Win32 platforms
+   # ------------------------------------------------------------
+  
+   if( WIN32 )
+      # For Win32 with shared libraries, the package dll must be
+      # located in the test directory.
+      unset( copy_lib_command )
+      foreach( lib Lib_fpe_trap Lib_dsxx )
+         unset( lib_loc )
+         get_target_property( lib_loc ${lib} LOCATION )
+         add_custom_command( TARGET Ut_fpe_trap_do_exception_exe
+            POST_BUILD 
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc} 
+                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+                    )
+      endforeach()
+   endif()
     
+endif() # PYTHONINTERP_FOUND
+

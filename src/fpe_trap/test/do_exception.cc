@@ -4,15 +4,15 @@
  * \author Rob Lowrie
  * \date   Thu Oct 13 14:33:59 2005
  * \brief  Does a floating-point exception.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "../fpe_trap.hh"
-#include "ds++/Release.hh"
-#include <ds++/Assert.hh>
+#include "ds++/Assert.hh"
 #include <fstream>
 #include <cmath>
 #include <iostream>
@@ -40,20 +40,20 @@ using namespace std;
 
 int run_test(int /*argc*/, char *argv[])
 {
-    std::ofstream f;
-    f.open("output.dat");
+    std::ofstream fout;
+    fout.open("output.dat");
 
     if ( rtt_fpe_trap::enable_fpe() )
     {
         // Platform supported.
-        f << "- fpe_trap: This platform is supported" << endl;
+        fout << "- fpe_trap: This platform is supported" << endl;
         cout << "- fpe_trap: This platform is supported" << endl;
     }
     else
     {
         // Platform not supported.
-        f << "- fpe_trap: This platform is not supported\n";
-        f.close();
+        fout << "- fpe_trap: This platform is not supported\n";
+        fout.close();
         return 0;
     }
 
@@ -73,8 +73,8 @@ int run_test(int /*argc*/, char *argv[])
 
     if ( test < -100 )
     { // this should never happen
-	Insist(0, "Something is very wrong.");
-	zero = neg = 1.0; // trick the optimizer?
+      Insist(0, "Something is very wrong.");
+      zero = neg = 1.0; // trick the optimizer?
     }
 
     switch ( test )
@@ -82,26 +82,26 @@ int run_test(int /*argc*/, char *argv[])
         case 0:
             // The test_filter.py triggers on the keyword 'signal', so I will
             // use '5ignal' instead.
-            f << "- Case zero: this operation should not throw a SIGFPE."
-              << " The result should be 2." << endl;
+            fout << "- Case zero: this operation should not throw a SIGFPE."
+                 << " The result should be 2." << endl;
             result = 1.0 + zero + sqrt(-neg);
-            f << "  result = " << result << endl;
+            fout << "  result = " << result << endl;
             break;
         case 1:
-            f << "- Trying a div_by_zero operation" << endl;
+            fout << "- Trying a div_by_zero operation" << endl;
             cout << "- Trying a div_by_zero operation" << endl;
             result = 1.0 / zero; // should fail here
             cout << "  result = " << 1.0*result << endl;
-            f << "  result = " << 1.0*result << endl;
+            fout << "  result = " << 1.0*result << endl;
             break;
         case 2:
-            f << "- Trying to evaluate sqrt(-1.0)" << endl;
+            fout << "- Trying to evaluate sqrt(-1.0)" << endl;
             result = sqrt(neg); // should fail here
-            f << "  result = " << result << endl;
+            fout << "  result = " << result << endl;
             break;
         case 3:
         {
-            f << "- Trying to cause an overflow condition" << endl;
+            fout << "- Trying to cause an overflow condition" << endl;
             result = 2.0;
             for ( size_t i = 0; i < 100; i++ )
             {
@@ -114,12 +114,12 @@ int run_test(int /*argc*/, char *argv[])
                          * result; // should fail at some i
                 
             }
-            f << "  result = " << result << endl;
+            fout << "  result = " << result << endl;
             break;
         }
     }
     // close the log file.
-    f.close();
+    fout.close();
     return 0;
 }
 
@@ -127,14 +127,6 @@ int run_test(int /*argc*/, char *argv[])
 int main(int argc, char *argv[])
 {
     Insist(argc == 2, "Wrong number of args.");
-
-    // banner
-    cout << "This is " << argv[0] << ": version "
-         << rtt_dsxx::release() << endl; 
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	    return 0;
-    
     try
     {
         run_test(argc,argv);
@@ -167,10 +159,9 @@ int main(int argc, char *argv[])
              << endl;
         return 1;
     }
-
     return 0;
 }
 
 //---------------------------------------------------------------------------//
-// end of tstfpuTrap.cc
+// end of do_exception.cc
 //---------------------------------------------------------------------------//

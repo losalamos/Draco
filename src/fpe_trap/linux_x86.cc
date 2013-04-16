@@ -5,7 +5,8 @@
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  Linux/X86 implementation of fpe_trap functions.
  *
- * Copyright 2004 The Regents of the University of California.
+ * Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
@@ -17,7 +18,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <fpe_trap/config.h>
+#include "fpe_trap/config.h"
 
 #ifdef FPETRAP_LINUX_X86
 
@@ -88,9 +89,9 @@ bool enable_fpe()
 {
     struct sigaction act;
 
-    act.sa_sigaction = catch_sigfpe;	/* the signal handler */
-    sigemptyset(&(act.sa_mask));	/* no other signals blocked */
-    act.sa_flags = SA_SIGINFO;		/* want 3 args for handler */
+    act.sa_sigaction = catch_sigfpe; /* the signal handler       */
+    sigemptyset(&(act.sa_mask));	    /* no other signals blocked */
+    act.sa_flags = SA_SIGINFO;       /* want 3 args for handler  */
 
     /* specify handler */
     Insist(! sigaction(SIGFPE, &act, NULL),
@@ -118,5 +119,5 @@ bool enable_fpe()
 #endif // FPETRAP_LINUX_X86
 
 //---------------------------------------------------------------------------//
-//                 end of linux_x86.cc
+// end of linux_x86.cc
 //---------------------------------------------------------------------------//

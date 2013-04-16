@@ -27,6 +27,8 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
    else()
       set( FPETRAP_DARWIN_INTEL 1 )
    endif()
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+   set( FPETRAP_WINDOWS_X86 1 )
 endif()
 
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/fpe_trap/config.h )

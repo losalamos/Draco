@@ -4,7 +4,8 @@
  * \author Rob Lowrie 
  * \date   Thu Oct 13 14:00:50 2005
  * \brief  config for fpe_trap
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
@@ -18,12 +19,14 @@
 #cmakedefine FPETRAP_DARWIN_INTEL @FPETRAP_DARWIN_INTEL@
 #cmakedefine FPETRAP_DARWIN_PPC   @FPETRAP_DARWIN_PPC@
 #cmakedefine FPETRAP_LINUX_X86    @FPETRAP_LINUX_X86@
+#cmakedefine FPETRAP_WINDOWS_X86  @FPETRAP_WINDOWS_X86@
 
 // Using values above, determine if fpe_trap is supported
 #if defined(FPETRAP_OSF_ALPHA) ||\
     defined(FPETRAP_DARWIN_INTEL) ||\
     defined(FPETRAP_DARWIN_PPC) ||\
-    defined(FPETRAP_LINUX_X86)
+    defined(FPETRAP_LINUX_X86) ||\
+    defined(FPETRAP_WINDOWS_X86)
 #define FPETRAP_SUPPORTED
 #else
 #define FPETRAP_UNSUPPORTED
@@ -32,5 +35,5 @@
 #endif /* fpe_trap_config_h */
 
 /*---------------------------------------------------------------------------*/
-/*           end of fpe_trap/config.h */
+/* end of fpe_trap/config.h */
 /*---------------------------------------------------------------------------*/
