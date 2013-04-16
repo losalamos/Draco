@@ -11,6 +11,16 @@
 # Prepare
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE )
 
+# OpenMP is not available in free MSVC products.
+if( USE_OPENMP )
+    # Platform checks for gethostname()
+    include( CheckIncludeFiles )
+    check_include_files( omp.h HAVE_OMP_H )
+    if( NOT HAVE_OMP_H )
+       set( USE_OPENMP OFF CACHE BOOL "Turn on OpenMP features?" FORCE )
+    endif()
+endif()
+
 # if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
   # message( FATAL_ERROR "You requested SHARED libraries for a Windows build.  This feature not available - yell at KT." )
 # endif()
@@ -91,7 +101,15 @@ if( ${CMAKE_GENERATOR} STREQUAL "Visual Studio 8 2005" OR
     #set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
   endif(MSVC_VERSION GREATER 1399)
 
-  find_library( Lib_win_winsock NAMES winsock32;ws2_32 )
+  find_library( Lib_win_winsock 
+     NAMES wsock32;winsock32;ws2_32 
+     HINTS 
+        "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Lib"
+        "C:/Windows/SysWOW64"
+  )  
+  if( ${Lib_win_winsock} MATCHES "NOTFOUND" )
+     message( FATAL_ERROR "Could not find library winsock32 or ws2_32!" )
+  endif()
   
   # if( ENABLE_SSE AND NOT CMAKE_CL_64 ) # not for 64-bit windows.
     # set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /arch:SSE2" )

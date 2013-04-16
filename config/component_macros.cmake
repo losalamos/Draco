@@ -200,36 +200,8 @@ set_target_properties(${acl_TARGET} PROPERTIES
          "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
 
    endif()
-   
-   #
-   # Special post-build options for Win32 platforms
-   #
+
   
-   if( WIN32 AND ${acl_TARGET} MATCHES "_test" )
-      # For Win32 with shared libraries, the package dll must be
-      # located in the test directory.
-      # get_target_property( ${comp_target}_loc ${comp_target} LOCATION )
-      unset( copy_lib_command )
-      foreach( lib ${${acl_PREFIX}_LIBRARIES} )
-         unset( ${comp_target}_loc )
-         get_target_property( ${comp_target}_loc ${lib} LOCATION )
-         #set( copy_lib_command "${copy_lib_command} COMMAND ${CMAKE_COMMAND} -E copy_if_different \"${${comp_target}_loc}\" #${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}" )
-         add_custom_command( TARGET ${acl_TARGET}
-            POST_BUILD 
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
-                    )
-message("
-         add_custom_command( TARGET ${acl_TARGET}
-            POST_BUILD 
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
-                    )
-")
-      endforeach()
-                    
-   endif()
-   
 endmacro()
 
 # ------------------------------------------------------------
@@ -241,24 +213,15 @@ endmacro()
 # ------------------------------------------------------------
 macro( register_scalar_test targetname runcmd command cmd_args )
    
-   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" AND "${SITE}" MATCHES "rr[a-z][0-9]+a" )
-      # Special treatment for Roadrunner PPE build.  The tests
-      # must be run on the PPC chip on the backend.  If we are
-      # running from the x86 backend, then we can run the tests
-      # by ssh'ing to the 'b' node and running the test.
-      add_test( 
-         NAME    ${targetname}
-         COMMAND ${RUN_CMD} "(cd ${PROJECT_BINARY_DIR};./${command} ${cmd_args})" )
-   else()
-      # Cielito needs the ./ in front of the binary name.
-      if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" )
-         set( APT_TARGET_FILE_PREFIX "./" )
-      endif()
-      separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
-      add_test( 
-         NAME    ${targetname}
-         COMMAND ${RUN_CMD} ${APT_TARGET_FILE_PREFIX}${command} ${cmdargs})
+   # Cielito needs the ./ in front of the binary name.
+   if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" )
+      set( APT_TARGET_FILE_PREFIX "./" )
    endif()
+   separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
+   add_test( 
+      NAME    ${targetname}
+      COMMAND ${RUN_CMD} ${APT_TARGET_FILE_PREFIX}${command} ${cmdargs}
+   )
 
    # reserve enough threads for application unit tests
    set( num_procs 1 ) # normally we only need 1 core for each scalar
@@ -417,22 +380,6 @@ macro( add_scalar_tests test_sources )
 
    endif()
 
-   # When on roadrunner backend (x86), we must ssh into the PPE to run
-   # the test.  If we are on roadrunner frontend, we cannot run the
-   # tests.
-   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
-      if( "${SITE}" MATCHES "rr[a-z][0-9]+a" )
-         if( "${SITE}" MATCHES "localdomain" )
-            string( REGEX REPLACE "(rr[a-z][0-9]+)[a][.]localdomain"
-               "\\1b" ppe_node ${SITE} )
-         else()
-            string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node 
-               ${SITE} )
-         endif()
-         set( RUN_CMD ssh ${ppe_node} )
-      endif()
-   endif()
-
    # Sanity Checks
    # ------------------------------------------------------------
    if( "${addscalartest_SOURCES}none" STREQUAL "none" )
@@ -470,7 +417,7 @@ macro( add_scalar_tests test_sources )
 
    # Loop over each test source files:
    # 1. Compile the executable
-   # 3. Register the unit test
+   # 2. Register the unit test
 
    # Generate the executable
    # ------------------------------------------------------------
@@ -497,9 +444,30 @@ macro( add_scalar_tests test_sources )
          Ut_${compname}_${testname}_exe 
          ${test_lib_target_name}
          ${addscalartest_DEPS}
-         )
+         )  
+         
+      # Special post-build options for Win32 platforms
+      # ------------------------------------------------------------
+     
+      if( WIN32 )
+         # For Win32 with shared libraries, the package dll must be
+         # located in the test directory.
+         unset( copy_lib_command )
+         foreach( lib ${test_lib_target_name} ${addscalartest_DEPS} )
+            unset( ${comp_target}_loc )
+            get_target_property( ${comp_target}_loc ${lib} LOCATION )
+            add_custom_command( TARGET Ut_${compname}_${testname}_exe
+               POST_BUILD 
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                       ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+                       )
+         endforeach()
+                       
+      endif()
    endforeach()
+   
 
+      
    # Register the unit test
    # ------------------------------------------------------------
    foreach( file ${addscalartest_SOURCES} )
@@ -546,21 +514,6 @@ macro( add_parallel_tests )
       ${ARGV}
       )
 
-   # When on roadrunner backend (x86), we must ssh into the PPE to run
-   # the test.  If we are on roadrunner frontend, we cannot run the
-   # tests.
-   if( "${CMAKE_CXX_COMPILER}" MATCHES "ppu-g[+][+]" )
-      if( "${SITE}" MATCHES "rr[a-z][0-9]+a" )
-         if( "${SITE}" MATCHES "localdomain" )
-            string( REGEX REPLACE "(rr[a-z][0-9]+)[a][.]localdomain"
-               "\\1b" ppe_node ${SITE} )
-         else()
-            string( REGEX REPLACE "a[.]rr[.]lanl[.]gov" "b" ppe_node ${SITE} )
-         endif()
-         set( RUN_CMD ssh ${ppe_node} )
-      endif()
-   endif()
-
    # Sanity Check
    if( "${addparalleltest_SOURCES}none" STREQUAL "none" )
       message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using the add_parallel_tests macro.  Please see draco/config/component_macros.cmake::add_parallel_tests() for more information." )
@@ -596,7 +549,7 @@ macro( add_parallel_tests )
        set( MPIRUN_POSTFLAGS ${MPIEXEC_POSTFLAGS} )
    else()
        set( MPIRUN_POSTFLAGS "${addparalleltest_MPIFLAGS}" )
-   endif ()
+   endif()
   
 
    # Loop over each test source files:

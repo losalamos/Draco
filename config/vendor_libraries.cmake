@@ -157,6 +157,14 @@ macro( setupMPILibrariesUnix )
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
          endif()
                
+         # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
+         # This is required on Turning when running 'ctest -j16'.  See
+         # notes in component_macros.cmake.
+         if( NOT "${SITE}" MATCHES "rr" )
+            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
+            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
+         endif()
+         
          # Find cores/cpu and cpu/node.
          set( MPI_CORES_PER_CPU 4 )
          if( EXISTS "/proc/cpuinfo" )
@@ -201,6 +209,11 @@ macro( setupMPILibrariesUnix )
          set( MPIEXEC_POSTFLAGS_STRING ${MPIEXEC_POSTFLAGS_STRING}
             CACHE STRING "extra mpirun flags (string)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
+      # elseif( "${MPIEXEC}" MATCHES aprun)
+      #    set( MPIEXEC_POSTFLAGS -cc none CACHE
+      #       STRING "extra mpirun flags (list)." FORCE)
+      #    set( MPIEXEC_POSTFLAGS_STRING "-cc none" CACHE
+      #       STRING "extra mpirun flags (string)." FORCE)
       elseif( "${MPIEXEC}" MATCHES srun)
          set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
             STRING "flag used to specify number of processes." FORCE)
@@ -242,11 +255,26 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
 
-   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.  
-   if( EXISTS  $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.1 )
-      list( APPEND CMAKE_PREFIX_PATH
-         $ENV{LAPACK_LIB_DIR}/cmake/lapack-3.4.1 )
-      find_package( lapack )
+   message( STATUS "Looking for lapack...")
+   set( lapack_FOUND FALSE )
+   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK. 
+   foreach( version 3.4.1 3.4.2 )   
+      if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
+         list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
+         find_package( lapack CONFIG )
+      endif()
+   endforeach()
+   foreach( config NOCONFIG DEBUG RELEASE )
+      get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
+      if( EXISTS ${tmp} )
+         set( lapack_FOUND TRUE )
+      endif()
+   endforeach()
+   if( lapack_FOUND)
+      message( STATUS "looking for lapack...found")
+      set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
+   else()
+      message( "looking for lapack...not found")
    endif()
 
 endmacro()
@@ -343,10 +371,10 @@ endmacro()
 #------------------------------------------------------------------------------
 # Helper macros for setup_global_libraries()
 #------------------------------------------------------------------------------
-macro( SetupVendorLibrariesWindows )
+macro( setupMPILibrariesWindows )
 
    # MPI ---------------------------------------------------------------------
-   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
+   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" ) # AND "${MPIEXEC}x" STREQUAL "x" )
       # Try to find MPI in the default locations (look for mpic++ in PATH)
       # This module will set the following variables:
       #   MPI_FOUND                  TRUE have we found MPI
@@ -454,34 +482,57 @@ macro( SetupVendorLibrariesWindows )
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       endif()
       
-   endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
+   endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
 
    set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
 
+endmacro( setupMPILibrariesWindows )
+
+macro( SetupVendorLibrariesWindows )
    # LAPACK ------------------------------------------------------------------
    # if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
-   #    message( STATUS "Looking for LAPACK...")
+   
+      # message( STATUS "Looking for LAPACK...")
       
-   #    # Set the BLAS/LAPACK VENDOR.  
-   #    # set( BLA_VENDOR "Generic" )
+     ## Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
+     # if( "${LAPACK_LIB_DIR}x" STREQUAL "x" AND NOT "$ENV{LAPACK_LIB_DIR}x" STREQUAL "x" )
+        # set( LAPACK_LIB_DIR "$ENV{LAPACK_LIB_DIR}" )
+     # endif()
+     
+     # if( EXISTS ${LAPACK_LIB_DIR}/cmake/lapack-3.4.2 )
+     # message("
+     # ${LAPACK_LIB_DIR}/cmake/lapack-3.4.2
+     # ")
+      # list( APPEND CMAKE_PREFIX_PATH
+         # ${LAPACK_LIB_DIR}/cmake/lapack-3.4.2 )
+         # message("
+         # find_package( lapack )
+         # CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}
+         # ")
+      # find_package( lapack )
+     # endif()
+   
       
-   #    # This module sets the following variables:
-   #    # LAPACK_FOUND - set to true if a library implementing the LAPACK
-   #    #              interface is found
-   #    # LAPACK_LINKER_FLAGS - uncached list of required linker flags
-   #    #              (excluding -l and -L).
-   #    # LAPACK_LIBRARIES - uncached list of libraries (using full path
-   #    #              name) to link against to use LAPACK
+      # Set the BLAS/LAPACK VENDOR.  
+      # set( BLA_VENDOR "Generic" )
+      
+      # This module sets the following variables:
+      # LAPACK_FOUND - set to true if a library implementing the LAPACK
+      #              interface is found
+      # LAPACK_LINKER_FLAGS - uncached list of required linker flags
+      #              (excluding -l and -L).
+      # LAPACK_LIBRARIES - uncached list of libraries (using full path
+      #              name) to link against to use LAPACK
 
-   #    # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
+      # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
 
-   #    find_package( LAPACK ) # QUIET
+      # find_package( LAPACK ) # QUIET
 
-   #    if( LAPACK_FOUND )
-   #       set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING "lapack libs" )
-   #       mark_as_advanced( LAPACK_LIBRARIES )
-   #       message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
-   #    endif()
+      # if( LAPACK_FOUND )
+         # set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING "lapack libs" )
+         # mark_as_advanced( LAPACK_LIBRARIES )
+         # message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
+      # endif()
       
    # endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
    
@@ -494,12 +545,18 @@ macro( SetupVendorLibrariesWindows )
    set(GSL_STATIC ON)
    
    find_package( GSL REQUIRED )
+   
+   # if( GSL_FOUND )
+      # message( STATUS "Looking for GSL...   FOUND")
+   # else()
+      # message( STATUS "Looking for GSL...   NOT FOUND")
+   # endif()
 
    # Random123 ---------------------------------------------------------------
-   message( STATUS "Looking for Random123...")
-   set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.06/include" )
+   #message( STATUS "Looking for Random123...")
+   #set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.06/include" )
 
-   find_package( Random123 REQUIRED )
+   #find_package( Random123 REQUIRED )
 
 endmacro()
 
@@ -552,35 +609,35 @@ individual vendor directories should be defined." )
         set( LAPACK_LIB_DIR $ENV{LAPACK_LIB_DIR} )
         set( LAPACK_INC_DIR $ENV{LAPACK_INC_DIR} )
     endif()
-    # if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/LAPACK/lib )
-    #     set( LAPACK_LIB_DIR "${VENDOR_DIR}/LAPACK/lib" )
-    #     set( LAPACK_INC_DIR "${VENDOR_DIR}/LAPACK/include" )
-    #     if( WIN32 )
-    #         # cleanup LIB
-    #         unset(newlibpath)
-    #         foreach( path $ENV{LIB} )
-    #             if( newlibpath )
-    #                 set( newlibpath "${newlibpath};${path}" )
-    #             else()
-    #                 set( newlibpath "${path}" )
-    #             endif()
-    #         endforeach()
-    #         set(haslapackpath FALSE)
-    #         foreach( path ${newlibpath} )
-    #             if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
-    #                 set( haslapackpath TRUE ) 
-    #             endif()
-    #         endforeach()
-    #         if( NOT ${haslapackpath} )
-    #             set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
-    #             set( ENV{LIB} "${newlibpath}" )
-    #         endif()
-    #         #message("LIB = $ENV{LIB}")
-    #     endif()
-    # endif()
+    if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/lapack-3.4.2/lib )
+        set( LAPACK_LIB_DIR "${VENDOR_DIR}/lapack-3.4.2/lib" )
+        set( LAPACK_INC_DIR "${VENDOR_DIR}/lapack-3.4.2/include" )
+        # if( WIN32 )
+            # cleanup LIB
+            # unset(newlibpath)
+            # foreach( path $ENV{LIB} )
+                # if( newlibpath )
+                    # set( newlibpath "${newlibpath};${path}" )
+                # else()
+                    # set( newlibpath "${path}" )
+                # endif()
+            # endforeach()
+            # set(haslapackpath FALSE)
+            # foreach( path ${newlibpath} )
+                # if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
+                    # set( haslapackpath TRUE ) 
+                # endif()
+            # endforeach()
+            # if( NOT ${haslapackpath} )
+                # set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
+                # set( ENV{LIB} "${newlibpath}" )
+            # endif()
+            # message("LIB = $ENV{LIB}")
+        # endif()
+    endif()
     # if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
-    #     set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
-    #     set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
+        # set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
+        # set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
     # endif()
 
     if( NOT GSL_LIB_DIR AND IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
@@ -648,6 +705,11 @@ macro( setupVendorLibraries )
      setupLAPACKLibrariesUnix()
      setupVendorLibrariesUnix()
   elseif( WIN32 )
+     
+     #if( NOT MPI_SETUP_DONE )
+        setupMPILibrariesWindows()
+     #endif()
+     setupLAPACKLibrariesUnix()
      setupVendorLibrariesWindows()
   else()
      message( FATAL_ERROR "

@@ -44,18 +44,36 @@ macro( set_ccs2_software_version PROJNAME )
    elseif( WIN32 )
       execute_process( 
          COMMAND         "cmd" "/c" "date" "/t"
-         OUTPUT_VARIABLE configureDate )
+         OUTPUT_VARIABLE configureDate
+         OUTPUT_STRIP_TRAILING_WHITESPACE )
       # this should produce a string of the form "Sat MM/DD/YYYY".
       # Format the configureDate
+      # message("xxx ${configureDate} xxx")
+      ### YYYY-MM-DD
       string( REGEX REPLACE 
-        ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-        "\\3" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
+        ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+        "\\1" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
       string( REGEX REPLACE 
-         ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-         "\\1" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
+         ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+         "\\2" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
       string( REGEX REPLACE 
-         ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-         "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
+         ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+         "\\3" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
+      ### MM-DD-YYYY
+      # string( REGEX REPLACE 
+        # ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+        # "\\3" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
+      # string( REGEX REPLACE 
+         # ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+         # "\\1" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
+      # string( REGEX REPLACE 
+         # ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+         # "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
+      # message("
+      # YYYY = ${${PROJNAME}_DATE_STAMP_YEAR}
+      # MM   = ${${PROJNAME}_DATE_STAMP_MONTH}
+      # DD   = ${${PROJNAME}_DATE_STAMP_DAY}
+      # ")
    endif()
    
    set( ${PROJNAME}_BUILD_DATE
