@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:29:17 2001
  * \brief  DummyEoS class header file (derived from ../EoS)
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$1
@@ -40,7 +42,7 @@ namespace rtt_cdi_test
  */
 //========================================================================
 
-class DummyEoS : public rtt_cdi::EoS
+class DLL_PUBLIC DummyEoS : public rtt_cdi::EoS
 {
   public:
 	

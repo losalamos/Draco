@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:02:21 2001
  * \brief  GrayOpacity class header file (an abstract class)
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,11 +14,11 @@
 #ifndef __cdi_GrayOpacity_hh__
 #define __cdi_GrayOpacity_hh__
 
-#include <vector>
-#include <string>
-
 #include "OpacityCommon.hh"  // Stuff that is common between Gray and
                              // Multigroup.
+#include "ds++/config.h"
+#include <vector>
+#include <string>
 
 namespace rtt_cdi
 {
@@ -39,7 +40,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class GrayOpacity
+class DLL_PUBLIC GrayOpacity
 {
     // DATA
 	
@@ -93,9 +94,9 @@ class GrayOpacity
      *
      * \return A vector of opacities (cm^2/g).
      */
-    virtual std::vector< double > getOpacity( 
-	const std::vector< double >& targetTemperature,
-	double targetDensity ) const = 0; 
+    virtual std::vector< double >  getOpacity( 
+	    const  std::vector< double >& targetTemperature,
+	    double targetDensity ) const = 0; 
 	
     /*!
      * \brief Opacity accessor that returns a vector of opacities
@@ -111,8 +112,8 @@ class GrayOpacity
      * \return A vector of opacities (cm^2/g).
      */
     virtual std::vector< double > getOpacity( 
-	double targetTemperature,
-	const std::vector<double>& targetDensity ) const = 0;
+	    double targetTemperature,
+	    const std::vector<double>& targetDensity ) const = 0;
 
     /*!
      * \brief Query whether the data is in tables or functional form.
@@ -185,8 +186,7 @@ class GrayOpacity
 	 */
 	virtual rtt_cdi::OpacityModelType getOpacityModelType() const = 0;
 	
-}; // end of class GrayOpacity
-    
+}; // end of class GrayOpacity    
     
 } // end namespace rtt_cdi
 

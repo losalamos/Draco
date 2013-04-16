@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Fri Apr 13 16:15:59 2001
  * \brief  EoS class header file (an abstract class)
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,6 +14,7 @@
 #ifndef __cdi_EoS_hh__
 #define __cdi_EoS_hh__
 
+#include "ds++/config.h"
 #include <vector>
 
 namespace rtt_cdi
@@ -35,7 +36,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class EoS
+class DLL_PUBLIC EoS
 {
     // DATA
 	

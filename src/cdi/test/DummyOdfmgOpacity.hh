@@ -5,8 +5,8 @@
  * \date   Mon Jan 8 17:12:51 2001
  * \brief  DummyOdfmgOpacity class header file (derived from 
  *         ../OdfmgOpacity)
- * \note   Copyright © 2001-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,6 +16,11 @@
 #define __cdi_DummyOdfmgOpacity_hh__
 
 #include "../OdfmgOpacity.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
+#endif
 
 namespace rtt_cdi_test
 {
@@ -47,7 +52,7 @@ namespace rtt_cdi_test
  */
 //===========================================================================//
 
-class DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
+class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 {
 
     // DATA - all of these values are set in the constructor.
@@ -467,6 +472,10 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
 }
 
 } // end namespace rtt_cdi_test
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_DummyOdfmgOpacity_hh__
 

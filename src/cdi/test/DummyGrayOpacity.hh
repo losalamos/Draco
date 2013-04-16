@@ -4,8 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:29:17 2001
  * \brief  DummyGrayOpacity class header file (derived from ../GrayOpacity)
- * \note   Copyright © 2001-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,6 +16,11 @@
 
 #include "../GrayOpacity.hh"
 #include "../OpacityCommon.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
+#endif
 
 namespace rtt_cdi_test
 {
@@ -46,7 +51,7 @@ namespace rtt_cdi_test
  */
 //========================================================================
 
-class DummyGrayOpacity : public rtt_cdi::GrayOpacity
+class DLL_PUBLIC DummyGrayOpacity : public rtt_cdi::GrayOpacity
 {
     // DATA - all of these values are set in the constructor.
 	
@@ -212,10 +217,13 @@ class DummyGrayOpacity : public rtt_cdi::GrayOpacity
 	rtt_cdi::OpacityModelType getOpacityModelType() const {
 		return rtt_cdi::DUMMY_TYPE;
 	}
-	
 };
-    
+
 } // end namespace rtt_cdi_test
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_DummyGrayOpacity_hh__
 

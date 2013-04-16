@@ -23,6 +23,7 @@ set( test_lib_sources
    ${PROJECT_SOURCE_DIR}/DummyOdfmgOpacity.cc   
 )
 file( GLOB test_sources *.cc )
+file( GLOB test_headers *.hh )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # ---------------------------------------------------------------------------- #
@@ -50,4 +51,4 @@ add_component_library(
 
 add_scalar_tests(
    SOURCES   "${test_sources}" 
-   DEPS      "Lib_dsxx;${MPI_LIBRARIES}" )
+   DEPS      "Lib_dsxx" ) # ;${MPI_LIBRARIES}" )

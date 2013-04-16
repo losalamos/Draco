@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 14:58:55 2001
  * \brief  OdfmgOpacity class header file (an abstract class)
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,7 @@
 #define __cdi_OdfmgOpacity_hh__
 
 #include "OpacityCommon.hh"
+#include "ds++/config.h"
 #include <vector>
 #include <string>
 
@@ -38,7 +40,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class OdfmgOpacity
+class DLL_PUBLIC OdfmgOpacity
 {
   // DATA
 
@@ -220,11 +222,10 @@ public:
 
 }; // end of class OdfmgOpacity
 
-
 } // end namespace rtt_cdi
 
 #endif // __cdi_OdfmgOpacity_hh__
 
 //---------------------------------------------------------------------------//
-//                end of cdi/OdfmgOpacity.hh
+// end of cdi/OdfmgOpacity.hh
 //---------------------------------------------------------------------------//

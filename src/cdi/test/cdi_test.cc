@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 10:51:39 2001
  * \brief  CDI Test help functions.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -13,7 +13,6 @@
 
 #include "cdi_test.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <iostream>
 #include <iomanip>
 #include <cmath>
 
@@ -26,12 +25,12 @@ namespace rtt_cdi_test
 // CHECK COMPUTED VERSUS EXPECTED VALUES
 //---------------------------------------------------------------------------//
 
-bool match( double computedValue, double referenceValue )
+DLL_PUBLIC bool match( double computedValue, double referenceValue )
 {
     return soft_equiv(computedValue, referenceValue );
 } 
 
-bool match( const std::vector< double > &computedValue, 
+DLL_PUBLIC bool match( const std::vector< double > &computedValue, 
             const std::vector< double > &referenceValue ) 
 {
     // If the vector sizes don't match then die
@@ -46,7 +45,7 @@ bool match( const std::vector< double > &computedValue,
     return true;
 }
 
-bool match(const std::vector< std::vector< double > >& computedValue, 
+DLL_PUBLIC bool match(const std::vector< std::vector< double > >& computedValue, 
            const std::vector< std::vector< double > >& referenceValue )
 {
     // If the vector sizes don't match then die
@@ -90,7 +89,7 @@ bool match(const std::vector< std::vector< double > >& computedValue,
     return true;
 }
 
-bool match(
+DLL_PUBLIC bool match(
     const std::vector< std::vector< std::vector< double > > >& computedValue, 
     const std::vector< std::vector< std::vector< double > > >& referenceValue )
 {

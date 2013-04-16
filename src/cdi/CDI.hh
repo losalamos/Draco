@@ -21,6 +21,11 @@
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
+#endif
+
 //---------------------------------------------------------------------------//
 // UNNAMED NAMESPACE
 //---------------------------------------------------------------------------//
@@ -76,7 +81,6 @@ static double const NORM_FACTOR = 0.25*coeff;         // 15/(4*pi^4);
 
 static inline double taylor_series_planck(double x)
 {
-
     Require( x >= 0.0 );
 
     double const xsqrd  = x * x;
@@ -118,13 +122,11 @@ static inline double taylor_series_planck(double x)
     return taylor;
 }
 
-
 /* --------------------------------------------------------------------------- */
 //! \brief return the 10-term Polylogarithmic expansion (minus one) for the
 //         Planck integral given \f$ x \f$ and \f$ e^{-x} \f$ (for efficiency)
 static double polylog_series_minus_one_planck(double const x, double const eix)
 {
-
     Require (x >= 0.0);
     Require (rtt_dsxx::soft_equiv(std::exp(-x), eix));
 
@@ -192,7 +194,6 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
         li4 += r40 + r41 + r42;
     }
 
-
     // calculate the lower polylogarithmic integral
     double const poly = -coeff * (xsqrd * x * li1 +
                                   3 * xsqrd * li2 +
@@ -202,11 +203,8 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
     return poly;
 }
 
-
-
 static double Planck2Rosseland(double const freq, double const exp_freq)
 {
-
     Check(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
     
     double const freq_3 = freq*freq*freq;
@@ -219,19 +217,13 @@ static double Planck2Rosseland(double const freq, double const exp_freq)
         factor = NORM_FACTOR * freq_3 / (1 - 0.5*freq);
 
     return factor;
-
 }
 
 } // end of unnamed namespace
 
-
-
 namespace rtt_cdi
 {
-
-
-
-
+    
 //===========================================================================//
 /*!
  * \class CDI
@@ -450,7 +442,7 @@ namespace rtt_cdi
  */
 //===========================================================================//
 
-class CDI 
+class DLL_PUBLIC CDI 
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef rtt_dsxx::SP<const GrayOpacity>       SP_GrayOpacity;
@@ -496,7 +488,6 @@ class CDI
      */
     VF_OdfmgOpacity odfmgOpacities;
 
-
     /*!
      * \brief Frequency group boundaries for multigroup data.
      *
@@ -533,10 +524,8 @@ class CDI
     //! Material ID.
     std_string matID;
 
-
     // IMPLELEMENTATION
     // ================
-
 
     //! Integrate the normalized Planckian from 0 to x (hnu/kT).
     inline static double integrate_planck(
@@ -552,8 +541,6 @@ class CDI
         double const exp_scaled_frequency,
         double& planck,
         double& rosseland);
-
-
     
   public:
         
@@ -562,8 +549,6 @@ class CDI
         
     CDI(const std_string &id = std_string());
     virtual ~CDI();
-        
-
 
     // SETTERS
     // -------
@@ -582,7 +567,6 @@ class CDI
 
     //! Clear all data objects
     void reset();
-
 
     // GETTERS
     // -------
@@ -608,10 +592,8 @@ class CDI
     static size_t getNumberFrequencyGroups( void );
     static size_t getNumberOpacityBands(   void );
 
-
     // INTEGRATORS:
     // ===========
-
 
     // Over a frequency range:
     // -----------------------
@@ -635,8 +617,6 @@ class CDI
         double const   T, 
         double       & planck, 
         double       & rosseland);
-    
-
 
     // Over a specific group:
     // ---------------------
@@ -679,9 +659,7 @@ class CDI
         double              const   T,
         std::vector<double>       & planck,
         std::vector<double>       & rosseland);
-
 };
-
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
@@ -695,13 +673,11 @@ class CDI
  * \param scaled_freq upper integration limit, scaled by the temperature.
  * 
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
- *
  */
 double CDI::integrate_planck(double const scaled_freq)
 {
     double const exp_scaled_freq = std::exp(-scaled_freq);
     return CDI::integrate_planck(scaled_freq, exp_scaled_freq);
-
 }
 
 //---------------------------------------------------------------------------//
@@ -740,10 +716,8 @@ void CDI::integrate_planck_rosseland(double const scaled_freq,
                                      double& planck,
                                      double& rosseland)
 {
-
     Require(scaled_freq >= 0.0);
     Require(rtt_dsxx::soft_equiv(exp_scaled_freq, std::exp(-scaled_freq)));
-
     
     // Calculate the Planckian integral 
     planck = integrate_planck(scaled_freq);
@@ -759,10 +733,13 @@ void CDI::integrate_planck_rosseland(double const scaled_freq,
     Ensure (rosseland <= 1.0);
 
     return;
-
 }
     
 } // end namespace rtt_cdi
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // rtt_cdi_CDI_hh
 

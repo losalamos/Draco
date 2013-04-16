@@ -4,14 +4,14 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright © 2003-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
-#include "ds++/Assert.hh"
 #include <limits>
 
 namespace rtt_cdi
@@ -57,7 +57,6 @@ CDI::CDI(const std_string &id)
 //---------------------------------------------------------------------------//
     
 CDI::~CDI() { /* empty */ }
-
 
 //---------------------------------------------------------------------------//
 // STATIC DATA
@@ -124,7 +123,6 @@ size_t CDI::getNumberOpacityBands()
         0 :
         opacityCdfBandBoundaries.size() - 1;
 }    
-
 
 //---------------------------------------------------------------------------//
 // Core Integrators
@@ -235,7 +233,6 @@ double CDI::integratePlanckSpectrum(const double T)
     return integral;
 }
 
-
 //---------------------------------------------------------------------------//
 // Rosseland Spectrum Integrators
 //---------------------------------------------------------------------------//
@@ -283,10 +280,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double  lowFreq,
     rosseland = rosseland_high - rosseland_low;
 
     return;
-
 }
-    
-
 
 //---------------------------------------------------------------------------//
 /*!
@@ -299,11 +293,11 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double  lowFreq,
  * \return integrated normalized Rosseland from x_low to x_high
  *
  */
-double CDI::integrateRosselandSpectrum(const double lowFreq,
-				       const double highFreq, 
-				       const double T)
+double CDI::integrateRosselandSpectrum(
+    const double lowFreq,
+	const double highFreq, 
+	const double T)
 {
-
     Require (lowFreq  >= 0.0);
     Require (highFreq >= lowFreq);
     Require (T >= 0.0);
@@ -313,7 +307,6 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
     integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck, rosseland); 
 
     return rosseland;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -325,7 +318,6 @@ double CDI::integrateRosselandSpectrum(const double lowFreq,
  * \param T          the temperature in keV (must be greater than 0.0)
  * \return           integrated normalized Plankian over the group specified
  *                   by groupIndex.
- *
  */
 double CDI::integrateRosselandSpectrum(size_t const groupIndex, double const T)
 {
@@ -342,7 +334,6 @@ double CDI::integrateRosselandSpectrum(size_t const groupIndex, double const T)
     double rosseland = integrateRosselandSpectrum(lowFreq, highFreq, T);
 
     return rosseland;
-
 }
 
 //---------------------------------------------------------------------------//
@@ -359,7 +350,6 @@ double CDI::integrateRosselandSpectrum(size_t const groupIndex, double const T)
  * \return The integrated normalized Planckian and Rosseland over the
  * requested frequency group. These are returned as references in argument PL
  * and ROSL
- *
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t  groupIndex,
 						 const double  T, 
@@ -478,7 +468,6 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
     integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
                                planck_value, rosseland_value); 
 
-
     for (size_t group = 0; group < groups; ++group)
     {
 
@@ -499,15 +488,10 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
         rosseland[group] = rosseland_value - last_rosseland;
 
         Ensure(planck[group]    >= 0.0);  Ensure(planck[group] <= 1.0);
-        Ensure(rosseland[group] >= 0.0);  Ensure(rosseland[group] <= 1.0);
-                                          
+        Ensure(rosseland[group] >= 0.0);  Ensure(rosseland[group] <= 1.0);                                          
     }
-
-    return;
-
-    
+    return;    
 }
-
 
 //---------------------------------------------------------------------------//
 // SET FUNCTIONS
@@ -646,8 +630,7 @@ void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp)
 		// copy the the band boundaries for this material to the "global"
 		// band boundaries that will be enforced for all CDI objects
 		opacityCdfBandBoundaries = spODFOp->getBandBoundaries();
-	}
-	
+	}	
 
 	// always check that the number of frequency groups is the same for each
 	// odfmg material added to CDI
@@ -679,7 +662,6 @@ void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp)
 				refBand.end(),
 				1.0e-6));
 
-
 	// assign the smart pointer
 	odfmgOpacities[model][reaction] = spODFOp;
 
@@ -691,12 +673,9 @@ void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp)
 void CDI::setEoS( const SP_EoS &in_spEoS )
 {
     Require (in_spEoS);
-
     Insist (!spEoS, "Tried to overwrite a set EoS object.!");
-
     // set the smart pointer
     spEoS = in_spEoS;
-
     Ensure (spEoS);
 }
 
@@ -768,6 +747,7 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model    m,
     Insist (odfmgOpacities[m][r], "Undefined OdfmgOpacity!");
     return odfmgOpacities[m][r]; 
 }
+
 //---------------------------------------------------------------------------//
 
 /*!
@@ -885,5 +865,5 @@ bool CDI::isEoSSet() const
 } // end namespace rtt_cdi
 
 //---------------------------------------------------------------------------//
-//                              end of CDI.cc
+// end of CDI.cc
 //---------------------------------------------------------------------------//
