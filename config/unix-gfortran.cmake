@@ -77,7 +77,7 @@ SET( CMAKE_Fortran_FLAGS_DEBUG
 # Release flags
 #
 # -03                 Highest supported optimization level.
-SET( CMAKE_Fortran_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops -march=k8 -DNDEBUG" )
+SET( CMAKE_Fortran_FLAGS_RELEASE "-O3 -march=native -mtune=native -ftree-vectorize -funroll-loops -march=k8 -DNDEBUG" )
 SET( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
 SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -ftree-vectorize -funroll-loops -march=k8 -DDEBUG" ) 
 
