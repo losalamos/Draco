@@ -114,6 +114,17 @@ macro( query_have_maxpathlen )
 endmacro()
 
 ##---------------------------------------------------------------------------##
+## Determine if some system headers exist
+##---------------------------------------------------------------------------##
+macro( query_have_sys_headers )
+   
+   include( CheckIncludeFiles )
+   check_include_files( sys/types.h HAVE_SYS_TYPES_H )
+   check_include_files( unistd.h    HAVE_UNISTD_H    )
+
+endmacro()
+
+##---------------------------------------------------------------------------##
 ## Determine Word Types
 ##
 ## Query sizes of PODTs.

@@ -21,6 +21,7 @@ include( platform_checks )
 set_draco_uname()
 query_have_gethostname()
 query_have_maxpathlen()
+query_have_sys_headers() # sets HAVE_UNISTD_H, etc.
 if( DRACO_ENABLE_CXX11 )
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
       "${Draco_SOURCE_DIR}/config/cxx11")
