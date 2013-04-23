@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Setup Vendors
-# note   Copyright (C) 2010-2012  Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$ 
@@ -157,14 +157,6 @@ macro( setupMPILibrariesUnix )
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
          endif()
                
-         # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
-         # This is required on Turning when running 'ctest -j16'.  See
-         # notes in component_macros.cmake.
-         if( NOT "${SITE}" MATCHES "rr" )
-            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
-            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
-         endif()
-         
          # Find cores/cpu and cpu/node.
          set( MPI_CORES_PER_CPU 4 )
          if( EXISTS "/proc/cpuinfo" )
@@ -182,20 +174,6 @@ macro( setupMPILibrariesUnix )
             "Number of multi-core CPUs per node" FORCE )
          set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
             "Number of cores per cpu" FORCE )
-
-         # set( MPIEXEC_OMP_POSTFLAGS_STRING "-mca mpi_paffinity_alone 0")
-         # set( socketid 0 )
-         # math( EXPR maxsocketid "${MPI_CPUS_PER_NODE} - 1" )
-         # math( EXPR maxcoreid "${MPI_CORES_PER_CPU} - 1" )
-         # while( NOT ${socketid} STREQUAL ${maxsocketid} )
-         #    set( MPIEXEC_OMP_POSTFLAGS_STRING
-         #       "${MPIEXEC_OMP_POSTFLAGS_STRING} hwloc-bind socket:${socketid}.core:0-${maxcoreid}" )
-         #    math( EXPR socketid "${socketid} + 1" )
-         # endwhile()
-         # unset( socketid )
-         # unset( coreid )
-         # separate_arguments( MPIEXEC_OMP_POSTFLAGS UNIX_COMMAND 
-         #    "${MPIEXEC_OMP_POSTFLAGS_STRING}" )
 
          # --bind-to-core added in OpenMPI-1.4
          set( MPIEXEC_OMP_POSTFLAGS 
@@ -271,10 +249,10 @@ macro( setupLAPACKLibrariesUnix )
       endif()
    endforeach()
    if( lapack_FOUND)
-      message( STATUS "looking for lapack...found")
+      message( STATUS "Looking for lapack...found")
       set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
    else()
-      message( "looking for lapack...not found")
+      message( "Looking for lapack...not found")
    endif()
 
 endmacro()
@@ -400,45 +378,10 @@ macro( setupMPILibrariesWindows )
          find_package( MPI )
       endif()
 
-      # Third chance using $MPI_INC_DIR and $MPI_LIB_DIR
-      if( NOT ${MPI_FOUND} AND EXISTS "${MPI_LIB_DIR}" AND 
-            EXISTS "${MPI_INC_DIR}" )
-         if( EXISTS "$ENV{MPI_INC_DIR}" AND "${MPI_INC_DIR}x" MATCHES "x" )
-            set( MPI_INC_DIR $ENV{MPI_INC_DIR} )
-         endif()
-         if( EXISTS "$ENV{MPI_LIB_DIR}" AND "${MPI_LIB_DIR}x" MATCHES "x" )
-            set( MPI_LIB_DIR $ENV{MPI_LIB_DIR} )
-         endif()
-         set( MPI_INCLUDE_PATH ${MPI_INC_DIR} )
-         find_library( MPI_LIBRARY
-            NAMES mpi mpich msmpi
-            PATHS ${MPI_LIB_DIR} 
-            ${MPICH_DIR}/lib
-            )
-         set( extra_libs mpi++ libopen-rte libopen-pal)
-         set( MPI_EXTRA_LIBRARY )
-         foreach( lib ${extra_libs} )
-            find_library( mpi_extra_lib_${lib}
-               NAMES ${lib}
-               HINTS ${MPI_LIB_DIR} 
-               ${MPICH_DIR}/lib )
-            mark_as_advanced( mpi_extra_lib_${lib} )
-            if( EXISTS "${mpi_extra_lib_${lib}}" )
-               list( APPEND MPI_EXTRA_LIBRARY ${tmp} )
-            endif()
-         endforeach()
-         find_package( MPI )
-         if( ${MPI_EXTRA_LIBRARY} MATCHES "NOTFOUND" )
-            # do nothing
-         else()
-            list( APPEND MPI_LIBRAIES ${MPI_EXTRA_LIBRARY} )
-         endif()
-      endif()
-
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
          set( DRACO_C4 "MPI" )  
-         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
+         # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
          if( NOT MPIEXEC )
             message( FATAL_ERROR 
                "MPI found but mpirun not in PATH. Aborting" )
@@ -475,9 +418,9 @@ macro( setupMPILibrariesWindows )
          # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
          # This is required on Turning when running 'ctest -j16'.  See
          # notes in component_macros.cmake.
-         set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 CACHE
+         set( MPIEXEC_POSTFLAGS --bind-to-none CACHE
             STRING "extra mpirun flags (list)." FORCE)
-         set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" CACHE
+         set( MPIEXEC_POSTFLAGS_STRING "--bind-to-none" CACHE
             STRING "extra mpirun flags (string)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
       endif()
