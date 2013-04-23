@@ -3,33 +3,27 @@
  * \file   diagnostics/test/tstTiming.cc
  * \author Thomas M. Evans
  * \date   Mon Dec 12 15:32:10 2005
- * \brief  
- * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC.
+ * \brief  Test the diagnostics/TIMER macros
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-
-#include "diagnostics_test.hh"
-#include "ds++/Release.hh"
 #include "../Timing.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-#include <iostream>
-#include <vector>
-#include <cmath>
+#include "c4/ParallelUnitTest.hh"
+#include "ds++/Release.hh"
 #include <iomanip>
 
 using namespace std;
 using rtt_dsxx::soft_equiv;
 typedef rtt_diagnostics::Timing_Diagnostics D;
 
-int nodes = 0;
-int node  = 0;
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 //---------------------------------------------------------------------------//
 // TEST HELPERS
@@ -150,7 +144,7 @@ void timing_active()
 
 //---------------------------------------------------------------------------//
 
-void test_timing()
+void test_timing( rtt_dsxx::UnitTest & ut )
 {
     // add to some timers
     D::update_timer("A", 1.2);
@@ -205,15 +199,13 @@ void test_timing()
     if (!soft_equiv(D::timer_value("B"), 0.0)) ITFAILS;
     if (!soft_equiv(D::timer_value("C"), 0.0)) ITFAILS;
     
-    if (rtt_diagnostics_test::passed)
-    {
+    if (ut.numFails==0)
         PASSMSG("Diagnostics timer lists ok.");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
-void test_macros()
+void test_macros( rtt_dsxx::UnitTest & ut )
 {
     // delete all existing timers
     D::delete_timers();
@@ -261,87 +253,26 @@ void test_macros()
 
     TIMER_REPORT(outer_timer, cout, "Total time");
 
-    if (rtt_diagnostics_test::passed)
-    {
+    if (ut.numFails==0)
         PASSMSG("Timer macros ok.");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    nodes = rtt_c4::nodes();
-    node  = rtt_c4::node();
-
-    if (node > 0)
-    {
-        rtt_c4::finalize();
-        return 0;
-    }
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            if (rtt_c4::node() == 0)
-                cout << argv[0] << ": version " 
-                     << rtt_dsxx::release() 
-                     << endl;
-            rtt_c4::finalize();
-            return 0;
-        }
-
+    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
+        Insist( rtt_c4::nodes() < 2, "This test requires exactly 1 PE." );
         // >>> UNIT TESTS
         timing_active();
-        test_timing();
-        test_macros();
+        test_timing(ut);
+        test_macros(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstTiming, " 
-                  << err.what()
-                  << std::endl;
-        rtt_c4::abort();
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstTiming, " 
-                  << "An unknown exception was thrown on processor "
-                  << rtt_c4::node() << std::endl;
-        rtt_c4::abort();
-        return 1;
-    }
-
-    {
-        // status of test
-        std::cout << std::endl;
-        std::cout <<     "*********************************************" 
-                  << std::endl;
-        if (rtt_diagnostics_test::passed) 
-        {
-            std::cout << "**** tstTiming Test: PASSED on " 
-                      << rtt_c4::node() 
-                      << std::endl;
-        }
-        std::cout <<     "*********************************************" 
-                  << std::endl;
-        std::cout << std::endl;
-    }
-
-    std::cout << "Done testing tstTiming on " << rtt_c4::node() 
-              << std::endl;
-    
-    rtt_c4::finalize();
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstTiming.cc
+// end of tstTiming.cc
 //---------------------------------------------------------------------------//

@@ -20,6 +20,9 @@
 /* DRACO TIMING LEVEL */
 #cmakedefine DRACO_TIMING @DRACO_TIMING@
 
+/* USE PROCMON - snapshot in time memory reporting via getrusage */
+#cmakedefine USE_PROCMON @USE_PROCMON@
+
 #endif /* __diagnostics_config_h__ */
 
 /*---------------------------------------------------------------------------*/

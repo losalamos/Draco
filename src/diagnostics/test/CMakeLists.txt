@@ -14,12 +14,12 @@ project( diagnostics_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/diagnostics_test.cc 
-   ${PROJECT_SOURCE_DIR}/diagnostics_test.hh
-)
+# set( test_lib_sources 
+#    ${PROJECT_SOURCE_DIR}/diagnostics_test.cc 
+#    ${PROJECT_SOURCE_DIR}/diagnostics_test.hh
+# )
 file( GLOB test_sources *.cc )
-list( REMOVE_ITEM test_sources ${test_lib_sources} )
+# list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -37,11 +37,11 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
-   TARGET       Lib_diagnostics_test
-   TARGET_DEPS  Lib_diagnostics
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${test_lib_sources}" )
+# add_component_library( 
+#    TARGET       Lib_diagnostics_test
+#    TARGET_DEPS  Lib_diagnostics
+#    LIBRARY_NAME ${PROJECT_NAME}
+#    SOURCES      "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
@@ -50,7 +50,7 @@ add_component_library(
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1"
-   DEPS    "Lib_c4" ) # ;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_c4" )
 
 # Application Unit Test 
 add_test( 

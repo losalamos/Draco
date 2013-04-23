@@ -4,36 +4,32 @@
  * \author Thomas M. Evans
  * \date   Fri Dec  9 16:16:27 2005
  * \brief  Diagnostics test.
- * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 //! \version $Id$
 //---------------------------------------------------------------------------//
 
-#include "diagnostics_test.hh"
-#include "ds++/Release.hh"
 #include "../Diagnostics.hh"
-#include "ds++/Assert.hh"
+#include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
+#include "c4/ParallelUnitTest.hh"
 #include <iostream>
-#include <vector>
-#include <cmath>
 
 using namespace std;
 using namespace rtt_diagnostics;
 using rtt_dsxx::soft_equiv;
 
-int nodes = 0;
-int node  = 0;
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_ints()
+void test_ints( rtt_dsxx::UnitTest & ut )
 {
     // add an integer quantity
     Diagnostics::integers["A"];
@@ -48,15 +44,13 @@ void test_ints()
     // add another
     Diagnostics::integers["B"] = 51;
     
-    if (rtt_diagnostics_test::passed)
-    {
+    if (ut.numFails==0)
         PASSMSG("Diagnostics integers ok.");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
-void test_floats()
+void test_floats( rtt_dsxx::UnitTest & ut )
 {
     if (Diagnostics::integers["A"] != 22) ITFAILS;
     if (Diagnostics::integers["B"] != 51) ITFAILS;
@@ -75,15 +69,13 @@ void test_floats()
 
     Diagnostics::integers.erase("A");
     
-    if (rtt_diagnostics_test::passed)
-    {
+    if (ut.numFails==0)
         PASSMSG("Diagnostics doubles ok.");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
-void test_vectors()
+void test_vectors( rtt_dsxx::UnitTest & ut )
 {
     Diagnostics::vec_integers["A"];
     Diagnostics::vec_integers["B"];
@@ -112,15 +104,13 @@ void test_vectors()
     if (Diagnostics::integers["A"] != 0)  ITFAILS;
     if (Diagnostics::integers["B"] != 51) ITFAILS;
     
-    if (rtt_diagnostics_test::passed)
-    {
+    if (ut.numFails==0)
         PASSMSG("Diagnostics vectors ok.");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
-void test_macro()
+void test_macro( rtt_dsxx::UnitTest & ut )
 {
     cout << endl;
     
@@ -162,108 +152,35 @@ void test_macro()
     }
 
     if (level[1] == 1)
-    {
         if (Diagnostics::integers["L1"] != 1) ITFAILS;
-    }
 
     if (level[2] == 1)
-    {
         if (Diagnostics::integers["L2"] != 1) ITFAILS;
-    }
 
     if (level[3] == 1)
-    {
         if (Diagnostics::integers["L3"] != 1) ITFAILS;
-    }
     
-    if (rtt_diagnostics_test::passed)
-    {
+    if (ut.numFails==0)
         PASSMSG("Diagnostics macro ok.");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    nodes = rtt_c4::nodes();
-    node  = rtt_c4::node();
-
-    if (node > 0)
-    {
-        rtt_c4::finalize();
-        return 0;
-    }
-
-    // print the version tag
-    if (rtt_c4::node() == 0)
-        cout << argv[0] << ": version " 
-             << rtt_dsxx::release() 
-             << endl;
-    
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (std::string(argv[arg]) == "--version")
-        {
-            // Version tag has already printed.  If --version is found on the
-            // command line then finalize and exit.
-            rtt_c4::finalize();
-            return 0;
-        }
-
+    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
+        Insist( rtt_c4::nodes() < 2, "This test requires exactly 1 PE." );
         // >>> UNIT TESTS
-
-        test_ints();
-        test_floats();
-        test_vectors();
-
-        test_macro();
+        test_ints(ut);
+        test_floats(ut);
+        test_vectors(ut);
+        test_macro(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstDiagnostics, " 
-                  << err.what()
-                  << std::endl;
-        rtt_c4::abort();
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstDiagnostics, " 
-                  << "An unknown exception was thrown on processor "
-                  << rtt_c4::node() << std::endl;
-        rtt_c4::abort();
-        return 1;
-    }
-
-    {
-        // status of test
-        std::cout << std::endl;
-        std::cout <<     "*********************************************" 
-                  << std::endl;
-        if (rtt_diagnostics_test::passed) 
-        {
-            std::cout << "**** tstDiagnostics Test: PASSED on " 
-                      << rtt_c4::node() 
-                      << std::endl;
-        }
-        std::cout <<     "*********************************************" 
-                  << std::endl;
-        std::cout << std::endl;
-    }
-
-    std::cout << "Done testing tstDiagnostics on " << rtt_c4::node() 
-              << std::endl;
-    
-    rtt_c4::finalize();
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstDiagnostics.cc
+// end of tstDiagnostics.cc
 //---------------------------------------------------------------------------//

@@ -26,6 +26,18 @@ set( DRACO_TIMING "0"
 # provide a constrained drop down menu for cmake-gui
 set_property( CACHE DRACO_TIMING PROPERTY STRINGS 0 1 2 )
 
+# Are the memory features of getrusage to be activated?
+option( USE_PROCMON "Use PROCMON process (cpu/memory) monitoring." OFF )
+# If USE_PROCMON is requested but /proc/meminfo is unavailable, abort
+if( USE_PROCMON )
+   if( NOT EXISTS "/proc/meminfo" )
+      message( FATAL_ERROR "USE_PROCMON=ON, but /proc/meminfo unavailable." )
+   endif()
+endif()
+if( NOT ${HAVE_SYS_TYPES} )
+   message( FATAL_ERROR "diagnostics/Procmon.hh requires sys/types.h.")
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
