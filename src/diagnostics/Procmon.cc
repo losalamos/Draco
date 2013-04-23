@@ -90,7 +90,7 @@ void procmon_resource_print( std::string const & identifier,
         "Could not open /proc/meminfo!  Is this Linux?" );
 
     std::ifstream fs;
-    fs.open( file_meminfo, std::fstream::in );
+    fs.open( file_meminfo.c_str(), std::fstream::in );
     Check( fs.good() );
     
     while( !fs.eof() )
@@ -121,7 +121,7 @@ void procmon_resource_print( std::string const & identifier,
             std::string("Could not open") + file_status_pid
             + std::string("!  Is this Linux?") );
 
-    fs.open( file_status_pid, std::fstream::in );
+    fs.open( file_status_pid.c_str(), std::fstream::in );
     Check( fs.good() );
     
     while( !fs.eof() )
