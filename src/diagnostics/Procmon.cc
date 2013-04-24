@@ -61,7 +61,7 @@ void procmon_resource_print( std::string const & identifier,
     std::string proc_name;
 
     double MemTotal(-1.0);
-    double MemFree(-1.0);
+    //double MemFree(-1.0);
 
     // int proc_uid (-1);
     int proc_vmsize(-1);  // The size of the virtual memory allocated to the process
@@ -103,13 +103,13 @@ void procmon_resource_print( std::string const & identifier,
         if( tokens.size() > 1 ) // protect against empty line
         {
             if( tokens[0] == std::string("MemTotal:") )  MemTotal = atof(tokens[1].c_str()); // kB
-            if( tokens[0] == std::string("MemFree:") )   MemFree  = atof(tokens[1].c_str()); // kB
+            // if( tokens[0] == std::string("MemFree:") )   MemFree  = atof(tokens[1].c_str()); // kB
         }
     }
     fs.close();
     
     Check( MemTotal > 0 );
-    Check( MemFree > 0 );
+    // Check( MemFree > 0 );
  
     // ----------------------------------------
     // Examine /proc/<PID>/status for memory used
