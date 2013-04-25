@@ -13,6 +13,7 @@
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Base.hh"
 #include "ds++/Packing_Utils.hh"
+#include "ds++/square.hh"
 #include "ds++/cube.hh"
 #include "c4/C4_Functions.hh"
 #include "cdi/CDI.hh"
@@ -131,8 +132,14 @@ double Pseudo_Line_Base::monoOpacity(double const x,
     unsigned const number_of_lines = number_of_lines_;
     double const width = line_width_;
     double const peak = line_peak_;
-    
+
+#if 0
+    // hardwire for really massive tests: realization 1, model 1
+    double Result = 
+        0.01 + 20/cube(1+x/1.602176462e-16) + 0.0001*square(square(x/1.602176462e-16));
+#else
     double Result = (*continuum_)(vector<double>(1,x));
+#endif
     
     for (unsigned i=0; i<number_of_lines; ++i)
     {

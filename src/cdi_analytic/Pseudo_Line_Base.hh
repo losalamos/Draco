@@ -85,6 +85,9 @@ class Pseudo_Line_Base
     
     double line_width() const { return line_width_; }
 
+    double Tref() const { return Tref_; }
+    double Tpow() const { return Tpow_; }
+
     //! Pack up the class for persistence.
     vector<char> pack() const;
 

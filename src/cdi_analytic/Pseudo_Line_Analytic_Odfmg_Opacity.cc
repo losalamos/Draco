@@ -10,6 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <fstream>
+
 #include "ode/rkqs.i.hh"
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
@@ -60,6 +62,39 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
     qpoints_(qpoints)
 {
     Require(qpoints>0);
+
+    // Precalculate basic opacities
+    
+    unsigned const number_of_groups = groups.size()-1U;
+    unsigned const N = qpoints_;
+    baseline_.resize(N*number_of_groups);
+
+#if 0
+    ofstream out("pseudo.dat");
+#endif
+
+    double g1 = groups[0];
+    for (unsigned g=0; g<number_of_groups; ++g)
+    {
+        double const g0 = g1;
+        g1 = groups[g+1];
+        double const delt = (g1-g0)/N;
+        double x = g0-0.5*delt;
+        for (unsigned iq=0; iq<N; ++iq)
+        {
+            x += delt;
+            baseline_[iq+N*g] = monoOpacity(x, Tref);
+
+#if 0
+            out << x << ' ' << baseline_[iq+N*g] << endl;
+#endif
+            
+        }
+        if (bands.size()>2)
+        {
+            sort(baseline_.begin()+N*g, baseline_.begin()+N*(g+1));
+        }
+    }
 }
 
 //---------------------------------------------------------------------------//
@@ -90,96 +125,83 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                                    vector<double>(bands_per_group));
 
     double g1 = group_bounds[0];
-    vector<pair<double, double> > raw;
     unsigned const N = qpoints_;
-    for (unsigned g=0; g<number_of_groups; ++g)
+
+    double const Tf = pow(T/Tref(), Tpow());
+
+    switch (averaging_)
     {
-        double const g0 = g1;
-        g1 = group_bounds[g+1];
-        raw.resize(0);
-        
-        for (unsigned iq=0; iq<N; ++iq)
-        {
-            double const x0 =     iq*(g1-g0)/N + g0;
-            double const x1 = (iq+1)*(g1-g0)/N + g0;
-            double const x = 0.5*(x0+x1);
-            double weight;
-            switch (averaging_)
+        case NONE:
+            if (N>1)
             {
-                case NONE:
-                    weight = x1-x0;
-                    break;
-
-                case ROSSELAND:
-                    weight = CDI::integrateRosselandSpectrum(x0/rtt_parser::keV.conv,
-                                                             x1/rtt_parser::keV.conv,
-                                                             T);
-                    break;
-
-                case PLANCK:
-                    weight = CDI::integratePlanckSpectrum(x0/rtt_parser::keV.conv,
-                                                          x1/rtt_parser::keV.conv,
-                                                          T);
-                    break;
-           
-                default:
-                    Insist(false, "bad case");
-                    weight = 1.0;
-                    // should not be reached since Insist throws an exception;
-                    // here to suppress a compiler warning.
-            }
-            weight += sqrt(std::numeric_limits<double>::min()); 
-              // avoid division by 0 at low temperatures where the high
-              // frequency groups have vanishing black body contribution
-            
-            raw.push_back(pair<double, double>(monoOpacity(x, T), weight));
-        }
-
-        switch (averaging_)
-        {
-            case NONE:
-            {
-                if (bands_per_group>1)
+                for (unsigned g=0; g<number_of_groups; ++g)
                 {
-                    sort(raw.begin(), raw.end());
+                    double b1 = bands[0];
+                    for (unsigned b=0; b<bands_per_group; ++b)
+                    {
+                        double const b0 = b1;
+                        b1 = bands[b+1];
+                        // little bit of an elaborate interpolation dance here
+                        double f = 0.5*(b0 + b1)*N - 0.5;
+                        unsigned const i = f;
+                        f -= i;
+                        Check(i<N);
+                        Check(f>=-0.5 && f<=0.5);
+                        Result[g][b] =
+                            Tf*((1.0-f)*baseline_[i+N*g] + f*baseline_[i+1+N*g]);
+                    }
                 }
-                double b1 = bands[0];
-                for (unsigned b=0; b<bands_per_group; ++b)
+            }
+            else
+            {
+                Check(bands_per_group==1);
+                for (unsigned g=0; g<number_of_groups; ++g)
                 {
-                    double const b0 = b1;
-                    b1 = bands[b+1];
-                    double const f = 0.5*(b0 + b1);
-                    Result[g][b] = raw[static_cast<unsigned>(f*N)].first;
+                    Result[g][0] = Tf*baseline_[g];
                 }
             }
             break;
-            
-            case ROSSELAND:
+
+        case ROSSELAND:
+            for (unsigned g=0; g<number_of_groups; ++g)
             {
-                sort(raw.begin(), raw.end());
+                double const g0 = g1;
+                g1 = group_bounds[g+1];
+                
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {
                     double const b0 = b1;
                     b1 = bands[b+1];
                     double t = 0.0, w = 0.0;
-
+    
                     unsigned const q0 = static_cast<unsigned>(b0*N);
                     unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
-                        t += raw[q].second/raw[q].first;
-                        w += raw[q].second;
+                        double const x0 =     q*(g1-g0)/N + g0;
+                        double const x1 = (q+1)*(g1-g0)/N + g0;
+
+                        double weight =
+                            CDI::integrateRosselandSpectrum(x0/rtt_parser::keV.conv,
+                                                            x1/rtt_parser::keV.conv,
+                                                            T);
+
+                        t += weight/baseline_[q+N*g];
+                        w += weight;
                     }
                     
-                    Result[g][b] = w/t;
+                    Result[g][b] = w*Tf/t;
                 }
             }
             break;
-            
-            case PLANCK:
+
+        case PLANCK:
+            for (unsigned g=0; g<number_of_groups; ++g)
             {
-                sort(raw.begin(), raw.end());
+                double const g0 = g1;
+                g1 = group_bounds[g+1];
+                
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {
@@ -191,18 +213,24 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
-                        t += raw[q].first*raw[q].second;
-                        w += raw[q].second;
+                        double const x0 =     q*(g1-g0)/N + g0;
+                        double const x1 = (q+1)*(g1-g0)/N + g0;
+
+                        double weight =
+                            CDI::integratePlanckSpectrum(x0/rtt_parser::keV.conv,
+                                                         x1/rtt_parser::keV.conv,
+                                                         T);
+                        t += weight*baseline_[q+N*g];
+                        w += weight;
                     }
                     
-                    Result[g][b] = t/w;
+                    Result[g][b] = t*Tf/w;
                 }
             }
             break;
-            
-            default:
-                Insist(false, "bad case");            
-        }
+
+        default:
+            Insist(false, "bad case");            
     }
     
     return Result;

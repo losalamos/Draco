@@ -43,6 +43,7 @@ class Pseudo_Line_Analytic_Odfmg_Opacity :
 
     Averaging averaging_;
     unsigned qpoints_;
+    sf_double baseline_;
 
   public:
     // Constructor.
