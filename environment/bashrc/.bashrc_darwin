@@ -17,12 +17,15 @@ ulimit -s unlimited
 # modules
 
 if test -n "$MODULESHOME"; then
-    module load cuda gcc/gcc-4.6.1 mpi cmake python 
+    module load compilers/gcc/4.7.2 mpi cmake python 
+    # module load cuda
     if test -d ${DRACO_SRC_DIR}/environment/Modules/darwin; then
         module use ${DRACO_SRC_DIR}/environment/Modules/darwin
         module load numdiff gsl lapack
     fi
 fi
+
+export VENDOR_DIR=/projects/opt
 
 # Avoid printing trigraph chars to the screen (eg: ���)
 export LANG=en_US
