@@ -283,7 +283,6 @@ macro( register_parallel_test targetname numPE command cmd_args )
       PROPERTIES	
         PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
         FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
-        PROCESSORS              "${numPE}"
         WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
       )
    if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
@@ -295,10 +294,17 @@ macro( register_parallel_test targetname numPE command cmd_args )
          PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
    endif()
    if( addparalleltest_MPI_PLUS_OMP ) 
+      math( EXPR numthreads "${numPE} * ${MPI_CORES_PER_CPU}" )
       set_tests_properties( ${targetname}
          PROPERTIES
-           RUN_SERIAL "ON"
+           PROCESSORS "${numthreads}"
+           # RUN_SERIAL "ON"
            LABELS "nomemcheck" )
+     else()
+      set_tests_properties( ${targetname}
+         PROPERTIES
+           PROCESSORS "${numPE}"
+           )
    endif()
 endmacro()
 

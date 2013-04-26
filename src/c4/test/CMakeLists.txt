@@ -81,8 +81,16 @@ list( REMOVE_ITEM test_sources ${special_test} )
 #   machine (aprun) or pushded to a PPC node (roadrunner, ppu-).
 set( special_test ${PROJECT_SOURCE_DIR}/tstOMP.cc )
 list( REMOVE_ITEM test_sources ${special_test} )
-if( DBS_CXX_IS_BULLSEYE OR "${MPIEXEC}" MATCHES "aprun" )
+if( DBS_CXX_IS_BULLSEYE )
    # no-op
+elseif( "${MPIEXEC}" MATCHES "aprun" ) 
+   if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
+      add_parallel_tests(
+         SOURCES   "${special_test}" 
+         PE_LIST   "1;2"
+         MPI_PLUS_OMP
+         )
+   endif()
 else()
    add_parallel_tests(
       SOURCES   "${special_test}" 

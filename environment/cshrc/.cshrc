@@ -21,7 +21,7 @@ case mu*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/12.1.5 openmpi
+    module load intel/13.1.0 openmpi/1.6.3
     module load gsl/1.14-intel svn emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos SuperLU_DIST
@@ -41,7 +41,7 @@ case ty*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/12.1.5 openmpi
+    module load intel/13.1.0 openmpi/1.6.3
     module load gsl/1.14-intel emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos SuperLU_DIST
@@ -57,52 +57,10 @@ case redfta[0-9]*:
 
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
-
-    if ($?tcsh) then
-        set modules_shell="tcsh"
-    else
-        set modules_shell="csh"
-    endif
-    
-    set exec_prefix='/usr/projects/draco/vendors/modules-3.2.9'
-    set prefix=""
-    set postfix=""
-
-    if ( $?histchars ) then
-        set histchar = `echo $histchars | cut -c1`
-        set _histchars = $histchars
-        set prefix  = 'unset histchars;'
-        set postfix = 'set histchars = $_histchars;'
-    else
-        set histchar = \!
-    endif
-    
-    if ($?prompt) then
-        set prefix  = "$prefix"'set _prompt="$prompt";set prompt="";'
-        set postfix = "$postfix"'set prompt="$_prompt";unset _prompt;'
-    endif
-    
-    if ($?noglob) then
-        set prefix  = "$prefix""set noglob;"
-        set postfix = "$postfix""unset noglob;"
-    endif
-    set postfix = "set _exit="'$status'"; $postfix; test 0 = "'$_exit;'
-    
-    alias module $prefix'eval `'$exec_prefix'/bin/modulecmd '$modules_shell' '$histchar'*`; '$postfix
-    unset exec_prefix
-    unset prefix
-    unset postfix
-    
-    setenv MODULESHOME /usr/projects/draco/vendors/modules-3.2.9
-    setenv MODULE_VERSION 3.2.9
-    setenv MODULE_VERSION_STACK 3.2.9
-
-    source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
-
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/13.0.1 openmpi cudatoolkit
+    module load intel/13.1.0 openmpi/1.6.3 # cudatoolkit
     module load cmake gsl/1.14-intel svn fstools 
     module load numdiff lapack/3.4.1-intel totalview
     module load trilinos SuperLU_DIST/3.0-intel
@@ -110,6 +68,7 @@ case ml*.localdomain:
     alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
     setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
+
 case ct*:
 case ci*:
    # source /usr/projects/crestone/dotfiles/Cshrc
@@ -125,32 +84,16 @@ case ci*:
    module load intel/13.0.1.117
    # draco modules start here.
    module load gsl/1.14 lapack/3.4.1-intel
-   module load cmake numdiff subversion
+   module load cmake numdiff subversion emacs
    module load trilinos SuperLU_DIST/3.0-intel 
    module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-cielito
+
+   setenv OMP_NUM_THREADS 8
 
    # Avoid run time messages of the form:
    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
    # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
    setenv KMP_AFFINITY none
-   setenv VENDOR_DIR /usr/projects/draco/vendors
-   breaksw
-case rr-dev*:
-case rra[0-9][0-9][0-9]a*:
-   source /usr/projects/eap/dotfiles/Cshrc
-   module use $DRACO_ENV_DIR/Modules/hpc
-   module use $DRACO_ENV_DIR/Modules/rr-dev-fe
-   module load friendly-testing cellsdk svn
-   module unload pgi openmpi-pgi
-   module load cmake numdiff python openmpi-gcc/1.4.3
-   module load gcc/4.7.1
-   setenv VENDOR_DIR /usr/projects/draco/vendors
-   breaksw
-case rra[0-9][0-9][0-9][bcd]*:
-   # source /usr/projects/crestone/dotfiles/Cshrc
-   module use $DRACO_ENV_DIR/Modules/ppc64
-   module load friendly-testing cellsdk
-   module load cmake gsl-1.14 numdiff 
    setenv VENDOR_DIR /usr/projects/draco/vendors
    breaksw
 case gondolin*:

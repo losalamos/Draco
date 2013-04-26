@@ -101,6 +101,7 @@ export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
 comp=CC
+export OMP_NUM_THREADS=8
 
 # Extra parameers
 case $extra_params in
