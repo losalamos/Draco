@@ -133,7 +133,7 @@ void procmon_resource_print(std::string const & identifier,
 } // end namespace rtt_diagnostics
 
 #ifdef USE_PROCMON
-#  define PROCMON_REPORT(string) procmon_resource_print(string)
+#  define PROCMON_REPORT(string) rtt_diagnostics::procmon_resource_print(string)
 #else
 #  define PROCMON_REPORT(string) 
 #endif
