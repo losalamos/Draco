@@ -51,10 +51,10 @@ class Pseudo_Line_Base
     // Coefficients
     SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
     unsigned seed_;
-    unsigned number_of_lines_;
+    int number_of_lines_;
     double line_peak_; // peak line opacity [cm^2/g]
     double line_width_;  // line width as fraction of line frequency.
-    unsigned number_of_edges_;
+    int number_of_edges_;
     double edge_ratio_;
 
     double Tref_;  // reference temperature for temperature dependence
@@ -67,10 +67,10 @@ class Pseudo_Line_Base
   public:
 
     Pseudo_Line_Base(SP<Expression const> const &cont,
-                     unsigned number_of_lines,
+                     int number_of_lines,
                      double line_peak,
                      double line_width,
-                     unsigned number_of_edges,
+                     int number_of_edges,
                      double edge_ratio,
                      double Tref,
                      double Tpow,

@@ -33,10 +33,10 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
         const sf_double         &bands,
         rtt_cdi::Reaction        reaction_in,
         SP<Expression const> const &continuum,
-        unsigned number_of_lines,
+        int number_of_lines,
         double line_peak,
         double line_width,
-        unsigned number_of_edges,
+        int number_of_edges,
         double edge_ratio,
         double Tref,
         double Tpow,
@@ -83,10 +83,12 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
         for (unsigned iq=0; iq<N; ++iq)
         {
             x += delt;
-            baseline_[iq+N*g] = monoOpacity(x, Tref);
+            baseline_[iq+N*g].first = monoOpacity(x, Tref);
+            baseline_[iq+N*g].second.first = x-0.5*delt;
+            baseline_[iq+N*g].second.second = x + 0.5*delt;
 
 #if 0
-            out << x << ' ' << baseline_[iq+N*g] << endl;
+            out << x << ' ' << baseline_[iq+N*g].first << endl;
 #endif
             
         }
@@ -124,7 +126,6 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
     vector<vector<double> > Result(number_of_groups,
                                    vector<double>(bands_per_group));
 
-    double g1 = group_bounds[0];
     unsigned const N = qpoints_;
 
     double const Tf = pow(T/Tref(), Tpow());
@@ -148,7 +149,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                         Check(i<N);
                         Check(f>=-0.5 && f<=0.5);
                         Result[g][b] =
-                            Tf*((1.0-f)*baseline_[i+N*g] + f*baseline_[i+1+N*g]);
+                            Tf*
+                            ((1.0-f)*baseline_[i+N*g].first + f*baseline_[i+1+N*g].first);
                     }
                 }
             }
@@ -157,7 +159,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                 Check(bands_per_group==1);
                 for (unsigned g=0; g<number_of_groups; ++g)
                 {
-                    Result[g][0] = Tf*baseline_[g];
+                    Result[g][0] = Tf*baseline_[g].first;
                 }
             }
             break;
@@ -165,9 +167,6 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
         case ROSSELAND:
             for (unsigned g=0; g<number_of_groups; ++g)
             {
-                double const g0 = g1;
-                g1 = group_bounds[g+1];
-                
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {
@@ -179,15 +178,15 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
-                        double const x0 =     q*(g1-g0)/N + g0;
-                        double const x1 = (q+1)*(g1-g0)/N + g0;
+                        double const x0 = baseline_[q+N*g].second.first;
+                        double const x1 = baseline_[q+N*g].second.second;
 
                         double weight =
                             CDI::integrateRosselandSpectrum(x0/rtt_parser::keV.conv,
                                                             x1/rtt_parser::keV.conv,
                                                             T);
 
-                        t += weight/baseline_[q+N*g];
+                        t += weight/baseline_[q+N*g].first;
                         w += weight;
                     }
                     
@@ -199,9 +198,6 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
         case PLANCK:
             for (unsigned g=0; g<number_of_groups; ++g)
             {
-                double const g0 = g1;
-                g1 = group_bounds[g+1];
-                
                 double b1 = bands[0];
                 for (unsigned b=0; b<bands_per_group; ++b)
                 {
@@ -213,14 +209,15 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                     unsigned const q1 = static_cast<unsigned>(b1*N);
                     for (unsigned q=q0; q<q1; ++q)
                     {
-                        double const x0 =     q*(g1-g0)/N + g0;
-                        double const x1 = (q+1)*(g1-g0)/N + g0;
+                        double const x0 = baseline_[q+N*g].second.first;
+                        double const x1 = baseline_[q+N*g].second.second;
 
                         double weight =
                             CDI::integratePlanckSpectrum(x0/rtt_parser::keV.conv,
                                                          x1/rtt_parser::keV.conv,
                                                          T);
-                        t += weight*baseline_[q+N*g];
+                        
+                        t += weight*baseline_[q+N*g].first;
                         w += weight;
                     }
                     

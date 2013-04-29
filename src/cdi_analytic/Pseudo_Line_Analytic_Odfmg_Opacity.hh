@@ -13,17 +13,19 @@
 #ifndef __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
 #define __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
 
+#include <vector>
+#include <string>
+
 #include "Analytic_Models.hh"
 #include "Analytic_Odfmg_Opacity.hh"
 #include "Pseudo_Line_Base.hh"
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
-#include <vector>
-#include <string>
 
 namespace rtt_cdi_analytic
 {
+using std::pair;
 
 //===========================================================================//
 /*!
@@ -43,7 +45,7 @@ class Pseudo_Line_Analytic_Odfmg_Opacity :
 
     Averaging averaging_;
     unsigned qpoints_;
-    sf_double baseline_;
+    vector<pair<double, pair<double, double> > > baseline_;
 
   public:
     // Constructor.
@@ -52,10 +54,10 @@ class Pseudo_Line_Analytic_Odfmg_Opacity :
         const sf_double         &bands,
         rtt_cdi::Reaction        reaction_in,
         SP<Expression const> const &cont,
-        unsigned number_of_lines,
+        int number_of_lines,
         double line_peak,
         double line_width,
-        unsigned number_of_edges,
+        int number_of_edges,
         double edge_ratio,
         double Tref,
         double Tpow,

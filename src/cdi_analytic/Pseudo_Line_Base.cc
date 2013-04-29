@@ -28,10 +28,10 @@ using namespace rtt_cdi;
 
 //---------------------------------------------------------------------------//
 Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
-                                   unsigned number_of_lines,
+                                   int number_of_lines,
                                    double line_peak,
                                    double line_width,
-                                   unsigned number_of_edges,
+                                   int number_of_edges,
                                    double edge_ratio,
                                    double Tref,
                                    double Tpow,
@@ -48,9 +48,8 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     edge_ratio_(edge_ratio),
     Tref_(Tref),
     Tpow_(Tpow),
-    center_(number_of_lines),
-    edge_(number_of_edges),
-    edge_factor_(number_of_edges)
+    edge_(abs(number_of_edges)),
+    edge_factor_(abs(number_of_edges))
 {
     Require(continuum!=SP<Expression>());
     Require(line_peak>=0.0);
@@ -67,17 +66,36 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     rtt_c4::global_min(emin);
     rtt_c4::global_max(emax);
 
-    for (unsigned i=0; i<number_of_lines; ++i)
+    if (number_of_lines>0)
     {
-        center_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
+        center_.resize(number_of_lines);
+        for (int i=0; i<number_of_lines; ++i)
+        {
+            center_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
+        }
+
+        // Sort line centers
+        sort(center_.begin(), center_.end());
     }
+     // else fuzz model: Instead of lines, we add a random opacity to each
+    // opacity bin to simulate very fine, unresolvable line structure.
 
-    // Sort line centers
-    sort(center_.begin(), center_.end());
-
-    for (unsigned i=0; i<number_of_edges; ++i)
+    unsigned ne = abs(number_of_edges);
+    for (unsigned i=0; i<ne; ++i)
     {
-        edge_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
+        if (number_of_edges>0)
+        {
+            // normal behavior is to place edges randomly
+            edge_[i] = (emax-emin)*static_cast<double>(rand())/RAND_MAX + emin;
+        }
+        else
+        {
+            // placed edges evenly; this makes it easier to choose a group
+            // structure that aligns with edges (as would likely be done with
+            // a production calculation using a real opacity with strong
+            // bound-free components)
+            edge_[i] = (emax-emin)*(i+1)/(ne+1) + emin;
+       }
         edge_factor_[i] = edge_ratio_*(*continuum)(vector<double>(1,edge_[i]));
     }
 
@@ -129,7 +147,7 @@ double Pseudo_Line_Base::monoOpacity(double const x,
                                      double const T)
     const
 {
-    unsigned const number_of_lines = number_of_lines_;
+    int const number_of_lines = number_of_lines_;
     double const width = line_width_;
     double const peak = line_peak_;
 
@@ -140,16 +158,25 @@ double Pseudo_Line_Base::monoOpacity(double const x,
 #else
     double Result = (*continuum_)(vector<double>(1,x));
 #endif
-    
-    for (unsigned i=0; i<number_of_lines; ++i)
+
+    if (number_of_lines>=0)
     {
-        double const nu0 = center_[i];
-        double const d = (x - nu0)/(width*nu0);
+        for (int i=0; i<number_of_lines; ++i)
+        {
+            double const nu0 = center_[i];
+            double const d = (x - nu0)/(width*nu0);
 //        Result += peak*exp(-d*d);
-        Result += peak/(1+d*d);
+            Result += peak/(1+d*d);
+        }
     }
-    
-    unsigned const number_of_edges = number_of_edges_;
+    else
+    {
+        // Fuzz model. We had better be precalculating opacities for
+        // consistent behavior.
+        Result += peak*static_cast<double>(rand())/RAND_MAX;
+    }
+        
+    unsigned const number_of_edges = abs(number_of_edges_);
     
     for (unsigned i=0; i<number_of_edges; ++i)
     {
