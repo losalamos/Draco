@@ -41,10 +41,16 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
         procmon_resource_print("tst_procmon_use_01",msg);
         std::string line=msg.str();
         std::vector<std::string> tokens = tokenize( line, " \t" );
-        if( tokens[4]  != std::string("VmSize") ) ITFAILS;
-        if( tokens[8]  != std::string("VmRss")  ) ITFAILS;
-        if( tokens[11] != std::string("kB")     ) ITFAILS;
 
+        std::cout << msg.str() << std::endl;
+        for( size_t i=0; i<tokens.size(); ++i )
+            std::cout << i << " : " << tokens[i] << std::endl;
+        
+#ifdef USE_PROCMON
+        if( tokens[4]  != std::string("VmPeak") ) ITFAILS;
+        if( tokens[9]  != std::string("VmRss")  ) ITFAILS;
+        if( tokens[12] != std::string("kB")     ) ITFAILS;
+#endif
         // Save the VmRSS size
         vmrss_orig = atof( tokens[10].c_str() );
     }

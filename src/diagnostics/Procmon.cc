@@ -18,9 +18,15 @@
 #include <fstream>
 #include <sstream>
 
+#ifdef USE_PROCMON
+// see 'man getrusage'
+#include <sys/time.h>
+#include <sys/resource.h>
+
 // see 'man getpid'
 #include <sys/types.h>
 #include <unistd.h>
+#endif
 
 namespace rtt_diagnostics
 {
@@ -50,6 +56,20 @@ std::vector<std::string> tokenize(
 }
 
 //---------------------------------------------------------------------------------------//
+/*
+ * Notes:  In Cassio's procmon routines, all absolute values are given in
+ * bytes instead of kB.  Cassio's procmon report has the following fields:
+ *
+ * Estimate: mpi_sum_node( 2 * rss_max ) / max_mem_node
+ * RSS     : mpi_sum_node( vmrss       ) / max_mem_node
+ * Virt    : mpi_sum_node( vmpeak      ) / max_mem_node
+ * RSS_MAX : mpi_sum_node( rss_max     ) / max_mem_node
+ *
+ * where
+ * - rss_max is read from getrusage.ru_maxrss;
+ * - vmrss and vmpeak are ready from /proc/<pid>/status
+ * - max_mem_node is read from /proc/meminfo as MemTotal
+ */
 void procmon_resource_print( std::string const & identifier,
                              std::ostream & msg )
 {
@@ -64,7 +84,8 @@ void procmon_resource_print( std::string const & identifier,
     //double MemFree(-1.0);
 
     // int proc_uid (-1);
-    int proc_vmsize(-1);  // The size of the virtual memory allocated to the process
+    int proc_vmpeak(-1);  // The peak size of the virtual memory allocated to the process
+    //int proc_vmsize(-1);  // The size of the virtual memory allocated to the process
     int proc_vmrss(-1);   // The amount of memory mapped in RAM ( instead of swapped out )
     // int proc_vmdata(-1);  // The size of the Data segment
     // int proc_vmstk(-1);   // The stack size.
@@ -73,7 +94,10 @@ void procmon_resource_print( std::string const & identifier,
     // Find the PID
     // ----------------------------------------
 
-    long long proc_pid = getpid();
+    long long proc_pid(0);
+#ifdef USE_PROCMON
+    proc_pid = getpid();
+#endif
     std::string proc_pid_string;
     {
         std::ostringstream buf;
@@ -110,20 +134,21 @@ void procmon_resource_print( std::string const & identifier,
     
     Check( MemTotal > 0 );
     // Check( MemFree > 0 );
- 
+
     // ----------------------------------------
     // Examine /proc/<PID>/status for memory used
     // ----------------------------------------
 
     std::string file_status_pid( std::string("/proc/") + proc_pid_string
                                  + std::string("/status") );
+#ifdef USE_PROCMON
     Insist( rtt_dsxx::fileExists( file_status_pid ),
             std::string("Could not open") + file_status_pid
             + std::string("!  Is this Linux?") );
 
     fs.open( file_status_pid.c_str(), std::fstream::in );
     Check( fs.good() );
-    
+
     while( !fs.eof() )
     {
         std::string line;
@@ -138,7 +163,8 @@ void procmon_resource_print( std::string const & identifier,
             if( tokens[0] == std::string("Name:") )   proc_name = tokens[1];
             // if( tokens[0] == std::string("PPid:") )   proc_ppid = atoi(tokens[1].c_str());
             // if( tokens[0] == std::string("Uid:") )    proc_uid  = atoi(tokens[1].c_str());
-            if( tokens[0] == std::string("VmSize:") ) proc_vmsize = atoi(tokens[1].c_str());
+            if( tokens[0] == std::string("VmPeak:") ) proc_vmpeak = atoi(tokens[1].c_str());
+            // if( tokens[0] == std::string("VmSize:") ) proc_vmsize = atoi(tokens[1].c_str());
             if( tokens[0] == std::string("VmRSS:") )  proc_vmrss  = atoi(tokens[1].c_str());
             // if( tokens[0] == std::string("VmData:") ) proc_vmdata = atoi(tokens[1].c_str());
             // if( tokens[0] == std::string("VmStk:") )  proc_vmstk  = atoi(tokens[1].c_str());
@@ -146,7 +172,20 @@ void procmon_resource_print( std::string const & identifier,
 
     }
     fs.close();
+#endif
+    
+    // ----------------------------------------
+    // Use rusage to obtain rss_max
+    // ----------------------------------------
 
+    double proc_vmrssmax(-1.0);
+#ifdef USE_PROCMON
+    struct rusage ruse_getrusage; /* getrusage */
+    
+    getrusage( RUSAGE_SELF, &ruse_getrusage );
+    proc_vmrssmax = ruse_getrusage.ru_maxrss; /* looks to be in kb */
+#endif
+    
     // ----------------------------------------
     // Print a report
     // ----------------------------------------
@@ -155,8 +194,10 @@ void procmon_resource_print( std::string const & identifier,
         << "[" << rtt_c4::node() << "] " 
         << proc_name << " (pid: " << proc_pid << ")::" << identifier
 //              << "\nUid  : " << proc_uid
-        << "\tVmSize : " << proc_vmsize << " kB "
-        << "\tVmRss  : " << proc_vmrss  << " kB (" << proc_vmrss/MemTotal*100.0 << "%)"
+        << "\tVmPeak : " << proc_vmpeak << " kB (" << proc_vmpeak/MemTotal*100.0 << "%)"
+//        << "\tVmSize : " << proc_vmsize << " kB "
+        << "\tVmRss : " << proc_vmrss  << " kB (" << proc_vmrss/MemTotal*100.0 << "%)"
+        << "\tVmRss_max : " << proc_vmrssmax  << " kB (" << proc_vmrssmax/MemTotal*100.0 << "%)"
         // << "\nVmData : " << proc_vmdata << " kB"
         // << "\nVmStk  : " << proc_vmstk  << " kB"
         // << "\nMemFree: " << MemFree     << " kB"
