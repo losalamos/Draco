@@ -163,6 +163,7 @@ macro( setupMPILibrariesUnix )
          # Find cores/cpu and cpu/node.
 
          set( MPI_CORES_PER_CPU 4 )
+         set( MPI_PHYSICAL_CORES 0 )
          if( EXISTS "/proc/cpuinfo" )
             file( READ "/proc/cpuinfo" cpuinfo_data )
             string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
@@ -170,6 +171,11 @@ macro( setupMPILibrariesUnix )
                if( "${line}" MATCHES "cpu cores" )
                   string( REGEX REPLACE ".* ([0-9]+).*" "\\1"
                      MPI_CORES_PER_CPU "${line}" )
+               elseif( "${line}" MATCHES "physical id" )
+                  string( REGEX REPLACE ".* ([0-9]+).*" "\\1" tmp "${line}" )
+                  if( ${tmp} GREATER ${MPI_PHYSICAL_CORES} )
+                     set( MPI_PHYSICAL_CORES ${tmp} )
+                  endif()
                endif()
             endforeach()
          endif()
@@ -179,6 +185,19 @@ macro( setupMPILibrariesUnix )
          set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
             "Number of cores per cpu" FORCE )
 
+         # Check for hyperthreading - This is important for reserving
+         # threads for OpenMP tests...
+
+         # correct base-zero indexing
+         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
+         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
+            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         else()
+            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         endif()
+         
          #
          # EAP's flags can be found in Test.rh/General/run_job.pl
          # (look for $other_args).  In particular, it may be useful to

@@ -295,6 +295,12 @@ macro( register_parallel_test targetname numPE command cmd_args )
    endif()
    if( addparalleltest_MPI_PLUS_OMP ) 
       math( EXPR numthreads "${numPE} * ${MPI_CORES_PER_CPU}" )
+      # message("target = ${targetname}, numthreads = ${numthreads}")
+      if( MPI_HYPERTHREADING )
+         math( EXPR numthreads "2 * ${numthreads}" )
+         # message("target = ${targetname}, numthreads = ${numthreads}")
+      endif()
+      # message("target = ${targetname}, numthreads = ${numthreads}")
       set_tests_properties( ${targetname}
          PROPERTIES
            PROCESSORS "${numthreads}"
@@ -303,8 +309,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
      else()
       set_tests_properties( ${targetname}
          PROPERTIES
-           PROCESSORS "${numPE}"
-           )
+           PROCESSORS "${numPE}" )
    endif()
 endmacro()
 
