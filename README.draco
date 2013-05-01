@@ -1,28 +1,28 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> DRACO RELEASE draco-6_4_0   
+>>> DRACO Component Libraries for Radiation Transport Codes
 >>> CCS-2 Computational Physics Group      
->>> Copyright LANS LLC 
+>>> Copyright (C) Los Alamos National Security, LLC.
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> $Id$
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 Draco is an object-oriented component library geared towards
-numerically intensive, radiation (particle) transport applications.
-It consists of semi-independent packages and a robust build system.
-The packages in draco provide a set of components that can be used by
-multiple clients to build transport codes.  The build system can also
-be extracted for use in clients.
+numerically intensive, radiation (particle) transport applications
+built for parallel computing hardware.  It consists of
+semi-independent packages and a robust build system.  The packages in
+draco provide a set of components that can be used by multiple clients
+to build transport codes.  The build system can also be extracted for
+use in clients.
 
 Draco contains two sets of components.  Active components are
 currently used and maintained.  Retired packages are no longer in use
-by any clients.  Retired packages can be recovered from cvs by using
-the tag <package>-retired or, in some cases, the last version of the
-package (for packages that have been moved elsewhere) e.g. imc-4_0_0.
+by any clients.  Retired packages can be recovered from subversion by
+checking out a tagged version of a component or repository.
 
 Draco development is performed by project teams within CCS-2.  The
-following code projects use/supply code to draco: 
+following code projects use/supply code to draco:
 
-	1) JAYENNE   Todd Urbatsch <tmonster@lanl.gov>
+	1) JAYENNE   Rob Lowrie    <lowrie@lanl.gov>
 	2) CAPSAICIN Jae Chang     <jhchang@lanl.gov>
 	3) MACH      Rob Lowrie    <lowrie@lanl.gov>
 	4) ZATHRAS   Scott Turner  <turners@lanl.gov>
@@ -35,7 +35,20 @@ Draco is governed by a board consisting of:
       Rob Lowrie          <lowrie@lanl.gov>
       Kelly (KT) Thompson <kgt@lanl.gov>
 
-A brief description of the packages in draco follows.
+Resources
+=============================
+
+Project Management http://coder/redmine/projects/draco
+SVN Repository 	   svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/draco
+Dashboard 	   http://coder.lanl.gov/cdash/index.php?project=Draco
+Autodoc 	   http://coder.lanl.gov/autodoc/draco
+
+Configuring and Building
+=============================
+
+Please review the notes at the top of CMakeLists.txt or the Redmine
+wiki page:
+http://coder/redmine/projects/draco/wiki/Configuration_and_Building
 
 Active Draco Component Synopsis
 =============================
@@ -52,7 +65,7 @@ equation-of-state data, etc.)
 cdi_analytic:
 
 cdi_eospac [draco/src/cdi_eospac]: {Equation-of-State data} This class
-wraps the FORTRAN EOSPAC libraries (local copy at
+wraps the EOSPAC6 libraries (local copy at
 /ccs/codes/radtran/vendors/eospac).  The interface inherits from
 CDI/EOS.hh and can be used as a stand alone component or as a plun-in
 to CDI.  To make the component available you must set in your
