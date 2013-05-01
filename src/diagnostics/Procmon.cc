@@ -17,6 +17,7 @@
 #include "ds++/path.hh"
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 #ifdef USE_PROCMON
 // see 'man getrusage'
@@ -190,18 +191,22 @@ void procmon_resource_print( std::string const & identifier,
     // Print a report
     // ----------------------------------------
 
-    msg // << "\nMemory status:"
+    msg
+        // << "\nMemory status:"
         << "[" << rtt_c4::node() << "] " 
-        << proc_name << " (pid: " << proc_pid << ")::" << identifier
+        << proc_name << " (pid: " << proc_pid << ")::" << identifier;
 //              << "\nUid  : " << proc_uid
-        << "\tVmPeak : " << proc_vmpeak << " kB (" << proc_vmpeak/MemTotal*100.0 << "%)"
+    msg << "\tVmPeak : " << proc_vmpeak << " kB (";
+    msg << std::fixed << std::setprecision(2) << proc_vmpeak/MemTotal*100.0 << "%)";
 //        << "\tVmSize : " << proc_vmsize << " kB "
-        << "\tVmRss : " << proc_vmrss  << " kB (" << proc_vmrss/MemTotal*100.0 << "%)"
-        << "\tVmRss_max : " << proc_vmrssmax  << " kB (" << proc_vmrssmax/MemTotal*100.0 << "%)"
-        // << "\nVmData : " << proc_vmdata << " kB"
+    msg << "\tVmRss : " << proc_vmrss  << " kB ("
+        << std::fixed << std::setprecision(2) << proc_vmrss/MemTotal*100.0 << "%)";
+    msg << "\tVmRss_max : " << proc_vmrssmax  << " kB ("
+        << std::fixed << std::setprecision(2) << proc_vmrssmax/MemTotal*100.0 << "%)";
+    // << "\nVmData : " << proc_vmdata << " kB"
         // << "\nVmStk  : " << proc_vmstk  << " kB"
         // << "\nMemFree: " << MemFree     << " kB"
-        << std::endl;
+    msg << std::endl;
        
 //    std::cout << "\nMemTotal: " << MemTotal << " kB"
 //              << "\nMemFree : " << MemFree  << " kB"
