@@ -28,7 +28,7 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 # -parallel    Automatic parallelziation.
 set( CMAKE_Fortran_FLAGS "-warn  -fpp -implicitnone" ) 
 if( USE_OPENMP )
-   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -openmp -parallel" )
+   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -openmp" )
 endif()
 
 # Debug flags:
