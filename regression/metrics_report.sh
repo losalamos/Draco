@@ -181,7 +181,8 @@ echo "  http://www.bullseye.com/coverage.html#basic_conditionDecision"
 
 # Send the email
 
-echo /bin/mailx -s "${subj}" ${recipients} < ${logfile}
+#echo " "
+#echo /bin/mailx -s \"${subj}\" ${recipients} < ${logfile}
 /bin/mailx -s "${subj}" ${recipients} < ${logfile}
 #/bin/mailx -s "${subj}" kellyt@lanl.gov < ${logfile}
 #/bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
