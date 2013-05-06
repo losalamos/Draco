@@ -58,9 +58,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
   # message( "sitename = ${sitename}")
-  if( ${sitename} MATCHES "rr[a-d]+[0-9]+" )
-     set( sitename "RoadRunner" )
-  elseif( ${sitename} MATCHES "ct" )
+  if( ${sitename} MATCHES "ct" )
      set( sitename "Cielito" )
   elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
      set( sitename "Moonlight" )
@@ -478,6 +476,7 @@ macro( setup_for_code_coverage )
             execute_process( 
                COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy
+               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --categorize=cloc-categorize.log 
                --counted=cloc-counted.log 
                --ignored=cloc-ignored.log 
@@ -492,6 +491,7 @@ macro( setup_for_code_coverage )
             execute_process( 
                COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=test,heterogeneous,chimpy
+               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --progress-rate=0 
                --report-file=lines-of-code-notest.log 
                --read-lang-def=/home/regress/draco/regression/cloc-lang.defs
