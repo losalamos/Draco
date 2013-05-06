@@ -50,16 +50,35 @@
     (setq machine-name (getenv "HOST"))
 (setq machine-name "none"))
 
-(if (string-match "lambda" machine-name)
-    (progn
-      (define-key global-map [(button4)] 
-        '(lambda () (interactive) (scroll-down 5)))
-      (define-key global-map [(button5)] 
-        '(lambda () (interactive) (scroll-up 5)))))
+;; (if (string-match "lambda" machine-name)
+;;     (progn
+;;       (define-key global-map [(button4)] 
+;;         '(lambda () (interactive) (scroll-down 5)))
+;;       (define-key global-map [(button5)] 
+;;         '(lambda () (interactive) (scroll-up 5)))))
 
 ;(if (or (string-match "ffe1" machine-name)
 ;	(string-match "qscfe1" machine-name)) (mwheel-install))
 
 (mwheel-install)
+
+;; Ack/Grep
+
+(defvar ack-history nil
+  "History for the `ack' command.")
+(defun ack (command-args)
+  (interactive
+   (let ((ack-command 
+          ;; "ack --nocolor --nogroup --with-filename --all "))
+          "ack --nocolor --nogroup --with-filename "))
+     (list (read-shell-command "Run ack (like this): "
+                               ack-command
+                               'ack-history))))
+  (let ((compilation-disable-input t))
+    (compilation-start (concat command-args " < " null-device)
+                       'grep-mode)))
+
+(define-key draco-mode-map [(shift f11)] 'grep)
+(define-key draco-mode-map [(f11)] 'ack)
 
 (provide 'draco-global-keys)

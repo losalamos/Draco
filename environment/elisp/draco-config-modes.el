@@ -872,44 +872,49 @@ auto-mode-alist and set up some customizations for DRACO."
 ;; http://ecb.sourceforge.net/
 ;; ========================================
 (defun draco-start-ecb ()
-  (interactive
-  (setq cedetver "1.1")
-  ;;(setq cedetver "1.0pre6")
-  (if (file-accessible-directory-p "/ccs/codes/radtran/vendors")
-      (setq draco-vendor-dir "/ccs/codes/radtran/vendors"))
-  (if (file-accessible-directory-p "/usr/projects/draco/vendors")
-      (setq draco-vendor-dir "/usr/projects/draco/vendors"))
-  (if (file-accessible-directory-p (concat draco-vendor-dir
-                                           "/elisp/cedet-" cedetver "/common"))
-      (progn
-        (load-file (concat draco-vendor-dir "/elisp/cedet-" cedetver "/common/cedet.el"))
-        (global-ede-mode 1)                      ; Enable the Project management system
-        (semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
-        (global-srecode-minor-mode 1)            ; Enable template insertion menu
-        (semantic-load-enable-minimum-features)
-        ))
-
-  (setq ecbver "2.40")
-  ;;(setq ecbver "snap")
-  (if (file-accessible-directory-p (concat draco-vendor-dir "/elisp/ecb-" ecbver))
-      (progn
-        (add-to-list 'load-path (concat draco-vendor-dir "/elisp/ecb-" ecbver))
-        (require 'ecb)
-        ;;(require 'ecb-autoloads)
-        ;; M-x ecb-activate
-        ;; M-x ecb-byte-compile
-        ;; M-x ecb-show-help
-        ))
-  (define-key draco-mode-map [(f4)] 'semantic-ia-fast-jump)
-
-  (setq ecb-compilation-window-height t)
-  (add-hook 'ecb-activate-hook
-            (lambda ()
-              (let ((compwin-buffer (ecb-get-compile-window-buffer)))
-                (if (not (and compwin-buffer
-                              (ecb-compilation-buffer-p compwin-buffer)))
-                    (ecb-toggle-compile-window -1)))))
-  ))
+"Start Emacs Code Browser"
+  (interactive)
+  (progn
+    (defvar cedetver "1.1" "CEDET version.")
+    (defvar draco-vendor-dir "/ccs/codes/radtran/vendors" "Draco vendor dir")
+    ;;(setq cedetver "1.0pre6")
+    (if (file-accessible-directory-p "/ccs/codes/radtran/vendors")
+        (setq draco-vendor-dir "/ccs/codes/radtran/vendors"))
+    (if (file-accessible-directory-p "/usr/projects/draco/vendors")
+        (setq draco-vendor-dir "/usr/projects/draco/vendors"))
+    (if (file-accessible-directory-p (concat draco-vendor-dir
+                                             "/elisp/cedet-" cedetver "/common"))
+        (progn
+          (load-file (concat draco-vendor-dir "/elisp/cedet-" cedetver "/common/cedet.el"))
+          (global-ede-mode 1)                      ; Enable the Project management system
+          (semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
+          (global-srecode-minor-mode 1)            ; Enable template insertion menu
+          (semantic-load-enable-minimum-features)
+          ))
+    
+    (defvar ecbver "2.40" "Version of Emacs Code Browser.")
+    ;;(setq ecbver "snap")
+    (if (file-accessible-directory-p (concat draco-vendor-dir "/elisp/ecb-" ecbver))
+        (progn
+          (add-to-list 'load-path (concat draco-vendor-dir "/elisp/ecb-" ecbver))
+          (require 'ecb)
+          ;;(require 'ecb-autoloads)
+          ;; M-x ecb-activate
+          ;; M-x ecb-byte-compile
+          ;; M-x ecb-show-help
+          ))
+    (define-key draco-mode-map [(f4)] 'semantic-ia-fast-jump)
+    
+    (defvar ecb-compilation-window-height t)
+    (add-hook 'ecb-activate-hook
+              (lambda ()
+                (let ((compwin-buffer (ecb-get-compile-window-buffer)))
+                  (if (not (and compwin-buffer
+                                (ecb-compilation-buffer-p compwin-buffer)))
+                      (ecb-toggle-compile-window -1)))))
+    )
+  (ecb-activate)
+  )
 
 ;;---------------------------------------------------------------------------;;
 ;; Provide these functions from draco-config-modes
