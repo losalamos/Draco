@@ -4,15 +4,15 @@
  * \author Thomas M. Evans and Todd Urbatsch
  * \date   Wed Nov  7 14:10:55 2001
  * \brief  Soft_Equivalence functions for floating point comparisons.
- * \note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __ds_Soft_Equivalence_hh__
-#define __ds_Soft_Equivalence_hh__
+#ifndef __dsxx_Soft_Equivalence_hh__
+#define __dsxx_Soft_Equivalence_hh__
 
 //===========================================================================//
 // Soft_Equivalence
@@ -76,11 +76,38 @@ inline bool soft_equiv( const FPT &value,
 }
 
 //---------------------------------------------------------------------------//
-
+// Disallow integer types for Soft_Equiv.
 template<>
 inline bool soft_equiv( const int & /* value */, 
                         const int & /* reference */,
                         const int   /* precision */ )
+{
+    Insist (0, "Can't do a soft compare with integers!");
+    return false;
+}
+
+template<>
+inline bool soft_equiv( const unsigned int & /* value */, 
+                        const unsigned int & /* reference */,
+                        const unsigned int   /* precision */ )
+{
+    Insist (0, "Can't do a soft compare with integers!");
+    return false;
+}
+
+template<>
+inline bool soft_equiv( const int64_t & /* value */, 
+                        const int64_t & /* reference */,
+                        const int64_t   /* precision */ )
+{
+    Insist (0, "Can't do a soft compare with integers!");
+    return false;
+}
+
+template<>
+inline bool soft_equiv( const uint64_t & /* value */, 
+                        const uint64_t & /* reference */,
+                        const uint64_t   /* precision */ )
 {
     Insist (0, "Can't do a soft compare with integers!");
     return false;
@@ -228,7 +255,7 @@ inline bool soft_equiv(
 
 } // end namespace rtt_dsxx
 
-#endif // __ds_Soft_Equivalence_hh__
+#endif // __dsxx_Soft_Equivalence_hh__
 
 //---------------------------------------------------------------------------//
 // end of ds++/Soft_Equivalence.hh

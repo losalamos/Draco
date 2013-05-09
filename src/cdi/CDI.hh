@@ -333,9 +333,9 @@ namespace rtt_cdi
  *
  * This function performs the following integration:
  *\f[
- *      \int_{x_low}^{x_high} b(x) dx
+ *      \int_{x_{low}}^{x_{high}} b(x) dx
  *\f]
- * where \f$x_low\f$ is calculated from the input low frequency bound and
+ * where \f$x_{low}\f$ is calculated from the input low frequency bound and
  * \f$x_high\f$ is calculated from the input high frequency bound.  This
  * integration uses the method of B. Clark (JCP (70)/2, 1987).  We use a
  * 10-term Polylogarithmic expansion for the normalized Planckian, except in
@@ -345,13 +345,13 @@ namespace rtt_cdi
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
  * \f[
- *      \int_{\nu_low}^{\nu_high} B(\nu,T) d\nu 
+ *      \int_{\nu_{low}}^{\nu_{high}} B(\nu,T) d\nu 
  * \f]
  * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
  * the radiation constant.  If you want to evaluate expressions like the
  * following:
  *\f[
- *      \int_{4\pi} \int_{\nu_low}^{\nu_high} B(\nu,T) d\nu d\Omega
+ *      \int_{4\pi} \int_{\nu_{low}}^{\nu_{high}} B(\nu,T) d\nu d\Omega
  *\f]
  * then you must multiply by \f$acT^4\f$.
  *
@@ -576,6 +576,36 @@ class DLL_PUBLIC CDI
     SP_OdfmgOpacity      odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
     SP_EoS               eos  (void) const;
 
+    //! Collapse Multigroup data to single-interval data with Planck weighting.
+    static double collapseMultigroupOpacitiesPlanck(
+        std::vector<double> const & groupBounds,
+        // double              const & T,
+        std::vector<double> const & opacity,
+        std::vector<double> const & planckSpectrum,
+        std::vector<double>       & emission_group_cdf );
+
+    //! Collapse Multigroup data to single-interval data with Rosseland weighting.
+    static double collapseMultigroupOpacitiesRosseland(
+        std::vector<double> const & groupBounds,
+        std::vector<double> const & opacity,
+        std::vector<double> const & rosselendSpectrum );
+    
+    //! Collapse Multigroup+Multiband data to single-interval data with Planck weighting.
+    static double collapseOdfmgOpacitiesPlanck(
+        std::vector<double> const & groupBounds,
+        // double              const & T,
+        std::vector<std::vector<double> > const & opacity,
+        std::vector<double> const & planckSpectrum,
+        std::vector<double> const & bandWidths,
+        std::vector<double>       & emission_group_cdf );
+
+    //! Collapse Multigroup+Multiband data to single-interval data with Rosseland weighting.
+    static double collapseOdfmgOpacitiesRosseland(
+        std::vector<double> const & groupBounds,
+        std::vector<std::vector<double> > const & opacity,
+        std::vector<double> const & rosselendSpectrum,
+        std::vector<double> const & bandWidths );
+    
     //! Return material ID string.
     const std_string& getMatID() const { return matID; }
 

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -12,7 +12,10 @@
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
+#include "ds++/Safe_Divide.hh"
 #include <limits>
+#include <algorithm>
+#include <iostream>
 
 namespace rtt_cdi
 {
@@ -240,17 +243,21 @@ double CDI::integratePlanckSpectrum(const double T)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Integrate the Planckian and Rosseland spectrum over a frequency
- * range.
+ *        range.
  * \param T the temperature in keV (must be greater than 0.0)
  * \return void the integrated normalized Planckian and Rosseland from x_low
- * to x_high are passed by reference in the function call
+ *        to x_high are passed by reference in the function call
  *
+ * \f[
+ * planck(T) = \int_{\nu_1}^{\nu_2}{B(\nu,T)d\nu}
+ * rosseland(T) = \int_{\nu_1}^{\nu_2}{\frac{\partial B(\nu,T)}{\partial T}d\nu}
+ * \f]
  */
-void CDI::integrate_Rosseland_Planckian_Spectrum(double  lowFreq,
-						 double  highFreq,
-						 const double  T,
-						 double       &planck, 
-						 double       &rosseland)
+void CDI::integrate_Rosseland_Planckian_Spectrum(double lowFreq,
+						 double highFreq,
+						 double const T,
+						 double &planck, 
+						 double &rosseland)
 {
     Require (lowFreq >= 0.0);
     Require (highFreq >= lowFreq);
@@ -270,8 +277,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double  lowFreq,
     lowFreq /= T;
     highFreq /= T;
 
-    const double exp_lowFreq  = std::exp(-lowFreq);
-    const double exp_highFreq = std::exp(-highFreq);
+    double const exp_lowFreq  = std::exp(-lowFreq);
+    double const exp_highFreq = std::exp(-highFreq);
 
     integrate_planck_rosseland(lowFreq,  exp_lowFreq,  planck_low,  rosseland_low);
     integrate_planck_rosseland(highFreq, exp_highFreq, planck_high, rosseland_high);
@@ -431,9 +438,9 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double>  const & bounds,
  * \brief Integrate the Planckian and Rosseland Specrum over an entire a set
  * of frequency groups, returning a vector of the integrals
  *
- * \param bounds The vector of group boundaries. Size n+1
- * \param T The temperature
- * \param planck Return argument containing the Planckian integrals. Size n
+ * \param bounds    The vector of group boundaries. Size n+1
+ * \param T         The temperature
+ * \param planck    Return argument containing the Planckian integrals. Size n
  * \param rosseland Return argumant containing the Rosseland integrals. Size n
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(
@@ -442,8 +449,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
     std::vector<double>       & planck,
     std::vector<double>       & rosseland)
 {
-
-    Require( T >= 0.0);
+    Require( T >= 0.0 );
     
     size_t const groups( bounds.size() - 1 );
     Check(groups >= 1);
@@ -491,6 +497,276 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
         Ensure(rosseland[group] >= 0.0);  Ensure(rosseland[group] <= 1.0);                                          
     }
     return;    
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup opacity set into a single representative value
+ *        weighted by the Planckian function.
+ *
+ * \param groupBounds The vector of group boundaries.
+ * \param T         The material temperature.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param plankSpectrum A vector of Planck integrals for all groups in the
+ *                  spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param emission_group_cdf
+ * \return A single interval Planckian weighted opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
+ * this function to obtain planckSpectrum. 
+ */
+double CDI::collapseMultigroupOpacitiesPlanck(
+    std::vector<double> const & groupBounds,
+//    double              const & T,
+    std::vector<double> const & opacity,
+    std::vector<double> const & planckSpectrum,
+    std::vector<double>       & emission_group_cdf )
+{
+    Require( groupBounds.size() > 0 );
+    Require( opacity.size()        == groupBounds.size() -1 );
+    Require( planckSpectrum.size() == groupBounds.size() -1 );
+
+    // Integrate the unnormalized Planckian over the group spectrum
+    // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
+    double const planck_integral =
+        std::accumulate(planckSpectrum.begin(), planckSpectrum.end(), 0.0);
+    Check( planck_integral >= 0.0 );
+
+    // Perform integration of sigma * b_g over all groups:
+    // int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+    
+    // Initialize sum:
+    double sig_planck_sum( 0.0 );
+    // Multiply by the absorption opacity and accumulate.
+    for( size_t g=1; g<groupBounds.size(); ++g )
+    {
+        Check( planckSpectrum[g-1] >= 0.0 );
+        Check( opacity[g-1]         >= 0.0 );
+        sig_planck_sum += planckSpectrum[g-1] * opacity[g-1];
+        // Also collect some CDF data.
+        emission_group_cdf[g-1] = sig_planck_sum;
+    }
+
+    //                         int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+    // Planck opac:  sigma_P = --------------------------------------------------
+    //                         int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
+
+    double planck_opacity(0.0);
+    if( planck_integral > 0.0 )
+    planck_opacity = sig_planck_sum / planck_integral;
+    else
+    {
+        // Weak check that the zero integrated Planck is due to a cold
+        // temperature whose Planckian peak is below the lowest (first) group
+        // boundary.
+        Check( rtt_dsxx::soft_equiv(sig_planck_sum, 0.0) );
+        // Check( T >= 0.0 );
+        // Check( 3.0 * T <= groupBounds[0] ); 
+        
+        // Set the ill-defined integrated Planck opacity to zero.
+        // planck_opacity = 0.0; // already initialized to zero.
+    }
+    Ensure( planck_opacity >= 0.0 );
+    return planck_opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup opacity set into a single representative value
+ *        weighted by the Rosseland function.
+ *
+ * \param groupBounds The vector of group boundaries. Size n+1
+ * \param T         The material temperature.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param rosselandSpectrum A vector of Rosseland integrals for all groups in
+ *                  the spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \return A single interval Rosseland weighted opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
+ * this function to obtain rosselandSpectrum. 
+ */
+double CDI::collapseMultigroupOpacitiesRosseland(
+    std::vector<double> const & groupBounds,
+    std::vector<double> const & opacity,
+    std::vector<double> const & rosselandSpectrum )
+{
+    Require( groupBounds.size() > 0 );
+    Require( opacity.size()           == groupBounds.size() -1 );
+    Require( rosselandSpectrum.size() == groupBounds.size() -1 );
+
+    // Integrate the unnormalized Rosseland over the group spectrum
+    // int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
+    double const rosseland_integral = 
+        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
+    Check (rosseland_integral >= 0.0);
+
+    // Perform integration of (1/sigma) * d(b_g)/dT over all groups:
+    // int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
+
+    // Rosseland opacity:
+
+    //    1      int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
+    // ------- = ----------------------------------------------------------
+    // sigma_R   int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
+    
+    // Initialize sum
+    double inv_sig_r_sum( 0.0 );
+        // Accumulated quantities for the Rosseland opacities:
+    for( size_t g=1; g<groupBounds.size(); ++g )
+        inv_sig_r_sum += rtt_dsxx::safe_pos_divide(rosselandSpectrum[g-1],
+                                                   opacity[g-1]);
+    Check( inv_sig_r_sum > 0.0 );
+    return rosseland_integral / inv_sig_r_sum;    
+}
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup-multiband opacity set into a single
+ * representative value weighted by the Planckian function.
+ *
+ * \param groupBounds The vector of group boundaries.
+ * \param T         The material temperature.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param plankSpectrum A vector of Planck integrals for all groups in the
+ *                  spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \param emission_group_cdf
+ * \return A single interval Planckian weighted opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
+ * this function to obtain planckSpectrum. 
+ */
+double CDI::collapseOdfmgOpacitiesPlanck(
+    std::vector<double> const & groupBounds,
+    std::vector<std::vector<double> > const & opacity,
+    std::vector<double> const & planckSpectrum,
+    std::vector<double> const & bandWidths,
+    std::vector<double>       & emission_group_cdf )
+{
+    Require( groupBounds.size() > 0 );
+    Require( opacity.size()        == groupBounds.size() -1 );
+    Require( opacity[0].size()     == bandWidths.size() );
+    Require( planckSpectrum.size() == groupBounds.size() -1 );
+
+    // Integrate the unnormalized Planckian over the group spectrum
+    // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
+    double const planck_integral =
+        std::accumulate(planckSpectrum.begin(), planckSpectrum.end(), 0.0);
+    Check( planck_integral >= 0.0 );
+
+    // Perform integration of sigma * b_g over all groups:
+    // int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+    
+    // Initialize sum:
+    double sig_planck_sum( 0.0 );
+    
+    size_t const numGroups = groupBounds.size() - 1;
+    size_t const numBands  = bandWidths.size();
+
+    // Multiply by the absorption opacity and accumulate.
+    for( size_t g=1; g<=numGroups; ++g )
+    {
+        for( size_t ib=1; ib<=numBands; ++ib )
+        {
+            Check( planckSpectrum[g-1] >= 0.0 );
+            Check( opacity[g-1][ib-1]  >= 0.0 );
+            Check((g-1)*numBands + ib-1 < numBands*numGroups);
+
+            sig_planck_sum += planckSpectrum[g-1]
+                              * bandWidths[ib-1] * opacity[g-1][ib-1];
+            // Also collect some CDF data.
+            emission_group_cdf[ (g-1)*numBands + ib - 1 ] = sig_planck_sum;
+        }
+    }
+
+    //                         int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+    // Planck opac:  sigma_P = --------------------------------------------------
+    //                         int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
+
+    double planck_opacity(0.0);
+    // if( planck_integral > 0.0 )
+    planck_opacity = sig_planck_sum / planck_integral;
+    // else
+    // {
+    //     // Weak check that the zero integrated Planck is due to a cold
+    //     // temperature whose Planckian peak is below the lowest (first) group
+    //     // boundary.
+    //     Check( rtt_dsxx::soft_equiv(sig_planck_sum, 0.0) );
+    //     Check( T >= 0.0 );
+    //     Check( 3.0 * T <= groupBounds[0] ); 
+        
+    //     // Set the ill-defined integrated Planck opacity to zero.
+    //     // planck_opacity = 0.0; // already initialized to zero.
+    // }
+    Ensure( planck_opacity >= 0.0 );
+    return planck_opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup-multiband opacity set into a single
+ * representative value weighted by the Rosseland function.
+ *
+ * \param groupBounds The vector of group boundaries. Size n+1
+ * \param T         The material temperature.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param rosselandSpectrum A vector of Rosseland integrals for all groups in
+ *                  the spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \return A single interval Rosseland weighted opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
+ * this function to obtain rosselandSpectrum. 
+ */
+double CDI::collapseOdfmgOpacitiesRosseland(
+    std::vector<double> const & groupBounds,
+    std::vector<std::vector<double> > const & opacity,
+    std::vector<double> const & rosselandSpectrum,
+    std::vector<double> const & bandWidths )
+{
+    Require( groupBounds.size() > 0 );
+    Require( opacity.size()           == groupBounds.size() -1 );
+    Require( opacity[0].size()        == bandWidths.size() );
+    Require( rosselandSpectrum.size() == groupBounds.size() -1 );
+
+    // Integrate the unnormalized Rosseland over the group spectrum
+    // int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
+    double const rosseland_integral = 
+        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
+    Check (rosseland_integral >= 0.0);
+
+    // Perform integration of (1/sigma) * d(b_g)/dT over all groups:
+    // int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
+
+    // Rosseland opacity:
+
+    //    1      int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
+    // ------- = ----------------------------------------------------------
+    // sigma_R   int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
+    
+    size_t const numGroups = groupBounds.size() - 1;
+    size_t const numBands  = bandWidths.size();
+    
+    // Initialize sum
+    double inv_sig_r_sum( 0.0 );
+
+    // Accumulated quantities for the Rosseland opacities:
+    for( size_t g=1; g<=numGroups; ++g )
+    {
+        for( size_t ib=1; ib<=numBands; ++ib )
+        {
+            Check( rosselandSpectrum[g-1] >= 0.0 );
+            Check( opacity[g-1][ib-1] >= 0.0 );
+            Check( (g-1)*numBands + ib-1 < numBands*numGroups );
+
+            inv_sig_r_sum += rtt_dsxx::safe_pos_divide(
+                rosselandSpectrum[g-1] * bandWidths[ib-1],
+                opacity[g-1][ib-1]);
+        }
+    }
+    Check( inv_sig_r_sum > 0.0 );
+    return rosseland_integral / inv_sig_r_sum;    
 }
 
 //---------------------------------------------------------------------------//

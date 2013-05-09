@@ -16,7 +16,9 @@
 #include "../Soft_Equivalence.hh"
 #include "../ScalarUnitTest.hh"
 #include <vector>
+#include <typeinfo>
 #include <deque>
+#include <sstream>
 #ifdef HAS_CXX11_ARRAY
 #include <array>
 #endif
@@ -33,28 +35,48 @@ using rtt_dsxx::soft_equiv_deep;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_soft_equiv_scalar(rtt_dsxx::ScalarUnitTest & ut)
+template< typename INT >
+void test_bad_data_type(rtt_dsxx::ScalarUnitTest & ut)
 {
-    // ensure that we can not use integer tolerance.
+    // ensure that we can not use integer fields or tolerance.
     {
-        int x = 31415;
-        int y = 31416;
-        int tol = 1l;
-
         try
         {
+            INT x = 31415;
+            INT y = 31416;
+            INT tol = 1l;
             /* bool result =  */ soft_equiv(x,y,tol);
             throw "Bogus!";            
         }
         catch( rtt_dsxx::assertion const & /* error */ )
         {
-            PASSMSG("Successfully prevented use of soft_equiv(int,int,int).");
+            std::string type;
+            if( typeid(INT) == typeid(int) )               type="int";
+            else if( typeid(INT) == typeid(unsigned int) ) type="unsigned";
+            else if( typeid(INT) == typeid(int64_t) )      type="int64_t";
+            else if( typeid(INT) == typeid(uint64_t) )     type="uint64_t";
+            else type = typeid(INT).name(); // may not be a useful name for gcc.
+            std::ostringstream msg;
+            msg << "Successfully prevented use of soft_equiv("
+                << type << "," << type << "," << type << ").";
+            PASSMSG(msg.str());
         }
         catch( ... )
         {
             FAILMSG("We should never get here.");
         }
     }
+    return;
+}
+
+//---------------------------------------------------------------------------------------//
+void test_soft_equiv_scalar(rtt_dsxx::ScalarUnitTest & ut)
+{
+    // ensure that we can not use integer fields or tolerance.
+    test_bad_data_type<int         >(ut);
+    test_bad_data_type<unsigned int>(ut);
+    test_bad_data_type<int64_t     >(ut);
+    test_bad_data_type<uint64_t    >(ut);
     
     // test with doubles
     {
@@ -87,7 +109,6 @@ void test_soft_equiv_scalar(rtt_dsxx::ScalarUnitTest & ut)
 }
 
 //---------------------------------------------------------------------------//
-
 void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 {
     vector<double> values(3, 0.0);

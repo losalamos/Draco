@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi/test
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -15,8 +15,6 @@ project( cdi_test CXX )
 # ---------------------------------------------------------------------------- #
 
 set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/cdi_test.cc 
-   ${PROJECT_SOURCE_DIR}/cdi_test.hh
    ${PROJECT_SOURCE_DIR}/DummyEoS.cc
    ${PROJECT_SOURCE_DIR}/DummyGrayOpacity.cc
    ${PROJECT_SOURCE_DIR}/DummyMultigroupOpacity.cc
@@ -51,4 +49,4 @@ add_component_library(
 
 add_scalar_tests(
    SOURCES   "${test_sources}" 
-   DEPS      "Lib_dsxx" ) # ;${MPI_LIBRARIES}" )
+   DEPS      "Lib_dsxx" ) 

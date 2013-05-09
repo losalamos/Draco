@@ -4,31 +4,30 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 10:52:50 2001
  * \brief  EoS class test.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "cdi_test.hh"
 #include "DummyEoS.hh"
 #include "../EoS.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
-#include <iostream>
+// #include <iostream>
 #include <sstream>
-#include <vector>
-#include <cmath>
+// #include <vector>
+// #include <cmath>
 
 using namespace std;
 
-using rtt_cdi_test::match;
 using rtt_cdi::EoS;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
 
 #define PASSMSG(a) ut.passes(a)
 #define ITFAILS    ut.failure(__LINE__);
@@ -71,7 +70,7 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
     double seie = spEoS->getSpecificElectronInternalEnergy( 
 	temperature, density );
 	    
-    if ( match ( seie, tabulatedSpecificElectronInternalEnergy ) ) 
+    if ( soft_equiv ( seie, tabulatedSpecificElectronInternalEnergy ) ) 
     {
 	ostringstream message;
 	message << "The getSpecificElectronInternalEnergy( dbl, dbl) " 
@@ -107,7 +106,8 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
     std::vector< double > vCve = spEoS->getElectronHeatCapacity(
 	vtemperature, vdensity );
 	    
-    if ( match ( vCve, vRefCve ) ) 
+    if ( soft_equiv( vCve.begin(), vCve.end(),
+                     vRefCve.begin(), vRefCve.end() ) )
     {
 	ostringstream message;
 	message << "The getElectronHeatCapacity( vect, vect ) request"
@@ -134,19 +134,7 @@ int main(int argc, char *argv[])
 	// >>> UNIT TESTS
 	test_EoS(ut);
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

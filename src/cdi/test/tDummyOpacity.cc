@@ -4,14 +4,13 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 15:50:53 2001
  * \brief  GrayOpacity and Multigroup opacity test.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "cdi_test.hh"
 #include "DummyGrayOpacity.hh"
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
@@ -21,21 +20,19 @@
 #include "../OpacityCommon.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/Soft_Equivalence.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
 #include <sstream>
 
 using namespace std;
 
-using rtt_cdi_test::match;
 using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::OdfmgOpacity;
 using rtt_dsxx::SP;
+using rtt_dsxx::soft_equiv;
+using rtt_dsxx::soft_equiv_deep;
 
 #define PASSMSG(a) ut.passes(a)
 #define ITFAILS    ut.failure(__LINE__);
@@ -76,12 +73,16 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
         rhogrid[0] = 0.1;
         rhogrid[1] = 0.2;
 
-        if ( match(gray->getTemperatureGrid(), Tgrid) )
+        std::vector<double> const T( gray->getTemperatureGrid() );
+        if( soft_equiv( T.begin(), T.end(),
+                        Tgrid.begin(), Tgrid.end() ) )
             PASSMSG("Gray temperature grid correct.");
         else
             FAILMSG("Gray temperature grid incorrect.");
 
-        if ( match(gray->getDensityGrid(), rhogrid) )
+        std::vector<double> const rho( gray->getDensityGrid() );
+        if( soft_equiv( rho.begin(), rho.end(),
+                        rhogrid.begin(), rhogrid.end() ) )
             PASSMSG("Gray density grid correct.");
         else
             FAILMSG("Gray density grid incorrect.");
@@ -121,17 +122,23 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
         egroups[2] = 5.0;
         egroups[3] = 50.0;
 
-        if ( match(mg->getTemperatureGrid(), Tgrid) )
+        std::vector<double> const T(mg->getTemperatureGrid());
+        if ( soft_equiv( T.begin(), T.end(),
+                         Tgrid.begin(), Tgrid.end() ) )
             PASSMSG("Multigroup temperature grid correct.");
         else
             FAILMSG("Multigroup temperature grid incorrect.");
 
-        if ( match(mg->getDensityGrid(), rhogrid) )
+        std::vector<double> const rho(mg->getDensityGrid());
+        if ( soft_equiv( rho.begin(), rho.end(),
+                         rhogrid.begin(), rhogrid.end() ) )
             PASSMSG("Multigroup density grid correct.");
         else
             FAILMSG("Multigroup density grid incorrect.");
 
-        if ( match(mg->getGroupBoundaries(), egroups) )
+        std::vector<double> const bounds(mg->getGroupBoundaries());
+        if ( soft_equiv( bounds.begin(), bounds.end(),
+                         egroups.begin(), egroups.end() ) )
             PASSMSG("Multigroup energy boundaries correct.");
         else
             FAILMSG("Multigroup energy boundaries incorrect.");
@@ -176,17 +183,23 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
         egroups[2] = 5.0;
         egroups[3] = 50.0;
 
-        if ( match(odfmg->getTemperatureGrid(), Tgrid) )
+        std::vector<double> const T( odfmg->getTemperatureGrid() );
+        if ( soft_equiv( T.begin(), T.end(), 
+                         Tgrid.begin(), Tgrid.end() ) )
             PASSMSG("Odfmg temperature grid correct.");
         else
             FAILMSG("Odfmg temperature grid incorrect.");
 
-        if ( match(odfmg->getDensityGrid(), rhogrid) )
+        std::vector<double> const rho( odfmg->getDensityGrid() );
+        if ( soft_equiv( rho.begin(), rho.end(),
+                         rhogrid.begin(), rhogrid.end() ) )
             PASSMSG("Odfmg density grid correct.");
         else
             FAILMSG("Odfmg density grid incorrect.");
 
-        if ( match(odfmg->getGroupBoundaries(), egroups) )
+        std::vector<double> const bounds( odfmg->getGroupBoundaries() );
+        if ( soft_equiv( bounds.begin(), bounds.end(),
+                         egroups.begin(), egroups.end() ) )
             PASSMSG("Odfmg energy boundaries correct.");
         else
             FAILMSG("Odfmg energy boundaries incorrect.");
@@ -230,7 +243,7 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
 
     double opacity = spDGO->getOpacity( temperature, density );
 
-    if ( match ( opacity, tabulatedGrayOpacity ) ) 
+    if ( soft_equiv ( opacity, tabulatedGrayOpacity ) ) 
     {
         ostringstream message;
         message << spDGO->getDataDescriptor()
@@ -258,7 +271,8 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
     std::vector< double > vOpacity = spDGO->getOpacity( vtemperature, 
                                                         density );  
 
-    if ( match ( vOpacity, vRefOpacity ) ) 
+    if ( soft_equiv ( vOpacity.begin(),    vOpacity.end(),
+                      vRefOpacity.begin(), vRefOpacity.end() ) )
     {
         ostringstream message;
         message << spDGO->getDataDescriptor()
@@ -289,7 +303,8 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
 
     vOpacity = spDGO->getOpacity( temperature, vdensity );
 
-    if ( match ( vOpacity, vRefOpacity ) )
+    if ( soft_equiv ( vOpacity.begin(),    vOpacity.end(),
+                      vRefOpacity.begin(), vRefOpacity.end() ) )
     {
         ostringstream message;
         message << spDGO->getDataDescriptor()
@@ -375,7 +390,8 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
         spDmgO->getOpacity( temperature, density );
 
     // Make sure the accessor values match the expected values.
-    if ( match( mgOpacity, tabulatedMGOpacity ) )
+    if( soft_equiv( mgOpacity.begin(), mgOpacity.end(),
+                    tabulatedMGOpacity.begin(), tabulatedMGOpacity.end() ) )
     {
         ostringstream message;
         message << spDmgO->getDataDescriptor()
@@ -420,7 +436,8 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
         = spDmgO->getOpacity( vtemperature, density );
 
     // Compare the results.
-    if ( match( vMgOpacity, vRefMgOpacity ) )
+    if ( soft_equiv_deep<2>().equiv( vMgOpacity.begin(), vMgOpacity.end(),
+                                     vRefMgOpacity.begin(), vRefMgOpacity.end() ) )
     {
         ostringstream message;
         message << spDmgO->getDataDescriptor()
@@ -479,7 +496,8 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
                            vOpacity.begin() );
 
     // Compare the results:
-    if ( match( vOpacity, vRefOpacity ) )
+    if ( soft_equiv( vOpacity.begin(), vOpacity.end(),
+                     vRefOpacity.begin(), vRefOpacity.end() ) )
     {
         ostringstream message;
         message << spDumMgOp->getDataDescriptor()
@@ -594,7 +612,9 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
         spDumOdfmgOpacity->getOpacity( temp, dens );
 
     // Make sure the accessor values match the expected values.
-    if ( match( opacities, odfmgRefOpacity ) )
+    if ( soft_equiv_deep<2>().equiv( opacities.begin(), opacities.end(),
+                                     odfmgRefOpacity.begin(),
+                                     odfmgRefOpacity.end() ) )
     {
         ostringstream message;
         message << spDumOdfmgOpacity->getDataDescriptor()
@@ -647,7 +667,8 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
         = spDumOdfmgOpacity->getOpacity( vtemperature, dens );
 
     // Compare the results.
-    if ( match( vCompOpacity, vRefOpacity ) )
+    if ( soft_equiv_deep<3>().equiv( vCompOpacity.begin(), vCompOpacity.end(),
+                                     vRefOpacity.begin(), vRefOpacity.end() ) )
     {
         ostringstream message;
         message << spDumOdfmgOpacity->getDataDescriptor()
@@ -706,7 +727,8 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
                            vOpacity.begin() );
 
     // Compare the results:
-    if ( match( vOpacity, vRefOpacityIter ) )
+    if ( soft_equiv( vOpacity.begin(), vOpacity.end(),
+                     vRefOpacityIter.begin(), vRefOpacityIter.end() ) )
     {
         ostringstream message;
         message << spDumMgOp->getDataDescriptor()
@@ -724,31 +746,18 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
     }
     return;
 }
-//---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
         simple_tests(ut);
         gray_opacity_test(ut);
         multigroup_opacity_test(ut);
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
