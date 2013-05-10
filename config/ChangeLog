@@ -5,7 +5,7 @@
 	  autodoc link directly to draco documentation.).
 
 	* ac_draco_arg.m4 (AC_DRACO_ARG): Comment out the option for
-	  --with-mips as it is deprecated. 
+	  --with-mips as it is deprecated.
 
 	* ac_f90env.m4 (AC_WITH_F90):  Clean up the output from
 	  'configure --help' by using the m4 standard AS_HELP_STRING()
@@ -16,7 +16,7 @@
 	* ac_platforms.m4 (AC_DBS_PGF90_ENVIRONMENT): Strip the path from
 	  the variable $CXX before trying to match it to a compiler name
 	  in a case statement.  This allows the developer to have
-	  CXX=/fully/qualified/path/g++ set in his/her environment. 
+	  CXX=/fully/qualified/path/g++ set in his/her environment.
 
 	* ac_vendors.m4 (AC_GANDOLF_SETUP): Only set $vendor_gandolf if
 	  $with_gandolf != "no".
@@ -29,12 +29,12 @@
 	* doxygen_config.in: Add *.py *.h *.c to FILE_PATTERNS.
 
 	* src/configure.ac (Level 2): Only include plot2D if grace was
-	  found. 
+	  found.
 
 2007-08-09  Mike Buksas  <mwbuksas@lanl.gov>
 
 	* ac_vendors.m4 (Repository): Tim's tests for Gandolf as a
-	dependency. 
+	dependency.
 
 	* ac_platforms.m4 (Repository): Added proper checking of
 	executable for openMPI and added compiler options to disable
@@ -58,7 +58,7 @@
 
 	* ac_conf.m4 (AC_RUNTESTS): Removed assignment of
 	  "test_alltarget."  This is now done in the Makefile. Renamed
-	  AC_TESTBINARY to AC_TEST_APPLICATION. 
+	  AC_TESTBINARY to AC_TEST_APPLICATION.
 
 	* ac_dracoenv.m4 (AC_DRACO_ENV): Provided additional checking for
 	  variables related to unit testing.  These changes should prevent
@@ -68,19 +68,19 @@
 	* ac_local.m4 (AC_DBS_VAR_SUBSTITUTIONS): Remove test_alltarget
 	  from list of variables for AC_SUBST.  Rename binary_tests and
 	  testbinary_nprocs to app_tests and app_test_nprocs,
-	  respectively. 
-	
+	  respectively.
+
 2006-04-25  Kelly Thompson  <kgt@lanl.gov>
 
-	* I am making a fundamental change to the way unit tests are 
+	* I am making a fundamental change to the way unit tests are
           registered and executed under the Draco Build System.  But I
-	  have made every effort ensure backward compatbility with 
+	  have made every effort ensure backward compatbility with
 	  existing syntax found in our configure.ac filse. The primay
 	  change is the ability for a package to have both parallel and
 	  scalar tests.  A secondary change is the availability of a new
 	  configure keyword AC_TESTBINARY.  Usage is described below. To
 	  ensure backward compatibility, the AC_RUNTESTS command looks the
-	  same, but may be called multiple times.  For example: 
+	  same, but may be called multiple times.  For example:
 
 	  dnl Scalar tests
 	  AC_RUNTESTS( tstMyClass1 tstMyClass4, scalar )
@@ -99,7 +99,7 @@
 	  a specific type of unit test on BPROC systems.  The Capsaicin
 	  project has unit tests written in C++ that create new processes
 	  that run under MPI.  For example, the unit test tstSerranoExe
-	  will setup an input deck and execute 
+	  will setup an input deck and execute
 	  "mpirun -np 4 ../bin/serrano test1.inp".  Output is captured and
 	  evaluated by tstSerranoExe.  On most systems, this type of unit
 	  test could be executed as a normal unit test.  However, BProc
@@ -110,7 +110,7 @@
 	  list of tests and a list of the number of processors to use when
 	  running the binary under MPI.
 
-	  Details:	
+	  Details:
 
 	* ac_conf.m4 (AC_RUNTESTS): Add checks for 2nd argument.  If 2nd
 	  argument is "scalar" or "serial" then append test names to
