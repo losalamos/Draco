@@ -28,6 +28,7 @@
 //
 //===========================================================================//
 
+#include <stdint.h>
 #include "Assert.hh"
 #include <cmath>
 #include <iterator>

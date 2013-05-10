@@ -16,6 +16,7 @@
 #include <limits>
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 
 namespace rtt_cdi
 {
