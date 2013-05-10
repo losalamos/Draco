@@ -4,7 +4,7 @@
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
-   echo "In .bashrc_tlcc"
+   echo "In .bashrc_lu"
 fi
 
 ##---------------------------------------------------------------------------##
@@ -30,13 +30,21 @@ fi
 #
 # Use this module command when running bash.
 # function module() { eval `/usr/bin/modulecmd bash $*`; }
-source /usr/share/modules/init/bash
+source /usr/share/Modules/init/bash
 # Use modules found in the draco directory
-module use $DRACO_MODULE_DIR/hpc
-# module use $DRACO_MODULE_DIR/tu-fe
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
 module purge &> /dev/null
 # Load a default set of modules.
+
+module use $DRACO_MODULE_DIR/hpc
+module use $DRACO_MODULE_DIR/tu-fe
+module load friendly-testing 
+module load intel/13.1.0 openmpi/1.6.3 # cudatoolkit
+module load cmake gsl/1.14-intel svn fstools 
+module load numdiff lapack/3.4.1-intel totalview
+module load trilinos SuperLU_DIST/3.0-intel
+module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-moonlight
+
 # module load modules friendly-testing hpc-tools intel-c intel-f totalview
 # module load openmpi-intel/1.4.3 grace python SuperLU_DIST/2.4-intel 
 # module load lapack/atlas-3.8.3-intel BLACS/1.1-intel ParMetis/3.1.1-intel
