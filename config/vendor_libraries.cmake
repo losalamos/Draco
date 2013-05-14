@@ -136,7 +136,10 @@ macro( setupMPILibrariesUnix )
       endif()
 
       execute_process( COMMAND ${MPIEXEC} --version
-         ERROR_VARIABLE DBS_MPI_VER )
+         OUTPUT_VARIABLE DBS_MPI_VER_OUT 
+         ERROR_VARIABLE DBS_MPI_VER_ERR)
+
+      set( DBS_MPI_VER "${DBS_MPI_VER_OUT} ${DBS_MPI_VER_ERR}") 
 
       # Check flavor and add optional flags
       if( "${MPIEXEC}" MATCHES openmpi OR
@@ -145,8 +148,6 @@ macro( setupMPILibrariesUnix )
 
          # Find the version of OpenMPI
 
-         execute_process( COMMAND ${MPIEXEC} --version
-            ERROR_VARIABLE DBS_MPI_VER )
          if( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9].[0-9]" )
             string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
                DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
