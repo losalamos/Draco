@@ -135,8 +135,12 @@ macro( setupMPILibrariesUnix )
          message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
       endif()
 
+      execute_process( COMMAND ${MPIEXEC} --version
+         ERROR_VARIABLE DBS_MPI_VER )
+
       # Check flavor and add optional flags
-      if( "${MPIEXEC}" MATCHES openmpi )
+      if( "${MPIEXEC}" MATCHES openmpi OR
+            "${DBS_MPI_VER}" MATCHES open-mpi )
          set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." )
 
          # Find the version of OpenMPI
@@ -246,6 +250,7 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
       elseif( "${MPIEXEC}" MATCHES srun)
          set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
             STRING "flag used to specify number of processes." FORCE)
+      # else()
       endif()
 
       # Mark some of the variables created by the above logic as
@@ -255,6 +260,11 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
       set( file_cmd ${file_cmd} CACHE INTERNAL "file command" )
 
       message(STATUS "Looking for MPI...found")
+
+      # Sanity Checks for DRACO_C4==MPI
+      if( "${MPI_CORES_PER_CPU}x" STREQUAL "x" )
+         message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU is not set!")
+      endif()
 
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
