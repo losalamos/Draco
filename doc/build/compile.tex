@@ -615,36 +615,17 @@ Table~\ref{tab:draco-enable} lists the complete set of \comp{BOOL}
     \begin{tabular}{lcp{3in}} \hline\hline
       \multicolumn{1}{c}{Option} & \multicolumn{1}{c}{Default Value} &
       \multicolumn{1}{c}{Description} \\ \hline
-                                % --enable-shmem
-%      \comp{--enable-shmem} & off & turns on \shmem\ communication
-%      library \\
-                                % --enable-pcglib
-%      \comp{--enable-pcglib} & on & turns off \pcglib \\
-                                % --enable-shared
-%      \comp{--enable-shared} & off & turns on shared (\comp{.so})
-%      libraries \\
-%                                % --enable-static-ld
-%      \comp{--enable-static-ld} & off & tries to use static
-%      (\comp{.a}) libraries for linking \\
-%                                % --enable-strict-ansi
-%      \comp{--enable-strict-ansi} & on & compiles using \comp{strict}
-%      flags for ANSI compliance \\
-%                                % --enable-debug
-%      \comp{--enable-debug} & off & turns on \comp{-g} option for
-%      debugging$^{\text{a}}$ \\ 
-%                                % --enable-32-bit
-%      \comp{--enable-32-bit} & off & turns on 32-bit compiling on SGIs 
-%      \\
-\comp{ENABLE\_RNG\_NR} & OFF & Selects the non-reproducible random number generator feature \\
-\comp{USE\_OPENMP} & ON & Disables OpenMP pragmas when compiling \draco\ sources \\
-% \comp{BUILD\_AUTODOC} & OFF & Enables discovery of Doxygen and the \comp{autodoc} build target \\
-%\comp{BUILD_DOC} & OFF & Enables building of all \LaTeX\ documentation found in the \comp{doc} directory \\
+
 \comp{BUILD\_TESTING} & ON & Allows developers to omit configuring for and building code found in test directories (disables \ctest\ features) \\
-% \comp{BUILD\_USE\_SOLUTION\_FOLDERS} & ON & Only available for \sys{Visual Studio} and \sys{X-Code} generators; makes each \draco\ component a solution folder \\
 \comp{CMAKE\_VERBOSE\_MAKEFILE}$^{\text{a}}$ & OFF & Forces the make process to echo all commands to the screen during the build process \\
 \comp{DBS\_PRINT\_DEBUG\_INFO} & OFF & Extremely verbose mode for \cmake\.   All state and variables are printed during \cmake\ execution. \\
+\comp{DRACO\_ENABLE\_C99}   & ON & Support the C99 ISO standard by turning on compiler flags \\
+\comp{DRACO\_ENABLE\_CXX11} & ON & Support the C++11 ISO standard by turning on compiler flags \\
+\comp{ENABLE\_RNG\_NR} & OFF & Selects the non-reproducible random number generator feature \\
 \comp{GCC\_ENABLE\_ALL\_WARNINGS} & OFF & When using gcc, enable more compiler warning features \\
 \comp{GCC\_ENABLE\_GLIBCXX\_DEBUG} & OFF &  When using gcc, use alternate glibc library that provides bounds checking and more safety features \\
+\comp{USE\_OPENMP} & ON & Disables OpenMP pragmas when compiling \draco\ sources \\
+\comp{USE\_PROCMON} & OFF & (Linux only) Enable inline memory profiling via the \pkg{diagnostics} component \\
 
               \hline\hline
 % footnote
@@ -678,49 +659,7 @@ Table~\ref{tab:draco-with} lists commonly used argument based configure options 
 %      & \multicolumn{1}{c}{Implied Argument} 
 & \multicolumn{1}{c}{Description} \\ 
 \hline\hline
-%                                % --with-mpi
-%      \comp{--with-mpi} & \comp{vendor mpich} & \comp{no} &
-%      \comp{vendor} & see \S~\ref{sec:vendor_libs} \\
-%                                % --with-mpi-inc
-%      \comp{--with-mpi-inc} & \vble{dir} & \cnull &
-%      \comp{\$MPI\_\,INC\_\,DIR} & see \S~\ref{sec:vendor_libs} \\ 
-%                                % --with-mpi-lib
-%      \comp{--with-mpi-lib} & \vble{dir} & \cnull &
-%      \comp{\$MPI\_\,LIB\_\,DIR} & see \S~\ref{sec:vendor_libs} \\
-%                                % --with-shmem-inc
-%      \comp{--with-shmem-inc} & \vble{dir} & \cnull &
-%      \comp{\$SHMEM\_\,INC\_\,DIR} & see \S~\ref{sec:vendor_libs} \\ 
-%                                % --with-shmem-lib
-%      \comp{--with-shmem-lib} & \vble{dir} & \cnull &
-%      \comp{\$SHMEM\_\,LIB\_\,DIR} & see \S~\ref{sec:vendor_libs} \\
-%                                % --with-sprng
-%      \comp{--with-sprng} & \comp{lfg lcg} & \comp{lfg} & \comp{lfg} &
-%      see \S~\ref{sec:vendor_libs} \\
-%                                % --with-sprng-inc
-%      \comp{--with-sprng-inc} & \vble{dir} & \cnull & 
-%      \comp{\$SPRNG\_\,INC\_\,DIR} & see \S~\ref{sec:vendor_libs} \\ 
-%                                % --with-sprng-lib
-%      \comp{--with-sprng-lib} & \vble{dir} & \cnull &
-%      \comp{\$SPRNG\_\,LIB\_\,DIR} & see \S~\ref{sec:vendor_libs} \\
-%                                % --with-pcglib-lib
-%      \comp{--with-pcglib-lib} & \vble{dir} & \cnull &
-%      \comp{\$PCGLIB\_\,LIB\_\,DIR} & see \S~\ref{sec:vendor_libs} \\
-%                                % --with-c4
-%      \comp{--with-c4} & \comp{scalar mpi shmem} & \comp{scalar} &
-%      \comp{scalar} & see \S~\ref{sec:c4_lib} \\
-%                                % --with-dbc
-%      \comp{--with-dbc} & \comp{0,1,...,7} & \vble{default} &
-%      \vble{default} & see \S~\ref{sec:dbc} \\
-%                                % --with-opt
-%      \comp{--with-opt} & \comp{0,1,2,3} & \comp{0} & \comp{0} & see
-%      \S~\ref{sec:optimization} \\
-%                                % --with-posix
-%      \comp{--with-posix} & \vble{posix src. num.} & \comp{199309L} &
-%      \comp{199309L} & sets POSIX source version \\
-%                                % --with-mips
-%      \comp{--with-mips} & \comp{1,2,3,4} & \comp{mips4} & \comp{4} &
-%      sets instruction set on SGIs \\
-      	
+
       \comp{NUMDIFF} & \comp{FILEPATH} to \sys{numdiff} & automatic discovery &  tool used by testing system for comparing output to gold standard output. \\
       \comp{VENDOR\_DIR} & \comp{PATH} & empty & location used by build system for auto discovery of vendor software. \\
       \comp{DRACO\_C4} & MPI or SCALAR & MPI$^{\text{a}}$ & see \S~\ref{sec:vendor_libs} \\
@@ -791,7 +730,7 @@ following vendors are used by \draco:
 \item \pkg{GSL}, GNU Scientific Library, provides a wide range of mathematical routines such as random number generators, special functions and least-squares fitting, see \S~\ref{appsec:gsl};
 \item \pkg{LAPACK} and \pkg{BLAS} provide optimized linear algebra algorithms, see \S~\ref{appsec:lapack};
 \item \pkg{CUDA} provides support for running threads on Graphic Processing Units, GPUs, see \S~\ref{appsec:cuda};
-\item \pkg{DaCS} provides support for running threads on IBM cell processing units, see \S~\ref{appsec:dacs};
+% \item \pkg{DaCS} provides support for running threads on IBM cell processing units, see \S~\ref{appsec:dacs};
 \item \pkg{XMGRACE} provides a 2D plotting capability, see \S~\ref{appsec:grace};
 \item \pkg{Random123} provides random numbers, see \S~\ref{appsec:random123};
 %\item \shmem\ communication library, see \S~\ref{appsec:shmem};
