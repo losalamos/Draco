@@ -28,6 +28,47 @@ using namespace rtt_ode;
 using namespace rtt_cdi;
 
 //---------------------------------------------------------------------------//
+void Pseudo_Line_Analytic_Odfmg_Opacity::precalculate(vector<double> const &groups,
+                                                      vector<double> const &bands,
+                                                      double const Tref)
+{
+    // Precalculate basic opacities
+
+    unsigned const number_of_groups = groups.size()-1U;
+    unsigned const N = qpoints_;
+    baseline_.resize(N*number_of_groups);
+
+#if 1
+    ofstream out("pseudo.dat");
+#endif
+
+    double g1 = groups[0];
+    for (unsigned g=0; g<number_of_groups; ++g)
+    {
+        double const g0 = g1;
+        g1 = groups[g+1];
+        double const delt = (g1-g0)/N;
+        double x = g0-0.5*delt;
+        for (unsigned iq=0; iq<N; ++iq)
+        {
+            x += delt;
+            baseline_[iq+N*g].first = monoOpacity(x, Tref);
+            baseline_[iq+N*g].second.first = x-0.5*delt;
+            baseline_[iq+N*g].second.second = x + 0.5*delt;
+
+#if 1
+            out << x << ' ' << baseline_[iq+N*g].first << endl;
+#endif
+            
+        }
+        if (bands.size()>2)
+        {
+            sort(baseline_.begin()+N*g, baseline_.begin()+N*(g+1));
+        }
+    }
+}
+
+//---------------------------------------------------------------------------//
 Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
         const sf_double         &groups,
         const sf_double         &bands,
@@ -63,40 +104,58 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
 {
     Require(qpoints>0);
 
-    // Precalculate basic opacities
-    
-    unsigned const number_of_groups = groups.size()-1U;
-    unsigned const N = qpoints_;
-    baseline_.resize(N*number_of_groups);
+    precalculate(groups,
+                 bands,
+                 Tref);
+}
 
-#if 0
-    ofstream out("pseudo.dat");
-#endif
+//---------------------------------------------------------------------------//
+Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
+        const sf_double         &groups,
+        const sf_double         &bands,
+        rtt_cdi::Reaction        reaction_in,
+        double nu0,
+        double C,
+        double Bn,
+        double Bd,
+        double R,
+        int number_of_lines,
+        double line_peak,
+        double line_width,
+        int number_of_edges,
+        double edge_ratio,
+        double Tref,
+        double Tpow,
+        double emin,
+        double emax,
+        Averaging averaging,
+        unsigned qpoints,
+        unsigned seed)
+    :
+    Analytic_Odfmg_Opacity(groups, bands, reaction_in),
+    Pseudo_Line_Base(nu0,
+                     C,
+                     Bn,
+                     Bd,
+                     R,
+                     number_of_lines,
+                     line_peak,
+                     line_width,
+                     number_of_edges,
+                     edge_ratio,
+                     Tref,
+                     Tpow,
+                     emin,
+                     emax,
+                     seed),
+    averaging_(averaging),
+    qpoints_(qpoints)
+{
+    Require(qpoints>0);
 
-    double g1 = groups[0];
-    for (unsigned g=0; g<number_of_groups; ++g)
-    {
-        double const g0 = g1;
-        g1 = groups[g+1];
-        double const delt = (g1-g0)/N;
-        double x = g0-0.5*delt;
-        for (unsigned iq=0; iq<N; ++iq)
-        {
-            x += delt;
-            baseline_[iq+N*g].first = monoOpacity(x, Tref);
-            baseline_[iq+N*g].second.first = x-0.5*delt;
-            baseline_[iq+N*g].second.second = x + 0.5*delt;
-
-#if 0
-            out << x << ' ' << baseline_[iq+N*g].first << endl;
-#endif
-            
-        }
-        if (bands.size()>2)
-        {
-            sort(baseline_.begin()+N*g, baseline_.begin()+N*(g+1));
-        }
-    }
+    precalculate(groups,
+                 bands,
+                 Tref);
 }
 
 //---------------------------------------------------------------------------//
@@ -184,7 +243,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                         double weight =
                             CDI::integrateRosselandSpectrum(x0/rtt_parser::keV.conv,
                                                             x1/rtt_parser::keV.conv,
-                                                            T);
+                                                            T)
+                            + numeric_limits<double>::min();
 
                         t += weight/baseline_[q+N*g].first;
                         w += weight;
@@ -215,7 +275,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                         double weight =
                             CDI::integratePlanckSpectrum(x0/rtt_parser::keV.conv,
                                                          x1/rtt_parser::keV.conv,
-                                                         T);
+                                                         T)
+                            + numeric_limits<double>::min();
                         
                         t += weight*baseline_[q+N*g].first;
                         w += weight;

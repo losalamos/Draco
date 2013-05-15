@@ -50,6 +50,13 @@ class Pseudo_Line_Base
   private:
     // Coefficients
     SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
+
+    double nu0_;
+    double C_;
+    double Bn_;
+    double Bd_;
+    double R_;
+    
     unsigned seed_;
     int number_of_lines_;
     double line_peak_; // peak line opacity [cm^2/g]
@@ -64,6 +71,9 @@ class Pseudo_Line_Base
     vector<double> edge_;   // edges for this realization
     vector<double> edge_factor_; // opacity at threshold
 
+    void setup_(double emin,
+                double emax);
+
   public:
 
     Pseudo_Line_Base(SP<Expression const> const &cont,
@@ -77,7 +87,23 @@ class Pseudo_Line_Base
                      double emin,
                      double emax,
                      unsigned seed);
-    
+
+    Pseudo_Line_Base(double nu0,
+                     double C,
+                     double Bn,
+                     double Bd,
+                     double R,
+                     int number_of_lines,
+                     double line_peak,
+                     double line_width,
+                     int number_of_edges,
+                     double edge_ratio,
+                     double Tref,
+                     double Tpow,
+                     double emin,
+                     double emax,
+                     unsigned seed);
+
     //! Constructor for packed state.
     explicit  Pseudo_Line_Base(vector<char> const &packed);
 

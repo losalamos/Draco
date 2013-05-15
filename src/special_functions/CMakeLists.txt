@@ -57,7 +57,7 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_special_functions EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/special_functions )
+install( FILES ${headers} ${template_implementations} DESTINATION include/special_functions )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

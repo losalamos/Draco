@@ -27,39 +27,13 @@ using namespace rtt_dsxx;
 using namespace rtt_cdi;
 
 //---------------------------------------------------------------------------//
-Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
-                                   int number_of_lines,
-                                   double line_peak,
-                                   double line_width,
-                                   int number_of_edges,
-                                   double edge_ratio,
-                                   double Tref,
-                                   double Tpow,
-                                   double emin,
-                                   double emax,
-                                   unsigned seed)
-    :
-    continuum_(continuum),
-    seed_(seed),
-    number_of_lines_(number_of_lines),
-    line_peak_(line_peak),
-    line_width_(line_width),
-    number_of_edges_(number_of_edges),
-    edge_ratio_(edge_ratio),
-    Tref_(Tref),
-    Tpow_(Tpow),
-    edge_(abs(number_of_edges)),
-    edge_factor_(abs(number_of_edges))
+void Pseudo_Line_Base::setup_(double emin,
+                              double emax)
 {
-    Require(continuum!=SP<Expression>());
-    Require(line_peak>=0.0);
-    Require(line_width>=0.0);
-    Require(edge_ratio>=0.0);
-    Require(emin>=0.0);
-    Require(emax>emin);
-    // Require parameter (other than emin and emax) to be same on all processors
-    
-    srand(seed);
+    srand(seed_);
+
+    int const number_of_lines = number_of_lines_;
+    int const number_of_edges = number_of_edges_;
 
     // Get global range of energy
 
@@ -95,12 +69,109 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
             // a production calculation using a real opacity with strong
             // bound-free components)
             edge_[i] = (emax-emin)*(i+1)/(ne+1) + emin;
-       }
-        edge_factor_[i] = edge_ratio_*(*continuum)(vector<double>(1,edge_[i]));
+        }
+        double C;
+        if (nu0_<0)
+        {
+            C = (*continuum_)(vector<double>(1,edge_[i]));
+        }
+        else
+        {
+            double const nu = edge_[i]/nu0_;
+            C = C_ + Bn_/cube(Bd_+nu) + R_*square(square(nu));
+        }
+        edge_factor_[i] = edge_ratio_*C;
     }
 
     // Sort edges
     sort(edge_.begin(), edge_.end());
+}
+
+//---------------------------------------------------------------------------//
+Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
+                                   int number_of_lines,
+                                   double line_peak,
+                                   double line_width,
+                                   int number_of_edges,
+                                   double edge_ratio,
+                                   double Tref,
+                                   double Tpow,
+                                   double emin,
+                                   double emax,
+                                   unsigned seed)
+    :
+    continuum_(continuum),
+    nu0_(-1), // as fast flag
+    seed_(seed),
+    number_of_lines_(number_of_lines),
+    line_peak_(line_peak),
+    line_width_(line_width),
+    number_of_edges_(number_of_edges),
+    edge_ratio_(edge_ratio),
+    Tref_(Tref),
+    Tpow_(Tpow),
+    edge_(abs(number_of_edges)),
+    edge_factor_(abs(number_of_edges))
+{
+    Require(continuum!=SP<Expression>());
+    Require(line_peak>=0.0);
+    Require(line_width>=0.0);
+    Require(edge_ratio>=0.0);
+    Require(emin>=0.0);
+    Require(emax>emin);
+    // Require parameter (other than emin and emax) to be same on all processors
+    
+    setup_(emin,
+           emax);
+}
+
+//---------------------------------------------------------------------------//
+Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
+                                   double C,
+                                   double Bn,
+                                   double Bd,
+                                   double R,
+                                   int number_of_lines,
+                                   double line_peak,
+                                   double line_width,
+                                   int number_of_edges,
+                                   double edge_ratio,
+                                   double Tref,
+                                   double Tpow,
+                                   double emin,
+                                   double emax,
+                                   unsigned seed)
+    :
+    nu0_(nu0),
+    C_(C),
+    Bn_(Bn),
+    Bd_(Bd),
+    R_(R),
+    seed_(seed),
+    number_of_lines_(number_of_lines),
+    line_peak_(line_peak),
+    line_width_(line_width),
+    number_of_edges_(number_of_edges),
+    edge_ratio_(edge_ratio),
+    Tref_(Tref),
+    Tpow_(Tpow),
+    edge_(abs(number_of_edges)),
+    edge_factor_(abs(number_of_edges))
+{
+    Require(nu0_>0.0);
+    Require(C_>=0.0);
+    Require(Bn_>=0.0);
+    Require(Bd_>=0.0);
+    Require(R_>=0.0);
+    Require(line_peak>=0.0);
+    Require(line_width>=0.0);
+    Require(edge_ratio>=0.0);
+    Require(emin>=0.0);
+    Require(emax>emin);
+    // Require parameter (other than emin and emax) to be same on all processors
+    
+    setup_(emin,
+           emax);
 }
 
 //---------------------------------------------------------------------------//
@@ -151,13 +222,16 @@ double Pseudo_Line_Base::monoOpacity(double const x,
     double const width = line_width_;
     double const peak = line_peak_;
 
-#if 0
-    // hardwire for really massive tests: realization 1, model 1
-    double Result = 
-        0.01 + 20/cube(1+x/1.602176462e-16) + 0.0001*square(square(x/1.602176462e-16));
-#else
-    double Result = (*continuum_)(vector<double>(1,x));
-#endif
+    double Result;
+    if (nu0_<0)
+    {
+        Result = (*continuum_)(vector<double>(1,x));
+    }
+    else
+    {
+        double const nu = x/nu0_;
+        Result = C_ + Bn_/cube(Bd_+nu) + R_*square(square(nu));
+    }
 
     if (number_of_lines>=0)
     {
