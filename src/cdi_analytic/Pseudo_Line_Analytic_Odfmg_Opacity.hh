@@ -76,6 +76,25 @@ class Pseudo_Line_Analytic_Odfmg_Opacity :
         const sf_double         &groups,
         const sf_double         &bands,
         rtt_cdi::Reaction        reaction_in,
+        string const &cont_file,
+        int number_of_lines,
+        double line_peak,
+        double line_width,
+        int number_of_edges,
+        double edge_ratio,
+        double Tref,
+        double Tpow,
+        double emin,
+        double emax,
+        Averaging averaging,
+        unsigned qpoints,
+        unsigned seed);
+    
+    // Constructor.
+    Pseudo_Line_Analytic_Odfmg_Opacity(
+        const sf_double         &groups,
+        const sf_double         &bands,
+        rtt_cdi::Reaction        reaction_in,
         double nu0,
         double C,
         double Bn,

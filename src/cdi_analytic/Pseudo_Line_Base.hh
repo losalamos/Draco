@@ -17,6 +17,7 @@
 namespace rtt_cdi_analytic
 {
 using std::vector;
+using std::string;
 using rtt_dsxx::SP;
 using rtt_parser::Expression;
 
@@ -50,6 +51,8 @@ class Pseudo_Line_Base
   private:
     // Coefficients
     SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
+    vector<double> continuum_table_;
+    double emax_;
 
     double nu0_;
     double C_;
@@ -77,6 +80,18 @@ class Pseudo_Line_Base
   public:
 
     Pseudo_Line_Base(SP<Expression const> const &cont,
+                     int number_of_lines,
+                     double line_peak,
+                     double line_width,
+                     int number_of_edges,
+                     double edge_ratio,
+                     double Tref,
+                     double Tpow,
+                     double emin,
+                     double emax,
+                     unsigned seed);
+
+    Pseudo_Line_Base(string const &cont_file,
                      int number_of_lines,
                      double line_peak,
                      double line_width,

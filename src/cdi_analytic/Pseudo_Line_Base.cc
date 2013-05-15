@@ -9,6 +9,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include <fstream>
+
 #include "ode/rkqs.i.hh"
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Base.hh"
@@ -73,7 +75,15 @@ void Pseudo_Line_Base::setup_(double emin,
         double C;
         if (nu0_<0)
         {
-            C = (*continuum_)(vector<double>(1,edge_[i]));
+            unsigned N = continuum_table_.size();
+            if (N>0)
+            {
+                C = continuum_table_[edge_[i]*N/emax];
+            }
+            else
+            {
+                C = (*continuum_)(vector<double>(1,edge_[i]));
+            }
         }
         else
         {
@@ -120,6 +130,57 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     Require(emin>=0.0);
     Require(emax>emin);
     // Require parameter (other than emin and emax) to be same on all processors
+    
+    setup_(emin,
+           emax);
+}
+
+//---------------------------------------------------------------------------//
+Pseudo_Line_Base::Pseudo_Line_Base(string const &cont_file,
+                                   int number_of_lines,
+                                   double line_peak,
+                                   double line_width,
+                                   int number_of_edges,
+                                   double edge_ratio,
+                                   double Tref,
+                                   double Tpow,
+                                   double emin,
+                                   double emax,
+                                   unsigned seed)
+    :
+    emax_(emax),
+    nu0_(-1), // as fast flag
+    seed_(seed),
+    number_of_lines_(number_of_lines),
+    line_peak_(line_peak),
+    line_width_(line_width),
+    number_of_edges_(number_of_edges),
+    edge_ratio_(edge_ratio),
+    Tref_(Tref),
+    Tpow_(Tpow),
+    edge_(abs(number_of_edges)),
+    edge_factor_(abs(number_of_edges))
+{
+    Require(cont_file.size()>0);
+    Require(line_peak>=0.0);
+    Require(line_width>=0.0);
+    Require(edge_ratio>=0.0);
+    Require(emin>=0.0);
+    Require(emax>emin);
+    // Require parameter (other than emin and emax) to be same on all
+    // processors
+
+    ifstream in(cont_file);
+    if (!in)
+    {
+        throw invalid_argument(("could not open " + cont_file).c_str());
+    }
+    while (in)
+    {
+        double x, y, z; // we will ignore x and z and fit table to emax
+        in >> x >> y >> z;
+        continuum_table_.push_back(y);
+    }
     
     setup_(emin,
            emax);
@@ -225,7 +286,15 @@ double Pseudo_Line_Base::monoOpacity(double const x,
     double Result;
     if (nu0_<0)
     {
-        Result = (*continuum_)(vector<double>(1,x));
+        unsigned N = continuum_table_.size();
+        if (N>0)
+        {
+            Result = continuum_table_[x*N/emax_];
+        }
+        else
+        {
+            Result = (*continuum_)(vector<double>(1,x));
+        }
     }
     else
     {

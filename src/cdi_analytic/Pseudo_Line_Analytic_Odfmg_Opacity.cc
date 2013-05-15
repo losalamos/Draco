@@ -114,6 +114,47 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
         const sf_double         &groups,
         const sf_double         &bands,
         rtt_cdi::Reaction        reaction_in,
+        string const &cont_file,
+        int number_of_lines,
+        double line_peak,
+        double line_width,
+        int number_of_edges,
+        double edge_ratio,
+        double Tref,
+        double Tpow,
+        double emin,
+        double emax,
+        Averaging averaging,
+        unsigned qpoints,
+        unsigned seed)
+    :
+    Analytic_Odfmg_Opacity(groups, bands, reaction_in),
+    Pseudo_Line_Base(cont_file,
+                     number_of_lines,
+                     line_peak,
+                     line_width,
+                     number_of_edges,
+                     edge_ratio,
+                     Tref,
+                     Tpow,
+                     emin,
+                     emax,
+                     seed),
+    averaging_(averaging),
+    qpoints_(qpoints)
+{
+    Require(qpoints>0);
+
+    precalculate(groups,
+                 bands,
+                 Tref);
+}
+
+//---------------------------------------------------------------------------//
+Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
+        const sf_double         &groups,
+        const sf_double         &bands,
+        rtt_cdi::Reaction        reaction_in,
         double nu0,
         double C,
         double Bn,
