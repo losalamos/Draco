@@ -136,7 +136,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
 }
 
 //---------------------------------------------------------------------------//
-Pseudo_Line_Base::Pseudo_Line_Base(string const &cont_file,
+Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
                                    int number_of_lines,
                                    double line_peak,
                                    double line_width,
@@ -170,7 +170,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(string const &cont_file,
     // Require parameter (other than emin and emax) to be same on all
     // processors
 
-    ifstream in(cont_file);
+    ifstream in(cont_file.c_str());
     if (!in)
     {
         throw invalid_argument(("could not open " + cont_file).c_str());
