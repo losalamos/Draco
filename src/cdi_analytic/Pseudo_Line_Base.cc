@@ -181,6 +181,8 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
         in >> x >> y >> z;
         continuum_table_.push_back(y);
     }
+
+    rtt_c4::global_max(emax_);
     
     setup_(emin,
            emax);
