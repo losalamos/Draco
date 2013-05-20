@@ -5,26 +5,27 @@
 ## modulefiles/modules.  Generated from modules.in by configure.
 ##
 
+conflict cmake
+
 # global control file
 if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
 # local variables
-set version     5.2.1
-set prefix      /usr/projects/draco/vendors/numdiff-$version
+set version     2.8.11-Linux-i386
+set prefix      /usr/projects/draco/vendors/cmake-$version
 set bindir      $prefix/bin;
-# set mandir      $prefix;
-set title    "NumDiff"
+set mandir      $prefix/man;
 
 # module whatis
-module-whatis   "$title $version";
+module-whatis   "CMake $version";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\t $title $version\n";
+   puts stderr "\tCMake $version\n";
 }
 
 if { ![file exists $prefix] } {
@@ -36,8 +37,6 @@ if { ![file exists $prefix] } {
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
 prepend-path    PATH            $bindir;
-#prepend-path    MANPATH         $mandir;
-
-
+prepend-path    MANPATH         $mandir;
 
 
