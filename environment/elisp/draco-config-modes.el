@@ -1,7 +1,7 @@
 ;; ======================================================================
 ;; draco-config-modes.el
 ;;
-;; $Id: draco-config-modes.el 6581 2012-06-05 17:09:45Z kellyt $
+;; $Id$
 ;;
 ;; Configure a variety of packages, upon request of user.
 ;;
@@ -913,6 +913,9 @@ auto-mode-alist and set up some customizations for DRACO."
                                 (ecb-compilation-buffer-p compwin-buffer)))
                       (ecb-toggle-compile-window -1)))))
     )
+  ;;(setq ecb-layout-window-sizes (quote (("ecb-layout-draco" (0.25 . 0.25) (0.15 . 0.25) (0.4 . 0.45) (0.4 . 0.3)))))
+  ;;(setq ecb-options-version "2.40")
+  ;;(setq ecb-source-path (quote ("$HOME/jayenne" ("$HOME/draco" "/draco"))))
   (ecb-activate)
   )
 
