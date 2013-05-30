@@ -12,7 +12,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 set version      1.07
-set prefix      "/usr/projects/opt/draco/vendors/Random123-$version"
+set prefix      "/projects/opt/draco/vendors/Random123-$version"
 set incdir      $prefix/include
 
 # module whatis
