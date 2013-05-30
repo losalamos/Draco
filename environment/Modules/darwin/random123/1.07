@@ -11,8 +11,8 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version      1.06
-set prefix      "/ccs/codes/radtran/vendors/Random123-$version"
+set version      1.07
+set prefix      "/usr/projects/opt/draco/vendors/Random123-$version"
 set incdir      $prefix/include
 
 # module whatis
