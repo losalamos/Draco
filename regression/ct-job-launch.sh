@@ -43,9 +43,10 @@ if test "${extra_params}x" = "x"; then
 fi
 
 # Configure, Build on front end
+export mode=cb
 echo " "
 echo "Configure and Build on the front end..."
-cmd="${regdir}/draco/regression/ct-regress.msub >& ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-cb.log"
+cmd="${regdir}/draco/regression/ct-regress.msub >& ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
 echo "${cmd}"
 eval "${cmd}"
 
@@ -53,11 +54,26 @@ eval "${cmd}"
 # reporting from the login node:
 
 echo " "
-echo "Test and Submit from the login node..."
-cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-ts.log ${regdir}/draco/regression/ct-regress.msub"
+echo "Test from the login node..."
+cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log ${regdir}/draco/regression/ct-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 echo "jobid = ${jobid}"
+
+# Wait for testing to finish
+sleep 1m
+while test "`showq | grep $jobid`" != ""; do
+   showq | grep $jobid
+   sleep 10m
+done
+
+# Submit from the front end
+mode=s
+echo "Jobs done, now submitting ${build_type} results from ct-fe1."
+cmd="${regdir}/draco/regression/ct-regress.msub >& ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+echo "${cmd}"
+eval "${cmd}"
+
 
 # Submit from the front end
 echo "Jobs done on ct."

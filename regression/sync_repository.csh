@@ -52,6 +52,9 @@ endif
 
 
 # update the scripts directories in /usr/projects/jayenne
+echo "cd /usr/projects/draco/vendors/Modules; svn update"
+cd /usr/projects/draco/vendors/Modules
+svn update
 echo "cd /usr/projects/jayenne/regress/draco/config; svn update"
 cd /usr/projects/jayenne/regress/draco/config
 svn update

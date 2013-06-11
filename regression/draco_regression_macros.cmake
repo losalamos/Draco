@@ -84,7 +84,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
   endif( WIN32 )      
 
   set( CTEST_USE_LAUNCHERS 0 )
-
   set( ENABLE_C_CODECOVERAGE OFF )
   set( ENABLE_Fortran_CODECOVERAGE OFF )
 
