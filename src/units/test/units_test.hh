@@ -13,6 +13,7 @@
 #ifndef rtt_units_test_test_hh
 #define rtt_units_test_test_hh
 
+#include "ds++/config.h"
 #include <iostream>
 #include <string>
 
@@ -35,19 +36,19 @@ namespace rtt_units_test
 // ways.  We do not constrain draco tests except that the output must be of
 // the form "Test: pass/fail"
 
-bool fail(int line);
+DLL_PUBLIC bool fail(int line);
 
-bool fail(int line, char *file);
+DLL_PUBLIC bool fail(int line, char *file);
 
-bool pass_msg(const std::string &);
+DLL_PUBLIC bool pass_msg(const std::string &);
 
-bool fail_msg(const std::string &);
+DLL_PUBLIC bool fail_msg(const std::string &);
 
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
 
-extern bool passed;
+DLL_PUBLIC extern bool passed;
 
 } // end namespace rtt_units_test
 

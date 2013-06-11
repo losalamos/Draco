@@ -3,7 +3,8 @@
 # author Gabriel Rockefeller
 # date   2011 June 13
 # brief  Instructions for building device Makefile.
-# note   © Copyright 2011 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 
@@ -20,9 +21,8 @@ endif()
 # Build one of DACS_Device or GPU_Device
 # ---------------------------------------------------------------------------- #
 
-if( ENABLE_HET_CODE )
-   include( DACS_Device.cmake )
-elseif( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
+if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
+   message("cuda")
    include( GPU_Device.cmake )
 endif()
 

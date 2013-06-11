@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:15:40 2004
  * \brief  Specializations of rkqs
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,6 +17,7 @@
 
 namespace rtt_ode
 {
+
 using std::vector;
 
 //---------------------------------------------------------------------------//
@@ -26,7 +28,8 @@ typedef void (*FPderivs)(double x,
                          vector<double> const &y, 
                          vector<double> &yderiv);
 
-template void rkck(vector<double> const &y,
+template DLL_PUBLIC
+void rkck( vector<double> const &y,
 		   vector<double> const &dydx,
 		   double x,
 		   double h,
@@ -34,7 +37,8 @@ template void rkck(vector<double> const &y,
 		   std::vector<double> &yerr, 
 		   FPderivs);
 
-template void rkqs(vector<double> &y,
+template DLL_PUBLIC
+void rkqs( vector<double> &y,
 		   vector<double> const &dydx,
 		   double &x, 
 		   double htry,
@@ -43,7 +47,6 @@ template void rkqs(vector<double> &y,
 		   double &hdid,
 		   double &hnext, 
 		   FPderivs);
-
 
 //---------------------------------------------------------------------------//
 // Field = double, Function = Quad_To_ODE<double (*)(double)>
@@ -57,7 +60,8 @@ template void rkqs(vector<double> &y,
 // 		   std::vector<double> &yerr, 
 // 		   );
 
-template void rkqs(vector<double> &y,
+template DLL_PUBLIC
+void rkqs( vector<double> &y,
 		   vector<double> const &dydx,
 		   double &x, 
 		   double htry,
@@ -70,5 +74,5 @@ template void rkqs(vector<double> &y,
 } // end namespace rtt_ode
 
 //---------------------------------------------------------------------------//
-//                 end of rkqs_pt.cc
+// end of rkqs_pt.cc
 //---------------------------------------------------------------------------//

@@ -3,20 +3,18 @@
  * \file   rng/test/tstRnd_Control_Inline.cc
  * \author Paul Henning
  * \brief  Rnd_Control test.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "rng_test.hh"
-#include "ds++/Release.hh"
 #include "../Random_Inline.hh"
-#include "../LFG.h"
+#include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-#include <iostream>
-
 
 using rtt_rng::Rnd_Control;
 using rtt_rng::LF_Gen;
@@ -40,6 +38,7 @@ void check_basics()
     return;
 }
 
+//---------------------------------------------------------------------------//
 void control_test()
 {
     cout << "\nStarting control tests ..." << endl;
@@ -91,8 +90,10 @@ void control_test()
 
     if (rtt_rng_test::passed)
     PASSMSG("Rnd_Control simple test ok.");
+    return;
 }
 
+//---------------------------------------------------------------------------//
 void check_accessors(void)
 {
     cout << "\nStarting additional tests...\n" << endl;
@@ -181,7 +182,6 @@ void check_accessors(void)
             count++;
         if( count != LFG_DATA_SIZE )              ITFAILS;
         
-        
         r3.finish_init();
     }
     
@@ -196,12 +196,11 @@ int main(int argc, char *argv[])
 {
     // version tag
     for (int arg = 1; arg < argc; arg++)
-    if (string(argv[arg]) == "--version")
-    {
-       cout << argv[0] << ": version " << rtt_dsxx::release() 
-         << endl;
-        return 0;
-    }
+        if (string(argv[arg]) == "--version")
+        {
+            cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
+            return 0;
+        }
 
     cout << "\nThis is rng: version" << rtt_dsxx::release() << "\n" << endl;
     
@@ -212,27 +211,24 @@ int main(int argc, char *argv[])
         control_test();
         check_accessors();
     }
-    catch (rtt_dsxx::assertion &ass)
+    catch (rtt_dsxx::assertion &err)
     {
-        cout << "While testing tstRnd_Control, " << ass.what()
+        cout << "While testing tstRnd_Control, " << err.what()
              << endl;
         return 1;
     }
 
     // status of test
-    cout << endl;
-    cout <<     "*********************************************" << endl;
+    cout <<   "\n*******************************************\n";
     if (rtt_rng_test::passed) 
-    {
-        cout << "**** tstRnd_Control Test: PASSED" 
-             << endl;
-    }
-    cout <<     "*********************************************" << endl;
-    cout << endl;
-
-    cout << "Done testing tstRnd_Control." << endl;
+        cout << "**** tstRnd_Control Test: PASSED\n";
+    else
+        cout << "**** tstRnd_Control Test: FAILED\n";
+    cout <<     "*********************************************\n\n"
+         << "Done testing tstRnd_Control." << endl;
+    return rtt_rng_test::passed?0:-1;
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstRnd_Control.cc
+// end of tstRnd_Control.cc
 //---------------------------------------------------------------------------//

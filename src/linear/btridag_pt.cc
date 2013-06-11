@@ -17,6 +17,7 @@ namespace rtt_linear
 using namespace std;
 
 template
+DLL_PUBLIC
 void btridag(vector<double> const &a,
 	     vector<double> const &b,
 	     vector<double> const &c,

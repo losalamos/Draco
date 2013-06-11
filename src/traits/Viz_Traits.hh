@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:10:54 2000
  * \brief  Viz_Traits header file.
- * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -47,7 +48,7 @@ namespace rtt_traits
 // 
 //===========================================================================//
 
-template<class FT>
+template<typename FT>
 class Viz_Traits 
 {
   private:
@@ -72,9 +73,13 @@ class Viz_Traits
 //---------------------------------------------------------------------------//
 // Specialization for std::vector<std::vector>
 
-template<class T>
+template<typename T>
 class Viz_Traits< std::vector<std::vector<T> > >
 {
+  public:
+    // Type traits
+    typedef T elementType;
+
   private:
     // Reference to vector<vector> field.
     const std::vector<std::vector<T> > &field;
@@ -83,15 +88,15 @@ class Viz_Traits< std::vector<std::vector<T> > >
     // Constructor.
     Viz_Traits(const std::vector<std::vector<T> > &fin) : field(fin)
     {
-	// Nothing to do here
+        // Nothing to do here
     } 
 
     // Overloaded operator().
     T operator()(size_t i, size_t j) const
     {
-	Require(i < field.size());
-	Require(j < field[i].size());
-	return field[i][j];
+        Require(i < field.size());
+        Require(j < field[i].size());
+        return field[i][j];
     }
 
     // Row size accessor.
@@ -100,8 +105,8 @@ class Viz_Traits< std::vector<std::vector<T> > >
     // Column size accessor.
     size_t ncols(size_t row) const
     {
-	Require (row < field.size());
-	return field[row].size();
+        Require (row < field.size());
+        return field[row].size();
     }
 };
 
@@ -112,6 +117,10 @@ class Viz_Traits< std::vector<std::vector<T> > >
 template<>
 class Viz_Traits< std::vector<std::vector<int> > >
 {
+  public:
+    // Type traits
+    typedef int elementType;
+
   private:
     // Reference to vector<vector> field.
     const std::vector<std::vector<int> > &field;
@@ -120,15 +129,15 @@ class Viz_Traits< std::vector<std::vector<int> > >
     // Constructor.
     Viz_Traits(const std::vector<std::vector<int> > &fin) : field(fin)
     {
-	// Nothing to do here
+        // Nothing to do here
     } 
 
     // Overloaded operator().
     size_t operator()(size_t i, size_t j) const
     {
-	Require(i < field.size());
-	Require(j < field[i].size());
-	return field[i][j];
+        Require(i < field.size());
+        Require(j < field[i].size());
+        return field[i][j];
     }
 
     // Row size accessor.
@@ -137,8 +146,8 @@ class Viz_Traits< std::vector<std::vector<int> > >
     // Column size accessor.
     size_t ncols(size_t row) const
     {
-	Require (row < field.size());
-	return field[row].size();
+        Require (row < field.size());
+        return field[row].size();
     }
 };
 
@@ -149,6 +158,10 @@ class Viz_Traits< std::vector<std::vector<int> > >
 template<>
 class Viz_Traits< std::vector<std::vector<double> > >
 {
+  public:
+    // Type traits
+    typedef double elementType;
+
   private:
     // Reference to vector<vector> field.
     const std::vector<std::vector<double> > &field;
@@ -157,15 +170,15 @@ class Viz_Traits< std::vector<std::vector<double> > >
     // Constructor.
     Viz_Traits(const std::vector<std::vector<double> > &fin) : field(fin)
     {
-	// Nothing to do here
+        // Nothing to do here
     } 
 
     // Overloaded operator().
     double operator()(size_t i, size_t j) const
     {
-	Require(i < field.size());
-	Require(j < field[i].size());
-	return field[i][j];
+        Require(i < field.size());
+        Require(j < field[i].size());
+        return field[i][j];
     }
 
     // Row size accessor.
@@ -174,15 +187,15 @@ class Viz_Traits< std::vector<std::vector<double> > >
     // Column size accessor.
     size_t ncols(size_t row) const
     {
-	Require (row < field.size());
-	return field[row].size();
+        Require (row < field.size());
+        return field[row].size();
     }
 };
 
 } // end namespace rtt_traits
 
-#endif                          // __traits_Viz_Traits_hh__
+#endif // __traits_Viz_Traits_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of traits/Viz_Traits.hh
+// end of traits/Viz_Traits.hh
 //---------------------------------------------------------------------------//

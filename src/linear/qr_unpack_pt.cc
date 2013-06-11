@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of qr_unpack
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,7 +23,8 @@ using std::vector;
 // RandomContainer = vector<double>
 //---------------------------------------------------------------------------//
 
-template void qr_unpack(vector<double> &r,
+template DLL_PUBLIC
+void qr_unpack(vector<double> &r,
 			const unsigned n,
 			const vector<double> &c,
 			const vector<double> &d,
@@ -31,5 +33,5 @@ template void qr_unpack(vector<double> &r,
 } // end namespace rtt_linear
 
 //---------------------------------------------------------------------------//
-//                 end of qr_unpack.cc
+// end of qr_unpack.cc
 //---------------------------------------------------------------------------//

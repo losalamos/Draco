@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for ode/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -31,21 +31,11 @@ include_directories(
 )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-add_component_library(
-   TARGET       Lib_ode_test
-   TARGET_DEPS  Lib_ode
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx"
+   DEPS    "Lib_ode;Lib_dsxx"
    )
 

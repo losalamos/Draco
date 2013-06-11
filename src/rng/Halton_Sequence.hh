@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
  * \brief  Definition of class Halton_Sequence
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +14,13 @@
 #ifndef rng_Halton_Sequence_hh
 #define rng_Halton_Sequence_hh
 
+#include "ds++/config.h"
 #include <vector>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_rng::Halton_Sequence::n_' : class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of class 'rtt_rng::Halton_Sequence'
+#endif
 
 namespace rtt_rng
 {
@@ -66,7 +73,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class Halton_Sequence 
+class DLL_PUBLIC Halton_Sequence 
 {
   public:
 
@@ -113,8 +120,12 @@ class Halton_Sequence
 
 } // end namespace rtt_rng
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // rng_Halton_Sequence_hh
 
 //---------------------------------------------------------------------------//
-//              end of rng/Halton_Sequence.hh
+// end of rng/Halton_Sequence.hh
 //---------------------------------------------------------------------------//

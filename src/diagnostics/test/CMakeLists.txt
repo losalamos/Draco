@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -14,12 +14,7 @@ project( diagnostics_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-# set( test_lib_sources 
-#    ${PROJECT_SOURCE_DIR}/diagnostics_test.cc 
-#    ${PROJECT_SOURCE_DIR}/diagnostics_test.hh
-# )
 file( GLOB test_sources *.cc )
-# list( REMOVE_ITEM test_sources ${test_lib_sources} )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -34,16 +29,6 @@ include_directories(
    )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-# add_component_library( 
-#    TARGET       Lib_diagnostics_test
-#    TARGET_DEPS  Lib_diagnostics
-#    LIBRARY_NAME ${PROJECT_NAME}
-#    SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
@@ -51,15 +36,16 @@ add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1"
    DEPS    "Lib_c4" )
-
+   
 # Application Unit Test 
 add_test( 
-   NAME    Ut_diagnostics_draco_info
+   NAME    diagnostics_draco_info
    COMMAND ${CMAKE_COMMAND} 
    -DAPP=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+   -DWORKDIR=$<TARGET_FILE_DIR:Ut_diagnostics_tstDiagnostics_exe>
    -P ${PROJECT_SOURCE_DIR}/tDracoInfo.cmake
    )
-set_tests_properties( Ut_diagnostics_draco_info
+set_tests_properties( diagnostics_draco_info
    PROPERTIES	
    PASS_REGULAR_EXPRESSION "Passes"
    FAIL_REGULAR_EXPRESSION "Fails"

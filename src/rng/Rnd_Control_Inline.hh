@@ -3,7 +3,8 @@
  * \file   rng/Rnd_Control_Inline.hh
  * \author Paul Henning
  * \brief  Rnd_Control header file.
- * \note   Copyright (C) 2008-2011 LANS, LLC
+ * \note   Copyright (C) 2008-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,11 +13,6 @@
 #ifndef rtt_rng_Rnd_Control_Inline_hh
 #define rtt_rng_Rnd_Control_Inline_hh
 
-//#include "ds++/Assert.hh"
-//#include "rng/config.h"
-
-// header file for SPRNG package
-//#include "LFG.h"
 #include "LF_Gen.hh"
 
 namespace rtt_rng 
@@ -25,7 +21,7 @@ namespace rtt_rng
 /*! All this does is to hold a seed and a stream number.  Everything else
  *  that the traditional Rnd_Control did was moved to LF_Gen */
 
-class Rnd_Control 
+class DLL_PUBLIC Rnd_Control 
 {
   private:
     // seed for initialization of random number streams
@@ -62,10 +58,7 @@ class Rnd_Control
     inline void half_initialize(LF_Gen&);
 };
 
-
-// ---------------------------------------------------------------------------
-
-
+//---------------------------------------------------------------------------//
 //! Update the stream number and initialize the LF_Gen
 inline void 
 Rnd_Control::initialize(const unsigned snum, LF_Gen& lf)
@@ -82,7 +75,6 @@ Rnd_Control::initialize(const unsigned snum, LF_Gen& lf)
     d_streamnum++;
 }
 
-
 //! Initialize the LF_Gen with the next stream number
 inline void 
 Rnd_Control::initialize(LF_Gen& lf)
@@ -94,9 +86,7 @@ Rnd_Control::initialize(LF_Gen& lf)
 
     // advance the counter
     d_streamnum++;
-
 }
-
 
 //! Do half an initialization... it is your responsibility to finish!
 inline void 
@@ -111,12 +101,10 @@ Rnd_Control::half_initialize(LF_Gen& lf)
     d_streamnum++;
 }
 
-
-
 } // end namespace rtt_rng
 
-#endif                          // rtt_rng_Rnd_Control_hh
+#endif // rtt_rng_Rnd_Control_hh
 
 //---------------------------------------------------------------------------//
-//                              end of rng/Rnd_Control.hh
+// end of rng/Rnd_Control.hh
 //---------------------------------------------------------------------------//

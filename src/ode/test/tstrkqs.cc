@@ -4,20 +4,19 @@
  * \author Kent Budge
  * \date   Tue Sep 21 09:28:30 2004
  * \brief  Test the rkqs integrator function template.
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <limits>
-
+#include "../rkqs.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../rkqs.hh"
+
+#include <cmath>
+#include <limits>
 
 using namespace std;
 using namespace rtt_ode;
@@ -28,8 +27,8 @@ using namespace rtt_dsxx;
 //---------------------------------------------------------------------------//
 
 static void ederivs(double /*x*/,
-		    const vector<double> &y,
-		    vector<double> &dydx)
+                    const vector<double> &y,
+                    vector<double> &dydx)
 {
     dydx[0] = y[0];
 }
@@ -41,38 +40,38 @@ void tstrkqs( UnitTest & ut )
     double x = 0.0;
     vector<double> yout, yerr;
     rkck(y, dydx, x, 1.0, yout, yerr, ederivs);
-    
+
     if (fabs(yout[0]-exp(1.0))>1.0e-2)
     {
-	ut.failure("rkck NOT accurate");
+        ut.failure("rkck NOT accurate");
     }
     else
     {
-	ut.passes("rkck accurate");
-	}
-    
+        ut.passes("rkck accurate");
+    }
+
     y[0] = 1.0;
     dydx[0] = 1.0;
     x = 0.0;
     vector<double> yscal(1, 1.0);
     double hdid,hnext;
     rkqs(y,
-	 dydx,
-	 x,
-	 1.0,
-	 numeric_limits<double>::epsilon(),
-	 yscal,
-	 hdid,
-	 hnext,
-	 ederivs); 
-    
+         dydx,
+         x,
+         1.0,
+         numeric_limits<double>::epsilon(),
+         yscal,
+         hdid,
+         hnext,
+         ederivs); 
+
     if (fabs(y[0]-exp(x))>1.0e-9)
     {
-	ut.failure("rkqs NOT accurate");
+        ut.failure("rkqs NOT accurate");
     }
     else
     {
-	ut.passes("rkqs accurate");
+        ut.passes("rkqs accurate");
     }
 }
 
@@ -80,27 +79,11 @@ void tstrkqs( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstrkqs(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown." << endl;
-
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstrkqs(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstrkqs.cc
+// end of tstrkqs.cc
 //---------------------------------------------------------------------------//

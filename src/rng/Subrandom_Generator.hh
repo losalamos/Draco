@@ -3,9 +3,8 @@
  * \file   rng/Subrandom_Generator.hh
  * \author Kent Budge
  * \brief  Definition of class Subrandom_Generator
- * \note   © Copyright 2006-2007 LANSLLC All rights reserved.
- *
- * Long description.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +13,8 @@
 #ifndef rng_Subrandom_Generator_hh
 #define rng_Subrandom_Generator_hh
 
-#include "Halton_Sequence.hh"
+//#include "Halton_Sequence.hh"
+#include "ds++/config.h"
 
 namespace rtt_rng
 {
@@ -39,7 +39,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class Subrandom_Generator 
+class DLL_PUBLIC Subrandom_Generator 
 {
   public:
 
@@ -80,5 +80,5 @@ class Subrandom_Generator
 #endif // rng_Subrandom_Generator_hh
 
 //---------------------------------------------------------------------------//
-//              end of rng/Subrandom_Generator.hh
+// end of rng/Subrandom_Generator.hh
 //---------------------------------------------------------------------------//

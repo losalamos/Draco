@@ -447,7 +447,6 @@ macro( setupMPILibrariesWindows )
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
          set( DRACO_C4 "MPI" )  
-         # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOMPI_SKIP_MPICXX" )
          if( NOT MPIEXEC )
             message( FATAL_ERROR 
                "MPI found but mpirun not in PATH. Aborting" )
@@ -477,18 +476,101 @@ macro( setupMPILibrariesWindows )
       else()
          message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
       endif()
-
+      
       # Check flavor and add optional flags
       if( "${MPIEXEC}" MATCHES openmpi )
          set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." )
-         # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
-         # This is required on Turning when running 'ctest -j16'.  See
-         # notes in component_macros.cmake.
-         set( MPIEXEC_POSTFLAGS --bind-to-none CACHE
-            STRING "extra mpirun flags (list)." FORCE)
-         set( MPIEXEC_POSTFLAGS_STRING "--bind-to-none" CACHE
-            STRING "extra mpirun flags (string)." FORCE)
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_POSTFLAGS_STRING )
+         
+         set( MPI_CORES_PER_CPU 4 )
+         set( MPI_PHYSICAL_CORES 0 )
+         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+            "Number of multi-core CPUs per node" FORCE )
+         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+            "Number of cores per cpu" FORCE )
+            
+         # Check for hyperthreading - This is important for reserving
+         # threads for OpenMP tests...
+
+         # correct base-zero indexing
+         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
+         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
+            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         else()
+            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         endif()  
+         
+         #
+         # EAP's flags can be found in Test.rh/General/run_job.pl
+         # (look for $other_args).  In particular, it may be useful to
+         # examine EAP's options for srun or aprun.
+         # 
+         # \sa
+         # http://blogs.cisco.com/performance/open-mpi-v1-5-processor-affinity-options/
+         #
+         # --cpus-per-proc <N> option is needed for multi-threaded
+         #   processes.  Use this as "threads per MPI rank."
+         # --bind-to-socket will bind MPI ranks ordered by socket first (rank 0 onto
+         #   socket 0, then rank 1 onto socket 1, etc.)
+
+         # --bind-to-core added in OpenMPI-1.4
+         set( MPIEXEC_OMP_POSTFLAGS 
+            -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
+            CACHE STRING "extra mpirun flags (list)." FORCE )
+         set( MPIEXEC_OMP_POSTFLAGS_STRING 
+            "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
+            CACHE STRING "extra mpirun flags (list)." FORCE)
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
+            MPI_LIBRARIES )    
+            
+      elseif("${MPIEXEC}" MATCHES "Microsoft HPC" )
+         set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
+         
+         set( MPI_CORES_PER_CPU 4 )
+         set( MPI_PHYSICAL_CORES 0 )
+         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+            "Number of multi-core CPUs per node" FORCE )
+         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+            "Number of cores per cpu" FORCE )
+            
+         # Check for hyperthreading - This is important for reserving
+         # threads for OpenMP tests...
+
+         # correct base-zero indexing
+         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
+         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
+            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         else()
+            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         endif()  
+         
+         #
+         # EAP's flags can be found in Test.rh/General/run_job.pl
+         # (look for $other_args).  In particular, it may be useful to
+         # examine EAP's options for srun or aprun.
+         # 
+         # \sa
+         # http://blogs.cisco.com/performance/open-mpi-v1-5-processor-affinity-options/
+         #
+         # --cpus-per-proc <N> option is needed for multi-threaded
+         #   processes.  Use this as "threads per MPI rank."
+         # --bind-to-socket will bind MPI ranks ordered by socket first (rank 0 onto
+         #   socket 0, then rank 1 onto socket 1, etc.)
+
+         # --bind-to-core added in OpenMPI-1.4
+         set( MPIEXEC_OMP_POSTFLAGS 
+            -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
+            CACHE STRING "extra mpirun flags (list)." FORCE )
+         set( MPIEXEC_OMP_POSTFLAGS_STRING 
+            "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
+            CACHE STRING "extra mpirun flags (list)." FORCE)
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
+            MPI_LIBRARIES )    
       endif()
       
    endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
@@ -582,7 +664,8 @@ macro( setVendorVersionDefaults )
 
     # See if VENDOR_DIR is set.  Try some defaults if it is not set.
     if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
-        set( VENDOR_DIR $ENV{VENDOR_DIR} )
+        set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
+          "Root directory where CCS-2 3rd party libraries are located." )
     endif()
     # If needed, try some obvious places.
     if( NOT EXISTS "${VENDOR_DIR}" )
@@ -607,7 +690,7 @@ macro( setVendorVersionDefaults )
 WARNING: VENDOR_DIR not defined locally or in user environment,
 individual vendor directories should be defined." )
     endif()
-
+    
     # Import environment variables related to vendors
     # 1. Use command line variables (-DLAPACK_LIB_DIR=<path>
     # 2. Use environment variables ($ENV{LAPACK_LIB_DIR}=<path>)

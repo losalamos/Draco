@@ -4,6 +4,8 @@
  * \author John McGhee
  * \date   Tue Mar  7 08:38:04 2000
  * \brief  Header file for CIC-19 Hex format mesh reader.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,6 +18,11 @@
 #include <string>
 #include "mesh_element/Element_Definition.hh"
 #include "Mesh_Reader.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_meshReaders::Hex_Mesh_Reader::meshfile_name' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_meshReaders::Hex_Mesh_Reader'
+#endif
 
 namespace rtt_meshReaders
 {
@@ -39,7 +46,7 @@ namespace rtt_meshReaders
 // 
 //===========================================================================//
 
-class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
+class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -49,7 +56,7 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     std::string meshfile_name;
     static std::string keyword()
     {
-	return "cic19_hex_mesh";
+        return "cic19_hex_mesh";
     }
     std::string version;
     int npoints;
@@ -89,7 +96,7 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
      */
     std::vector<std::vector<double> > get_node_coords() const
     {
-	return point_coords;
+        return point_coords;
     }
     
     /*!
@@ -100,7 +107,7 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
      */
     std::string get_node_coord_units() const
     {
-	return "unknown";
+        return "unknown";
     }
     /*!
      * The Hex mesh format has no provision for flagging nodes.
@@ -108,9 +115,9 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
      * which contains all the nodes.
      *
      */
-     std::map<std::string, std::set<int> > get_node_sets() const
+    std::map<std::string, std::set<int> > get_node_sets() const
     {
-	return node_sets;
+        return node_sets;
     }
 
     /*! 
@@ -119,9 +126,9 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
      * "Untitled -- CIC-19 Hex Mesh"
      *
      */
-     std::string get_title() const
+    std::string get_title() const
     {
-	return "Untitled -- CIC-19 Hex Mesh";
+        return "Untitled -- CIC-19 Hex Mesh";
     }
 
     std::vector<std::vector<int> > get_element_nodes(void) const;
@@ -131,10 +138,10 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     std::map<std::string, std::set<int> > get_element_sets() const;
 
     std::vector< rtt_mesh_element::Element_Definition::Element_Type >
-    get_element_types() const;
+        get_element_types() const;
 
     std::vector< rtt_mesh_element::Element_Definition::Element_Type >
-    get_unique_element_types() const;
+        get_unique_element_types() const;
 
     size_t get_dims_ndim() const {return ndim;};
     
@@ -147,7 +154,11 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 
 } // end namespace rtt_meshReaders
 
-#endif                 // __meshReaders_Hex_Mesh_Reader_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __meshReaders_Hex_Mesh_Reader_hh__
 
 /*!
  * \page rtt_meshreaders_hexformat The CIC-19 Hex Mesh File Format
@@ -224,5 +235,5 @@ class Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
         
 
 //---------------------------------------------------------------------------//
-//                      end of meshReaders/Hex_Mesh_Reader.hh
+// end of meshReaders/Hex_Mesh_Reader.hh
 //---------------------------------------------------------------------------//

@@ -5,15 +5,15 @@
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Provides some descriptive information for the
  *         standard mesh elements.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include <iostream>
-
 #include "Element_Definition.hh"
-#include "ds++/Assert.hh"
 
 namespace rtt_mesh_element
 {

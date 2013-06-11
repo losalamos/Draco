@@ -2,9 +2,10 @@
 /*!
  * \file   rng/test/tstSubrandom_Sequence.cc
  * \author Kent Budge
- * \date   Thu Dec 22 14:16:45 2005
+ * \date   Thu Dec 22 14:16:45 2006
  * \brief  Test the Subrandom_Sequence class
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -164,33 +165,17 @@ void tstSubrandom_Sequence( UnitTest & ut )
         ut.failure("Member function count did not return the expected value (imax=100).");
     }
     return;
-}
-    
+}    
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-        tstSubrandom_Sequence( ut );
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstSubrandom_Sequence, " 
-                  << err.what() << std::endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstSubrandom_Sequence, " 
-                  << "An unknown exception was thrown." << std::endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstSubrandom_Sequence( ut ); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstSubrandom_Sequence.cc
+// end of tstSubrandom_Sequence.cc
 //---------------------------------------------------------------------------//

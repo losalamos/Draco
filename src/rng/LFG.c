@@ -130,7 +130,6 @@
 /*************************************************************************/
 /*************************************************************************/
 
-
 #define MAX_STREAMS 0x7fffffff
 
 /*
@@ -215,10 +214,6 @@ struct lfgen
 #define OFFSET_gennum     (VALID_LM1 + VALID_L + VALID_L + 3)
 #define OFFSET_END        (VALID_LM1 + VALID_L + VALID_L + 4)
 
-
-
-
-
 static unsigned gseed = 0;
 
 /*************************************************************************/
@@ -226,7 +221,6 @@ static unsigned gseed = 0;
 /*                    ERROR PRINTING FUNCTION                            */
 /*************************************************************************/
 /*************************************************************************/
-
 
 void errprint(char const *level, char const *routine, char const *error)
 {
@@ -238,7 +232,6 @@ void errprint(char const *level, char const *routine, char const *error)
 /*            ROUTINES USED TO CREATE GENERATOR FILLS                    */
 /*************************************************************************/
 /*************************************************************************/
-
 
 /* The number of bits set in the binary representation of the integers 0-255 */
 static const unsigned bitcount[256] =

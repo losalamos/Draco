@@ -4,14 +4,14 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:08:03 2004
  * \brief  Specializations of svbksb
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include <vector>
-
 #include "svbksb.i.hh"
 
 namespace rtt_linear
@@ -22,7 +22,8 @@ using std::vector;
 // T=vector<double>
 //---------------------------------------------------------------------------//
 
-template void svbksb(const vector<double> &u,
+template DLL_PUBLIC
+void svbksb(const vector<double> &u,
 		     const vector<double> &w,
 		     const vector<double> &v,
 		     const unsigned m,
@@ -33,5 +34,5 @@ template void svbksb(const vector<double> &u,
 } // end namespace rtt_linear
 
 //---------------------------------------------------------------------------//
-//                 end of svbksb_pt.cc
+// end of svbksb_pt.cc
 //---------------------------------------------------------------------------//

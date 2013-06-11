@@ -10,15 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
+#include "../quad.hh"
+#include "../rkqs.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../quad.hh"
-#include "../rkqs.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -50,15 +46,15 @@ void tstquad( UnitTest & ut )
 
     double eps = 1.0e-12;
     double integral = 
-	rtt_ode::quad<fpdd, Rule>(exp_fpdd, 0.0, 1.0, eps, &rkqs);
-    
+        rtt_ode::quad<fpdd, Rule>(exp_fpdd, 0.0, 1.0, eps, &rkqs);
+
     if (!soft_equiv(integral, exp(1.0)-1.0, 1.0e-12))
     {
-	ut.failure("quad NOT accurate");
+        ut.failure("quad NOT accurate");
     }
     else
     {
-	ut.passes("quad accurate");
+        ut.passes("quad accurate");
     }
  }
 
@@ -66,26 +62,11 @@ void tstquad( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstquad(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown. " << endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstquad(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstquad.cc
+// end of tstquad.cc
 //---------------------------------------------------------------------------//

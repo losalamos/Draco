@@ -108,7 +108,7 @@ static double const protonMassSI      = 1.6726231e-27;        // kg
  */
 //==============================================================================
 
-class PhysicalConstants
+class DLL_PUBLIC PhysicalConstants
 {
   public:
     

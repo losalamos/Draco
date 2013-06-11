@@ -1,16 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
-  \file    Data_Table.hh
-  \author  Paul Henning
-  \brief   Declaration of class Data_Table
-  \note    Copyright (C) 2007-2010 Los Alamos National Security, LLC.
-  \version $Id$
-*/
+ * \file    Data_Table.hh
+ * \author  Paul Henning
+ * \brief   Declaration of class Data_Table
+ * \note    Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ * \version $Id$
+ */
 //---------------------------------------------------------------------------//
 #ifndef dsxx_Data_Table_hh
 #define dsxx_Data_Table_hh
 
 #include "Assert.hh"
+#include "ds++/config.h"
 #include <vector>
 
 /*!
@@ -24,7 +26,8 @@ namespace rtt_dsxx
 {
 
 //! Provide const array-style access to an actual array or a scalar.
-template<class T> class Data_Table
+template<typename T> 
+class Data_Table
 {
   public:
     typedef T const * const_iterator;
@@ -51,12 +54,11 @@ template<class T> class Data_Table
     T const d_value;
 };
 
-
 /*! 
   Copy constructor, but update the pointers to point to the local d_value if
   they pointed to the d_value in the rhs. 
 */
-template<class T> 
+template<typename T> 
 Data_Table<T>::Data_Table(Data_Table<T> const &rhs)
     : d_begin(rhs.d_begin)
     , d_end(rhs.d_end)
@@ -69,7 +71,7 @@ Data_Table<T>::Data_Table(Data_Table<T> const &rhs)
     }
 }
 
-template<class T> Data_Table<T>&
+template<typename T> Data_Table<T>&
 Data_Table<T>::operator=(Data_Table<T> const &rhs)
 {
     if(&rhs != this)
@@ -89,7 +91,6 @@ Data_Table<T>::operator=(Data_Table<T> const &rhs)
     return *this;
 }
 
-
 /*!
   Bad things will happen if you alter the size of the source vector while
   this Data_Table is in existence.
@@ -98,7 +99,7 @@ Data_Table<T>::operator=(Data_Table<T> const &rhs)
   (dereferencing of end iterator is not allowed).  This particular ctor causes
   run time failures for STLport and MSVC/Debug.
 */
-// template<class T> inline
+// template<typename T> inline
 // Data_Table<T>::Data_Table(std::vector<T> const & v)
 //     : d_begin(&(*(v.begin())))
 //     , d_end(&(*(v.end())))
@@ -107,8 +108,7 @@ Data_Table<T>::operator=(Data_Table<T> const &rhs)
 //     Require(size() == v.size());
 // }
 
-
-template<class T> inline
+template<typename T> inline
 Data_Table<T>::Data_Table(const_iterator const begin,
                           const_iterator const end)
     : d_begin(begin)
@@ -118,32 +118,31 @@ Data_Table<T>::Data_Table(const_iterator const begin,
     Require(!(begin > end));
 }
 
-
 /*! 
   Copy the scalar into a local variable, and set the pointers to that copy.
 */
-template<class T> inline
+template<typename T> inline
 Data_Table<T>::Data_Table(T const& value)
     : d_begin(&d_value)
     , d_end(&d_value + 1)
     , d_value(value)
 {}
 
-template<class T> inline
+template<typename T> inline
 Data_Table<T>::Data_Table()
     : d_begin(0)
     , d_end(0)
     , d_value()
 {}
 
-template<class T> inline T const & 
+template<typename T> inline T const & 
 Data_Table<T>::operator[](unsigned const i) const
 {
     Require(static_cast<int>(i) < (d_end - d_begin));
     return d_begin[i];
 }
 
-template<class T> inline T const & 
+template<typename T> inline T const & 
 Data_Table<T>::front() const
 {
     Require((d_end - d_begin) > 0);
@@ -151,7 +150,7 @@ Data_Table<T>::front() const
 }
 
 
-template<class T> inline T const & 
+template<typename T> inline T const & 
 Data_Table<T>::back() const
 {
     Require((d_end - d_begin) > 0);
@@ -159,14 +158,18 @@ Data_Table<T>::back() const
 }
 
 
-template<class T> inline T*
+template<typename T> inline T*
 Data_Table<T>::access()
 {
     Require((d_end - d_begin) > 0);
     return const_cast<T*>(d_begin);
 }
 
-
 }
 
 #endif
+
+//---------------------------------------------------------------------------//
+// end of Data_Table.hh
+//---------------------------------------------------------------------------//
+

@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
  * \brief  
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -153,6 +154,8 @@ int main(int argc, char *argv[])
     cout << endl << "*********************************************" << endl;
     if( rtt_units_test::passed )
         cout << "**** tstFundUnit Test: PASSED" << endl;
+    else
+        cout << "**** tstFundUnit Test: FAILED" << endl;
     cout <<         "*********************************************" << endl << endl;
     
     cout << "Done testing tstFundUnit." << endl;
@@ -160,5 +163,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstFundUnit.cc
+// end of tstFundUnit.cc
 //---------------------------------------------------------------------------//

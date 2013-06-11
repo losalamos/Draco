@@ -4,7 +4,7 @@
  * \author Thomas M. Evans, Aimee Hungerford
  * \date   Fri Dec  9 10:52:38 2005
  * \brief  Diagnostics class for runtime info.
- * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * 2010-11-29 This component was moved from clubimc/utils to
@@ -18,6 +18,7 @@
 #define diagnostics_Diagnostics_hh
 
 #include "diagnostics/config.h"
+#include "ds++/config.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -58,16 +59,16 @@ namespace Diagnostics
 {
     
 //! Map of integer data.
-extern std::map<std::string, int> integers;
+extern DLL_PUBLIC std::map<std::string, int> integers;
 
 //! Map of floating point data.
-extern std::map<std::string, double> doubles;
+extern DLL_PUBLIC std::map<std::string, double> doubles;
 
 //! Map of vector, integer data.
-extern std::map< std::string, std::vector<int> > vec_integers;
+extern DLL_PUBLIC std::map< std::string, std::vector<int> > vec_integers;
 
 //! Map of vector, double data.
-extern std::map< std::string, std::vector<double> > vec_doubles;
+extern DLL_PUBLIC std::map< std::string, std::vector<double> > vec_doubles;
 
 } // end of namespace Diagnostics
 

@@ -1,11 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   linear/test/tstfnorm.cc
- * \author Kent Budge
- * \date   Mon Aug  9 13:39:20 2004
- * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
- */
+* \file   linear/test/tstfnorm.cc
+* \author Kent Budge
+* \date   Mon Aug  9 13:39:20 2004
+* \brief  
+* \note   Copyright 2006 Los Alamos National Security, LLC.
+*         All rights reserved.
+*/
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -45,11 +46,11 @@ void tstfnorm(UnitTest &ut)
 
     if (soft_equiv(fnorm(x, fvec, &func), 0.5*3.2*3.2))
     {
-	ut.passes("fnorm is correct");
+        ut.passes("fnorm is correct");
     }
     else
     {
-	ut.failure("fnorm is NOT correct");
+        ut.failure("fnorm is NOT correct");
     }
 }
 
@@ -58,24 +59,10 @@ void tstfnorm(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut( argc,argv,release );
-    try
-    {
-	tstfnorm(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstfnorm, " << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstfnorm, " 
-             << "An unknown exception was thrown." << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { tstfnorm(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstfnorm.cc
+// end of tstfnorm.cc
 //---------------------------------------------------------------------------//

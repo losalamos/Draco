@@ -4,23 +4,23 @@
  * \author Paul Henning
  * \date   June 28, 2006
  * \brief  Lagged Fibonacci Generator Random Number Generator
- * \note   Copyright 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$                       */
 /*---------------------------------------------------------------------------*/
 
-
 #ifndef rtt_rng_LFG_H
 #define rtt_rng_LFG_H
 
 #include "rng/config.h"
+#include "ds++/config.h"
 
 #ifdef __cplusplus
 extern "C" { 
 #endif
-
-
+    
 #ifndef LFG_PARAM_SET
 #  ifdef RNG_NR
 #    define LFG_PARAM_SET 2
@@ -28,8 +28,7 @@ extern "C" {
 #    define LFG_PARAM_SET 1
 #  endif
 #endif 
-
-
+    
 /* 
    This is kludgy.  LFG_DATA_SIZE is the number of unsigned ints required to
    store the state of a random number generator. This needs to be the same as
@@ -71,7 +70,6 @@ extern void lfg_create_rng_part1(const unsigned gennum,
 extern void lfg_create_rng_part2(unsigned* begin
                                  /*, unsigned* end */);
 
-
 /*
   Create a new random number generator from an already existing one.  This
   produces an independent stream.  Data is written in to [*begin, *end), see
@@ -80,7 +78,6 @@ extern void lfg_create_rng_part2(unsigned* begin
 extern void lfg_spawn_rng(unsigned* genptr, 
 			  unsigned* begin, 
 			  unsigned* end);
-
 
 /*
   Get the next double from the random number generator pointed to by genptr
@@ -94,12 +91,10 @@ extern double lfg_gen_dbl(unsigned* genptr);
 */
 extern int lfg_gen_int(unsigned* genptr);
 
-
 /*
   Dump a little diagnostics printout.
 */
 extern void lfg_print(unsigned* genptr);
-
 
 /*
   Return the number of unsigned ints needed to hold the state.  This should 
@@ -117,8 +112,8 @@ extern unsigned lfg_gennum(unsigned* genptr);
 */
 extern unsigned lfg_unique_num(unsigned* genptr);
 
-extern void errprint(char const *level, char const *routine, char const *error);
-    
+extern DLL_PUBLIC 
+void errprint(char const *level, char const *routine, char const *error);
 
 #ifdef __cplusplus
 }

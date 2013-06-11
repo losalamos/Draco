@@ -14,6 +14,7 @@
 #include "ApplicationUnitTest.hh"
 #include "ds++/path.hh"
 #include <sstream>
+#include <fstream>
 
 namespace rtt_c4
 {

@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:30:05 2004
  * \brief  Adaptive quadrature of a function over a specified interval.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,11 +15,13 @@
 #define ode_quad_hh
 
 #include "Function_Traits.hh"
+#include <vector>
 
 namespace rtt_ode
 {
-//---------------------------------------------------------------------------//
+//===========================================================================//
 /*! 
+ * \class Quad_To_ODE
  * \brief Helper class for quad
  *
  * This class transforms a quadrature into an ODE problem.  This allows
@@ -27,9 +30,10 @@ namespace rtt_ode
  * \arg \a Function A function type for which <code> double operator()(double)
  * </code> is defined.
  */
+//===========================================================================//
 
-template<class Function>
-class Quad_To_ODE
+template<typename Function> 
+class DLL_PUBLIC Quad_To_ODE
 {
   public:
 
@@ -39,17 +43,16 @@ class Quad_To_ODE
 		    std::vector<double> const &,
 		    std::vector<double> &dydx)
     {
-	dydx[0] = func(x);
+        dydx[0] = func(x);
     }
 
   private:
     Function &func;
 };
 
-
 //! Adaptive quadrature of a function over a specified interval.
-template<class Function, class Rule>
-typename Function_Traits<Function>::return_type 
+template<typename Function, typename Rule>
+DLL_PUBLIC typename Function_Traits<Function>::return_type 
 quad(Function func, 
      double x1, 
      double x2,
@@ -61,5 +64,5 @@ quad(Function func,
 #endif // ode_quad_hh
 
 //---------------------------------------------------------------------------//
-//              end of ode/quad.hh
+// end of ode/quad.hh
 //---------------------------------------------------------------------------//

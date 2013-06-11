@@ -3,7 +3,8 @@
  * \file   rng/Halton_Subrandom_Generator.hh
  * \author Kent Budge
  * \brief  Definition of class Halton_Subrandom_Generator
- * \note   © Copyright 2006-2007 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,11 @@
 
 #include "Subrandom_Generator.hh"
 #include "Halton_Sequence.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_rng::Halton_Subrandom_Generator::sequences_' : class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of class 'rtt_rng::Halton_Subrandom_Generator'
+#endif
 
 namespace rtt_rng
 {
@@ -33,7 +39,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class Halton_Subrandom_Generator : public Subrandom_Generator
+class DLL_PUBLIC Halton_Subrandom_Generator : public Subrandom_Generator
 {
   public:
 
@@ -61,8 +67,12 @@ class Halton_Subrandom_Generator : public Subrandom_Generator
 
 } // end namespace rtt_rng
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // rng_Halton_Subrandom_Generator_hh
 
 //---------------------------------------------------------------------------//
-//              end of rng/Halton_Subrandom_Generator.hh
+// end of rng/Halton_Subrandom_Generator.hh
 //---------------------------------------------------------------------------//

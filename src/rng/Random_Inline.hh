@@ -1,15 +1,19 @@
+//----------------------------------*-C++-*----------------------------------//
 /*!
-  \file    rng/Random_Inline.hh
-  \author  Paul Henning
-  \brief   Header to bring in appropriate random number generators
-  \note    Copyright (C) 2008-2011 Los Alamos National Security, LLC.
-  \version $Id$
-*/
+ * \file    rng/Random_Inline.hh
+ * \author  Paul Henning
+ * \brief   Header to bring in appropriate random number generators
+ * \note    Copyright (C) 2008-2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ * \version $Id$
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
 
 #ifndef rtt_rng_Random_Inline_hh
 #define rtt_rng_Random_Inline_hh
 
-//#include "rng/config.h"
 #include <stdint.h>
 #include "Rnd_Control_Inline.hh"
 
@@ -24,10 +28,10 @@ typedef LF_Gen Random;
 extern uint64_t rn_stream;  
 }
 
-#endif                          // rtt_rng_Random_Inline_hh
+#endif // rtt_rng_Random_Inline_hh
 
 //---------------------------------------------------------------------------//
-//                              end of rng/Random_Inline.hh
+// end of rng/Random_Inline.hh
 //---------------------------------------------------------------------------//
 
 

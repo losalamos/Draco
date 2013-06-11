@@ -4,7 +4,8 @@
  *  \brief  This file contains enums, conversion factors and labels that help
  *          define a UnitSystem. 
  *  \date   Fri Oct 24 15:57:09 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,6 +14,7 @@
 #ifndef __units_UnitSystemEnums_hh__
 #define __units_UnitSystemEnums_hh__
 
+#include "ds++/config.h"
 #include <string>
 
 namespace rtt_units
@@ -132,12 +134,12 @@ std::string const Q_labels( "NA,mol" );
 //---------------------------------------------------------------------------//
 
 //! Extract unit labels from list in UnitSystemEnums.hh.
-std::string setUnitLabel( size_t const pos, std::string const & labels );
+DLL_PUBLIC std::string setUnitLabel( size_t const pos, std::string const & labels );
 
 } // end namespace rtt_units
 
 #endif  // __units_UnitSystemEnums_hh__
 
 //---------------------------------------------------------------------------//
-//                         end of UnitSystemEnums.hh
+// end of UnitSystemEnums.hh
 //---------------------------------------------------------------------------//

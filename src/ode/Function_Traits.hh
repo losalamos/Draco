@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 18 10:31:24 2004
  * \brief  Definition of class template Function_Traits
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,8 +14,8 @@
 #ifndef ode_Function_Traits_hh
 #define ode_Function_Traits_hh
 
+#include "ds++/config.h"
 #include <complex>
-#include "ode/config.h"
 
 namespace rtt_ode
 {
@@ -39,7 +40,7 @@ namespace rtt_ode
  */
 //===========================================================================//
 
-template<class Function> class Function_Traits
+template<typename Function> class DLL_PUBLIC Function_Traits
 {
   public:
 
@@ -57,7 +58,7 @@ template<> class Function_Traits<double(*)(double)>
     typedef double return_type;
 };
 
-#ifdef isAIX
+#ifdef draco_isAIX
 //---------------------------------------------------------------------------//
 /*! Traits for ordinary function mapping const double to double
  *
@@ -85,5 +86,5 @@ template<> class Function_Traits<std::complex<double>(*)(double)>
 #endif // ode_Function_Traits_hh
 
 //---------------------------------------------------------------------------//
-//              end of ode/Function_Traits.hh
+// end of ode/Function_Traits.hh
 //---------------------------------------------------------------------------//

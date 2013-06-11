@@ -31,22 +31,12 @@ include_directories(
 )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-add_component_library( 
-   TARGET       Lib_mesh_element_test
-   TARGET_DEPS  Lib_mesh_element
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_dsxx" )
+   DEPS    "Lib_mesh_element;Lib_dsxx" )
 
 
 

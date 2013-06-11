@@ -3,7 +3,8 @@
  *  \author Kelly Thompson
  *  \brief  This file defines a fundamental unit type.
  *  \date   Mon Oct 27 16:24:31 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,11 @@
 
 #include "UnitSystemEnums.hh"
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_units::FundUnit<F>::d_label' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_units::FundUnit<F>'
+#endif
+
 namespace rtt_units
 {
 
@@ -23,12 +29,11 @@ namespace rtt_units
  *
  * \sa UnitSystem
  * \sa UnitSystemType
- *
  */
 //============================================================================//
 
-template< typename F > // T is one of { Ltype, Mtype, etc. }
-class FundUnit         // Length, Mass, time, etc...
+template< typename F >       // T is one of { Ltype, Mtype, etc. }
+class DLL_PUBLIC FundUnit    // Length, Mass, time, etc...
 {
   public:
     //! default constructor
@@ -66,8 +71,12 @@ class FundUnit         // Length, Mass, time, etc...
 
 } // end namespace rtt_units
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // __units_FundUnit_hh__
 
 //---------------------------------------------------------------------------//
-//                         end of FundUnit.hh
+// end of FundUnit.hh
 //---------------------------------------------------------------------------//

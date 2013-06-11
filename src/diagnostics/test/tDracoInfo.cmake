@@ -24,10 +24,11 @@ aut_setup()
 ##---------------------------------------------------------------------------##
 # Run the application and capture the output.
 message("Running tests...
-${APP} 
-   > ${OUTFILE}")
+${APP} > ${OUTFILE}")
+
 execute_process( 
    COMMAND ${APP} 
+   WORKING_DIRECTORY ${WORKDIR}
 #   INPUT_FILE ${STDINFILE}
    RESULT_VARIABLE testres
    OUTPUT_VARIABLE testout

@@ -4,17 +4,13 @@
  * \author Kent Budge
  * \date   Tue Aug 26 12:02:36 2008
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
@@ -109,27 +105,10 @@ void tstsvdfit(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        tstsvdfit(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstsvdfit, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstsvdfit, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { tstsvdfit(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstsvdfit.cc
+// end of tstsvdfit.cc
 //---------------------------------------------------------------------------//

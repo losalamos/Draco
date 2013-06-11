@@ -29,6 +29,12 @@
 #include <unistd.h>
 #endif
 
+//#ifdef MSVC
+//#include <Windows.h>
+//#include <stdio.h>
+//#include <tchar.h>
+//#endif
+
 namespace rtt_diagnostics
 {
 
@@ -109,7 +115,24 @@ void procmon_resource_print( std::string const & identifier,
     // ----------------------------------------
     // Examine /proc/meminfo for total memory and free memory.
     // ----------------------------------------
-    
+
+#ifdef MSVC
+    // struct MEMORYSTATUSEX (all values in bytes)
+    // ullTotalPhys
+    // ullAvailPhys
+    // ullTotalPageFile
+    // ullAvailPageFile
+    // ullTotalVirtual
+    // ullAvailVirtual
+    // ullAvailExtendedVirtual
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof( statex );
+    GlobalMemoryStatusEx( &statex );
+
+    MemTotal = statex.ullTotalPhys / 1024.0; // bytes -> kB.
+
+#else
+
     std::string file_meminfo( "/proc/meminfo" );
     Insist( rtt_dsxx::fileExists( file_meminfo ),
         "Could not open /proc/meminfo!  Is this Linux?" );
@@ -132,7 +155,7 @@ void procmon_resource_print( std::string const & identifier,
         }
     }
     fs.close();
-    
+#endif
     Check( MemTotal > 0 );
     // Check( MemFree > 0 );
 

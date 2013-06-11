@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Dec 17 16:04:59 2001
  * \brief  rng testing services.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,6 +14,7 @@
 #ifndef __rng_test_hh__
 #define __rng_test_hh__
 
+#include "ds++/config.h"
 #include <iostream>
 #include <string>
 
@@ -34,19 +37,19 @@ namespace rtt_rng_test
 // ways.  We do not constrain draco tests except that the output must be of
 // the form "Test: pass/fail"
 
-bool fail(int line);
+DLL_PUBLIC bool fail(int line);
 
-bool fail(int line, char *file);
+DLL_PUBLIC bool fail(int line, char *file);
 
-bool pass_msg(const std::string &);
+DLL_PUBLIC bool pass_msg(const std::string &);
 
-bool fail_msg(const std::string &);
+DLL_PUBLIC bool fail_msg(const std::string &);
 
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
 
-extern bool passed;
+extern DLL_PUBLIC bool passed;
 
 } // end namespace rtt_rng_test
 
@@ -64,8 +67,8 @@ extern bool passed;
 #define PASSMSG(a) rtt_rng_test::pass_msg(a);
 #define FAILMSG(a) rtt_rng_test::fail_msg(a);
 
-#endif                          // __rng_test_hh__
+#endif // __rng_test_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of rng/test/rng_test.hh
+// end of rng/test/rng_test.hh
 //---------------------------------------------------------------------------//

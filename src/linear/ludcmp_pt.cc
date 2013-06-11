@@ -4,6 +4,8 @@
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  LU decomposition
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,17 +17,17 @@
 namespace rtt_linear
 {
  
-template
+template DLL_PUBLIC
 void ludcmp(vector<double> &a,
 	    vector<unsigned> &indx,
 	    double &d);
 
-template
+template DLL_PUBLIC
 void lubksb(vector<double> const &a,
 	    vector<unsigned> const &indx,
 	    vector<double> &b);
 
-template
+template DLL_PUBLIC
 void lubksb(vector<double> const &a,
 	    vector<unsigned> const &indx,
 	    rtt_dsxx::Slice<vector<double>::iterator> &b);
@@ -34,5 +36,5 @@ void lubksb(vector<double> const &a,
 
 
 //---------------------------------------------------------------------------//
-//                 end of ludcmp_pt.cc
+// end of ludcmp_pt.cc
 //---------------------------------------------------------------------------//

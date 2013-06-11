@@ -4,8 +4,8 @@
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -19,6 +19,11 @@
 #include <string>
 #include <stdexcept>
 #include <ostream>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
+#endif
 
 namespace rtt_mesh_element
 {
@@ -93,8 +98,7 @@ namespace rtt_mesh_element
 // 
 //===========================================================================//
 
-
-class Element_Definition 
+class DLL_PUBLIC Element_Definition 
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -498,8 +502,12 @@ class Element_Definition
 
 } // end namespace rtt_mesh_element
 
-#endif                          // __mesh_element_Element_Definition_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __mesh_element_Element_Definition_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of mesh_element/Element_Definition.hh
+// end of mesh_element/Element_Definition.hh
 //---------------------------------------------------------------------------//

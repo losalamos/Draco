@@ -10,7 +10,7 @@
 #ifndef __dsxx_config_h__
 #define __dsxx_config_h__
 
-#include <climits>        // HOST_NAME_MAX, hostname
+#include <limits.h>        // HOST_NAME_MAX, hostname
 //#ifdef WIN32
     //#include <windows.h>  // MAX_COMPUTERNAME_LENGTH -> HOST_NAME_MAX
 //#endif

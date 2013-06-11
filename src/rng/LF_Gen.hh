@@ -3,7 +3,7 @@
  * \file    rng/LF_Gen.hh
  * \author  Paul Henning
  * \brief   Declaration of class LF_Gen
- * \note    Copyright (C) 2006-2011 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *          All rights reserved.
  * \version $Id$
  */
@@ -13,10 +13,19 @@
 #define LF_Gen_hh
 
 #include "LFG.h"
-//#include "rng/config.h"
-//#include <ds++/Assert.hh>
-#include <ds++/Data_Table.hh>
+#include "ds++/Data_Table.hh"
+#include "ds++/config.h"
 #include <algorithm>
+
+// A possible way to eliminate the warnings suppressed with this pragma is here: 
+// http://www.windows-api.com/microsoft/VC-Language/30952961/a-solution-to-warning-c4251--class-needs-to-have-dllinterface.aspx
+#if defined(MSVC)
+#pragma warning (push)
+// LF_Gen.hh(58): warning C4251: 'rtt_rng::LF_Gen_Ref::data' : class '
+// rtt_dsxx::Data_Table<T>' needs to have dll-interface to be used by 
+// clients of class 'rtt_rng::LF_Gen_Ref'
+#pragma warning (disable:4251)
+#endif
 
 namespace rtt_rng
 {
@@ -25,7 +34,7 @@ namespace rtt_rng
 class LF_Gen;
 
 /*! This is a reference to an LF_Gen */
-class LF_Gen_Ref
+class DLL_PUBLIC LF_Gen_Ref
 {
   public:
     LF_Gen_Ref(unsigned int* const db, unsigned int* const de)
@@ -43,15 +52,12 @@ class LF_Gen_Ref
     //! Return a unique number for this stream and state
     unsigned int get_unique_num() const { return lfg_unique_num(data.access()); }
 
-
     inline bool is_alias_for(LF_Gen const &rng);
 
   private:
+
     mutable rtt_dsxx::Data_Table<unsigned int> data;
 };
-
-
-
 
 //===========================================================================//
 /*!
@@ -60,7 +66,7 @@ class LF_Gen_Ref
  *        number stream
  */
 //===========================================================================//
-class LF_Gen
+class DLL_PUBLIC LF_Gen
 {
   private:
 
@@ -143,7 +149,6 @@ class LF_Gen
 
 };
 
-
 //---------------------------------------------------------------------------//
 // Implementation
 //---------------------------------------------------------------------------//
@@ -153,7 +158,7 @@ class LF_Gen
 
 inline void LF_Gen_Ref::spawn(LF_Gen& new_gen) const
 { 
-    lfg_spawn_rng(data.access(),  new_gen.data, new_gen.data+LFG_DATA_SIZE); 
+    lfg_spawn_rng(data.access(), new_gen.data, new_gen.data+LFG_DATA_SIZE); 
 }
 
 inline bool LF_Gen_Ref::is_alias_for(LF_Gen const &rng)
@@ -161,7 +166,15 @@ inline bool LF_Gen_Ref::is_alias_for(LF_Gen const &rng)
     return rng.begin() == data.access();
 }
 
-
 } // end namespace rtt_rng
 
+#if defined(MSVC)
+#   pragma warning (pop)
 #endif
+
+
+#endif
+
+//---------------------------------------------------------------------------//
+// end of LF_Gen.hh
+//---------------------------------------------------------------------------//

@@ -3,7 +3,8 @@
  * \file   rng/Sobol_Sequence.hh
  * \author Kent Budge
  * \brief  Definition of class Sobol_Sequence
- * \note   © Copyright 2006-2007 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,12 @@
 
 #include <vector>
 #include "gsl/gsl_qrng.h"
+#include "ds++/config.h"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  warning C4251: 'rtt_rng::Sobol_Sequence::values_' : class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of class 'rtt_rng::Sobol_Sequence'
+#endif
 
 namespace rtt_rng
 {
@@ -34,7 +41,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class Sobol_Sequence 
+class DLL_PUBLIC Sobol_Sequence 
 {
   public:
 
@@ -79,8 +86,12 @@ class Sobol_Sequence
 
 } // end namespace rtt_rng
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // rng_Sobol_Sequence_hh
 
 //---------------------------------------------------------------------------//
-//              end of rng/Sobol_Sequence.hh
+// end of rng/Sobol_Sequence.hh
 //---------------------------------------------------------------------------//

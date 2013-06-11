@@ -314,6 +314,53 @@ macro( register_parallel_test targetname numPE command cmd_args )
 endmacro()
 
 #----------------------------------------------------------------------#
+# Special post-build options for Win32 platforms
+# ------------------------------------------------------------
+# copy_win32_dll_to_test_dir()
+#
+#----------------------------------------------------------------------#
+macro( copy_win32_dll_to_test_dir )
+   if( WIN32 )
+      # For Win32 with shared libraries, the package dll must be
+      # located in the test directory.
+
+      # Discover all library dependencies for this unit test.
+      get_target_property( link_libs Ut_${compname}_${testname}_exe LINK_LIBRARIES )
+      set( old_link_libs "" )
+      
+      # Recurse through the library dependencies to build a list of all .dll dependencies.
+      while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
+         set( old_link_libs ${link_libs} )
+         foreach( lib ${link_libs} )
+            get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
+            list( APPEND link_libs ${link_libs2} )
+         endforeach()
+         list( REMOVE_DUPLICATES link_libs )
+         foreach( lib ${link_libs} )
+            if( "${lib}" MATCHES ".[lL]ib$" OR 
+                "${lib}" MATCHES "NOTFOUND" )
+               list( REMOVE_ITEM link_libs ${lib} )
+            endif()
+         endforeach()
+      endwhile()    
+      #message( "Ut_${compname}_${testname}_exe --> ${link_libs}")
+      
+      # Add a post-build command to copy each dll into the test directory.
+      foreach( lib ${link_libs} )
+         # message("   Ut_${compname}_${testname}_exe --> ${lib}")
+         unset( ${comp_target}_loc )
+         get_target_property( ${comp_target}_loc ${lib} LOCATION )
+         add_custom_command( TARGET Ut_${compname}_${testname}_exe 
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+            )
+         # message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+      endforeach()
+   endif()
+endmacro()
+
+#----------------------------------------------------------------------#
 # add_scalar_tests
 #
 # Given a list of sources, create unit test executables, one exe for
@@ -459,26 +506,10 @@ macro( add_scalar_tests test_sources )
          
       # Special post-build options for Win32 platforms
       # ------------------------------------------------------------
-     
-      if( WIN32 )
-         # For Win32 with shared libraries, the package dll must be
-         # located in the test directory.
-         unset( copy_lib_command )
-         foreach( lib ${test_lib_target_name} ${addscalartest_DEPS} )
-            unset( ${comp_target}_loc )
-            get_target_property( ${comp_target}_loc ${lib} LOCATION )
-            add_custom_command( TARGET Ut_${compname}_${testname}_exe
-               POST_BUILD 
-               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                       ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
-                       )
-         endforeach()
-                       
-      endif()
+     copy_win32_dll_to_test_dir()
+    
    endforeach()
-   
-
-      
+         
    # Register the unit test
    # ------------------------------------------------------------
    foreach( file ${addscalartest_SOURCES} )
@@ -598,13 +629,11 @@ macro( add_parallel_tests )
          ${complib}
          ${addparalleltest_DEPS}
          )
-      # if( WIN32 )
-      #    add_custom_command( TARGET Ut_c4_${testname}_exe 
-      #       POST_BUILD
-      #       COMMAND ${CMAKE_COMMAND} -E copy_if_different  
-      #               ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-      #       )
-      # endif()
+
+      # Special post-build options for Win32 platforms
+      # ------------------------------------------------------------
+      copy_win32_dll_to_test_dir()
+         
    endforeach()
 
    # 3. Register the unit test

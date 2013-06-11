@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Sep 13 11:46:05 2006
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -186,25 +187,11 @@ void tstgaussj(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-        tstgaussj(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstgaussj, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstgaussj, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstgaussj(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstgaussj.cc
+// end of tstgaussj.cc
 //---------------------------------------------------------------------------//

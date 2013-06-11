@@ -4,7 +4,8 @@
  *  \brief  Aggregates a collection of FundUnits to create a complete 
  *          UnitSystemType.
  *  \date   Fri Oct 24 15:04:41 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,7 @@
 #define __units_UnitSystemType_hh__
 
 #include "FundUnit.hh"
- 
+
 namespace rtt_units
 {
 
@@ -46,7 +47,7 @@ namespace rtt_units
  */
 //============================================================================//
 
-class UnitSystemType
+class DLL_PUBLIC UnitSystemType
 {
   public:
 
@@ -132,5 +133,5 @@ class UnitSystemType
 #endif  // __units_UnitSystemType_hh__
 
 //---------------------------------------------------------------------------//
-//                     end of UnitSystemType.hh
+// end of UnitSystemType.hh
 //---------------------------------------------------------------------------//

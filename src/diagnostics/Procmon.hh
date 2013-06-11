@@ -31,6 +31,7 @@
 #define diagnostics_Procmon_hh
 
 #include "diagnostics/config.h"
+#include "ds++/config.h"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -40,7 +41,7 @@ namespace rtt_diagnostics
 
 //---------------------------------------------------------------------------------------//
 // Tokenize a string
-std::vector<std::string> tokenize(
+DLL_PUBLIC std::vector<std::string> tokenize(
     std::string const & source,
     char        const * delimiter_list = " ",
     bool                keepEmpty      = false);
@@ -127,8 +128,8 @@ std::vector<std::string> tokenize(
  * \example diagnostics/test/tstProcmon.cc 
  */
 //===========================================================================//
-void procmon_resource_print(std::string const & identifier,
-                            std::ostream & msg = std::cout );
+DLL_PUBLIC void procmon_resource_print(std::string const & identifier,
+                                       std::ostream & msg = std::cout );
 
 } // end namespace rtt_diagnostics
 

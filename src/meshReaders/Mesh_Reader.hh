@@ -4,14 +4,16 @@
  * \author John McGhee
  * \date   Fri Feb 25 08:14:54 2000
  * \brief  Header file for the RTT Mesh_Reader base class.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-
+ 
 #ifndef __meshReaders_Mesh_Reader_hh__
 #define __meshReaders_Mesh_Reader_hh__
-
+ 
 #include <vector>
 #include <set>
 #include <string>
@@ -25,15 +27,6 @@ namespace rtt_meshReaders
 //===========================================================================//
 /*!
  * \class Mesh_Reader
- *
- */
-// revision history:
-// -----------------
-// 0) original
-// 
-//===========================================================================//
-
-/*!
  * \brief Base class for the RTT mesh readers. 
  *
  * This class provides the template from which all other
@@ -42,13 +35,16 @@ namespace rtt_meshReaders
  * supports structured and unstructured meshes. Both
  * so called "AMR" or "hanging-node" meshes and C0 connectivity
  * meshes can be described.
- *
  */
-class Mesh_Reader 
+// revision history:
+// -----------------
+// 0) original
+// 
+//===========================================================================//
+
+class DLL_PUBLIC Mesh_Reader 
 {
-
     // NESTED CLASSES AND TYPEDEFS
-
 
     // DATA
     
@@ -61,7 +57,7 @@ class Mesh_Reader
 
     virtual ~Mesh_Reader() 
     {
-	//Empty
+        //Empty
     }
 
     // MANIPULATORS
@@ -148,20 +144,15 @@ class Mesh_Reader
      */
     virtual std::map<std::string, std::set<int> > get_element_sets() const = 0;
 
-    /*!
-     * \brief Returns the title of the mesh.
-     *
-     */
+    //! Returns the title of the mesh.
     virtual std::string get_title() const = 0;
 
     virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > 
-    get_element_defs() const
-    {return std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> >(); };
+        get_element_defs() const {
+        return std::vector<rtt_dsxx::SP<
+            rtt_mesh_element::Element_Definition> >(); };
 
-    /*!
-     * \brief Provides a check on the integrity of the mesh data.
-     *
-     */
+    //! Provides a check on the integrity of the mesh data.
     virtual bool invariant() const = 0;
 
     virtual size_t get_dims_ndim() const = 0;
@@ -173,8 +164,8 @@ class Mesh_Reader
 
 } // end namespace rtt_meshReaders
 
-#endif                          // __meshReaders_Mesh_Reader_hh__
+#endif // __meshReaders_Mesh_Reader_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of meshReaders/Mesh_Reader.hh
+// end of meshReaders/Mesh_Reader.hh
 //---------------------------------------------------------------------------//

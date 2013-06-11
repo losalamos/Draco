@@ -14,9 +14,71 @@ project( lapack_wrap CXX )
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-if( NOT lapack_FOUND )
-   message( STATUS
+if( NOT lapack_FOUND OR APPLE )
+   if( NOT lapack_FOUND )
+      message( STATUS
       "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
+   else()
+      message( STATUS
+      "NOTE: Skipping lapack_wrap component because SYSTEM is APPLE" )
+   endif()
+else()
+
+if( MSVC )
+
+   # message("CMakeAddFortranSubdirectory")
+   # include(CMakeAddFortranSubdirectory)
+   # cmake_add_fortran_subdirectory( f90proj 
+       # PROJECT f90proj
+       # ARCHIVE_DIR ${CURRENT_BINARY_DIR}/f90proj 
+       # RUNTIME_DIR ${CURRENT_BINARY_DIR}/f90proj 
+       # NO_EXTERNAL_INSTALL
+       # )
+       
+   # cmake_add_fortran_subdirectory( fortran
+      # PROJECT DGESV
+      # ARCHIVE_DIR ${CMake_ARCHIVE_OUTPUT_DIRECTORY}
+      # RUNTIME_DIR ${CMake_RUNTIME_OUTPUT_DIRECTORY}
+      # LIBRARIES refblas dgesv # target libraries created
+      # LINK_LIBRARIES  # link interface libraries
+      # LINK_LIBS dgesv refblas  # dgesv needs refblas to link
+      # CMake_COMMAND_LINE
+      # -DCMake_ARCHIVE_OUTPUT_DIRECTORY=${CMake_ARCHIVE_OUTPUT_DIRECTORY}
+      # -DCMake_RUNTIME_OUTPUT_DIRECTORY=${CMake_RUNTIME_OUTPUT_DIRECTORY}
+      # NO_EXTERNAL_INSTALL
+   # )    
+    
+    # The autofortran library linking does not work unless fortran is enabled.
+    # include(CheckLanguage)
+    # check_language(Fortran)
+    # if( CMake_Fortran_Compiler )
+       # enable_language(Fortran)
+    # else()
+       # message(STATUS "No native Fortran support.")
+    # endif()
+    
+    set( file_content "
+#ifndef FC_HEADER_INCLUDED
+#define FC_HEADER_INCLUDED
+
+/* Mangling for Fortran global symbols without underscores. */
+#define FC_GLOBAL(name,NAME) name##_
+
+/* Mangling for Fortran global symbols with underscores. */
+#define FC_GLOBAL_(name,NAME) name##_
+
+/* Mangling for Fortran module symbols without underscores. */
+#define FC_MODULE(mod_name,name, mod_NAME,NAME) mod_name##_mp_##name##_
+
+/* Mangling for Fortran module symbols with underscores. */
+#define FC_MODULE_(mod_name,name, mod_NAME,NAME) mod_name##_mp_##name##_
+
+#endif
+")
+    if( NOT EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
+      file( WRITE ${PROJECT_BINARY_DIR}/lapack_wrap/config.h ${file_content} )
+    endif()
+    
 else()
 
 # cmake --help-module FortranCInterface
@@ -31,13 +93,21 @@ include(FortranCInterface)
 #                          [MACRO_NAMESPACE <macro-ns>]
 #                          [SYMBOL_NAMESPACE <ns>]
 #                          [SYMBOLS [<module>:]<function> ...])
-FortranCInterface_HEADER( lapack_wrap/config.h MACRO_NAMESPACE "FC_")
+FortranCInterface_HEADER( lapack_wrap/config.h 
+    MACRO_NAMESPACE "FC_"
+    SYMBOLS scopy dcopy saxpy daxpy sscal dscal sdot ddot snrm2 dnrm2
+    SYMBOL_NAMESPACE "FC_"
+    )
 # This creates a "lapack_wrap.h" header that defines mangling macros
 # FC_GLOBAL(), FC_GLOBAL_() FC_MODULE(), and FC_MODULE().
+# define saxpy FC_GLOBAL(saxpy, SAXPY)
+
+endif()
 
 # Omit this package is the mangling was not found by
 # FortranCInterface.cmake 
-if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
+if( EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
+# if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -64,13 +134,6 @@ include_directories(
 ) 
 
 # ---------------------------------------------------------------------------- #
-# Build package library
-# ---------------------------------------------------------------------------- #
-
-# No sources!
-# add_component_library( Lib_lapack_wrap ${PROJECT_NAME} "${sources}"  )
-
-# ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
@@ -83,7 +146,6 @@ install( FILES ${headers} DESTINATION include/lapack_wrap )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
-
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
@@ -101,4 +163,4 @@ endif()
 # lapack_FOUND?
 else()
    message("   lapack_wrap - skipped because lapack was not found.")
-endif( NOT lapack_FOUND )
+endif() # NOT lapack_FOUND

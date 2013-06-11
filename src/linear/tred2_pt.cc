@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Thu Sep  2 14:49:55 2004
  * \brief  Specializations of tred2
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,7 +24,8 @@ using std::vector;
 // T1=T2=T3=vector<double>
 //---------------------------------------------------------------------------//
 
-template void tred2(vector<double> &a,
+template DLL_PUBLIC
+void tred2(vector<double> &a,
 		    unsigned n,
 		    vector<double> &d,
 		    vector<double> &e);
@@ -31,5 +33,5 @@ template void tred2(vector<double> &a,
 } // end namespace rtt_linear
 
 //---------------------------------------------------------------------------//
-//                 end of tred2_pt.cc
+// end of tred2_pt.cc
 //---------------------------------------------------------------------------//

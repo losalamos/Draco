@@ -4,18 +4,19 @@
  * \author Kent Budge
  * \date   Wed Aug 18 10:28:16 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <typeinfo>
-
+#include "../Function_Traits.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../Function_Traits.hh"
+
+#include <iostream>
+#include <typeinfo>
 
 using namespace std;
 using namespace rtt_ode;
@@ -33,51 +34,29 @@ class Test_Functor
 
 void tstFunction_Traits( UnitTest & ut )
 {
-    if (typeid(Function_Traits<double (*)(double)>::return_type) != 
-	typeid(double))
-    {
-	ut.failure("return_type NOT correct");
-    }
+    if( typeid(Function_Traits<double (*)(double)>::return_type) != 
+        typeid(double) )
+        ut.failure("return_type NOT correct");
     else
-    {
-	ut.passes("return_type correct");
-    }
+        ut.passes("return_type correct");
 
-    if (typeid(Function_Traits<Test_Functor>::return_type) != 
-	typeid(Test_Functor::return_type))
-    {
-	ut.failure("return_type NOT correct");
-    }
+    if( typeid(Function_Traits<Test_Functor>::return_type) != 
+        typeid(Test_Functor::return_type) )
+        ut.failure("return_type NOT correct");
     else
-    {
-	ut.passes("return_type correct");
-    }
+        ut.passes("return_type correct");
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
-{
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstFunction_Traits(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown. " << endl;
-        return 1;
-    }
-    return 0;
+{        
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstFunction_Traits(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstFunction_Traits.cc
+// end of tstFunction_Traits.cc
 //---------------------------------------------------------------------------//

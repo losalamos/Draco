@@ -3,7 +3,8 @@
  *  \author Kelly Thompson
  *  \date   Thu Oct 24 15:10:32 2003
  *  \brief
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -86,5 +87,5 @@ bool operator!=( UnitSystem const & op1, UnitSystem const & op2 )
 } // end namespace rtt_units
 
 //---------------------------------------------------------------------------//
-//                              end of UnitSystem.cc
+// end of UnitSystem.cc
 //---------------------------------------------------------------------------//

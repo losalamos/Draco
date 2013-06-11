@@ -1,8 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   linear/test/tstbtridag.cc
- * \author Kent Budge * \brief  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \author Kent Budge 
+ * \brief  
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -45,22 +47,22 @@ void tstbtridag(UnitTest &ut)
             2U,
             1U,
             u);
-     
+
     if (soft_equiv(1.0, u[0]*2 + u[1]*3))
     {
-	ut.passes("0 is correct");
+        ut.passes("0 is correct");
     }
     else
     {
-	ut.failure("0 is NOT correct");
+        ut.failure("0 is NOT correct");
     }
     if (soft_equiv(2.0, u[0]*1 + u[1]*5))
     {
-	ut.passes("0 is correct");
+        ut.passes("0 is correct");
     }
     else
     {
-	ut.failure("0 is NOT correct");
+        ut.failure("0 is NOT correct");
     }
 }
 
@@ -68,25 +70,11 @@ void tstbtridag(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstbtridag(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstsvbksb, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstsvbksb, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstbtridag(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstsvbksb.cc
+// end of tstsvbksb.cc
 //---------------------------------------------------------------------------//

@@ -4,13 +4,13 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:30:05 2004
  * \brief  Specializations of quad
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
 #include "rkqs.hh"
 #include "quad.i.hh"
 
@@ -35,7 +35,8 @@ typedef double (*fpdd)(double);
 // Function = fpdd, Rule = rule
 //---------------------------------------------------------------------------//
 
-template double quad(fpdd,
+template DLL_PUBLIC 
+double quad( fpdd,
 		     double x1, 
 		     double x2,
 		     double &eps,

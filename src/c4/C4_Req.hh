@@ -41,7 +41,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class C4_ReqRefRep
+class DLL_PUBLIC C4_ReqRefRep
 {
     friend class C4_Req;
     

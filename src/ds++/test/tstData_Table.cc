@@ -3,7 +3,7 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (C) 1997-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1997-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -239,7 +239,6 @@ int
 main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-
     if( ut.dbcOn() && ! ut.dbcNothrow() )
     {
         try
@@ -265,7 +264,8 @@ main(int argc, char *argv[])
     }
     else
     {
-        PASSMSG("Unit tests only works if DBC is on and the DBC nothrow option is off.");
+        PASSMSG( std::string("Unit tests only works if DBC is on and the ")
+            + std::string("DBC nothrow option is off.") );
     }
     return ut.numFails;
 }   

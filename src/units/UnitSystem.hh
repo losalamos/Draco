@@ -4,7 +4,8 @@
  *  \brief  Provide a definition of a unit system (7 dimensions: length,
  *          mass, time, temperature, current, angle, quantity).
  *  \date   Fri Oct 24 15:07:43 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -104,7 +105,7 @@ namespace rtt_units
 // 
 //===========================================================================//
 
-class UnitSystem
+class DLL_PUBLIC UnitSystem
 {
   public:
 
@@ -115,11 +116,11 @@ class UnitSystem
 // 				 UnitSystem const & op2 );
 
     //! Define the equality operator for Units==Units.
-    friend bool operator==( UnitSystem const & op1, 
+    friend DLL_PUBLIC bool operator==( UnitSystem const & op1, 
 			    UnitSystem const & op2 );
 
     //! Define the equality operator for Units==Units.
-    friend bool operator!=( UnitSystem const & op1, 
+    friend DLL_PUBLIC bool operator!=( UnitSystem const & op1, 
 			    UnitSystem const & op2 );
     // CREATORS
     
@@ -208,5 +209,5 @@ class UnitSystem
 #endif  // rtt__units_UnitSystem_hh
 
 //---------------------------------------------------------------------------//
-//                         end of UnitSystem.hh
+// end of UnitSystem.hh
 //---------------------------------------------------------------------------//

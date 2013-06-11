@@ -4,15 +4,16 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
- * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "Traits_Test.hh"
-#include "ds++/Release.hh"
 #include "../Viz_Traits.hh"
+#include "ds++/Release.hh"
 
 #include <iostream>
 #include <string>
@@ -29,7 +30,7 @@ bool passed = true;
 //---------------------------------------------------------------------------//
 // simple test field class for checking viz traits
 
-template<class T>
+template<typename T>
 class Test_Field
 {
   public:
@@ -49,55 +50,59 @@ class Test_Field
 //---------------------------------------------------------------------------//
 // test vector traits specialization
 
-template<class VVF>
+template<typename VVF>
 void test_vector()
 {
     VVF field(3);
-    for (size_t i = 0; i < field.size(); i++)
+
+    for( size_t i = 0; i < field.size(); i++ )
     {
-	field[i].resize(i+2);
-	for (size_t j = 0; j < field[i].size(); j++)
-	    field[i][j] = 2 * i + 4 * j;
+        field[i].resize(i+2);
+        for( size_t j = 0; j < field[i].size(); j++ )
+            field[i][j] = static_cast<
+                          typename Viz_Traits<VVF>::elementType>(
+                              2 * i + 4 * j);
     }
 
     Viz_Traits<VVF> vdf(field);
 
-    if (vdf.nrows() != field.size())         ITFAILS; 
-    for (size_t i = 0; i < vdf.nrows(); i++)
+    if( vdf.nrows() != field.size() )         ITFAILS; 
+    for( size_t i = 0; i < vdf.nrows(); i++ )
     {
-	if (vdf.ncols(i) != field[i].size()) ITFAILS;
-	for (size_t j = 0; j < vdf.ncols(i); j++)
-	{
-	    if (static_cast<int>(vdf(i, j)) != field[i][j])       ITFAILS;
-	    if (vdf(i, j) != 2*i + 4*j)                           ITFAILS;
-	}
-    }				   
+        if( vdf.ncols(i) != field[i].size() ) ITFAILS;
+        for( size_t j = 0; j < vdf.ncols(i); j++ )
+        {
+            if( static_cast<int>(vdf(i, j)) != field[i][j] )       ITFAILS;
+            if( vdf(i, j) != 2*i + 4*j )                           ITFAILS;
+        }
+    }
+    return;
 }
 
 //---------------------------------------------------------------------------//
 // standard Viz_Traits field test
 
-template<class T>
+template<typename T>
 void test_FT()
 {
     vector<vector<T> > field(3);
     for (size_t i = 0; i < field.size(); i++)
     {
-	field[i].resize(i+2);
-	for (size_t j = 0; j < field[i].size(); j++)
-	    field[i][j] = 2 * i + 4 * j;
+        field[i].resize(i+2);
+        for (size_t j = 0; j < field[i].size(); j++)
+            field[i][j] = 2 * i + 4 * j;
     }
 
     Test_Field<T> test_field(field);
-    
+
     Viz_Traits<Test_Field<T> > vt(test_field);
 
     if (vt.nrows() != 3)                                         ITFAILS;
     for (size_t i = 0; i < vt.nrows(); i++)
     {
-	if (vt.ncols(i) != field[i].size())                          ITFAILS;
-	for (size_t j = 0; j < vt.ncols(i); j++)
-	    if (vt(i, j) != field[i][j])                             ITFAILS;
+        if (vt.ncols(i) != field[i].size())                          ITFAILS;
+        for (size_t j = 0; j < vt.ncols(i); j++)
+            if (vt(i, j) != field[i][j])                             ITFAILS;
     }
 }
 
@@ -123,10 +128,12 @@ int main(int argc, char *argv[])
     cout <<     "\n*************************************";
     if (passed) 
         cout << "\n****Viz_Traits Self Test: PASSED ****";
+    else
+        cout << "\n****Viz_Traits Self Test: FAILED ****";
     cout <<     "\n*************************************\n\n"
          << "Done testing Viz_Traits." << endl;
 }
 
 //---------------------------------------------------------------------------//
-//                              end of tstViz_Traits.cc
+// end of tstViz_Traits.cc
 //---------------------------------------------------------------------------//

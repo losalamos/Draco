@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:01:02 2004
  * \brief  Specializations of rsolv
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -21,12 +22,13 @@ using std::vector;
 // T=vector<double> const &
 //---------------------------------------------------------------------------//
 
-template void rsolv(const vector<double> &R,
+template DLL_PUBLIC
+void rsolv(const vector<double> &R,
  		    const unsigned n,
  		    vector<double> &b);
 
 } // end namespace rtt_linear
 
 //---------------------------------------------------------------------------//
-//                 end of rsolv.cc
+// end of rsolv.cc
 //---------------------------------------------------------------------------//

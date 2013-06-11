@@ -12,8 +12,8 @@
 //---------------------------------------------------------------------------//
 
 #include "../Timing.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include "c4/ParallelUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include <iomanip>
 

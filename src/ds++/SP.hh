@@ -102,7 +102,7 @@ struct SPref
 // 
 //===========================================================================//
 
-template<class T>
+template<typename T>
 class SP 
 {
   private: 
@@ -194,7 +194,7 @@ DLL_PUBLIC void incompatible(std::type_info const &X, std::type_info const &T);
 /*!
  * \brief Do equality check with a free pointer.
  */
-template<class T>
+template<typename T>
 bool operator==(const T *pt, const SP<T> &sp)
 {
     return sp == pt;
@@ -204,7 +204,7 @@ bool operator==(const T *pt, const SP<T> &sp)
 /*!
  * \brief Do inequality check with a free pointer.
  */
-template<class T>
+template<typename T>
 bool operator!=(const T *pt, const SP<T> &sp)
 {
     return sp != pt;
@@ -227,7 +227,7 @@ bool operator!=(const T *pt, const SP<T> &sp)
  *
  * \param p_in pointer to type T
  */
-template<class T>
+template<typename T>
 SP<T>::SP(T *p_in)
     : p(p_in),
       r(new SPref)
@@ -261,7 +261,7 @@ SP<T>::SP(T *p_in)
  *
  * \param px_in pointer to type X that is convertible to T *
  */
-template<class T>
+template<typename T>
 template<class X>
 SP<T>::SP(X *px_in)
     : p(NULL), r(NULL)
@@ -290,7 +290,7 @@ SP<T>::SP(X *px_in)
  *
  * \param sp_in smart pointer of type SP<T>
  */
-template<class T>
+template<typename T>
 SP<T>::SP(const SP<T> &sp_in)
     : p(sp_in.p),
       r(sp_in.r)
@@ -311,7 +311,7 @@ SP<T>::SP(const SP<T> &sp_in)
  *
  * \param spx_in smart pointer of type SP<X>
  */
-template<class T>
+template<typename T>
 template<class X>
 SP<T>::SP(const SP<X> &spx_in)
     :p(NULL), r(NULL)
@@ -350,7 +350,7 @@ SP<T>::SP(const SP<X> &spx_in)
  * 
  * \param p_in pointer to T
  */
-template<class T>
+template<typename T>
 SP<T>& SP<T>::operator=(T *p_in)
 {
     // check if we already own this pointer
@@ -384,7 +384,7 @@ SP<T>& SP<T>::operator=(T *p_in)
  * \param px_in pointer to type X * that is convertible to type T * through a
  * dynamic cast
  */
-template<class T>
+template<typename T>
 template<class X>
 SP<T>& SP<T>::operator=(X *px_in)
 {
@@ -408,7 +408,7 @@ SP<T>& SP<T>::operator=(X *px_in)
  *
  * \param sp_in smart pointer of type SP<T>
  */
-template<class T>
+template<typename T>
 SP<T>& SP<T>::operator=(const SP<T> sp_in)
 {
     Require (sp_in.r);
@@ -439,7 +439,7 @@ SP<T>& SP<T>::operator=(const SP<T> sp_in)
  *
  * \param spx_in smart pointer of type SP<X>
  */
-template<class T>
+template<typename T>
 template<class X>
 SP<T>& SP<T>::operator=(const SP<X> spx_in)
 {
@@ -486,7 +486,7 @@ SP<T>& SP<T>::operator=(const SP<X> spx_in)
  *
  * Note that it is perfectly acceptable to call delete on a NULL pointer.
  */
-template<class T>
+template<typename T>
 void SP<T>::free()
 {
     Require (r);
@@ -504,5 +504,5 @@ void SP<T>::free()
 #endif                          // RTT_ds_SP_HH
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/SP.hh
+// end of ds++/SP.hh
 //---------------------------------------------------------------------------//

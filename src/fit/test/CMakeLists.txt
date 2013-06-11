@@ -34,22 +34,12 @@ include_directories(
 )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-add_component_library(
-   TARGET       Lib_fit_test
-   TARGET_DEPS  Lib_fit
-   LIBRARY_NAME ${PROJECT_NAME} 
-   SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_linear" )
+   DEPS    "Lib_fit;Lib_linear" )
 
 
 

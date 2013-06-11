@@ -4,7 +4,7 @@
  * \author T.M. Kelly, Thomas M. Evans
  * \date   Tue Dec 13 10:44:29 2005
  * \brief  Timing class and macros definition.
- * \note   Copyright (C) 2004-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,9 +15,15 @@
 #define diagnostics_Timing_hh
 
 #include "diagnostics/config.h"
+#include "ds++/config.h"
 #include <string>
 #include <map>
 #include <vector>
+
+#if defined(MSVC)
+#pragma warning (push)
+#pragma warning (disable:4251) // warning C4251: 'rtt_diagnostics::Timing_Diagnostics::timers' : class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by clients of class 'rtt_diagnostics::Timing_Diagnostics'
+#endif
 
 namespace rtt_diagnostics
 {
@@ -51,7 +57,7 @@ namespace rtt_diagnostics
  */
 //===========================================================================//
 
-class Timing_Diagnostics
+class DLL_PUBLIC Timing_Diagnostics
 {
   public:
     // Useful typedef.
@@ -271,6 +277,10 @@ class Timing_Diagnostics
 #define TIMER_REPORT( timer, ostream, comment)
 
 #endif 
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // diagnostics_Timing_hh
 

@@ -3,7 +3,9 @@
  * \file   linear/btridag.hh
  * \author Kent Budge
  * \date   Wed Sep 15 13:03:41 MDT 2010
- * \brief  Implementation of block tridiagonal solver
+ * \brief  Implementation of block tridiagonal solver.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -11,6 +13,8 @@
 
 #ifndef linear_btridag_hh
 #define linear_btridag_hh
+
+#include "ds++/config.h"
 
 namespace rtt_linear
 {
@@ -32,7 +36,7 @@ namespace rtt_linear
  *
  * \throw std::range_error If the system is not diagonal dominant.
  */
-template<class FieldVector>
+template<typename FieldVector>
 void btridag(FieldVector const &a,
 	     FieldVector const &b,
 	     FieldVector const &c,
@@ -46,5 +50,5 @@ void btridag(FieldVector const &a,
 #endif // linear_btridag_i_hh
 
 //---------------------------------------------------------------------------//
-//                 end of btridag.i.hh
+// end of btridag.i.hh
 //---------------------------------------------------------------------------//
