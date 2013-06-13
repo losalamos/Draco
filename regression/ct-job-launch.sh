@@ -6,6 +6,8 @@
 #    $subproj    - 'draco', 'clubimc', etc.
 #    $build_type - 'Debug', 'Release', 'Coverage'
 
+export SHOWQ = /opt/MOAB/default/bin/showq
+
 # sanity check
 if test "${regdir}x" = "x"; then
     echo "FATAL ERROR in ct-job-launch.sh: You did not set 'regdir' in the environment!"
@@ -62,8 +64,8 @@ echo "jobid = ${jobid}"
 
 # Wait for testing to finish
 sleep 1m
-while test "`showq | grep $jobid`" != ""; do
-   showq | grep $jobid
+while test "`${SHOWQ} | grep $jobid`" != ""; do
+   ${SHOWQ} | grep $jobid
    sleep 10m
 done
 
