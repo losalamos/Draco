@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Ipcress file test
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,7 +14,6 @@
 #include "cdi_ipcress_test.hh"
 #include "../IpcressFile.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -61,22 +60,14 @@ void ipcress_file_test( rtt_dsxx::ScalarUnitTest &ut )
 	    
     std::vector<size_t> matIDs = spGF->getMatIDs();
     if ( matIDs[0] == 10001 && matIDs[1] == 10002 )
-    {
         PASSMSG("Found two materials in IPCRESS file with expected IDs.");
-    }
     else
-    {
         FAILMSG("Did not find materials with expected IDs in IPCRESS file.");
-    }
 	    
     if ( spGF->materialFound( 10001 ) )
-    {
         PASSMSG("Looks like material 10001 is in the data file.");
-    }
     else
-    {
         FAILMSG("Can't find material 10001 in the data file.");
-    }
 	    
     if ( spGF->materialFound( 5500 ) ) // should fail
     {
@@ -134,13 +125,9 @@ void ipcress_file_test( rtt_dsxx::ScalarUnitTest &ut )
         std::cout << std::endl;
 
         if( fieldNames[0] == std::string("tgrid") )
-        {
             PASSMSG("Found tgrid in the list of fields for mat 10001.");
-        }
         else
-        {
             FAILMSG("Did not find tgrid in the list of fields for mat 10001.");
-        }
 
         std::vector< double > tgrid = spGF->getData( matid, fieldNames[0] );
         std::cout << "\nMaterial 0 (10001)'s tgrid field has " << tgrid.size()
@@ -162,13 +149,9 @@ void ipcress_file_test( rtt_dsxx::ScalarUnitTest &ut )
         tgrid_expect[9] = 15.0;
         if( rtt_dsxx::soft_equiv( tgrid_expect.begin(), tgrid_expect.end(),
                                   tgrid.begin(), tgrid.end() ) )
-        {
             PASSMSG("tgrid for mat 10001 has the expected values.");
-        }
         else
-        {
             FAILMSG("tgrid for mat 10001 does not have the expected values.");
-        }
         
     }
 
@@ -179,24 +162,10 @@ void ipcress_file_test( rtt_dsxx::ScalarUnitTest &ut )
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {	// >>> UNIT TESTS
-	ipcress_file_test(ut);
-    }
-    catch (rtt_dsxx::assertion &excpt)
-    {
-	cout << "While testing tIpcressFile, " << excpt.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tIpcressFile, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { ipcress_file_test(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tIpcressFile.cc
+// end of tIpcressFile.cc
 //---------------------------------------------------------------------------//

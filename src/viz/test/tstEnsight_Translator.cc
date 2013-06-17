@@ -14,6 +14,7 @@
 #include "../Ensight_Translator.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
+#include "ds++/path.hh"
 
 using namespace std;
 using rtt_viz::Ensight_Translator;
@@ -30,7 +31,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
         cout << "\nGenerating binary files...\n" << endl;
     else
         cout << "\nGenerating ascii files...\n" << endl;
-    
+
     // dimensions
     int ncells   = 27; 
     int nvert    = 64; 
@@ -46,13 +47,13 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     typedef vector<double> vec_d;
     typedef vector<vec_d>  vec2_d;
     typedef vector<vec2_d> vec3_d;
-    
+
     // do an Ensight Dump
     vec2_i ipar(ncells, vec_i(nhexvert));
     vec2_d vrtx_data(nvert, vec_d(ndata, 5.0)); 
     vec2_d cell_data(ncells, vec_d(ndata, 10.));   
     vec2_d pt_coor(nvert, vec_d(ndim));
-  
+
     vec_i iel_type(ncells, rtt_viz::eight_node_hexahedron);
     vec_i rgn_index(ncells, 1);
     vec_s vdata_names(ndata, "Temperatures");
@@ -64,7 +65,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     rgn_name[1] = "RGN_B";
     rgn_data[1] = 2;
     for (int i = 1; i < 5; i++)
-	rgn_index[i] = 2;
+        rgn_index[i] = 2;
     rgn_index[14] = 2;
     rgn_index[15] = 2;
     rgn_index[21] = 2;
@@ -74,32 +75,42 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     string prefix   = "testproblem";
     if ( binary )
         prefix += "_binary";
-    
+
     int icycle      = 1;
     double time     = .01;
     double dt       = .01;
-    string gd_wpath = ".";
+    //string gd_wpath = ".";
+    string const gd_wpath = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath(), rtt_dsxx::FC_NATIVE);
 
     // make data
     for (int i = 0; i < ndata; i++)
     {
-	// cell data
-	for (int cell = 0; cell < ncells; cell++)
-	    cell_data[cell][i] = 1 + cell;
+        // cell data
+        for (int cell = 0; cell < ncells; cell++)
+            cell_data[cell][i] = 1 + cell;
 
-	// vrtx data
-	for (int v = 0; v < nvert; v++)
-	    vrtx_data[v][i] = 1 + v;
+        // vrtx data
+        for (int v = 0; v < nvert; v++)
+            vrtx_data[v][i] = 1 + v;
     }
 
     // read cell data
-    ifstream input("cell_data");
+
+    // Build path for the input file "cell_data"
+    string const cdInputFile = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath() + std::string("cell_data"),
+        rtt_dsxx::FC_NATIVE);
+
+    ifstream input( cdInputFile );
+    if( !input ) ITFAILS;
+
     for (size_t i = 0; i < pt_coor.size(); i++)
-	for (size_t j = 0; j < pt_coor[i].size(); j++)
-	    input >> pt_coor[i][j];
+        for (size_t j = 0; j < pt_coor[i].size(); j++)
+            input >> pt_coor[i][j];
     for (size_t i = 0; i < ipar.size(); i++)
-	for (size_t j = 0; j < ipar[i].size(); j++)
-	    input >> ipar[i][j];
+        for (size_t j = 0; j < ipar[i].size(); j++)
+            input >> ipar[i][j];
 
     const bool static_geom = false;
 
@@ -109,18 +120,18 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     vector<set<int> > tmp_vrtx(nrgn);
     for ( int i = 0; i < ncells; i++ )
     {
-	int ipart = rgn_index[i] - 1;
-	g_cell_indices[ipart].push_back(i);
-	for ( size_t j = 0; j < ipar[i].size(); j++ )
-	    tmp_vrtx[ipart].insert(ipar[i][j] - 1);
+        int ipart = rgn_index[i] - 1;
+        g_cell_indices[ipart].push_back(i);
+        for ( size_t j = 0; j < ipar[i].size(); j++ )
+            tmp_vrtx[ipart].insert(ipar[i][j] - 1);
     }
 
     typedef set<int>::const_iterator set_iter;
     vec2_i g_vrtx_indices(nrgn);
     for ( int i = 0; i < nrgn; i++ )
     {
-	for ( set_iter s = tmp_vrtx[i].begin(); s != tmp_vrtx[i].end(); ++s )
-	    g_vrtx_indices[i].push_back(*s);
+        for ( set_iter s = tmp_vrtx[i].begin(); s != tmp_vrtx[i].end(); ++s )
+            g_vrtx_indices[i].push_back(*s);
     }
 
     // Create the equivalent data arrays for the write_part() versions.
@@ -133,51 +144,51 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 
     for ( int i = 0; i < nrgn; i++ )
     {
-	int p_ncells = g_cell_indices[i].size();
-	int p_nvert  = g_vrtx_indices[i].size();
-	p_ipar[i].resize(p_ncells, vec_i(nhexvert));
-	p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0)); 
-	p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));   
-	p_pt_coor[i].resize(p_nvert, vec_d(ndim));
-  	p_iel_type[i].resize(p_ncells, rtt_viz::eight_node_hexahedron);
+        int p_ncells = g_cell_indices[i].size();
+        int p_nvert  = g_vrtx_indices[i].size();
+        p_ipar[i].resize(p_ncells, vec_i(nhexvert));
+        p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0)); 
+        p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));   
+        p_pt_coor[i].resize(p_nvert, vec_d(ndim));
+        p_iel_type[i].resize(p_ncells, rtt_viz::eight_node_hexahedron);
 
-	for ( int j = 0; j < p_nvert; j++ )
-	{
-	    int g = g_vrtx_indices[i][j];
-	    // cout << g << endl;
-	    p_vrtx_data[i][j] = vrtx_data[g];
-	    p_pt_coor[i][j] = pt_coor[g];
-	}
-	
-	for ( int j = 0; j < p_ncells; j++ )
-	{
-	    int g = g_cell_indices[i][j];
-	    p_cell_data[i][j] = cell_data[g];
-	    p_iel_type[i][j]  = iel_type[g];
+        for ( int j = 0; j < p_nvert; j++ )
+        {
+            int g = g_vrtx_indices[i][j];
+            // cout << g << endl;
+            p_vrtx_data[i][j] = vrtx_data[g];
+            p_pt_coor[i][j] = pt_coor[g];
+        }
 
-	    for ( size_t k = 0; k < ipar[g].size(); k++ )
-	    {
-		int tmp =  ipar[g][k] - 1;
+        for ( int j = 0; j < p_ncells; j++ )
+        {
+            int g = g_cell_indices[i][j];
+            p_cell_data[i][j] = cell_data[g];
+            p_iel_type[i][j]  = iel_type[g];
 
-		vector<int>::iterator f = find(g_vrtx_indices[i].begin(),
-					       g_vrtx_indices[i].end(), tmp);
+            for ( size_t k = 0; k < ipar[g].size(); k++ )
+            {
+                int tmp =  ipar[g][k] - 1;
 
-		Require(f !=  g_vrtx_indices[i].end());
-		p_ipar[i][j][k] = f - g_vrtx_indices[i].begin() + 1;
-	    }
-	}
+                vector<int>::iterator f = find(g_vrtx_indices[i].begin(),
+                                               g_vrtx_indices[i].end(), tmp);
+
+                Require(f !=  g_vrtx_indices[i].end());
+                p_ipar[i][j][k] = f - g_vrtx_indices[i].begin() + 1;
+            }
+        }
     }
 
     // build an Ensight_Translator (make sure it overwrites any existing
     // stuff) 
     Ensight_Translator translator(prefix, gd_wpath, vdata_names,
-				  cdata_names, true, static_geom,
-				  binary); 
+                                  cdata_names, true, static_geom,
+                                  binary); 
 
     translator.ensight_dump(icycle, time, dt,
-			    ipar, iel_type, rgn_index, pt_coor,
-			    vrtx_data, cell_data,
-			    rgn_data, rgn_name);
+                            ipar, iel_type, rgn_index, pt_coor,
+                            vrtx_data, cell_data,
+                            rgn_data, rgn_name);
 
     vec_d dump_times = translator.get_dump_times();
     if (dump_times.size() != 1) ITFAILS;
@@ -186,50 +197,50 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     // build another ensight translator; this should overwrite the existing
     // directories
     Ensight_Translator translator2(prefix, gd_wpath, vdata_names,
-				   cdata_names, true, static_geom,
-				   binary); 
-    
+                                   cdata_names, true, static_geom,
+                                   binary); 
+
     translator2.ensight_dump(icycle, time, dt,
-			     ipar, iel_type, rgn_index, pt_coor,
-			     vrtx_data, cell_data,
-			     rgn_data, rgn_name);
+                             ipar, iel_type, rgn_index, pt_coor,
+                             vrtx_data, cell_data,
+                             rgn_data, rgn_name);
 
     // build another ensight translator from the existing dump times list;
     // thus we will not overwrite the existing directories
 
     Ensight_Translator translator3(prefix, gd_wpath, vdata_names,
- 				   cdata_names, false, static_geom,
-				   binary); 
-    
+                                   cdata_names, false, static_geom,
+                                   binary); 
+
     // now add another dump to the existing data
     translator3.ensight_dump(2, .05, dt,
-			     ipar, iel_type, rgn_index, pt_coor,
-			     vrtx_data, cell_data,
-			     rgn_data, rgn_name);    
+                             ipar, iel_type, rgn_index, pt_coor,
+                             vrtx_data, cell_data,
+                             rgn_data, rgn_name);    
 
     // make yet a fourth translator that will append
     Ensight_Translator translator4(prefix, gd_wpath, vdata_names,
-				   cdata_names, false, static_geom,
-				   binary); 
-    
+                                   cdata_names, false, static_geom,
+                                   binary); 
+
     // add yet another dump to the existing data
     translator4.ensight_dump(3, .10, dt,
-			     ipar, iel_type, rgn_index, pt_coor,
-			     vrtx_data, cell_data,
-			     rgn_data, rgn_name);    
+                             ipar, iel_type, rgn_index, pt_coor,
+                             vrtx_data, cell_data,
+                             rgn_data, rgn_name);    
 
     // build an Ensight_Translator and do the per-part dump.
     string p_prefix = "part_" + prefix;
     Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names,
-				   cdata_names, true, static_geom,
-				   binary); 
+                                   cdata_names, true, static_geom,
+                                   binary); 
 
     translator5.open(icycle, time, dt);
 
     for ( int i = 0; i < nrgn; i++ )
-	translator5.write_part(i+1, rgn_name[i], p_ipar[i], p_iel_type[i],
-			       p_pt_coor[i], p_vrtx_data[i], p_cell_data[i],
-			       g_vrtx_indices[i], g_cell_indices[i]);
+        translator5.write_part(i+1, rgn_name[i], p_ipar[i], p_iel_type[i],
+                               p_pt_coor[i], p_vrtx_data[i], p_cell_data[i],
+                               g_vrtx_indices[i], g_cell_indices[i]);
 
     translator5.close();
     if( ut.numFails == 0 )
@@ -246,6 +257,10 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 
 void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
 {
+    // Build path for the input file "scanner_test.inp"
+    string const baseDir = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath(), rtt_dsxx::FC_NATIVE);
+
     string desc;
     vector<string> prefixes;
     if( binary )
@@ -270,7 +285,7 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
     dirs.push_back( string( "Densities" ));
 
     cout << "\nChecking contents of generated " << desc << " files...\n" << endl;
-    
+
     for( vector<string>::const_iterator itp=prefixes.begin();
          itp != prefixes.end(); ++itp )
     {
@@ -278,18 +293,18 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
              itd != dirs.end(); ++itd )
         {
             // file string
-            string output   = *itp + string("/") + *itd + string("/data")
-                              + postfix;
+            string output   = baseDir + *itp + rtt_dsxx::dirSep + *itd 
+                              + rtt_dsxx::dirSep + string("data") + postfix;
             string ref_out, diff_out;
             if( binary )
             {
-                ref_out  = *itd + string(".bin") + postfix;
-                diff_out = *itd + string(".bin.diff");
+                ref_out  = baseDir + *itd + string(".bin") + postfix;
+                diff_out = baseDir + *itd + string(".bin.diff");
             }
             else
             {
-                ref_out  = *itd + postfix;
-                diff_out = *itd + string(".diff");
+                ref_out  = baseDir + *itd + postfix;
+                diff_out = baseDir + *itd + string(".diff");
             }
 
             // Diff the output and reference
@@ -303,7 +318,7 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
         }
         cout << endl;
     }
-    
+
     return;
 }
 
@@ -313,7 +328,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {   // tests
-        
+
         { // ASCII dumps
             ensight_dump_test(ut, false); 
             checkOutputFiles( ut, false );
@@ -323,7 +338,7 @@ int main(int argc, char *argv[])
             ensight_dump_test(ut, true);
             checkOutputFiles( ut, true );
         }
-            
+
     }
     UT_EPILOG(ut);
 }

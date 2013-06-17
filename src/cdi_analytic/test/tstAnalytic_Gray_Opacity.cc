@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -18,7 +18,6 @@
 #include "cdi/CDI.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 
@@ -422,28 +421,15 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-	// >>> UNIT TESTS
-	constant_test(ut);
-	user_defined_test(ut);
-	CDI_test(ut);
-	packing_test(ut);
-	type_test(ut);
+        // >>> UNIT TESTS
+        constant_test(ut);
+        user_defined_test(ut);
+        CDI_test(ut);
+        packing_test(ut);
+        type_test(ut);
         default_behavior_tests(ut);
     }
-    catch (rtt_dsxx::assertion &err)
-    {
-        std::cout << "ERROR: While testing " << argv[0] << ", "
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing " << argv[0] << ", " 
-                  << "An unknown exception was thrown on processor "
-                  << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

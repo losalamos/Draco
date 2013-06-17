@@ -4,15 +4,16 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit test for the class rtt_parser::Token.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Release.hh"
 #include "../Token.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_parser;
@@ -102,38 +103,11 @@ void token_test( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	token_test( ut );
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { token_test( ut ); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstToken.cc
+// end of tstToken.cc
 //---------------------------------------------------------------------------//

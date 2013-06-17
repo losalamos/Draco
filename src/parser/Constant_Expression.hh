@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Jul 26 07:53:32 2006
  * \brief  Definition of class Constant_Expression
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,7 +19,7 @@
 namespace rtt_parser
 {
 //---------------------------------------------------------------------------//
-void write_c(Unit const &units, ostream &out);
+DLL_PUBLIC void write_c(Unit const &units, ostream &out);
 
 //===========================================================================//
 /*!
@@ -106,5 +107,5 @@ class Constant_Expression : public Expression
 #endif // parser_Constant_Expression_hh
 
 //---------------------------------------------------------------------------//
-//              end of parser/Constant_Expression.hh
+// end of parser/Constant_Expression.hh
 //---------------------------------------------------------------------------//

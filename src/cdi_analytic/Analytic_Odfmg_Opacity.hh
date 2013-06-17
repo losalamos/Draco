@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Odfmg_Opacity class definition.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC..
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,10 +17,14 @@
 #include "Analytic_Models.hh"
 #include "cdi/OdfmgOpacity.hh"
 #include "cdi/OpacityCommon.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include <vector>
 #include <string>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_analytic
 {
@@ -35,7 +40,7 @@ namespace rtt_cdi_analytic
 // 
 //===========================================================================//
 
-class Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
+class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
 {
   public:
     // Useful typedefs.
@@ -233,8 +238,12 @@ Analytic_Odfmg_Opacity::getDataFilename() const
 
 } // end namespace rtt_cdi_analytic
 
-#endif              // __cdi_analytic_Analytic_Odfmg_Opacity_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __cdi_analytic_Analytic_Odfmg_Opacity_hh__
 
 //---------------------------------------------------------------------------//
-//                   end of cdi_analytic/Analytic_Odfmg_Opacity.hh
+// end of cdi_analytic/Analytic_Odfmg_Opacity.hh
 //---------------------------------------------------------------------------//

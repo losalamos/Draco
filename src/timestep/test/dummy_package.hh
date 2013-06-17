@@ -4,7 +4,8 @@
  * \author John McGhee
  * \date   Thu Aug 27 07:48:41 1998
  * \brief  A dummy package to exercize the field time-step advisors.
- * \note   Copyright (C) 1998-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,6 +16,11 @@
 
 #include "ds++/SP.hh"
 #include <vector>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Parallel_File_Token_Stream::filename_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::Parallel_File_Token_Stream'
+#endif
 
 // FORWARD REFERENCES
 
@@ -36,7 +42,7 @@ namespace rtt_timestep_test
  */
 //===========================================================================//
 
-class dummy_package 
+class DLL_PUBLIC dummy_package 
 {
   public:
 
@@ -75,8 +81,12 @@ class dummy_package
 
 } // end namespace rtt_timestep_test
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // __timestep_test_dummy_package_hh__
 
 //---------------------------------------------------------------------------//
-//                        end of dummy_package.hh
+// end of dummy_package.hh
 //---------------------------------------------------------------------------//

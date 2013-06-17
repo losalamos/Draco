@@ -25,20 +25,24 @@ namespace rtt_cdi_ipcress_test
 // DATA EQUIVALENCE FUNCTIONS USED FOR TESTING
 //---------------------------------------------------------------------------//
 
+DLL_PUBLIC
 bool match( double const computedValue, double const referenceValue );
 
 //---------------------------------------------------------------------------//
 
+DLL_PUBLIC
 bool match( std::vector< double > const & computedValue, 
 	    std::vector< double > const & referenceValue );
 
 //---------------------------------------------------------------------------//
 
+DLL_PUBLIC
 bool match( std::vector< std::vector<double> > const & computedValue, 
 	    std::vector< std::vector<double> > const & referenceValue );
 
 //---------------------------------------------------------------------------//
 
+DLL_PUBLIC
 bool match(
     std::vector< std::vector< std::vector< double > > > const & computedValue, 
     std::vector< std::vector< std::vector< double > > > const & referenceValue );

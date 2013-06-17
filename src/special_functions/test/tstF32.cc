@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,9 +18,8 @@
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "units/PhysicalConstants.hh"
-
 #include "ds++/Release.hh"
+#include "units/PhysicalConstants.hh"
 #include "../F32.hh"
 
 using namespace std;
@@ -67,26 +67,11 @@ void tstF32( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstF32(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown." << endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstF32(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstF32.cc
+// end of tstF32.cc
 //---------------------------------------------------------------------------//

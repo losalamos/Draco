@@ -22,6 +22,11 @@
 #include <vector>
 #include <string>
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
+
 namespace rtt_cdi_analytic
 {
  
@@ -67,7 +72,7 @@ namespace rtt_cdi_analytic
 // 
 //===========================================================================//
 
-class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
+class DLL_PUBLIC Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 {
   public:
     // Useful typedefs.
@@ -197,6 +202,10 @@ Analytic_Gray_Opacity::getDataFilename() const
 }
 
 } // end namespace rtt_cdi_analytic
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_analytic_Analytic_Gray_Opacity_hh__
 

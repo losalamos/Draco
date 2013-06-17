@@ -595,61 +595,14 @@ macro( setupMPILibrariesWindows )
 endmacro( setupMPILibrariesWindows )
 
 macro( SetupVendorLibrariesWindows )
-   # LAPACK ------------------------------------------------------------------
-   # if( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
-   
-      # message( STATUS "Looking for LAPACK...")
-      
-     ## Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
-     # if( "${LAPACK_LIB_DIR}x" STREQUAL "x" AND NOT "$ENV{LAPACK_LIB_DIR}x" STREQUAL "x" )
-        # set( LAPACK_LIB_DIR "$ENV{LAPACK_LIB_DIR}" )
-     # endif()
-     
-     # if( EXISTS ${LAPACK_LIB_DIR}/cmake/lapack-3.4.2 )
-     # message("
-     # ${LAPACK_LIB_DIR}/cmake/lapack-3.4.2
-     # ")
-      # list( APPEND CMAKE_PREFIX_PATH
-         # ${LAPACK_LIB_DIR}/cmake/lapack-3.4.2 )
-         # message("
-         # find_package( lapack )
-         # CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}
-         # ")
-      # find_package( lapack )
-     # endif()
-   
-      
-      # Set the BLAS/LAPACK VENDOR.  
-      # set( BLA_VENDOR "Generic" )
-      
-      # This module sets the following variables:
-      # LAPACK_FOUND - set to true if a library implementing the LAPACK
-      #              interface is found
-      # LAPACK_LINKER_FLAGS - uncached list of required linker flags
-      #              (excluding -l and -L).
-      # LAPACK_LIBRARIES - uncached list of libraries (using full path
-      #              name) to link against to use LAPACK
 
-      # Use BLA_VENDOR and BLA_STATIC values from the BLAS section above.
-
-      # find_package( LAPACK ) # QUIET
-
-      # if( LAPACK_FOUND )
-         # set( LAPACK_LIBRARIES ${LAPACK_LIBRARIES} CACHE STRING "lapack libs" )
-         # mark_as_advanced( LAPACK_LIBRARIES )
-         # message( STATUS "Found LAPACK: ${LAPACK_LIBRARIES}" )
-      # endif()
-      
-   # endif( NOT EXISTS ${LAPACK_lapack_LIBRARY} )
-   
    # GSL ---------------------------------------------------------------------
    message( STATUS "Looking for GSL...")
    set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
    set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
    
    # Use static BLAS libraries
-   set(GSL_STATIC ON)
-   
+   set(GSL_STATIC ON)   
    find_package( GSL REQUIRED )
    
    # if( GSL_FOUND )
@@ -659,10 +612,8 @@ macro( SetupVendorLibrariesWindows )
    # endif()
 
    # Random123 ---------------------------------------------------------------
-   #message( STATUS "Looking for Random123...")
-   #set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.06/include" )
-
-   #find_package( Random123 REQUIRED )
+   message( STATUS "Looking for Random123...")
+   find_package( Random123 REQUIRED )
 
 endmacro()
 
@@ -719,28 +670,6 @@ individual vendor directories should be defined." )
     if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/lapack-3.4.2/lib )
         set( LAPACK_LIB_DIR "${VENDOR_DIR}/lapack-3.4.2/lib" )
         set( LAPACK_INC_DIR "${VENDOR_DIR}/lapack-3.4.2/include" )
-        if( WIN32 )
-           # cleanup LIB
-            # unset(newlibpath)
-            # foreach( path $ENV{LIB} )
-                # if( newlibpath )
-                    # set( newlibpath "${newlibpath};${path}" )
-                # else()
-                    # set( newlibpath "${path}" )
-                # endif()
-            # endforeach()
-            # set(haslapackpath FALSE)
-            # foreach( path ${newlibpath} )
-                # if( "${LAPACK_LIB_DIR}" STREQUAL "${path}" )
-                    # set( haslapackpath TRUE ) 
-                # endif()
-            # endforeach()
-            # if( NOT ${haslapackpath} )
-                # set( newlibpath "${newlibpath};${LAPACK_LIB_DIR}" )
-                # set( ENV{LIB} "${newlibpath}" )
-            # endif()
-            # message("LIB = $ENV{LIB}")
-         endif()
     endif()
     # if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
         # set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
@@ -759,7 +688,10 @@ individual vendor directories should be defined." )
     if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
         set( RANDOM123_INC_DIR $ENV{RANDOM123_INC_DIR} )
     endif()
-
+    if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY ${VENDOR_DIR}/random123-1.06/include )
+        set( RANDOM123_INC_DIR "${VENDOR_DIR}/random123-1.06/include" )
+    endif()
+    
     set_package_properties( MPI PROPERTIES
        URL "http://www.open-mpi.org/"
        DESCRIPTION "A High Performance Message Passing Library"
@@ -806,18 +738,19 @@ macro( setupVendorLibraries )
 
   # System specific settings
   if ( UNIX )
+  
      if( NOT MPI_SETUP_DONE )
         setupMPILibrariesUnix()
      endif()
      setupLAPACKLibrariesUnix()
      setupVendorLibrariesUnix()
+     
   elseif( WIN32 )
      
-     #if( NOT MPI_SETUP_DONE )
-        setupMPILibrariesWindows()
-     #endif()
+     setupMPILibrariesWindows()
      setupLAPACKLibrariesUnix()
      setupVendorLibrariesWindows()
+     
   else()
      message( FATAL_ERROR "
 I don't know how to setup global (vendor) libraries for this platform.

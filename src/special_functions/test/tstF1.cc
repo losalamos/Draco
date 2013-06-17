@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
  * \brief  Unit test for F1 function.
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -63,26 +64,11 @@ void tstF1( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstF1(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown." << endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstF1(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstF1.cc
+// end of tstF1.cc
 //---------------------------------------------------------------------------//

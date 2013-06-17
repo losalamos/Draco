@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Wed Aug 29 16:46:52 2001
  * \brief  Analytic_Model definitions
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -75,7 +76,7 @@ enum EoS_Models
  */
 //===========================================================================//
 
-class Analytic_Opacity_Model
+class DLL_PUBLIC Analytic_Opacity_Model
 {
   public:
     // Typedefs.
@@ -117,7 +118,7 @@ class Analytic_Opacity_Model
  * \arg a = [cm^2/g]
  *
  */
-class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
+class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
   private:
     // Constant opacity.
@@ -169,7 +170,7 @@ class Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
  * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
  *
  */
-class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
+class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
   private: 
     // Coefficients
@@ -275,7 +276,7 @@ class Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
  */
 //===========================================================================//
 
-class Analytic_EoS_Model
+class DLL_PUBLIC Analytic_EoS_Model
 {
   public:
     // Typedefs.
@@ -355,7 +356,7 @@ class Analytic_EoS_Model
  * Compton scatter) only require specfic heat data.
  * 
  */
-class Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
+class DLL_PUBLIC Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
 {
   private:
     // Coefficients.   
@@ -545,7 +546,7 @@ struct find_elec_temperature_functor
 
 } // end namespace rtt_cdi_analytic
 
-#endif  // __cdi_analytic_Analytic_Models_hh__
+#endif // __cdi_analytic_Analytic_Models_hh__
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Analytic_Models.hh

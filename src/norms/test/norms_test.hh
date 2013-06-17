@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 09:10:18 2005
  * \brief  header for utilities.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,6 +14,7 @@
 #ifndef rtt_norms_test_hh
 #define rtt_norms_test_hh
 
+#include "ds++/config.h"
 #include <iostream>
 #include <string>
 
@@ -35,21 +37,21 @@ namespace rtt_norms_test
 // ways.  We do not constrain draco tests except that the output must be of
 // the form "Test: pass/fail"
 
-bool fail(int line);
+DLL_PUBLIC bool fail(int line);
 
-bool fail(int line, char const * file);
+DLL_PUBLIC bool fail(int line, char const * file);
 
-bool pass_msg(const std::string &);
+DLL_PUBLIC bool pass_msg(const std::string &);
 
-bool fail_msg(const std::string &);
+DLL_PUBLIC bool fail_msg(const std::string &);
 
-void unit_test(const bool pass, int line, char const * file);
+DLL_PUBLIC void unit_test(const bool pass, int line, char const * file);
 
 //---------------------------------------------------------------------------//
 // PASSING CONDITIONALS
 //---------------------------------------------------------------------------//
 
-extern bool passed;
+DLL_PUBLIC extern bool passed;
 
 } // end namespace rtt_norms_test
 
@@ -71,5 +73,5 @@ extern bool passed;
 #endif // rtt_norms_test_hh
 
 //---------------------------------------------------------------------------//
-//     end of norms/test/norms_test.hh
+// end of norms/test/norms_test.hh
 //---------------------------------------------------------------------------//

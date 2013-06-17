@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 18 08:22:08 2007
  * \brief  Preinstantiate template function L2norm
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.  
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,18 +16,19 @@
 
 #include <vector>
 #include "L2norm.i.hh"
+#include "ds++/config.h"
 
 namespace rtt_norms
 {
-//! Compute the L2-norm of a vector.
-template
-double L2norm(std::vector<double> const &x);
 
+//! Compute the L2-norm of a vector.
+template DLL_PUBLIC
+double L2norm(std::vector<double> const &x);
 
 } // end namespace rtt_norms
 
 #endif // norms_L2norm_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/L2norm_pt.cc
+// end of norms/L2norm_pt.cc
 //---------------------------------------------------------------------------//

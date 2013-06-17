@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Specializations of mrqmin
- * \note   © Copyright 2009 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2009-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -22,15 +23,15 @@ using std::vector;
 // RandomContainer=vector<double>
 //---------------------------------------------------------------------------//
 
-template
+template DLL_PUBLIC
 void mrqmin(vector<double> const &x,
             vector<double> const &y,
             vector<double> const &sig,
-	    unsigned n,
+            unsigned n,
             unsigned m,
-	    vector<double> &a,
+            vector<double> &a,
             vector<bool> &ia,
-	    vector<double> &covar,
+            vector<double> &covar,
             vector<double> &alpha,
             unsigned p,
             double &chisq,
@@ -43,5 +44,5 @@ void mrqmin(vector<double> const &x,
 } // end namespace rtt_min
 
 //---------------------------------------------------------------------------//
-//                 end of mrqmin_pt.cc
+// end of mrqmin_pt.cc
 //---------------------------------------------------------------------------//

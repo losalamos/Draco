@@ -39,14 +39,6 @@
 namespace rtt_diagnostics
 {
 
-//---------------------------------------------------------------------------------------//
-// Tokenize a string
-DLL_PUBLIC std::vector<std::string> tokenize(
-    std::string const & source,
-    char        const * delimiter_list = " ",
-    bool                keepEmpty      = false);
-
-
 //===========================================================================//
 /*!
  * \brief Access and report on system and process resources.

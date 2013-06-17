@@ -4,19 +4,17 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include <sstream>
-#include "parser_test.hh"
-#include "ds++/Release.hh"
 #include "../Unit.hh"
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 
@@ -31,65 +29,42 @@ void unit_test(UnitTest &ut)
 {
     Unit tstC  = { 0, 0,  1, 1, 0, 0, 0, 0, 0,    1};
     if (C!=tstC)
-    {
 	ut.failure("unit C does NOT have expected dimensions");
-    }
     else
-    {
 	ut.passes("unit C has expected dimensions");
-    }
 
     Unit tstHz = { 0, 0, -1, 0, 0, 0, 0, 0, 0,    1};
     if (Hz!=tstHz)
-    {
 	ut.failure("unit Hz does NOT have expected dimensions");
-    }
     else
-    {
 	ut.passes("unit Hz has expected dimensions");
-    }
 
     Unit tstN  = { 1, 1, -2, 0, 0, 0, 0, 0, 0,    1}; 
     if (N!=tstN)
-    {
 	ut.failure("unit N does NOT have expected dimensions");
-    }
     else
-    {
 	ut.passes("unit N has expected dimensions");
-    }
 
     Unit tstJ  = { 2, 1, -2, 0, 0, 0, 0, 0, 0,    1};
     if (J!=tstJ)
-    {
 	ut.failure("unit J does NOT have expected dimensions");
-    }
     else
-    {
 	ut.passes("unit J has expected dimensions");
-    }
+
     {
         ostringstream buffer;
         buffer << tstJ;
         if (buffer.str() == "1 m^2-kg-s^-2")
-        {
             ut.passes("correct text representation of J");
-        }
         else
-        {
             ut.failure("NOT correct text representation of J");
-        }
     }
 
     Unit tstinch = {1, 0, 0, 0, 0, 0, 0, 0, 0,    0.0254};
     if (inch == tstinch)
-    {
 	ut.passes("unit inch has expected dimensions");
-    }
     else
-    {
 	ut.failure("unit inch does NOT have expected dimensions");
-    }
 
     // Test divisor
     {
@@ -181,52 +156,20 @@ void unit_test(UnitTest &ut)
             ut.failure("failed to ignore conversion factor difference");
     }
     if (soft_equiv(conversion_factor(J, CGS), erg.conv))
-    {
         ut.passes("Conversion to CGS good");
-    }
     else
-    {
         ut.failure("Conversion to CGS NOT good");
-    }
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-	// >>> UNIT TESTS
-        ScalarUnitTest ut( argc, argv, release );
-        unit_test(ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { unit_test(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstUnit.cc
+// end of tstUnit.cc
 //---------------------------------------------------------------------------//

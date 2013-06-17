@@ -4,7 +4,8 @@
  * \author Kent G. Budge
  * \date   Tue Nov  9 14:34:11 2010
  * \brief  Test the Abstract_Class_Parser template
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,13 +15,13 @@
 #include <vector>
 #include <cmath>
 
-#include "ds++/Assert.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "../Class_Parser.hh"
 #include "../Abstract_Class_Parser.hh"
 #include "../utilities.hh"
 #include "../File_Token_Stream.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/path.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -328,7 +329,12 @@ void test(UnitTest &ut)
     Parent::register_model("daughter",
                            Daughter::parse_parent );
 
-    File_Token_Stream tokens("sons_and_daughters.inp");
+    // Build path for the input file "scanner_test.inp"
+    string const sadInputFile = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath() + std::string("sons_and_daughters.inp"),
+        rtt_dsxx::FC_NATIVE);
+
+    File_Token_Stream tokens( sadInputFile );
 
     top_parse_table.parse(tokens);
 
@@ -351,27 +357,10 @@ void test(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        test(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstAbstract_Class_Parser, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstAbstract_Class_Parser, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { test(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstAbstract_Class_Parser.cc
+// end of tstAbstract_Class_Parser.cc
 //---------------------------------------------------------------------------//

@@ -16,6 +16,11 @@
 #include <deque>
 #include <stdexcept>
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) 
+#endif
+
 namespace rtt_parser 
 {
 //-------------------------------------------------------------------------//
@@ -97,7 +102,7 @@ class Syntax_Error : public std::runtime_error
  * not provide virtual destructors.
  */
 
-class Token_Stream
+class DLL_PUBLIC Token_Stream
     : private std::deque<Token>
 {
   public:
@@ -272,7 +277,11 @@ inline Token_Stream::Token_Stream()
 
 }  // namespace rtt_parser
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // CCS4_Token_Stream_HH
 //---------------------------------------------------------------------------//
-//                          end of Token_Stream.hh
+// end of Token_Stream.hh
 //---------------------------------------------------------------------------//

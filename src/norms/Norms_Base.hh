@@ -4,7 +4,8 @@
   \author Rob Lowrie
   \date   Fri Jan 14 13:01:19 2005
   \brief  Header file for Norms_Base.
-  \note   Copyright © 2005-2010 Los Alamos National Security, LLC.  
+  \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+          All rights reserved.
 */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +14,7 @@
 #ifndef rtt_norms_Norms_Base_hh
 #define rtt_norms_Norms_Base_hh
 
-#include <ds++/Assert.hh>
+#include "ds++/Assert.hh"
 #include <cmath>
 
 namespace rtt_norms {
@@ -28,7 +29,7 @@ namespace rtt_norms {
   dependent functionality of Norms to be compiled in a single place.
 */
 //===========================================================================//
-class Norms_Base
+class DLL_PUBLIC Norms_Base
 {
   protected:
     

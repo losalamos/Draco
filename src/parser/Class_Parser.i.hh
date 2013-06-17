@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug 28 07:30:16 2006
  * \brief  Member template definitions of template class Class_Parser
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -27,7 +28,7 @@
  * the specification is not valid.
  */
 
-template<class Class, class ReturnClass, bool is_reentrant>
+template<typename Class, typename ReturnClass, bool is_reentrant>
 rtt_dsxx::SP<ReturnClass>
 Class_Parser<Class,
              ReturnClass,
@@ -113,5 +114,5 @@ Class_Parser<Class,
 #endif // utils_Class_Parser_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of utils/Class_Parser.i.hh
+// end of utils/Class_Parser.i.hh
 //---------------------------------------------------------------------------//

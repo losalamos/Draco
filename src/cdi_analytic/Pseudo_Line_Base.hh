@@ -3,7 +3,8 @@
  * \file   cdi_analytic/Pseudo_Line_Base.hh
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
- * \note   Copyright (C) 2011-2012, Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013, Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,6 +14,13 @@
 #define __cdi_analytic_Pseudo_Line_Base_hh__
 
 #include "parser/Expression.hh"
+#include <cmath>
+#include <cstdio>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_analytic
 {
@@ -20,6 +28,10 @@ using std::vector;
 using std::string;
 using rtt_dsxx::SP;
 using rtt_parser::Expression;
+
+#ifdef _MSC_VER
+double expm1( double const & x );
+#endif
 
 //---------------------------------------------------------------------------//
 /*!
@@ -35,7 +47,7 @@ using rtt_parser::Expression;
  * time saver.
  *
  */
-class Pseudo_Line_Base
+class DLL_PUBLIC Pseudo_Line_Base
 {
   public:
 
@@ -161,8 +173,12 @@ class Pseudo_Line_Base
 
 } // end namespace rtt_cdi_analytic
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // __cdi_analytic_Pseudo_Line_Base_hh__
 
 //---------------------------------------------------------------------------//
-//       end of cdi_analytic/Pseudo_Line_Base.hh
+// end of cdi_analytic/Pseudo_Line_Base.hh
 //---------------------------------------------------------------------------//

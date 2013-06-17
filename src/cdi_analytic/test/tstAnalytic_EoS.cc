@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Oct  4 11:45:19 2001
  * \brief  Analytic_EoS test.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -16,7 +16,6 @@
 #include "cdi/CDI.hh"
 #include "cdi/EoS.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
@@ -445,25 +444,12 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-	// >>> UNIT TESTS
-	analytic_eos_test(ut);
-	CDI_test(ut);
-	packing_test(ut);
+	    // >>> UNIT TESTS
+	    analytic_eos_test(ut);
+	    CDI_test(ut);
+	    packing_test(ut);
     }
-    catch (rtt_dsxx::assertion &err)
-    {
-        std::cout << "ERROR: While testing " << argv[0] << ", "
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing " << argv[0] << ", " 
-                  << "An unknown exception was thrown on processor "
-                  << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

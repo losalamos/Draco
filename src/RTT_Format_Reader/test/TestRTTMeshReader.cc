@@ -13,9 +13,9 @@
 //---------------------------------------------------------------------------//
 
 #include "../RTT_Mesh_Reader.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/path.hh"
 #include <sstream>
 
 //---------------------------------------------------------------------------//
@@ -42,10 +42,14 @@ bool check_virtual( rtt_dsxx::UnitTest &ut,
 
 void runTest( rtt_dsxx::UnitTest &ut)
 {
+    // Find the mesh file
+    string const appPath = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
+                           rtt_dsxx::FC_NATIVE );
+
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
     const int MAX_MESHES = 1;
-    string filename[MAX_MESHES] = {"rttdef.mesh"};
+    string filename[MAX_MESHES] = { appPath + string("rttdef.mesh") };
     Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)

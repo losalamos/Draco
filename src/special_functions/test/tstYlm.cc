@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
  * \brief  
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -390,19 +390,7 @@ int main(int argc, char *argv[])
         tstComplexYlk(    ut );
         tstgalerkinYlk(   ut );
     }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown on processor " << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

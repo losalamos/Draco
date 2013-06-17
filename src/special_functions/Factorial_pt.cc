@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide explicit instantiations of templatized factorial function. 
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,26 +19,26 @@ namespace rtt_sf
 //---------------------------------------------------------------------------//
 // Make factorial valid only for int and unsigned.
 
-template
+template DLL_PUBLIC
 unsigned factorial( unsigned const k ) ;
 
-template
+template DLL_PUBLIC
 int factorial( int const k ) ;
 
-template
+template DLL_PUBLIC
 long factorial( long const k ) ;
 
-template
+template DLL_PUBLIC
 double factorial_fraction( unsigned const k, unsigned const l );
 
-template
+template DLL_PUBLIC
 double factorial_fraction( int const k, int const l );
 
-template
+template DLL_PUBLIC
 double factorial_fraction( long const k, long const l );
 
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//              end of sf/factorial_pt.cc
+// end of sf/factorial_pt.cc
 //---------------------------------------------------------------------------//

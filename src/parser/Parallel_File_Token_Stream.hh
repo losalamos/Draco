@@ -3,7 +3,8 @@
  * \file   Parallel_File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Parallel_File_Token_Stream.
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,11 @@
 
 #include <fstream>
 #include "Text_Token_Stream.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Parallel_File_Token_Stream::filename_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::Parallel_File_Token_Stream'
+#endif
 
 namespace rtt_parser 
 {
@@ -34,7 +40,7 @@ using std::ifstream;
  * very flat.
  */
 
-class Parallel_File_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC Parallel_File_Token_Stream : public Text_Token_Stream
 {
   public:
 
@@ -93,7 +99,11 @@ class Parallel_File_Token_Stream : public Text_Token_Stream
 
 } // rtt_parser
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // CCS4_Parallel_File_Token_Stream_HH
 //---------------------------------------------------------------------------//
-//                      end of Parallel_File_Token_Stream.hh
+// end of Parallel_File_Token_Stream.hh
 //---------------------------------------------------------------------------//

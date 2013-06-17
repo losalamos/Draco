@@ -4,7 +4,8 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of member functions of class Parse_Table
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved
  */
 //---------------------------------------------------------------------------------------//
 // $Id$

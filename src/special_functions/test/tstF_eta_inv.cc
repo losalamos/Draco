@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Sep 20 14:55:09 2004
  * \brief  Test the F_eta_inv function
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -34,30 +35,30 @@ void tstF_eta_inv( UnitTest & ut )
 
     const unsigned ntests = 19;
     double eta[ntests] = {
-	-70.0, -5.0, -0.694, -0.693, 0.0, 5.0, 10.0, 20.0, 50.0, 100.0,
-	800.0,
-	-50.0, -5.0, 0.0, 5.0, 
-	-20.0, -5.0, 5.0, 50.0
+        -70.0, -5.0, -0.694, -0.693, 0.0, 5.0, 10.0, 20.0, 50.0, 100.0,
+        800.0,
+        -50.0, -5.0, 0.0, 5.0, 
+        -20.0, -5.0, 5.0, 50.0
     };
     double T[ntests] = {
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1.0e9, 1.0e9, 1.0e9, 1.0e9,
-	500.0e9, 500.0e9, 500.0e9, 500.0e9
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1.0e9, 1.0e9, 1.0e9, 1.0e9,
+        500.0e9, 500.0e9, 500.0e9, 500.0e9
     };
-    
+
     for (unsigned i=0; i<ntests; i++)
     {
-	double gamma = T[i]*(C_KB/(C_ME*C_C*C_C));
-	double reta = gamma*eta[i];
-	double rreta = F_eta_inv(F_eta(reta, gamma), gamma);
-	if (fabs((rreta-reta)/gamma)>1.0e-5)
-	{
-	    ut.failure("F_eta_inv FAILED");
-	}
-	else
-	{
-	    ut.passes("F_eta_inv passed");
-	}
+        double gamma = T[i]*(C_KB/(C_ME*C_C*C_C));
+        double reta = gamma*eta[i];
+        double rreta = F_eta_inv(F_eta(reta, gamma), gamma);
+        if (fabs((rreta-reta)/gamma)>1.0e-5)
+        {
+            ut.failure("F_eta_inv FAILED");
+        }
+        else
+        {
+            ut.passes("F_eta_inv passed");
+        }
     }
 }
 
@@ -65,26 +66,11 @@ void tstF_eta_inv( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstF_eta_inv(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown." << endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstF_eta_inv(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstF_eta_inv.cc
+// end of tstF_eta_inv.cc
 //---------------------------------------------------------------------------//

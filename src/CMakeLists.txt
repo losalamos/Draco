@@ -65,8 +65,7 @@ add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
 if( _LANGUAGES_ MATCHES Fortran )
-   if( NOT "${CMAKE_CXX_COMPILER}" MATCHES "[sp]pu-g[+][+]" 
-   AND NOT ${CMAKE_GENERATOR} MATCHES Xcode)
+   if( NOT ${CMAKE_GENERATOR} MATCHES Xcode)
       add_dir_if_exists( FortranChecks )
    endif()
 endif()
@@ -103,9 +102,9 @@ message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
 
 # Install related libaries
-if( WIN32 )
-   include( InstallRequiredSystemLibraries )
-endif()
+# if( WIN32 )
+   # include( InstallRequiredSystemLibraries )
+# endif()
 
 # Summary
 message(" ")
@@ -121,6 +120,7 @@ feature_summary(
 feature_summary( 
    WHAT PACKAGES_NOT_FOUND 
    INCLUDE_QUIET_PACKAGES
+   FATAL_ON_MISSING_REQUIRED_PACKAGES
    DESCRIPTION "Packages missing:")
 
 feature_summary( 

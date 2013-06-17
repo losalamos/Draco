@@ -126,5 +126,5 @@ class Class_Parser
 #endif // parser_Class_Parser_hh
 
 //---------------------------------------------------------------------------//
-//              end of parser/Class_Parser.hh
+// end of parser/Class_Parser.hh
 //---------------------------------------------------------------------------//

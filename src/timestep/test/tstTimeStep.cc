@@ -42,24 +42,11 @@ int main ( int argc, char *argv[] )
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     { 	// Run the tests...
-	run_tests(ut);
+        run_tests(ut);
         if( rtt_c4::node() == 0 )
             check_field_ts_advisor(ut);
     }
-    catch( std::exception const & err )
-    {
-        std::cout << "ERROR: While testing tstTimeStep, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstL2norm, " 
-                  << "An unknown exception was thrown."
-                  << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

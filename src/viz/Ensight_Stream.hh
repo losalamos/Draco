@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:28:37 2004
  * \brief  Header for Ensight_Stream.
- * \note   Copyright © 2004-2010 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC. 
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,8 +14,14 @@
 #ifndef rtt_viz_Ensight_Stream_hh
 #define rtt_viz_Ensight_Stream_hh
 
+#include "ds++/config.h"
 #include <string>
 #include <fstream>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_viz::Ensight_Stream::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_viz::Ensight_Stream'
+#endif
 
 namespace rtt_viz
 {
@@ -24,7 +31,7 @@ namespace rtt_viz
 class Ensight_Stream;
 
 //! A specific "endl" manipulator for Ensight_Stream.
-Ensight_Stream& endl(Ensight_Stream &s);
+DLL_PUBLIC Ensight_Stream& endl(Ensight_Stream &s);
 
 //===========================================================================//
 /*!
@@ -45,7 +52,7 @@ Ensight_Stream& endl(Ensight_Stream &s);
  */
 //===========================================================================//
 
-class Ensight_Stream 
+class DLL_PUBLIC Ensight_Stream 
 {
   private:
 
@@ -105,7 +112,7 @@ class Ensight_Stream
 
     Ensight_Stream& operator<<(FP f);
 
-    friend Ensight_Stream& endl(Ensight_Stream &s);
+    friend DLL_PUBLIC Ensight_Stream& endl(Ensight_Stream &s);
 
   private:
 
@@ -115,8 +122,13 @@ class Ensight_Stream
 
 } // end namespace rtt_viz
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+
 #endif // rtt_viz_Ensight_Stream_hh
 
 //---------------------------------------------------------------------------//
-//              end of viz/Ensight_Stream.hh
+// end of viz/Ensight_Stream.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:57:58 2005
  * \brief  Header for Index_Proc.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,8 +14,8 @@
 #ifndef rtt_norms_Index_Proc_hh
 #define rtt_norms_Index_Proc_hh
 
+#include "ds++/config.h"
 #include <cstddef>
-
 
 namespace rtt_norms
 {
@@ -28,7 +29,7 @@ using std::size_t;
  */
 //===========================================================================//
 
-struct Index_Proc 
+struct DLL_PUBLIC Index_Proc 
 {
     //! The index.
     size_t index;
@@ -48,5 +49,5 @@ struct Index_Proc
 #endif // rtt_norms_Index_Proc_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/Index_Proc.hh
+// end of norms/Index_Proc.hh
 //---------------------------------------------------------------------------//

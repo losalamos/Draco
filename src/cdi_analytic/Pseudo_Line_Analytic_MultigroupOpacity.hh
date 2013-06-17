@@ -3,7 +3,8 @@
  * \file   cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,7 +37,7 @@ using rtt_parser::Expression;
  * time saver.
  *
  */
-class Pseudo_Line_Analytic_MultigroupOpacity
+class DLL_PUBLIC Pseudo_Line_Analytic_MultigroupOpacity
     : public Analytic_MultigroupOpacity, public Pseudo_Line_Base
 {
   private:
@@ -90,5 +91,5 @@ class Pseudo_Line_Analytic_MultigroupOpacity
 #endif  // __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
 
 //---------------------------------------------------------------------------//
-//       end of cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh
+// end of cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh
 //---------------------------------------------------------------------------//

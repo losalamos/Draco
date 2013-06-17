@@ -1,11 +1,12 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
-  \file   Norms_Index.hh
-  \author Rob Lowrie
-  \date   Fri Jan 14 13:00:32 2005
-  \brief  Header file for Norms_Index.
-  \note   Copyright © 2005-2010 Los Alamos National Security, LLC.  
-*/
+ * \file   Norms_Index.hh
+ * \author Rob Lowrie
+ * \date   Fri Jan 14 13:00:32 2005
+ * \brief  Header file for Norms_Index.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.  
+ *         All rights reserved.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -15,7 +16,13 @@
 
 #include "Norms_Base.hh"
 
-namespace rtt_norms {
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_norms::Norms_Index<Index_t>::d_index_Linf' : struct 'rtt_norms::Index_Labeled' needs to have dll-interface to be used by clients of class 'rtt_norms::Norms_Index<Index_t>'
+#endif
+
+namespace rtt_norms 
+{
 
 //===========================================================================//
 /*!
@@ -45,8 +52,8 @@ namespace rtt_norms {
   \param Index_t The index type for labeling the location of the Linf norm.
 */
 //===========================================================================//
-template <class Index_t>
-class Norms_Index
+template <typename Index_t>
+class DLL_PUBLIC Norms_Index
     : public Norms_Base
 {
   public:
@@ -92,6 +99,10 @@ class Norms_Index
 };
 
 } // namespace rtt_norms
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // rtt_norms_Norms_Index_hh
 

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS class definition.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -17,6 +17,11 @@
 #include "Analytic_Models.hh"
 #include "cdi/EoS.hh"
 #include "ds++/SP.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_analytic
 {
@@ -48,7 +53,7 @@ namespace rtt_cdi_analytic
 // 
 //===========================================================================//
 
-class Analytic_EoS : public rtt_cdi::EoS
+class DLL_PUBLIC Analytic_EoS : public rtt_cdi::EoS
 {
   public:
     // Useful typedefs.
@@ -118,6 +123,10 @@ class Analytic_EoS : public rtt_cdi::EoS
 };
 
 } // end namespace rtt_cdi_analytic
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_analytic_Analytic_EoS_hh__
 

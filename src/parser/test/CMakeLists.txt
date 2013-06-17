@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   parser/test/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for parser/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -14,12 +14,7 @@ project( parser_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB test_lib_sources *_pt.cc )
-list( APPEND test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/parser_test.cc 
-   ${PROJECT_SOURCE_DIR}/parser_test.hh)
 file( GLOB test_sources *.cc )
-list( REMOVE_ITEM test_sources ${test_lib_sources} )
 file( GLOB input_files *.inp )
 
 # ---------------------------------------------------------------------------- #
@@ -31,13 +26,6 @@ include_directories(
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # config.h
    ${MPI_INCLUDE_PATH} )
-
-# Library Lib_parser_test
-add_component_library(
-   TARGET        Lib_parser_test
-   TARGET_DEPS   Lib_parser
-   LIBRARY_NAME  ${PROJECT_NAME}
-   SOURCES       "${test_lib_sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
@@ -53,10 +41,9 @@ set_target_properties( Ut_parser_tstConsole_Token_Stream
    PROPERTIES 
      OUTPUT_NAME tstConsole_Token_Stream
      VS_KEYWORD  tstConsole_Token_Stream
-     PROJECT_LABEL tstConsole_Token_Stream
+     PROJECT_LABEL Ut_parser_tstConsole_Token_Stream
    )
 target_link_libraries( Ut_parser_tstConsole_Token_Stream
-   Lib_parser_test 
    Lib_parser
    Lib_c4
    Lib_dsxx
@@ -82,20 +69,35 @@ add_scalar_tests(
 # Special case for driver4tstConsole_Token_Stream
 # 1. This test doesn't work under Xcode
 # 2. This test must have unique access to tstConsole_Token_Stream and
-#    we will use a RESOURCE_LOCK to prevent multiple simultaneious
+#    we will use a RESOURCE_LOCK to prevent multiple simultaneous
 #    instances during parallel ctest.
 list( REMOVE_ITEM test_sources 
    ${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc )
 if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
-add_parallel_tests(
+add_scalar_tests(
    SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
-   PE_LIST "1;2"
    DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" 
    RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
 endif()
 
 # The remaining tests are Parallel.
 
+# Run with with 1 PE only
+list( REMOVE_ITEM test_sources 
+   ${PROJECT_SOURCE_DIR}/tstFile_Token_Stream.cc )
+add_parallel_tests(
+   SOURCES "${PROJECT_SOURCE_DIR}/tstFile_Token_Stream.cc"
+   PE_LIST "1"
+   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
+
+# Broken on Win32
+if( WIN32 )
+   list( REMOVE_ITEM test_sources 
+      ${PROJECT_SOURCE_DIR}/tstAbstract_Class_Parser.cc )
+   message( "parser/tstAbstract_Class_Parser.cc is not running under Win32." )
+endif()
+   
+# Run remaining tests with 1 and 2 PEs.   
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"

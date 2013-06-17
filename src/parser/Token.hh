@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Token.hh
+ * \file   parser/Token.hh
  * \author Kent G. Budge
- * \brief Define class Token and enum Token_Type
- * \note Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Define class Token and enum Token_Type
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,8 +16,10 @@
 #include <string>
 #include "ds++/Assert.hh"
 
-#ifdef _MSC_VER
-#undef ERROR
+#if defined(MSVC)
+#   undef ERROR
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Token::text_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::Token'
 #endif
 
 namespace rtt_parser 
@@ -72,7 +75,7 @@ enum Token_Type
  * location.
  */
 
-class Token
+class DLL_PUBLIC Token
 {
   public:
 
@@ -86,6 +89,13 @@ class Token
 
     //! Construct a Token with specified type, text, and location.
     inline Token(Token_Type ty, string const &tx, string const &loc);
+
+    //! Default constructor
+    inline Token(/*empty*/)
+        : type_(END),
+          text_(),
+          location_()
+    { /* empty */ }
 
     // ACCESSORS
     
@@ -109,15 +119,15 @@ class Token
 };
 
 // For checking of assertions
-bool Is_Text_Token  (Token_Type type);
-bool Is_Integer_Text(char const *string);
-bool Is_Keyword_Text(char const *string);
-bool Is_Real_Text   (char const *string);
-bool Is_String_Text (char const *string);
-bool Is_Other_Text  (char const *string);
+DLL_PUBLIC bool Is_Text_Token  (Token_Type type);
+DLL_PUBLIC bool Is_Integer_Text(char const *string);
+DLL_PUBLIC bool Is_Keyword_Text(char const *string);
+DLL_PUBLIC bool Is_Real_Text   (char const *string);
+DLL_PUBLIC bool Is_String_Text (char const *string);
+DLL_PUBLIC bool Is_Other_Text  (char const *string);
 
 //! Test equality of two Tokens
-bool operator==(Token const &, Token const &);
+DLL_PUBLIC bool operator==(Token const &, Token const &);
 
 //-------------------------------------------------------------------------//
 /*! 
@@ -194,7 +204,11 @@ Token::Token(Token_Type const type, string const &location)
 
 }  // namespace rtt_parser
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // CCS4_Token_HH
 //--------------------------------------------------------------------//
-//                      end of Token.hh
+// end of Token.hh
 //--------------------------------------------------------------------//

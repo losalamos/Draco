@@ -3,7 +3,8 @@
  * \file   parser/Expression.hh
  * \author Kent Budge
  * \brief  Definition of class Expression
- * \note   Copyright 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -62,7 +63,7 @@ using rtt_dsxx::SP;
  */
 //===========================================================================//
 
-class Expression 
+class DLL_PUBLIC Expression 
 {
   public:
 
@@ -209,5 +210,5 @@ class Expression
 #endif // parser_Expression_hh
 
 //---------------------------------------------------------------------------//
-//              end of parser/Expression.hh
+// end of parser/Expression.hh
 //---------------------------------------------------------------------------//

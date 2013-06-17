@@ -4,7 +4,8 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of File_Token_Stream methods.
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -53,17 +54,17 @@ File_Token_Stream::File_Token_Stream(void)
 
 File_Token_Stream::File_Token_Stream(string const &file_name)
     :
-    filename_(file_name),
-    infile_(file_name.c_str())
+    filename_( file_name         ),
+    infile_  ( file_name.c_str(), std::ios::in )
 {
     if( ! infile_ )
     {
-	ostringstream errmsg;
-	errmsg << "Cannot construct File_Token_Stream.\n"
-	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << file_name 
-	       << "\"" << endl;
-	throw invalid_argument( errmsg.str().c_str() );
+        ostringstream errmsg;
+        errmsg << "Cannot construct File_Token_Stream.\n"
+	            << "The file specified could not be found.\n"
+	            << "The file requested was: \"" << file_name 
+	            << "\"" << endl;
+        throw invalid_argument( errmsg.str().c_str() );
     }
 
     Ensure(check_class_invariants());
@@ -255,5 +256,5 @@ void File_Token_Stream::rewind()
 } // namespace rtt_parser
 
 //---------------------------------------------------------------------------//
-//                      end of File_Token_Stream.cc
+// end of File_Token_Stream.cc
 //---------------------------------------------------------------------------//

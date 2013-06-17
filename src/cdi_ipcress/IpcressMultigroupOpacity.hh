@@ -5,7 +5,8 @@
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity class header file (derived from
  *         cdi/MultigroupOpacity) 
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,13 +17,17 @@
 
 #include "IpcressDataTable.hh"  // we have a smart pointer to a
                                 // IpcressDataTable object.
-#include "ds++/Assert.hh" 
 #include "ds++/SP.hh"
 #include "cdi/MultigroupOpacity.hh"
 #include "cdi/OpacityCommon.hh"
 
 #include <vector>
 #include <string>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_cdi_ipcress::IpcressMultigroupOpacity::ipcressFilename' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_cdi_ipcress::IpcressMultigroupOpacity'
+#endif
 
 namespace rtt_cdi_ipcress
 {
@@ -90,7 +95,7 @@ class IpcressDataTable;
  */
 //===========================================================================//
 
-class IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
+class DLL_PUBLIC IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
 
     // DATA
@@ -541,8 +546,12 @@ OpacityIterator IpcressMultigroupOpacity::getOpacity(
 
 } // end namespace rtt_cdi_ipcress
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // __cdi_ipcress_IpcressMultigroupOpacity_hh__
 
 //---------------------------------------------------------------------------//
-//                end of cdi_ipcress/IpcressMultigroupOpacity.hh
+// end of cdi_ipcress/IpcressMultigroupOpacity.hh
 //---------------------------------------------------------------------------//

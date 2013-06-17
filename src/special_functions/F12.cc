@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Implementation of F12
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -90,5 +91,5 @@ double F12(double x)
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//                 end of F12.cc
+// end of F12.cc
 //---------------------------------------------------------------------------//

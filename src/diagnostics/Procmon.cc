@@ -15,6 +15,7 @@
 #include "Procmon.hh"
 #include "c4/C4_Functions.hh"
 #include "ds++/path.hh"
+#include "ds++/UnitTest.hh" // tokenize()
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -37,30 +38,6 @@
 
 namespace rtt_diagnostics
 {
-
-//---------------------------------------------------------------------------------------//
-std::vector<std::string> tokenize(
-    std::string const & source,
-    char        const * delimiter_list,
-    bool                keepEmpty)
-{
-    std::vector<std::string> results;
-
-    size_t prev = 0;
-    size_t next = 0;
-
-    while ((next = source.find_first_of(delimiter_list, prev)) != std::string::npos)
-    {
-        if (keepEmpty || (next - prev != 0))
-            results.push_back(source.substr(prev, next - prev));
-        prev = next + 1;
-    }
-
-    if (prev < source.size())
-        results.push_back(source.substr(prev));
-
-    return results;
-}
 
 //---------------------------------------------------------------------------------------//
 /*
@@ -147,11 +124,14 @@ void procmon_resource_print( std::string const & identifier,
         std::getline( fs, line );
         
         // tokenize the string
-        std::vector<std::string> tokens = tokenize( line, " \t" );
+        std::vector<std::string> tokens
+            = rtt_dsxx::UnitTest::tokenize( line, " \t" );
         if( tokens.size() > 1 ) // protect against empty line
         {
-            if( tokens[0] == std::string("MemTotal:") )  MemTotal = atof(tokens[1].c_str()); // kB
-            // if( tokens[0] == std::string("MemFree:") )   MemFree  = atof(tokens[1].c_str()); // kB
+            if( tokens[0] == std::string("MemTotal:") )
+                MemTotal = atof(tokens[1].c_str()); // kB
+            // if( tokens[0] == std::string("MemFree:") )
+            // MemFree  = atof(tokens[1].c_str()); // kB
         }
     }
     fs.close();

@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug 28 07:36:50 2006
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.  
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,7 +19,6 @@
 #include "ds++/Release.hh"
 #include "../String_Token_Stream.hh"
 #include "../utilities.hh"
-
 #include "../Class_Parser.hh"
 
 using namespace std;
@@ -142,29 +142,11 @@ void tstClass_Parser( UnitTest & ut)
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut(argc, argv, release);
-        tstClass_Parser(ut);
-        ut.status();
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstClass_Parser, " 
-                  << err.what()
-                  << std::endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstClass_Parser, " 
-                  << "An unknown exception was thrown."
-                  << std::endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut(argc, argv, release);
+    try { tstClass_Parser(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstClass_Parser.cc
+// end of tstClass_Parser.cc
 //---------------------------------------------------------------------------//

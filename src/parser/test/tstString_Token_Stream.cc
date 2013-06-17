@@ -4,27 +4,29 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit tests for String_Token_Stream class.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include <sstream>
-
-#include "ds++/ScalarUnitTest.hh"
-#include "c4/global.hh"
-#include "c4/SpinLock.hh"
-
-#include "ds++/Soft_Equivalence.hh"
-#include "parser_test.hh"
+#include "../String_Token_Stream.hh"
 #include "../utilities.hh"
 #include "ds++/Release.hh"
-#include "../String_Token_Stream.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/path.hh"
 
 using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -32,7 +34,12 @@ using namespace rtt_dsxx;
 
 void tstString_Token_Stream(UnitTest &ut)
 {
-    ifstream infile("scanner_test.inp");
+    // Build path for the input file "scanner_test.inp"
+    string const stInputFile = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath() + std::string("scanner_test.inp"),
+        rtt_dsxx::FC_NATIVE);
+
+    ifstream infile( stInputFile );
     string contents;
     while (true)
     {
@@ -279,7 +286,13 @@ void tstString_Token_Stream(UnitTest &ut)
 //---------------------------------------------------------------------------//
 
     {
-	ifstream infile("scanner_recovery.inp");
+
+    // Build path for the input file "scanner_recovery.inp"
+    string const srInputFile = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath() + std::string("scanner_recovery.inp"),
+        rtt_dsxx::FC_NATIVE);
+
+	ifstream infile( srInputFile );
 	string contents;
 	while (true)
 	{
@@ -411,38 +424,11 @@ void tstString_Token_Stream(UnitTest &ut)
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-        tstString_Token_Stream(ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstString_Token_Stream(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstString_Token_Stream.cc
+// end of tstString_Token_Stream.cc
 //---------------------------------------------------------------------------//

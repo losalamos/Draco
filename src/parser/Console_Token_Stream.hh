@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Console_Token_Stream.hh
+ * \file   parser/Console_Token_Stream.hh
  * \author Kent G. Budge
- * \brief Definition of class Console_Token_Stream.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \brief  Definition of class Console_Token_Stream.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -39,7 +40,7 @@ using std::string;
  * under our current unit testing system, since it is inherently interactive.
  */
 
-class Console_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC Console_Token_Stream : public Text_Token_Stream
 {
   public:
 
@@ -76,5 +77,5 @@ class Console_Token_Stream : public Text_Token_Stream
 
 #endif  // CCS4_Console_Token_Stream_HH
 //---------------------------------------------------------------------------//
-//                      end of Console_Token_Stream.hh
+// end of Console_Token_Stream.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_MultigroupOpacity class definition.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -17,10 +17,12 @@
 #include "Analytic_Models.hh"
 #include "cdi/MultigroupOpacity.hh"
 #include "cdi/OpacityCommon.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
-#include <vector>
-#include <string>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_analytic
 {
@@ -53,7 +55,7 @@ namespace rtt_cdi_analytic
  */ 
 //===========================================================================//
 
- class Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
+class DLL_PUBLIC Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
   public:
     // Useful typedefs.
@@ -175,6 +177,10 @@ Analytic_MultigroupOpacity::getDataFilename() const
 }
 
 } // end namespace rtt_cdi_analytic
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_analytic_Analytic_MultigroupOpacity_hh__
 

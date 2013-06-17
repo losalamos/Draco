@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Header file for IpcressFile class
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,6 +19,11 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_cdi_ipcress::IpcressFile::dataFilename' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_cdi_ipcress::IpcressFile'
+#endif
 
 namespace rtt_cdi_ipcress
 {
@@ -72,7 +78,7 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class IpcressFile 
+class DLL_PUBLIC IpcressFile 
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -238,6 +244,10 @@ class IpcressFile
 } // end namespace rtt_cdi_ipcress
 
 #endif // __cdi_ipcress_IpcressFile_hh__
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh

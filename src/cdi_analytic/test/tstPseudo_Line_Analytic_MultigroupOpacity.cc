@@ -4,7 +4,8 @@
  * \author Kent G. Budge
  * \date   Tue Apr  5 09:01:03 2011
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,7 +16,6 @@
 #include <vector>
 #include <cmath>
 
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "../Pseudo_Line_Analytic_MultigroupOpacity.hh"
@@ -226,27 +226,10 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
-    try
-    {
-        tstPseudo_Line_Analytic_MultigroupOpacity(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstPseudo_Line_Analytic_MultigroupOpacity, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstPseudo_Line_Analytic_MultigroupOpacity, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { tstPseudo_Line_Analytic_MultigroupOpacity(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstPseudo_Line_Analytic_MultigroupOpacity.cc
+// end of tstPseudo_Line_Analytic_MultigroupOpacity.cc
 //---------------------------------------------------------------------------//

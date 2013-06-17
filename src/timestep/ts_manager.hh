@@ -19,6 +19,11 @@
 #include "ds++/SP.hh"
 #include <list>
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_timestep::ts_manager::controlling_advisor' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_timestep::ts_manager'
+#endif
+
 namespace rtt_timestep
 {
 
@@ -35,7 +40,7 @@ namespace rtt_timestep
  * radiation energy, ion energy, max allowed change, etc...). 
  */
 //===========================================================================//
-class ts_manager
+class DLL_PUBLIC ts_manager
 {
 
 // NESTED CLASSES AND TYPEDEFS
@@ -140,8 +145,12 @@ class ts_manager
 
 } // end of rtt_timestep namespace
 
-#endif                          // __timestep_ts_manager_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __timestep_ts_manager_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of ts_manager.hh
+// end of ts_manager.hh
 //---------------------------------------------------------------------------//

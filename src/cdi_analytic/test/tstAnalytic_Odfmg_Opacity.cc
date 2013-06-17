@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  Analytic_Odfmg_Opacity test.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -18,7 +18,6 @@
 #include "cdi/CDI.hh"
 #include "parser/Constant_Expression.hh"
 #include "c4/ParallelUnitTest.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
@@ -625,24 +624,12 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
-        odfmg_test(ut);
-        test_CDI(ut);
+        odfmg_test( ut);
+        test_CDI(    ut);
         packing_test(ut);
         pseudo_line_opacity_test(ut);
     }
-    catch (rtt_dsxx::assertion &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown." << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

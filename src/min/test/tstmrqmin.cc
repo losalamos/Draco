@@ -4,19 +4,17 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \brief  
- * \note   Copyright 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Release.hh"
 #include "../mrqmin.hh"
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
+#include "ds++/Release.hh"
 #include <fstream>
 #include <vector>
 
@@ -69,12 +67,18 @@ void model(vector<double> const &x,
     dyda[8] = n*p*c*an;
 }
 
-
-
+//---------------------------------------------------------------------------//
+// tstmrqmin
+//---------------------------------------------------------------------------//
 
 void tstmrqmin( UnitTest & ut )
 {
-    ifstream data("mrqmin_data.inp");
+    std::cout << "\nTesting tstmrqmin()...\n" << std::endl;
+
+    // Parse an input file
+    std::string filename = ut.getTestPath() + std::string("mrqmin_data.inp");
+
+    ifstream data(filename);
     vector<double> x, y, sig;
     for (;;)
     {
@@ -93,7 +97,7 @@ void tstmrqmin( UnitTest & ut )
                 x.push_back(n);
                 x.push_back(c);
                 x.push_back(a);
-//                y.push_back(t);
+                //                y.push_back(t);
             }
             y2sum += t*t;
             ysum += t;
@@ -103,14 +107,14 @@ void tstmrqmin( UnitTest & ut )
         {
             break;
         }
-//        for (unsigned i=0; i<3; ++i)
+        //        for (unsigned i=0; i<3; ++i)
         {
-//            double const ymean = ysum/3;
+            //            double const ymean = ysum/3;
             y.push_back(ymin);
             sig.push_back(ymin);
-//            sig.push_back(sqrt(0.5*(y2sum - 2*ysum*ymean + 3*ymean*ymean)));
-//            sig.push_back(ymean);
-//            sig.push_back(1.0);
+            //            sig.push_back(sqrt(0.5*(y2sum - 2*ysum*ymean + 3*ymean*ymean)));
+            //            sig.push_back(ymean);
+            //            sig.push_back(1.0);
         }
     }
 
@@ -308,7 +312,7 @@ void tstmrqmin( UnitTest & ut )
                     }
                     ia[j4] = false;
                     a[j4] = 0.0;
-                    }
+                }
                 ia[j3] = false;
                 a[j3] = 0.0;
             }
@@ -321,7 +325,7 @@ void tstmrqmin( UnitTest & ut )
     cout << "Optimum 4-var is " << sqrt(copt/y.size())
          << " for variables " << i1 << i2 << i3 << i4 << endl;
 
- 
+
     copt = 1e100;
     unsigned i5(0);
     for (unsigned j1=0; j1<9; ++j1)
@@ -377,7 +381,7 @@ void tstmrqmin( UnitTest & ut )
                     }
                     ia[j4] = false;
                     a[j4] = 0.0;
-                    }
+                }
                 ia[j3] = false;
                 a[j3] = 0.0;
             }
@@ -389,7 +393,7 @@ void tstmrqmin( UnitTest & ut )
     }
     cout << "Optimum 5-var is " << sqrt(copt/y.size())
          << " for variables " << i1 << i2 << i3 << i4 << i5 << endl;
- 
+
     copt = 1e100;
     unsigned i6(0);
     for (unsigned j1=0; j1<9; ++j1)
@@ -452,7 +456,7 @@ void tstmrqmin( UnitTest & ut )
                     }
                     ia[j4] = false;
                     a[j4] = 0.0;
-                    }
+                }
                 ia[j3] = false;
                 a[j3] = 0.0;
             }
@@ -464,7 +468,7 @@ void tstmrqmin( UnitTest & ut )
     }
     cout << "Optimum 6-var is " << sqrt(copt/y.size())
          << " for variables " << i1 << i2 << i3 << i4 << i5 << i6 << endl;
- 
+
     copt = 1e100;
     unsigned i7(0);
     for (unsigned j1=0; j1<9; ++j1)
@@ -496,7 +500,7 @@ void tstmrqmin( UnitTest & ut )
                                     }
                                     if (ii==2)
                                     {
-                                    alamda = 0;
+                                        alamda = 0;
                                     }
                                     mrqmin(x,
                                            y,
@@ -534,7 +538,7 @@ void tstmrqmin( UnitTest & ut )
                     }
                     ia[j4] = false;
                     a[j4] = 0.0;
-                    }
+                }
                 ia[j3] = false;
                 a[j3] = 0.0;
             }
@@ -550,15 +554,15 @@ void tstmrqmin( UnitTest & ut )
 
     ia.resize(0);
     ia.resize(9, false);
-//    ia[0] = true;
-//    ia[1] = true;
-//    ia[2] = true;
+    //    ia[0] = true;
+    //    ia[1] = true;
+    //    ia[2] = true;
     ia[3] = true;
-//    ia[4] = true;
+    //    ia[4] = true;
     ia[5] = true;
-//    ia[6] = true;
-//    ia[7] = true;
-//    ia[8] = true;
+    //    ia[6] = true;
+    //    ia[7] = true;
+    //    ia[8] = true;
     for (unsigned ii=0; ii<3; ++ii)
     {
         if (ii==0)
@@ -618,14 +622,14 @@ void tstmrqmin( UnitTest & ut )
     }
     cout << "Max relative deviation = " << maxerr << " at i = " << ierr
          << endl;
-    
+
     if (sqrt(chisq/y.size()) < 1)
     {
-	ut.passes("fit is correct");
+        ut.passes("fit is correct");
     }
     else
     {
-	ut.failure("fit is NOT correct");
+        ut.failure("fit is NOT correct");
     }
 }
 
@@ -634,24 +638,10 @@ void tstmrqmin( UnitTest & ut )
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut( argc, argv, release );
-    try
-    {
-	tstmrqmin(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstmrqmin, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstmrqmin, an unknown exception was thrown."
-             << endl;
-	return 1;
-    }
-    return 0;
+    try { tstmrqmin(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstmrqmin.cc
+// end of tstmrqmin.cc
 //---------------------------------------------------------------------------//

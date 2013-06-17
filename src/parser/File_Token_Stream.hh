@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file File_Token_Stream.hh
+ * \file   parser/File_Token_Stream.hh
  * \author Kent G. Budge
- * \brief Definition of class File_Token_Stream.
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \brief  Definition of class File_Token_Stream.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,11 @@
 
 #include <fstream>
 #include "Text_Token_Stream.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::File_Token_Stream::filename_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::File_Token_Stream'
+#endif
 
 namespace rtt_parser 
 {
@@ -30,7 +36,7 @@ using std::ifstream;
  * console error stream \c cerr.
  */
 
-class File_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC File_Token_Stream : public Text_Token_Stream
 {
   public:
 
@@ -78,7 +84,11 @@ class File_Token_Stream : public Text_Token_Stream
 
 } // rtt_parser
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // CCS4_File_Token_Stream_HH
 //---------------------------------------------------------------------------//
-//                      end of File_Token_Stream.hh
+// end of File_Token_Stream.hh
 //---------------------------------------------------------------------------//

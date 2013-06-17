@@ -4,7 +4,8 @@
  * \author Paul Talbot
  * \date   Thu Jul 28 09:20:34 2011
  * \brief  Tests the ExpInt for correct solutions in each routine
- * \note   Copyright 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,7 +16,6 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
 #include "../ExpInt.hh"
 
 using rtt_dsxx::soft_equiv;
@@ -194,39 +194,26 @@ void tstE1_high( rtt_dsxx::UnitTest & ut )
     return;
 }
 
-
 //--------------------------------------------------------------------------//
 // RUN TESTS
 //--------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-        tstEi_low( ut);
+        tstEi_low(  ut);
         tstEi_high( ut);
-        tstEi_neg( ut);
-        tstE0( ut);
-        tstE3_0( ut);
-        tstE4_low( ut);
+        tstEi_neg(  ut);
+        tstE0(      ut);
+        tstE3_0(    ut);
+        tstE4_low(  ut);
         tstE1_high( ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout<<"ERROR: While testing "<<argv[0]<<", "
-                 <<err.what()<<std::endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout<<"ERROR: While testing "<<argv[0]<<", "
-                 <<"An unknown exception was thrown on processor "<<std::endl;
-        return 1;
-    }
-    return 0;
+    UT_EPILOG(ut);
 }
 
 //--------------------------------------------------------------------------//
-//                          end of tstExpInt.cc
+// end of tstExpInt.cc
 //--------------------------------------------------------------------------//

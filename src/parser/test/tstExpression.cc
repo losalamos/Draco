@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Jul 26 08:15:18 2006
  * \brief  Test the Expression class and expression parsing.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -377,27 +378,10 @@ void tstExpression(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        tstExpression(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing " << argv[0] << ", "
-                  << err.what()
-                  << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing " << argv[0] << ", "
-                  << "An unknown exception was thrown."
-                  << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails? EXIT_FAILURE : EXIT_SUCCESS;
+    try { tstExpression(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstExpression.cc
+// end of tstExpression.cc
 //---------------------------------------------------------------------------//

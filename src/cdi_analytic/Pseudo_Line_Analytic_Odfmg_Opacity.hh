@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Pseudo_Line_Analytic_Odfmg_Opacity class definition.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,15 +14,16 @@
 #ifndef __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
 #define __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
 
-#include <vector>
-#include <string>
-
 #include "Analytic_Models.hh"
 #include "Analytic_Odfmg_Opacity.hh"
 #include "Pseudo_Line_Base.hh"
 #include "cdi/OpacityCommon.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_analytic
 {
@@ -38,7 +40,7 @@ using std::pair;
 // 
 //===========================================================================//
 
-class Pseudo_Line_Analytic_Odfmg_Opacity :
+class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
         public Analytic_Odfmg_Opacity, public Pseudo_Line_Base
 {
   private:
@@ -137,8 +139,12 @@ class Pseudo_Line_Analytic_Odfmg_Opacity :
 
 } // end namespace rtt_cdi_analytic
 
-#endif              // __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
 
 //---------------------------------------------------------------------------//
-//                   end of cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.hh
+// end of cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.hh
 //---------------------------------------------------------------------------//

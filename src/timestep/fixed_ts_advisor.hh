@@ -30,7 +30,7 @@ namespace rtt_timestep
  * simply the user input value. 
  */ 
 //===========================================================================//
-class fixed_ts_advisor : public ts_advisor
+class DLL_PUBLIC fixed_ts_advisor : public ts_advisor
 {
 
   // DATA

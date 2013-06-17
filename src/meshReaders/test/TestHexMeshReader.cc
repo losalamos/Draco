@@ -32,8 +32,7 @@ void runTest( std::string const & thisApp )
     using rtt_dsxx::SP;
     using rtt_mesh_element::Element_Definition;
 
-    cout << std::endl << "******* CIC-19 Hex Mesh Reader Tests *******" 
-         << std::endl;
+    cout << "\n******* CIC-19 Hex Mesh Reader Tests *******" << std::endl;
 
     // currentPath
     //string const cp = rtt_dsxx::draco_getcwd();

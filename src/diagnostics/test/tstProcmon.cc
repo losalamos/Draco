@@ -40,7 +40,7 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
         std::ostringstream msg;
         procmon_resource_print("tst_procmon_use_01",msg);
         std::string line=msg.str();
-        std::vector<std::string> tokens = tokenize( line, " \t" );
+        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
 
         std::cout << msg.str() << std::endl;
         for( size_t i=0; i<tokens.size(); ++i )
@@ -65,7 +65,7 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
         std::ostringstream msg;
         procmon_resource_print("tst_procmon_use_02",msg);
         std::string line=msg.str();
-        std::vector<std::string> tokens = tokenize( line, " \t" );
+        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
 
         // Save the VmRSS size
         vmrss_bigger = atof( tokens[10].c_str() );
@@ -84,7 +84,7 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
         std::ostringstream msg;
         procmon_resource_print("tst_procmon_use_03",msg);
         std::string line=msg.str();
-        std::vector<std::string> tokens = tokenize( line, " \t" );
+        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
 
         // Save the VmRSS size
         vmrss_end = atof( tokens[10].c_str() );

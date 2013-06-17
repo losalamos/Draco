@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Header file for the base class time-step advisor.
- * \note   Copyright © 1998-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -18,6 +18,11 @@
 #include <string>
 #include <iostream>
 #include "ds++/config.h"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_timestep::ts_manager::controlling_advisor' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_timestep::ts_manager'
+#endif
 
 namespace rtt_timestep
 {
@@ -36,7 +41,7 @@ class ts_manager;
  */
 // 
 //===========================================================================//
-class ts_advisor
+class DLL_PUBLIC ts_advisor
 {
 
 // NESTED CLASSES AND TYPEDEFS
@@ -165,8 +170,12 @@ class ts_advisor
 
 } // end of rtt_timestep namespace
 
-#endif                          // __timestep_ts_advisor_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __timestep_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of ts_advisor.hh
+// end of ts_advisor.hh
 //---------------------------------------------------------------------------//

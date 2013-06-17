@@ -5,7 +5,8 @@
  * \date   Thu July 10 2008
  * \brief  Regression test based on odfregression10.ipcress, also checks
  *         packing and unpacking.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: ReadOdfIpcressFile.cc
@@ -16,17 +17,10 @@
 #include "../IpcressOdfmgOpacity.hh"
 #include "../IpcressMultigroupOpacity.hh"
 #include "cdi/OpacityCommon.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
 #include <cstdio>
-#include <string>
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)

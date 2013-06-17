@@ -4,20 +4,16 @@
  * \author Kent Budge
  * \date   Tue Aug 26 13:12:30 2008
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
+#include "../mnbrak.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../mnbrak.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -68,27 +64,10 @@ void tstmnbrak(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        tstmnbrak(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstmnbrak, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstmnbrak, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { tstmnbrak(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstmnbrak.cc
+// end of tstmnbrak.cc
 //---------------------------------------------------------------------------//

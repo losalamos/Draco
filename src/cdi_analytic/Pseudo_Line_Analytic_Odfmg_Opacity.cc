@@ -244,7 +244,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                         b1 = bands[b+1];
                         // little bit of an elaborate interpolation dance here
                         double f = 0.5*(b0 + b1)*N - 0.5;
-                        unsigned const i = f;
+                        unsigned const i = static_cast<unsigned int>(f);
                         f -= i;
                         Check(i<N);
                         Check(f>=-0.5 && f<=0.5);

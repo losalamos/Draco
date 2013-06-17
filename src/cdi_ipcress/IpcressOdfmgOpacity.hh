@@ -5,7 +5,8 @@
  * \date   Mon Jan 22 13:56:01 2001
  * \brief  IpcressOdfmgOpacity class header file (derived from
  *         cdi/OdfmgOpacity) 
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,14 +17,15 @@
 
 #include "IpcressDataTable.hh"  // we have a smart pointer to a
                                 // IpcressDataTable object.
-#include "ds++/Assert.hh" 
 #include "ds++/SP.hh"
 #include "cdi/OdfmgOpacity.hh"
 #include "cdi/OpacityCommon.hh"
+#include <cmath> // we need to define log(double) and exp(double
 
-#include <vector>
-#include <string>
-#include <cmath> // we need to define log(double) and exp(double)
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_ipcress
 {
@@ -89,7 +91,7 @@ class IpcressDataTable;
  */
 //===========================================================================//
 
-class IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity
+class DLL_PUBLIC IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 {
 
     // DATA
@@ -586,6 +588,10 @@ OpacityIterator IpcressOdfmgOpacity::getOpacity(
 }
 
 } // end namespace rtt_cdi_ipcress
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_ipcress_IpcressOdfmgOpacity_hh__
 

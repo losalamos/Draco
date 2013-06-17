@@ -4,7 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Mesh_Reader library.
- * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,6 +17,11 @@
 #include "RTT_Format_Reader.hh"
 #include "meshReaders/Mesh_Reader.hh"
 #include "mesh_element/Element_Definition.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Abstract_Class_Parser_Base::keys_' : class 'rtt_parser::Abstract_Class_Parser_Base::c_string_vector' needs to have dll-interface to be used by clients of class 'rtt_parser::Abstract_Class_Parser_Base'
+#endif
 
 namespace rtt_RTT_Format_Reader
 {
@@ -41,7 +47,7 @@ namespace rtt_RTT_Format_Reader
 // 
 //===========================================================================//
 
-class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
+class DLL_PUBLIC RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef std::string string;
@@ -148,8 +154,12 @@ class RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif                          // __RTT_Format_Reader_RTT_Mesh_Reader_hh__
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // __RTT_Format_Reader_RTT_Mesh_Reader_hh__
 
 //---------------------------------------------------------------------------//
-//                  end of RTT_Format_Reader/RTT_Mesh_Reader.hh
+// end of RTT_Format_Reader/RTT_Mesh_Reader.hh
 //---------------------------------------------------------------------------//

@@ -50,13 +50,13 @@ namespace rtt_viz
  * future exercise).
  */
 template<class SSF>
-Ensight_Translator::Ensight_Translator(const std_string &prefix,
-				       const std_string &gd_wpath,
-				       const SSF        &vdata_names,
-				       const SSF        &cdata_names,
-				       const bool        overwrite,
-				       const bool        static_geom,
-				       const bool        binary)
+Ensight_Translator::Ensight_Translator( const std_string &prefix,
+                                        const std_string &gd_wpath,
+                                        const SSF        &vdata_names,
+                                        const SSF        &cdata_names,
+                                        const bool        overwrite,
+                                        const bool        static_geom,
+                                        const bool        binary)
     : d_static_geom(static_geom),
       d_binary(binary),
       d_dump_dir(gd_wpath),

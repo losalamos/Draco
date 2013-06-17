@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:57:58 2005
  * \brief  Header for Index_Labeled.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +14,13 @@
 #ifndef rtt_norms_Index_Labeled_hh
 #define rtt_norms_Index_Labeled_hh
 
+#include "ds++/config.h"
 #include <string>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_norms
 {
@@ -25,7 +32,7 @@ namespace rtt_norms
  */
 //===========================================================================//
 
-struct Index_Labeled 
+struct DLL_PUBLIC Index_Labeled 
 {
     //! The index.
     size_t index;
@@ -46,8 +53,12 @@ struct Index_Labeled
 
 } // end namespace rtt_norms
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // rtt_norms_Index_Labeled_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/Index_Labeled.hh
+// end of norms/Index_Labeled.hh
 //---------------------------------------------------------------------------//

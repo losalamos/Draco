@@ -350,12 +350,24 @@ macro( copy_win32_dll_to_test_dir )
          # message("   Ut_${compname}_${testname}_exe --> ${lib}")
          unset( ${comp_target}_loc )
          get_target_property( ${comp_target}_loc ${lib} LOCATION )
-         add_custom_command( TARGET Ut_${compname}_${testname}_exe 
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-            )
+         # Also grab the file with debug info
+         string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
+         #if( EXISTS ${pdb_file} )
+            add_custom_command( TARGET Ut_${compname}_${testname}_exe 
+               POST_BUILD
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                       ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file} 
+                       ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+               )
+         # else()
+            # add_custom_command( TARGET Ut_${compname}_${testname}_exe 
+               # POST_BUILD
+               # COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                       # ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+               # )
          # message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+         # endif()
       endforeach()
    endif()
 endmacro()

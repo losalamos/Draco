@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Wednesday, Nov 16, 2011, 17:07 pm
  * \brief  Header file for IpcressDataTable
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,8 +19,11 @@
 // enumerated items are defined: { Model, Reaction } 
 #include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
-#include <vector>
-#include <string>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_ipcress
 {
@@ -39,7 +43,7 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class IpcressDataTable 
+class DLL_PUBLIC IpcressDataTable 
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -224,7 +228,11 @@ class IpcressDataTable
 
 };
 
-} // end namespace rtt_cdi_ipcress
+} // end namespace 
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __cdi_ipcress_IpcressDataTable_hh__
 

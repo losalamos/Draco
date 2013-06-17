@@ -34,9 +34,13 @@ set( random123_unit_tests
    ${PROJECT_SOURCE_DIR}/ut_ars.c
    ${PROJECT_SOURCE_DIR}/ut_carray.cpp
    ${PROJECT_SOURCE_DIR}/ut_gsl.c
-   ${PROJECT_SOURCE_DIR}/ut_Engine.cpp
    ${PROJECT_SOURCE_DIR}/ut_M128.cpp
 )
+if( NOT WIN32 )
+   # Visual Studio 2010 does not support uniform_int_distribution<int> from C++11/C++0x.
+   list( APPEND random123_unit_tests 
+      ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
+endif()
 
 # Random123 known-answer tests
 set( random123_known_answer_tests
@@ -71,7 +75,7 @@ add_component_library(
 
 add_scalar_tests( 
    SOURCES "${test_sources}"
-   DEPS    "Lib_rng_test" ) # dsxx;${GSL_LIBRARIES};" )
+   DEPS    "Lib_rng_test" ) 
 
 if( RANDOM123_FOUND)
    # Random123 unit tests almost all use assert to check for failures,

@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 18 09:06:26 2007
  * \brief  Test the L2norm function template.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.  
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,6 @@
 #include <vector>
 #include <cmath>
 
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
@@ -53,27 +53,10 @@ void tstL2norm( UnitTest &ut)
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
-    try
-    {
-        tstL2norm(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstL2norm, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstL2norm, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { tstL2norm(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstL2norm.cc
+// end of tstL2norm.cc
 //---------------------------------------------------------------------------//

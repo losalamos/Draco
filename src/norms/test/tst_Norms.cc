@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 09:12:16 2005
  * \brief  Tests Norms.
- * \note   Copyright 2004-2010 Los Alamos National Security, LLC. All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC. 
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,15 +13,14 @@
 
 #include "norms_test.hh"
 
-#include "ds++/Release.hh"
 #include "../Norms.hh"
 #include "../Norms_Labeled.hh"
 #include "../Norms_Proc.hh"
-
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include "c4/global.hh"
 #include "c4/SpinLock.hh"
+#include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/Release.hh"
 
 #include <iostream>
 #include <sstream>
@@ -302,6 +302,12 @@ int main(int argc, char *argv[])
                       << rtt_c4::node() 
                       << std::endl;
 	}
+    else
+	{
+	    std::cout << "**** tst_Norms Test: FAILED on " 
+                      << rtt_c4::node() 
+                      << std::endl;
+	}
 	std::cout <<     "*********************************************" 
                   << std::endl;
 	std::cout << std::endl;
@@ -318,5 +324,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tst_Norms.cc
+// end of tst_Norms.cc
 //---------------------------------------------------------------------------//

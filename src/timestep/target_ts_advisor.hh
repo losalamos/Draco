@@ -29,7 +29,7 @@ namespace rtt_timestep {
  * a predetermined problem time. 
  */ 
 //===========================================================================//
-class target_ts_advisor : public ts_advisor
+class DLL_PUBLIC target_ts_advisor : public ts_advisor
 {
 
 // DATA

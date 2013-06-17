@@ -3,8 +3,9 @@
  * \file   sf/KroneckerDelta_pt.cc
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
- * \brief  Provide explicit instantiations of templatized KroneckerDelta function. 
- * \note   Copyright 2006 The Regents of the University of California.
+ * \brief  Provide explicit instantiations of templatized KroneckerDelta function.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,24 +19,24 @@ namespace rtt_sf
 //---------------------------------------------------------------------------//
 // Make kronecker delta valid only for double, int, unsigned, and float.
 
-template 
+template DLL_PUBLIC
 unsigned int kronecker_delta( double const test_value, 
 			double const offset ) ;
-template 
+template DLL_PUBLIC
 unsigned int kronecker_delta( int const test_value, 
 		     int const offset ) ;
-template 
+template DLL_PUBLIC
 unsigned int kronecker_delta( long const test_value, 
 		      long const offset ) ;
-template 
+template DLL_PUBLIC
 unsigned int kronecker_delta( unsigned const test_value, 
 			  unsigned const offset ) ;
-template 
+template DLL_PUBLIC
 unsigned int kronecker_delta( float const test_value, 
 		       float const offset ) ;
 
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//              end of sf/KroneckerDelta_pt.cc
+// end of sf/KroneckerDelta_pt.cc
 //---------------------------------------------------------------------------//

@@ -16,6 +16,7 @@
 #include "Token_Stream.hh"
 #include "Parse_Table.hh"
 #include "ds++/SP.hh"
+#include <iostream>
 #include <cstring>
 
 namespace rtt_parser
@@ -34,21 +35,20 @@ using rtt_dsxx::SP;
  * the keyword table is properly cleaned up when the program terminates.
  */
 
-class Abstract_Class_Parser_Base
+class DLL_PUBLIC Abstract_Class_Parser_Base
 {
   protected:
 
     // TYPES
 
-    class c_string_vector : public vector<char *>
+    class DLL_PUBLIC c_string_vector : public vector<char *>
     {
       public:
-
         ~c_string_vector();
     };
 
     // provide a virtual destrcutor for the base class.
-    virtual ~Abstract_Class_Parser_Base();
+    virtual ~Abstract_Class_Parser_Base() {/* empty */};
 
     // DATA
 
@@ -99,11 +99,10 @@ class Abstract_Class_Parser_Base
  */
 //===========================================================================//
 
-template<class Abstract_Class,
-         Parse_Table &get_parse_table(),
-         SP<Abstract_Class> &get_parsed_object()>
-
-class Abstract_Class_Parser : private Abstract_Class_Parser_Base
+template< typename Abstract_Class,
+          Parse_Table &get_parse_table(),
+          SP<Abstract_Class> &get_parsed_object() >
+class DLL_PUBLIC Abstract_Class_Parser : private Abstract_Class_Parser_Base
 {
   public:
     
@@ -141,5 +140,5 @@ class Abstract_Class_Parser : private Abstract_Class_Parser_Base
 #endif // parser_Abstract_Class_Parser_hh
 
 //---------------------------------------------------------------------------//
-//              end of parser/Abstract_Class_Parser.hh
+// end of parser/Abstract_Class_Parser.hh
 //---------------------------------------------------------------------------//

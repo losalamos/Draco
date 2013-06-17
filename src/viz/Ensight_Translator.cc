@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator implementation file (non-templated code).
- * \note   Copyright (C) 2000-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -175,11 +175,19 @@ close()
  */
 void Ensight_Translator::create_filenames(const std_string &prefix)
 {
-    // ensight directory name
-    d_prefix = d_dump_dir + "/" + prefix + "_ensight";
-
+    if( d_dump_dir[d_dump_dir.size()-1] == rtt_dsxx::UnixDirSep ||
+        d_dump_dir[d_dump_dir.size()-1] == rtt_dsxx::WinDirSep )
+    {
+        // ensight directory name
+        d_prefix = d_dump_dir + prefix + "_ensight";
+    }
+    else
+    {
+        // ensight directory name
+        d_prefix = d_dump_dir + "/" + prefix + "_ensight";
+    }
     // case file name
-    d_case_filename = d_prefix + "/" + prefix + ".case";
+    d_case_filename = d_prefix + rtt_dsxx::dirSep + prefix + ".case";
 }
 
 //---------------------------------------------------------------------------//
@@ -253,55 +261,57 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     d_cell_type_index[13] = six_node_wedge;
     d_cell_type_index[14] = fifteen_node_wedge;
 
-
-    struct stat sbuf;
-    int stat_ret = stat(d_dump_dir.c_str(), &sbuf);
-    if(stat_ret)
+    // Check d_dump_dir
+    rtt_dsxx::draco_getstat dumpDirStat( d_dump_dir );
+    //struct stat sbuf;
+    //int stat_ret = stat(d_dump_dir.c_str(), &sbuf);
+    if( ! dumpDirStat.isdir() )
     {
-	std::ostringstream dir_error;
-	dir_error << "Error opening dump directory \"" 
-		  << d_dump_dir << "\": "
-		  << strerror(errno);
-	Insist (0,  dir_error.str().c_str());
+        std::ostringstream dir_error;
+        dir_error << "Error opening dump directory \"" 
+		        << d_dump_dir << "\": " << strerror(errno);
+        Insist( dumpDirStat.isdir(),  dir_error.str() );
     }
+
+    // try to create d_prefix
     rtt_dsxx::draco_mkdir( d_prefix );
-    stat_ret = stat(d_prefix.c_str(), &sbuf);
-    if(stat_ret)
+    rtt_dsxx::draco_getstat prefixDirStat( d_prefix );
+    // stat_ret = stat(d_prefix.c_str(), &sbuf);
+    if( ! prefixDirStat.isdir() )
     {
-	std::ostringstream dir_error;
-	dir_error << "Unable to create EnSight directory \"" 
-		  << d_prefix << "\": "
-		  << strerror(errno);
-	Insist (0,  dir_error.str().c_str());
+        std::ostringstream dir_error;
+        dir_error << "Unable to create EnSight directory \"" 
+                  << d_prefix << "\": " << strerror(errno);
+        Insist ( dumpDirStat.isdir(),  dir_error.str() );
     }
 
     // See if the case file exists
-    stat_ret = stat(d_case_filename.c_str(), &sbuf);
-    
+    struct stat sbuf;
+    int stat_ret = stat(d_case_filename.c_str(), &sbuf);    
     
     // build the ensight directory if this is not a continuation
     if (!graphics_continue)
     { 
-	// We have guaranteed that our prefix directory exists at this
-	// point.  Now, wipe out files that we might have created in there...
-	if(!stat_ret)
-	{
+        // We have guaranteed that our prefix directory exists at this
+        // point.  Now, wipe out files that we might have created in there...
+        if(!stat_ret)
+        {
             rtt_dsxx::draco_remove_dir( d_prefix );
             rtt_dsxx::draco_mkdir(      d_prefix );
-	}
+        }
     }
     else
     {
-	// We were asked for a continuation.  Complain if we don't have a
-	// case file.
-	if(stat_ret)
-	{
-	    std::ostringstream dir_error;
-	    dir_error << "EnSight directory \""
-		      << d_prefix << "\" doesn't contain a case file!";
-	    Insist (0,  dir_error.str().c_str());
-	}
-    
+        // We were asked for a continuation.  Complain if we don't have a
+        // case file.
+        if(stat_ret)
+        {
+            std::ostringstream dir_error;
+            dir_error << "EnSight directory \""
+                      << d_prefix << "\" doesn't contain a case file!";
+            Insist (0,  dir_error.str().c_str());
+        }
+
     }
        
     // Check to make sure the variable names are of acceptable length 
@@ -461,5 +471,5 @@ void Ensight_Translator::write_case()
 } // end of rtt_viz
 
 //---------------------------------------------------------------------------//
-//                              end of Ensight_Translator.cc
+// end of Ensight_Translator.cc
 //---------------------------------------------------------------------------//

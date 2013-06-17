@@ -18,6 +18,7 @@
 #include <list>
 #include <iostream>
 #include <map>
+#include <vector>
 
 #if defined(MSVC)
 #   pragma warning (push)
@@ -163,6 +164,8 @@ class DLL_PUBLIC UnitTest
     bool dbcEnsure(void)  const { return m_dbcEnsure;  }
     bool dbcNothrow(void) const { return m_dbcNothrow; }
     bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
+    std::string getTestPath(void) const { return testPath; }
+    std::string getTestName(void) const { return testName; }
 
     // DATA
     //! The number of passes found for this test.
@@ -175,6 +178,10 @@ class DLL_PUBLIC UnitTest
     get_word_count( std::ostringstream const & data, bool verbose=false );
     static std::map< std::string, unsigned >
     get_word_count( std::string const & filename, bool verbose=false );
+    static std::vector<std::string> tokenize(
+        std::string const & source,
+        char        const * delimiter_list = " ",
+        bool                keepEmpty      = false);
     
   protected:
 
@@ -205,19 +212,25 @@ class DLL_PUBLIC UnitTest
 
 } // end namespace rtt_dsxx
 
-// #define PASSMSG(m) ut.passes(m)
-// #define FAILMSG(m) ut.failure(m)
-// #define ITFAILS    ut.failure( __LINE__, __FILE__ )
-// #define FAILURE    ut.failure(__LINE__, __FILE__);
-// #define UT_PROLOG(foo) typedef ut foo
-#define UT_EPILOG(foo) catch (rtt_dsxx::assertion &err) {     \
-std::cout << "ERROR: While testing " << argv[0] << ", " \
-          << err.what() << std::endl; \
-foo.numFails++; } catch( ... ) { \
-std::cout << "ERROR: While testing " << argv[0] << ", " \
-          << "An unknown exception was thrown on processor " \
-          << std::endl; foo.numFails++; }; return foo.numFails; 
-
+//#define PASSMSG(ut,m)  ut.passes(m)
+//#define FAILMSG(ut,m)  ut.failure(m)
+//#define ITFAILS(ut)    ut.failure( __LINE__, __FILE__ )
+//#define FAILURE(ut)    ut.failure( __LINE__, __FILE__ );
+//#define UT_PROLOG(foo) typedef ut foo
+#define UT_EPILOG(foo) \
+catch (rtt_dsxx::assertion &err) {     \
+   std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", " \
+             << "the following error was thrown...\n" \
+             << err.what() << std::endl; foo.numFails++; } \
+catch(std::exception &err) { \
+   std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+             << "the following error was thrown...\n" \
+             << err.what() << std::endl; foo.numFails++; } \
+catch( ... ) { \
+   std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+             << "An unknown exception was thrown on processor " \
+             << std::endl; foo.numFails++; }; \
+return foo.numFails; 
 
 #if defined(MSVC)
 #   pragma warning (pop)

@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Fri Jul 21 09:10:49 2006
  * \brief  Unit test for functions in Token_Equivalence.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,9 +14,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "ds++/ScalarUnitTest.hh"
 #include "../Token_Equivalence.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -62,40 +63,11 @@ void tstOne( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
-        // function setTestName).
-        ScalarUnitTest ut( argc, argv, release );
-        tstOne(ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstOne(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstToken_Equivalence.cc
+// end of tstToken_Equivalence.cc
 //---------------------------------------------------------------------------//

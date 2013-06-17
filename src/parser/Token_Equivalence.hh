@@ -3,7 +3,8 @@
  * \file Token_Equivalence.hh
  * \author Kelly G. Thompson
  * \brief Provide services for ApplicationUnitTest framework.
- * \note Copyright © 2006 Los Alamos National Security, LLC
+ * \note Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -19,6 +20,7 @@
 namespace rtt_parser 
 {
 //! Search tokens for existance of keyword.
+DLL_PUBLIC
 void check_token_keyword( String_Token_Stream       & tokens,
                           std::string         const & keyword,
                           rtt_dsxx::UnitTest        & ut,
@@ -26,6 +28,7 @@ void check_token_keyword( String_Token_Stream       & tokens,
 
 //! Search tokens for keyword and compare associated value.  Report result to
 //! UnitTest. 
+DLL_PUBLIC
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
                                 int                 const   value,
@@ -34,6 +37,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
 
 //! Search tokens for keyword and compare associated value.  Report result to
 //! UnitTest. 
+DLL_PUBLIC
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
                                 double              const   value,

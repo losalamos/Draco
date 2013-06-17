@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 22 13:23:37 2001
  * \brief  IpcressGrayOpacity class header file (derived from cdi/GrayOpacity)
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -27,6 +27,11 @@
 // C++ standard library dependencies
 #include <vector>
 #include <string>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 
+#endif
 
 namespace rtt_cdi_ipcress
 {
@@ -95,7 +100,7 @@ class IpcressFile;
  */
 //===========================================================================//
 
-class IpcressGrayOpacity : public rtt_cdi::GrayOpacity
+class DLL_PUBLIC IpcressGrayOpacity : public rtt_cdi::GrayOpacity
 {
 
     // DATA
@@ -515,8 +520,12 @@ OpacityIterator IpcressGrayOpacity::getOpacity(
 
 } // end namespace rtt_cdi_ipcress
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif // __cdi_ipcress_IpcressGrayOpacity_hh__
 
 //---------------------------------------------------------------------------//
-//                end of cdi_ipcress/IpcressGrayOpacity.hh
+// end of cdi_ipcress/IpcressGrayOpacity.hh
 //---------------------------------------------------------------------------//

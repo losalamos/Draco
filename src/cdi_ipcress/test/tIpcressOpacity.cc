@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Oct 26 10:50:44 2001
  * \brief
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,16 +17,8 @@
 #include "../IpcressMultigroupOpacity.hh"
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/ScalarUnitTest.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <string>
-#include <sstream>
 #include <algorithm>
 
 using namespace std;
@@ -1443,34 +1436,20 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 
 int main(int argc, char *argv[])
 {
-    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
-    cout << "\nWe are testing cdi_ipcress: version "
-         << rtt_dsxx::release() << "\n" << endl;
-    
+    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);    
     try
     {
-	// >>> UNIT TESTS
-	file_check_Al_BeCu(ut);
-	file_check_analytic(ut);
-	check_ipcress_stl_accessors(ut);
+        // >>> UNIT TESTS
+        file_check_Al_BeCu(ut);
+        file_check_analytic(ut);
+        check_ipcress_stl_accessors(ut);
 
-	gray_opacity_packing_test(ut);
-	mg_opacity_packing_test(ut);
+        gray_opacity_packing_test(ut);
+        mg_opacity_packing_test(ut);
     }
-    catch (rtt_dsxx::assertion const & error)
-    {
-	cout << "While testing tIpcressOpacity, " << error.what() << endl;
-	ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tIpcressOpacity, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tIpcressOpacity.cc
+// end of tIpcressOpacity.cc
 //---------------------------------------------------------------------------//

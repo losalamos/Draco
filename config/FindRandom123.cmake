@@ -8,11 +8,10 @@ find_path( RANDOM123_INCLUDE_DIR
     NAMES
        "Random123/threefry.h"
     PATHS
-       ${RANDOM123_INC_DIR}
-       $ENV{RANDOM123_INC_DIR}
+       "${RANDOM123_INC_DIR}"
+       "$ENV{RANDOM123_INC_DIR}"
     NO_DEFAULT_PATH
 )
-
 mark_as_advanced( RANDOM123_INCLUDE_DIR )
 
 # handle the QUIETLY and REQUIRED arguments and set RANDOM123_FOUND to

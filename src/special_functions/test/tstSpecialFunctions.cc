@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Sep 27 12:49:39 2005
  * \brief  Unit tests for kronecker_delta and factorial.
- * \note   Copyright (C) 2006-2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -12,10 +13,10 @@
 
 #include <iostream>
 
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "../Factorial.hh"
 #include "../KroneckerDelta.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 
 //---------------------------------------------------------------------------//
@@ -158,33 +159,16 @@ int main(int argc, char *argv[])
 {
     using namespace rtt_sf;
     using namespace std;
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
         tstFactorial(ut);
         tstKdelta(ut);
         tstFF(ut);
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of test_sf.cc
+// end of test_sf.cc
 //---------------------------------------------------------------------------//

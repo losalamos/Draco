@@ -31,7 +31,7 @@ namespace rtt_timestep
  * current_dt*ratio. 
  */ 
 //===========================================================================//
-class ratio_ts_advisor : public ts_advisor
+class DLL_PUBLIC ratio_ts_advisor : public ts_advisor
 {
 
 // DATA

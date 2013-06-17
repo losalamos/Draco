@@ -5,7 +5,7 @@
  * \date   Mon Oct 3 13:16 2011
  * \brief  Execute the binary Ipcress_Interpreter by redirecting the
  *         contents of IpcressInterpreter.stdin as stdin.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,19 +14,17 @@
 
 #include "config.h"
 #include "cdi_ipcress_test.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include <iostream>
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/path.hh"
 #include <fstream>
-#include <sstream>
-#include <string>
 #include <cstdlib>
 #include <cerrno>
 #include <cstring>
+#include <cmath>
 
 using namespace std;
-
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
@@ -43,14 +41,39 @@ using namespace std;
 
 void runtest(rtt_dsxx::ScalarUnitTest &ut)
 {
+    // Setup paths:
+
+    // The Ipcress_Interpreter binary will be at ${build_dir}/${configuration}/ 
+    // for XCode and MSVC.  For Unix Makefiles it will be at ${build_dir}.
+    
+    // This will be the correct path for Generators that do not use 
+    // $(Configurations).
+    string bindir = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
+            rtt_dsxx::FC_PATH );
+    if( rtt_dsxx::getFilenameComponent( ut.getTestPath(), rtt_dsxx::FC_NAME ) 
+        != "test" )
+    {  
+        // The project generator does use $(configuration).  So the unit 
+        // test is at cdi_ipcress/test/$(Configuration), but the binary is
+        // at cdi_ipcress/$(Configuration)
+        string configuration = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
+            rtt_dsxx::FC_NAME );
+        bindir = rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_PATH )
+            + configuration;
+        bindir = rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_NATIVE );
+    }
+
     // String to hold command that will start the test.  For example:
     // "../bin/Ipcress_Interpreter Al_BeCu.ipcress < IpcressInterpreter.stdin"
     ostringstream cmd;
-    cmd << IPCRESS_INTERPRETER_BIN_DIR << "/Ipcress_Interpreter"
+    cmd << bindir << rtt_dsxx::dirSep << "Ipcress_Interpreter" 
+        << rtt_dsxx::exeExtension
         // << " " << IPCRESS_INTERPRETER_BUILD_DIR << "/Al_BeCu.ipcress"
         << " " << "Al_BeCu.ipcress"
-        << " < " << IPCRESS_INTERPRETER_SOURCE_DIR << "/IpcressInterpreter.stdin" 
-        << " > " << IPCRESS_INTERPRETER_BUILD_DIR << "/tstIpcressInterpreter.out";
+        << " < " << IPCRESS_INTERPRETER_SOURCE_DIR << rtt_dsxx::dirSep 
+        << "IpcressInterpreter.stdin" 
+        << " > " << IPCRESS_INTERPRETER_BUILD_DIR  << rtt_dsxx::dirSep 
+        << "tstIpcressInterpreter.out";
 
     cout << "Preparing to run: \n" << endl;
     string consoleCommand( cmd.str() );
@@ -127,18 +150,35 @@ void check_output(rtt_dsxx::ScalarUnitTest &ut)
             ITFAILS;
         if( dataByLine[24] != string("Frequency grid") )
             ITFAILS;
-        if( dataByLine[25] != string("1	1.0000000e-05") )
+        // dataByLine[25] = "1\t1.0000000e-005"
+        std::vector<std::string> wordsInLine 
+            = rtt_dsxx::UnitTest::tokenize( dataByLine[25], "\t" );
+        double ddata = atof( wordsInLine[1].c_str() );
+        if( ! rtt_dsxx::soft_equiv( ddata, 1.0e-5 ) )
             ITFAILS;
-        if( dataByLine[69] != string("material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: ") )
-        {
-            cout << "match failed: \n   "
-                 << dataByLine[68] << " != \n   "
-                 << "material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: " << endl;
+        // dataByLine[69] = "material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: "
+        wordsInLine = rtt_dsxx::UnitTest::tokenize( dataByLine[69] );
+        if( wordsInLine[0] != string("material") )  ITFAILS;
+        if( wordsInLine[1] != string("0") )         ITFAILS;
+        if( wordsInLine[2] != string("Id(10001)") ) ITFAILS;
+        if( wordsInLine[3] != string("at") )        ITFAILS;
+        if( wordsInLine[4] != string("density") )   ITFAILS;
+        if( ! rtt_dsxx::soft_equiv( atof( 
+            wordsInLine[5].substr(0,wordsInLine[5].size()-1).c_str() ), 
+            1.0e-01 ) ) ITFAILS;
+        if( wordsInLine[6] != string("temperature") )  ITFAILS;
+        if( ! rtt_dsxx::soft_equiv( atof( wordsInLine[7].c_str() ), 1.0 ) ) 
             ITFAILS;
-        }
+        if( wordsInLine[8] != string("is:") )          ITFAILS;
+
         if( dataByLine[70] != string("Index 	 Group Center 		 Opacity") )
             ITFAILS;
-        if( dataByLine[71] != string("1	 8.9050000e-03   	 1.0000000e+10") )
+        // dataByLine[71] = "1\t8.9050000e-03\t1.0000000e+10"
+        wordsInLine = rtt_dsxx::UnitTest::tokenize( dataByLine[71], "\t" );
+        if( atoi( wordsInLine[0].c_str() ) != 1 ) ITFAILS;
+        if( ! rtt_dsxx::soft_equiv( atof( wordsInLine[1].c_str() ), 8.9050000e-03 ) )
+            ITFAILS; 
+        if( ! rtt_dsxx::soft_equiv( atof( wordsInLine[2].c_str() ), 1.0000000e+10 ) )
             ITFAILS;
     }
     
@@ -156,21 +196,9 @@ int main(int argc, char* argv[])
         if( ut.numFails == 0 )
             check_output(ut);
     }
-    catch ( exception const & err)
-    {
-        cout << "ERROR: While testing tstIpcress_Interpreter.cc, " 
-             << err.what() << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing tstIpcress_Interpreter.cc, " 
-             << "An unknown exception was thrown. "<< endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//      end of tstIpcress_Interpreter.cc
+// end of tstIpcress_Interpreter.cc
 //---------------------------------------------------------------------------//

@@ -4,8 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader library.
- * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -31,6 +31,11 @@
 #include "SideData.hh"
 #include "CellData.hh"
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Abstract_Class_Parser_Base::keys_' : class 'rtt_parser::Abstract_Class_Parser_Base::c_string_vector' needs to have dll-interface to be used by clients of class 'rtt_parser::Abstract_Class_Parser_Base'
+#endif
+
 namespace rtt_RTT_Format_Reader
 {
 //===========================================================================//
@@ -52,7 +57,7 @@ namespace rtt_RTT_Format_Reader
 // 
 //===========================================================================//
 
-class RTT_Format_Reader
+class DLL_PUBLIC RTT_Format_Reader
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef std::ifstream ifstream;
@@ -734,6 +739,10 @@ class RTT_Format_Reader
 };
 
 } // end namespace rtt_RTT_Format_Reader
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __RTT_Format_Reader_RTT_Format_Reader_hh__
 

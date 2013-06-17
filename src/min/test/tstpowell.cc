@@ -4,21 +4,18 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
+#include "../powell.hh"
+#include "units/PhysicalConstants.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "units/PhysicalConstants.hh"
-
 #include "ds++/Release.hh"
-#include "../powell.hh"
 #include "ds++/cube.hh"
 
 using namespace std;
@@ -29,7 +26,6 @@ using rtt_units::PI;
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-
 
 unsigned const NP = 2;
 
@@ -89,26 +85,11 @@ void tstpowell( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-        tstpowell(ut);
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown." << endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstpowell(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of testpowell.cc
+// end of testpowell.cc
 //---------------------------------------------------------------------------//

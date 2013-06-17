@@ -20,6 +20,11 @@
 #include "ds++/Check_Strings.hh"
 #include <set>
 
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_viz::Ensight_Translator::d_dump_dir' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_viz::Ensight_Translator'
+#endif
+
 namespace rtt_viz
 {
 
@@ -137,7 +142,7 @@ enum Ensight_Cell_Types
 // 
 //===========================================================================//
 
-class Ensight_Translator 
+class DLL_PUBLIC Ensight_Translator 
 {
   public:
     // Ensight_Translator typedefs.
@@ -301,8 +306,12 @@ class Ensight_Translator
 
 #include "Ensight_Translator.t.hh"
 
-#endif                          // rtt_viz_Ensight_Translator_hh
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
+#endif // rtt_viz_Ensight_Translator_hh
 
 //---------------------------------------------------------------------------//
-//                              end of viz/Ensight_Translator.hh
+// end of viz/Ensight_Translator.hh
 //---------------------------------------------------------------------------//

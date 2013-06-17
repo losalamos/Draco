@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide declaration of templatized KroneckerDelta function.
- * \note   Copyright 2006 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,11 +14,13 @@
 #ifndef sf_KroneckerDelta_hh
 #define sf_KroneckerDelta_hh
 
+#include "ds++/config.h"
+
 namespace rtt_sf
 {
 
 //! \brief kronecker_delta
-template< typename T >
+template< typename T > DLL_PUBLIC
 unsigned int kronecker_delta( T const test_value, T const offset );
 
 } // end namespace rtt_sf
@@ -25,5 +28,5 @@ unsigned int kronecker_delta( T const test_value, T const offset );
 #endif // sf_KroneckerDelta_hh
 
 //---------------------------------------------------------------------------//
-//              end of sf/KroneckerDelta.hh
+// end of sf/KroneckerDelta.hh
 //---------------------------------------------------------------------------//

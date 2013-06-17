@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------------------//
 /*!
- * \file utilities.cc
+ * \file   parser/utilities.cc
  * \author Kent G. Budge
- * \date 18 Feb 2003
- * \brief Definitions of parsing utility functions.
- * \note   Copyright © 2006 Los Alamos National Security, LLC
+ * \date   18 Feb 2003
+ * \brief  Definitions of parsing utility functions.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id$
@@ -34,20 +35,20 @@ unsigned parse_unsigned_integer(Token_Stream &tokens)
     Token const token = tokens.shift();
     if (token.type() == INTEGER)
     {
-	errno = 0;
-	char *endptr;
-	unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
-	if (Result != static_cast<unsigned>(Result) || errno==ERANGE)
-	{
-	    tokens.report_semantic_error("integer value overflows");
-	}
-	Check(endptr != NULL);
-	return Result;
+        errno = 0;
+        char *endptr;
+        unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
+        if (Result != static_cast<unsigned>(Result) || errno==ERANGE)
+        {
+            tokens.report_semantic_error("integer value overflows");
+        }
+        Check(endptr != NULL);
+        return Result;
     }
     else
     {
-	tokens.report_syntax_error(token, "expected an unsigned integer");
-	return 0;
+        tokens.report_syntax_error(token, "expected an unsigned integer");
+        return 0;
     }
 }
 
@@ -948,5 +949,5 @@ SP<Expression> parse_quantity(Token_Stream &tokens,
 
 } // rtt_parser
 //---------------------------------------------------------------------------------------//
-//                          end of utilities.cc
+// end of utilities.cc
 //---------------------------------------------------------------------------------------//

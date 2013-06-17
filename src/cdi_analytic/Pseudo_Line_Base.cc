@@ -29,6 +29,14 @@ using namespace rtt_dsxx;
 using namespace rtt_cdi;
 
 //---------------------------------------------------------------------------//
+#ifdef _MSC_VER
+double expm1( double const & x )
+{
+    return std::exp(x) - 1.0;
+}
+#endif
+
+//---------------------------------------------------------------------------//
 void Pseudo_Line_Base::setup_(double emin,
                               double emax)
 {
@@ -78,7 +86,7 @@ void Pseudo_Line_Base::setup_(double emin,
             unsigned N = continuum_table_.size();
             if (N>0)
             {
-                C = continuum_table_[edge_[i]*N/emax];
+                C = continuum_table_[static_cast<unsigned int>(edge_[i]*N/emax)];
             }
             else
             {
@@ -291,7 +299,7 @@ double Pseudo_Line_Base::monoOpacity(double const x,
         unsigned N = continuum_table_.size();
         if (N>0)
         {
-            Result = continuum_table_[x*N/emax_];
+            Result = continuum_table_[static_cast<unsigned int>(x*N/emax_)];
         }
         else
         {

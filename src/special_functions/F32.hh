@@ -4,9 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 21 12:06:09 2004
  * \brief  Compute Fermi-Dirac function of 1/2 order
- * \note   © Copyright 2006 LANSLLC All rights reserved.
- *
- * Long description.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,10 +14,12 @@
 #ifndef sf_F32_hh
 #define sf_F32_hh
 
+#include "ds++/config.h"
+
 namespace rtt_sf
 {
 //! Calculate Fermi-Dirac integral of index 3/2.
-template<class OrderedField>
+template<typename OrderedField> DLL_PUBLIC
 OrderedField F32(OrderedField const &x);
 
 } // end namespace rtt_sf
@@ -26,5 +27,5 @@ OrderedField F32(OrderedField const &x);
 #endif // sf_F32_hh
 
 //---------------------------------------------------------------------------//
-//              end of sf/F32.hh
+// end of sf/F32.hh
 //---------------------------------------------------------------------------//

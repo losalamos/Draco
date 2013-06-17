@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:26:42 2002
  * \brief  RTT_Format_Reader test.
- * \note   Copyright (C) 2002-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */
@@ -14,8 +14,8 @@
 #include "../RTT_Mesh_Reader.hh"
 #include "../CellDefs.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/path.hh"
 
 #include <sstream>
 
@@ -35,10 +35,13 @@ map<Meshes, bool> Dims_validated;
 
 void runTest(UnitTest &ut)
 {
+    // Find the mesh file
+    string const appPath = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
+                           rtt_dsxx::FC_NATIVE );
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
     int const MAX_MESHES = 1;
-    std::string filename[MAX_MESHES] = {"rttdef.mesh"};
+    std::string filename[MAX_MESHES] = { appPath + string("rttdef.mesh") };
     Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)
@@ -1907,37 +1910,11 @@ bool check_cell_data(RTT_Format_Reader const & mesh,
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        // >>> UNIT TESTS
-        ScalarUnitTest ut( argc, argv, release );
-        runTest(ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { runTest(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of TestRTTFormatReader.cc
+// end of TestRTTFormatReader.cc
 //---------------------------------------------------------------------------//

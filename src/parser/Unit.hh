@@ -3,7 +3,8 @@
  * \file   parser/Unit.hh
  * \author Kent Budge
  * \brief  Definition the Unit struct
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -275,7 +276,7 @@ inline bool is_compatible(Unit const &a, Unit const &b)
 //---------------------------------------------------------------------------//
 //! Write out the unit in text form.
 
-std::ostream &operator<<(std::ostream &, const Unit &);
+DLL_PUBLIC std::ostream &operator<<(std::ostream &, const Unit &);
 
 
 // Some useful examples
@@ -366,12 +367,12 @@ Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e3*rtt_units::EV2K, 1., 1., 1., 1., 
 * initially MKS.
 */
 
-double conversion_factor(Unit const &units, Unit const &unit_system);
+DLL_PUBLIC double conversion_factor(Unit const &units, Unit const &unit_system);
 
 } // end namespace rtt_parser
 
 #endif // __parser_Unit_hh__
 
 //---------------------------------------------------------------------------//
-//              end of parser/Unit.hh
+// end of parser/Unit.hh
 //---------------------------------------------------------------------------//

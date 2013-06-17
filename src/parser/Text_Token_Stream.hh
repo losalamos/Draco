@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file   Text_Token_Stream.hh
+ * \file   parser/Text_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of the Text_Token_Stream class.
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,6 +15,11 @@
 
 #include "Token_Stream.hh"
 #include <set>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Text_Token_Stream::default_whitespace' : class 'std::set<_Kty>' needs to have dll-interface to be used by clients of class 'rtt_parser::Text_Token_Stream'
+#endif
 
 namespace rtt_parser 
 {
@@ -30,7 +36,7 @@ namespace rtt_parser
  * internally to indicate the end of file or an error condition.
  */
 
-class Text_Token_Stream : public Token_Stream
+class DLL_PUBLIC Text_Token_Stream : public Token_Stream
 {    
   public:
 
@@ -126,7 +132,11 @@ class Text_Token_Stream : public Token_Stream
 
 }  // namespace rtt_parser
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
+
 #endif  // CCS4_Text_Token_Stream_HH
 //--------------------------------------------------------------------//
-//                      end of Text_Token_Stream.hh
+// end of Text_Token_Stream.hh
 //--------------------------------------------------------------------//

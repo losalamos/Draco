@@ -32,6 +32,7 @@ enum FilenameComponent
     FC_EXT,
     FC_NAME_WE,
     FC_REALPATH,
+    FC_NATIVE,     //!< Convert directory separator to native format.
     FC_LASTVALUE
 };
 

@@ -4,7 +4,8 @@
  * \author Kent G. Budge
  * \date   Wed Sep 15 10:12:52 2010
  * \brief  
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,6 @@
 #include <vector>
 #include <cmath>
 
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -49,27 +49,10 @@ void tstcubic1(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        tstcubic1(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstcubic1, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstcubic1, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { tstcubic1(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstcubic1.cc
+// end of tstcubic1.cc
 //---------------------------------------------------------------------------//

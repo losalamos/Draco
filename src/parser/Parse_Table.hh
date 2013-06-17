@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file   Parse_Table.hh
+ * \file   parser/Parse_Table.hh
  * \author Kent G. Budge
  * \brief  Definition of Keyword and Parse_Table.
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,8 +14,13 @@
 #define CCS4_Parse_Table_HH
 
 #include "Token_Stream.hh"
-#include "ds++/Assert.hh"
+#include <cstring> // strcmp
 #include <vector>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) // warning C4251: 'std::_Vector_val<_Ty,_Alloc>::_Alval' : class 'std::allocator<_Ty>' needs to have dll-interface to be used by clients of class 'std::_Vector_val<_Ty,_Alloc>'
+#endif
 
 namespace rtt_parser 
 {
@@ -143,7 +149,7 @@ struct Keyword
  * processing.
  */
 
-class Parse_Table
+class DLL_PUBLIC Parse_Table
     : private std::vector<Keyword>
 {
   public:
@@ -257,18 +263,23 @@ class Parse_Table
 
 inline bool operator==(Keyword const &a, Keyword const &b)
 {
-    return a.moniker == b.moniker &&
-	a.func == b.func &&
-	a.index == b.index &&
-	a.module == b.module;
+    return 
+        strcmp( a.moniker, b.moniker ) == 0 &&
+        a.func  == b.func                   &&
+        a.index == b.index                  &&
+        strcmp( a.module, b.module ) == 0;
 }    
 
 //---------------------------------------------------------------------------//
 //! Check whether a keyword is well-formed.
 
-bool Is_Well_Formed_Keyword(Keyword const &key);
+DLL_PUBLIC bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // rtt_parser
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif  // CCS4_Parse_Table_HH
 //---------------------------------------------------------------------------//
