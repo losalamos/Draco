@@ -249,6 +249,21 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          endif()
 
       elseif( "${MPIEXEC}" MATCHES srun)
+         if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
+            set( MPI_CPUS_PER_NODE 1 CACHE STRING
+               "Number of multi-core CPUs per node" FORCE )
+            set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
+               "Number of cores per cpu" FORCE )
+            set( MPIEXEC_OMP_POSTFLAGS -c${MPI_CORES_PER_CPU} CACHE
+               STRING "extra mpirun flags (list)." FORCE)
+            set( MPIEXEC_OMP_POSTFLAGS_STRING "-c${MPI_CORES_PER_CPU}" CACHE
+               STRING "extra mpirun flags (string)." FORCE)
+         else()
+            message( STATUS "
+WARNING: ENV{OMP_NUM_THREADS} is not set in your environment, 
+         all OMP tests will be disabled." )
+         endif()
+
          set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
             STRING "flag used to specify number of processes." FORCE)
       # else()
