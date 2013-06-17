@@ -52,6 +52,13 @@ SET( CMAKE_Fortran_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict
 SET( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
 SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
 
+##---------------------------------------------------------------------------##
+# Set MPI_Fortran_COMPILER on rzuseq/sequoia, so that MPI detection works
+##---------------------------------------------------------------------------##
+if( "${SITE}" MATCHES "seq" )
+   set( MPI_Fortran_COMPILER "mpixlf2003_r" )
+endif()
+
 #------------------------------------------------------------------------------#
 # End config/unix-xlf.cmake
 #------------------------------------------------------------------------------#
