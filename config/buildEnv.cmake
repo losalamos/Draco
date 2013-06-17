@@ -89,22 +89,24 @@ macro( dbsSetDefaults )
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
 
-  # Set replacement RPATH for installed libraries and executables
-  # See http://www.cmake.org/Wiki/CMake_RPATH_handling
+  if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
+     # Set replacement RPATH for installed libraries and executables
+     # See http://www.cmake.org/Wiki/CMake_RPATH_handling
 
-  # Do not skip the full RPATH for the build tree
-  # set( CMAKE_SKIP_BUILD_RPATH FALSE )
-  # When building, don't use the install RPATH already
-  # (but later on when installing)
-  # set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-  if( EXISTS "${DRACO_DIR}" )
-     set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${DRACO_DIR}/lib )
-  else()
-     set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+     # Do not skip the full RPATH for the build tree
+     # set( CMAKE_SKIP_BUILD_RPATH FALSE )
+     # When building, don't use the install RPATH already
+     # (but later on when installing)
+     # set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+     if( EXISTS "${DRACO_DIR}" )
+        set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${DRACO_DIR}/lib )
+     else()
+        set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+     endif()
+     # add the automatically determined parts of the RPATH
+     # which point to directories outside the build tree to the install RPATH
+     # set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
   endif()
-  # add the automatically determined parts of the RPATH
-  # which point to directories outside the build tree to the install RPATH
-  # set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
 
 endmacro()
 
