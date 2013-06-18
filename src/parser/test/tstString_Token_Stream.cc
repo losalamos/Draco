@@ -39,7 +39,7 @@ void tstString_Token_Stream(UnitTest &ut)
         ut.getTestPath() + std::string("scanner_test.inp"),
         rtt_dsxx::FC_NATIVE);
 
-    ifstream infile( stInputFile );
+    ifstream infile( stInputFile.c_str() );
     string contents;
     while (true)
     {
@@ -287,12 +287,12 @@ void tstString_Token_Stream(UnitTest &ut)
 
     {
 
-    // Build path for the input file "scanner_recovery.inp"
-    string const srInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("scanner_recovery.inp"),
-        rtt_dsxx::FC_NATIVE);
-
-	ifstream infile( srInputFile );
+        // Build path for the input file "scanner_recovery.inp"
+        string const srInputFile = rtt_dsxx::getFilenameComponent(
+            ut.getTestPath() + std::string("scanner_recovery.inp"),
+            rtt_dsxx::FC_NATIVE);
+        
+        ifstream infile( srInputFile.c_str() );
 	string contents;
 	while (true)
 	{

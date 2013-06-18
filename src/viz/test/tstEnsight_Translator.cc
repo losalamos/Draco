@@ -102,7 +102,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
         ut.getTestPath() + std::string("cell_data"),
         rtt_dsxx::FC_NATIVE);
 
-    ifstream input( cdInputFile );
+    ifstream input( cdInputFile.c_str() );
     if( !input ) ITFAILS;
 
     for (size_t i = 0; i < pt_coor.size(); i++)

@@ -16,8 +16,8 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/path.hh"
 #include <sstream>
-// #include <cstdlib>
-// #include <cerrno>
+#include <cstdlib> // system
+#include <cerrno> // errno
 #include <cstring>
 
 using namespace std;
