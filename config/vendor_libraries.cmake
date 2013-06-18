@@ -65,6 +65,30 @@ macro( setupMPILibrariesUnix )
             STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
       endif()
 
+      # Before calling find_package(MPI), if CMAKE_<lang>_COMPILER is
+      # actually an MPI wrapper script:
+      #
+      # - set MPI_<lang>_COMPILER, so that FindMPI will skip automatic
+      #   compiler detection; and
+      # - set MPI_<lang>_NO_INTERROGATE, so that FindMPI will skip MPI
+      #   include-path and library detection and trust that the
+      #   provided compilers can build MPI binaries without further
+      #   help.
+      if( "${CMAKE_CXX_COMPILER}" MATCHES "mpi" )
+         set( MPI_CXX_COMPILER ${CMAKE_CXX_COMPILER} )
+         set( MPI_CXX_NO_INTERROGATE ${CMAKE_CXX_COMPILER} )
+      endif()
+
+      if( "${CMAKE_C_COMPILER}" MATCHES "mpi" )
+         set( MPI_C_COMPILER ${CMAKE_C_COMPILER} )
+         set( MPI_C_NO_INTERROGATE ${CMAKE_C_COMPILER} )
+      endif()
+
+      if( "${CMAKE_Fortran_COMPILER}" MATCHES "mpi" )
+         set( MPI_Fortran_COMPILER ${CMAKE_Fortran_COMPILER} )
+         set( MPI_Fortran_NO_INTERROGATE ${CMAKE_Fortran_COMPILER} )
+      endif()
+
       # On CT, only look for .a MPI libraries when build type is STATIC
       # if( "${SITE}" MATCHES "c[it]" AND
       #       "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )

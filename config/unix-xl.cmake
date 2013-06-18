@@ -81,14 +81,6 @@ toggle_compiler_flag( DRACO_ENABLE_CXX11 "-qlanglvl=extended0x" "CXX" "")
 toggle_compiler_flag( DRACO_ENABLE_C99         "-qlanglvl=stdc99" "C" "")
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-qlanglvl=stdc89" "C" "")
 
-##---------------------------------------------------------------------------##
-# Set MPI_lang_COMPILER on rzuseq/sequoia, so that MPI detection works
-##---------------------------------------------------------------------------##
-if( "${SITE}" MATCHES "seq" )
-   set( MPI_CXX_COMPILER     "mpixlcxx_r"   )
-   set( MPI_C_COMPILER       "mpixlc_r"     )
-endif()
-
 #------------------------------------------------------------------------------#
 # End config/unix-xl.cmake
 #------------------------------------------------------------------------------#
