@@ -45,22 +45,31 @@ void runtest(rtt_dsxx::ScalarUnitTest &ut)
 
     // The Ipcress_Interpreter binary will be at ${build_dir}/${configuration}/ 
     // for XCode and MSVC.  For Unix Makefiles it will be at ${build_dir}.
+    string bindir = ut.getTestPath();
+
+    // If bindir is a relative path that points to "./" replace it with a full
+    // path. 
+    if( bindir == std::string("./") )
+        bindir = rtt_dsxx::draco_getcwd();    
     
-    // This will be the correct path for Generators that do not use 
-    // $(Configurations).
-    string bindir = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
-            rtt_dsxx::FC_PATH );
-    if( rtt_dsxx::getFilenameComponent( ut.getTestPath(), rtt_dsxx::FC_NAME ) 
-        != "test" )
+    // Strip the 'test/' from bindir.  This will be the correct path for
+    // Generators that do not use $(Configurations). 
+    bindir = rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_PATH );
+    
+    // Account for special directory structure used by IDEs like Visual Studio
+    // or XCode
+    if( rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_NAME )
+        == "test" )
     {  
         // The project generator does use $(configuration).  So the unit 
         // test is at cdi_ipcress/test/$(Configuration), but the binary is
         // at cdi_ipcress/$(Configuration)
-        string configuration = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
-            rtt_dsxx::FC_NAME );
-        bindir = rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_PATH )
-            + configuration;
-        bindir = rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_NATIVE );
+        string configuration = rtt_dsxx::getFilenameComponent(
+            ut.getTestPath(), rtt_dsxx::FC_NAME );
+        bindir = rtt_dsxx::getFilenameComponent(
+            bindir, rtt_dsxx::FC_PATH ) + configuration;
+        bindir = rtt_dsxx::getFilenameComponent(
+            bindir, rtt_dsxx::FC_NATIVE );
     }
 
     // String to hold command that will start the test.  For example:
@@ -74,6 +83,7 @@ void runtest(rtt_dsxx::ScalarUnitTest &ut)
         << "IpcressInterpreter.stdin" 
         << " > " << IPCRESS_INTERPRETER_BUILD_DIR  << rtt_dsxx::dirSep 
         << "tstIpcressInterpreter.out";
+
 
     cout << "Preparing to run: \n" << endl;
     string consoleCommand( cmd.str() );

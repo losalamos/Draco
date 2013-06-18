@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi_ipcress/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -13,7 +13,7 @@ project( cdi_ipcress_test CXX )
 # ---------------------------------------------------------------------------- #
 # Configuration files
 # ---------------------------------------------------------------------------- #
-set( IPCRESS_INTERPRETER_BIN_DIR ${cdi_ipcress_BINARY_DIR} )
+
 set( IPCRESS_INTERPRETER_SOURCE_DIR ${PROJECT_SOURCE_DIR} )
 set( IPCRESS_INTERPRETER_BUILD_DIR ${PROJECT_BINARY_DIR} )
 

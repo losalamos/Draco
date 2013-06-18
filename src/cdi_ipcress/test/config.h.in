@@ -10,7 +10,6 @@
 #ifndef rtt_cdi_ipcress_test_config_h
 #define rtt_cdi_ipcress_test_config_h
 
-#cmakedefine IPCRESS_INTERPRETER_BIN_DIR    "@IPCRESS_INTERPRETER_BIN_DIR@"
 #cmakedefine IPCRESS_INTERPRETER_SOURCE_DIR "@IPCRESS_INTERPRETER_SOURCE_DIR@"
 #cmakedefine IPCRESS_INTERPRETER_BUILD_DIR  "@IPCRESS_INTERPRETER_BUILD_DIR@"
 

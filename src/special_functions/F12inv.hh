@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Inverse Fermi-Dirac integral of 1/2 order.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,18 +14,20 @@
 #ifndef sf_F12inv_hh
 #define sf_F12inv_hh
 
+#include "ds++/config.h"
+
 namespace rtt_sf
 {
 //! Compute the inverse Fermi-Dirac function of index 1/2.
-double F12inv(double f);
+DLL_PUBLIC double F12inv(double f);
 
 //! Compute the inverse Fermi-Dirac function of index 1/2 and its derivative. 
-void F12inv(double f, double &eta, double &deta);
+DLL_PUBLIC void F12inv(double f, double &eta, double &deta);
 
 } // end namespace rtt_sf
 
 #endif // sf_F12inv_hh
 
 //---------------------------------------------------------------------------//
-//              end of sf/F12inv.hh
+// end of sf/F12inv.hh
 //---------------------------------------------------------------------------//
