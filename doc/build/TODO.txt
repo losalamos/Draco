@@ -1,3 +1,0 @@
-ToDo:
-
-1. Consider adding the figure from "C++ Templates" to help describe the relationship between .hh/.cc/.t.hh/_pt.cc files.

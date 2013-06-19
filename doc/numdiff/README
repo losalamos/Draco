@@ -1,8 +1,0 @@
-This directory contains tests for draco/tools/numdiff.py.  For the
-documentation, see the script file.
-
-Files:
-
-  tstNumdiff:  Runs the tests
-  numdiff_f1:  Sample input file #1
-  numdiff_f2:  Sample input file #2
