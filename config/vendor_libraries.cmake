@@ -74,17 +74,23 @@ macro( setupMPILibrariesUnix )
       #   include-path and library detection and trust that the
       #   provided compilers can build MPI binaries without further
       #   help.
-      if( "${CMAKE_CXX_COMPILER}" MATCHES "mpi" )
+      get_filename_component( compiler_wo_path
+         "${CMAKE_CXX_COMPILER}" NAME )
+      if( "${compiler_wo_path}" MATCHES "mpi" )
          set( MPI_CXX_COMPILER ${CMAKE_CXX_COMPILER} )
          set( MPI_CXX_NO_INTERROGATE ${CMAKE_CXX_COMPILER} )
       endif()
 
-      if( "${CMAKE_C_COMPILER}" MATCHES "mpi" )
+      get_filename_component( compiler_wo_path
+         "${CMAKE_C_COMPILER}" NAME )
+      if( "${compiler_wo_path}" MATCHES "mpi" )
          set( MPI_C_COMPILER ${CMAKE_C_COMPILER} )
          set( MPI_C_NO_INTERROGATE ${CMAKE_C_COMPILER} )
       endif()
 
-      if( "${CMAKE_Fortran_COMPILER}" MATCHES "mpi" )
+      get_filename_component( compiler_wo_path
+         "${CMAKE_Fortran_COMPILER}" NAME )
+      if( "${compiler_wo_path}" MATCHES "mpi" )
          set( MPI_Fortran_COMPILER ${CMAKE_Fortran_COMPILER} )
          set( MPI_Fortran_NO_INTERROGATE ${CMAKE_Fortran_COMPILER} )
       endif()

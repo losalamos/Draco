@@ -262,6 +262,9 @@ endmacro()
 # 2. Register the pass/fail criteria.
 # ------------------------------------------------------------
 macro( register_parallel_test targetname numPE command cmd_args )
+   if( VERBOSE )
+      message( "      Adding test: ${targetname}" )
+   endif()
    if( addparalleltest_MPI_PLUS_OMP )
       add_test( 
          NAME    ${targetname}
@@ -612,6 +615,9 @@ macro( add_parallel_tests )
 
    foreach( file ${addparalleltest_SOURCES} )
       get_filename_component( testname ${file} NAME_WE )
+      if( VERBOSE )
+         message( "   add_executable( Ut_${compname}_${testname}_exe ${file} )")
+      endif()
       add_executable( Ut_${compname}_${testname}_exe ${file} )
       set_target_properties( 
          Ut_${compname}_${testname}_exe 
