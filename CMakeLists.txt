@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright (C) 2010-2012 Los Alamos National Security, 
+# note   Copyright (C) 2010-2013 Los Alamos National Security, 
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -144,7 +144,7 @@ setupVendorLibraries()
 #
 # Build Draco components:
 # 
-add_subdirectory( doc )
+# add_subdirectory( doc ) Now at svnroot/draco/dracodoc.
 add_subdirectory( src )
 add_subdirectory( autodoc ) # This must be processed after 'src'
 add_subdirectory( config ) # This must be processed after 'src'
@@ -192,14 +192,6 @@ install( EXPORT draco-targets
 # 5. Use 'make test' or 'ctest -jN' to run the unit tests.
 # 6. Use 'make install' to strip libraries and copy libraries and
 #    headers to the INSTALL_PREFIX directory.
-
-
-## Microsoft Visual Studio 10
-##
-## Prerequisits:
-## 1. BLAS & LAPACK: http://icl.cs.utk.edu/lapack-for-windows/lapack/
-##    Follow instructions for "using LAPACK subroutines in a Visual Studio Project without FORTRAN.
-##    
 
 ##---------------------------------------------------------------------------##
 ## End of CMakeLists.txt
