@@ -31,13 +31,20 @@ if { $machine == "cielito" } then {
 
 if { [info exists ::env(LCOMPILER) ] } {
     set compiler       $::env(LCOMPILER)
-    set compilermajver $::env(LCOMPILERMAJVER)
-    # special case for darwin.lanl.gov
-    if { $compiler == "compilers" } {
-       if { [info exists ::env(INTEL) ] } {
-           set compiler intel
-       }
+
+    if { [info exists ::env(LCOMPILERMAJVER) ] } {
+       set compilermajver $::env(LCOMPILERMAJVER)
+    } else {
+       set compilerver [ exec icpc --version | grep icpc | awk {{print $3}} ]
+       set compilermajver [ lindex [ split "$compilerver" "." ] 0 ].[ lindex [ split "$compilerver" "." ] 1 ]
     }
+
+    # special case for darwin.lanl.gov
+    # if { $compiler == "compilers" } {
+    #    if { [info exists ::env(INTEL) ] } {
+    #        set compiler intel
+    #    }
+    # }
 } else {
     set compiler    gcc
     set compilerver [ exec gcc --version | grep GCC | awk {{print $3}} ]
@@ -48,6 +55,7 @@ if { [info exists ::env(LCOMPILER) ] } {
 # For all Intel-13 series compilers, point to 13.0.1
 if { $compiler == "intel" } then {
    if { $compilermajver == 13 } { set compilerver 13.0.1 }
+   if { $compilermajver == 13.0 } { set compilerver 13.0.1 }
 }
 
 # local variables

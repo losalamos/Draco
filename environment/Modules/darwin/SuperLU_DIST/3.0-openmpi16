@@ -12,7 +12,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 
 # local variables
 # set version      3.0
-set prefix      /ccs/codes/radtran/vendors/SuperLU_DIST_3.0/openmpi16-gnu471-gnu471
+set prefix      /projects/opt/draco/vendors/SuperLU_DIST_3.0/darwin-openmpi163-intel1301-intel1301
 set libdir      $prefix/lib
 set incdir      $prefix/include
 

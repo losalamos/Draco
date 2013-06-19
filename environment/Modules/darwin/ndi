@@ -11,24 +11,22 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version     3.1.1
-set prefix      /projects/opt/draco/vendors/ParMetis-3.1.1/darwin-openmpi163-intel1301-intel1301
+set version      2.0.13
+set prefix      /projects/opt/draco/vendors/ndi/$version
 set libdir      $prefix/lib
 set incdir      $prefix/include
-set incdir2     $prefix/source/METISLib
+set gendir      /projects/opt/draco/physical_data/ndi/2.0.13/share/gendir
 
 # module whatis
-module-whatis   "Parmetis";
+module-whatis   "NDI";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tParmetis\n";
-   puts stderr "\tPARMETIS_LIB_DIR\t= $libdir";
-   puts stderr "\tPARMETIS_INC_DIR\t= $incdir";
-   puts stderr "\tMETIS_LIB_DIR\t= $libdir";
-   puts stderr "\tMETIS_INC_DIR\t= $incdir2";
+   puts stderr "\tNDI $version\n";
+   puts stderr "\tNDI_LIB_DIR\t= $libdir";
+   puts stderr "\tNDI_INC_DIR\t= $incdir";
 }
 
 if { ![file exists $prefix] } {
@@ -37,7 +35,6 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-setenv PARMETIS_LIB_DIR $libdir
-setenv PARMETIS_INC_DIR $incdir
-setenv METIS_LIB_DIR $libdir
-setenv METIS_INC_DIR $incdir2
+setenv NDI_LIB_DIR $libdir
+setenv NDI_INC_DIR $incdir
+setenv NDI_GENDIR_PATH $gendir

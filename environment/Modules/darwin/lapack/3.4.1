@@ -31,13 +31,14 @@ if { $machine == "cielito" } then {
 
 if { [info exists ::env(LCOMPILER) ] } {
     set compiler       $::env(LCOMPILER)
-    set compilermajver $::env(LCOMPILERMAJVER)
-    # special case for darwin.lanl.gov
-    if { $compiler == "compilers" } {
-       if { [info exists ::env(INTEL) ] } {
-           set compiler intel
-       }
+
+    if { [info exists ::env(LCOMPILERMAJVER) ] } {
+       set compilermajver $::env(LCOMPILERMAJVER)
+    } else {
+       set compilerver [ exec icpc --version | grep icpc | awk {{print $3}} ]
+       set compilermajver [ lindex [ split "$compilerver" "." ] 0 ]
     }
+
 } else {
     set compiler    gcc
     set compilerver [ exec gcc --version | grep GCC | awk {{print $3}} ]
