@@ -95,12 +95,12 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # This should be set in each projects CTestConfig.cmake file.
   #set( CTEST_NIGHTLY_START_TIME "00:00:01 MST")
   
-  set( CTEST_DROP_METHOD "http")
-  set( CTEST_DROP_SITE "coder.lanl.gov")
+  set( CTEST_DROP_METHOD "https")
+  set( CTEST_DROP_SITE "rtt.lanl.gov")
   set( CTEST_DROP_LOCATION 
      "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" )
   set( CTEST_DROP_SITE_CDASH TRUE )
-  set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF )
+  set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF CURLOPT_SSL_VERIFYHOST_OFF )
 
   set( MPIEXEC_MAX_NUMPROCS 1 CACHE STRING  "Number of cores on the local machine." )
 

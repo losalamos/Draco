@@ -40,7 +40,7 @@ Resources
 
 Project Management http://coder/redmine/projects/draco
 SVN Repository 	   svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/draco
-Dashboard 	   http://coder.lanl.gov/cdash/index.php?project=Draco
+Dashboard 	   http://rtt.lanl.gov/cdash/index.php?project=Draco
 Autodoc 	   http://coder.lanl.gov/autodoc/draco
 
 Configuring and Building

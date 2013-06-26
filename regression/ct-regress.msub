@@ -139,7 +139,7 @@ module list
 # 2. run cmake to build Makefiles
 # 3. run make to build libraries and tests
 # 4. Run the unit tests
-# 5. Post the results to coder.lanl.gov/cdash
+# 5. Post the results to rtt.lanl.gov/cdash
 #
 # Options are:
 # Regression type: Experimental (default), Nightly, Continuous

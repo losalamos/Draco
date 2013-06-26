@@ -4,7 +4,7 @@ Regression system for Draco, Capsaicin and Jayenne
 
 The regression system uses a combination of crontab, shell scripts and
 CTest scripts to checkout, configure, build, test and submit results
-to the Draco's CDash web server (http://coder.lanl.gov/cdsah).  
+to the Draco's CDash web server (http://rtt.lanl.gov/cdsah).  
 
 Two type of scripts are run by the crontab:
 1. A script to update the regression system.  This script runs around
