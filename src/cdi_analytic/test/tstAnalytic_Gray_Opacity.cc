@@ -147,17 +147,16 @@ void user_defined_test( rtt_dsxx::UnitTest & ut )
     {
 	Analytic_Gray_Opacity ngray(packed);
     }
-    catch (const rtt_dsxx::assertion &ass)
+    catch (const rtt_dsxx::assertion &err)
     {
 	caught = true;
 	ostringstream message;
-	message << "Caught the following assertion, " << ass.what();
+	message << "Caught the following assertion, " << err.what();
 	PASSMSG(message.str());
     }
     if (!caught)
-    {
 	FAILMSG("Failed to catch unregistered analyic model assertion");
-    }
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -236,7 +235,7 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
     {
         std::vector<double> params( amodel->get_parameters() );
         
-        std::vector<double> expectedValue(4,0.0);
+        std::vector<double> expectedValue(5,0.0);
         expectedValue[1] = 100.0;
         expectedValue[2] = -3.0;
 
@@ -246,9 +245,9 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
         
         if( soft_equiv( params.begin(), params.end(),
                         expectedValue.begin(), expectedValue.end(), tol ) )
-        { PASSMSG("get_parameters() returned the analytic expression coefficients.");}
+            PASSMSG("get_parameters() returned the analytic expression coefficients.");
         else
-        { FAILMSG("get_parameters() did not return the analytic expression coefficients.");}
+            FAILMSG("get_parameters() did not return the analytic expression coefficients.");
     }
     return;
 }
@@ -360,9 +359,9 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
 
         if( datafilename.length()  == 0 &&
             expectedValue.length() == 0 )
-        { PASSMSG("getDataFilename() returned an empty string."); }
+            PASSMSG("getDataFilename() returned an empty string."); 
         else
-        { FAILMSG("getDataFilename() did not return an empty string."); }
+            FAILMSG("getDataFilename() did not return an empty string.");
     }
 
     // There is no density grid associated with this analytic opacity model.
@@ -372,9 +371,9 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
         vector<double> expectedValue;
 
         if( densityGrid == expectedValue )
-        { PASSMSG("getDensityGrid() returned an empty string."); }
+            PASSMSG("getDensityGrid() returned an empty string."); 
         else
-        { FAILMSG("getDensityGrid() did not return an empty string."); }
+            FAILMSG("getDensityGrid() did not return an empty string.");
     }
 
     // There is no density grid associated with this analytic opacity model.
@@ -384,14 +383,14 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
         vector<double> expectedValue;
 
         if( opac.getNumDensities() == 0 )
-        { PASSMSG("getNumDensities() returned 0."); }
+            PASSMSG("getNumDensities() returned 0."); 
         else
-        { FAILMSG("getNumDensities() did not return 0."); }
+            FAILMSG("getNumDensities() did not return 0.");
 
         if( densityGrid == expectedValue )
-        { PASSMSG("getDensityGrid() returned an empty vector."); }
+            PASSMSG("getDensityGrid() returned an empty vector."); 
         else
-        { FAILMSG("getDensityGrid() did not return an empty vector."); }
+            FAILMSG("getDensityGrid() did not return an empty vector.");
     }
 
     // There is no temperature grid associated with this analytic opacity model.
@@ -401,14 +400,14 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
         vector<double> expectedValue;
 
         if( opac.getNumTemperatures() == 0 )
-        { PASSMSG("getNumTemperatures() returned 0."); }
+            PASSMSG("getNumTemperatures() returned 0."); 
         else
-        { FAILMSG("getNumTemperatures() did not return 0."); }
+            FAILMSG("getNumTemperatures() did not return 0."); 
 
         if( temperatureGrid == expectedValue )
-        { PASSMSG("getTemperatureGrid() returned an empty vector."); }
+            PASSMSG("getTemperatureGrid() returned an empty vector."); 
         else
-        { FAILMSG("getTemperatureGrid() did not return an empty vector."); }
+            FAILMSG("getTemperatureGrid() did not return an empty vector."); 
     }
     
     return;

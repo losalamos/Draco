@@ -48,7 +48,8 @@ namespace rtt_cdi_analytic
  * a different rtt_cdi_analytic::Analytic_Model can be used in each group.
  * For example, the client could choose to use a
  * rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model for the low frequency
- * groups and a rtt_cdi_analytic::Constant_Analytic_Opacity_Model for the * high frequency groups.
+ * groups and a rtt_cdi_analytic::Constant_Analytic_Opacity_Model for the high
+ * frequency groups.
  *
  * Note that opacities are returned in units of cm^2/g. Thus the resultant
  * opacity must be multiplied by density to get units of 1/cm.  See the
@@ -90,13 +91,13 @@ class DLL_PUBLIC nGray_Analytic_MultigroupOpacity : public Analytic_MultigroupOp
 
   public:
     // Constructor.
-    nGray_Analytic_MultigroupOpacity(const sf_double &, 
-                                     const sf_Analytic_Model &,
-                                     rtt_cdi::Reaction,
-                                     rtt_cdi::Model = rtt_cdi::ANALYTIC);
+    nGray_Analytic_MultigroupOpacity(const sf_double         & groups, 
+                                     const sf_Analytic_Model & models,
+                                     rtt_cdi::Reaction         reaction_in,
+                                     rtt_cdi::Model            model_in = rtt_cdi::ANALYTIC);
 
     // Constructor for packed Analytic_Multigroup_Opacities
-    explicit nGray_Analytic_MultigroupOpacity(const sf_char &);
+    explicit nGray_Analytic_MultigroupOpacity(const sf_char & packed);
 
     // >>> ACCESSORS
     const_Model get_Analytic_Model(size_t g) const { return group_models[g-1]; }
@@ -104,19 +105,19 @@ class DLL_PUBLIC nGray_Analytic_MultigroupOpacity : public Analytic_MultigroupOp
     // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 
     // Get the group opacities.
-    sf_double getOpacity(double, double) const;
+    sf_double getOpacity(double temperature, double density) const;
 
     // Get the group opacity fields given a field of temperatures.
-    vf_double getOpacity(const sf_double &, double) const;
+    vf_double getOpacity(const sf_double & temperature, double density) const;
 
     // Get the group opacity fields given a field of densities.
-    vf_double getOpacity(double, const sf_double &) const;
+    vf_double getOpacity(double temperature, const sf_double & density) const;
 
     // Get the data description of the opacity.
-    inline std_string getDataDescriptor() const;
+    inline std_string getDataDescriptor(void) const;
 
     // Pack the nGray_Analytic_MultigroupOpacity into a character string.
-    sf_char pack() const;
+    sf_char pack(void) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -140,7 +141,10 @@ nGray_Analytic_MultigroupOpacity::getDataDescriptor() const
 	descriptor = "nGray Multigroup Scattering";
     else
     {
-	Insist (0, "Invalid nGray multigroup model opacity!");
+	Insist( reaction == rtt_cdi::TOTAL      ||
+                reaction == rtt_cdi::ABSORPTION || 
+                reaction == rtt_cdi::SCATTERING,
+                "Invalid nGray multigroup model opacity!");
     }
 
     return descriptor;

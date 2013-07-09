@@ -149,7 +149,7 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
  */
 nGray_Analytic_MultigroupOpacity::sf_double
 nGray_Analytic_MultigroupOpacity::getOpacity(double temperature, 
-					double density) const
+                                             double density) const
 {
     Require (temperature >= 0.0);
     Require (density >= 0.0);

@@ -202,15 +202,12 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
     //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho, double nu) const
     {
+        using std::pow;        
 	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
 	Require (rho >= 0.0);
 	Require (nu >= 0.0);
 
-	double T_power   = std::pow(T,   c);
-	double rho_power = std::pow(rho, d);
-	double nu_power  = std::pow(nu,  e);
-
-	double opacity   = (a + b * T_power * nu_power) * rho_power;
+	double opacity = (a + b * pow(T,c) * pow(nu,e)) * pow(rho,d);
 
 	Ensure (opacity >= 0.0);
 	return opacity;
@@ -219,13 +216,11 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
     //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho) const
     {
+        using std::pow;
 	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
 	Require (rho >= 0.0);
 
-	double T_power   = std::pow(T,   c);
-	double rho_power = std::pow(rho, d);
-
-	double opacity   = (a + b * T_power) * rho_power; 
+	double opacity   = (a + b * pow(T,c)) * pow(rho,d); 
 
 	Ensure (opacity >= 0.0);
 	return opacity;

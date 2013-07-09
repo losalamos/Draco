@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov 21 14:36:15 2001
  * \brief  Analytic_Models implementation file.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -205,7 +205,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
     : a(0.0), b(0.0), c(0.0), d(0.0), e(0.0)
 {
     // size of stream
-    size_t size = sizeof(int) + 4 * sizeof(double);
+    size_t size = sizeof(int) + 5 * sizeof(double);
 
     Require (packed.size() == size);
 
@@ -222,7 +222,7 @@ Polynomial_Analytic_Opacity_Model::Polynomial_Analytic_Opacity_Model(
 	    "Tried to unpack the wrong type in Polynomial_Analytic_Opacity_Model");
 	
     // unpack the data
-    unpacker >> a >> b >> c >> d;
+    unpacker >> a >> b >> c >> d >> e;
 
     Ensure (unpacker.get_ptr() == unpacker.end());
 }
@@ -236,8 +236,8 @@ Polynomial_Analytic_Opacity_Model::pack() const
     // get the registered indicator 
     int indicator = POLYNOMIAL_ANALYTIC_OPACITY_MODEL;
 
-    // caculate the size in bytes: indicator + 4 * double
-    int size = sizeof(int) + 4 * sizeof(double);
+    // caculate the size in bytes: indicator + 5 * double
+    int size = sizeof(int) + 5 * sizeof(double);
 
     // make a vector of the appropriate size
     sf_char pdata(size);
@@ -256,6 +256,7 @@ Polynomial_Analytic_Opacity_Model::pack() const
     packer << b;
     packer << c;
     packer << d;
+    packer << e;
 
     // Check the size
     Ensure (packer.get_ptr() == &pdata[0] + size);
@@ -269,11 +270,12 @@ Polynomial_Analytic_Opacity_Model::pack() const
 Analytic_Opacity_Model::sf_double
 Polynomial_Analytic_Opacity_Model::get_parameters() const
 {
-    sf_double p(4);
+    sf_double p(5);
     p[0] = a;
     p[1] = b;
     p[2] = c;
     p[3] = d;
+    p[4] = e;
 
     return p;
 }
@@ -368,5 +370,5 @@ Polynomial_Specific_Heat_Analytic_EoS_Model::get_parameters() const
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of Analytic_Models.cc
+// end of Analytic_Models.cc
 //---------------------------------------------------------------------------//
