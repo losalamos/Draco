@@ -78,9 +78,22 @@ else
     echo "*** SVN repository not found ***"
     exit 1
     # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-    # mkdir -p ${svnroot}
+    # mkdir -p ${svnroot}; cd ${svnroot}
     # svnadmin create ${svnroot}/jayenne
-    # (update hooks/pre-commit and hooks/pre-svnprop; chmod 775 )
+    # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
+    # cd jayenne/hooks
+    # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
+    # vi pre-commit; comment out all code and add...
+    #if ! test `whoami` = 'kellyt'; then
+    #echo "This is a read only repository.  The real SVN repository is"
+    #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
+    #exit 1
+    #fi
+    #exit 0
+    # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
+    #    pre-revprop-change
+    # vi pre-revprop-change --> comment out all code.
+    # cd $svnroot
     # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
     # svnsync sync file:///${svnroot}/jayenne
 endif
@@ -97,6 +110,10 @@ svnsync --non-interactive sync file:///${svnroot}/jayenne
 # Capsaicin
 echo "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
 svnsync --non-interactive sync file:///${svnroot}/capsaicin
+
+# Asterisk
+echo "svnsync --non-interactive sync file:///${svnroot}/asterisk"
+svnsync --non-interactive sync file:///${svnroot}/asterisk
 
 # also update the scripts directory
 if ( -d /usr/projects/jayenne/regress/jayenne/regression ) then
