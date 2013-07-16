@@ -1,10 +1,30 @@
-#!/bin/bash -l
+#!/bin/bash
 
 # called from ml-master.cs
 # assumes the following variables are defined in ml-master.cs:
 #    $regdir     - /home/regress
 #    $subproj    - 'draco', 'clubimc', etc.
 #    $build_type - 'Debug', 'Release', 'Coverage'
+
+# command line arguments
+args=( "$@" )
+nargs=${#args[@]}
+
+# if test ${nargs} -lt 1; then
+#     echo "Fatal Error: launch job requires a subproject name"
+#     echo " "
+#     echo "Use:"
+#     echo "   launchjob projname [jobid] [jobid]"
+#     echo " "
+#     return 1
+#     # exit 1
+# fi
+
+ # Dependencies: wait for these jobs to finish
+dep_jobids=""
+for (( i=0; i < $nargs ; ++i )); do
+   dep_jobids="${dep_jobids} ${args[$i]} "
+done
 
 # sanity check
 if test "${regdir}x" = "x"; then
@@ -40,6 +60,16 @@ epdash="-"
 if test "${extra_params}x" = "x"; then
    epdash=""
 fi
+
+# Prerequisits:
+# Wait for all dependencies to be met before creating a new job
+echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+for jobid in ${dep_jobids}; do
+    while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
+       echo "   ${subproj}: waiting for jobid = $jobid to finish."
+       sleep 10m
+    done
+done
 
 # Configure, Build, Test on back end
 cmd="/opt/MOAB/bin/msub -A access -j oe -V -o ${regdir}/logs/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/ml-regress.msub"

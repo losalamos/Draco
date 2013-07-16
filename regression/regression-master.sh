@@ -63,8 +63,7 @@ case $# in
 esac
 
 # Build everything as the default action
-projects=(  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
-forkbuild=( "no"    "yes"        "no"      "yes"      "yes" )
+projects="draco capsaicin clubimc wedgehog milagro asterisk"
 
 # Host based variables
 export host=`uname -n | sed -e 's/[.].*//g'`
@@ -145,8 +144,8 @@ esac
 # use forking to reduce total wallclock runtime, but do not fork
 # when there is a dependency:
 # 
-# draco --> capsaicin
-#       --> clubimc --> wedgehog
+# draco --> capsaicin           --\ 
+#       --> clubimc --> wedgehog --+--> asterisk
 #                   --> milagro
 
 # special cases
@@ -156,26 +155,22 @@ coverage)
     ;;
 cuda)
     # do not build capsaicin with CUDA
-    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "no"      "yes"      "yes" )
+    projects="draco clubimc wedgehog milagro"
     epdash="-"
     ;;
 fulldiagnostics)
     # do not build capsaicin or milagro with full diagnostics turned on.
-    projects=(  "draco" "clubimc" "wedgehog" )
-    forkbuild=( "no"    "no"      "yes"      )
+    projects="draco clubimc wedgehog"
     epdash="-"
     ;;
 intel13)
     # also build capsaicin
-    projects=(  "draco" "capsaicin" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "yes"       "no"      "yes"      "yes" )
+    projects="draco capsaicin clubimc wedgehog milagro asterisk"
     epdash="-"
     ;;
 pgi)
     # Capsaicin does not support building with PGI (lacking vendor installations!)
-    projects=(  "draco" "clubimc" "wedgehog" "milagro" )
-    forkbuild=( "no"    "no"      "yes"      "yes" )
+    projects="draco clubimc wedgehog milagro"
     epdash="-"
     ;;
 *)
@@ -183,27 +178,84 @@ pgi)
     ;;
 esac
 
-for (( i=0 ; i < ${#projects[@]} ; ++i )); do
+# The job launch logic spawns a job for each project immediately, but
+# the *-job-launch.sh script will spin until all dependencies (jobids)
+# are met.  Thus, the ml-job-launch.sh for milagro will start
+# immediately, but it will not do any real work until both draco and
+# clubimc have completed.
 
-    export subproj=${projects[$i]}
-    export fork=${forkbuild[$i]}
+export subproj=draco
+if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1
+  draco_jobid=`jobs -p | sort -gr | head -n 1`
+fi
 
-    # <machine>-job-launch.sh requires the following variables:
-    # $regdir, $subproj, $build_type
+export subproj=clubimc
+if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+  # Run the *-job-launch.sh script (special for each platform).
+  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  # Spin until $draco_jobid disappears (indicates that draco has been
+  # built and installed)
+  cmd+=" ${draco_jobid}"
+  # Log all output.
+  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1
+  clubimc_jobid=`jobs -p | sort -gr | head -n 1`
+fi
 
-    cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+export subproj=wedgehog
+if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  # Wait for clubimc regressions to finish
+  cmd+=" ${clubimc_jobid}"
+  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1
+  wedgehog_jobid=`jobs -p | sort -gr | head -n 1`
+fi
 
-    echo " "
-    echo "Regression for ${subproj} (${build_type}, fork=${fork})."
-    echo " "
-    echo "${cmd}"
-        
-    if test $fork = "yes"; then
-        eval "${cmd} &"
-    else
-        eval ${cmd}
-    fi
-done
+export subproj=milagro
+if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  # Wait for clubimc regressions to finish
+  cmd+=" ${clubimc_jobid}"
+  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1
+  milagro_jobid=`jobs -p | sort -gr | head -n 1`
+fi
+
+export subproj=capsaicin
+if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  # Wait for draco regressions to finish
+  cmd+=" ${draco_jobid}"
+  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1
+  capsaicin_jobid=`jobs -p | sort -gr | head -n 1`
+fi
+
+export subproj=asterisk
+if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  # Wait for wedgehog and capsaicin regressions to finish
+  cmd+=" ${wedgehog_jobid} ${capsaicin_jobid}"
+  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  echo "${subproj}: $cmd"
+  eval "${cmd} &"
+  sleep 1
+  asterisk_jobid=`jobs -p | sort -gr | head -n 1`
+fi
 
 # Wait for all parallel jobs to finish
 while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done

@@ -138,6 +138,16 @@ else
     svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/capsaicin/trunk/scripts scripts
 endif
 
+if ( -d /usr/projects/jayenne/regress/asterisk/regression ) then
+    echo "cd /usr/projects/jayenne/regress/asterisk/regression; svn update"
+    cd /usr/projects/jayenne/regress/asterisk/regression
+    svn update
+else
+    echo "mkdir -p /usr/projects/jayenne/regress/asterisk"
+    mkdir -p /usr/projects/jayenne/regress/asterisk
+    echo "svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression"
+    svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression
+endif
 
 # Notes:
 # ------------------------------------------------------------

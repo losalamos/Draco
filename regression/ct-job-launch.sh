@@ -6,7 +6,27 @@
 #    $subproj    - 'draco', 'clubimc', etc.
 #    $build_type - 'Debug', 'Release', 'Coverage'
 
-export SHOWQ = /opt/MOAB/default/bin/showq
+# command line arguments
+args=( "$@" )
+nargs=${#args[@]}
+
+# if test ${nargs} -lt 1; then
+#     echo "Fatal Error: launch job requires a subproject name"
+#     echo " "
+#     echo "Use:"
+#     echo "   launchjob projname [jobid] [jobid]"
+#     echo " "
+#     return 1
+#     # exit 1
+# fi
+
+export SHOWQ=/opt/MOAB/default/bin/showq
+
+ # Dependencies: wait for these jobs to finish
+dep_jobids=""
+for (( i=0; i < $nargs ; ++i )); do
+   dep_jobids="${dep_jobids} ${args[$i]} "
+done
 
 # sanity check
 if test "${regdir}x" = "x"; then
@@ -44,6 +64,16 @@ if test "${extra_params}x" = "x"; then
    epdash=""
 fi
 
+# Prerequisits:
+# Wait for all dependencies to be met before creating a new job
+echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+for jobid in ${dep_jobids}; do
+    while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
+       echo "   ${subproj}: waiting for jobid = $jobid to finish."
+       sleep 10m
+    done
+done
+
 # Configure, Build on front end
 export mode=cb
 echo " "
@@ -60,13 +90,14 @@ echo "Test from the login node..."
 cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log ${regdir}/draco/regression/ct-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
+jobid=`echo $jobid | sed '/^$/d'`
 echo "jobid = ${jobid}"
 
 # Wait for testing to finish
 sleep 1m
 while test "`${SHOWQ} | grep $jobid`" != ""; do
    ${SHOWQ} | grep $jobid
-   sleep 10m
+   sleep 1m
 done
 
 # Submit from the front end

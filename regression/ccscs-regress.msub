@@ -158,6 +158,9 @@ elif test "${subproj}" == milagro; then
 elif test "${subproj}" == capsaicin; then
     script_dir=${regdir}/capsaicin/scripts
     script_name=Capsaicin_Linux64.cmake
+elif test "${subproj}" == asterisk; then
+    script_dir=${regdir}/asterisk/regression
+    script_name=Asterisk_Linux64.cmake
 fi
 
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
