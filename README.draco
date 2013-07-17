@@ -38,17 +38,17 @@ Draco is governed by a board consisting of:
 Resources
 =============================
 
-Project Management http://coder/redmine/projects/draco
+Project Management http://rtt/redmine/projects/draco
 SVN Repository 	   svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/draco
 Dashboard 	   http://rtt.lanl.gov/cdash/index.php?project=Draco
-Autodoc 	   http://coder.lanl.gov/autodoc/draco
+Autodoc 	   http://rtt.lanl.gov/autodoc/draco
 
 Configuring and Building
 =============================
 
 Please review the notes at the top of CMakeLists.txt or the Redmine
 wiki page:
-http://coder/redmine/projects/draco/wiki/Configuration_and_Building
+http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
 
 Active Draco Component Synopsis
 =============================

@@ -75,6 +75,8 @@
 #
 # Reference:
 #
+# Draco build system: /ccs/codes/radtran/svn/draco/dracodoc/build or
+#    https://rtt.lanl.gov/redmine/projects/draco/repository/dracodoc/changes/build/dbs.pdf
 # CMake Tutorial: http://www.cmake.org/cmake/help/cmake_tutorial.html
 # CMake Wiki:     http://www.cmake.org/Wiki/CMake
 # CMake FAQ:      http://www.cmake.org/Wiki/CMake_FAQ
@@ -97,6 +99,14 @@ endif()
 
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
+
+#
+# Debug cmake scripts:
+#
+# 1. Review macros defined at config/debug_macros.cmake.
+# 2. Uncomment this feature to tell CMake to print include paths
+#    during target registration (requires cmake-2.8.11+).
+# set( CMAKE_DEBUG_TARGET_PROPERTIES INCLUDE_DIRECTORIES )
 
 #
 # The Draco version number.

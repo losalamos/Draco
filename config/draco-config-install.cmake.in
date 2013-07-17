@@ -23,7 +23,7 @@ set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco-@DRACO_VERSION_MAJ
 # Provide some pretty print information during configure
 include( FeatureSummary )
 set_package_properties( draco PROPERTIES
-   URL "http://coder/redmine/projects/draco"
+   URL "https://rtt.lanl.gov/redmine/projects/draco"
    DESCRIPTION 
 "Draco is a comprehensive, radiation transport framework that provides
      key, reusable components for serial and parallel computational physics
