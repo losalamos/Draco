@@ -187,7 +187,7 @@ esac
 export subproj=draco
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -202,7 +202,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   # built and installed)
   cmd+=" ${draco_jobid}"
   # Log all output.
-  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -214,7 +214,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for clubimc regressions to finish
   cmd+=" ${clubimc_jobid}"
-  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -226,7 +226,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for clubimc regressions to finish
   cmd+=" ${clubimc_jobid}"
-  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -238,7 +238,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for draco regressions to finish
   cmd+=" ${draco_jobid}"
-  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -250,7 +250,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for wedgehog and capsaicin regressions to finish
   cmd+=" ${wedgehog_jobid} ${capsaicin_jobid}"
-  cmd+=" >& ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -263,6 +263,8 @@ while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
 # set permissions
 chgrp -R draco ${regdir}/logs
 chmod -R g+rwX ${regdir}/logs
+
+echo "All done"
 
 ##---------------------------------------------------------------------------##
 ## End of regression-master.sh

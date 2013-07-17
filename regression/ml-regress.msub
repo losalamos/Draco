@@ -194,6 +194,8 @@ fi
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
+echo "All done."
+
 ##---------------------------------------------------------------------------##
 ## End of script
 ##---------------------------------------------------------------------------##

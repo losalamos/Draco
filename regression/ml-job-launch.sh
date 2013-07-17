@@ -20,7 +20,9 @@ nargs=${#args[@]}
 #     # exit 1
 # fi
 
- # Dependencies: wait for these jobs to finish
+export SHOWQ=/opt/MOAB/bin/showq
+
+# Dependencies: wait for these jobs to finish
 dep_jobids=""
 for (( i=0; i < $nargs ; ++i )); do
    dep_jobids="${dep_jobids} ${args[$i]} "
@@ -80,8 +82,8 @@ jobid=`echo ${jobid//[^0-9]/}`
 
 # Wait for CBT (Config, build, test) to finish
 sleep 1m
-while test "`showq | grep $jobid`" != ""; do
-   showq | grep $jobid
+while test "`$SHOWQ | grep $jobid`" != ""; do
+   $SHOWQ | grep $jobid
    sleep 10m
 done
 
@@ -90,6 +92,8 @@ echo "Jobs done, now submitting ${build_type} results from ml."
 cmd="${regdir}/draco/regression/ml-regress.msub >& ${regdir}/logs/ml-${build_type}-${extra_params}${epdash}${subproj}-s.log"
 echo "${cmd}"
 eval "${cmd}"
+
+echo "All done."
 
 ##---------------------------------------------------------------------------##
 ## End of ml-job-launch.sh

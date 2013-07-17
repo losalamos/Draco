@@ -77,6 +77,8 @@ cmd="${regdir}/draco/regression/ccscs-regress.msub >& ${regdir}/logs/ccscs-${bui
 echo "${cmd}"
 eval "${cmd}"
 
+echo "All done."
+
 ##---------------------------------------------------------------------------##
 ## End of ccscs-job-launch.sh
 ##---------------------------------------------------------------------------##
