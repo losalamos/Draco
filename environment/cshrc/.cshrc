@@ -63,9 +63,11 @@ case ml*.localdomain:
     module load intel/13.1.0 openmpi/1.6.3 # cudatoolkit
     module load cmake gsl/1.14-intel svn fstools 
     module load numdiff lapack/3.4.1-intel totalview
-    module load trilinos SuperLU_DIST/3.0-intel
-    module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-moonlight
-    alias  mvcap 'cd /usr/projects/capsaicin/devs/jhchang'  
+    module load SuperLU_DIST/3.0-openmpi163-intel1310
+    module load trilinos/10.12.2-openmpi163-intel1310
+    module load ParMetis/3.1.1-openmpi163-intel1310 
+    module load ndi random123 eospac/v6.2.4beta.1-moonlight
+    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
     setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 
