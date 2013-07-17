@@ -27,13 +27,22 @@ endif()
 if( BUILD_TESTING )
   include(CTest)
   enable_testing()
+  # by default do not use parallel build flags (e.g.: -j16)
+  set( pbuildtestflags "" )
   if( WIN32 OR "${MPIEXEC_MAX_NUMPROCS}none" STREQUAL "none"  )
-     add_custom_target( check
-        COMMAND ${CMAKE_MAKE_PROGRAM}  
-        COMMAND ${CMAKE_CTEST_COMMAND} )   
+     # stick with scalar builds for now.
   else()
-     add_custom_target( check
-        COMMAND ${CMAKE_MAKE_PROGRAM} -j ${MPIEXEC_MAX_NUMPROCS} 
-        COMMAND ${CMAKE_CTEST_COMMAND} -j ${MPIEXEC_MAX_NUMPROCS} )
+     set( pbuildtestflags "-j${MPIEXEC_MAX_NUMPROCS}" )
+     message("pbuildtestflags = ${pbuildtestflags}")
   endif()
+  add_custom_target( check
+     COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
+             ${pbuildtestflags}
+     COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} )
+  add_custom_target( failedtests
+     COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
+             ${pbuildtestflags}
+     COMMAND "${CMAKE_COMMAND}" -P 
+             "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
+     COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} -I FailedTests.log )
 endif()  
