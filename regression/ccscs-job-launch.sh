@@ -68,7 +68,7 @@ echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 for jobid in ${dep_jobids}; do
     while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
        echo "   ${subproj}: waiting for jobid = $jobid to finish."
-       sleep 10m
+       sleep 5m
     done
 done
 

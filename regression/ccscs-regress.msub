@@ -102,7 +102,7 @@ fulldiagnostics)
 #     module load pgi openmpi gsl/1.14-pgi
 #     comp=`basename $CXX`
 #     ;;
-# *)
+*)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
     echo "the regression system."
