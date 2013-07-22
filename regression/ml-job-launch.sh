@@ -20,6 +20,7 @@ nargs=${#args[@]}
 #     # exit 1
 # fi
 
+export MOABHOMEDIR=/opt/MOAB
 export SHOWQ=/opt/MOAB/bin/showq
 
 # Dependencies: wait for these jobs to finish
