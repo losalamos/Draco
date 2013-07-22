@@ -33,7 +33,6 @@ if( BUILD_TESTING )
      # stick with scalar builds for now.
   else()
      set( pbuildtestflags "-j${MPIEXEC_MAX_NUMPROCS}" )
-     message("pbuildtestflags = ${pbuildtestflags}")
   endif()
   add_custom_target( check
      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
