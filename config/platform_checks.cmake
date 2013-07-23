@@ -149,9 +149,24 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( query_have_restrict_keyword )
    
-   check_c_source_compiles(
-      "int test (void *restrict x); int main (void) {return 0;}"
-      HAVE_RESTRICT) 
+   foreach( ac_kw __restrict __restrict__ _Restrict restrict )
+      message("looking at ${ac_kw}...")
+      check_c_source_compiles("
+         typedef int * int_ptr
+         int foo ( int_ptr ${ac_kw} ip ) { return ip[0]; }
+         int main (void) {
+            int s[1];
+            int * ${ac_kw} t = s;
+            t[0] = 0;
+            return foo(t);
+         "
+         HAVE_RESTRICT) 
+      if( HAVE_RESTRICT )
+         set( RESTRICT_KEYWORD ${ac_kw} )
+         message("found RESTRICT_KEYWORD = ${RESTRICT_KEYWORD}")
+         break()
+      endif()
+   endforeach()
 
 endmacro()
 

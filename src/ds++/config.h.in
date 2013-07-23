@@ -45,7 +45,10 @@
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
 #cmakedefine HAVE_CUDA @HAVE_CUDA@
 #cmakedefine APPLE @APPLE@
+
+/* Support for C99's restrict keyword */
 #cmakedefine HAVE_RESTRICT
+#define restrict @RESTRICT_KEYWORD@
 
 /* Platform checks for various functions */
 
@@ -211,8 +214,8 @@
     #define M_PI     3.14159265358979323846264338327950288
 #endif
 
-#endif                          /* __dsxx_config_h__ */
+#endif /* __dsxx_config_h__ */
 
 /*---------------------------------------------------------------------------*/
-/*                              end of config.h */
+/* end of config.h */
 /*---------------------------------------------------------------------------*/
