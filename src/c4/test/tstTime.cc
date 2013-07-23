@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "../ParallelUnitTest.hh"
-#include "../Timer.hh"
+#include "../Global_Timer.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
@@ -23,6 +23,8 @@
 #define FAILMSG(m) ut.failure(m)
 #define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
+rtt_c4::Global_Timer do_timer("do_global_timer"), do_not_timer("do_not_global_timer");
+
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -32,11 +34,20 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     using std::endl;
     using std::cout;
     using std::ostringstream;
+    using std::set;
+    using std::string;
 
     using rtt_dsxx::soft_equiv; 
     using rtt_c4::wall_clock_time;
     using rtt_c4::wall_clock_resolution;
     using rtt_c4::Timer;
+    using rtt_c4::Global_Timer;
+
+    Global_Timer do_timer("do_timer"), do_not_timer("do_not_timer");
+    set<string> active_timers;
+    active_timers.insert("do_timer");
+    active_timers.insert("do_global_timer");
+    Global_Timer::set_global_activity(active_timers);
 
     double const wcr( rtt_c4::wall_clock_resolution() );
     // double const wcrDeprecated( C4::Wtick() );
