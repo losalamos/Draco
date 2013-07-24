@@ -126,21 +126,21 @@ class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
 
   public:
     //! Constructor, sig has units of cm^2/g.
-    explicit Constant_Analytic_Opacity_Model(double sig) 
-	: sigma(sig) 
-    { 
-	Require (sigma >= 0.0); 
+    explicit Constant_Analytic_Opacity_Model(double sig)
+	: sigma(sig)
+    {
+        Require (sigma >= 0.0);
     }
-
+    
     //! Constructor for packed state.
     explicit Constant_Analytic_Opacity_Model(const sf_char &packed);
-
+    
     //! Calculate the opacity in units of cm^2/g.
     double calculate_opacity(double /*T*/, double /*rho*/) const
     {
-	return sigma;
+        return sigma;
     }
-
+    
     //! Calculate the opacity in units of cm^2/g.
     double calculate_opacity(double /*T*/, double /*rho*/, double /*nu*/) const
     {
@@ -157,7 +157,7 @@ class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
 //---------------------------------------------------------------------------//
 /*!
  * \class Polynomial_Analytic_Opacity_Model
- * \brief Derived Analytic_Opacity_Model class that defines a polymomial
+ * \brief Derived Analytic_Opacity_Model class that defines a polynomial
  * function for the opacity.
  *
  * The opacity is defined:
@@ -172,7 +172,7 @@ class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
  */
 class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
-  private: 
+  private:
     // Coefficients
     double a;  // constant [cm^2/g * (cm^3/g)^d]
     double b;  // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
@@ -190,40 +190,40 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
      * \param e_ frequency power
      */
     Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_,
-				      double d_, double e_=0)
+                                      double d_, double e_=0)
 	: a(a_), b(b_), c(c_), d(d_), e(e_)
     {
-	/*...*/
+        /*...*/
     }
-
+    
     //! Constructor for packed state.
     explicit Polynomial_Analytic_Opacity_Model(const sf_char &packed);
-
+    
     //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho, double nu) const
     {
-        using std::pow;        
-	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
-	Require (rho >= 0.0);
-	Require (nu >= 0.0);
-
-	double opacity = (a + b * pow(T,c) * pow(nu,e)) * pow(rho,d);
-
-	Ensure (opacity >= 0.0);
-	return opacity;
+        using std::pow;
+        Require (c < 0.0 ? T > 0.0 : T >= 0.0);
+        Require (rho >= 0.0);
+        Require (nu >= 0.0);
+        
+        double opacity = (a + b * pow(T,c) * pow(nu,e)) * pow(rho,d);
+        
+        Ensure (opacity >= 0.0);
+        return opacity;
     }
-
+    
     //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho) const
     {
         using std::pow;
-	Require (c < 0.0 ? T > 0.0 : T >= 0.0);
-	Require (rho >= 0.0);
-
-	double opacity   = (a + b * pow(T,c)) * pow(rho,d); 
-
-	Ensure (opacity >= 0.0);
-	return opacity;
+        Require (c < 0.0 ? T > 0.0 : T >= 0.0);
+        Require (rho >= 0.0);
+        
+        double opacity   = (a + b * pow(T,c)) * pow(rho,d); 
+        
+        Ensure (opacity >= 0.0);
+        return opacity;
     }
 
     //! Return the model parameters.
@@ -233,6 +233,98 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
     sf_char pack() const;
 };
 
+//---------------------------------------------------------------------------//
+/*!
+ * \class Stimulated_Emission_Analytic_Opacity_Model
+ * \brief Derived Analytic_Opacity_Model class that defines a polynomial
+ * function for the opacity that includes stimulated emission.
+ *
+ * The opacity is defined:
+ *
+ * \arg opacity = (a + b * T^c * nu^e [ 1 - exp(-nu/T) ] ) * rho^d,
+ *
+ * i.e.,
+ *
+ * \f[ \sigma = \left[a+bT^c \nu^e \left(1-e^{-\nu/T}\right) \right] \rho^d \f]
+ *
+ * where the coefficients have the following units:
+ *
+ * \arg a = [cm^2/g * (cm^3/g)^d]
+ * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
+ * 
+ * For a typical bound-free or free-free absorption model, one should set
+ * \arg a = 0
+ * \arg b = constant > 0
+ * \arg c = -1/2    ( inverse sqrt(T) )
+ * \arg d = constant
+ * \arg e = -3
+ *
+ * This produces a Planck or Rosseland opacity of the form 
+ *         \f[ \overline{\sigma} \propto T^{-7/2} \f]
+ * which is also known as Kramers' Opacity Law.
+ * \sa{ http://en.wikipedia.org/wiki/Kramers'_opacity_law }
+ *
+ * 
+ */
+//class DLL_PUBLIC Stimulated_Emission_Analytic_Opacity_Model : public Analytic_Opacity_Model
+//{
+//private:
+//    // Coefficients
+//    double a;  // constant [cm^2/g * (cm^3/g)^d]
+//    double b;  // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
+//    double c;  // temperature power
+//    double d;  // density power
+//    double e;  // frequency power
+//    
+//public:
+//    /*!
+//     * \brief Constructor.
+//     * \param a_ constant [cm^2/g (cm^3/g)^d]
+//     * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
+//     * \param c_ temperature power
+//     * \param d_ density power
+//     * \param e_ frequency power
+//     */
+//    Stimulated_Emission_Analytic_Opacity_Model(double a_, double b_, double c_,
+//                                               double d_, double e_=0)
+//    : a(a_), b(b_), c(c_), d(d_), e(e_)
+//    {
+//        /*...*/
+//    }
+//    
+//    //! Constructor for packed state.
+//    explicit Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed);
+//    
+//    //! Calculate the opacity in units of cm^2/g
+//    double calculate_opacity(double T, double rho, double nu) const
+//    {
+//        using std::pow;
+//        Require (T > 0.0);
+//        Require (rho >= 0.0);
+//        Require (nu >= 0.0);
+//        
+//        double opacity = (a + b * pow(T,c) * pow(nu,e)
+//                          * (1-exp(-nu/T) )) * pow(rho,d);
+//        
+//        Ensure (opacity >= 0.0);
+//        return opacity;
+//    }
+//    
+//    //! Calculate the opacity in units of cm^2/g
+//    double calculate_opacity(double, double) const
+//    {
+//        Insist(false, "Stimatulated emission opacity model needs a frequency.");
+//        return -1.0;
+//    }
+//    
+//    //! Return the model parameters.
+//    sf_double get_parameters() const;
+//    
+//    //! Pack up the class for persistence.
+//    sf_char pack() const;
+//};
+    
+    
 //===========================================================================//
 /*!
  * \class Analytic_EoS_Model

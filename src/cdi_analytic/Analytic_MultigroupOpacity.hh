@@ -36,7 +36,7 @@ namespace rtt_cdi_analytic
  * The Analytic_MultigroupOpacity class is an abstract class derived from
  * rtt_cdi::MultigroupOpacity class.  It provides analytic opacity data. The
  * specific analytic opacity model is specified by concrete classes derived
- * from Analytic_MultigroupOpacy.
+ * from Analytic_MultigroupOpacity.
  *
  * Note that opacities are returned in units of cm^2/g. Thus the resultant
  * opacity must be multiplied by density to get units of 1/cm.  See the
@@ -49,7 +49,7 @@ namespace rtt_cdi_analytic
  * The default rtt_cdi::Model for an Analytic_MultigroupOpacity is
  * rtt_cdi::ANALYTIC.  However, this can be overridden in the constructor.
  *
- * \example cdi_analytic/test/tstAnalytic_MultigroupOpacity.cc
+ * \example cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
  *
  * Example usage of Analytic_MultigroupOpacity.
  */ 
