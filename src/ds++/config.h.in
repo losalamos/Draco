@@ -48,7 +48,11 @@
 
 /* Support for C99's restrict keyword */
 #cmakedefine HAVE_RESTRICT
+/* restrict is valid keyword in C99 but not in C++11.  Protect this define so
+ * that it is set only for C++ */
+#ifdef __cplusplus
 #define restrict @RESTRICT_KEYWORD@
+#endif /* __cplusplus */
 
 /* Platform checks for various functions */
 
