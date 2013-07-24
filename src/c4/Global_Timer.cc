@@ -69,7 +69,7 @@ Global_Timer::~Global_Timer()
 
 //---------------------------------------------------------------------------------------//
 /*static*/
-void Global_Timer::set_global_activity(set<string> const &timer_list)
+void Global_Timer::set_selected_activity(set<string> const &timer_list, bool const active)
 {
     if (rtt_c4::node()==0)
     {
@@ -79,10 +79,10 @@ void Global_Timer::set_global_activity(set<string> const &timer_list)
             string const &name = (*i);
             cout << " \"" << name << '\"';
             timer_entry &entry = active_list_[name];
-            entry.is_active = true;
+            entry.is_active = active;
             if (entry.timer != NULL)
             {
-                entry.timer->set_activity(true);
+                entry.timer->set_activity(active);
             }
             else
             {

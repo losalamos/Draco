@@ -68,20 +68,38 @@ class DLL_PUBLIC Global_Timer : public Timer
     static std::map<std::string, timer_entry> active_list_; // Selected Global_Timers are active
      
   public:
+
+    // Constructors
     
     Global_Timer(char const *name); //! default constructor
 
+    // Accessors
+
     char const *name() const { return name_; }
 
-    bool is_active() const { return active_; }
+    bool is_active() const { return active_ || global_active_; }
+
+    // Manipulators
 
     void set_activity(bool active) { active_ = active; }
+
+    void start()
+    {
+        if (active_ || global_active_) Timer::start();
+    }
+
+    void stop()
+    {
+        if (active_ || global_active_) Timer::stop();
+    }
+
+    // Statics
 
     static bool is_global_active() { return global_active_; }
 
     static void set_global_activity(bool active);
 
-    static void set_global_activity(std::set<std::string> const &timer_list);
+    static void set_selected_activity(std::set<std::string> const &timer_list, bool active);
 
     ~Global_Timer();
 };

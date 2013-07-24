@@ -47,7 +47,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     set<string> active_timers;
     active_timers.insert("do_timer");
     active_timers.insert("do_global_timer");
-    Global_Timer::set_global_activity(active_timers);
+    Global_Timer::set_selected_activity(active_timers, true);
 
     double const wcr( rtt_c4::wall_clock_resolution() );
     // double const wcrDeprecated( C4::Wtick() );
