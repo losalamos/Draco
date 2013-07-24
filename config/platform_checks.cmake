@@ -146,27 +146,33 @@ endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Detect support for the C99 restrict keyword
+## Borrowed from http://cmake.3232098.n2.nabble.com/AC-C-RESTRICT-td7582761.html
 ##---------------------------------------------------------------------------##
 macro( query_have_restrict_keyword )
    
+   message(STATUS "Looking for the C99 restrict keyword")
+   include( CheckCSourceCompiles )
    foreach( ac_kw __restrict __restrict__ _Restrict restrict )
-      message("looking at ${ac_kw}...")
       check_c_source_compiles("
-         typedef int * int_ptr
+         typedef int * int_ptr;
          int foo ( int_ptr ${ac_kw} ip ) { return ip[0]; }
          int main (void) {
             int s[1];
             int * ${ac_kw} t = s;
             t[0] = 0;
-            return foo(t);
+            return foo(t); }
          "
          HAVE_RESTRICT) 
+      # message("looking at ${ac_kw}, HAVE_RESTRICT = ${HAVE_RESTRICT}")
       if( HAVE_RESTRICT )
          set( RESTRICT_KEYWORD ${ac_kw} )
-         message("found RESTRICT_KEYWORD = ${RESTRICT_KEYWORD}")
+         message(STATUS "Looking for the C99 restrict keyword - found ${RESTRICT_KEYWORD}")
          break()
       endif()
    endforeach()
+   if( NOT HAVE_RESTRICT )
+      message(STATUS "Looking for the C99 restrict keyword - not found")
+   endif()
 
 endmacro()
 
