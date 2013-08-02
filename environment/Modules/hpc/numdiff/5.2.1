@@ -1,0 +1,38 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+# global control file
+if { [file exists $env(MODULESHOME)/etc/control] } {
+   source $env(MODULESHOME)/etc/control;
+}
+
+# prereq openmpi-gcc openmpi-pgi openmpi-intel;
+
+# local variables
+set prefix      /usr/projects/draco/vendors/numdiff-5.2.1
+set bindir      $prefix/bin
+set infodir     $prefix/share/info
+
+# module whatis
+module-whatis	"numdiff";
+
+# module help
+proc ModulesHelp { } {
+   global version prefix incdir;
+
+   puts stderr "\txnumdiff";
+}
+
+if { ![file exists $prefix] } {
+   puts stderr "\n[module-info name]: $prefix: No such file or directory.\n";
+   break;
+   exit 1;
+}
+
+# setenv         HOMESHOW       $env(HOME);
+prepend-path    PATH            $bindir;
+prepend-path    INFOPATH        $infodir;
