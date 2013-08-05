@@ -125,8 +125,8 @@ string General_Octant_Quadrature::as_text(string const &indent) const
 //---------------------------------------------------------------------------------------//
 /*virtual*/
 void General_Octant_Quadrature::create_octant_ordinates_(vector<double> &mu,
-                                                  vector<double> &eta,
-                                                  vector<double> &wt) const
+                                                         vector<double> &eta,
+                                                         vector<double> &wt) const
 {
     mu = mu_;
     eta = eta_;

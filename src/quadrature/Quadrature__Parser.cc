@@ -16,6 +16,7 @@
 #include "Gauss_Legendre.hh"
 #include "Level_Symmetric.hh"
 #include "Tri_Chebyshev_Legendre.hh"
+#include "Product_Chebyshev_Legendre.hh"
 #include "Square_Chebyshev_Legendre.hh"
 #include "Double_Gauss.hh"
 #include "General_Octant_Quadrature.hh"
@@ -48,6 +49,12 @@ SP<Quadrature> parse_tri_cl(Token_Stream &tokens)
 SP<Quadrature> parse_square_cl(Token_Stream &tokens)
 {
     return Square_Chebyshev_Legendre::parse(tokens);
+}
+
+//---------------------------------------------------------------------------//
+SP<Quadrature> parse_product_cl(Token_Stream &tokens)
+{
+    return Product_Chebyshev_Legendre::parse(tokens);
 }
 
 //---------------------------------------------------------------------------//
@@ -121,6 +128,9 @@ void Class_Parser<Quadrature>::post_sentinels_()
 
         Quadrature::register_quadrature("square cl",
                                         parse_square_cl);
+
+        Quadrature::register_quadrature("product cl",
+                                        parse_product_cl);
 
         Quadrature::register_quadrature("double gauss",
                                         parse_double_gauss);
