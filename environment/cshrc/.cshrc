@@ -82,13 +82,13 @@ case ci*:
    module unload papi perftools
    # load the Intel programming env, but then unloda libsci and totalview
    module load PrgEnv-intel
-   module unload xt-libsci xt-totalview intel
-   module load intel/13.0.1.117
+   module unload xt-libsci # xt-totalview intel
+   # module load intel/13.0.1.117
    # draco modules start here.
    module load gsl/1.14 lapack/3.4.1-intel
    module load cmake numdiff subversion emacs
    module load trilinos SuperLU_DIST/3.0-intel 
-   module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-cielito
+   module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.3
 
    setenv OMP_NUM_THREADS 8
 
