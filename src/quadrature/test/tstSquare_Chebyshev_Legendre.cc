@@ -66,14 +66,14 @@ int main(int argc, char *argv[])
     }
     catch (std::exception &err)
     {
-        std::cout << "ERROR: While testing tstGaussLegendre, " 
+        std::cout << "ERROR: While testing tstSquareGaussLegendre, " 
                   << err.what()
                   << endl;
         ut.numFails++;
     }
     catch( ... )
     {
-        std::cout << "ERROR: While testing tstGaussLegendre, " 
+        std::cout << "ERROR: While testing tstSquareGaussLegendre, " 
                   << "An unknown exception was thrown."
                   << endl;
         ut.numFails++;
