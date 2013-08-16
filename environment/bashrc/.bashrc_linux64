@@ -22,12 +22,29 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
+target="`uname -n | sed -e s/[.].*//`"
+arch=`uname -m`
+
+case ${target} in
+    ccscs9*)
+        # Module is provided by the system:
+        if test -z "$MODULESHOME"; then
+            if test -f /usr/share/Modules/init/bash; then
+                source /usr/share/Modules/init/bash
+            fi
+        fi
+        module use /ccs/codes/radtran/vendors/Modules
+        ;;
+    *)
+        if test -z "$MODULESHOME"; then
+            if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
+                source ${VENDOR_DIR}/modules-3.2.9/init/bash
+            fi
+        fi
+        ;;
+esac
+
 # modules
-if test -z "$MODULESHOME"; then
-  if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
-    source ${VENDOR_DIR}/modules-3.2.9/init/bash
-  fi
-fi
 module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
 module load ndi openmpi emacs random123 eospac
 module load ParMetis trilinos totalview cmake numdiff git svn
