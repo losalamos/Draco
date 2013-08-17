@@ -34,6 +34,8 @@ case ${target} in
             fi
         fi
         module use /ccs/codes/radtran/vendors/Modules
+        module load gcc/4.8.1
+        module load gsl/1.16
         ;;
     *)
         if test -z "$MODULESHOME"; then
@@ -41,14 +43,18 @@ case ${target} in
                 source ${VENDOR_DIR}/modules-3.2.9/init/bash
             fi
         fi
+        module load gcc gsl/1.13
+        module load emacs
         ;;
 esac
 
 # modules
-module load grace gcc BLACS SCALAPACK SuperLU_DIST gsl hypre lapack
-module load ndi openmpi emacs random123 eospac
-module load ParMetis trilinos totalview cmake numdiff git svn
+module load openmpi totalview 
+module load cmake grace lapack random123 eospac numdiff git svn
 module load dia graphviz doxygen git valgrind
+
+module load BLACS SCALAPACK SuperLU_DIST hypre ndi
+module load ParMetis trilinos  
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
