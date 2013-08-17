@@ -7,7 +7,7 @@
 # Typical use:
 # ./metrics_report.sh -e kellyt@lanl.gov -p "draco clubimc wedgehog"
 # ./metrics_report.sh -e "kgt@lanl.gov jhchang@lanl.gov" -p "draco capsaicin"
-# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov" -p "draco clubimc wedgehog"
+# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov caw@lanl.gov jayenne@lanl.gov" -p "draco clubimc wedgehog"
 
 ##---------------------------------------------------------------------------##
 ## Support functions
