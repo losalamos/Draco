@@ -36,6 +36,7 @@ case ${target} in
         module use /ccs/codes/radtran/vendors/Modules
         module load gcc/4.8.1
         module load gsl/1.16
+        module load emacs/24.2
         ;;
     *)
         if test -z "$MODULESHOME"; then
@@ -44,7 +45,7 @@ case ${target} in
             fi
         fi
         module load gcc gsl/1.13
-        module load emacs
+        module load emacs/23.2
         ;;
 esac
 
