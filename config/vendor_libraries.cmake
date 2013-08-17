@@ -195,6 +195,22 @@ macro( setupMPILibrariesUnix )
             message( FATAL_ERROR "OpenMPI version < 1.4 found." )
          endif()
                
+         # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
+         # The --bind-to-none option available (and the default) in
+         # OpenMPI 1.4+ is apparently not a synonym for this;
+         #
+         # % ompi_info -param mpi all
+         #
+         # with OpenMPI 1.6.3 on Moonlight reports that
+         # mpi_paffinity_alone is 1, which means, "[A]ssume that this
+         # job is the only (set of) process(es) running on each node
+         # and bind processes to processors, starting with processor
+         # ID 0."  Setting mpi_paffinity_alone to 0 allows parallel
+         # ctest to work correctly.  MPIEXEC_POSTFLAGS only affects
+         # MPI-only tests (and not MPI+OpenMP tests).
+         set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
+         set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
+
          # Find cores/cpu and cpu/node.
 
          set( MPI_CORES_PER_CPU 4 )
