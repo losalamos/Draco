@@ -189,4 +189,7 @@ fi
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
+run "chgrp -R draco ${work_dir}"
+run "chmod -R g+rwX ${work_dir}"
+
 echo "All done."
