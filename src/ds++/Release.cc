@@ -51,29 +51,43 @@ const std::string release()
  * \code
  * % files=`find . -name '*.hh' -o -name '*.cc' -o -name '*.txt' \
  *        -o -name '*.cmake' -o -name '*.in' -o -name '*.h'`
- * % svn annotate $files > file_list
- * % user_list=`cat file_list | awk '{print $2}' | sort -u`
- * % for name in $user_list; do numlines=`grep $name file_list | wc -l`;   \
-        echo "$numlines: $name"; done > author_loc
- * % cat author_loc | sort -rn
+ * % svn annotate $files > ../file_list
+ * % user_list=`cat ../file_list | awk '{print $2}' | sort -u`
+ * % for name in $user_list; do numlines=`grep $name ../file_list | wc -l`;   \
+        echo "$numlines: $name"; done > ../author_loc
+ * % cat ../author_loc | sort -rn
  * \endcode
  *
  * Note 1: the annotate step can take a long time (do this on a local disk!)
  *
- * Note 2: I only included contributers that supplied more than 100 lines of
+ * Note 2: I only included contributers that supplied more than 500 lines of
  * code. 
  */
 const std::string author_list()
 {
+
+// 72335: kellyt
+// 47657: kgbudge
+// 12228: tme
+// 6824: lowrie
+// 6131: bta
+// 4709: gaber
+// 4468: mwbuksas
+// 4042: mcghee
+// 2186: phenning
+// 1744: warsa
+// 1212: rsqrd
+// 950: wollaber
+// 917: sethrj
+   
     std::stringstream alist;
 //            0         1         2         3         4         5         6         7
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
     alist << "    Kelly G. Thompson,      Kent G. Budge,        Tom M. Evans,\n"
-          << "    Rob Lowrie,             B. Todd Adams,        Mike W. Buksas,\n"
-          << "    Gabriel M. Rockefeller, John McGhee,          Paul J. Henning,\n"
-          << "    Randy M. Roberts,       James S. Warsa,       Seth R. Johnson,\n"
-          << "    Allan B. Wollaber,      Jeff Furnish,         Paul W. Talbot,\n"
-          << "    Peter Ahrens,           Benjamin K. Bergen,   Jae H. Chang.";
+          << "    Rob Lowrie,             B. Todd Adams,        Gabriel M. Rockefeller,\n"
+          << "    Mike W. Buksas,         John McGhee,          Paul J. Henning,\n"
+          << "    James S. Warsa,         Randy M. Roberts,     Allan B. Wollaber,\n"
+          << "    Seth R. Johnson.";
     return alist.str();
 }
 

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright (C) 2010-2013 Los Alamos National Security, 
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -15,15 +15,15 @@
 # Background:
 # 
 # There are 3 directories: source; build; target.
-#   source - this is the location of cvs co files
+#   source - this is the location of svn co files
 #   build  - this is the location for makefiles, object files, etc.
 #   target - this is the install location for final headers, libraries
 #            and binaries. 
 #
 # Environment:
 #
-# - cmake must be in your path
-# - The compiler is chosen by setting $CXX, $CC, $F90, etc.  On the
+# - CMake must be in your path.
+# - The compiler is chosen by setting $CXX, $CC, $FC, etc.  On the
 #   ICN this is done for you automatcially.  If not set, CMake will
 #   use whatever it can find in your path (e.g.: /usr/bin/g++)
 # - Vendor locations can be specified by setting $<VENDOR>_LIB_DIR and
@@ -33,8 +33,8 @@
 #
 # Requirements:
 #
-# 1. By default MPI is selected by finding mpirun/mpiexec/etc in your
-#    PATH. 
+# 1. By default MPI is selected by finding 
+#    mpirun/mpiexec/aprun/srun/etc in your PATH. 
 # 2. GSL must be found in a standard system location or the
 #    environment variables GSL_INC_DIR and GSL_LIB_DIR must be set to
 #    point to the local GSL installation.
@@ -48,10 +48,10 @@
 #    directory. 
 # 4. [optional] Use command line arguments to cmake to configure your
 #    build (instead of using CMakeCache.txt).  For example:
-#    cmake ~/draco \
-#          -DCMAKE_INSTALL_PREFIX=/var/tmp/draco-install-dir \
+#    cmake -DCMAKE_INSTALL_PREFIX=/var/tmp/draco-install-dir \
 #          -DDRACO_DBC_LEVEL=0 \
-#          -DCMAKE_BUILD_TYPE=Release
+#          -DCMAKE_BUILD_TYPE=Release \
+#          /path/to/draco/source
 # 5. [optional] Run 'make edit_cache' to review your build setup.
 #    Edit as needed. 
 # 6. Run 'make -j24' to compile the code. (also try 'make VERBOSE=1')
@@ -112,7 +112,7 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 6)
+set(DRACO_VERSION_MINOR 7)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )

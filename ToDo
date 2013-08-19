@@ -2,10 +2,13 @@
 DRACO DEVELOPMENT
 ----------------------------------------
 
+Please use the project development console at
+https://rtt.lanl.gov/redmine/projects/draco.  
+
 Areas currently under development
 ----------------------------------------
-[ ] Port to Dawn
-[ ] Develop plan for supporting heterogeneous architectures.
+[x] Port to Sequoia
+[x] Develop plan for supporting heterogeneous architectures.
     [x] Partially done with addition of DaCS, CUDA, OpenMP under MPI features.
 
 Things planned for sometime in the future
