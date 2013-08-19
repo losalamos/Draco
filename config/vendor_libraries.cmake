@@ -312,7 +312,8 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
 
          set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
             STRING "flag used to specify number of processes." FORCE)
-      # else()
+      else()
+         message( FATAL_ERROR "missing if block for MPIEXEC=${MPIEXEC}")
       endif()
 
       # Mark some of the variables created by the above logic as
