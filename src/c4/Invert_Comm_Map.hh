@@ -21,8 +21,10 @@
 namespace rtt_c4
 {
 
-DLL_PUBLIC void master_impl(const std::vector<int> &, std::vector<int>&);
-DLL_PUBLIC void slave_impl( const std::vector<int> &, std::vector<int>&);
+DLL_PUBLIC void icm_master_impl( std::vector<int> const & in,
+                                 std::vector<int>       & out );
+DLL_PUBLIC void icm_slave_impl(  std::vector<int> const & in,
+                                 std::vector<int>       & out );
 
 //---------------------------------------------------------------------------//
 /**
@@ -38,38 +40,37 @@ DLL_PUBLIC void slave_impl( const std::vector<int> &, std::vector<int>&);
 template <typename T>
 void invert_comm_map(const T& to_values, T& from_values)
 {
-    const int node = rtt_c4::node();
+    int const node = rtt_c4::node();
 
     // Copy the provided container to a std::vector<int>
-    std::vector<int> to_data, from_data;
-    to_data.insert(to_data.end(), to_values.begin(), to_values.end());
-
+    std::vector<int> to_data;
+    std::vector<int> from_data;
+    to_data.insert( to_data.end(), to_values.begin(), to_values.end() );
 
     if (node == 0)
-        master_impl(to_data, from_data);
+        icm_master_impl(to_data, from_data);
     else
-        slave_impl(to_data, from_data);
+        icm_slave_impl(to_data, from_data);
 
     // Append the results to the end of the provided container.
-    std::copy(from_data.begin(), from_data.end(), std::back_inserter(from_values));
+    std::copy(from_data.begin(), from_data.end(),
+              std::back_inserter(from_values));
+    return;
 }
 
 //---------------------------------------------------------------------------//
 /**
  * \brief Specialized version of invert_comm_map for std::vector<int> which
  * avoids data copy operations.
- * 
  */
-inline void invert_comm_map(const std::vector<int>& to_values,
-                            std::vector<int>& from_values)
+inline void invert_comm_map( std::vector<int> const & to_values,
+                             std::vector<int>       & from_values )
 {
-    const int node = rtt_c4::node();
-
-    if (node == 0)
-        master_impl(to_values, from_values);
+    if( rtt_c4::node() == 0 )
+        icm_master_impl(to_values, from_values );
     else
-        slave_impl(to_values, from_values);
-
+        icm_slave_impl( to_values, from_values );
+    return;
 }
 
 } // end namespace rtt_c4
