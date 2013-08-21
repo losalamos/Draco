@@ -22,34 +22,17 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
-target="`uname -n | sed -e s/[.].*//`"
-arch=`uname -m`
+# Module is provided by the system:
+if test -z "$MODULESHOME"; then
+    if test -f /usr/share/Modules/init/bash; then
+        source /usr/share/Modules/init/bash
+    fi
+fi
+module use /ccs/codes/radtran/vendors/Modules
+module load gcc/4.8.1
+module load gsl/1.16
+module load emacs/24.2
 
-case ${target} in
-    *)
-        # Module is provided by the system:
-        if test -z "$MODULESHOME"; then
-            if test -f /usr/share/Modules/init/bash; then
-                source /usr/share/Modules/init/bash
-            fi
-        fi
-        module use /ccs/codes/radtran/vendors/Modules
-        module load gcc/4.8.1
-        module load gsl/1.16
-        module load emacs/24.2
-        ;;
-    ccscs8*)
-        if test -z "$MODULESHOME"; then
-            if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
-                source ${VENDOR_DIR}/modules-3.2.9/init/bash
-            fi
-        fi
-        module load gcc gsl/1.13
-        module load emacs/23.2
-        ;;
-esac
-
-# modules
 module load openmpi totalview 
 module load cmake grace lapack random123 eospac numdiff git svn
 module load dia graphviz doxygen git valgrind
