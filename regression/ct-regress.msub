@@ -98,7 +98,7 @@ done
 module unload PrgEnv-intel PrgEnv-pgi
 module unload cmake numdiff svn gsl
 module load PrgEnv-intel
-module load gsl/1.14 lapack/3.4.1-intel
+module load gsl lapack
 module load cmake numdiff svn
 module load trilinos/10.12.2-intel SuperLU_DIST/3.0-intel 
 module load random123 

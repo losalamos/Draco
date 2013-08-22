@@ -83,7 +83,7 @@ module use ${regdir}/draco/environment/Modules/hpc
 # module purge &> /dev/null
 module load friendly-testing 
 module load intel/13.1.0 openmpi/1.6.3
-module load gsl/1.14-intel lapack/3.4.1-intel
+module load gsl lapack
 module load trilinos/10.12.2-openmpi163-intel1310 SuperLU_DIST/3.0-openmpi163-intel1310
 module load ParMetis/3.1.1-openmpi163-intel1310 ndi
 module load cmake numdiff svn random123 eospac
@@ -108,7 +108,7 @@ fulldiagnostics)
 pgi)
     module unload eospac ParMetis trilinos SuperLU_DIST gsl
     module unload lapack cudatoolkit openmpi intel
-    module load pgi openmpi gsl/1.14-pgi
+    module load pgi openmpi gsl
     comp=`basename $CXX`
     ;;
 *)
