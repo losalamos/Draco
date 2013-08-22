@@ -2,9 +2,11 @@
 
 # Use: In ~/.cshrc add the following code:
 #
- setenv DRACO_ENV_DIR ~/draco/environment
-# source $DRACO_ENV_DIR/cshrc/.cshrc
-#
+if( ! -d "${DRACO_ENV_DIR}" )then
+  if( -d ~/draco/environment )then
+    setenv DRACO_ENV_DIR ~/draco/environment
+  endif
+endif
 
 setenv PATH $DRACO_ENV_DIR/bin:$PATH
 
@@ -16,13 +18,13 @@ case mu-fey*.lanl.gov:
 case mu*.localdomain:
 
 #    source /usr/projects/crestone/dotfiles/Cshrc
-    source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
+#    source /usr/projects/draco/vendors/modules-3.2.9/init/tcsh
 
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
     module load intel/13.1.0 openmpi/1.6.3
-    module load gsl/1.14-intel svn emacs
+    module load gsl svn emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
@@ -42,7 +44,7 @@ case ty*.localdomain:
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
     module load intel/13.1.0 openmpi/1.6.3
-    module load gsl/1.14-intel emacs
+    module load gsl emacs
     module load cmake numdiff git lapack/3.4.1-intel
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
@@ -60,13 +62,13 @@ case ml*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/13.1.0 openmpi/1.6.3 # cudatoolkit
-    module load cmake gsl/1.14-intel svn fstools 
+    module load intel/13.1.0 openmpi/1.6.3 
+    module load cmake gsl svn fstools 
     module load numdiff lapack/3.4.1-intel totalview
     module load SuperLU_DIST/3.0-openmpi163-intel1310
     module load trilinos/10.12.2-openmpi163-intel1310
     module load ParMetis/3.1.1-openmpi163-intel1310 
-    module load ndi random123 eospac/v6.2.4beta.1-moonlight
+    module load ndi random123 eospac
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
     setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
@@ -85,7 +87,7 @@ case ci*:
    module unload xt-libsci # xt-totalview intel
    # module load intel/13.0.1.117
    # draco modules start here.
-   module load gsl/1.14 lapack/3.4.1-intel
+   module load gsl lapack/3.4.1-intel
    module load cmake numdiff subversion emacs
    module load trilinos SuperLU_DIST/3.0-intel 
    module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.3
