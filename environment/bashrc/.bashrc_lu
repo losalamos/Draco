@@ -40,8 +40,8 @@ module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/tu-fe
 module load friendly-testing 
 module load intel/13.1.0 openmpi/1.6.3 # cudatoolkit
-module load cmake gsl/1.14-intel svn fstools 
-module load numdiff lapack/3.4.1-intel totalview
+module load cmake gsl svn fstools 
+module load numdiff lapack totalview
 module load trilinos SuperLU_DIST/3.0-intel
 module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.1-moonlight
 
