@@ -1,0 +1,81 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+# This file is based on the module file for ML's OpenMPI/1.6.3:
+
+# where are we? 
+# trim everything after ':'
+set module_path $::env(MODULEPATH)
+set my_module_dir [ lindex [ split "$module_path" ":" ] 0 ]
+cd $my_module_dir/..
+set draco_module_dir [pwd]
+
+source $draco_module_dir/templates/header
+
+# local variables
+set name        [moduleName]
+set version     [moduleVersion]
+set machine     [machineName]
+
+# module whatis
+module-whatis   "GSL $version (Gnu Scientific Library)";
+
+conflict gsl
+
+
+# Determine what compiler we're using
+
+if { $machine == "cielito" } then {
+   set compiler       intel
+   set compilermajver 13
+} else {
+
+if { [info exists ::env(LCOMPILER) ] } {
+    set compiler       $::env(LCOMPILER)
+
+    if { [info exists ::env(LCOMPILERMAJVER) ] } {
+       set compilermajver $::env(LCOMPILERMAJVER)
+    } else {
+       set compilerver [ exec icpc --version | grep icpc | awk {{print $3}} ]
+       set compilermajver [ lindex [ split "$compilerver" "." ] 0 ]
+    }
+
+} else {
+    set compiler    gcc
+    set compilerver [ exec gcc --version | grep GCC | awk {{print $3}} ]
+    set compilermajver [ lindex [ split "$compilerver" "." ] 0 ].[ lindex [ split "$compilerver" "." ] 1 ]
+}
+}
+
+
+# local variables
+set version      1.14
+set prefix      /usr/projects/draco/vendors/gsl-$version/${compiler}-${compilermajver}
+set libdir      $prefix/lib
+set incdir      $prefix/include
+set bindir      $prefix/bin
+
+if { ![file exists $libdir] } {
+    puts stderr "\n[module-info name]: $libdir: No such file or directory.\n"
+    break
+    exit 1
+}
+
+# module help
+proc ModulesHelp { } {
+   global version prefix bindir;
+   puts stderr "\tGnu Scientific Library $version\n";
+   puts stderr "\tGSL_LIB_DIR\t= $libdir";
+   puts stderr "\tGSL_INC_DIR\t= $incdir";
+   puts stderr "\tPATH+= $bindir";
+}
+
+prepend-path    PATH            $bindir;
+
+setenv GSL_LIB_DIR $libdir
+setenv GSL_INC_DIR $incdir
+
