@@ -1,0 +1,66 @@
+#%Module1.0#####################################################################
+##
+## modules modulefile
+##
+## modulefiles/modules.  Generated from modules.in by configure.
+##
+
+# This file is based on the module file for CT's OpenMPI/1.7.2:
+
+conflict lapack
+
+source /usr/projects/hpcsoft/modulefiles/templates/header
+
+if { [is-loaded PrgEnv-gnu] } {
+   set compiler gcc;
+   set compilerver [ exec gcc --version | grep GCC | awk {{print $3}} ]
+   set compilermajver [ lindex [ split "$compilerver" "." ] 0 ].[ lindex [ split "$compilerver" "." ] 1 ]
+}
+if { [is-loaded PrgEnv-intel] } {
+   set compiler intel;   
+   set compilerver [ exec icpc --version | grep icpc | awk {{print $3}} ]
+   set compilermajver [ lindex [ split "$compilerver" "." ] 0 ]
+}
+
+if { "$compiler" == "" } {
+   set compiler gnu;
+   if { [module-info mode load] } {
+      puts stderr "\n\t*** No supported Programming Environment loaded (Supported: PrgEnv-gnu, PrgEnv-intel)  ***"
+      puts stderr "\t*** Using GCC build of Open-MPI ***"
+   }
+}
+
+# local variables
+set name        [moduleName]
+set version     [moduleVersion]
+set machine     [machineName]
+
+# module whatis
+module-whatis   "LAPACK $version"
+module-whatis   "This is a universal module file for all compilers."
+module-whatis   "You must have a programming environment loaded prior to "
+module-whatis   "loading this one or you will get the system GCC"
+module-whatis   "build of LAPACK added to your paths."
+
+# local variables
+set version     3.4.1;
+set prefix      /usr/projects/draco/vendors/lapack-$version/${compiler}-${compilermajver}
+set libdir      $prefix/lib;
+set incdir      $prefix/include;
+
+if { ![file exists $libdir] } {
+    puts stderr "\n[module-info name]: $libdir: No such file or directory.\n"
+    break
+    exit 1
+}
+
+# module help
+proc ModulesHelp { } {
+   global version prefix bindir;
+   puts stderr "\tLAPACK ($version)\n";
+   puts stderr "\tLAPACK_LIB_DIR\t= $libdir";
+}
+
+setenv          LAPACK_LIB_DIR  $libdir
+setenv          BLAS_blas_LIBRARY ${libdir}/libblas.a
+

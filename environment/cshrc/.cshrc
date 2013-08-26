@@ -25,7 +25,7 @@ case mu*.localdomain:
     module load friendly-testing 
     module load intel/13.1.0 openmpi/1.6.3
     module load gsl svn emacs
-    module load cmake numdiff git lapack/3.4.1-intel
+    module load cmake numdiff git lapack/3.4.1
     module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
     # PGI keeps running out of tmp sapce
@@ -45,7 +45,7 @@ case ty*.localdomain:
     module load friendly-testing 
     module load intel/13.1.0 openmpi/1.6.3
     module load gsl emacs
-    module load cmake numdiff git lapack/3.4.1-intel
+    module load cmake numdiff git lapack/3.4.1
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     setenv VENDOR_DIR /usr/projects/draco/vendors
@@ -64,7 +64,7 @@ case ml*.localdomain:
     module load friendly-testing 
     module load intel/13.1.0 openmpi/1.6.3 
     module load cmake gsl svn fstools 
-    module load numdiff lapack/3.4.1-intel totalview
+    module load numdiff lapack/3.4.1 totalview
     module load SuperLU_DIST/3.0-openmpi163-intel1310
     module load trilinos/10.12.2-openmpi163-intel1310
     module load ParMetis/3.1.1-openmpi163-intel1310 
@@ -87,7 +87,7 @@ case ci*:
    module unload xt-libsci # xt-totalview intel
    # module load intel/13.0.1.117
    # draco modules start here.
-   module load gsl lapack/3.4.1-intel
+   module load gsl lapack/3.4.1
    module load cmake numdiff subversion emacs
    module load trilinos SuperLU_DIST/3.0-intel 
    module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.3
