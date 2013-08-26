@@ -22,26 +22,46 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
-# Is the module function available?
-found=`declare -f module | wc -l`
-# Module is provided by the system:
-#if test -z "$MODULESHOME"; then
-if test ${found} == 0; then
-    if test -f /usr/share/Modules/init/bash; then
+target="`uname -n | sed -e s/[.].*//`"
+arch=`uname -m`
+
+case ${target} in
+gondolin*)
+   if test -z "$MODULESHOME"; then
+     if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
+       source ${VENDOR_DIR}/modules-3.2.9/init/bash
+     fi
+   fi
+   module load Modules.deprecated
+   module load gcc/4.7.1 gsl/1.13
+   module load emacs/23.2
+   module load openmpi totalview 
+   module load cmake grace lapack random123 eospac numdiff git svn
+   module load dia graphviz doxygen git valgrind
+   module load BLACS SCALAPACK SuperLU_DIST hypre ndi
+   module load ParMetis trilinos  
+;;
+
+*)
+   # Is the module function available?
+   found=`declare -f module | wc -l`
+   # Module is provided by the system:
+   if test ${found} == 0; then
+     if test -f /usr/share/Modules/init/bash; then
         source /usr/share/Modules/init/bash
-    fi
-fi
-module use /ccs/codes/radtran/vendors/Modules
-module load gcc/4.8.1
-module load gsl/1.16
-module load emacs/24.2
-
-module load openmpi totalview 
-module load cmake grace lapack random123 eospac numdiff git svn
-module load dia graphviz doxygen git valgrind
-
-module load BLACS SCALAPACK SuperLU_DIST hypre ndi
-module load ParMetis trilinos  
+     fi
+   fi
+   module use /ccs/codes/radtran/vendors/Modules
+   module load gcc/4.8.1
+   module load gsl/1.16
+   module load emacs/24.2
+   module load openmpi totalview 
+   module load cmake grace lapack random123 eospac numdiff git svn
+   module load dia graphviz doxygen git valgrind
+   module load BLACS SCALAPACK SuperLU_DIST hypre ndi
+   module load ParMetis trilinos  
+;;
+esac
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
