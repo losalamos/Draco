@@ -22,8 +22,11 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
+# Is the module function available?
+found=`declare -f module | wc -l`
 # Module is provided by the system:
-if test -z "$MODULESHOME"; then
+#if test -z "$MODULESHOME"; then
+if test ${found} == 0; then
     if test -f /usr/share/Modules/init/bash; then
         source /usr/share/Modules/init/bash
     fi

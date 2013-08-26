@@ -14,34 +14,16 @@
 ## whichall <string> - show path of all commands in path that match
 ##                     <string>
 ##
-## xe                - start XEmacs using gnuclient if an instance is
-##                     already running
-## 
-## em                - start GNU Emacs using emacsclient if an instance is 
-##                     already running
-##
 ## cleanemacs        - recursively remove ~ files, .flc files and .rel
 ##                     files.
 ##
 ## ssh1/scp1         - force use of protocol version 1.
-##
-## fixperms          - Change permissions recursively.  Usage:
-##                     'fixperms <world>'  If optional keyword "world"
-##                     is ommitted, defaults to no access for world.
-##
-## loadandlistmodules - load modules specified in the string $defmods.
 ##
 ## findsymbol <sym>  - search all libraries (.so and .a files) in the
 ##                     current directory for symbol <sym>.
 ##
 ## pkgdepends        - Print a list of dependencies for the current
 ##                     directory. 
-##
-## mpush <file>      - Store <file> to HPSS/xfer and then push it to
-##                     Mercury. 
-##
-## mpull <index>     - Pull index from Mercury (to HPSS/xfer) and then
-##                     save it to the CWD.
 ##
 ## npwd              - function used to set the prompt under bash.
 ##
@@ -58,47 +40,6 @@ elif test -d /usr/projects/data/eos; then
    export SESPATHU=/usr/projects/data/eos
    export SESPATHU=/usr/projects/data/eos
 fi
-
-##---------------------------------------------------------------------------##
-## Start Emacs.  First invokation will start the Emacs server.
-## Additional invokations will connect to the already running Emacs
-## server. 
-##---------------------------------------------------------------------------##
-
-function xe
-{
-  # Look for XEmacs first.  Choose to use xemacs/gnuclient:
-  if test -n "`which xemacs 2>/dev/null`"; then
-    if test -z "`ps | grep xemacs`" ; then
-      xemacs $* -g 90x65
-      # xemacs -no-site-file -l /users/kellyt/.emacs $*
-    else
-      gnuclient $*
-    fi
-
-  # If no XEmacs, then look for GNU emacs;  
-  # Choose to use the emacs/emacsclient:
-  elif test -n "`which emacs 2>/dev/null`"; then
-    if test -z "`ps | grep emacs`" ; then
-      emacs -g 90x65 $*
-    else
-      emacsclient -a emacs $*
-    fi
-  else
-    echo "Could not find XEmacs or GNU Emacs in your path."
-  fi
-}
-
-function em
-{
-    # export GDK_NATIVE_WINDOWS=1
-    if test -z "`ps | grep emacs`"; then
-        emacs $* -g 90x55
-    else
-        exec emacsclient --alternate-editor="emacs" -c "$@"
-    fi
-    export EDITOR=em
-}
 
 ##---------------------------------------------------------------------------##
 ## Find all matches in PATH (not just the first one)
@@ -186,48 +127,6 @@ function npwd_alt()
 
 ##---------------------------------------------------------------------------##
 ## Usage:
-##    fixperms [world]
-##
-##    world - optional keyword to provide world read access.
-##---------------------------------------------------------------------------##
-
-function fixperms()
-{
-    local option1=$1
-    local exebits='770'
-    local filebits='660'
-    if test ${option1:='group'} = 'world'; then
-      exebits='775'
-      filebits='664'
-    fi
-    # fix root directory first
-    groupid=`groups | grep radtran`
-    if test "${groupid}" == ""; then
-       groupid=draco
-    else
-       groupid=radtran
-    fi
-    chgrp ${groupid} .
-    chmod $exebits .
-    # recursively fix other dirs and files.
-    echo chgrp -R ${groupid} *
-    chgrp -R ${groupid} *
-    echo "Setting executable entries to bitmode $exebits"
-    echo "Setting regular entries to bitmode $filebits"
-    local permissions="700 750 770 775 777 500 550 555"
-    for permbits in $permissions; do
-       echo "find . -perm $permbits -exec chmod ${exebits} {} \;"
-       find . -perm $permbits -exec chmod ${exebits} {} \;
-    done
-    permissions="600 640 660 644 664 400 440 444"
-    for permbits in $permissions; do
-       echo "find . -perm $permbits -exec chmod ${filebits} {} \;"
-       find . -perm $permbits -exec chmod ${filebits} {} \;
-    done
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
 ##    findsymbol <symbol>
 ##
 ## Searches all .a and .so files in local directory for symbol
@@ -282,120 +181,6 @@ function pkgdepends()
       grep "SETUP[(]pkg" configure.ac | sed -e 's/AC_/   /' | sed -e 's/_.*//'
    fi
 }
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    mpush <file1> ... <fileN>
-##
-## Purpose:
-##     Check for kerberose ticket, get one if needed.  Next, store
-##     <file1> on HPSS in the subdirectory "xfer".  Finally, push
-##     <file1> via Mercury.
-##---------------------------------------------------------------------------##
-
-# function mpush()
-# {
-#     # Ensure that an argument was provided.  The argument must be the name
-#     # of a file.
-#     if test x$1 == x; then
-#        echo "Error: no filename provided."
-#        echo "Useage:"
-#        echo "   mpush <filename>"
-#        return
-#     fi
-
-#     # Use psi or k5psi
-#     psicmd='psi'
-#     linux_release=`uname -r | sed -e 's/-.*//'`
-#     case ${linux_release} in
-#     2.6.*)
-#       psicmd='k5psi'
-#     ;;
-#     esac
-
-#     ticket_cache=`k5list | grep Ticket | sed -e 's/.*://'`
-#     # time stamps in seconds
-#     date_of_ticket=`date -r ${ticket_cache} +%s`
-#     date_now=`date +%s`
-#     eight_hours=28800
-#     dotpeh=`expr $date_of_ticket + $eight_hours`
-#     # Check for valid kerberose ticket.
-#     if test ${dotpeh} -lt ${date_now}; then
-#        # No ticket found
-#        echo "Last update to Kerberose Ticket: ${date_of_ticket} sec."
-#        echo "Should expire on               : ${dotpeh} sec."
-#        echo "Currently                      : ${date_now} sec."
-#        echo "No kerberose ticket found.  Let's get one..."
-#        k5init -f
-#     fi
-
-#     # Process for each file (Store file to HPSS)
-#     ${psicmd} store -d xfer $@
-
-#     # Push file via Mercury
-#     xfiles=""
-#     for file in $@; do
-#        xfiles="${xfiles} xfer/${file}"
-#     done
-#     push ${xfiles}
-
-#     echo "mpush: done."
-#     echo " "
-# }
-
-
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    mpull [N] [N] [...]
-##
-## Purpose:
-##     Examine the output from the status command.  If there are files
-##     on Mecury that are ready to pull, then pull them to HPSS and
-##     then to the CWD.  If no arguments are provided, then pull all
-##     available files.  If arguments are provided only pull the files
-##     associated with the index number provided.
-##---------------------------------------------------------------------------##
-
-# function mpull()
-# {
-#     # If no arguments, then pull all available files
-#     items=""
-#     numitems=0
-#     if test x$1 == x; then
-#        echo "Pulling all available Mercury files to HPSS."
-#        tmp=`status | sed -e 's/[A-Za-z:\s]*//g'`
-#        for i in ${tmp}; do
-#           items="${items} ${i}"
-#           numitems="`expr ${numitems} + 1`" 
-#        done
-#     else
-#        "Pulling item(s) $* from Mercury to HPSS."
-#        items=$*
-#        numitems=$#
-#     fi
-
-#     # Pull from Mercury
-#     echo "pull ${items} xfer"
-#     pull ${items} xfer
-
-#     # Get a list of files located in the user's HPSS xfer directory
-#     # sorted by time stamp.  Retrieve the most recent N files to the
-#     # user's CWD.  N is the number of files pulled from Mercury.
-#     i=1
-#     xfiles=`psi ls -t xfer/*`
-#     for file in ${xfiles}; do
-#        echo "Item ${i}: psi get ${file}"
-#        if test $i -eq $n; then
-#           break
-#        fi
-#        psi get ${file}
-#        i="`expr ${i} + 1`"
-#     done
-
-#     echo "mpull: done."
-#     echo " "
-# }
 
 ##---------------------------------------------------------------------------##
 ## Usage:
@@ -472,8 +257,6 @@ function wiki()
 
 # function encrypt() { gpg -ac --no-options "$1" }
 # function decrypt (){ gpg --no-options "$1" }
-
-
 
 ##---------------------------------------------------------------------------##
 ## Publish all functions to the current shell.
