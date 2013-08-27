@@ -484,3 +484,136 @@
    fun:exit
    fun:(below main)
 }
+
+#=============== C++ string issues (gcc-4.8.1) ===============#
+
+{
+   # Memcheck:Cond
+   # fun:__strlen_sse42
+   # fun:std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&)
+   gcc481/basic_string/strlen/1
+   Memcheck:Cond
+   fun:__strlen_sse42
+   fun:_ZNSsC1EPKcRKSaIcE
+   ...
+}
+{
+   gcc481/basic_string/strlen/2
+   Memcheck:Addr8
+   fun:__strlen_sse42
+   fun:_ZNSsC1EPKcRKSaIcE
+   ...
+}
+{
+   # Memcheck:Cond
+   # fun:char* std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_S_construct<char const*>(char const*, char const*, std::allocator<char> const&, std::forward_iterator_tag)
+   # fun:std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&)
+   gcc481/basic_string/S_construct/1
+   Memcheck:Cond
+   ...
+   fun:_ZNSsC1EPKcRKSaIcE
+   ...
+}
+
+{
+   gcc481/basic_string/S_construct/3
+   # Memcheck:Value8
+   # fun:memcpy
+   # fun:char* std::basic_string<char, std::char_traits<char>, std::allocator<char> >::_S_construct<char const*>(char const*, char const*, std::allocator<char> const&, std::forward_iterator_tag)
+   # fun:std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&)
+   Memcheck:Value8
+   ...
+   fun:_ZNSsC1EPKcRKSaIcE
+   ...
+}
+{
+   gcc481/basic_string/notequal/1
+   # fun:bool std::operator!=<char, std::char_traits<char>, std::allocator<char> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+   Memcheck:Cond
+   ...
+   fun:_ZStneIcSt11char_traitsIcESaIcEEbRKSbIT_T0_T1_ES8_
+   ...
+}
+{
+   gcc481/basic_string/notequal/2
+   # fun:bool std::operator!=<char, std::char_traits<char>, std::allocator<char> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+   Memcheck:Value8
+   ...
+   fun:_ZStneIcSt11char_traitsIcESaIcEEbRKSbIT_T0_T1_ES8_
+   ...
+}
+{
+   gcc481/basic_string/operatorplus/1
+   # fun:std::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+   Memcheck:Value8
+   ...
+   fun:_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_EOS6_RKS6_
+   ...
+}
+{
+   gcc481/basic_string/operatorplus/2
+   # fun:std::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+   Memcheck:Cond
+   ...
+   fun:_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_EOS6_RKS6_
+   ...
+}
+{
+   gcc481/basic_string/operatorplus/3
+   Memcheck:Cond
+   ...
+   fun:_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_EOS6_S3_
+   ...
+}
+{
+   gcc481/basic_string/operatorplus/4
+   Memcheck:Value8
+   ...
+   fun:_ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_EOS6_S3_
+   ...
+}
+{
+   gcc481/basic_ostream/insert/1
+   Memcheck:Cond
+   # fun:std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)
+   fun:_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l
+   ...
+}
+{
+   gcc481/basic_ostream/insert/2
+   # fun:std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)
+   Memcheck:Cond
+   ...
+   fun:_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l
+   ...
+}
+{
+   gcc481/basic_ostream/insert/3
+   # fun:std::basic_ostream<char, std::char_traits<char> >& std::__ostream_insert<char, std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*, long)
+   Memcheck:Value8
+   ...
+   fun:_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l
+   ...
+}
+{
+   gcc481/basic_ostream/endl/1
+   Memcheck:Cond
+   ...
+   fun:_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_
+   ...
+}
+{
+   gcc481/basic_ostream/endl/1
+   Memcheck:Value8
+   ...
+   fun:_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_
+   ...
+}
+
+
+
+
+
+
+
+
