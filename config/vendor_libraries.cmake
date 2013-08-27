@@ -459,7 +459,7 @@ macro( SetupVendorLibrariesUnix )
 
    # Random123 ----------------------------------------------------------------
    # message( STATUS "Looking for Random123...")
-   find_package( Random123 QUIET )
+   find_package( Random123 REQUIRED )
 
    # GRACE ------------------------------------------------------------------
    find_package( Grace QUIET )
