@@ -313,6 +313,53 @@
 
 
 ## ---------------------------------------------------------------------- ##
+## EOSPAC 6
+## ---------------------------------------------------------------------- ##
+
+{
+   eospac/createtables/1
+   Memcheck:Cond
+   ...
+   fun:eos_CreateTables
+   ...
+}
+{
+   eospac/createtables/2
+   Memcheck:Value8
+   ...
+   fun:eos_CreateTables
+   ...
+}
+{
+   eospac/createtables/3
+   Memcheck:Addr8
+   ...
+   fun:eos_CreateTables
+   ...
+}
+{
+   eospac/createtableseosdatamap/1
+   Memcheck:Value8
+   ...
+   fun:eos_CreateTablesEosDataMap
+   ...
+}
+{
+   eospac/createtableseosdatamap/2
+   Memcheck:Cond
+   ...
+   fun:eos_CreateTablesEosDataMap
+   ...
+}
+{
+   eospac/createtableseosdatamap/3
+   Memcheck:Addr8
+   ...
+   fun:eos_CreateTablesEosDataMap
+   ...
+}
+
+## ---------------------------------------------------------------------- ##
 ## Numdiff
 ## ---------------------------------------------------------------------- ##
 
@@ -609,11 +656,64 @@
    fun:_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_
    ...
 }
-
-
-
-
-
-
-
-
+{
+   gcc481/basic_ostream/operatorlessless/1
+   Memcheck:Addr8
+   ...
+   fun:_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+   ...
+}
+{
+   gcc481/basic_ostream/operatorlessless/2
+   Memcheck:Cond
+   ...
+   fun:_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+   ...
+}
+{
+   gcc481/basic_ostream/str/1
+   Memcheck:Cond
+   fun:_ZNKSt19basic_ostringstreamIcSt11char_traitsIcESaIcEE3strEv
+   ...
+}
+{
+   gcc481/basic_ostream/str/2
+   Memcheck:Value8
+   ...
+   fun:_ZNKSt19basic_ostringstreamIcSt11char_traitsIcESaIcEE3strEv
+   ...
+}
+{
+   gcc481/basic_ostringstream/str/3
+   Memcheck:Cond
+   ...
+   fun:_ZNKSt19basic_ostringstreamIcSt11char_traitsIcESaIcEE3strEv
+   ...
+}
+{
+   gcc481/strcmp/1
+   Memcheck:Addr8
+   fun:__strcmp_sse42
+   ...
+}
+{
+   gcc481/back_insert_operator/1
+   Memcheck:Value8
+   ...
+   fun:_ZSt9transformIN9__gnu_cxx17__normal_iteratorIPSsSt6vectorISsSaISsEEEESt20back_insert_iteratorIS3_IPcSaIS8_EEEPFS8_RKSsEET0_T_SH_SG_T1_
+   ...
+}
+{
+   gcc481/back_insert_operator/2
+   Memcheck:Addr8
+   ...
+   fun:_ZSt9transformIN9__gnu_cxx17__normal_iteratorIPSsSt6vectorISsSaISsEEEESt20back_insert_iteratorIS3_IPcSaIS8_EEEPFS8_RKSsEET0_T_SH_SG_T1_
+   ...
+}
+{
+   gcc481/back_insert_operator/3
+   Memcheck:Cond
+   ...
+   fun:_ZSt9transformIN9__gnu_cxx17__normal_iteratorIPSsSt6vectorISsSaISsEEEESt20back_insert_iteratorIS3_IPcSaIS8_EEEPFS8_RKSsEET0_T_SH_SG_T1_
+   ...
+}
