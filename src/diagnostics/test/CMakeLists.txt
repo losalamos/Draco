@@ -47,7 +47,9 @@ add_test(
    )
 set_tests_properties( diagnostics_draco_info
    PROPERTIES	
-   PASS_REGULAR_EXPRESSION "Passes"
-   FAIL_REGULAR_EXPRESSION "Fails"
+     PASS_REGULAR_EXPRESSION "Passes"
+     FAIL_REGULAR_EXPRESSION "Fails"
+     PROPERTIES LABELS "nomemcheck" # valgrind gets confused when
+                                    # parsing a 32-bit program (e.g.: cmake)
    )
 

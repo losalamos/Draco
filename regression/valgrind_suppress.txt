@@ -5,8 +5,10 @@
 # For help, use '--gen-suppressions=[yes|all]'
 
 # Example valgrind use:
-# valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes --num-callers=50 /ccs/codes/mpi/openmpi/Linux64/1.6/bin/mpiexec -np 1 phw hello
-# Options: --suppressions="$HOME/draco/regression/valgrind_suppress.txt"
+# valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes 
+#   --trace-children=yes --num-callers=50 --gen-suppressions=yes 
+#   --suppressions="$HOME/draco/regression/valgrind_suppress.txt"
+#   /ccs/codes/mpi/openmpi/Linux64/1.6/bin/mpiexec -np 1 phw hello 
 
 # OR --------
 
@@ -393,6 +395,47 @@
    fun:init_mpa_support
    fun:main
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:__gmpn_mul_basecase
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:__gmpn_mul_basecase
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:init_mpa_support
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:__gmpn_sqr_basecase
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:__gmpn_sqr_n
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:__gmpn_divrem
+   ...
+}
+
+
+
+
 #===================== text compare =============================================#
 
 # ==18889== Conditional jump or move depends on uninitialised value(s)
