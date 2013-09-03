@@ -2,10 +2,24 @@
 
 # Use: In ~/.cshrc add the following code:
 #
-if( ! -d "${DRACO_ENV_DIR}" )then
+# setenv DRACO_ENV_DIR ~/draco/environment
+# source $DRACO_ENV_DIR/cshrc/.cshrc
+#
+if( ! $?DRACO_ENV_DIR )then
+  if( -d /usr/projects/draco/environment )then
+    setenv DRACO_ENV_DIR /usr/projects/draco/environment
+  endif
   if( -d ~/draco/environment )then
     setenv DRACO_ENV_DIR ~/draco/environment
   endif
+endif
+if( ! $?DRACO_ENV_DIR )then
+  echo "ERROR: DRACO_ENV_DIR has not been set."
+  exit 1
+endif
+if( ! -d "${DRACO_ENV_DIR}" )then
+  echo "ERROR: DRACO_ENV_DIR is not a valid directory (${DRACO_ENV_DIR})"
+  exit 1
 endif
 
 setenv PATH $DRACO_ENV_DIR/bin:$PATH
