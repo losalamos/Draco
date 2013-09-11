@@ -70,7 +70,7 @@ set( CMAKE_Fortran_FLAGS "-ffree-line-length-none -cpp" )
 #                explicit interface.  
 #   
 SET( CMAKE_Fortran_FLAGS_DEBUG 
-  "-g -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+  "-g -gdwarf-3 -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
 # [2011-10-25 KT]: turn off '-Wall -W' for now
 # removed pedantic - needed by capsaicin
 
@@ -79,7 +79,7 @@ SET( CMAKE_Fortran_FLAGS_DEBUG
 # -03                 Highest supported optimization level.
 SET( CMAKE_Fortran_FLAGS_RELEASE "-O3 -march=native -mtune=native -ftree-vectorize -funroll-loops -march=k8 -DNDEBUG" )
 SET( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
-SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -ftree-vectorize -funroll-loops -march=k8 -DDEBUG" ) 
+SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -gdwarf -O3 -ftree-vectorize -funroll-loops -march=k8 -DDEBUG" ) 
 
 # ------------------------------------------------------------
 # Find and save compiler libraries.  These may need to be used when
