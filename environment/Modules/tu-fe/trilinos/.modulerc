@@ -1,2 +1,2 @@
 #%Module1.0
-module-version trilinos/10.12.2-intel default
+module-version trilinos/11.4.1-openmpi163 default
