@@ -79,9 +79,9 @@ case ml*.localdomain:
     module load intel/13.1.0 openmpi/1.6.3 
     module load cmake gsl svn fstools 
     module load numdiff lapack/3.4.1 totalview
-    module load SuperLU_DIST/3.0-openmpi163-intel1310
-    module load trilinos/10.12.2-openmpi163-intel1310
-    module load ParMetis/3.1.1-openmpi163-intel1310 
+    module load SuperLU_DIST
+    module load trilinos
+    module load ParMetis 
     module load ndi random123 eospac
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
     setenv VENDOR_DIR /usr/projects/draco/vendors
@@ -103,8 +103,8 @@ case ci*:
    # draco modules start here.
    module load gsl lapack/3.4.1
    module load cmake numdiff subversion emacs
-   module load trilinos SuperLU_DIST/3.0-intel 
-   module load ParMetis/3.1.1-intel ndi random123 eospac/v6.2.4beta.3
+   module load trilinos SuperLU_DIST 
+   module load ParMetis ndi random123 eospac/v6.2.4beta.3
 
    setenv OMP_NUM_THREADS 8
 
