@@ -21,6 +21,7 @@
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include <iostream>
+#include <functional>
 
 //---------------------------------------------------------------------------//
 // TESTS
