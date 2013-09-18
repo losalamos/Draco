@@ -5,6 +5,7 @@
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Galerkin_Ordinate_Space
  * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Galerkin_Ordinate_Space.cc 6855 2012-11-06 16:39:27Z kellyt $
@@ -146,8 +147,8 @@ Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
 
     // Choose: l= 0, ..., N-1, k = -l, ..., l
     for( unsigned ell=0; ell<N; ++ell )
-	for( int k = -ell; k <= static_cast<int>(ell); ++k )
-	    result.push_back( Moment(ell,k) );
+        for( int k = -1*static_cast<int>(ell); k <= static_cast<int>(ell); ++k )
+	        result.push_back( Moment(ell,k) );
 
     // Add ell=N and k<0
     {
