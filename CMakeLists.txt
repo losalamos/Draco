@@ -24,7 +24,7 @@
 #
 # - CMake must be in your path.
 # - The compiler is chosen by setting $CXX, $CC, $FC, etc.  On the
-#   ICN this is done for you automatcially.  If not set, CMake will
+#   ICN this is done for you automatically.  If not set, CMake will
 #   use whatever it can find in your path (e.g.: /usr/bin/g++)
 # - Vendor locations can be specified by setting $<VENDOR>_LIB_DIR and
 #   $<VENDOR>_INC_DIR. For example, $MPI_INC_DIR, $GSL_LIB_DIR,
@@ -92,8 +92,13 @@ cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR )
 #       Support MSVC builds mixed with MingGW gfortran
 #       Support for Xcode 4.3
 project( Draco CXX C )
-
-if (NOT "${CMAKE_GENERATOR}" MATCHES Xcode AND NOT "${CMAKE_GENERATOR}" MATCHES "Visual Studio")
+ 
+ # Do not look for Fortran for 
+ # 1. XCode based Generators, or
+ # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
+ #    look for Fortran. 
+if( NOT "${CMAKE_GENERATOR}" MATCHES Xcode AND 
+    NOT MSVC )
    enable_language( Fortran OPTIONAL )
 endif()
 
@@ -157,7 +162,7 @@ setupVendorLibraries()
 # add_subdirectory( doc ) Now at svnroot/draco/dracodoc.
 add_subdirectory( src )
 add_subdirectory( autodoc ) # This must be processed after 'src'
-add_subdirectory( config ) # This must be processed after 'src'
+add_subdirectory( config )  # This must be processed after 'src'
 
 #
 # Dashboard/Regression setup

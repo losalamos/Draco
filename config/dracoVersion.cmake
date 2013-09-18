@@ -48,27 +48,29 @@ macro( set_ccs2_software_version PROJNAME )
          OUTPUT_STRIP_TRAILING_WHITESPACE )
       # this should produce a string of the form "Sat MM/DD/YYYY".
       # Format the configureDate
-      # message("xxx ${configureDate} xxx")
+	  if( ${configureDate} MATCHES ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*" )
       ### YYYY-MM-DD
-      string( REGEX REPLACE 
-        ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
-        "\\1" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
-      string( REGEX REPLACE 
-         ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
-         "\\2" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
-      string( REGEX REPLACE 
-         ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
-         "\\3" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
-      ### MM-DD-YYYY
-      # string( REGEX REPLACE 
-        # ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-        # "\\3" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
-      # string( REGEX REPLACE 
-         # ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-         # "\\1" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
-      # string( REGEX REPLACE 
-         # ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
-         # "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
+		  string( REGEX REPLACE 
+			".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+			"\\1" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
+		  string( REGEX REPLACE 
+			 ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+			 "\\2" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
+		  string( REGEX REPLACE 
+			 ".*(20[0-9][0-9])-([0-9][0-9])-([0-9][0-9]).*"
+			 "\\3" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
+	  else()
+		# this should produce a string of the form "Sat MM/DD/YYYY".
+		  string( REGEX REPLACE 
+			".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+			"\\3" ${PROJNAME}_DATE_STAMP_YEAR "${configureDate}" )
+		  string( REGEX REPLACE 
+			 ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+			 "\\1" ${PROJNAME}_DATE_STAMP_MONTH "${configureDate}" )
+		  string( REGEX REPLACE 
+			 ".*([0-9][0-9])/([0-9][0-9])/(20[0-9][0-9]).*"
+			 "\\2" ${PROJNAME}_DATE_STAMP_DAY "${configureDate}" )
+	 endif()
       # message("
       # YYYY = ${${PROJNAME}_DATE_STAMP_YEAR}
       # MM   = ${${PROJNAME}_DATE_STAMP_MONTH}
