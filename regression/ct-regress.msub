@@ -100,10 +100,10 @@ module unload cmake numdiff svn gsl
 module load PrgEnv-intel
 module load gsl lapack
 module load cmake numdiff svn
-module load trilinos/10.12.2-intel SuperLU_DIST/3.0-intel 
+module load trilinos SuperLU_DIST 
 module load random123 
 module load eospac
-module load ParMetis/3.1.1-intel ndi
+module load ParMetis ndi
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
