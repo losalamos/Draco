@@ -89,22 +89,17 @@ macro( add_component_library )
 
    add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
    if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-      set_target_properties( ${acl_TARGET} 
-         PROPERTIES 
-         # Provide compile define macro to enable declspec(dllexport) linkage.
-         COMPILE_DEFINITIONS BUILDING_DLL 
-         # Use custom library naming
-         OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
-         FOLDER      ${folder_name}
-         )
-   else()
-      set_target_properties( ${acl_TARGET}
-         PROPERTIES 
-         # Use custom library naming
-         OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
-         FOLDER      ${folder_name}
-         )
+      set( compdefs COMPILE_DEFINITIONS BUILDING_DLL )
    endif()
+   set_target_properties( ${acl_TARGET} 
+      PROPERTIES 
+      # Provide compile define macro to enable declspec(dllexport) linkage.
+      ${compdefs}
+      # COMPILE_DEFINITIONS BUILDING_DLL
+      # Use custom library naming
+      OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
+      FOLDER      ${folder_name}
+      )
 
    #
    # Generate properties related to library dependencies
@@ -350,12 +345,15 @@ macro( copy_win32_dll_to_test_dir )
       
       # Add a post-build command to copy each dll into the test directory.
       foreach( lib ${link_libs} )
-         # message("   Ut_${compname}_${testname}_exe --> ${lib}")
+         #message("   Ut_${compname}_${testname}_exe --> ${lib}")
          unset( ${comp_target}_loc )
          get_target_property( ${comp_target}_loc ${lib} LOCATION )
+		 get_target_property( ${comp_target}_gnutoms ${lib} GNUtoMS )
          # Also grab the file with debug info
          string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
-         #if( EXISTS ${pdb_file} )
+
+         if( "${comp_target}_loc" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
+		    # message("copy dbg")
             add_custom_command( TARGET Ut_${compname}_${testname}_exe 
                POST_BUILD
                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
@@ -363,14 +361,15 @@ macro( copy_win32_dll_to_test_dir )
                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file} 
                        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
                )
-         # else()
-            # add_custom_command( TARGET Ut_${compname}_${testname}_exe 
-               # POST_BUILD
-               # COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
-                       # ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-               # )
-         # message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-         # endif()
+		 else()
+            add_custom_command( TARGET Ut_${compname}_${testname}_exe 
+               POST_BUILD
+               COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+                       ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+               )		 
+		 endif()
+         #message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+         
       endforeach()
    endif()
 endmacro()
@@ -810,6 +809,10 @@ macro( provide_aux_files )
       Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg} 
       ALL
       DEPENDS ${required_files}
+      )
+	set( folder_name ${compname}_test )
+    set_target_properties( Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg} 
+      PROPERTIES FOLDER ${folder_name}
       )
    
 endmacro()
