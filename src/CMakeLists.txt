@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building src level Makefile.
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -98,14 +98,12 @@ add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 
 # Level 5
-message(" ")
-message( STATUS "Configuring Level 5 packages --" )
-add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
-
-# Install related libaries
-# if( WIN32 )
-   # include( InstallRequiredSystemLibraries )
-# endif()
+if( NOT WIN32 )
+  # this is broken on win32 due to a problem with Abstract_Class_Parser
+  message(" ")
+  message( STATUS "Configuring Level 5 packages --" )
+  add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
+endif()
 
 # Summary
 message(" ")
