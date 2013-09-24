@@ -10,17 +10,15 @@
 #      http://www.cmake.org/Wiki/CMake_Scripting_of_CTest
 
 
+# Echo settings if 'ON'
+set( drm_verbose OFF )
+
 # Call this script from regress/Draco_*.cmake
 
 # ------------------------------------------------------------
 # Defaults (override with optional arguments)
 # ------------------------------------------------------------
 macro( set_defaults )
-
-  # parse arguments
-  if( ${ARGV} MATCHES QUIET )
-    set( quiet_mode ON )
-  endif( ${ARGV} MATCHES QUIET )
 
   # Prerequisits:
   # 
@@ -79,9 +77,10 @@ win32$ set work_dir=c:/full/path/to/work_dir
   if( WIN32 )
     # add option for "NMake Makefiles JOM"?
     set( CTEST_CMAKE_GENERATOR "NMake Makefiles" )
-  else( WIN32 )
+    # set( CTEST_CMAKE_GENERATOR "Visual Studio 11" )
+  else()
     set( CTEST_CMAKE_GENERATOR "Unix Makefiles" )
-  endif( WIN32 )      
+  endif()      
 
   set( CTEST_USE_LAUNCHERS 0 )
   set( ENABLE_C_CODECOVERAGE OFF )
@@ -102,10 +101,10 @@ win32$ set work_dir=c:/full/path/to/work_dir
   set( CTEST_DROP_SITE_CDASH TRUE )
   set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF CURLOPT_SSL_VERIFYHOST_OFF )
 
-  set( MPIEXEC_MAX_NUMPROCS 1 CACHE STRING  "Number of cores on the local machine." )
+  set( MPIEXEC_MAX_NUMPROCS 4 CACHE STRING  "Number of cores on the local machine." )
 
   if( EXISTS "$ENV{VENDOR_DIR}" )
-    set(VENDOR_DIR $ENV{VENDOR_DIR})
+    file( TO_CMAKE_PATH $ENV{VENDOR_DIR} VENDOR_DIR )
   endif()
   find_path( VENDOR_DIR
     ChangeLog
@@ -126,37 +125,32 @@ win32$ set work_dir=c:/full/path/to/work_dir
    set( CTEST_TEST_TIMEOUT "1800" ) # seconds
 
   # Echo settings
-  
-#   if( NOT quiet_mode )
-#      message("
-# ARGV     = ${ARGV}
+  if( ${drm_verbose} )  
+     message("
+ARGV     = ${ARGV}
 
-# work_dir   = ${work_dir}
+work_dir   = ${work_dir}
 
-# CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
-# CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
-# CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
+CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
+CTEST_SCRIPT_DIRECTORY = ${CTEST_SCRIPT_DIRECTORY}
+CTEST_SCRIPT_NAME      = ${CTEST_SCRIPT_NAME}
 
-# CTEST_SITE             = ${CTEST_SITE}
-# CTEST_SOURCE_DIRECTORY = ${CTEST_SOURCE_DIRECTORY}
-# CTEST_BINARY_DIRECTORY = ${CTEST_BINARY_DIRECTORY}
-# CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
-# CTEST_MODEL            = ${CTEST_MODEL}
-# CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
-# CTEST_CMAKE_GENERATOR  = ${CTEST_CMAKE_GENERATOR}
-# CTEST_USE_LAUNCHERS    = ${CTEST_USE_LAUNCHERS}
-# ENABLE_C_CODECOVERAGE  = ${ENABLE_C_CODECOVERAGE}
-# ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
-# CTEST_NIGHTLY_START_TIME  = ${CTEST_NIGHTLY_START_TIME}
-# CTEST_DROP_METHOD         = ${CTEST_DROP_METHOD}
-# CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
-# CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
-# CTEST_DROP_SITE_CDASH     = ${CTEST_DROP_SITE_CDASH}
-# CTEST_CURL_OPTIONS        = ${CTEST_CURL_OPTIONS}
-# MPIEXEC_MAX_NUMPROCS      = ${MPIEXEC_MAX_NUMPROCS}
-# VENDOR_DIR                = ${VENDOR_DIR}
-# ")
-#   endif( NOT quiet_mode )
+CTEST_SITE             = ${CTEST_SITE}
+CTEST_SOURCE_DIRECTORY = ${CTEST_SOURCE_DIRECTORY}
+CTEST_BINARY_DIRECTORY = ${CTEST_BINARY_DIRECTORY}
+CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
+CTEST_MODEL            = ${CTEST_MODEL}
+CTEST_BUILD_CONFIGURATION = ${CTEST_BUILD_CONFIGURATION}
+CTEST_CMAKE_GENERATOR  = ${CTEST_CMAKE_GENERATOR}
+CTEST_NIGHTLY_START_TIME  = ${CTEST_NIGHTLY_START_TIME}
+CTEST_DROP_METHOD         = ${CTEST_DROP_METHOD}
+CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
+CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
+CTEST_DROP_SITE_CDASH     = ${CTEST_DROP_SITE_CDASH}
+CTEST_CURL_OPTIONS        = ${CTEST_CURL_OPTIONS}
+VENDOR_DIR                = ${VENDOR_DIR}
+")
+  endif()
 
 endmacro( set_defaults )
 
@@ -164,11 +158,6 @@ endmacro( set_defaults )
 # Parse Arguments
 # ------------------------------------------------------------
 macro( parse_args )
-
-  # parse arguments
-  if( ${ARGV} MATCHES QUIET )
-    set( quiet_mode ON )
-  endif( ${ARGV} MATCHES QUIET )
 
   # Default is "Experimental." Special builds are "Nightly" or "Continuous"
   if( ${CTEST_SCRIPT_ARG} MATCHES Nightly )
@@ -200,8 +189,15 @@ macro( parse_args )
   if( ${CTEST_SCRIPT_ARG} MATCHES Submit )
      set( CTEST_SUBMIT "ON" )
   endif()
+
+  # default compiler name based on platform
+  if( WIN32 )
+    set( compiler_short_name "cl" )
+  else()
+    set( compiler_short_name "gcc" )
+  endif()
   
-  set( compiler_short_name "gcc" )
+  # refine compiler short name.
   if( $ENV{CXX} MATCHES "pgCC" )
      set( compiler_short_name "pgi" )
   elseif($ENV{CXX} MATCHES "icpc" )
@@ -270,7 +266,6 @@ DRACO_TIMING:STRING=2")
   
   # For Experimental builds, use launchers and parallel builds.
   if( ${CTEST_SCRIPT_ARG} MATCHES Experimental )
-     set( CTEST_USE_LAUNCHERS 1 )
      if( UNIX )
         if( EXISTS "/proc/cpuinfo" )
            file( READ "/proc/cpuinfo" cpuinfo )
@@ -291,8 +286,8 @@ DRACO_TIMING:STRING=2")
         endif()
      endif()
   endif()
-  
-  if( NOT quiet_mode )
+
+  if( ${drm_verbose} )    
     message("
 CTEST_MODEL                 = ${CTEST_MODEL}
 CTEST_BUILD_CONFIGURATION   = ${CTEST_BUILD_CONFIGURATION}
@@ -300,22 +295,16 @@ compiler_short_name         = ${compiler_short_name}
 CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
-CTEST_USE_LAUNCHER          = ${CTEST_USE_LAUNCHER}
+CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
 MPIEXEC_MAX_NUMPROCS        = ${MPIEXEC_MAX_NUMPROCS}
 ")
   endif()
-
 endmacro( parse_args )
 
 # ------------------------------------------------------------
 # Names of developer tools
 # ------------------------------------------------------------
 macro( find_tools )
-
-  # parse arguments
-  if( ${ARGV} MATCHES QUIET )
-    set( quiet_mode ON )
-  endif( ${ARGV} MATCHES QUIET )
 
   find_program( CTEST_CMD
     NAMES ctest
@@ -326,6 +315,7 @@ macro( find_tools )
   if( NOT EXISTS ${CTEST_CMD} )
     message( FATAL_ERROR "Cound not find ctest executable.(CTEST_CMD = ${CTEST_CMD})" )
   endif( NOT EXISTS ${CTEST_CMD} )
+
   find_program( CTEST_SVN_COMMAND
      NAMES svn
      HINTS
@@ -351,6 +341,7 @@ macro( find_tools )
   find_program( MAKECOMMAND
     NAMES nmake make
     HINTS
+      "C:/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin"
       "c:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/bin"
       # NO_DEFAULT_PATH
     )
@@ -392,9 +383,9 @@ macro( find_tools )
     endif()
   endif()
 
-  set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
-
-  if( NOT quiet_mode )
+  # This breaks NMake Makefile builds because it is missing the -G"..."
+  # set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
+  if( ${drm_verbose} )  
     message("
 CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
@@ -406,8 +397,7 @@ CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}
 CTEST_CONFIGURE_COMMAND           = ${CTEST_CONFIGURE_COMMAND}
 
 ")
-  endif( NOT quiet_mode )
-
+  endif()
 endmacro( find_tools )
 
 # ------------------------------------------------------------
