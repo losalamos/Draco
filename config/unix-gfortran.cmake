@@ -27,10 +27,10 @@ if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
             CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} )
 endif()
 if( "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.3" )
-  message( FATAL_ERROR """
+  message( FATAL_ERROR "
 *** Compiler incompatibility:
 gfortran < 4.3 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
-"""
+"
   )
 # If we absolutely must compile with an older version of gfortran, the
 # following flags may need to be added: "-x f95-cpp-input"
