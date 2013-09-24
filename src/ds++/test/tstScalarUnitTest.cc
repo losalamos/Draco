@@ -74,28 +74,28 @@ void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
     map<string,unsigned> word_list(
         UnitTest::get_word_count( msg, verbose ) );
 
-    // Check the list of occurances against the expected values
+    // Check the list of occurrences against the expected values
     if( word_list[ string("Test") ] == 6 )
-        unitTest.passes("Found 6 occurances of \"Test\"");
+        unitTest.passes("Found 6 occurrences of \"Test\"");
     else
-        unitTest.failure("Did not find expected number of occurances of \"Test\"");
+        unitTest.failure("Did not find expected number of occurrences of \"Test\"");
 
     if( word_list[ string("failed") ] != 4 )
-        unitTest.failure("Did not find 4 occurances of failure.");
+        unitTest.failure("Did not find 4 occurrences of failure.");
     if( word_list[ string("FAILMSG") ] != 1 )
-        unitTest.failure("Found 1 occurance of \"FAILMSG\"");
+        unitTest.failure("Found 1 occurrence of \"FAILMSG\"");
     if( word_list[ string("failure") ] != 1 )
-        unitTest.failure("Found 1 occurance of \"failure\"");
+        unitTest.failure("Found 1 occurrence of \"failure\"");
 
     if( word_list[ string("macro") ] == 1 )
-        unitTest.passes("Found 1 occurance of \"macro\"");
+        unitTest.passes("Found 1 occurrence of \"macro\"");
     else
-        unitTest.failure("Did not find expected number of occurances of \"macro\"");
+        unitTest.failure("Did not find expected number of occurrences of \"macro\"");
 
     if( word_list[ string("working") ] == 2 )
-        unitTest.passes("Found 2 occurances of \"working\"");
+        unitTest.passes("Found 2 occurrences of \"working\"");
     else
-        unitTest.failure("Did not find expected number of occurances of \"working\"");
+        unitTest.failure("Did not find expected number of occurrences of \"working\"");
     
     return;
 }
