@@ -349,10 +349,6 @@ Objective C++
     filter call_regexp_common C
     filter remove_inline //.*$
     3rd_gen_scale 2.96
-Ocaml
-    filter call_regexp_common Pascal
-    extension ml
-    3rd_gen_scale 3.00
 Octave
     filter remove_matches ^\s*#
     filter remove_inline #.*$
@@ -507,7 +503,6 @@ Text
     extension bib
     extension bst
     extension cfg
-    extension cls
     extension dia
     extension dot
     extension fig
