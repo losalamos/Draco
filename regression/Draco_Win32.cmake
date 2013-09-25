@@ -88,9 +88,14 @@ set_defaults()
 parse_args() 
 find_tools()
 set_svn_command("draco/trunk")
+# Add username and fully qualified machine name.
 string( REPLACE "//ccscs8/" "//kellyt@ccscs8.lanl.gov/" 
    CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
-
+# Make machine name lower case   
+if( ${CTEST_SITE} MATCHES "KTHOMPSON" )
+   set( CTEST_SITE "kthompson" )
+endif()
+   
 # Platform customization:
 # 1. Ceilito - set TOOCHAIN_SETUP
 platform_customization()
