@@ -88,8 +88,8 @@ set_defaults()
 parse_args() 
 find_tools()
 set_svn_command("draco/trunk")
-
-
+string( REPLACE "//ccscs8/" "//kellyt@ccscs8.lanl.gov/" 
+   CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
 
 # Platform customization:
 # 1. Ceilito - set TOOCHAIN_SETUP

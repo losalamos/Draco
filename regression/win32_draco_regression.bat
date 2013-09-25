@@ -43,7 +43,9 @@ echo configuration might not be installed.
 goto :eof
 
 :cdash
-set dashboard_type=Experimental
+set SVN_SSH=c:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe
+rem set dashboard_type=Experimental
+set dashboard_type=Nightly
 set base_dir=d:\cdash
 set build_type=Debug
 set comp=cl
