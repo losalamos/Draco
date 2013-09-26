@@ -17,8 +17,12 @@
 #include <map>
 #include <set>
 #include <string>
-
 #include "Timer.hh"
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  warning C4251: 'rtt_c4::Global_Timer::active_list_' : class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by clients of class 'rtt_c4::Global_Timer'
+#endif
 
 namespace rtt_c4
 {
@@ -106,9 +110,12 @@ class DLL_PUBLIC Global_Timer : public Timer
 
 } // end namespace rtt_c4
 
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 #endif // __c4_Global_Timer_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/Global_Timer.hh
+// end of c4/Global_Timer.hh
 //---------------------------------------------------------------------------//
