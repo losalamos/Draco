@@ -310,7 +310,7 @@ vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_c
 void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
                                       unsigned const sn_order)
 {
-    unsigned const Lmax = expansion_order_;
+    unsigned Lmax = expansion_order_;
     
     moments_ = compute_n2lk_(quadrature_class,
                              sn_order);
@@ -320,8 +320,13 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
     for(unsigned n=0; n<moments_.size(); ++n)
     {
         unsigned const l = moments_[n].L();
-        if (l<=Lmax)
+        if (l<=Lmax || !prune())
         {
+            if (l>Lmax)
+            {
+                Lmax = l;
+                moments_per_order_.resize(Lmax+1, 0U);
+            }
             moments_per_order_[l] += 1;
             number_of_moments_++;
         }

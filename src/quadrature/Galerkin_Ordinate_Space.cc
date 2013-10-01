@@ -343,7 +343,7 @@ void Galerkin_Ordinate_Space::compute_operators()
     vector<double> cartesian_M;
     vector<double> cartesian_D;
 
-    if (method_ == 1)
+    if (method_ == 1 || method_ == 3)
     {
         // -----------------------------------------------------------------------------------------
         // invert the (m x n) moment-to-discrete matrix M to compute the discrete-to-moment matrix D

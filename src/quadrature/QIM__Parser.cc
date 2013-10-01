@@ -32,9 +32,6 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens,
                            "quadrature interpolation model already specified");
     
     Token token = tokens.shift();
-
-    tokens.check_semantics(token.text()=="SN" || token.text()=="GQ1" || token.text()=="GQ2",
-                           "unrecognized quadrature interpolation model");
     
     if (token.text()=="SN")
     {
@@ -47,6 +44,15 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens,
     else if (token.text()=="GQ2")
     {
         qim = GQ2;
+    }
+    else if (token.text()=="GQF")
+    {
+        qim = GQF;
+    }
+    else
+    {
+        tokens.check_semantics(false,
+                               "unrecognized quadrature interpolation model");
     }
 }
 

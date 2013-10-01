@@ -450,6 +450,17 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                  2,
                                                  include_extra_directions,
                                                  ordering);
+
+        case GQF:
+            Result = new Galerkin_Ordinate_Space(dimension,
+                                                 geometry,
+                                                 ordinates,
+                                                 quadrature_class(),
+                                                 number_of_levels(),
+                                                 moment_expansion_order,
+                                                 3,
+                                                 include_extra_directions,
+                                                 ordering);
             break;
 
         default:

@@ -27,6 +27,7 @@ enum QIM
     SN,  /*!< Use the standard SN method. */
     GQ1, /*!< Use Morel's Galerkin Quadrature method. */
     GQ2, /*!< Use Warsa/Prinja Galerkin Quadrature method. */
+    GQF, /*!< Use Morel's Galerkin Quadrature method and retain all moments. */
     SVD, /*!< Let M be an approximate inverse of D. */
 
     END_QIM  //!< Sentinel value

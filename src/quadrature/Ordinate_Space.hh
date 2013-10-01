@@ -255,6 +255,16 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     //! Return the moment to discrete transform matrix
     virtual vector<double> M() const = 0;
 
+    //! Should the moment space be pruned to the specified order?
+    virtual bool prune() const
+    {
+        return true;
+        // By default, prune any moments beyond the user-specified expansion
+        // order. Such moments are included in Galerkin methods for purposes
+        // of computing the M and D matrices, but are then removed from the
+        // moment space unless the GQF interpolation model has been specified.
+    }
+
     // STATICS
     
     double compute_azimuthalAngle( double mu, double eta ); 
@@ -285,7 +295,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     
     virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
-    
+
   private:
 
     // NESTED CLASSES AND TYPEDEFS

@@ -84,7 +84,10 @@ class Galerkin_Ordinate_Space : public Ordinate_Space
     //! Return the moment to discrete transform matrix
     virtual vector<double> M() const;
 
+    bool prune() const { return method_ != 3; }
+
     // STATICS
+
 
   private:
 
