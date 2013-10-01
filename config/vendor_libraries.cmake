@@ -645,11 +645,14 @@ macro( SetupVendorLibrariesWindows )
 
    # GSL ---------------------------------------------------------------------
    message( STATUS "Looking for GSL...")
-   set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
-   set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
+   # set( GSL_INC_DIR "${VENDOR_DIR}/gsl/include" )
+   # set( GSL_LIB_DIR "${VENDOR_DIR}/gsl/lib" )
    
    # Use static BLAS libraries
-   set(GSL_STATIC ON)   
+   set(GSL_STATIC ON)
+   if( DRACO_SHARED_LIBS )
+      set(GSL_STATIC OFF)
+   endif()
    find_package( GSL REQUIRED )
    
    # if( GSL_FOUND )

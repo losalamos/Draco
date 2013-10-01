@@ -21,21 +21,31 @@ find_path( GSL_INCLUDE_DIR
     NO_DEFAULT_PATH
 )
 
+set( GSL_LIBRARY_NAME gsl)
 if( WIN32 )
-   if( GSL_STATIC )
-    set( GSL_LIBRARY_NAME gsl.lib)
-    set( GSL_BLAS_NAME gslcblas.lib)
-   else()
-    set( GSL_LIBRARY_NAME libgsl_dll.lib)
-    set( GSL_BLAS_NAME libgslcblas_dll.lib)
-   endif()
-else()
-   if( GSL_STATIC )
-      set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-   endif()
-   set( GSL_LIBRARY_NAME gsl)
-   set( GSL_BLAS_NAME gslcblas)
+  set( GSL_BLAS_NAME cblas)
+  # Both dll and static builds link against the .lib.  However, the dll build
+  # must copy the dll to the run directory for tests.
+  #if( NOT GSL_STATIC )
+    # set(CMAKE_FIND_LIBRARY_PREFIXES "" )
+    # set( CMAKE_FIND_LIBRARY_SUFFIXES ".dll" )
+  # endif()
+else() # Linux
+  set( GSL_BLAS_NAME gslcblas)
+  if( GSL_STATIC )
+    # set(CMAKE_FIND_LIBRARY_PREFIXES lib )
+    set( CMAKE_FIND_LIBRARY_SUFFIXES ".a" )
+  endif()
 endif()
+
+# Use CMake style paths (this conversion is needed on Win32)
+file( TO_CMAKE_PATH ${GSL_LIB_DIR} GSL_LIB_DIR )
+
+# For Windows, consider looking for both Release AND Debug versions.  
+# If both are found, then GSL_LIBRARY can be set like this:
+# set( GSL_LIBRARY
+#      Debug ${GSL_LIBRARY_DEBUG}
+#      Release ${GSL_LIBRARY_RELEASE} )
 
 find_library(GSL_LIBRARY
     NAMES ${GSL_LIBRARY_NAME}
@@ -45,8 +55,10 @@ find_library(GSL_LIBRARY
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
         $ENV{GSL_DIR}               # Cielito/Cielo
+    PATH_SUFFIXES Release Debug
     NO_DEFAULT_PATH                 # avoid picking up /usr/lib/libgsl.so
 )
+
 find_library(GSL_BLAS_LIBRARY
     NAMES ${GSL_BLAS_NAME}
     PATHS
@@ -55,6 +67,7 @@ find_library(GSL_BLAS_LIBRARY
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
         $ENV{GSL_DIR}               # Cielito/Cielo
+    PATH_SUFFIXES Release Debug
     NO_DEFAULT_PATH
 )
 # If above fails, look in default locations

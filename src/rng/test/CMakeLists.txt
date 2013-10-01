@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for rng/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -36,7 +36,8 @@ set( random123_unit_tests
    ${PROJECT_SOURCE_DIR}/ut_gsl.c
    ${PROJECT_SOURCE_DIR}/ut_M128.cpp
 )
-if( NOT WIN32 )
+
+if( R123_USE_CXX11 ) #if( NOT WIN32 )
    # Visual Studio 2010 does not support uniform_int_distribution<int> from C++11/C++0x.
    list( APPEND random123_unit_tests 
       ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
@@ -75,8 +76,8 @@ add_component_library(
 
 add_scalar_tests( 
    SOURCES "${test_sources}"
-   DEPS    "Lib_rng_test" ) 
-
+   DEPS    "Lib_rng_test;${GSL_LIBRARIES}" ) 
+   
 if( RANDOM123_FOUND)
    # Random123 unit tests almost all use assert to check for failures,
    # and CTest seems to identify the subsequent abort as a failure

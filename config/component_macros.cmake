@@ -325,7 +325,7 @@ macro( copy_win32_dll_to_test_dir )
       # Discover all library dependencies for this unit test.
       get_target_property( link_libs Ut_${compname}_${testname}_exe LINK_LIBRARIES )
       set( old_link_libs "" )
-      
+                
       # Recurse through the library dependencies to build a list of all .dll dependencies.
       while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
          set( old_link_libs ${link_libs} )
@@ -335,25 +335,48 @@ macro( copy_win32_dll_to_test_dir )
          endforeach()
          list( REMOVE_DUPLICATES link_libs )
          foreach( lib ${link_libs} )
-            if( "${lib}" MATCHES ".[lL]ib$" OR 
-                "${lib}" MATCHES "NOTFOUND" )
+            if( "${lib}" MATCHES "NOTFOUND" )
+               # nothing to add so remove from list
                list( REMOVE_ITEM link_libs ${lib} )
+               # message("remove item ${lib}")
+            elseif( "${lib}" MATCHES ".[lL]ib$" )
+               # We have a path to a static library. Static libraries do not 
+               # need to be copied.  
+               list( REMOVE_ITEM link_libs ${lib} )
+               # message("remove item ${lib}")
+               # However, if there is a corresponding dll, we should add it 
+               # to the list.
+               string( REPLACE ".lib" ".dll" dll_lib ${lib} )
+               if( ${dll_lib} MATCHES "[.]dll$" AND EXISTS ${dll_lib} )
+                  list( APPEND link_libs "${dll_lib}" )
+                  # message( "add item ${dll_lib}" )
+               endif()               
             endif()
          endforeach()
-      endwhile()    
-      #message( "Ut_${compname}_${testname}_exe --> ${link_libs}")
+      endwhile()
+      list( REMOVE_DUPLICATES link_libs )      
+      # if( ${compname} MATCHES "rng" )  
+         # message( "Ut_${compname}_${testname}_exe --> ${link_libs}")
+      # endif()
       
       # Add a post-build command to copy each dll into the test directory.
       foreach( lib ${link_libs} )
-         #message("   Ut_${compname}_${testname}_exe --> ${lib}")
+         # message("   Ut_${compname}_${testname}_exe --> ${lib}")
          unset( ${comp_target}_loc )
-         get_target_property( ${comp_target}_loc ${lib} LOCATION )
-		 get_target_property( ${comp_target}_gnutoms ${lib} GNUtoMS )
+         if( EXISTS ${lib} )
+            # If $lib is a full path to a library, add it to the list
+            set( ${comp_target}_loc ${lib} )
+            set( ${comp_target}_gnutoms NOTFOUND )
+         else()
+            # if $lib is a target name, obtain the file path.
+            get_target_property( ${comp_target}_loc ${lib} LOCATION )
+            get_target_property( ${comp_target}_gnutoms ${lib} GNUtoMS )
+         endif()
          # Also grab the file with debug info
          string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
 
          if( "${comp_target}_loc" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
-		    # message("copy dbg")
+            # message("copy dbg")
             add_custom_command( TARGET Ut_${compname}_${testname}_exe 
                POST_BUILD
                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
@@ -361,15 +384,16 @@ macro( copy_win32_dll_to_test_dir )
                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file} 
                        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
                )
-		 else()
+         else()
             add_custom_command( TARGET Ut_${compname}_${testname}_exe 
                POST_BUILD
                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
                        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-               )		 
-		 endif()
-         #message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-         
+               )
+         endif()
+         # if( ${compname} MATCHES "rng" )  
+         # message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+         # endif()
       endforeach()
    endif()
 endmacro()
@@ -486,7 +510,7 @@ macro( add_scalar_tests test_sources )
    if( NOT "${pkg_lib_loc}" MATCHES "NOTFOUND" )
       list( APPEND test_lib_target_name "Lib_${compname}" )
    endif()
-
+  
    # Loop over each test source files:
    # 1. Compile the executable
    # 2. Register the unit test
@@ -494,7 +518,7 @@ macro( add_scalar_tests test_sources )
    # Generate the executable
    # ------------------------------------------------------------
    foreach( file ${addscalartest_SOURCES} )
-
+   
       if( "${file}" MATCHES "tstParallelUnitTest" )
          message("RUN_CMD = ${RUN_CMD}")
       endif()
@@ -516,7 +540,8 @@ macro( add_scalar_tests test_sources )
          Ut_${compname}_${testname}_exe 
          ${test_lib_target_name}
          ${addscalartest_DEPS}
-         )  
+         )         
+       
          
       # Special post-build options for Win32 platforms
       # ------------------------------------------------------------
