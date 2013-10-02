@@ -56,6 +56,11 @@ set ctestparts=Configure,Build,Test,Submit
 set subproj=draco
 set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
 
+:vendorsetup
+set VENDOR_DIR=d:\work\vendors
+set GSL_INC_DIR=%VENDOR_DIR%\gsl-1.16\include
+set GSL_LIB_DIR=%VENDOR_DIR%\gsl-1.16\lib
+
 rem print some information
 echo Environment:
 echo .
@@ -64,7 +69,7 @@ echo .
 echo -----     -----     -----     -----     -----     
 
 rem navigate to the workdir
-mkdir %work_dir%
+if not exist %work_dir% mkdir %work_dir%
 cd /d %work_dir%
 
 rem clear the build directory (need to do this here to avoid a hang).
@@ -76,7 +81,7 @@ if not exist %work_dir%\target mkdir target
 rem run the ctest script
 rem d:\cdash\draco\Experimental_cl\Debug>ctest -VV -S d:\cdash\draco\regression\Draco_Win32.cmake,Experimental,Debug,Configure,Build,Test,Submit > my.log 2>&1
 echo ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts%
-ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts%
+ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-cbts.log
 
 echo You need to remove -k from script launch to let this window close automatically.
 
