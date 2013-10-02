@@ -253,7 +253,7 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
         if (eval_model == rtt_cdi::Model::ANALYTIC)
         {
             //double nu = 0.5*(nu0+nu1);
-            double nu = sqrt(nu0+nu1);
+            double nu = sqrt(nu0*nu1);
             opacity = (a + b * pow(T/f,c) * pow(nu/h,e)) * pow(rho/g,d);
         }
         else 
