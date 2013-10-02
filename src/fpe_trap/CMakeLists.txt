@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for fpe_trap.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -18,9 +18,12 @@ project( fpe_trap CXX )
 if( ${CMAKE_SYSTEM} MATCHES "OSF" )
    set( FPETRAP_OSF_ALPHA 1 )
 elseif( ${CMAKE_SYSTEM} MATCHES "Linux" )
-   if( CMAKE_COMPILER_IS_GNUCXX )
+   # If the OS is Linux, fpe_trap should work as long as
+   # feenableexscept is available.  That is, it should work for both
+   # GNU and Intel compiler suites.
+   #if( CMAKE_COMPILER_IS_GNUCXX )
       set( FPETRAP_LINUX_X86 1 )
-   endif()
+   #endif()
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
    if( ${_CMAKE_OSX_MACHINE} MATCHES "ppc" )
       set( FPETRAP_DARWIN_PPC 1 )
