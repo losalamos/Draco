@@ -76,10 +76,9 @@ public:
    *     values are being requested (g/cm^3)
    * \return A vector of opacities (a single opacity for each group).
    */
-  virtual std::vector< std::vector<double> > getOpacity( 
-							double targetTemperature,
+  virtual std::vector< std::vector<double> > getOpacity(double targetTemperature,
 							double targetDensity ) const = 0; 
-
+    
   /*!
    * \brief Opacity accessor that returns a vector of multigroupband
    *     opacity 2-D vectors that correspond to the provided vector of

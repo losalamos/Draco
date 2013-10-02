@@ -42,12 +42,12 @@ namespace rtt_cdi_analytic
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  *
  */
-nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
-    const sf_double         &groups,
-    const sf_double         &bands,
-    const sf_Analytic_Model &models,
-    rtt_cdi::Reaction        reaction_in,
-    rtt_cdi::Model           model_in)
+nGray_Analytic_Odfmg_Opacity::
+nGray_Analytic_Odfmg_Opacity(const sf_double         &groups,
+                             const sf_double         &bands,
+                             const sf_Analytic_Model &models,
+                             rtt_cdi::Reaction        reaction_in,
+                             rtt_cdi::Model           model_in)
     : Analytic_Odfmg_Opacity(groups, bands, reaction_in, model_in),
       group_models(models)
 {
@@ -63,8 +63,8 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
  * Analytic_Model types that have been registered in the
  * rtt_cdi_analytic::Opacity_Models enumeration.
  */
-nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
-    const sf_char &packed)
+nGray_Analytic_Odfmg_Opacity::
+nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
     : Analytic_Odfmg_Opacity(packed),
       group_models()
 {
@@ -117,13 +117,15 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
         // now determine which analytic model we need to build
         if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
         {
-            group_models[i] = new Constant_Analytic_Opacity_Model(
-                models[i]);
+            group_models[i] = new Constant_Analytic_Opacity_Model(models[i]);
         }
         else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
         {
-            group_models[i] = new Polynomial_Analytic_Opacity_Model(
-                models[i]);
+            group_models[i] = new Polynomial_Analytic_Opacity_Model(models[i]);
+        }
+        else if (indicator == STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
+        {
+            group_models[i] = new Stimulated_Emission_Analytic_Opacity_Model(models[i]);
         }
         else
         {
@@ -150,15 +152,17 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
  * \return group opacities (coefficients) in cm^2/g
  *
  */
-std::vector< std::vector<double> > nGray_Analytic_Odfmg_Opacity::getOpacity( 
-    double targetTemperature,
-    double targetDensity ) const 
+std::vector< std::vector<double> >
+nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
+                                         double targetDensity ) const 
 {
     Require (targetTemperature >= 0.0);
     Require (targetDensity >= 0.0);
 
     const size_t numBands = getNumBands();
     const size_t numGroups = getNumGroups();
+
+    sf_double const &group_bounds = this->getGroupBoundaries();
 
     // return opacities
     std::vector< std::vector<double> > opacity( numGroups );
@@ -171,8 +175,8 @@ std::vector< std::vector<double> > nGray_Analytic_Odfmg_Opacity::getOpacity(
         opacity[group].resize(numBands);
 
         // assign the opacity based on the group model to the first band
-        opacity[group][0] = group_models[group]->
-                            calculate_opacity(targetTemperature, targetDensity);
+        opacity[group][0] = group_models[group]->calculate_opacity(targetTemperature, targetDensity,
+                                                                   group_bounds[group], group_bounds[group+1]);
 
         Check (opacity[group][0] >= 0.0);
 
@@ -192,9 +196,9 @@ std::vector< std::vector<double> > nGray_Analytic_Odfmg_Opacity::getOpacity(
  *     opacity 2-D vectors that correspond to the provided vector of
  *     temperatures and a single density value.
  */
-std::vector< std::vector< std::vector<double> > >  nGray_Analytic_Odfmg_Opacity::getOpacity( 
-    const std::vector<double>& targetTemperature,
-    double targetDensity ) const
+std::vector< std::vector< std::vector<double> > >
+nGray_Analytic_Odfmg_Opacity::getOpacity(const std::vector<double>& targetTemperature,
+                                         double targetDensity ) const
 { 
     std::vector< std::vector< std::vector<double> > > opacity( targetTemperature.size() );
 
@@ -211,9 +215,9 @@ std::vector< std::vector< std::vector<double> > >  nGray_Analytic_Odfmg_Opacity:
  *     opacity 2-D vectors that correspond to the provided
  *     temperature and a vector of density values.
  */
-std::vector< std::vector< std::vector<double> > >  nGray_Analytic_Odfmg_Opacity::getOpacity( 
-    double targetTemperature,
-    const std::vector<double>& targetDensity ) const
+std::vector< std::vector< std::vector<double> > >
+nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
+                                         const std::vector<double>& targetDensity ) const
 { 
     std::vector< std::vector< std::vector<double> > > opacity( targetDensity.size() );
 

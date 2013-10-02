@@ -42,11 +42,11 @@ namespace rtt_cdi_analytic
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  *
  */
-nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
-    const sf_double         &groups,
-    const sf_Analytic_Model &models,
-    rtt_cdi::Reaction        reaction_in,
-    rtt_cdi::Model           model_in)
+nGray_Analytic_MultigroupOpacity::
+nGray_Analytic_MultigroupOpacity(const sf_double         &groups,
+                                 const sf_Analytic_Model &models,
+                                 rtt_cdi::Reaction        reaction_in,
+                                 rtt_cdi::Model           model_in)
     : Analytic_MultigroupOpacity(groups, reaction_in, model_in),
       group_models(models)
 {
@@ -248,7 +248,7 @@ nGray_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
  */
 nGray_Analytic_MultigroupOpacity::vf_double
 nGray_Analytic_MultigroupOpacity::getOpacity(double temperature,
-					const sf_double &density) const
+                                             const sf_double &density) const
 {
     Require (temperature >= 0.0);
 

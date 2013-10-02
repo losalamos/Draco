@@ -14,9 +14,11 @@
 #ifndef __cdi_analytic_Analytic_Models_hh__
 #define __cdi_analytic_Analytic_Models_hh__
 
-#include "ds++/Assert.hh"
 #include <cmath>
 #include <vector>
+
+#include "ds++/Assert.hh"
+#include "cdi/OpacityCommon.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -35,7 +37,8 @@ namespace rtt_cdi_analytic
 enum Opacity_Models
 {
     CONSTANT_ANALYTIC_OPACITY_MODEL,
-    POLYNOMIAL_ANALYTIC_OPACITY_MODEL
+    POLYNOMIAL_ANALYTIC_OPACITY_MODEL,
+    STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL,
 };
 
 /*!
@@ -96,6 +99,12 @@ class DLL_PUBLIC Analytic_Opacity_Model
         return calculate_opacity(T, rho); 
     };
 
+    //! Interface for derived analytic opacity models.
+    virtual double calculate_opacity(double T, double rho, double /*nu0*/, double /*nu1*/) const
+    {
+        return calculate_opacity(T, rho); 
+    };
+        
     //! Return parameters.
     virtual sf_double get_parameters() const = 0;
 
@@ -147,6 +156,12 @@ class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
         return sigma;
     }
 
+    //! Calculate the opacity in units of cm^2/g.
+    double calculate_opacity(double /*T*/, double /*rho*/, double /*nu0*/, double /*nu1*/) const
+    {
+        return sigma;
+    }
+
     //! Return the model parameters.
     sf_double get_parameters() const;
 
@@ -172,13 +187,18 @@ class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
  */
 class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
-  private:
+  protected:
+
     // Coefficients
     double a;  // constant [cm^2/g * (cm^3/g)^d]
     double b;  // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
     double c;  // temperature power
     double d;  // density power
     double e;  // frequency power
+    double f;  // reference temperature
+    double g;  // reference density
+    double h;  // reference frequency
+    rtt_cdi::Model eval_model;
 
   public:
     /*!
@@ -188,17 +208,63 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
      * \param c_ temperature power
      * \param d_ density power
      * \param e_ frequency power
+     * \param f_ reference temperature 
+     * \param g_ reference density
+     * \param h_ reference frequency 
      */
-    Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_,
-                                      double d_, double e_=0)
-	: a(a_), b(b_), c(c_), d(d_), e(e_)
+
+    Polynomial_Analytic_Opacity_Model(double a_,
+                                      double b_,
+                                      double c_,
+                                      double d_,
+                                      double e_=0,
+                                      double f_=1,
+                                      double g_=1,
+                                      double h_=1,
+                                      rtt_cdi::Model eval_model_=rtt_cdi::Model::ANALYTIC)
+	: a(a_),
+          b(b_), 
+          c(c_), 
+          d(d_), 
+          e(e_),
+          f(f_),
+          g(g_),
+          h(h_),
+          eval_model(eval_model_)
     {
         /*...*/
     }
-    
+   
     //! Constructor for packed state.
     explicit Polynomial_Analytic_Opacity_Model(const sf_char &packed);
     
+    //! Calculate the opacity in units of cm^2/g
+    double calculate_opacity(double T, double rho, double nu0, double nu1) const
+    {
+        using std::pow;
+        Require (c < 0.0 ? T > 0.0 : T >= 0.0);
+        Require (rho >= 0.0);
+        Require (nu1 > nu0);
+        Require (f > 0.0);
+        Require (g > 0.0);
+        Require (h > 0.0);
+        
+        double opacity(-1.0);
+        if (eval_model == rtt_cdi::Model::ANALYTIC)
+        {
+            //double nu = 0.5*(nu0+nu1);
+            double nu = sqrt(nu0+nu1);
+            opacity = (a + b * pow(T/f,c) * pow(nu/h,e)) * pow(rho/g,d);
+        }
+        else 
+        {
+            Insist(false, "Evaluation based on averaging is not yet implemented.");
+        }
+        
+        Ensure (opacity >= 0.0);
+        return opacity;
+    }
+
     //! Calculate the opacity in units of cm^2/g
     double calculate_opacity(double T, double rho, double nu) const
     {
@@ -206,8 +272,11 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
         Require (c < 0.0 ? T > 0.0 : T >= 0.0);
         Require (rho >= 0.0);
         Require (nu >= 0.0);
-        
-        double opacity = (a + b * pow(T,c) * pow(nu,e)) * pow(rho,d);
+        Require (f > 0.0);
+        Require (g > 0.0);
+        Require (h > 0.0);        
+
+        double opacity = (a + b * pow(T/f,c) * pow(nu/h,e)) * pow(rho/g,d);
         
         Ensure (opacity >= 0.0);
         return opacity;
@@ -220,7 +289,7 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
         Require (c < 0.0 ? T > 0.0 : T >= 0.0);
         Require (rho >= 0.0);
         
-        double opacity   = (a + b * pow(T,c)) * pow(rho,d); 
+        double opacity   = (a + b * pow(T/f,c)) * pow(rho/g,d); 
         
         Ensure (opacity >= 0.0);
         return opacity;
@@ -266,64 +335,97 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
  *
  * 
  */
-//class DLL_PUBLIC Stimulated_Emission_Analytic_Opacity_Model : public Analytic_Opacity_Model
-//{
-//private:
-//    // Coefficients
-//    double a;  // constant [cm^2/g * (cm^3/g)^d]
-//    double b;  // temperature multiplier [keV^(-c) * cm^2/g * (cm^3/g)^d]
-//    double c;  // temperature power
-//    double d;  // density power
-//    double e;  // frequency power
-//    
-//public:
-//    /*!
-//     * \brief Constructor.
-//     * \param a_ constant [cm^2/g (cm^3/g)^d]
-//     * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
-//     * \param c_ temperature power
-//     * \param d_ density power
-//     * \param e_ frequency power
-//     */
-//    Stimulated_Emission_Analytic_Opacity_Model(double a_, double b_, double c_,
-//                                               double d_, double e_=0)
-//    : a(a_), b(b_), c(c_), d(d_), e(e_)
-//    {
-//        /*...*/
-//    }
-//    
-//    //! Constructor for packed state.
-//    explicit Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed);
-//    
-//    //! Calculate the opacity in units of cm^2/g
-//    double calculate_opacity(double T, double rho, double nu) const
-//    {
-//        using std::pow;
-//        Require (T > 0.0);
-//        Require (rho >= 0.0);
-//        Require (nu >= 0.0);
-//        
-//        double opacity = (a + b * pow(T,c) * pow(nu,e)
-//                          * (1-exp(-nu/T) )) * pow(rho,d);
-//        
-//        Ensure (opacity >= 0.0);
-//        return opacity;
-//    }
-//    
-//    //! Calculate the opacity in units of cm^2/g
-//    double calculate_opacity(double, double) const
-//    {
-//        Insist(false, "Stimatulated emission opacity model needs a frequency.");
-//        return -1.0;
-//    }
-//    
-//    //! Return the model parameters.
-//    sf_double get_parameters() const;
-//    
-//    //! Pack up the class for persistence.
-//    sf_char pack() const;
-//};
+
+class DLL_PUBLIC Stimulated_Emission_Analytic_Opacity_Model : public Polynomial_Analytic_Opacity_Model
+{
+  public:
+    /*!
+     * \brief Constructor.
+     * \param a_ constant [cm^2/g (cm^3/g)^d]
+     * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
+     * \param c_ temperature power
+     * \param d_ density power
+     * \param e_ frequency power
+     */
     
+    Stimulated_Emission_Analytic_Opacity_Model(double a_,
+                                               double b_,
+                                               double c_,
+                                               double d_,
+                                               double e_=0,
+                                               double f_=1,
+                                               double g_=1,
+                                               double h_=1,
+                                               rtt_cdi::Model eval_model_=rtt_cdi::Model::ANALYTIC)
+	: Polynomial_Analytic_Opacity_Model(a_,
+                                            b_, 
+                                            c_, 
+                                            d_, 
+                                            e_,
+                                            f_,
+                                            g_,
+                                            h_,
+                                            eval_model_)
+    {
+        /*...*/
+    }
+    
+    //! Constructor for packed state.
+    explicit Stimulated_Emission_Analytic_Opacity_Model(const sf_char &packed)
+        :  Polynomial_Analytic_Opacity_Model(packed)
+    {
+        /*...*/
+    }
+    
+    //! Calculate the opacity in units of cm^2/g
+    double calculate_opacity(double T, double rho, double nu0, double nu1) const
+    {
+        using std::pow;
+        Require (T > 0.0);
+        Require (rho >= 0.0);
+        Require (nu1 > nu0);
+        Require (f > 0.0);
+        Require (g > 0.0);
+        Require (h > 0.0);        
+
+        //double nu = 0.5*(nu0+nu1);
+        double nu = sqrt(nu0*nu1);
+        double opacity = (a + b * pow(T/f,c) * pow(nu/h,e) * (1-exp(-(nu/h)/(T/f))) ) * pow(rho/g,d);
+        
+        Ensure (opacity >= 0.0);
+        return opacity;
+    }
+
+    //! Calculate the opacity in units of cm^2/g
+    double calculate_opacity(double T, double rho, double nu) const
+    {
+        using std::pow;
+        Require (T > 0.0);
+        Require (rho >= 0.0);
+        Require (nu >= 0.0);
+        Require (f > 0.0);
+        Require (g > 0.0);
+        Require (h > 0.0);        
+        
+        double opacity = (a + b * pow(T/f,c) * pow(nu/h,e) * (1-exp(-(nu/h)/(T/f))) ) * pow(rho/g,d);
+        
+        Ensure (opacity >= 0.0);
+        return opacity;
+    }
+    
+    //! Calculate the opacity in units of cm^2/g
+    double calculate_opacity(double, double) const
+    {
+        Insist(false, "Stimatulated emission opacity model needs a frequency.");
+        return -1.0;
+    }
+    
+    //! Return the model parameters.
+    //sf_double get_parameters() const;
+    
+    //! Pack up the class for persistence.
+    //sf_char pack() const;
+};
     
 //===========================================================================//
 /*!
