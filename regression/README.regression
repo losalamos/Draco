@@ -123,3 +123,25 @@ perform code metrics including lines-of-code, valgrind dynamic memory
 checking and Bullseye code coverage tests.
 
 
+
+----------------------------------------------------------------------
+Regression setup: Windows
+----------------------------------------------------------------------
+
+Currently, the regressions run under Kelly Thompson's (WIN/107638)
+credentials and on his desktop machine (KTHOMPSON). 
+
+Locations:
+--------------------
+regression directory | d:/cdash
+work directories     | d:/cdash/draco/Nightly_cl/
+
+Scripts:
+--------------------
+- A scheduled task runs at 11 pm to update the regression script
+  directory from svn.  
+  cd /d d:/cdash/draco/regression
+  svn update
+- A scheduled task runs at 1 am to start the draco regression
+  %comspec% ""D:\cdash\draco\regression\win32_draco_regression.bat"" x86
+
