@@ -612,24 +612,9 @@ macro( setupMPILibrariesWindows )
          endif()  
          
          #
-         # EAP's flags can be found in Test.rh/General/run_job.pl
-         # (look for $other_args).  In particular, it may be useful to
-         # examine EAP's options for srun or aprun.
-         # 
-         # \sa
-         # http://blogs.cisco.com/performance/open-mpi-v1-5-processor-affinity-options/
-         #
-         # --cpus-per-proc <N> option is needed for multi-threaded
-         #   processes.  Use this as "threads per MPI rank."
-         # --bind-to-socket will bind MPI ranks ordered by socket first (rank 0 onto
-         #   socket 0, then rank 1 onto socket 1, etc.)
-
-         # --bind-to-core added in OpenMPI-1.4
-         set( MPIEXEC_OMP_POSTFLAGS 
-            -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
+         set( MPIEXEC_OMP_POSTFLAGS -exitcodes            
             CACHE STRING "extra mpirun flags (list)." FORCE )
-         set( MPIEXEC_OMP_POSTFLAGS_STRING 
-            "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
+         set( MPIEXEC_OMP_POSTFLAGS_STRING "-exitcodes"
             CACHE STRING "extra mpirun flags (list)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
             MPI_LIBRARIES )    
