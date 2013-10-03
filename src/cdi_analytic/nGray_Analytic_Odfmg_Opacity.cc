@@ -115,21 +115,21 @@ nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
         unpacker >> indicator;
 
         // now determine which analytic model we need to build
-        if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
+        if (indicator ==  rtt_cdi_analytic::Opacity_Models::CONSTANT_ANALYTIC_OPACITY_MODEL)
         {
             group_models[i] = new Constant_Analytic_Opacity_Model(models[i]);
         }
-        else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
+        else if (indicator ==  rtt_cdi_analytic::Opacity_Models::POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
         {
             group_models[i] = new Polynomial_Analytic_Opacity_Model(models[i]);
         }
-        else if (indicator == STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
+        else if (indicator == rtt_cdi_analytic::Opacity_Models::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
         {
             group_models[i] = new Stimulated_Emission_Analytic_Opacity_Model(models[i]);
         }
         else
         {
-            Insist (0, "Unregistered analytic opacity model!");
+            Insist (false, "Unregistered analytic opacity model!");
         }
 
         Ensure (group_models[i]);
@@ -248,7 +248,7 @@ nGray_Analytic_Odfmg_Opacity::sf_char nGray_Analytic_Odfmg_Opacity::pack() const
 
     // first pack up models
     std::vector<sf_char> models(group_models.size());
-    size_t                  num_bytes_models = 0;
+    size_t num_bytes_models = 0;
 
     // loop through and pack up the models
     for (size_t i = 0; i < models.size(); i++)

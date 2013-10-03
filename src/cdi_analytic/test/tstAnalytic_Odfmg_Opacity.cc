@@ -93,8 +93,7 @@ void odfmg_test(UnitTest &ut)
     models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
 
     // make a Polynomial model for the second group
-    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-        1.5, 0.0, 0.0, 0.0);
+    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
 
     // make a Constant model for the third group
     models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
@@ -294,8 +293,7 @@ void test_CDI(UnitTest &ut)
     models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
 
     // make a Polynomial model for the second group
-    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-        1.5, 0.0, 0.0, 0.0);
+    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
 
     // make a Constant model for the third group
     models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
@@ -391,12 +389,10 @@ void packing_test(UnitTest &ut)
         vector<SP<Analytic_Opacity_Model> > models(3);
 
         // make a Polynomial model for the first group
-        models[0] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-            0.0, 100.0, -3.0, 0.0);
+        models[0] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(0.0, 100.0, -3.0, 0.0);
 
         // make a Polynomial model for the second group
-        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-            1.5, 0.0, 0.0, 0.0);
+        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
 
         // make a Constant model for the third group
         models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
@@ -496,16 +492,14 @@ void packing_test(UnitTest &ut)
         models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
 
         // make a Polynomial model for the second group
-        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
-            1.5, 0.0, 0.0, 0.0);
+        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
 
         // make a Constant model for the third group
         models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
 
         // make an analytic multigroup opacity object for absorption
-        SP<const OdfmgOpacity> odfmg( 
-            new nGray_Analytic_Odfmg_Opacity(groups, bands, models,
-                                       rtt_cdi::ABSORPTION));
+        SP<const OdfmgOpacity>
+            odfmg(new nGray_Analytic_Odfmg_Opacity(groups, bands, models, rtt_cdi::ABSORPTION));
 
         packed = odfmg->pack();
     }

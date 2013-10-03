@@ -168,13 +168,10 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
     SP<const GrayOpacity> scattering;
 
     // lets make two models
-    SP<Analytic_Opacity_Model> amodel
-	(new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
-    SP<Analytic_Opacity_Model> smodel
-	(new Constant_Analytic_Opacity_Model(1.0));
+    SP<Analytic_Opacity_Model> amodel (new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
+    SP<Analytic_Opacity_Model> smodel (new Constant_Analytic_Opacity_Model(1.0));
 
-    if (!soft_equiv(amodel->calculate_opacity(2.0, 3.0, 4.0),
-                    100.0/(2.0*2.0*2.0)))
+    if (!soft_equiv(amodel->calculate_opacity(2.0, 3.0, 4.0), 100.0/(2.0*2.0*2.0)))
         FAILMSG("FAILED to calculate grey absorption opacity");
     if (!soft_equiv(smodel->calculate_opacity(1.0, 1.0, 1.0), 1.0))
         FAILMSG("FAILED to calculate grey scattering opacity");
@@ -221,8 +218,7 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
 	rtt_cdi::Reaction abs  = rtt_cdi::ABSORPTION;
 	rtt_cdi::Reaction scat = rtt_cdi::SCATTERING; 
 
-	double error = fabs(cdi.gray(model,abs)->getOpacity(T[i], rho[i])
-			    - ref);
+	double error = fabs(cdi.gray(model,abs)->getOpacity(T[i], rho[i]) - ref);
 
 	if (error > 1.0e-12 * ref) ITFAILS; 
 
@@ -235,16 +231,21 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
     {
         std::vector<double> params( amodel->get_parameters() );
         
-        std::vector<double> expectedValue(5,0.0);
+        std::vector<double> expectedValue(8);
+        expectedValue[0] =   0.0;
         expectedValue[1] = 100.0;
-        expectedValue[2] = -3.0;
+        expectedValue[2] =  -3.0;
+        expectedValue[3] =   0.0;
+        expectedValue[4] =   0.0;
+        expectedValue[5] =   1.0;
+        expectedValue[6] =   1.0;
+        expectedValue[7] =   1.0;
 
         double const tol(1.0e-12);
         
         if( params.size() != expectedValue.size() ) ITFAILS;
         
-        if( soft_equiv( params.begin(), params.end(),
-                        expectedValue.begin(), expectedValue.end(), tol ) )
+        if( soft_equiv( params.begin(), params.end(), expectedValue.begin(), expectedValue.end(), tol ) )
             PASSMSG("get_parameters() returned the analytic expression coefficients.");
         else
             FAILMSG("get_parameters() did not return the analytic expression coefficients.");
@@ -260,8 +261,7 @@ void packing_test( rtt_dsxx::UnitTest & ut )
     vector<char> packed;
     {
 	// lets make two models
-	SP<Analytic_Opacity_Model> amodel
-	    (new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
+	SP<Analytic_Opacity_Model> amodel(new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
 	
 	Analytic_Gray_Opacity absorption(amodel, rtt_cdi::ABSORPTION);
 
@@ -311,8 +311,7 @@ void type_test( rtt_dsxx::UnitTest & ut )
     // constant model
     const double constant_opacity = 5.0;
 
-    SP<Analytic_Opacity_Model> model
-	(new Constant_Analytic_Opacity_Model(constant_opacity));
+    SP<Analytic_Opacity_Model> model(new Constant_Analytic_Opacity_Model(constant_opacity));
 
     SP<GrayOpacity> op(new Analytic_Gray_Opacity(model, rtt_cdi::TOTAL));
     SP<Analytic_Gray_Opacity> opac;
@@ -329,10 +328,8 @@ void type_test( rtt_dsxx::UnitTest & ut )
     if (!soft_equiv(constant_opacity, parm.front())) ITFAILS;
 
     // another way to do this
-    nGray_Analytic_MultigroupOpacity *m = 
-	dynamic_cast<nGray_Analytic_MultigroupOpacity *>(&*op);
-    Analytic_Gray_Opacity       *o = 
-	dynamic_cast<Analytic_Gray_Opacity *>(&*op);
+    nGray_Analytic_MultigroupOpacity *m = dynamic_cast<nGray_Analytic_MultigroupOpacity *>(&*op);
+    Analytic_Gray_Opacity *o = dynamic_cast<Analytic_Gray_Opacity *>(&*op);
 
     if (m)  ITFAILS;
     if (!o) ITFAILS;
@@ -346,8 +343,7 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
     // constant model
     const double constant_opacity = 5.0;
 
-    SP<Analytic_Opacity_Model> model(
-	new Constant_Analytic_Opacity_Model( constant_opacity ));
+    SP<Analytic_Opacity_Model> model(new Constant_Analytic_Opacity_Model( constant_opacity ));
 
     Analytic_Gray_Opacity opac( model, rtt_cdi::TOTAL );
 
