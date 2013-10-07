@@ -39,7 +39,9 @@ else() # Linux
 endif()
 
 # Use CMake style paths (this conversion is needed on Win32)
-file( TO_CMAKE_PATH ${GSL_LIB_DIR} GSL_LIB_DIR )
+if( EXISTS ${GSL_LIB_DIR} )
+   file( TO_CMAKE_PATH ${GSL_LIB_DIR} GSL_LIB_DIR )
+endif()
 
 # For Windows, consider looking for both Release AND Debug versions.  
 # If both are found, then GSL_LIBRARY can be set like this:
