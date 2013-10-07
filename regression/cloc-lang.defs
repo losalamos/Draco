@@ -519,6 +519,7 @@ Text
     filename  README.elisp
     filename  README.python
     filename  ToDo
+    3rd_gen_scale 0.10
 VHDL
     filter remove_matches ^\s*--
     filter remove_matches ^\s*//

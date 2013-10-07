@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -15,7 +15,12 @@ project( diagnostics CXX )
 # Special options for this component
 ##---------------------------------------------------------------------------##
 
-# From autoconf build system: "yes" --> 7, "no" --> 0
+# Uses a bit mask
+# 001 - basic print messages (negligible performance hit)
+# 010 - detailed print messages (some performance hit or intrusive
+#       output)
+# 100 - additional computation required for diagnostic messages
+#       (including fpe_trap)
 set( DRACO_DIAGNOSTICS "0"
    CACHE STRING "Diagnostics verbosity level (0-7). Default is 0." )
 # provide a constrained drop down menu for cmake-gui
@@ -95,7 +100,7 @@ set_target_properties( Exe_draco_info
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_diagnostics  
+install( TARGETS Lib_diagnostics
    EXPORT draco-targets
    DESTINATION lib )
 install( TARGETS Exe_draco_info DESTINATION bin )

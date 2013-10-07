@@ -80,9 +80,10 @@ extern DLL_PUBLIC std::map< std::string, std::vector<double> > vec_doubles;
  *
  * The diagnostics can be turned on in three different levels based on logical
  * bit comparisions.  The following shows the levels:
- * - Bit 0, (001), activates Level 1
- * - Bit 1, (010), activates Level 2
- * - Bit 2, (100), activates Level 3
+ * - Bit 0, (001), activates Level 1 (negligible performance impact)
+ * - Bit 1, (010), activates Level 2 (some performance impact and possible
+ *                                    intrusive output)
+ * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .
  * The following integer settings activate Levels in the following way:
  * - 0 all off
@@ -94,8 +95,8 @@ extern DLL_PUBLIC std::map< std::string, std::vector<double> > vec_doubles;
  * - 6 Level 2, Level 3
  * - 7 Level 1, Level 2, Level 3
  * .
- * Thus setting --with-clubimc-diagnostics=7 at configure time will turn on
- * all levels.  The default setting is 0.
+ * Thus setting -DDRACO_DIAGNOSTICS=7 at configure time will turn on all
+ * levels.  The default setting is 0.
  *
  * The intent is to use Level 1 for high-level, low cost diagnostics that are
  * always active (ie. User "Education").  Levels 2 and 3 are for low-level

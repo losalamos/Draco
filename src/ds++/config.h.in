@@ -10,10 +10,12 @@
 #ifndef __dsxx_config_h__
 #define __dsxx_config_h__
 
+/* hostname */
 #include <limits.h>        // HOST_NAME_MAX, hostname
-//#ifdef WIN32
-    //#include <windows.h>  // MAX_COMPUTERNAME_LENGTH -> HOST_NAME_MAX
-//#endif
+
+/*---------------------------------------------------------------------------*/
+/* Draco/CMake build system variables */
+/*---------------------------------------------------------------------------*/
 
 /* DBC ENVIRONMENTS */
 #define DBC @DRACO_DBC_LEVEL@
@@ -24,7 +26,7 @@
 /* define DRACO_SHARED_LIBS */
 #cmakedefine DRACO_SHARED_LIBS @DRACO_SHARED_LIBS@
 
-   /* Version Inforation */
+/* Version Inforation */
 #define DRACO_BUILD_DATE "@DRACO_BUILD_DATE@"
 #define DRACO_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
 #cmakedefine DRACO_VERSION @DRACO_VERSION@
@@ -33,7 +35,7 @@
 #define DRACO_VERSION_MINOR "@DRACO_VERSION_MINOR@"
 #define DRACO_VERSION_PATCH "@DRACO_VERSION_PATCH@"
 
-   /* System Type */
+/* System Type */
 #cmakedefine MSVC @MSVC@
 #cmakedefine UNIX @UNIX@
 #cmakedefine draco_isLinux
@@ -45,6 +47,10 @@
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
 #cmakedefine HAVE_CUDA @HAVE_CUDA@
 #cmakedefine APPLE @APPLE@
+
+/*---------------------------------------------------------------------------*/
+/* Platform checks */
+/*---------------------------------------------------------------------------*/
 
 /* Support for C99's restrict keyword */
 #cmakedefine HAVE_RESTRICT
@@ -96,7 +102,10 @@
 /* OpenMP Setup */
 #cmakedefine USE_OPENMP @USE_OPENMP@
 
+/* ---------------------------------------- */
 /* C++ 11 support */
+/* ---------------------------------------- */   
+
 #cmakedefine DRACO_ENABLE_CXX11
 /* @DRACO_ENABLE_CXX11@ */
 #cmakedefine CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@"

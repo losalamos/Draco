@@ -136,6 +136,9 @@ void test_macro( rtt_dsxx::UnitTest & ut )
     cout << ">>> Testing Level 3 Block diagnostics." << endl;
     level[3] = 1;
     level[0] = 0;
+
+    
+    
 #endif
 
     cout << endl;
@@ -171,7 +174,7 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        Insist( rtt_c4::nodes() < 2, "This test requires exactly 1 PE." );
+        Insist( rtt_c4::nodes() == 1, "This test requires exactly 1 PE." );
         // >>> UNIT TESTS
         test_ints(ut);
         test_floats(ut);
