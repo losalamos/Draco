@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 15:30:56 2002
  * \brief  c4 package testing functions.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -65,8 +67,8 @@ extern DLL_PUBLIC bool passed;
 #define PASSMSG(a) rtt_c4_test::pass_msg(a);
 #define FAILMSG(a) rtt_c4_test::fail_msg(a);
 
-#endif                          // __c4_test_hh__
+#endif // __c4_test_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/test/c4_test.hh
+// end of c4/test/c4_test.hh
 //---------------------------------------------------------------------------//

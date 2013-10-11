@@ -464,7 +464,7 @@ Code coverage
 Directory                             Function Coverage           C/D Coverage
 --------------------------------  ---------------------  ---------------------
 ../source/src/units/                  82 /    82 = 100%      58 /    58 = 100%
-../source/src/traits/                 16 /    16 = 100%       0 /     0       
+../source/src/traits/                 16 /    16 = 100%       0 /     0
 ../source/src/special_functions/      31 /    31 = 100%     208 /   218 =  95%
 ../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
 ../source/src/ds++/                  477 /   477 = 100%     462 /   497 =  92%

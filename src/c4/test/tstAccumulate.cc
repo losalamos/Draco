@@ -80,10 +80,7 @@ void tstAccumulate(UnitTest &ut)
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
-    try
-    {
-        tstAccumulate(ut);
-    }
+    try { tstAccumulate(ut); }
     UT_EPILOG(ut);
 }   
 
