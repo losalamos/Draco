@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
- * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -23,7 +23,8 @@
 #define FAILMSG(m) ut.failure(m)
 #define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
-rtt_c4::Global_Timer do_timer("do_global_timer"), do_not_timer("do_not_global_timer");
+rtt_c4::Global_Timer do_timer(    "do_global_timer");
+rtt_c4::Global_Timer do_not_timer("do_not_global_timer");
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -43,14 +44,14 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     using rtt_c4::Timer;
     using rtt_c4::Global_Timer;
 
-    Global_Timer do_timer("do_timer"), do_not_timer("do_not_timer");
+    Global_Timer do_timer(    "do_timer");
+    Global_Timer do_not_timer("do_not_timer");
     set<string> active_timers;
     active_timers.insert("do_timer");
     active_timers.insert("do_global_timer");
     Global_Timer::set_selected_activity(active_timers, true);
 
     double const wcr( rtt_c4::wall_clock_resolution() );
-    // double const wcrDeprecated( C4::Wtick() );
     if( wcr > 0.0 && wcr <= 100.0)
     {
         ostringstream msg;
@@ -87,9 +88,9 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     
     Timer t;
 
-    double const prec( 1.8*t.posix_err() );
-    
-    double begin           = rtt_c4::wall_clock_time();
+    double const prec( 2.0*t.posix_err() );
+    double       begin( rtt_c4::wall_clock_time() );
+
     //double beginDeprecated = C4::Wtime();
 
     // if( rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
@@ -138,6 +139,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 	    << "\n\tbegin          = " << begin
 	    << "\n\tend-begin      = " << end - begin
 	    << "\n\tt.wall_clock() = " << t.wall_clock()
+            << "\n\terror          = " << error
 	    << "\n\tprec           = " << prec << endl;
 	FAILMSG(msg.str());
     }
@@ -283,26 +285,10 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 int main( int argc, char *argv[] )
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {   // UNIT TESTS
-      	wall_clock_test(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstTime, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstTime, " 
-                  << "An unknown exception was thrown."
-                  << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { wall_clock_test(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstTime.cc
+// end of tstTime.cc
 //---------------------------------------------------------------------------//
