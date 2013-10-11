@@ -49,6 +49,7 @@ case mu*.localdomain:
 #     endif
     setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
+
 case lu*.lanl.gov:
 case lu*.localdomain:
 case ty*.lanl.gov:
@@ -57,9 +58,10 @@ case ty*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
+    module unload intel openmpi
     module load intel/13.1.0 openmpi/1.6.3
     module load gsl emacs
-    module load cmake numdiff git lapack/3.4.1
+    module load cmake numdiff git lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     setenv VENDOR_DIR /usr/projects/draco/vendors
