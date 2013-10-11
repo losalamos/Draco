@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:04:00 2001
  * \brief  Dummy model used for testing cdi_analytic software.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -28,7 +28,9 @@ namespace rtt_cdi_analytic_test
 
 class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
 {
+  private:
     double a;
+    
   public:
     Marshak_Model(double a_) : a(a_) {/*...*/}
 
@@ -38,6 +40,11 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
     }
 
     double calculate_opacity(double T, double rho, double /*nu*/) const
+    {
+        return calculate_opacity(T, rho);
+    }
+
+    double calculate_opacity(double T, double rho, double /*nu0*/, double /*nu1*/) const
     {
         return calculate_opacity(T, rho);
     }
