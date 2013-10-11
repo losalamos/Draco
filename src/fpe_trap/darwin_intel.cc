@@ -30,7 +30,7 @@
 namespace rtt_fpe_trap
 {
 
-bool enable_fpe()
+bool enable_fpe( bool /*abortWithInsist*/ )
 {
     _mm_setcsr( _MM_MASK_MASK &~
                 (_MM_MASK_OVERFLOW|_MM_MASK_INVALID|_MM_MASK_DIV_ZERO) );

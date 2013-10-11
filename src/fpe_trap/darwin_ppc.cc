@@ -5,7 +5,7 @@
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  Darwin/PPC implementation of fpe_trap functions.
  *
- * Copyright 2004 The Regents of the University of California.
+ * Copyright (C) 2004-2013  Los Alamos National Security, LLC.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
@@ -70,14 +70,15 @@ static void catch_sigfpe(int sig)
 namespace rtt_fpe_trap
 {
 
-bool enable_fpe()
+bool enable_fpe( bool abortWithInsist )
 {
     pthread_t enabler;
     void *mts = reinterpret_cast<void *>(mach_thread_self());
     pthread_create(&enabler, NULL, fpe_enabler, mts);
     pthread_join(enabler, NULL);
-    
-    signal(SIGFPE, catch_sigfpe);
+
+    if( abortWithInsist)
+        signal(SIGFPE, catch_sigfpe);
 
     return true;
 }
@@ -87,5 +88,5 @@ bool enable_fpe()
 #endif // FPETRAP_DARWIN_PPC
 
 //---------------------------------------------------------------------------//
-//                 end of darwin_ppc.cc
+// end of darwin_ppc.cc
 //---------------------------------------------------------------------------//

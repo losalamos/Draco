@@ -70,7 +70,7 @@ namespace rtt_fpe_trap
 // - http://stackoverflow.com/questions/2769814/how-do-i-use-try-catch-to-catch-floating-point-errors
 // - See MSDN articles on fenv_access and _controlfp_s examples.
 // ----------------------------------------------------------------------------
-DLL_PUBLIC bool enable_fpe()
+DLL_PUBLIC bool enable_fpe( bool abortWithInsist )
 {   
    // Allways call this before setting control words.
    _clearfp();
@@ -91,8 +91,9 @@ DLL_PUBLIC bool enable_fpe()
    // Update the control word with our changes
    // MCW_EM is Interrupt exception mask.
    _controlfp(fp_control_word,MCW_EM);
-   
-   _set_se_translator(trans_func);
+
+   if( abortWithInsist )
+       _set_se_translator(trans_func);
    
    return true;
 }

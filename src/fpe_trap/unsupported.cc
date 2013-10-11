@@ -16,7 +16,10 @@
 
 #ifdef FPETRAP_UNSUPPORTED
 
-DLL_PUBLIC bool rtt_fpe_trap::enable_fpe() { return false; }
+DLL_PUBLIC bool rtt_fpe_trap::enable_fpe( bool /*AbortWithInsist*/ )
+{
+    return false;
+}
 
 #endif // FPETRAP_UNSUPPORTED
 

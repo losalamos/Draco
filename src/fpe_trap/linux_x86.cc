@@ -30,14 +30,15 @@
 #include <fenv.h>
 
 /* Signal handler for floating point exceptions. */
+extern "C"
+{
 
-extern "C" {
 static void
 catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
 {
     std::cout << "(fpe_trap/linux_x86.cc) A SIGFPE was detected!"
               << std::endl;
-    
+        
     std::string mesg;
     if (sig != SIGFPE)
     {
@@ -76,7 +77,7 @@ catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
                 break;
         }
     }
-
+    
     Insist(0, mesg);
 }
 
@@ -85,22 +86,25 @@ catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
 namespace rtt_fpe_trap
 {
 
-bool enable_fpe()
+bool enable_fpe( bool abortWithInsist )
 {
     struct sigaction act;
 
-    act.sa_sigaction = catch_sigfpe; /* the signal handler       */
-    sigemptyset(&(act.sa_mask));	    /* no other signals blocked */
+    // Choose to use Draco's DbC Insist.  If set to false, the compiler should
+    // print a stack trace instead of the pretty print message defined above
+    // in catch_sigfpe.
+    if( abortWithInsist )
+        act.sa_sigaction = catch_sigfpe; /* the signal handler       */
+
+    sigemptyset(&(act.sa_mask));     /* no other signals blocked */
     act.sa_flags = SA_SIGINFO;       /* want 3 args for handler  */
 
-    /* specify handler */
+    // specify handler
     Insist(! sigaction(SIGFPE, &act, NULL),
            "Unable to set floating point handler.");
 
-    /*
-     * The feenableexcept function is new for glibc 2.2.  See its
-     * description in the man page for fenv(3).
-     */
+    // The feenableexcept function is new for glibc 2.2.  See its description
+    // in the man page for fenv(3). 
 
     (void)feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
     

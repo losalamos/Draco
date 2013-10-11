@@ -5,7 +5,7 @@
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  OSF alpha implementation of fpe_trap functions.
  *
- * Copyright 2004 The Regents of the University of California.
+ * Copyright (C) 2004-2013  Los Alamos National Security, LLC.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
@@ -50,13 +50,14 @@ catch_sigfpe(int sig)
 namespace rtt_fpe_trap
 {
 
-bool enable_fpe()
+bool enable_fpe( bool abortWithInsist )
 {
     unsigned long csr = ieee_get_fp_control();
     csr |= IEEE_TRAP_ENABLE_INV | IEEE_TRAP_ENABLE_DZE | IEEE_TRAP_ENABLE_OVF;
     ieee_set_fp_control(csr);
 
-    signal(SIGFPE, catch_sigfpe);
+    if( abortWithInsist )
+        signal(SIGFPE, catch_sigfpe);
 
     return true;
 }
@@ -66,5 +67,5 @@ bool enable_fpe()
 #endif // FPETRAP_OSF_ALPHA
 
 //---------------------------------------------------------------------------//
-//                 end of osf_alpha.cc
+// end of osf_alpha.cc
 //---------------------------------------------------------------------------//

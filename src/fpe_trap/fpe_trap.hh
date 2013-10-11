@@ -22,6 +22,11 @@ namespace rtt_fpe_trap
 //---------------------------------------------------------------------------//
 /*!
   \brief Enable trapping of floating-point exceptions.
+  \param[in] abortWithInsist toggle the abort mode default is true to use
+                             ds++'s Insist macro.
+  \return \b true if trapping is enabled, \b false otherwise.
+          A \b false return value is typically because the platform is not 
+          supported.
 
   The floating-point exception behavior is platform dependent.  Nevertheless,
   the goal of this function is to turn on trapping for the following
@@ -32,19 +37,22 @@ namespace rtt_fpe_trap
     number.
   - Overflow.
 
-  If a floating-point exception is detected, ds++'s Insist is called; that is,
-  a C++ exception is thrown.
+  If a floating-point exception is detected, the code will abort using a mode
+  triggered by the value of abortWithInsist.
+  - If true, ds++'s Insist is called; that is, a C++ exception is thrown.
+  - If false, the default mechanism defined by the compiler will be used.  For
+    most modern compilers this results in a stack trace.
 
   Typically, an application calls this function once, before any
-  floating-point operations are performed.  Note that all program
-  functionality then traps floating-point exceptions, including in libraries.
-  Currently, there is no way to turn trapping off.
+  floating-point operations are performed (e.g.: \c
+  wedgehog/Function_Interfaces.cc).  Note that all program functionality then
+  traps floating-point exceptions, including in libraries.  Currently, there
+  is no way to turn trapping off once it has been turned on.
 
-  \return \b true if trapping is enabled, \b false otherwise.
-  A \b false return value is typically because the platform is not
-  supported.
+  Note: By Draco coding convention, fpe_traps are enabled when
+  DRACO_DIAGNOSTIC && 4 == true.
 */
-DLL_PUBLIC bool enable_fpe();
+DLL_PUBLIC bool enable_fpe( bool abortWithInsist=true );
 
 } // end namespace rtt_fpe_trap
 
