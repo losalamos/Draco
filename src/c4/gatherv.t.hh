@@ -22,8 +22,6 @@
 
 namespace rtt_c4
 {
-using std::vector;
-using std::copy;
 
 //---------------------------------------------------------------------------//
 // GATHER
@@ -36,7 +34,8 @@ DLL_PUBLIC void indeterminate_gatherv(
 {
     // convert from string to vector<char>
     std::vector<char> outgoing_data_vc( outgoing_data.size() );
-    std::copy( outgoing_data.begin(), outgoing_data.end(), outgoing_data_vc.begin() );
+    std::copy( outgoing_data.begin(), outgoing_data.end(),
+               outgoing_data_vc.begin() );
 
     // create container for return value
     std::vector< std::vector< char > > incoming_data_vvc( nodes() );
@@ -52,7 +51,9 @@ DLL_PUBLIC void indeterminate_gatherv(
         {
             size_t const len= incoming_data_vvc[i].size();
             incoming_data[i].resize( len );
-            std::copy( incoming_data_vvc[i].begin(), incoming_data_vvc[i].end(), incoming_data[i].begin() );
+            std::copy( incoming_data_vvc[i].begin(),
+                       incoming_data_vvc[i].end(),
+                       incoming_data[i].begin() );
             Check( incoming_data[i].size() > 0 );
         }
     }
@@ -63,8 +64,8 @@ DLL_PUBLIC void indeterminate_gatherv(
 //---------------------------------------------------------------------------//
 template<class T>
 DLL_PUBLIC void indeterminate_gatherv(
-    vector<T>          & outgoing_data,
-    vector<vector<T> > & incoming_data )
+    std::vector<T>               & outgoing_data,
+    std::vector<std::vector<T> > & incoming_data )
 {
 #ifdef C4_MPI
     { // This block is a no-op for with-c4=scalar 
@@ -75,8 +76,8 @@ DLL_PUBLIC void indeterminate_gatherv(
         int count( outgoing_data.size() );
         if (rtt_c4::node()==0)
         {
-            vector<int> counts(N, -1);
-            vector<int> displs(N, -1);
+            std::vector<int> counts(N, -1);
+            std::vector<int> displs(N, -1);
             
             // for valid comm world, this should always be true.
             Check( counts.size() > 0 ); 
@@ -93,7 +94,7 @@ DLL_PUBLIC void indeterminate_gatherv(
             // We can only use the &vec[0] notation if the vector is non-zero
             // in length.  An shorthand-if is used to pass 'NULL' to mpi if
             // there is no data to gather.
-            vector<T> recbuf(total_count, 42);
+            std::vector<T> recbuf(total_count, 42);
             rtt_c4::gatherv(
                 (count>0?&outgoing_data[0]:NULL),
                 outgoing_data.size(),
@@ -105,9 +106,9 @@ DLL_PUBLIC void indeterminate_gatherv(
             for( unsigned p=0; p<N; ++p )
             {
                 incoming_data[p].resize( counts[p] );
-                copy( recbuf.begin()+displs[p],
-                      recbuf.begin()+displs[p]+counts[p],
-                      incoming_data[p].begin());
+                std::copy( recbuf.begin()+displs[p],
+                           recbuf.begin()+displs[p]+counts[p],
+                           incoming_data[p].begin());
             }
 
         }
@@ -137,8 +138,8 @@ DLL_PUBLIC void indeterminate_gatherv(
 //---------------------------------------------------------------------------//
 template<class T>
 DLL_PUBLIC void determinate_gatherv(
-    vector<T>           &outgoing_data,
-    vector<vector<T> >  &incoming_data)
+    std::vector<T>               &outgoing_data,
+    std::vector<std::vector<T> > &incoming_data)
 {
     Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
     
@@ -149,8 +150,8 @@ DLL_PUBLIC void determinate_gatherv(
         int count( outgoing_data.size() );
         if (rtt_c4::node()==0)
         {
-            vector<int> counts(N,-1);
-            vector<int> displs(N,-1);
+            std::vector<int> counts(N,-1);
+            std::vector<int> displs(N,-1);
             unsigned total_count(0);
             for( unsigned p=0; p<N; ++p )
             {
@@ -159,7 +160,7 @@ DLL_PUBLIC void determinate_gatherv(
                 total_count += counts[p];
             }
             
-            vector<T> recbuf(total_count,42);
+            std::vector<T> recbuf(total_count,42);
             // &vec[0] is only valid if vector has non-zero length
             rtt_c4::gatherv(
                 (count>0?&outgoing_data[0]:NULL),
@@ -172,9 +173,9 @@ DLL_PUBLIC void determinate_gatherv(
             for( unsigned p=0; p<N; ++p )
             {
                 incoming_data[p].resize( counts[p] );
-                copy( recbuf.begin()+displs[p],
-                      recbuf.begin()+displs[p]+counts[p],
-                      incoming_data[p].begin() );
+                std::copy( recbuf.begin()+displs[p],
+                           recbuf.begin()+displs[p]+counts[p],
+                           incoming_data[p].begin() );
             }
 
         }
