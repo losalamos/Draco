@@ -1122,6 +1122,9 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
 //---------------------------------------------------------------------------//
 void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
 {
+    std::cout << "Running test test_mgopacity_collapse(ut)..." << std::endl;
+    size_t const numFailCheckpoint(ut.numFails);
+    
     // Test functions that collapse MG opacity data into one-group data using
     // either Planckian or Rosseland weight functions:
 
@@ -1210,6 +1213,87 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
                           emission_group_cdf_ref.begin(),
                           emission_group_cdf_ref.end() ) )   ITFAILS;
     }        
+
+    // Special case 1 (opacity==0)
+    {
+        // mgOpacities = { 0,0,0 }
+        std::vector<double> mgOpacities( 3, 0.0 );
+        
+        // Force the spectrum to be flat.
+        planck_spectrum[0] = 1.0/3.0;
+        planck_spectrum[1] = 1.0/3.0;
+        planck_spectrum[2] = 1.0/3.0;
+        rosseland_spectrum[0] = 1.0/3.0;
+        rosseland_spectrum[1] = 1.0/3.0;
+        rosseland_spectrum[2] = 1.0/3.0;
+
+        // Generate reference solutions
+        std::vector<double> emission_group_cdf_ref(bounds.size()-1);
+        double opacity_pl_ref(0.0);
+        double opacity_ross_ref(0.0);
+        for( size_t ig=0; ig<bounds.size()-1; ++ig )
+        {
+            // opacity_pl_ref += planck_spectrum[ig]*mgOpacities[ig];
+            emission_group_cdf_ref[ig] = opacity_pl_ref;
+            // opacity_ross_ref += rosseland_spectrum[ig]/mgOpacities[ig];
+        }
+        // opacity_ross_ref = 1.0/opacity_ross_ref;
+        
+        // Collapse the opacities:
+        double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
+            bounds, mgOpacities, planck_spectrum, emission_group_cdf );
+        double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
+            bounds,mgOpacities, rosseland_spectrum );
+        
+        if( ! soft_equiv( opacity_pl,   opacity_pl_ref   ) ) ITFAILS;
+        if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
+        if( ! soft_equiv( emission_group_cdf.begin(),
+                          emission_group_cdf.end(),
+                          emission_group_cdf_ref.begin(),
+                          emission_group_cdf_ref.end() ) )   ITFAILS;
+    }
+
+    // Special case 2 (rosseland_spectrum == 0)
+    {
+        // Force the spectrum to be flat.
+        planck_spectrum[0] = 1.0/3.0;
+        planck_spectrum[1] = 1.0/3.0;
+        planck_spectrum[2] = 1.0/3.0;
+        rosseland_spectrum[0] = 0.0;
+        rosseland_spectrum[1] = 0.0;
+        rosseland_spectrum[2] = 0.0;
+
+        // Generate reference solutions
+        std::vector<double> emission_group_cdf_ref(bounds.size()-1);
+        double opacity_pl_ref(0.0);
+        double opacity_ross_ref(mgOpacities[0]);
+        for( size_t ig=0; ig<bounds.size()-1; ++ig )
+        {
+            opacity_pl_ref += planck_spectrum[ig]*mgOpacities[ig];
+            emission_group_cdf_ref[ig] = opacity_pl_ref;
+            // opacity_ross_ref += rosseland_spectrum[ig]/mgOpacities[ig];
+        }
+        // opacity_ross_ref = 1.0/opacity_ross_ref;
+        
+        // Collapse the opacities:
+        double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
+            bounds, mgOpacities, planck_spectrum, emission_group_cdf );
+        double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
+            bounds,mgOpacities, rosseland_spectrum );
+        
+        if( ! soft_equiv( opacity_pl,   opacity_pl_ref   ) ) ITFAILS;
+        if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
+        if( ! soft_equiv( emission_group_cdf.begin(),
+                          emission_group_cdf.end(),
+                          emission_group_cdf_ref.begin(),
+                          emission_group_cdf_ref.end() ) )   ITFAILS;
+    }
+
+    // Report
+    if( ut.numFails == numFailCheckpoint )
+        PASSMSG( "test_mgopacity_collapse completed successfully." );
+    else
+        FAILMSG( "test_mgopacity_collapse reported at least one failure." );
     
     return;
 }
