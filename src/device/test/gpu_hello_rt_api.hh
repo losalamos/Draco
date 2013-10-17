@@ -3,8 +3,10 @@
  * \file   device/test/gpu_hello_rt_api.hh
  * \author Kelly (KT) Thompson
  * \date   Thu Oct 25 15:28:48 2011
- * \brief  
+ * \brief  Wrap the cuda_runtime_api.h header while preventing comiler
+ *         warnings about vendor code.
  * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,13 +16,26 @@
 // http://wiki.services.openoffice.org/wiki/Writing_warning-free_code#When_all_else_fails
 #if defined __GNUC__
 #pragma GCC system_header
+// Intel defines __GNUC__ by default
+#  ifdef __INTEL_COMPILER
+#    pragma warning push
+//#    pragma warning(disable:1011) // missing return statement at end of non-void function 
+//#    pragma warning(disable:381)  // more than one instance of overloaded function
+#  endif
 #elif defined __SUNPRO_CC
 #pragma disable_warn
 #elif defined _MSC_VER
 #pragma warning(push, 1)
 #endif
+
 #include <cuda_runtime_api.h>
-#if defined __SUNPRO_CC
+
+#if defined __GNUC__
+#  pragma GCC system_header
+#  ifdef __INTEL_COMPILER
+#    pragma warning pop
+#  endif
+#elif defined __SUNPRO_CC
 #pragma enable_warn
 #elif defined _MSC_VER
 #pragma warning(pop)
@@ -28,4 +43,7 @@
 
 // #define Error(format, args...) (error_and_exit)("%s:%d: " format, __FILE__, __LINE__, ##args)
 
+//---------------------------------------------------------------------------//
+// end of gpu_hello_rt_api.hh
+//---------------------------------------------------------------------------//
 
