@@ -16,9 +16,23 @@
 
 #ifdef FPETRAP_UNSUPPORTED
 
-DLL_PUBLIC bool rtt_fpe_trap::enable_fpe( bool /*AbortWithInsist*/ )
+
+namespace rtt_fpe_trap
 {
-    return false;
+
+//---------------------------------------------------------------------------------------//
+//!  Enable trapping of floating point errors.
+bool fpe_trap::enable(void)
+{
+    // Toggle the state.
+    fpeTrappingActive = true;
+    return fpeTrappingActive;
+}
+//---------------------------------------------------------------------------------------//
+//! Disable trapping of floating point errors.
+void fpe_trap::disable(void)
+{
+    return;
 }
 
 #endif // FPETRAP_UNSUPPORTED

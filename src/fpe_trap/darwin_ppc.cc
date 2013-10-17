@@ -6,6 +6,7 @@
  * \brief  Darwin/PPC implementation of fpe_trap functions.
  *
  * Copyright (C) 2004-2013  Los Alamos National Security, LLC.
+ *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
@@ -67,20 +68,34 @@ static void catch_sigfpe(int sig)
 
 } // end of namespace
 
+//---------------------------------------------------------------------------------------//
 namespace rtt_fpe_trap
 {
-
-bool enable_fpe( bool abortWithInsist )
+//---------------------------------------------------------------------------------------//
+//!  Enable trapping of floating point errors.
+bool fpe_trap::enable(void)
 {
     pthread_t enabler;
     void *mts = reinterpret_cast<void *>(mach_thread_self());
     pthread_create(&enabler, NULL, fpe_enabler, mts);
     pthread_join(enabler, NULL);
 
-    if( abortWithInsist)
+    if( this->abortWithInsist)
         signal(SIGFPE, catch_sigfpe);
 
-    return true;
+     // Toggle the state.
+    fpeTrappingActive = true;
+    return fpeTrappingActive;
+}
+
+//---------------------------------------------------------------------------------------//
+//! Disable trapping of floating point errors.
+void fpe_trap::disable(void)
+{
+    // (void)feenableexcept( 0x00 );
+    Insist(0,"Please update darwin_ppc.cc to provide instructions for disabling fpe traps.");
+    // fpeTrappingActive=false;
+    return;
 }
 
 } // end namespace rtt_shared_lib

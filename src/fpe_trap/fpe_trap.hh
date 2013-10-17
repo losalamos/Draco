@@ -21,20 +21,17 @@ namespace rtt_fpe_trap
 
 //---------------------------------------------------------------------------//
 /*!
+  \class fpe_trap
+
   \brief Enable trapping of floating-point exceptions.
   \param[in] abortWithInsist toggle the abort mode default is true to use
                              ds++'s Insist macro.
-  \return \b true if trapping is enabled, \b false otherwise.
-          A \b false return value is typically because the platform is not 
-          supported.
-
+                             
   The floating-point exception behavior is platform dependent.  Nevertheless,
-  the goal of this function is to turn on trapping for the following
-  exceptions:
+  the goal of this class is to turn on trapping for the following exceptions:
 
   - Division by zero.
-  - Invalid operation; for example, the square-root of a negative
-    number.
+  - Invalid operation; for example, the square-root of a negative number.
   - Overflow.
 
   If a floating-point exception is detected, the code will abort using a mode
@@ -52,7 +49,34 @@ namespace rtt_fpe_trap
   Note: By Draco coding convention, fpe_traps are enabled when
   DRACO_DIAGNOSTIC && 4 == true.
 */
-DLL_PUBLIC bool enable_fpe( bool abortWithInsist=true );
+class DLL_PUBLIC fpe_trap
+{
+  public:
+    //! constructor
+    fpe_trap( bool const abortWithInsist_in = true)
+        : fpeTrappingActive(false),
+          abortWithInsist( abortWithInsist_in )
+    {/* emtpy */};
+    ~fpe_trap(void) {/* empty */};
+
+
+    //-----------------------------------------------------------------------------------//
+    /*! 
+     * \brief Enable trapping fpe signals.
+     * \return \b true if trapping is enabled, \b false otherwise.
+     *         A \b false return value is typically because the platform is not 
+     *         supported.
+     */
+    bool enable( void );
+    //! Disable trapping fpe signals.
+    void disable( void );
+    //! Query if trapping of fpe signals is active.
+    bool active(void) const { return fpeTrappingActive; }
+
+  private:
+    bool fpeTrappingActive;
+    bool const abortWithInsist;
+};
 
 } // end namespace rtt_fpe_trap
 

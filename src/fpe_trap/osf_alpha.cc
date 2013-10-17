@@ -6,6 +6,7 @@
  * \brief  OSF alpha implementation of fpe_trap functions.
  *
  * Copyright (C) 2004-2013  Los Alamos National Security, LLC.
+ *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
@@ -50,7 +51,9 @@ catch_sigfpe(int sig)
 namespace rtt_fpe_trap
 {
 
-bool enable_fpe( bool abortWithInsist )
+//---------------------------------------------------------------------------------------//
+//!  Enable trapping of floating point errors.
+bool fpe_trap::enable(void)
 {
     unsigned long csr = ieee_get_fp_control();
     csr |= IEEE_TRAP_ENABLE_INV | IEEE_TRAP_ENABLE_DZE | IEEE_TRAP_ENABLE_OVF;
@@ -59,7 +62,18 @@ bool enable_fpe( bool abortWithInsist )
     if( abortWithInsist )
         signal(SIGFPE, catch_sigfpe);
 
-    return true;
+    // Toggle the state.
+    fpeTrappingActive = true;
+    return fpeTrappingActive;
+}
+
+//---------------------------------------------------------------------------------------//
+//! Disable trapping of floating point errors.
+void fpe_trap::disable(void)
+{
+    ieee_set_fp_control(0x00);
+    fpeTrappingActive=false;
+    return;
 }
 
 } // end namespace rtt_shared_lib

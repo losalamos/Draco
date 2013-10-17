@@ -38,12 +38,13 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 
-int run_test(int /*argc*/, char *argv[])
+void run_test(int /*argc*/, char *argv[])
 {
     std::ofstream fout;
     fout.open("output.dat");
 
-    if ( rtt_fpe_trap::enable_fpe() )
+    bool const abortWithInsist(true);
+    if ( rtt_fpe_trap::fpe_trap(abortWithInsist).enable() )
     {
         // Platform supported.
         fout << "- fpe_trap: This platform is supported" << endl;
@@ -54,7 +55,7 @@ int run_test(int /*argc*/, char *argv[])
         // Platform not supported.
         fout << "- fpe_trap: This platform is not supported\n";
         fout.close();
-        return 0;
+        return;
     }
 
     // Accept a command line argument with value 1, 2 or 3.
@@ -120,7 +121,7 @@ int run_test(int /*argc*/, char *argv[])
     }
     // close the log file.
     fout.close();
-    return 0;
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -133,7 +134,7 @@ int main(int argc, char *argv[])
     }
     catch (exception &err)
     {
-        if ( rtt_fpe_trap::enable_fpe() )
+        if ( rtt_fpe_trap::fpe_trap().enable() )
         {
             // keyword 'signal' shows up as a failure when processed by
             // test_filter.py.  To avoid this, we do not print the err.what()

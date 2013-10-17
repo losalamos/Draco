@@ -19,13 +19,13 @@
 //---------------------------------------------------------------------------//
 
 #include "fpe_trap/config.h"
+#include "fpe_trap.hh"
 
 #ifdef FPETRAP_LINUX_X86
 
+#include <ds++/Assert.hh>
 #include <iostream>
 #include <string>
-#include <ds++/Assert.hh>
-
 #include <signal.h>
 #include <fenv.h>
 
@@ -86,18 +86,20 @@ catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
 namespace rtt_fpe_trap
 {
 
-bool enable_fpe( bool abortWithInsist )
+//---------------------------------------------------------------------------------------//
+//!  Enable trapping of floating point errors.
+bool fpe_trap::enable(void)
 {
     struct sigaction act;
 
     // Choose to use Draco's DbC Insist.  If set to false, the compiler should
     // print a stack trace instead of the pretty print message defined above
     // in catch_sigfpe.
-    if( abortWithInsist )
+    if( this->abortWithInsist )
         act.sa_sigaction = catch_sigfpe; /* the signal handler       */
 
-    sigemptyset(&(act.sa_mask));     /* no other signals blocked */
-    act.sa_flags = SA_SIGINFO;       /* want 3 args for handler  */
+    sigemptyset(&(act.sa_mask));         /* no other signals blocked */
+    act.sa_flags = SA_SIGINFO;           /* want 3 args for handler  */
 
     // specify handler
     Insist(! sigaction(SIGFPE, &act, NULL),
@@ -107,15 +109,39 @@ bool enable_fpe( bool abortWithInsist )
     // in the man page for fenv(3). 
 
     (void)feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
-    
+
+    // Toggle the state.
+    fpeTrappingActive = true;
+                        
     // ... if you want to catch "everything" :
     //(void)feenableexcept(FE_ALL_EXCEPT);
     
-    // Also available:
-    // FE_INEXACT
-    // FE_UNDERFLOW
+    // Also available (taken from fenv.h and bits/fenv.h):
+    // FE_INEXACT               inexact result
+    // FE_DIVBYZERO             division by zero
+    // FE_UNDERFLOW             result not representable due to underflow
+    // FE_OVERFLOW              result not representable due to overflow
+    // FE_INVALID               invalid operation
 
-    return true;
+    // FE_ALL_EXCEPT            bitwise OR of all supported exceptions
+
+    // The next macros are defined iff the appropriate rounding mode is
+    // supported by the implementation.
+    // FE_TONEAREST             round to nearest
+    // FE_UPWARD                round toward +Inf
+    // FE_DOWNWARD              round toward -Inf
+    // FE_TOWARDZERO            round toward 0
+    
+    return fpeTrappingActive;
+}
+
+//---------------------------------------------------------------------------------------//
+//! Disable trapping of floating point errors.
+void fpe_trap::disable(void)
+{
+    (void)feenableexcept( 0x00 );
+    fpeTrappingActive=false;
+    return;
 }
 
 } // end namespace rtt_shared_lib
