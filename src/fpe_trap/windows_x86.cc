@@ -6,6 +6,7 @@
  * \brief  windows implementation of fpe_trap functions.
  * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
  *         All rights reserved.
+ *
  * \sa Microsoft Visual C++ Floating-Point Optimizations, 
  *     section "Floating-Point Exceptions as C++ Exceptions"
  */
@@ -14,6 +15,7 @@
 //---------------------------------------------------------------------------//
 
 #include "fpe_trap/config.h"
+#include "fpe_trap.hh"
 
 #ifdef FPETRAP_WINDOWS_X86
 
@@ -70,7 +72,7 @@ namespace rtt_fpe_trap
 // - http://stackoverflow.com/questions/2769814/how-do-i-use-try-catch-to-catch-floating-point-errors
 // - See MSDN articles on fenv_access and _controlfp_s examples.
 // ----------------------------------------------------------------------------
-DLL_PUBLIC bool enable_fpe( bool abortWithInsist )
+bool fpe_trap::enable( void )
 {   
    // Allways call this before setting control words.
    _clearfp();
@@ -92,10 +94,33 @@ DLL_PUBLIC bool enable_fpe( bool abortWithInsist )
    // MCW_EM is Interrupt exception mask.
    _controlfp(fp_control_word,MCW_EM);
 
-   if( abortWithInsist )
+   if( this->abortWithInsist )
        _set_se_translator(trans_func);
+       
+   // Toggle the state.
+    fpeTrappingActive = true;
    
-   return true;
+   return fpeTrappingActive;
+}
+
+//---------------------------------------------------------------------------------------//
+//! Disable trapping of floating point errors.
+void fpe_trap::disable(void)
+{
+   // Read the current control words.
+   unsigned int fp_control_word = _controlfp(0,0);
+
+   // Set the exception masks off for exceptions that you want to trap.  When
+   // a mask bit is set, the corresponding floating-point exception is 
+   // blocked from being generated.
+   fp_control_word &= ( EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW );
+
+   // Update the control word with our changes
+   // MCW_EM is Interrupt exception mask.
+   _controlfp(fp_control_word,MCW_EM);   
+    
+    fpeTrappingActive=false;
+    return;
 }
 
 } // end namespace rtt_shared_lib
