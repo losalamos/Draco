@@ -16,7 +16,6 @@
 
 #ifdef FPETRAP_UNSUPPORTED
 
-
 namespace rtt_fpe_trap
 {
 
@@ -28,12 +27,15 @@ bool fpe_trap::enable(void)
     fpeTrappingActive = true;
     return fpeTrappingActive;
 }
-//---------------------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
 //! Disable trapping of floating point errors.
 void fpe_trap::disable(void)
 {
     return;
 }
+
+} // end namespace rtt_fpe_trap
 
 #endif // FPETRAP_UNSUPPORTED
 
