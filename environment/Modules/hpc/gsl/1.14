@@ -10,9 +10,24 @@
 # where are we? 
 # trim everything after ':'
 set module_path $::env(MODULEPATH)
-set my_module_dir [ lindex [ split "$module_path" ":" ] 0 ]
-cd $my_module_dir/..
-set draco_module_dir [pwd]
+
+# I'm sure there is a better way to do this but I don't know TCL well enough to know the syntax.
+# Get the first 3 directories listed, one of these should be the draco dir.
+set my_module_dir0 [ lindex [ split "$module_path" ":" ] 0 ]
+set my_module_dir1 [ lindex [ split "$module_path" ":" ] 1 ]
+set my_module_dir2 [ lindex [ split "$module_path" ":" ] 2 ]
+if { [file exists $my_module_dir0/gsl] } {
+  cd $my_module_dir0/..
+  set draco_module_dir [pwd]
+} 
+if { [file exists $my_module_dir1/gsl] } {
+  cd $my_module_dir1/..
+  set draco_module_dir [pwd]
+} 
+if { [file exists $my_module_dir2/gsl] } {
+  cd $my_module_dir2/..
+  set draco_module_dir [pwd]
+}
 
 source $draco_module_dir/templates/header
 
