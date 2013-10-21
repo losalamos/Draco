@@ -96,6 +96,7 @@ add_dir_if_exists( special_functions ) # needs roots, units, ode
 add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
 add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
+add_dir_if_exists( memory )            # needs diagnostics
 
 # Level 5
 if( NOT WIN32 )
