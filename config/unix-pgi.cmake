@@ -7,6 +7,8 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
+set( draco_isPGI 1 CACHE BOOL "Are we using PGI CXX? -> ds++/config.h" )
+
 # NOTE: You may need to set TMPDIR to a location that the compiler can
 #       write temporary files to.  Sometimes the default space on HPC
 #       is not sufficient.
