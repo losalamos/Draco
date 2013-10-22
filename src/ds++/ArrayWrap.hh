@@ -11,6 +11,19 @@
 #define ArrayWrap_hh
 
 #include "Assert.hh"
+#include "ds++/config.h"
+
+#ifdef HAS_CXX11_ARRAY
+
+// This file is deprecated by std::array.  However, as of Oct, 2013, PGI 13.7
+// and XLC 12.1 still did not provide std::array I am keeping this class for
+// those two compilers.
+
+// This class should not be removed unless
+// jayenne/clubimc/src/imc/*_Particle.* routines can be compiled with
+// std::array.  
+
+#else
 
 namespace rtt_dsxx
 {
@@ -125,5 +138,7 @@ template<class T> class ArrayWrap<T, 0>
 };
 
 }
+
+#endif // HAS_CXX11_ARRAY
 
 #endif
