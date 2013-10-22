@@ -16,7 +16,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_fpe_trap
+namespace rtt_dsxx
 {
 
 //---------------------------------------------------------------------------//
@@ -78,7 +78,7 @@ class DLL_PUBLIC fpe_trap
     bool const abortWithInsist;
 };
 
-} // end namespace rtt_fpe_trap
+} // end namespace rtt_dsxx
 
 #endif // fpe_trap_hh
 

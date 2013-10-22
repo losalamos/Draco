@@ -55,7 +55,7 @@ message( STATUS "Configuring Level 2 packages --" )
 add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( device )       # needs ds++
-add_dir_if_exists( fpe_trap )     # needs ds++
+# add_dir_if_exists( fpe_trap )     # needs ds++
 if (NOT APPLE)
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()
@@ -96,7 +96,9 @@ add_dir_if_exists( special_functions ) # needs roots, units, ode
 add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
 add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
-add_dir_if_exists( memory )            # needs diagnostics
+if( NOT WIN32 )
+   add_dir_if_exists( memory )            # needs diagnostics
+endif()
 
 # Level 5
 if( NOT WIN32 )

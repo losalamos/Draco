@@ -17,6 +17,30 @@ project( dsxx CXX )
 
 # Review config/platform_checks.cmake for many of these settings.
 
+# Choose platforms for fpe_trap
+if( ${CMAKE_SYSTEM} MATCHES "OSF" )
+   set( FPETRAP_OSF_ALPHA 1 )
+elseif( ${CMAKE_SYSTEM} MATCHES "Linux" )
+   # If the OS is Linux, fpe_trap should work as long as
+   # feenableexscept is available.  That is, it should work for both
+   # GNU and Intel compiler suites.
+   #if( CMAKE_COMPILER_IS_GNUCXX )
+      set( FPETRAP_LINUX_X86 1 )
+   #endif()
+   # Turn fpe_trap off for PGI compilers.
+   if( ${CMAKE_C_COMPILER} MATCHES pgcc )
+      set( FPETRAP_LINUX_X86 0 )
+   endif()
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+   if( ${_CMAKE_OSX_MACHINE} MATCHES "ppc" )
+      set( FPETRAP_DARWIN_PPC 1 )
+   else()
+      set( FPETRAP_DARWIN_INTEL 1 )
+   endif()
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+   set( FPETRAP_WINDOWS_X86 1 )
+endif()
+
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 

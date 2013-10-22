@@ -12,12 +12,10 @@
 //---------------------------------------------------------------------------//
 
 #include "../fpe_trap.hh"
-#include "ds++/Assert.hh"
+#include "../Assert.hh"
 #include <fstream>
 #include <cmath>
 #include <iostream>
-
-int main(int argc, char *argv[]);
 
 using namespace std;
 
@@ -44,7 +42,7 @@ void run_test(int /*argc*/, char *argv[])
     fout.open("output.dat");
 
     bool const abortWithInsist(true);
-    if ( rtt_fpe_trap::fpe_trap(abortWithInsist).enable() )
+    if ( rtt_dsxx::fpe_trap(abortWithInsist).enable() )
     {
         // Platform supported.
         fout << "- fpe_trap: This platform is supported" << endl;
@@ -134,7 +132,7 @@ int main(int argc, char *argv[])
     }
     catch (exception &err)
     {
-        if ( rtt_fpe_trap::fpe_trap().enable() )
+        if ( rtt_dsxx::fpe_trap().enable() )
         {
             // keyword 'signal' shows up as a failure when processed by
             // test_filter.py.  To avoid this, we do not print the err.what()

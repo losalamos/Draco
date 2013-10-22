@@ -471,6 +471,16 @@ macro( SetupVendorLibrariesUnix )
 
    # CUDA ------------------------------------------------------------------
    setupCudaEnv()
+
+   # PYTHON ----------------------------------------------------------------
+   find_package(PythonInterp QUIET)
+   #  PYTHONINTERP_FOUND - Was the Python executable found
+   #  PYTHON_EXECUTABLE  - path to the Python interpreter
+   set_package_properties( PythonInterp PROPERTIES
+      DESCRIPTION "Python interpreter"
+      TYPE OPTIONAL
+      PURPOSE "Required for running the fpe_trap tests." 
+      )
    
 endmacro()
 
@@ -649,6 +659,16 @@ macro( SetupVendorLibrariesWindows )
    # Random123 ---------------------------------------------------------------
    message( STATUS "Looking for Random123...")
    find_package( Random123 REQUIRED )
+
+   # PYTHON ----------------------------------------------------------------
+   find_package(PythonInterp QUIET)
+   #  PYTHONINTERP_FOUND - Was the Python executable found
+   #  PYTHON_EXECUTABLE  - path to the Python interpreter
+   set_package_properties( PythonInterp PROPERTIES
+      DESCRIPTION "Python interpreter"
+      TYPE OPTIONAL
+      PURPOSE "Required for running the fpe_trap tests." 
+      )
 
 endmacro()
 
