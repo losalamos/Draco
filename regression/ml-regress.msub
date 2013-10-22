@@ -82,7 +82,7 @@ module use ${regdir}/draco/environment/Modules/hpc
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
 # module purge &> /dev/null
 module load friendly-testing 
-module load intel/13.1.0 openmpi/1.6.3
+module load intel/13.1.3 openmpi/1.6.3
 module load gsl lapack
 module load trilinos SuperLU_DIST
 module load ParMetis ndi

@@ -160,7 +160,7 @@ cuda)
     ;;
 fulldiagnostics)
     # do not build capsaicin or milagro with full diagnostics turned on.
-    projects="draco clubimc wedgehog"
+    projects="draco clubimc wedgehog capsaicin"
     epdash="-"
     ;;
 intel13)
