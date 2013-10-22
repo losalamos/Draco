@@ -18,7 +18,6 @@
 #include <math.h>
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
-#include "ds++/isFinite.hh"
 #include "qrdcmp.hh"
 
 namespace rtt_linear
@@ -67,7 +66,6 @@ bool qrdcmp(RandomContainer &a,
     Require(a.size()==n*n);
 
     using std::sqrt;
-    using rtt_dsxx::isFinite;
     using rtt_dsxx::square;
 
     c.resize(n);
@@ -114,7 +112,7 @@ bool qrdcmp(RandomContainer &a,
 	}
     }
     d[n-1] = a[n-1+n*(n-1)];
-    if (!d[n-1] || !isFinite(d[n-1])) singular = true;
+    if (!d[n-1] || !rtt_dsxx::isFinite(d[n-1])) singular = true;
 
     Ensure(a.size()==n*n);
     Ensure(c.size()==n);

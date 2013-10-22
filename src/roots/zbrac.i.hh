@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Bracket a root of a function.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,10 +14,8 @@
 #ifndef roots_zbrac_i_hh
 #define roots_zbrac_i_hh
 
-#include <cmath>
-
+#include "ds++/DracoMath.hh"
 #include "ds++/Assert.hh"
-#include "ds++/isFinite.hh"
 
 namespace rtt_roots
 {
@@ -62,7 +61,6 @@ void zbrac(Function func, Real &x1, Real &x2)
     Require(x2>x1);
 
     using namespace std;
-    using rtt_dsxx::isFinite;
     
     Real f1 = func(x1), f2 = func(x2), f3;
     Real af1 = (f1>0.? f1 : -f1);
@@ -83,7 +81,7 @@ void zbrac(Function func, Real &x1, Real &x2)
 	    try 
 	    {
 		Real f0 = func(x0);
-		if (!isFinite(f0)) throw std::runtime_error("");
+		if (!rtt_dsxx::isFinite(f0)) throw std::runtime_error("");
 		f1 = f0;
                 af1 = (f1>0.? f1 : -f1);
 		x1 = x0;
@@ -105,7 +103,7 @@ void zbrac(Function func, Real &x1, Real &x2)
 	    try
 	    {
 		Real const f3 = func(x3);
-		if (!isFinite(f3)) throw std::runtime_error("");
+		if (!rtt_dsxx::isFinite(f3)) throw std::runtime_error("");
 		f2 = f3;
                 af2 = (f2>0.? f2 : -f2);
 		x2 = x3;
@@ -128,7 +126,7 @@ void zbrac(Function func, Real &x1, Real &x2)
 	    try 
 	    {
 		Real f0 = func(x0);
-		if (!isFinite(f0)) throw std::runtime_error("");
+		if (!rtt_dsxx::isFinite(f0)) throw std::runtime_error("");
 		f3 = func(x3);
 		f1 = f0;
                 af1 = (f1>0.? f1 : -f1);
@@ -154,5 +152,5 @@ void zbrac(Function func, Real &x1, Real &x2)
 #endif // roots_zbrac_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/zbrac.i.hh
+// end of roots/zbrac.i.hh
 //---------------------------------------------------------------------------//

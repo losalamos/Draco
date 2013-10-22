@@ -16,7 +16,6 @@
 #include "ds++/Assert.hh"
 #include "ludcmp.hh"
 #include "ds++/DracoMath.hh"
-#include "ds++/isFinite.hh"
 
 namespace rtt_linear
 {

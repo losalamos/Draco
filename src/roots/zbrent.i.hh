@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:57:06 2004
  * \brief  Find a bracketed root of a function.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,12 +14,11 @@
 #ifndef roots_zbrent_i_hh
 #define roots_zbrent_i_hh
 
+#include "ds++/DracoMath.hh"
+#include "ds++/Assert.hh"
 #include <algorithm>
 #include <cmath>
 #include <limits>
-
-#include "ds++/Assert.hh"
-#include "ds++/isFinite.hh"
 
 namespace rtt_roots
 {
@@ -202,5 +202,5 @@ Real zbrent(Function func,
 #endif // roots_zbrent_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/zbrent.i.hh
+// end of roots/zbrent.i.hh
 //---------------------------------------------------------------------------//
