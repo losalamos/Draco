@@ -108,7 +108,7 @@ fulldiagnostics)
 pgi)
     module unload eospac ParMetis trilinos SuperLU_DIST gsl
     module unload lapack cudatoolkit openmpi intel
-    module load pgi/13.7 openmpi gsl lapack
+    module load pgi/13.7 openmpi/1.6.3 gsl lapack
     comp=`basename $CXX`
     ;;
 *)
