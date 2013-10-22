@@ -16,7 +16,7 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "ds++/cube.hh"
+#include "ds++/DracoMath.hh"
 
 using namespace std;
 using namespace rtt_min;

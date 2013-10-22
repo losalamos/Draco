@@ -4,11 +4,13 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Template implementation for dbc
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
- * This header defines several function templates that perform common
+  * This header defines several function templates that perform common
  * numerical operations not standardized in the STL algorithm header. It also
- * defines some useful STL-style predicates. These predicates are
- * particularly useful for writing Design by Contract assertions.
+ * defines some useful STL-style predicates. These predicates are particularly
+ * useful for writing Design by Contract assertions.
  */
 //---------------------------------------------------------------------------//
 // $Id$ 
@@ -180,49 +182,11 @@ bool is_symmetric_matrix( Random_Access_Container const &A,
     return true;
 }
 
-
-//-------------------------------------------------------------------------//
-/*! 
- * \author Kent G. Budge
- * \date Thu Jan 23 08:41:54 MST 2003
- * \brief Return the positive difference of the arguments.
- * 
- * This is a replacement for the FORTRAN DIM function.
- *
- * \arg \a Ordered_Group_Element
- * A type for which operator< and unary operator- are defined and which
-  * can be constructed from a literal \c 0.
- *
- * \param a
- * Minuend
- *
- * \param b
- * Subtrahend
- *
- * \return \f$max(0, a-b)\f$
- *
- * \deprecated A FORTRAN relic that should disappear eventually.
- */
-
-template <class Ordered_Group_Element>
-inline Ordered_Group_Element dim(Ordered_Group_Element a, 
-				 Ordered_Group_Element b)
-{
-    if (a<b)
-    {
-	return Ordered_Group_Element(0);
-    }
-    else
-    {
-	return a-b;
-    }
-}
-
 }  // rtt_dsxx
 
 #endif // rtt_dsxx_dbc_i_hh
 //---------------------------------------------------------------------------//
-//                           end of dbc.i.hh
+// end of dbc.i.hh
 //---------------------------------------------------------------------------//
 
 

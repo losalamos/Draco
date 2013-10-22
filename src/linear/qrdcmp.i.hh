@@ -4,9 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the Q-R decomposition of a square matrix.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
- *
- * Long description.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,8 +17,7 @@
 #include <cmath>
 #include <math.h>
 #include "ds++/Assert.hh"
-
-#include "ds++/square.hh"
+#include "ds++/DracoMath.hh"
 #include "ds++/isFinite.hh"
 #include "qrdcmp.hh"
 
@@ -129,5 +127,5 @@ bool qrdcmp(RandomContainer &a,
 #endif // linear_qrdcmp_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/qrdcmp.i.hh
+// end of linear/qrdcmp.i.hh
 //---------------------------------------------------------------------------//

@@ -3,8 +3,9 @@
  * \file   sf/F_eta_inv.cc
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
- * \brief  Implementation of F_eta_inv  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \brief  Implementation of F_eta_inv.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * The implementations here are derived from C implementations from Numerical
  * Recipes. 
@@ -18,9 +19,7 @@
 #include <vector>
 
 #include "ds++/Assert.hh"
-
-#include "ds++/square.hh"
-#include "ds++/cube.hh"
+#include "ds++/DracoMath.hh"
 #include "ode/rkqs.hh"
 #include "ode/quad.hh"
 #include "F_eta_inv.hh"
@@ -108,5 +107,5 @@ double F_eta_inv(double const n, double const gamma)
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//                 end of F_eta_inv.cc
+// end of F_eta_inv.cc
 //---------------------------------------------------------------------------//

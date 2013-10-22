@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
- * \note   Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,8 +19,7 @@
 #include <vector>
 
 #include "ds++/Assert.hh"
-
-#include "ds++/square.hh"
+#include "ds++/DracoMath.hh"
 #include "linear/svdcmp.i.hh"
 #include "linear/svbksb.i.hh"
 #include "svdfit.hh"
@@ -142,5 +142,5 @@ void svdfit(RandomContainer const &x,
 #endif // fit_svdfit_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of fit/svdfit.i.hh
+// end of fit/svdfit.i.hh
 //---------------------------------------------------------------------------//

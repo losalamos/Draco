@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,11 +18,9 @@
 #include <algorithm>
 #include <vector>
 
-#include "ds++/Assert.hh"
-
-#include "ds++/pythag.hh"
-#include "ds++/square.hh"
 #include "svdcmp.hh"
+#include "ds++/Assert.hh"
+#include "ds++/DracoMath.hh"
 
 namespace rtt_linear
 {
@@ -330,5 +329,5 @@ void svdcmp(RandomContainer &a,
 #endif // linear_svdcmp_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/svdcmp.i.hh
+// end of linear/svdcmp.i.hh
 //---------------------------------------------------------------------------//

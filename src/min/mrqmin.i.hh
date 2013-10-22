@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Implementation of mrqmin
- * \note   © Copyright 2009-2010 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,9 +15,8 @@
 #define min_mrqmin_i_hh
 
 #include "mrqmin.hh"
-
 #include "ds++/Assert.hh"
-#include "ds++/square.hh"
+#include "ds++/DracoMath.hh"
 #include "ds++/dbc.hh"
 #include "linear/gaussj.hh"
 
@@ -296,5 +296,5 @@ void mrqmin(RandomContainer const &x,
 #endif // min_mrqmin_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of min/mrqmin.i.hh
+// end of min/mrqmin.i.hh
 //---------------------------------------------------------------------------//

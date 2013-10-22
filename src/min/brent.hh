@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a function.
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,7 +15,7 @@
 #define min_brent_hh
 
 #include "ds++/Assert.hh"
-#include "ds++/sign.hh"
+#include "ds++/DracoMath.hh"
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -156,5 +156,5 @@ double brent(double const ax,
 #endif // min_brent_hh
 
 //---------------------------------------------------------------------------//
-//              end of min/brent.hh
+// end of min/brent.hh
 //---------------------------------------------------------------------------//

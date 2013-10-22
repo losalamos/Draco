@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:21:58 2004
  * \brief  Reduce norm of a set of functions on a ray.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,7 +18,7 @@
 #include <cmath>
 
 #include "linear/fnorm.hh"
-#include "ds++/square.hh"
+#include "ds++/DracoMath.hh"
 
 namespace rtt_roots
 {
@@ -182,5 +183,5 @@ void lnsrch(RandomContainer const &xold,
 #endif // roots_lnsrch_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/lnsrch.i.hh
+// end of roots/lnsrch.i.hh
 //---------------------------------------------------------------------------//

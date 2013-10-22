@@ -1,16 +1,19 @@
-#=============================================================================
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
-#=============================================================================
+#-----------------------------*-cmake-*----------------------------------------#
+# file   special_functions/test/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2010 Aug 1
+# brief  Generate build project files for special_functions/test
+# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
-#=============================================================================
-
+#------------------------------------------------------------------------------#
+cmake_minimum_required(VERSION 2.8)
 project( special_functions_test CXX )
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB test_sources *.cc )
 
 # ---------------------------------------------------------------------------- #
@@ -21,18 +24,16 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${ode_BINARY_DIR}          # ode/config.h
-#  ${GSL_INCLUDE_DIRS}
+   ${diagnostics_BINARY_DIR}  # diagnostics/config.h
    )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-# There is no Lib_special_functions_test so can't use the
-# add_scalar_tests() macro. 
-
-add_scalar_tests( SOURCES "${test_sources}"
-   DEPS  "Lib_special_functions;Lib_units;Lib_ode" ) # ;${GSL_LIBRARIES}" )
+add_scalar_tests( 
+   SOURCES "${test_sources}"
+   DEPS    "Lib_special_functions;Lib_units;Lib_ode;Lib_diagnostics" ) 
 
 # ---------------------------------------------------------------------------- #
 # Copy vendor dll files to test directory (binary_dir)

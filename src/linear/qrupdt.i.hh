@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 11:59:48 2004
  * \brief  Update the QR decomposition of a square matrix
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
   */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,9 +15,8 @@
 #define linear_qrupdt_i_hh
 
 #include "ds++/Assert.hh"
-
+#include "ds++/DracoMath.hh"
 #include "rotate.hh"
-#include "ds++/square.hh"
 #include "qrupdt.hh"
 
 namespace rtt_linear
@@ -94,5 +94,5 @@ void qrupdt(RandomContainer &r,
 #endif // linear_qrupdt_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/qrupdt.i.hh
+// end of linear/qrupdt.i.hh
 //---------------------------------------------------------------------------//

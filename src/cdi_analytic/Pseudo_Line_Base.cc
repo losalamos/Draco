@@ -3,7 +3,8 @@
  * \file   cdi_analytic/pseudo_line.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -15,11 +16,9 @@
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Base.hh"
 #include "ds++/Packing_Utils.hh"
-#include "ds++/square.hh"
-#include "ds++/cube.hh"
+#include "ds++/DracoMath.hh"
 #include "c4/C4_Functions.hh"
 #include "cdi/CDI.hh"
-
 
 namespace rtt_cdi_analytic
 {
@@ -349,5 +348,5 @@ double Pseudo_Line_Base::monoOpacity(double const x,
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of Pseudo_Line_Base.cc
+// end of Pseudo_Line_Base.cc
 //---------------------------------------------------------------------------//

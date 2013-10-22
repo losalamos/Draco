@@ -13,7 +13,7 @@
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../dbc.hh"
-#include "../abs.hh"
+#include "../DracoMath.hh"
 #include "../isFinite.hh"
 #include <vector>
 
@@ -31,7 +31,7 @@ class sum_predicate_Test_Predicate
 
     double operator()(const std::pair<double, char*> &p)
     {
-	    return p.first;
+        return p.first;
     }
 };
 
@@ -41,80 +41,81 @@ void dbc_test( UnitTest & ut )
 {
     using std::pair;
     using std::vector;
+    using rtt_dsxx::dim;
 
     if (!(abs(5.4) == 5.4) || !(abs(-2.1) == 2.1) || !(abs(0.0) == 0.0))
-	    ut.failure("abs function template FAILED");
+        ut.failure("abs function template FAILED");
     else
-	    ut.passes("abs function template ok");
+        ut.passes("abs function template ok");
 
     if (!(dim(2, 7) == 0) || !(dim(5, -3) == 8) || !(dim(4, 4) == 0))
-	    ut.failure("dim function template FAILED");
+        ut.failure("dim function template FAILED");
     else
-	    ut.passes("dim function template ok");
+        ut.passes("dim function template ok");
 
     double sum_test_array[6] = {1., 4., 3., 2., 5., 6.};
 
     if (is_monotonic_increasing(sum_test_array, sum_test_array+6) ||
 	!is_monotonic_increasing(sum_test_array, sum_test_array+2))
-	    ut.failure("is_monotonic_increasing function template FAILED");
+        ut.failure("is_monotonic_increasing function template FAILED");
     else
-	    ut.passes("is_monotonic_increasing function template ok");
+        ut.passes("is_monotonic_increasing function template ok");
 
     // Ensure that the is_monotonic_increasing() function will return true if
     // there is only one data point.
 
     if ( !is_monotonic_increasing(sum_test_array, sum_test_array+1) )
-	    ut.failure(
+        ut.failure(
             string("is_monotonic_increasing function template ") +
             string("incorrectly reported length=1 container ") +
             string("non-monotonic.") );
     else
-	    ut.passes(
+        ut.passes(
             string("is_monotonic_increasing function template worked for ")+
             string("length=1 test.") );
     
     if (is_strict_monotonic_increasing(sum_test_array, sum_test_array+6) ||
 	!is_strict_monotonic_increasing(sum_test_array, sum_test_array+2))
-	    ut.failure("is_strict_monotonic_increasing function template FAILED");
+        ut.failure("is_strict_monotonic_increasing function template FAILED");
     else
-	    ut.passes("is_strict_monotonic_increasing function template ok");
+        ut.passes("is_strict_monotonic_increasing function template ok");
     
     // Ensure that the is_strict_monotonic_increasing() function will return
     // true if there is only one data point.
 
     if ( is_strict_monotonic_increasing(sum_test_array, sum_test_array+1) )
-	    ut.passes(
+        ut.passes(
             string("is_strict_monotonic_increasing function template worked ")+
             string("for length=1 test.") );
     else
-	    ut.failure(
+        ut.failure(
             string("is_strict_monotonic_increasing function template ")+
             string("incorrectly reported length=1 container non-monotonic.") );
     
     if (   is_strict_monotonic_decreasing(sum_test_array+1, sum_test_array+3) &&
-         ! is_strict_monotonic_decreasing(sum_test_array,   sum_test_array+6) )
-	    ut.passes("is_strict_monotonic_decreasing function template ok");
+           ! is_strict_monotonic_decreasing(sum_test_array,   sum_test_array+6) )
+        ut.passes("is_strict_monotonic_decreasing function template ok");
     else
-	    ut.failure("is_strict_monotonic_decreasing function template FAILED");
+        ut.failure("is_strict_monotonic_decreasing function template FAILED");
     
     // Ensure that the is_strict_monotonic_decreasing() function will return
     // true if there is only one data point.
 
     if ( is_strict_monotonic_decreasing(sum_test_array, sum_test_array+1) )
-	    ut.passes(
+        ut.passes(
             string("is_strict_monotonic_decreasing function template ")+
             string("worked for length=1 test.") );
     else
-	    ut.failure(
+        ut.failure(
             string("is_strict_monotonic_decreasing function template ")+
             string("incorrectly reported length=1 container monotonic.") );
 
     if (std::find_if(sum_test_array, 
 		     sum_test_array+6, 
 		     bind2nd(greater<double>(), 2.))!=sum_test_array+1)
-	    ut.failure("std::bind2nd or std::greater function templates FAILED");
+        ut.failure("std::bind2nd or std::greater function templates FAILED");
     else
-	    ut.passes("std::bind2nd or std::greater function templates ok");
+        ut.passes("std::bind2nd or std::greater function templates ok");
 
     // The preceeding tests whether binders are present in the C++
     // implementation. The binders in <functional> supercede the old
@@ -158,9 +159,9 @@ void isFinite_test( UnitTest & ut )
     using rtt_dsxx::isFinite;    
     double x(15.0);
     if( isFinite(x) )
-	    ut.passes("Correctly found x to be finite.");
+        ut.passes("Correctly found x to be finite.");
     else
-	    ut.failure("Failed to find x to be finite.");    
+        ut.failure("Failed to find x to be finite.");    
     return;
 }
 
@@ -171,8 +172,8 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try
     {
-	    dbc_test(ut);
-	    isFinite_test(ut);
+        dbc_test(ut);
+        isFinite_test(ut);
     }
     UT_EPILOG(ut);
 }   

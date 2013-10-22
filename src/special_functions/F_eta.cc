@@ -3,8 +3,9 @@
  * \file   sf/F_eta.cc
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
- * \brief  Implementation of F_eta  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \brief  Implementation of F_eta.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * These routines are based on C routines from Numerical Recipes.
  */
@@ -19,8 +20,7 @@
 #include "units/PhysicalConstants.hh"
 #include "ds++/Assert.hh"
 #include "Factorial.hh"
-#include "ds++/square.hh"
-#include "ds++/cube.hh"
+#include "ds++/DracoMath.hh"
 #include "ode/rkqs.hh"
 #include "ode/quad.hh"
 #include "F_eta.hh"
@@ -193,5 +193,5 @@ double F_eta(double const eta, double const gamma)
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//                 end of F_eta.cc
+// end of F_eta.cc
 //---------------------------------------------------------------------------//

@@ -4,10 +4,9 @@
  * \author Kent Budge
  * \date   Thu Sep  2 15:00:32 2004
  * \brief  Find eigenvectors and eigenvalues of a symmetric matrix that
- * has been reduced to tridiagonal form via a call to tred2. 
- * \note   © Copyright 2006 LANSLLC All rights reserved.
- *
- * Long description.
+ *         has been reduced to tridiagonal form via a call to tred2. 
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,9 +17,8 @@
 
 #include <stdexcept>
 #include "ds++/Assert.hh"
-#include "ds++/pythag.hh"
+#include "ds++/DracoMath.hh"
 #include "tqli.hh"
-#include "ds++/sign.hh"
 
 namespace rtt_linear
 {
@@ -134,5 +132,5 @@ void tqli(FieldVector1 &d,
 #endif // linear_tqli_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/tqli.i.hh
+// end of linear/tqli.i.hh
 //---------------------------------------------------------------------------//

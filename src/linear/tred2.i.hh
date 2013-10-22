@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Thu Sep  2 14:49:55 2004
  * \brief  Householder reduce a symmetric matrix.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,7 @@
 #define linear_tred2_i_hh
 
 #include "ds++/Assert.hh"
-#include "ds++/sign.hh"
+#include "ds++/DracoMath.hh"
 #include "tred2.hh"
 
 namespace rtt_linear
@@ -161,5 +162,5 @@ void tred2(FieldVector1 &a,
 #endif // linear_tred2_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/tred2.i.hh
+// end of linear/tred2.i.hh
 //---------------------------------------------------------------------------//

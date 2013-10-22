@@ -3,7 +3,7 @@
  * \file   quadrature/Moment.hh
  * \author Kent Budge
  * \brief  Declaration file for the class rtt_quadrature::Moment.
- * \note   Copyright (C)  2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------------------//
@@ -13,15 +13,8 @@
 #ifndef quadrature_Moment_hh
 #define quadrature_Moment_hh
 
-#include "ds++/abs.hh"
+#include "ds++/DracoMath.hh"
 #include "ds++/Assert.hh"
-
-// #include <vector>
-
-// #include "ds++/SP.hh"
-//#include "ds++/Soft_Equivalence.hh"
-
-// #include "Quadrature.hh"
 
 namespace rtt_quadrature
 {
@@ -90,5 +83,5 @@ inline bool operator==(Moment const &a, Moment const &b)
 #endif // quadrature_Moment_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/Moment.hh
+// end of quadrature/Moment.hh
 //---------------------------------------------------------------------------------------//

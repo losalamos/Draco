@@ -4,6 +4,8 @@
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  Implementation of methods of ludcmp.hh
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,7 +15,7 @@
 #include <stdexcept>
 #include "ds++/Assert.hh"
 #include "ludcmp.hh"
-#include "ds++/abs.hh"
+#include "ds++/DracoMath.hh"
 #include "ds++/isFinite.hh"
 
 namespace rtt_linear
@@ -173,5 +175,5 @@ void lubksb(FieldVector1 const &a,
 } // end namespace rtt_linear
 
 //---------------------------------------------------------------------------//
-//                 end of ludcmp.i.hh
+// end of ludcmp.i.hh
 //---------------------------------------------------------------------------//

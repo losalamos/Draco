@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Sep 15 10:04:02 MDT 2010
  * \brief  Solve a cubic equation assumed to have one real root
- * \note   Copyright 2010 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,7 @@
 #define roots_cubic1_i_hh
 
 #include "ds++/Assert.hh"
-#include "ds++/value.hh"
+#include "ds++/Field_Traits.hh"
 #include "cubic1.hh"
 
 namespace rtt_roots
@@ -44,9 +45,8 @@ Field cubic1(Field const &a, Field const &b, Field const &c)
 
 } // end namespace rtt_roots
 
-#endif
-// roots_cubic1_i_hh
+#endif // roots_cubic1_i_hh
 
 //---------------------------------------------------------------------------//
-//                 end of cubic1.i.hh
+// end of cubic1.i.hh
 //---------------------------------------------------------------------------//

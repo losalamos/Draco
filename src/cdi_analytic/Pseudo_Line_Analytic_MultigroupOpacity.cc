@@ -3,7 +3,8 @@
  * \file   cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,9 +14,8 @@
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
-#include "ds++/cube.hh"
+#include "ds++/DracoMath.hh"
 #include "cdi/CDI.hh"
-
 
 namespace rtt_cdi_analytic
 {
@@ -370,5 +370,5 @@ Pseudo_Line_Analytic_MultigroupOpacity::getDataDescriptor() const
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of Pseudo_Line_Analytic_MultigroupOpacity.cc
+// end of Pseudo_Line_Analytic_MultigroupOpacity.cc
 //---------------------------------------------------------------------------//

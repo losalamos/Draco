@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Find the norm of a set of functions.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,7 +15,7 @@
 #define linear_fnorm_hh
 
 #include "ds++/Assert.hh"
-#include "ds++/conj.hh"
+#include "ds++/DracoMath.hh"
 
 namespace rtt_linear
 {
@@ -63,5 +64,5 @@ typename RandomContainer::value_type fnorm(const RandomContainer &x,
 #endif // linear_fnorm_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/fnorm.hh
+// end of linear/fnorm.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a multivariate function.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,8 +18,8 @@
 #include <vector>
 
 #include "ds++/Assert.hh"
+#include "ds++/DracoMath.hh"
 #include "linmin.hh"
-#include "ds++/square.hh"
 
 namespace rtt_min
 {
@@ -122,5 +123,5 @@ void powell(RandomContainer &p,
 #endif // min_powell_hh
 
 //---------------------------------------------------------------------------//
-//              end of min/powell.hh
+// end of min/powell.hh
 //---------------------------------------------------------------------------//

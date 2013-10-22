@@ -16,12 +16,10 @@
 #include <algorithm>
 #include <vector>
 
-#include "ds++/Assert.hh"
-
-#include "ds++/pythag.hh"
-#include "ds++/square.hh"
 #include "gaussj.hh"
-#include "ds++/value.hh"
+#include "ds++/Assert.hh"
+#include "ds++/DracoMath.hh"
+#include "ds++/Field_Traits.hh"
 
 namespace rtt_linear
 {

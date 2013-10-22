@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Pseudo_Line_Analytic_Odfmg_Opacity class member definitions.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,7 +18,7 @@
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "Pseudo_Line_Analytic_Odfmg_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
-#include "ds++/cube.hh"
+#include "ds++/DracoMath.hh"
 #include "cdi/CDI.hh"
 
 namespace rtt_cdi_analytic
@@ -414,5 +415,5 @@ Pseudo_Line_Analytic_Odfmg_Opacity::pack() const
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of Pseudo_Line_Analytic_Odfmg_Opacity.cc
+// end of Pseudo_Line_Analytic_Odfmg_Opacity.cc
 //---------------------------------------------------------------------------//

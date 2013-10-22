@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Compute an explicit representation of a packed QR decomposition.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,11 +17,9 @@
 #include <sstream>
 #include <algorithm>
 
-#include "ds++/Assert.hh"
-
-#include "ds++/pythag.hh"
-#include "ds++/square.hh"
 #include "qr_unpack.hh"
+#include "ds++/Assert.hh"
+#include "ds++/DracoMath.hh"
 
 namespace rtt_linear
 {
@@ -124,5 +123,5 @@ void qr_unpack(RandomContainer &r,
 #endif // linear_qr_unpack_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/qr_unpack.i.hh
+// end of linear/qr_unpack.i.hh
 //---------------------------------------------------------------------------//

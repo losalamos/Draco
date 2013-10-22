@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Jul  7 09:14:09 2004
  * \brief  Find a solution of a set of nonlinear equations.
- * \note   © Copyright 2006-2010 LANSLLC. All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,7 +24,7 @@
 #include "linear/svdcmp.hh"
 #include "linear/svbksb.hh"
 #include "ds++/Assert.hh"
-#include "ds++/square.hh"
+#include "ds++/DracoMath.hh"
 
 #include <numeric>
 #include <vector>
@@ -569,5 +570,5 @@ void broydn(std::vector<Field> &x,
 #endif // roots_broydn_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/broydn.hh
+// end of roots/broydn.hh
 //---------------------------------------------------------------------------//

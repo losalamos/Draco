@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Bracket minimum of a function.
- * \note   Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -19,7 +20,7 @@
 
 #include "ds++/Assert.hh"
 #include "ds++/dbc.hh"
-#include "ds++/sign.hh"
+#include "ds++/DracoMath.hh"
 
 namespace rtt_min
 {
@@ -114,5 +115,5 @@ void mnbrak(double &ax,
 #endif // min_mnbrak_hh
 
 //---------------------------------------------------------------------------//
-//              end of min/mnbrak.hh
+// end of min/mnbrak.hh
 //---------------------------------------------------------------------------//

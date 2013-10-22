@@ -2,8 +2,9 @@
 /*!
  * \file   ds++/Field_Traits.hh
  * \author Kent Budge
- * \brief  Define the Field_Traits class template
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC
+ * \brief  Define the Field_Traits class template.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -74,10 +75,42 @@ class Field_Traits <const double>
     static double one() { return 1.0; }
 };
 
-} // end namespace kgb_traits
+//---------------------------------------------------------------------------//
+// value.hh
+//---------------------------------------------------------------------------//
+/*! Strip a field type of any labeling.
+ *
+ * Implicit conversion of a labeled field type (such as a
+ * value-plus-derivatives class) to an underlying unlabeled field type can
+ * be dangerous. However, unlike conversion constructors, conversion operators
+ * cannot be flagged explicit. Our alternative is to templatize a conversion
+ * function from labeled field type to unlabeled field type.
+ *
+ * The default implementation assumes there is no labeling to strip.
+ *
+ * \arg \a Field A field type
+ */
+template<class Field>
+inline
+typename Field_Traits<Field>::unlabeled_type &value(Field &x)
+{
+    return x;
+}
+
+//---------------------------------------------------------------------------//
+//! A version of the value function template for const arguments.
+template<class Field>
+inline
+typename Field_Traits<Field>::unlabeled_type const &value(Field const &x)
+{
+    return x;
+}
+
+
+} // end namespace rtt_dsxx
 
 #endif // traits_Field_Traits_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Field_Traits.hh
+// end of ds++/Field_Traits.hh
 //---------------------------------------------------------------------------//
