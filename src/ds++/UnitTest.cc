@@ -42,6 +42,7 @@ UnitTest::UnitTest( int              & /* argc */,
                     std::ostream     & out_ )
     : numPasses( 0 ),
       numFails(  0 ),
+      fpe_trap_active(false),
       testName( getFilenameComponent( std::string(argv[0]), rtt_dsxx::FC_NAME )),
       testPath( getFilenameComponent( std::string(argv[0]), rtt_dsxx::FC_PATH )),
       release(  release_ ),
@@ -74,7 +75,7 @@ UnitTest::UnitTest( int              & /* argc */,
     // if set to true, fpe_trap forms a simple message and calls Insist.
     bool const abortWithInsist(true);
     rtt_dsxx::fpe_trap fpeTrap(abortWithInsist);
-    fpeTrap.enable();
+    fpe_trap_active = fpeTrap.enable();
 #endif
     
     return;

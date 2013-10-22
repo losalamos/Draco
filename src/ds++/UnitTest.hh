@@ -173,6 +173,9 @@ class DLL_PUBLIC UnitTest
     //! The number of failures found for this test.
     unsigned numFails;
 
+    //! Is fpe_traping active?
+    bool fpe_trap_active;
+
     // Features
     static std::map< std::string, unsigned >
     get_word_count( std::ostringstream const & data, bool verbose=false );
@@ -208,6 +211,7 @@ class DLL_PUBLIC UnitTest
     bool m_dbcCheck;
     bool m_dbcEnsure;
     bool m_dbcNothrow;
+
 };
 
 } // end namespace rtt_dsxx

@@ -14,8 +14,7 @@
 #define memory_memory_hh
 
 #include <cstdlib>
-
-#include "diagnostics/config.h"
+#include "ds++/config.h" // defines DRACO_DIAGNOSTICS
 
 namespace rtt_memory
 {

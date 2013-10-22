@@ -18,7 +18,7 @@
 #include "../gaulag.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "diagnostics/Diagnostics.hh"
+#include "ds++/Release.hh"
 #include "ds++/DracoMath.hh"
 #include "ds++/ScalarUnitTest.hh"
 
@@ -42,16 +42,16 @@ void tstgaulag(UnitTest &ut)
         ut.failure("gaulag NOT accurate");
     else
         ut.passes("gaulag accurate");
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    ScalarUnitTest ut(argc, argv,
-                      rtt_diagnostics::release_with_diagnostics);
+    ScalarUnitTest ut(argc, argv, rtt_dsxx::release );
     try { tstgaulag(ut); }
-    UT_EPILOG(ut);
+    UT_EPILOG(ut);    
 }   
 
 //---------------------------------------------------------------------------//

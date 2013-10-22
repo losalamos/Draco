@@ -78,10 +78,9 @@ void test_idempotence(ScalarUnitTest& ut)
      */ 
 
     for (double value = 1.0;
-         value < std::numeric_limits<double>::max();
-         value *= 3.4)
+         value < std::numeric_limits<double>::max()/4.0; // divide by 4 to
+         value *= 3.4)                                   // prevent overflow
     {
-
         // Use the in-place version to test positive values.
         double local = value;
         byte_swap(local);   
@@ -98,9 +97,8 @@ void test_idempotence(ScalarUnitTest& ut)
 
         if (neg_local != -value)
             ut.failure("byte_swap failed to reproduce original number");
-
     }
-
+    return;
 }
 
 //---------------------------------------------------------------------------//
