@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_Odfmg_Opacity class member definitions.
- * \note   Copyright (C) 2001-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -115,17 +116,20 @@ nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
         unpacker >> indicator;
 
         // now determine which analytic model we need to build
-        if (indicator ==  rtt_cdi_analytic::Opacity_Models::CONSTANT_ANALYTIC_OPACITY_MODEL)
+        if (indicator ==  rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL)
         {
             group_models[i] = new Constant_Analytic_Opacity_Model(models[i]);
         }
-        else if (indicator ==  rtt_cdi_analytic::Opacity_Models::POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
+        else if (indicator ==
+                 rtt_cdi_analytic::POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
         {
             group_models[i] = new Polynomial_Analytic_Opacity_Model(models[i]);
         }
-        else if (indicator == rtt_cdi_analytic::Opacity_Models::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
+        else if (indicator ==
+                 rtt_cdi_analytic::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
         {
-            group_models[i] = new Stimulated_Emission_Analytic_Opacity_Model(models[i]);
+            group_models[i] =
+                new Stimulated_Emission_Analytic_Opacity_Model(models[i]);
         }
         else
         {
@@ -175,8 +179,9 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
         opacity[group].resize(numBands);
 
         // assign the opacity based on the group model to the first band
-        opacity[group][0] = group_models[group]->calculate_opacity(targetTemperature, targetDensity,
-                                                                   group_bounds[group], group_bounds[group+1]);
+        opacity[group][0] = group_models[group]->calculate_opacity(
+            targetTemperature, targetDensity,
+            group_bounds[group], group_bounds[group+1]);
 
         Check (opacity[group][0] >= 0.0);
 
@@ -197,10 +202,12 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
  *     temperatures and a single density value.
  */
 std::vector< std::vector< std::vector<double> > >
-nGray_Analytic_Odfmg_Opacity::getOpacity(const std::vector<double>& targetTemperature,
-                                         double targetDensity ) const
+nGray_Analytic_Odfmg_Opacity::getOpacity(
+    const std::vector<double>& targetTemperature,
+    double targetDensity ) const
 { 
-    std::vector< std::vector< std::vector<double> > > opacity( targetTemperature.size() );
+    std::vector< std::vector< std::vector<double> > > opacity(
+        targetTemperature.size() );
 
     for ( size_t i=0; i<targetTemperature.size(); ++i )
     {
@@ -216,10 +223,12 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(const std::vector<double>& targetTemper
  *     temperature and a vector of density values.
  */
 std::vector< std::vector< std::vector<double> > >
-nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
-                                         const std::vector<double>& targetDensity ) const
+nGray_Analytic_Odfmg_Opacity::getOpacity(
+    double targetTemperature,
+    const std::vector<double>& targetDensity ) const
 { 
-    std::vector< std::vector< std::vector<double> > > opacity( targetDensity.size() );
+    std::vector< std::vector< std::vector<double> > >
+        opacity( targetDensity.size() );
 
     //call our regular getOpacity function for every target density
     for ( size_t i=0; i<targetDensity.size(); ++i )
@@ -234,11 +243,12 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
  * \brief Pack an analytic odfmg opacity.
  *
  * This function will pack up the Analytic_Mulitgroup_Opacity into a char
- * array (represented by a vector<char>).  The nGray_Analytic_Opacity_Model derived
- * class must have a pack function; this is enforced by the virtual
+ * array (represented by a vector<char>).  The nGray_Analytic_Opacity_Model
+ * derived class must have a pack function; this is enforced by the virtual
  * nGray_Analytic_Opacity_Model base class.
  */
-nGray_Analytic_Odfmg_Opacity::sf_char nGray_Analytic_Odfmg_Opacity::pack() const
+nGray_Analytic_Odfmg_Opacity::sf_char nGray_Analytic_Odfmg_Opacity::pack()
+    const
 {
     // make a packer
     rtt_dsxx::Packer packer;
@@ -290,5 +300,5 @@ nGray_Analytic_Odfmg_Opacity::sf_char nGray_Analytic_Odfmg_Opacity::pack() const
 } // end namespace rtt_cdi_analytic
 
 //---------------------------------------------------------------------------//
-//                              end of nGray_Analytic_Odfmg_Opacity.cc
+// end of nGray_Analytic_Odfmg_Opacity.cc
 //---------------------------------------------------------------------------//
