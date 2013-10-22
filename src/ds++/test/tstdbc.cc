@@ -14,7 +14,6 @@
 #include "../Release.hh"
 #include "../dbc.hh"
 #include "../DracoMath.hh"
-#include "../isFinite.hh"
 #include <vector>
 
 using namespace std;
@@ -42,6 +41,7 @@ void dbc_test( UnitTest & ut )
     using std::pair;
     using std::vector;
     using rtt_dsxx::dim;
+    using namespace std;
 
     if (!(abs(5.4) == 5.4) || !(abs(-2.1) == 2.1) || !(abs(0.0) == 0.0))
         ut.failure("abs function template FAILED");
@@ -124,12 +124,12 @@ void dbc_test( UnitTest & ut )
     // Test badly formed numbers.
     double Zero = 0.0;
     double Infinity = 1.0/Zero;
-    if (isInfinity(Infinity))
+    if (rtt_dsxx::isInf(Infinity))
         ut.passes("isInfinity works on this platform");
     else
         ut.failure("isInfinity is problematic on this platform.");
     double Nan = Zero*Infinity;
-    if (isNaN(Nan))
+    if (rtt_dsxx::isNan(Nan))
         ut.passes("isNaN works on this platform");
     else
         ut.failure("isNaN is problematic on this platform.");
@@ -156,9 +156,8 @@ void dbc_test( UnitTest & ut )
 
 void isFinite_test( UnitTest & ut )
 {
-    using rtt_dsxx::isFinite;    
     double x(15.0);
-    if( isFinite(x) )
+    if( rtt_dsxx::isFinite(x) )
         ut.passes("Correctly found x to be finite.");
     else
         ut.failure("Failed to find x to be finite.");    

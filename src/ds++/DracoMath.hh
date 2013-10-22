@@ -17,6 +17,7 @@
 #ifndef rtt_dsxx_DracoMath_hh
 #define rtt_dsxx_DracoMath_hh
 
+#include "ds++/config.h"
 #include <cmath>
 #include <cstdlib>
 #include <complex>
@@ -26,6 +27,36 @@
 
 namespace rtt_dsxx
 {
+
+//---------------------------------------------------------------------------//
+// isFinite.hh
+//
+// Try to use the C++11/C99 functions isinf, isnan and isfinite defined in
+// <cmath> instead of defining our own.  I would like to use C++11
+// implemenations which are true functions in the std:: namespace.  The
+// problem here is that PGI/13.7 does not have these language features.
+// However, PGI does provide the C99 _macros_ of the same name (w/o namespace
+// qualifier).
+// ---------------------------------------------------------------------------//
+#ifdef draco_isPGI
+
+template< typename T >
+bool isNan(T a) { return isnan(a); }
+template< typename T >
+bool isInf(T a) { return isinf(a); }
+template< typename T >
+bool isFinite(T a) { return isfinite(a); }
+
+#else
+
+template< typename T >
+bool isNan(T a) { return std::isnan(a); }
+template< typename T >
+bool isInf(T a) { return std::isinf(a); }
+template< typename T >
+bool isFinite(T a) { return std::isfinite(a); }
+
+#endif
 
 //---------------------------------------------------------------------------//
 /*
