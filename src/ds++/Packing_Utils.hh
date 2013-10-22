@@ -132,6 +132,7 @@ class Packer
 
     //! Get the size of the data stream.
     unsigned int size() const { return stream_size; }
+
 };
 
 //---------------------------------------------------------------------------//
@@ -829,6 +830,46 @@ void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,
     }
 
     Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );
+    return;
+}
+
+//---------------------------------------------------------------------------//
+// GLOBAL scope functions
+//---------------------------------------------------------------------------//
+
+/*!
+ * \brief Pack an array into a char buffer while honoring endianess.
+ * \param[in]  start
+ * \param[out] dest
+ * \param[in]  num_elements
+ * \param[in]  byte_swap (default: false)
+ *
+ * This function was written by Tim Kelley and previously lived in
+ * jayenne/clubimc/src/imc/Bonus_Pack.hh. 
+ */
+inline void
+pack_vec_double( double const * start, 
+                 char         * dest, 
+                 uint32_t       num_elements,
+                 bool           byte_swap = false)
+{
+    rtt_dsxx::Packer packer;
+    packer.set_buffer( num_elements * sizeof(double), dest);
+
+    if(!byte_swap)
+    {
+        for( size_t i = 0; i < num_elements; ++i)
+        {
+            packer << *start++;
+        }
+    }
+    else
+    {
+        for( size_t i = 0; i < num_elements; ++i)
+        {
+            packer << swap(*start++);
+        }
+    }
     return;
 }
 

@@ -4,18 +4,14 @@
  * \author Kelly Thompson
  * \date   Wed Nov 09 14:15:14 2011
  * \brief  Function declarations for endian conversions
- * \note   Copyright (C) 2007-2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "Endian.hh"
-#include <cstring>
-#include <stdint.h>
-#include <iomanip>
-#include <iostream>
-
 
 namespace rtt_dsxx
 {
@@ -27,7 +23,8 @@ namespace rtt_dsxx
  */
 bool is_big_endian(void)
 {
-    union {
+    union
+    {
         uint32_t i;
         char c[4];
     } data = {0x01020304};
@@ -56,7 +53,6 @@ bool has_ieee_float_representation(void)
     // Generate a bit-by-bit view of the double precision value:
     char char_two[size];
     std::memcpy( &char_two, &d_two, size );
-
     
     // IEEE reference value:
     char ieee64_two[size] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40};
@@ -78,10 +74,8 @@ bool has_ieee_float_representation(void)
     return i_am_ieee;
 }
 
-
 } // end namespace rtt_dsxx
 
-
 //---------------------------------------------------------------------------//
-//              end of ds++/Endian.cc
+// end of ds++/Endian.cc
 //---------------------------------------------------------------------------//

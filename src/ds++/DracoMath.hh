@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file   ds++/draco_math.hh
+ * \file   ds++/DracoMath.hh
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  New or overloaded <cmath> or cmath-like functions.
@@ -8,7 +8,7 @@
  *         All rights reserved.
  *
  * History:
- * 2013-10-17 Many small header files were combined to create draco_math.hh.
+ * 2013-10-17 Many small header files were combined to create DracoMath.hh.
  */
 //---------------------------------------------------------------------------//
 // $Id$ 
@@ -232,7 +232,7 @@ inline Ordered_Group sign(Ordered_Group a,
 #endif // rtt_dsxx_DracoMath_hh
 
 //---------------------------------------------------------------------------//
-// end of draco_math.hh
+// end of DracoMath.hh
 //---------------------------------------------------------------------------//
 
 
