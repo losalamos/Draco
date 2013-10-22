@@ -44,6 +44,7 @@
 #cmakedefine draco_isAIX
 #cmakedefine draco_isLinux_with_aprun
 #cmakedefine draco_isCatamount
+#cmakedefine draco_isPGI
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
 #cmakedefine HAVE_CUDA @HAVE_CUDA@
 #cmakedefine APPLE @APPLE@
