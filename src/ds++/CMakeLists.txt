@@ -41,6 +41,18 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
    set( FPETRAP_WINDOWS_X86 1 )
 endif()
 
+# Choose settings for DRACO_DIAGNOSTICS
+# Uses a bit mask
+# 001 - basic print messages (negligible performance hit)
+# 010 - detailed print messages (some performance hit or intrusive
+#       output)
+# 100 - additional computation required for diagnostic messages
+#       (including fpe_trap)
+set( DRACO_DIAGNOSTICS "0"
+   CACHE STRING "Diagnostics verbosity level (0-7). Default is 0." )
+# provide a constrained drop down menu for cmake-gui
+set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
+
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 

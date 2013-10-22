@@ -39,6 +39,14 @@ const std::string release()
 #ifdef DBC
                 << "; DBC: " << DBC
 #endif
+#ifdef DRACO_DIAGNOSTICS
+                << "; DRACO_DIAGNOSTICS: " << DRACO_DIAGNOSTICS
+#endif
+#ifdef DRACO_DIAGNOSTICS_LEVEL_3
+#ifdef FPETRAP_SUPPORTED
+                << "; FPE_TRAP: ON"
+#endif
+#endif
         ;
     
     return pkg_release.str();

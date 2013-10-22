@@ -12,7 +12,6 @@
 //---------------------------------------------------------------------------//
 
 #include "diagnostics/config.h"
-#include "c4/config.h"
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
@@ -81,7 +80,14 @@ int main( int /*argc*/, char *argv[] )
 #else
              << "disabled"
 #endif
-             << "\n    MPI support    : "
+/*
+
+  2013-10-22 (KT) MPI reporting is disabled for now because diagnostics no
+  longer depends on c4 and cannot extract this information.  This file can be
+  moved to a package that is higher in the dependency tree to re-enable this
+  features.
+  
+  << "\n    MPI support    : "
 #ifdef C4_MPI
              << "enabled"
              << "\n      mpirun cmd   : " << C4_MPICMD
@@ -94,6 +100,7 @@ int main( int /*argc*/, char *argv[] )
 #else
              << "disabled (c4 scalar mode)"
 #endif
+*/
 
              << "\n    Diagnostics    : "
 #ifdef DRACO_DIAGNOSTICS

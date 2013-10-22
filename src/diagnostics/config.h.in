@@ -14,9 +14,6 @@
 #ifndef __diagnostics_config_h__
 #define __diagnostics_config_h__
 
-/* DRACO DIAGNOSTICS LEVEL */
-#cmakedefine DRACO_DIAGNOSTICS @DRACO_DIAGNOSTICS@
-
 /* DRACO TIMING LEVEL */
 #cmakedefine DRACO_TIMING @DRACO_TIMING@
 

@@ -14,7 +14,7 @@
 #include "../Diagnostics.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "c4/ParallelUnitTest.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include <iostream>
 
 using namespace std;
@@ -171,10 +171,9 @@ void test_macro( rtt_dsxx::UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        Insist( rtt_c4::nodes() == 1, "This test requires exactly 1 PE." );
         // >>> UNIT TESTS
         test_ints(ut);
         test_floats(ut);

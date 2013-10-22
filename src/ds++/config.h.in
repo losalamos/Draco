@@ -105,7 +105,8 @@
 
 /* ---------------------------------------- */
 /* FPE_TRAP Settings */
-/* ---------------------------------------- */   
+/* ---------------------------------------- */
+
 // At most, only one of these should be defined in config/ac_platforms.m4
 #cmakedefine FPETRAP_OSF_ALPHA    @FPETRAP_OSF_ALPHA@ 
 #cmakedefine FPETRAP_DARWIN_INTEL @FPETRAP_DARWIN_INTEL@
@@ -123,6 +124,59 @@
 #else
 #define FPETRAP_UNSUPPORTED
 #endif 
+
+/* ---------------------------------------- */
+/*!
+ * \page diagnostics Diagnostics Levels
+ *
+ * The diagnostics can be turned on in three different levels based on logical
+ * bit comparisions.  The following shows the levels:
+ * - Bit 0, (001), activates Level 1 (negligible performance impact)
+ * - Bit 1, (010), activates Level 2 (some performance impact and possible
+ *                                    intrusive output, rtt_memory trackin is
+ *                                    activated.) 
+ * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
+ * .
+ * The following integer settings activate Levels in the following way:
+ * - 0 all off
+ * - 1 Level 1
+ * - 2 Level 2
+ * - 3 Level 1, Level 2
+ * - 4 Level 3
+ * - 5 Level 1, Level 3
+ * - 6 Level 2, Level 3
+ * - 7 Level 1, Level 2, Level 3
+ * .
+ * Thus setting -DDRACO_DIAGNOSTICS=7 at configure time will turn on all
+ * levels.  The default setting is 0.
+ *
+ * The intent is to use Level 1 for high-level, low cost diagnostics that are
+ * always active (ie. User "Education").  Levels 2 and 3 are for low-level
+ * diagnostics that could incur a performance penalty.  However, all of these
+ * usages are up to the client.
+ *
+ * The value for DRACO_DIAGNOSTICS is set and saved in ds++'s CMakeLists.tx
+ * and config.h, respectively.
+ */
+/* ---------------------------------------- */   
+
+#cmakedefine DRACO_DIAGNOSTICS @DRACO_DIAGNOSTICS@
+
+#if !defined(DRACO_DIAGNOSTICS)
+#define DRACO_DIAGNOSTICS 0
+#endif 
+
+#if DRACO_DIAGNOSTICS & 1
+#define DRACO_DIAGNOSTICS_LEVEL_1
+#endif
+
+#if DRACO_DIAGNOSTICS & 2
+#define DRACO_DIAGNOSTICS_LEVEL_2
+#endif
+
+#if DRACO_DIAGNOSTICS & 4
+#define DRACO_DIAGNOSTICS_LEVEL_3
+#endif
 
 /* ---------------------------------------- */
 /* C++ 11 support */

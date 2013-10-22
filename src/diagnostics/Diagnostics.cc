@@ -15,6 +15,9 @@
 //---------------------------------------------------------------------------//
 
 #include "Diagnostics.hh"
+#include "ds++/Release.hh"
+#include "ds++/fpe_trap.hh"
+#include <sstream>
 
 namespace rtt_diagnostics
 {

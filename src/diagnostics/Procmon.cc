@@ -13,12 +13,12 @@
 //---------------------------------------------------------------------------//
 
 #include "Procmon.hh"
-#include "c4/C4_Functions.hh"
 #include "ds++/path.hh"
 #include "ds++/UnitTest.hh" // tokenize()
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <cstdlib> // atof (XLC)
 
 #ifdef USE_PROCMON
 // see 'man getrusage'
@@ -55,6 +55,7 @@ namespace rtt_diagnostics
  * - max_mem_node is read from /proc/meminfo as MemTotal
  */
 void procmon_resource_print( std::string const & identifier,
+                             int const & mynode,
                              std::ostream & msg )
 {
     // ----------------------------------------
@@ -196,7 +197,7 @@ void procmon_resource_print( std::string const & identifier,
 
     msg
         // << "\nMemory status:"
-        << "[" << rtt_c4::node() << "] " 
+        << "[" << mynode << "] " 
         << proc_name << " (pid: " << proc_pid << ")::" << identifier;
 //              << "\nUid  : " << proc_uid
     msg << "\tVmPeak : " << proc_vmpeak << " kB (";

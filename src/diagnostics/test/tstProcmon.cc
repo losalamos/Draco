@@ -12,9 +12,10 @@
 //---------------------------------------------------------------------------//
 
 #include "../Procmon.hh"
-#include "c4/ParallelUnitTest.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include <sstream>
+#include <cstdlib> // atof (XLC)
 
 using namespace std;
 using namespace rtt_diagnostics;
@@ -31,6 +32,7 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
 {
     std::cout << "Running tst_procmon_basic(ut)..." << std::endl;
 
+    int mynode(0);
     double vmrss_orig(-1.0);
     double vmrss_bigger(-1.0);
     double vmrss_end(-1.0);
@@ -38,9 +40,10 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
     // Run the function and ensure the output has some required fields.
     {
         std::ostringstream msg;
-        procmon_resource_print("tst_procmon_use_01",msg);
+        procmon_resource_print("tst_procmon_use_01",mynode,msg);
         std::string line=msg.str();
-        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
+        std::vector<std::string> tokens =
+            rtt_dsxx::UnitTest::tokenize( line, " \t" );
 
         std::cout << msg.str() << std::endl;
         for( size_t i=0; i<tokens.size(); ++i )
@@ -63,9 +66,11 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
 
     {
         std::ostringstream msg;
-        procmon_resource_print("tst_procmon_use_02",msg);
+        
+        procmon_resource_print("tst_procmon_use_02",mynode,msg);
         std::string line=msg.str();
-        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
+        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize(
+            line, " \t" );
 
         // Save the VmRSS size
         vmrss_bigger = atof( tokens[10].c_str() );
@@ -82,9 +87,10 @@ void tst_procmon_basic( rtt_dsxx::UnitTest & ut )
     // Check that the memory use has decreased:
     {
         std::ostringstream msg;
-        procmon_resource_print("tst_procmon_use_03",msg);
+        procmon_resource_print("tst_procmon_use_03",mynode,msg);
         std::string line=msg.str();
-        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
+        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize(
+            line, " \t" );
 
         // Save the VmRSS size
         vmrss_end = atof( tokens[10].c_str() );
@@ -116,7 +122,7 @@ void tst_procmon_macro( rtt_dsxx::UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
         // >>> UNIT TESTS

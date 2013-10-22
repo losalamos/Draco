@@ -13,6 +13,9 @@
 
 #include "UnitTest.hh"
 #include "path.hh"
+#ifdef DRACO_DIAGNOSTICS_LEVEL_3
+#include "fpe_trap.hh"
+#endif
 #include <fstream>
 #include <sstream>
 
@@ -64,6 +67,16 @@ UnitTest::UnitTest( int              & /* argc */,
 #if DBC & 8
     m_dbcNothrow = true;
 #endif
+
+    // Turn on fpe_traps at level 3.
+#ifdef DRACO_DIAGNOSTICS_LEVEL_3
+    // if set to false, most compilers will provide a stack trace.
+    // if set to true, fpe_trap forms a simple message and calls Insist.
+    bool const abortWithInsist(true);
+    rtt_dsxx::fpe_trap fpeTrap(abortWithInsist);
+    fpeTrap.enable();
+#endif
+    
     return;
 }
 

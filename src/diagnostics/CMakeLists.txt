@@ -15,16 +15,8 @@ project( diagnostics CXX )
 # Special options for this component
 ##---------------------------------------------------------------------------##
 
-# Uses a bit mask
-# 001 - basic print messages (negligible performance hit)
-# 010 - detailed print messages (some performance hit or intrusive
-#       output)
-# 100 - additional computation required for diagnostic messages
-#       (including fpe_trap)
-set( DRACO_DIAGNOSTICS "0"
-   CACHE STRING "Diagnostics verbosity level (0-7). Default is 0." )
-# provide a constrained drop down menu for cmake-gui
-set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
+# DRACO_DIAGNOSICS IS SET IN DS++ (ds++/config.h).
+
 # From autoconf build system: "yes" --> 2, "no" --> 0
 set( DRACO_TIMING "0"
    CACHE STRING "Timing detail level (0-2). Default is 0." )
@@ -77,8 +69,6 @@ include_directories(
    ${PROJECT_BINARY_DIR}  # config.h
    ${draco_src_dir_SOURCE_DIR} # ds++ and c4 headers
    ${dsxx_BINARY_DIR} # ds++/config.h
-   ${c4_BINARY_DIR}   # c4/config.h
-   ${MPI_CXX_INCLUDE_PATH}
    )
 
 # ---------------------------------------------------------------------------- #
@@ -87,7 +77,7 @@ include_directories(
 
 add_component_library( 
    TARGET       Lib_diagnostics
-   TARGET_DEPS  Lib_c4
+   TARGET_DEPS  "Lib_dsxx"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 
@@ -103,6 +93,9 @@ set_target_properties( Exe_draco_info
 install( TARGETS Lib_diagnostics
    EXPORT draco-targets
    DESTINATION lib )
+
+# ??? Do I need to put draco_info into a bin/ diretory for RPATH to
+# work correctly after install?
 install( TARGETS Exe_draco_info DESTINATION bin )
 install( FILES ${headers}  DESTINATION include/diagnostics )
 

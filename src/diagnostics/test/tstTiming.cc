@@ -12,9 +12,10 @@
 //---------------------------------------------------------------------------//
 
 #include "../Timing.hh"
-#include "c4/ParallelUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
+#include "../Diagnostics.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <iomanip>
 
 using namespace std;
@@ -261,11 +262,9 @@ void test_macros( rtt_dsxx::UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        Insist( rtt_c4::nodes() < 2, "This test requires exactly 1 PE." );
-        // >>> UNIT TESTS
         timing_active();
         test_timing(ut);
         test_macros(ut);

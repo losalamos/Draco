@@ -127,8 +127,8 @@ class DLL_PUBLIC UnitTest
     UnitTest( int    & argc,
               char **& argv,
               string_fp_void   release_,
-              std::ostream   & out_ = std::cout );
-
+              std::ostream   & out_         = std::cout );
+    
     //! The copy constructor is disabled.
     UnitTest( UnitTest const &rhs );
 

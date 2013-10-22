@@ -43,6 +43,10 @@ namespace rtt_diagnostics
 /*!
  * \brief Access and report on system and process resources.
  *
+ * \param[in] identifier
+ * \param[in] mynode
+ * \return    void
+ *
  * Examine /proc/<pid>/status and /proc/meminfo and report results.
  *
  * Sample meminfo content:
@@ -121,7 +125,8 @@ namespace rtt_diagnostics
  */
 //===========================================================================//
 DLL_PUBLIC void procmon_resource_print(std::string const & identifier,
-                                       std::ostream & msg = std::cout );
+                                       int         const & mynode,
+                                       std::ostream      & msg = std::cout );
 
 } // end namespace rtt_diagnostics
 

@@ -76,13 +76,14 @@ extern DLL_PUBLIC std::map< std::string, std::vector<double> > vec_doubles;
 
 //---------------------------------------------------------------------------//
 /*!
- * \page clubimc_diagnostics Diagnostics Levels
+ * \page diagnostics Diagnostics Levels
  *
  * The diagnostics can be turned on in three different levels based on logical
  * bit comparisions.  The following shows the levels:
  * - Bit 0, (001), activates Level 1 (negligible performance impact)
  * - Bit 1, (010), activates Level 2 (some performance impact and possible
- *                                    intrusive output)
+ *                                    intrusive output, rtt_memory trackin is
+ *                                    activated.) 
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .
  * The following integer settings activate Levels in the following way:
@@ -102,6 +103,9 @@ extern DLL_PUBLIC std::map< std::string, std::vector<double> > vec_doubles;
  * always active (ie. User "Education").  Levels 2 and 3 are for low-level
  * diagnostics that could incur a performance penalty.  However, all of these
  * usages are up to the client.
+ *
+ * The value for DRACO_DIAGNOSTICS is set and saved in ds++'s CMakeLists.tx
+ * and config.h, respectively.
  */
 /*!
  * \def DIAGNOSTICS_ONE(Diagnostics::member)
@@ -131,30 +135,22 @@ extern DLL_PUBLIC std::map< std::string, std::vector<double> > vec_doubles;
  *     DIAGNOSTICS_THREE(integers["Variable"] = 1);
  * \endcode
  * On when DRACO_DIAGNOSTICS & 4 is true.  Defines
- * DRACO_DIAGNOSTICS_LEVEL_3. 
+ * DRACO_DIAGNOSTICS_LEVEL_3.
  */
 //---------------------------------------------------------------------------//
-
-#if !defined(DRACO_DIAGNOSTICS)
-#define DRACO_DIAGNOSTICS 0
-#endif 
-
-#if DRACO_DIAGNOSTICS & 1
-#define DRACO_DIAGNOSTICS_LEVEL_1
+#ifdef DRACO_DIAGNOSTICS_LEVEL_1
 #define DIAGNOSTICS_ONE(member) rtt_diagnostics::Diagnostics::member
 #else
 #define DIAGNOSTICS_ONE(member)
 #endif
 
-#if DRACO_DIAGNOSTICS & 2
-#define DRACO_DIAGNOSTICS_LEVEL_2
+#ifdef DRACO_DIAGNOSTICS_LEVEL_2
 #define DIAGNOSTICS_TWO(member) rtt_diagnostics::Diagnostics::member
 #else
 #define DIAGNOSTICS_TWO(member)
 #endif
 
-#if DRACO_DIAGNOSTICS & 4
-#define DRACO_DIAGNOSTICS_LEVEL_3
+#ifdef DRACO_DIAGNOSTICS_LEVEL_3
 #define DIAGNOSTICS_THREE(member) rtt_diagnostics::Diagnostics::member
 #else
 #define DIAGNOSTICS_THREE(member)
