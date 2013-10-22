@@ -19,12 +19,12 @@
 namespace rtt_fpe_trap
 {
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 //!  Enable trapping of floating point errors.
 bool fpe_trap::enable(void)
 {
-    // Toggle the state.
-    fpeTrappingActive = true;
+    // (unsupported platform.  leave fag set to false.
+    fpeTrappingActive = false;
     return fpeTrappingActive;
 }
 
