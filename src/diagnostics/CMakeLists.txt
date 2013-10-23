@@ -68,7 +68,9 @@ include_directories(
    ${PROJECT_SOURCE_DIR}  # sources
    ${PROJECT_BINARY_DIR}  # config.h
    ${draco_src_dir_SOURCE_DIR} # ds++ and c4 headers
-   ${dsxx_BINARY_DIR} # ds++/config.h
+   ${dsxx_BINARY_DIR}     # ds++/config.h
+   ${c4_BINARY_DIR}       # c4/config.h
+   ${MPI_CXX_INCLUDE_PATH}
    )
 
 # ---------------------------------------------------------------------------- #
@@ -77,7 +79,7 @@ include_directories(
 
 add_component_library( 
    TARGET       Lib_diagnostics
-   TARGET_DEPS  "Lib_dsxx"
+   TARGET_DEPS  "Lib_c4"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 

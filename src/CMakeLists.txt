@@ -65,7 +65,6 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
-add_dir_if_exists( diagnostics )  # needs ds++
 if( _LANGUAGES_ MATCHES Fortran )
    if( NOT ${CMAKE_GENERATOR} MATCHES Xcode)
       add_dir_if_exists( FortranChecks )
@@ -79,6 +78,8 @@ endif()
 # Level 3
 message(" ")
 message( STATUS "Configuring Level 3 packages --" )
+add_dir_if_exists( cdi_ipcress )
+add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
@@ -87,7 +88,6 @@ add_dir_if_exists( parser )       # needs units, c4
 add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( timestep )     # needs c4, ds++
 add_dir_if_exists( viz )          # needs traits, ds++
-add_dir_if_exists( cdi_ipcress )
 
 # Level 4
 message(" ")

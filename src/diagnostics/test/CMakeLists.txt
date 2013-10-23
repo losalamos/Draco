@@ -24,6 +24,7 @@ include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # config.h
+   ${MPI_INCLUDE_PATH}
    )
 
 # ---------------------------------------------------------------------------- #
@@ -31,7 +32,8 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
-   SOURCES "${test_sources}" )
+   SOURCES "${test_sources}" 
+   DEPS    Lib_c4 )
    
 # Application Unit Test 
 add_test( 
