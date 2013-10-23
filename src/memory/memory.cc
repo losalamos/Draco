@@ -22,47 +22,53 @@ namespace rtt_memory
 {
 using namespace std;
 
-// We put the following in a wrapper so we can control destruction. We want to
-// be sure is_active is set to false once alloc_map is destroyed.
+unsigned total;
+unsigned peak;
 
 #if DRACO_DIAGNOSTICS & 2
+
+bool is_active = false;
+
+// We put the following in a wrapper so we can control destruction. We want to
+// be sure is_active is forced to be false once alloc_map is destroyed.
+
 struct memory_diagnostics
 {
-    unsigned total;
-    unsigned peak;
-    bool is_active = false;
     map<void *, size_t> alloc_map;
 
     ~memory_diagnostics() { is_active = false; }
 }
     st;
 
+#endif // DRACO_DIAGNOSTICS & 2
+
 //---------------------------------------------------------------------------------------//
 bool set_memory_checking(bool new_status)
 {
-    bool Result = st.is_active;
+#if DRACO_DIAGNOSTICS & 2
+    bool Result = is_active;
 
-    st.total = 0;
-    st.peak = 0;
-    st.is_active = false;
+    total = 0;
+    peak = 0;
+    is_active = false;
     st.alloc_map.clear();
-    st.is_active = new_status;
+    is_active = new_status;
     
     return Result;
+#endif
 }
 
 //---------------------------------------------------------------------------------------//
 unsigned total_allocation()
 {
-    return st.total;
+    return total;
 }
 
 //---------------------------------------------------------------------------------------//
 unsigned peak_allocation()
 {
-    return st.peak;
+    return peak;
 }
-#endif
 
 } // end namespace rtt_memory
 
@@ -73,13 +79,18 @@ using namespace rtt_memory;
 void *operator new(size_t n) _GLIBCXX_THROW(std::bad_alloc)
 {
     void *Result = malloc(n);
-    if (st.is_active)
+    if (is_active)
     {
-        st.total += n;
-        st.peak = max(st.peak, st.total);
-        st.is_active = false;
+        total += n;
+        // Don't use max() here; doing it with if statement allows programmers
+        // to set a breakpoint here to find high water marks of memory usage.
+        if (total>peak)
+        {
+            peak = total;
+        }
+        is_active = false;
         st.alloc_map[Result] = n;
-        st.is_active = true;
+        is_active = true;
     }
     return Result;
 }
@@ -88,15 +99,15 @@ void *operator new(size_t n) _GLIBCXX_THROW(std::bad_alloc)
 void operator delete(void *ptr) throw()
 {
     free(ptr);
-    if (st.is_active)
+    if (is_active)
     {
         map<void *, size_t>::iterator i = st.alloc_map.find(ptr);
         if (i != st.alloc_map.end())
         {
-            st.total -= i->second;
-            st.is_active = false;
+            total -= i->second;
+            is_active = false;
             st.alloc_map.erase(i);
-            st.is_active = true;
+            is_active = true;
         }
     }
 }

@@ -19,25 +19,10 @@
 namespace rtt_memory
 {
 
-#if DRACO_DIAGNOSTICS & 2
-
 bool set_memory_checking(bool new_status);
 
 unsigned total_allocation();
 unsigned peak_allocation();
-
-#else
-
-// If not wanted, the diagnostics are defined as empty inline functions so
-// that the library, with the intercepting implementation of operator new,
-// need not be linked.
-
-inline bool set_memory_checking(bool){ return false; }
-
-inline unsigned total_allocation(){ return 0; }
-inline unsigned peak_allocation(){ return 0; }
-
-#endif
 
 } // namespace rtt_memory
 
