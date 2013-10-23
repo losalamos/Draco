@@ -38,7 +38,17 @@ namespace rtt_dsxx
 // However, PGI does provide the C99 _macros_ of the same name (w/o namespace
 // qualifier).
 // ---------------------------------------------------------------------------//
-#ifdef draco_isPGI
+#if defined _WIN32 || defined __CYGWIN__ 
+
+template< typename T >
+bool isNan(T a) { return _isnan(a); }
+template< typename T >
+bool isInf(T a) { return !_finite(a); }
+template< typename T >
+bool isFinite(T a) { return _finite(a); }
+
+#elif defined draco_isPGI
+
 
 template< typename T >
 bool isNan(T a) { return isnan(a); }
