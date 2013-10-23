@@ -128,9 +128,10 @@ std::string draco_getcwd(void)
  *    http://en.wikipedia.org/wiki/Stat_%28system_call%29
  */
 draco_getstat::draco_getstat( std::string const & fqName )
-    : stat_return_code(0), filefound(true), buf()
+    : stat_return_code(0), buf()
 {
 #ifdef WIN32
+    filefound = true;
     /*! \note If path contains the location of a directory, it cannot 
      * contain a trailing backslash. If it does, -1 will be returned and 
      * errno will be set to ENOENT. */

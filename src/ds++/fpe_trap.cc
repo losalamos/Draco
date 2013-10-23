@@ -335,6 +335,9 @@ bool fpe_trap::enable(void)
     _mm_setcsr( _MM_MASK_MASK &~
                 (_MM_MASK_OVERFLOW|_MM_MASK_INVALID|_MM_MASK_DIV_ZERO) );    
 
+    // This functionality is not currently implemented on the Mac.
+    abortWithInsist = false;
+    
     // Toggle the state.
     fpeTrappingActive = true;
     return fpeTrappingActive;
@@ -446,7 +449,12 @@ namespace rtt_dsxx
 bool fpe_trap::enable(void)
 {
     // (unsupported platform.  leave fag set to false.
-    fpeTrappingActive = false;
+    // (using abortWithInsist to silence unused variable warning)
+    if (abortWithInsist)
+        fpeTrappingActive = false;
+    else
+        fpeTrappingActive = false;
+    
     return fpeTrappingActive;
 }
 

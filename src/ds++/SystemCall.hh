@@ -78,9 +78,9 @@ class DLL_PUBLIC draco_getstat
 {
   private:
     int stat_return_code;
-    bool filefound;
 #ifdef WIN32
     struct _stat buf;
+    bool filefound;
     WIN32_FIND_DATA FileInformation; // Additional file information
 #else
     struct stat buf;

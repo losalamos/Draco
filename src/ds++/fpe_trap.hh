@@ -75,7 +75,7 @@ class DLL_PUBLIC fpe_trap
 
   private:
     bool fpeTrappingActive;
-    bool const abortWithInsist;
+    bool abortWithInsist;
 };
 
 } // end namespace rtt_dsxx
