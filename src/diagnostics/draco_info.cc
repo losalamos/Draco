@@ -119,6 +119,30 @@ int main( int /*argc*/, char *argv[] )
 #ifdef HAS_CXX11_CSTDINT_H
              << "HAS_CXX11_CSTDINT_H "
 #endif
+#ifdef HAS_CXX11_AUTO
+             << "\n                     HAS_CXX11_AUTO "
+#endif
+#ifdef HAS_CXX11_NULLPTR
+             << "\n                     HAS_CXX11_NULLPTR "
+#endif
+#ifdef HAS_CXX11_LAMBDA
+             << "\n                     HAS_CXX11_LAMBDA_TEMPLATES "
+#endif
+#ifdef HAS_CXX11_STATIC_ASSERT
+             << "\n                     HAS_CXX11_STATIC_ASSERT "
+#endif
+#ifdef HAS_CXX11_RVALUE_REFERENCES
+             << "\n                     HAS_CXX11_RVALUE_REFERENCES "
+#endif
+#ifdef HAS_CXX11_DECLTYPE
+             << "\n                     HAS_CXX11_DECLTYPE "
+#endif
+#ifdef HAS_CXX11_CSTDINT_H
+             << "\n                     HAS_CXX11_CSTDINT_H "
+#endif
+#ifdef HAS_CXX11_LONG_LONG
+             << "\n                     HAS_CXX11_LONG_LONG "
+#endif
 #ifdef HAS_CXX11_VARIADIC_TEMPLATES
              << "\n                     HAS_CXX11_VARIADIC_TEMPLATES "
 #endif
