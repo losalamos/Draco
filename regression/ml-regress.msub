@@ -80,7 +80,7 @@ module use ${regdir}/draco/environment/Modules/tu-fe
 module use ${regdir}/draco/environment/Modules/hpc
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
-# module purge &> /dev/null
+module purge &> /dev/null
 module load friendly-testing 
 module load intel/13.1.3 openmpi/1.6.3
 module load gsl lapack
@@ -94,7 +94,7 @@ case $extra_params in
     # no-op
     ;;
 cuda)
-    module load cudatoolkit
+    module load cudatoolkit/5.0
     comp="intel-cuda"
     ;;
 fulldiagnostics)
