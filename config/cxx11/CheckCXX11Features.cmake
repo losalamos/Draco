@@ -99,6 +99,26 @@ cxx11_check_feature("explicit_conversion" 2437 HAS_CXX11_EXPLICIT_CONVERSION)
 cxx11_check_feature("unrestricted_unions" 2544 HAS_CXX11_UNRESTRICTED_UNIONS)
 cxx11_check_feature("type_traits"         1836 HAS_CXX11_TYPE_TRAITS)
 
+# We track supported compilers's support of these C++ features at
+# https://rtt.lanl.gov/redmine/projects/draco/wiki/C++.  We currently
+# allow the use of 
+# - auto
+# - rvalue_references
+# - long long
+# So ensure that these are available in the selected compiler.
+if( NOT HAS_CXX11_AUTO )
+   message( FATAL_ERROR 
+"Draco expects your comiler to support C++11's auto keyword." )
+endif()
+if( NOT HAS_CXX11_RVALUE_REFERENCES )
+   message( FATAL_ERROR 
+"Draco expects your comiler to support C++11's rvalue references feature." )
+endif()
+if( NOT HAS_CXX11_LONG_LONG )
+   message( FATAL_ERROR 
+"Draco expects your comiler to support C++11's long long keyword." )
+endif()
+
 # Please add a CPP macro def in ds++/config.h.
 
 set(CXX11_FEATURE_LIST ${CXX11_FEATURE_LIST} CACHE STRING "C++11 feature support list")
