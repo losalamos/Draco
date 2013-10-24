@@ -38,6 +38,10 @@ if { [info exists ::env(LCOMPILER) ] } {
 if { $compiler == "intel" } then {
    if { $compilermajver == 13 } { set compilerver 13.0.1 }
 }
+# For all Intel-12 series compilers, point to 12.1.5
+if { $compiler == "intel" } then {
+   if { $compilermajver == 12 } { set compilerver 12.1.5 }
+}
 
 # local variables
 set version     v6.2.4beta.3
