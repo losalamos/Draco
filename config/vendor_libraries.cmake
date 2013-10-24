@@ -322,7 +322,8 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
       mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
       set( file_cmd ${file_cmd} CACHE INTERNAL "file command" )
 
-      message(STATUS "Looking for MPI...found")
+      message(STATUS "Looking for MPI.......found ${MPIEXEC}")
+      # (version ${DBS_MPI_VER})")
 
       # Sanity Checks for DRACO_C4==MPI
       if( "${MPI_CORES_PER_CPU}x" STREQUAL "x" )
@@ -375,10 +376,10 @@ macro( setupLAPACKLibrariesUnix )
       endif()
    endforeach()
    if( lapack_FOUND)
-      message( STATUS "Looking for lapack...found")
+      message( STATUS "Looking for lapack....found ${LAPACK_LIB_DIR}")
       set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
    else()
-      message( "Looking for lapack...not found")
+      message( STATUS "Looking for lapack....not found")
    endif()
 
    mark_as_advanced( lapack_DIR lapack_FOUND )
@@ -414,6 +415,7 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupCudaEnv )
 
+   message( STATUS "Looking for CUDA..." )
    find_package( CUDA QUIET )
    set_package_properties( CUDA PROPERTIES
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
@@ -434,6 +436,9 @@ macro( setupCudaEnv )
       set( cudalibs ${CUDA_CUDART_LIBRARY} )
       set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
          "static or shared (dll) libraries" FORCE )
+      message( STATUS "Looking for CUDA......found ${CUDA_NVCC_EXECUTABLE}" )
+   else()
+      message( STATUS "Looking for CUDA......not found" )
    endif()
    mark_as_advanced( 
       CUDA_SDK_ROOT_DIR 
@@ -455,11 +460,22 @@ macro( SetupVendorLibrariesUnix )
    if( DRACO_LIBRARY_TYPE MATCHES "STATIC" )
       set( GSL_STATIC ON )
    endif()
+   message( STATUS "Looking for GSL..." )
    find_package( GSL QUIET )
+   if( GSL_FOUND )
+      message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
+   else()
+      message( STATUS "Looking for GSL.......not found" )
+   endif()
 
    # Random123 ----------------------------------------------------------------
-   # message( STATUS "Looking for Random123...")
-   find_package( Random123 REQUIRED )
+   message( STATUS "Looking for Random123...")
+   find_package( Random123 REQUIRED QUIET )
+   if( RANDOM123_FOUND )
+      message( STATUS "Looking for Random123.found ${RANDOM123_INCLUDE_DIR}")
+   else()
+      message( STATUS "Looking for Random123.not found")
+   endif()
 
    # GRACE ------------------------------------------------------------------
    find_package( Grace QUIET )
@@ -473,6 +489,8 @@ macro( SetupVendorLibrariesUnix )
    setupCudaEnv()
 
    # PYTHON ----------------------------------------------------------------
+
+   message( STATUS "Looking for Python...." )
    find_package(PythonInterp QUIET)
    #  PYTHONINTERP_FOUND - Was the Python executable found
    #  PYTHON_EXECUTABLE  - path to the Python interpreter
@@ -481,7 +499,12 @@ macro( SetupVendorLibrariesUnix )
       TYPE OPTIONAL
       PURPOSE "Required for running the fpe_trap tests." 
       )
-   
+      if( GSL_FOUND )
+      message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
+   else()
+      message( STATUS "Looking for Python....not found" )
+   endif()
+
 endmacro()
 
 #------------------------------------------------------------------------------
