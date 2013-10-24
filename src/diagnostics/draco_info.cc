@@ -12,6 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "diagnostics/config.h"
+#include "c4/config.h"
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
@@ -80,14 +81,8 @@ int main( int /*argc*/, char *argv[] )
 #else
              << "disabled"
 #endif
-/*
-
-  2013-10-22 (KT) MPI reporting is disabled for now because diagnostics no
-  longer depends on c4 and cannot extract this information.  This file can be
-  moved to a package that is higher in the dependency tree to re-enable this
-  features.
-  
-  << "\n    MPI support    : "
+           
+             << "\n    MPI support    : "
 #ifdef C4_MPI
              << "enabled"
              << "\n      mpirun cmd   : " << C4_MPICMD
@@ -100,8 +95,6 @@ int main( int /*argc*/, char *argv[] )
 #else
              << "disabled (c4 scalar mode)"
 #endif
-*/
-
              << "\n    Diagnostics    : "
 #ifdef DRACO_DIAGNOSTICS
              << DRACO_DIAGNOSTICS
@@ -123,20 +116,23 @@ int main( int /*argc*/, char *argv[] )
 #ifdef DRACO_ENABLE_CXX11
              << "enabled"
              << "\n      Feature list : "
-#ifdef HAS_CXX11_AUTO
-             << "HAS_CXX11_AUTO "
+#ifdef HAS_CXX11_CSTDINT_H
+             << "HAS_CXX11_CSTDINT_H "
 #endif
-#ifdef HAS_CXX11_NULLPTR
-             << "\n                     HAS_CXX11_NULLPTR "
+#ifdef HAS_CXX11_VARIADIC_TEMPLATES
+             << "\n                     HAS_CXX11_VARIADIC_TEMPLATES "
 #endif
-#ifdef HAS_CXX11_LAMBDA
-             << "\n                     HAS_CXX11_LAMBDA "
+#ifdef HAS_CXX11_CONSTEXPR
+             << "\n                     HAS_CXX11_CONSTEXPR "
 #endif
-#ifdef HAS_CXX11_STATIC_ASSERT
-             << "\n                     HAS_CXX11_STATIC_ASSERT "
+#ifdef HAS_CXX11_SIZEOF_MEMBER
+             << "\n                     HAS_CXX11_SIZEOF_MEMBER "
 #endif
 #ifdef HAS_CXX11_SHARED_PTR
              << "\n                     HAS_CXX11_SHARED_PTR "
+#endif
+#ifdef HAS_CXX11_ARRAY
+             << "\n                     HAS_CXX11_ARRAY "
 #endif
 #else
              << "disabled"
