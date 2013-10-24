@@ -25,9 +25,9 @@ using namespace std;
 unsigned total;
 unsigned peak;
 
-#if DRACO_DIAGNOSTICS & 2
-
 bool is_active = false;
+
+#if DRACO_DIAGNOSTICS & 2
 
 // We put the following in a wrapper so we can control destruction. We want to
 // be sure is_active is forced to be false once alloc_map is destroyed.
@@ -45,17 +45,17 @@ struct memory_diagnostics
 //---------------------------------------------------------------------------------------//
 bool set_memory_checking(bool new_status)
 {
-#if DRACO_DIAGNOSTICS & 2
     bool Result = is_active;
 
+#if DRACO_DIAGNOSTICS & 2
     total = 0;
     peak = 0;
     is_active = false;
     st.alloc_map.clear();
+#endif
     is_active = new_status;
     
     return Result;
-#endif
 }
 
 //---------------------------------------------------------------------------------------//
