@@ -11,6 +11,7 @@
 //---------------------------------------------------------------------------//
 
 #include <map>
+#include <iostream>
 
 #include "memory.hh"
 
@@ -24,6 +25,7 @@ using namespace std;
 
 unsigned total;
 unsigned peak;
+unsigned check = 67181557U; // normally set in debugger to trigger a breakpoint
 
 bool is_active = false;
 
@@ -87,6 +89,10 @@ void *operator new(size_t n) _GLIBCXX_THROW(std::bad_alloc)
         if (total>peak)
         {
             peak = total;
+            if (peak >= check)
+            {
+                cout << "Reached check value" << endl;
+            }
         }
         is_active = false;
         st.alloc_map[Result] = n;
