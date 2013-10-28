@@ -13,6 +13,7 @@
 #  HAS_CXX11_SIZEOF_MEMBER      - sizeof() non-static members
 #  HAS_CXX11_FUNC               - __func__ preprocessor constant
 #  HAS_CXX11_INITIALIZER_LISTS  - 
+#  HAS_CXX11_RANGE_BASED_FOR
 # 
 # Original script by Rolf Eike Beer
 # Modifications by Andreas Weis
@@ -98,6 +99,7 @@ cxx11_check_feature("array"               ""   HAS_CXX11_ARRAY)
 cxx11_check_feature("explicit_conversion" 2437 HAS_CXX11_EXPLICIT_CONVERSION)
 cxx11_check_feature("unrestricted_unions" 2544 HAS_CXX11_UNRESTRICTED_UNIONS)
 cxx11_check_feature("type_traits"         1836 HAS_CXX11_TYPE_TRAITS)
+cxx11_check_feature("range_based_for"     2930 HAS_CXX11_RANGE_BASED_FOR)
 
 # We track supported compilers's support of these C++ features at
 # https://rtt.lanl.gov/redmine/projects/draco/wiki/C++.  We currently
