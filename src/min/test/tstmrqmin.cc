@@ -17,6 +17,7 @@
 #include "ds++/Release.hh"
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 using namespace rtt_dsxx;

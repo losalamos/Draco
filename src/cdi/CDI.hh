@@ -20,6 +20,7 @@
 #include "EoS.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <algorithm>
 
 #if defined(MSVC)
 #   pragma warning (push)

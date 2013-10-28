@@ -17,6 +17,7 @@
 #include "Soft_Equivalence.hh"
 #include <limits>
 #include <cmath>
+#include <algorithm>
 
 namespace rtt_dsxx
 {

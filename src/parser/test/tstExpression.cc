@@ -342,7 +342,7 @@ void tstExpression(UnitTest &ut)
         ostringstream expression_text_copy;
         expression->write(vars, expression_text_copy);
 
-        cout << expression_text_copy << endl;
+        cout << expression_text_copy.str() << endl;
             
         char const * expression_text_raw =
             "(log(1)+cos(2)+exp(3)+sin(4))/(m*s)";

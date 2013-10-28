@@ -14,7 +14,6 @@
 #include "CDI.hh"
 #include "ds++/Safe_Divide.hh"
 #include <limits>
-#include <algorithm>
 #include <iostream>
 #include <numeric>
 
