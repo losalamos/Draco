@@ -25,7 +25,7 @@ using namespace std;
 
 unsigned total;
 unsigned peak;
-unsigned check = 67181557U; // normally set in debugger to trigger a breakpoint
+unsigned check = 63508465U; // normally set in debugger to trigger a breakpoint
 
 bool is_active = false;
 
