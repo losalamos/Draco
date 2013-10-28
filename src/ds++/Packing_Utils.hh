@@ -654,8 +654,7 @@ void pack_data( std::map< keyT, std::vector< dataT > > const & map,
     // determine the number of bytes in the field
     size_t const key_size = numkeys * sizeof( keyT ) + sizeof(size_t);
     size_t data_size(0);
-    for( typename std::map< keyT, std::vector<dataT> >::const_iterator
-             itr=map.begin(); itr != map.end(); ++itr )
+    for( auto itr=map.begin(); itr != map.end(); ++itr )
     {
         // Size of data plus a size_t that indicates the vector length.
         data_size += (*itr).second.size() * sizeof( dataT ) + sizeof(size_t);
@@ -674,20 +673,17 @@ void pack_data( std::map< keyT, std::vector< dataT > > const & map,
 
     // iterate and pack:
     // 1. the keys
-    for( typename std::map< keyT, std::vector<dataT> >::const_iterator
-             itr = map.begin(); itr != map.end(); itr++ )
+    for( auto itr = map.begin(); itr != map.end(); itr++ )
     {
         packer << (*itr).first;
     }
     // 2. The vector size and vector data for each key.
-    for( typename std::map< keyT, std::vector<dataT> >::const_iterator
-             itr = map.begin(); itr != map.end(); itr++ )
+    for( auto itr = map.begin(); itr != map.end(); itr++ )
     {
         // The size of the fector associated with one key.
         packer << (*itr).second.size();
         // pack the data found in the vector for one key.
-        for( typename std::vector<dataT>::const_iterator
-                 it = (*itr).second.begin(); it != (*itr).second.end(); it++ )
+        for( auto it = (*itr).second.begin(); it != (*itr).second.end(); it++ )
         {
             packer << *it;
         }
@@ -757,7 +753,7 @@ void unpack_data( FT &field, std::vector<char> const & packed )
     field.resize( field_size );
     
     // unpack the data
-    for( typename FT::iterator itr = field.begin(); itr != field.end(); itr++ )
+    for( auto itr = field.begin(); itr != field.end(); itr++ )
 	unpacker >> *itr;
 
     Ensure( unpacker.get_ptr() == &packed[0] + packed.size() );
@@ -818,14 +814,12 @@ void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,
     }
 
     // unpack the data
-    for( typename std::map< keyT, std::vector<dataT> >::iterator // C++11 auto
-             it=unpacked_map.begin(); it!=unpacked_map.end(); ++it )
+    for( auto it=unpacked_map.begin(); it!=unpacked_map.end(); ++it )
     {
         size_t numdata(0);
         unpacker >> numdata;
         unpacked_map[(*it).first].resize(numdata);
-        for( typename std::vector<dataT>::iterator
-                 itr = (*it).second.begin(); itr != (*it).second.end(); itr++ )
+        for( auto itr = (*it).second.begin(); itr != (*it).second.end(); itr++ )
             unpacker >> *itr;
     }
 
