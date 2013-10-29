@@ -50,7 +50,7 @@ extern "C"
 // Print a demangled stack backtrace of the caller function to FILE* out.
 // http://blog.aplikacja.info/2010/12/backtraces-for-c/
 std::string
-print_stacktrace(const char * source )
+print_stacktrace( std::string const & error_name )
 {
     // max size of stack backtrace.
     unsigned const max_frames(63);
@@ -72,8 +72,9 @@ print_stacktrace(const char * source )
     ret = readlink(linkname, buf, linkname_size);
     buf[ret] = 0;
 
-    msg << "\nStack trace (" << source << ") for process "
-        << buf << " (PID:" << pid << "):\n";
+    msg << "\nStack trace:"
+        << "\n  Signaling error: " << error_name
+        << "\n  Process " << buf << "\n\n";
     
     // storage array for stack trace address data
     void * addrlist[max_frames+1];
@@ -157,7 +158,7 @@ print_stacktrace(const char * source )
     free(symbollist);
 
     // fprintf(out, "stack trace END (PID:%d)\n", pid);
-    msg << "stack trace END (PID:" << pid << ")\n";
+    msg << "Stack trace: END (PID:" << pid << ")\n";
     return msg.str();
 }
 
@@ -167,51 +168,46 @@ static void
 catch_sigfpe (int sig, siginfo_t *psSiginfo, void * /*psContext*/) 
 {    
     // generate a message:
-    std::ostringstream mesg;
-    mesg << "(ds++/fpe_trap.cc) A SIGFPE was detected! "
-         << "(signal: " << sig << ")" << std::endl;
+    std::string error_type;
 
     if (sig != SIGFPE)
     {
-        mesg << "Floating point exception problem.";
+        error_type = "Floating point exception problem.";
     }
     else
     {
         switch (psSiginfo->si_code)
         {
             case FPE_INTDIV:
-                mesg << "Integer divide by zero.";
+                error_type = "SIGFPE (Integer divide by zero)";
                 break;
             case FPE_INTOVF:
-                mesg << "Integer overflow.";
+                error_type = "SIGFPE (Integer overflow)";
                 break;
             case FPE_FLTDIV:
-                mesg << "Floating point divide by zero.";
+                error_type = "SIGFPE (Floating point divide by zero)";
                 break;
             case FPE_FLTOVF:
-                mesg << "Floating point overflow.";
+                error_type = "SIGFPE (Floating point overflow)";
                 break;
             case FPE_FLTUND:
-                mesg << "Floating point underflow.";
+                error_type = "SIGFPE (Floating point underflow)";
                 break;
             case FPE_FLTRES:
-                mesg << "Floating point inexact result.";
+                error_type = "SIGFPE (Floating point inexact result)";
                 break;
             case FPE_FLTINV:
-                mesg << "Invalid floating point operation.";
+                error_type = "SIGFPE (Invalid floating point operation)";
                 break;
             case FPE_FLTSUB:
-                mesg << "Floating point subscript out of range.";
+                error_type = "SIGFPE (Floating point subscript out of range)";
                 break;
             default:
-                mesg << "Unknown floating point exception.";
+                error_type = "SIGFPE (Unknown floating point exception)";
                 break;
         }
     }
-
-    mesg << print_stacktrace("SIGFPE");
-    
-    Insist(0, mesg.str());
+    Insist(false, print_stacktrace(error_type));
 }
 
 } // end of extern "C"
