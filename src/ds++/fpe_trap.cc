@@ -18,10 +18,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-// #include "fpe_trap/config.h"
 #include "fpe_trap.hh"
 #include "Assert.hh"
 #include <iostream>
+#include <sstream>
 #include <string>
 
 //---------------------------------------------------------------------------//
@@ -32,56 +32,186 @@
 #include <signal.h>
 #include <fenv.h>
 
+// Print a demangled stack backtrace of the caller function to FILE* out.
+// http://blog.aplikacja.info/2010/12/backtraces-for-c/
+#include <cxxabi.h>
+#include <execinfo.h> // backtrace
+#include <stdio.h>  //snprintf
+#include <stdlib.h>
+#include <string.h>
+#include <ucontext.h>
+#include <unistd.h>
+#include <Qt/qapplication.h>
+
 /* Signal handler for floating point exceptions. */
 extern "C"
 {
 
-static void
-catch_sigfpe (int sig, siginfo_t *code, void * /*v*/)
+// Print a demangled stack backtrace of the caller function to FILE* out.
+// http://blog.aplikacja.info/2010/12/backtraces-for-c/
+std::string
+print_stacktrace(const char * source )
 {
-    std::cout << "(fpe_trap/linux_x86.cc) A SIGFPE was detected!"
-              << std::endl;
+    // max size of stack backtrace.
+    unsigned const max_frames(63);
+
+    // store the message here.
+    std::ostringstream msg;
+
+    unsigned const linkname_size(512);
+    char linkname[linkname_size]; 
+    char buf[linkname_size];
+    pid_t pid;
+    int ret;
+
+    /* Get our PID and build the name of the link in /proc */
+    pid = getpid();
+    snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid);
         
-    std::string mesg;
+    /* Now read the symbolic link */
+    ret = readlink(linkname, buf, linkname_size);
+    buf[ret] = 0;
+
+    msg << "\nStack trace (" << source << ") for process "
+        << buf << " (PID:" << pid << "):\n";
+    
+    // storage array for stack trace address data
+    void * addrlist[max_frames+1];
+    
+    // retrieve current stack addresses
+    int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+
+    if (addrlen == 0)
+    {
+        msg << "  \n";
+        return msg.str();
+    }
+
+    // resolve addresses into strings containing "filename(function+address)",
+    // this array must be free()-ed
+    char** symbollist = backtrace_symbols(addrlist, addrlen);
+
+    // allocate string which will be filled with the demangled function name
+    size_t funcnamesize = 256;
+    char* funcname = (char*)malloc(funcnamesize);
+
+    // iterate over the returned symbol lines. skip first two,
+    // (addresses of this function and handler)
+    for (int i = 2; i < addrlen; i++)
+    {
+	char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
+
+	// find parentheses and +address offset surrounding the mangled name:
+	// ./module(function+0x15c) [0x8048a6d]
+	for (char *p = symbollist[i]; *p; ++p)
+	{
+	    if (*p == '(')
+		begin_name = p;
+	    else if (*p == '+')
+		begin_offset = p;
+	    else if (*p == ')' && begin_offset) {
+		end_offset = p;
+		break;
+	    }
+	}
+
+	if (begin_name && begin_offset && end_offset
+	    && begin_name < begin_offset)
+	{
+	    *begin_name++ = '\0';
+	    *begin_offset++ = '\0';
+	    *end_offset = '\0';
+
+	    // mangled name is now in [begin_name, begin_offset) and caller
+	    // offset in [begin_offset, end_offset). now apply
+	    // __cxa_demangle():
+
+	    int status;
+	    char* ret = abi::__cxa_demangle(begin_name,
+					    funcname, &funcnamesize, &status);
+	    if (status == 0)
+            {
+		funcname = ret; // use possibly realloc()-ed string
+                msg << "  (PID:" << pid << ") "
+                    << symbollist[i] << " : "
+                    << funcname << "()+" << begin_offset << "\n";
+	    }
+	    else
+            {
+		// demangling failed. Output function name as a C function with
+		// no arguments.
+                msg << "  (PID:" << pid << ") "
+                    << symbollist[i] << " : "
+                    << begin_name << "()+" << begin_offset << "\n";
+	    }
+	}
+	else
+	{
+	    // couldn't parse the line? print the whole line.
+            msg << "  (PID:" << pid << ") "
+                << symbollist[i] << " : ??\n";
+	}
+    }
+
+    free(funcname);
+    free(symbollist);
+
+    // fprintf(out, "stack trace END (PID:%d)\n", pid);
+    msg << "stack trace END (PID:" << pid << ")\n";
+    return msg.str();
+}
+
+
+//---------------------------------------------------------------------------//
+static void
+catch_sigfpe (int sig, siginfo_t *psSiginfo, void * /*psContext*/) 
+{    
+    // generate a message:
+    std::ostringstream mesg;
+    mesg << "(ds++/fpe_trap.cc) A SIGFPE was detected! "
+         << "(signal: " << sig << ")" << std::endl;
+
     if (sig != SIGFPE)
     {
-        mesg = "Floating point exception problem.";
+        mesg << "Floating point exception problem.";
     }
     else
     {
-        switch (code->si_code)
+        switch (psSiginfo->si_code)
         {
             case FPE_INTDIV:
-                mesg = "Integer divide by zero.";
+                mesg << "Integer divide by zero.";
                 break;
             case FPE_INTOVF:
-                mesg = "Integer overflow.";
+                mesg << "Integer overflow.";
                 break;
             case FPE_FLTDIV:
-                mesg = "Floating point divide by zero.";
+                mesg << "Floating point divide by zero.";
                 break;
             case FPE_FLTOVF:
-                mesg = "Floating point overflow.";
+                mesg << "Floating point overflow.";
                 break;
             case FPE_FLTUND:
-                mesg = "Floating point underflow.";
+                mesg << "Floating point underflow.";
                 break;
             case FPE_FLTRES:
-                mesg = "Floating point inexact result.";
+                mesg << "Floating point inexact result.";
                 break;
             case FPE_FLTINV:
-                mesg = "Invalid floating point operation.";
+                mesg << "Invalid floating point operation.";
                 break;
             case FPE_FLTSUB:
-                mesg = "Floating point subscript out of range.";
+                mesg << "Floating point subscript out of range.";
                 break;
             default:
-                mesg = "Unknown floating point exception.";
+                mesg << "Unknown floating point exception.";
                 break;
         }
     }
+
+    mesg << print_stacktrace("SIGFPE");
     
-    Insist(0, mesg);
+    Insist(0, mesg.str());
 }
 
 } // end of extern "C"
@@ -142,7 +272,7 @@ bool fpe_trap::enable(void)
 //! Disable trapping of floating point errors.
 void fpe_trap::disable(void)
 {
-    (void)feenableexcept( 0x00 );
+    (void)fedisableexcept( FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
     fpeTrappingActive=false;
     return;
 }

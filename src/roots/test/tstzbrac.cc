@@ -4,17 +4,17 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:24:48 2004
  * \brief  Test the zbrac function template
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include <iostream>
-
 #include "ds++/ScalarUnitTest.hh"
-
 #include "ds++/Release.hh"
+#include "ds++/fpe_trap.hh"
 #include "../zbrac.hh"
 
 using namespace std;
@@ -25,9 +25,7 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-double foo(double x) {
-  return log(x);
-}
+double foo(double x) { return log(x); }
 
 //---------------------------------------------------------------------------//
 //! Functor class representation of log function for testing zbrent and zbrac.
@@ -112,26 +110,17 @@ void tstzbrac( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstzbrac(ut);
-    }
-    catch (std::exception &err)
-    {
-	std::cout << "ERROR: While testing tstzbrac, " 
-		  << err.what() << std::endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	std::cout << "ERROR: While testing tstzbrac, " 
-		  << "An unknown exception was thrown." << std::endl;
-	return 1;
-    }
-    return 0;
+    
+    ScalarUnitTest ut( argc, argv, release );
+    // This test includes a check for -NaN by design.  To avoid failure, do
+    // not run this test with fpe_trap enabled.
+    rtt_dsxx::fpe_trap fpeTrap(true);
+    fpeTrap.disable();    
+    
+    try { tstzbrac(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstzbrac.cc
+// end of tstzbrac.cc
 //---------------------------------------------------------------------------//
