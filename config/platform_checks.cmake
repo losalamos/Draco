@@ -147,6 +147,12 @@ endmacro()
 ##---------------------------------------------------------------------------##
 ## Detect support for the C99 restrict keyword
 ## Borrowed from http://cmake.3232098.n2.nabble.com/AC-C-RESTRICT-td7582761.html
+##
+## A restrict-qualified pointer (or reference) is basically a promise to the 
+## compiler that for the scope of the pointer, the target of the pointer will 
+## only be accessed through that pointer (and pointers copied from it).
+##
+## http://www.research.scea.com/research/pdfs/GDC2003_Memory_Optimization_18Mar03.pdf
 ##---------------------------------------------------------------------------##
 macro( query_have_restrict_keyword )
    
@@ -163,7 +169,7 @@ macro( query_have_restrict_keyword )
             return foo(t); }
          "
          HAVE_RESTRICT) 
-      # message("looking at ${ac_kw}, HAVE_RESTRICT = ${HAVE_RESTRICT}")
+
       if( HAVE_RESTRICT )
          set( RESTRICT_KEYWORD ${ac_kw} )
          message(STATUS "Looking for the C99 restrict keyword - found ${RESTRICT_KEYWORD}")

@@ -85,9 +85,9 @@ void runTest( rtt_dsxx::UnitTest & ut )
         if( ! elem_defs[i].invariant_satisfied() )
         {
             ostringstream msg;
-            msg << "invariant_satisfied() failed for element i="
-                << i << ", whose type is = " << elem_defs[i].get_name()
-                << cout;
+			msg << "invariant_satisfied() failed for element i="
+				<< i << ", whose type is = " << elem_defs[i].get_name()
+                << std::endl;
             FAILMSG(msg.str());
         }
     }

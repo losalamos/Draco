@@ -404,6 +404,7 @@ bool fpe_trap::enable( void )
    // Set the exception masks off for exceptions that you want to trap.  When
    // a mask bit is set, the corresponding floating-point exception is 
    // blocked from being generated.
+
    fp_control_word &= ~( EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW );
    
    // Other options:
@@ -428,13 +429,16 @@ bool fpe_trap::enable( void )
 //! Disable trapping of floating point errors.
 void fpe_trap::disable(void)
 {
+   // Allways call this before setting control words.
+   _clearfp();
+
    // Read the current control words.
    unsigned int fp_control_word = _controlfp(0,0);
 
    // Set the exception masks off for exceptions that you want to trap.  When
    // a mask bit is set, the corresponding floating-point exception is 
    // blocked from being generated.
-   fp_control_word &= ( EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW );
+   fp_control_word |= ( EM_INVALID | EM_ZERODIVIDE | EM_OVERFLOW );
 
    // Update the control word with our changes
    // MCW_EM is Interrupt exception mask.
