@@ -4,15 +4,14 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:17:16 2001
  * \brief  DummyOdfmgOpacity templated class implementation file.
- * \note   Copyright © 2006-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "DummyOdfmgOpacity.hh"
-
 #include <cmath> // pow(x,n)
 #include "ds++/Assert.hh"
 
@@ -34,20 +33,22 @@ namespace rtt_cdi_test
  *     Densities        = { 0.1, 0.2 }
  *     EnergyBoundaries = { 0.05, 0.5, 5.0, 50.0 }
  *     BandBoundaries   = { 0.00, 0.125, 0.25, 0.50, 1.00 }
- *
  */
 DummyOdfmgOpacity::DummyOdfmgOpacity(rtt_cdi::Reaction reaction,
                                      rtt_cdi::Model    model)
-    : dataFilename( "none" ),
-      dataDescriptor( "DummyOdfmgOpacity" ),
+    : dataFilename(           "none" ),
+      dataDescriptor(         "DummyOdfmgOpacity" ),
       energyPolicyDescriptor( "Odfmg" ),
-      numTemperatures( 3 ),
-      numDensities( 2 ),
+      numTemperatures(    3 ),
+      numDensities(       2 ),
       numGroupBoundaries( 4 ),
-      numBandBoundaries( 5 ),
-      groupBoundaries(), bandBoundaries(), temperatureGrid(), densityGrid(),
+      numBandBoundaries(  5 ),
+      groupBoundaries(),
+      bandBoundaries( ),
+      temperatureGrid(),
+      densityGrid(    ),
       reaction_type(reaction),
-      model_type(model)
+      model_type(   model)
 {
     temperatureGrid.resize( numTemperatures );
     densityGrid.resize( numDensities );
@@ -67,7 +68,6 @@ DummyOdfmgOpacity::DummyOdfmgOpacity(rtt_cdi::Reaction reaction,
     bandBoundaries[0] = 0.0;
     for ( size_t i=1; i < numBandBoundaries; ++i )
         bandBoundaries[i] = std::pow(2,(i - 4.0));
-    //Check(bandBoundaries[numBandBoundaries - 1] == 1.0);
 } 
 
 // Constructor for entering a different group boundary structure than the
@@ -101,8 +101,10 @@ DummyOdfmgOpacity::DummyOdfmgOpacity(
 
     bandBoundaries[0] = 0.0;
     for ( size_t i=1; i < numBandBoundaries; ++i )
-        bandBoundaries[i] = std::pow(2,(i - numBandBoundaries - 1.0));
-    //Check(bandBoundaries[numBandBoundaries - 1] == 1.0);
+        bandBoundaries[i] = std::pow(2.0,
+                                     static_cast<int>(i)
+                                     -static_cast<int>(numBandBoundaries)-1);
+    return;
 } 
 
 // --------- //
@@ -116,7 +118,6 @@ DummyOdfmgOpacity::DummyOdfmgOpacity(
  *
  *     Opacity = 2 * ( temperature + density/1000 ) 
  *                 / ( E_high + E_low ) * 10^(band - 2)
- *
  */
 std::vector< std::vector<double> > DummyOdfmgOpacity::getOpacity( 
     double targetTemperature,
