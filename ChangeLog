@@ -1,3 +1,256 @@
+2013-10-29  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_8_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/13
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_2_0,    http://coder/redmine/versions/12
+	  - Capsaicin-3_6_0,  http://coder/redmine/versions/15
+
+	* Platforms:
+	  PI/ML/TY/LU    Intel 13.1.3    OpenMPI-1.6.3
+	  CT/CI          Intel 13.1.3    MPICH2-5.6.4
+	  SQ             XLC 12.1
+
+	* Summary of changes:
+	  - 244 files changed, added or removed in 110 commits.
+	  - Dev environment updated significantly.
+	  - New GQF quadrature now available.
+	  - Code updated to avoid Floating Point Exceptions in a few
+	    corner cases.
+	  - Added a stimulated emission analytic absorption opacity
+	    capability.
+	  - Signficiant update to the fpe_trap feature.
+	  - A new component, memory, was added.
+	  - fpe_trap was integrated into the UnitTest framework so that at
+	    least one nightly regression checks for floating point
+	    exceptions.
+	  - Many deprecated features found in ds++ were retired from
+	    Draco.
+	  - Being allowing very limited use of C++11 feature (auto, rvalue
+	    references, long long).
+
+	* Details per package:
+
+	Build System:
+	  - Significant improvements were implemented to allow building
+	    and testing with Visual Studio 2012.  Nightly regressions are
+	    now working for this platform/toolset.
+
+	Developer Environment:
+	  - The script metric_report was producing LOC data that was not
+	    consistent with values reported on CDash (#261).  The script
+	    was not using the Draco custom language features.  This was
+	    corrected.
+	  - After the update to REHL-6.4 on CCS LAN machines,
+	    - Update the default set of modules to those that work with
+	      RHEL-6.4.
+	    - Begin using gcc/4.8.1, gsl/1.16 and emacs/24.2.
+	    - Updated valgrind suppressions.
+	 - Retired HPC modules
+	    - eospac/v6.2.3-intel, eospac/v6.2.4beta.1-cielito,
+	      eospac/v6.2.4beta.1-moonlight
+	    - gsl/1.14-gcc, gsl/1.14-intel, gsl/1.14-pgi
+	    - lapack/3.4.0-gcc, lapack/3.4.0-intel, lapack/3.4.0-pgi,
+	      lapack/3.4.1-intel
+	    - ParMetis/3.1
+	    - SuperLU_DIST/2.3, SuperLU_DIST/2.4, SuperLU_DIST/2.4-intel
+	    - trilinos/10.10.2, trilinos/10.10.2-intel
+	    - numdiff/5.2.1
+	  - Provide new vendors/moduls on HPC:
+	    - SuperLU_DIST/3.3
+	    - trilinos/10.10.2-intel, trilinos/11.4.1-openmpi163
+	  - Random123 is now a required vendor for Draco.
+	  - Change PGI regression to use pgi/13.7.
+
+	quadrature:
+	  - Add a GQF option to the quadrature interpolation modules. This
+	    is identical to Morel Galerkin quadrature, but the moments are
+	    not pruned. Thus the strict one-to-one mapping of ordinates to
+	    moments and back is preserved. In other words, there are
+	    exactly as many moments as ordinates.  This option is needed
+	    to support experiments with McClarren's Sn ray filter.
+
+	cdi:
+	  - Update collapseMultigroupOpacitiesRosseland and
+	    collapseOdfmgOpacitiesRosseland member functions to provide
+	    specialized treatment for 2 cases to prevent potential
+	    division by zero.
+            1. If all opacity(ig,ib) == 0, then return sig_R = 0.
+            2. If the group structure is not well aligned with the
+	       Rosseland Spectrum (i.e.: dB/dT(ig) is very small), then
+	       return sig_R = sig(ig=0).
+            Credit goes to Allan and Kent for helping me develop
+	    algorithms for these corner cases. refs #270
+
+	cdi_analytic:
+	  - Added a stimulated emission analytic absorption opacity. Added
+	    the hooks to integrate over energy groups (for now just
+	    evaluating at the geometic midpoint of the group).
+
+	ds++:
+	  - Many deprecated or unused features were retired:
+	    o Array, ArraySizes, RefArray
+	    o DBC_Array.hh, DBC_Ptr.hh
+	    o RCF.hh
+	    o Safe_Ptr.hh, Thin_Ptr.hh, Vector_Lite
+	  - Many small math features were merged into DracoMath.hh:
+	    o abs.hh
+	    o conj.hh
+	    o cube.hh
+	    o dim.hh
+	    o pythag.hh
+	    o sign.hh
+	    o sign.hh
+	    o square.hh
+	  - value.hh was merged into Field_Traits.hh
+	  - swap.hh merged into Endian.hh.
+	  - Move imc/Bonus_pack.hh features into Packing_Utils.hh.
+	  - Use language standard equivalents in place of isFinite
+	    features.
+	  - When available use std::array in place of ArrayWrap.hh.
+	  - unit tests updated to match above changes.
+	  - fpe_trap merged into ds++.
+	  - Configure time value for DRACO_DIAGNOSTICS now lives in
+	    ds++/config.h instead of diagnostics/config.h.  This allows
+	    the value of DRACO_DIAGNOSTICS to regulate diagnostic features
+	    from within the UnitTest framework. #266
+
+	fpe_trap:
+	  - Turn fpe_trap off if the selected compiler is PGI.  I can't
+	    figure out how to make PGI work with this GNU extension. Since
+	    our primary compiler is Intel (and it does work with
+	    fpe_trap), I don't want to spend any more time looking into
+	    this issue. #268
+	  - Convert the stand alone enable_fpe function features into a
+	    class called fpe_trap that has member functions:
+	    - constructor(bool) argument allows disabling the use of ds++
+	                        Insist.
+	    - enable()          funcitonally equivalent to the old
+	                        enable_fpe
+            - disable()         where platforms allow, turn of fpe traps.
+            - active()          return bool to indicate if fpe traps are
+	                        turned on.
+	  - Platform implementations were updated to follow the new
+	    design, but not all platform code was tested because I don't
+	    have access to many of these platforms (darwin_ppc,
+	    darwin_intel, osf_alpha).
+	  - The new design improves extensibility of the fpe trap feature.
+	    In the future, we might consider adding a member function that
+	    selects the action when fpe are caught (e.g.: stack trace
+	    vs. ds++ Insist). I am also in favor of converting fpe_trap
+	    into a singleton. #271
+	  - fpe_trap was moved to ds++.
+	  - fpe_trap was integrated into UnitTest.
+	  - The fep_trap error message on Linux/x86 now includes a stack
+	    trace.
+
+	memory:
+	  - This new package is turned on with DRACO_DIAGNOSTIC's 2nd
+	    bit.  It keeps track of all new/allocated memory and can
+	    print a summary report.
+
+	* Corrected defects:
+	  Bug #261 metric_report has data inconsistent with CDash reports.
+	  Bug #269 Installed binaries do not have correct RPATH.
+	  Bug #279 Cuda based regressions fail on ML after 10/23/2013 DST
+
+	* New features:
+	  Feature #266: Improve usefulness of fpe_trap
+	  Feature #267: Modify fpe_trap so that it works with Intel
+	                compilers on Linux
+	  Feature #268: Allow fpe_trap to work with PGI compilers on Linux
+	  Feature #271: Convert fpe_trap into a class
+	  Feature #272: Attempt to run at least some Draco tests with
+	                fpe_trap turned on for DRACO_DIAGNOSTICS=7
+	  Task #275: Cleanup/Consolidate ds++ package
+
+	* Known Defects:
+          Bug #240: Intel 13 generates incorrect code in rare cases
+	            involving compile-time constants larger than
+	            0x7fffffff
+	  Bug  #59: cdi_eospac design flaw
+	  Feature #227: refactor cdi_analytic opacities
+	  Feature #135: Build on WIN32
+
+	* Statistics (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+
+
+
+Lines of code
+-------------
+
+* Note: previously, the metrics_report.sh script did not report the values
+        for text files correctly.  This change accounts for the extra 20k
+	LOC compared to draco-6_7_0.
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             401          11284          18021          63388
+C/C++ Header                    340           7548          21235          19993
+Text                             81           2323           1947          19876
+Lisp                             13           1810           2543          11960
+Perl                              2           1351           1562           8775
+CMake                           106           1827           4903           6882
+Visual Basic                     13            202              0           5482
+Python                           26           1210           1343           2197
+Bourne Shell                     11            193            452            837
+C                                 6            220            430            694
+Bourne Again Shell                4             99            206            564
+CSS                               1            113             37            395
+C Shell                           3             42            103            244
+Fortran 90                        3             38             68            118
+CUDA                              4             28             57             65
+DOS Batch                         1             19             10             59
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                           1017          28329          52931         141568
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+              units/                  82 /    82 = 100%      58 /    58 = 100%
+              traits/                 16 /    16 = 100%       0 /     0
+              memory/                  3 /     3 = 100%       0 /     0
+              special_functions/      32 /    32 = 100%     206 /   216 =  95%
+              fit/                     1 /     1 = 100%      15 /    16 =  93%
+              ode/                     5 /     5 = 100%      29 /    32 =  90%
+              min/                     9 /     9 = 100%     137 /   154 =  88%
+              linear/                 16 /    16 = 100%     334 /   392 =  85%
+              cdi/                    43 /    43 = 100%      49 /    58 =  84%
+              roots/                   8 /     8 = 100%     259 /   312 =  83%
+              diagnostics/            10 /    10 = 100%      11 /    14 =  78%
+              mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+              cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+              meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+              FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+              RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+              parser/                268 /   271 =  98%    1083 /  1353 =  80%
+              timestep/               62 /    63 =  98%     104 /   178 =  58%
+              cdi_eospac/             52 /    53 =  98%      62 /   132 =  46%
+              ds++/                  311 /   317 =  98%     382 /   427 =  89%
+              quadrature/            196 /   200 =  98%     501 /   637 =  78%
+              norms/                  25 /    26 =  96%      21 /    34 =  61%
+              viz/                    24 /    25 =  96%     131 /   174 =  75%
+              rng/                    87 /    91 =  95%      65 /    70 =  92%
+              c4/                    180 /   190 =  94%     513 /   582 =  88%
+              cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+              plot2D/                 22 /    29 =  75%      46 /    76 =  60%
+              lapack_wrap/            12 /    16 =  75%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2075 /  2138 =  97%    4941 /  6146 =  80%
+
+* C/D Coverage is condition/decision coverage
+  http://www.bullseye.com/coverage.html#basic_conditionDecision
+
 2013-08-19  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_7_0.  This is a minor Draco release.
@@ -83,7 +336,7 @@
 	    spacing of absorption edges.
 	  - Further extensions to pseudo line models. These add options to
 	    allow absorption edges to be regularly spaced and to add a
-	    fully unresolved "line" opacity.
+	    fully unresolved "line" opacity.1
 
 	diagnostics:
 	  - A new Procmon capability was added.  The macro PROCMON_REPORT(
@@ -101,7 +354,7 @@
 	    oriented along the polar axis, from 0 to Pi, the second being
 	    the number of points oriented along the azimuthal axis.
 
-	* Corrected defect:
+	* Corrected defects:
 	  #226 DBS should detect availability and provide CPP definition
 	       for C99 restrict keyword
 	  #149 Compiling with PGI fails

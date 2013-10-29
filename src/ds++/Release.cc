@@ -74,28 +74,26 @@ const std::string release()
 const std::string author_list()
 {
 
-// 72335: kellyt
-// 47657: kgbudge
-// 12228: tme
-// 6824: lowrie
-// 6131: bta
-// 4709: gaber
-// 4468: mwbuksas
-// 4042: mcghee
-// 2186: phenning
-// 1744: warsa
-// 1212: rsqrd
-// 950: wollaber
-// 917: sethrj
+// 72027: kellyt
+// 46166: kgbudge
+// 11568: tme
+// 6133: bta
+// 5536: lowrie
+// 4590: gaber
+// 4456: mwbuksas
+// 4043: mcghee
+// 2079: warsa
+// 1213: rsqrd
+// 914: sethrj
+// 898: wollaber  
    
     std::stringstream alist;
 //            0         1         2         3         4         5         6         7
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
-    alist << "    Kelly G. Thompson,      Kent G. Budge,        Tom M. Evans,\n"
-          << "    Rob Lowrie,             B. Todd Adams,        Gabriel M. Rockefeller,\n"
-          << "    Mike W. Buksas,         John McGhee,          Paul J. Henning,\n"
-          << "    James S. Warsa,         Randy M. Roberts,     Allan B. Wollaber,\n"
-          << "    Seth R. Johnson.";
+    alist << "    Kelly G. Thompson, Kent G. Budge,   Tom M. Evans,\n"
+          << "    B. Todd Adams,     Rob Lowrie,      Gabriel M. Rockefeller,\n"
+          << "    Mike W. Buksas,    John McGhee,     James S. Warsa, \n"
+          << "    Randy M. Roberts,  Seth R. Johnson, Allan B. Wollaber.";
     return alist.str();
 }
 
