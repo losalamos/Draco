@@ -111,9 +111,6 @@ endif()
 # Summary
 message(" ")
 
-add_feature_info( BUILD_AUTODOC BUILD_AUTODOC
-   "Turn on to enable generation of doxygen documentation (make autodoc).")
-
 feature_summary( 
    WHAT PACKAGES_FOUND 
    INCLUDE_QUIET_PACKAGES

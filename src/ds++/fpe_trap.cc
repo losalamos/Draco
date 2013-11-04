@@ -41,7 +41,7 @@
 #include <string.h>
 #include <ucontext.h>
 #include <unistd.h>
-#include <Qt/qapplication.h>
+// #include <Qt/qapplication.h>
 
 /* Signal handler for floating point exceptions. */
 extern "C"

@@ -26,7 +26,6 @@ The significant services provided in ds++ are:
 - \b SP (rtt_dsxx::SP) a smart pointer class
 - \b Packer \b Unpacker (rtt_dsxx::Packer, rtt_dsxx::Unpacker) utilities that
 pack data types into a char *
-- \b Vector_Lite (rtt_dsxx::Vector_Lite) a tiny vector implementation
 - \b soft_equiv (rtt_dsxx::soft_equiv()) a soft equivalence function for
 floating point comparisons 
 - \b ScalarUnitTest (rtt_dsxx::ScalarUnitTest) provides a unit test
