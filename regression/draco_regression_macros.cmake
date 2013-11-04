@@ -466,12 +466,13 @@ macro( setup_for_code_coverage )
                COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log 
                --counted=cloc-counted.log 
                --ignored=cloc-ignored.log 
                --progress-rate=0 
                --report-file=lines-of-code.log 
-               --read-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3 
                #  --diff
