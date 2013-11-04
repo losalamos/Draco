@@ -25,7 +25,12 @@ using namespace std;
 
 unsigned total;
 unsigned peak;
-unsigned check = 63508465U; // normally set in debugger to trigger a breakpoint
+
+unsigned check_peak = 53261809U; // normally set in debugger to trigger a
+                                 // breakpoint
+
+unsigned check_large = 7680000U; // normally set in debugger to trigger a breakpoint
+
 
 bool is_active = false;
 
@@ -89,10 +94,14 @@ void *operator new(size_t n) _GLIBCXX_THROW(std::bad_alloc)
         if (total>peak)
         {
             peak = total;
-            if (peak >= check)
+            if (peak >= check_peak)
             {
-                cout << "Reached check value" << endl;
+                cout << "Reached check peak value" << endl;
             }
+        }
+        if (n >= check_large)
+        {
+            cout << "Allocated check large value" << endl;
         }
         is_active = false;
         st.alloc_map[Result] = n;
@@ -111,6 +120,10 @@ void operator delete(void *ptr) throw()
         if (i != st.alloc_map.end())
         {
             total -= i->second;
+            if (i->second>=check_large)
+            {
+                cout << "Deallocated check large value" << endl;
+            }
             is_active = false;
             st.alloc_map.erase(i);
             is_active = true;
