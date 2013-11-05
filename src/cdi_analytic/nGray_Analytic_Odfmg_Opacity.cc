@@ -118,10 +118,6 @@ nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
         // get the indicator for this model (first packed datum)
         unpacker >> indicator;
 
-        int caom(rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL);
-        int paom(rtt_cdi_analytic::POLYNOMIAL_ANALYTIC_OPACITY_MODEL);
-        int seaom(rtt_cdi_analytic::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL);
-
         // now determine which analytic model we need to build
         if (indicator ==  rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL)
         {
