@@ -94,7 +94,8 @@ if( DOXYGEN_FOUND )
             -Dhtmlheader=${htmlheader}
             -Dhtmlfooter=${htmlfooter}
             -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
-    DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
+    DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
+    # DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
     )
   configure_file(
     ${PROJECT_SOURCE_DIR}/autodoc/html/footer.html.in
