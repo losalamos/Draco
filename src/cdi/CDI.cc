@@ -41,8 +41,8 @@ namespace rtt_cdi
  */
 CDI::CDI(const std_string &id)
     : grayOpacities(
-          constants::num_Models, 
-          SF_GrayOpacity(constants::num_Reactions)),
+        constants::num_Models, 
+        SF_GrayOpacity(constants::num_Reactions)),
       multigroupOpacities(
           constants::num_Models,
           SF_MultigroupOpacity(constants::num_Reactions)),
@@ -280,8 +280,10 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double lowFreq,
     double const exp_lowFreq  = std::exp(-lowFreq);
     double const exp_highFreq = std::exp(-highFreq);
 
-    integrate_planck_rosseland(lowFreq,  exp_lowFreq,  planck_low,  rosseland_low);
-    integrate_planck_rosseland(highFreq, exp_highFreq, planck_high, rosseland_high);
+    integrate_planck_rosseland(lowFreq,  exp_lowFreq,  planck_low,
+                               rosseland_low);
+    integrate_planck_rosseland(highFreq, exp_highFreq, planck_high,
+                               rosseland_high);
 
     planck    = planck_high    - planck_low;
     rosseland = rosseland_high - rosseland_low;
@@ -302,8 +304,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double lowFreq,
  */
 double CDI::integrateRosselandSpectrum(
     const double lowFreq,
-	const double highFreq, 
-	const double T)
+    const double highFreq, 
+    const double T)
 {
     Require (lowFreq  >= 0.0);
     Require (highFreq >= lowFreq);
@@ -311,7 +313,8 @@ double CDI::integrateRosselandSpectrum(
 
     double planck, rosseland;
 
-    integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck, rosseland); 
+    integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck,
+                                           rosseland); 
 
     return rosseland;
 }
@@ -494,7 +497,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
         rosseland[group] = rosseland_value - last_rosseland;
 
         Ensure(planck[group]    >= 0.0);  Ensure(planck[group] <= 1.0);
-        Ensure(rosseland[group] >= 0.0);  Ensure(rosseland[group] <= 1.0);                                          
+        Ensure(rosseland[group] >= 0.0);  Ensure(rosseland[group] <= 1.0);
     }
     return;    
 }
@@ -554,7 +557,7 @@ double CDI::collapseMultigroupOpacitiesPlanck(
 
     double planck_opacity(0.0);
     if( planck_integral > 0.0 )
-    planck_opacity = sig_planck_sum / planck_integral;
+        planck_opacity = sig_planck_sum / planck_integral;
     else
     {
         // Weak check that the zero integrated Planck is due to a cold
@@ -610,16 +613,18 @@ double CDI::collapseMultigroupOpacitiesRosseland(
         std::accumulate( opacity.begin(), opacity.end(), 0.0 );
     if( rtt_dsxx::soft_equiv( opacity_sum, 0.0, eps ) )
     {
-        // std::cerr << "\nWARNING (CDI.cc::collapseMultigroupOpacitiesRosseland)::"
-        //           << "\n\tComputing Rosseland Opacity when all opacities are zero!"
-        //           << std::endl;
+        // std::cerr << "\nWARNING ("
+        //           << "CDI.cc::collapseMultigroupOpacitiesRosseland)::"
+        //           << "\n\tComputing Rosseland Opacity when all opacities "
+        //           << "are zero!" << std::endl;
         return 0.0;
     }
     
     // Integrate the unnormalized Rosseland over the group spectrum
     // int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
     double const rosseland_integral = 
-        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
+        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(),
+                        0.0);
 
     // If the group bounds are well outside the Rosseland Spectrum at the
     // current temperature, our algorithm may return a value that is within
@@ -730,8 +735,8 @@ double CDI::collapseOdfmgOpacitiesPlanck(
     // else
     // {
     //     // Weak check that the zero integrated Planck is due to a cold
-    //     // temperature whose Planckian peak is below the lowest (first) group
-    //     // boundary.
+    //     // temperature whose Planckian peak is below the lowest (first)
+    //     // group boundary.
     //     Check( rtt_dsxx::soft_equiv(sig_planck_sum, 0.0) );
     //     Check( T >= 0.0 );
     //     Check( 3.0 * T <= groupBounds[0] ); 
@@ -786,17 +791,18 @@ double CDI::collapseOdfmgOpacitiesRosseland(
                                         opacity[g-1].end(), 0.0 );
     if( rtt_dsxx::soft_equiv( opacity_sum, 0.0, eps ) )
     {
-        // std::cerr << "\nWARNING (CDI.cc::collapseMultigroupOpacitiesRosseland)::"
-        //           << "\n\tComputing Rosseland Opacity when all opacities are zero!"
-        //           << std::endl;
+        // std::cerr << "\nWARNING (CDI.cc::"
+        //           << "collapseMultigroupOpacitiesRosseland)::"
+        //           << "\n\tComputing Rosseland Opacity when all opacities"
+        //           << " are zero!" << std::endl;
         return 0.0;
     }
 
     // Integrate the unnormalized Rosseland over the group spectrum
     // int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
     double const rosseland_integral = 
-        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
-
+        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(),
+                        0.0);
 
     // If the group bounds are well outside the Rosseland Spectrum at the
     // current temperature, our algorithm may return a value that is within
@@ -932,7 +938,7 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
 
     // do a check of the actual boundary values when DBC check is on (this is
     // more expensive so we retain the option of turning it off)
-    Remember( const std::vector<double> &ref = spMGOp->getGroupBoundaries(); );
+    Remember( std::vector<double> const ref = spMGOp->getGroupBoundaries(); );
     Check (soft_equiv(frequencyGroupBoundaries.begin(),
 		      frequencyGroupBoundaries.end(),
 		      ref.begin(),
@@ -962,69 +968,73 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp)
  */
 void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp) 
 {
-	using rtt_dsxx::soft_equiv;
+    using rtt_dsxx::soft_equiv;
 
-	Require (spODFOp);
+    Require (spODFOp);
 
-	// determine the model and reaction types
-	rtt_cdi::Model		model		= spODFOp->getModelType();
-	rtt_cdi::Reaction	reaction	= spODFOp->getReactionType();
+    // determine the model and reaction types
+    rtt_cdi::Model		model		= spODFOp->getModelType();
+    rtt_cdi::Reaction	reaction	= spODFOp->getReactionType();
 
-	Insist (!odfmgOpacities[model][reaction],
-			"Tried to overwrite a set odfmgOpacity object!");
+    Insist (!odfmgOpacities[model][reaction],
+            "Tried to overwrite a set odfmgOpacity object!");
 
-	// if the frequency group boundaries have not been assigned in any CDI
-	// object, then assign them here
-	if (frequencyGroupBoundaries.empty())
-	{
-		// copy the the group boundaries for this material to the "global"
-		// group boundaries that will be enforced for all CDI objects
-		frequencyGroupBoundaries = spODFOp->getGroupBoundaries();
-	}
+    // if the frequency group boundaries have not been assigned in any CDI
+    // object, then assign them here
+    if (frequencyGroupBoundaries.empty())
+    {
+        // copy the the group boundaries for this material to the
+        // "global" group boundaries that will be enforced for all CDI
+        // objects
+        frequencyGroupBoundaries = spODFOp->getGroupBoundaries();
+    }
 
-	// if the opacity band boundaries have not been assigned in any CDI
-	// object, then assign them here
-	if (opacityCdfBandBoundaries.empty())
-	{
-		// copy the the band boundaries for this material to the "global"
-		// band boundaries that will be enforced for all CDI objects
-		opacityCdfBandBoundaries = spODFOp->getBandBoundaries();
-	}	
+    // if the opacity band boundaries have not been assigned in any CDI
+    // object, then assign them here
+    if (opacityCdfBandBoundaries.empty())
+    {
+        // copy the the band boundaries for this material to the
+        // "global" band boundaries that will be enforced for all CDI
+        // objects
+        opacityCdfBandBoundaries = spODFOp->getBandBoundaries();
+    }	
 
-	// always check that the number of frequency groups is the same for each
-	// odfmg material added to CDI
-	Insist (spODFOp->getNumGroupBoundaries() == 
-			frequencyGroupBoundaries.size(),
-			"Incompatible frequency groups assigned for this material");
+    // always check that the number of frequency groups is the same for
+    // each odfmg material added to CDI
+    Insist (spODFOp->getNumGroupBoundaries() == 
+            frequencyGroupBoundaries.size(),
+            "Incompatible frequency groups assigned for this material");
 
-	// always check that the number of frequency groups is the same for each
-	// odfmg material added to CDI
-	Insist (spODFOp->getNumBandBoundaries() == 
-			opacityCdfBandBoundaries.size(),
-			"Incompatible opacity bands assigned for this material");
+    // always check that the number of frequency groups is the same for
+    // each odfmg material added to CDI
+    Insist (spODFOp->getNumBandBoundaries() == 
+            opacityCdfBandBoundaries.size(),
+            "Incompatible opacity bands assigned for this material");
 
-	// do a check of the actual boundary values when DBC check is on (this is
-	// more expensive so we retain the option of turning it off)
-	Remember( const std::vector<double> &refGroup = spODFOp->getGroupBoundaries(); );
-	Check (soft_equiv(frequencyGroupBoundaries.begin(),
-				frequencyGroupBoundaries.end(),
-				refGroup.begin(),
-				refGroup.end(),
-				1.0e-6));
+    // do a check of the actual boundary values when DBC check is on (this
+    // is more expensive so we retain the option of turning it off)
+    Remember( std::vector<double> const refGroup
+              = spODFOp->getGroupBoundaries(); );
+    Check (soft_equiv(frequencyGroupBoundaries.begin(),
+                      frequencyGroupBoundaries.end(),
+                      refGroup.begin(),
+                      refGroup.end(),
+                      1.0e-6));
 	
-	// do a check of the actual band boundary values when DBC check is on 
-	// (this is more expensive so we retain the option of turning it off)
-	Remember( const std::vector<double> &refBand = spODFOp->getBandBoundaries(); );
-	Check (soft_equiv(opacityCdfBandBoundaries.begin(),
-				opacityCdfBandBoundaries.end(),
-				refBand.begin(),
-				refBand.end(),
-				1.0e-6));
+    // do a check of the actual band boundary values when DBC check is on 
+    // (this is more expensive so we retain the option of turning it off)
+    Remember( std::vector<double> const refBand
+              = spODFOp->getBandBoundaries(); );
+    Check (soft_equiv(opacityCdfBandBoundaries.begin(),
+                      opacityCdfBandBoundaries.end(),
+                      refBand.begin(),
+                      refBand.end(),
+                      1.0e-6));
 
-	// assign the smart pointer
-	odfmgOpacities[model][reaction] = spODFOp;
+    // assign the smart pointer
+    odfmgOpacities[model][reaction] = spODFOp;
 
-	Ensure (odfmgOpacities[model][reaction]);
+    Ensure (odfmgOpacities[model][reaction]);
 }
 
 //---------------------------------------------------------------------------//
@@ -1101,7 +1111,7 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model    m,
  *
  */
 CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model    m,
-				  rtt_cdi::Reaction r) const 
+                                rtt_cdi::Reaction r) const 
 {
     Insist (odfmgOpacities[m][r], "Undefined OdfmgOpacity!");
     return odfmgOpacities[m][r]; 
@@ -1168,7 +1178,7 @@ void CDI::reset()
             // check it
             Check (!grayOpacities[i][j]);
             Check (!odfmgOpacities[i][j]);
-		}
+        }
     }
     
     // empty the frequency group boundaries

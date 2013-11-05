@@ -77,7 +77,8 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 
 toggle_compiler_flag( DRACO_SHARED_LIBS "-qnostaticlink" "EXE_LINKER" "")
 toggle_compiler_flag( USE_OPENMP       "-qsmp=omp" "C;CXX;EXE_LINKER" "")
-toggle_compiler_flag( DRACO_ENABLE_CXX11 "-qlanglvl=extended0x -std=c++0x" "CXX" "")
+#toggle_compiler_flag( DRACO_ENABLE_CXX11 "-qlanglvl=extended0x -std=c++0x" "CXX" "")
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "-qlanglvl=extended0x" "CXX" "")
 toggle_compiler_flag( DRACO_ENABLE_C99         "-qlanglvl=stdc99" "C" "")
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-qlanglvl=stdc89" "C" "")
 
