@@ -93,7 +93,8 @@ void odfmg_test(UnitTest &ut)
     models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
 
     // make a Polynomial model for the second group
-    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
+    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+        1.5, 0.0, 0.0, 0.0);
 
     // make a Constant model for the third group
     models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
@@ -263,9 +264,11 @@ void odfmg_test(UnitTest &ut)
     SP<Analytic_Opacity_Model const> expected_model( models[0] );
 
     if( expected_model == my_mg_opacity_model )
-        ut.passes("get_Analytic_Model() returned the expected MG Opacity model.");
+        ut.passes(std::string("get_Analytic_Model() returned the expected")
+                  + std::string(" MG Opacity model."));
     else
-        ut.failure("get_Analytic_Model() did not return the expected MG Opacity model.");
+        ut.failure(std::string("get_Analytic_Model() did not return the")
+                   + std::string(" expected MG Opacity model."));
     
     return;
 }
@@ -293,7 +296,8 @@ void test_CDI(UnitTest &ut)
     models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
 
     // make a Polynomial model for the second group
-    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
+    models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+        1.5, 0.0, 0.0, 0.0);
 
     // make a Constant model for the third group
     models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
@@ -389,10 +393,12 @@ void packing_test(UnitTest &ut)
         vector<SP<Analytic_Opacity_Model> > models(3);
 
         // make a Polynomial model for the first group
-        models[0] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(0.0, 100.0, -3.0, 0.0);
+        models[0] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+            0.0, 100.0, -3.0, 0.0);
 
         // make a Polynomial model for the second group
-        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
+        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+            1.5, 0.0, 0.0, 0.0);
 
         // make a Constant model for the third group
         models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
@@ -492,14 +498,16 @@ void packing_test(UnitTest &ut)
         models[0] = new rtt_cdi_analytic_test::Marshak_Model(100.0);
 
         // make a Polynomial model for the second group
-        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(1.5, 0.0, 0.0, 0.0);
+        models[1] = new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
+            1.5, 0.0, 0.0, 0.0);
 
         // make a Constant model for the third group
         models[2] = new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0);
 
         // make an analytic multigroup opacity object for absorption
         SP<const OdfmgOpacity>
-            odfmg(new nGray_Analytic_Odfmg_Opacity(groups, bands, models, rtt_cdi::ABSORPTION));
+            odfmg(new nGray_Analytic_Odfmg_Opacity(
+                      groups, bands, models, rtt_cdi::ABSORPTION));
 
         packed = odfmg->pack();
     }
@@ -567,13 +575,9 @@ void pseudo_line_opacity_test(UnitTest &ut)
     vector<vector<double> > opacity = model.getOpacity(1.0, 1.0);
 
     if (opacity.size()+1==groups.size())
-    {
         ut.passes("Correct number of groups in pseudo line model");
-    }
     else
-    {
         ut.failure("NOT correct number of groups in pseudo line model");
-    }
 
     for (unsigned i=0; i<number_of_energy_groups; ++i)
     {
@@ -596,7 +600,8 @@ void pseudo_line_opacity_test(UnitTest &ut)
 
     if (opacities.size()!=2)
     {
-        ut.failure("NOT correct number of opacities in vector rho opacity call");
+        ut.failure(std::string("NOT correct number of opacities in vector")
+                   + std::string(" rho opacity call"));
     }
 
     if (model.getDataDescriptor() != "Pseudo Line Odfmg Absorption")
@@ -618,10 +623,10 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
     try
     {
-        // odfmg_test( ut);
-        // test_CDI(    ut);
+        odfmg_test( ut);
+        test_CDI(    ut);
         packing_test(ut);
-        // pseudo_line_opacity_test(ut);
+        pseudo_line_opacity_test(ut);
     }
     UT_EPILOG(ut);
 }   
