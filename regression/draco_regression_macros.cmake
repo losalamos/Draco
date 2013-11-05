@@ -461,7 +461,19 @@ macro( setup_for_code_coverage )
             execute_process(COMMAND "${COV01}" --on RESULT_VARIABLE RES)
 
             # Process and save lines of code 
-            message(  "Generating lines of code statistics...")
+            message(  "Generating lines of code statistics...
+ /home/regress/draco/regression/cloc
+               --exclude-dir=heterogeneous,chimpy
+               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-lang=Text,Postscript
+               --categorize=cloc-categorize.log 
+               --counted=cloc-counted.log 
+               --ignored=cloc-ignored.log 
+               --progress-rate=0 
+               --report-file=lines-of-code.log 
+               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               ${CTEST_SOURCE_DIRECTORY}
+            ")
             execute_process( 
                COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy
@@ -473,18 +485,6 @@ macro( setup_for_code_coverage )
                --progress-rate=0 
                --report-file=lines-of-code.log 
                --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
-               ${CTEST_SOURCE_DIRECTORY}
-               #  --3 
-               #  --diff
-               WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-               )
-            execute_process( 
-               COMMAND /home/regress/draco/regression/cloc
-               --exclude-dir=test,heterogeneous,chimpy
-               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
-               --progress-rate=0 
-               --report-file=lines-of-code-notest.log 
-               --read-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3 
                #  --diff

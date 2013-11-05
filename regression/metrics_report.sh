@@ -143,7 +143,7 @@ echo " "
 
 echo "Lines of code"
 echo "-------------"
-cmd="${CLOC} --sum-reports --read-lang-def=/home/regress/draco/regression/cloc-lang.defs"
+cmd="${CLOC} --sum-reports --force-lang-def=/home/regress/draco/regression/cloc-lang.defs"
 for proj in $projects; do
    cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log "
 done
