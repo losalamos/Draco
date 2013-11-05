@@ -13,6 +13,7 @@
 
 #include "nGray_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
+#include "ds++/dbc.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -50,7 +51,8 @@ nGray_Analytic_MultigroupOpacity(const sf_double         &groups,
     : Analytic_MultigroupOpacity(groups, reaction_in, model_in),
       group_models(models)
 {
-    Require (groups.size() - 1 == models.size());
+    Require(groups.size() - 1 == models.size());
+    Require(rtt_dsxx::is_strict_monotonic_increasing(groups.begin(), groups.end()));
 }
 
 //---------------------------------------------------------------------------//
@@ -103,29 +105,29 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     int indicator = 0;
     for (size_t i = 0; i < models.size(); ++i)
     {
-	// reset the buffer
-	unpacker.set_buffer(models[i].size(), &models[i][0]);
+        // reset the buffer
+        unpacker.set_buffer(models[i].size(), &models[i][0]);
 
-	// get the indicator for this model (first packed datum)
-	unpacker >> indicator;
+        // get the indicator for this model (first packed datum)
+        unpacker >> indicator;
 
-	// now determine which analytic model we need to build
-	if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
-	{
-	    group_models[i] = new Constant_Analytic_Opacity_Model(
-		models[i]);
-	}
-	else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
-	{
-	    group_models[i] = new Polynomial_Analytic_Opacity_Model(
-		models[i]);
-	}
-	else
-	{
-	    Insist (0, "Unregistered analytic opacity model!");
-	}
+        // now determine which analytic model we need to build
+        if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
+        {
+	        group_models[i] = new Constant_Analytic_Opacity_Model(
+	        models[i]);
+        }
+        else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
+        {
+	        group_models[i] = new Polynomial_Analytic_Opacity_Model(
+	        models[i]);
+        }
+        else
+        {
+	        Insist (0, "Unregistered analytic opacity model!");
+        }
 
-	Ensure (group_models[i]);
+        Ensure (group_models[i]);
     }
     
     Ensure (group_boundaries.size() - 1 == group_models.size());

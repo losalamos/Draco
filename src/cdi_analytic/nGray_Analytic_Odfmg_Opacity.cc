@@ -14,6 +14,7 @@
 #include "nGray_Analytic_MultigroupOpacity.hh"
 #include "nGray_Analytic_Odfmg_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
+#include "ds++/dbc.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -52,7 +53,9 @@ nGray_Analytic_Odfmg_Opacity(const sf_double         &groups,
     : Analytic_Odfmg_Opacity(groups, bands, reaction_in, model_in),
       group_models(models)
 {
-    Require (models.size() == groups.size() - 1);
+    Require( models.size() == groups.size() - 1 );
+    Require( rtt_dsxx::is_strict_monotonic_increasing( groups.begin(), groups.end() ) );
+    Require( rtt_dsxx::is_strict_monotonic_increasing( bands.begin(), bands.end() ) );
 }
 
 //---------------------------------------------------------------------------//
@@ -114,6 +117,10 @@ nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
 
         // get the indicator for this model (first packed datum)
         unpacker >> indicator;
+
+        int caom(rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL);
+        int paom(rtt_cdi_analytic::POLYNOMIAL_ANALYTIC_OPACITY_MODEL);
+        int seaom(rtt_cdi_analytic::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL);
 
         // now determine which analytic model we need to build
         if (indicator ==  rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL)
