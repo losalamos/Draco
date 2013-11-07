@@ -176,6 +176,10 @@ if ! test "${setup_dirs}x" = "x"; then
       if test -d ${work_dir}/target/lib; then
          rm -rf ${work_dir}/target/*
       fi
+      # empty the autodoc directory to force new build
+      if test -d ${word_dir}/build/autodoc; then
+         rm -rf ${word_dir}/build/autodoc/*
+      fi
       # keep the purger from removing the source files.
       # find ${work_dir}/source/ -exec touch {} \;
    fi
