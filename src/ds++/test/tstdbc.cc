@@ -124,13 +124,15 @@ void dbc_test( UnitTest & ut )
     // Test badly formed numbers.
     if( ! ut.fpe_trap_active )
     {
-        double Zero = 0.0;
-        double Infinity = 1.0/Zero;
+        double const Zero = 0.0;
+        double const Infinity = 1.0/Zero;
         if (rtt_dsxx::isInf(Infinity))
             ut.passes("isInfinity works on this platform");
         else
             ut.failure("isInfinity is problematic on this platform.");
-        double Nan = Zero*Infinity;
+        // This is optimized to double Nan(0.0) by Intel.
+        // double Nan = Zero*Infinity;
+        double const Nan = std::sqrt(-1.0);
         if (rtt_dsxx::isNan(Nan))
             ut.passes("isNaN works on this platform");
         else

@@ -95,7 +95,9 @@ void run_test(int /*argc*/, char *argv[])
             break;
         case 2:
             fout << "- Trying to evaluate sqrt(-1.0)" << endl;
-            result = sqrt(neg); // should fail here
+            cout << "- Trying to evaluate sqrt(-1.0)" << endl;
+            result = std::sqrt(neg); // should fail here
+            cout << "  result = " << result << endl;
             fout << "  result = " << result << endl;
             break;
         case 3:
