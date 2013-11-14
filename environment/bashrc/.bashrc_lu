@@ -44,6 +44,7 @@ module load gsl svn
 module load cmake numdiff git lapack/3.4.1 totalview
 module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac
+module load emacs
 
 # Ensure that F90 and FC are set for Intel C/C++/FC environment.
 #if test `echo $CC | grep icc | wc -l` = 1; then
