@@ -28,7 +28,7 @@ and architecture of Draco.
 To get started building Draco see \ref build_system.  Package
 overviews can be found in the <a href="pages.html">Related Pages</a>
 section of the documentation. Also see:
-- <a href=http://coder.lanl.gov/redmine/projects/draco>Draco project
+- <a href=http://rtt.lanl.gov/redmine/projects/draco>Draco project
   management (Redmine) </a>.
 - <a href=http://rtt.lanl.gov/cdash>Draco regression reporting on CDash</a>.
 - <a href="mailto:draco@lanl.gov">Draco mailing list</a>.
