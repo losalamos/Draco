@@ -63,6 +63,7 @@
 (mwheel-install)
 
 ;; Ack/Grep
+;; http://www.emacswiki.org/Ack
 
 (defvar ack-history nil
   "History for the `ack' command.")

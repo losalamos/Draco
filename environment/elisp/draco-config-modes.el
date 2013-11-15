@@ -866,7 +866,7 @@ auto-mode-alist and set up some customizations for DRACO."
 ;; ========================================
 ;; ECB & CEDET
 ;;
-;; Ref: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
+;; http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
 ;;
 ;; When installing cedet from trunk:
 ;; 1. run make from top level
@@ -1148,20 +1148,27 @@ auto-mode-alist and set up some customizations for DRACO."
         ;;
         ;; ECB
         ;;
-        (defvar ecbver "2.40" "Version of Emacs Code Browser.")
-        ;; (setq ecbver "snap")
+        (defvar ecbver "latest" "Version of Emacs Code Browser.")
         (if (file-accessible-directory-p (concat draco-vendor-dir "/elisp/ecb-" ecbver))
             (progn
+              ; prevents ecb failing on start
+              (setq ecb-version-check nil)
+              (defadvice ecb-check-requirements (around no-version-check activate compile)
+                "ECB version checking code is very old so that it thinks that the latest
+cedet/emacs is not new enough when in fact it is years newer than the latest
+version that it is aware of. So simply bypass the version check."
+                (if (or (< emacs-major-version 23)
+                        (and (= emacs-major-version 23)
+                             (< emacs-minor-version 3)))
+                    ad-do-it))
+
               (add-to-list 'load-path (concat draco-vendor-dir
                                               "/elisp/ecb-" ecbver))
-              (require 'ecb-autoloads)
+              ; (require 'ecb-autoloads) ;; only for old version of ecb
               (setq ecb-tip-of-the-day nil)
               (setq ecb-source-path '(my-home-dir))
-              ;;(quote (concat my-home-dir "/draco") 
-              ;;             (concat my-home-dir "/jayenne") ))
-              
 
-              ;; (require 'ecb)
+              (require 'ecb)
               ;; M-x ecb-activate
               ;; M-x ecb-byte-compile
               ;; M-x ecb-show-help
