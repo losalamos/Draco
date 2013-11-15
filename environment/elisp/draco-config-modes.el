@@ -863,60 +863,312 @@ auto-mode-alist and set up some customizations for DRACO."
   )
 
 
-
 ;; ========================================
 ;; ECB & CEDET
 ;;
-;; http://cedet.sourceforge.net/setup.shtml
-;; http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
-;; http://ecb.sourceforge.net/
+;; Ref: http://alexott.net/en/writings/emacs-devenv/EmacsCedet.html
+;;
+;; When installing cedet from trunk:
+;; 1. run make from top level
+;; 2. run make from the contrib directory.
+;; 
+;; Options to add to ~/.emacs
+;;
+;; I set these from within emacs.  The most notable is probably
+;; ecb-prescan-directories-for-emptyness, which was triggering
+;; "Permission denied" errors when trying to walk directories on HPC
+;; machines.
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(ecb-layout-window-sizes (quote (("left8" (ecb-directories-buffer-name 0.3548387096774194 . 0.28888888888888886) (ecb-sources-buffer-name 0.3548387096774194 . 0.24444444444444444) (ecb-methods-buffer-name 0.3548387096774194 . 0.28888888888888886) (ecb-history-buffer-name 0.3548387096774194 . 0.16666666666666666)))))
+;;  '(ecb-options-version "2.40")
+;;  '(ecb-prescan-directories-for-emptyness nil)
+;;  '(ecb-primary-secondary-mouse-buttons (quote mouse-1--mouse-2)))
 ;; ========================================
 (defun draco-start-ecb ()
 "Start Emacs Code Browser"
   (interactive)
-  (progn
-    (defvar cedetver "1.1" "CEDET version.")
-    (defvar draco-vendor-dir "/ccs/codes/radtran/vendors" "Draco vendor dir")
-    ;;(setq cedetver "1.0pre6")
-    (if (file-accessible-directory-p "/ccs/codes/radtran/vendors")
-        (setq draco-vendor-dir "/ccs/codes/radtran/vendors"))
-    (if (file-accessible-directory-p "/usr/projects/draco/vendors")
-        (setq draco-vendor-dir "/usr/projects/draco/vendors"))
-    (if (file-accessible-directory-p (concat draco-vendor-dir
-                                             "/elisp/cedet-" cedetver "/common"))
-        (progn
-          (load-file (concat draco-vendor-dir "/elisp/cedet-" cedetver "/common/cedet.el"))
-          (global-ede-mode 1)                      ; Enable the Project management system
-          (semantic-load-enable-code-helpers)      ; Enable prototype help and smart completion 
-          (global-srecode-minor-mode 1)            ; Enable template insertion menu
-          (semantic-load-enable-minimum-features)
-          ))
-    
-    (defvar ecbver "2.40" "Version of Emacs Code Browser.")
-    ;;(setq ecbver "snap")
-    (if (file-accessible-directory-p (concat draco-vendor-dir "/elisp/ecb-" ecbver))
-        (progn
-          (add-to-list 'load-path (concat draco-vendor-dir "/elisp/ecb-" ecbver))
-          (require 'ecb)
-          ;;(require 'ecb-autoloads)
-          ;; M-x ecb-activate
-          ;; M-x ecb-byte-compile
-          ;; M-x ecb-show-help
-          ))
-    (define-key draco-mode-map [(f4)] 'semantic-ia-fast-jump)
-    
-    (defvar ecb-compilation-window-height t)
-    (add-hook 'ecb-activate-hook
-              (lambda ()
-                (let ((compwin-buffer (ecb-get-compile-window-buffer)))
-                  (if (not (and compwin-buffer
-                                (ecb-compilation-buffer-p compwin-buffer)))
-                      (ecb-toggle-compile-window -1)))))
+  (if (> emacs-major-version 23) ;; need emacs-24 or newer.
+      (progn
+        (defvar cedetver "latest" "CEDET version.")
+        (defvar draco-vendor-dir "/ccs/codes/radtran/vendors" "Draco vendor dir")
+        ;; Find and set the draco vendor directory.
+        (if (file-accessible-directory-p "/ccs/codes/radtran/vendors")
+            (setq draco-vendor-dir "/ccs/codes/radtran/vendors"))
+        (if (file-accessible-directory-p "/usr/projects/draco/vendors")
+            (setq draco-vendor-dir "/usr/projects/draco/vendors"))
+
+        ;; 
+        ;; CEDET
+        ;;
+        (if (file-accessible-directory-p 
+             (concat draco-vendor-dir
+                     "/elisp/cedet-" cedetver "/lisp"))
+            (progn
+              (load-file 
+               (concat draco-vendor-dir "/elisp/cedet-" cedetver "/cedet-devel-load.el"))
+              (load-file 
+               (concat draco-vendor-dir "/elisp/cedet-" cedetver "/contrib/cedet-contrib-load.el"))
+
+              ;; Add further minor-modes to be enabled by semantic-mode.
+              ;; See doc-string of `semantic-default-submodes' for other things
+              ;; you can use here.  Set these modes before enabling Semantic.
+              (add-to-list 'semantic-default-submodes
+                           'global-cedet-m3-minor-mode t)
+              (add-to-list 'semantic-default-submodes
+                           'global-semantic-mru-bookmark-mode t)
+
+              ;; Enable Semantic
+              (semantic-mode 1)
+              (require 'semantic/ia)
+              
+              ;; Enable GCC-specific support
+              (require 'semantic/bovine/gcc)
+              
+              ;; Parse headers when idle
+              (setq semantic-idle-work-update-headers-flag t)
+              
+              ;; Decrease idle threshold
+              (setq semantic-idle-scheduler-idle-time 0.3)
+              
+              ;; Decrease idle work threshold
+              ;; (setq semantic-idle-scheduler-work-idle-time 30)
+              
+              ;; Allow creation of ebrowse databases
+              ;; (setq semanticdb-default-system-save-directory
+              ;;       "~/.emacs.d/semanticdb")
+
+              ;; Customize CEDET key bindings
+              (defun my-cedet-bindings-hook ()
+                (local-set-key [(alt return)] 'semantic-ia-complete-symbol-menu)
+                (local-set-key [(control return)] 'semantic-ia-complete-symbol-menu)
+                (local-set-key "\C-c?" 'semantic-ia-complete-symbol)
+                
+                (local-set-key "\C-c>" 'semantic-complete-analyze-inline)
+                (local-set-key "\C-c=" 'semantic-decoration-include-visit)
+                
+                (local-set-key "\C-cj" 'semantic-ia-fast-jump)
+                (local-set-key "\C-cq" 'semantic-ia-show-doc)
+                (local-set-key "\C-ca" 'semantic-ia-show-summary)
+                (local-set-key "\C-cp" 'semantic-analyze-proto-impl-toggle))
+              (add-hook 'semantic-init-hooks 'my-cedet-bindings-hook)
+              
+              ;; Enable tag folding
+              (defun my-semantic-folding-hook ()
+                (semantic-tag-folding-mode 1)
+                (local-set-key "\C-c-" 'semantic-tag-folding-fold-block)
+                (local-set-key "\C-c+" 'semantic-tag-folding-show-block))
+              (add-hook 'semantic-init-hooks 'my-semantic-folding-hook)
+
+              ))
+
+        ;; 
+        ;; Global gtags
+        ;;
+        (defvar gtagsglobalver "6.2.9" "Global gtags version.")
+        (if (file-accessible-directory-p (concat 
+                                          draco-vendor-dir
+                                          "/elisp/global-" gtagsglobalver "/share/gtags"))
+            (progn
+              (load-file (concat draco-vendor-dir "/elisp/global-"
+                                 gtagsglobalver "/share/gtags/gtags.el")) 
+              (autoload 'gtags-mode "gtags" "" t)
+              
+              ;; Enable GNU GLOBAL support
+              (when (cedet-gnu-global-version-check t)
+                (semanticdb-enable-gnu-global-databases 'c-mode t)
+                (semanticdb-enable-gnu-global-databases 'c++-mode t)
+                (semanticdb-enable-gnu-global-databases 'f90-mode t))
+              
+              ;; Enable gtags in C mode and F90 mode
+              (add-hook 'c-mode-common-hook '(lambda () (gtags-mode 1)))
+              (add-hook 'f90-mode-hook '(lambda () (gtags-mode 1)))
+
+              ;; Switch some bindings for C and F90 mode
+              (defun my-gtags-bindings-hook ()
+                (local-set-key "\M-."  'gtags-find-tag))
+              (add-hook 'c-mode-common-hook 'my-gtags-bindings-hook)
+              (add-hook 'f90-mode-hook 'my-gtags-bindings-hook)
+
+              ))
+
+        ;;
+        ;; Eassist
+        ;; 
+        (require 'eassist)
+        
+        ;; Teach eassist about .hh files
+        (setq eassist-header-switches '(("h" . ("cc" "c"))
+                                        ;; ("i.hh" . ("t.hh" "cc" "hh"))
+                                        ;; ("t.hh" . ("cc" "hh" "i.hh"))
+                                        ("hh" . ("i.hh" "t.hh" "cc"))
+                                        ("cc" . ("hh" "i.hh" "t.hh"))
+                                        ("H" . ("C" "CC"))
+                                        ("c" . ("h"))
+                                        ("C" . ("H"))))
+        
+        ;; Customize eassist key bindings
+        (defun my-eassist-bindings-hook ()
+          (local-set-key "\C-ct" 'eassist-switch-h-cpp)
+          (local-set-key [(shift f8)] 'eassist-switch-h-cpp)
+          (local-set-key "\C-ce" 'eassist-list-methods)
+          (local-set-key "\C-c\C-r" 'semantic-symref))
+        (add-hook 'c-mode-common-hook 'my-eassist-bindings-hook)
+
+        ;; 
+        ;; EDE (Project Management)
+        ;; 
+        (global-ede-mode 1)
+
+        ;; This trips on "unsafe" operations in some projects
+        ;; (ede-enable-generic-projects)
+        
+        ;; Tell EDE to use Global to locate files
+        (setq ede-locate-setup-options
+              '(ede-locate-global ede-locate-base))
+        
+        ;; Set up an EDE project for Draco+Jayenne
+        ;; If the user has not set
+        ;; file-at-root-level-draco, then set it to
+        ;; ~/.draco_ede (this assumes that draco and jayenne are checked
+        ;; out at $HOME).  
+        (if (not (boundp 'file-at-root-level-draco))
+            (defvar file-at-root-level-draco "~/.draco_ede" ))
+        ;; If the file does not exist, create it as an empty file.
+        (if (not (file-exists-p file-at-root-level-draco))
+            (write-region "" nil file-at-root-level-draco))
+
+        ;; Link Draco, Jayenne and Capsaicin sources so semantic can find
+        ;; all the sources.
+        (ede-cpp-root-project "draco"
+                              :name "Draco Project"
+                              :file file-at-root-level-draco
+                              :include-path '("/draco/src"
+                                              "/jayenne/clubimc/src"
+                                              "/jayenne/wedgehog/src"
+                                              "/jayenne/milagro/src"
+                                              "/capsaicin/src")
+                              ;; :system-include-path '("~/exp/include")
+                              ;; :spp-table '(("isUnix" . "")
+                              ;;              ("BOOST_TEST_DYN_LINK" . "" )
+                              )
+
+        ;; Set up an EDE project for EAP     
+
+        ;; If the user has not set file-at-root-level-eap, then set it
+        ;; to ~/cassio/.eap_ede 
+        (if (not (boundp 'file-at-root-level-eap ))
+            (defvar file-at-root-level-eap "~/cassio/.eap_ede" ))
+        ;; If the file does not exist, create it as an empty file.
+        (if (not (file-exists-p file-at-root-level-eap))
+            (if (file-accessible-directory-p "~/cassio" )
+                (write-region "" nil file-at-root-level-eap)))
+        ;; If the directory does not exist the above will fail.
+        (if (file-exists-p file-at-root-level-eap)
+            (ede-cpp-root-project "EAP"
+                              :name "EA Project"
+                              :file file-at-root-level-eap
+                              :include-path
+                              '("/Source.othello"
+                                "/Source.othello/Draco"
+                                "/Source.othello/IMC"
+                                "/Source.othello/Sn"
+                                "/Source.othello/cassio"
+                                "/Source.rh"
+                                "/Source.rh/Analysis"
+                                "/Source.rh/Bibliography"
+                                "/Source.rh/Comm"
+                                "/Source.rh/Comm/Dummy_mpi"
+                                "/Source.rh/Common"
+                                "/Source.rh/Common_Util"
+                                "/Source.rh/EOS"
+                                "/Source.rh/ExternalSRCs"
+                                "/Source.rh/Graphics"
+                                "/Source.rh/Graphics/pv"
+                                "/Source.rh/Graphics/pv/Adaptor"
+                                "/Source.rh/Graphics/pv/Examples"
+                                "/Source.rh/Gravity"
+                                "/Source.rh/HEBurn"
+                                "/Source.rh/HEBurn/Contours"
+                                "/Source.rh/HEBurn/Contours/bin"
+                                "/Source.rh/Hydro"
+                                "/Source.rh/Hydro/OneFileHydros"
+                                "/Source.rh/Hydro/OpenCLHydro"
+                                "/Source.rh/Hydro/OpenCLHydro/Unit"
+                                "/Source.rh/IO"
+                                "/Source.rh/Iso"
+                                "/Source.rh/Laser"
+                                "/Source.rh/MMS"
+                                "/Source.rh/MaterialInterface"
+                                "/Source.rh/MaterialInterface/VOFQ"
+                                "/Source.rh/Mesh"
+                                "/Source.rh/Mesh/gem_old_test"
+                                "/Source.rh/OpenCLUtil"
+                                "/Source.rh/OpenCLUtil/Unit"
+                                "/Source.rh/Parser"
+                                "/Source.rh/Plasma"
+                                "/Source.rh/Plasma/tests"
+                                "/Source.rh/Radiation"
+                                "/Source.rh/Rage"
+                                "/Source.rh/Roxane"
+                                "/Source.rh/Roxane/OpenCL"
+                                "/Source.rh/Roxane/OpenCL/Unit"
+                                "/Source.rh/Roxane_Util"
+                                "/Source.rh/Setup"
+                                "/Source.rh/Setup/SpicaCSG"
+                                "/Source.rh/Solvers"
+                                "/Source.rh/Solvers/dierckx"
+                                "/Source.rh/Strength"
+                                "/Source.rh/Strength/TEPLA"
+                                "/Source.rh/TNBurn"
+                                "/Source.rh/Turbulence"
+                                "/Source.rh/Util"
+                                "/Source.rh/Util_basic"
+                                "/Source.rh/build"
+                                "/Source.rh/dump_reader"
+                                "/Source.rh/l7"
+                                "/Source.rh/l7/config"
+                                "/Source.rh/l7/libsrc"
+                                "/Source.rh/l7/libsrc/l7"
+                                "/Source.rh/l7/tests"
+                                "/Source.rh/l7/tests/F7test"
+                                "/Source.rh/l7/tests/L7test"
+                                "/Source.rh/leLinkLib"
+                                "/Source.rh/leLinkLib/leLinkLib"
+                                "/Source.rh/leLinkLib/sageFiles"
+                                "/Source.rh/m4"
+                                "/Source.rh/xRage")
+                              :header-match-regexp 
+                              "\\.\\(h\\(h\\|xx\\|pp\\|\\+\\+\\)?\\|H\\|f90\\)$\\|\\<\\w+$")
+        ) ;; endif
+
+        ;;
+        ;; ECB
+        ;;
+        (defvar ecbver "2.40" "Version of Emacs Code Browser.")
+        ;; (setq ecbver "snap")
+        (if (file-accessible-directory-p (concat draco-vendor-dir "/elisp/ecb-" ecbver))
+            (progn
+              (add-to-list 'load-path (concat draco-vendor-dir
+                                              "/elisp/ecb-" ecbver))
+              (require 'ecb-autoloads)
+              (setq ecb-tip-of-the-day nil)
+              (setq ecb-source-path '(my-home-dir))
+              ;;(quote (concat my-home-dir "/draco") 
+              ;;             (concat my-home-dir "/jayenne") ))
+              
+
+              ;; (require 'ecb)
+              ;; M-x ecb-activate
+              ;; M-x ecb-byte-compile
+              ;; M-x ecb-show-help
+              ))
+        )
+    (message "CEDT/ECB setup required emacs version 24 or newer.")
     )
-  ;;(setq ecb-layout-window-sizes (quote (("ecb-layout-draco" (0.25 . 0.25) (0.15 . 0.25) (0.4 . 0.45) (0.4 . 0.3)))))
-  ;;(setq ecb-options-version "2.40")
-  ;;(setq ecb-source-path (quote ("$HOME/jayenne" ("$HOME/draco" "/draco"))))
-  (ecb-activate)
   )
 
 ;;---------------------------------------------------------------------------;;

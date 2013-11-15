@@ -16,20 +16,12 @@
 ;; System information
 ;;
 (defvar emacs-load-start-time (current-time))
-(defconst win32p
-    (eq system-type 'windows-nt) "Are we running on a WinTel system?")
-(defconst cygwinp
-    (eq system-type 'cygwin) "Are we running on a WinTel cygwin system?")
 (defconst linuxp
     (or (eq system-type 'gnu/linux)
         (eq system-type 'linux)) "Are we running on a GNU/Linux system?")
-(defconst unixp
-  (or linuxp (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix))
-  "Are we running unix")
 (defconst linux-x-p
     (and window-system 'linuxp) "Are we running under X on a GNU/Linux system?")
-(defconst xemacsp (featurep 'xemacs) "Are we running XEmacs?")
-(defconst emacs>=23p (and (not xemacsp) (> emacs-major-version 22))
+(defconst emacs>=24p (> emacs-major-version 23))
   "Are we running GNU Emacs 23 or above?")
 (defvar emacs-debug-loading nil)
 
@@ -42,91 +34,75 @@
 ;; Personal Settings below this line
 ;;---------------------------------------------------------------------------------------
 
-;; (custom-set-variables
-;;   ;; custom-set-variables was added by Custom.
-;;   ;; If you edit it by hand, you could mess it up, so be careful.
-;;   ;; Your init file should contain only one such instance.
-;;   ;; If there is more than one, they won't work right.
-;;  '(inhibit-startup-screen t)
-;;  '(scroll-bar-mode (quote right))
-;;  '(show-paren-mode t)
-;;  '(tool-bar-mode nil)
-;;  '(transient-mark-mode t))
+;; this is the same title bar format all Gnome apps seem to use
+(setq frame-title-format (list "[" (system-name) "] %b" ))
 
-;; (custom-set-faces
-;;   ;; custom-set-faces was added by Custom.
-;;   ;; If you edit it by hand, you could mess it up, so be careful.
-;;   ;; Your init file should contain only one such instance.
-;;   ;; If there is more than one, they won't work right.
-;;  '(default ((t (:stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width semi-condensed :family "misc-fixed")))))
+; Turn off warning:
+(setq large-file-warning-threshold nil)
 
+;; Automatically keep buffers synchronized with file system
+;; (i.e. reload the buffer automatically if the file changes outside
+;; of emacs).
+(global-auto-revert-mode t)
 
-;; (unless xemacsp (set-language-environment 'Latin-1))
-;; ;(set-keyboard-coding-system 'iso-8859-1) ??
+;; CEDET
+;; Generate tag files for Fortran: 'gtags --gtagslabel=ctags'
+(defvar file-at-root-level-draco "~/.draco_ede")
+(defvar file-at-root-level-eap "~/cassio/.eap_ede")
+(draco-start-ecb)
 
-;; ;;; Default Settings
-;; (setq next-line-add-newlines nil)
-;; (setq track-eol nil)
-;; (setq scroll-step 1)
-;; ;;(setq scroll-conservatively 10000)
+;; Allow 'emacsclient' to connect to running emacs.
+(server-start)
+(add-hook 'server-switch-hook
+          (lambda ()
+            (when (current-local-map)
+              (use-local-map (copy-keymap (current-local-map))))
+            (when server-buffer-clients
+              (local-set-key (kbd "C-c C-c") 'server-edit))))
 
-;; (setq hscroll-step 1)
-;; (setq make-backup-files nil)
-;; (line-number-mode 1)     ; line-numbers
-;; (column-number-mode 1)
-;; (setq visible-bell t) ; no beeping
-;; (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1)) ; no blinking cursor
-;; (setq default-tab-width 4)
-;; (setq-default indent-tabs-mode nil)
-;; (setq imenu-max-items 40)
-;; (setq message-log-max 3000)
-;; ;(setq echo-keystrokes 0.1)
-;; (setq history-length 100)
-;; (setq line-number-display-limit 10000000)
-;; (setq sentence-end-double-space nil)
-;; (setq read-quoted-char-radix 10) ; accept decimal input when using ^q, e.g.: ^q 13 [RET] -> ^M
-;; (setq yank-excluded-properties t) ; do not paste any properties
-;; (setq confirm-nonexistent-file-or-buffer t)
-;; ;;(setq directory-sep-char ?\\)
-;; (setq completion-ignored-extensions (remove ".pdf" completion-ignored-extensions))
-;; (setq completion-ignored-extensions (remove ".dvi" completion-ignored-extensions))
+;; ========================================
+;; GNU Emacs Custom settings
+;; ========================================
 
-;; (setq max-specpdl-size 32000)
-;; (setq max-lisp-eval-depth 32000)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(compilation-auto-jump-to-first-error nil)
+ '(compilation-scroll-output (quote first-error))
+ '(cua-mode t nil (cua-base))
+ '(ecb-layout-window-sizes (quote (("ecb-layout-draco" (0.25 . 0.25) (0.15 . 0.25) (0.4 . 0.45) (0.4 . 0.3)))))
 
-;; (setq apropos-sort-by-scores t)
+ '(ecb-options-version "2.40")
+ '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-CVS . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state) (ecb-vc-dir-managed-by-MTN . ecb-vc-state))))
+ '(font-lock-maximum-decoration t)
+ '(global-font-lock-mode t nil (font-lock))
+ '(inhibit-startup-screen t)
+ '(scroll-bar-mode (quote right))
+ '(show-paren-mode t nil (paren))
+ '(text-mode-hook (quote (turn-on-auto-fill text-mode-hook-identify)))
+ '(tool-bar-mode nil)
+ '(ecb-prescan-directories-for-emptyness nil)
+ '(ecb-primary-secondary-mouse-buttons (quote mouse-1--mouse-2))
+ '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
 
-;; (setq-default case-fold-search t)
-
-;; (require 'uniquify)
-;; (setq uniquify-non-file-buffer-names t)
-;; (setq uniquify-after-kill-buffer-p t)
-;; (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-;; (setq uniquify-ignore-buffers-re "\\`\\*")
-;; ;(toggle-uniquify-buffer-names)
-
-
-;; ;;; Window System specific code
-;; (cond (window-system
-;;        ;; use some nicer colors for font-lock mode
-;;        ;=(set-face-foreground 'font-lock-comment-face "gray50")
-;;        ;=(set-face-foreground 'font-lock-string-face "green4")
-
-;;        (unless xemacsp (global-font-lock-mode t))
-;;        (setq font-lock-maximum-decoration t)
-;;        (setq lazy-lock-defer-on-scrolling t)
-;;        (if emacs>=21p
-;;            (progn
-;;              (setq font-lock-support-mode 'jit-lock-mode)
-;;              ;; (setq jit-lock-stealth-time 16)
-;;              ;; (setq jit-lock-stealth-nice 0.5)
-;;              (setq font-lock-multiline t))
-;;          (setq font-lock-support-mode 'lazy-lock-mode))
-;;        ;(setq lazy-lock-defer-contextually t)
-;;        ;(setq lazy-lock-defer-time 0)
-;; ))
-
-;; ;; http://www.emacswiki.org/emacs/AddKeywords
-;; (unless (fboundp 'font-lock-add-keywords)
-;;   (defalias 'font-lock-add-keywords 'ignore))
-
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "ivory" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width semi-condensed :family "Fixed" :foundry "Misc"))))
+ '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "purple"))))
+ '(font-lock-constant-face ((((class color) (min-colors 88) (background light)) (:foreground "CadetBlue"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-string-face :foreground "bisque3"))))
+ '(font-lock-function-name-face ((((class color) (min-colors 88) (background light)) (:foreground "Blue3"))))
+ '(font-lock-keyword-face ((((class color) (min-colors 88) (background light)) (:foreground "firebrick2"))))
+ '(font-lock-preprocessor-face ((t (:inherit font-lock-builtin-face :foreground "hotpink"))))
+ '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:foreground "orange3"))))
+ '(font-lock-variable-name-face ((((class color) (min-colors 88) (background light)) (:foreground "Royalblue"))))
+ '(menu ((((type x-toolkit)) (:weight bold :height 0.8 :family "helvetica"))))
+ '(mode-line ((((class color) (min-colors 88)) (:background "wheat" :foreground "black" :box (:line-width -1 :style released-button) :weight bold :height 0.9 :width normal :foundry "Times" :family "Times"))))
+ '(mode-line-emphasis ((t (:foreground "red" :weight bold))))
+ '(modeline-face ((((class color) (min-colors 88) (background light)) (:background "wheat")))))
