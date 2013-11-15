@@ -96,7 +96,7 @@ install( TARGETS Lib_diagnostics
    EXPORT draco-targets
    DESTINATION lib )
 
-# ??? Do I need to put draco_info into a bin/ diretory for RPATH to
+# ??? Do I need to put draco_info into a bin/ directory for RPATH to
 # work correctly after install?
 install( TARGETS Exe_draco_info DESTINATION bin )
 install( FILES ${headers}  DESTINATION include/diagnostics )

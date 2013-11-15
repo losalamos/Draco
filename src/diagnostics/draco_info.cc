@@ -152,14 +152,14 @@ int main( int /*argc*/, char *argv[] )
             cout << " " << CMAKE_C_FLAGS_RELEASE;
         else if( build_type == std::string("Release") )
             cout << " " << CMAKE_C_FLAGS_DEBUG;
-        
+#ifdef CMAKE_Fortran_COMPILER
         cout << "\n    Fortran Compiler  : " << CMAKE_Fortran_COMPILER
              << "\n    Fortran_FLAGS     : " << CMAKE_Fortran_FLAGS;
         if( build_type == std::string("Release") )
             cout << " " << CMAKE_Fortran_FLAGS_RELEASE;
         else if( build_type == std::string("Release") )
             cout << " " << CMAKE_Fortran_FLAGS_DEBUG;
-        
+#endif        
         cout << "\n" << endl;
     }
     catch( rtt_dsxx::assertion &err )
