@@ -14,10 +14,12 @@
 #include "diagnostics/config.h"
 #include "c4/config.h"
 #include "ds++/Release.hh"
+#include "ds++/UnitTest.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <algorithm> // tolower
 
 //---------------------------------------------------------------------------//
 // Draco-6_5_20121113, build date 2012/11/13; build type: DEBUG; DBC: 7
@@ -62,7 +64,14 @@ int main( int /*argc*/, char *argv[] )
 // Build Information
 //---------------------------------------------------------------------------//
 
+        // Create a string to hold build_type and normalize the case.
+        std::string build_type( CMAKE_BUILD_TYPE );
+        std::transform( build_type.begin(), build_type.end(),
+                        build_type.begin(), ::tolower);
+        build_type[0] = ::toupper(build_type[0]);
+        
         cout << "Build information:"
+             << "\n    Build type     : " << build_type
              << "\n    Library type   : "
 #ifdef DRACO_SHARED_LIBS
              << "shared"
@@ -115,53 +124,43 @@ int main( int /*argc*/, char *argv[] )
              << "\n    C++11 Support  : "
 #ifdef DRACO_ENABLE_CXX11
              << "enabled"
-             << "\n      Feature list : "
-#ifdef HAS_CXX11_CSTDINT_H
-             << "HAS_CXX11_CSTDINT_H "
-#endif
-#ifdef HAS_CXX11_AUTO
-             << "\n                     HAS_CXX11_AUTO "
-#endif
-#ifdef HAS_CXX11_NULLPTR
-             << "\n                     HAS_CXX11_NULLPTR "
-#endif
-#ifdef HAS_CXX11_LAMBDA
-             << "\n                     HAS_CXX11_LAMBDA_TEMPLATES "
-#endif
-#ifdef HAS_CXX11_STATIC_ASSERT
-             << "\n                     HAS_CXX11_STATIC_ASSERT "
-#endif
-#ifdef HAS_CXX11_RVALUE_REFERENCES
-             << "\n                     HAS_CXX11_RVALUE_REFERENCES "
-#endif
-#ifdef HAS_CXX11_DECLTYPE
-             << "\n                     HAS_CXX11_DECLTYPE "
-#endif
-#ifdef HAS_CXX11_CSTDINT_H
-             << "\n                     HAS_CXX11_CSTDINT_H "
-#endif
-#ifdef HAS_CXX11_LONG_LONG
-             << "\n                     HAS_CXX11_LONG_LONG "
-#endif
-#ifdef HAS_CXX11_VARIADIC_TEMPLATES
-             << "\n                     HAS_CXX11_VARIADIC_TEMPLATES "
-#endif
-#ifdef HAS_CXX11_CONSTEXPR
-             << "\n                     HAS_CXX11_CONSTEXPR "
-#endif
-#ifdef HAS_CXX11_SIZEOF_MEMBER
-             << "\n                     HAS_CXX11_SIZEOF_MEMBER "
-#endif
-#ifdef HAS_CXX11_SHARED_PTR
-             << "\n                     HAS_CXX11_SHARED_PTR "
-#endif
-#ifdef HAS_CXX11_ARRAY
-             << "\n                     HAS_CXX11_ARRAY "
-#endif
+             << "\n      Feature list : ";
+
+        std::vector<std::string> cxx11_features(
+            rtt_dsxx::UnitTest::tokenize( CXX11_FEATURE_LIST, ";", false ) );
+        for( size_t i=0; i<cxx11_features.size(); ++i )
+            if( i==0 )
+                cout << cxx11_features[i];
+            else
+                cout << "\n                     " << cxx11_features[i];
 #else
-             << "disabled"
+            << "disabled";
 #endif
-             << "\n" << endl;
+
+            // Compilers and Flags
+            
+        cout << "\n    CXX Compiler      : " << CMAKE_CXX_COMPILER
+             << "\n    CXX_FLAGS         : " << CMAKE_CXX_FLAGS;
+        if( build_type == std::string("Release") )
+            cout << " " << CMAKE_CXX_FLAGS_RELEASE;
+        else if( build_type == std::string("Release") )
+            cout << " " << CMAKE_CXX_FLAGS_DEBUG;
+
+        cout << "\n    C Compiler        : " << CMAKE_C_COMPILER
+             << "\n    C_FLAGS           : " << CMAKE_C_FLAGS;
+        if( build_type == std::string("Release") )
+            cout << " " << CMAKE_C_FLAGS_RELEASE;
+        else if( build_type == std::string("Release") )
+            cout << " " << CMAKE_C_FLAGS_DEBUG;
+        
+        cout << "\n    Fortran Compiler  : " << CMAKE_Fortran_COMPILER
+             << "\n    Fortran_FLAGS     : " << CMAKE_Fortran_FLAGS;
+        if( build_type == std::string("Release") )
+            cout << " " << CMAKE_Fortran_FLAGS_RELEASE;
+        else if( build_type == std::string("Release") )
+            cout << " " << CMAKE_Fortran_FLAGS_DEBUG;
+        
+        cout << "\n" << endl;
     }
     catch( rtt_dsxx::assertion &err )
     {

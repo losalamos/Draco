@@ -100,6 +100,9 @@ cxx11_check_feature("explicit_conversion" 2437 HAS_CXX11_EXPLICIT_CONVERSION)
 cxx11_check_feature("unrestricted_unions" 2544 HAS_CXX11_UNRESTRICTED_UNIONS)
 cxx11_check_feature("type_traits"         1836 HAS_CXX11_TYPE_TRAITS)
 cxx11_check_feature("range_based_for"     2930 HAS_CXX11_RANGE_BASED_FOR)
+cxx11_check_feature("raw_string_literals" 2442 HAS_CXX11_RAW_STRING_LITERALS)
+cxx11_check_feature("non_static_data_member_init" 2756 HAS_CXX11_NON_STATIC_DATA_MEMBER_INIT)
+cxx11_check_feature("delegating_constructors" 1986 HAS_CXX11_DELEGATING_CONSTRUCTORS)
 
 # We track supported compilers's support of these C++ features at
 # https://rtt.lanl.gov/redmine/projects/draco/wiki/C++.  We currently
@@ -110,15 +113,15 @@ cxx11_check_feature("range_based_for"     2930 HAS_CXX11_RANGE_BASED_FOR)
 # So ensure that these are available in the selected compiler.
 if( NOT HAS_CXX11_AUTO )
    message( FATAL_ERROR 
-"Draco expects your comiler to support C++11's auto keyword." )
+"Draco expects your compiler to support C++11's auto keyword." )
 endif()
 if( NOT HAS_CXX11_RVALUE_REFERENCES )
    message( FATAL_ERROR 
-"Draco expects your comiler to support C++11's rvalue references feature." )
+"Draco expects your compiler to support C++11's rvalue references feature." )
 endif()
 if( NOT HAS_CXX11_LONG_LONG )
    message( FATAL_ERROR 
-"Draco expects your comiler to support C++11's long long keyword." )
+"Draco expects your compiler to support C++11's long long keyword." )
 endif()
 
 # Please add a CPP macro def in ds++/config.h.

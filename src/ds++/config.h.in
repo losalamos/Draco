@@ -200,6 +200,23 @@
 #cmakedefine HAS_CXX11_ARRAY
 
 /* ---------------------------------------- */
+/* Configuration Options used by CMake      */
+/* ---------------------------------------- */   
+#cmakedefine CMAKE_CXX_COMPILER      "@CMAKE_CXX_COMPILER@"
+#cmakedefine CMAKE_CXX_FLAGS         "@CMAKE_CXX_FLAGS@"
+#cmakedefine CMAKE_CXX_FLAGS_DEBUG   "@CMAKE_CXX_FLAGS_DEBUG@"
+#cmakedefine CMAKE_CXX_FLAGS_RELEASE "@CMAKE_CXX_FLAGS_RELEASE@"
+#cmakedefine CMAKE_C_COMPILER        "@CMAKE_C_COMPILER@"
+#cmakedefine CMAKE_C_FLAGS           "@CMAKE_C_FLAGS@"
+#cmakedefine CMAKE_C_FLAGS_DEBUG     "@CMAKE_C_FLAGS_DEBUG@"
+#cmakedefine CMAKE_C_FLAGS_RELEASE   "@CMAKE_C_FLAGS_RELEASE@"
+#cmakedefine CMAKE_Fortran_COMPILER  "@CMAKE_Fortran_COMPILER@"
+#cmakedefine CMAKE_Fortran_FLAGS     "@CMAKE_Fortran_FLAGS@"
+#cmakedefine CMAKE_Fortran_FLAGS_DEBUG     "@CMAKE_Fortran_FLAGS_DEBUG@"
+#cmakedefine CMAKE_Fortran_FLAGS_RELEASE   "@CMAKE_Fortran_FLAGS_RELEASE@"
+#cmakedefine CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+
+/* ---------------------------------------- */
 /* GENERAL build system setup               */
 /* ---------------------------------------- */   
 
