@@ -29,6 +29,8 @@
 #  define DRACO_TIME_TYPE time_t
 #  define DRACO_CLOCKS_PER_SEC CLOCKS_PER_SEC
 #else
+// Consider using GetProcessTimes instead of this as a higher resolution
+// timer. 
 #  define DRACO_TIME_TYPE tms
 #  define DRACO_CLOCKS_PER_SEC sysconf(_SC_CLK_TCK)
 #endif

@@ -2,8 +2,8 @@
 # file   config/unix-gfortran.cmake
 # author Kelly Thompson 
 # date   2010 Sep 27
-# brief  Establish flags for Windows - Intel Visual Fortran
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# brief  Establish flags for Unix/Linux - Gnu Fortran
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -13,8 +13,8 @@
 # switch on this macro.
 set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 
-# I know that gfortran 4.1 won't compile our code (maybe 4.2 or 4.3
-# will).
+# gfortran < 4.3 won't compile Draco
+# gfortran < 4.7 won't compile Jayenne
 if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
    execute_process(
       COMMAND ${CMAKE_Fortran_COMPILER} --version
@@ -26,125 +26,40 @@ if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
    string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
             CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} )
 endif()
-if( "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.3" )
+if( "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.7" )
   message( FATAL_ERROR "
 *** Compiler incompatibility:
-gfortran < 4.3 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
-"
-  )
-# If we absolutely must compile with an older version of gfortran, the
-# following flags may need to be added: "-x f95-cpp-input"
-
+gfortran < 4.7 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
+" )
 endif()
 
-# General flags:
 #
-# -ffree-form             Don't assume fixed-form FORTRAN.
-# -ffree-line-length-none Allow Fortran lines longer than 132 chars.
-# -fimplicit-none         Do not allow implicit typing
-# -fPIC                   Produce position independent code
-# -cpp                    Enable preprocessing
-# -static-libgfortran     On systems that provide libgfortran as a
-#                         shared and a static library, this option
-#                         forces the use of the static version. If no
-#                         shared version of libgfortran was built when
-#                         the compiler was configured, this option has
-#                         no effect. 
+# Compiler Flags
+# 
 
-set( CMAKE_Fortran_FLAGS "-ffree-line-length-none -cpp" )
+if( NOT Fortran_FLAGS_INITIALIZED )
+   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-# Debug flags:
-#
-# -g            Always include debug symbols (strip for distribution).
-# -Wall          Enable most warning messages
-# -fbounds-check Turn on array bounds checking
-# -frange-check  Disallow 1/0=+infinity or range wrap-around.
-# -ffpe-trap=invalid  invalid floating point operation, such as "SQRT(-1.0)"
-#           =zero     division by zero
-#           =overflow overflow in a floating point operation
-# -pedantic      Issue warnings for uses of extensions to Fortran 95.
-# Consider adding:
-# -Wconversion   Warn about implicit conversions between different
-#                types.
-# -Wimplicit-interface Warn if a procedure is called without an
-#                explicit interface.  
-#   
-SET( CMAKE_Fortran_FLAGS_DEBUG 
-  "-g -gdwarf-3 -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
-# [2011-10-25 KT]: turn off '-Wall -W' for now
-# removed pedantic - needed by capsaicin
-
-# Release flags
-#
-# -03                 Highest supported optimization level.
-SET( CMAKE_Fortran_FLAGS_RELEASE "-O3 -march=native -mtune=native -ftree-vectorize -funroll-loops -march=k8 -DNDEBUG" )
-SET( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
-SET( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -gdwarf -O3 -ftree-vectorize -funroll-loops -march=k8 -DDEBUG" ) 
-
-# ------------------------------------------------------------
-# Find and save compiler libraries.  These may need to be used when
-# the main code is C++ that links to Fortran libraries.
-# ------------------------------------------------------------
-
-if( "${DRACO_LIBRARY_TYPE}" STREQUAL "STATIC" )
-   set(libext ".a")
-else()
-   set(libext ".so")
-endif()
-set( f90_system_lib libgfortran.${libext} )
-if( USE_OPENMP )
-  set( f90_system_lib ${f90_system_lib};libgomp.${libext} )
-endif( USE_OPENMP )
-
-# Static libraries from the /lib directory (useful for target_link_library command).
-set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL "Fortran system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" )
-
-# Find the Fortran lib/ directory
-execute_process(
-  COMMAND ${CMAKE_Fortran_COMPILER} --print-file-name=libgfortran${libext}
-  OUTPUT_VARIABLE CMAKE_Fortran_LIB_DIR )
-get_filename_component( CMAKE_Fortran_LIB_DIR
-  ${CMAKE_Fortran_LIB_DIR} PATH )
-
-foreach( lib ${f90_system_lib} )
-
+   set( CMAKE_Fortran_FLAGS "-ffree-line-length-none -cpp" )
+   set( CMAKE_Fortran_FLAGS_DEBUG 
+      "-g -gdwarf-3 -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
+   set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -mtune=native -ftree-vectorize -funroll-loops -DNDEBUG" )
+   set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
+   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -gdwarf ${CMAKE_Fortran_FLAGS_RELEASE}")
    
-  get_filename_component( libwe ${lib} NAME_WE )
-  find_library( CMAKE_Fortran_${libwe}
-    NAMES ${libwe}${libext} ${libwe}
-    PATHS "${CMAKE_Fortran_LIB_DIR}"
-    )
-  mark_as_advanced( CMAKE_Fortran_${libwe} )
-  set( CMAKE_Fortran_${libwe}_lib_LIBRARY
-    "${CMAKE_Fortran_${libwe}}"
-    CACHE INTERNAL "Fortran static system libraries that are needed by the applications built with Intel Visual Fortran (only optimized versions are redistributable.)" FORCE )
-  list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib_LIBRARY} )
+   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
+      set( CMAKE_Fortran_FLAGS    "${CMAKE_Fortran_FLAGS} -march=native" )
+   endif()
+endif()
 
-endforeach( lib ${f90_system_lib} )
-
-unset(f90_system_lib)
-unset(libext)
-
-# Code Coverage options:
-
-# option( ENABLE_Fortran_CODECOVERAGE
-#   "Instrument for Fortran (gfortran) code coverage analysis?" OFF )
-# if( ENABLE_Fortran_CODECOVERAGE )
-#   find_program( COVERAGE_COMMAND gcov )
-#   set( CMAKE_Fortran_FLAGS_DEBUG
-#     "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -fprofile-arcs -ftest-coverage" )
-#   set( CMAKE_Fortran_FLAGS_DEBUG   "${CMAKE_Fortran_FLAGS_DEBUG}")
-#   set( CMAKE_LDFLAGS               "${CMAKE_LDFLAGS} -fprofile-arcs -ftest-coverage" )
-# endif( ENABLE_Fortran_CODECOVERAGE )
-
-# Profiling
-
-# option( ENABLE_Fortran_PROFILING 
-#   "Instrument for Fortran profiling with gprof"
-#   OFF )
-# if( ENABLE_Fortran_PROFILING )
-#   set( CMAKE_Fortran_FLAGS   "${CMAKE_Fortran_FLAGS} -pg" )
-# endif( ENABLE_Fortran_PROFILING )
+##---------------------------------------------------------------------------##
+# Ensure cache values always match current selection
+##---------------------------------------------------------------------------##
+set( CMAKE_Fortran_FLAGS                "${CMAKE_Fortran_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 #------------------------------------------------------------------------------#
 # End config/unix-gfortran.cmake

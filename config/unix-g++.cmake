@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-g++.cmake
-# brief  Establish flags for Windows - MSVC
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# brief  Establish flags for Unix/Linux - Gnu C++
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -12,61 +12,23 @@
 # http://gcc.gnu.org/wiki/TransactionalMemory
 # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
+#
+# Declare CMake options related to GCC
+#
+option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." OFF )
+option( GCC_ENABLE_GLIBCXX_DEBUG 
+   "Use special version of libc.so that includes STL bounds checking." OFF )
 
 #
-# Sanity Checks
-# 
-
-if( NOT CMAKE_COMPILER_IS_GNUCC )
-  message( FATAL_ERROR "If CC is not GNUCC, then we shouldn't have ended up here.  Something is really wrong with the build system. " )
-endif( NOT CMAKE_COMPILER_IS_GNUCC )
-
-#
-# Compiler flag check
+# Compiler flag checks
 #
 include(CheckCCompilerFlag)
-check_c_compiler_flag(-march=native HAS_MARCH_NATIVE)
-
-#
-# C++ libraries required by Fortran linker
-# 
-
-execute_process( 
-  COMMAND ${CMAKE_C_COMPILER} -print-libgcc-file-name
-  TIMEOUT 5
-  RESULT_VARIABLE tmp
-  OUTPUT_VARIABLE libgcc_path
-  ERROR_VARIABLE err
-  )
-get_filename_component( libgcc_path ${libgcc_path} PATH )
-execute_process( 
-  COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libstdc++.so
-  TIMEOUT 5
-  RESULT_VARIABLE tmp
-  OUTPUT_VARIABLE libstdcpp_so_loc
-  ERROR_VARIABLE err
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-get_filename_component( libstdcpp_so_loc ${libstdcpp_so_loc} ABSOLUTE )
-execute_process( 
-  COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcc_s.so
-  TIMEOUT 5
-  RESULT_VARIABLE tmp
-  OUTPUT_VARIABLE libgcc_s_so_loc
-  ERROR_VARIABLE err
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-get_filename_component( libgcc_s_so_loc ${libgcc_s_so_loc} ABSOLUTE )
-set( GCC_LIBRARIES 
-  ${libstdcpp_so_loc}
-  ${libgcc_s_so_loc}
-  )
-
-#
-# config.h settings
-#
-set( DBS_C_COMPILER_VER "gcc ${CMAKE_CXX_COMPILER_VERSION}" )
-set( DBS_CXX_COMPILER_VER "g++ ${CMAKE_CXX_COMPILER_VERSION}" )
+include(CheckCXXCompilerFlag)
+check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
+check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
+check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
+check_cxx_compiler_flag( "-Wunused-local-typedefs"   HAS_WUNUSED_LOCAL_TYPEDEFS )
+check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" HAS_WZER0_AS_NULL_POINTER_CONSTANT )
 
 # is this bullseye?
 execute_process(
@@ -86,20 +48,14 @@ endif()
 # Compiler Flags
 # 
 
-# cmake-2.8.9+ -fPIC can be established by using
-# set(CMAKE_POSITION_INDEPENDENT_CODE ON) 
-
-# Flags from Draco autoconf build system:
-
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
    set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
-   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
-      set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} -march=native" )
-   endif()
    set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
+   # set( CMAKE_C_FLAGS_RELEASE        "-O3 -ffast-math -mtune=native -ftree-vectorize -funroll-loops -DNDEBUG" )
+# -fno-finite-math-only -fno-associative-math -fsignaling-nans
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
@@ -110,40 +66,21 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
    # Extra Debug flags that only exist in newer gcc versions.
-   include(CheckCXXCompilerFlag)
-   check_cxx_compiler_flag( "-Wnoexcept" HAS_WNOEXCEPT)
    if( HAS_WNOEXCEPT )
       set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wnoexcept" )
    endif()
-   check_cxx_compiler_flag( "-Wsuggest-attribute=const"
-      HAS_WSUGGEST_ATTRIBUTE )
    if( HAS_WSUGGEST_ATTRIBUTE )
       set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wsuggest-attribute=const" )
    endif()
-   check_cxx_compiler_flag( "-Wunused-local-typedefs"
-      HAS_WUNUSED_LOCAL_TYPEDEFS )
    if( HAS_WUNUSED_LOCAL_TYPEDEFS )
       set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wunused-local-typedefs" )
    endif()
-   check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant"
-      HAS_WZER0_AS_NULL_POINTER_CONSTANT )
-   # if( HAS_WZER0_AS_NULL_POINTER_CONSTANT )
-   #    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wzero-as-null-pointer-constant" )
-   # endif()
+   if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
+      set( CMAKE_C_FLAGS         "${CMAKE_C_FLAGS} -march=native" )
+      set( CMAKE_CXX_FLAGS       "${CMAKE_CXX_FLAGS} -march=native" )
+   endif()
 
 endif()
-
-##---------------------------------------------------------------------------##
-
-option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options."
-   OFF )
-toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
-
-option( GCC_ENABLE_GLIBCXX_DEBUG 
-   "Use special version of libc.so that includes STL bounds checking." 
-   OFF )
-toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG 
-   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
 
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
@@ -160,8 +97,17 @@ set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE ST
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-# Toggle for OpenMP
-# consider:
+#
+# Toggle compiler flags for optional features
+#
+toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
+toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG 
+   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c++98" "CXX" "")
+toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c90"   "C" "")
+toggle_compiler_flag( DRACO_ENABLE_C99         "-std=c99" "C" "" )
+
+# Consider:
 #   find_package(OpenMP)
 #   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_CXX_FLAGS}" "C;CXX;EXE_LINKER" "" )
 toggle_compiler_flag( USE_OPENMP "-fopenmp" "C;CXX;EXE_LINKER" "" )
@@ -181,15 +127,9 @@ Found gcc version ${GCC_VERSION}")
    endif()
 endif()
 
-# Toggle for C99 support
-toggle_compiler_flag( DRACO_ENABLE_C99 "-std=c99" "C" "" )
-
-# Do we add '-ansi -pedantic'?
-#toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-ansi" "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c++98" "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c90"   "C" "")
-
+#========================================
 # Notes for building gcc-4.7.1
+#========================================
 # ../gcc-4.7.1/configure \
 # --prefix=/ccs/codes/radtran/vendors/gcc-4.7.1 \
 # --enable-language=c++,fortran,lto \

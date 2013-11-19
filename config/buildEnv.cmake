@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Default CMake build parameters
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -135,37 +135,8 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro( dbsConfigInfo )
 
-   # create a generator to capture DBS_BUILD_DATE
-   # set( DBS_CONFIGURE_DATE "unknown" )
-
-   # Do we have access to the all the required system headers?
-   #include( CheckIncludeFiles )
-   #check_include_files( stdbool.h DBS_HAVE_STDBOOL_H )
-   #check_include_files( stdint.h TSP_HAVE_STDINT_H )
-   #check_include_files( regex.h TSP_HAVE_REGEX_H )
-
-   # Do we have some special symbols
-   #include( CheckSymbolExists )
-   #check_symbol_exists( cbrt math.h DBS_HAVE_CBRT )
-   
    # We need this string in all caps to capture the compiler flags correctly.
    string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE )
-   
-   set( DBS_F90_COMPILER "${CMAKE_Fortran_COMPILER}" )
-   set( DBS_F90_COMPILER_VER "${CMAKE_Fortran_COMPILER_VERSION}" )
-   set( DBS_F90_OPT_LEVEL "${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}" )
-
-   set( DBS_C_COMPILER "${CMAKE_C_COMPILER}" )
-   set( DBS_C_OPT_LEVEL "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}" )
-   if( NOT DBS_C_COMPILER_VER )
-      set( DBS_C_COMPILER_VER " " )
-   endif( NOT DBS_C_COMPILER_VER )
-   
-   set( DBS_CXX_COMPILER "${CMAKE_CXX_COMPILER}" )
-   set( DBS_CXX_OPT_LEVEL "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
-   if( NOT DBS_CXX_COMPILER_VER )
-      set( DBS_CXX_COMPILER_VER " ")
-   endif( NOT DBS_CXX_COMPILER_VER )
 
    set( DBS_OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
    set( DBS_OPERATING_SYSTEM_VER "${CMAKE_SYSTEM}")
@@ -216,16 +187,16 @@ macro( dbsConfigInfo )
          set( DBS_OPERATING_SYSTEM "${win_prod_name} ${win_sp}" )
       endif()
       
-      execute_process(
-         COMMAND ${CMAKE_CXX_COMPILER}
-         ERROR_VARIABLE tmp
-         OUTPUT_STRIP_TRAILING_WHITESPACE
-         OUTPUT_QUIET
-         )
-      string( REGEX REPLACE "^(.*)Copyright.*" "\\1"
-         tmp "${tmp}" )
-      string( STRIP "${tmp}" DBS_CXX_COMPILER_VER )
-      set( DBS_C_COMPILER_VER "${DBS_CXX_COMPILER_VER}" )
+      # execute_process(
+      #    COMMAND ${CMAKE_CXX_COMPILER}
+      #    ERROR_VARIABLE tmp
+      #    OUTPUT_STRIP_TRAILING_WHITESPACE
+      #    OUTPUT_QUIET
+      #    )
+      # string( REGEX REPLACE "^(.*)Copyright.*" "\\1"
+      #    tmp "${tmp}" )
+      # string( STRIP "${tmp}" DBS_CXX_COMPILER_VER )
+      # set( DBS_C_COMPILER_VER "${DBS_CXX_COMPILER_VER}" )
       
       # Did we build 32-bit or 64-bit code?
       execute_process(
@@ -249,7 +220,6 @@ macro( dbsConfigInfo )
          )
       string( REGEX REPLACE ".*Host Name[.: ]+([A-z]+).*Primary.*" "\\1" DBS_TARGET "${windows_ip_configuration}" )
       
-      # end elseif( WIN32 )
    endif()
 
 endmacro()
