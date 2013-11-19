@@ -11,8 +11,11 @@
 
 # History
 # ----------------------------------------
-# 7/20/11 - Use -O3 for Release builds but reduce -fp-model from
-#           strict to precise to eliminate warning 1678.
+# 07/20/2011 - Use -O3 for Release builds but reduce -fp-model from
+#              strict to precise to eliminate warning 1678.
+# 11/18/2013 - For RELEASE builds, begin using -fp-model precise 
+#              -fp-speculation safe.  Jayenne sees about 10%
+#              performance bump.
 
 #
 # Compiler Flags
@@ -20,51 +23,14 @@
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-xHost HAS_XHOST)
 
-# Try 'icpc -help':
-# -inline-level=<n> control inline expansion (same as -Ob<n>)
-#    n=0  disables inlining
-#    n=1  inline functions declared with __inline, and perform C++ inlining
-#    n=2  inline any function, at the compiler's discretion (same as -ip)
-# -O3    enable -O2 plus more aggressive optimizations that may not improve
-#        performance for all programs
-# -O0    disable optimizations
-# -g     Include debug information
-# -ip    enable single-file IP optimizations (within files)
-# -ipo   enable multi-file IP optimizations (within files)
-# -ansi  equivalent to GNU -ansi
-# -fp-model <name>    enable <name> floating point model variation
-#            [no-]except - enable/disable floating point semantics
-#            double      - rounds intermediates in 53-bit (double) precision
-#            extended    - rounds intermediates in 64-bit (extended) precision
-#            fast[=1|2]  - enables more aggressive floating point optimizations
-#            precise     - allows value-safe optimizations
-#            source      - enables intermediates in source precision
-#            strict      - enables -fp-model precise -fp-model except, disables
-#                          contractions and enables pragma stdc fenv_access
-# -w<n>      control diagnostics:
-#            n=0 display errors (same as -w)
-#            n=1 display warnings and errors (DEFAULT)
-#            n=2 display remarks, warnings, and errors
-# -shared-intel Causes Intel-provided libraries to be linked in
-#            dynamically.  This should eliminate the need to link
-#            against libm for every library.
-
-# Suppressions 
-# -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
-# Warning #1678: cannot enable speculation unless fenv_access and 
-#                exception_semantics are disabled
-
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -fp-model precise -ftz" )
-  if (HAS_XHOST)
-     set( CMAKE_C_FLAGS             "${CMAKE_C_FLAGS} -xHost" )
-  endif()
+  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -ftz" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check-uninit -DDEBUG") 
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation safe -pthread -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp -fp-speculation safe -pthread" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp  -pthread -fp-model precise -fp-speculation safe" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
@@ -92,7 +58,8 @@ set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE ST
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-# Toggle for OpenMP
+# Optional compiler flags
+toggle_compiler_flag( HAS_XHOST                "-xHost"       "C;CXX" "")
 toggle_compiler_flag( USE_OPENMP               "-openmp"      "C;CXX;EXE_LINKER" "")
 toggle_compiler_flag( DRACO_ENABLE_CXX11       "-std=c++0x"   "CXX" "")
 toggle_compiler_flag( DRACO_ENABLE_C99         "-std=c99"     "C"   "")

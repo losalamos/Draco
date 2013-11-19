@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compiler_env.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -353,6 +353,7 @@ macro( toggle_compiler_flag switch compiler_flag
       # sanity check
       if( NOT ${comp} STREQUAL "C" AND
             NOT ${comp} STREQUAL "CXX" AND
+            NOT ${comp} STREQUAL "Fortran" AND
             NOT ${comp} STREQUAL "EXE_LINKER")
          message(FATAL_ERROR "When calling
 toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names),
