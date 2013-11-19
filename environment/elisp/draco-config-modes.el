@@ -943,7 +943,7 @@ auto-mode-alist and set up some customizations for DRACO."
 
               ;; Customize CEDET key bindings
               (defun my-cedet-bindings-hook ()
-                (local-set-key [(alt return)] 'semantic-ia-complete-symbol-menu)
+                (local-set-key [(meta return)] 'semantic-ia-complete-symbol-menu)
                 (local-set-key [(control return)] 'semantic-ia-complete-symbol-menu)
                 (local-set-key "\C-c?" 'semantic-ia-complete-symbol)
                 
