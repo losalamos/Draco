@@ -27,6 +27,11 @@ template DLL_PUBLIC void Processor_Group::assemble_vector(
     vector<double> const &local,
     vector<double> &global) const;
 
+template DLL_PUBLIC void Processor_Group::assemble_vector(
+    double const *local,
+    double *global,
+    unsigned count) const;
+
 } // end namespace rtt_c4
 
 #endif //C4_MPI

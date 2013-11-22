@@ -55,8 +55,29 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
                                comm_);
 
     Insist(status==0, "MPI_Gather failed");
+}
 
-    
+//---------------------------------------------------------------------------//
+/*!
+ * \param local Points to a region of storage of size N.
+ * \param global Points to a region of storage of size N*this->size()
+ * \param N Number of local quantities to assemble.
+ */
+
+template<class T>
+void Processor_Group::assemble_vector(T const *local,
+                                      T *global,
+                                      unsigned const N) const
+{
+    int status = MPI_Allgather(const_cast<T*>(local),
+                               N,
+                               rtt_c4::MPI_Traits<T>::element_type(),
+                               global,
+                               N,
+                               rtt_c4::MPI_Traits<T>::element_type(),
+                               comm_);
+
+    Insist(status==0, "MPI_Gather failed");
 }
 
 } // end namespace rtt_c4

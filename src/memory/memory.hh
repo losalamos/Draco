@@ -23,6 +23,7 @@ bool set_memory_checking(bool new_status);
 
 unsigned total_allocation();
 unsigned peak_allocation();
+unsigned largest_allocation();
 
 } // namespace rtt_memory
 

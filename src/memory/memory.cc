@@ -25,11 +25,13 @@ using namespace std;
 
 unsigned total;
 unsigned peak;
+unsigned largest;
 
-unsigned check_peak = 53261809U; // normally set in debugger to trigger a
+unsigned check_peak = 165234368U; // normally set in debugger to trigger a
                                  // breakpoint
 
-unsigned check_large = 7680000U; // normally set in debugger to trigger a breakpoint
+unsigned check_large = 860160U; // normally set in debugger to trigger a
+                                 // breakpoint
 
 
 bool is_active = false;
@@ -77,6 +79,12 @@ unsigned peak_allocation()
     return peak;
 }
 
+//---------------------------------------------------------------------------------------//
+unsigned largest_allocation()
+{
+    return largest;
+}
+
 } // end namespace rtt_memory
 
 using namespace rtt_memory;
@@ -102,6 +110,10 @@ void *operator new(size_t n) _GLIBCXX_THROW(std::bad_alloc)
         if (n >= check_large)
         {
             cout << "Allocated check large value" << endl;
+        }
+        if (n>largest)
+        {
+            largest = n;
         }
         is_active = false;
         st.alloc_map[Result] = n;

@@ -68,6 +68,12 @@ class DLL_PUBLIC Processor_Group
     void assemble_vector(std::vector<T> const &local_vector,
                          std::vector<T> &global_vector) const;
 
+    //! Assemble a set of local vectors into global vectors.
+    template<class T>
+    void assemble_vector(T const *local_vector,
+                         T *global_vector,
+                         unsigned count) const;
+
   private:
 
     // NESTED CLASSES AND TYPEDEFS
