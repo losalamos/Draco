@@ -18,7 +18,6 @@
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/SP.hh"
-#include "ds++/Assert.hh"
 
 #include <iostream>
 #include <cmath>
