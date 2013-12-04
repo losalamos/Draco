@@ -26,21 +26,21 @@ target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
 case ${target} in
-gondolin*)
-   if test -z "$MODULESHOME"; then
-     if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
-       source ${VENDOR_DIR}/modules-3.2.9/init/bash
-     fi
-   fi
-   module load Modules.deprecated
-   module load gcc/4.7.1 gsl/1.13
-   module load emacs/23.2
-   module load openmpi totalview 
-   module load cmake grace lapack random123 eospac numdiff git svn
-   module load dia graphviz doxygen git valgrind
-   module load BLACS SCALAPACK SuperLU_DIST hypre ndi
-   module load ParMetis trilinos  
-;;
+# gondolin*)
+#    if test -z "$MODULESHOME"; then
+#      if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
+#        source ${VENDOR_DIR}/modules-3.2.9/init/bash
+#      fi
+#    fi
+#    module load Modules.deprecated
+#    module load gcc/4.7.1 gsl/1.13
+#    module load emacs/23.2
+#    module load openmpi totalview 
+#    module load cmake grace lapack random123 eospac numdiff git svn
+#    module load dia graphviz doxygen git valgrind
+#    module load BLACS SCALAPACK SuperLU_DIST hypre ndi
+#    module load ParMetis trilinos  
+# ;;
 
 *)
    # Is the module function available?
@@ -49,6 +49,9 @@ gondolin*)
    if test ${found} == 0; then
      if test -f /usr/share/Modules/init/bash; then
         source /usr/share/Modules/init/bash
+     elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
+        # CCS workstations (e.g.: gondolin)
+        source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
      fi
    fi
    module use /ccs/codes/radtran/vendors/Modules
