@@ -23,11 +23,12 @@ namespace rtt_c4
 
 /* Initialize static non-const data members found in the Timer class */
 
-// Count up the total L2 cache misses and hits and the total number of
-// floating point operations. These allow us to report the percentage of cache
-// hits and the number of floating point operations per cache miss.
+// By default, we count up the total L2 data cache misses and hits and the
+// total number of floating point operations. These allow us to report the
+// percentage of data cache hits and the number of floating point operations
+// per cache miss.
 int Timer::papi_events_[papi_max_counters_] = {
-    PAPI_L2_TCM, PAPI_L2_TCH, PAPI_FP_OPS };
+    PAPI_L2_DCM, PAPI_L2_DCH, PAPI_FP_OPS };
 
 unsigned Timer::papi_num_counters_ = 0;
 
@@ -73,12 +74,12 @@ Timer::Timer()
 	    std::cout << "PAPI: No floating operations counter" << std::endl;
         }
 
-	if (PAPI_query_event(PAPI_L2_TCM) != PAPI_OK)
+	if (PAPI_query_event(PAPI_L2_DCM) != PAPI_OK)
         {
 	    std::cout << "PAPI: No L2 cache miss counter" << std::endl;
         }
 
-	if (PAPI_query_event(PAPI_L2_TCH) != PAPI_OK)
+	if (PAPI_query_event(PAPI_L2_DCH) != PAPI_OK)
         {
 	    std::cout << "PAPI: No cache hit counter" << std::endl;
         }
@@ -242,6 +243,69 @@ bool Timer::setIsMPIWtimeAvailable() const
 #endif
 }
 
+//---------------------------------------------------------------------------//
+// Statics
+//---------------------------------------------------------------------------//
+
+/* static */
+void Timer::initialize(int &argc, char *argv[])
+{
+    // The initialize function need not be called if the default settings are
+    // okay. Otherwise, initialize is called with the command line arguments
+    // to allow command line control of which cache is sampled under PAPI.
+    //
+    // At present, there are no non-PAPI options controlled by initialize.
+#ifdef HAVE_PAPI
+    int j = 0;
+    for (int i=0; i<argc; ++i)
+    {
+        if (strcmp(argv[i], "--cache")==0)
+        {
+            char *endptr;
+            unsigned c = strtol(argv[i+1], &endptr, 10);
+            if (*endptr!='\0' || c<1 || c>3)
+            {
+                throw std::invalid_argument(" --cache selection is not 1, 2, or 3");
+            }
+            else
+            {
+                i++;
+                switch (c)
+                {
+                    case 1:
+                        papi_events_[0] = PAPI_L1_DCM;
+                        papi_events_[1] = PAPI_L1_DCH;
+                        break;
+                        
+                    case 2:
+                        /* default; no action needed */
+                        break;
+                        
+                    case 3:
+                        papi_events_[0] = PAPI_L3_DCM;
+                        papi_events_[1] = PAPI_L3_DCH;
+                        break;
+                }       
+            }
+        }
+        else
+        {
+            if (j!=i)
+            {
+                argv[j] = argv[i];
+            }
+            j++;
+        }
+    }
+    int orig_argc = argc;
+    argc = j;
+    for (; j<orig_argc; ++j)
+    {
+        argv[j] = NULL;
+    }
+#endif // HAVE_PAPI
+}
+                       
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//

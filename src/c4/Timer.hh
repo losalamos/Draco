@@ -14,9 +14,11 @@
 #ifndef __c4_Timer_hh__
 #define __c4_Timer_hh__
 
+#include <iostream>
+#include <limits>
+#include <cstring>
 #include <c4/config.h>
 #include "C4_Functions.hh"
-#include <iostream>
 
 namespace rtt_c4
 {
@@ -241,6 +243,8 @@ class DLL_PUBLIC Timer
 		    unsigned width = 15U) const;
 
     inline void merge(Timer const &);
+
+    static void initialize(int &argc, char *argv[]);
 };
 
 //---------------------------------------------------------------------------//
@@ -275,6 +279,7 @@ void Timer::start()
 void Timer::stop()
 {
     Require( timer_on );
+    using namespace std;
     // set both end and tms_end.
     end      = wall_clock_time( tms_end );
     timer_on = false; 
@@ -288,6 +293,10 @@ void Timer::stop()
     for (unsigned i=0; i<papi_num_counters_; ++i)
     {
 	papi_stop_[i] = papi_raw_counts_[i];
+        if (papi_stop_[i]>numeric_limits<long long>::max()/5)
+        {
+            cerr << "WARNING: PAPI counters aproaching overflow" << endl;
+        }
 	papi_counts_[i] += papi_stop_[i]-papi_start_[i];
     }
     papi_wc_end_cycle = PAPI_get_real_cyc();

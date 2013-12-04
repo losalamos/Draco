@@ -285,6 +285,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 int main( int argc, char *argv[] )
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
+    rtt_c4::Timer::initialize(argc, argv);
     try { wall_clock_test(ut); }
     UT_EPILOG(ut);
 }   
