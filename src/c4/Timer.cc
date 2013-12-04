@@ -92,6 +92,13 @@ Timer::Timer()
                       << std::endl;
 	}
 
+        // At present, some platforms *lie* about how many counters they have
+        // available, reporting they have three then returning an out of
+        // counters error when you actually try to assign the three counter
+        // types listed above. Until we have a fix, hardwire to leave out the
+        // flops count, which is the least essential of the three counts.
+        papi_num_counters_ = 2;
+
 	if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
             papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
 
@@ -210,9 +217,12 @@ void Timer::printline( std::ostream &out,
     double const miss = sum_L2_cache_misses();
     double const hit  = sum_L2_cache_hits();
     out << setw(w) 
-	<< 100.0 * hit / (miss+hit)
-	<< setw(w)
-	<< sum_floating_operations() / miss;
+	<< 100.0 * hit / (miss+hit);
+    if (papi_num_counters_>2)
+    {
+	out << setw(w)
+            << sum_floating_operations() / miss;
+    }
 #endif
 
     out << std::endl;

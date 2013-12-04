@@ -213,7 +213,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
         // std::cout << "\"" <<  timingsingleline.str() << ".\"" << std::endl;
         // std::cout << "len = " << timingsingleline.str().length() << std::endl;
 #ifdef HAVE_PAPI
-        if( timingsingleline.str().length() == 42 )
+        if( timingsingleline.str().length() == 34 )
 #else
         if( timingsingleline.str().length() == 26 )
 #endif
