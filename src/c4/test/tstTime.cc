@@ -254,8 +254,8 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     // Check PAPI data
     //------------------------------------------------------------//
 
-    long long cachemisses = t.sum_L2_cache_misses();
-    long long cachehits   = t.sum_L2_cache_hits();
+    long long cachemisses = t.sum_cache_misses();
+    long long cachehits   = t.sum_cache_hits();
     long long flops       = t.sum_floating_operations();
 
 #ifdef HAVE_PAPI

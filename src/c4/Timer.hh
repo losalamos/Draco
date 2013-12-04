@@ -188,6 +188,8 @@ class DLL_PUBLIC Timer
     long long sum_papi_virt_cycle;
     // sum of papi virtual time (microseconds)
     long long sum_papi_virt_usec;
+
+    static void papi_init_();
 #endif
     
   public:
@@ -217,16 +219,16 @@ class DLL_PUBLIC Timer
     int intervals() const { Require(! timer_on); return num_intervals; }
 
 #ifdef HAVE_PAPI
-    long long sum_L2_cache_misses()     const { return papi_counts_[0]; }
-    long long sum_L2_cache_hits()       const { return papi_counts_[1]; }
+    long long sum_cache_misses()     const { return papi_counts_[0]; }
+    long long sum_cache_hits()       const { return papi_counts_[1]; }
     long long sum_floating_operations() const { return papi_counts_[2]; }
     long long sum_papi_wc_cycles()      const { return sum_papi_wc_cycle; }
     long long sum_papi_wc_usecs()       const { return sum_papi_wc_usec; }
     long long sum_papi_virt_cycles()    const { return sum_papi_virt_cycle; }
     long long sum_papi_virt_usecs()     const { return sum_papi_virt_usec; }
 #else
-    long long sum_L2_cache_misses()     const { return 0; }
-    long long sum_L2_cache_hits()       const { return 0; }
+    long long sum_cache_misses()     const { return 0; }
+    long long sum_cache_hits()       const { return 0; }
     long long sum_floating_operations() const { return 0; }
     long long sum_papi_wc_cycles()      const { return 0; }
     long long sum_papi_wc_usecs()       const { return 0; }

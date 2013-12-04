@@ -35,6 +35,8 @@ unsigned Timer::papi_num_counters_ = 0;
 long long Timer::papi_raw_counts_[papi_max_counters_] = {
     0, 0, 0};
 
+int selected_cache = 2;
+
 #endif
 
 //---------------------------------------------------------------------------//
@@ -57,71 +59,19 @@ Timer::Timer()
 {
 #ifdef HAVE_PAPI
     
-    // Initialize the PAPI library on construction of first timer.
+    // Initialize the PAPI library on construction of first timer if it has
+    // not already be initialized through a call to Timer::initialize.
     
-    static bool first_time = true;
-    if (first_time)
-    {
-	int retval = PAPI_library_init(PAPI_VER_CURRENT);
-	if (retval != PAPI_VER_CURRENT)
-        {
-            std::cout << "PAPI library init error!" << std::endl;
-            exit(EXIT_FAILURE);
-	}
-        
-	if (PAPI_query_event(PAPI_FP_OPS) != PAPI_OK)
-        {
-	    std::cout << "PAPI: No floating operations counter" << std::endl;
-        }
-
-	if (PAPI_query_event(PAPI_L2_DCM) != PAPI_OK)
-        {
-	    std::cout << "PAPI: No L2 cache miss counter" << std::endl;
-        }
-
-	if (PAPI_query_event(PAPI_L2_DCH) != PAPI_OK)
-        {
-	    std::cout << "PAPI: No cache hit counter" << std::endl;
-        }
-
-	papi_num_counters_ = PAPI_num_counters();
-        if (papi_num_counters_<sizeof(papi_events_)/sizeof(int))
-        {
-            std::cout << "PAPI: This system has only " << papi_num_counters_
-                      << " hardware counters.\n" << std::endl;
-            std::cout << "Some performance statistics will not be available."
-                      << std::endl;
-	}
-
-        // At present, some platforms *lie* about how many counters they have
-        // available, reporting they have three then returning an out of
-        // counters error when you actually try to assign the three counter
-        // types listed above. Until we have a fix, hardwire to leave out the
-        // flops count, which is the least essential of the three counts.
-        papi_num_counters_ = 2;
-
-	if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
-            papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
-
-	int result = PAPI_start_counters(papi_events_, papi_num_counters_);
-	if (result != PAPI_OK)
-        {
-	    std::cout << "Failed to start hardware counters with error "
-                      << result << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-        // sum of papi wall clock cycles
-        sum_papi_wc_cycle = 0;
-        // sum of papi wall clock time (microseconds)
-        sum_papi_wc_usec = 0;
-        // sum of papi virtual cycles
-        sum_papi_virt_cycle = 0;
-        // sum of papi virtual time (microseconds)
-        sum_papi_virt_usec = 0;
-        
-	first_time = false;
-    }
+    papi_init_();
+    
+    // sum of papi wall clock cycles
+    sum_papi_wc_cycle = 0;
+    // sum of papi wall clock time (microseconds)
+    sum_papi_wc_usec = 0;
+    // sum of papi virtual cycles
+    sum_papi_virt_cycle = 0;
+    // sum of papi virtual time (microseconds)
+    sum_papi_virt_usec = 0;
 #endif
 
     reset();
@@ -160,15 +110,15 @@ void Timer::print( std::ostream &out, int p ) const
 	    << " sec." << "\n\n";
 
 #ifdef HAVE_PAPI
-        double const miss = sum_L2_cache_misses();
-        double const hit  = sum_L2_cache_hits();
+        double const miss = sum_cache_misses();
+        double const hit  = sum_cache_hits();
         out << "PAPI Events:\n"
 
-            << setw(26) << "L2 Cache misses  : "
-            << sum_L2_cache_misses()     << "\n"
+            << setw(26) << 'L' << selected_cache << " cache misses  : "
+            << sum_cache_misses()     << "\n"
 
-            << setw(26) << "L2 Cache hits    : "
-            << sum_L2_cache_hits()       << "\n"
+            << setw(26) << 'L' << selected_cache << " cache hits    : "
+            << sum_cache_hits()       << "\n"
 
             << setw(26) << "Percent hit      : "
             << 100.0 * hit / (miss+hit)  << "\n"
@@ -215,8 +165,8 @@ void Timer::printline( std::ostream &out,
 	<< setw(w) << sum_wall_clock();
 
 #ifdef HAVE_PAPI
-    double const miss = sum_L2_cache_misses();
-    double const hit  = sum_L2_cache_hits();
+    double const miss = sum_cache_misses();
+    double const hit  = sum_cache_hits();
     out << setw(w) 
 	<< 100.0 * hit / (miss+hit);
     if (papi_num_counters_>2)
@@ -262,15 +212,15 @@ void Timer::initialize(int &argc, char *argv[])
         if (strcmp(argv[i], "--cache")==0)
         {
             char *endptr;
-            unsigned c = strtol(argv[i+1], &endptr, 10);
-            if (*endptr!='\0' || c<1 || c>3)
+            selected_cache = strtol(argv[i+1], &endptr, 10);
+            if (*endptr!='\0' || selected_cache<1 || selected_cache>3)
             {
                 throw std::invalid_argument(" --cache selection is not 1, 2, or 3");
             }
             else
             {
                 i++;
-                switch (c)
+                switch (selected_cache)
                 {
                     case 1:
                         papi_events_[0] = PAPI_L1_DCM;
@@ -305,6 +255,79 @@ void Timer::initialize(int &argc, char *argv[])
     }
 #endif // HAVE_PAPI
 }
+
+#ifdef HAVE_PAPI
+//---------------------------------------------------------------------------------------//
+/* static */
+void Timer::papi_init_()
+{
+    static bool first_time = true;
+    if (first_time)
+    {
+	int retval = PAPI_library_init(PAPI_VER_CURRENT);
+	if (retval != PAPI_VER_CURRENT)
+        {
+            std::cout << "PAPI library init error!" << std::endl;
+            exit(EXIT_FAILURE);
+	}
+	first_time = false;
+    }
+    else
+    {
+        int result = PAPI_stop_counters(papi_raw_counts_, papi_num_counters_);
+        if (result != PAPI_OK)
+        {
+            std::cout << "Failed to stop hardware counters with error "
+                      << result << std::endl;
+            
+            exit(EXIT_FAILURE);
+        }
+    }
+    
+    if (PAPI_query_event(PAPI_FP_OPS) != PAPI_OK)
+    {
+        std::cout << "PAPI: No floating operations counter" << std::endl;
+    }
+    
+    if (PAPI_query_event(papi_events_[0]) != PAPI_OK)
+    {
+        std::cout << "PAPI: No cache miss counter" << std::endl;
+    }
+    
+    if (PAPI_query_event(papi_events_[1]) != PAPI_OK)
+    {
+        std::cout << "PAPI: No cache hit counter" << std::endl;
+    }
+    
+    papi_num_counters_ = PAPI_num_counters();
+    if (papi_num_counters_<sizeof(papi_events_)/sizeof(int))
+    {
+        std::cout << "PAPI: This system has only " << papi_num_counters_
+                  << " hardware counters.\n" << std::endl;
+        std::cout << "Some performance statistics will not be available."
+                  << std::endl;
+    }
+    
+    // At present, some platforms *lie* about how many counters they have
+    // available, reporting they have three then returning an out of
+    // counters error when you actually try to assign the three counter
+    // types listed above. Until we have a fix, hardwire to leave out the
+    // flops count, which is the least essential of the three counts.
+    papi_num_counters_ = 2;
+    
+    if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
+        papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
+
+    int result = PAPI_start_counters(papi_events_, papi_num_counters_);
+    if (result != PAPI_OK)
+    {
+        std::cout << "Failed to start hardware counters with error "
+                  << result << std::endl;
+
+            exit(EXIT_FAILURE);
+    }
+}
+#endif // HAVE_PAPI
                        
 } // end namespace rtt_c4
 
