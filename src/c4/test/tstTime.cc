@@ -117,11 +117,17 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     t.start();
 
     // do some work
-    std::cout << "\nDoing some work..." << std::endl;
-    size_t len(20000000);
-    std::vector<int> foo(len);
+    if( rtt_c4::node() == 0 )
+      std::cout << "\nDoing some work..." << std::endl;
+    size_t len(10000000);
+    std::vector<double> foo(len);
+    double sum(0);
     for( size_t i = 0; i < len; ++i )
-        foo[i] = i*3;
+    {
+        double const d(i);
+        foo[i] = std::sqrt(std::log(d*3.14)*std::cos(d/3.14));
+        sum += foo[i];
+    }
 
     double end = rtt_c4::wall_clock_time();
     t.stop();
@@ -129,19 +135,19 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     double const error( t.wall_clock() - (end-begin) );
     if( std::fabs(error) <= prec )
     {
-	PASSMSG("wall_clock() value looks ok.");
+        PASSMSG("wall_clock() value looks ok.");
     }
     else
     {
-	ostringstream msg;
-	msg << "t.wall_clock() value does not match the expected value."
-	    << "\n\tend            = " << end
-	    << "\n\tbegin          = " << begin
-	    << "\n\tend-begin      = " << end - begin
-	    << "\n\tt.wall_clock() = " << t.wall_clock()
-            << "\n\terror          = " << error
-	    << "\n\tprec           = " << prec << endl;
-	FAILMSG(msg.str());
+        ostringstream msg;
+        msg << "t.wall_clock() value does not match the expected value."
+            << "\n\tend            = " << end
+            << "\n\tbegin          = " << begin
+            << "\n\tend-begin      = " << end - begin
+            << "\n\tt.wall_clock() = " << t.wall_clock()
+                << "\n\terror          = " << error
+            << "\n\tprec           = " << prec << endl;
+        FAILMSG(msg.str());
     }
 
     //---------------------------------------------------------------------//
@@ -161,33 +167,34 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 #endif
     if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= time_resolution )
     {
-	ostringstream msg;
-	msg << "The sum of cpu and user time is less than or equal to the\n\t"
-	    << "reported wall clock time (within error bars = " << time_resolution
-	    << " secs.)." << endl;
-	PASSMSG(msg.str());
+        ostringstream msg;
+        msg << "The sum of cpu and user time is less than or equal to the\n\t"
+            << "reported wall clock time (within error bars = " << time_resolution
+            << " secs.)." << endl;
+        PASSMSG(msg.str());
     }
     else
     {
-	ostringstream msg;
-	msg << "The sum of cpu and user time exceeds the reported wall "
-	    << "clock time.  Here are the details:"
-	    << "\n\tposix_error() = " << prec << " sec."
-	    << "\n\tdeltaWallTime = " << deltaWallTime  << " sec."
- 	    << "\n\tSystem time   = " << t.system_cpu() << " sec."
- 	    << "\n\tUser time     = " << t.user_cpu()   << " sec."
- 	    << "\n\tWall time     = " << t.wall_clock() << " sec."
-	    << endl;
-	FAILMSG(msg.str());
+        ostringstream msg;
+        msg << "The sum of cpu and user time exceeds the reported wall "
+            << "clock time.  Here are the details:"
+            << "\n\tposix_error() = " << prec << " sec."
+            << "\n\tdeltaWallTime = " << deltaWallTime  << " sec."
+            << "\n\tSystem time   = " << t.system_cpu() << " sec."
+            << "\n\tUser time     = " << t.user_cpu()   << " sec."
+            << "\n\tWall time     = " << t.wall_clock() << " sec."
+            << endl;
+        FAILMSG(msg.str());
     }
 
     //------------------------------------------------------//
     // Demonstrate print functions:
     //------------------------------------------------------//
 
-    cout << "Demonstration of the print() member function via the\n"
-         << "\toperator<<(ostream&,Timer&) overloaded operator.\n"
-         << endl;
+    if( rtt_c4::node() == 0 )
+        cout << "Demonstration of the print() member function via the\n"
+             << "\toperator<<(ostream&,Timer&) overloaded operator.\n"
+             << endl;
 
     cout << "Timer = " << t << endl;
         
