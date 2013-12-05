@@ -198,7 +198,7 @@ bool Timer::setIsMPIWtimeAvailable() const
 //---------------------------------------------------------------------------//
 
 /* static */
-void Timer::initialize(int &argc, char *argv[])
+void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
 {
     // The initialize function need not be called if the default settings are
     // okay. Otherwise, initialize is called with the command line arguments
