@@ -59,7 +59,7 @@ void test_static_access( rtt_dsxx::UnitTest & ut )
 
     // eV2K
 
-    dev = 11604.5192266998;
+    dev = 11604.51936627009;
     if( soft_equiv( dev, PhysicalConstants::eV2K() ) )
     {
         ostringstream msg;
@@ -385,9 +385,9 @@ void test_scaled_values( rtt_dsxx::UnitTest & ut )
 
     // gasConstant
 
-    dev = 8.3144622; // J/mol/K
+    dev = 8.3144621; // J/mol/K
     dev = dev * us.e()/si.e() /( us.Q()/si.Q() * us.T()/si.T() );
-    if( soft_equiv( pc.gasConstant(), dev ) )
+    if( soft_equiv( pc.gasConstant(), dev, 1.0e-8 ) )
     {
         ostringstream msg;
         msg << "Scaled Gas constant looks correct." << endl;
