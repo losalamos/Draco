@@ -4,7 +4,8 @@
  *  \brief  Provide a single place where physical constants (pi, speed of
  *          light, etc) are defined.
  *  \date   Fri Nov 07 10:04:52 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -30,36 +31,48 @@ static double const PI = 3.141592653589793238462643383279;
 //    W - watts, J - joules, C - coulombs, F - farads
 //    mol - mole
     
-//! [Na] AVOGADRO'S NUMBER ("entities"/MOLE) 
-static double const AVOGADRO          = 6.022136736e23;      // entities/mol
+//! [Na] AVOGADRO'S NUMBER ("entities"/MOLE)
+// Wikipedia (2013-12-3) == NIST Codata 2010
+static double const AVOGADRO          = 6.02214129e23;     // entities/mol
    
 //! [h] Planck constant ( Energy seconds )
-static double const planckSI          = 6.6260755e-34;     // J s
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
+static double const planckSI          = 6.62606957e-34;       // J s
 
-//! [R] Gas constant
-static double const gasConstantSI     = 8.314510;          // J/mol/K
+//! [R] Molar Gas constant
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps 9.1e-7)
+static double const gasConstantSI     = 8.3144621;         // J/mol/K
 
 //! [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
 static double const boltzmannSI = gasConstantSI / AVOGADRO ; // J K^-1
 
 //! [e] ELECTRON CHARGE (COULOMBS)
-static double const electronChargeSI  = 1.60217733e-19;    // Amp / sec
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 2.2e-8)
+static double const electronChargeSI  = 1.602176565e-19;    // Amp / sec
 
-
-//! EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
-//       (TEMPERATURE IN eV) * EV2K = (TEMPERATURE IN KELVIN)
+/*! \brief EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
+ *
+ * (TEMPERATURE IN eV) * EV2K = (TEMPERATURE IN KELVIN)
+ * 
+ * If this number is changed, you must also update the conversion factor found
+ * in UniSystemUnums.hh
+ */
 static double const EV2K              = electronChargeSI / boltzmannSI;
 
 //! [c] SPEED OF LIGHT (M/S)
+// exact value by NIST definition
 static double const cLightSI          = 2.99792458e8;        // m s^-1
 
 //! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
-static double const stefanBoltzmannSI = 5.67051e-8;       // W m^-2 K^-4
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 3.6e-6)
+static double const stefanBoltzmannSI = 5.670373e-8;        // W m^-2 K^-4
 
 //! [G] Gravitational Constant
-static double const gravitationalConstantSI = 6.67259e-11; 
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 1.2e-4)
+static double const gravitationalConstantSI = 6.67384e-11; // m^3/kg/s^2
 
 //! [g] Acceleration due to gravity (standard)
+// Wikipedia (2013-12-3)
 static double const accelerationFromGravitySI = 9.80665;     // m/s^2
 
 //! [F] Faraday constant == Na * e
@@ -72,11 +85,13 @@ static double const permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
 static double const permittivityOfFreeSpaceSI = 1.0 /
 permeabilityOfVacuumSI/cLightSI/cLightSI; // Coloumb^2/J/m
 
-//! [me] ELECTRON REST MASS (KG)	 
-static double const electronMassSI    = 9.1093897e-31;        // kg
+//! [me] ELECTRON REST MASS (KG)	 s
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4e-8)
+static double const electronMassSI    = 9.10938291e-31;        // kg
 
 //! [mp] PROTON REST MASS (KG)
-static double const protonMassSI      = 1.6726231e-27;        // kg
+// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
+static double const protonMassSI      = 1.672621777e-27;        // kg
 
 //==============================================================================
 /*!
@@ -248,5 +263,5 @@ class DLL_PUBLIC PhysicalConstants
 #endif  // __units_PhysicalConstants_hh__
 
 //---------------------------------------------------------------------------//
-//                  end of units/PhysicalConstants.hh
+// end of units/PhysicalConstants.hh
 //---------------------------------------------------------------------------//

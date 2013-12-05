@@ -4,13 +4,15 @@
  *  \brief  Provide a single place where physical constants (pi, speed of
  *          light, etc) are defined for the local UnitSystem.
  *  \date   Mon Nov 10 09:24:55 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
 #include "PhysicalConstants.hh"
+#include <iostream>
 
 namespace rtt_units
 {
@@ -64,10 +66,19 @@ PhysicalConstants::PhysicalConstants( UnitSystem const & u )
       d_protonMass      ( protonMassSI   * u.M() )
 {
     // empty
+    // std::cout << "\nu.e() = " << u.e()
+    //           << "\nu.t() = " << u.t()
+    //           << "\nu.T() = " << u.T()
+    //           << "\nu.v() = " << u.v()
+    //           << "\nu.p() = " << u.p()
+    //           << "\nu.L() = " << u.L()
+    //           << "\nu.M() = " << u.M()
+    //           << "\nu.a() = " << u.a()
+    //           << std::endl;
 }
 
 } // end namespace rtt_units
 
 //---------------------------------------------------------------------------//
-//                  end of units/PhysicalConstants.cc
+// end of units/PhysicalConstants.cc
 //---------------------------------------------------------------------------//

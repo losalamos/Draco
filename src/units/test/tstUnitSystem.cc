@@ -8,20 +8,23 @@
  */
 //---------------------------------------------------------------------------//
 
-#include "units_test.hh"
 #include "../UnitSystem.hh"
-#include "ds++/Assert.hh"
+
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include <iostream>
+#include "ds++/ScalarUnitTest.hh"
+
 #include <sstream>
-#include <string>
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_ctor()
+void test_ctor( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -119,7 +122,7 @@ void test_ctor()
 
 //---------------------------------------------------------------------------//
 
-void test_def_ctor()
+void test_def_ctor( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -211,7 +214,7 @@ void test_def_ctor()
 
 //--------------------------------------------------------------------//
 
-void test_more_accessors()
+void test_more_accessors( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -344,7 +347,7 @@ void test_more_accessors()
 
 //---------------------------------------------------------------------------//
 
-void test_aux_accessors()
+void test_aux_accessors( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -380,7 +383,7 @@ void test_aux_accessors()
 }
 //---------------------------------------------------------------------------//
 
-void logic_test()
+void logic_test( rtt_dsxx::UnitTest & ut )
 {   
     using std::cout;
     using std::endl;
@@ -557,7 +560,7 @@ void logic_test()
 
 //---------------------------------------------------------------------------//
 
-void test_eq_op()
+void test_eq_op( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -737,7 +740,7 @@ void test_eq_op()
 
 //---------------------------------------------------------------------------//
 
-void test_valid_units()
+void test_valid_units( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -1090,49 +1093,18 @@ void test_valid_units()
 
 int main( int argc, char *argv[] )
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-    using rtt_dsxx::release;
-
-    // version tag
-    for( int arg = 1; arg < argc; arg++ )
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
+    try 
     {
-	if( string( argv[arg] ) == "--version" )
-	{
-	    cout << argv[0] << ": version " << release() << endl;
-	    return 0;
-	}
+	test_ctor(          ut);
+	test_def_ctor(      ut);
+	test_more_accessors(ut);
+	test_aux_accessors( ut);
+	logic_test(         ut);
+	test_eq_op(         ut);
+	test_valid_units(   ut);
     }
-
-    // Print startup message
-    cout << "Draco units package: version " << release() << endl << endl;
-
-    try  //  >>>>> UNIT TESTS <<<<<
-    {
-	test_ctor();
-	test_def_ctor();
-	test_more_accessors();
-	test_aux_accessors();
-	logic_test();
-	test_eq_op();
-	test_valid_units();
-    }
-    catch( rtt_dsxx::assertion &assert )
-    {
-	cout << "While testing tstUnitSystem, " << assert.what() << endl;
-	return 1;
-    }
-
-    // status of test
-    cout << "\n*********************************************\n";
-    if( rtt_units_test::passed )
-        cout << "**** tstUnitSystem Test: PASSED\n";
-    else
-        cout << "**** tstUnitSystem Test: FAILED\n";
-    cout << "*********************************************\n\n"
-         << "Done testing tstUnitSystem." << endl;
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

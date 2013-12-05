@@ -4,31 +4,30 @@
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
  * \brief  
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <string>
 #include <sstream>
 
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/Assert.hh"
-
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "../UnitSystemEnums.hh"
-#include "../FundUnit.hh"
 #include "../UnitSystemType.hh"
 
-#include "units_test.hh"
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_default_ctor()
+void test_default_ctor( rtt_dsxx::UnitTest & ut )
 {
     using std::endl;
     using std::ostringstream;
@@ -95,13 +94,9 @@ void test_default_ctor()
 	FAILMSG( msg.str() );
     }
     if( soft_equiv( ust.L().cf(), 1.0 ) )
-    {
 	PASSMSG("UnitSystemType container has L().cf() == 1.0).");
-    }
     else
-    {
 	FAILMSG("UnitSystemType container does not have L().cf() == 1.0).");
-    }
     if( ust.L().label() == "m" )
     {
 	PASSMSG("UnitSystemType container has L().label() == \"m\").");
@@ -127,13 +122,9 @@ void test_default_ctor()
 	FAILMSG( msg.str() );
     }
     if( soft_equiv( ust.Q().cf(), 0.0 ) )
-    {
 	PASSMSG("UnitSystemType container has Q().cf() == 0.0).");
-    }
     else
-    {
 	FAILMSG("UnitSystemType container does not have Q().cf() == 0.0).");
-    }
     if( ust.Q().label() == "NA" )
     {
 	PASSMSG("UnitSystemType container has Q().label() == \"NA\").");
@@ -158,13 +149,9 @@ void test_default_ctor()
 	FAILMSG( msg.str() );
     }
     if( soft_equiv( ust.A().cf(), 0.0 ) )
-    {
 	PASSMSG("UnitSystemType container has A().cf() == 0.0).");
-    }
     else
-    {
 	FAILMSG("UnitSystemType container does not have A().cf() == 0.0).");
-    }
     if( ust.A().label() == "NA" )
     {
 	PASSMSG("UnitSystemType container has A().label() == \"NA\").");
@@ -209,7 +196,7 @@ void test_default_ctor()
 	msg << "UnitSystemType container does not have "
 	    << "Q().cf() == 1.0.  Instead the value returned was: " 
 	    << ust.Q().cf() << endl;
-	    FAILMSG( msg.str() );
+        FAILMSG( msg.str() );
     }
     if( ust.Q().label() == "mol" )
     {
@@ -349,7 +336,7 @@ void test_default_ctor()
 
 //------------------------------------------------------------------------//
 
-void test_qualified_ctor()
+void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
 {  
     using std::endl;
     using std::ostringstream;
@@ -524,7 +511,7 @@ void test_qualified_ctor()
 /*!
  * \brief Test special unit system types.
  */
-void test_sust_ctor()
+void test_sust_ctor( rtt_dsxx::UnitTest & ut )
 {
     using std::endl;
     using std::ostringstream;
@@ -591,7 +578,7 @@ void test_sust_ctor()
 	    << "L().label() == \"m\")." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.L().cf(), 100.0 ) )
+    if( soft_equiv( x4.L().cf(), 100.0 ) )
     {
 	PASSMSG("x4 units container has L().cf() == 100.0.");
     }
@@ -599,7 +586,7 @@ void test_sust_ctor()
     {
 	FAILMSG("x4 units container does not have L().cf() == 100.0.");
     }
-   if( x4.L().label() == "cm" )
+    if( x4.L().label() == "cm" )
     {
 	PASSMSG("x4 units container has L().label() == \"cm\").");
     }
@@ -611,8 +598,8 @@ void test_sust_ctor()
 	FAILMSG( msg.str() );
     }
 
-   // Check Mass data...
-   // ----------------------------------------
+    // Check Mass data...
+    // ----------------------------------------
 
     if( si.M().enumVal() == rtt_units::M_kg )
     {
@@ -655,7 +642,7 @@ void test_sust_ctor()
 	    << "M().label() == \"kg\")." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.M().cf(), 1000.0 ) )
+    if( soft_equiv( x4.M().cf(), 1000.0 ) )
     {
 	PASSMSG("x4 units container has M().cf() == 1000.0.");
     }
@@ -663,7 +650,7 @@ void test_sust_ctor()
     {
 	FAILMSG("x4 units container does not have M().cf() == 1000.0.");
     }
-   if( x4.M().label() == "g" )
+    if( x4.M().label() == "g" )
     {
 	PASSMSG("x4 units container has M().label() == \"g\".");
     }
@@ -675,8 +662,8 @@ void test_sust_ctor()
 	FAILMSG( msg.str() );
     }
 
-   // Check time data...
-   // ----------------------------------------
+    // Check time data...
+    // ----------------------------------------
 
     if( si.t().enumVal() == rtt_units::t_s )
     {
@@ -719,7 +706,7 @@ void test_sust_ctor()
 	    << "t().label() == \"s\"." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.t().cf(), 1.0e8 ) )
+    if( soft_equiv( x4.t().cf(), 1.0e8 ) )
     {
 	PASSMSG("x4 units container has t().cf() == 1.0e8.");
     }
@@ -727,7 +714,7 @@ void test_sust_ctor()
     {
 	FAILMSG("x4 units container does not have t().cf() == 1.0e8.");
     }
-   if( x4.t().label() == "sh" )
+    if( x4.t().label() == "sh" )
     {
 	PASSMSG("x4 units container has t().label() == \"sh\".");
     }
@@ -739,10 +726,10 @@ void test_sust_ctor()
 	FAILMSG( msg.str() );
     }
 
-   // Check Temperature data...
-   // ----------------------------------------
+    // Check Temperature data...
+    // ----------------------------------------
 
-   if( si.T().enumVal() == rtt_units::T_K )
+    if( si.T().enumVal() == rtt_units::T_K )
     {
 	PASSMSG("si has T().enumVal() == T_K).");
     }
@@ -783,15 +770,13 @@ void test_sust_ctor()
 	    << "T().label() == \"K\"." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.T().cf(), 1.0/1.1604449278e7 ) )
-    {
+    
+    double const keV2K(1.160451923e7);
+    if( soft_equiv( x4.T().cf(), 1.0/keV2K ) )
 	PASSMSG("x4 units container has T().cf() == 8.6173843847e-8");
-    }
     else
-    {
 	FAILMSG("x4 units container does not have T().cf() == .");
-    }
-   if( x4.T().label() == "keV" )
+    if( x4.T().label() == "keV" )
     {
 	PASSMSG("x4 units container has T().label() == \"keV\").");
     }
@@ -804,10 +789,10 @@ void test_sust_ctor()
     }
 
 
-   // Check Angle data...
-   // ----------------------------------------
+    // Check Angle data...
+    // ----------------------------------------
 
-   if( si.A().enumVal() == rtt_units::A_rad )
+    if( si.A().enumVal() == rtt_units::A_rad )
     {
 	PASSMSG("si has A().enumVal() == A_rad.");
     }
@@ -848,7 +833,7 @@ void test_sust_ctor()
 	    << "A().label() == \"rad\"." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.A().cf(), 1.0 ) )
+    if( soft_equiv( x4.A().cf(), 1.0 ) )
     {
 	PASSMSG("x4 units container has A().cf() == 1.0.");
     }
@@ -856,7 +841,7 @@ void test_sust_ctor()
     {
 	FAILMSG("x4 units container does not have A().cf() == 1.0.");
     }
-   if( x4.A().label() == "rad" )
+    if( x4.A().label() == "rad" )
     {
 	PASSMSG("x4 units container has A().label() == \"rad\").");
     }
@@ -869,10 +854,10 @@ void test_sust_ctor()
     }
 
 
-   // Check Current data...
-   // ----------------------------------------
+    // Check Current data...
+    // ----------------------------------------
 
-   if( si.I().enumVal() == rtt_units::I_amp )
+    if( si.I().enumVal() == rtt_units::I_amp )
     {
 	PASSMSG("si has I().enumVal() == I_amp).");
     }
@@ -913,7 +898,7 @@ void test_sust_ctor()
 	    << "I().label() == \"Amp\"." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.I().cf(), 1.0 ) )
+    if( soft_equiv( x4.I().cf(), 1.0 ) )
     {
 	PASSMSG("x4 units container has I().cf() == 1.0");
     }
@@ -921,7 +906,7 @@ void test_sust_ctor()
     {
 	FAILMSG("x4 units container does not have I().cf() == 1.0.");
     }
-   if( x4.I().label() == "Amp" )
+    if( x4.I().label() == "Amp" )
     {
 	PASSMSG("x4 units container has I().label() == \"Amp\").");
     }
@@ -934,10 +919,10 @@ void test_sust_ctor()
     }
 
 
-   // Check Quantity data...
-   // ----------------------------------------
+    // Check Quantity data...
+    // ----------------------------------------
 
-   if( si.Q().enumVal() == rtt_units::Q_mol )
+    if( si.Q().enumVal() == rtt_units::Q_mol )
     {
 	PASSMSG("si has Q().enumVal() == Q_mol.");
     }
@@ -978,7 +963,7 @@ void test_sust_ctor()
 	    << "Q().label() == \"mol\"." << endl;
 	FAILMSG( msg.str() );
     }
-   if( soft_equiv( x4.Q().cf(), 1.0 ) )
+    if( soft_equiv( x4.Q().cf(), 1.0 ) )
     {
 	PASSMSG("x4 units container has Q().cf() == 1.0.");
     }
@@ -986,7 +971,7 @@ void test_sust_ctor()
     {
 	FAILMSG("x4 units container does not have Q().cf() == 1.0.");
     }
-   if( x4.Q().label() == "mol" )
+    if( x4.Q().label() == "mol" )
     {
 	PASSMSG("x4 units container has Q().label() == \"mol\").");
     }
@@ -1005,43 +990,16 @@ void test_sust_ctor()
 
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-    using rtt_dsxx::release;
-
-    // version tag
-    for( int arg = 1; arg < argc; arg++ )
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
+    try 
     {
-	if( string( argv[arg] ) == "--version" )
-	{
-	    cout << argv[0] << ": version " << release() << endl;
-	    return 0;
-	}
+	test_default_ctor(  ut);
+	test_qualified_ctor(ut);
+	test_sust_ctor(     ut); // specific UnitSystemType ctors
     }
-
-    try  //  >>>>> UNIT TESTS <<<<<
-    {
-	test_default_ctor();
-	test_qualified_ctor();
-	test_sust_ctor(); // specific UnitSystemType ctors
-    }
-    catch( rtt_dsxx::assertion &assert )
-    {
-	cout << "While testing tstUnitSystemTypes, " << assert.what() << endl;
-	return 1;
-    }
-
-    // status of test
-    cout << endl << "*********************************************" << endl;
-    if( rtt_units_test::passed )
-        cout << "**** tstUnitSystemTypes Test: PASSED" << endl;
-    cout <<         "*********************************************" << endl << endl;
-    
-    cout << "Done testing tstUnitSystemTypes." << endl;
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstUnitSystemTypes.cc
+// end of tstUnitSystemTypes.cc
 //---------------------------------------------------------------------------//

@@ -79,11 +79,13 @@ enum Ttype
 {
     T_null, //!< no temperature type
     T_K,    //!< Kelvin
-    T_keV   //!< keV     (1 K = 8.6173843847e-8 keV or 1 keV = 1.1604449278e7 K)
+    T_keV   //!< keV     (1 K = 8.6173843847e-8 keV or 1 keV = 1.160451923e7 K)
+    // This conversion factor between K and keV must agree with the value
+    // given in PhysicalConstants.hh.
 };
 
 int    const num_Ttype(3);
-double const T_cf[num_Ttype] = { 0.0, 1.0, 1.0/1.1604449278e7 };
+double const T_cf[num_Ttype] = { 0.0, 1.0, 1.0/1.160451923e7 };
 std::string const T_labels( "NA,K,keV" );
 
 //========================================//

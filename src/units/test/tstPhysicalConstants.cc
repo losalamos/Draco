@@ -11,23 +11,23 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <sstream>
-#include <string>
 #include <iomanip>
-#include <cmath>
 
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "units_test.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "../PhysicalConstants.hh"
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_static_access()
+void test_static_access( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -59,7 +59,7 @@ void test_static_access()
 
     // eV2K
 
-    dev = 11604.44927792425;
+    dev = 11604.5192266998;
     if( soft_equiv( dev, PhysicalConstants::eV2K() ) )
     {
         ostringstream msg;
@@ -79,7 +79,7 @@ void test_static_access()
 
     // Avagadro
 
-    dev = 6.022136736e23;
+    dev = 6.02214129e+23;
     if( soft_equiv( dev, PhysicalConstants::avogadro() ) &&
         soft_equiv( dev, PhysicalConstants::Na() ) )
     {
@@ -103,7 +103,7 @@ void test_static_access()
 
 //---------------------------------------------------------------------------//
 
-void test_ctor()
+void test_ctor( rtt_dsxx::UnitTest & ut )
 {
     using std::ostringstream;
     using std::endl;
@@ -344,7 +344,7 @@ void test_ctor()
 
 //---------------------------------------------------------------------------//
 
-void test_scaled_values()
+void test_scaled_values( rtt_dsxx::UnitTest & ut )
 {
     using std::ostringstream;
     using std::endl;
@@ -385,7 +385,7 @@ void test_scaled_values()
 
     // gasConstant
 
-    dev = 8.314510; // J/mol/K
+    dev = 8.3144622; // J/mol/K
     dev = dev * us.e()/si.e() /( us.Q()/si.Q() * us.T()/si.T() );
     if( soft_equiv( pc.gasConstant(), dev ) )
     {
@@ -468,7 +468,7 @@ void test_scaled_values()
 
     // Stefan-Boltzmann constant
 
-    dev = 5.67051e-8; // W / m^2 / K^4
+    dev = 5.670373e-8; // W / m^2 / K^4
     dev = dev * us.p() / si.p() * pow( si.L() / us.L(), 2 ) 
         * pow( si.T() / us.T(), 4 );
 
@@ -641,47 +641,16 @@ void test_scaled_values()
 }
 
 //---------------------------------------------------------------------------//
-
 int main( int argc, char *argv[] )
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-    using rtt_dsxx::release;
-
-    // version tag
-    for( int arg = 1; arg < argc; arg++ )
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
+    try
     {
-        if( string( argv[arg] ) == "--version" )
-        {
-	        cout << argv[0] << ": version " << release() << endl;
-	        return 0;
-        }
+        test_static_access(ut);
+        test_ctor(         ut);
+        test_scaled_values(ut);
     }
-
-    try  //  >>>>> UNIT TESTS <<<<<
-    {
-        test_static_access();
-        test_ctor();
-        test_scaled_values();
-    }
-    catch( rtt_dsxx::assertion &assert )
-    {
-        cout << "While testing tstUnitSystemTypes, " << assert.what() << endl;
-        return 1;
-    }
-
-    // status of test
-    cout << endl << "*********************************************" << endl;
-    if( rtt_units_test::passed )
-        cout << "**** tstUnitSystemTypes Test: PASSED" << endl;
-    else
-        cout << "**** tstUnitSystemTypes Test: FAILED" << endl;
-    cout <<         "*********************************************" << endl << endl;
-    
-    cout << "Done testing tstUnitSystemTypes." << endl;
-    return 0;
-
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

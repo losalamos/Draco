@@ -11,23 +11,22 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <string>
 #include <sstream>
 
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "../FundUnit.hh"
-#include "units_test.hh"
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
+#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-void test_construction()
+void test_construction( rtt_dsxx::UnitTest & ut )
 {
     using std::cout;
     using std::endl;
@@ -117,49 +116,14 @@ void test_construction()
     }
 
     return;
-
 }
 
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    using std::cout;
-    using std::endl;
-    using std::string;
-    using rtt_dsxx::release;
-
-    // version tag
-    for( int arg = 1; arg < argc; arg++ )
-    {
-	if( string( argv[arg] ) == "--version" )
-	{
-	    cout << argv[0] << ": version " << release() << endl;
-	    return 0;
-	}
-    }
-
-    try  //  >>>>> UNIT TESTS <<<<<
-    {
-	test_construction();
-    }
-    catch( rtt_dsxx::assertion &assert )
-    {
-	cout << "While testing tstFundUnit, " << assert.what() << endl;
-	return 1;
-    }
-
-    // status of test
-    cout << endl << "*********************************************" << endl;
-    if( rtt_units_test::passed )
-        cout << "**** tstFundUnit Test: PASSED" << endl;
-    else
-        cout << "**** tstFundUnit Test: FAILED" << endl;
-    cout <<         "*********************************************" << endl << endl;
-    
-    cout << "Done testing tstFundUnit." << endl;
-    return 0;
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
+    try { test_construction(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
