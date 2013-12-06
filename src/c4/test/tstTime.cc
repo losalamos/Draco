@@ -124,8 +124,8 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     double sum(0);
     for( size_t i = 0; i < len; ++i )
     {
-        double const d(i);
-        foo[i] = std::sqrt(std::log(d*3.14)*std::cos(d/3.14));
+        double const d(i+1);
+        foo[i] = std::sqrt(std::log(d*3.14)*std::fabs(std::cos(d/3.14)));
         sum += foo[i];
     }
 
@@ -145,7 +145,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
             << "\n\tbegin          = " << begin
             << "\n\tend-begin      = " << end - begin
             << "\n\tt.wall_clock() = " << t.wall_clock()
-                << "\n\terror          = " << error
+            << "\n\terror          = " << error
             << "\n\tprec           = " << prec << endl;
         FAILMSG(msg.str());
     }
