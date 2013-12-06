@@ -898,8 +898,12 @@ auto-mode-alist and set up some customizations for DRACO."
         ;; Find and set the draco vendor directory.
         (if (file-accessible-directory-p "/ccs/codes/radtran/vendors")
             (setq draco-vendor-dir "/ccs/codes/radtran/vendors"))
+        ;; HPC 
         (if (file-accessible-directory-p "/usr/projects/draco/vendors")
             (setq draco-vendor-dir "/usr/projects/draco/vendors"))
+        ;; Darwin
+        (if (file-accessible-directory-p "/projects/opt/draco/vendors")
+            (setq draco-vendor-dir "/projects/opt/draco/vendors"))
 
         ;; 
         ;; CEDET
