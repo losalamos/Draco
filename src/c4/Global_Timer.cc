@@ -12,7 +12,6 @@
 //---------------------------------------------------------------------------//
 
 #include <iostream>
-
 #include "Global_Timer.hh"
 
 namespace rtt_c4
@@ -93,9 +92,8 @@ void Global_Timer::set_selected_activity(set<string> const &timer_list, bool con
     }
 }
 
-
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                              end of c4/Global_Timer.cc
+// end of c4/Global_Timer.cc
 //---------------------------------------------------------------------------//
