@@ -108,39 +108,39 @@ void Timer::print( std::ostream &out, int p ) const
 	    << " sec." << '\n';
 	out << setw(20) << "SYSTEM CPU TIME: " << sum_system_cpu()
 	    << " sec." << "\n\n";
+    }
 
 #ifdef HAVE_PAPI
-        double const miss = sum_cache_misses();
-        double const hit  = sum_cache_hits();
-        out << "PAPI Events:\n"
-
-            << setw(26) << 'L' << selected_cache << " cache misses  : "
-            << sum_cache_misses()     << "\n"
-
-            << setw(26) << 'L' << selected_cache << " cache hits    : "
-            << sum_cache_hits()       << "\n"
-
-            << setw(26) << "Percent hit      : "
-            << 100.0 * hit / (miss+hit)  << "\n"
-
-            << setw(26) << "FP operations    : "
-            << sum_floating_operations() << "\n"
-            
-            << setw(26) << "Wall Clock cycles: "
-            << sum_papi_wc_cycles() << "\n"
-
-            << setw(26) << "Wall Clock time (us): "
-            << sum_papi_wc_usecs() << "\n"
-
-            << setw(26) << "Virtual cycles: "
-            << sum_papi_virt_cycles() << "\n"
-
-            << setw(26) << "Virtual time (us): "
-            << sum_papi_virt_usecs() << "\n"
-
-            << std::endl;
+    double const miss = sum_cache_misses();
+    double const hit  = sum_cache_hits();
+    out << "PAPI Events:\n"
+        
+        << setw(26) << 'L' << selected_cache << " cache misses  : "
+        << sum_cache_misses()     << "\n"
+        
+        << setw(26) << 'L' << selected_cache << " cache hits    : "
+        << sum_cache_hits()       << "\n"
+        
+        << setw(26) << "Percent hit      : "
+        << 100.0 * hit / (miss+hit)  << "\n"
+        
+        << setw(26) << "FP operations    : "
+        << sum_floating_operations() << "\n"
+        
+        << setw(26) << "Wall Clock cycles: "
+        << sum_papi_wc_cycles() << "\n"
+        
+        << setw(26) << "Wall Clock time (us): "
+        << sum_papi_wc_usecs() << "\n"
+        
+        << setw(26) << "Virtual cycles: "
+        << sum_papi_virt_cycles() << "\n"
+        
+        << setw(26) << "Virtual time (us): "
+        << sum_papi_virt_usecs() << "\n"
+        
+        << std::endl;
 #endif
-    }
     
     out.flush();
 }
@@ -198,7 +198,11 @@ bool Timer::setIsMPIWtimeAvailable() const
 //---------------------------------------------------------------------------//
 
 /* static */
+#ifdef HAVE_PAPI
+void Timer::initialize( int &argc, char * argv [] )
+#else
 void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
+#endif
 {
     // The initialize function need not be called if the default settings are
     // okay. Otherwise, initialize is called with the command line arguments
