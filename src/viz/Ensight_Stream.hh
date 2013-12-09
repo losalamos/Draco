@@ -98,7 +98,7 @@ class DLL_PUBLIC Ensight_Stream
     bool is_open() { return d_stream.is_open(); }
 
     //! Expose flush()
-    void flush() { d_stream.flush(); }
+    // void flush() { d_stream.flush(); }
 
     // The supported output stream functions.
     
