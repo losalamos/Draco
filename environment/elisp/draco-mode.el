@@ -434,10 +434,22 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 ;;======================================================================
 
 (defun draco-insert-function-doc ()
-"Default function for inserting a comment block in front of a C++ function or method."
+"Default function for inserting a comment block in front of a C++
+function or method. Width is set by draco-code-comment-width.
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief 
+ * 
+ * \param name description
+ * \return description
+ */
+"
   (interactive)
   (beginning-of-line)
-  (insert "//---------------------------------------------------------------------------------------//\n")
+  (insert "//")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "//\n")
   (insert "/*! \n")
   (insert " * \\brief \n")
   (insert " * \n")
@@ -448,13 +460,25 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
   (end-of-line)
 )
 (defun draco-insert-class-doc ()
-"Function for inserting a class desicription boilerplate."
+"Function for inserting a class desicription boilerplate.  Width is set
+by draco-code-comment-width.
+
+//===========================================================================//
+/*!
+ * \class 
+ * \brief 
+//===========================================================================//
+"
   (interactive)
-  (insert "//=======================================================================================//\n")
+  (insert "//")
+  (insert (make-string (- draco-code-comment-width 5) ?=))
+  (insert "//\n")
   (insert "/*!\n")
   (insert " * \\class \n")
   (insert " * \\brief \n")
-  (insert "//=======================================================================================//\n")
+  (insert "//")
+  (insert (make-string (- draco-code-comment-width 5) ?=))
+  (insert "//\n")
   (previous-line 2)
   (end-of-line)
 )
@@ -463,7 +487,9 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 "Function for inserting a single line comment divider."
   (interactive)
   (beginning-of-line)
-  (insert "//---------------------------------------------------------------------------------------//\n")
+  (insert "//")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "//\n")
 )
 
 (defun draco-save-and-kill-current-buffer ()
@@ -514,40 +540,64 @@ draco-companion-file-alist."
 ;;----------------------------------------------------------------------
 
 (defun draco-f90-subroutine-divider ()
-"Insert a comment block for f90"
+"Insert a comment block for f90
+
+!-----------------------------------------------------------------------------!
+!
+!-----------------------------------------------------------------------------!
+"
   (interactive)
   (beginning-of-line)
-  (insert "!-----------------------------------------------------------------------------!\n")
-  (insert "! \n")
-  (insert "!-----------------------------------------------------------------------------!\n\n")
+  (insert "!")
+  (insert (make-string (- draco-code-comment-width 3) ?-))
+  (insert "!\n! \n!")
+  (insert (make-string (- draco-code-comment-width 3) ?-))
+  (insert "!\n\n")
   (previous-line 3)
   (end-of-line)
 )
 
 (defun draco-f90-comment-divider ()
-"Insert a single line prepended by an f90 comment mark."
+"Insert a single line prepended by an f90 comment mark.
+
+!-----------------------------------------------------------------------------!
+"
   (interactive)
   (beginning-of-line)
-  (insert "!-----------------------------------------------------------------------------!\n")
+  (insert "!")
+  (insert (make-string (- draco-code-comment-width 3) ?-))
+  (insert "!\n")
   (end-of-line)
 )
 
 (defun draco-f77-subroutine-divider ()
-"Insert a comment block."
+"Insert a comment block.
+
+c-----------------------------------------------------------------------------c
+c
+c-----------------------------------------------------------------------------c
+"
   (interactive)
   (beginning-of-line)
-  (insert "c-----------------------------------------------------------------------------c\n")
-  (insert "c \n")
-  (insert "c-----------------------------------------------------------------------------c\n\n")
+  (insert "c")
+  (insert (make-string (- draco-code-comment-width 3) ?-))
+  (insert "c\nc \nc")
+  (insert (make-string (- draco-code-comment-width 3) ?-))
+  (insert "c\n\n")
   (previous-line 3)
   (end-of-line)
 )
 
 (defun draco-f77-comment-divider ()
-"Insert a divider."
+"Insert a divider.
+
+c-----------------------------------------------------------------------------c
+"
   (interactive)
-  (beginning-of-line)
-  (insert "c-----------------------------------------------------------------------------c\n")
+  (beginning-of-line) 
+  (insert "c")
+  (insert (make-string (- draco-code-comment-width 3) ?-))
+  (insert "c\n")
   (end-of-line)
 ) 
 
@@ -611,20 +661,32 @@ draco-companion-file-alist."
 )
 
 (defun draco-c-comment-divider ()
-"Insert a C style divider."
+"Insert a C style divider.
+
+/*---------------------------------------------------------------------------*/
+"
   (interactive)
   (beginning-of-line)
-  (insert "/*---------------------------------------------------------------------------*/\n")
+  (insert "/*")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "*/\n")
   (end-of-line)
 )
 
 (defun draco-c-divider ()
-"Insert a C style comment block."
+"Insert a C style comment block.
+
+/*---------------------------------------------------------------------------*/
+/* text */
+/*---------------------------------------------------------------------------*/
+"
   (interactive)
   (beginning-of-line)
-  (insert "/*---------------------------------------------------------------------------*/\n")
-  (insert "/* \n")
-  (insert "/*---------------------------------------------------------------------------*/\n\n")
+  (insert "/*")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "*/\n/* \n/*")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "*/\n\n")
   (previous-line 3)
   (end-of-line)
 )
@@ -646,12 +708,17 @@ draco-companion-file-alist."
 )
 
 (defun draco-cc-divider ()
-"Insert a C style comment block."
+"Insert a C style comment block:
+//---------------------------------------------------------------------------//
+//
+//---------------------------------------------------------------------------//"
   (interactive)
   (beginning-of-line)
-  (insert "//---------------------------------------------------------------------------//\n")
-  (insert "// \n")
-  (insert "//---------------------------------------------------------------------------//\n\n")
+  (insert "//")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "//\n// \n//")
+  (insert (make-string (- draco-code-comment-width 5) ?-))
+  (insert "//\n\n")
   (previous-line 3)
   (end-of-line)
 )

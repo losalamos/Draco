@@ -4,7 +4,8 @@
  * \author <user>
  * \date   <date>
  * \brief  Member definitions of class <class>
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -36,5 +37,5 @@ template<typename T>
 #endif // <spkg>_<class>_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of <pkg>/<class>.i.hh
+// end of <pkg>/<class>.i.hh
 //---------------------------------------------------------------------------//

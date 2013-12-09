@@ -3,7 +3,8 @@
  * \file   <pkg>/<class>.hh
  * \author <user>
  * \brief  Define class <class>
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -84,5 +85,5 @@ class <class>
 #endif // <spkg>_<class>_hh
 
 //---------------------------------------------------------------------------//
-//              end of <pkg>/<class>.hh
+// end of <pkg>/<class>.hh
 //---------------------------------------------------------------------------//

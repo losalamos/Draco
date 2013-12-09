@@ -4,7 +4,8 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,5 +19,5 @@ namespace <namespace>
 } // end namespace <namespace>
 
 //---------------------------------------------------------------------------//
-//                 end of <basename>.cc
+// end of <basename>.cc
 //---------------------------------------------------------------------------//

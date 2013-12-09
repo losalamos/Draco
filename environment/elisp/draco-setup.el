@@ -132,6 +132,11 @@ Consider prepending your local directories."
   :group 'draco-mode
   :type 'list)
 
+(defcustom draco-code-comment-width 80
+  "*Number of characters to use for comments (default 80)"
+:group 'draco-mode
+:type 'string )
+
 ;; ========================================
 ;; Use Draco configuration for these modes
 ;; ========================================
@@ -288,8 +293,6 @@ compilation-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
-
-
 
 ;; ========================================
 ;; Update load path using draco-env-dirs. 

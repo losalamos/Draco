@@ -4,23 +4,24 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
 using namespace <namespace>;
+
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -37,23 +38,9 @@ int main(int argc, char *argv[])
     {
         // >>> UNIT TESTS
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing <class>, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing <class>, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of <class>.cc
+// end of <class>.cc
 //---------------------------------------------------------------------------//

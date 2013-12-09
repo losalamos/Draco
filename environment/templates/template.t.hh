@@ -4,7 +4,8 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,5 +24,5 @@ namespace <namespace>
 #endif // <spkg>_<class>_t_hh
 
 //---------------------------------------------------------------------------//
-//                   end of <pkg>/<basename>.t.hh
+// end of <pkg>/<basename>.t.hh
 //---------------------------------------------------------------------------//

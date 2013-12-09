@@ -4,7 +4,8 @@
  * \author <user>
  * \date   <date>
  * \brief  Explicit template instatiations for class <basename>.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
+ *         All rights reserved.
  * 
  * <start>
  */
@@ -22,5 +23,5 @@ namespace <namespace>
 } // end namespace <namespace>
 
 //---------------------------------------------------------------------------//
-//                 end of <basename>_pt.cc
+// end of <basename>_pt.cc
 //---------------------------------------------------------------------------//

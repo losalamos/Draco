@@ -44,10 +44,8 @@
   "Function to set up a draco package directory with stuff.
 The files that we will place into all package directories are:
 
- 1) configure.ac
+ 1) CMakeLists.txt
  2) config.h.in
- 3) Release.hh
- 4) Release.cc
 
 These files are based on templates in the draco/templates directory."
 
@@ -72,25 +70,17 @@ These files are based on templates in the draco/templates directory."
 
     (draco-guess-names)
 
-    ;; Create new buffers from templates (configure.ac, config.h.in,
-    ;; Release.hh, Release.cc):
+    ;; Create new buffers from templates (CMakeLists.txt, config.h.in)
     
     (draco-create-buffer-from-template 
-     "configure.ac"
-     (concat draco-templates-dir "/configure.package.ac"))
+     "CMakeLists.txt"
+     (concat draco-templates-dir "/CMakeLists.package.txt"))
     
     (draco-create-buffer-from-template 
      "config.h.in"
      (concat draco-templates-dir "/template.h")
      "config")
     
-    (draco-create-buffer-from-template 
-     "Release.hh"
-     (concat draco-templates-dir "/Release.hh"))
-    
-    (draco-create-buffer-from-template 
-     "Release.cc"
-     (concat draco-templates-dir "/Release.cc"))
     ))
 
 ;;---------------------------------------------------------------------------;;
@@ -100,9 +90,7 @@ These files are based on templates in the draco/templates directory."
   "Function to set up a draco package test directory with stuff.
 The files that we will place into all package test directories are:
 
- 1) <spkg>_test.hh
- 2) <spkg>_test.cc
- 3) Makefile.target
+ 1) CMakeLists.txt
 
 These files are based on templates in the draco/templates directory."
 
@@ -123,20 +111,11 @@ These files are based on templates in the draco/templates directory."
 
     (draco-guess-names)
 
-  ;; Create new buffers from templates (pkg_test.hh, pkg_test.cc,
-  ;; Makefile.target). 
-
-  (draco-create-buffer-from-template 
-   (concat draco-safe-package-name "_test.hh")
-   (concat draco-templates-dir "/pkg_Test.hh")) 
+  ;; Create new buffers from templates (CMakeLists.txt)
 
   (draco-create-buffer-from-template
-   (concat draco-safe-package-name "_test.cc")
-   (concat draco-templates-dir "/pkg_Test.cc"))
-
-  (draco-create-buffer-from-template
-   (concat "Makefile.target")
-   (concat draco-templates-dir "/Makefile.test"))
+   "CMakeLists.txt"
+   (concat draco-templates-dir "/CMakeLists.test.txt"))
 ))
 
 ;;---------------------------------------------------------------------------;;
