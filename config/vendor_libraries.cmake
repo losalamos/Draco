@@ -767,8 +767,8 @@ individual vendor directories should be defined." )
     if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
         set( RANDOM123_INC_DIR $ENV{RANDOM123_INC_DIR} )
     endif()
-    if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY ${VENDOR_DIR}/random123-1.06/include )
-        set( RANDOM123_INC_DIR "${VENDOR_DIR}/random123-1.06/include" )
+    if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY ${VENDOR_DIR}/Random123-1.08/include )
+        set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.08/include" )
     endif()
     
     set_package_properties( MPI PROPERTIES
