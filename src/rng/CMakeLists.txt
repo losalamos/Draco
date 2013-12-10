@@ -31,7 +31,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/rng/config.h )
 # ---------------------------------------------------------------------------- #
 
 file( GLOB sources *.cc *.c )
-file( GLOB headers *.hh *.h )
+file( GLOB headers *.hh *.h *.hpp)
 list( APPEND headers ${PROJECT_BINARY_DIR}/rng/config.h )
 
 # Make the header files available in the IDE.
