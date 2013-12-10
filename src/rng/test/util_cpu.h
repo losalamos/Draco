@@ -137,8 +137,11 @@ static double clockspeedHz(int *ncores, char **modelnamep){
 	    nameclean(*modelnamep);
 	    dprintf(("cleaned modelname is %s\n", *modelnamep));
 	}
-	if ((s = strstr(buf, "cpu MHz")) != NULL) {
-	    CHECKNOTZERO(sscanf(s, "cpu MHz : %lf %n", &xMhz, &i));
+	if ((s = strstr(buf, "cpu MHz")) || (s = strstr(buf, "clock"))) {
+	    if (s[1] == 'p') // cpu MHz
+		CHECKNOTZERO(sscanf(s, "cpu MHz : %lf %n", &xMhz, &i));
+	    else // clock
+		CHECKNOTZERO(sscanf(s, "clock : %lfMHz %n", &xMhz, &i));
 	    dprintf(("parsed %f %d\n", xMhz, i));
 	    if (xMhz > Mhz) Mhz = xMhz;
 	    s += i;

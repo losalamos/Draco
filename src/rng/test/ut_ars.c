@@ -51,9 +51,7 @@ main(int argc, char **argv)
 #if R123_USE_AES_NI
     struct r123array1xm128i c, k, ret;
     char m128str[M128_STR_SIZE], *kat;
-#endif
 
-#if R123_USE_AES_NI
     if (haveAESNI()) {
 	c.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
 	k.v[0].m = m128i_from_charbuf("01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
