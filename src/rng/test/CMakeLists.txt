@@ -35,6 +35,7 @@ set( random123_unit_tests
    ${PROJECT_SOURCE_DIR}/ut_carray.cpp
    ${PROJECT_SOURCE_DIR}/ut_gsl.c
    ${PROJECT_SOURCE_DIR}/ut_M128.cpp
+   ${PROJECT_SOURCE_DIR}/ut_uniform.cpp
 )
 
 if( R123_USE_CXX11 ) #if( NOT WIN32 )
@@ -47,8 +48,6 @@ endif()
 set( random123_known_answer_tests
    ${PROJECT_SOURCE_DIR}/kat_c.c
    ${PROJECT_SOURCE_DIR}/kat_cpp.cpp
-   ${PROJECT_SOURCE_DIR}/kat_u01_c.c
-   ${PROJECT_SOURCE_DIR}/kat_u01_cpp.cpp
 )
 
 # ---------------------------------------------------------------------------- #
@@ -93,7 +92,7 @@ if( RANDOM123_FOUND)
          "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELWITHDEBINFO" )
       add_scalar_tests(
          SOURCES    "${random123_unit_tests}"
-         PASS_REGEX "OK"
+         PASS_REGEX "OK|SUCCESS"
          FAIL_REGEX "failed;error;Failure" )
    endif()
 
@@ -111,18 +110,6 @@ if( RANDOM123_FOUND)
          COMMAND $<TARGET_FILE:kat_cuda> )
 
       set_tests_properties( rng_kat_cuda
-         PROPERTIES
-         PASS_REGULAR_EXPRESSION "PASSED"
-         FAIL_REGULAR_EXPRESSION "FAILED" )
-
-      cuda_add_executable( kat_u01_cuda
-         ${PROJECT_SOURCE_DIR}/kat_u01_cuda.cu )
-
-      add_test(
-         NAME    rng_kat_u01_cuda
-         COMMAND $<TARGET_FILE:kat_u01_cuda> )
-
-      set_tests_properties( rng_kat_u01_cuda
          PROPERTIES
          PASS_REGULAR_EXPRESSION "PASSED"
          FAIL_REGULAR_EXPRESSION "FAILED" )

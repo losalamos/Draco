@@ -44,7 +44,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include "Random123/u01.h"
+#include "uniform.hpp"
 
 #include <ds++/Data_Table.hh>
 #include <algorithm>
@@ -92,7 +92,7 @@ class Counter_RNG_Ref
         CBRNG::ctr_type result = rng(ctr, key);
         ctr.incr();
         std::copy(ctr.data(), ctr.data() + 2, data.access());
-        return u01_open_open_64_53(result[0]);
+        return r123::u01fixedpt<double, CBRNG::ctr_type::value_type>(result[0]);
     }
 
     //! Spawn a new, independent stream from this one.
@@ -166,7 +166,7 @@ class Counter_RNG
         ctr.incr();
         data[0] = ctr[0];
         data[1] = ctr[1];
-        return u01_open_open_64_53(result[0]);
+        return r123::u01fixedpt<double, CBRNG::ctr_type::value_type>(result[0]);
     }
 
     //! Spawn a new, independent stream from this one.
