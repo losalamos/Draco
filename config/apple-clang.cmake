@@ -20,10 +20,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
    if (NOT ${CMAKE_GENERATOR} MATCHES Xcode AND HAS_MARCH_NATIVE)
       set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS} -march=native" )
    endif()
-   set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
+   set( CMAKE_C_FLAGS_DEBUG          "-g -fno-inline -O0 -Wextra -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
+   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -Wextra -funroll-loops" )
 
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) 
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
@@ -48,6 +48,10 @@ set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE ST
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
+# Toggle for C++11 support
+# can use -std=c++11 
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "-stdlib=libc++ -std=c++11" "CXX" "") 
+
 #------------------------------------------------------------------------------#
-# End config/unix-g++.cmake
+# End config/apple-clang.cmake
 #------------------------------------------------------------------------------#
