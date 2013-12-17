@@ -22,27 +22,23 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
+if test -f /etc/redhat-release; then
+  rh6=`cat /etc/redhat-release | grep "release 6" | wc -l`
+  rh5=`cat /etc/redhat-release | grep "release 5" | wc -l`
+fi
+
 target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
 case ${target} in
-# gondolin*)
-#    if test -z "$MODULESHOME"; then
-#      if test -f ${VENDOR_DIR}/modules-3.2.9/init/bash; then
-#        source ${VENDOR_DIR}/modules-3.2.9/init/bash
-#      fi
-#    fi
-#    module load Modules.deprecated
-#    module load gcc/4.7.1 gsl/1.13
-#    module load emacs/23.2
-#    module load openmpi totalview 
-#    module load cmake grace lapack random123 eospac numdiff git svn
-#    module load dia graphviz doxygen git valgrind
-#    module load BLACS SCALAPACK SuperLU_DIST hypre ndi
-#    module load ParMetis trilinos  
-# ;;
-
 *)
+
+   if test $rh5 == 1; then
+     echo "WARNING: draco/.bashrc_linux64 is not configured correctly"
+     echo "         for Redhat version 5.  Please talk to KT if you"
+     echo "         encounter this warning."
+   fi
+
    # Is the module function available?
    found=`declare -f module | wc -l`
    # Module is provided by the system:
@@ -63,6 +59,7 @@ case ${target} in
    module load dia graphviz doxygen git valgrind
    module load BLACS SCALAPACK SuperLU_DIST hypre ndi
    module load ParMetis trilinos  
+
 ;;
 esac
 
