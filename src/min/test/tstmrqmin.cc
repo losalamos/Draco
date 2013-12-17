@@ -77,7 +77,7 @@ void tstmrqmin( UnitTest & ut )
     std::cout << "\nTesting tstmrqmin()...\n" << std::endl;
 
     // Parse an input file
-    std::string filename = ut.getTestPath() + std::string("mrqmin_data.inp");
+    std::string filename(ut.getTestInputPath()+std::string("mrqmin_data.inp"));
 
     ifstream data(filename.c_str());
     vector<double> x, y, sig;

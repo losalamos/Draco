@@ -329,10 +329,9 @@ void test(UnitTest &ut)
     Parent::register_model("daughter",
                            Daughter::parse_parent );
 
-    // Build path for the input file "scanner_test.inp"
-    string const sadInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("sons_and_daughters.inp"),
-        rtt_dsxx::FC_NATIVE);
+    // Build path for the input file
+    string const sadInputFile(ut.getTestInputPath()
+                           + std::string("sons_and_daughters.inp") );
 
     File_Token_Stream tokens( sadInputFile );
 

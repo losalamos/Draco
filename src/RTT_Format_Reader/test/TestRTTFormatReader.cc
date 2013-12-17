@@ -36,12 +36,12 @@ map<Meshes, bool> Dims_validated;
 void runTest(UnitTest &ut)
 {
     // Find the mesh file
-    string const appPath = rtt_dsxx::getFilenameComponent( ut.getTestPath(), 
-                           rtt_dsxx::FC_NATIVE );
+    string const inpPath = ut.getTestInputPath();
+    
     // New meshes added to this test will have to be added to the enumeration
     // Meshes in the header file.
     int const MAX_MESHES = 1;
-    std::string filename[MAX_MESHES] = { appPath + string("rttdef.mesh") };
+    std::string filename[MAX_MESHES] = { inpPath + string("rttdef.mesh") };
     Meshes mesh_type;
 
     for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++)

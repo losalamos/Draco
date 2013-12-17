@@ -32,10 +32,9 @@ void tstutilities(UnitTest &ut)
     std::cout << "Running test tstutilities()..." << std::endl;
 
     // Build path for the input file "utilities.inp"
-    string const inputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("utilities.inp"),
-        rtt_dsxx::FC_NATIVE);
-
+    string const inputFile(ut.getTestInputPath()
+                           + std::string("utilities.inp") );
+    
     // Generate a File_Token_Stream
     File_Token_Stream tokens( inputFile );
 

@@ -211,10 +211,9 @@ void tstParse_Table(UnitTest &ut)
 
     if (table.size()!=raw_table_size) ut.failure("test FAILS");
 
-    // Build path for the input file "scanner_test.inp"
-    string const ptInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("parser_test.inp"),
-        rtt_dsxx::FC_NATIVE);
+    // Build path for the input file "parser_test.inp"
+    string const ptInputFile(ut.getTestInputPath()
+                            + std::string("parser_test.inp") );
 
     File_Token_Stream token_stream( ptInputFile );
 
@@ -414,9 +413,8 @@ void tstParse_Table(UnitTest &ut)
     }
 
     // Build path for the input file "recovery.inp"
-    string const recInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("recovery.inp"),
-        rtt_dsxx::FC_NATIVE);
+    string const recInputFile(ut.getTestInputPath()
+                           + std::string("recovery.inp") );
 
     File_Token_Stream recover_stream( recInputFile );
     table.parse(recover_stream);

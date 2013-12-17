@@ -35,9 +35,8 @@ using namespace rtt_dsxx;
 void tstString_Token_Stream(UnitTest &ut)
 {
     // Build path for the input file "scanner_test.inp"
-    string const stInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("scanner_test.inp"),
-        rtt_dsxx::FC_NATIVE);
+    string const stInputFile(ut.getTestInputPath()
+                           + std::string("scanner_test.inp") );
 
     ifstream infile( stInputFile.c_str() );
     string contents;
@@ -288,9 +287,8 @@ void tstString_Token_Stream(UnitTest &ut)
     {
 
         // Build path for the input file "scanner_recovery.inp"
-        string const srInputFile = rtt_dsxx::getFilenameComponent(
-            ut.getTestPath() + std::string("scanner_recovery.inp"),
-            rtt_dsxx::FC_NATIVE);
+        string const srInputFile(ut.getTestInputPath()
+                               + std::string("scanner_recovery.inp") );
         
         ifstream infile( srInputFile.c_str() );
 	string contents;

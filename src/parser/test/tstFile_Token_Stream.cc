@@ -33,9 +33,8 @@ using namespace rtt_dsxx;
 void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
 {
     // Build path for the input file "scanner_test.inp"
-    string const inputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("scanner_test.inp"),
-        rtt_dsxx::FC_NATIVE);
+    string const inputFile(ut.getTestInputPath()
+                           + std::string("scanner_test.inp") );
 
     {
         File_Token_Stream tokens( inputFile );
@@ -401,9 +400,9 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
 
     {
         // Build path for the input file "scanner_recovery.inp"
-        string const inputFile2 = rtt_dsxx::getFilenameComponent(
-            ut.getTestPath() + std::string("scanner_recovery.inp"),
-            rtt_dsxx::FC_NATIVE);
+        // Build path for the input file "scanner_recovery.inp"
+        string const inputFile2(ut.getTestInputPath()
+                               + std::string("scanner_recovery.inp") );
 
         File_Token_Stream tokens;
         tokens.open( inputFile2 );

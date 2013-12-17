@@ -166,6 +166,7 @@ class DLL_PUBLIC UnitTest
     bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
     std::string getTestPath(void) const { return testPath; }
     std::string getTestName(void) const { return testName; }
+    std::string getTestInputPath(void) const;
 
     // DATA
     //! The number of passes found for this test.
