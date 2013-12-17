@@ -59,7 +59,7 @@ void test_static_access( rtt_dsxx::UnitTest & ut )
 
     // eV2K
 
-    dev = 11604.51936627009;
+    dev = 11604.51930280894;
     if( soft_equiv( dev, PhysicalConstants::eV2K() ) )
     {
         ostringstream msg;
@@ -468,13 +468,11 @@ void test_scaled_values( rtt_dsxx::UnitTest & ut )
 
     // Stefan-Boltzmann constant
 
-    dev = 5.670373e-8; // W / m^2 / K^4
+    dev = 5.6703726e-8; // W / m^2 / K^4 
     dev = dev * us.p() / si.p() * pow( si.L() / us.L(), 2 ) 
         * pow( si.T() / us.T(), 4 );
-
-
-    std::cout << " ste = " << pc.stefanBoltzmann() << endl;
-    if( soft_equiv( pc.stefanBoltzmann(), dev ) )
+    
+    if( soft_equiv( pc.stefanBoltzmann(), dev, 1.0e-8 ) )
     {
         ostringstream msg;
         msg << "Scaled Stefan-Boltzmann constant looks correct." << endl;

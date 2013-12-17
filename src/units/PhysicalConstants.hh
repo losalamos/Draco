@@ -25,6 +25,9 @@ namespace rtt_units
 //! pi the ratio of a circle's circumference to its diameter (dimensionless)
 static double const PI = 3.141592653589793238462643383279; 
 
+// Euler's number (dimensionless)
+static double const N_EULER = 2.7182818284590452353602874;
+
 // Base physical constants in SI units:
 
 //    m - meters, kg - kilograms, s - seconds, K - kelvin
@@ -37,14 +40,14 @@ static double const AVOGADRO          = 6.02214129e23;     // entities/mol
    
 //! [h] Planck constant ( Energy seconds )
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
-static double const planckSI          = 6.62606957e-34;       // J s
+static double const planckSI          = 6.62606957e-34;    // J s
 
 //! [R] Molar Gas constant
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps 9.1e-7)
 static double const gasConstantSI     = 8.3144621;         // J/mol/K
 
 //! [k] BOLTZMANN'S CONSTANT == R/Na (JOULES/K)
-static double const boltzmannSI = gasConstantSI / AVOGADRO ; // J K^-1
+static double const boltzmannSI       = 1.380648800E-23;   // J K^-1
 
 //! [e] ELECTRON CHARGE (COULOMBS)
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 2.2e-8)
@@ -63,9 +66,16 @@ static double const EV2K              = electronChargeSI / boltzmannSI;
 // exact value by NIST definition
 static double const cLightSI          = 2.99792458e8;        // m s^-1
 
-//! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
-// Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 3.6e-6)
-static double const stefanBoltzmannSI = 5.670373e-8;        // W m^-2 K^-4
+/*! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
+ *
+ * /f
+ * \sigma_{SB} = \frac{2 \pi^5 k^4} {15 h^3 c^2}
+ *             = 5.670373e-8 
+ * /f
+ */
+static double const stefanBoltzmannSI =
+    2.0 * std::pow(PI,5) * std::pow(boltzmannSI,4)
+    / (15.0 * std::pow(planckSI,3) * std::pow(cLightSI,2) );
 
 //! [G] Gravitational Constant
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 1.2e-4)
@@ -82,8 +92,8 @@ static double const faradayConstantSI = AVOGADRO * electronChargeSI;
 static double const permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
 
 //! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
-static double const permittivityOfFreeSpaceSI = 1.0 /
-permeabilityOfVacuumSI/cLightSI/cLightSI; // Coloumb^2/J/m
+static double const permittivityOfFreeSpaceSI =
+    1.0 / permeabilityOfVacuumSI/cLightSI/cLightSI; // Coloumb^2/J/m
 
 //! [me] ELECTRON REST MASS (KG)	 s
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4e-8)
