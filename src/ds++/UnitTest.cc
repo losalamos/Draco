@@ -258,7 +258,7 @@ UnitTest::get_word_count( std::string const & filename, bool verbose )
     infile.close();
     return UnitTest::get_word_count( data, verbose );
 }
-    
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Returns the expected path of the input file
@@ -272,12 +272,12 @@ std::string
 UnitTest::getTestInputPath() const
 {
     std::string inputDir(this->getTestPath());
-    
+
     // If inputDir is a relative path that points to "./" replace it with a full
     // path.
     if( inputDir == std::string("./") )
         inputDir = rtt_dsxx::draco_getcwd();
-    
+
     // Next, check to see if we are working with a configuration subdirectory
     if( rtt_dsxx::getFilenameComponent( inputDir, rtt_dsxx::FC_NAME ) == "test")
     {
@@ -296,14 +296,15 @@ UnitTest::getTestInputPath() const
         int pos(inputDir.find_last_of(configuration) - configuration.length());
         Check( pos > 0 );
         std::string inputDirTrunc( inputDir.substr(0,pos) + rtt_dsxx::dirSep );
-    
+
         // Ensure that the slashes are correct
         inputDir = rtt_dsxx::getFilenameComponent(inputDirTrunc,
                                                   rtt_dsxx::FC_NATIVE);
     }
-    
+
     return (inputDir);
 }
+    
 
 } // end namespace rtt_dsxx
 

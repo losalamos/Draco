@@ -100,24 +100,31 @@ int draco_getpid(void)
 //---------------------------------------------------------------------------//
 /*! \brief Wrapper for system dependent getcwd call.
  *
+ *  This should always return a trailing directory separator.
  */
 std::string draco_getcwd(void)
 {
     // Identify the current working directory.
 #ifdef WIN32
-	char * buffer;
-	Insist( (buffer = _getcwd(NULL, 0)) != NULL,
-           std::string("getcwd failed: " + std::string(strerror(errno))));
-	std::string curr_path( buffer, buffer+strnlen(buffer,MAXPATHLEN));
-	free(buffer);
-    return curr_path;
+    char * buffer;
+    Insist( (buffer = _getcwd(NULL, 0)) != NULL,
+       std::string("getcwd failed: " + std::string(strerror(errno))));
+    std::string cwd(buffer, buffer+strnlen(buffer,MAXPATHLEN));
+    free(buffer);
 #else
     char curr_path[MAXPATHLEN]; curr_path[0] = '\0';
     Insist(getcwd(curr_path, MAXPATHLEN) != NULL,
            std::string("getcwd failed: " + std::string(strerror(errno))));
-    return std::string( curr_path );
+    std::string cwd( curr_path );
 #endif
+
+    // Ensure that the last character is a directory separator.
+    if (  cwd.at( cwd.length() - 1) != rtt_dsxx::dirSep )
+        cwd = cwd + rtt_dsxx::dirSep;
+
+    return cwd;
 }
+
 
 //---------------------------------------------------------------------------//
 /*! \brief Wrapper for system dependent stat call.
