@@ -4,7 +4,7 @@
 # Notes: added a requirement to use static libraries and
 #        pointed VENDOR_LIB to the default "ports" install
 #        location of /opt/local/
-cmake_minimum_required(VERSION 2.6.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 # Use:
 # - See jayenne/regression/nightly_cmake_script.sh or

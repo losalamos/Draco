@@ -2,7 +2,7 @@
 # Linux 64-bit
 # Ref: http://www.cmake.org/Wiki/CMake_Scripting_Of_CTest
 
-cmake_minimum_required(VERSION 2.6.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 # Use:
 # - See jayenne/regression/nightly_cmake_script.sh or
