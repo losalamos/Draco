@@ -104,7 +104,7 @@ case ci*:
    # module load intel/13.0.1.117
    # draco modules start here.
    module load gsl lapack/3.4.1
-   module load cmake numdiff subversion emacs
+   module load cmake numdiff svn emacs
    module load trilinos SuperLU_DIST 
    module load ParMetis ndi random123 eospac/v6.2.4beta.3
 
