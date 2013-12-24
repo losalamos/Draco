@@ -86,7 +86,9 @@ add_component_library(
 add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info.cc )
 target_link_libraries( Exe_draco_info Lib_dsxx  )
 set_target_properties( Exe_draco_info
-   PROPERTIES OUTPUT_NAME draco_info )
+   PROPERTIES OUTPUT_NAME draco_info 
+   PROJECT_LABEL draco_info
+   FOLDER        diagnostics )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

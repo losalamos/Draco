@@ -117,6 +117,11 @@ if( RANDOM123_FOUND)
 
    add_executable(time_serial
       ${PROJECT_SOURCE_DIR}/time_serial.c )
+   set_target_properties( time_serial
+     PROPERTIES 
+       #OUTPUT_NAME time_serial
+       PROJECT_LABEL time_serial
+       FOLDER rng_test )
 
    configure_file( ${PROJECT_SOURCE_DIR}/kat_vectors
       ${PROJECT_BINARY_DIR}/kat_vectors COPYONLY )

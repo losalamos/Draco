@@ -64,7 +64,9 @@ target_link_libraries(
    ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY})
 set_target_properties( 
    Exe_Ipcress_Interpreter 
-   PROPERTIES OUTPUT_NAME Ipcress_Interpreter )
+   PROPERTIES OUTPUT_NAME Ipcress_Interpreter 
+   PROJECT_LABEL          Ipcress_Interpreter
+   FOLDER                 cdi_ipcress)
 if( WIN32 )   
    # Add a post-build command to copy each dll into the test directory.
    foreach( lib Lib_cdi_ipcress;Lib_cdi;Lib_dsxx )

@@ -82,7 +82,8 @@ if( PYTHONINTERP_FOUND )
        PROPERTIES 
            OUTPUT_NAME do_exception 
            VS_KEYWORD do_exception
-           PROJECT_LABEL Ut_dsxx
+           PROJECT_LABEL do_exception
+           FOLDER dsxx_test
     )
     target_link_libraries( Ut_dsxx_do_exception_exe Lib_dsxx )
     add_test( 
@@ -92,7 +93,7 @@ if( PYTHONINTERP_FOUND )
                 $<TARGET_FILE:Ut_dsxx_do_exception_exe>
     )
     set_tests_properties( dsxx_fpe_trap_test 
-       PROPERTIES	
+       PROPERTIES
          PASS_REGULAR_EXPRESSION ".*PASSED" 
          FAIL_REGULAR_EXPRESSION ".*FAILED" 
          LABELS                  "nomemcheck"
