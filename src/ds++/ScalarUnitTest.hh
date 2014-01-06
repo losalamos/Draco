@@ -37,35 +37,9 @@ namespace rtt_dsxx
  * \code
 int main(int argc, char *argv[])
 {
-    try
-    {
-        rtt_utils::ScalarUnitTest ut( argc, argv, release );
-        tstOne(ut);
-        ut.status();
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-    return 0;
+    rtt_utils::ScalarUnitTest ut( argc, argv, release );
+    try { tstOne(ut); }
+    UT_EPILOG(ut);
 }  
  * \endcode
  *
