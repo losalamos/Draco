@@ -46,10 +46,21 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 
     Global_Timer do_timer(    "do_timer");
     Global_Timer do_not_timer("do_not_timer");
+
+    if (do_timer.is_active())
+    {
+        ut.failure("do_timer should NOT be active");
+    }
+    
     set<string> active_timers;
     active_timers.insert("do_timer");
     active_timers.insert("do_global_timer");
     Global_Timer::set_selected_activity(active_timers, true);
+
+    if (rtt_c4::nodes()==1 && !do_timer.is_active())
+    {
+        ut.failure("do_timer SHOULD be active");
+    }
 
     double const wcr( rtt_c4::wall_clock_resolution() );
     if( wcr > 0.0 && wcr <= 100.0)
