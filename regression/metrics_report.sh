@@ -183,6 +183,6 @@ echo "  http://www.bullseye.com/coverage.html#basic_conditionDecision"
 
 #echo " "
 #echo /bin/mailx -s \"${subj}\" ${recipients} < ${logfile}
-/bin/mailx -s "${subj}" ${recipients} < ${logfile}
-#/bin/mailx -s "${subj}" kellyt@lanl.gov < ${logfile}
-#/bin/mailx -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
+/bin/mailx -r "${USER}@lanl.gov" -s "${subj}" ${recipients} < ${logfile}
+#/bin/mailx -r "${USER}@lanl.gov" -s "${subj}" kellyt@lanl.gov < ${logfile}
+#/bin/mailx -r "${USER}@lanl.gov" -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
