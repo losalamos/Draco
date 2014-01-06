@@ -726,7 +726,10 @@ double CDI::integrate_planck(double const scaled_freq,
 {
     double const poly
         = polylog_series_minus_one_planck(scaled_freq, exp_scaled_freq) + 1.0;
-    double const taylor   = taylor_series_planck(scaled_freq);
+    double const taylor   = taylor_series_planck(std::min(scaled_freq, 1.0e15));
+    // Truncated argument to avoid overlow with IEEE standard double
+    // precision. At values this large, the next line will always select the
+    // polylog value.
     double       integral = std::min(taylor, poly);
 
     Ensure ( integral >= 0.0 );

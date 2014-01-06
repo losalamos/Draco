@@ -158,7 +158,7 @@ double F_eta(double const eta, double const gamma)
         // Degenerate regime?
 	double const e = square(eta+1)-1;
 
-        if (e<0)
+        if (e<=0)
         {
             return Feta_brute(eta, gamma);
         }
