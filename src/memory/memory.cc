@@ -10,10 +10,11 @@
 // $Id: memory.cc 7133 2013-06-11 17:54:11Z kellyt $
 //---------------------------------------------------------------------------//
 
+#include "memory.hh"
+#include "ds++/StackTrace.hh"
+#include "ds++/Assert.hh"
 #include <map>
 #include <iostream>
-
-#include "memory.hh"
 
 #ifndef _GLIBCXX_THROW
 #define _GLIBCXX_THROW(except) throw(except)
@@ -23,16 +24,15 @@ namespace rtt_memory
 {
 using namespace std;
 
-unsigned total;
-unsigned peak;
-unsigned largest;
+uint64_t total;
+uint64_t peak;
+uint64_t largest;
 
-unsigned check_peak = 165234368U; // normally set in debugger to trigger a
-                                 // breakpoint
+uint64_t check_peak = 165234368U; // normally set in debugger to trigger a
+                                  // breakpoint
 
-unsigned check_large = 860160U; // normally set in debugger to trigger a
-                                 // breakpoint
-
+uint64_t check_large = 860160U; // normally set in debugger to trigger a
+                                // breakpoint
 
 bool is_active = false;
 
@@ -48,6 +48,8 @@ struct memory_diagnostics
     ~memory_diagnostics() { is_active = false; }
 }
     st;
+
+
 
 #endif // DRACO_DIAGNOSTICS & 2
 
@@ -68,19 +70,19 @@ bool set_memory_checking(bool new_status)
 }
 
 //---------------------------------------------------------------------------------------//
-unsigned total_allocation()
+uint64_t total_allocation()
 {
     return total;
 }
 
 //---------------------------------------------------------------------------------------//
-unsigned peak_allocation()
+uint64_t peak_allocation()
 {
     return peak;
 }
 
 //---------------------------------------------------------------------------------------//
-unsigned largest_allocation()
+uint64_t largest_allocation()
 {
     return largest;
 }
@@ -91,9 +93,33 @@ using namespace rtt_memory;
 
 #if DRACO_DIAGNOSTICS & 2
 //---------------------------------------------------------------------------------------//
-void *operator new(size_t n) _GLIBCXX_THROW(std::bad_alloc)
+void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc)
 {
+    // Allocate memory.  Failure to allocate memory is treated at the end of
+    // this function.
     void *Result = malloc(n);
+
+    // if malloc failed, then we need to deal with it.
+    if( Result == 0 )
+    {
+        // Store the global new handler
+        // http://codereview.stackexchange.com/questions/7216/custom-operator-new-and-operator-delete
+        bool failwithstacktrace(true);
+        if( failwithstacktrace )
+        {
+            std::set_new_handler(rtt_memory::out_of_memory_handler);
+            rtt_memory::out_of_memory_handler();
+        }
+        else
+        {
+            new_handler global_handler = set_new_handler(0);
+            set_new_handler(global_handler);
+            if( global_handler ) global_handler();
+            else                 throw bad_alloc();
+        }
+    }
+
+    // If malloc was successful, do the book keeping and return the pointer.
     if (is_active)
     {
         total += n;
@@ -143,6 +169,45 @@ void operator delete(void *ptr) throw()
     }
 }
 #endif
+
+//---------------------------------------------------------------------------//
+/*! 
+ * \brief 
+ * 
+ * \param name description
+ * \return description
+ *
+ * The usual notion is that if new operator cannot allocate dynamic memory of
+ * the requested size, then it should throw an exception of type
+ * std::bad_alloc.
+ *
+ * If std::bad_alloc is about to be thrown because new is unable to allocate
+ * enough memory, a user-defined function can be called to provide diagnostic
+ * information.  This function must be registered in the program.
+ *
+ * Example:
+ * 
+ * \code
+ * #include <cstdlib>
+ * int main()
+ * {
+ *    // set the new handler.
+ * #if DRACO_DIAGNOSTICS & 2
+ *    std::set_new_handler(out_of_memory_handler);
+ * #endif
+ *    // invalid memory request
+ *    int *pBigArray = new int[1000000000000L];
+ *    return 0;
+ * }
+ * \endcode
+ *
+ */
+void rtt_memory::out_of_memory_handler(void)
+{
+    std::cerr << "Unable to allocate requested memory.\n"
+              << rtt_dsxx::print_stacktrace( "bad_alloc" );
+    throw std::bad_alloc();
+}
 
 //---------------------------------------------------------------------------//
 // end of memory.cc

@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   memory/test/tstmemory.cc
- * \author Kent G. Budge
+ * \author Kent G. Budge, Kelly G. Thompson
  * \brief  memory test.
  * \note   Copyright (C) 2013 Los Alamos National Security, LLC.
  *         All rights reserved.
@@ -11,9 +11,15 @@
 //---------------------------------------------------------------------------//
 
 #include "../memory.hh"
-#include "c4/ParallelUnitTest.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include <sstream>
+//#include <new> // std::set_new_handler
+#include <limits>
+
+#define PASSMSG(a) ut.passes(a)
+#define FAILMSG(a) ut.failure(a)
+#define ITFAILS    ut.failure(__LINE__)
 
 using namespace std;
 using namespace rtt_memory;
@@ -26,19 +32,19 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
 {
     if (total_allocation()==0)
     {
-        ut.passes("correct initial total allocation");
+        PASSMSG("correct initial total allocation");
     }
     else
     {
-        ut.failure("NOT correct initial total allocation");
+        FAILMSG("NOT correct initial total allocation");
     }
     if (peak_allocation()==0)
     {
-        ut.passes("correct initial peak allocation");
+        PASSMSG("correct initial peak allocation");
     }
     else
     {
-        ut.failure("NOT correct initial peak allocation");
+        FAILMSG("NOT correct initial peak allocation");
     }
     set_memory_checking(true);
     
@@ -49,22 +55,22 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
 #if DRACO_DIAGNOSTICS & 2
     if (total_allocation()==50*sizeof(double))
     {
-        ut.passes("correct total allocation");
+        PASSMSG("correct total allocation");
     }
     else
     {
-        ut.failure("NOT correct total allocation");
+        FAILMSG("NOT correct total allocation");
     }
     if (peak_allocation()>=50*sizeof(double))
     {
-        ut.passes("correct peak allocation");
+        PASSMSG("correct peak allocation");
     }
     else
     {
-        ut.failure("NOT correct peak allocation");
+        FAILMSG("NOT correct peak allocation");
     }
 #else
-    ut.passes("memory diagnostics not checked for this build");
+    PASSMSG("memory diagnostics not checked for this build");
 #endif
 
     delete[] array;
@@ -73,33 +79,85 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
 #if DRACO_DIAGNOSTICS & 2
     if (total_allocation()==0)
     {
-        ut.passes("correct total allocation");
+        PASSMSG("correct total allocation");
     }
     else
     {
-        ut.failure("NOT correct total allocation");
+        FAILMSG("NOT correct total allocation");
     }
     if (peak_allocation()>=50*sizeof(double))
     {
-        ut.passes("correct peak allocation");
+        PASSMSG("correct peak allocation");
     }
     else
     {
-        ut.failure("NOT correct peak allocation");
+        FAILMSG("NOT correct peak allocation");
     }
 #endif
 
 }
 
 //---------------------------------------------------------------------------//
+void tst_bad_alloc( rtt_dsxx::UnitTest & ut )
+{
+    size_t const num_fails_start( ut.numFails );
+    
+#if DRACO_DIAGNOSTICS & 2
 
+    std::cout << "\nTesting special handler (stack trace) for "
+              << "std::bad_alloc...\n" << std::endl;
+
+    // Set a specialized memory handler.
+    // std::set_new_handler(rtt_memory::out_of_memory_handler);
+
+    try
+    {    
+        // trigger a std::bad_alloc exception
+        std::cout << "Attempt to allocate some memory." << std::endl;
+        uint64_t const new_size(static_cast<uint64_t>(100*1024)*
+                                static_cast<uint64_t>(1024*1024));
+
+        char * pBigArray = new char[new_size];
+        
+        // should never get here.
+        {
+            pBigArray[0] = 'a';
+            std::cout << "pBigArray[0] = " << pBigArray[0] << std::endl;
+            std::cout << "total_allocation = " << total_allocation() << std::endl;
+        }
+
+        delete [] pBigArray;
+    }
+    catch( std::bad_alloc & ba )
+    {
+        std::cout << "Successfully caught an expected std::bad_alloc exception."
+                  << std::endl;
+    }
+    catch( ... )
+    {
+        FAILMSG( "Failed to catch a bad_alloc.");
+    }
+        
+#else // DRACO_DIAGNOSTICS & 2
+
+#endif // DRACO_DIAGNOSTICS & 2
+
+    if( ut.numFails > num_fails_start )
+        FAILMSG("Test failures in tst_bad_alloc.");
+    else
+        PASSMSG("tst_bad_alloc completed sucessfully.");
+
+    return;
+}
+    
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
-    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
         tst_memory(ut);
+        tst_bad_alloc(ut);
     }
     UT_EPILOG(ut);
 }   

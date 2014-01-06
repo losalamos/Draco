@@ -23,18 +23,14 @@ file( GLOB test_sources *.cc )
 include_directories( 
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
-   ${PROJECT_BINARY_DIR}/..   # config.h
-   ${c4_BINARY_DIR}           # c4/config.h
-   ${MPI_CXX_INCLUDE_PATH}
    )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_parallel_tests(
+add_scalar_tests(
    SOURCES "${test_sources}"
-   PE_LIST "1"
    DEPS    "Lib_c4" )
    
 # Application Unit Test 
