@@ -13,6 +13,7 @@
 
 #include "../fpe_trap.hh"
 #include "../Assert.hh"
+#include "../StackTrace.hh"
 #include <fstream>
 #include <cmath>
 #include <iostream>

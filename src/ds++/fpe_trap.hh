@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   fpe_trap/fpe_trap.hh
+ * \file   ds++/fpe_trap.hh
  * \author Rob Lowrie
  * \date   Thu Oct 13 16:36:09 2005
  * \brief  Contains functions in the fpe_trap namespace.
@@ -15,40 +15,45 @@
 #define fpe_trap_hh
 
 #include "ds++/config.h"
+#include <string>
+#include <iostream>
 
 namespace rtt_dsxx
 {
 
 //---------------------------------------------------------------------------//
 /*!
-  \class fpe_trap
-
-  \brief Enable trapping of floating-point exceptions.
-  \param[in] abortWithInsist toggle the abort mode default is true to use
-                             ds++'s Insist macro.
-                             
-  The floating-point exception behavior is platform dependent.  Nevertheless,
-  the goal of this class is to turn on trapping for the following exceptions:
-
-  - Division by zero.
-  - Invalid operation; for example, the square-root of a negative number.
-  - Overflow.
-
-  If a floating-point exception is detected, the code will abort using a mode
-  triggered by the value of abortWithInsist.
-  - If true, ds++'s Insist is called; that is, a C++ exception is thrown.
-  - If false, the default mechanism defined by the compiler will be used.  For
-    most modern compilers this results in a stack trace.
-
-  Typically, an application calls this function once, before any
-  floating-point operations are performed (e.g.: \c
-  wedgehog/Function_Interfaces.cc).  Note that all program functionality then
-  traps floating-point exceptions, including in libraries.  Currently, there
-  is no way to turn trapping off once it has been turned on.
-
-  Note: By Draco coding convention, fpe_traps are enabled when
-  DRACO_DIAGNOSTIC && 4 == true.
-*/
+ * \class fpe_trap
+ *
+ * \brief Enable trapping of floating-point exceptions.
+ * \param[in] abortWithInsist toggle the abort mode default is true to use
+ *                            ds++'s Insist macro.
+ *                            
+ * The floating-point exception behavior is platform dependent.  Nevertheless,
+ * the goal of this class is to turn on trapping for the following exceptions:
+ *
+ * - Division by zero.
+ * - Invalid operation; for example, the square-root of a negative number.
+ * - Overflow.
+ *
+ * If a floating-point exception is detected, the code will abort using a mode
+ * triggered by the value of abortWithInsist.
+ * - If true, ds++'s Insist is called; that is, a C++ exception is thrown.
+ * - If false, the default mechanism defined by the compiler will be used.  For
+ *   most modern compilers this results in a stack trace.
+ *
+ * Typically, an application calls this function once, before any
+ * floating-point operations are performed (e.g.: \c
+ * wedgehog/Function_Interfaces.cc).  Note that all program functionality then
+ * traps floating-point exceptions, including in libraries.  Currently, there
+ * is no way to turn trapping off once it has been turned on.
+ *
+ * Note: By Draco coding convention, fpe_traps are enabled when
+ * DRACO_DIAGNOSTIC && 4 == true.
+ *
+ * Useful links:
+ * - http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
+ */
 class DLL_PUBLIC fpe_trap
 {
   public:
@@ -59,16 +64,9 @@ class DLL_PUBLIC fpe_trap
     {/* emtpy */};
     ~fpe_trap(void) {/* empty */};
 
-
-    //-----------------------------------------------------------------------------------//
-    /*! 
-     * \brief Enable trapping fpe signals.
-     * \return \b true if trapping is enabled, \b false otherwise.
-     *         A \b false return value is typically because the platform is not 
-     *         supported.
-     */
+    //! Enable trapping of fpe signals.
     bool enable( void );
-    //! Disable trapping fpe signals.
+    //! Disable trapping of fpe signals.
     void disable( void );
     //! Query if trapping of fpe signals is active.
     bool active(void) const { return fpeTrappingActive; }
@@ -83,5 +81,5 @@ class DLL_PUBLIC fpe_trap
 #endif // fpe_trap_hh
 
 //---------------------------------------------------------------------------//
-// end of fpe_trap/fpe_trap.hh
+// end of ds++/fpe_trap.hh
 //---------------------------------------------------------------------------//

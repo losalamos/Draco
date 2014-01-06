@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   fpe_trap/linux_x86.cc
+ * \file   ds++/fpe_trap.cc
  * \author Rob Lowrie
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  Linux/X86 implementation of fpe_trap functions.
@@ -20,9 +20,8 @@
 
 #include "fpe_trap.hh"
 #include "Assert.hh"
-#include <iostream>
+#include "StackTrace.hh"
 #include <sstream>
-#include <string>
 
 //---------------------------------------------------------------------------//
 // Linux_x86
@@ -32,140 +31,9 @@
 #include <signal.h>
 #include <fenv.h>
 
-// Print a demangled stack backtrace of the caller function to FILE* out.
-// http://blog.aplikacja.info/2010/12/backtraces-for-c/
-#include <cxxabi.h>
-#include <execinfo.h> // backtrace
-#include <stdio.h>  //snprintf
-#include <stdlib.h>
-#include <string.h>
-#include <ucontext.h>
-#include <unistd.h>
-// #include <Qt/qapplication.h>
-
 /* Signal handler for floating point exceptions. */
 extern "C"
-{
-
-// Print a demangled stack backtrace of the caller function to FILE* out.
-// http://blog.aplikacja.info/2010/12/backtraces-for-c/
-std::string
-print_stacktrace( std::string const & error_name )
-{
-    // max size of stack backtrace.
-    unsigned const max_frames(63);
-
-    // store the message here.
-    std::ostringstream msg;
-
-    unsigned const linkname_size(512);
-    char linkname[linkname_size]; 
-    char buf[linkname_size];
-    pid_t pid;
-    int ret;
-
-    /* Get our PID and build the name of the link in /proc */
-    pid = getpid();
-    snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid);
-        
-    /* Now read the symbolic link */
-    ret = readlink(linkname, buf, linkname_size);
-    buf[ret] = 0;
-
-    msg << "\nStack trace:"
-        << "\n  Signaling error: " << error_name
-        << "\n  Process " << buf << "\n\n";
-    
-    // storage array for stack trace address data
-    void * addrlist[max_frames+1];
-    
-    // retrieve current stack addresses
-    int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
-
-    if (addrlen == 0)
-    {
-        msg << "  \n";
-        return msg.str();
-    }
-
-    // resolve addresses into strings containing "filename(function+address)",
-    // this array must be free()-ed
-    char** symbollist = backtrace_symbols(addrlist, addrlen);
-
-    // allocate string which will be filled with the demangled function name
-    size_t funcnamesize = 256;
-    char* funcname = (char*)malloc(funcnamesize);
-
-    // iterate over the returned symbol lines. skip first two,
-    // (addresses of this function and handler)
-    for (int i = 2; i < addrlen; i++)
-    {
-	char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
-
-	// find parentheses and +address offset surrounding the mangled name:
-	// ./module(function+0x15c) [0x8048a6d]
-	for (char *p = symbollist[i]; *p; ++p)
-	{
-	    if (*p == '(')
-		begin_name = p;
-	    else if (*p == '+')
-		begin_offset = p;
-	    else if (*p == ')' && begin_offset) {
-		end_offset = p;
-		break;
-	    }
-	}
-
-	if (begin_name && begin_offset && end_offset
-	    && begin_name < begin_offset)
-	{
-	    *begin_name++ = '\0';
-	    *begin_offset++ = '\0';
-	    *end_offset = '\0';
-
-	    // mangled name is now in [begin_name, begin_offset) and caller
-	    // offset in [begin_offset, end_offset). now apply
-	    // __cxa_demangle():
-
-	    int status;
-	    char* ret = abi::__cxa_demangle(begin_name,
-					    funcname, &funcnamesize, &status);
-	    if (status == 0)
-            {
-		funcname = ret; // use possibly realloc()-ed string
-                msg << "  (PID:" << pid << ") "
-                    << symbollist[i] << " : "
-                    << funcname << "()+" << begin_offset << "\n";
-	    }
-	    else
-            {
-		// demangling failed. Output function name as a C function with
-		// no arguments.
-                msg << "  (PID:" << pid << ") "
-                    << symbollist[i] << " : "
-                    << begin_name << "()+" << begin_offset << "\n";
-	    }
-	}
-	else
-	{
-	    // couldn't parse the line? print the whole line.
-            msg << "  (PID:" << pid << ") "
-                << symbollist[i] << " : ??\n";
-	}
-    }
-
-    free(funcname);
-    free(symbollist);
-
-    // fprintf(out, "stack trace END (PID:%d)\n", pid);
-    msg << "Stack trace: END (PID:" << pid << ")\n";
-    return msg.str();
-}
-
-
-//---------------------------------------------------------------------------//
-static void
-catch_sigfpe (int sig, siginfo_t *psSiginfo, void * /*psContext*/) 
+void catch_sigfpe (int sig, siginfo_t *psSiginfo, void * /*psContext*/) 
 {    
     // generate a message:
     std::string error_type;
@@ -207,16 +75,20 @@ catch_sigfpe (int sig, siginfo_t *psSiginfo, void * /*psContext*/)
                 break;
         }
     }
-    Insist(false, print_stacktrace(error_type));
+    Insist(false, rtt_dsxx::print_stacktrace(error_type));
 }
 
-} // end of extern "C"
-
+//---------------------------------------------------------------------------//
 namespace rtt_dsxx
 {
 
 //---------------------------------------------------------------------------//
-//!  Enable trapping of floating point errors.
+/*! 
+ * \brief Enable trapping fpe signals.
+ * \return \b true if trapping is enabled, \b false otherwise.
+ *
+ * A \b false return value is typically because the platform is not supported.
+ */
 bool fpe_trap::enable(void)
 {
     struct sigaction act;
@@ -600,5 +472,5 @@ void fpe_trap::disable(void)
 #endif // FPETRAP_UNSUPPORTED
 
 //---------------------------------------------------------------------------//
-// end of fpe_trap.cc
+// end of ds++/fpe_trap.cc
 //---------------------------------------------------------------------------//
