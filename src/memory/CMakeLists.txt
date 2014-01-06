@@ -19,10 +19,6 @@ file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-list( REMOVE_ITEM headers
-   ${template_implementations} 
-   ${PROJECT_SOURCE_DIR}/draco_info.cc
-   )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
@@ -36,11 +32,8 @@ endif()
 include_directories(
    ${PROJECT_SOURCE_DIR}  # sources
    ${PROJECT_BINARY_DIR}  # config.h
-   ${draco_src_dir_SOURCE_DIR} # ds++ and c4 headers
+   ${draco_src_dir_SOURCE_DIR} # ds++ headers
    ${dsxx_BINARY_DIR} # ds++/config.h
-   ${diagnostics_BINARY_DIR} $ diagnostics/config.h
-   ${c4_BINARY_DIR}   # c4/config.h
-   ${MPI_CXX_INCLUDE_PATH}
    )
 
 # ---------------------------------------------------------------------------- #
@@ -49,7 +42,7 @@ include_directories(
 
 add_component_library( 
    TARGET       Lib_memory
-   TARGET_DEPS  Lib_c4
+   TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 
@@ -57,10 +50,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_memory
-   EXPORT draco-targets
-   DESTINATION lib )
-install( FILES ${headers}  DESTINATION include/memory )
+install( TARGETS Lib_memory EXPORT draco-targets DESTINATION lib )
+install( FILES ${headers} DESTINATION include/memory )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
