@@ -239,15 +239,15 @@ lu-fe[0-9] | lua[0-9]* | ml-fey | ml* | mu-fey | mu* | pi*)
 esac
 
 # Only print the loaded modules if this is an interactive session.
-if ! test "${NoModules}" == "1"; then
-  case ${-} in 
-  *i*)
-    if test -n "$MODULESHOME"; then
-      module list
-    fi
-    ;;
-  esac
-fi
+# if ! test "${NoModules}" == "1"; then
+#   case ${-} in 
+#   *i*)
+#     if test -n "$MODULESHOME"; then
+#       module list
+#     fi
+#     ;;
+#   esac
+# fi
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
