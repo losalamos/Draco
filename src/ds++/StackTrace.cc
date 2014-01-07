@@ -20,9 +20,11 @@
 //---------------------------------------------------------------------------//
 #ifdef UNIX
 
-#include <cxxabi.h>
+#ifndef draco_isPGI
+#include <cxxabi.h> // abi::__cxa_demangle
+#endif
 #include <execinfo.h> // backtrace
-#include <stdio.h>  //snprintf
+#include <stdio.h>    //snprintf
 #include <stdlib.h>
 #include <string.h>
 #include <ucontext.h>
@@ -126,9 +128,12 @@ std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
 	    // offset in [begin_offset, end_offset). now apply
 	    // __cxa_demangle():
 
-	    int status;
-	    char* ret = abi::__cxa_demangle(begin_name,
-					    funcname, &funcnamesize, &status);
+	    int status(1);  // assume failure
+            char * ret = NULL;
+#ifndef draco_isPGI
+            ret = abi::__cxa_demangle(begin_name,
+                                      funcname, &funcnamesize, &status);
+#endif
 	    if (status == 0)
             {
 		funcname = ret; // use possibly realloc()-ed string
@@ -155,11 +160,16 @@ std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
     free(funcname);
     free(symbollist);
 
+#ifdef draco_isPGI
+    msg << "\n==> Draco's StackTrace feature is not currently implemented for PGI."
+        << "\n    The StackTrace is known to work under Intel or GCC compilers."
+        << std::endl;
+#else
     msg << "\n==> Try to run 'addr2line -e " << process_name << " 0x99999' "
         << "\n    to find where each part of the stack relates to your source code."
         << "\n    Replace the 0x99999 with the actual address from the stack trace above."
         << std::endl;
-    
+#endif
     return msg.str();
 }
 

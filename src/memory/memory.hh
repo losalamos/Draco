@@ -14,7 +14,7 @@
 #define memory_memory_hh
 
 #include <cstdlib>
-#include <cstdint>
+#include <stdint.h> // cstdint not available on PGI
 #include "ds++/config.h" // defines DRACO_DIAGNOSTICS
 
 namespace rtt_memory

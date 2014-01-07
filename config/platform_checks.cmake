@@ -46,11 +46,13 @@ endmacro()
 macro( query_have_gethostname )
     # Platform checks for gethostname()
     include( CheckIncludeFiles )
-    check_include_files( unistd.h HAVE_UNISTD_H )
-    check_include_files( limits.h HAVE_LIMITS_H )
-    check_include_files( winsock2.h HAVE_WINSOCK2_H )
-    check_include_files( direct.h HAVE_DIRECT_H )
+    check_include_files( unistd.h    HAVE_UNISTD_H )
+    check_include_files( limits.h    HAVE_LIMITS_H )
+    check_include_files( winsock2.h  HAVE_WINSOCK2_H )
+    check_include_files( direct.h    HAVE_DIRECT_H )
     check_include_files( sys/param.h HAVE_SYS_PARAM_H )
+    # Used to demangle symbols for stack trace
+    # check_include_files( cxxabi.h    HAVE_CXXABI_H )
 
     # -------------- Checks for hostname and len(hostname) ---------------- #
     # gethostname()
