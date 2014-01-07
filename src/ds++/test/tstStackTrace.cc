@@ -41,7 +41,6 @@ void runtest( rtt_dsxx::UnitTest & ut )
     std::cout << "Running tstStackTrace...\n\n"
               << "Requesting a trace..." << std::endl;
 
-#ifdef UNIX
 
     // Create a stack trace.  It should look something like this:
 
@@ -68,12 +67,11 @@ void runtest( rtt_dsxx::UnitTest & ut )
     bool const verbose(false);
     std::map< std::string, unsigned > words = ut.get_word_count( msg,
                                                                  verbose );
-    // Expected values.
+
+	// Expected values.
     if( words[ std::string("PID")]   != 1 ) ITFAILS;
     if( words[ std::string("Stack")] <  2 ) ITFAILS;
-
-#endif
-    
+   
     if( ut.numFails==0 )
         PASSMSG("done with testing print_stacktrace.");
     return;

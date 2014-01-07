@@ -11,12 +11,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <StackTrace.hh>
+#include "StackTrace.hh"
 #include <sstream>
 #include <iostream>
 
 //---------------------------------------------------------------------------//
-// Stack trace feature is only available on Unix-based systems.
+// Stack trace feature is only available on Unix-based systems when 
+// compiled with Intel or GNU C++.
 //---------------------------------------------------------------------------//
 #ifdef UNIX
 
@@ -24,7 +25,7 @@
 #include <cxxabi.h> // abi::__cxa_demangle
 #endif
 #include <execinfo.h> // backtrace
-#include <stdio.h>    //snprintf
+#include <stdio.h>    // snprintf
 #include <stdlib.h>
 #include <string.h>
 #include <ucontext.h>
@@ -174,6 +175,42 @@ std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
 }
 
 #endif // UNIX
+
+//---------------------------------------------------------------------------//
+// Stack trace feature is also available on Win32-based systems when 
+// compiled with Visual Studio.
+//---------------------------------------------------------------------------//
+#ifdef WIN32
+
+//---------------------------------------------------------------------------//
+// Print a demangled stack backtrace of the caller function.
+std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
+{
+	// store/build the message here.  At the end of the function we return
+    // msg.str(). 
+    std::ostringstream msg;
+
+	int pid(0);
+	std::string process_name("unknown");
+	int stack_depth(3);
+
+	// Print a header for the stack trace
+    msg << "\nStack trace:"
+        << "\n  Signaling error: " << error_name
+        << "\n  Process        : " << process_name
+        << "\n  PID            : " << pid
+        << "\n  Stack depth    : " << stack_depth
+        << " (showing " << stack_depth-3 << ")"
+        << "\n\n";    
+
+	msg << "\n==> Draco's StackTrace feature is not currently implemented for Win32."
+        << "\n    The StackTrace is known to work under Intel or GCC compilers on Linux."
+        << std::endl;
+
+	return msg.str();
+}
+
+#endif // WIN32
 
 //---------------------------------------------------------------------------//
 // end of ds++/StackTrace.cc
