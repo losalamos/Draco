@@ -73,7 +73,7 @@ toggle_compiler_flag( USE_OPENMP "-qsmp=omp" "Fortran" "")
 # link line when a C++ main the link line and actually causes the link
 # to fail on SQ.
 # ----------------------------------------------------------------------------
-function( remove_lib_from_link lib_for_removal )
+macro( remove_lib_from_link lib_for_removal )
 
    foreach( lib ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES} )
       if( ${lib} MATCHES ${lib_for_removal} )
@@ -90,11 +90,11 @@ function( remove_lib_from_link lib_for_removal )
       "Extra Fortran libraries needed when linking to Fortral library from C++ target"
       FORCE )
 
-endfunction()
+endmacro()
 
 # When building on SQ with XLC/XLF90, ensure that libxlomp_ser is not
 # on the link line
-remove_lib_from_link( "xlomp_ser" )
+#remove_lib_from_link( "xlomp_ser" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-xlf.cmake

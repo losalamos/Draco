@@ -30,6 +30,12 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
+# When building on SQ with XLC/XLF90, ensure that libxlomp_ser is not
+# on the link line.  This macro is defined in config/unix-xlf.cmake.
+if( ${CMAKE_Fortran_COMPILER_FLAVOR} MATCHES "XL" )
+   remove_lib_from_link( "xlomp_ser" )
+endif()
+
 # Create the test.
 add_scalar_tests( 
    SOURCES "${test_sources}" 
