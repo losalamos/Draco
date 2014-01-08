@@ -81,7 +81,7 @@ install(
      ${CMake_in} 
      ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake
    DESTINATION
-     lib/cmake/draco-${DRACO_VERSION_MAJOR}.${DRACO_VERSION_MINOR} )
+     lib/cmake/draco )
 
 ##---------------------------------------------------------------------------##
 ## End of config/CMakeLists.txt

@@ -18,7 +18,7 @@ include( "${_SELF_DIR}/draco-targets.cmake" )
 # Also set the draco install dir
 set( DRACO_DIR "@CMAKE_INSTALL_PREFIX@" )
 set( DRACO_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
-set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco-@DRACO_VERSION_MAJOR@.@DRACO_VERSION_MINOR@" )
+set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco" )
 
 # Provide some pretty print information during configure
 include( FeatureSummary )

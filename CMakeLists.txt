@@ -193,8 +193,7 @@ add_custom_target( uninstall
    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
 
 # Export targets
-install( EXPORT draco-targets
-   DESTINATION lib/cmake/draco-${DRACO_VERSION} )
+install( EXPORT draco-targets DESTINATION lib/cmake/draco )
 
 ##---------------------------------------------------------------------------##
 ## Notes:
