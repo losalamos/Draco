@@ -1,6 +1,10 @@
 # ---------------------------------------------------------------------------- #
-# Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
+# file   FortranChecks/test/CMakeLists.txt
+# author Kelly Thompson
+# brief  Instructions for building a C++ main that links against an
+#        F90 library and uses ISO_C_BINDING.
+# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+#        All rights reserved
 # ---------------------------------------------------------------------------- #
 # $Id$
 # ---------------------------------------------------------------------------- #
@@ -26,6 +30,11 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
+# Create the test.
 add_scalar_tests( 
    SOURCES "${test_sources}" 
    DEPS    "Lib_dsxx;Lib_FortranChecks" )
+
+# ---------------------------------------------------------------------------- #
+# end of FortranChecks/test/CMakeLists.txt
+# ---------------------------------------------------------------------------- #

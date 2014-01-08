@@ -11,10 +11,11 @@
 cmake_minimum_required( VERSION 2.8 )
 project( FortranChecks CXX Fortran )
 
-#include(FortranCInterface)
-#FortranCInterface_HEADER( FortranChecks/config.h MACRO_NAMESPACE "FC_")
-# This creates a "config.h" header that defines mangling macros
-# FC_GLOBAL(), FC_GLOBAL_() FC_MODULE(), and FC_MODULE().
+# When using CXX/Fortran cross language linking and function calling
+# the CMake module FortranCInterface.cmake can be used to deal with
+# name mangling issues.  However, Draco has chosen to use
+# ISO_C_BINDING instead and this makes manual name demangling
+# unnecessary.
 
 # ---------------------------------------------------------------------------- #
 # Source files
