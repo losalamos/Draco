@@ -186,15 +186,15 @@ std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
 // Print a demangled stack backtrace of the caller function.
 std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
 {
-	// store/build the message here.  At the end of the function we return
+    // store/build the message here.  At the end of the function we return
     // msg.str(). 
     std::ostringstream msg;
 
-	int pid(0);
-	std::string process_name("unknown");
-	int stack_depth(3);
+    int pid(0);
+    std::string process_name("unknown");
+    int stack_depth(3);
 
-	// Print a header for the stack trace
+    // Print a header for the stack trace
     msg << "\nStack trace:"
         << "\n  Signaling error: " << error_name
         << "\n  Process        : " << process_name
@@ -203,11 +203,11 @@ std::string rtt_dsxx::print_stacktrace( std::string const & error_name )
         << " (showing " << stack_depth-3 << ")"
         << "\n\n";    
 
-	msg << "\n==> Draco's StackTrace feature is not currently implemented for Win32."
+    msg << "\n==> Draco's StackTrace feature is not currently implemented for Win32."
         << "\n    The StackTrace is known to work under Intel or GCC compilers on Linux."
         << std::endl;
 
-	return msg.str();
+    return msg.str();
 }
 
 #endif // WIN32

@@ -30,16 +30,16 @@ namespace rtt_dsxx
  *
  * A stack trace will look something like this:
  * \code
-Stack trace:
-  Signaling error: myMessage
-  Process        : /var/tmp/kgt/gcc-mpid-diag3/d/src/ds++/test/tstStackTrace
-  PID            : 29732
-  Stack depth    : 7 (showing 4)
+ Stack trace:
+ Signaling error: myMessage
+ Process        : /var/tmp/kgt/gcc-mpid-diag3/d/src/ds++/test/tstStackTrace
+ PID            : 29732
+ Stack depth    : 7 (showing 4)
 
-  ./tstStackTrace : sr2(std::string&)()+0x41 [0x405671]
-  ./tstStackTrace : sr1(std::string&)()+0x18 [0x405705]
-  ./tstStackTrace : runtest(rtt_dsxx::UnitTest&)()+0x54 [0x40575c]
-  ./tstStackTrace : main()+0x50
+ ./tstStackTrace : sr2(std::string&)()+0x41 [0x405671]
+ ./tstStackTrace : sr1(std::string&)()+0x18 [0x405705]
+ ./tstStackTrace : runtest(rtt_dsxx::UnitTest&)()+0x54 [0x40575c]
+ ./tstStackTrace : main()+0x50
  * \code
  *
  * To debug a stack trace use objdump and c++filt (Intel/g++ only).
@@ -58,7 +58,7 @@ Stack trace:
  *
  * Useful links:
  * - http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
- * - http://www.codeproject.com/KB/threads/StackWalker/StackWalker.zip
+ * - http://stackwalker.codeplex.com
  */
 DLL_PUBLIC std::string print_stacktrace( std::string const & error_name );
 
