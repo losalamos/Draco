@@ -1,3 +1,189 @@
+2014-01-09  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_9_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/17
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_3_0,    http://coder/redmine/versions/16
+	  - Capsaicin-3_7_0,  http://coder/redmine/versions/18
+
+	* Platforms:
+	  PI/ML/TY/LU    Intel 13.1.3    OpenMPI-1.6.3
+	  CT/CI          Intel 13.1.3    MPICH2-5.6.4
+	  SQ             XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	  - 188 files changed, added or removed in 84 commits.
+	  - Update physical constants to match NIST 2010 CODATA report.
+	  - Provide (and require) Random123/1.08 for all platforms.
+	  - Improved support for building/running on SQ.
+
+	* Details per package:
+
+	Build System:
+	  - 'autodoc' make target was updated to be a bit more robust.
+	  - Configuration files for IBM XL compilers were updated with
+ 	    appropriate flags.
+	  - For Intel compilers, enable optimization
+	    '-fp-model fast -fp-speculation fast' for Release builds.
+	  - Add C++11 tests for
+	    o delegating constructors
+	    o non static data member initialization
+	    o raw string literals
+
+	Developer Environment:
+	  - gsl and lapack modules updated for CT/CI.
+	  - Cleaned up the configuration file for cloc.  New
+ 	    categorization of file types will change LOC reported for some
+	    file types.
+	  - Emacs CEDET/ECB default configuration reworked.  This requires
+	    emacs >= version 24.
+	    ;; CEDET
+	    ;; Generate tag files for Fortran: 'gtags --gtagslabel=ctags'
+            (defvar file-at-root-level-draco "~/.draco_ede")
+            (defvar file-at-root-level-eap "~/cassio/.eap_ede")
+            (draco-start-ecb)
+            o See https://rtt.lanl.gov/redmine/projects/draco/wiki/Emacs.
+	  - Provide (and require) Random123/1.08 for all platforms.
+	  - Change the default svn client to version 1.8.5.  The
+	    repositories remain at 1.6.
+
+	c4:
+	  - Modify PAPI build options on Global_Timer to work with ccscs9
+	    and similar platforms.
+
+	cdi_analytic:
+	  - A bug in tstAnalytic_Odfmg_Opacity.cc was discovered and
+	    fixed.  The band boundaries were previously invalid
+	    (non-monotoic).
+
+	diagnostics:
+	  - draco_info now provides a report of all supported C++11 features
+
+	ds++:
+	  - Moved the Jayenne function linear_interpolate to DracoMath.
+	  - Moved code that generates a stack trace into its own file.
+
+	memory:
+	  - Added the ability to breakpoint on large memory allocations.
+	  - Enhance memory diagnostics to include maximum individual
+	    allocation size.
+	  - Provide a specialized memory handler that will print a stack
+	    trace if new is unable to provide the requested amount of
+	    memory. This can be activated in code by adding
+	    'std::set_new_handler(rtt_memory::out_of_memory_handler);'
+	    to the C++ main() function.
+
+	units:
+	  - Update physical constants to match NIST 2010 CODATA report.
+
+	* Corrected defects:
+	  Bug #282 Autodoc does not appaer to be publishing correctly.
+	  Bug #308 rng/uniform.hpp triggers error under Intel/14.
+
+	* New features:
+	  Feature #285 Consider moving Intel and GCC to a "fast math" model.
+	  Feature #303 Provide a stacktrace generator.
+	  Task #278 Setup radtran/ on dedicated file space.
+	  Task #295 Provide unit test for Global_Timer's 'is_active'
+	            member function.
+	  Task #296 Update Random123 to version 1.08.
+	  Task #305 Install svn 1.8+ on CCS systems and git 1.8+ on CCS
+	            and HPC systems.
+	  Task #307 Ensure code builds and passes on SQ.
+	  Task #309 Eliminate version values on directory name for
+	            installed config directory.
+
+	* Known Defect:
+          Bug #240: Intel 13 generates incorrect code in rare cases
+	            involving compile-time constants larger than
+	            0x7fffffff
+	  Bug  #59: cdi_eospac design flaw
+	  Feature #227: refactor cdi_analytic opacities
+	  Feature #135: Build on WIN32
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+72027: kellyt
+46314: kgbudge
+11522: tme
+ 6132: bta
+ 5524: lowrie
+ 4450: mwbuksas
+ 4229: gaber
+ 4043: mcghee
+ 2070: warsa
+ 1213: rsqrd
+  994: wollaber
+  863: sethrj
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             434          11943          21151          63706
+C/C++ Header                    347           7603          21519          20129
+Lisp                             14           1857           2651          12226
+CMake                           109           1811           4738           6868
+Python                           27           1226           1360           2237
+Bourne Again Shell               17            199            447            899
+Bourne Shell                     11            193            452            837
+C                                 5            212            403            683
+CSS                               1            113             37            395
+C Shell                           3             42            103            244
+Fortran 90                        3             38             68            118
+DOS Batch                         1             19             10             59
+HTML                              2              8             15             48
+CUDA                              3             14             31             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            979          25300          52999         108528
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+              units/                  82 /    82 = 100%      58 /    58 = 100%
+              traits/                 16 /    16 = 100%       0 /     0
+              special_functions/      32 /    32 = 100%     206 /   216 =  95%
+              fit/                     1 /     1 = 100%      15 /    16 =  93%
+              ode/                     5 /     5 = 100%      29 /    32 =  90%
+              min/                     9 /     9 = 100%     137 /   154 =  88%
+              linear/                 16 /    16 = 100%     334 /   392 =  85%
+              cdi/                    43 /    43 = 100%      49 /    58 =  84%
+              roots/                   8 /     8 = 100%     259 /   312 =  83%
+              mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+              cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+              viz/                    24 /    24 = 100%     131 /   174 =  75%
+              meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+              diagnostics/            10 /    10 = 100%      21 /    30 =  70%
+              FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+              RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+              parser/                268 /   271 =  98%    1083 /  1353 =  80%
+              timestep/               62 /    63 =  98%     104 /   178 =  58%
+              ds++/                  314 /   320 =  98%     383 /   433 =  88%
+              cdi_eospac/             52 /    53 =  98%      62 /   132 =  46%
+              quadrature/            196 /   200 =  98%     501 /   637 =  78%
+              c4/                    182 /   189 =  96%     516 /   570 =  90%
+              norms/                  25 /    26 =  96%      21 /    34 =  61%
+              rng/                    90 /    94 =  95%      67 /    72 =  93%
+              cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+              plot2D/                 22 /    29 =  75%      46 /    76 =  60%
+              lapack_wrap/            12 /    16 =  75%       0 /     0
+              memory/                  3 /     5 =  60%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2083 /  2144 =  97%    4957 /  6158 =  80%
+
+* C/D Coverage is condition/decision coverage
+  http://www.bullseye.com/coverage.html#basic_conditionDecision
+
 2013-10-29  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_8_0.  This is a minor Draco release.
