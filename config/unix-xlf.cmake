@@ -75,6 +75,7 @@ toggle_compiler_flag( USE_OPENMP "-qsmp=omp" "Fortran" "")
 # ----------------------------------------------------------------------------
 macro( remove_lib_from_link lib_for_removal )
 
+   set( tmp "" )
    foreach( lib ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES} )
       if( ${lib} MATCHES ${lib_for_removal} )
          message("Removing ${lib_for_removal} from CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES")
