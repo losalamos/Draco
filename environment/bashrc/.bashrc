@@ -205,18 +205,13 @@ darwin* | cn[0-9]*)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_darwin
    ;; 
 
-#TLCC machines
-ty-fe* | ty[0-9]*)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
-    ;;
-
 # Cielito | Cielo
 ct-fe[0-9] | ct-login[0-9] | ci-fe[0-9] | ci-login[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
-# Luna | Moonlight | Mustang
-lu* | ml* | mu* | pi*)
+# Luna | Moonlight | Mustang | Pinto | Typhoon
+lu* | ml* | mu* | pi* | ty*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 
