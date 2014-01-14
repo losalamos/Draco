@@ -21,7 +21,7 @@ if test -n "$MODULESHOME"; then
     # module load cuda
     if test -d ${DRACO_SRC_DIR}/environment/Modules/darwin; then
         module use ${DRACO_SRC_DIR}/environment/Modules/darwin
-        module unload compilers mpi
+        module unload compilers mpi cmake
         module load cmake/2.8.11.1 compilers/gcc/4.7.2
         module load mpi/openmpi-1.6.4-gcc.4.7.2 other/emacs-24.3
         module load other/gnuplot-4.6.1 python/2.7.3 totalview/8.11.0-2
