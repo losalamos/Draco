@@ -17,9 +17,20 @@
 #include <fstream>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
+//---------------------------------------------------------------------------//
+// Helper
+void fcout( std::string const & msg, std::ofstream & fout )
+{
+    fout << msg << endl;
+    cout << msg << endl;
+    return;
+}
+
+//---------------------------------------------------------------------------//
 /*
   Usage: do_exception test
   
@@ -34,25 +45,28 @@ using namespace std;
 
   The file output.dat documents what happened during all tests.
 */
-
-//---------------------------------------------------------------------------//
-
 void run_test(int /*argc*/, char *argv[])
 {
     std::ofstream fout;
     fout.open("output.dat");
 
     bool const abortWithInsist(true);
-    if ( rtt_dsxx::fpe_trap(abortWithInsist).enable() )
+    rtt_dsxx::fpe_trap fpet(abortWithInsist);
+    if ( fpet.enable() )
     {
         // Platform supported.
-        fout << "- fpe_trap: This platform is supported" << endl;
-        cout << "- fpe_trap: This platform is supported" << endl;
+        fcout("- fpe_trap: This platform is supported",fout);
+        if( ! fpet.active() )
+            fcout("- fpe_trap: active flag set to false was not expected.",
+                  fout );
     }
     else
     {
         // Platform not supported.
         fout << "- fpe_trap: This platform is not supported\n";
+        if( fpet.active() )
+            fcout("- fpe_trap: active flag set to true was not expected.",
+                  fout );
         fout.close();
         return;
     }
@@ -77,6 +91,7 @@ void run_test(int /*argc*/, char *argv[])
       zero = neg = 1.0; // trick the optimizer?
     }
 
+    std::ostringstream msg;
     switch ( test )
     {
         case 0:
@@ -88,18 +103,16 @@ void run_test(int /*argc*/, char *argv[])
             fout << "  result = " << result << endl;
             break;
         case 1:
-            fout << "- Trying a div_by_zero operation" << endl;
-            cout << "- Trying a div_by_zero operation" << endl;
+            fcout( "- Trying a div_by_zero operation", fout );
             result = 1.0 / zero; // should fail here
-            cout << "  result = " << 1.0*result << endl;
-            fout << "  result = " << 1.0*result << endl;
+            msg << "  result = " << 1.0*result;
+            fcout( msg.str(), fout );
             break;
         case 2:
-            fout << "- Trying to evaluate sqrt(-1.0)" << endl;
-            cout << "- Trying to evaluate sqrt(-1.0)" << endl;
+            fcout( "- Trying to evaluate sqrt(-1.0)", fout );
             result = std::sqrt(neg); // should fail here
-            cout << "  result = " << result << endl;
-            fout << "  result = " << result << endl;
+            msg  << "  result = " << result;
+            fcout( msg.str(), fout );
             break;
         case 3:
         {

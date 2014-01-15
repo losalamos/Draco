@@ -54,3 +54,24 @@ set_tests_properties( cdi_eospac_tQueryEospac
                            # parsing a 32-bit program (e.g.: cmake)
 )
 
+# Test QueryEospac '--version' option
+add_test( 
+   NAME cdi_eospac_tQueryEospac_version
+   COMMAND $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac> --version
+)
+set_tests_properties( cdi_eospac_tQueryEospac_version
+   PROPERTIES	
+      PASS_REGULAR_EXPRESSION "version"
+      FAIL_REGULAR_EXPRESSION "Fails"
+)
+
+# Test QueryEospac '--help' option
+add_test( 
+   NAME cdi_eospac_tQueryEospac_help
+   COMMAND $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac> --help
+)
+set_tests_properties( cdi_eospac_tQueryEospac_help
+   PROPERTIES	
+      PASS_REGULAR_EXPRESSION "Follow the prompts"
+      FAIL_REGULAR_EXPRESSION "Fails"
+)

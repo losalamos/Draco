@@ -201,7 +201,7 @@ class SesameTables
     }
     
     //! Return the number of return types 
-    unsigned getNumReturnTypes() const { return numReturnTypes; }
+    // unsigned getNumReturnTypes() const { return numReturnTypes; }
 
     //! Pack a SesameTables object into a vector<char> stream.
     std::vector<char> pack() const;

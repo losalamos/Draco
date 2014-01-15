@@ -46,6 +46,15 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
     {
         FAILMSG("NOT correct initial peak allocation");
     }
+    if (largest_allocation()==0)
+    {
+        PASSMSG("correct initial largest allocation");
+    }
+    else
+    {
+        FAILMSG("NOT correct initial largest allocation");
+    }
+    
     set_memory_checking(true);
     
     double *array = new double[20];
@@ -69,6 +78,15 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
     {
         FAILMSG("NOT correct peak allocation");
     }
+    if (largest_allocation()>=30*sizeof(double))
+    {
+        PASSMSG("correct largest allocation");
+    }
+    else
+    {
+        FAILMSG("NOT correct largest allocation");
+    }
+    
 #else
     PASSMSG("memory diagnostics not checked for this build");
 #endif
@@ -92,6 +110,14 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
     else
     {
         FAILMSG("NOT correct peak allocation");
+    }
+    if (largest_allocation()>=30*sizeof(double))
+    {
+        PASSMSG("correct largest allocation");
+    }
+    else
+    {
+        FAILMSG("NOT correct largest allocation");
     }
 #endif
 
