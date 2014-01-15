@@ -4,7 +4,8 @@
   \author lowrie
   \date   2002-04-12
   \brief  Header for Plot2D.
- * \note   Copyright © 2002-2010 Los Alamos National Security, LLC.  
+  \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+          All rights reserved.
 */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,12 +14,10 @@
 #ifndef INCLUDED_plot2D_Plot2D_hh
 #define INCLUDED_plot2D_Plot2D_hh
 
-#include <ds++/SP.hh>
-#include <ds++/Assert.hh>
+#include "SetProps.hh"
+#include "ds++/SP.hh"
 #include <string>
 #include <vector>
-
-#include "SetProps.hh"
 
 namespace rtt_plot2D
 {
@@ -143,7 +142,7 @@ class Plot2D
     // CREATORS
 
     // default constructor; window left unopened
-    Plot2D();
+    // Plot2D();
 
     // another constructor; window is opened
     explicit Plot2D(const int numGraphs,
@@ -174,7 +173,7 @@ class Plot2D
 	      const bool batch = false);
 
     // sends Grace a command
-    void rawCom(const std::string command);
+    // void rawCom(const std::string command);
 
     // reads block data from file, one set per graph
     void readBlock(const std::string blockFilename);
@@ -201,13 +200,13 @@ class Plot2D
 		       const double charSize = 1.0);
 
     // Turns on autoscale when reading sets.
-    void autoscaleOnRead();
+    // void autoscaleOnRead();
 
     // Turns off autoscale when reading sets.
-    void noAutoscaleOnRead();
+    //void noAutoscaleOnRead();
 
     // Turns on autoscaling for first set read into a graph.
-    void autoscaleOnFirstRead();
+    // void autoscaleOnFirstRead();
 
     // sets the properties for a data set
     void setProps(const int iG,
@@ -216,8 +215,8 @@ class Plot2D
 
     
     // sets the properties for a data set in all graphs
-    void setProps(const int iSet,
-		  const SetProps &setProps);
+    // void setProps(const int iSet,
+    //     	  const SetProps &setProps);
 
     // ACCESSORS
 

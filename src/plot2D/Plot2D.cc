@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- *  \file   Plot2D.cc
- *  \author lowrie
+ * \file   Plot2D.cc
+ * \author lowrie
  * \date   2002-04-12
  * \brief  Implementation for Plot2D.
- * \note   Copyright © 2002-2010 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -32,21 +33,21 @@ namespace rtt_plot2D
   Must then call open() to actually generate plots.
 */
 //---------------------------------------------------------------------------//
-Plot2D::Plot2D()
-    : d_autoscale(0),
-      d_numGraphs(0),
-      d_numRows(0),
-      d_numCols(0),
-      d_batch(false),
-      d_graceVersion(),
-      d_numSets( std::vector<int>() ),
-      d_setsBeenRead( std::vector<bool>() )
-{
-    // is_supported must be checked for all constructors.
-    Insist(is_supported(), "Plot2D unsupported on this platform!");
+// Plot2D::Plot2D()
+//     : d_autoscale(0),
+//       d_numGraphs(0),
+//       d_numRows(0),
+//       d_numCols(0),
+//       d_batch(false),
+//       d_graceVersion(),
+//       d_numSets( std::vector<int>() ),
+//       d_setsBeenRead( std::vector<bool>() )
+// {
+//     // is_supported must be checked for all constructors.
+//     Insist(is_supported(), "Plot2D unsupported on this platform!");
 
-    d_graceVersion = graceVersion();
-}
+//     d_graceVersion = graceVersion();
+// }
 //---------------------------------------------------------------------------//
 /*!
   \brief Constructor that calls open(); see open() for arguments.
@@ -431,13 +432,13 @@ killAllSets()
   crude level.  See the Grace documentation for GracePrintf.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-rawCom(const std::string command)
-{
-    Require(GraceIsOpen());
-    GracePrintf(command.c_str());
-}
+// void
+// Plot2D::
+// rawCom(const std::string command)
+// {
+//     Require(GraceIsOpen());
+//     GracePrintf(command.c_str());
+// }
 //---------------------------------------------------------------------------//
 /*!
   \brief Turns on autoscale when reading data sets.
@@ -446,12 +447,12 @@ rawCom(const std::string command)
   See also noAutoscaleOnRead() and autoscaleOnFirstRead().
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-autoscaleOnRead()
-{
-    d_autoscale = AUTOSCALE_ON;
-}
+// void
+// Plot2D::
+// autoscaleOnRead()
+// {
+//     d_autoscale = AUTOSCALE_ON;
+// }
 //---------------------------------------------------------------------------//
 /*!
   \brief Turns off autoscale when reading data sets.
@@ -460,12 +461,12 @@ autoscaleOnRead()
   See also autoscaleOnRead() and autoscaleOnFirstRead().
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-noAutoscaleOnRead()
-{
-    d_autoscale = AUTOSCALE_OFF;
-}
+// void
+// Plot2D::
+// noAutoscaleOnRead()
+// {
+//     d_autoscale = AUTOSCALE_OFF;
+// }
 //---------------------------------------------------------------------------//
 /*!
   \brief Turns on autoscale when reading the first
@@ -474,12 +475,12 @@ noAutoscaleOnRead()
   See also autoscaleOnRead() and noAutoscaleOnRead().
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-autoscaleOnFirstRead()
-{
-    d_autoscale = AUTOSCALE_FIRSTREAD;
-}
+// void
+// Plot2D::
+// autoscaleOnFirstRead()
+// {
+//     d_autoscale = AUTOSCALE_FIRSTREAD;
+// }
 //---------------------------------------------------------------------------//
 /*!
   \brief Reads block data from file, one set per graph.
@@ -606,13 +607,15 @@ setProps(const int iG,
     GracePrintf("focus g%d", graphNum(iG));
 
     GracePrintf("s%d line linestyle %d", iSet, p.line.style);
-    if ( p.line.style != LineProps::STYLE_NONE ) {
+    if ( p.line.style != LineProps::STYLE_NONE )
+    {
 	GracePrintf("s%d line color %d", iSet, p.line.color);
 	GracePrintf("s%d line linewidth %f", iSet, p.line.width);
     }
     
     GracePrintf("s%d symbol %d", iSet, p.symbol.shape);
-    if ( p.symbol.shape != SymbolProps::SHAPE_NONE ) {
+    if ( p.symbol.shape != SymbolProps::SHAPE_NONE )
+    {
 	GracePrintf("s%d symbol size %f", iSet, p.symbol.size);
 	GracePrintf("s%d symbol color %d", iSet, p.symbol.color);
 	GracePrintf("s%d symbol linewidth %f", iSet, p.symbol.width);
@@ -621,7 +624,8 @@ setProps(const int iG,
 	GracePrintf("s%d symbol fill color %d", iSet, p.symbol.fillColor);
     }
     
-    if ( p.legend.size() > 0 ) {
+    if ( p.legend.size() > 0 )
+    {
 	GracePrintf("s%d legend \"%s\"", iSet, p.legend.c_str());
     }
 
@@ -635,15 +639,15 @@ setProps(const int iG,
   in all graphs.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-setProps(const int iSet,
-	 const SetProps &p)
-{
-    for ( int iG = 0; iG < d_numGraphs; iG++ ) {
-	setProps(iG, iSet, p);
-    }
-}
+// void
+// Plot2D::
+// setProps(const int iSet,
+// 	 const SetProps &p)
+// {
+//     for ( int iG = 0; iG < d_numGraphs; iG++ ) {
+// 	setProps(iG, iSet, p);
+//     }
+// }
 //---------------------------------------------------------------------------//
 /*!
   \brief Determines the Grace graph number for the given graph number.

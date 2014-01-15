@@ -93,16 +93,16 @@ inline void blas_copy(const std::vector<T> &x,
 /*!
  * \brief Do \f$ x\leftarrow\alpha x \f$ for type float.
  */
-inline void blas_scal(int    N,
-                      float  alpha,
-                      float *x,
-                      int    increment_x)
-{
-    Check (N >= 0);
-    Check (x);
+// inline void blas_scal(int    N,
+//                       float  alpha,
+//                       float *x,
+//                       int    increment_x)
+// {
+//     Check (N >= 0);
+//     Check (x);
 
-    FC_GLOBAL(sscal,SSCAL)(&N, &alpha, x, &increment_x);
-}
+//     FC_GLOBAL(sscal,SSCAL)(&N, &alpha, x, &increment_x);
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -145,21 +145,21 @@ inline void blas_scal(T               alpha,
 /*!
  * \brief Do \f$ \mbox{dot}\leftarrow x^{T}y \f$ for type float.
  */
-inline float blas_dot(int          N,
-                      const float *x,
-                      int          increment_x,
-                      const float *y,
-                      int          increment_y)
-{
-    Check (N >= 0);
-    Check (x);
-    Check (y);
+// inline float blas_dot(int          N,
+//                       const float *x,
+//                       int          increment_x,
+//                       const float *y,
+//                       int          increment_y)
+// {
+//     Check (N >= 0);
+//     Check (x);
+//     Check (y);
 
-    // do a single precision dot (inner) product
-    return FC_GLOBAL(sdot,SDOT)(&N,
-                                const_cast<float *>(x), &increment_x,
-                                const_cast<float *>(y), &increment_y);
-}
+//     // do a single precision dot (inner) product
+//     return FC_GLOBAL(sdot,SDOT)(&N,
+//                                 const_cast<float *>(x), &increment_x,
+//                                 const_cast<float *>(y), &increment_y);
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -213,21 +213,21 @@ inline T blas_dot(const std::vector<T> &x,
  *
  * Results are written into y.
  */
-inline void blas_axpy(int          N, 
-                      float        alpha, 
-                      const float *x, 
-                      int          increment_x,
-                      float       *y,
-                      int          increment_y)
-{
-    Check (N >= 0);
-    Check (x);
-    Check (y);
+// inline void blas_axpy(int          N, 
+//                       float        alpha, 
+//                       const float *x, 
+//                       int          increment_x,
+//                       float       *y,
+//                       int          increment_y)
+// {
+//     Check (N >= 0);
+//     Check (x);
+//     Check (y);
 
-    // do a single precision axpy
-    FC_GLOBAL(saxpy,SAXPY)(&N, &alpha, const_cast<float *>(x), &increment_x, y,
-                           &increment_y);
-}
+//     // do a single precision axpy
+//     FC_GLOBAL(saxpy,SAXPY)(&N, &alpha, const_cast<float *>(x), &increment_x, y,
+//                            &increment_y);
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -283,19 +283,19 @@ inline void blas_axpy(T                     alpha,
 /*!
  * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ for type float.
  */
-inline float blas_nrm2(int          N, 
-                       const float *x,
-                       int          increment_x)
-{
-    Check (N >= 0);
-    Check (x);
+// inline float blas_nrm2(int          N, 
+//                        const float *x,
+//                        int          increment_x)
+// {
+//     Check (N >= 0);
+//     Check (x);
 
-    // do a single precision 2-norm
-    float nrm2 = FC_GLOBAL(snrm2,SNRM2)(&N, const_cast<float *>(x),
-                                        &increment_x);
-    Check (nrm2 >= 0.0);
-    return nrm2;
-}
+//     // do a single precision 2-norm
+//     float nrm2 = FC_GLOBAL(snrm2,SNRM2)(&N, const_cast<float *>(x),
+//                                         &increment_x);
+//     Check (nrm2 >= 0.0);
+//     return nrm2;
+// }
 
 //---------------------------------------------------------------------------//
 /*!

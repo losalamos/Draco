@@ -4,6 +4,8 @@
   \author lowrie
   \date   2002-04-12
   \brief  Header for SetProps.
+  \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+          All rights reserved.
 */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,8 +16,10 @@
 
 #include "LineProps.hh"
 #include "SymbolProps.hh"
+#include <string>
 
-namespace rtt_plot2D {
+namespace rtt_plot2D
+{
 
 //===========================================================================//
 /*!
