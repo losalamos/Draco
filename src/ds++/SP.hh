@@ -14,8 +14,9 @@
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
 
-#include "Assert.hh"
 #include <typeinfo>
+#include "ds++/config.h"
+#include "Assert.hh"
 
 namespace rtt_dsxx
 {
@@ -35,6 +36,20 @@ struct SPref
 
     //! Constructor
     SPref(int r = 1) : refs(r) { }
+
+#if DRACO_DIAGNOSTICS & 2
+    // To prevent refcounts from being included in memory debugging.
+    // These are problematic because we allocate reference counters even
+    // for null smart pointers.
+    void *operator new(size_t const n)
+    {
+        return malloc(n);
+    }
+    void  operator delete(void *const ptr)
+    {
+        free(ptr);
+    }
+#endif
 };
 
 //===========================================================================//

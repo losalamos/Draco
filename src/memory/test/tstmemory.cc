@@ -87,6 +87,7 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
         FAILMSG("NOT correct largest allocation");
     }
     
+    report_leaks(cerr);
 #else
     PASSMSG("memory diagnostics not checked for this build");
 #endif
@@ -119,6 +120,7 @@ void tst_memory( rtt_dsxx::UnitTest & ut )
     {
         FAILMSG("NOT correct largest allocation");
     }
+    report_leaks(cerr);
 #endif
 
 }

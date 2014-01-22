@@ -15,6 +15,7 @@
 #include "ds++/Assert.hh"
 #include <map>
 #include <iostream>
+#include <limits>
 
 #ifndef _GLIBCXX_THROW
 #define _GLIBCXX_THROW(except) throw(except)
@@ -28,22 +29,48 @@ uint64_t total;
 uint64_t peak;
 uint64_t largest;
 
-uint64_t check_peak = 165234368U; // normally set in debugger to trigger a
-                                  // breakpoint
+uint64_t check_peak = numeric_limits<uint64_t>::max();
+// normally set in debugger to trigger a breakpoint
 
-uint64_t check_large = 860160U; // normally set in debugger to trigger a
-                                // breakpoint
+uint64_t check_large = numeric_limits<uint64_t>::max();
+// normally set in debugger to trigger a breakpoint
+
+uint64_t check_select_size = 504U;
+// normally set in debugger to trigger a breakpoint
+
+uint64_t check_select_count = 0U;
+// normally set in debugger to trigger a breakpoint
 
 bool is_active = false;
 
 #if DRACO_DIAGNOSTICS & 2
+
+struct alloc_t
+{
+    unsigned size;  // size of allocation
+    unsigned count;  // number of allocations of this size
+
+    alloc_t(){}
+    alloc_t(unsigned my_size, unsigned my_count) : size(my_size), count(my_count) {}
+};
+
+struct Unsigned
+{
+    unsigned value;
+
+    Unsigned() : value(0) {}
+
+    operator unsigned() const { return value; }
+    unsigned &operator++(){ return ++value; }
+};
 
 // We put the following in a wrapper so we can control destruction. We want to
 // be sure is_active is forced to be false once alloc_map is destroyed.
 
 struct memory_diagnostics
 {
-    map<void *, size_t> alloc_map;
+    map<void *, alloc_t> alloc_map;
+    map<size_t, Unsigned> alloc_count;
 
     ~memory_diagnostics() { is_active = false; }
 }
@@ -63,6 +90,7 @@ bool set_memory_checking(bool new_status)
     peak = 0;
     is_active = false;
     st.alloc_map.clear();
+    st.alloc_count.clear();
 #endif
     is_active = new_status;
     
@@ -85,6 +113,31 @@ uint64_t peak_allocation()
 uint64_t largest_allocation()
 {
     return largest;
+}
+
+//---------------------------------------------------------------------------//
+void report_leaks(ostream &out)
+{
+    if (is_active)
+    {
+#if DRACO_DIAGNOSTICS & 2
+        if (st.alloc_map.size()==0)
+        {
+            out << "No indications of leaks" << endl;
+        }
+        else
+        {
+            map<void *, alloc_t>::const_iterator i;
+            for (i=st.alloc_map.begin(); i!=st.alloc_map.end(); ++i)
+            {
+                out << i->second.size << " bytes allocated at address " << i->first
+                    << " as allocation " << i->second.count << " of this size" << endl;
+            }
+        }
+#else
+        out << "No leak report available." << endl;
+#endif
+    }
 }
 
 } // end namespace rtt_memory
@@ -122,6 +175,7 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc)
     // If malloc was successful, do the book keeping and return the pointer.
     if (is_active)
     {
+        is_active = false;
         total += n;
         // Don't use max() here; doing it with if statement allows programmers
         // to set a breakpoint here to find high water marks of memory usage.
@@ -141,8 +195,12 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc)
         {
             largest = n;
         }
-        is_active = false;
-        st.alloc_map[Result] = n;
+        unsigned count = ++st.alloc_count[n];
+        st.alloc_map[Result] = alloc_t(n, count);
+        if (n==check_select_size && count==check_select_count)
+        {
+            cout << "Reached check select allocation" << endl;
+        }
         is_active = true;
     }
     return Result;
@@ -154,11 +212,11 @@ void operator delete(void *ptr) throw()
     free(ptr);
     if (is_active)
     {
-        map<void *, size_t>::iterator i = st.alloc_map.find(ptr);
+        map<void *, alloc_t>::iterator i = st.alloc_map.find(ptr);
         if (i != st.alloc_map.end())
         {
-            total -= i->second;
-            if (i->second>=check_large)
+            total -= i->second.size;
+            if (i->second.size>=check_large)
             {
                 cout << "Deallocated check large value" << endl;
             }
