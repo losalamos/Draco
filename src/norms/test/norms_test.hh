@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 09:10:18 2005
  * \brief  header for utilities.
- * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

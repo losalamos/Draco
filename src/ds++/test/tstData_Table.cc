@@ -3,7 +3,7 @@
  * \file   ds++/test/tstData_Table.cc
  * \author Paul Henning
  * \brief  DBC_Ptr tests.
- * \note   Copyright (C) 1997-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1997-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

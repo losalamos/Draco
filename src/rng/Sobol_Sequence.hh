@@ -3,7 +3,7 @@
  * \file   rng/Sobol_Sequence.hh
  * \author Kent Budge
  * \brief  Definition of class Sobol_Sequence
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

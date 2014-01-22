@@ -3,7 +3,8 @@
  * \file   c4/C4_Datatype.hh
  * \author Kent G. Budge
  * \brief  C4_Datatype class definition.
- * \note   Copyright 2013 The Regents of the University of California.
+ * \note   Copyright (C) 2013-2014 Los Alamos National Security, LLC.
+ #         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: C4_Datatype.hh 6334 2011-12-23 19:20:49Z warsa $
@@ -11,8 +12,6 @@
 
 #ifndef c4_C4_Datatype_hh
 #define c4_C4_Datatype_hh
-
-//#include <ds++/Assert.hh>
 
 // C4 package configure
 #include "c4/config.h"
@@ -41,5 +40,5 @@ typedef void *C4_Datatype;
 #endif // c4_C4_Datatype_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/C4_Datatype.hh
+// end of c4/C4_Datatype.hh
 //---------------------------------------------------------------------------//

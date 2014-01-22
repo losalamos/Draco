@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity class definition.
- * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

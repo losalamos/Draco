@@ -3,7 +3,7 @@
  * \file   quadrature/Moment.hh
  * \author Kent Budge
  * \brief  Declaration file for the class rtt_quadrature::Moment.
- * \note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC.
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------------------//

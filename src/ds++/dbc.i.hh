@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Template implementation for dbc
- * \note   Copyright (C) 2003-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
   * This header defines several function templates that perform common

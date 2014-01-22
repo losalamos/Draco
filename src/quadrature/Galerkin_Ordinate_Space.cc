@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Define methods of class Galerkin_Ordinate_Space
- * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2007-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//

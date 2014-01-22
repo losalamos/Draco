@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/Assert.cc
  * \brief  Helper functions for the Assert facility.
- * \note   Copyright (C) 1997-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1997-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */

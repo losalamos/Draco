@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 15:30:56 2002
  * \brief  c4 package testing functions.
- * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

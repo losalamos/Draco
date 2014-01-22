@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Nov 28 09:17:23 2006
  * \brief  test the Homogeneous_New allocator class.
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

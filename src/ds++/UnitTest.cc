@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Paul Henning
  * \date   June 28, 2006
  * \brief  Lagged Fibonacci Generator Random Number Generator
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 /*---------------------------------------------------------------------------*/

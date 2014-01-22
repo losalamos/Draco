@@ -5,7 +5,7 @@
  * \date   Mon Oct 3 13:16 2011
  * \brief  Execute the binary Ipcress_Interpreter by redirecting the
  *         contents of IpcressInterpreter.stdin as stdin.
- * \note   Copyright (C) 2011-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

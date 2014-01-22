@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Aug 27 07:48:41 1998
  * \brief  A dummy package to exercize the field time-step advisors.
- * \note   Copyright (C) 1998-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1998-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

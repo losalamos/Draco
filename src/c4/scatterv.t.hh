@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

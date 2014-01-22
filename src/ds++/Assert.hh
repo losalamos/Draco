@@ -3,7 +3,7 @@
  * \file   ds++/Assert.hh
  * \brief  Header file for Draco specific exception class definition
  *         (rtt_dsxx::assertion). Also define Design-by-Contract macros.
- * \note   Copyright (C) 1993-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1993-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

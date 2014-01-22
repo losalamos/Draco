@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:05:39 2002
  * \brief  meshReaders testing infrastructure.
- * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

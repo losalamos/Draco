@@ -5,7 +5,7 @@
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  Linux/X86 implementation of fpe_trap functions.
  *
- * Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ * Copyright (C) 2005-2014 Los Alamos National Security, LLC.
  *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.

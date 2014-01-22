@@ -3,7 +3,7 @@
  * \file   sf/F12.hh
  * \author Kent Budge
  * \brief  Compute Fermi-Dirac function of 1/2 order
- * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

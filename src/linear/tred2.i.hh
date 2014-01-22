@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Thu Sep  2 14:49:55 2004
  * \brief  Householder reduce a symmetric matrix.
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:01:02 2004
  * \brief  Specializations of rsolv
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

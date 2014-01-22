@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Thu Jul  8 08:06:53 2004
  * \brief  Definitions of nontrivial methods of template class Slice.
- * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

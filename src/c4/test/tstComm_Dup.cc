@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Jul 18 11:10:10 2002
  * \brief  test Communicator Duplication
- * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

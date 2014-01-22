@@ -3,7 +3,7 @@
  * \file   ds++/Field_Traits.hh
  * \author Kent Budge
  * \brief  Define the Field_Traits class template.
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

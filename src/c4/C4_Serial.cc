@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 17:06:25 2002
  * \brief  Implementation of C4 serial option.
- * \note   Copyright (C) 2002-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

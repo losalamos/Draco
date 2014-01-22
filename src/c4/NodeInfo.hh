@@ -4,7 +4,7 @@
  * \author Geoffrey Furnish
  * \date   Tue Jan 17 10:13:47 1995
  * \brief  Class to hold parallel configuration information.
- * \note   Copyright (C) 1995-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1995-2014 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

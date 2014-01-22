@@ -4,7 +4,7 @@
  * \author Thomas M. Evans, Geoffrey Furnish
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req member definitions.
- * \note   Copyright (C) 2005-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

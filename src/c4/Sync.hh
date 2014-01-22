@@ -4,7 +4,7 @@
  * \author Maurice LeBrun
  * \date   Wed Jan 25 16:04:40 1995
  * \brief  Classes for forcing a global sync at the head and/or tail of a block.
- * \note   Copyright (C) 1995-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1995-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

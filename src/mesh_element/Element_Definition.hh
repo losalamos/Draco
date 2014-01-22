@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
- * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC. 
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//

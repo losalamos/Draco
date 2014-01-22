@@ -3,7 +3,7 @@
  * \file    rng/LF_Gen.hh
  * \author  Paul Henning
  * \brief   Declaration of class LF_Gen
- * \note    Copyright (C) 2006-2013 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *          All rights reserved.
  * \version $Id$
  */

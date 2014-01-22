@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide explicit instantiations of templatized factorial function. 
- * \note   Copyright (C) 2004-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

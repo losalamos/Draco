@@ -5,7 +5,7 @@
  * \date   Mon Jan 8 17:12:51 2001
  * \brief  DummyMultigroupOpacity class header file (derived from 
  *         ../MultigroupOpacity)
- * \note   Copyright (C) 2006-2013 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC. 
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//

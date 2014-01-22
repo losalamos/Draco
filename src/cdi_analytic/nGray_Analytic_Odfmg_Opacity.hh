@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_Odfmg_Opacity class definition.
- * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

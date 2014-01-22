@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Dec 17 16:04:59 2001
  * \brief  rng testing services.
- * \note   Copyright (C) 2001-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

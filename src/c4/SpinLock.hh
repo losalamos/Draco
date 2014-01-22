@@ -4,7 +4,7 @@
  * \author Geoffrey Furnish
  * \date   Fri Dec 16 13:29:01 1994
  * \brief  A spin lock class.  Serializes execution of a blcok.
- * \note   Copyright (C) 1994-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 1994-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

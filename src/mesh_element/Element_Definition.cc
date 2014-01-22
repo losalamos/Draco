@@ -5,7 +5,7 @@
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Provides some descriptive information for the
  *         standard mesh elements.
- * \note   Copyright (C) 2000-2013 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC. 
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//

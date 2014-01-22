@@ -3,7 +3,7 @@
  * \file   c4/Compare.hh
  * \author Mike Buksas
  * \brief  Define class Compare
- * \note   Copyright (C) 2007-2013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2007-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
