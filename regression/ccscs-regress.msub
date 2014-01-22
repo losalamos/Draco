@@ -188,6 +188,7 @@ fi
 if test "${build_type}" = "Coverage"; then
    # Coverage build imply Debug builds.
    build_type="Debug,${build_type}"
+   export COVFILE=${regdir}/build/CMake.cov
 fi
 
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
