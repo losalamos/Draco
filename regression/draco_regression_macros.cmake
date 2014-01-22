@@ -461,7 +461,7 @@ macro( setup_for_code_coverage )
             execute_process(COMMAND "${COV01}" --on RESULT_VARIABLE RES)
 
             # Process and save lines of code 
-            message(  "Generating lines of code statistics...
+            message( "Generating lines of code statistics...
  /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
@@ -490,8 +490,38 @@ macro( setup_for_code_coverage )
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
-
             message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
+            message( "Generating lines of code statistics (omitting test directories)
+ /home/regress/draco/regression/cloc
+               --exclude-dir=heterogeneous,chimpy,test
+               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-lang=Text,Postscript
+               --categorize=cloc-categorize.log 
+               --counted=cloc-counted.log 
+               --ignored=cloc-ignored.log 
+               --progress-rate=0 
+               --report-file=lines-of-code-notest.log 
+               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               ${CTEST_SOURCE_DIRECTORY}
+            ")
+            execute_process( 
+               COMMAND /home/regress/draco/regression/cloc
+               --exclude-dir=heterogeneous,chimpy,test
+               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-lang=Text,Postscript
+               --categorize=cloc-categorize.log 
+               --counted=cloc-counted.log 
+               --ignored=cloc-ignored.log 
+               --progress-rate=0 
+               --report-file=lines-of-code-notest.log 
+               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               ${CTEST_SOURCE_DIRECTORY}
+               #  --3 
+               #  --diff
+               WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+               )
+            message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
+
             set( CTEST_NOTES_FILES 
                "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
                "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
