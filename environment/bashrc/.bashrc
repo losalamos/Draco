@@ -55,14 +55,16 @@ done
 # Tell wget to use LANL's www proxy (see
 # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage) 
 # export http_proxy=http://wpad.lanl.gov/wpad.dat
-export http_proxy=http://proxyout.lanl.gov:8080
-export https_proxy=$http_proxy
-export HTTP_PROXY=$http_proxy
-export HTTPS_PROXY=$http_proxy
-export http_no_proxy="*.lanl.gov"
-export no_proxy=lanl.gov
-export NO_PROXY=$no_proxy
-# See help page for how to setup subversion
+found=`nslookup proxyout.lanl.gov | grep Name | wc -l`
+if test ${found} == 1; then
+   export http_proxy=http://proxyout.lanl.gov:8080
+   export https_proxy=$http_proxy
+   export HTTP_PROXY=$http_proxy
+   export HTTPS_PROXY=$http_proxy
+   export http_no_proxy="*.lanl.gov"
+   export no_proxy=lanl.gov
+   export NO_PROXY=$no_proxy
+fi
 
 # cd paths - disable here, let user choose in ~/.bashrc
 CDPATH=
@@ -125,8 +127,8 @@ case ${-} in
    nodename=`uname -n | sed -e 's/[.].*//g'`
    alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
    alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
-   alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
-   #alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
+   # alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
+   # alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
    # alias wmdstat='watch -n 2 "cat /proc/mdstat"'
    alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
 
@@ -205,18 +207,13 @@ darwin* | cn[0-9]*)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_darwin
    ;; 
 
-#TLCC machines
-ty-fe* | ty[0-9]*)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tlcc
-    ;;
-
 # Cielito | Cielo
 ct-fe[0-9] | ct-login[0-9] | ci-fe[0-9] | ci-login[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
 # Luna | Moonlight | Mustang
-lu* | ml* | mu* | pi*)
+lu* | ml* | mu* | pi* | ty*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 
