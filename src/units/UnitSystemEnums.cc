@@ -4,7 +4,8 @@
  *  \brief  This file contains enums, conversion factors and labels that help
  *          define a UnitSystem. 
  *  \date   Mon Nov 03 20:54:05 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -66,5 +67,5 @@ std::string setUnitLabel( size_t const pos, std::string const & labels )
 } // end namespace rtt_units
 
 //---------------------------------------------------------------------------//
-//                         end of UnitSystemEnums.cc
+// end of UnitSystemEnums.cc
 //---------------------------------------------------------------------------//

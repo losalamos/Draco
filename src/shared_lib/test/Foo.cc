@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Wed Dec 29 11:24:17 2004
  * \brief  Implementatin of Foo.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -28,5 +29,5 @@ double Foo::compute(const double x) const
 } // end namespace rtt_shared_lib_test
 
 //---------------------------------------------------------------------------//
-//              end of shared_lib/test/Foo.cc
+// end of shared_lib/test/Foo.cc
 //---------------------------------------------------------------------------//

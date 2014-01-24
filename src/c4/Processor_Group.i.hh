@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Fri Oct 20 13:49:10 2006
  * \brief  Template method definitions of class Processor_Group
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -86,5 +86,5 @@ void Processor_Group::assemble_vector(T const *local,
 #endif // c4_Processor_Group_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/Processor_Group.i.hh
+// end of c4/Processor_Group.i.hh
 //---------------------------------------------------------------------------//

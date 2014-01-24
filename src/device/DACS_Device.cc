@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Thu Jun 16 14:55:48 2011
  * \brief  DACS_Device implementation.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -167,5 +168,5 @@ std::string verbose_error(std::string const & message)
 } // end namespace rtt_device
 
 //---------------------------------------------------------------------------//
-//                 end of DACS_Device.cc
+// end of DACS_Device.cc
 //---------------------------------------------------------------------------//

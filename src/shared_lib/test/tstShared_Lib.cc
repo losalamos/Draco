@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 23:03:32 2004
  * \brief  Tests Shared_Lib
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -237,5 +238,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstShared_Lib.cc
+// end of tstShared_Lib.cc
 //---------------------------------------------------------------------------//

@@ -4,8 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of gaussj
- * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
-*         All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

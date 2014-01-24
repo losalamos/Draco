@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of quadratic
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -25,5 +26,5 @@ template void quadratic(double const &a,
 } // end namespace rtt_roots
 
 //---------------------------------------------------------------------------//
-//                 end of quadratic.cc
+// end of quadratic.cc
 //---------------------------------------------------------------------------//

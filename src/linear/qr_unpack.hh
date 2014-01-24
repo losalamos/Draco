@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Compute an explicit representation of a packed QR decomposition.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -28,5 +29,5 @@ void qr_unpack(RandomContainer &r,
 #endif // linear_qr_unpack_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/qr_unpack.hh
+// end of linear/qr_unpack.hh
 //---------------------------------------------------------------------------//

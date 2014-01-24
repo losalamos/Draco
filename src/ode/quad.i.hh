@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:30:05 2004
  * \brief  Adaptive quadrature of a function over a specified interval.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -96,5 +97,5 @@ quad(Function func,
 #endif // ode_quad_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of ode/quad.i.hh
+// end of ode/quad.i.hh
 //---------------------------------------------------------------------------//

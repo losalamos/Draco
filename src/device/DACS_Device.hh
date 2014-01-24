@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Thu Jun 16 14:55:48 2011
  * \brief  DACS_Device header file.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -97,5 +98,5 @@ class DACS_Device
 #endif // device_DACS_Device_hh
 
 //---------------------------------------------------------------------------//
-//              end of device/DACS_Device.hh
+// end of device/DACS_Device.hh
 //---------------------------------------------------------------------------//

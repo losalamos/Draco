@@ -3,7 +3,8 @@
  * \file   ds++/Homogeneous_New.cc
  * \author Kent Budge
  * \brief  Implement methods of class Homogeneous_New
- * \note   Copyright (C) 2006-2007 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -125,5 +126,5 @@ void Homogeneous_New::reserve(unsigned const object_count)
 } // end namespace rtt_dsxx
 
 //---------------------------------------------------------------------------//
-//                 end of Homogeneous_New.cc
+// end of Homogeneous_New.cc
 //---------------------------------------------------------------------------//

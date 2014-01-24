@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:37:29 2002
  * \brief  Traits for C4 intrinsic types.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -203,8 +205,8 @@ struct C4_Traits<long long *>
     
 } // end namespace rtt_c4
 
-#endif                          // __c4_C4_Traits_hh__
+#endif // __c4_C4_Traits_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of c4/C4_Traits.hh
+// end of c4/C4_Traits.hh
 //---------------------------------------------------------------------------//

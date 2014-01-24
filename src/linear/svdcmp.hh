@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -29,5 +30,5 @@ void svdcmp(RandomContainer &a,
 #endif // linear_svdcmp_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/svdcmp.hh
+// end of linear/svdcmp.hh
 //---------------------------------------------------------------------------//

@@ -3,7 +3,8 @@
  * \file   c4/Processor_Group.cc
  * \author Kent Budge
  * \brief  Define non-template methods of class Processor_Group.
- * \note   Copyright (C) 2006-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -85,5 +86,5 @@ Processor_Group::~Processor_Group()
 #endif //C4_MPI
 
 //---------------------------------------------------------------------------//
-//                 end of Processor_Group.cc
+// end of Processor_Group.cc
 //---------------------------------------------------------------------------//

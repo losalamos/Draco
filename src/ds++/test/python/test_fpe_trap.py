@@ -1,6 +1,15 @@
 #!/usr/bin/env python
-#
+
+#------------------------------------------------------------------------------#
+# file   ds++/test/python/test_fpe_trap.py
+# author Rob Lowrie, Kelly Thompson
+# date   
+# brief  Test harnes for checking fpe_trap features.
+# note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # $Id$
+#------------------------------------------------------------------------------#
 
 # Tests fpe_trap functions by calling the c++ program do_exception.
 # We do this via python because we assume that do_exception aborts

@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// NodeData.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/NodeData.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/NodeData class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_NodeData_hh__
@@ -79,8 +78,8 @@ class NodeData
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif                          // __RTT_Format_Reader_NodeData_hh__
+#endif // __RTT_Format_Reader_NodeData_hh__
 
 //---------------------------------------------------------------------------//
-//                   end of RTT_Format_Reader/NodeData.hh
+// end of RTT_Format_Reader/NodeData.hh
 //---------------------------------------------------------------------------//

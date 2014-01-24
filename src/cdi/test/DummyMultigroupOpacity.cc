@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:17:16 2001
  * \brief  DummyMultigroupOpacity templated class implementation file.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

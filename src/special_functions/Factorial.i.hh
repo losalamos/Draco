@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized factorial function.
- * \note   
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -78,5 +79,5 @@ double factorial_fraction( T const k, T const l )
 #endif // sf_factorial_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of sf/factorial.i.hh
+// end of sf/factorial.i.hh
 //---------------------------------------------------------------------------//

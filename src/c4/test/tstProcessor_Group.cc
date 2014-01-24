@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 21 11:45:44 2004
  * \brief  Unit tests for the Processor_Group class and member functions.
- * \note   Copyright (C) 2006-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
@@ -114,5 +114,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                   end of tstProcessor_Group.cc
+// end of tstProcessor_Group.cc
 //---------------------------------------------------------------------------//

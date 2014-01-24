@@ -2,6 +2,8 @@
 /*!
  * \file   timestep/ratio_ts_advisor.hh
  * \brief  Header file for the ratio time-step advisor class.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -99,5 +101,5 @@ class DLL_PUBLIC ratio_ts_advisor : public ts_advisor
 #endif                          // __timestep_ratio_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of ratio_ts_advisor.hh
+// end of ratio_ts_advisor.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
@@ -142,5 +142,5 @@ bool General_Octant_Quadrature::is_open_interval() const
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
-//                 end of General_Octant_Quadrature.cc
+// end of General_Octant_Quadrature.cc
 //---------------------------------------------------------------------------------------//

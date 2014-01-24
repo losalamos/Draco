@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Mon Jun 13 16:54:19 2011
  * \brief  DACS_Device tests.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -205,5 +206,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstDACS_Device.cc
+// end of tstDACS_Device.cc
 //---------------------------------------------------------------------------//

@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// NodeFlags.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/NodeFlags.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/NodeFlags class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "NodeFlags.hh"
@@ -95,5 +94,5 @@ int NodeFlags::get_flag_type_index(string & desired_flag_type) const
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                       end of RTT_Format_Reader/NodeFlags.cc
+// end of RTT_Format_Reader/NodeFlags.cc
 //---------------------------------------------------------------------------//

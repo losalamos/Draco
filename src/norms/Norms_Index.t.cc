@@ -4,6 +4,8 @@
   \author Rob Lowrie
   \date   Fri Jan 14 13:00:47 2005
   \brief  Instantiates Norms_Index for some types.
+ * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
 */
 //---------------------------------------------------------------------------//
 // $Id$

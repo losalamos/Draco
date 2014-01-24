@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 12:37:43 2004
  * \brief  Specializations of rotate
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,5 +19,5 @@ namespace kgb_recipes
 } // end namespace kgb_recipes
 
 //---------------------------------------------------------------------------//
-//                 end of rotate.cc
+// end of rotate.cc
 //---------------------------------------------------------------------------//

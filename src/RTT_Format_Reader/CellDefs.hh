@@ -4,8 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for CellDefs library.
- * \note   Copyright © 2000-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$

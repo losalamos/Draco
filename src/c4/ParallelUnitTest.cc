@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco parallel unit tests.
- * \note   Copyright 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -120,5 +121,5 @@ void ParallelUnitTest::status()
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
-//                 end of ParallelUnitTest.cc
+// end of ParallelUnitTest.cc
 //---------------------------------------------------------------------------//

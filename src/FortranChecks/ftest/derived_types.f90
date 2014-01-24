@@ -4,7 +4,7 @@
 ! author Kelly Thompson, Allan Wollaber
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 derived types passed into a C++ function
-! note   Copyright (c) 2012 Los Alamos National Security, LLC
+! note   Copyright (c) 2012-2014 Los Alamos National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
 ! $Id$
@@ -110,3 +110,7 @@ program test_derived_types
    print '(a)', "*********************************************"
 
  end program test_derived_types
+
+!---------------------------------------------------------------------------
+! end of derived_types.f90
+!---------------------------------------------------------------------------

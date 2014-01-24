@@ -4,6 +4,8 @@
  * \author Seth R. Johnson
  * \date   Thu July 10 2008
  * \brief  
+ * \note   Copyright (C) 2008-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: ReadOdfIpcressFile.cc
@@ -612,5 +614,5 @@ void printData(SP_Goo spGandOpacity, double temperature, double density)
 }
 
 //---------------------------------------------------------------------------//
-//                        end of ReadOdfIpcressFile.cc
+// end of ReadOdfIpcressFile.cc
 //---------------------------------------------------------------------------//

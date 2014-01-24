@@ -3,8 +3,9 @@
  * \file   sf/F4.cc
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
- * \brief  Implementation of F4
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \brief  Implementation of F4 
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -69,5 +70,5 @@ double F4(double const eta)
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//                 end of F4.cc
+// end of F4.cc
 //---------------------------------------------------------------------------//

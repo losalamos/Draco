@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of F3
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -111,5 +112,5 @@ double F3(double const x)
 } // end namespace rtt_sf
 
 //---------------------------------------------------------------------------//
-//                 end of F3.cc
+// end of F3.cc
 //---------------------------------------------------------------------------//

@@ -4,16 +4,12 @@
  * \author James S. Warsa
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class for Product Chebyshev-Gauss-Legendre quadrature sets.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Product_Chebyshev_Legendre.cc 6718 2012-08-30 20:03:01Z warsa $
 //---------------------------------------------------------------------------------------//
-
-// #include <iostream>
-// #include <iomanip>
-// #include <cmath>
-// #include <algorithm>
 
 #include "Product_Chebyshev_Legendre.hh"
 
@@ -106,5 +102,5 @@ Product_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu,
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
-//                 end of Product_Chebyshev_Legendre.cc
+// end of Product_Chebyshev_Legendre.cc
 //---------------------------------------------------------------------------------------//

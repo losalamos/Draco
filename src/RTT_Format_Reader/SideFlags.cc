@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// SideFlags.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/SideFlags.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/SideFlags class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "SideFlags.hh"
@@ -95,5 +94,5 @@ int SideFlags::get_flag_type_index(string & desired_flag_type) const
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                 end of RTT_Format_Reader/SideFlags.cc
+// end of RTT_Format_Reader/SideFlags.cc
 //---------------------------------------------------------------------------//

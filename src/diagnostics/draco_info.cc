@@ -32,7 +32,7 @@
 //     Allan B. Wollaber, Peter Ahrens, Jeff Furnish,
 //     Paul W. Talbot, Jae H. Chang, and Benjamin K. Bergen.
 //
-// Copyright (C) 1995-2012 LANS, LLC
+// Copyright (C) 1995-2014 LANS, LLC
 // Build information:
 //     Library type   : shared
 //     System type    : Linux

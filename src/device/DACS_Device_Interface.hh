@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Fri Jun 24 12:58:18 2011
  * \brief  DACS_Device_Interface, for use by non-C++ clients.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -41,5 +42,5 @@ extern "C"
 #endif // device_DACS_Device_Interface_hh
 
 //---------------------------------------------------------------------------//
-//              end of device/DACS_Device_Interface.hh
+// end of device/DACS_Device_Interface.hh
 //---------------------------------------------------------------------------//

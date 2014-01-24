@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 22 14:11:10 2001
  * \brief  IpcressGrayOpacity templated class implementation file.
- * \note   Copyright (C) 2001-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

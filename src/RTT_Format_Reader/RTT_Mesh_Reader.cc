@@ -4,7 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Mesh_Reader library.
- * \note   Copyright (C) 2000-2010 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -272,5 +273,5 @@ bool RTT_Mesh_Reader::invariant() const
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                   end of RTT_Format_Reader/RTT_Mesh_Reader.cc
+// end of RTT_Format_Reader/RTT_Mesh_Reader.cc
 //---------------------------------------------------------------------------//

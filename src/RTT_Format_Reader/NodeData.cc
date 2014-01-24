@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// NodeData.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/NodeData.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/NodeData class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "NodeData.hh"
@@ -77,5 +76,5 @@ void NodeData::readEndKeyword(ifstream & meshfile)
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                     end of RTT_Format_Reader/NodeData.cc
+// end of RTT_Format_Reader/NodeData.cc
 //---------------------------------------------------------------------------//

@@ -5,7 +5,7 @@
  * \date   Wed Oct 19 14:42 2005
  * \brief  Execute the binary tstConsole_Token_Stream by redirecting the
  *         contents of console_test.inp as stdin.
- * \note   Copyright (C) 2004-1013 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -4,6 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Sides class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -105,8 +107,8 @@ class Sides
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif                          // __RTT_Format_Reader_Sides_hh__
+#endif // __RTT_Format_Reader_Sides_hh__
 
 //---------------------------------------------------------------------------//
-//                      end of RTT_Format_Reader/Sides.hh
+// end of RTT_Format_Reader/Sides.hh
 //---------------------------------------------------------------------------//

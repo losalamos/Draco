@@ -3,7 +3,7 @@
  * \file   device/GPU_Module.hh
  * \author Kelly (KT) Thompson
  * \brief  Define class GPU_Module
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -87,5 +87,5 @@ class GPU_Module
 #endif // device_GPU_Module_hh
 
 //---------------------------------------------------------------------------//
-//              end of device/GPU_Module.hh
+// end of device/GPU_Module.hh
 //---------------------------------------------------------------------------//

@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -229,5 +231,5 @@ void semideterminate_swap(vector<unsigned>   const &/*outgoing_pid*/,
 #endif // c4_swap_t_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/swap.t.hh
+// end of c4/swap.t.hh
 //---------------------------------------------------------------------------//

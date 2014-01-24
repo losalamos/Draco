@@ -2,6 +2,8 @@
 /*!
  * \file timestep/target_ts_advisor.hh
  * \brief Header file for the target time-step advisor class.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -91,8 +93,8 @@ class DLL_PUBLIC target_ts_advisor : public ts_advisor
 
 } // end of rtt_timestep namespace
 
-#endif                          // __target_timestep_ts_advisor_hh__
+#endif // __target_timestep_ts_advisor_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of target_ts_advisor.hh
+// end of target_ts_advisor.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
 ## Fri Jul 25 13:06:21 2003
 ## $Id$
 ###############################################################################
-## Copyright 2003 The Regents of the University of California.
+## Copyright 2003 The Regents of the Los Alamos National Security, LLC.
 ## Copyright 2008 LANS, LLC
 ###############################################################################
 ## Usage: python update_release_tags.py old_tag new_tag

@@ -4,6 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Header file for IpcressMaterial class
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

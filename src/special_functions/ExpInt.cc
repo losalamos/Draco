@@ -4,7 +4,8 @@
  * \author Paul Talbot
  * \date   Tue July 26 13:39:00 2011
  * \brief  Iterative methods to calculate Ei(x), E_n(x)
- * \note   Copyright 2011 Los Alamos Natinal Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos Natinal Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$ 
@@ -204,5 +205,5 @@ double Ei (double const x)
 } //end namespace rtt_sf
 
 //--------------------------------------------------------------------------//
-//                          end of ExpInt.cc
+// end of ExpInt.cc
 //--------------------------------------------------------------------------//

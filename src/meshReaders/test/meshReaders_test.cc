@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:05:39 2002
  * \brief  meshReaders testing infrastructure.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -64,5 +66,5 @@ bool passed = true;
 } // end namespace rtt_meshReaders_test
 
 //---------------------------------------------------------------------------//
-//                              end of meshReaders_test.cc
+// end of meshReaders_test.cc
 //---------------------------------------------------------------------------//

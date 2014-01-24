@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Thu Jul 14 16:03:44 2011
  * \brief  Define class DACS_External_Process
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -80,5 +81,5 @@ class DACS_External_Process : public DACS_Process
 #endif // device_DACS_External_Process_hh
 
 //---------------------------------------------------------------------------//
-//              end of device/DACS_External_Process.hh
+// end of device/DACS_External_Process.hh
 //---------------------------------------------------------------------------//

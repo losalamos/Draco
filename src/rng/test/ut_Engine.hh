@@ -3,7 +3,7 @@
  * \file   rng/test/ut_Engine.hh
  * \author Gabriel M. Rockefeller
  * \brief  ut_Engine header file.
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

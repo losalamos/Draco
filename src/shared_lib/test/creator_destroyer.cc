@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Wed Dec 29 11:16:44 2004
  * \brief  Implementation of creator and destroyer functions for Foo.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

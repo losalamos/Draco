@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 18 08:53:41 2007
  * \brief  Declare template class norm
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -29,5 +30,5 @@ double norm(Field const &x)
 #endif // norms_norm_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/norm.hh
+// end of norms/norm.hh
 //---------------------------------------------------------------------------//

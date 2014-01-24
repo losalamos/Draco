@@ -4,6 +4,8 @@
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Extensions to the STL algorithm library
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This header defines several function templates that perform common
  * numerical operations not standardized in the STL algorithm header. It also
@@ -57,7 +59,7 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
 
 #endif // rtt_dsxx_dbc_hh
 //---------------------------------------------------------------------------//
-//                           end of dbc.hh
+// end of dbc.hh
 //---------------------------------------------------------------------------//
 
 

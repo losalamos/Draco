@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 21 11:45:44 2004
  * \brief  
- * \note   Copyright (C) 2004-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -92,5 +92,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                   end of tstTermination_Detector.cc
+// end of tstTermination_Detector.cc
 //---------------------------------------------------------------------------//

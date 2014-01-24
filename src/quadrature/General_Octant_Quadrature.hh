@@ -4,9 +4,8 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright 2004 The Regents of the University of California.
- *
- * Long description.
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: General_Octant_Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -94,5 +93,5 @@ class General_Octant_Quadrature : public Octant_Quadrature
 #endif // quadrature_General_Octant_Quadrature_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/General_Octant_Quadrature.hh
+// end of quadrature/General_Octant_Quadrature.hh
 //---------------------------------------------------------------------------------------//

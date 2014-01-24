@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:01:02 2004
  * \brief  Solve an upper triangular system of equations
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -56,5 +57,5 @@ void rsolv(const RandomContainer &R, const unsigned n, RandomContainer &b)
 #endif // linear_rsolv_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/rsolv.i.hh
+// end of linear/rsolv.i.hh
 //---------------------------------------------------------------------------//

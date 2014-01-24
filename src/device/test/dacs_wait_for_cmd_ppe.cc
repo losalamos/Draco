@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Wed Jul 20 09:16:12 2011
  * \brief  A tiny DACS accel-side binary, for testing DACS_Process.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -57,5 +58,5 @@ int main()
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of dacs_wait_for_cmd_ppe.cc
+// end of dacs_wait_for_cmd_ppe.cc
 //---------------------------------------------------------------------------//

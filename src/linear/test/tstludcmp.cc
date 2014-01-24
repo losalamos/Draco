@@ -1,8 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   linear/test/tstludcmp.cc
- * \author Kent Budge * \brief  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \author Kent Budge
+ * \brief  
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

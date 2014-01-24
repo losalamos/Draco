@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Thu Jul 14 16:39:58 2011
  * \brief  DACS_External_Process tests.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -256,5 +257,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstDACS_External_Process.cc
+// end of tstDACS_External_Process.cc
 //---------------------------------------------------------------------------//

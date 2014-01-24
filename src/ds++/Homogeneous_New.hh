@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Nov 28 08:27:37 2006
  * \brief  Definition of class Homogeneous_New
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -156,5 +157,5 @@ class DLL_PUBLIC Homogeneous_New
 #endif // dsxx_Homogeneous_New_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Homogeneous_New.hh
+// end of ds++/Homogeneous_New.hh
 //---------------------------------------------------------------------------//

@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Mar 25 15:39:13 2002
  * \brief  c4 package test infrastructure.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -64,5 +66,5 @@ DLL_PUBLIC bool passed = true;
 } // end namespace rtt_c4_test
 
 //---------------------------------------------------------------------------//
-//                              end of c4_test.cc
+// end of c4_test.cc
 //---------------------------------------------------------------------------//

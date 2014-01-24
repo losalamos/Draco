@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a multivariate function on a specified line.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -117,5 +118,5 @@ void linmin(RandomContainer &p,
 #endif // min_linmin_hh
 
 //---------------------------------------------------------------------------//
-//              end of min/linmin.hh
+// end of min/linmin.hh
 //---------------------------------------------------------------------------//

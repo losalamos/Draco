@@ -4,9 +4,8 @@
  * \author Kent Budge
  * \date   Mon Mar 24 10:17:40 2008
  * \brief  Explicit template instatiations for class global_containers.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
- * 
- * 
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -31,6 +30,7 @@ void global_merge(map<unsigned, bool> &);
 
 } // end namespace rtt_c4
 #endif // C4_MPI 
+
 //---------------------------------------------------------------------------//
-//                 end of global_containers_pt.cc
+// end of global_containers_pt.cc
 //---------------------------------------------------------------------------//

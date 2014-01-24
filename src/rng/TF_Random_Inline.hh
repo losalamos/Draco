@@ -2,7 +2,7 @@
   \file    rng/Random_Inline.hh
   \author  Paul Henning
   \brief   Header to bring in appropriate random number generators
-  \note    Copyright (C) 2008-2011 Los Alamos National Security, LLC.
+  \note    Copyright (C) 2008-2014 Los Alamos National Security, LLC.
   \version $Id$
 */
 

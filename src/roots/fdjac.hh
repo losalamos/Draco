@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 11 08:07:04 2004
  * \brief  Compute the Jacobian of a nonlinear system of equations
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -86,5 +87,5 @@ void fdjac(const std::vector<Field> &x,
 #endif // roots_fdjac_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/fdjac.hh
+// end of roots/fdjac.hh
 //---------------------------------------------------------------------------//

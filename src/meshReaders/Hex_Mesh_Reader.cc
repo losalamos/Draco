@@ -4,6 +4,8 @@
  * \author John McGhee
  * \date   Tue Mar  7 08:38:04 2000
  * \brief  Implements a CIC-19 Hex Mesh Format mesh reader.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

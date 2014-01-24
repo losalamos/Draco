@@ -4,6 +4,8 @@
  * \author Kent Budge
  * \date   Thu Jul  1 10:54:20 2004
  * \brief  LU decomposition
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -60,5 +62,5 @@ void lubksb(FieldVector1 const &a,
 #endif // linear_ludcmp_hh
 
 //---------------------------------------------------------------------------//
-//                 end of Implicit.cc
+// end of Implicit.cc
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide implementation of templatized delta function.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

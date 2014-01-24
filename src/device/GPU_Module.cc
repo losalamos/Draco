@@ -2,7 +2,7 @@
 /*!
  * \file   device/GPU_Module.cc
  * \brief  
- * \note   Copyright (C) 2011-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

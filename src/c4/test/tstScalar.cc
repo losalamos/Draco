@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Nov  1 13:24:19 2005
  * \brief  Test functions provided by C4_Serial.cc/.hh
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -191,5 +192,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstScalar.cc.cc
+// end of tstScalar.cc.cc
 //---------------------------------------------------------------------------//

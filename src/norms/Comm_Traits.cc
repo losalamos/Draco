@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 12:45:49 2005
  * \brief  Implementations for Comm_Traits.
- * \note   Copyright (C) 2004-2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

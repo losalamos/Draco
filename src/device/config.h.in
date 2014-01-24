@@ -4,7 +4,7 @@
  * \author Gabriel M. Rockefeller 
  * \date   Mon Jun 13 16:48:32 2011
  * \brief  CPP defines necessary for the device package.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
@@ -23,5 +23,5 @@ namespace rtt_device
 #endif /* device_config_h */
 
 /*---------------------------------------------------------------------------*/
-/*           end of device/config.h */
+/* end of device/config.h */
 /*---------------------------------------------------------------------------*/

@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Wed Aug 11 08:07:05 2004
  * \brief  Specializations of fdjac
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -18,5 +19,5 @@ namespace kgb_recipes
 } // end namespace kgb_recipes
 
 //---------------------------------------------------------------------------//
-//                 end of fdjac.cc
+// end of fdjac.cc
 //---------------------------------------------------------------------------//

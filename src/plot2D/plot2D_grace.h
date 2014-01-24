@@ -1,3 +1,17 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   plot2D/plot2D_grace.h
+ * \author Thomas M. Evans
+ * \brief  Solve a system of equations by Gaussian elimination.
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
+
+
 /*-----------------------------------*-C-*-----------------------------------*/
 /* plot2D/plot2D_grace.h
  * Thomas M. Evans 
@@ -79,8 +93,8 @@ int GraceCommand(const char*)
 
 #endif // GRACE_H
 
-#endif                          /* __plot2D_plot2D_grace_h__ */
+#endif /* __plot2D_plot2D_grace_h__ */
 
 /*---------------------------------------------------------------------------*/
-/*                              end of plot2D/plot2D_grace.h */
+/* end of plot2D/plot2D_grace.h */
 /*---------------------------------------------------------------------------*/

@@ -5,7 +5,7 @@
 ;; Created: 30 Nov 2004
 ;; Version: 0.0.1
 ;;
-;; Copyright (C) 2004 University of California
+;; Copyright (C) 2004 Los Alamos National Security, LLC
 ;;
 ;; $Id$
 ;;============================================================

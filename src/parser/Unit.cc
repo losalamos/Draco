@@ -1,10 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Unit.cc
+ * \file   Unit.cc
  * \author Kent G. Budge
- * \date Wed Jan 22 15:18:23 MST 2003
- * \brief Definitions of Unit methods.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \date   Wed Jan 22 15:18:23 MST 2003
+ * \brief  Definitions of Unit methods.
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -108,5 +109,5 @@ double conversion_factor(Unit const &units, Unit const &unit_system)
 } // namespace rtt_parser
 
 //---------------------------------------------------------------------------//
-//                      end of Unit.cc
+// end of Unit.cc
 //---------------------------------------------------------------------------//

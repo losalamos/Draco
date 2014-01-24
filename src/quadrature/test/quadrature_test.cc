@@ -3,7 +3,8 @@
  * \file   quadrature/quadrature_test.cc
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -897,5 +898,5 @@ void quadrature_test(UnitTest &ut,
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
-//              end of quadrature/quadrature_test.cc
+// end of quadrature/quadrature_test.cc
 //---------------------------------------------------------------------------//

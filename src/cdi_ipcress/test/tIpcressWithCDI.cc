@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Mon Oct 29 17:16:32 2001
  * \brief  Ipcress + CDI test.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -343,5 +345,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tIpcressWithCDI.cc
+// end of tIpcressWithCDI.cc
 //---------------------------------------------------------------------------//

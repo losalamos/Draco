@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:49:41 2000
  * \brief  Traits testing definitions.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -30,8 +32,8 @@ inline bool fail(int line)
 
 } // end namespace rtt_traits_test
 
-#endif                          // __traits_test_Traits_Test_hh__
+#endif // __traits_test_Traits_Test_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of traits/test/Traits_Test.hh
+// end of traits/test/Traits_Test.hh
 //---------------------------------------------------------------------------//

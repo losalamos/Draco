@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Fri Jun 24 12:58:18 2011
  * \brief  DACS_Device_Interface implementation.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -53,5 +54,5 @@ int dacs_device_get_pid(dacs_process_id_t * const pid)
 }
 
 //---------------------------------------------------------------------------//
-//                 end of DACS_Device_Interface.cc
+// end of DACS_Device_Interface.cc
 //---------------------------------------------------------------------------//

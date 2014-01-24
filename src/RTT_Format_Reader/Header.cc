@@ -1,13 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// Header.cc
 /*! 
  * \file   RTT_Format_Reader/Header.cc
  * \author B.T. Adams
  * \date   WED Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/Header class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Header.hh"
@@ -124,5 +125,5 @@ void Header::readEndKeyword(ifstream & meshfile)
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                     end of RTT_Format_Reader/Header.cc
+// end of RTT_Format_Reader/Header.cc
 //---------------------------------------------------------------------------//

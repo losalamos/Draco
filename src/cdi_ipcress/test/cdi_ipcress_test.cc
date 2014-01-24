@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Oct 12 15:36:36 2001
  * \brief  cdi_ipcress test functions.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -118,5 +120,5 @@ bool match(
 } // end namespace rtt_cdi_ipcress_test
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_ipcress_test.cc
+// end of cdi_ipcress_test.cc
 //---------------------------------------------------------------------------//

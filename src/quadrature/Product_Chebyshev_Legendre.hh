@@ -4,9 +4,8 @@
  * \author James S. Warsa
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class for Product Chebyshev-Gauss-Legendre quadrature sets.
- * \note   Copyright 2004 The Regents of the University of California.
- *
- * Long description.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Product_Chebyshev_Legendre.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -99,5 +98,5 @@ class Product_Chebyshev_Legendre : public Octant_Quadrature
 #endif // quadrature_Product_Chebyshev_Legendre_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/Product_Chebyshev_Legendre.hh
+// end of quadrature/Product_Chebyshev_Legendre.hh
 //---------------------------------------------------------------------------------------//

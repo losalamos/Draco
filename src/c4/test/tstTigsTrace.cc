@@ -4,7 +4,7 @@
  * \author Bob Webster, Thomas M. Evans
  * \date   Fri Sep 30 12:53:25 2005
  * \brief  Test the TigsTrace class.
- * \note   Copyright (C) 2004-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * These comm classes are used to perform gather/scatter operations.  They

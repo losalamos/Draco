@@ -4,7 +4,8 @@
  * \author Gabriel M. Rockefeller
  * \date   Thu Jul 21 13:09:19 2011
  * \brief  DACS_Process implementation.
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -114,5 +115,5 @@ std::string verbose_error(std::string const & message)
 } // end namespace rtt_device
 
 //---------------------------------------------------------------------------//
-//                 end of DACS_Process.cc
+// end of DACS_Process.cc
 //---------------------------------------------------------------------------//

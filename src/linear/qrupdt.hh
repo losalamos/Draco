@@ -4,8 +4,9 @@
  * \author Kent Budge
  * \date   Tue Aug 10 11:59:48 2004
  * \brief  Update the QR decomposition of a square matrix
- * \note   © Copyright 2006 LANSLLC All rights reserved.
-  */
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
@@ -28,5 +29,5 @@ void qrupdt(RandomContainer &r,
 #endif // linear_qrupdt_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/qrupdt.hh
+// end of linear/qrupdt.hh
 //---------------------------------------------------------------------------//

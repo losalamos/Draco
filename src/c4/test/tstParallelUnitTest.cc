@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jul 7 2011
  * \brief  Test the functionality of the class ParallelUnitTest
- * \note   Copyright (C) 2011 Los Alamos National Securities, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Securities, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -133,5 +133,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                   end of tstunit_test.cc
+// end of tstunit_test.cc
 //---------------------------------------------------------------------------//

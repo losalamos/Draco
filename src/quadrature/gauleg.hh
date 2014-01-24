@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 14 13:16:09 2004
  * \brief  Gauss-Legendre quadrature
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -137,5 +138,5 @@ void gauleg( double const x1, // expect FieldVector::value_type to be promoted t
 #endif // rtt_quadrature_gauleg_hh
 
 //---------------------------------------------------------------------------//
-//              end of quadrature/gauleg.hh
+// end of quadrature/gauleg.hh
 //---------------------------------------------------------------------------//

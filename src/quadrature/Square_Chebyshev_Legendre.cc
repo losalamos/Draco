@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Square_Chebyshev_Legendre.cc 6718 2012-08-30 20:03:01Z warsa $

@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity templated class implementation file.
- * \note   Copyright (C) 2011 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:21:58 2004
  * \brief  Reduce norm of a set of functions on a ray.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -38,5 +39,5 @@ void lnsrch(const RandomContainer &xold,
 #endif // roots_lnsrch_hh
 
 //---------------------------------------------------------------------------//
-//              end of roots/lnsrch.hh
+// end of roots/lnsrch.hh
 //---------------------------------------------------------------------------//

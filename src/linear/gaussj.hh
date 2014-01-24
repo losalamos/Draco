@@ -3,7 +3,8 @@
  * \file   linear/gaussj.hh
  * \author Kent Budge
  * \brief  Solve a system of equations by Gaussian elimination.
- * \note   © Copyright 2006-2007 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -33,5 +34,5 @@ void gaussj(DoubleRandomContainer &A,
 #endif // linear_gaussj_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/gaussj.hh
+// end of linear/gaussj.hh
 //---------------------------------------------------------------------------//

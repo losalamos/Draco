@@ -1,9 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// MT_traits.hh
-// Randy M. Roberts
-// Fri Nov 20 13:46:24 1998
+/*!
+ * \file   traits/MT_traits.hh
+ * \author Randy M. Roberts
+ * \date   Wed May  6 14:50:14 1998
+ * \brief  
+ * \note   Copyright (C) 1998-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __traits_MT_traits_hh__
@@ -70,8 +75,8 @@ struct MT_Traits
 
 } // end namespace rtt_traits
 
-#endif                          // __traits_MT_traits_hh__
+#endif // __traits_MT_traits_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of traits/MT_traits.hh
+// end of traits/MT_traits.hh
 //---------------------------------------------------------------------------//

@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Fri Oct 12 15:36:36 2001
  * \brief  cdi_ipcress test function headers.
+ * \note   Copyright (C) 2001-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -257,5 +259,5 @@ void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest & ut,
 #endif                          // __cdi_ipcress_test_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of cdi_ipcress/test/cdi_ipcress_test.hh
+// end of cdi_ipcress/test/cdi_ipcress_test.hh
 //---------------------------------------------------------------------------//

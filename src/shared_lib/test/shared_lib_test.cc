@@ -4,7 +4,8 @@
  * \author Thomas M. Evans
  * \date   Wed Apr 21 14:31:07 2004
  * \brief  shared_lib testing infrastructure.
- * \note   Copyright © 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -79,5 +80,5 @@ bool passed = true;
 } // end namespace rtt_shared_lib_test
 
 //---------------------------------------------------------------------------//
-//               end of shared_lib_test.cc
+// end of shared_lib_test.cc
 //---------------------------------------------------------------------------//

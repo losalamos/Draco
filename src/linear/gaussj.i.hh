@@ -2,8 +2,9 @@
 /*!
  * \file   linear/gaussj.i.hh
  * \author Kent Budge
- * \brief  Solve a linear system by Gaussian elimination..
- * \note   Copyright 2006-2007 LANSLLC All rights reserved.
+ * \brief  Solve a linear system by Gaussian elimination.
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -263,5 +264,5 @@ void gaussj(DoubleRandomContainer &A,
 #endif // linear_gaussj_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/gaussj.i.hh
+// end of linear/gaussj.i.hh
 //---------------------------------------------------------------------------//

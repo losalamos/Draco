@@ -3,7 +3,8 @@
  * \file   c4/global_containers.hh
  * \author Kent Budge
  * \brief  Define class global_containers
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -54,5 +55,5 @@ void global_merge(map<IndexType, bool> &local_map);
 #endif // c4_global_containers_hh
 
 //---------------------------------------------------------------------------//
-//              end of c4/global_containers.hh
+// end of c4/global_containers.hh
 //---------------------------------------------------------------------------//

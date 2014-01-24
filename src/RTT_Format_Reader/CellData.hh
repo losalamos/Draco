@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*----------------------------------//
-// CellData.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/CellData.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/CellData class.
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_CellData_hh__
@@ -79,8 +78,8 @@ class CellData
 
 } // end namespace rtt_RTT_Format_Reader
 
-#endif                          // __RTT_Format_Reader_CellData_hh__
+#endif // __RTT_Format_Reader_CellData_hh__
 
 //---------------------------------------------------------------------------//
-//                   end of RTT_Format_Reader/CellData.hh
+// end of RTT_Format_Reader/CellData.hh
 //---------------------------------------------------------------------------//

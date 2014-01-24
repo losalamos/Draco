@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// Cells.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/Cells.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/Cells class.
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Cells.hh"
@@ -134,5 +133,5 @@ void Cells::redefineCells()
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                    end of RTT_Format_Reader/Cells.cc
+// end of RTT_Format_Reader/Cells.cc
 //---------------------------------------------------------------------------//

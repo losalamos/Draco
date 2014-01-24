@@ -5,7 +5,7 @@
 ## Thu Oct 30 09:07:41 2003
 ## $Id$
 ###############################################################################
-## Copyright 2003 The Regents of the University of California.
+## Copyright 2003 The Regents of the Los Alamos National Security, LLC.
 ###############################################################################
 ##---------------------------------------------------------------------------##
 ## Collect profile information from multiple runs of an executable.

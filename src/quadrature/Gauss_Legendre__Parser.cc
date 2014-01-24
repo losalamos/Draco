@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2000-2010 Los Alamos National Security, LLC. All rights
+ * \note   Copyright 2000-2014 Los Alamos National Security, LLC. All rights
  *         reserved. 
  */
 //---------------------------------------------------------------------------------------//

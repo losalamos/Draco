@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:08:03 2004
  * \brief  Solve a linear system from its singular value decomposition.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -114,5 +115,5 @@ void svbksb(const RandomContainer &u,
 #endif // linear_svbksb_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of linear/svbksb.i.hh
+// end of linear/svbksb.i.hh
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Peter Ahrens
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Counter_RNG tests.
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

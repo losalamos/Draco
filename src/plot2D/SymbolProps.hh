@@ -4,6 +4,8 @@
   \author lowrie
   \date   2002-04-12
   \brief  Header for SymbolProps.
+  \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+          All rights reserved.
 */
 //---------------------------------------------------------------------------//
 // $Id$

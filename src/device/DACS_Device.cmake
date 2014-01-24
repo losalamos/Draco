@@ -3,7 +3,7 @@
 # author Gabriel Rockefeller
 # date   2011 June 13
 # brief  Instructions for building device Makefile.
-# note   Copyright (C) 2011-2012 Los Alamos National Security, 
+# note   Copyright (C) 2011-2014 Los Alamos National Security, 
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

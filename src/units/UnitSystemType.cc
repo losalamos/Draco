@@ -4,7 +4,8 @@
  *  \brief  Aggregates a collection of FundUnits to create a complete 
  *          UnitSystemType.
  *  \date   Fri Oct 24 15:04:41 2003
- *  \note   Copyright © 2003 The Regents of the University of California.
+ *  \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *          All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -105,5 +106,5 @@ UnitSystemType& UnitSystemType::Q( Qtype myType,
 
 
 //---------------------------------------------------------------------------//
-//                     end of UnitSystemType.cc
+// end of UnitSystemType.cc
 //---------------------------------------------------------------------------//

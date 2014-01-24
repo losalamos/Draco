@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Tue Sep 18 08:22:08 2007
  * \brief  Define template function L2norm
- * \note   Copyright (C) 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -25,5 +26,5 @@ double L2norm(In const &x);
 #endif // norms_L2norm_hh
 
 //---------------------------------------------------------------------------//
-//              end of norms/L2norm.hh
+// end of norms/L2norm.hh
 //---------------------------------------------------------------------------//

@@ -4,9 +4,8 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright 2004 The Regents of the University of California.
- *
- * Long description.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Tri_Chebyshev_Legendre.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -94,5 +93,5 @@ class Tri_Chebyshev_Legendre : public Octant_Quadrature
 #endif // quadrature_Tri_Chebyshev_Legendre_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/Tri_Chebyshev_Legendre.hh
+// end of quadrature/Tri_Chebyshev_Legendre.hh
 //---------------------------------------------------------------------------------------//

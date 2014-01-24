@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// CellFlags.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/CellFlags.cc
  * \author B.T. Adams
  * \date   Mon Jun 7 10:33:26 2000
- * \brief  Implementation file for RTT_Format_Reader/CellFlags class.
+ * \brief  Implementation file for RTT_Format_Reader/CellFlags clas
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.s.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "CellFlags.hh"
@@ -95,5 +94,5 @@ int CellFlags::get_flag_type_index(string & desired_flag_type) const
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                   end of RTT_Format_Reader/CellFlags.cc
+// end of RTT_Format_Reader/CellFlags.cc
 //---------------------------------------------------------------------------//

@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 09:10:19 2005
  * \brief  utilities for tests.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -72,5 +73,5 @@ bool passed = true;
 } // end namespace rtt_norms_test
 
 //---------------------------------------------------------------------------//
-//               end of norms_test.cc
+// end of norms_test.cc
 //---------------------------------------------------------------------------//

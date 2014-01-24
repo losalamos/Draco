@@ -3,7 +3,7 @@
  * \file Console_Token_Stream.cc
  * \author Kent G. Budge
  * \brief Definitions of Console_Token_Stream methods.
- * \note   Copyright © 2006-2007 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2014 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

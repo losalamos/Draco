@@ -4,6 +4,8 @@
   \author Rob Lowrie
   \date   Fri Jan 14 13:00:32 2005
   \brief  Header file for Norms.
+  \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
+          All rights reserved.
 */
 //---------------------------------------------------------------------------//
 // $Id$

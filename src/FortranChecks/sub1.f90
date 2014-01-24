@@ -3,7 +3,7 @@
 ! Author:   Kelly Thompson
 ! Date:     Tue June 12 2012
 ! Brief:    Fortran subroutine for cross language link checks.
-! Note:     Copyright (c) 2012 Los Alamos National Security, LLC
+! Note:     Copyright (c) 2012-2014 Los Alamos National Security, LLC.
 !           All rights reserved.
 !-----------------------------------------------------------------------------!
 ! $Id$
@@ -42,3 +42,6 @@ subroutine sub1(alpha,np,nf) bind(c)
   
 end subroutine sub1
 
+!-----------------------------------------------------------------------------!
+! end of sub1.f90
+!-----------------------------------------------------------------------------!

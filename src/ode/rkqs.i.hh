@@ -4,8 +4,9 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:15:40 2004
  * \brief  Integrate an ordinary differential equation with local error
- * control using fifth-order Cash-Karp Runge-Kutta steps.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ *         control using fifth-order Cash-Karp Runge-Kutta steps.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -214,5 +215,5 @@ void rkqs(std::vector<Field> &y,
 #endif // ode_rkqs_i_hh
 
 //---------------------------------------------------------------------------//
-//              end of ode/rkqs.i.hh
+// end of ode/rkqs.i.hh
 //---------------------------------------------------------------------------//

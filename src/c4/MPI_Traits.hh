@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:07:40 2002
  * \brief  Traits classes for MPI types.
- * \note   Copyright (C) 2002-2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -123,8 +123,8 @@ struct MPI_Traits<long double>
 
 } // end namespace rtt_c4
 
-#endif                          // c4_MPI_Traits_hh
+#endif // c4_MPI_Traits_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/MPI_Traits.hh
+// end of c4/MPI_Traits.hh
 //---------------------------------------------------------------------------//

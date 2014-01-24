@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   device/GPU_Device.cmake
 # brief  Instructions for building device Makefile.
-# note   Copyright (C) 2011-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2011-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

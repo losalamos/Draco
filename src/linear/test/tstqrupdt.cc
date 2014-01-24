@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
  * \brief  
- * \note   Copyright 2006 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -126,5 +127,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstqrupdt.cc
+// end of tstqrupdt.cc
 //---------------------------------------------------------------------------//

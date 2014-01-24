@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// Flags.hh
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/Flags.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/Flags class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Flags.hh"
@@ -35,5 +34,5 @@ void Flags::readFlags(ifstream & meshfile)
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                       end of RTT_Format_Reader/Flags.cc
+// end of RTT_Format_Reader/Flags.cc
 //---------------------------------------------------------------------------//

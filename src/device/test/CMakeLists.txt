@@ -1,7 +1,8 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   device/test/CMakeLists.txt
 # brief  Instructions for building device/test Makefile.
-# note   Copyright(C) 2011-2012 Los Alamos National Security, All rights reserved.
+# note   Copyright(C) 2011-2014 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 

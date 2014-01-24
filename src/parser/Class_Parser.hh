@@ -3,7 +3,8 @@
  * \file   parser/Class_Parser.hh
  * \author Kent Budge
  * \brief  Define template class Class_Parser
- * \note   Copyright (C) 2006-2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

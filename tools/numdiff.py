@@ -5,7 +5,7 @@
 ## 2004 Jan 16
 ## $Id$
 ###############################################################################
-## Copyright 2003-2005 The Regents of the University of California.
+## Copyright 2003-2005 The Regents of the Los Alamos National Security, LLC.
 ###############################################################################
 
 '''

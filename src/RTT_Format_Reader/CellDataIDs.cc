@@ -1,15 +1,14 @@
 //----------------------------------*-C++-*--------------------------------//
-// CellDataIDs.cc
-// B.T. Adams
-// 7 June 00
 /*! 
  * \file   RTT_Format_Reader/CellDataIDs.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellDataIDs class.
+ * \note   Copyright (C) 2003-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// @> 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #include "CellDataIDs.hh"
@@ -75,5 +74,5 @@ void CellDataIDs::readEndKeyword(ifstream & meshfile)
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                     end of RTT_Format_Reader/CellDataIDs.cc
+// end of RTT_Format_Reader/CellDataIDs.cc
 //---------------------------------------------------------------------------//

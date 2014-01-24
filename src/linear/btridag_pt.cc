@@ -4,6 +4,8 @@
  * \author Kent Budge
  * \date   Wed Sep 15 13:03:41 MDT 2010
  * \brief  Implementation of block tridiagonal solver
+ * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -29,5 +31,5 @@ void btridag(vector<double> const &a,
 } // end namespace rtt_linear
 
 //---------------------------------------------------------------------------//
-//                 end of btridag_pt.cc
+// end of btridag_pt.cc
 //---------------------------------------------------------------------------//

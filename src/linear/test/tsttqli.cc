@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:06:56 2004
  * \brief  Test the tqli eigenvector solver.
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -101,5 +102,5 @@ int main(int argc, char *argv[])
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tsttqli.cc
+// end of tsttqli.cc
 //---------------------------------------------------------------------------//

@@ -1,11 +1,15 @@
-//----------------------------------*-C++-*----------------------------------//
-// MatrixFactoryTraits.hh
-// Randy M. Roberts
-// Tue Jun  8 09:18:38 1999
+//----------------------------------*-C++-*----------------------------------------------//
+/*!
+ * \file   traits/MatrixFactoryTraits.hh
+ * \author Randy M. Roberts
+ * \date   Tue Jun  8 09:18:38 1999
+ * \brief  
+ * \note   Copyright (C) 1998-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
-// @> 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 
 #ifndef __traits_MatrixFactoryTraits_hh__
 #define __traits_MatrixFactoryTraits_hh__
@@ -86,8 +90,8 @@ class MatrixFactoryTraits
 
 } // end namespace rtt_traits
 
-#endif                          // __traits_MatrixFactoryTraits_hh__
+#endif // __traits_MatrixFactoryTraits_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of traits/MatrixFactoryTraits.hh
+// end of traits/MatrixFactoryTraits.hh
 //---------------------------------------------------------------------------//

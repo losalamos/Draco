@@ -2,7 +2,8 @@
 /*!
  * \file   lapack_wrap/Blas_Prototypes.hh
  * \brief  Header declaring BLAS prototypes
- * \note   Copyright (C) 2012 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  * \version $Id$
  */
 //---------------------------------------------------------------------------//

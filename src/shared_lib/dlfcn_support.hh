@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Logic for dlfcn.h system header.
- * \note   Copyright © 2003 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -68,5 +69,5 @@ int dlclose(void */*handle*/)
 #endif // rtt_shared_lib_dlfcn_supported_hh
 
 //---------------------------------------------------------------------------//
-//              end of shared_lib/dlfcn_supported.hh
+// end of shared_lib/dlfcn_supported.hh
 //---------------------------------------------------------------------------//

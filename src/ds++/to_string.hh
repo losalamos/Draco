@@ -3,7 +3,8 @@
  * \file   ds++/to_string.hh
  * \author Kent Budge
  * \brief  Define class to_string
- * \note   Copyright (C) 2007 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2007-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -39,5 +40,5 @@ string to_string(T const num, unsigned int const precision = 0 )
 #endif // dsxx_to_string_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/to_string.hh
+// end of ds++/to_string.hh
 //---------------------------------------------------------------------------//

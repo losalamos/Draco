@@ -4,6 +4,8 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:42:03 2002
  * \brief  Data swap functions
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  *
  * This file contains the declarations for determinate and indeterminate data
  * swap functions.
@@ -137,8 +139,8 @@ void indeterminate_swap(std::vector<unsigned> const &outgoing_pid,
 
 } // end namespace rtt_c4
 
-#endif                          // c4_swap_hh
+#endif // c4_swap_hh
 
 //---------------------------------------------------------------------------//
-//                              end of c4/swap.hh
+// end of c4/swap.hh
 //---------------------------------------------------------------------------//

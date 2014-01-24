@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Wed Dec 29 11:24:17 2004
  * \brief  Header for Foo_Base.
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

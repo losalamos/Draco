@@ -4,7 +4,8 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  
- * \note   Copyright 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Level_Symmetric.cc 6718 2012-08-30 20:03:01Z warsa $
@@ -369,5 +370,5 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
-//                 end of Level_Symmetric.cc
+// end of Level_Symmetric.cc
 //---------------------------------------------------------------------------------------//

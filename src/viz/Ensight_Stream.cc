@@ -4,7 +4,8 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  Ensight_Stream implementation file.
- * \note   Copyright © 2004-2010 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -261,5 +262,5 @@ void Ensight_Stream::binary_write(const T v)
 } // end of rtt_viz
 
 //---------------------------------------------------------------------------//
-//                              end of Ensight_Stream.cc
+// end of Ensight_Stream.cc
 //---------------------------------------------------------------------------//

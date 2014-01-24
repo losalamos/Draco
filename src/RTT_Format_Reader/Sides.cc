@@ -4,6 +4,8 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/Sides class.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -130,5 +132,5 @@ void Sides::redefineSides()
 } // end namespace rtt_RTT_Format_Reader
 
 //---------------------------------------------------------------------------//
-//                     end of RTT_Format_Reader/Sides.cc
+// end of RTT_Format_Reader/Sides.cc
 //---------------------------------------------------------------------------//

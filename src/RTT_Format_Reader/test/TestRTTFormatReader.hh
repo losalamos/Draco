@@ -4,6 +4,8 @@
  * \author B.T. Adams
  * \date   Tue Mar 14 09:48:00 2000
  * \brief  Header file for the RTT_Format_Reader class unit test.
+ * \note   Copyright (C) 2000-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
