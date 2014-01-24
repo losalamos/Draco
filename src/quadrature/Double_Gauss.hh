@@ -4,8 +4,8 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval double Gauss-Legendre quadrature set.
- * \note   Copyright 2000-2010 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ * \note   Copyright 2000-2010 Los Alamos National Security, LLC.
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -72,7 +72,7 @@ class Double_Gauss : public Interval_Quadrature
 
     // DATA
 
-    unsigned sn_order_;
+    // unsigned sn_order_;
 };
 
 } // end namespace rtt_quadrature
@@ -80,5 +80,5 @@ class Double_Gauss : public Interval_Quadrature
 #endif // __quadrature_Quadrature_hh__
 
 //---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.hh
+// end of quadrature/Quadrature.hh
 //---------------------------------------------------------------------------------------//

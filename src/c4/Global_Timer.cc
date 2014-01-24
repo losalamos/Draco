@@ -24,7 +24,8 @@ map<string, Global_Timer::timer_entry> Global_Timer::active_list_;
 //---------------------------------------------------------------------------------------//
 Global_Timer::Global_Timer(char const *name)
     :
-    name_(name)
+    name_(name),
+    active_(false)
 {
     Require(name != NULL);
 

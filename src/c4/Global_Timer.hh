@@ -72,7 +72,13 @@ class DLL_PUBLIC Global_Timer : public Timer
 
     //! Selected Global_Timers are active
     static std::map<std::string, timer_entry> active_list_; 
-     
+
+    //! Disable copy construction
+    Global_Timer( Global_Timer const & rhs );
+
+    // Disable assignment
+    Global_Timer operator=( Global_Timer const & rhs );
+    
   public:
 
     // Constructors

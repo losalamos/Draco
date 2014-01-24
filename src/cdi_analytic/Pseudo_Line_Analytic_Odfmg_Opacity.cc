@@ -101,7 +101,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
                      emax,
                      seed),
     averaging_(averaging),
-    qpoints_(qpoints)
+    qpoints_(qpoints),
+    baseline_()
 {
     Require(qpoints>0);
 
@@ -142,7 +143,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
                      emax,
                      seed),
     averaging_(averaging),
-    qpoints_(qpoints)
+    qpoints_(qpoints),
+    baseline_()
 {
     Require(qpoints>0);
 
@@ -191,7 +193,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
                      emax,
                      seed),
     averaging_(averaging),
-    qpoints_(qpoints)
+    qpoints_(qpoints),
+    baseline_()
 {
     Require(qpoints>0);
 

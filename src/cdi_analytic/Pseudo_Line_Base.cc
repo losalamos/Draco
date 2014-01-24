@@ -118,7 +118,13 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
                                    unsigned seed)
     :
     continuum_(continuum),
+    continuum_table_(std::vector<double>()),
+    emax_(-1.0),
     nu0_(-1), // as fast flag
+    C_(-1.0),
+    Bn_(-1.0),
+    Bd_(-1.0),
+    R_(-1.0),
     seed_(seed),
     number_of_lines_(number_of_lines),
     line_peak_(line_peak),
@@ -127,6 +133,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     edge_ratio_(edge_ratio),
     Tref_(Tref),
     Tpow_(Tpow),
+    center_(std::vector<double>()),
     edge_(abs(number_of_edges)),
     edge_factor_(abs(number_of_edges))
 {
@@ -142,7 +149,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
            emax);
 }
 
-//---------------------------------------------------------------------------//
+
 Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
                                    int number_of_lines,
                                    double line_peak,
@@ -155,8 +162,14 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
                                    double emax,
                                    unsigned seed)
     :
+    continuum_( NULL ),
+    continuum_table_(std::vector<double>()),
     emax_(emax),
     nu0_(-1), // as fast flag
+    C_(-1.0),
+    Bn_(-1.0),
+    Bd_(-1.0),
+    R_(-1.0),
     seed_(seed),
     number_of_lines_(number_of_lines),
     line_peak_(line_peak),
@@ -165,6 +178,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
     edge_ratio_(edge_ratio),
     Tref_(Tref),
     Tpow_(Tpow),
+    center_(std::vector<double>()),
     edge_(abs(number_of_edges)),
     edge_factor_(abs(number_of_edges))
 {
@@ -212,6 +226,9 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
                                    double emax,
                                    unsigned seed)
     :
+    continuum_( NULL ),
+    continuum_table_(std::vector<double>()),
+    emax_(emax),
     nu0_(nu0),
     C_(C),
     Bn_(Bn),
@@ -225,6 +242,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
     edge_ratio_(edge_ratio),
     Tref_(Tref),
     Tpow_(Tpow),
+    center_(std::vector<double>()),
     edge_(abs(number_of_edges)),
     edge_factor_(abs(number_of_edges))
 {
