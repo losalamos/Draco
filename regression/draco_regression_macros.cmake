@@ -616,9 +616,9 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
    endif()
    get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
    
-   if( ENABLE_C_CODECOVERAGE )
-      string( REPLACE ${CTEST_BUILD_CONFIGURATION} "Coverage" 
-         ${dep_pkg_caps}_DIR ${${dep_pkg_caps}_DIR} )
-   endif()
+   # if( ENABLE_C_CODECOVERAGE )
+   #    string( REPLACE ${CTEST_BUILD_CONFIGURATION} "Coverage" 
+   #       ${dep_pkg_caps}_DIR ${${dep_pkg_caps}_DIR} )
+   # endif()
 endmacro(set_pkg_work_dir)
 
