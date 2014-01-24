@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 
 # Pull SVN repositories from Yellow 
 #
@@ -27,10 +27,13 @@ unpack_repo() {
    pkg=$1
    echo "Remove old files..."
    if test -f ${pkg}.hotcopy.tar; then
-      run "rm -f $[pkg}.hotcopy.tar"
+      run "rm -f ${pkg}.hotcopy.tar"
    fi
    if test -d ${pkg}.hotcopy; then
       run "rm -rf ${pkg}.hotcopy"
+   fi
+   if test -d ${pkg}.old; then
+      run "rm -rf ${pkg}.old"
    fi
    
    echo "Unpacking SVN repository for $pkg ..."
@@ -55,7 +58,8 @@ fi
 # Ask Mercury if there are any items available for pulling from Yellow
 possible_items_to_pull=`status | awk '{print $1}'`
 
-# Loop over all items that mercury listed, if 'draco.repo' is found, then mark it for unpacking.
+# Loop over all items that mercury listed, if 'draco.repo' is found,
+# then mark it for unpacking. 
 
 draco_ready=0
 capsaicin_ready=0
