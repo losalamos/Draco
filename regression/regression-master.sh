@@ -64,7 +64,8 @@ case $# in
 esac
 
 # Build everything as the default action
-projects="capsaicin"
+projects="draco capsaicin clubimc wedgehog milagro asterisk"
+#projects="capsaicin"
 
 # Host based variables
 export host=`uname -n | sed -e 's/[.].*//g'`
