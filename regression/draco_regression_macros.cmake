@@ -11,7 +11,7 @@
 
 
 # Echo settings if 'ON'
-set( drm_verbose OFF )
+set( drm_verbose ON )
 
 # Call this script from regress/Draco_*.cmake
 
@@ -590,14 +590,21 @@ endmacro(platform_customization)
 # 
 # ------------------------------------------------------------
 macro(set_pkg_work_dir this_pkg dep_pkg)
+
    string( TOUPPER ${dep_pkg} dep_pkg_caps )
    # Assume that draco_work_dir is parallel to our current location.
    string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
+
    if( "${dep_pkg}" MATCHES "draco" )
       string( REPLACE "cmake_jayenne/draco" "cmake_draco" 
-         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )      
+         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
    endif()
- 
+
+   # If this is a coverage build, link to the Debug Draco files:
+   if( "${dep_pkg}" MATCHES "draco" )
+      string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+   endif()
+
    find_file( ${dep_pkg}_target_dir
       NAMES README.${dep_pkg}
       HINTS
@@ -614,11 +621,8 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
          "Could not locate the ${dep_pkg} installation directory. "
          "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}" )
    endif()
+
    get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
-   
-   # if( ENABLE_C_CODECOVERAGE )
-   #    string( REPLACE ${CTEST_BUILD_CONFIGURATION} "Coverage" 
-   #       ${dep_pkg_caps}_DIR ${${dep_pkg_caps}_DIR} )
-   # endif()
+
 endmacro(set_pkg_work_dir)
 

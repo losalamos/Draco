@@ -10,11 +10,13 @@
 #    jayenne.repo    jayenne.hotcopy.tar   jayenne.hotcopy
 #    capsaicin.repo  capsaicin.hotcopy.tar capsaicin.hotcopy
 # 2. SVN repositories live at /usr/projects/draco/svn
+# 3. Kerberos keytab files is at $HOME/.ssh/cron.keytab and is signed
+#    with principal $USER@lanl.gov
 
 # dry_run=1
 
 # Helpful functions:
-die () { echo "ERROR: $1"; exit 1;}
+die () { echo "FATAL ERROR: $1"; exit 1;}
 
 run () {
    echo $1
@@ -41,8 +43,6 @@ unpack_repo() {
    run "tar -xvf ${pkg}.hotcopy.tar"
    run "mv ${pkg} ${pkg}.old"
    run "mv ${pkg}.hotcopy ${pkg}"
-   run "chgrp -R draco ${pkg} ${pkg}.hotcopy.tar"
-   run "chmod -R g+rwX,o-rwX ${pkg} ${pkg}.hotcopy.tar"
    echo " "
 }
 
@@ -54,6 +54,9 @@ if test -d $work_dir; then
 else
    die "could not cd to $work_dir"
 fi
+
+# Ensure we have a kerberos ticket
+run "kinit -f -l 8h -kt $HOME/.ssh/cron.keytab ${USER}@lanl.gov"
 
 # Ask Mercury if there are any items available for pulling from Yellow
 possible_items_to_pull=`status | awk '{print $1}'`
@@ -75,3 +78,8 @@ done
 if test ${draco_ready} = 1; then unpack_repo "draco"; fi
 if test ${jayenne_ready} = 1; then unpack_repo "jayenne"; fi
 if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin"; fi
+
+# Update permisssions as needed
+run "cd ${work_dir}/.."
+run "chgrp -R draco svn"
+run "chmod -R g+rwX,o-rwX svn"

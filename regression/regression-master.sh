@@ -26,6 +26,7 @@ print_use()
     echo "Extra parameters read from environment:"
     echo "   ENV{dashboard_type} = {Nightly, Experimental}"
     echo "   ENV{base_dir}       = {/var/tmp/$USER/cdash, /scratch/$USER/cdash}"
+    echo "   ENV{regdir}         = {/home/regress, /home/$USER}"
 }
 
 fn_exists()
@@ -63,7 +64,7 @@ case $# in
 esac
 
 # Build everything as the default action
-projects="draco capsaicin clubimc wedgehog milagro asterisk"
+projects="capsaicin"
 
 # Host based variables
 export host=`uname -n | sed -e 's/[.].*//g'`
@@ -91,7 +92,9 @@ ml-*)
 ccscs[0-9])
     machine_name_long="Linux64 on CCS LAN"
     machine_name_short=ccscs
-    export regdir=/home/regress
+    if ! test -d "${regdir}/draco/regression"; then
+       export regdir=/home/regress
+    fi
     ;;
 *)
     echo "FATAL ERROR: I don't know how to run regression on host = ${host}."
@@ -116,6 +119,7 @@ echo " "
 echo "Optional environment:"
 echo "   dashboard_type = ${dashboard_type}"
 echo "   base_dir       = ${base_dir}"
+echo "   regdir         = ${regdir}"
 echo " "
 
 # Sanity Checks

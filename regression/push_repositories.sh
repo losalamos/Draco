@@ -10,8 +10,10 @@
 #01/22/14 08:04:33  01/22/14 16:04:33  krbtgt/lanl.gov@lanl.gov
 #	renew until 01/24/14 16:57:02
 
+PUSH=/ccs/opt/x86_64/mercCmd-1.2.3/bin/push
+
 # Helpful functions:
-die () { echo "ERROR: $1"; exit 1;}
+die () { echo "FATAL ERROR: $1"; exit 1;}
 
 run () {
    echo $1
@@ -24,8 +26,10 @@ run () {
 if test -d /ccs/codes/radtran/svn; then
   run "cd /ccs/codes/radtran/svn"
 else
-  die "FATAL ERROR.  SVN root directory not found."
+  die "SVN root directory not found."
 fi
+
+if ! test -x $PUSH; then die "Cannot find Mercury executable push"; fi
 
 # Repositories to push
 repos="draco jayenne capsaicin"
