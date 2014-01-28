@@ -20,6 +20,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include <cctype>
 
 namespace rtt_cdi_ipcress
 {
@@ -137,9 +138,11 @@ class IpcressMaterial
                     std::vector<double> const & in_values )
     {
         // Remove white space from in_fieldName before saving it.
+        // NOTE: We had to cast isspace here using (int(*)(int)) to insure the
+        // proper isspace was being used (cctype NOT STD::isspace)
         in_fieldName.erase( std::remove_if( in_fieldName.begin(),
                                             in_fieldName.end(),
-                                            isspace ),
+                                            (int(*)(int))isspace ),
                             in_fieldName.end() );
 
         // Save the material data field (description and associated values).
