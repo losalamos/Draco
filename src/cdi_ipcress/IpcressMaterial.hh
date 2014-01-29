@@ -138,11 +138,10 @@ class IpcressMaterial
                     std::vector<double> const & in_values )
     {
         // Remove white space from in_fieldName before saving it.
-        // NOTE: We had to cast isspace here using (int(*)(int)) to insure the
-        // proper isspace was being used (cctype NOT STD::isspace)
+        // NOTE: ::isspace forces the use of c namespace rather than std::isspace
         in_fieldName.erase( std::remove_if( in_fieldName.begin(),
                                             in_fieldName.end(),
-                                            (int(*)(int))isspace ),
+                                            ::isspace ),
                             in_fieldName.end() );
 
         // Save the material data field (description and associated values).
