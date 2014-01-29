@@ -188,7 +188,11 @@ fi
 if test "${build_type}" = "Coverage"; then
    # Coverage build imply Debug builds.
    build_type="Debug,${build_type}"
-   export COVFILE=${work_dir}/build/CMake.cov
+   run "export COVFILE=${work_dir}/build/CMake.cov"
+   if test -f ${COVFILE}; then
+      run "rm -f ${COVFILE}"
+      cov01 --on
+   fi
 fi
 
 # Environment
