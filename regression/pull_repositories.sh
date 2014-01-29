@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#------------------------------------------------------------------------------#
 # Pull SVN repositories from Yellow 
 #
 # Assumptions:
@@ -12,6 +13,18 @@
 # 2. SVN repositories live at /usr/projects/draco/svn
 # 3. Kerberos keytab files is at $HOME/.ssh/cron.keytab and is signed
 #    with principal $USER@lanl.gov
+#------------------------------------------------------------------------------#
+# How to generate keytab files:
+#
+# /usr/kerberos/sbin/kadmin -p ${USER}@lanl.gov
+# > ktadd -k $HOME/.ssh/cron.keytab -p ${USER}@lanl.gov
+# > quit
+# chmod 600 $HOME/.ssh/cron.keytab
+
+# Enable kerberos credentials via keytab authentication:
+#
+# kinit -f -l 8h -kt $HOME/.ssh/cron.keytab ${USER}@lanl.gov
+#------------------------------------------------------------------------------#
 
 # dry_run=1
 

@@ -47,7 +47,7 @@ for repo in $repos; do
    run "svnadmin hotcopy $repo ${repo}.hotcopy"
    # Tar it up and push via mercury.
    run "tar -cvf ${repo}.hotcopy.tar ${repo}.hotcopy"
-   run "push id=${repo}.repo ${repo}.hotcopy.tar"
+   run "${PUSH} id=${repo}.repo ${repo}.hotcopy.tar"
    # Ensure the new files have group rwX permissions.
    run "chgrp -R draco ${repo}.hotcopy.tar ${repo}.hotcopy"
    run "chmod -R g+rwX,o=g-w ${repo}.hotcopy.tar ${repo}.hotcopy"
