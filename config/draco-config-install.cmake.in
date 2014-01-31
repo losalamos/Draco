@@ -31,7 +31,7 @@ set_package_properties( draco PROPERTIES
    TYPE REQUIRED
    PURPOSE 
 "Provides underlying capabilities required by ClubIMC (smart pointers, 
-     data access, randon number generators, etc."
+     data access, random number generators, etc.)"
    )   
 
 ## ---------------------------------------------------------------------------
