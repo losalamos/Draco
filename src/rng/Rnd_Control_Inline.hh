@@ -13,92 +13,94 @@
 #ifndef rtt_rng_Rnd_Control_Inline_hh
 #define rtt_rng_Rnd_Control_Inline_hh
 
-#include "LF_Gen.hh"
+#include "Counter_RNG.hh"
 
 namespace rtt_rng 
 {
 
-/*! All this does is to hold a seed and a stream number.  Everything else
- *  that the traditional Rnd_Control did was moved to LF_Gen */
-
+//===========================================================================//
+/*!
+ * \class Rnd_Control
+ * \brief A stream number manager that can initialize RNGs.
+ *
+ * Rnd_Control manages application-facing RNG information---a seed used by all
+ * generators, and the next available stream number to be used when
+ * constructing a new generator.
+ */
+//===========================================================================//
 class DLL_PUBLIC Rnd_Control 
 {
   private:
-    // seed for initialization of random number streams
-    unsigned d_seed;
+    //! Seed for initialization of random number streams.
+    const uint32_t d_seed;
 
-    // total number of streams allowed
-    const unsigned d_number;
+    //! Next available stream number.
+    uint64_t d_streamnum;
 
-    // number of current stream
-    unsigned d_streamnum;
+    //! Total number of streams supported.
+    const uint64_t d_max_streams;
 
   public:
-    // Constructor.
-    Rnd_Control(int seed, int max_streams = 1000000000, int sn = 0, int p = 1);
+    //! Constructor.
+    Rnd_Control(const uint32_t seed,
+                const uint64_t streamnum = 0,
+                const uint64_t max_streams =
+                std::numeric_limits<uint64_t>::max())
+        : d_seed(seed),
+        d_streamnum(streamnum),
+        d_max_streams(max_streams)
+    {
+        Require(max_streams > 0);
+        Require(streamnum < max_streams);
+    }
 
+    //! Return the next available stream number.
+    uint64_t get_num() const { return d_streamnum; }
 
-    //! Query for the current random number stream index.
-    int get_num() const { return d_streamnum; }
+    //! Reset the stream number.
+    void set_num(const uint64_t num)
+    {
+        Require(num < d_max_streams);
 
-    //! Set (reset) the random number stream index.
-    void set_num(const int num) { d_streamnum = num; }
+        d_streamnum = num;
+    }
 
-    //! Query size of a packed random number state.
-    int get_size() const { return (LFG_DATA_SIZE+2)*sizeof(unsigned); }
+    //! Return the seed value.
+    uint32_t get_seed() const { return d_seed; }
 
-    //! Get the seed value used to initialize the SPRNG library.
-    int get_seed() const { return d_seed; }
+    //! Return the maximum number of streams allowed.
+    uint64_t get_max_streams() const { return d_max_streams; }
 
-    //! Return the total number of current streams set.
-    int get_number() const { return d_number; }
-
-    inline void initialize(const unsigned snum, LF_Gen&);
-    inline void initialize(LF_Gen&);
-    inline void half_initialize(LF_Gen&);
+    inline void initialize(const uint64_t snum, Counter_RNG&);
+    inline void initialize(Counter_RNG&);
 };
 
 //---------------------------------------------------------------------------//
-//! Update the stream number and initialize the LF_Gen
+//! Update the stream number and initialize the Counter_RNG.
 inline void 
-Rnd_Control::initialize(const unsigned snum, LF_Gen& lf)
+Rnd_Control::initialize(const uint64_t snum, Counter_RNG& cbrng)
 {
-    Require (snum <= d_number);
+    Require (snum < d_max_streams);
 
-    // reset streamnum
-    d_streamnum = snum;
+    // Reset the stream number.
+    set_num(snum);
 
-    // create a new Rnd object
-    lfg_create_rng(d_streamnum, d_seed, lf.begin(), lf.end());
-
-    // advance the counter
-    d_streamnum++;
+    // Continue initialization.
+    initialize(cbrng);
 }
 
-//! Initialize the LF_Gen with the next stream number
+//---------------------------------------------------------------------------//
+//! Initialize the Counter_RNG with the next available stream number.
 inline void 
-Rnd_Control::initialize(LF_Gen& lf)
+Rnd_Control::initialize(Counter_RNG& cbrng)
 {
-    Require(d_streamnum <= d_number);
+    Require(d_streamnum < d_max_streams);
 
-    // create a new Rnd object
-    lfg_create_rng(d_streamnum, d_seed, lf.begin(), lf.end());
+    // Initialize the counter-based RNG.
+    cbrng.initialize(d_seed, d_streamnum);
 
-    // advance the counter
-    d_streamnum++;
-}
-
-//! Do half an initialization... it is your responsibility to finish!
-inline void 
-Rnd_Control::half_initialize(LF_Gen& lf)
-{
-    Require(d_streamnum <= d_number);
-
-    // create a (partially initialized) new Rnd object
-    lfg_create_rng_part1(d_streamnum, d_seed, lf.begin(), lf.end());
-
-    // advance the counter
-    d_streamnum++;
+    // Advance to the next stream number.
+    ++d_streamnum;
 }
 
 } // end namespace rtt_rng

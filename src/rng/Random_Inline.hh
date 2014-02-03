@@ -20,8 +20,6 @@
 namespace rtt_rng
 {
 
-typedef LF_Gen Random;
-
 /*! rn_stream is not used for anything in this library.  It is simply a global
  * variable that some applications use for holding a stream number.
  */

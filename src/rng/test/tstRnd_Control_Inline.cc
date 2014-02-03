@@ -10,223 +10,246 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "rng_test.hh"
-#include "../Random_Inline.hh"
-#include "ds++/Release.hh"
+#include "rng/Rnd_Control_Inline.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-using rtt_rng::Rnd_Control;
-using rtt_rng::LF_Gen;
-using rtt_rng::LF_Gen_Ref;
-
 using namespace std;
+using namespace rtt_dsxx;
+using namespace rtt_rng;
 
-int seed = 2452423;
+#define ITFAILS ut.failure(__LINE__, __FILE__)
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void check_basics()
+void test_control(UnitTest &ut)
 {
-    // Test RNG.cc's errprint function
-    cerr << "Testing RNG.cc's errprint function "
-         << "(a fake message should appear next)." << endl;
-    errprint("noway","check_basics","error message goes here");
-        
-    return;
+    // Create two controllers with different seeds.
+    uint32_t seed1 = 2452423;
+    uint32_t seed2 = 9182736;
+    Rnd_Control control1(seed1);
+    Rnd_Control control2(seed2);
+
+    if (control1.get_max_streams() != std::numeric_limits<uint64_t>::max())
+                                                                       ITFAILS;
+    if (control2.get_max_streams() != std::numeric_limits<uint64_t>::max())
+                                                                       ITFAILS;
+    if (control1.get_seed() != seed1)                                  ITFAILS;
+    if (control2.get_seed() != seed2)                                  ITFAILS;
+    if (control1.get_num() != 0)                                       ITFAILS;
+    if (control2.get_num() != 0)                                       ITFAILS;
+
+    // Create a third controller with the same seed as controller1, but
+    // starting with a different stream number.
+    uint64_t streamnum = 2000;
+    Rnd_Control control3(seed1, streamnum);
+
+    // Initialize some generators.
+    Counter_RNG rng1, rng2, rng3;
+    uint64_t numiter = 1000;
+    for (uint64_t i = 0; i < numiter; ++i)
+    {
+        control1.initialize(rng1);
+        control2.initialize(rng2);
+        control3.initialize(rng3);
+
+        // Both rng1 and rng2 should be on stream number i.  control1 and
+        // control2 should be on stream number i+1.  rng3 should be on stream
+        // number i+streamnum.  control3 should be on stream number
+        // i+streamnum+1.  Other controller state should not have changed.
+        // None of the generators should match each other.
+        if (rng1.get_num() != i)                                       ITFAILS;
+        if (rng2.get_num() != i)                                       ITFAILS;
+        if (rng3.get_num() != i+streamnum)                             ITFAILS;
+
+        if (rng1 == rng2)                                              ITFAILS;
+        if (rng1 == rng3)                                              ITFAILS;
+        if (rng2 == rng3)                                              ITFAILS;
+
+        if (control1.get_num() != i+1)                                 ITFAILS;
+        if (control2.get_num() != i+1)                                 ITFAILS;
+        if (control3.get_num() != i+streamnum+1)                       ITFAILS;
+
+        if (control1.get_max_streams() != std::numeric_limits<uint64_t>::max())
+                                                                       ITFAILS;
+        if (control2.get_max_streams() != std::numeric_limits<uint64_t>::max())
+                                                                       ITFAILS;
+        if (control3.get_max_streams() != std::numeric_limits<uint64_t>::max())
+                                                                       ITFAILS;
+        if (control1.get_seed() != seed1)                              ITFAILS;
+        if (control2.get_seed() != seed2)                              ITFAILS;
+        if (control3.get_seed() != seed1)                              ITFAILS;
+    }
+
+    // Create another controller with the same seed and control number as the
+    // original controller.
+    Rnd_Control control4(seed1);
+
+    if (control4.get_num() != 0)                                       ITFAILS;
+
+    // Set control4's next stream number manually.
+    control4.set_num(numiter-1);
+
+    if (control4.get_num() != numiter-1)                               ITFAILS;
+
+    // Initialize a generator.
+    Counter_RNG rng4;
+    control4.initialize(rng4);
+
+    // rng4 should match rng1 but not rng2 or rng3.
+    if (rng4.get_num() != numiter-1)                                   ITFAILS;
+    if (rng4 != rng1)                                                  ITFAILS;
+    if (rng4 == rng2)                                                  ITFAILS;
+    if (rng4 == rng3)                                                  ITFAILS;
+    if (control4.get_num() != numiter)                                 ITFAILS;
+
+    if (ut.numFails == 0)
+        ut.passes("test_control passed");
 }
 
 //---------------------------------------------------------------------------//
-void control_test()
+void test_exceptions(UnitTest &ut)
 {
-    cout << "\nStarting control tests ..." << endl;
-    
-    // make a controller
-    Rnd_Control control(seed);
-
-    // checks
-    if (control.get_number() != 1000000000) ITFAILS;
-    if (control.get_seed()   != 2452423)    ITFAILS;
-    if (control.get_num()    != 0)          ITFAILS;
-
-    // make some random numbers
-    LF_Gen r0; control.initialize(r0);
-    if (control.get_num()    != 1)          ITFAILS;
-    LF_Gen r1; control.initialize(r1);
-    if (control.get_num()    != 2)          ITFAILS;
-    LF_Gen r2; control.initialize(r2);
-    if (control.get_num()    != 3)          ITFAILS;
-
-    LF_Gen rr2; control.initialize(2, rr2);
-    if (control.get_num()    != 3)          ITFAILS;
-
-    LF_Gen rr1; control.initialize(1, rr1);
-    if (control.get_num()    != 2)          ITFAILS;
-
-    control.set_num(0);
-
-    LF_Gen rr0; control.initialize(rr0);
-    if (control.get_num()    != 1)          ITFAILS;
-
-    for (int i = 0; i < 100; i++)
+    // Try to create a controller that allows 0 streams.
+    bool caught = false;
+    try
     {
-        double rn0  = r0.ran();
-        double rrn0 = rr0.ran();
-        double rn1  = r1.ran();
-        double rrn1 = rr1.ran();
-        double rn2  = r2.ran();
-        double rrn2 = rr2.ran();
-    
-        if (rn0 != rrn0)         ITFAILS;
-        if (rn1 != rrn1)         ITFAILS;
-        if (rn2 != rrn2)         ITFAILS;
-    
-        if (rn0 == rrn1)         ITFAILS;
-        if (rn1 == rrn2)         ITFAILS;
-        if (rn2 == rrn0)         ITFAILS;
+        Rnd_Control control(0, 0, 0);
     }
-
-    if (rtt_rng_test::passed)
-    PASSMSG("Rnd_Control simple test ok.");
-    return;
-}
-
-//---------------------------------------------------------------------------//
-void check_accessors(void)
-{
-    cout << "\nStarting additional tests...\n" << endl;
-    
-    // make a controller
-    Rnd_Control control(seed);
-
-    // make some random numbers
-    LF_Gen r0;
-    control.initialize(r0);
-
+    catch (rtt_dsxx::assertion &err)
     {
-        LF_Gen_Ref gr0 = r0.ref();
-        double rn0     = gr0.ran();
-        if( rn0 < 0 || rn0 >1 )         ITFAILS;
-        if( gr0.get_num() != 0 )        ITFAILS;
-        if ( LF_Gen::size_bytes() != LFG_DATA_SIZE*sizeof(unsigned int)) ITFAILS;
-        LF_Gen sgr0;
-        gr0.spawn(sgr0);
-        if ( gr0.is_alias_for(sgr0) )                        ITFAILS;
-        if ( gr0.get_unique_num() == sgr0.get_unique_num() ) ITFAILS;
+        cout << "Good, caught assertion: " << err.what() << endl;
+        caught = true;
     }
+    if (!caught)                                                       ITFAILS;
 
-    { // test ctors
-        
-        // create some data
-        size_t N(LFG_DATA_SIZE);
-        vector<unsigned int> foo(N,0);
-        for( size_t i=0; i<N; ++i)
-            foo[i] = i+100;
+    // Try to create a controller with an initial stream number greater than
+    // its maximum number of streams.
+    caught = false;
+    try
+    {
+        Rnd_Control control(0, 1001, 1000);
+    }
+    catch (rtt_dsxx::assertion &err)
+    {
+        cout << "Good, caught assertion: " << err.what() << endl;
+        caught = true;
+    }
+    if (!caught)                                                       ITFAILS;
 
-        // some entries in LFG data have extra-special significance; for
-        // example, data[OFFSET_hidx] is "hidx".  This must be less than
-        // VALID_LM1, which is either 16 or 30, depending on LFG_PARAM_SET.
-#if LFG_PARAM_SET == 1
-        foo[LFG_DATA_SIZE-4] = 16;
-#elif LFG_PARAM_SET == 2
-        foo[LFG_DATA_SIZE-4] = 30;
-#endif
+    // Create a controller.
+    Rnd_Control control(0, 0);
 
-        // try ctor form 2
-        LF_Gen r2( seed, 0 );        
+    // Try to set the stream number to std::numeric_limits<uint64_t>::max().
+    caught = false;
+    try
+    {
+        control.set_num(std::numeric_limits<uint64_t>::max());
+    }
+    catch (rtt_dsxx::assertion &err)
+    {
+        cout << "Good, caught assertion: " << err.what() << endl;
+        caught = true;
+    }
+    if (!caught)                                                       ITFAILS;
 
-        // try ctor form 3 (foo must have length = LFG_DATA_SIZE
-        LF_Gen r3( &foo[0] );
-
-        // try to spawn
-        r3.spawn( r2 );
-        if( r3 == r2 )
-            FAILMSG("LF_Gen spawn creates a distinct LF_Gen object.")
-        else
-            PASSMSG("LF_Gen equality operator works.")
-
-        // "get_num" returns the generator stream ID.  It is the same 
-        // after the call to spawn.
-        if (r3.get_num() == r2.get_num()) 
-            PASSMSG("LF_Gen spawn creates objects with the same stream IDs.")
-        else
-            FAILMSG("LF_Gen spawn changed the stream ID number.")
-
-        // Check if the "unique number" is unique enough
-        // Note: This number is a combination of the generator 
-        // ID and an unsigned int from the state.  With some low 
-        // probability it will not be unique, but we only need it 
-        // to be unique enough to prevent the resurrection of
-        // two particles with the same stream ID, as described in
-// https://tf.lanl.gov/sf/go/artf23409?nav=1&_pagenum=1&returnUrlKey=1333470445809
-        for (unsigned int i=0; i<1000000; ++i)
+    // Set the stream number to std::numeric_limits<uint64_t>::max() - 1, then
+    // try to initialize two generators.  One should succeed.
+    control.set_num(std::numeric_limits<uint64_t>::max() - 1);
+    caught = false;
+    uint64_t num_rngs = 0;
+    try
+    {
+        for (num_rngs = 0; num_rngs < 2; ++num_rngs)
         {
-            if (r3.get_unique_num() == r2.get_unique_num())
-               FAILMSG("LF_Gen unique state number is not unique.")
-            r2.ran();
+            Counter_RNG rng;
+            control.initialize(rng);
+
+            if (rng.get_num() !=
+                std::numeric_limits<uint64_t>::max() - 1)              ITFAILS;
         }
-
-        // Check the id for this stream
-        double rn = r3.ran();
-        cout << "LF_Gen r3 returns ran() = " << rn << endl;
-        unsigned int id = r3.get_num();
-        // The value returned by LF_Gen::get_num() lives at the end of the LFG
-        // data array.
-        if( id != foo[LFG_DATA_SIZE-1] )          ITFAILS;
-        if( r3.size() != LFG_DATA_SIZE )          ITFAILS;
-
-        int count(0);
-        for( LF_Gen::iterator it=r3.begin(); it != r3.end(); ++it )
-            count++;
-        if( count != LFG_DATA_SIZE )              ITFAILS;
-        
-        r3.finish_init();
     }
-    
-    if (rtt_rng_test::passed)
-    PASSMSG("Rnd_Control simple test ok.");
-    return;
+    catch (rtt_dsxx::assertion &err)
+    {
+        cout << "Good, caught assertion: " << err.what() << endl;
+        caught = true;
+    }
+    if (!caught)                                                       ITFAILS;
+    if (num_rngs != 1)                                                 ITFAILS;
+
+    // Create a controller that allows 10 streams.
+    Rnd_Control control2(0, 0, 10);
+
+    if (control2.get_max_streams() != 10)                               ITFAILS;
+
+    // Try to create a generator on stream 10.
+    caught = false;
+    try
+    {
+        Counter_RNG rng;
+        control2.initialize(10, rng);
+    }
+    catch (rtt_dsxx::assertion &err)
+    {
+        cout << "Good, caught assertion: " << err.what() << endl;
+        caught = true;
+    }
+    if (!caught)                                                       ITFAILS;
+
+    // Try to create 11 generators.  The first 10 should succeed.
+    num_rngs = 0;
+    caught = false;
+    try
+    {
+        for (num_rngs = 0; num_rngs < 11; ++num_rngs)
+        {
+            Counter_RNG rng;
+            control2.initialize(rng);
+
+            if (rng.get_num() != num_rngs)                             ITFAILS;
+        }
+    }
+    catch (rtt_dsxx::assertion &err)
+    {
+        cout << "Good, caught assertion: " << err.what() << endl;
+        caught = true;
+    }
+    if (!caught)                                                       ITFAILS;
+    if (num_rngs != 10)                                                ITFAILS;
+
+    if (ut.numFails == 0)
+        ut.passes("test_exceptions passed");
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
-            return 0;
-        }
-
-    cout << "\nThis is rng: version" << rtt_dsxx::release() << "\n" << endl;
-    
+    ScalarUnitTest ut(argc, argv, release);
     try
     {
-        // >>> UNIT TESTS
-        check_basics();
-        control_test();
-        check_accessors();
+        test_control(ut);
+        test_exceptions(ut);
     }
-    catch (rtt_dsxx::assertion &err)
+    catch (std::exception &err)
     {
-        cout << "While testing tstRnd_Control, " << err.what()
+        cout << "ERROR: While testing tstRnd_Control, "
+             << err.what()
              << endl;
-        return 1;
+        ut.numFails++;
     }
-
-    // status of test
-    cout <<   "\n*******************************************\n";
-    if (rtt_rng_test::passed) 
-        cout << "**** tstRnd_Control Test: PASSED\n";
-    else
-        cout << "**** tstRnd_Control Test: FAILED\n";
-    cout <<     "*********************************************\n\n"
-         << "Done testing tstRnd_Control." << endl;
-    return rtt_rng_test::passed?0:-1;
+    catch (...)
+    {
+        cout << "ERROR: While testing tstRnd_Control, "
+             << "an unknown exception was thrown."
+             << endl;
+        ut.numFails++;
+    }
+    return ut.numFails;
 }   
 
 //---------------------------------------------------------------------------//

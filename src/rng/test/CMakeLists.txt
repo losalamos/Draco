@@ -14,11 +14,6 @@ project( rng_test C CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/rng_test.cc 
-   ${PROJECT_SOURCE_DIR}/rng_test.hh
-)
-
 set( test_sources
    ${PROJECT_SOURCE_DIR}/tstRnd_Control_Inline.cc
    ${PROJECT_SOURCE_DIR}/tstSubrandom_Sequence.cc
@@ -60,22 +55,12 @@ include_directories(
 )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-add_component_library( 
-   TARGET       Lib_rng_test
-   TARGET_DEPS  Lib_rng
-   LIBRARY_NAME ${PROJECT_NAME} 
-   SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests( 
    SOURCES "${test_sources}"
-   DEPS    "Lib_rng_test;${GSL_LIBRARIES}" ) 
+   DEPS    "${GSL_LIBRARIES}" )
    
 if( RANDOM123_FOUND)
    # Random123 unit tests almost all use assert to check for failures,
