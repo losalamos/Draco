@@ -15,10 +15,6 @@ project( rng CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
-option( ENABLE_RNG_NR "Enable non reproducable random number generator" OFF )
-if( ENABLE_RNG_NR )
-   set( RNG_NR 1 )
-endif()
 if( HAS_CXX11_EXPLICIT_CONVERSION AND HAS_CXX11_STATIC_ASSERT AND
       HAS_CXX11_TYPE_TRAITS AND HAS_CXX11_UNRESTRICTED_UNIONS AND
       HAS_CXX11_LONG_LONG AND HAS_CXX11_CONSTEXPR AND NOT USE_CUDA )
