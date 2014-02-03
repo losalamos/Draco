@@ -213,7 +213,7 @@ ct-fe[0-9] | ct-login[0-9] | ci-fe[0-9] | ci-login[0-9])
     ;;
 
 # Luna | Moonlight | Mustang
-lu* | ml* | mu* | pi* | ty*)
+mp* | lu* | ml* | mu* | pi* | ty*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 
