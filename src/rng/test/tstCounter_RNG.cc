@@ -107,6 +107,7 @@ void test_equality(UnitTest &ut)
     if (rng6 != rng6)                                                  ITFAILS;
 
     // Try to create a Counter_RNG from a data array that's too short.
+#ifdef REQUIRE_ON
     bool caught = false;
     try
     {
@@ -118,6 +119,7 @@ void test_equality(UnitTest &ut)
         caught = true;
     }
     if (!caught)                                                       ITFAILS;
+#endif
 
     // Test for equality using iterators.
     if (!std::equal(rng6.begin(), rng6.end(), rng.begin()))            ITFAILS;
@@ -297,6 +299,7 @@ void test_alias(UnitTest &ut)
     if (soft_equiv(z, x))                                              ITFAILS;
 
     // Try to create a Counter_RNG_Ref with a data array that's too short.
+#ifdef REQUIRE_ON
     bool caught = false;
     try
     {
@@ -308,6 +311,7 @@ void test_alias(UnitTest &ut)
         caught = true;
     }
     if (!caught)                                                       ITFAILS;
+#endif
 
     if (ut.numFails == 0)
         ut.passes("test_alias passed");

@@ -114,6 +114,7 @@ void test_control(UnitTest &ut)
 //---------------------------------------------------------------------------//
 void test_exceptions(UnitTest &ut)
 {
+#ifdef REQUIRE_ON
     // Try to create a controller that allows 0 streams.
     bool caught = false;
     try
@@ -220,6 +221,7 @@ void test_exceptions(UnitTest &ut)
     }
     if (!caught)                                                       ITFAILS;
     if (num_rngs != 10)                                                ITFAILS;
+#endif
 
     if (ut.numFails == 0)
         ut.passes("test_exceptions passed");
