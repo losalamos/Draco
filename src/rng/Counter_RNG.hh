@@ -77,7 +77,7 @@ namespace // anonymous
  * chosen counter-based RNG to a shuffled version of the RNG state and then
  * returns the lower 64 bits of the result.
  */
-inline
+static inline
 uint64_t _get_unique_num(const ctr_type::value_type * const data)
 {
     CBRNG hash;
@@ -93,7 +93,7 @@ uint64_t _get_unique_num(const ctr_type::value_type * const data)
  * Given a pointer to RNG state data, this function returns a random double in
  * the open interval (0, 1)---i.e., excluding the endpoints.
  */
-inline
+static inline
 double _ran(ctr_type::value_type * const data)
 {
     CBRNG rng;
