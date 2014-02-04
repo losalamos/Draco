@@ -6,7 +6,7 @@
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
 	  - Jayenne-7_3_0,   http://coder/redmine/versions/16
-	  - Capsaicin-3_7_0, http://coder/redmine/versions/21
+	  - Capsaicin-3_8_0, http://coder/redmine/versions/21
 
 	* Platforms:
 	  PI/ML/MP/MU/LU/TY  Intel 13.1.3    OpenMPI-1.6.3
@@ -151,7 +151,6 @@ Total                     2050 /  2097 =  97%    4901 /  6108 =  80%
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Jayenne-7_3_0,    http://coder/redmine/versions/16
 	  - Capsaicin-3_7_0,  http://coder/redmine/versions/18
 
 	* Platforms:
