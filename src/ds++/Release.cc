@@ -58,7 +58,7 @@ const std::string release()
  * This data is assembled by hand:
  * \code
  * % files=`find . -name '*.hh' -o -name '*.cc' -o -name '*.txt' \
- *        -o -name '*.cmake' -o -name '*.in' -o -name '*.h'`
+         -o -name '*.cmake' -o -name '*.in' -o -name '*.h'`
  * % svn annotate $files > ../file_list
  * % user_list=`cat ../file_list | awk '{print $2}' | sort -u`
  * % for name in $user_list; do numlines=`grep $name ../file_list | wc -l`;   \
@@ -75,25 +75,25 @@ const std::string author_list()
 {
 
 // 72027: kellyt
-// 46166: kgbudge
-// 11568: tme
-// 6133: bta
-// 5536: lowrie
-// 4590: gaber
-// 4456: mwbuksas
+// 46314: kgbudge
+// 11522: tme
+// 6132: bta
+// 5524: lowrie
+// 4450: mwbuksas
+// 4229: gaber
 // 4043: mcghee
-// 2079: warsa
+// 2070: warsa
 // 1213: rsqrd
-// 914: sethrj
-// 898: wollaber  
-   
+// 994: wollaber
+// 863: sethrj
+
     std::stringstream alist;
 //            0         1         2         3         4         5         6         7
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
-    alist << "    Kelly G. Thompson, Kent G. Budge,   Tom M. Evans,\n"
-          << "    B. Todd Adams,     Rob Lowrie,      Gabriel M. Rockefeller,\n"
-          << "    Mike W. Buksas,    John McGhee,     James S. Warsa, \n"
-          << "    Randy M. Roberts,  Seth R. Johnson, Allan B. Wollaber.";
+    alist << "    Kelly G. Thompson,  Kent G. Budge,     Tom M. Evans,\n"
+          << "    B. Todd Adams,      Rob Lowrie,        Mike W. Buksas,\n"
+          << "    Gabriel M. Rockefeller, John McGhee,   James S. Warsa, \n"
+          << "    Randy M. Roberts,   Allan B. Wollaber, Seth R. Johnson.";
     return alist.str();
 }
 
