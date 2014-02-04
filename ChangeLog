@@ -1,3 +1,149 @@
+2014-02-04  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_10_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/19
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_3_0,   http://coder/redmine/versions/16
+	  - Capsaicin-3_8_0, http://coder/redmine/versions/21
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 13.1.3    OpenMPI-1.6.3
+	                     Intel 14.0.1    OpenMPI-1.6.3
+	  CT/CI              Intel 13.1.3    MPICH2-5.6.4
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	  - 774 files changed, added or removed in 35 commits.
+	  - In rng, replaced LFG with Counter_RNG.
+	  - Increased functionality of memory diagnostics.
+
+	* Details per package:
+
+	Build System:
+	* Eliminated versioning of the installed config directory.
+
+	Developer Environment:
+	* Provided improved bash support for ML, PI, MU, MP, LU, and TY.
+	* Provided scripts for mirroring the repository to the red
+	  network.
+	* For coverage regression testing, other projects will now link
+	  against the Debug (not Coverage) build of Draco.
+
+	memory:
+	  - Increase functionality of memory diagnostics options.
+
+	rng:
+	  - In rng, replaced LFG with Counter_RNG.
+	  - Remove RNG_NR logic from rng.
+            LFG used different generator parameters depending on whether
+	    it was built in reproducible or non-reproducible mode.
+	    Counter_RNG doesn't distinguish between reproducible and
+	    non-reproducible builds, so setting RNG_NR in Draco (and
+	    installing two side-by-side R/NR versions of Draco for every
+	    release configuration) is no longer necessary.
+
+	* Corrected defects:
+	  Bug #314 Redmine SVN integration broken after repo upgrade to
+	           version 1.8.
+	  Bug #308 rng/uniform.hpp triggers error under Intel 14.
+	  Bug #307 D690 - Ensure code builds and passes on ...
+	  Bug #306 Release Draco-6_9_0.
+	  Bug #240 Intel 13 generates incorrect code in rare cases.
+
+	* New features:
+	  (none)
+
+	* Known Defects:
+	  Bug  #59 cdi_eospac design flaw
+	  Bug #304 Draco reports taht Intel/14 does not support
+	           initializer_lists.
+	  Bug #315 Code coverage for Capsaicin is broken
+	  Feature #277 Convert fpe_trap into a singleton.
+	  Feature #297 Work with HPC/ptools teams to create a common
+	           user-contributed module feature.
+	  Feature #227: refactor cdi_analytic opacities
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+   72577: kellyt,kgt,107638
+   46174: kgbudge
+   11366: tme
+   5971: bta
+   5457: lowrie
+   5209: gaber
+   4042: mcghee
+   3943: mwbuksas
+   2057: warsa
+   1192: rsqrd
+   896: wollaber
+   863: sethrj
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             433          11945          21224          63769
+C/C++ Header                    347           7607          21669          20091
+Lisp                             14           1857           2651          12226
+CMake                           109           1816           4744           6914
+Python                           27           1227           1369           2237
+Bourne Shell                     13            217            503            920
+Bourne Again Shell               17            199            447            907
+C                                 5            212            403            683
+CSS                               1            113             37            395
+C Shell                           3             42            103            244
+Fortran 90                        3             40             77            118
+DOS Batch                         1             19             10             59
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            980          25341          53327         108690
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                   Function Coverage           C/D Coverage
+----------------------  ---------------------  ---------------------
+src/units/                  82 /    82 = 100%      58 /    58 = 100%
+src/traits/                 16 /    16 = 100%       0 /     0
+src/rng/                    57 /    57 = 100%      22 /    22 = 100%
+src/lapack_wrap/            12 /    12 = 100%       0 /     0
+src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+src/min/                     9 /     9 = 100%     137 /   154 =  88%
+src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+src/cdi/                    43 /    43 = 100%      49 /    58 =  84%
+src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+src/mesh_element/           24 /    24 = 100%     165 /   213 =  77%
+src/cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+src/viz/                    24 /    24 = 100%     131 /   174 =  75%
+src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+src/diagnostics/            10 /    10 = 100%      21 /    30 =  70%
+src/cdi_eospac/             52 /    52 = 100%      67 /   132 =  50%
+src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+src/parser/                268 /   271 =  98%    1083 /  1353 =  80%
+src/ds++/                  315 /   320 =  98%     381 /   433 =  87%
+src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+src/quadrature/            196 /   200 =  98%     501 /   637 =  78%
+src/c4/                    182 /   189 =  96%     516 /   570 =  90%
+src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+----------------------  ---------------------  ---------------------
+Total                     2050 /  2097 =  97%    4901 /  6108 =  80%
+
+
 2014-01-09  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_9_0.  This is a minor Draco release.
@@ -5,7 +151,6 @@
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Jayenne-7_3_0,    http://coder/redmine/versions/16
 	  - Capsaicin-3_7_0,  http://coder/redmine/versions/18
 
 	* Platforms:
