@@ -111,7 +111,8 @@ double _ran(ctr_type::value_type * const data)
     ctr.incr();
 
     // Copy the updated counter back into data.
-    std::copy(ctr.data(), ctr.data()+ctr_type::static_size, data);
+    data[0] = ctr[0];
+    data[1] = ctr[1];
 
     // Convert the first 64 bits of the RNG output into a double-precision
     // value in the open interval (0, 1) and return it.
