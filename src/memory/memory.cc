@@ -146,10 +146,15 @@ using namespace rtt_memory;
 
 #if DRACO_DIAGNOSTICS & 2
 //---------------------------------------------------------------------------------------//
+/*! Allocate memory with diagnostics.
+ *
+ * This version of operator new overrides the library default and allows us to
+ * track how memory is being used while debugging. Since this introduces
+ * considerable overhead, it should not be used for production builds.
+ */
+
 void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc)
 {
-    // Allocate memory.  Failure to allocate memory is treated at the end of
-    // this function.
     void *Result = malloc(n);
 
     // if malloc failed, then we need to deal with it.
@@ -184,21 +189,38 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc)
             peak = total;
             if (peak >= check_peak)
             {
+                // This is where a programmer should set his breakpoint if he
+                // wishes to pause execution when total memory exceeds the
+                // check_peak value (which the programmer typically also sets
+                // in the debugger).
                 cout << "Reached check peak value" << endl;
             }
         }
         if (n >= check_large)
         {
+            // This is where a programmer should set his breakpoint if he
+            // wishes to pause execution when a memory allocation is requested
+            // that is larger than the check_large value (which the programmer
+            // typically also sets in the debugger).
             cout << "Allocated check large value" << endl;
         }
         if (n>largest)
         {
+            // Track the size of the largest single memory allocation.
             largest = n;
         }
         unsigned count = ++st.alloc_count[n];
         st.alloc_map[Result] = alloc_t(n, count);
         if (n==check_select_size && count==check_select_count)
         {
+            // This is where the programmer should set his breakpoint if he
+            // wishes to pause execution on the check_select_count'th instance
+            // of requesting an allocation of size check_select_size (which
+            // the programmer typically also set in the debugger.) This is
+            // typically done to narrow in on a potential memory leak, by
+            // identifying exactly which allocation is being leaked by looking
+            // at the allocation map (st.alloc_map) to see the size and
+            // instance.
             cout << "Reached check select allocation" << endl;
         }
         is_active = true;
@@ -207,6 +229,11 @@ void *operator new(std::size_t n) _GLIBCXX_THROW(std::bad_alloc)
 }
 
 //---------------------------------------------------------------------------------------//
+/*! Deallocate memory with diagnostics
+ *
+ * This is the operator delete override to go with the operator new override
+ * above.
+ */ 
 void operator delete(void *ptr) throw()
 {
     free(ptr);
@@ -218,6 +245,10 @@ void operator delete(void *ptr) throw()
             total -= i->second.size;
             if (i->second.size>=check_large)
             {
+                // This is where the programmer should set his breakpoint if
+                // he wishes to pause execution when an allocation larger than
+                // check_large is deallocated. check_large is typically also
+                // set in the debugger by the programmer.
                 cout << "Deallocated check large value" << endl;
             }
             is_active = false;
