@@ -188,7 +188,7 @@ void test_stream(UnitTest &ut)
     double w = rng3.ran();
     if (rng3 == rng)                                                   ITFAILS;
     if (rng3 != rng2)                                                  ITFAILS;
-    if (std::equal(rng3.begin(), rng2.begin(), data.begin()))          ITFAILS;
+    if (std::equal(rng3.begin(), rng3.end(), data.begin()))            ITFAILS;
     if (rng3.get_num() != streamnum)                                   ITFAILS;
     if (!soft_equiv(w, y))                                             ITFAILS;
 
