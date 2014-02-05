@@ -196,7 +196,7 @@ class Counter_RNG
 
     typedef ctr_type::const_iterator const_iterator;
 
-    /*! Default constructor.
+    /*! \brief Default constructor.
      *
      * This default constructor is invoked when a client wants to create a
      * Counter_RNG but delegate its initialization to an Rnd_Control object.
@@ -273,7 +273,7 @@ class Counter_RNG
     //! Initialize internal state from a seed and stream number.
     inline void initialize(const uint32_t seed, const uint64_t streamnum);
 
-    //! Common implementation of spawning.
+    //! Spawn a new, independent generator from the provided state block.
     inline void _spawn(ctr_type::value_type * const parent_data);
 };
 
@@ -335,6 +335,7 @@ void Counter_RNG::initialize(const uint32_t seed, const uint64_t streamnum)
  * Given 2^M possible generators, arranging them in a binary tree produces a
  * tree of depth M.
  *
+ * \verbatim
  *                                      0
  *                                    /   \
  *                                  1       2
@@ -347,6 +348,7 @@ void Counter_RNG::initialize(const uint32_t seed, const uint64_t streamnum)
  *                                      N
  *                                    /   \
  *                                 2N+1   2N+2
+ * \endverbatim
  *
  * If every root generator has a different stream number, the generators
  * spawned from that root will be independent of the generators spawned from
