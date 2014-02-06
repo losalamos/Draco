@@ -6,6 +6,9 @@
 # (via msub) where access to ccscs8:/ccs/codes/radtran/svn is not
 # available.
 
+# Use svn 1.8+
+set PATH = ( /usr/projects/eap/tools/TLCC/bin ${PATH} )
+
 # source system dotfiles if running batch (cron) and not already set up
 # if( -f /etc/csh.cshrc ) then
 #   # source /etc/csh.cshrc

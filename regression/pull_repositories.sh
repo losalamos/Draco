@@ -27,6 +27,7 @@
 #------------------------------------------------------------------------------#
 
 STATUS=/usr/local/bin/status
+PULL=/usr/local/bin/pull
 
 # dry_run=1
 
@@ -54,7 +55,7 @@ unpack_repo() {
    fi
    
    echo "Unpacking SVN repository for $pkg ..."
-   run "pull ${pkg}.repo ."
+   run "${PULL} ${pkg}.repo ."
    run "tar -xvf ${pkg}.hotcopy.tar"
    run "mv ${pkg} ${pkg}.old"
    run "mv ${pkg}.hotcopy ${pkg}"
