@@ -171,9 +171,9 @@ for proj in $projects; do
    cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
 done
 # create the new coverage file via covmerge
-eval $cmd
-# run covdir to generate a report
-covdir
+eval $cmd 
+# run covdir to generate a report (but omit entry for /source/src/)
+covdir | grep -v "source/src/ "
 
 echo " "
 echo "* C/D Coverage is condition/decision coverage"
