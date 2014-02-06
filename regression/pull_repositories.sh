@@ -26,6 +26,8 @@
 # kinit -f -l 8h -kt $HOME/.ssh/cron.keytab ${USER}@lanl.gov
 #------------------------------------------------------------------------------#
 
+STATUS=/usr/local/bin/status
+
 # dry_run=1
 
 # Helpful functions:
@@ -72,7 +74,7 @@ fi
 run "kinit -f -l 8h -kt $HOME/.ssh/cron.keytab ${USER}@lanl.gov"
 
 # Ask Mercury if there are any items available for pulling from Yellow
-possible_items_to_pull=`status | awk '{print $1}'`
+possible_items_to_pull=`${STATUS} | awk '{print $1}'`
 
 # Loop over all items that mercury listed, if 'draco.repo' is found,
 # then mark it for unpacking. 
