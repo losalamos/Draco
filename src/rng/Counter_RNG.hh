@@ -70,11 +70,15 @@ namespace // anonymous
 /*! \brief Generate a nearly-unique identifier.
  *
  * Given a pointer to RNG state data, this function generates a 64-bit
- * identifier distinct both from the next double-precision floating-point
- * output of the generator and (to the degree allowed by an 8-byte
- * representation of a 32-byte state) from the identifier associated with
- * other nearby generators in the RNG state space.  It simply applies the
- * chosen counter-based RNG to a shuffled version of the RNG state and then
+ * identifier unique to this generator but not to the specific position of its
+ * RNG stream.  In other words, the identifier associated with a given
+ * generator will not change as random numbers are generated from it.
+ * However, this insensitivity to the specific stream position also means that
+ * repeated spawning will eventually produce two generators with the same
+ * identifier.
+ *
+ * This function simply applies the chosen counter-based RNG to a shuffled
+ * version of the RNG seed, stream number, and spawn indicator and then
  * returns the lower 64 bits of the result.
  */
 static inline
@@ -82,7 +86,7 @@ uint64_t _get_unique_num(const ctr_type::value_type * const data)
 {
     CBRNG hash;
     const ctr_type ctr = {{data[3], data[2]}};
-    const key_type key = {{data[1], data[0]}};
+    const key_type key = {{data[1] >> 32, 0}};
     const ctr_type result = hash(ctr, key);
     return result[0];
 }

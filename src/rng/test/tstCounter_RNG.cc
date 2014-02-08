@@ -49,6 +49,7 @@ void test_equality(UnitTest &ut)
     // not be identical.
     if (rng2.get_num() != streamnum)                                   ITFAILS;
     if (rng2.get_num() != rng.get_num())                               ITFAILS;
+    if (rng2.get_unique_num() == rng.get_unique_num())                 ITFAILS;
     if (rng2 == rng)                                                   ITFAILS;
     if (rng2 != rng2)                                                  ITFAILS;
 
@@ -59,6 +60,8 @@ void test_equality(UnitTest &ut)
 
     // rng3 should be different from the previous two generators.
     if (rng3.get_num() != streamnum)                                   ITFAILS;
+    if (rng3.get_unique_num() == rng.get_unique_num())                 ITFAILS;
+    if (rng3.get_unique_num() == rng2.get_unique_num())                ITFAILS;
     if (rng3 == rng)                                                   ITFAILS;
     if (rng3 == rng2)                                                  ITFAILS;
     if (rng3 != rng3)                                                  ITFAILS;
@@ -69,6 +72,9 @@ void test_equality(UnitTest &ut)
 
     // rng4 should be equal to rng but different from rng2 and rng3.
     if (rng4.get_num() != streamnum)                                   ITFAILS;
+    if (rng4.get_unique_num() != rng.get_unique_num())                 ITFAILS;
+    if (rng4.get_unique_num() == rng2.get_unique_num())                ITFAILS;
+    if (rng4.get_unique_num() == rng3.get_unique_num())                ITFAILS;
     if (rng4 != rng)                                                   ITFAILS;
     if (rng4 == rng2)                                                  ITFAILS;
     if (rng4 == rng3)                                                  ITFAILS;
@@ -84,6 +90,10 @@ void test_equality(UnitTest &ut)
 
     streamnum = data[2];
     if (rng5.get_num() != streamnum)                                   ITFAILS;
+    if (rng5.get_unique_num() == rng.get_unique_num())                 ITFAILS;
+    if (rng5.get_unique_num() == rng2.get_unique_num())                ITFAILS;
+    if (rng5.get_unique_num() == rng3.get_unique_num())                ITFAILS;
+    if (rng5.get_unique_num() == rng4.get_unique_num())                ITFAILS;
     if (rng5 == rng)                                                   ITFAILS;
     if (rng5 == rng2)                                                  ITFAILS;
     if (rng5 == rng3)                                                  ITFAILS;
@@ -99,6 +109,11 @@ void test_equality(UnitTest &ut)
 
     streamnum = data[2];
     if (rng6.get_num() != streamnum)                                   ITFAILS;
+    if (rng6.get_unique_num() != rng.get_unique_num())                 ITFAILS;
+    if (rng6.get_unique_num() == rng2.get_unique_num())                ITFAILS;
+    if (rng6.get_unique_num() == rng3.get_unique_num())                ITFAILS;
+    if (rng6.get_unique_num() != rng4.get_unique_num())                ITFAILS;
+    if (rng6.get_unique_num() == rng5.get_unique_num())                ITFAILS;
     if (rng6 != rng)                                                   ITFAILS;
     if (rng6 == rng2)                                                  ITFAILS;
     if (rng6 == rng3)                                                  ITFAILS;
@@ -146,11 +161,12 @@ void test_stream(UnitTest &ut)
     // Generate a random double (and advance the stream) from rng.
     double x = rng.ran();
 
-    // rng and rng2 should no longer match, but their stream numbers should be
-    // the same.
+    // rng and rng2 should no longer match, but their stream numbers and
+    // unique identifiers should be the same.
     if (rng == rng2)                                                   ITFAILS;
     if (rng.get_num() != streamnum)                                    ITFAILS;
     if (rng.get_num() != rng2.get_num())                               ITFAILS;
+    if (rng.get_unique_num() != rng2.get_unique_num())                 ITFAILS;
 
     // Generate a random double (and advance the stream) from rng2.
     double y = rng2.ran();
@@ -167,6 +183,7 @@ void test_stream(UnitTest &ut)
     if (rng == rng2)                                                   ITFAILS;
     if (rng.get_num() != streamnum)                                    ITFAILS;
     if (rng.get_num() != rng2.get_num())                               ITFAILS;
+    if (rng.get_unique_num() != rng2.get_unique_num())                 ITFAILS;
     if (soft_equiv(x, z))                                              ITFAILS;
 
     // Create a Counter_RNG from a data array.
@@ -177,11 +194,14 @@ void test_stream(UnitTest &ut)
     data[3] = 0;
     Counter_RNG rng3(&data[0], &data[0] + CBRNG_DATA_SIZE);
 
-    // Initially, rng3 should match neither rng nor rng2.
+    // Initially, rng3 should exactly match neither rng nor rng2, but all
+    // three should have the same stream number and "unique" identifier.
     if (!std::equal(rng3.begin(), rng3.end(), data.begin()))           ITFAILS;
     if (rng3 == rng)                                                   ITFAILS;
     if (rng3 == rng2)                                                  ITFAILS;
     if (rng3.get_num() != streamnum)                                   ITFAILS;
+    if (rng3.get_unique_num() != rng.get_unique_num())                 ITFAILS;
+    if (rng3.get_unique_num() != rng2.get_unique_num())                ITFAILS;
 
     // Generate a random double from rng3; it should match rng2 but not data
     // afterward.
@@ -190,6 +210,8 @@ void test_stream(UnitTest &ut)
     if (rng3 != rng2)                                                  ITFAILS;
     if (std::equal(rng3.begin(), rng3.end(), data.begin()))            ITFAILS;
     if (rng3.get_num() != streamnum)                                   ITFAILS;
+    if (rng3.get_unique_num() != rng.get_unique_num())                 ITFAILS;
+    if (rng3.get_unique_num() != rng2.get_unique_num())                ITFAILS;
     if (!soft_equiv(w, y))                                             ITFAILS;
 
     if (ut.numFails == 0)
@@ -214,6 +236,12 @@ void test_alias(UnitTest &ut)
     if (rng2.get_num() != rng3.get_num())                              ITFAILS;
     if (rng2.get_num() == rng4.get_num())                              ITFAILS;
     if (rng3.get_num() == rng4.get_num())                              ITFAILS;
+    if (rng.get_unique_num() != rng2.get_unique_num())                 ITFAILS;
+    if (rng.get_unique_num() == rng3.get_unique_num())                 ITFAILS;
+    if (rng.get_unique_num() == rng4.get_unique_num())                 ITFAILS;
+    if (rng2.get_unique_num() == rng3.get_unique_num())                ITFAILS;
+    if (rng2.get_unique_num() == rng4.get_unique_num())                ITFAILS;
+    if (rng3.get_unique_num() == rng4.get_unique_num())                ITFAILS;
     if (rng != rng2)                                                   ITFAILS;
     if (rng == rng3)                                                   ITFAILS;
     if (rng == rng4)                                                   ITFAILS;
@@ -228,6 +256,10 @@ void test_alias(UnitTest &ut)
     if (ref.get_num() != rng2.get_num())                               ITFAILS;
     if (ref.get_num() != rng3.get_num())                               ITFAILS;
     if (ref.get_num() == rng4.get_num())                               ITFAILS;
+    if (ref.get_unique_num() != rng.get_unique_num())                  ITFAILS;
+    if (ref.get_unique_num() != rng2.get_unique_num())                 ITFAILS;
+    if (ref.get_unique_num() == rng3.get_unique_num())                 ITFAILS;
+    if (ref.get_unique_num() == rng4.get_unique_num())                 ITFAILS;
     if (!ref.is_alias_for(rng))                                        ITFAILS;
     if (ref.is_alias_for(rng2))                                        ITFAILS;
     if (ref.is_alias_for(rng3))                                        ITFAILS;
@@ -240,6 +272,10 @@ void test_alias(UnitTest &ut)
     if (ref.get_num() != rng2.get_num())                               ITFAILS;
     if (ref.get_num() != rng3.get_num())                               ITFAILS;
     if (ref.get_num() == rng4.get_num())                               ITFAILS;
+    if (ref.get_unique_num() != rng.get_unique_num())                  ITFAILS;
+    if (ref.get_unique_num() != rng2.get_unique_num())                 ITFAILS;
+    if (ref.get_unique_num() == rng3.get_unique_num())                 ITFAILS;
+    if (ref.get_unique_num() == rng4.get_unique_num())                 ITFAILS;
     if (!ref.is_alias_for(rng))                                        ITFAILS;
     if (ref.is_alias_for(rng2))                                        ITFAILS;
     if (ref.is_alias_for(rng3))                                        ITFAILS;
@@ -251,6 +287,9 @@ void test_alias(UnitTest &ut)
     if (rng.get_num() != rng2.get_num())                               ITFAILS;
     if (rng.get_num() != rng3.get_num())                               ITFAILS;
     if (rng.get_num() == rng4.get_num())                               ITFAILS;
+    if (rng.get_unique_num() != rng2.get_unique_num())                 ITFAILS;
+    if (rng.get_unique_num() == rng3.get_unique_num())                 ITFAILS;
+    if (rng.get_unique_num() == rng4.get_unique_num())                 ITFAILS;
     if (rng == rng2)                                                   ITFAILS;
     if (rng == rng3)                                                   ITFAILS;
     if (rng == rng4)                                                   ITFAILS;
@@ -277,6 +316,10 @@ void test_alias(UnitTest &ut)
     if (ref2.get_num() != rng2.get_num())                              ITFAILS;
     if (ref2.get_num() != rng3.get_num())                              ITFAILS;
     if (ref2.get_num() == rng4.get_num())                              ITFAILS;
+    if (ref2.get_unique_num() == rng.get_unique_num())                 ITFAILS;
+    if (ref2.get_unique_num() == rng2.get_unique_num())                ITFAILS;
+    if (ref2.get_unique_num() != rng3.get_unique_num())                ITFAILS;
+    if (ref2.get_unique_num() == rng4.get_unique_num())                ITFAILS;
     if (ref2.is_alias_for(rng))                                        ITFAILS;
     if (ref2.is_alias_for(rng2))                                       ITFAILS;
     if (ref2.is_alias_for(rng3))                                       ITFAILS;
@@ -629,9 +672,8 @@ void test_unique(UnitTest &ut)
     if (!rng2_ref.is_alias_for(rng2))                                  ITFAILS;
     if (!rng3_ref.is_alias_for(rng3))                                  ITFAILS;
 
-    // Generate some random numbers from rng2, and spawn some generators from
-    // rng3.  While all four generators should have the same stream number
-    // throughout this process, their unique numbers should differ.
+    // Generate some random numbers from rng2.  The stream number and unique
+    // number of rng2 should remain the same during this process.
     set<uint64_t> ids;
     ids.insert(rng.get_unique_num());
 
@@ -641,12 +683,12 @@ void test_unique(UnitTest &ut)
 
         if (rng2.get_num() != rng.get_num())                           ITFAILS;
         if (rng2_ref.get_unique_num() != rng2.get_unique_num())        ITFAILS;
-        if (ids.find(rng2.get_unique_num())       != ids.end())        ITFAILS;
-
-        // Insert new unique identifiers and continue.
-        ids.insert(rng2.get_unique_num());
+        if (ids.find(rng2.get_unique_num()) == ids.end())              ITFAILS;
     }
 
+    // Spawn some generators from rng3.  While all spawned generators should
+    // have the same stream number as the original parent, their unique
+    // numbers should differ.
     unsigned int expected_period = 0;
     for (unsigned int i = 0; i < 8 * sizeof(uint64_t); ++i)
         expected_period += i;
