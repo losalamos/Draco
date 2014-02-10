@@ -348,9 +348,11 @@ DLL_PUBLIC std::string verbose_error( std::string const & message );
 #define CHECK_ON
 #define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Bad_Case(m) default: rtt_dsxx::toss_cookies( m, __FILE__, __LINE__ )
 #else
 #define Check(c) 
-#define Assert(c) 
+#define Assert(c)
+#define Bad_Case(m)
 #endif
 
 #if DBC & 4
