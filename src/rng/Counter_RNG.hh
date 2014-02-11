@@ -70,11 +70,15 @@ namespace // anonymous
 /*! \brief Generate a nearly-unique identifier.
  *
  * Given a pointer to RNG state data, this function generates a 64-bit
- * identifier distinct both from the next double-precision floating-point
- * output of the generator and (to the degree allowed by an 8-byte
- * representation of a 32-byte state) from the identifier associated with
- * other nearby generators in the RNG state space.  It simply applies the
- * chosen counter-based RNG to a shuffled version of the RNG state and then
+ * identifier unique to this generator but not to the specific position of its
+ * RNG stream.  In other words, the identifier associated with a given
+ * generator will not change as random numbers are generated from it.
+ * However, this insensitivity to the specific stream position also means that
+ * repeated spawning will eventually produce two generators with the same
+ * identifier.
+ *
+ * This function simply applies the chosen counter-based RNG to a shuffled
+ * version of the RNG seed, stream number, and spawn indicator and then
  * returns the lower 64 bits of the result.
  */
 static inline
@@ -82,7 +86,7 @@ uint64_t _get_unique_num(const ctr_type::value_type * const data)
 {
     CBRNG hash;
     const ctr_type ctr = {{data[3], data[2]}};
-    const key_type key = {{data[1], data[0]}};
+    const key_type key = {{data[1] >> 32, 0}};
     const ctr_type result = hash(ctr, key);
     return result[0];
 }
@@ -196,7 +200,7 @@ class Counter_RNG
 
     typedef ctr_type::const_iterator const_iterator;
 
-    /*! Default constructor.
+    /*! \brief Default constructor.
      *
      * This default constructor is invoked when a client wants to create a
      * Counter_RNG but delegate its initialization to an Rnd_Control object.
@@ -273,7 +277,7 @@ class Counter_RNG
     //! Initialize internal state from a seed and stream number.
     inline void initialize(const uint32_t seed, const uint64_t streamnum);
 
-    //! Common implementation of spawning.
+    //! Spawn a new, independent generator from the provided state block.
     inline void _spawn(ctr_type::value_type * const parent_data);
 };
 
@@ -335,6 +339,7 @@ void Counter_RNG::initialize(const uint32_t seed, const uint64_t streamnum)
  * Given 2^M possible generators, arranging them in a binary tree produces a
  * tree of depth M.
  *
+ * \verbatim
  *                                      0
  *                                    /   \
  *                                  1       2
@@ -347,6 +352,7 @@ void Counter_RNG::initialize(const uint32_t seed, const uint64_t streamnum)
  *                                      N
  *                                    /   \
  *                                 2N+1   2N+2
+ * \endverbatim
  *
  * If every root generator has a different stream number, the generators
  * spawned from that root will be independent of the generators spawned from
