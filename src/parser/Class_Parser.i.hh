@@ -28,12 +28,16 @@
  * the specification is not valid.
  */
 
-template<typename Class, typename ReturnClass, bool is_reentrant>
+template<typename Class,
+         typename ReturnClass,
+         bool is_reentrant,
+         typename ParseTableClass>
 rtt_dsxx::SP<ReturnClass>
 Class_Parser<Class,
              ReturnClass,
-             is_reentrant>::parse(rtt_parser::Token_Stream &tokens,
-                                  bool const allow_exit)
+             is_reentrant,
+             ParseTableClass>::parse(rtt_parser::Token_Stream &tokens,
+                                     bool const allow_exit)
 {
     using rtt_dsxx::SP;
     //using namespace rtt_parser;

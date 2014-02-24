@@ -174,6 +174,9 @@ class DLL_PUBLIC Parse_Table
     //! Construct a parse table with the specified keywords.
     Parse_Table(Keyword const *table, size_t count, unsigned flags=0);
 
+    //! This class is meant to be heritable.
+    virtual ~Parse_Table(){}
+
     // MANIPULATORS
 
     //! Add keywords to the table.

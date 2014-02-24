@@ -50,7 +50,10 @@ namespace rtt_parser
  */
 //===========================================================================//
 
-template<class Class, class ReturnClass = Class, bool is_reentrant = false>
+template<class Class,
+         class ReturnClass = Class,
+         bool is_reentrant = false,
+         class ParseTableClass = Parse_Table>
 class Class_Parser 
 {
   public:
@@ -68,9 +71,11 @@ class Class_Parser
     /*! Parse table for the class.
      *
      * This must be public and non-constant if we are to support various
-     * mechanisms for local extensions to Capsaicin.
+     * mechanisms for local extensions to Capsaicin. We define it as a
+     * reference so that the underlying object can be of any type derived from
+     * Parse_Table.
      */
-    static Parse_Table parse_table_;
+    static ParseTableClass parse_table_;
 
     // IMPLEMENTATION
 
