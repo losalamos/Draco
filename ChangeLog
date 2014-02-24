@@ -1,3 +1,15 @@
+2014-02-24  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_10_1.  This is a patch Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_3_1,   http://coder/redmine/versions/16
+	  - Capsaicin-3_8_1, http://coder/redmine/versions/21
+
+	* Corrected Defects (rtt.lanl.gov/redmine/issues)
+	  Bug #336 Bug in unit conversion k->keV.
+
 2014-02-04  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_10_0.  This is a minor Draco release.
