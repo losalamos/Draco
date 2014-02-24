@@ -771,11 +771,20 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
 	FAILMSG( msg.str() );
     }
     
-    double const keV2K(1.160451923e7);
+    double const keV2K(1.16045193028089e7);
     if( soft_equiv( x4.T().cf(), 1.0/keV2K ) )
-	PASSMSG("x4 units container has T().cf() == 8.6173843847e-8");
+    {
+        std::ostringstream msg;
+        msg << "x4 units container has T().cf() == " << x4.T().cf();
+	PASSMSG( msg.str() );
+    }
     else
-	FAILMSG("x4 units container does not have T().cf() == .");
+    {
+        std::ostringstream msg;
+        msg << "x4 units container does not have T().cf() == " << 1.0/keV2K
+            << "\n\t found T().cf() = " << x4.T().cf();
+    FAILMSG( msg.str() );
+    }
     if( x4.T().label() == "keV" )
     {
 	PASSMSG("x4 units container has T().label() == \"keV\").");

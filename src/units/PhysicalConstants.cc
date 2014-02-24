@@ -12,7 +12,9 @@
 //---------------------------------------------------------------------------//
 
 #include "PhysicalConstants.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <iostream>
+#include <iomanip>
 
 namespace rtt_units
 {
@@ -50,7 +52,7 @@ PhysicalConstants::PhysicalConstants()
 PhysicalConstants::PhysicalConstants( UnitSystem const & u )
     : d_planck          ( planckSI  * u.e() * u.t() ),
       d_gasConstant     ( gasConstantSI * u.e() / u.T() ),
-      d_boltzmann       ( d_gasConstant / AVOGADRO ),
+      d_boltzmann       ( boltzmannSI * u.e() / u.T() ),
       d_electronCharge  ( electronChargeSI ),
       d_cLight          ( cLightSI * u.v() ),
       d_stefanBoltzmann ( 
@@ -66,15 +68,17 @@ PhysicalConstants::PhysicalConstants( UnitSystem const & u )
       d_protonMass      ( protonMassSI   * u.M() )
 {
     // empty
-    // std::cout << "\nu.e() = " << u.e()
-    //           << "\nu.t() = " << u.t()
-    //           << "\nu.T() = " << u.T()
-    //           << "\nu.v() = " << u.v()
-    //           << "\nu.p() = " << u.p()
-    //           << "\nu.L() = " << u.L()
-    //           << "\nu.M() = " << u.M()
-    //           << "\nu.a() = " << u.a()
-    //           << std::endl;
+    
+    // std::cout << std::setprecision(16) << std::scientific
+    //     << "\nu.e() = " << u.e()
+    //     << "\nu.t() = " << u.t()
+    //     << "\nu.T() = " << u.T()
+    //     << "\nu.v() = " << u.v()
+    //     << "\nu.p() = " << u.p()
+    //     << "\nu.L() = " << u.L()
+    //     << "\nu.M() = " << u.M()
+    //     << "\nu.a() = " << u.a()
+    //     << std::endl;
 }
 
 } // end namespace rtt_units
