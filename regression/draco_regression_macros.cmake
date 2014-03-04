@@ -101,7 +101,12 @@ win32$ set work_dir=c:/full/path/to/work_dir
   set( CTEST_DROP_SITE_CDASH TRUE )
   set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF CURLOPT_SSL_VERIFYHOST_OFF )
 
-  set( MPIEXEC_MAX_NUMPROCS 4 CACHE STRING  "Number of cores on the local machine." )
+
+  if( WIN32) 
+     set( MPIEXEC_MAX_NUMPROCS 4 CACHE STRING  "Number of cores on the local machine." )
+  else()
+     set( MPIEXEC_MAX_NUMPROCS 1 CACHE STRING  "Number of cores on the local machine." )
+  endif()
 
   if( EXISTS "$ENV{VENDOR_DIR}" )
     file( TO_CMAKE_PATH $ENV{VENDOR_DIR} VENDOR_DIR )
@@ -125,7 +130,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
    set( CTEST_TEST_TIMEOUT "1800" ) # seconds
 
   # Echo settings
-  if( ${drm_verbose} )  
+  if( drm_verbose )  
      message("
 ARGV     = ${ARGV}
 
@@ -287,7 +292,7 @@ DRACO_TIMING:STRING=2")
      endif()
   endif()
 
-  if( ${drm_verbose} )    
+  if( drm_verbose )
     message("
 CTEST_MODEL                 = ${CTEST_MODEL}
 CTEST_BUILD_CONFIGURATION   = ${CTEST_BUILD_CONFIGURATION}
@@ -385,7 +390,7 @@ macro( find_tools )
 
   # This breaks NMake Makefile builds because it is missing the -G"..."
   # set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
-  if( ${drm_verbose} )  
+  if( drm_verbose )
     message("
 CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
@@ -401,28 +406,8 @@ CTEST_CONFIGURE_COMMAND           = ${CTEST_CONFIGURE_COMMAND}
 endmacro( find_tools )
 
 # ------------------------------------------------------------
-# Setup regression steps:
+# Setup SVNROOT
 # ------------------------------------------------------------
-macro( setup_ctest_commands )
-  # deprecated
-endmacro( setup_ctest_commands )
-
-# ------------------------------------------------------------
-# Setup CVSROOT
-# ------------------------------------------------------------
-# macro( set_cvs_command projname )
-#    if( EXISTS /ccs/codes/radtran/cvsroot )
-#       set( CTEST_CVS_CHECKOUT
-#          "${CTEST_CVS_COMMAND} -d /ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
-#    elseif( EXISTS /usr/projects/jayenne/regress/cvsroot )
-#       set( CTEST_CVS_CHECKOUT
-#          "${CTEST_CVS_COMMAND} -d /usr/projects/jayenne/regress/cvsroot co -P -d source ${projname}" )
-#    else()
-#       set( CTEST_CVS_CHECKOUT
-#          "${CTEST_CVS_COMMAND} -d ccscs8:/ccs/codes/radtran/cvsroot co -P -d source ${projname}" )
-#    endif()
-# endmacro()
-##---------------------------------------------------------------------------##
 macro( set_svn_command svnpath )
    if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
       if( EXISTS /ccs/codes/radtran/svn )

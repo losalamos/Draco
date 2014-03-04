@@ -146,6 +146,9 @@ echo "ccscs-regress.msub: comp           = $comp"
 if test "${subproj}" == draco; then
     script_dir=${regdir}/draco/regression
     script_name=Draco_Linux64.cmake
+elif test "${subproj}" == jayenne; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Jayenne_Linux64.cmake
 elif test "${subproj}" == clubimc; then
     script_dir=${regdir}/jayenne/regression
     script_name=ClubIMC_Linux64.cmake

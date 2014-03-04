@@ -3,7 +3,7 @@
 # called from regression-master.sh
 # assumes the following variables are defined in ccscs-master.sh:
 #    $regdir     - /home/regress
-#    $subproj    - 'draco', 'clubimc', etc.
+#    $subproj    - 'draco', 'clubimc', 'jaynne', etc.
 #    $build_type - 'Debug', 'Release'
 #    $extra_params - '', 'intel13', 'pgi', 'coverage'
 

@@ -50,15 +50,19 @@ unpack_repo() {
    if test -d ${pkg}.hotcopy; then
       run "rm -rf ${pkg}.hotcopy"
    fi
-   if test -d ${pkg}.old; then
-      run "rm -rf ${pkg}.old"
+   if test -d ${pkg}; then
+     if test -d ${pkg}.old; then
+        run "rm -rf ${pkg}.old"
+     fi
    fi
    
    echo "Unpacking SVN repository for $pkg ..."
    run "${PULL} ${pkg}.repo ."
    run "tar -xvf ${pkg}.hotcopy.tar"
-   run "mv ${pkg} ${pkg}.old"
-   run "mv ${pkg}.hotcopy ${pkg}"
+   if test -d ${pkg}.hotcopy; then
+     run "mv ${pkg} ${pkg}.old"
+     run "mv ${pkg}.hotcopy ${pkg}"
+   fi
    echo " "
 }
 

@@ -65,6 +65,8 @@ esac
 
 # Build everything as the default action
 projects="draco capsaicin clubimc wedgehog milagro asterisk"
+#projects="draco capsaicin jayenne asterisk"
+#projects="jayenne"
 #projects="capsaicin"
 
 # Host based variables
@@ -149,9 +151,8 @@ esac
 # use forking to reduce total wallclock runtime, but do not fork
 # when there is a dependency:
 # 
-# draco --> capsaicin           --\ 
-#       --> clubimc --> wedgehog --+--> asterisk
-#                   --> milagro
+# draco --> capsaicin  --\ 
+#       --> jayenne     --+--> asterisk
 
 # special cases
 case $extra_params in
@@ -160,22 +161,22 @@ coverage)
     ;;
 cuda)
     # do not build capsaicin with CUDA
-    projects="draco clubimc wedgehog milagro"
+    projects="draco jayenne"
     epdash="-"
     ;;
 fulldiagnostics)
     # do not build capsaicin or milagro with full diagnostics turned on.
-    projects="draco clubimc wedgehog capsaicin"
+    projects="draco jayenne"
     epdash="-"
     ;;
 intel13)
     # also build capsaicin
-    projects="draco capsaicin clubimc wedgehog milagro asterisk"
+    projects="draco capsaicin jayenne asterisk"
     epdash="-"
     ;;
 pgi)
     # Capsaicin does not support building with PGI (lacking vendor installations!)
-    projects="draco clubimc wedgehog milagro"
+    projects="draco jayenne"
     epdash="-"
     ;;
 *)
@@ -199,7 +200,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   draco_jobid=`jobs -p | sort -gr | head -n 1`
 fi
 
-export subproj=clubimc
+export subproj=jayenne
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   # Run the *-job-launch.sh script (special for each platform).
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
@@ -211,32 +212,32 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
-  clubimc_jobid=`jobs -p | sort -gr | head -n 1`
+  jayenne_jobid=`jobs -p | sort -gr | head -n 1`
 fi
 
-export subproj=wedgehog
-if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-  # Wait for clubimc regressions to finish
-  cmd+=" ${clubimc_jobid}"
-  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
-  echo "${subproj}: $cmd"
-  eval "${cmd} &"
-  sleep 1
-  wedgehog_jobid=`jobs -p | sort -gr | head -n 1`
-fi
+# export subproj=wedgehog
+# if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+#   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+#   # Wait for clubimc regressions to finish
+#   cmd+=" ${clubimc_jobid}"
+#   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+#   echo "${subproj}: $cmd"
+#   eval "${cmd} &"
+#   sleep 1
+#   wedgehog_jobid=`jobs -p | sort -gr | head -n 1`
+# fi
 
-export subproj=milagro
-if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-  # Wait for clubimc regressions to finish
-  cmd+=" ${clubimc_jobid}"
-  cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
-  echo "${subproj}: $cmd"
-  eval "${cmd} &"
-  sleep 1
-  milagro_jobid=`jobs -p | sort -gr | head -n 1`
-fi
+# export subproj=milagro
+# if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+#   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+#   # Wait for clubimc regressions to finish
+#   cmd+=" ${clubimc_jobid}"
+#   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+#   echo "${subproj}: $cmd"
+#   eval "${cmd} &"
+#   sleep 1
+#   milagro_jobid=`jobs -p | sort -gr | head -n 1`
+# fi
 
 export subproj=capsaicin
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
@@ -254,7 +255,7 @@ export subproj=asterisk
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for wedgehog and capsaicin regressions to finish
-  cmd+=" ${wedgehog_jobid} ${capsaicin_jobid}"
+  cmd+=" ${jayenne_jobid} ${capsaicin_jobid}"
   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
