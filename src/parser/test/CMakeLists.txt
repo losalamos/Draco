@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for parser/test.
-# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -64,7 +64,7 @@ set( scalar_test_sources
 list( REMOVE_ITEM test_sources ${scalar_test_sources} )
 add_scalar_tests(
    SOURCES "${scalar_test_sources}"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_parser;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
 
 # Special case for driver4tstConsole_Token_Stream
 # 1. This test doesn't work under Xcode
@@ -76,7 +76,7 @@ list( REMOVE_ITEM test_sources
 if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 add_scalar_tests(
    SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" 
+   DEPS    "Lib_parser;${MPI_LIBRARIES};${PAPI_LIBRARY}" 
    RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
 endif()
 
@@ -88,7 +88,7 @@ list( REMOVE_ITEM test_sources
 add_parallel_tests(
    SOURCES "${PROJECT_SOURCE_DIR}/tstFile_Token_Stream.cc"
    PE_LIST "1"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_parser;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
 
 # Broken on Win32
 if( WIN32 )
@@ -101,7 +101,7 @@ endif()
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_parser;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
    
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)

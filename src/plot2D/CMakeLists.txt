@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for plot2D.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -54,8 +54,6 @@ add_component_library(
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME plot2D
    SOURCES      "${sources}" 
-#   VENDOR_LIST  "GRACE"
-#   VENDOR_LIBS  "${Grace_LIBRARY}"
    )
 
 # ---------------------------------------------------------------------------- #

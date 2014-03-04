@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for plot2D/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -30,7 +30,7 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-set( test_deps  Lib_dsxx ${Grace_LIBRARY} )
+set( test_deps Lib_plot2D ${Grace_LIBRARY} )
 
 # This test requires numdiff
 find_program( NUMDIFF

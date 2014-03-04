@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4/test.
-# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -49,6 +49,7 @@ add_component_library(
 set( special_test ${PROJECT_SOURCE_DIR}/phw.cc )
 add_parallel_tests( 
    SOURCES   "${special_test}" 
+   DEPS      Lib_c4_test
    PE_LIST   "1;2;4" 
    TEST_ARGS "hello"
    PASS_REGEX "Hello"   
@@ -61,6 +62,7 @@ list( REMOVE_ITEM test_sources ${special_test} )
 set( special_test ${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc )
 add_scalar_tests(
    SOURCES   "${special_test}" 
+   DEPS      Lib_c4_test
    TEST_ARGS "--np 1;--np 2;--np 4"
    APPLICATION_UNIT_TEST  )
 list( REMOVE_ITEM test_sources ${special_test} )
@@ -69,6 +71,7 @@ list( REMOVE_ITEM test_sources ${special_test} )
 set( special_test ${PROJECT_SOURCE_DIR}/tstParallelUnitTest.cc )
 add_parallel_tests(
    SOURCES   "${special_test}" 
+   DEPS      Lib_c4_test
    PE_LIST   "1;2;4"
    TEST_ARGS "--version;--dummy; "
    PASS_REGEX "tstParallelUnitTest[.ex]*: version"
@@ -89,6 +92,7 @@ elseif( "${MPIEXEC}" MATCHES "aprun" )
    if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
       add_parallel_tests(
          SOURCES   "${special_test}" 
+         DEPS      Lib_c4_test
          PE_LIST   "1;2"
          MPI_PLUS_OMP
          )
@@ -96,6 +100,7 @@ elseif( "${MPIEXEC}" MATCHES "aprun" )
 else()
    add_parallel_tests(
       SOURCES   "${special_test}" 
+      DEPS      Lib_c4_test
       PE_LIST   "1;2"
       MPI_PLUS_OMP
       )
@@ -105,5 +110,6 @@ endif()
 
 add_parallel_tests( 
    SOURCES   "${test_sources}" 
+   DEPS      Lib_c4_test
    PE_LIST   "1;2;4" 
    )

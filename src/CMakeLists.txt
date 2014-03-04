@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building src level Makefile.
-# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -55,7 +55,6 @@ message( STATUS "Configuring Level 2 packages --" )
 add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( device )       # needs ds++
-# add_dir_if_exists( fpe_trap )     # needs ds++
 if (NOT APPLE)
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()
@@ -97,7 +96,7 @@ add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
 add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 if( NOT WIN32 )
-   add_dir_if_exists( memory )            # needs diagnostics
+   add_dir_if_exists( memory )         # needs diagnostics
 endif()
 
 # Level 5

@@ -1,10 +1,10 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/component_macros.cmake
-# author 
+# author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
 # brief  Provide extra macros to simplify CMakeLists.txt for component
 #        directories. 
-# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$ 
@@ -124,11 +124,16 @@ macro( add_component_library )
    endif()
 
    # Find target file name and location
-   get_target_property( imploc ${acl_TARGET} LOCATION )
+   get_target_property( impname ${acl_TARGET} OUTPUT_NAME )
+
    # the above command returns the location in the build tree.  We
    # need to convert this to the install location.
-   get_filename_component( imploc ${imploc} NAME )
-   set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${imploc}" )
+   # gett_filename_component( imploc ${imploc} NAME )
+   if( ${DRACO_SHARED_LIBS} )
+      set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${impname}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+   else()
+      set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${impname}${CMAKE_STATIC_LIBRARY_SUFFIX}" )
+   endif()
 
    set( ilil "")
    if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND  "${acl_VENDOR_LIBS}x" STREQUAL "x")
@@ -500,17 +505,6 @@ macro( add_scalar_tests test_sources )
    # What is the component name (always use Lib_${compname} as a dependency).
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
 
-   # If the test directory does not provide its own library (e.g.:
-   # libc4_test.a), then don't try to link against it!
-   get_target_property( test_lib_loc Lib_${compname}_test LOCATION )
-   if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
-      set( test_lib_target_name "Lib_${compname}_test" )
-   endif()
-   get_target_property( pkg_lib_loc Lib_${compname} LOCATION )
-   if( NOT "${pkg_lib_loc}" MATCHES "NOTFOUND" )
-      list( APPEND test_lib_target_name "Lib_${compname}" )
-   endif()
-  
    # Loop over each test source files:
    # 1. Compile the executable
    # 2. Register the unit test
@@ -615,15 +609,8 @@ macro( add_parallel_tests )
          "RESOURCE_LOCK ${addparalleltest_RESOURCE_LOCK}")
    endif()
 
-   # What is the component name (always use Lib_${compname} as a dependency).
+   # What is the component name? Use this to give a target name to the test.
    string( REPLACE "_test" "" compname ${PROJECT_NAME} )
-
-   # If the test directory does not provide its own library (e.g.:
-   # libc4_test.a), then don't try to link against it!
-   get_target_property( test_lib_loc Lib_${compname}_test LOCATION )
-   if( NOT "${test_lib_loc}" MATCHES "NOTFOUND" )
-      set( test_lib_target_name "Lib_${compname}_test" )
-   endif()
 
    # Override MPI Flags upon user request
    if ( NOT DEFINED addparalleltest_MPIFLAGS )
@@ -661,14 +648,10 @@ macro( add_parallel_tests )
            set_target_properties( Ut_${compname}_${testname}_exe 
                PROPERTIES LINKER_LANGUAGE Fortran )
       endif()
-      get_target_property( target_source_list Lib_${compname} SOURCES )
-      if( NOT "${target_source_list}" MATCHES NOTFOUND )
-         set( complib Lib_${compname} )
-      endif()
+
       target_link_libraries( 
          Ut_${compname}_${testname}_exe 
          ${test_lib_target_name} 
-         ${complib}
          ${addparalleltest_DEPS}
          )
 
@@ -682,14 +665,6 @@ macro( add_parallel_tests )
    # 4. Register the pass/fail criteria.
    if( ${DRACO_C4} MATCHES "MPI" )
       foreach( file ${addparalleltest_SOURCES} )
-         get_filename_component( testname ${file} NAME_WE )
-         if( CMAKE_GENERATOR MATCHES "Visual Studio")
-            set( test_loc "${PROJECT_BINARY_DIR}/$(INTDIR)/${testname}" )
-         else()
-            get_target_property( test_loc 
-               Ut_${compname}_${testname}_exe 
-               LOCATION )
-         endif()
 
          # Loop over PE_LIST, register test for each numPE
 
@@ -711,6 +686,7 @@ macro( add_parallel_tests )
          #
          # http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.4
 
+         get_filename_component( testname ${file} NAME_WE )
          foreach( numPE ${addparalleltest_PE_LIST} )
             set( iarg 0 )
             if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )

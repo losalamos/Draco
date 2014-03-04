@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for timestep/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -47,5 +47,5 @@ add_component_library(
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2;4"
-   DEPS    "Lib_c4;Lib_dsxx;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
+   DEPS    "Lib_timestep_test;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
 

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics/test.
-# note   Copyright (C) 2010-2013, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -33,7 +33,7 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}" 
-   DEPS    Lib_c4 )
+   DEPS    Lib_diagnostics )
    
 # Application Unit Test 
 add_test( 

@@ -60,7 +60,7 @@ include_directories(
 
 add_scalar_tests( 
    SOURCES "${test_sources}"
-   DEPS    "${GSL_LIBRARIES}" )
+   DEPS    "Lib_rng;${GSL_LIBRARIES}" )
    
 if( RANDOM123_FOUND)
    # Random123 unit tests almost all use assert to check for failures,
@@ -76,13 +76,15 @@ if( RANDOM123_FOUND)
    if( "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "DEBUG" OR
          "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELWITHDEBINFO" )
       add_scalar_tests(
-         SOURCES    "${random123_unit_tests}"
+         SOURCES    "${random123_unit_tests}" 
+         DEPS       "Lib_rng"
          PASS_REGEX "OK|SUCCESS"
          FAIL_REGEX "failed;error;Failure" )
    endif()
 
    add_scalar_tests(
       SOURCES    "${random123_known_answer_tests}"
+      DEPS       "Lib_rng"
       PASS_REGEX "PASSED"
       FAIL_REGEX "FAILED" )
 
