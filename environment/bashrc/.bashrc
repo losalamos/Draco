@@ -45,7 +45,7 @@ if test -z "$DRACO_SRC_DIR"; then
 fi
 
 # Append PATHS (not linux specific, not ccs2 specific).
-extradirs="${DRACO_SRC_DIR}/environment/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/lanl/bin /usr/bin /ccs/opt/x86_64/mercCmd-1.2.3/bin"
+extradirs="${DRACO_SRC_DIR}/environment/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin /ccs/opt/x86_64/mercCmd-1.2.3/bin"
 for mydir in ${extradirs}; do
    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
       export PATH=${PATH}:${mydir}
