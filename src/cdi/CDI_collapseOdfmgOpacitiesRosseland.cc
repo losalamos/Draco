@@ -13,6 +13,7 @@
 
 #include "CDI.hh"
 #include "ds++/Safe_Divide.hh"
+#include <numeric>
 
 namespace rtt_cdi
 {
