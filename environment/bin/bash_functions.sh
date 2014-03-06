@@ -248,15 +248,62 @@ function wiki()
   dig +short txt $1.wp.dg.cx;
 }
 
-#function eproxyfloat
-#{ 
-#  echo "Requested $1 copies of \"$2\""
-#  perl -e 'print join( "\n", (unpack("H*", pack( "f*", ( $2 ) x $1 ) ) =~ m/.{1,72}/g)), "\n"'
-#}
+##---------------------------------------------------------------------------##
+## Transfer 2.0 (Mercury replacement)
+## Ref: http://transfer.lanl.gov
+##
+## Examples:
+##   xfpush foo.txt
+##   xfstatus
+##   xfpull foo.txt
+##---------------------------------------------------------------------------##
+function xfpush()
+{
+    myfile=$1
+    if ! test -f $myfile; then
+       echo "ERROR: You must profile a file for transfering: xfpush foo.txt"
+       return
+    fi
+    scp $myfile red@transfer.lanl.gov:
+}
+function xfstatus()
+{
+    ssh red@transfer.lanl.gov myfiles
+}
+function xfpull()
+{
+    wantfile=$1
+    filesavailable=`ssh red@transfer.lanl.gov myfiles`
+    # sanity check: is the requested file in the list?
+    fileready=`echo $filesavailable | grep $wantfile`
+    if test "${fileready}x" = "x"; then
+        echo "ERROR: File '${wantfile}' is not available (yet?) to pull."
+        echo "       Run 'xfstatus' to see list of available files."
+        return
+    fi
+    # Find the file identifier for the requested file.  The variable
+    # filesavailable contains a list of pairs:  
+    # { (id1, file1), (id2, file2), ... }.  Load each pair and if the
+    # filename matches the requested filename then pull that file id.
+    # Once pulled, remove the file from transfer.lanl.gov.
+    is_file_id=1
+    for entry in $filesavailable; do
+        if test $is_file_id = 1; then
+            fileid=$entry
+            is_file_id=0
+        else
+            if test $entry = $wantfile; then
+                echo "scp red@transfer.lanl.gov:${fileid} ."
+                scp red@transfer.lanl.gov:${fileid} .
+                echo "ssh red@transfer.lanl.gov delete ${fileid}"
+                ssh red@transfer.lanl.gov delete ${fileid}
+                return
+            fi
+            is_file_id=1
+        fi
+    done
+}
 
-
-# function encrypt() { gpg -ac --no-options "$1" }
-# function decrypt (){ gpg --no-options "$1" }
 
 ##---------------------------------------------------------------------------##
 ## Publish all functions to the current shell.
