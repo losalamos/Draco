@@ -795,7 +795,8 @@ individual vendor directories should be defined." )
        )  
     set_package_properties( Random123 PROPERTIES
        URL "http://www.deshawresearch.com/resources_random123.html"
-       DESCRIPTION "a library of counter-based random number generators"
+       DESCRIPTION "a library of counter-based random number generators
+"
        TYPE REQUIRED
        PURPOSE "Required for building rng component."
        )

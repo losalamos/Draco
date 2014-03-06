@@ -83,7 +83,7 @@ target_link_libraries( gpu_hello_rt_api_exe Lib_dsxx )
 # ---------------------------------------------------------------------------- #
 
 set( test_deps
-   Lib_dsxx
+   Lib_device
    ${CUDA_CUDA_LIBRARY} )
 add_scalar_tests( 
    SOURCES  "${test_sources}"
