@@ -147,27 +147,6 @@ void C4_ReqRefRep::wait()
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Free request handle for a posted asynchronous receive.
- *
- * Note: once freed the handle must be reactivated to test for completeness or
- * to wait on it
- */
-//---------------------------------------------------------------------------//
-
-void C4_ReqRefRep::free()
-{
-#ifdef C4_MPI
-    if (assigned)
-    {
-	MPI_Cancel( &r );
-        MPI_Request_free( &r );
-    }
-#endif
-    clear();
-}
-
-//---------------------------------------------------------------------------//
 //! Tests for the completion of a non blocking operation.
 //---------------------------------------------------------------------------//
 
@@ -188,21 +167,6 @@ bool C4_ReqRefRep::complete()
 #endif
 #ifdef C4_SCALAR
     throw "Send to self machinery has not been implemented in scalar mode.";
-#endif
-}
-
-//---------------------------------------------------------------------------//
-//! Return the number of items returned on the last complete operation.
-//---------------------------------------------------------------------------//
-
-unsigned C4_ReqRefRep::count()
-{
-#ifdef C4_MPI
-    int count;
-    MPI_Get_count( &s, MPI_CHAR, &count );
-    return count;
-#else
-    return 0;
 #endif
 }
 

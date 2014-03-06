@@ -61,18 +61,6 @@ DLL_PUBLIC void finalize()
     return;
 }
 
-//---------------------------------------------------------------------------//
-
-DLL_PUBLIC void free_inherited_comm()
-{
-    if (communicator != MPI_COMM_WORLD)
-    {
-	MPI_Comm_free(&communicator);
-	communicator = MPI_COMM_WORLD;
-    }
-    return;
-}
-
 //---------------------------------------------------------------------------------------//
 
 DLL_PUBLIC void type_free(C4_Datatype &old_type)
@@ -195,27 +183,6 @@ DLL_PUBLIC void wait_all(int      count,
 }
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC unsigned wait_any(int      count,
-                             C4_Req * requests)
-{
-    using std::vector;
-    
-    vector<MPI_Request> array_of_requests(count);
-    for (int i=0; i<count; ++i)
-    {
-        if (requests[i].inuse())
-            array_of_requests[i] = requests[i].r();
-        else
-            array_of_requests[i] = MPI_REQUEST_NULL;
-    }
-    int index;
-    MPI_Waitany(count, &array_of_requests[0], &index, MPI_STATUSES_IGNORE);
-    requests[index] = C4_Req();
-
-    return index;
-}
-
-//---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
 DLL_PUBLIC int abort(int error)
@@ -234,19 +201,6 @@ DLL_PUBLIC int abort(int error)
 DLL_PUBLIC bool isScalar()
 {
     return ! initialized;
-}
-
-//---------------------------------------------------------------------------//
-// get_processor_name
-//---------------------------------------------------------------------------//
-DLL_PUBLIC std::string get_processor_name()
-{
-    int namelen(0);
-    char processor_name[DRACO_MAX_PROCESSOR_NAME];
-    MPI_Get_processor_name( processor_name, &namelen );
-    std::string pname(processor_name);
-    Ensure( pname.size() == static_cast<size_t>(namelen) );
-    return pname;
 }
 
 } // end namespace rtt_c4

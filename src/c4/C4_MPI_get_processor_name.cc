@@ -1,0 +1,42 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   c4/C4_MPI_get_processor_name.cc
+ * \author Thomas M. Evans
+ * \date   Thu Mar 21 16:56:17 2002
+ * \brief  C4 MPI implementation.
+ * \note   Copyright (C) 2002-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------//
+// $Id: C4_MPI_get_processor_name.cc 7388 2014-01-22 16:02:07Z kellyt $
+//---------------------------------------------------------------------------//
+
+#include <string>
+#include "c4/config.h"
+
+#ifdef C4_MPI
+
+#include "C4_Functions.hh"
+
+namespace rtt_c4
+{
+//---------------------------------------------------------------------------//
+// get_processor_name
+//---------------------------------------------------------------------------//
+DLL_PUBLIC std::string get_processor_name()
+{
+    int namelen(0);
+    char processor_name[DRACO_MAX_PROCESSOR_NAME];
+    MPI_Get_processor_name( processor_name, &namelen );
+    std::string pname(processor_name);
+    Ensure( pname.size() == static_cast<size_t>(namelen) );
+    return pname;
+}
+
+} // end namespace rtt_c4
+
+#endif // C4_MPI
+
+//---------------------------------------------------------------------------//
+// end of C4_MPI_get_processor_name.cc
+//---------------------------------------------------------------------------//
