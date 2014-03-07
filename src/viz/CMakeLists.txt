@@ -41,7 +41,7 @@ include_directories(
 
 add_component_library(
    TARGET       Lib_viz
-   TARGET_DEPS  Lib_c4
+   TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 

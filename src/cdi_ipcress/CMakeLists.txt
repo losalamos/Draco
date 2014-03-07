@@ -53,7 +53,7 @@ include_directories(
 
 add_component_library( 
    TARGET       Lib_cdi_ipcress
-   TARGET_DEPS  "Lib_cdi;Lib_c4"
+   TARGET_DEPS  "Lib_cdi"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 

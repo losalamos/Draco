@@ -191,6 +191,13 @@ configure_file(
 add_custom_target( uninstall
    "${CMAKE_COMMAND}" -P
    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
+# Sometimes CMake does not install the correct RPATH.  This target
+# usually fixes the issue
+add_custom_target( update_rpaths
+  COMMAND "${CMAKE_MAKE_PROGRAM}" rebuild_cache
+  COMMAND "${CMAKE_MAKE_PROGRAM}" ${MAKE_ARGS} install
+  COMMENT "Reparsing to try to update RPATH values..."
+  )
 
 # Export targets
 install( EXPORT draco-targets DESTINATION lib/cmake/draco )

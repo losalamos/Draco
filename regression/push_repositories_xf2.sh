@@ -21,8 +21,7 @@ else
 fi
 
 # Repositories to push
-repos="draco" 
-# jayenne capsaicin"
+repos="draco jayenne capsaicin"
 
 #
 for repo in $repos; do
@@ -39,7 +38,7 @@ for repo in $repos; do
    # run "tar -cvf ${repo}.hotcopy.tar ${repo}.hotcopy"
    
    #run "${PUSH} push2r --quiet ${repo}.hotcopy.tar"
-   run "scp ${repo}.hotcopy.tar red@transfer.lanl.gov"
+   run "scp ${repo}.hotcopy.tar red@transfer.lanl.gov:"
 
    # Ensure the new files have group rwX permissions.
    # run "chgrp -R draco ${repo}.hotcopy.tar ${repo}.hotcopy"
