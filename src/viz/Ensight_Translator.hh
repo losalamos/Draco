@@ -15,7 +15,7 @@
 #define rtt_viz_Ensight_Translator_hh
 
 #include "Ensight_Stream.hh"
-#include "traits/Viz_Traits.hh"
+#include "Viz_Traits.hh"
 #include "ds++/SP.hh"
 #include "ds++/Check_Strings.hh"
 #include <set>
@@ -96,19 +96,19 @@ enum Ensight_Cell_Types
  * \arg \b ISF (integer scalar field) can be any field type that supports
  * random access iterators and operator[] indexing
  *
- * \arg \b IVF (integer vector field) uses the rtt_traits::Viz_Traits class
+ * \arg \b IVF (integer vector field) uses the rtt_viz::Viz_Traits class
  * to convert to i,j indexing to operator(int, int).  See the
- * rtt_traits::Viz_Traits class to determine which 2D vector containers are
+ * rtt_viz::Viz_Traits class to determine which 2D vector containers are
  * specialized
  *
- * \arg \b FVF (floating point vector field) uses the rtt_traits::Viz_Traits
+ * \arg \b FVF (floating point vector field) uses the rtt_viz::Viz_Traits
  * class to convert to i,j indexing to operator(int, int).  See the
- * rtt_traits::Viz_Traits class to determine which 2D vector containers are
+ * rtt_viz::Viz_Traits class to determine which 2D vector containers are
  * specialized
  *
  * The vector-field (VF) types will most commonly by rtt_dsxx::Mat2 or
  * std::vector<std::vector> types.  Other types will require specialization
- * in the rtt_traits::Viz_Traits class.
+ * in the rtt_viz::Viz_Traits class.
  *
  * Data dumped to Ensight will be stored in the directory prefix argument
  * given to the constructor (Ensight_Translator::Ensight_Translator()).  The
@@ -230,8 +230,8 @@ class DLL_PUBLIC Ensight_Translator
     template<class IVF, class FVF, class ISF>
     void write_geom(const int,
 		    const std_string &,
-		    const rtt_traits::Viz_Traits<IVF> &,
-		    const rtt_traits::Viz_Traits<FVF> &,
+		    const rtt_viz::Viz_Traits<IVF> &,
+		    const rtt_viz::Viz_Traits<FVF> &,
 		    const sf2_int &,
 		    const sf_int &, 
 		    const ISF &,
@@ -240,13 +240,13 @@ class DLL_PUBLIC Ensight_Translator
     // Write out vertex data.
     template<class FVF>
     void write_vrtx_data(const int,
-			 const rtt_traits::Viz_Traits<FVF> &,
+			 const rtt_viz::Viz_Traits<FVF> &,
 			 const sf_int &);
 
     // Write out cell data.
     template<class FVF>
     void write_cell_data(const int,
-			 const rtt_traits::Viz_Traits<FVF> &,
+			 const rtt_viz::Viz_Traits<FVF> &,
 			 const sf2_int &);
 
     // Initializer used by constructors

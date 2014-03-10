@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   traits/test/tstViz_Traits.cc
+ * \file   viz/test/tstViz_Traits.cc
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
@@ -11,21 +11,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Traits_Test.hh"
 #include "../Viz_Traits.hh"
 #include "ds++/Release.hh"
-
-#include <iostream>
-#include <string>
-#include <vector>
+#include "ds++/ScalarUnitTest.hh"
 
 using namespace std;
+using rtt_viz::Viz_Traits;
 
-using rtt_traits::Viz_Traits;
-
-// passing condition
-bool passed = true;
-#define ITFAILS passed = rtt_traits_test::fail(__LINE__);
+#define PASSMSG(a) ut.passes(a)
+#define ITFAILS    ut.failure(__LINE__)
+#define FAILURE    ut.failure(__LINE__, __FILE__)
+#define FAILMSG(a) ut.failure(a)
 
 //---------------------------------------------------------------------------//
 // simple test field class for checking viz traits
@@ -51,7 +47,7 @@ class Test_Field
 // test vector traits specialization
 
 template<typename VVF>
-void test_vector()
+void test_vector(rtt_dsxx::UnitTest & ut)
 {
     VVF field(3);
 
@@ -76,6 +72,8 @@ void test_vector()
             if( vdf(i, j) != 2*i + 4*j )                           ITFAILS;
         }
     }
+    if( ut.numFails == 0 )
+        PASSMSG( "test_vector passes." );
     return;
 }
 
@@ -83,7 +81,7 @@ void test_vector()
 // standard Viz_Traits field test
 
 template<typename T>
-void test_FT()
+void test_FT(rtt_dsxx::UnitTest & ut)
 {
     vector<vector<T> > field(3);
     for (size_t i = 0; i < field.size(); i++)
@@ -100,38 +98,30 @@ void test_FT()
     if (vt.nrows() != 3)                                         ITFAILS;
     for (size_t i = 0; i < vt.nrows(); i++)
     {
-        if (vt.ncols(i) != field[i].size())                          ITFAILS;
+        if (vt.ncols(i) != field[i].size())                      ITFAILS;
         for (size_t j = 0; j < vt.ncols(i); j++)
-            if (vt(i, j) != field[i][j])                             ITFAILS;
+            if (vt(i, j) != field[i][j])                         ITFAILS;
     }
+    if( ut.numFails == 0 )
+        PASSMSG( "test_FT passes." );
+    return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
-    // version tag
-    cout << argv[0] << ": version " << rtt_dsxx::release() << endl; 
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	    return 0;
-    
-    // tests
-    test_vector<vector<vector<int> > >   ();
-    test_vector<vector<vector<double> > >();
-    test_vector<vector<vector<float> > > ();
-
-    test_FT<int>   ();
-    test_FT<double>();
-
-    // status of test
-    cout <<     "\n*************************************";
-    if (passed) 
-        cout << "\n****Viz_Traits Self Test: PASSED ****";
-    else
-        cout << "\n****Viz_Traits Self Test: FAILED ****";
-    cout <<     "\n*************************************\n\n"
-         << "Done testing Viz_Traits." << endl;
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
+    try
+    {
+        // >>> UNIT TESTS
+        test_vector<vector<vector<int> > >   (ut);
+        test_vector<vector<vector<double> > >(ut);
+        test_vector<vector<vector<float> > > (ut);
+        test_FT<int>   (ut);
+        test_FT<double>(ut);
+    }
+    UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

@@ -62,7 +62,6 @@ add_dir_if_exists( linear )       # needs ds++
 add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
-add_dir_if_exists( traits )       # needs ds++
 add_dir_if_exists( units )        # needs ds++
 if( _LANGUAGES_ MATCHES Fortran )
    if( NOT ${CMAKE_GENERATOR} MATCHES Xcode)

@@ -210,7 +210,7 @@ ensight_dump(int        icycle,
 	     const ISF &rgn_numbers,
 	     const SSF &rgn_name)
 {
-    using rtt_traits::Viz_Traits;
+    using rtt_viz::Viz_Traits;
     using std::string;
     using std::vector;
     using std::find;
@@ -399,7 +399,7 @@ write_part(int               part_num,
 {
     Require(part_num > 0);
     
-    using rtt_traits::Viz_Traits;
+    using rtt_viz::Viz_Traits;
     using std::string;
     using std::vector;
     using std::find;
@@ -459,8 +459,8 @@ template<class IVF, class FVF, class ISF>
 void Ensight_Translator::
 write_geom(const int                          part_num,
 	   const std_string                  &part_name,
-	   const rtt_traits::Viz_Traits<IVF> &ipar, 
-	   const rtt_traits::Viz_Traits<FVF> &pt_coor,
+	   const rtt_viz::Viz_Traits<IVF> &ipar, 
+	   const rtt_viz::Viz_Traits<FVF> &pt_coor,
 	   const sf2_int                     &cells_of_type, 
 	   const sf_int                      &vertices,
 	   const ISF                         &g_vrtx_indices,
@@ -544,7 +544,7 @@ write_geom(const int                          part_num,
 template<class FVF> 
 void Ensight_Translator::
 write_vrtx_data(const int                          part_num,
-		const rtt_traits::Viz_Traits<FVF> &vrtx_data,
+		const rtt_viz::Viz_Traits<FVF> &vrtx_data,
 		const sf_int                      &vertices)
 {
     if (vrtx_data.nrows() == 0)
@@ -580,7 +580,7 @@ write_vrtx_data(const int                          part_num,
 template<class FVF> 
 void Ensight_Translator::
 write_cell_data(const int                          part_num,
-		const rtt_traits::Viz_Traits<FVF> &cell_data,
+		const rtt_viz::Viz_Traits<FVF> &cell_data,
 		const sf2_int                     &cells_of_type)
 {
     if (cell_data.nrows() == 0)

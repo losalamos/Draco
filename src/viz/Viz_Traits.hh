@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   traits/Viz_Traits.hh
+ * \file   viz/Viz_Traits.hh
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:10:54 2000
  * \brief  Viz_Traits header file.
@@ -11,13 +11,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __traits_Viz_Traits_hh__
-#define __traits_Viz_Traits_hh__
+#ifndef __viz_Viz_Traits_hh__
+#define __viz_Viz_Traits_hh__
 
 #include "ds++/Assert.hh"
 #include <vector>
 
-namespace rtt_traits
+namespace rtt_viz
 {
  
 //===========================================================================//
@@ -194,8 +194,8 @@ class Viz_Traits< std::vector<std::vector<double> > >
 
 } // end namespace rtt_traits
 
-#endif // __traits_Viz_Traits_hh__
+#endif // __viz_Viz_Traits_hh__
 
 //---------------------------------------------------------------------------//
-// end of traits/Viz_Traits.hh
+// end of viz/Viz_Traits.hh
 //---------------------------------------------------------------------------//

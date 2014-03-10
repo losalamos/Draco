@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------------------//
 /*!
- * \file   traits/MatrixFactoryTraits.hh
+ * \file   viz/MatrixFactoryTraits.hh
  * \author Randy M. Roberts
  * \date   Tue Jun  8 09:18:38 1999
  * \brief  
@@ -11,10 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------------------//
 
-#ifndef __traits_MatrixFactoryTraits_hh__
-#define __traits_MatrixFactoryTraits_hh__
+#ifndef __viz_MatrixFactoryTraits_hh__
+#define __viz_MatrixFactoryTraits_hh__
 
-namespace rtt_traits
+namespace rtt_viz
 {
  
 //===========================================================================//
@@ -90,8 +90,8 @@ class MatrixFactoryTraits
 
 } // end namespace rtt_traits
 
-#endif // __traits_MatrixFactoryTraits_hh__
+#endif // __viz_MatrixFactoryTraits_hh__
 
 //---------------------------------------------------------------------------//
-// end of traits/MatrixFactoryTraits.hh
+// end of viz/MatrixFactoryTraits.hh
 //---------------------------------------------------------------------------//

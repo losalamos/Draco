@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   traits/ContainerTraits.hh
+ * \file   viz/ContainerTraits.hh
  * \author Randy M. Roberts
  * \date   Wed May  6 14:50:14 1998
  * \brief  
@@ -11,12 +11,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __traits_ContainerTraits_hh__
-#define __traits_ContainerTraits_hh__
+#ifndef __viz_ContainerTraits_hh__
+#define __viz_ContainerTraits_hh__
 
 #include <vector>
 
-namespace rtt_traits
+namespace rtt_viz
 {
     
 //===========================================================================//
@@ -175,8 +175,8 @@ class ContainerTraits<std::vector<T1>, std::vector<T2> >
 
 }  // namespace rtt_traits
 
-#endif // __traits_ContainerTraits_hh__
+#endif // __viz_ContainerTraits_hh__
 
 //---------------------------------------------------------------------------//
-// end of traits/ContainerTraits.hh
+// end of viz/ContainerTraits.hh
 //---------------------------------------------------------------------------//

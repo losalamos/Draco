@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   traits/MT_traits.hh
+ * \file   viz/MT_traits.hh
  * \author Randy M. Roberts
  * \date   Wed May  6 14:50:14 1998
  * \brief  
@@ -11,12 +11,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef __traits_MT_traits_hh__
-#define __traits_MT_traits_hh__
+#ifndef __viz_MT_traits_hh__
+#define __viz_MT_traits_hh__
 
 #include <iosfwd>
 
-namespace rtt_traits
+namespace rtt_viz
 {
  //===========================================================================//
  // class MT_traits - 
@@ -75,8 +75,8 @@ struct MT_Traits
 
 } // end namespace rtt_traits
 
-#endif // __traits_MT_traits_hh__
+#endif // __viz_MT_traits_hh__
 
 //---------------------------------------------------------------------------//
-// end of traits/MT_traits.hh
+// end of viz/MT_traits.hh
 //---------------------------------------------------------------------------//
