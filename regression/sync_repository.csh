@@ -8,6 +8,7 @@
 
 # Use svn 1.8+
 set PATH = ( /usr/projects/eap/tools/TLCC/bin ${PATH} )
+set SVN=/usr/projects/eap/tools/TLCC/bin/svn
 
 # source system dotfiles if running batch (cron) and not already set up
 # if( -f /etc/csh.cshrc ) then
@@ -55,18 +56,18 @@ endif
 
 
 # update the scripts directories in /usr/projects/jayenne
-echo "cd /usr/projects/draco/vendors/Modules; svn update"
+echo "cd /usr/projects/draco/vendors/Modules; ${SVN} update"
 cd /usr/projects/draco/vendors/Modules
-svn update
-echo "cd /usr/projects/jayenne/regress/draco/config; svn update"
+${SVN} update
+echo "cd /usr/projects/jayenne/regress/draco/config; ${SVN} update"
 cd /usr/projects/jayenne/regress/draco/config
-svn update
-echo "cd /usr/projects/jayenne/regress/draco/regression; svn update"
+${SVN} update
+echo "cd /usr/projects/jayenne/regress/draco/regression; ${SVN} update"
 cd /usr/projects/jayenne/regress/draco/regression
-svn update
-echo "cd /usr/projects/jayenne/regress/draco/environment; svn update"
+${SVN} update
+echo "cd /usr/projects/jayenne/regress/draco/environment; ${SVN} update"
 cd /usr/projects/jayenne/regress/draco/environment
-svn update
+${SVN} update
 
 # SVN portions
 # ------------------------------------------------------------
@@ -151,10 +152,3 @@ else
     echo "svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression"
     svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression
 endif
-
-# Notes:
-# ------------------------------------------------------------
-# McKay uses the following:
-# Purpose: Get Kerberos ticket
-# Command: /usr/kerberos/bin/kinit -k -t /users/lmdm/.ssh/keytabfile lmdm@lanl.gov
-# Output:  
