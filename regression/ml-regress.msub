@@ -165,6 +165,9 @@ elif test "${subproj}" == wedgehog; then
 elif test "${subproj}" == milagro; then
     script_dir=${regdir}/jayenne/regression
     script_name=Milagro_Linux64.cmake
+elif test "${subproj}" == jayenne; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Jayenne_Linux64.cmake
 elif test "${subproj}" == capsaicin; then
     script_dir=${regdir}/capsaicin/scripts
     script_name=Capsaicin_Linux64.cmake

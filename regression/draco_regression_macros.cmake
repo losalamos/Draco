@@ -130,7 +130,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
    set( CTEST_TEST_TIMEOUT "1800" ) # seconds
 
   # Echo settings
-  if( drm_verbose )  
+  if( ${drm_verbose} )  
      message("
 ARGV     = ${ARGV}
 
@@ -292,7 +292,7 @@ DRACO_TIMING:STRING=2")
      endif()
   endif()
 
-  if( drm_verbose )
+  if( ${drm_verbose} )
     message("
 CTEST_MODEL                 = ${CTEST_MODEL}
 CTEST_BUILD_CONFIGURATION   = ${CTEST_BUILD_CONFIGURATION}
@@ -390,7 +390,7 @@ macro( find_tools )
 
   # This breaks NMake Makefile builds because it is missing the -G"..."
   # set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} \"${CTEST_SOURCE_DIRECTORY}\"")
-  if( drm_verbose )
+  if( ${drm_verbose} )
     message("
 CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
