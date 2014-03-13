@@ -20,7 +20,7 @@ print_use()
     echo "Usage: $0 <build_type> [extra_params]"
     echo " "
     echo "   <build_type>   = { Debug, Release }."
-    echo "   [extra_params] = { intel13, pgi, coverage, cuda,"
+    echo "   [extra_params] = { intel14, pgi, coverage, cuda,"
     echo "                      fulldiagnostics }."
     echo " "
     echo "Extra parameters read from environment:"
@@ -64,7 +64,7 @@ case $# in
 esac
 
 # Build everything as the default action
-projects="draco capsaicin clubimc wedgehog milagro asterisk"
+projects="draco"
 
 # Host based variables
 export host=`uname -n | sed -e 's/[.].*//g'`
@@ -154,21 +154,22 @@ esac
 # special cases
 case $extra_params in
 coverage)
+    projects="draco capsaicin jayenne asterisk"
     epdash="-"
     ;;
 cuda)
     # do not build capsaicin with CUDA
-    projects="draco clubimc wedgehog milagro"
+    projects="draco jayenne"
     epdash="-"
     ;;
 fulldiagnostics)
     # do not build capsaicin or milagro with full diagnostics turned on.
-    projects="draco clubimc wedgehog milagro"
+    projects="draco jayenne"
     epdash="-"
     ;;
-intel13)
+intel14)
     # also build capsaicin
-    projects="draco capsaicin jayenne asterisk"
+    projects="draco"
     epdash="-"
     ;;
 pgi)
@@ -177,6 +178,8 @@ pgi)
     epdash="-"
     ;;
 *)
+    #projects="draco capsaicin clubimc wedgehog milagro asterisk"
+    projects="draco capsaicin jayenne asterisk"
     epdash=""
     ;;
 esac
