@@ -10,7 +10,6 @@ if test -z "$MODULESHOME"; then
       source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
     fi
 fi
-module load svn
 
 # update the scripts directories in /home/regress
 run () {
@@ -19,6 +18,9 @@ run () {
        eval $1
     fi
 }
+
+run "module use /ccs/codes/radtran/vendors/Modules"
+run "module load svn"
 
 run "cd /home/regress/draco/config; svn update"
 run "cd /home/regress/draco/regression; svn update"
