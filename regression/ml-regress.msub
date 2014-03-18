@@ -105,6 +105,9 @@ fulldiagnostics)
 #     module load intel/13.0.1 openmpi
 #     comp="intel-13.0.1"
 #     ;;
+nr)
+    # no-op
+    ;;
 pgi)
     module unload eospac ParMetis trilinos SuperLU_DIST gsl
     module unload lapack cudatoolkit openmpi intel
@@ -156,15 +159,15 @@ echo "ml-regress.msub: subproj        = $subproj"
 if test "${subproj}" == draco; then
     script_dir=${regdir}/draco/regression
     script_name=Draco_Linux64.cmake
-elif test "${subproj}" == clubimc; then
-    script_dir=${regdir}/jayenne/regression
-    script_name=ClubIMC_Linux64.cmake
-elif test "${subproj}" == wedgehog; then
-    script_dir=${regdir}/jayenne/regression
-    script_name=Wedgehog_Linux64.cmake
-elif test "${subproj}" == milagro; then
-    script_dir=${regdir}/jayenne/regression
-    script_name=Milagro_Linux64.cmake
+# elif test "${subproj}" == clubimc; then
+#     script_dir=${regdir}/jayenne/regression
+#     script_name=ClubIMC_Linux64.cmake
+# elif test "${subproj}" == wedgehog; then
+#     script_dir=${regdir}/jayenne/regression
+#     script_name=Wedgehog_Linux64.cmake
+# elif test "${subproj}" == milagro; then
+#     script_dir=${regdir}/jayenne/regression
+#     script_name=Milagro_Linux64.cmake
 elif test "${subproj}" == jayenne; then
     script_dir=${regdir}/jayenne/regression
     script_name=Jayenne_Linux64.cmake

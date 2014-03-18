@@ -215,6 +215,8 @@ macro( parse_args )
         set( compiler_version "fulldiagnostics" )
         set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
 #DRACO_TIMING:STRING=2 <-- breaks milagro tests (python cannot parse output).
+     elseif( ${work_dir} MATHCES ".*nr.*" )
+        set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
      endif()
      if( "${compiler_version}x" STREQUAL "x" )
         set( compiler_short_name "intel" )
