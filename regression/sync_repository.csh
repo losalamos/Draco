@@ -121,34 +121,34 @@ svnsync --non-interactive sync file:///${svnroot}/asterisk
 
 # also update the scripts directory
 if ( -d /usr/projects/jayenne/regress/jayenne/regression ) then
-    echo "cd /usr/projects/jayenne/regress/jayenne/regression; svn update"
+    echo "cd /usr/projects/jayenne/regress/jayenne/regression; ${SVN} update"
     cd /usr/projects/jayenne/regress/jayenne/regression
-    svn update
+    ${SVN} update
 else
     echo "mkdir -p /usr/projects/jayenne/regress/jayenne"
     mkdir -p /usr/projects/jayenne/regress/jayenne
-    echo "svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne/jayenne-project/regression regression"
-    svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne/jayenne-project/regression regression
+    echo "${SVN} co svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne/jayenne-project/regression regression"
+    ${SVN} co svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne/jayenne-project/regression regression
 endif
 
 if ( -d /usr/projects/jayenne/regress/capsaicin/scripts ) then
-    echo "cd /usr/projects/jayenne/regress/capsaicin/scripts; svn update"
+    echo "cd /usr/projects/jayenne/regress/capsaicin/scripts; ${SVN} update"
     cd /usr/projects/jayenne/regress/capsaicin/scripts
-    svn update
+    ${SVN} update
 else
     echo "mkdir -p /usr/projects/jayenne/capsaicin/scripts"
     mkdir -p /usr/projects/jayenne/capsaicin/scripts
-    echo "svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/capsaicin/trunk/scripts scripts"
-    svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/capsaicin/trunk/scripts scripts
+    echo "${SVN} co svn+ssh://ccscs8/ccs/codes/radtran/svn/capsaicin/trunk/scripts scripts"
+    ${SVN} co svn+ssh://ccscs8/ccs/codes/radtran/svn/capsaicin/trunk/scripts scripts
 endif
 
 if ( -d /usr/projects/jayenne/regress/asterisk/regression ) then
-    echo "cd /usr/projects/jayenne/regress/asterisk/regression; svn update"
+    echo "cd /usr/projects/jayenne/regress/asterisk/regression; ${SVN} update"
     cd /usr/projects/jayenne/regress/asterisk/regression
-    svn update
+    ${SVN} update
 else
     echo "mkdir -p /usr/projects/jayenne/regress/asterisk"
     mkdir -p /usr/projects/jayenne/regress/asterisk
-    echo "svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression"
-    svn co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression
+    echo "${SVN} co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression"
+    ${SVN} co svn+ssh://ccscs8/ccs/codes/radtran/svn/asterisk/trunk/regression regression
 endif
