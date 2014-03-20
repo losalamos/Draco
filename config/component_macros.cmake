@@ -253,6 +253,13 @@ macro( register_scalar_test targetname runcmd command cmd_args )
       set_tests_properties( ${targetname}
          PROPERTIES DEPENDS "${addscalartest_RUN_AFTER}" )
    endif()
+
+   # Labels
+   # message("LABEL (ast) = ${addscalartest_LABEL}")
+   if( NOT "${addscalartest_LABEL}x" STREQUAL "x" )
+      set_tests_properties( ${targetname}
+         PROPERTIES  LABELS "${addscalartest_LABEL}" )
+   endif()
 endmacro()
 
 # ------------------------------------------------------------
@@ -309,10 +316,16 @@ macro( register_parallel_test targetname numPE command cmd_args )
            PROCESSORS "${numthreads}"
            # RUN_SERIAL "ON"
            LABELS "nomemcheck" )
+   else()
+     if( "${addparalleltest_LABEL}x" STREQUAL "x" )
+       set_tests_properties( ${targetname}
+         PROPERTIES PROCESSORS "${numPE}" )
      else()
-      set_tests_properties( ${targetname}
-         PROPERTIES
-           PROCESSORS "${numPE}" )
+       # message("LABEL (apt) = ${addparalleltest_LABEL}")
+       set_tests_properties( ${targetname}
+         PROPERTIES PROCESSORS "${numPE}"
+         LABELS "${addparalleltest_LABEL}" )
+     endif()
    endif()
 endmacro()
 
@@ -439,7 +452,7 @@ macro( add_scalar_tests test_sources )
       # prefix
       addscalartest
       # list names
-      "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER"
+      "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;LABEL"
       # option names
       "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE"
       ${ARGV}
@@ -535,7 +548,6 @@ macro( add_scalar_tests test_sources )
          ${test_lib_target_name}
          ${addscalartest_DEPS}
          )         
-       
          
       # Special post-build options for Win32 platforms
       # ------------------------------------------------------------
@@ -583,7 +595,7 @@ macro( add_parallel_tests )
       # prefix
       addparalleltest
       # list names
-      "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;MPIFLAGS"
+      "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;MPIFLAGS;LABEL"
       # option names
       "MPI_PLUS_OMP;LINK_WITH_FORTRAN"
       ${ARGV}
@@ -685,6 +697,8 @@ macro( add_parallel_tests )
          # core.  This appears to fix the randomly failing tests.
          #
          # http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.4
+
+
 
          get_filename_component( testname ${file} NAME_WE )
          foreach( numPE ${addparalleltest_PE_LIST} )
