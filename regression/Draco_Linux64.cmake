@@ -128,7 +128,10 @@ endif()
 # Test
 if( "${CTEST_TEST}" STREQUAL "ON" )
    message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-   ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON ) 
+   ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+               SCHEDULE_RANDOM ON 
+               # INCLUDE_LABEL <LABEL>
+   ) 
 
    # Process code coverage (bullseye) or dynamic analysis (valgrind)
    message("Processing code coverage or dynamic analysis")

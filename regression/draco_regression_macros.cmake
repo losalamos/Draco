@@ -587,9 +587,10 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
          ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
    endif()
 
-   # If this is a coverage build, link to the Debug Draco files:
+   # If this is a coverage or nr build, link to the Debug Draco files:
    if( "${dep_pkg}" MATCHES "draco" )
       string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+      string( REPLACE "intel-nr" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
    endif()
 
    find_file( ${dep_pkg}_target_dir

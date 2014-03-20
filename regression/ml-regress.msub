@@ -106,7 +106,7 @@ fulldiagnostics)
 #     comp="intel-13.0.1"
 #     ;;
 nr)
-    # no-op
+    comp="intel-nr"
     ;;
 pgi)
     module unload eospac ParMetis trilinos SuperLU_DIST gsl

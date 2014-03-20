@@ -171,7 +171,7 @@ intel14)
     projects="draco"
     ;;
 nr)
-    projects="draco jayenne"
+    projects="jayenne"
     ;;
 pgi)
     # Capsaicin does not support building with PGI (lacking vendor installations!)
