@@ -2,6 +2,7 @@
 
 # Ensure that the permissions are correct
 umask 0002
+SNV=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn
 
 # Helper function
 run () {
@@ -11,20 +12,10 @@ run () {
     fi
 }
 
-# Establish modules environment and load proper version of svn.
-module () 
-{ 
-    eval `/usr/bin/modulecmd bash $*`
-}
-
-# update the scripts directories in /home/regress
-run "module use /ccs/codes/radtran/vendors/Modules"
-run "module load svn"
-
-run "cd /home/regress/draco/config; svn update"
-run "cd /home/regress/draco/regression; svn update"
-run "cd /home/regress/draco/environment; svn update"
-run "cd /home/regress/jayenne/regression; svn update"
-run "cd /home/regress/capsaicin/scripts; svn update"
-run "cd /home/regress/asterisk/regression; svn update"
+run "cd /home/regress/draco/config; ${SVN} update"
+run "cd /home/regress/draco/regression; ${SVN} update"
+run "cd /home/regress/draco/environment; ${SVN} update"
+run "cd /home/regress/jayenne/regression; ${SVN} update"
+run "cd /home/regress/capsaicin/scripts; ${SVN} update"
+run "cd /home/regress/asterisk/regression; ${SVN} update"
 
