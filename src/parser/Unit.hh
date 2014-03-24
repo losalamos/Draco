@@ -13,9 +13,9 @@
 #ifndef __parser_Unit_hh__
 #define __parser_Unit_hh__
 
-#include "units/PhysicalConstants.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include <cmath>
+#include "ds++/Soft_Equivalence.hh"
+#include "units/PhysicalConstantsSI.hh"
 
 namespace rtt_parser
 {
@@ -333,7 +333,8 @@ Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
 
 // Miscellaneous units
 
-Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1.602176462e-16}; //!< Thousands of electron volts
+Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1e3*rtt_units::electronChargeSI};
+//!< Thousands of electron volts
 
 // Numbers for which no conversion is requested
 Unit const constant = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< used for numbers with no units 
@@ -360,7 +361,7 @@ Unit const raw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< another name for number
 Unit const MKS = { 1.,   1.,    1., 1., 1., 1., 1., 1., 1.,  0.};
 Unit const CGS = { 0.01, 0.001, 1., 1., 1., 1., 1., 1., 1.,  0.};
 Unit const CGMU = { 0.01, 0.001, 1e-6, 1., 1., 1., 1., 1., 1.,  0.};
-Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e3*rtt_units::EV2K, 1., 1., 1., 1.,  0.};
+Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e3*rtt_units::EV2K, 1., 1., 1.,1.,  0.};
 
 //---------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are

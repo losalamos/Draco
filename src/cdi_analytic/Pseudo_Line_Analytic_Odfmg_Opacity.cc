@@ -13,13 +13,15 @@
 
 #include <fstream>
 
+#include "Pseudo_Line_Analytic_Odfmg_Opacity.hh"
+
 #include "ode/rkqs.i.hh"
 #include "ode/quad.i.hh"
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
-#include "Pseudo_Line_Analytic_Odfmg_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/DracoMath.hh"
 #include "cdi/CDI.hh"
+#include "units/PhysicalConstantsSI.hh"
 
 namespace rtt_cdi_analytic
 {
@@ -27,6 +29,8 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_ode;
 using namespace rtt_cdi;
+
+rtt_parser::Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0, 1e3*rtt_units::electronChargeSI};
 
 //---------------------------------------------------------------------------//
 void Pseudo_Line_Analytic_Odfmg_Opacity::precalculate(vector<double> const &groups,
@@ -286,8 +290,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                         double const x1 = baseline_[q+N*g].second.second;
 
                         double weight =
-                            CDI::integrateRosselandSpectrum(x0/rtt_parser::keV.conv,
-                                                            x1/rtt_parser::keV.conv,
+                            CDI::integrateRosselandSpectrum(x0/keV.conv,
+                                                            x1/keV.conv,
                                                             T)
                             + numeric_limits<double>::min();
 
@@ -318,8 +322,8 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                         double const x1 = baseline_[q+N*g].second.second;
 
                         double weight =
-                            CDI::integratePlanckSpectrum(x0/rtt_parser::keV.conv,
-                                                         x1/rtt_parser::keV.conv,
+                            CDI::integratePlanckSpectrum(x0/keV.conv,
+                                                         x1/keV.conv,
                                                          T)
                             + numeric_limits<double>::min();
                         

@@ -122,9 +122,9 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 //---------------------------------------------------------------------------//
     {
         double const keV2K(1.16045193028089e7);
-	int    const iSenVal(3);
-	double       adSenVal[iSenVal] = { 0.0, 1.0, 1.0/keV2K };
-	string const sSenVal( "NA,K,keV" );
+	int    const iSenVal(4);
+	double       adSenVal[iSenVal] = { 0.0, 1.0, 1.0/keV2K, 1.0e3/keV2K };
+	string const sSenVal( "NA,K,keV,eV" );
         
 	if( rtt_units::num_Ttype == iSenVal )
 	    PASSMSG("num_Ttype has the expected value.");

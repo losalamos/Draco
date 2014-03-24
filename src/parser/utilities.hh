@@ -20,6 +20,8 @@
 
 namespace rtt_parser 
 {
+DLL_PUBLIC void disable_unit_expressions();
+
 //! Can the next token in the stream be interpreted as real number?
 DLL_PUBLIC bool at_real(Token_Stream &tokens);
 

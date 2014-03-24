@@ -18,6 +18,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "../PhysicalConstants.hh"
+#include "../PhysicalConstantsSI.hh"
 
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
@@ -34,12 +35,13 @@ void test_static_access( rtt_dsxx::UnitTest & ut )
     using std::string;
     using std::ostringstream;
     using rtt_dsxx::soft_equiv; 
-    using rtt_units::PhysicalConstants;
+    using rtt_units::PI;
+    using rtt_units::EV2K;
 
     // PI
 
     double dev( 3.14159265358979324 );
-    if( soft_equiv( dev, PhysicalConstants::pi() ) )
+    if( soft_equiv( dev, PI ) )
     {
         ostringstream msg;
         msg << "Found expected value for PI (static)." << endl;
@@ -51,7 +53,7 @@ void test_static_access( rtt_dsxx::UnitTest & ut )
         msg << "Did not find expected value for PI (static)."
             << endl << "\tThe value returned was " 
             << std::setprecision(16) 
-            << PhysicalConstants::pi() << " != " 
+            << PI << " != " 
             << std::setprecision(16) << dev
             << "." << endl;
         FAILMSG(msg.str());
@@ -60,7 +62,7 @@ void test_static_access( rtt_dsxx::UnitTest & ut )
     // eV2K
 
     dev = 11604.51930280894;
-    if( soft_equiv( dev, PhysicalConstants::eV2K() ) )
+    if( soft_equiv( dev, EV2K ) )
     {
         ostringstream msg;
         msg << "Found expected value for eV2K (static)." << endl;
@@ -71,28 +73,7 @@ void test_static_access( rtt_dsxx::UnitTest & ut )
         ostringstream msg;
         msg << "Did not find expected value for eV2K (static)."
             << endl << "\tThe value returned was " 
-            << std::setprecision(16) << PhysicalConstants::eV2K() 
-            << " != " << std::setprecision(16) << dev
-            << "." << endl;
-        FAILMSG(msg.str());
-    }
-
-    // Avagadro
-
-    dev = 6.02214129e+23;
-    if( soft_equiv( dev, PhysicalConstants::avogadro() ) &&
-        soft_equiv( dev, PhysicalConstants::Na() ) )
-    {
-        ostringstream msg;
-        msg << "Found expected value for Avogadro's number (static)." << endl;
-        PASSMSG(msg.str());	
-    }
-    else
-    {
-        ostringstream msg;
-        msg << "Did not find expected value for Avogadro's number (static)."
-            << endl << "\tThe value returned was " 
-            << std::setprecision(16) << PhysicalConstants::avogadro() 
+            << std::setprecision(16) << EV2K 
             << " != " << std::setprecision(16) << dev
             << "." << endl;
         FAILMSG(msg.str());
@@ -111,6 +92,7 @@ void test_ctor( rtt_dsxx::UnitTest & ut )
     using rtt_units::PhysicalConstants;
     using rtt_units::UnitSystem;
     using rtt_units::UnitSystemType;
+    using rtt_units::PI;
 
     UnitSystem us( UnitSystemType().SI() );
     PhysicalConstants pc_def;
@@ -353,6 +335,7 @@ void test_scaled_values( rtt_dsxx::UnitTest & ut )
     using rtt_units::PhysicalConstants;
     using rtt_units::UnitSystem;
     using rtt_units::UnitSystemType;
+    using rtt_units::PI;
 
     // test scaled values against expected values
 
@@ -361,6 +344,27 @@ void test_scaled_values( rtt_dsxx::UnitTest & ut )
     PhysicalConstants pc( us );
 
     double dev;
+
+    // Avagadro
+
+    dev = 6.02214129e+23;
+    if( soft_equiv( dev, pc.avogadro() ) &&
+        soft_equiv( dev, pc.Na() ) )
+    {
+        ostringstream msg;
+        msg << "Found expected value for Avogadro's number." << endl;
+        PASSMSG(msg.str());	
+    }
+    else
+    {
+        ostringstream msg;
+        msg << "Did not find expected value for Avogadro's number."
+            << endl << "\tThe value returned was " 
+            << std::setprecision(16) << pc.avogadro() 
+            << " != " << std::setprecision(16) << dev
+            << "." << endl;
+        FAILMSG(msg.str());
+    }
 
     // Planck
 
@@ -554,7 +558,7 @@ void test_scaled_values( rtt_dsxx::UnitTest & ut )
 
     // Permeability of vacuum (free space) 
 
-    dev = 4.0 * pc.pi() * 1.0e-7; // H / m
+    dev = 4.0 * PI * 1.0e-7; // H / m
     dev = dev * si.L()/us.L();
     if( soft_equiv( pc.permeabilityOfVacuum(), dev ) )
     {

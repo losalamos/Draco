@@ -12,7 +12,9 @@
 //---------------------------------------------------------------------------//
 
 #include "PhysicalConstants.hh"
+
 #include "ds++/Soft_Equivalence.hh"
+#include "PhysicalConstantsSI.hh"
 #include <iostream>
 #include <iomanip>
 
@@ -25,7 +27,8 @@ namespace rtt_units
  * \return A PhysicalConstants object.
  */
 PhysicalConstants::PhysicalConstants()
-    : d_planck         ( planckSI ),
+    : d_avogadro( AVOGADRO ),
+      d_planck         ( planckSI ),
       d_gasConstant    ( gasConstantSI ),
       d_boltzmann      ( boltzmannSI ),
       d_electronCharge ( electronChargeSI ),
@@ -50,7 +53,8 @@ PhysicalConstants::PhysicalConstants()
  * \return A PhysicalConstants object.
  */
 PhysicalConstants::PhysicalConstants( UnitSystem const & u )
-    : d_planck          ( planckSI  * u.e() * u.t() ),
+    : d_avogadro        ( AVOGADRO * u.Q() ),
+      d_planck          ( planckSI  * u.e() * u.t() ),
       d_gasConstant     ( gasConstantSI * u.e() / u.T() ),
       d_boltzmann       ( boltzmannSI * u.e() / u.T() ),
       d_electronCharge  ( electronChargeSI ),

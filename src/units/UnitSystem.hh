@@ -199,8 +199,7 @@ class DLL_PUBLIC UnitSystem
     
     // DATA
 
-    // The actual UnitSystem is immutable once created.
-    UnitSystemType const d_ust;
+    UnitSystemType d_ust;
 
 }; // end of class UnitSystem
 

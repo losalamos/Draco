@@ -18,9 +18,23 @@
 #include "utilities.hh"
 #include "units/PhysicalConstants.hh"
 
+namespace // anonymous
+{
+
+bool no_unit_expressions = false;
+
+} // namespace anonymous
+
 namespace rtt_parser 
 {
 using namespace std;
+
+//---------------------------------------------------------------------------------------//
+//! Disable parsing of unit expressions. Unit names become ordinary keywords.
+void disable_unit_expressions()
+{
+    no_unit_expressions = true;
+}
 
 //---------------------------------------------------------------------------------------//
 /*! 
@@ -304,6 +318,8 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size)
 
 bool at_unit_term(Token_Stream &tokens, unsigned position = 0)
 {
+    if (no_unit_expressions) return false;
+    
     Token const token = tokens.lookahead(position);
     if (token.type()==KEYWORD)
     {
@@ -701,14 +717,21 @@ double parse_quantity(Token_Stream &tokens,
 		      char const *const name)
 {
     double const value = parse_real(tokens);
-    Unit const unit = parse_unit(tokens);
-    if (!is_compatible(unit, target_unit))
+    if (no_unit_expressions)
     {
-	ostringstream buffer;
-	buffer << "expected quantity with dimensions of " << name;
-	tokens.report_semantic_error(buffer.str().c_str());
+        return value;
     }
-    return  value*unit.conv/target_unit.conv;
+    else
+    {
+        Unit const unit = parse_unit(tokens);
+        if (!is_compatible(unit, target_unit))
+        {
+            ostringstream buffer;
+            buffer << "expected quantity with dimensions of " << name;
+            tokens.report_semantic_error(buffer.str().c_str());
+        }
+        return  value*unit.conv/target_unit.conv;
+    }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -730,30 +753,37 @@ double parse_quantity(Token_Stream &tokens,
 double parse_temperature(Token_Stream &tokens)
 {
     double const T = parse_real(tokens);
-    Unit const u = parse_unit(tokens);
-    double Result;
-    if (is_compatible(u, K))
+    if (no_unit_expressions)
     {
-	Result = T * u.conv;
-    }
-    else if (is_compatible(u, J))
-    {
-	Result = T * u.conv/rtt_units::boltzmannSI;
+        return T;
     }
     else
     {
-	tokens.report_syntax_error("expected quantity with units of "
-				   "temperature");
-	return 0.0;
-    }
-    if (Result<0.0)
-    {
-        tokens.report_semantic_error("temperature must be nonnegative");
-        return 0.0;
-    }
-    else
-    {
-        return Result;
+        Unit const u = parse_unit(tokens);
+        double Result;
+        if (is_compatible(u, K))
+        {
+            Result = T * u.conv;
+        }
+        else if (is_compatible(u, J))
+        {
+            Result = T * u.conv/rtt_units::boltzmannSI;
+        }
+        else
+        {
+            tokens.report_syntax_error("expected quantity with units of "
+                                       "temperature");
+            return 0.0;
+        }
+        if (Result<0.0)
+        {
+            tokens.report_semantic_error("temperature must be nonnegative");
+            return 0.0;
+        }
+        else
+        {
+            return Result;
+        }
     }
 }
 
@@ -789,20 +819,27 @@ parse_temperature(Token_Stream &tokens,
     SP<Expression> T = Expression::parse(number_of_variables,
                                          variable_map,
                                          tokens);
-    
-    Unit const u = parse_unit(tokens)*T->units();
-    if (is_compatible(u, K))
+
+    if (no_unit_expressions)
     {
-        T->set_units(u);
+        return T;
     }
     else
     {
-        tokens.check_syntax(is_compatible(u, J),
-                            "expected quantity with units of temperature");
-        
-        T->set_units(u*K/(J*rtt_units::boltzmannSI));
+        Unit const u = parse_unit(tokens)*T->units();
+        if (is_compatible(u, K))
+        {
+            T->set_units(u);
+        }
+        else
+        {
+            tokens.check_syntax(is_compatible(u, J),
+                                "expected quantity with units of temperature");
+            
+            T->set_units(u*K/(J*rtt_units::boltzmannSI));
+        }
+        return T;
     }
-    return T;
 }
 
 //---------------------------------------------------------------------------------------//
@@ -935,16 +972,23 @@ SP<Expression> parse_quantity(Token_Stream &tokens,
     SP<Expression> value = Expression::parse(number_of_variables,
                                              variable_map,
                                              tokens);
-    
-    Unit unit = parse_unit(tokens)*value->units();
-    if (!is_compatible(unit, target_unit))
+
+    if (no_unit_expressions)
     {
-	ostringstream buffer;
-	buffer << "expected quantity with dimensions of " << name;
-	tokens.report_semantic_error(buffer.str().c_str());
+        return value;
     }
-    value->set_units(unit);
-    return value;
+    else
+    {
+        Unit unit = parse_unit(tokens)*value->units();
+        if (!is_compatible(unit, target_unit))
+        {
+            ostringstream buffer;
+            buffer << "expected quantity with dimensions of " << name;
+            tokens.report_semantic_error(buffer.str().c_str());
+        }
+        value->set_units(unit);
+        return value;
+    }
 }
 
 } // rtt_parser

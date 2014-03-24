@@ -17,6 +17,9 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"
+#include "units/PhysicalConstants.hh"
+#include "units/PhysicalConstantsSI.hh"
+
 #include <limits>
 
 using namespace std;
