@@ -483,9 +483,9 @@ macro( setup_for_code_coverage )
                --exclude-dir=heterogeneous,chimpy,test
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
-               --categorize=cloc-categorize.log 
-               --counted=cloc-counted.log 
-               --ignored=cloc-ignored.log 
+               --categorize=cloc-categorize-notest.log 
+               --counted=cloc-counted-notest.log 
+               --ignored=cloc-ignored-notest.log 
                --progress-rate=0 
                --report-file=lines-of-code-notest.log 
                --force-lang-def=/home/regress/draco/regression/cloc-lang.defs

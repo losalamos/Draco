@@ -11,16 +11,6 @@
 args=( "$@" )
 nargs=${#args[@]}
 
-# if test ${nargs} -lt 1; then
-#     echo "Fatal Error: launch job requires a subproject name"
-#     echo " "
-#     echo "Use:"
-#     echo "   launchjob projname [jobid] [jobid]"
-#     echo " "
-#     return 1
-#     # exit 1
-# fi
-
  # Dependencies: wait for these jobs to finish
 dep_jobids=""
 for (( i=0; i < $nargs ; ++i )); do

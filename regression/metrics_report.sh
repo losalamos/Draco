@@ -5,9 +5,9 @@
 #    <path>/metrics_report.sh -e "email1 [email2]" -p "project1 [project2]"
 
 # Typical use:
-# ./metrics_report.sh -e kellyt@lanl.gov -p "draco clubimc wedgehog"
+# ./metrics_report.sh -e kellyt@lanl.gov -p "draco jayenne"
 # ./metrics_report.sh -e "kgt@lanl.gov jhchang@lanl.gov" -p "draco capsaicin"
-# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov caw@lanl.gov jayenne@lanl.gov" -p "draco clubimc wedgehog"
+# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov caw@lanl.gov jayenne@lanl.gov" -p "draco jayenne"
 
 ##---------------------------------------------------------------------------##
 ## Support functions
@@ -19,7 +19,7 @@ print_use()
     echo " "
     echo "Usage: $0 -e \"email1 [email2]\" -p \"project1 [project2]\""
     echo " "
-    echo "   [projects] = { draco, clubimc, wedgehog, milagro, capsaicin }."
+    echo "   [projects] = { draco, jayenne, capsaicin }."
     echo "   - Multiple projects or emails must be space delimeted and"
     echo "     in quotes."
 }
@@ -117,15 +117,15 @@ pp=""
 # special cases:
 if test "${projects}" = "draco"; then
    project_name="Draco"
-elif test "${projects}" = "draco clubimc wedgehog"; then
+elif test "${projects}" = "draco jayenne"; then
    project_name="Jayenne"
-   pp=" - Combined report for Draco, ClubIMC and Wedgehog"
-elif test "${projects}" = "draco clubimc wedgehog milagro"; then
-   project_name="Jayenne (with Milagro)"
-   pp=" - Combined report for Draco, ClubIMC, Wedgehog and Milagro"
+   pp=" - Combined report for Draco and Jayenne"
 elif test "${projects}" = "draco capsaicin"; then
    project_name="Capsaicin"
    pp=" - Combined report for Draco and Capsaicin"
+elif test "${projects}" = "draco jayenne capsaicin"; then
+   project_name="Jayenne and Capsaicin"
+   pp=" - Combined report for Draco, Jayenne and Capsaicin"
 fi
 
 subj=`echo -n "Code Metrics for ${project_name}, "; date`
@@ -173,7 +173,7 @@ done
 # create the new coverage file via covmerge
 eval $cmd 
 # run covdir to generate a report (but omit entry for /source/src/)
-covdir | grep -v "source/src/ "
+covdir | grep -v "source/.*src/ " | grep -v "source/ "
 
 echo " "
 echo "* C/D Coverage is condition/decision coverage"

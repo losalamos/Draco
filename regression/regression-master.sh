@@ -215,45 +215,6 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   jayenne_jobid=`jobs -p | sort -gr | head -n 1`
 fi
 
-# export subproj=clubimc
-# if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-#   # Run the *-job-launch.sh script (special for each platform).
-#   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-#   # Spin until $draco_jobid disappears (indicates that draco has been
-#   # built and installed)
-#   cmd+=" ${draco_jobid}"
-#   # Log all output.
-#   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
-#   echo "${subproj}: $cmd"
-#   eval "${cmd} &"
-#   sleep 1
-#   clubimc_jobid=`jobs -p | sort -gr | head -n 1`
-# fi
-
-# export subproj=wedgehog
-# if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-#   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-#   # Wait for clubimc regressions to finish
-#   cmd+=" ${clubimc_jobid}"
-#   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
-#   echo "${subproj}: $cmd"
-#   eval "${cmd} &"
-#   sleep 1
-#   wedgehog_jobid=`jobs -p | sort -gr | head -n 1`
-# fi
-
-# export subproj=milagro
-# if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-#   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-#   # Wait for clubimc regressions to finish
-#   cmd+=" ${clubimc_jobid}"
-#   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
-#   echo "${subproj}: $cmd"
-#   eval "${cmd} &"
-#   sleep 1
-#   milagro_jobid=`jobs -p | sort -gr | head -n 1`
-# fi
-
 export subproj=capsaicin
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
