@@ -217,6 +217,7 @@ macro( parse_args )
 #DRACO_TIMING:STRING=2 <-- breaks milagro tests (python cannot parse output).
      elseif( ${work_dir} MATCHES "intel-nr" )
         set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
+        set( compiler_short_name "intel-nr" )
      endif()
      if( "${compiler_version}x" STREQUAL "x" )
         set( compiler_short_name "intel" )
