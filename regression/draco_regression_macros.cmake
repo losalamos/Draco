@@ -217,7 +217,7 @@ macro( parse_args )
 #DRACO_TIMING:STRING=2 <-- breaks milagro tests (python cannot parse output).
      elseif( ${work_dir} MATCHES "intel-nr" )
         set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
-        set( compiler_short_name "intel-nr" )
+        set( compiler_version "nr" )
      endif()
      if( "${compiler_version}x" STREQUAL "x" )
         set( compiler_short_name "intel" )
@@ -300,6 +300,7 @@ macro( parse_args )
 CTEST_MODEL                 = ${CTEST_MODEL}
 CTEST_BUILD_CONFIGURATION   = ${CTEST_BUILD_CONFIGURATION}
 compiler_short_name         = ${compiler_short_name}
+compiler_version            = ${compiler_version}
 CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
