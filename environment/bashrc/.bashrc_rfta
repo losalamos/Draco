@@ -1,0 +1,57 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_ccs4_linux - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_rfta"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is draco
+_BINDIR=`dirname "$BASH_ARGV"`
+export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
+
+# Where is the vendor directory
+if test "${VENDOR_DIR}x" == "x"; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+   fi
+fi
+
+#
+# MODULES
+#
+# 1. Determine if the module command is available
+modcmd=`declare -f module`
+#    If not found, look for it in /usr/share/Modules (ML)
+if test "${modcmd}x" = "x"; then
+   if test -f /usr/share/Modules/init/bash; then
+      source /usr/share/Modules/init/bash
+   else
+      echo "ERROR: The module command was not found. No modules will be loaded."
+   fi
+fi
+modcmd=`declare -f module`
+
+# 2. Use modules found in the draco directory
+
+if test "${modcmd}x" = "x"; then
+   echo "ERROR: The module command was not found. No modules will be loaded."
+else
+
+    module use $DRACO_MODULE_DIR/hpc
+    module use $DRACO_MODULE_DIR/tu-fe
+    module load svn cmake numdiff git hsi-htar psi
+
+fi
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_rfta
+##---------------------------------------------------------------------------##

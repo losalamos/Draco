@@ -49,6 +49,7 @@ case mp*.localdomain:
     breaksw
 
 case redfta[0-9]*:
+case rfta**:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load git svn

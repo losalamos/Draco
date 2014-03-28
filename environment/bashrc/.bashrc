@@ -45,7 +45,7 @@ if test -z "$DRACO_SRC_DIR"; then
 fi
 
 # Append PATHS (not linux specific, not ccs2 specific).
-extradirs="${DRACO_SRC_DIR}/environment/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin /ccs/opt/x86_64/mercCmd-1.2.3/bin"
+extradirs="${DRACO_SRC_DIR}/environment/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin"
 for mydir in ${extradirs}; do
    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
       export PATH=${PATH}:${mydir}
@@ -215,6 +215,11 @@ ct-fe[0-9] | ct-login[0-9] | ci-fe[0-9] | ci-login[0-9])
 # Luna | Moonlight | Mustang
 mp* | lu* | ml* | mu* | pi* | ty*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
+    ;;
+
+# wtrw and rfta
+red-wtrw* | rfta*)
+    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rfta
     ;;
 
 # Assume CCS machine (ccscs[0-9] or personal workstation)
