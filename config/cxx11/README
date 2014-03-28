@@ -19,3 +19,10 @@ none_of() algorithm
 threading library
 smart pointer class
 
+* Compile manually with Intel or GNU:
+
+icpc -D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600 -D__STDC_CONSTANT_MACROS -w1 -vec-report0 -diag-disable remark -shared-intel -ftz -xHost -openmp -std=c++0x -g -O0 -inline-level=0 -ftrapuv -check-uninit -DDEBUG -early-template-check -openmp -o foo foo.cc
+
+g++ -D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600 -D__STDC_CONSTANT_MACROS -Wcast-align -Wpointer-arith -Wall -pedantic -march=native -fopenmp -std=c++11 -g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG -Woverloaded-virtual -Wnoexcept -Wsuggest-attribute=const -Wunused-local-typedefs -fopenmp -o foo foo.cc
+
+
