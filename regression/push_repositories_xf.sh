@@ -5,8 +5,13 @@
 # https://rtt.lanl.gov/redmine/projects/draco/wiki/Kelly_Thompson#Generating-keytab-file-that-works-with-transfer-20
 # or see the comments at the end of this file.
 
+# Use a different cache location to avoid destroying any active user's
+# kerberos.
+export KRB5CCNAME=/tmp/regress_kerb_cache
+
 # Obtain kerberos authentication via keytab
-kinit -f -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
+kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
+#kinit -f -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
 
 # Helpful functions:
 die () { echo "FATAL ERROR: $1"; exit 1;}
