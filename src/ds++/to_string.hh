@@ -26,11 +26,10 @@ using std::string;
 //---------------------------------------------------------------------------//
 
 template< class T >
-string to_string(T const num, unsigned int const precision = 0 )
+string to_string(T const num, unsigned int const precision = 23 )
 {
     std::stringstream s;
-    if( precision != 0 )
-        s.precision(precision);
+    s.precision(precision);
     s << num ;
     return s.str();
 }

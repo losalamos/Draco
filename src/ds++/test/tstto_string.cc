@@ -35,7 +35,7 @@ void tstto_string( UnitTest &ut)
         ut.failure("pi NOT correctly written/read");
 
     double const foo(2.11111111);
-    unsigned int const p(0);
+    unsigned int const p(23);
     // Must be careful to use rtt_dsxx::to_string and avoid std::to_string --
     // especially after 'using namespace std.'
     string s1( rtt_dsxx::to_string(foo,p) );
