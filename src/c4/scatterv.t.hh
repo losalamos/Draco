@@ -79,11 +79,11 @@ DLL_PUBLIC void indeterminate_scatterv(vector<vector<T> >  &outgoing_data,
             scatter(static_cast<int*>(NULL), &count, 1);
             incoming_data.resize(count);
             if( count > 0 )
-                scatterv(static_cast<T*>(NULL),
-                         static_cast<int>(NULL),
-                         static_cast<int>(NULL),
-                         &incoming_data[0],
-                         count);
+                rtt_c4::scatterv(static_cast<T*>(NULL),
+                                 static_cast<int*>(NULL),
+                                 static_cast<int*>(NULL),
+                                 &incoming_data[0],
+                                 count);
         }
     }
 #else
@@ -139,11 +139,11 @@ DLL_PUBLIC void determinate_scatterv(vector<vector<T> >  &outgoing_data,
         else
         {
             int count = incoming_data.size();
-            scatterv(static_cast<T*>(NULL),
-                     static_cast<int>(NULL),
-                     static_cast<int>(NULL),
-                     &incoming_data[0],
-                     count);
+            rtt_c4::scatterv(static_cast<T*>(NULL),
+                             static_cast<int*>(NULL),
+                             static_cast<int*>(NULL),
+                             &incoming_data[0],
+                             count);
         }
     }
 #else
