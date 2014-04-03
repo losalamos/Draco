@@ -167,6 +167,11 @@ set_target_properties(${acl_TARGET} PROPERTIES
 ")
    endif()
 
+   # Set the install rpath for apple builds
+   if( ${DRACO_SHARED_LIBS} )
+     set_target_properties( ${acl_TARGET} PROPERTIES INSTALL_RPATH "${imploc}" )
+   endif()
+
    if( NOT "${acl_TARGET}" MATCHES "test" )
 
       list( APPEND ${acl_PREFIX}_LIBRARIES ${acl_TARGET} )
