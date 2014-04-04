@@ -50,7 +50,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 
 # Toggle for C++11 support
 # can use -std=c++11 
-#toggle_compiler_flag( DRACO_ENABLE_CXX11 "-stdlib=libc++ -std=c++11" "CXX" "") 
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "-stdlib=libc++ -std=c++11" "CXX" "") 
 
 #------------------------------------------------------------------------------#
 # End config/apple-clang.cmake

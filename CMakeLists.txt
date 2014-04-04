@@ -97,9 +97,13 @@ project( Draco CXX C )
  # 1. XCode based Generators, or
  # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
  #    look for Fortran. 
-if( NOT "${CMAKE_GENERATOR}" MATCHES Xcode AND 
-    NOT MSVC )
+if( NOT APPLE AND NOT MSVC )
    enable_language( Fortran OPTIONAL )
+endif()
+
+# Set RPATH for all libraries on Apple platform
+if (APPLE)
+   set(CMAKE_MACOSX_RPATH 1)
 endif()
 
 # Build system configuration files are located here.

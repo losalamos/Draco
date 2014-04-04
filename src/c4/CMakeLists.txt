@@ -36,7 +36,7 @@ elseif( WIN32 )
 elseif( OSF1 )
    set( C4_MPICMD "prun -n " )
 elseif( APPLE )
-   set( C4_MPICMD "mpirun -np " )
+   set( C4_MPICMD "mpiexec -np " )
 else() # AIX
    set( C4_MPICMD "poe -procs " )
 endif()
