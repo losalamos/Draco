@@ -32,7 +32,7 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_meshReaders_test" )
+   DEPS    "Lib_meshReaders;Lib_dsxx" )
 
 # ---------------------------------------------------------------------------- #
 # Copy mesh files to test directory (binary_dir)
