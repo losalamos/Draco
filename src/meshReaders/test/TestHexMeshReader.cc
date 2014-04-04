@@ -13,20 +13,24 @@
 
 #include <cmath>
 #include <sstream>
-#include "meshReaders_test.hh"
 #include "TestHexMeshReader.hh"
 #include "../Hex_Mesh_Reader.hh"
 #include "mesh_element/Element_Definition.hh"
 #include "ds++/path.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+
+#define PASSMSG(m) ut.passes(m)
+#define FAILMSG(m) ut.failure(m)
 
 using namespace std;
+using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
-void runTest( std::string const & thisApp )
+void runTest(UnitTest &ut)
 {
     using rtt_meshReaders::Hex_Mesh_Reader;
     using rtt_dsxx::SP;
@@ -34,16 +38,10 @@ void runTest( std::string const & thisApp )
 
     cout << "\n******* CIC-19 Hex Mesh Reader Tests *******" << std::endl;
 
-    // currentPath
-    //string const cp = rtt_dsxx::draco_getcwd();
-    //std::cout << "cwd = " << cp << std::endl;
-
-    string const appPath = rtt_dsxx::getFilenameComponent( thisApp, 
-                                                           rtt_dsxx::FC_PATH );
-    //std::cout << "appPath = " << appPath << std::endl;
-
-    // Read and test a 1D mesh.
-    std::string filename = appPath + "slab.mesh";
+    // Read and test a 1D mesh.g
+    string const inpPath = ut.getTestInputPath();
+    
+    std::string filename = inpPath + "slab.mesh";
     std::cout << "Creating mesh from file: " << filename << std::endl;
     Hex_Mesh_Reader mesh_1D(filename);
     {
@@ -54,13 +52,13 @@ void runTest( std::string const & thisApp )
         PASSMSG( message.str() );
     }
 
-    rtt_meshReaders_test::check_mesh(mesh_1D, "slab");
+    rtt_meshReaders_test::check_mesh(ut, mesh_1D, "slab");
     vector<SP<Element_Definition> > element_defs = mesh_1D.get_element_defs();
     if (element_defs.size()>0)
         FAILMSG("element defs is NOT empty for slab");
 
     // Read and test a 2D mesh.
-    filename = appPath + "quad.mesh";
+    filename = inpPath + "quad.mesh";
     std::cout << "Creating mesh from file: " << filename << std::endl;
     Hex_Mesh_Reader mesh_2D(filename);
     {
@@ -70,13 +68,13 @@ void runTest( std::string const & thisApp )
                 << std::endl;
         PASSMSG( message.str() );
     }
-    rtt_meshReaders_test::check_mesh(mesh_2D, "quad");
+    rtt_meshReaders_test::check_mesh(ut, mesh_2D, "quad");
     element_defs = mesh_2D.get_element_defs();
     if (element_defs.size()>0)
         FAILMSG("element defs is NOT empty for quad");
 
     // Read and test a 3D mesh.
-    filename = appPath + "cube.mesh";
+    filename = inpPath + "cube.mesh";
     std::cout << "Creating mesh from file: " << filename << std::endl;
     Hex_Mesh_Reader mesh_3D(filename);
     {
@@ -86,21 +84,18 @@ void runTest( std::string const & thisApp )
                 << std::endl;
         PASSMSG( message.str() );
     }
-    rtt_meshReaders_test::check_mesh(mesh_3D, "cube");
+    rtt_meshReaders_test::check_mesh(ut, mesh_3D, "cube");
     element_defs = mesh_3D.get_element_defs();
     if (element_defs.size()>0)
         FAILMSG("element defs is NOT empty for cube");
     cout << endl;
 
     // Report results of test.
-    if (rtt_meshReaders_test::passed)
-    {
-        PASSMSG("All tests passed.");
-    }
+    if( ut.numFails == 0 && ut.numPasses > 0 )
+        ut.passes("All tests passed.");
     else
-    {
-        FAILMSG("Some tests failed.");
-    }
+        ut.failure("Some tests failed.");
+    return;
 }
 
 //---------------------------------------------------------------------------//
@@ -108,29 +103,34 @@ void runTest( std::string const & thisApp )
 namespace rtt_meshReaders_test
 {
 
-bool check_mesh(
+bool check_mesh(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
 
     // Exercize the accessor functions for this mesh and spot check
     // the results.
 
-    bool pass_nc = check_nodes(mesh, testid);
-    bool pass_cu = check_node_units(mesh);
-    bool pass_ns = check_node_sets(mesh, testid);
-    bool pass_ti = check_title(mesh);
-    bool pass_gdn = check_get_dims_ndim(mesh, testid);
-    bool pass_en = check_element_nodes(mesh, testid);
-    bool pass_in = check_invariant(mesh);
-    bool pass_es = check_element_sets(mesh, testid);
-    bool pass_et = check_element_types(mesh, testid);
-    bool pass_ut = check_unique_element_types(mesh, testid);
+    bool pass_nc = check_nodes(ut,mesh, testid);
+    bool pass_cu = check_node_units(ut,mesh);
+    bool pass_ns = check_node_sets(ut,mesh, testid);
+    bool pass_ti = check_title(ut, mesh);
+    bool pass_gdn = check_get_dims_ndim(ut,mesh, testid);
+    bool pass_en = check_element_nodes(ut, mesh, testid);
+    bool pass_in = check_invariant(ut, mesh);
+    bool pass_es = check_element_sets(ut, mesh, testid);
+    bool pass_et = check_element_types(ut,mesh, testid);
+    bool pass_ut = check_unique_element_types(ut,mesh, testid);
 
-    return pass_nc && pass_cu && pass_ns && pass_ti && pass_gdn && pass_en
-        && pass_in && pass_es && pass_et && pass_ut;
+    bool all_passed(pass_nc && pass_cu && pass_ns && pass_ti && pass_gdn && pass_en
+                    && pass_in && pass_es && pass_et && pass_ut);
+    
+    if (!all_passed) FAILMSG("check_mesh failed");
+    
+    return all_passed;
+    
 }
 
-bool check_nodes(
+bool check_nodes(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check node coords -- Need to do a "fuzzy" check here, these are doubles!
@@ -182,7 +182,7 @@ bool check_nodes(
     return pass_nc;
 }
 
-bool check_node_units(
+bool check_node_units(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
 {     
     // Check coordinate units.
@@ -203,7 +203,7 @@ bool check_node_units(
     return pass_cu;
 }
 
-bool check_node_sets(
+bool check_node_sets(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check node sets.
@@ -238,7 +238,7 @@ bool check_node_sets(
     return pass_ns;
 }
 
-bool check_title(
+bool check_title(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
 {
     // Check title.
@@ -259,7 +259,7 @@ bool check_title(
     return pass_ti;
 }
 
-bool check_get_dims_ndim(
+bool check_get_dims_ndim(UnitTest &ut,
     rtt_meshReaders::Hex_Mesh_Reader const & mesh,
     std::string                      const & testid )
 {
@@ -289,7 +289,7 @@ bool check_get_dims_ndim(
     return pass_gdn;
 }
 
-bool check_element_nodes(
+bool check_element_nodes(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check element nodes.
@@ -362,7 +362,7 @@ bool check_element_nodes(
     return pass_en;
 }
 
-bool check_invariant(
+bool check_invariant(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
 { 
     // Check invariant.
@@ -382,7 +382,7 @@ bool check_invariant(
     return invr;
 }
 
-bool check_element_sets(
+bool check_element_sets(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     typedef std::map<std::string, std::set<int> > mt;
@@ -444,7 +444,7 @@ bool check_element_sets(
     return pass_es;
 }
 
-bool check_element_types(
+bool check_element_types(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check Element Types.
@@ -490,7 +490,7 @@ bool check_element_types(
     return pass_et;
 }
 
-bool check_unique_element_types(
+bool check_unique_element_types(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh, const std::string &testid)
 {
     // Check Unique Element Types.
@@ -570,37 +570,10 @@ int main(int argc, char *argv[])
 {
     using  rtt_dsxx::release;
 
-    std::string const thisApp( argv[0] );
-
-    // version tag
-    cout << argv[0] << ": version " << release() << endl;
-
-    for( int arg = 1; arg < argc; arg++ )
-        if (string(argv[arg]) == "--version") return 0;
-
-    try
-    {
-        // >>> UNIT TESTS
-        runTest( thisApp );
-    }
-    catch( rtt_dsxx::assertion &assert )
-    {
-        cout << "While testing TestHexMeshReader, "
-             << assert.what() << endl;
-        return 1;
-    }
-
-    // status of test
-    cout <<   "\n*********************************************\n";
-    if( rtt_meshReaders_test::passed )
-        cout << "**** TestHexMeshReader Test: PASSED\n";
-    else
-        cout << "**** TestHexMeshReader Test: FAILED\n";
-    cout <<     "*********************************************\n";
-    cout << endl;
-
-    cout << "Done testing TestHexMeshReader." << endl;
-    return 0;
+    ScalarUnitTest ut( argc, argv, release );
+    try { runTest(ut); }
+    UT_EPILOG(ut);
+    
 }   
 
 //---------------------------------------------------------------------------//
