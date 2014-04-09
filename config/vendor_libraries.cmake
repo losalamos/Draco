@@ -208,8 +208,17 @@ macro( setupMPILibrariesUnix )
          # ID 0."  Setting mpi_paffinity_alone to 0 allows parallel
          # ctest to work correctly.  MPIEXEC_POSTFLAGS only affects
          # MPI-only tests (and not MPI+OpenMP tests).
-         set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
-         set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
+
+         # This flag also shows up in
+         # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
+         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+           set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
+           set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
+         else()
+           # Flag provided by Sam Gutierrez (2014-04-08, #
+           set( MPIEXEC_POSTFLAGS -mca hwloc_base_binding_policy none )
+           set( MPIEXEC_POSTFLAGS_STRING "-mca hwloc_base_binding_policy none" )
+         endif()
 
          # Find cores/cpu and cpu/node.
 
