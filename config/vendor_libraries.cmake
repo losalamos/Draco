@@ -271,13 +271,22 @@ macro( setupMPILibrariesUnix )
          # --bind-to-socket will bind MPI ranks ordered by socket first (rank 0 onto
          #   socket 0, then rank 1 onto socket 1, etc.)
 
-         # --bind-to-core added in OpenMPI-1.4
-         set( MPIEXEC_OMP_POSTFLAGS 
-            -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
-            CACHE STRING "extra mpirun flags (list)." FORCE )
-         set( MPIEXEC_OMP_POSTFLAGS_STRING 
-            "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-            CACHE STRING "extra mpirun flags (list)." FORCE)
+         # --bind-to-core added in OpenMPI-1.4 
+         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+           set( MPIEXEC_OMP_POSTFLAGS 
+             -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
+             CACHE STRING "extra mpirun flags (list)." FORCE )
+           set( MPIEXEC_OMP_POSTFLAGS_STRING 
+             "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
+             CACHE STRING "extra mpirun flags (list)." FORCE)
+        else()
+           set( MPIEXEC_OMP_POSTFLAGS 
+             -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
+             CACHE STRING "extra mpirun flags (list)." FORCE )
+           set( MPIEXEC_OMP_POSTFLAGS_STRING 
+             "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
+             CACHE STRING "extra mpirun flags (list)." FORCE)
+        endif()
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
             MPI_LIBRARIES )         
 
@@ -620,14 +629,23 @@ macro( setupMPILibrariesWindows )
          #   socket 0, then rank 1 onto socket 1, etc.)
 
          # --bind-to-core added in OpenMPI-1.4
-         set( MPIEXEC_OMP_POSTFLAGS 
-            -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
-            CACHE STRING "extra mpirun flags (list)." FORCE )
-         set( MPIEXEC_OMP_POSTFLAGS_STRING 
-            "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-            CACHE STRING "extra mpirun flags (list)." FORCE)
+         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+           set( MPIEXEC_OMP_POSTFLAGS 
+             -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
+             CACHE STRING "extra mpirun flags (list)." FORCE )
+           set( MPIEXEC_OMP_POSTFLAGS_STRING 
+             "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
+             CACHE STRING "extra mpirun flags (list)." FORCE)
+         else()
+           set( MPIEXEC_OMP_POSTFLAGS 
+             -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
+             CACHE STRING "extra mpirun flags (list)." FORCE )
+           set( MPIEXEC_OMP_POSTFLAGS_STRING 
+             "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
+             CACHE STRING "extra mpirun flags (list)." FORCE)
+         endif()
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
-            MPI_LIBRARIES )    
+           MPI_LIBRARIES )    
             
       elseif("${MPIEXEC}" MATCHES "Microsoft HPC" )
          set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
