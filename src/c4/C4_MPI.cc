@@ -41,16 +41,17 @@ const int proc_null = MPI_PROC_NULL;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void initialize(int &argc, char **&argv)
+DLL_PUBLIC int initialize(int &argc, char **&argv, int required)
 {
-    int result = MPI_Init(&argc, &argv);
+    int provided;
+    int result = MPI_Init_thread(&argc, &argv, required, &provided);
     initialized = (result == MPI_SUCCESS);
     Check( initialized );
 
     // Resync clocks for Darwin mpich
     Remember( double foo( MPI_Wtick() ); );
     Ensure( foo > 0.0 );
-    return;
+    return provided;
 }
 
 //---------------------------------------------------------------------------//

@@ -59,7 +59,9 @@ class C4_Req;
 /*!
  * \brief Initialize a parallel job.
  */
-DLL_PUBLIC void initialize(int &argc, char **&argv);
+DLL_PUBLIC int initialize(int &argc,
+                          char **&argv,
+                          int required=MPI_THREAD_SINGLE);
 
 //---------------------------------------------------------------------------//
 /*!
