@@ -33,7 +33,7 @@ const int proc_null = -1;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void initialize(int &/* argc */, char **&/*argv */)
+DLL_PUBLIC void initialize(int &/* argc */, char **&/*argv */, int /*required*/)
 {
 }
 
