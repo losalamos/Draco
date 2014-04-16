@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building ds++/test level Makefile.
-# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -104,8 +104,7 @@ if( PYTHONINTERP_FOUND )
       # located in the test directory.
       unset( copy_lib_command )
       foreach( lib Lib_dsxx )
-         unset( lib_loc )
-         get_target_property( lib_loc ${lib} LOCATION )
+         set( lib_loc $<TARGET_FILE:${lib}> )
          add_custom_command( TARGET Ut_dsxx_do_exception_exe
             POST_BUILD 
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc} 

@@ -353,38 +353,36 @@ macro( copy_win32_dll_to_test_dir )
       while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
          set( old_link_libs ${link_libs} )
          foreach( lib ${link_libs} )
-            get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
-            list( APPEND link_libs ${link_libs2} )
+            # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual path
+            # to a library (c:\lib\gsl.lib).
+            if( NOT EXISTS ${lib} )
+               # Must be a CMake target... find it's dependencies...
+               get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
+               list( APPEND link_libs ${link_libs2} )
+            endif()
          endforeach()
          list( REMOVE_DUPLICATES link_libs )
          foreach( lib ${link_libs} )
             if( "${lib}" MATCHES "NOTFOUND" )
                # nothing to add so remove from list
                list( REMOVE_ITEM link_libs ${lib} )
-               # message("remove item ${lib}")
             elseif( "${lib}" MATCHES ".[lL]ib$" )
                # We have a path to a static library. Static libraries do not 
                # need to be copied.  
                list( REMOVE_ITEM link_libs ${lib} )
-               # message("remove item ${lib}")
                # However, if there is a corresponding dll, we should add it 
                # to the list.
                string( REPLACE ".lib" ".dll" dll_lib ${lib} )
                if( ${dll_lib} MATCHES "[.]dll$" AND EXISTS ${dll_lib} )
                   list( APPEND link_libs "${dll_lib}" )
-                  # message( "add item ${dll_lib}" )
                endif()               
             endif()
          endforeach()
       endwhile()
       list( REMOVE_DUPLICATES link_libs )      
-      # if( ${compname} MATCHES "rng" )  
-         # message( "Ut_${compname}_${testname}_exe --> ${link_libs}")
-      # endif()
       
       # Add a post-build command to copy each dll into the test directory.
       foreach( lib ${link_libs} )
-         # message("   Ut_${compname}_${testname}_exe --> ${lib}")
          unset( ${comp_target}_loc )
          if( EXISTS ${lib} )
             # If $lib is a full path to a library, add it to the list
@@ -392,7 +390,7 @@ macro( copy_win32_dll_to_test_dir )
             set( ${comp_target}_gnutoms NOTFOUND )
          else()
             # if $lib is a target name, obtain the file path.
-            get_target_property( ${comp_target}_loc ${lib} LOCATION )
+            set( ${comp_target}_loc $<TARGET_FILE:${lib}> )
             get_target_property( ${comp_target}_gnutoms ${lib} GNUtoMS )
          endif()
          # Also grab the file with debug info
@@ -414,9 +412,6 @@ macro( copy_win32_dll_to_test_dir )
                        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
                )
          endif()
-         # if( ${compname} MATCHES "rng" )  
-         # message("   cp ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-         # endif()
       endforeach()
    endif()
 endmacro()
@@ -556,7 +551,7 @@ macro( add_scalar_tests test_sources )
          
       # Special post-build options for Win32 platforms
       # ------------------------------------------------------------
-     copy_win32_dll_to_test_dir()
+      copy_win32_dll_to_test_dir()
     
    endforeach()
          
@@ -683,28 +678,6 @@ macro( add_parallel_tests )
    if( ${DRACO_C4} MATCHES "MPI" )
       foreach( file ${addparalleltest_SOURCES} )
 
-         # Loop over PE_LIST, register test for each numPE
-
-         # 2011-02-22 KT: I noticed that a handful of tests were
-         # failing because MPI was aborting.  After some investigation
-         # this appears be be a result of how OpenMPI is installed on
-         # the big iron.  That is, our installations do not allow
-         # multiple mpirun executing on the same core. 
-         #
-         # In an attempt to fix this problem, I added "--bind-to-none"
-         # to the add_test() command.  This does allow multiple mpirun
-         # on the same core.  However, each mpirun job was using the
-         # same 4 cores while the remaining 12 where idle.  
-         #
-         # Jon Dahl pointed me to the "--mca mpi_paffinity_alone 0"
-         # option that appears to allow me to run on all 16 cores and
-         # allows multiple mpirun to execute at the same time on each
-         # core.  This appears to fix the randomly failing tests.
-         #
-         # http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.4
-
-
-
          get_filename_component( testname ${file} NAME_WE )
          foreach( numPE ${addparalleltest_PE_LIST} )
             set( iarg 0 )
@@ -757,7 +730,11 @@ macro( add_parallel_tests )
 endmacro()
 
 #----------------------------------------------------------------------#
-#
+# provide_aux_files
+# 
+# Call this macro from a package CMakeLists.txt to instruct the build 
+# system that some files should be copied from the source directory
+# into the build directory.
 #----------------------------------------------------------------------#
 macro( provide_aux_files )
 
@@ -770,14 +747,6 @@ macro( provide_aux_files )
       "NONE"
       ${ARGV}
       )
-
-   # Strip any CVS directories from aux. files list
-   foreach( file ${auxfiles_FILES} )
-      if( ${file} MATCHES CVS$ )
-         list( REMOVE_ITEM auxfiles_FILES ${file})
-      endif()
-   endforeach()
- 
 
    unset(required_files)
    foreach( file ${auxfiles_FILES} )
@@ -801,12 +770,7 @@ macro( provide_aux_files )
                srcfilenameonly ${srcfilenameonly} )
          endif()
       endif()
-      if ( ${CMAKE_GENERATOR} MATCHES "Makefiles" OR 
-           ${CMAKE_GENERATOR} MATCHES "Xcode"  )
-         set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
-      else()
-         set( outfile ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${srcfilenameonly} )
-      endif()
+      set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
       add_custom_command( 
          OUTPUT  ${outfile}
          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}
@@ -830,7 +794,7 @@ macro( provide_aux_files )
       ALL
       DEPENDS ${required_files}
       )
-	set( folder_name ${compname}_test )
+    set( folder_name ${compname}_test )
     set_target_properties( Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg} 
       PROPERTIES FOLDER ${folder_name}
       )
@@ -880,8 +844,7 @@ macro( conditionally_add_subdirectory )
          endforeach()
       endif()
    endif()
-
-
+   
 endmacro()
 
 #----------------------------------------------------------------------#

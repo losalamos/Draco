@@ -122,6 +122,8 @@ void dbc_test( UnitTest & ut )
     // rtt_utils::exceeds predicate.
 
     // Test badly formed numbers.
+	// Note: VS2013 with Nov 2013 CTP will not compile an explicit division by zero.
+#ifndef WIN32
     if( ! ut.fpe_trap_active )
     {
         double const Zero = 0.0;
@@ -138,7 +140,8 @@ void dbc_test( UnitTest & ut )
         else
             ut.failure("isNaN is problematic on this platform.");
     }
-    
+#endif
+
     // Check on symmetricity of matrix.
     vector<double> A(2*2);
     A[0+2*0] = 2.5;

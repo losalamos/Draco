@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Sep 24
 # brief  Generate build project files for ds++.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -67,12 +67,6 @@ file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/ds++/config.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
-# BUG: artf21615 (tf.lanl.gov): Safe_Ptr has a design defect
-list( REMOVE_ITEM headers 
-   ${PROJECT_SOURCE_DIR}/Safe_Ptr.hh
-   ${PROJECT_SOURCE_DIR}/DBC_Ptr.hh 
-)
-
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
    list( APPEND sources ${headers} ${template_implementations} )
@@ -95,13 +89,13 @@ add_component_library(
    LIBRARY_NAME ds++ 
    SOURCES      "${sources}" 
    )
+target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION lib )
-target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
 
 # ---------------------------------------------------------------------------- #
@@ -111,6 +105,9 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
+#if( WIN32 )
+#   add_subdirectory( bin )
+#endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

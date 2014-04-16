@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi_ipcress.
-# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -61,7 +61,7 @@ add_executable( Exe_Ipcress_Interpreter IpcressInterpreter.cc )
 target_link_libraries( 
    Exe_Ipcress_Interpreter 
    Lib_cdi_ipcress Lib_cdi Lib_dsxx 
-   ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY})
+   ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY} )
 set_target_properties( 
    Exe_Ipcress_Interpreter 
    PROPERTIES OUTPUT_NAME Ipcress_Interpreter 
@@ -70,21 +70,18 @@ set_target_properties(
 if( WIN32 )   
    # Add a post-build command to copy each dll into the test directory.
    foreach( lib Lib_cdi_ipcress;Lib_cdi;Lib_dsxx )
-      unset( ${comp_target}_loc )
-      get_target_property( ${comp_target}_loc ${lib} LOCATION )
+      set( lib_loc $<TARGET_FILE:${lib}> )
       # Also grab the file with debug info
-      string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
+      string( REPLACE ".dll" ".pdb" pdb_file ${lib_loc} )
       add_custom_command( TARGET Exe_Ipcress_Interpreter 
          POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc} 
                  ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file} 
                  ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
          )
    endforeach()
-endif()
-      
-      
+endif()      
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
@@ -107,6 +104,3 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-
-

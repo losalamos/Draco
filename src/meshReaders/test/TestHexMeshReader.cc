@@ -46,9 +46,9 @@ void runTest(UnitTest &ut)
     Hex_Mesh_Reader mesh_1D(filename);
     {
         ostringstream message;
-        message << 
-            "Read a 1D mesh without coreing in or firing an assertion." 
-                << std::endl;
+        message 
+			<< "Read a 1D mesh without coreing in or firing an assertion." 
+            << std::endl;
         PASSMSG( message.str() );
     }
 
