@@ -175,9 +175,10 @@ public:
     static void SigsegvHandler(int);
     static void SigtermHandler(int);
 };
-#endif
 
 } // end namespace rtt_dsxx
+
+#endif // end FPETRAP_WINDOWS_X86
 
 #endif // fpe_trap_hh
 
