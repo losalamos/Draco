@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/fpe_trap.cc
- * \author Rob Lowrie
+ * \author Rob Lowrie, Kelly Thompson
  * \date   Thu Oct 13 16:52:05 2005
- * \brief  Linux/X86 implementation of fpe_trap functions.
+ * \brief  platform dependent implementation of fpe_trap functions.
  *
  * Copyright (C) 2005-2014 Los Alamos National Security, LLC.
  *               All rights reserved.
@@ -20,8 +20,10 @@
 
 #include "fpe_trap.hh"
 #include "Assert.hh"
+#include <iostream>
 #include "StackTrace.hh"
 #include <sstream>
+#include <string>
 
 //---------------------------------------------------------------------------//
 // Linux_x86
@@ -34,7 +36,7 @@
 /* Signal handler for floating point exceptions. */
 extern "C"
 void catch_sigfpe (int sig, siginfo_t *psSiginfo, void * /*psContext*/) 
-{    
+{
     // generate a message:
     std::string error_type;
 
@@ -202,7 +204,7 @@ void fpe_trap::disable(void)
     return;
 }
 
-} // end namespace rtt_shared_lib
+} // end namespace rtt_dsxx
 
 #endif // FPETRAP_OSF_ALPHA
 
@@ -213,6 +215,9 @@ void fpe_trap::disable(void)
 
 #include <Windows.h>  // defines STATUS_FLOAT_...
 #include <float.h>    // defines _controlfp_s
+#include <new.h>      // _set_new_handler
+#include <signal.h>   // SIGABRT
+#include <dbghelp.h>  // minidump_exception_information
 
 #pragma fenv_access (on)
 
@@ -263,7 +268,7 @@ namespace rtt_dsxx
 // ----------------------------------------------------------------------------
 bool fpe_trap::enable( void )
 {   
-   // Allways call this before setting control words.
+   // Always call this before setting control words.
    _clearfp();
 
    // Read the current control words.
@@ -297,7 +302,7 @@ bool fpe_trap::enable( void )
 //! Disable trapping of floating point errors.
 void fpe_trap::disable(void)
 {
-   // Allways call this before setting control words.
+   // Always call this before setting control words.
    _clearfp();
 
    // Read the current control words.
@@ -316,7 +321,425 @@ void fpe_trap::disable(void)
     return;
 }
 
-} // end namespace rtt_shared_lib
+//---------------------------------------------------------------------------//
+// CCrashHandler
+//---------------------------------------------------------------------------//
+void CCrashHandler::SetProcessExceptionHandlers()
+{
+    std::cout << "In CCrashHandler::SetProcessExceptionHandlers" << std::endl;
+    // Install top-level SEH handler
+    SetUnhandledExceptionFilter(SehHandler);    
+
+    // Catch pure virtual function calls.
+    // Because there is one _purecall_handler for the whole process, 
+    // calling this function immediately impacts all threads. The last 
+    // caller on any thread sets the handler. 
+    // http://msdn.microsoft.com/en-us/library/t296ys27.aspx
+    _set_purecall_handler(PureCallHandler);    
+
+    // Catch new operator memory allocation exceptions
+    _set_new_handler(NewHandler);
+
+    // Catch invalid parameter exceptions.
+    _set_invalid_parameter_handler(InvalidParameterHandler); 
+
+    // Set up C++ signal handlers
+
+    _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
+
+    // Catch an abnormal program termination
+    signal(SIGABRT, SigabrtHandler);  
+
+    // Catch illegal instruction handler
+    signal(SIGINT, SigintHandler);     
+
+    // Catch a termination request
+    signal(SIGTERM, SigtermHandler);          
+}
+
+void CCrashHandler::SetThreadExceptionHandlers()
+{
+    // Catch terminate() calls. 
+    // In a multithreaded environment, terminate functions are maintained 
+    // separately for each thread. Each new thread needs to install its own 
+    // terminate function. Thus, each thread is in charge of its own termination handling.
+    // http://msdn.microsoft.com/en-us/library/t6fk7h29.aspx
+    set_terminate(TerminateHandler);       
+
+    // Catch unexpected() calls.
+    // In a multithreaded environment, unexpected functions are maintained 
+    // separately for each thread. Each new thread needs to install its own 
+    // unexpected function. Thus, each thread is in charge of its own unexpected handling.
+    // http://msdn.microsoft.com/en-us/library/h46t5b69.aspx  
+    set_unexpected(UnexpectedHandler);
+
+    // Catch a floating point error
+    typedef void (*sigh)(int);
+    signal(SIGFPE, (sigh)SigfpeHandler); 
+
+    // Catch an illegal instruction
+    signal(SIGILL, SigillHandler);   
+
+    // Catch illegal storage access errors
+    signal(SIGSEGV, SigsegvHandler); 
+}
+
+// The following code gets exception pointers using a workaround found in CRT code.
+void CCrashHandler::GetExceptionPointers(
+    DWORD                dwExceptionCode, 
+    EXCEPTION_POINTERS** ppExceptionPointers)
+{
+    // The following code was taken from VC++ 8.0 CRT (invarg.c: line 104)
+
+    EXCEPTION_RECORD ExceptionRecord;
+    CONTEXT ContextRecord;
+    memset(&ContextRecord, 0, sizeof(CONTEXT));
+
+#ifdef _X86_
+
+    __asm {
+        mov dword ptr [ContextRecord.Eax], eax
+        mov dword ptr [ContextRecord.Ecx], ecx
+        mov dword ptr [ContextRecord.Edx], edx
+        mov dword ptr [ContextRecord.Ebx], ebx
+        mov dword ptr [ContextRecord.Esi], esi
+        mov dword ptr [ContextRecord.Edi], edi
+        mov word ptr [ContextRecord.SegSs], ss
+        mov word ptr [ContextRecord.SegCs], cs
+        mov word ptr [ContextRecord.SegDs], ds
+        mov word ptr [ContextRecord.SegEs], es
+        mov word ptr [ContextRecord.SegFs], fs
+        mov word ptr [ContextRecord.SegGs], gs
+        pushfd
+        pop [ContextRecord.EFlags]
+    }
+
+    ContextRecord.ContextFlags = CONTEXT_CONTROL;
+#pragma warning(push)
+#pragma warning(disable:4311)
+    ContextRecord.Eip = (ULONG)_ReturnAddress();
+    ContextRecord.Esp = (ULONG)_AddressOfReturnAddress();
+#pragma warning(pop)
+    ContextRecord.Ebp = *((ULONG *)_AddressOfReturnAddress()-1);
+
+
+#elif defined (_IA64_) || defined (_AMD64_)
+
+    /* Need to fill up the Context in IA64 and AMD64. */
+    RtlCaptureContext(&ContextRecord);
+
+#else  /* defined (_IA64_) || defined (_AMD64_) */
+
+    ZeroMemory(&ContextRecord, sizeof(ContextRecord));
+
+#endif  /* defined (_IA64_) || defined (_AMD64_) */
+
+    ZeroMemory(&ExceptionRecord, sizeof(EXCEPTION_RECORD));
+
+    ExceptionRecord.ExceptionCode = dwExceptionCode;
+    ExceptionRecord.ExceptionAddress = _ReturnAddress();
+
+    ///
+
+    EXCEPTION_RECORD* pExceptionRecord = new EXCEPTION_RECORD;
+    memcpy(pExceptionRecord, &ExceptionRecord, sizeof(EXCEPTION_RECORD));
+    CONTEXT* pContextRecord = new CONTEXT;
+    memcpy(pContextRecord, &ContextRecord, sizeof(CONTEXT));
+
+    *ppExceptionPointers = new EXCEPTION_POINTERS;
+    (*ppExceptionPointers)->ExceptionRecord = pExceptionRecord;
+    (*ppExceptionPointers)->ContextRecord = pContextRecord;  
+}
+
+//! Action to perform when an exception is found.
+void CCrashHandler::ActionOnException( std::string const & message,
+                                       EXCEPTION_POINTERS* pExcPtrs )
+{
+    std::cout << "In CCrashHandler::ActionOnException" << std::endl;
+    CCrashHandler::CreateMiniDump( pExcPtrs );
+
+    // Provide a report
+    std::ostringstream msg;
+    msg << "\nERROR: " << message
+        << "\nA fatal error has occured and a dump file was generated "
+        << "(crashdump.dmp)."
+        << "\nThe dump file can be viewed by loading it into "
+        << "Visual Studio." << std::endl;
+    std::cout << msg.str( ) << std::endl;
+
+    // Terminate process
+    TerminateProcess( GetCurrentProcess( ), 1 );
+
+    return;
+}
+
+// This method creates minidump of the process
+void CCrashHandler::CreateMiniDump(EXCEPTION_POINTERS* pExcPtrs)
+{  
+    std::cout << "In CCrashHandler::CreateMiniDump" << std::endl;
+#define _T(foo) foo 
+    HMODULE hDbgHelp = NULL;
+    HANDLE hFile = NULL;
+    MINIDUMP_EXCEPTION_INFORMATION mei;
+    MINIDUMP_CALLBACK_INFORMATION mci;
+    
+    // Load dbghelp.dll
+    hDbgHelp = LoadLibrary(_T("dbghelp.dll"));
+    if(hDbgHelp==NULL) return;
+
+    // Create the minidump file
+    hFile = CreateFile(
+        _T("crashdump.dmp"),
+        GENERIC_WRITE,
+        0,
+        NULL,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+
+    if(hFile==INVALID_HANDLE_VALUE) return;
+   
+    // Write minidump to the file
+    mei.ThreadId = GetCurrentThreadId();
+    mei.ExceptionPointers = pExcPtrs;
+    mei.ClientPointers = FALSE;
+    mci.CallbackRoutine = NULL;
+    mci.CallbackParam = NULL;
+
+    std::cout << "\nThreadId = " << mei.ThreadId
+        << "\nExceptionPointers = " << mei.ExceptionPointers;
+ 
+    typedef BOOL (WINAPI *LPMINIDUMPWRITEDUMP)(
+        HANDLE hProcess, 
+        DWORD ProcessId, 
+        HANDLE hFile, 
+        MINIDUMP_TYPE DumpType, 
+        CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, 
+        CONST PMINIDUMP_USER_STREAM_INFORMATION UserEncoderParam, 
+        CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
+
+    LPMINIDUMPWRITEDUMP pfnMiniDumpWriteDump = 
+        (LPMINIDUMPWRITEDUMP)GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
+    if(!pfnMiniDumpWriteDump) return;
+
+    HANDLE hProcess = GetCurrentProcess();
+    DWORD dwProcessId = GetCurrentProcessId();
+
+    std::cout << "\nhProcess = " << hProcess
+        << "\nProcessId = " << dwProcessId
+        << "\nhFile = " << hFile
+        << "\nMiniDumpNormal = " << MiniDumpNormal;
+
+    BOOL bWriteDump = pfnMiniDumpWriteDump(
+        hProcess,
+        dwProcessId,
+        hFile,
+        MiniDumpNormal,
+        &mei,
+        NULL,
+        &mci);
+
+    if(!bWriteDump) return;
+
+    // Close file
+    CloseHandle(hFile);
+
+    // Unload dbghelp.dll
+    FreeLibrary(hDbgHelp);
+}
+
+// Structured exception handler
+LONG WINAPI CCrashHandler::SehHandler(PEXCEPTION_POINTERS pExceptionPtrs)
+{ 
+    std::cout << "In CCrashHandler::SehHandler" << std::endl;
+    
+    // Write minidump file
+    ActionOnException( std::string("Seh"), pExceptionPtrs );
+    
+    // Unreacheable code  
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+// CRT terminate() call handler
+void __cdecl CCrashHandler::TerminateHandler()
+{
+    std::cout << "In CCrashHandler::TerminateHandler" << std::endl;
+    // Abnormal program termination (terminate() function was called)
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException(std::string("Terminate"), pExceptionPtrs);
+
+    return;
+}
+
+// CRT unexpected() call handler
+void __cdecl CCrashHandler::UnexpectedHandler()
+{
+    std::cout << "In CCrashHandler::UnexpectedHandler" << std::endl;
+    // Unexpected error (unexpected() function was called)
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string("Unexpected"), pExceptionPtrs );
+
+    return;
+}
+
+// CRT Pure virtual method call handler
+void __cdecl CCrashHandler::PureCallHandler()
+{
+    std::cout << "In CCrashHandler::PurceCallHandler" << std::endl;
+    // Pure virtual function call
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string("PureCall"), pExceptionPtrs );
+  
+    return;
+}
+
+// CRT invalid parameter handler
+void __cdecl CCrashHandler::InvalidParameterHandler(
+    const wchar_t* expression, 
+    const wchar_t* function, 
+    const wchar_t* file, 
+    unsigned int line, 
+    uintptr_t pReserved)
+{
+    std::cout << "In CCrashHandler::InvalidParameterHandler" << std::endl;
+    pReserved;
+
+    // Invalid parameter exception
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string("InvalidParameter"), pExceptionPtrs );
+ 
+    return;
+}
+
+// CRT new operator fault handler
+int __cdecl CCrashHandler::NewHandler(size_t)
+{
+    std::cout << "In CCrashHandler::NewHandler" << std::endl;
+    // 'new' operator memory allocation exception
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string("MemoryAllocation"), pExceptionPtrs );
+
+    return 0;
+}
+
+// CRT SIGABRT signal handler
+void CCrashHandler::SigabrtHandler(int)
+{
+    std::cout << "In CCrashHandler::SigabrtHandler" << std::endl;
+    // Caught SIGABRT C++ signal
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string("SignalAbort"), pExceptionPtrs );
+
+    return;
+}
+
+// CRT SIGFPE signal handler
+void CCrashHandler::SigfpeHandler(int /*code*/, int subcode)
+{
+    std::cout << "In CCrashHandler::SigfpeHandler" << std::endl;
+    // Floating point exception (SIGFPE)
+
+    EXCEPTION_POINTERS* pExceptionPtrs = (PEXCEPTION_POINTERS)_pxcptinfoptrs;
+    
+    // Write minidump file
+    ActionOnException( std::string( "SignalFloatingPointException" ), pExceptionPtrs );
+ 
+    return;
+}
+
+// CRT sigill signal handler
+void CCrashHandler::SigillHandler(int)
+{
+    std::cout << "In CCrashHandler::SigillHandler" << std::endl;
+    // Illegal instruction (SIGILL)
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string( "SignalIllegalInstruction" ), pExceptionPtrs );
+  
+    return;
+}
+
+// CRT sigint signal handler
+void CCrashHandler::SigintHandler(int)
+{
+    std::cout << "In CCrashHandler::SigintHandler" << std::endl;
+    // Interruption (SIGINT)
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string( "SignalInterruption" ), pExceptionPtrs );
+
+    return;
+}
+
+// CRT SIGSEGV signal handler
+void CCrashHandler::SigsegvHandler(int)
+{
+    std::cout << "In CCrashHandler::SigsegvHandler" << std::endl;
+    // Invalid storage access (SIGSEGV)
+
+    PEXCEPTION_POINTERS pExceptionPtrs = (PEXCEPTION_POINTERS)_pxcptinfoptrs;
+
+    // Write minidump file
+    ActionOnException( std::string( "SignalInvalidStorageAccess(SIGSEGV)" ), pExceptionPtrs );
+ 
+    return;
+}
+
+// CRT SIGTERM signal handler
+void CCrashHandler::SigtermHandler(int)
+{
+    std::cout << "In CCrashHandler::SigtermHandler" << std::endl;
+    // Termination request (SIGTERM)
+
+    // Retrieve exception information
+    EXCEPTION_POINTERS* pExceptionPtrs = NULL;
+    GetExceptionPointers(0, &pExceptionPtrs);
+
+    // Write minidump file
+    ActionOnException( std::string( "SignalTerminateRequest" ), pExceptionPtrs );
+
+    return;
+ }
+
+} // end namespace rtt_dsxx
 
 #endif // FPETRAP_WINDOWS_X86
 

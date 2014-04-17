@@ -1,11 +1,18 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/fpe_trap.hh
- * \author Rob Lowrie
+ * \author Rob Lowrie, Kelly Thompson
  * \date   Thu Oct 13 16:36:09 2005
  * \brief  Contains functions in the fpe_trap namespace.
  * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
+ *
+ * Copyright (C) 1994-2001  K. Scott Hunziker.
+ * Copyright (C) 1990-1994  The Boeing Company.
+ *
+ * See ds++/COPYING file for more copyright information.  This code is based
+ * substantially on fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is
+ * available at http://algae.sourceforge.net/.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -53,7 +60,7 @@ namespace rtt_dsxx
  *
  * Useful links:
  * - http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
- */
+*/
 class DLL_PUBLIC fpe_trap
 {
   public:
@@ -75,6 +82,100 @@ class DLL_PUBLIC fpe_trap
     bool fpeTrappingActive;
     bool abortWithInsist;
 };
+} // end namespace rtt_dsxx
+
+//---------------------------------------------------------------------------//
+/* WINDOWS X86
+ *
+ * Provide additional crash handlers for Win32 platforms.  This code 
+ * provides the ability to catch and handle the following exceptions: 
+ * - Structured Exception Handling (SEH): An exception code is provided and 
+ *   typically triggers Dr.Watson to start.
+ * - Vectored Exception Handling (VEH): These exceptions are supported in 
+ *   WinXP and later.  VEH allows the system to watch or handle all SEH 
+ *   chained exceptions for an application.
+ * - CRT Error Handling: The C run time libraries provide their own error 
+ *   handling mechanism to catch C++ exceptions like Terminate, Pure Call, 
+ *   New Operator Fault and Invalid Parameter.
+ * - C++ Signal Handling: C++ provides a program interruption mechanism to 
+ *   catch SIGABRT, SIGFPE, SIGILL, SIGINT, SIGSEGV and SIGTERM.
+ * 
+ * http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
+ *
+ * In the class declaration, you also can see several exception handler 
+ * functions, such as SehHandler(), TerminateHandler() and so on. Any of 
+ * these exception handlers can be called when an exception occurs. A handler
+ * function (optionally) retrieves exception information and invokes crash 
+ * minidump generation code, then it terminates process with 
+ * TerminateProcess() function call.
+ *
+ * The GetExceptionPointers() static method is used to retrieve exception 
+ * information.
+ */
+//---------------------------------------------------------------------------//
+#ifdef FPETRAP_WINDOWS_X86
+#include <Windows.h> // EXCEPTION_POINTERS
+//#include <cstdint>   // uintptr_t
+
+namespace rtt_dsxx
+{
+class DLL_PUBLIC CCrashHandler  
+{
+public:
+
+    // Constructor
+    CCrashHandler() {/*empty*/};
+
+    // Destructor
+    virtual ~CCrashHandler() {/*empty*/};
+
+    //! Sets exception handlers that work on per-process basis
+    void SetProcessExceptionHandlers();
+
+    //! Installs C++ exception handlers that function on per-thread basis
+    void SetThreadExceptionHandlers();
+
+    //! Collects current process state.
+    static void GetExceptionPointers(
+        DWORD dwExceptionCode, 
+        EXCEPTION_POINTERS** pExceptionPointers);
+
+    //! Action to perform when an exception is found.
+    static void ActionOnException( std::string const & message,
+                                   EXCEPTION_POINTERS* pExcPtrs );
+
+    /*!
+     * \brief This method creates minidump of the process
+     * \param pExcPtrs Pointer to the EXCEPTION_POINTERS structure 
+     *        containing exception information.
+     * 
+     * The method calls the MiniDumpWriteDump() function from Microsoft Debug 
+     * Help Library to generate a minidump file. 
+     */
+     static void CreateMiniDump(EXCEPTION_POINTERS* pExcPtrs);
+
+    /* Exception handler functions. */
+
+    static LONG WINAPI SehHandler(PEXCEPTION_POINTERS pExceptionPtrs);
+    static void __cdecl TerminateHandler();
+    static void __cdecl UnexpectedHandler();
+
+    static void __cdecl PureCallHandler();
+
+    static void __cdecl InvalidParameterHandler(const wchar_t* expression, 
+           const wchar_t* function, const wchar_t* file, 
+           unsigned int line, uintptr_t pReserved);
+
+    static int __cdecl NewHandler(size_t);
+
+    static void SigabrtHandler(int);
+    static void SigfpeHandler(int /*code*/, int subcode);
+    static void SigintHandler(int);
+    static void SigillHandler(int);
+    static void SigsegvHandler(int);
+    static void SigtermHandler(int);
+};
+#endif
 
 } // end namespace rtt_dsxx
 

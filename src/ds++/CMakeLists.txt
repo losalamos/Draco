@@ -105,9 +105,9 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
 if( BUILD_TESTING )
    add_subdirectory( test )
 endif()   
-#if( WIN32 )
-#   add_subdirectory( bin )
-#endif()
+if( WIN32 )
+  add_subdirectory( bin )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
