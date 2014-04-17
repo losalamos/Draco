@@ -116,7 +116,8 @@ double wall_clock_time( DRACO_TIME_TYPE & now )
     // obtain posix timer information and return it to the user via the
     // reference value argument "now".
 #ifdef WIN32
-    now = time(NULL);
+    // now = time( NULL );
+    time( &now );
 #else
     times( &now );
 #endif
