@@ -47,6 +47,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     more details.
  */
 
+#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
+// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and
+// an "unused local typedef" warning, from a pre-C++11 implementation of a
+// static assertion in compilerfeatures.h.
+#if (GNUC_VERSION >= 40600)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
 #include "uniform.hpp"
 #include <Random123/threefry.h>
 #include <stdio.h>
@@ -54,6 +67,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <string>
 #include <sstream>
+
+#if (GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
 
 using namespace r123;
 

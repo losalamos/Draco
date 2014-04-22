@@ -63,7 +63,7 @@ macro( add_component_library )
       # list names
       "PREFIX;TARGET;LIBRARY_NAME;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS;LIBRARY_NAME_PREFIX;LINK_LANGUAGE"
       # option names
-      "NONE"
+      "NOEXPORT"
       ${ARGV}
       )
 
@@ -128,7 +128,7 @@ macro( add_component_library )
 
    # the above command returns the location in the build tree.  We
    # need to convert this to the install location.
-   # gett_filename_component( imploc ${imploc} NAME )
+   # get_filename_component( imploc ${imploc} NAME )
    if( ${DRACO_SHARED_LIBS} )
       set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${impname}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
    else()
@@ -147,9 +147,9 @@ macro( add_component_library )
    endif()
    
    # For non-test libraries, save properties to the
-   # project-config.cmake file.
+   # project-config.cmake file     
    if( "${ilil}x" STREQUAL "x" )
-      set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
+     set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
          "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
 set_target_properties(${acl_TARGET} PROPERTIES
    IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
@@ -157,8 +157,8 @@ set_target_properties(${acl_TARGET} PROPERTIES
 )
 ")
    else()
-      set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
-         "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
+     set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
+       "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
 set_target_properties(${acl_TARGET} PROPERTIES
    IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
    IMPORTED_LINK_INTERFACE_LIBRARIES \"${ilil}\"
@@ -166,13 +166,16 @@ set_target_properties(${acl_TARGET} PROPERTIES
 )
 ")
    endif()
-
+ 
    # Set the install rpath for apple builds
    if( ${DRACO_SHARED_LIBS} )
      set_target_properties( ${acl_TARGET} PROPERTIES INSTALL_RPATH "${imploc}" )
    endif()
 
-   if( NOT "${acl_TARGET}" MATCHES "test" )
+   # Only publish information to draco-config.cmake for non-test
+   # libraries.  Also, omit any libraries that are marked as NOEXPORT
+   if( NOT ${acl_NOEXPORT} AND
+       NOT "${acl_TARGET}" MATCHES "test" )
 
       list( APPEND ${acl_PREFIX}_LIBRARIES ${acl_TARGET} )
       string( REPLACE "Lib_" "" compname ${acl_TARGET} )

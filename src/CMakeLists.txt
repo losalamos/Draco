@@ -6,7 +6,7 @@
 # note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
+# $Id: CMakeLists.txt 7442 2014-03-10 15:36:16Z kellyt $
 #------------------------------------------------------------------------------#
 
 cmake_minimum_required( VERSION 2.8 )
@@ -56,19 +56,19 @@ add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( device )       # needs ds++
 if (NOT APPLE)
-  add_dir_if_exists( lapack_wrap )  # needs ds++
+  add_dir_if_exists( lapack_wrap ) # needs ds++
 endif()
 add_dir_if_exists( linear )       # needs ds++
 add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
-if( _LANGUAGES_ MATCHES Fortran )
-   if( NOT ${CMAKE_GENERATOR} MATCHES Xcode)
-      add_dir_if_exists( FortranChecks )
-   endif()
+if( _LANGUAGES_ MATCHES Fortran OR MSVC ) # Exclude XCode
+   # This Fortran interoperability check should work for 
+   # 1. Linux/Makefiles,
+   # 2. MSVC (using gfortran provided by MinGW)
+   add_dir_if_exists( FortranChecks )
 endif()
-
 if( GRACE_FOUND )
   add_dir_if_exists( plot2D )
 endif()
@@ -168,225 +168,11 @@ if( DBS_PRINT_DEBUG_INFO )
    message( "CMake variables and values:" )
    echo_all_cmake_variable_values()
 
-   # Debug target properties
+   # Debug target properties (run 'make help' to see a list of targets)
    message( "CMake targets and properties:" )
    set( dbs_targets
       # Lib_dsxx
       # Lib_dsxx_test
-      # Lib_c4
-      # Lib_c4_test
-      # Lib_cdi
-      # Lib_cdi_test
-      # Lib_fpe_trap
-      # Lib_linear
-      # Lib_linear_test
-      # Lib_mesh_element
-      # Lib_mesh_element_test
-      # Lib_ode
-      # Lib_ode_test
-      # Lib_rng
-      # Lib_rng_test
-      # Lib_units
-      # Lib_units_test
-      # Lib_FC_Derived_Type
-      # Lib_FortranChecks
-      # Lib_plot2D
-      # Lib_diagnostics
-      # Lib_diagnostics_test
-      # Lib_fit
-      # Lib_fit_test
-      # Lib_meshReaders
-      # Lib_meshReaders_test
-      # Lib_min
-      # Lib_min_test
-      # Lib_norms
-      # Lib_norms_test
-      # Lib_parser
-      # Lib_parser_test
-      # Lib_roots
-      # Lib_roots_test
-      # Lib_timestep
-      # Lib_timestep_test
-      # Lib_viz
-      # Lib_viz_test
-      # Lib_cdi_ipcress
-      # Lib_cdi_ipcress_test
-      # Lib_special_functions
-      # Lib_cdi_analytic
-      # Lib_cdi_analytic_test
-      # Lib_RTT_Format_Reader
-      # Lib_quadrature
-      # Lib_quadrature_test
-      # Ut_dsxx_tstArray_exe
-      # Ut_dsxx_tstAssert_exe
-      # Ut_dsxx_tstBounds_exe
-      # Ut_dsxx_tstCheck_Strings_exe
-      # Ut_dsxx_tstDBC_Array_exe
-      # Ut_dsxx_tstData_Table_exe
-      # Ut_dsxx_tstEndian_exe
-      # Ut_dsxx_tstField_Traits_exe
-      # Ut_dsxx_tstFile_Streams_exe
-      # Ut_dsxx_tstHomogeneous_New_exe
-      # Ut_dsxx_tstIndex_Converter_exe
-      # Ut_dsxx_tstIndex_Counter_exe
-      # Ut_dsxx_tstIndex_Set_exe
-      # Ut_dsxx_tstMat1RA_exe
-      # Ut_dsxx_tstMat2RA_exe
-      # Ut_dsxx_tstMat3RA_exe
-      # Ut_dsxx_tstMat4RA_exe
-      # Ut_dsxx_tstMat5RA_exe
-      # Ut_dsxx_tstMat_exe
-      # Ut_dsxx_tstPacking_Utils_exe
-      # Ut_dsxx_tstPath_exe
-      # Ut_dsxx_tstRCF_exe
-      # Ut_dsxx_tstRange_finder_exe
-      # Ut_dsxx_tstSP_exe
-      # Ut_dsxx_tstSafe_Divide_exe
-      # Ut_dsxx_tstScalarUnitTest_exe
-      # Ut_dsxx_tstSlice_exe
-      # Ut_dsxx_tstSoft_Equiv_exe
-      # Ut_dsxx_tstSortPermutation_exe
-      # Ut_dsxx_tstVector_Lite_exe
-      # Ut_dsxx_tstabs_exe
-      # Ut_dsxx_tstconj_exe
-      # Ut_dsxx_tstcube_exe
-      # Ut_dsxx_tstdbc_exe
-      # Ut_dsxx_tstisFinite_exe
-      # Ut_dsxx_tstpythag_exe
-      # Ut_dsxx_tstsign_exe
-      # Ut_dsxx_tstsquare_exe
-      # Ut_dsxx_tstto_string_exe
-      # Ut_dsxx_tstvalue_exe
-      # Ut_c4_phw_exe
-      # Ut_c4_tstAbort_exe
-      # Ut_c4_tstApplicationUnitTest_exe
-      # Ut_c4_tstBroadcast_exe
-      # Ut_c4_tstC4_Req_exe
-      # Ut_c4_tstComm_Dup_exe
-      # Ut_c4_tstCompare_exe
-      # Ut_c4_tstGatherScatter_exe
-      # Ut_c4_tstInvert_Comm_Map_exe
-      # Ut_c4_tstOMP_exe
-      # Ut_c4_tstParallelUnitTestFailMode_exe
-      # Ut_c4_tstParallelUnitTest_exe
-      # Ut_c4_tstPingPong_exe
-      # Ut_c4_tstProcessor_Group_exe
-      # Ut_c4_tstReduction_exe
-      # Ut_c4_tstScalar_exe
-      # Ut_c4_tstSend_Receive_exe
-      # Ut_c4_tstSwap_exe
-      # Ut_c4_tstTermination_Detector_exe
-      # Ut_c4_tstTime_exe
-      # Ut_c4_tstglobal_containers_exe
-      # Ut_cdi_tCDI_exe
-      # Ut_cdi_tDummyEoS_exe
-      # Ut_cdi_tDummyOpacity_exe
-      # Ut_fpe_trap_do_exception_exe
-      # Ut_lapack_wrap_tstBlas_Level_1_exe
-      # Ut_linear_tstbtridag_exe
-      # Ut_linear_tstfnorm_exe
-      # Ut_linear_tstgaussj_exe
-      # Ut_linear_tstludcmp_exe
-      # Ut_linear_tstqr_unpack_exe
-      # Ut_linear_tstqrdcmp_exe
-      # Ut_linear_tstqrupdt_exe
-      # Ut_linear_tstrotate_exe
-      # Ut_linear_tstrsolv_exe
-      # Ut_linear_tstsvbksb_exe
-      # Ut_linear_tstsvdcmp_exe
-      # Ut_linear_tsttqli_exe
-      # Ut_linear_tsttred2_exe
-      # Ut_mesh_element_TestElementDefinition_exe
-      # Ut_ode_tstFunction_Traits_exe
-      # Ut_ode_tstquad_exe
-      # Ut_ode_tstrkqs_exe
-      # Ut_rng_tstRnd_Control_Inline_exe
-      # Ut_rng_tstSubrandom_Sequence_exe
-      # Ut_traits_tstViz_Traits_exe
-      # Ut_units_tstFundUnit_exe
-      # Ut_units_tstPhysicalConstants_exe
-      # Ut_units_tstUnitSystemEnums_exe
-      # Ut_units_tstUnitSystemType_exe
-      # Ut_units_tstUnitSystem_exe
-      # Ut_FortranChecks_cppmain_exe
-      # Ut_FortranChecks_ftest_derived_types_exe
-      # Ut_FortranChecks_ftest_f90main_exe
-      # Ut_plot2D_install_inputs_1
-      # Ut_plot2D_tstPlot2D_exe
-      # Ut_diagnostics_tstDiagnostics_exe
-      # Ut_diagnostics_tstTiming_exe
-      # Ut_fit_tstsvdfit_exe
-      # Ut_meshReaders_TestHexMeshReader_exe
-      # Ut_meshReaders_install_inputs_1
-      # Ut_min_install_inputs_1
-      # Ut_min_tstbrent_exe
-      # Ut_min_tstmnbrak_exe
-      # Ut_min_tstmrqmin_exe
-      # Ut_min_tstpowell_exe
-      # Ut_norms_tstL2norm_exe
-      # Ut_norms_tst_Norms_exe
-      # Ut_parser_driver4tstConsole_Token_Stream_exe
-      # Ut_parser_install_inputs_1
-      # Ut_parser_tstAbstract_Class_Parser_exe
-      # Ut_parser_tstClass_Parser_exe
-      # Ut_parser_tstConsole_Token_Stream
-      # Ut_parser_tstExpression_exe
-      # Ut_parser_tstFile_Token_Stream_exe
-      # Ut_parser_tstParallel_File_Token_Stream_exe
-      # Ut_parser_tstParse_Table_exe
-      # Ut_parser_tstString_Token_Stream_exe
-      # Ut_parser_tstToken_Equivalence_exe
-      # Ut_parser_tstToken_exe
-      # Ut_parser_tstUnit_exe
-      # Ut_parser_tstutilities_exe
-      # Ut_roots_tstbroydn_exe
-      # Ut_roots_tstcubic1_exe
-      # Ut_roots_tstfdjac_exe
-      # Ut_roots_tstlnsrch_exe
-      # Ut_roots_tstquadratic_exe
-      # Ut_roots_tstzbrac_exe
-      # Ut_roots_tstzbrent_exe
-      # Ut_timestep_tstTimeStep_exe
-      # Ut_viz_install_inputs_1
-      # Ut_viz_install_inputs_2
-      # Ut_viz_install_inputs_3
-      # Ut_viz_tstEnsight_Stream_exe
-      # Ut_viz_tstEnsight_Translator_exe
-      # Ut_cdi_ipcress_ReadOdfIpcressFile_exe
-      # Ut_cdi_ipcress_tIpcressFile_exe
-      # Ut_cdi_ipcress_tIpcressOdfmgOpacity_exe
-      # Ut_cdi_ipcress_tIpcressOpacity_exe
-      # Ut_cdi_ipcress_tIpcressWithCDI_exe
-      # Ut_cdi_ipcress_tIpcress_Interpreter_exe
-      # Ut_special_functions_tstExpInt_exe
-      # Ut_special_functions_tstF12_exe
-      # Ut_special_functions_tstF12inv_exe
-      # Ut_special_functions_tstF1_exe
-      # Ut_special_functions_tstF2inv_exe
-      # Ut_special_functions_tstF32_exe
-      # Ut_special_functions_tstF3_exe
-      # Ut_special_functions_tstF4_exe
-      # Ut_special_functions_tstFM12_exe
-      # Ut_special_functions_tstF_eta_inv_exe
-      # Ut_special_functions_tstPower_exe
-      # Ut_special_functions_tstSpecialFunctions_exe
-      # Ut_special_functions_tstYlm_exe
-      # Ut_cdi_analytic_tstAnalytic_EoS_exe
-      # Ut_cdi_analytic_tstAnalytic_Gray_Opacity_exe
-      # Ut_cdi_analytic_tstAnalytic_Odfmg_Opacity_exe
-      # Ut_cdi_analytic_tstPseudo_Line_Analytic_MultigroupOpacity_exe
-      # Ut_cdi_analytic_tstnGray_Analytic_MultigroupOpacity_exe
-      # Ut_RTT_Format_Reader_TestRTTFormatReader_exe
-      # Ut_RTT_Format_Reader_TestRTTMeshReader_exe
-      # Ut_RTT_Format_Reader_install_inputs_1
-      # Ut_quadrature_tAngle_Operator_exe
-      # Ut_quadrature_tAxialQuadrature_exe
-      # Ut_quadrature_tQuadCreator_exe
-      # Ut_quadrature_tQuadServices_exe
-      # Ut_quadrature_tQuadrature_exe
-      # Ut_quadrature_tstOrdinate_exe
-      # Ut_quadrature_tstgaulag_exe
-      # Ut_quadrature_tstgauleg_exe
       Exe_Ipcress_Interpreter
       )
    echo_targets( ${dbs_targets} )

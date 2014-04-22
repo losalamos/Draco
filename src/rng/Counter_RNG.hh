@@ -35,6 +35,7 @@
 #endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Weffc++"
 #endif
 
 #include "Random123/threefry.h"

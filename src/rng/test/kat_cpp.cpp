@@ -43,6 +43,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Engines have multiple copy constructors, quite legal C++, disable MSVC complaint
 #pragma warning (disable : 4521)
 #endif
+#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
+// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and
+// an "unused local typedef" warning, from a pre-C++11 implementation of a
+// static assertion in compilerfeatures.h.
+#if (GNUC_VERSION >= 40600)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
 
 #include <map>
 #include <cstring>
@@ -51,6 +63,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Random123/MicroURNG.hpp>
 #include <Random123/conventional/Engine.hpp>
 
+#if (GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
 using namespace std;
 
 typedef map<pair<method_e, unsigned>, void (*)(kat_instance *)> genmap_t;
