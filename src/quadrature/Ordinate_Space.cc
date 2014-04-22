@@ -10,6 +10,8 @@
 // $Id: Ordinate_Space.cc 6855 2012-11-06 16:39:27Z kellyt $
 //---------------------------------------------------------------------------------------//
 
+#include <iostream>
+
 // Vendor software
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
@@ -257,12 +259,57 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
             }
         }
     }
+    else if (geometry == rtt_mesh_element::CARTESIAN)
+    {
+        if (this->dimension() == 2 && this->ordering() == LEVEL_ORDERED)
+        {
+            // NEW: organize quadratures for 2D into levels, even for Cartesian coordinates,
+            // but do not compute angular derivative approximation coefficients
+            // For our purposes here, the use of the first_angles_ vector is
+            // different from the use for axisymmetric coordinates; it is used to
+            // record find the index into the first ordinate on each level
+            
+            int level = 0;
+            double etap; 
+            double eta; 
+            for (unsigned a=0; a<number_of_ordinates; a++)
+            {
+                levels_[a] = level;
+                
+                if (a > 0)
+                {
+                    if (!soft_equiv(eta,etap))
+                    {
+                        // New level
+                        level++;
+                        first_angles_.push_back(a-1);
+                        etap = eta;
+                    }
+                    else
+                    {
+                        etap = eta;
+                        eta = ordinates[a].eta();
+                    }
+                }
+            else
+            {
+                eta = ordinates[a].eta();
+                etap = eta;
+            }
+            }
+            
+            first_angles_.push_back(number_of_ordinates);
+            number_of_levels_ = level+1;
+            
+        }
+        else
+            number_of_levels_ = 0;
+    }
     else
     {
-        Check(geometry == rtt_mesh_element::CARTESIAN);
-        number_of_levels_ = 0;
+        Insist(false, "unexpected geometry when creating an Ordinate_Space."); 
     }
-
+    
     Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
 }
 
@@ -447,8 +494,8 @@ bool Ordinate_Space::check_class_invariants() const
 {
     if (geometry() == rtt_mesh_element::CARTESIAN)
     {
-        // There are no levels in Cartesian ordinate sets.
-        return number_of_levels_ == 0;
+        return ((this->dimension() != 2 || this->ordering() != LEVEL_ORDERED) ||
+                (first_angles_.size()  == number_of_levels_)); 
     }
     else
     {
