@@ -97,7 +97,7 @@ project( Draco CXX C )
  # 1. XCode based Generators, or
  # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
  #    look for Fortran. 
-if( NOT APPLE AND NOT MSVC )
+if( NOT ${CMAKE_GENERATOR} MATCHES Xcode AND NOT MSVC )
    enable_language( Fortran OPTIONAL )
 endif()
 

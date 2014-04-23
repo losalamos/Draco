@@ -381,7 +381,7 @@ macro( setupLAPACKLibrariesUnix )
    message( STATUS "Looking for lapack...")
    set( lapack_FOUND FALSE )
    # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK. 
-   foreach( version 3.4.1 3.4.2 )   
+   foreach( version 3.4.1 3.4.2 3.5.0 )   
       if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
          list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
          find_package( lapack CONFIG )

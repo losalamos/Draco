@@ -14,13 +14,13 @@ project( lapack_wrap CXX )
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
-if( NOT lapack_FOUND OR APPLE )
+if( NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode)
    if( NOT lapack_FOUND )
       message( STATUS
       "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
    else()
       message( STATUS
-      "NOTE: Skipping lapack_wrap component because SYSTEM is APPLE" )
+      "NOTE: Skipping lapack_wrap component because Generator is XCode" )
    endif()
 else()
 
