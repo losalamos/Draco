@@ -11,11 +11,10 @@
 cmake_minimum_required( VERSION 2.8 )
 project( FortranChecks CXX )
 
-# When using CXX/Fortran cross language linking and function calling
-# the CMake module FortranCInterface.cmake can be used to deal with
-# name mangling issues.  However, Draco has chosen to use
-# ISO_C_BINDING instead and this makes manual name demangling
-# unnecessary.
+# When using CXX/Fortran cross language linking and function calling the CMake
+# module FortranCInterface.cmake can be used to deal with name mangling issues.
+# However, Draco has chosen to use ISO_C_BINDING instead and this makes manual
+# name demangling unnecessary.
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -35,24 +34,17 @@ add_component_library(
 set_target_properties( Lib_FC_Derived_Type 
    PROPERTIES FOLDER FortranChecks )
 
-# For Unix, this will simply run add_subdirectory(f90sub). For MVSE or XCode, 
-# an ExternalProject will be created that uses an alternate gfortran via 
-# Makefiles to generate the library external to the main project. 
+# For Unix, this will simply run add_subdirectory(f90sub). For MVSE or XCode, an
+# ExternalProject will be created that uses an alternate gfortran via Makefiles
+# to generate the library external to the main project.
 if( _LANGUAGES_ MATCHES Fortran )
     add_subdirectory(f90sub)
-endif()
-if( MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode )
+elseif( MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode )
 
    include(CMakeAddFortranSubdirectory)
 
-   # Try to use use gfortran with MVSE via add_fortran_subdirectory.
-   # \todo Should this be moved to windows-cl.cmake?)
-   # if( DRACO_SHARED_LIBS )
-      # set( CMAKE_GNUtoMS ON )
-   # endif()
-
-   # cmake will put some run scripts in $build_dir/f90sub
-   # Another directory for the build is generated at $build_dir/FortranChecks_f90sub_build-prefix
+   # cmake will put some run scripts in $build_dir/f90sub Another directory for
+   # the build is generated at $build_dir/FortranChecks_f90sub_build-prefix
    cmake_add_fortran_subdirectory( 
       f90sub                       # directory name
       PROJECT FortranChecks_f90sub # project name in toplevel CMakeLists.txt
