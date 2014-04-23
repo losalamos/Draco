@@ -74,7 +74,7 @@ function(_setup_mingw_config_and_build source_dir build_dir)
     if( tmp_gfortran )
        set( MINGW_GFORTRAN "${tmp_gfortran}" )       
     endif()
-  endif()
+  else()
 
   # Look for a MinGW gfortran.
   find_program(MINGW_GFORTRAN
@@ -83,6 +83,7 @@ function(_setup_mingw_config_and_build source_dir build_dir)
       c:/MinGW/bin
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin"
     )  
+  endif()
   
   if(NOT EXISTS ${MINGW_GFORTRAN})
     message(FATAL_ERROR
@@ -91,8 +92,6 @@ function(_setup_mingw_config_and_build source_dir build_dir)
       " This is required to build")
   endif()
 
-  message("Using ${MINGW_GFORTRAN}")
-  
   # Validate flavor/architecture of specified gfortran 
   if( MSVC )
       # MinGW gfortran under MSVS.
@@ -102,11 +101,11 @@ function(_setup_mingw_config_and_build source_dir build_dir)
         set(_mingw_target "Target:.*mingw32")
       endif()
   else() 
-      # GNU gfotran under XCode.
+      # GNU gfortran under XCode.
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_mingw_target "Target:.*64-apple*")
       else()
-        set(_mingw_target "Target:.*i686-apple*")
+        set(_mingw_target "Target:.*86-apple*")
       endif()  
   endif() # MSVC
   execute_process(COMMAND "${MINGW_GFORTRAN}" -v
@@ -168,7 +167,6 @@ function(cmake_add_fortran_subdirectory subdir)
   check_language(Fortran)  
   if( CMAKE_Fortran_COMPILER ) 
   # (MSVC OR ))
-    message("Using standard Fortran handling...")
     add_subdirectory(${subdir})
     return()
   endif()
@@ -177,8 +175,6 @@ function(cmake_add_fortran_subdirectory subdir)
      message( FATAL_ERROR "Add_fortran_subdirectory only tested for MSVC and XCode." )
   endif()
 
-  message("Using special Fortran project.")
-  
   # if we have MSVC without Intel Fortran then setup
   # external projects to build with mingw Fortran
 
@@ -218,19 +214,12 @@ function(cmake_add_fortran_subdirectory subdir)
     )
   # create imported targets for all libraries
   foreach(lib ${libraries})
-    message("add_library(${lib} SHARED IMPORTED GLOBAL)")
     add_library(${lib} SHARED IMPORTED GLOBAL)
     set_property(TARGET ${lib} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
     set_target_properties(${lib} PROPERTIES
       IMPORTED_IMPLIB_NOCONFIG   "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" #.LIB
       IMPORTED_LOCATION_NOCONFIG "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"  #.DLL
       )
-    message("
-    set_target_properties(${lib} PROPERTIES
-      IMPORTED_IMPLIB_NOCONFIG   \"${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}\" #.LIB
-      IMPORTED_LOCATION_NOCONFIG \"${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}\"  #.DLL
-      )    
-      ")
     add_dependencies(${lib} ${project_name}_build)
   endforeach()
 

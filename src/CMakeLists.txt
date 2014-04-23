@@ -63,7 +63,7 @@ add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
-if( _LANGUAGES_ MATCHES Fortran OR MSVC ) # Exclude XCode
+if( _LANGUAGES_ MATCHES Fortran OR MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode) 
    # This Fortran interoperability check should work for 
    # 1. Linux/Makefiles,
    # 2. MSVC (using gfortran provided by MinGW)
