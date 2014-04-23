@@ -72,12 +72,12 @@ function(_setup_mingw_config_and_build source_dir build_dir)
   if( MINGW_GFORTRAN AND NOT EXISTS ${MINGW_GFORTRAN} )
     find_program(tmp_gfortran NAMES ${MINGW_GFORTRAN} )
     if( tmp_gfortran )
-       set( MINGW_GFORTRAN "${tmp_gfortran}" )
+       set( MINGW_GFORTRAN "${tmp_gfortran}" CACHE FILEPATH "Fortran filepath" FORCE )
     endif()
   endif()
- 
+
   # Look for a MinGW gfortran.
-  find_program(MINGW_GFORTRAN 
+  find_program(MINGW_GFORTRAN  
     NAMES ${MINGW_GFORTRAN} gfortran
     PATHS
       c:/MinGW/bin
