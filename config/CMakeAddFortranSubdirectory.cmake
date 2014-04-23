@@ -72,18 +72,17 @@ function(_setup_mingw_config_and_build source_dir build_dir)
   if( MINGW_GFORTRAN AND NOT EXISTS ${MINGW_GFORTRAN} )
     find_program(tmp_gfortran NAMES ${MINGW_GFORTRAN} )
     if( tmp_gfortran )
-       set( MINGW_GFORTRAN "${tmp_gfortran}" )       
+       set( MINGW_GFORTRAN "${tmp_gfortran}" )
     endif()
-  else()
-
+  endif()
+ 
   # Look for a MinGW gfortran.
-  find_program(MINGW_GFORTRAN
-    NAMES gfortran
+  find_program(MINGW_GFORTRAN 
+    NAMES ${MINGW_GFORTRAN} gfortran
     PATHS
       c:/MinGW/bin
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin"
     )  
-  endif()
   
   if(NOT EXISTS ${MINGW_GFORTRAN})
     message(FATAL_ERROR
@@ -153,20 +152,18 @@ function(cmake_add_fortran_subdirectory subdir)
   # Parse arguments to function
   set(options NO_EXTERNAL_INSTALL)
   set(oneValueArgs PROJECT ARCHIVE_DIR RUNTIME_DIR)
-  set(multiValueArgs LIBRARIES LINK_LIBRARIES CMAKE_COMMAND_LINE)
+  set(multiValueArgs LIBRARIES TARGET_NAMES LINK_LIBRARIES CMAKE_COMMAND_LINE)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if(NOT ARGS_NO_EXTERNAL_INSTALL)
     message(FATAL_ERROR
       "Option NO_EXTERNAL_INSTALL is required (for forward compatibility) "
-      "but was not given."
-      )
+      "but was not given." )
   endif()
 
   # if we are not using MSVC without Fortran support then just use the usual 
   # add_subdirectory to build the Fortran library:
   check_language(Fortran)  
-  if( CMAKE_Fortran_COMPILER ) 
-  # (MSVC OR ))
+  if( CMAKE_Fortran_COMPILER )
     add_subdirectory(${subdir})
     return()
   endif()
@@ -175,14 +172,25 @@ function(cmake_add_fortran_subdirectory subdir)
      message( FATAL_ERROR "Add_fortran_subdirectory only tested for MSVC and XCode." )
   endif()
 
-  # if we have MSVC without Intel Fortran then setup
-  # external projects to build with mingw Fortran
+  # if we have MSVC without Intel Fortran then setup external projects to 
+  # build with alternate Fortran
 
   set(source_dir   "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
   set(project_name "${ARGS_PROJECT}")
   set(library_dir  "${ARGS_ARCHIVE_DIR}")
   set(binary_dir   "${ARGS_RUNTIME_DIR}")
-  set(libraries ${ARGS_LIBRARIES})
+  set(libraries     ${ARGS_LIBRARIES})
+  set(target_names "${ARGS_TARGET_NAMES}")
+  list(LENGTH libraries numlibs)
+  list(LENGTH target_names numtgtnames)
+  if( ${numtgtnames} STREQUAL 0 )
+     set(target_names ${libraries})
+     set( numtgtnames ${numlibs})
+  endif()
+  if( NOT ${numlibs} STREQUAL ${numtgtnames} )
+     message(FATAL_ERROR "If TARGET_NAMES are provided, you must provide an "
+     "equal number of entries for both TARGET_NAMES and LIBRARIES." )
+  endif()
   # use the same directory that add_subdirectory would have used
   set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/${subdir}")
   foreach(dir_var library_dir binary_dir)
@@ -213,14 +221,16 @@ function(cmake_add_fortran_subdirectory subdir)
     ALWAYS 1
     )
   # create imported targets for all libraries
+  set(idx 0)
   foreach(lib ${libraries})
-    add_library(${lib} SHARED IMPORTED GLOBAL)
-    set_property(TARGET ${lib} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
-    set_target_properties(${lib} PROPERTIES
+    list(GET target_names idx tgt)
+    add_library(${tgt} SHARED IMPORTED GLOBAL)
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+    set_target_properties(${tgt} PROPERTIES
       IMPORTED_IMPLIB_NOCONFIG   "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" #.LIB
       IMPORTED_LOCATION_NOCONFIG "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"  #.DLL
       )
-    add_dependencies(${lib} ${project_name}_build)
+    add_dependencies(${tgt} ${project_name}_build)
   endforeach()
 
   # now setup link libraries for targets

@@ -49,27 +49,16 @@ elseif( MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode )
       f90sub                       # directory name
       PROJECT FortranChecks_f90sub # project name in toplevel CMakeLists.txt
                                    # Creates target named 'FortranChecks_f90sub_build' 
-      ARCHIVE_DIR f90sub      # .lib location relative to root binary tree
-      RUNTIME_DIR f90sub      # .dll location relative to root binary tree
-      LIBRARIES rtt_FC_f90sub # Sub project will create a library with this name.
-                              # --> librtt_FC_f90.dll.
-      NO_EXTERNAL_INSTALL )
-      
+      ARCHIVE_DIR  f90sub        # .lib location relative to root binary tree
+      RUNTIME_DIR  f90sub        # .dll location relative to root binary tree
+      LIBRARIES    rtt_FC_f90sub # Sub project will create a library with this name.
+                                 # --> librtt_FC_f90.dll.
+      TARGET_NAMES Lib_FC_f90sub
+      NO_EXTERNAL_INSTALL )      
 
    set_target_properties( FortranChecks_f90sub_build 
       PROPERTIES FOLDER FortranChecks ) 
-      
-   # Generate an imported target that has the expected name consistent with 
-   # the naming convensions of the Draco Build System.
-   add_library(  Lib_FC_f90sub SHARED IMPORTED GLOBAL )
-   set_property( TARGET Lib_FC_f90sub 
-        APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
-   get_target_property( implib   rtt_FC_f90sub IMPORTED_IMPLIB_NOCONFIG )
-   get_target_property( location rtt_FC_f90sub IMPORTED_LOCATION_NOCONFIG )
-   set_target_properties( Lib_FC_f90sub 
-      PROPERTIES
-         IMPORTED_IMPLIB_NOCONFIG   "${implib}"
-         IMPORTED_LOCATION_NOCONFIG "${location}" )
+
 else()
    message( STATUS "Skipping FortranChecks because Fortran not found in _LANGUAGES_." )
 endif()
