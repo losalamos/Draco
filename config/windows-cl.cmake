@@ -22,6 +22,11 @@ if( USE_OPENMP )
     endif()
 endif()
 
+# This is required to provide compatibility between MSVC and MinGW generated libraries.
+if( DRACO_SHARED_LIBS )
+  set( CMAKE_GNUtoMS ON )
+endif()
+
 # if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
   # message( FATAL_ERROR "You requested SHARED libraries for a Windows build.  This feature not available - yell at KT." )
 # endif()

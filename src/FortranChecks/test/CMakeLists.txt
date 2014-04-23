@@ -27,9 +27,6 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-#get_target_property( bar rtt_FC_f90sub LOCATION )
-#message( "rtt_FC_f90sub location = ${bar}" )     
-
 # When building on SQ with XLC/XLF90, ensure that libxlomp_ser is not
 # on the link line.  This macro is defined in config/unix-xlf.cmake.
 if( ${CMAKE_Fortran_COMPILER_FLAVOR} MATCHES "XL" )
@@ -38,12 +35,6 @@ endif()
 
 # Create the test.
 set( test_deps "Lib_dsxx;Lib_FC_f90sub" )
-if( MSVC )
-   # The add_fortran_subdirectory() macro provided by CMake doesn't preserve 
-   # the correct target names. We need to use the target name rtt_FC_f90sub 
-   # instead of Lib_FC_f90sub when using MSVC + MinGW.
-   set( test_deps "Lib_dsxx;rtt_FC_f90sub" )
-endif()
 add_scalar_tests( 
    SOURCES "${test_sources}" 
    DEPS    "${test_deps}" )
