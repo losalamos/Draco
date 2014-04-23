@@ -4,7 +4,7 @@
  * \author Allan Wollaber
  * \date   Tue Jul 10 12:48:13 MDT 2012
  * \brief  Test Fortran main calling C with a derived type
- * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2012-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -24,7 +24,6 @@ struct my_informative_type
    enum    MG_Select {GREY=0, MULTIGROUP=1, ODF=2};
    MG_Select some_enum;
 };
-
 
 // A simple function to test for valid values in a Fortran derived type
 extern "C" 
