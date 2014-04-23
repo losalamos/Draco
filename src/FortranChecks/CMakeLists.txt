@@ -29,7 +29,8 @@ file( GLOB Csources *.cc )
 add_component_library( 
    TARGET       Lib_FC_Derived_Type 
    LIBRARY_NAME FC_Derived_Type
-   SOURCES      "${Csources}" )
+   SOURCES      "${Csources}" 
+   NOEXPORT )
    
 set_target_properties( Lib_FC_Derived_Type 
    PROPERTIES FOLDER FortranChecks )
