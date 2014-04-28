@@ -67,7 +67,7 @@ if( _LANGUAGES_ MATCHES Fortran OR MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode)
    # This Fortran interoperability check should work for 
    # 1. Linux/Makefiles,
    # 2. MSVC (using gfortran provided by MinGW)
-   # add_dir_if_exists( FortranChecks )
+   add_dir_if_exists( FortranChecks )
 endif()
 if( GRACE_FOUND )
   add_dir_if_exists( plot2D )

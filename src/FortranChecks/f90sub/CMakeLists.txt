@@ -37,12 +37,12 @@ file( GLOB f90sources *.f90 )
 # If we are using cmake_add_fortran_subdirectory to include this package, the 
 # library targets Lib_dsxx and Lib_FC_derived_typ will not be defined. 
 # We must manually find these libraries.
-if(NOT DEFINED Lib_dsxx)
+if(NOT TARGET Lib_dsxx)
    include(CMakeAddFortranSubdirectory)
    cafs_create_imported_targets( Lib_dsxx "rtt_ds++" 
       "${PROJECT_BINARY_DIR}/../../ds++" )
 endif()
-if(NOT DEFINED Lib_FC_Derived_Type)
+if( NOT TARGET Lib_FC_Derived_Type)
    cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type" 
       "${PROJECT_BINARY_DIR}/../../FortranChecks" )
 endif()
