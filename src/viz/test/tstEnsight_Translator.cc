@@ -23,6 +23,12 @@ using rtt_viz::Ensight_Translator;
 #define FAILMSG(m) ut.failure(m)
 #define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
+#ifdef WIN32
+#define WIN32PATHOFFSET std::string("..\\")
+#else
+#define WIN32PATHOFFSET std::string("")
+#endif
+
 //---------------------------------------------------------------------------//
 
 void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
@@ -98,9 +104,9 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     // read cell data
 
     // Build path for the input file "cell_data"
-    string const cdInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("cell_data"),
-        rtt_dsxx::FC_NATIVE);
+	string const cdInputFile = rtt_dsxx::getFilenameComponent(
+		ut.getTestPath() + WIN32PATHOFFSET + std::string("cell_data"),
+		rtt_dsxx::FC_NATIVE);
 
     ifstream input( cdInputFile.c_str() );
     if( !input ) ITFAILS;
@@ -298,12 +304,12 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
             string ref_out, diff_out;
             if( binary )
             {
-                ref_out  = baseDir + *itd + string(".bin") + postfix;
+                ref_out  = baseDir +WIN32PATHOFFSET+ *itd + string(".bin") + postfix;
                 diff_out = baseDir + *itd + string(".bin.diff");
             }
             else
             {
-                ref_out  = baseDir + *itd + postfix;
+                ref_out  = baseDir +WIN32PATHOFFSET+ *itd + postfix;
                 diff_out = baseDir + *itd + string(".diff");
             }
 
