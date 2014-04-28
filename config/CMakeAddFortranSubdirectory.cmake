@@ -262,3 +262,28 @@ function(cmake_add_fortran_subdirectory subdir)
     _add_fortran_library_link_interface(${target} "${target_libs}")
   endif()
 endfunction()
+
+###--------------------------------------------------------------------------------####
+
+macro( cafs_create_imported_targets targetName libName targetPath )
+
+    get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
+    set( libstaticsuffix ".lib" )
+    set( libsharedsuffix ".dll" )
+    
+    find_library( lib
+        NAMES ${libName}
+        PATHS ${pkgloc}
+        PATH_SUFFIXES Release Debug
+    )    
+    get_filename_component( libloc ${lib} DIRECTORY )    
+     
+    add_library( ${targetName} SHARED IMPORTED GLOBAL)
+    set_property(TARGET ${targetName} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+    set_target_properties(${targetName} PROPERTIES
+       IMPORTED_IMPLIB_NOCONFIG   "${libloc}/${libName}${libstaticsuffix}" #.LIB
+       IMPORTED_LOCATION_NOCONFIG "${libloc}/${libName}${libsharedsuffix}" #.DLL
+       )
+    unset(lib CACHE)
+       
+endmacro()

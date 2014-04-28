@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <cmath>
 #include <iostream>
+#include "ds++/config.h"
 
 /// Define the derived type as a C structure
 struct my_informative_type
@@ -26,7 +27,7 @@ struct my_informative_type
 };
 
 // A simple function to test for valid values in a Fortran derived type
-extern "C" 
+extern "C" DLL_PUBLIC
 void rtt_test_derived_type(const my_informative_type& mit, int& error_code)
 {
     std::cout << "In the C-interface, derived type has double = " <<

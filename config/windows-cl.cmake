@@ -24,7 +24,7 @@ endif()
 
 # This is required to provide compatibility between MSVC and MinGW generated libraries.
 if( DRACO_SHARED_LIBS )
-  set( CMAKE_GNUtoMS ON )
+  set( CMAKE_GNUtoMS ON CACHE BOOL "Compatibility flag for MinGW/MSVC." FORCE)
 endif()
 
 # if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )

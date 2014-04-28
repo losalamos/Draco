@@ -41,4 +41,3 @@ subroutine sub1(alpha,np,nf) bind(c)
   endif
   
 end subroutine sub1
-

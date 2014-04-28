@@ -39,7 +39,7 @@ DLL_PUBLIC const std::string copyright();
 } // end of rtt_ds++
 
 //! This version can be called by Fortran and wraps the C++ version.
-extern "C" void ec_release( char * release_string, size_t maxlen );
+extern "C" DLL_PUBLIC void ec_release( char * release_string, size_t maxlen );
 
 #endif // rtt_ds_Release_hh
 

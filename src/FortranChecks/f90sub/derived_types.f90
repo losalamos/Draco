@@ -10,9 +10,6 @@
 ! $Id$
 !---------------------------------------------------------------------------
 
-! Ref: http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
-!      http://fortranwiki.org/fortran/show/Generating+C+Interfaces
-
 !---------------------------------------------------------------------------
 ! Create a module that contains a derived type and an interface to a C
 ! function that uses it.  Note the "import" statement brings the type
@@ -52,7 +49,7 @@ end module rtt_test_derived_types
 !---------------------------------------------------------------------------
 ! Fortran main that uses the above module type and bound c-interface
 !---------------------------------------------------------------------------
-program test_derived_types
+subroutine test_derived_types() bind(c)
 
   use rtt_test_derived_types
   use iso_c_binding, only : c_int, c_int64_t, c_double, c_loc, c_ptr
@@ -109,7 +106,7 @@ program test_derived_types
       endif
    print '(a)', "*********************************************"
 
- end program test_derived_types
+ end subroutine test_derived_types
 
 !---------------------------------------------------------------------------
 ! end of derived_types.f90

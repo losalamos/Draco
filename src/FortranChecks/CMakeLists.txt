@@ -22,6 +22,13 @@ project( FortranChecks CXX )
 file( GLOB Csources *.cc )
 
 # ---------------------------------------------------------------------------- #
+# Directories to search for include directives
+# ---------------------------------------------------------------------------- #
+
+include_directories( 
+   ${dsxx_BINARY_DIR} ) # ds++/config.h
+
+# ---------------------------------------------------------------------------- #
 # Build package libraries
 # ---------------------------------------------------------------------------- #
 
@@ -68,35 +75,13 @@ endif()
 # ---------------------------------------------------------------------------- #
 # No need to install this library as it is not used by anyone else.  This 
 # component is only used to test Fortran/C binding.
+# install( TARGETS Lib_FC_Derived_Type EXPORT draco-targets DESTINATION lib )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
 if( BUILD_TESTING )
    add_subdirectory( test )
-   if( _LANGUAGES_ MATCHES Fortran )
-      add_subdirectory( ftest )
-   endif()
-   
-   # The cmake_add_fortran_subdirectory does not currently support generating 
-   # executables via MinGW's gfortran from within MSVC.
-   # if( MSVC )   
-      # unset( cmake_extra_commands )
-      # foreach( dep Lib_FC_Derived_Type rtt_FC_f90sub )
-        # set( ${dep}_loc $<TARGET_FILE:${dep}> )
-        # list( APPEND cmake_extra_commands "-D${dep}=${${dep}_loc}" )
-      # endforeach()
-      # cmake_add_fortran_subdirectory( ftest
-         # PROJECT FortranChecks_ftest 
-         # ARCHIVE_DIR ftest 
-         # RUNTIME_DIR ftest 
-         # LIBRARIES Ut_FortranChecks_ftest_f90main_exe 
-         # LINK_LIBRARIES 
-            # LINK_LIBS Ut_FortranChecks_ftest_f90main_exe Lib_FC_Derived_Type rtt_FC_f90sub # Lib_dsxx
-         # CMAKE_COMMAND_LINE "${cmake_extra_commands}"
-         # NO_EXTERNAL_INSTALL
-      # )
-   # endif()
 endif()   
 
 # ---------------------------------------------------------------------------- #

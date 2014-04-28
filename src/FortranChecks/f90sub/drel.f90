@@ -1,6 +1,6 @@
 !----------------------------------*-F90-*----------------------------------
 !
-! file   FortranCheck/test/cppmain.cc
+! file   FortranCheck/f90sub/drel.f90
 ! author Kelly Thompson
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 main linking against C++ library and calling a C++ function.
@@ -13,7 +13,7 @@
 ! Ref: http://gcc.gnu.org/onlinedocs/gfortran/Interoperable-Subroutines-and-Functions.html
 !      http://fortranwiki.org/fortran/show/Generating+C+Interfaces
 
-program testflags
+subroutine drelf90() bind(c)
 
   use iso_c_binding, only : c_size_t,C_NULL_CHAR 
   implicit none
@@ -65,8 +65,8 @@ program testflags
       endif
    print '(a)', "*********************************************"
 
- end program testflags
+ end subroutine drelf90
 
 !---------------------------------------------------------------------------
-! end of f90main.f90
+! end of drel.f90
 !---------------------------------------------------------------------------
