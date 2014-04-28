@@ -268,9 +268,16 @@ endfunction()
 macro( cafs_create_imported_targets targetName libName targetPath )
 
     get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
-    set( libstaticsuffix ".lib" )
-    set( libsharedsuffix ".dll" )
-    
+    if ( MSVC ) 
+       set( libstaticsuffix ".lib" )
+       set( libsharedsuffix ".dll" )
+       set( libsharedprefix "")
+    else() # This is for Xcode on Apple
+       set( libstaticsuffix ".a" )
+       set( libsharedsuffix ".dylib" )
+       set( libsharedprefix "lib")
+    endif()
+ 
     find_library( lib
         NAMES ${libName}
         PATHS ${pkgloc}
@@ -281,8 +288,8 @@ macro( cafs_create_imported_targets targetName libName targetPath )
     add_library( ${targetName} SHARED IMPORTED GLOBAL)
     set_property(TARGET ${targetName} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
     set_target_properties(${targetName} PROPERTIES
-       IMPORTED_IMPLIB_NOCONFIG   "${libloc}/${libName}${libstaticsuffix}" #.LIB
-       IMPORTED_LOCATION_NOCONFIG "${libloc}/${libName}${libsharedsuffix}" #.DLL
+       IMPORTED_IMPLIB_NOCONFIG   "${libloc}/${libsharedprefix}${libName}${libstaticsuffix}" #.LIB
+       IMPORTED_LOCATION_NOCONFIG "${libloc}/${libsharedprefix}${libName}${libsharedsuffix}" #.DLL
        )
     unset(lib CACHE)
        
