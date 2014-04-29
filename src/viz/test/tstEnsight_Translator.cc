@@ -23,14 +23,14 @@ using rtt_viz::Ensight_Translator;
 #define FAILMSG(m) ut.failure(m)
 #define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
-#ifdef WIN32
+#ifdef MSVC_IDE
+// When configuring for the MSVC_IDE, ut.getTestPath() will point to viz/test/[Release|Debug].
 #define WIN32PATHOFFSET std::string("..\\")
 #else
 #define WIN32PATHOFFSET std::string("")
 #endif
 
 //---------------------------------------------------------------------------//
-
 void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 {
     if( binary )
@@ -104,9 +104,9 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     // read cell data
 
     // Build path for the input file "cell_data"
-	string const cdInputFile = rtt_dsxx::getFilenameComponent(
-		ut.getTestPath() + WIN32PATHOFFSET + std::string("cell_data"),
-		rtt_dsxx::FC_NATIVE);
+    string const cdInputFile = rtt_dsxx::getFilenameComponent(
+        ut.getTestPath() + WIN32PATHOFFSET + std::string("cell_data"),
+        rtt_dsxx::FC_NATIVE);
 
     ifstream input( cdInputFile.c_str() );
     if( !input ) ITFAILS;
@@ -259,8 +259,6 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 //---------------------------------------------------------------------------//
 // 
 //---------------------------------------------------------------------------//
-
-
 void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
 {
     // Build path for the input file "scanner_test.inp"
@@ -333,18 +331,15 @@ int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     try
-    {   // tests
-
+    {
         { // ASCII dumps
             ensight_dump_test(ut, false); 
             checkOutputFiles( ut, false );
         }
-
         { // Binary dumps
             ensight_dump_test(ut, true);
             checkOutputFiles( ut, true );
         }
-
     }
     UT_EPILOG(ut);
 }

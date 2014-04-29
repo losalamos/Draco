@@ -50,16 +50,16 @@ elseif( MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode )
 
    include(CMakeAddFortranSubdirectory)
 
-   # cmake will put some run scripts in $build_dir/f90sub Another directory for
+   # CMake will put some run scripts in $build_dir/f90sub Another directory for
    # the build is generated at $build_dir/FortranChecks_f90sub_build-prefix
    cmake_add_fortran_subdirectory( 
       f90sub                       # directory name
       PROJECT FortranChecks_f90sub # project name in toplevel CMakeLists.txt
                                    # Creates target named 'FortranChecks_f90sub_build' 
-      ARCHIVE_DIR  f90sub        # .lib location relative to root binary tree
-      RUNTIME_DIR  f90sub        # .dll location relative to root binary tree
-      LIBRARIES    rtt_FC_f90sub # Sub project will create a library with this name.
-                                 # --> librtt_FC_f90.dll.
+      ARCHIVE_DIR  f90sub          # .lib location relative to root binary tree
+      RUNTIME_DIR  f90sub          # .dll location relative to root binary tree
+      LIBRARIES    rtt_FC_f90sub   # Sub project will create a library with this name.
+                                   # --> librtt_FC_f90.dll.
       TARGET_NAMES Lib_FC_f90sub
       NO_EXTERNAL_INSTALL )      
 

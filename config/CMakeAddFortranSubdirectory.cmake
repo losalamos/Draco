@@ -269,7 +269,7 @@ endfunction()
 macro( cafs_create_imported_targets targetName libName targetPath )
 
     get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
-    if ( MSVC ) 
+    if( WIN32 AND CMAKE_GNUtoMS ) 
        set( libstaticsuffix ".lib" )
        set( libsharedsuffix ".dll" )
        set( libsharedprefix "")
@@ -284,8 +284,8 @@ macro( cafs_create_imported_targets targetName libName targetPath )
         PATHS ${pkgloc}
         PATH_SUFFIXES Release Debug
     )    
-    get_filename_component( libloc ${lib} DIRECTORY )    
-     
+    get_filename_component( libloc ${lib} DIRECTORY )
+
     add_library( ${targetName} SHARED IMPORTED GLOBAL)
     set_property(TARGET ${targetName} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
     set_target_properties(${targetName} PROPERTIES
