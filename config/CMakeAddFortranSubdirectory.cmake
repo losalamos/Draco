@@ -160,21 +160,22 @@ function(cmake_add_fortran_subdirectory subdir)
       "but was not given." )
   endif()
 
-  # if we are not using MSVC without Fortran support then just use the usual 
-  # add_subdirectory to build the Fortran library:
-  check_language(Fortran)  
-  if( CMAKE_Fortran_COMPILER )
+  # If we are using MSVC with Intel Fortran integrated support then just use 
+  # the usual add_subdirectory to build the Fortran library:
+  check_language(Fortran)
+  if( MSVC AND "${CMAKE_Fortran_COMPILER}" MATCHES ifort )
     add_subdirectory(${subdir})
     return()
   endif()
   
+  # If we are using a Generator w/o Fortran support other than Xcode or MSVC, 
+  # then abort.
   if( NOT (MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode) )
      message( FATAL_ERROR "Add_fortran_subdirectory only tested for MSVC and XCode." )
   endif()
 
   # if we have MSVC without Intel Fortran then setup external projects to 
   # build with alternate Fortran
-
   set(source_dir   "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
   set(project_name "${ARGS_PROJECT}")
   set(library_dir  "${ARGS_ARCHIVE_DIR}")
