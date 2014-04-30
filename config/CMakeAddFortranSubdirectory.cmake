@@ -32,6 +32,7 @@
 #    LIBRARIES <lib>...      # names of library targets to import
 #    LINK_LIBRARIES          # link interface libraries for LIBRARIES
 #     [LINK_LIBS <lib> <dep>...]...
+#    DEPENDS                 # Register dependencies external for this AFSD project.
 #    CMAKE_COMMAND_LINE ...  # extra command line flags to pass to cmake
 #    NO_EXTERNAL_INSTALL     # skip installation of external project
 #    )
@@ -148,11 +149,14 @@ function(_add_fortran_library_link_interface library depend_library)
 endfunction()
 
 ###--------------------------------------------------------------------------------####
+### This is the main function.  This generates the required external_project pieces 
+### that will be run under a different generator (MinGW Makefiles).
+###--------------------------------------------------------------------------------####
 function(cmake_add_fortran_subdirectory subdir)
   # Parse arguments to function
   set(options NO_EXTERNAL_INSTALL)
   set(oneValueArgs PROJECT ARCHIVE_DIR RUNTIME_DIR)
-  set(multiValueArgs LIBRARIES TARGET_NAMES LINK_LIBRARIES CMAKE_COMMAND_LINE)
+  set(multiValueArgs LIBRARIES TARGET_NAMES LINK_LIBRARIES DEPENDS CMAKE_COMMAND_LINE)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if(NOT ARGS_NO_EXTERNAL_INSTALL)
     message(FATAL_ERROR
@@ -221,6 +225,10 @@ function(cmake_add_fortran_subdirectory subdir)
     DEPENDERS build
     ALWAYS 1
     )
+  # Register additional build dependencies for the external project.
+  if( ARGS_DEPENDS )
+    add_dependencies( ${project_name}_build ${ARGS_DEPENDS} )
+  endif()
   # create imported targets for all libraries
   set(idx 0)
   foreach(lib ${libraries})

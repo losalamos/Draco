@@ -61,11 +61,10 @@ elseif( MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode )
       LIBRARIES    rtt_FC_f90sub   # Sub project will create a library with this name.
                                    # --> librtt_FC_f90.dll.
       TARGET_NAMES Lib_FC_f90sub
+      DEPENDS      "Lib_FC_Derived_Type;Lib_dsxx" 
       NO_EXTERNAL_INSTALL )      
-
-   set_target_properties( FortranChecks_f90sub_build 
-      PROPERTIES FOLDER FortranChecks ) 
-
+   
+   set_target_properties( FortranChecks_f90sub_build PROPERTIES FOLDER FortranChecks ) 
 else()
    message( STATUS "Skipping FortranChecks because Fortran not found in _LANGUAGES_." )
 endif()
