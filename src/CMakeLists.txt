@@ -6,9 +6,6 @@
 # note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 7442 2014-03-10 15:36:16Z kellyt $
-#------------------------------------------------------------------------------#
-
 cmake_minimum_required( VERSION 2.8 )
 project( draco_src_dir )
 
