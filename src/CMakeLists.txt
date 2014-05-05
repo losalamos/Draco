@@ -61,9 +61,11 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 if( _LANGUAGES_ MATCHES Fortran OR MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode) 
-   # This Fortran interoperability check should work for 
+   # This Fortran interoperability check should work for:
    # 1. Linux/Makefiles,
-   # 2. MSVC (using gfortran provided by MinGW)
+   # 2. MSVC (using gfortran provided by MinGW) with NMake Makefiles
+   #    or Visual Studio Projects, and
+   # 3. Xcode (using gfortran provided by gnu).
    add_dir_if_exists( FortranChecks )
 endif()
 if( GRACE_FOUND )
