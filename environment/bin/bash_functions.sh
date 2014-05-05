@@ -259,12 +259,15 @@ function wiki()
 ##---------------------------------------------------------------------------##
 function xfpush()
 {
-    myfile=$1
-    if ! test -f $myfile; then
+    myfiles="$*"
+    if ! test -n "$1"; then
        echo "ERROR: You must profile a file for transfering: xfpush foo.txt"
        return
     fi
-    scp $myfile red@transfer.lanl.gov:
+    for myfile in $myfiles; do
+       scp $myfile red@transfer.lanl.gov:
+       echo scp $myfile red@transfer.lanl.gov:
+    done
 }
 function xfstatus()
 {
@@ -272,8 +275,10 @@ function xfstatus()
 }
 function xfpull()
 {
-    wantfile=$1
+    wantfiles="$*"
     filesavailable=`ssh red@transfer.lanl.gov myfiles`
+    for wantfile in $wantfiles
+
     # sanity check: is the requested file in the list?
     fileready=`echo $filesavailable | grep $wantfile`
     if test "${fileready}x" = "x"; then
@@ -302,6 +307,8 @@ function xfpull()
             is_file_id=1
         fi
     done
+
+    done # end loop over $wantfiles
 }
 
 
