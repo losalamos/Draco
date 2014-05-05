@@ -84,6 +84,10 @@ int main( int /*argc*/, char *argv[] )
 #else
              << "Unknown"
 #endif
+             << "\n    Site name      : "
+#ifdef SITENAME
+             << SITENAME
+#endif
              << "\n    CUDA support   : "
 #ifdef HAVE_CUDA
              << "enabled"

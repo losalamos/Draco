@@ -60,6 +60,21 @@ if( HAVE_PAPI )
        "Provide PAPI hardware counters if available." )
 endif()
 
+# ------------------------------------------------------------------------------
+# Identify machine and save name in ds++/config.h
+# ------------------------------------------------------------------------------
+site_name( SITENAME )
+string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
+if( ${SITENAME} MATCHES "c[it]" )
+  set( SITENAME "Cielito" )
+elseif( ${SITENAME} MATCHES "ml[0-9]+" OR ${SITENAME} MATCHES "ml-fey" OR
+        ${SITENAME} MATCHES "lu[0-9]+" OR ${SITENAME} MATCHES "lu-fey" )
+  set( SITENAME "Moonlight" )
+elseif( ${SITENAME} MATCHES "ccscs[0-9]+" )
+  # do nothing (keep the fullname)
+endif()
+set( SITENAME ${SITENAME} CACHE "STRING" "Name of the current machine" FORCE)
+
 #----------------------------------------------------------------------#
 # Macro to establish which runtime libraries to link against 
 #
