@@ -37,11 +37,11 @@ if( BUILD_TESTING )
   add_custom_target( check
      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
              ${pbuildtestflags}
-     COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} )
+     COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $(ARGS) )
   add_custom_target( failedtests
      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
              ${pbuildtestflags}
      COMMAND "${CMAKE_COMMAND}" -P 
              "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
-     COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} -I FailedTests.log )
+     COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} $(ARGS) -I FailedTests.log )
 endif()  
