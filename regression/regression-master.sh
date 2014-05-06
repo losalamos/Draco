@@ -21,7 +21,7 @@ print_use()
     echo " "
     echo "   <build_type>   = { Debug, Release }."
     echo "   [extra_params] = { intel14, pgi, coverage, cuda,"
-    echo "                      fulldiagnostics, nr }."
+    echo "                      fulldiagnostics, nr, perfbench }."
     echo " "
     echo "Extra parameters read from environment:"
     echo "   ENV{dashboard_type} = {Nightly, Experimental}"
@@ -172,6 +172,9 @@ intel14)
     ;;
 nr)
     projects="jayenne"
+    ;;
+perfbench)
+    projects="capsaicin"
     ;;
 pgi)
     # Capsaicin does not support building with PGI (lacking vendor installations!)

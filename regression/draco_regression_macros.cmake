@@ -218,6 +218,8 @@ macro( parse_args )
      elseif( ${work_dir} MATCHES "intel-nr" )
         set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
         set( compiler_version "nr" )
+     elseif( ${work_dir} MATCHES "intel-perfbuild" )
+       set( compiler_version "perfbuild" )
      endif()
      if( "${compiler_version}x" STREQUAL "x" )
         set( compiler_short_name "intel" )
@@ -591,8 +593,12 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
 
   # If this is a coverage/nr build, link to the Debug/Release Draco files:
   if( "${dep_pkg}" MATCHES "draco" )
+    # coverage  build -> debug   version of Draco
+    # nr        build -> release version of Draco
+    # perfbench build -> release version of Draco
     string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-nr" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-perfbench" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
   endif()
 
   find_file( ${dep_pkg}_target_dir
