@@ -277,7 +277,7 @@ function xfpull()
 {
     wantfiles="$*"
     filesavailable=`ssh red@transfer.lanl.gov myfiles`
-    for wantfile in $wantfiles
+    for wantfile in $wantfiles; do
 
     # sanity check: is the requested file in the list?
     fileready=`echo $filesavailable | grep $wantfile`
