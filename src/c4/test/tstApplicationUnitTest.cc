@@ -14,7 +14,7 @@
 #include "../ApplicationUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"
-#include <iostream>
+#include <fstream>
 #include <sstream>
 #include <map>
 
@@ -99,6 +99,41 @@ void tstTwo( ApplicationUnitTest &unitTest )
 
 //---------------------------------------------------------------------------//
 
+void tstThree( ApplicationUnitTest &unitTest)
+{
+    unitTest.setNodes("serial");
+    if (unitTest.runTest("hello"))
+    {
+        unitTest.passes("Successfully ran phw with overriding proc count.");
+
+        ostringstream data;
+        {
+            // open and parse log file
+            ifstream file( unitTest.logFileName().c_str() );
+            Check( file );
+            data << file.rdbuf();
+    }
+        
+        // Check expected word counts.
+        
+        bool verbose(false);
+        std::map< std::string, unsigned > word_count(
+            ApplicationUnitTest::get_word_count( data, verbose ) );
+        
+        if( word_count[ string("world!") ] == 1 )
+            unitTest.passes("Found single occurance of \"world!\"");
+        else
+            unitTest.failure("Did NOT find single occurance of \"world!\" (count is " +
+                             to_string(word_count[string("world!")]) + ')');
+    }
+    else
+    {
+        unitTest.failure("Did NOT successfully run phw with overriding proc count.");
+    }
+}
+
+//---------------------------------------------------------------------------//
+
 void tstTwoCheck( ApplicationUnitTest &unitTest, std::ostringstream & msg )
 {
     using rtt_dsxx::UnitTest;
@@ -155,6 +190,10 @@ int main(int argc, char *argv[])
             argc, argv, rtt_dsxx::release, appName, std::list<std::string>(), messages );
         tstTwo(sut);
         tstTwoCheck( ut, messages );
+
+        // Overriding processor count. This should probably be run last since
+        // it modifies ut.
+        tstThree(ut);
         
         ut.status();
     }

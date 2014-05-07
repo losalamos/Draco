@@ -120,6 +120,9 @@ class DLL_PUBLIC ApplicationUnitTest : public rtt_dsxx::UnitTest
     //! Add a command line argument to the list that will be tested.
     void addCommandLineArgument( std::string const & appArgs );
 
+    //! Change the number of processors that are to be used for tests.
+    void setNodes(std::string const &nodes);
+
     //! Execute the specified binary with the provided arguments.
     void runTests(void);
     bool runTest( std::string const & appArgs );
@@ -165,19 +168,19 @@ class DLL_PUBLIC ApplicationUnitTest : public rtt_dsxx::UnitTest
     // DATA
 
     //! The name of the binary file to be tested.
-    std::string const applicationName;
+    std::string applicationName;
     
     //! The path to the binary file to be tested.
-    std::string const applicationPath;
+    std::string applicationPath;
 
     //! Number of processors for the test(s).
-    std::string const numProcs;
+    std::string numProcs;
 
     //! The command that will be executed by the system.
-    std::string const mpiCommand;
+    std::string mpiCommand;
 
     //! The extension used when creating log files
-    std::string const logExtension;
+    std::string logExtension;
 
     //! A list of command line arguments used during execution of the test.
     std::list< std::string > listOfArgs;

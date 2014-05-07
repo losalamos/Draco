@@ -302,6 +302,22 @@ void ApplicationUnitTest::runTests()
     return;
 }
 
+//---------------------------------------------------------------------------//
+void ApplicationUnitTest::setNodes(std::string const &nodes)
+{
+    Require( nodes == std::string("scalar") ||
+             nodes == std::string("serial") ||
+             std::atoi( nodes.c_str() ) > 0 );
+
+    numProcs = nodes;
+    mpiCommand = constructMpiCommand( nodes );
+    logExtension = buildLogExtension( nodes );
+    
+    // header
+    
+    out << "\n=== Number of Processors reset to: "  << numProcs
+        << std::endl;
+}
 
 } // end namespace rtt_c4
 
