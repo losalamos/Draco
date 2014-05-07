@@ -53,8 +53,10 @@ DLL_PUBLIC int receive(T   *buffer,
     MPI_Status status;
 
     // do the blocking receive
+    Remember(int check =)
     MPI_Recv(buffer, size, MPI_Traits<T>::element_type(), source, tag,
 	     communicator, &status);
+    Check(check == MPI_SUCCESS);
 
     // get the count of received data
     MPI_Get_count(&status, MPI_Traits<T>::element_type(), &count);
