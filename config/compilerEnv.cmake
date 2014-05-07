@@ -286,7 +286,16 @@ macro(dbsSetupCxx)
          "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112" )
       set( CMAKE_REQUIRED_DEFINITIONS
          "${CMAKE_REQUIRED_DEFINITIONS} -D_XOPEN_SOURCE=600")
-   endif()
+      if ( APPLE ) 
+          # Defining the above requires adding POSIX extensions,
+          # otherwise, include ordering still goes wrong on Darwin,
+          # (i.e., putting fstream before iostream causes problems)
+          # see https://code.google.com/p/wmii/issues/detail?id=89
+          add_definitions(-D_DARWIN_C_SOURCE)
+          set( CMAKE_REQUIRED_DEFINITIONS
+            "${CMAKE_REQUIRED_DEFINITIONS} -D_DARWIN_C_SOURCE ")
+      endif() 
+  endif()
 
 endmacro()
 

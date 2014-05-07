@@ -16,7 +16,7 @@
 
 #include "NodeInfo.hh"
 #include "Sync.hh"
-#include <cstdio>
+//#include <cstdio>
 
 namespace rtt_c4
 {
