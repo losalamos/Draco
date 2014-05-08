@@ -26,37 +26,6 @@ else()
 
 if( MSVC )
 
-   # message("CMakeAddFortranSubdirectory")
-   # include(CMakeAddFortranSubdirectory)
-   # cmake_add_fortran_subdirectory( f90proj 
-       # PROJECT f90proj
-       # ARCHIVE_DIR ${CURRENT_BINARY_DIR}/f90proj 
-       # RUNTIME_DIR ${CURRENT_BINARY_DIR}/f90proj 
-       # NO_EXTERNAL_INSTALL
-       # )
-       
-   # cmake_add_fortran_subdirectory( fortran
-      # PROJECT DGESV
-      # ARCHIVE_DIR ${CMake_ARCHIVE_OUTPUT_DIRECTORY}
-      # RUNTIME_DIR ${CMake_RUNTIME_OUTPUT_DIRECTORY}
-      # LIBRARIES refblas dgesv # target libraries created
-      # LINK_LIBRARIES  # link interface libraries
-      # LINK_LIBS dgesv refblas  # dgesv needs refblas to link
-      # CMake_COMMAND_LINE
-      # -DCMake_ARCHIVE_OUTPUT_DIRECTORY=${CMake_ARCHIVE_OUTPUT_DIRECTORY}
-      # -DCMake_RUNTIME_OUTPUT_DIRECTORY=${CMake_RUNTIME_OUTPUT_DIRECTORY}
-      # NO_EXTERNAL_INSTALL
-   # )    
-    
-    # The autofortran library linking does not work unless fortran is enabled.
-    # include(CheckLanguage)
-    # check_language(Fortran)
-    # if( CMake_Fortran_Compiler )
-       # enable_language(Fortran)
-    # else()
-       # message(STATUS "No native Fortran support.")
-    # endif()
-    
     set( file_content "
 #ifndef FC_HEADER_INCLUDED
 #define FC_HEADER_INCLUDED

@@ -35,10 +35,15 @@ set( CMake_src
    vendor_libraries.cmake
    windows-cl.cmake
    windows-ifort.cmake
+   CMakeAddFortranSubdirectory.cmake
 )
 set( CMake_in
    cmake_uninstall.cmake.in
    doxygen_config.in
+   )
+set( CMake_AFSD
+   CMakeAddFortranSubdirectory/build_mingw.cmake.in
+   CMakeAddFortranSubdirectory/config_mingw.cmake.in
    )
 
 # include(debug_macros)
@@ -82,6 +87,11 @@ install(
      ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake
    DESTINATION
      lib/cmake/draco )
+install(
+  FILES
+    ${CMake_AFSD}
+  DESTINATION
+     lib/cmake/draco/CMakeAddFortranSubdirectory )
 
 ##---------------------------------------------------------------------------##
 ## End of config/CMakeLists.txt

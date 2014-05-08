@@ -54,7 +54,7 @@
 #          /path/to/draco/source
 # 5. [optional] Run 'make edit_cache' to review your build setup.
 #    Edit as needed. 
-# 6. Run 'make -j24' to compile the code. (also try 'make VERBOSE=1')
+# 6. Run 'make -j' to compile the code. (also try 'make VERBOSE=1')
 # 7. Run 'ctest -j16' to run the tests.
 # 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
 # 9. [optional] Run 'make help' for a list of targets.
@@ -97,14 +97,11 @@ project( Draco CXX C )
  # 1. XCode based Generators, or
  # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
  #    look for Fortran. 
-if( NOT ${CMAKE_GENERATOR} MATCHES Xcode AND NOT MSVC )
+ # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
+if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
    enable_language( Fortran OPTIONAL )
 endif()
 
-# Set RPATH for all libraries on Apple platform
-if (APPLE)
-   set(CMAKE_MACOSX_RPATH 1)
-endif()
 
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )

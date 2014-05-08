@@ -59,6 +59,11 @@ macro( dbsSetDefaults )
      set( CMAKE_SUPPRESS_REGENERATION ON )  
   endif()
   
+  # Set RPATH for all libraries on Apple platform
+  if (APPLE)
+    set(CMAKE_MACOSX_RPATH 1)
+  endif()
+  
   # Design-by-Contract
 
   #   Insist() assertions    : always on

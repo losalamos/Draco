@@ -12,8 +12,8 @@ cmake_minimum_required(VERSION 2.8)
 project( FortranChecks_f90sub Fortran )
 
 # ---------------------------------------------------------------------------- #
-# Setup - This folder is parsed independent of parent folders, so we need 
-# some basic setup.
+# Setup - For Generators other than "Unix Makefiles", this folder is
+# parsed independent of parent folders, so we need  some basic setup.
 # ---------------------------------------------------------------------------- #
 # Build system configuration files are located here.
 if( NOT EXISTS ${PROJECT_SOURCE_DIR}/../../../config )

@@ -34,14 +34,21 @@ if( BUILD_TESTING )
   else()
      set( pbuildtestflags "-j${MPIEXEC_MAX_NUMPROCS}" )
   endif()
-  add_custom_target( check
-     COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
-             ${pbuildtestflags}
-     COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $(ARGS) )
-  add_custom_target( failedtests
-     COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- 
-             ${pbuildtestflags}
-     COMMAND "${CMAKE_COMMAND}" -P 
-             "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
-     COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} $(ARGS) -I FailedTests.log )
-endif()  
+  if( ${CMAKE_GENERATOR} MATCHES Ninja )
+    add_custom_target( check
+      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
+      COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $$(ARGS) )
+    add_custom_target( failedtests
+      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
+      COMMAND "${CMAKE_COMMAND}" -P "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
+      COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} $$(ARGS) -I FailedTests.log )
+  else()
+    add_custom_target( check
+      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
+      COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $(ARGS) )
+    add_custom_target( failedtests
+      COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
+      COMMAND "${CMAKE_COMMAND}" -P "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
+      COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} $(ARGS) -I FailedTests.log )
+  endif() 
+endif() 
