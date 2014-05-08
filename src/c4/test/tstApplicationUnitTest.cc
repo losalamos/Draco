@@ -14,6 +14,7 @@
 #include "../ApplicationUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"
+#include "ds++/to_string.hh"
 #include <fstream>
 #include <sstream>
 #include <map>
@@ -124,7 +125,7 @@ void tstThree( ApplicationUnitTest &unitTest)
             unitTest.passes("Found single occurance of \"world!\"");
         else
             unitTest.failure("Did NOT find single occurance of \"world!\" (count is " +
-                             to_string(word_count[string("world!")]) + ')');
+                             rtt_dsxx::to_string(word_count[string("world!")]) + ')');
     }
     else
     {
