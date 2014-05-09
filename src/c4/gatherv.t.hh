@@ -80,10 +80,12 @@ DLL_PUBLIC void indeterminate_gatherv(
             std::vector<int> displs(N, -1);
             
             // for valid comm world, this should always be true.
-            Check( counts.size() > 0 ); 
+            Check( counts.size() > 0 );
+            Remember(int check = )
             gather( &count,
                     &counts[0],
                     1 );
+            Check(check == MPI_SUCCESS);
             unsigned total_count( 0 );
             for( unsigned p=0; p<N; ++p )
             {
@@ -95,6 +97,7 @@ DLL_PUBLIC void indeterminate_gatherv(
             // in length.  An shorthand-if is used to pass 'NULL' to mpi if
             // there is no data to gather.
             std::vector<T> recbuf(total_count, 42);
+            Remember(check =)
             rtt_c4::gatherv(
                 (count>0?&outgoing_data[0]:NULL),
                 outgoing_data.size(),
@@ -102,6 +105,7 @@ DLL_PUBLIC void indeterminate_gatherv(
                 &counts[0],
                 &displs[0]
                 );
+            Check(check==MPI_SUCCESS);
             
             for( unsigned p=0; p<N; ++p )
             {
@@ -114,7 +118,10 @@ DLL_PUBLIC void indeterminate_gatherv(
         }
         else
         {
+            Remember(int check = )
             gather( &count, static_cast<int*>(NULL), 1 );
+            Check(check == MPI_SUCCESS);
+            Remember(check =)
             gatherv(
                 (count>0?&outgoing_data[0]:NULL),
                 count,
@@ -122,6 +129,7 @@ DLL_PUBLIC void indeterminate_gatherv(
                 0,
                 static_cast<int*>(NULL)
                 );
+            Check(check == MPI_SUCCESS);
         }
     }
 #else

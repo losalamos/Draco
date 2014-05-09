@@ -51,12 +51,15 @@ DLL_PUBLIC void indeterminate_scatterv(vector<vector<T> >  &outgoing_data,
                 total_count += n;
             }
             int count;
+            Remember(int check =)
             scatter(&counts[0], &count, 1);
+            Check(check==MPI_SUCCESS);
             incoming_data.resize(count);
             
             vector<T> sendbuf(total_count);
             for (unsigned p=0; p<N; ++p)
             {
+                Check(outgoing_data[p].size()+displs[p] <= sendbuf.size());
                 copy(outgoing_data[p].begin(),
                      outgoing_data[p].end(),
                      sendbuf.begin()+displs[p]);
@@ -68,22 +71,30 @@ DLL_PUBLIC void indeterminate_scatterv(vector<vector<T> >  &outgoing_data,
                 Check( counts.size() >0 );
                 Check( displs.size() >0 );
                 Check( incoming_data.size()==0 );
+                Remember(int check =)
                 rtt_c4::scatterv( &sendbuf[0], &counts[0], &displs[0],
                                   (incoming_data.size()>0 ? &incoming_data[0] : NULL),
                                   count);
+                Check(check == MPI_SUCCESS);
             }
         }
         else
         {
             int count;
+            Remember(int check =)
             scatter(static_cast<int*>(NULL), &count, 1);
+            Check(check==MPI_SUCCESS);
             incoming_data.resize(count);
             if( count > 0 )
+            {
+                Remember(int check =)
                 rtt_c4::scatterv(static_cast<T*>(NULL),
                                  static_cast<int*>(NULL),
                                  static_cast<int*>(NULL),
                                  &incoming_data[0],
                                  count);
+                Check(check == MPI_SUCCESS);
+            }
         }
     }
 #else

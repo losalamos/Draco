@@ -68,6 +68,7 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
         for(size_t n=0; n<=octantOrdinates-1; ++n) 
         {
             unsigned const m = (octant-1)*octantOrdinates+n;
+            Check(m<mu.size() && m<eta.size() && m<wt.size());
             switch (octant) {
                 case 2:
                     mu[m]  = -mu[n];
@@ -95,6 +96,9 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
     // Evaluate mu and eta for octants 5-8
     for( size_t n=0; n<=4*octantOrdinates-1; ++n)
     {
+        Check(n+4*octantOrdinates < mu.size() &&
+              n+4*octantOrdinates < eta.size() &&
+              n+4*octantOrdinates < wt.size());
         mu[n+4*octantOrdinates]  = mu[n];
         eta[n+4*octantOrdinates] = eta[n];
         wt[n+4*octantOrdinates]  = wt[n];

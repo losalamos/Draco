@@ -181,7 +181,9 @@ DLL_PUBLIC void wait_all(int      count,
         else
             array_of_requests[i] = MPI_REQUEST_NULL;
     }
+    Remember(int check =)
     MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
+    Check(check==MPI_SUCCESS);
 }
 
 //---------------------------------------------------------------------------//
