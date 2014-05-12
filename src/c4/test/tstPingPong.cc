@@ -11,13 +11,14 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "c4_test.hh"
-#include "../global.hh"
-#include "../SpinLock.hh"
+#include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
+
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 using namespace std;
 
@@ -35,7 +36,7 @@ using rtt_c4::blocking_probe;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void blocking_ping_pong()
+void blocking_ping_pong( rtt_dsxx::UnitTest & ut )
 {
     if (rtt_c4::nodes() != 2) return;
     
@@ -111,13 +112,11 @@ void blocking_ping_pong()
     }
 
     rtt_c4::global_barrier();
-
-    if (rtt_c4_test::passed)
+    if( ut.numFails == 0 )
     {
         ostringstream m;
         m << "Blocking Send/Recv communication ok on " << rtt_c4::node();
         PASSMSG(m.str());
-
     }
     else
     {
@@ -129,7 +128,7 @@ void blocking_ping_pong()
 }
 //---------------------------------------------------------------------------//
 
-void non_blocking_ping_pong()
+void non_blocking_ping_pong( rtt_dsxx::UnitTest & ut )
 {
 
    if (rtt_c4::nodes() != 2) return;
@@ -284,7 +283,7 @@ void non_blocking_ping_pong()
    if (frr.inuse()) ITFAILS;
    if (drr.inuse()) ITFAILS;
 
-   if (rtt_c4_test::passed)
+   if (ut.numFails == 0)
    {
        ostringstream m;
        m << "Non-blocking Send/Recv communication ok on " << rtt_c4::node();
@@ -324,7 +323,7 @@ void tstC4_Req_free()
 
 //---------------------------------------------------------------------------//
 
-void probe_ping_pong()
+void probe_ping_pong( rtt_dsxx::UnitTest & ut )
 {
 
    if (rtt_c4::nodes() != 2) return;
@@ -390,53 +389,32 @@ void probe_ping_pong()
 
    rtt_c4::global_barrier();
 
-   if (rtt_c4_test::passed)
+   if (ut.numFails == 0)
    {
        ostringstream m;
        m << "Probe communication ok on " << rtt_c4::node();
        PASSMSG(m.str());
    }
-
+   return;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
-{    
-    rtt_c4::initialize(argc, argv);
+{
+	rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-        // >>> UNIT TESTS
         std::cout << "This is " << rtt_c4::get_processor_name() << std::endl;        
 
-        blocking_ping_pong();
-        non_blocking_ping_pong();
-        probe_ping_pong();
+		Insist(rtt_c4::nodes() == 2, "This designed is designed for exactly 2 Processors.");
+
+		blocking_ping_pong(ut);
+		non_blocking_ping_pong(ut);
+		probe_ping_pong(ut);
         tstC4_Req_free();
-
-    }
-    catch (rtt_dsxx::assertion &error)
-    {
-        cout << "While testing tstPingPong, " << error.what()
-            << endl;
-        rtt_c4::abort();
-        return 1;
-    }
-
-    {
-        rtt_c4::HTSyncSpinLock slock;
-        // status of test
-        cout <<     "\n*********************************************";
-        if (rtt_c4_test::passed) 
-            cout << "\n**** tstPingPong Test: PASSED on " << rtt_c4::node(); 
-        cout <<     "\n*********************************************\n" << endl;
-    }
-
-    rtt_c4::global_barrier();
-
-    cout << "Done testing tstPingPong on " << rtt_c4::node() << endl;
-    rtt_c4::finalize();
-    return 0;
+	}
+	UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

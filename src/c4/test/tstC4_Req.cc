@@ -11,8 +11,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
-#include "../SpinLock.hh"
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include <iostream>
@@ -59,12 +57,10 @@ void tstCopyConstructor(rtt_dsxx::UnitTest &ut)
 
 void tstTraits(rtt_dsxx::UnitTest &ut)
 {
-    using std::cout;
-    using std::endl;
     using rtt_c4::C4_Traits;
 
     {
-        rtt_c4::HSyncSpinLock headsyncspinlock;
+        // rtt_c4::HSyncSpinLock headsyncspinlock;
         
         if( C4_Traits<unsigned char>::tag  != 432 ) ITFAILS;
         if( C4_Traits<short>::tag          != 433 ) ITFAILS;
@@ -76,7 +72,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut)
 #ifdef C4_MPI
     {
         using rtt_c4::MPI_Traits;
-        rtt_c4::TSyncSpinLock tailsyncspinlock;
+        // rtt_c4::TSyncSpinLock tailsyncspinlock;
         
         if( MPI_Traits<unsigned char>::element_type()  != MPI_UNSIGNED_CHAR )  ITFAILS;
         if( MPI_Traits<short>::element_type()          != MPI_SHORT )          ITFAILS;
@@ -129,13 +125,11 @@ void tstWait(rtt_dsxx::UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-        // >>> UNIT TESTS
         tstCopyConstructor(ut);
         tstTraits(ut);
         tstWait(ut);

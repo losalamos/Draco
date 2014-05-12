@@ -93,15 +93,10 @@ void test_simple( rtt_dsxx::UnitTest &ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {
-        // Unit tests
-        test_simple(ut);
-    }
+    try { test_simple(ut); }
     UT_EPILOG(ut);
 }   
 

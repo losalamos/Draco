@@ -11,14 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
-#include "c4/global.hh"
 #include "../L2norm.hh"
 
 using namespace std;
@@ -39,17 +34,14 @@ void tstL2norm( UnitTest &ut)
     double const norm = L2norm(x);
 
     if (soft_equiv(norm, sqrt(1./6+n*(0.5+n/3.))))
-    {
         ut.passes("L2norm is correct");
-    }
     else
-    {
         ut.failure("L2norm is NOT correct");
-    }
+
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);

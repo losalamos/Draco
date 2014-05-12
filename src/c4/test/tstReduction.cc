@@ -11,17 +11,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "c4_test.hh"
-#include "../global.hh"
-#include "../SpinLock.hh"
+#include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <numeric>
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 using namespace std;
 
@@ -35,7 +31,7 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void elemental_reduction()
+void elemental_reduction( rtt_dsxx::UnitTest & ut )
 {
     // test ints
     int xint = rtt_c4::node() + 1;
@@ -43,7 +39,7 @@ void elemental_reduction()
 
     int int_answer = 0;
     for (int i = 0; i < rtt_c4::nodes(); i++)
-	int_answer += i + 1;
+        int_answer += i + 1;
 
     if (xint != int_answer) ITFAILS;
 
@@ -58,7 +54,7 @@ void elemental_reduction()
 
     long long_answer = 0;
     for (int i = 0; i < rtt_c4::nodes(); i++)
-	long_answer += i + 1000;
+        long_answer += i + 1000;
 
     if (xlong != long_answer) ITFAILS;
 
@@ -68,7 +64,7 @@ void elemental_reduction()
 
     double dbl_answer = 0.0;
     for (int i = 0; i < rtt_c4::nodes(); i++)
-	dbl_answer += static_cast<double>(i) + 0.1;
+        dbl_answer += static_cast<double>(i) + 0.1;
 
     if (!soft_equiv(xdbl, dbl_answer)) ITFAILS;
 
@@ -78,7 +74,7 @@ void elemental_reduction()
 
     long_answer = 1;
     for (int i = 0; i < rtt_c4::nodes(); i++)
-	long_answer *= (i + 1);
+        long_answer *= (i + 1);
 
     if (xlong != long_answer) ITFAILS;
 
@@ -109,13 +105,13 @@ void elemental_reduction()
     global_max(xdbl);
     if (!soft_equiv(xdbl, rtt_c4::nodes() - 0.3)) ITFAILS;
     
-    if (rtt_c4_test::passed)
-	PASSMSG("Elemental reductions ok.");
+    if (ut.numFails == 0)
+        PASSMSG("Elemental reductions ok.");
+    return;
 }
 
 //---------------------------------------------------------------------------//
-
-void array_reduction()
+void array_reduction( rtt_dsxx::UnitTest & ut)
 {
     // make a vector of doubles
     vector<double> x(100);
@@ -127,14 +123,14 @@ void array_reduction()
     // fill it
     for (int i = 0; i < 100; i++)
     {
-	x[i]  = rtt_c4::node() + 0.11;
-	for (int j = 0; j < rtt_c4::nodes(); j++)
-	{
-	    sum[i]  += (j + 0.11);
-	    prod[i] *= (j + 0.11);
-	}
-	lmin[i] = 0.11;
-	lmax[i] = rtt_c4::nodes() + 0.11 - 1.0;
+        x[i]  = rtt_c4::node() + 0.11;
+        for (int j = 0; j < rtt_c4::nodes(); j++)
+        {
+            sum[i]  += (j + 0.11);
+            prod[i] *= (j + 0.11);
+        }
+        lmin[i] = 0.11;
+        lmax[i] = rtt_c4::nodes() + 0.11 - 1.0;
     }
 
     vector<double> c;
@@ -180,58 +176,21 @@ void array_reduction()
         
     }
     
-    if (rtt_c4_test::passed)
-	PASSMSG("Array reductions ok.");
+    if (ut.numFails==0)
+        PASSMSG("Array reductions ok.");
     return;
 }
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
-
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (string(argv[arg]) == "--version")
-	{
-	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " << rtt_dsxx::release() 
-		     << endl;
-	    rtt_c4::finalize();
-	    return 0;
-	}
-
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
-    {
-	// >>> UNIT TESTS
-       
-	elemental_reduction();
-	array_reduction();
+    {       
+        elemental_reduction(ut);
+        array_reduction(ut);
     }
-    catch (rtt_dsxx::assertion &excpt)
-    {
-	cout << "While testing tstReduction, " << excpt.what() << endl;
-	rtt_c4::abort();
-	return 1;
-    }
-
-    {
-	rtt_c4::HTSyncSpinLock slock;
-
-	// status of test
-	cout << "\n*********************************************\n"
-             << "**** tstReduction Test: ";
-	if (rtt_c4_test::passed) 
-	    cout << "PASSED";
-        else
-	    cout << "FAILED";
-        cout << " on " << rtt_c4::node()
-             << "\n*********************************************\n\n";
-    }
-    
-    rtt_c4::global_barrier();
-    cout << "Done testing tstReduction on " << rtt_c4::node() << endl;
-    rtt_c4::finalize();
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

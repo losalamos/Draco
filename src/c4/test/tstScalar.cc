@@ -11,14 +11,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
-#include "ds++/Assert.hh"
-#include "../global.hh"
-#include "../SpinLock.hh"
+//#include "c4_test.hh"
+#include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../C4_Tags.hh"
-#include "c4_test.hh"
+//#include "../global.hh"
+//#include "../SpinLock.hh"
+//#include "../C4_Tags.hh"
+// #include <iostream>
+
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 using namespace std;
 
@@ -29,25 +32,25 @@ using namespace std;
 // C4_Serial.cc/.hh. 
 //---------------------------------------------------------------------------//
 
-void tstScalar()
+void tstScalar( rtt_dsxx::UnitTest & ut )
 {
 
 // Skip the tests if code not configured with the option --with-c4=scalar.
     
 #ifndef C4_SCALAR
 
-    if( rtt_c4::isScalar() )
-        FAILMSG("Incorrectly identified process as scalar.")
-    else
-        PASSMSG("Correctly identified process as parallel.")
+	if (rtt_c4::isScalar())
+		FAILMSG("Incorrectly identified process as scalar.");
+	else
+		PASSMSG("Correctly identified process as parallel.");
 
 #else
 
     // Check the isScalar function.
-    if( rtt_c4::isScalar() )
-        PASSMSG("Correctly identified process as scalar.")
-    else
-        FAILMSG("Incorrectly identified process as parallel.")
+	if( rtt_c4::isScalar() )
+		PASSMSG("Correctly identified process as scalar.");
+	else
+		FAILMSG("Incorrectly identified process as parallel.");
     
 // For --with-c4=scalar, probe(int,int,int) always returns false.
 
@@ -146,49 +149,10 @@ void tstScalar()
 int main(int argc, char *argv[])
 {
     using std::cout;
-    using std::endl;
-    std::string unitTestName( "tstScalar" );
-
-    rtt_c4::initialize(argc, argv);
-
-    try
-    {
-        // >>> UNIT TESTS
-        tstScalar();
-    }
-    catch (std::exception &err)
-    {
-        cout << "ERROR: While testing " << unitTestName << ", "
-             << err.what() << endl;
-        rtt_c4::abort();
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << unitTestName << ", " 
-             << "An unknown exception was thrown on processor "
-             << rtt_c4::node() << endl;
-        rtt_c4::abort();
-        return 1;
-    }
-
-    {
-        rtt_c4::HTSyncSpinLock slock;
-        
-        // status of test
-        cout << "\n*********************************************\n";
-        if (rtt_c4_test::passed) 
-            cout << "**** " << unitTestName
-                 << " Test: PASSED on " << rtt_c4::node();
-        cout << "\n*********************************************\n"
-             << endl;
-    }
-    
-    rtt_c4::global_barrier();
-    cout << "Done testing " << unitTestName << " on "
-         << rtt_c4::node() << endl; 
-    rtt_c4::finalize();
-    return 0;
+	using std::endl;
+	rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
+	try { tstScalar(ut); }
+	UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

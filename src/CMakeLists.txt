@@ -57,7 +57,7 @@ add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
-add_dir_if_exists( FortranChecks )
+   add_dir_if_exists( FortranChecks )
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()

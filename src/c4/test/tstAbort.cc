@@ -11,11 +11,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
-#include "../SpinLock.hh"
-#include "ds++/Assert.hh"
+#include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include <iostream>
+
+#define PASSMSG(A) ut.passes(A)
+#define FAILMSG(A) ut.failure(A)
+#define ITFAILS    ut.failure( __LINE__ )
 
 using namespace std;
 
@@ -23,9 +24,9 @@ using namespace std;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void abort_test()
+void abort_test(rtt_dsxx::UnitTest & ut)
 {
-    cout << "Entering abort on proc " << rtt_c4::node() << endl;
+    cout << "Entering abort_test on proc " << rtt_c4::node() << endl;
     
     rtt_c4::global_barrier();
 
@@ -34,6 +35,11 @@ void abort_test()
     {
         cout << "Aborting from processor 0" << endl;
         rtt_c4::abort();
+        FAILMSG("Should never get here.");
+    }
+    else
+    {
+        PASSMSG("Only abort from Processor 0.");
     }
     return;
 }
@@ -42,57 +48,27 @@ void abort_test()
 
 int main(int argc, char *argv[])
 {
-    rtt_c4::initialize(argc, argv);
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
 
+    // runtest command option tag
     bool runtest = false;
-
-    // version tag
     for (int arg = 1; arg < argc; arg++)
-    {
-	if (std::string(argv[arg]) == "--version")
-	{
-	    if (rtt_c4::node() == 0)
-		cout << argv[0] << ": version " 
-		     << rtt_dsxx::release()
-		     << endl;
-	    rtt_c4::finalize();
-	    return 0;
-	}
-        else if (std::string(argv[arg]) == "--runtest")
+        if (std::string(argv[ arg ])=="--runtest") runtest = true;
+
+    try
+    { 
+        // run test here so we get a pass message; this should simply abort the
+        // program at this point;  only run the test if --runtest is given so we
+        // don't hose the automated testing
+        if (runtest)
         {
-            runtest = true;
+            abort_test(ut);
+            std::cout<<"Do we get here?"<<std::endl;
         }
+        else
+            PASSMSG("Test allways passes when --runtest is not provided.");
     }
-
-    {
-	rtt_c4::HTSyncSpinLock slock;
-
-	// status of test
-	std::cout << std::endl;
-	std::cout <<     "*********************************************" 
-                  << std::endl;
-        std::cout << "**** tstAbort Test: PASSED on " 
-                  << rtt_c4::node() 
-                  << std::endl;
-	std::cout <<     "*********************************************" 
-                  << std::endl;
-	std::cout << std::endl;
-    }
-    
-    rtt_c4::global_barrier();
-
-    // run test here so we get a pass message; this should simply abort the
-    // program at this point;  only run the test if --runtest is given so we
-    // don't hose the automated testing
-    if (runtest)
-        abort_test();
-
-    std::cout << "Done testing tstAbort on " << rtt_c4::node() 
-              << std::endl;
-    
-    rtt_c4::finalize();
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

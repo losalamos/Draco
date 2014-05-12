@@ -11,8 +11,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
-#include "../SpinLock.hh"
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include <sstream>
@@ -109,29 +107,15 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
     // the free should have set back to COMM_WORLD
     if (rtt_c4::nodes() != 4) ITFAILS;
 
-    // Generate some make work (time delay?)
-    //! \bug I dont' think we should need to add this delay?
-    // KT - Previously this was after the HTSyncSpinLock below.  But I think
-    // it makes more sense here (if it is needed at all).
-    // {
-    //     std::vector<int> foo(10000,0);
-    //     for (int i = 0; i < 10000; i++)
-    //         foo[i] = i;
-    // }
-    
-    { // generate a sync point here and at end of block.
-	rtt_c4::HTSyncSpinLock slock;
-
-        if (ut.numFails==0)
-        {
-            std::ostringstream m;
-            m << "Communicator duplicated successfully on " << rtt_c4::node();
-            PASSMSG(m.str());
-        }
+	rtt_c4::global_barrier();
+    if (ut.numFails==0)
+    {
+        std::ostringstream m;
+        m << "Communicator duplicated successfully on " << rtt_c4::node();
+        PASSMSG(m.str());
     }
 
     rtt_c4::global_barrier();
-
     MPI_Comm_free(&new_comm);
 
 #endif

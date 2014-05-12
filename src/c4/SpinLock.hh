@@ -16,7 +16,6 @@
 
 #include "NodeInfo.hh"
 #include "Sync.hh"
-//#include <cstdio>
 
 namespace rtt_c4
 {
@@ -62,8 +61,9 @@ class DLL_PUBLIC SpinLock : public NodeInfo
  */
 //===========================================================================//
 
-class HSyncSpinLock : public HSync, public SpinLock {
-
+class DLL_PUBLIC HSyncSpinLock : public HSync, public SpinLock 
+{
+	// disable copy and assignment operators.
     HSyncSpinLock( const HSyncSpinLock& );
     HSyncSpinLock& operator=( const HSyncSpinLock& );
 
@@ -78,8 +78,9 @@ class HSyncSpinLock : public HSync, public SpinLock {
  */
 //===========================================================================//
 
-class TSyncSpinLock : public TSync, public SpinLock {
-
+class DLL_PUBLIC TSyncSpinLock : public TSync, public SpinLock 
+{
+	// disable copy and assignment operators.
     TSyncSpinLock( const TSyncSpinLock& );
     TSyncSpinLock& operator=( const TSyncSpinLock& );
 
@@ -94,23 +95,15 @@ class TSyncSpinLock : public TSync, public SpinLock {
  */
 //===========================================================================//
 
-class HTSyncSpinLock : public HSync, public TSync, public SpinLock {
-
+class DLL_PUBLIC HTSyncSpinLock : public HSync, public TSync, public SpinLock 
+{
+	// disable copy and assignment operators.
     HTSyncSpinLock( const HTSyncSpinLock& );
     HTSyncSpinLock& operator=( const HTSyncSpinLock& );
 
   public:
     HTSyncSpinLock( int l =1 ) : HSync(l), TSync(l), SpinLock(l) {}
 };
-
-#define SPINLOCK(a) \
-{ \
-    cout << flush; \
-    fflush(stdout); \
-    C4::HTSyncSpinLock h; \
-    a; \
-    cout << flush; \
-}
 
 } // end of rtt_c4
 

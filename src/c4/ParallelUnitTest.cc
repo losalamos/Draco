@@ -95,15 +95,13 @@ ParallelUnitTest::~ParallelUnitTest()
 }
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief Print a summary of the pass/fail status of ParallelUnitTest.
- */
+//! Print a summary of the pass/fail status of ParallelUnitTest.
 void ParallelUnitTest::status()
 {
     { // Provide some space before the report -- but keep all the processors
       // in sync.  [KT: 2011/06/20 - Actually, ParallelUnitTest should only
       // have a barrier on the destructor.  Otherwise, we can find ourselves
-      // in a race condition between this function and the destructure (in the
+      // in a race condition between this function and the destructor (in the
       // case of an exception).]
         
         // HTSyncSpinLock slock;
