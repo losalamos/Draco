@@ -44,7 +44,6 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
 
     // This block is a no-op for with-c4=scalar.
     // Dito when the vectors are of zero-length.
-    if( incoming_processor_count > 0 )
     { 
         
         // Post the asynchronous sends.
