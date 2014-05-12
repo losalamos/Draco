@@ -85,11 +85,15 @@ endmacro(CXX11_CHECK_FEATURE)
 cxx11_check_feature("auto"                2546 HAS_CXX11_AUTO)
 cxx11_check_feature("rvalue_references"   2118 HAS_CXX11_RVALUE_REFERENCES)
 cxx11_check_feature("long_long"           1811 HAS_CXX11_LONG_LONG)
+cxx11_check_feature("static_assert"       1720 HAS_CXX11_STATIC_ASSERT)
+cxx11_check_feature("decltype"            2343 HAS_CXX11_DECLTYPE)
+
+# These features are not currently allowed in the Draco project
+# because some compilers that we must use do not support them.  See
+# https://rtt.lanl.gov/redmine/projects/draco/wiki/C++#C11-features-that-can-be-used-in-Draco. 
 
 # cxx11_check_feature("nullptr"             2431 HAS_CXX11_NULLPTR)
 # cxx11_check_feature("lambda"              2927 HAS_CXX11_LAMBDA)
-# cxx11_check_feature("static_assert"       1720 HAS_CXX11_STATIC_ASSERT)
-# cxx11_check_feature("decltype"            2343 HAS_CXX11_DECLTYPE)
 # cxx11_check_feature("cstdint"             ""   HAS_CXX11_CSTDINT_H)
 # cxx11_check_feature("variadic_templates"  2555 HAS_CXX11_VARIADIC_TEMPLATES)
 # cxx11_check_feature("constexpr"           2235 HAS_CXX11_CONSTEXPR)
@@ -123,6 +127,14 @@ endif()
 if( NOT HAS_CXX11_LONG_LONG )
    message( FATAL_ERROR 
 "Draco expects your compiler to support C++11's long long keyword." )
+endif()
+if( NOT HAS_CXX11_STATIC_ASSERT )
+   message( FATAL_ERROR 
+"Draco expects your compiler to support C++11's static_assert keyword." )
+endif()
+if( NOT HAS_CXX11_DECLTYPE )
+   message( FATAL_ERROR 
+"Draco expects your compiler to support C++11's decltype keyword." )
 endif()
 
 # Please add a CPP macro def in ds++/config.h.
