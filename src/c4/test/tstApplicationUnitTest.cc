@@ -102,7 +102,7 @@ void tstTwo( ApplicationUnitTest &unitTest )
 
 void tstThree( ApplicationUnitTest &unitTest)
 {
-    unitTest.setNodes("serial");
+    unitTest.setNodes("1");
     if (unitTest.runTest("hello"))
     {
         unitTest.passes("Successfully ran phw with overriding proc count.");

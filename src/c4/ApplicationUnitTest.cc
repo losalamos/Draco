@@ -200,7 +200,7 @@ std::string ApplicationUnitTest::constructMpiCommand(
     //     mpirun -np 3 ../bin/program
     //     prun -n 16 ../bin/program
     std::ostringstream cmd;
-    if( numProcs == "scalar" )
+    if( numProcs == "scalar" || numProcs == "serial" )
         cmd << applicationPath + applicationName << " "; // "../bin/serrano ";
     else
     {
