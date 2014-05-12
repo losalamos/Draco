@@ -109,10 +109,8 @@ DLL_PUBLIC void indeterminate_gatherv(
             
             for( unsigned p=0; p<N; ++p )
             {
-                incoming_data[p].resize( counts[p] );
-                std::copy( recbuf.begin()+displs[p],
-                           recbuf.begin()+displs[p]+counts[p],
-                           incoming_data[p].begin());
+                incoming_data[p].assign( recbuf.begin()+displs[p],
+                                         recbuf.begin()+displs[p]+counts[p] );
             }
 
         }
