@@ -63,10 +63,6 @@
 #define restrict @RESTRICT_KEYWORD@
 #endif /* __cplusplus */
 
-#if defined __APPLE__
-#define register 
-#endif
-
 /* Platform checks for various functions */
 
 #cmakedefine HAVE_UNISTD_H   @HAVE_UNISTD_H@

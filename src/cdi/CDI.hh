@@ -158,15 +158,15 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
     // calculate terms 2..10.  This loop has been unrolled by a factor of 3
     for(size_t i = 2; i < 11; i += 3)
     {
-        register double const ip0_inv = *curr_inv++;
+        double const ip0_inv = *curr_inv++;
         eixp *= eix;
         double eixr_ip0 = eixp * ip0_inv;
 
-        register double const ip1_inv = *curr_inv++;
+        double const ip1_inv = *curr_inv++;
         eixp *= eix;
         double eixr_ip1 = eixp * ip1_inv;
 
-        register double const ip2_inv = *curr_inv++;
+        double const ip2_inv = *curr_inv++;
         eixp *= eix;
         double eixr_ip2 = eixp * ip2_inv;
 
