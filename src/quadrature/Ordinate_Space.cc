@@ -101,6 +101,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
                 // Not a starting ordinate.  Use Morel's recurrence relations
                 // to determine the next ordinate derivative coefficient.
             {
+                Check(a>0);
                 alpha_[a] = alpha_[a-1] + mu*wt;
                 Csum += wt;
                 levels_[a] = level;
@@ -374,6 +375,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
                 Lmax = l;
                 moments_per_order_.resize(Lmax+1, 0U);
             }
+            Check(l<moments_per_order_.size());
             moments_per_order_[l] += 1;
             number_of_moments_++;
         }

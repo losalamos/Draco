@@ -278,6 +278,7 @@ Sn_Ordinate_Space::compute_D()
     // ---------------------------------------------------
     
     std::vector< double > M( M_ );
+    Check(M.size()==numOrdinates*numMoments);
     gsl_matrix_view gsl_M = gsl_matrix_view_array( &M[0], numOrdinates, numMoments );
     
     std::vector< double > D( numMoments*numOrdinates );  // rows x cols

@@ -325,8 +325,10 @@ DLL_PUBLIC void global_sum(T &x)
     T y = x;
     
     // do global MPI reduction (result is on all processors) into x
+    Remember(int check = )
     MPI_Allreduce(&y, &x, 1, MPI_Traits<T>::element_type(), MPI_SUM,
 		  communicator);
+    Check(check == MPI_SUCCESS);
     return;
 }
 

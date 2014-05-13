@@ -141,7 +141,10 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
         for ( size_t i=0; i<numOrdinates; ++i )
         {
             if (xi[i]>0.0 && (dimension>1 || eta[i]>0.0))
+            {
+                Check(m<Result.size());
                 Result[m++] = Ordinate(mu[i], eta[i], xi[i], wt[i]);
+            }
         }
         Result.resize(m);
 
