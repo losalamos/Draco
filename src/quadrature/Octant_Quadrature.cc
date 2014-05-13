@@ -107,10 +107,16 @@ Octant_Quadrature::create_ordinates_(unsigned const dimension,
     // Evaluate xi for all octants
     vector<double> xi(numOrdinates);
     for( size_t n=0;n<=4*octantOrdinates-1;++n)
+    {
+        Check(n<xi.size());
         xi[n] = std::sqrt(1.0-(mu[n]*mu[n]+eta[n]*eta[n]));
+    }
     
     for(size_t n=0;n<=4*octantOrdinates-1;++n)
+    {
+        Check(n+4*octantOrdinates < xi.size());
         xi[n+4*octantOrdinates] = -xi[n];
+    }
 
     vector<Ordinate> Result;   
 

@@ -91,12 +91,18 @@ void broadcast(
     diff_type size;
     if( node() == 0)
 	size = std::distance(first, last);
+
+    Remember(int check = )
     broadcast(&size, 1, 0);
+    Check(check == MPI_SUCCESS);
     
     value_type *buf = new value_type[size];
     if ( node() == 0)
 	std::copy(first, last, buf);
+    
+    Remember(check = )
     broadcast(buf, size, 0);
+    Check(check == MPI_SUCCESS);
 
     if ( node() != 0)
 	std::copy(buf, buf+size, result);
