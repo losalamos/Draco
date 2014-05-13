@@ -69,12 +69,14 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
         }
         
         // Wait for all the receives to complete.
-        
-        wait_all(incoming_processor_count, &incoming_C4_Req[0]);
+        wait_all( incoming_processor_count,
+                  incoming_processor_count>0 ?
+                  &incoming_C4_Req[0] : NULL );
         
         // Wait until all the posted sends have completed.
-        
-        wait_all(outgoing_processor_count, &outgoing_C4_Req[0]);
+        wait_all(outgoing_processor_count,
+                 outgoing_processor_count>0 ?
+                 &outgoing_C4_Req[0] : NULL );
         
     }
     return;

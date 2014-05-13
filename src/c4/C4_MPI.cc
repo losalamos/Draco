@@ -171,9 +171,10 @@ DLL_PUBLIC void blocking_probe(int   source,
 DLL_PUBLIC void wait_all(int      count,
                          C4_Req * requests)
 {
-    using std::vector;
+    // Nothing to do if count is zero.
+    if( count == 0 ) return;
     
-    vector<MPI_Request> array_of_requests(count);
+    std::vector<MPI_Request> array_of_requests(count);
     for (int i=0; i<count; ++i)
     {
         if (requests[i].inuse())
@@ -184,6 +185,7 @@ DLL_PUBLIC void wait_all(int      count,
     Remember(int check =)
     MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
     Check(check==MPI_SUCCESS);
+    return;
 }
 
 //---------------------------------------------------------------------------//
