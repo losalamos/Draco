@@ -12,10 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "../ParallelUnitTest.hh"
-#include "../C4_Functions.hh"
 #include "../swap.hh"
-
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 
 #include <iostream>
@@ -340,21 +337,7 @@ int main(int argc, char *argv[])
         tstDeterminateSwap(ut);
         tstSemideterminateSwap(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstSwap, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstSwap, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
