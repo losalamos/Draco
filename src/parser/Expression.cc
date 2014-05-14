@@ -1076,7 +1076,7 @@ class Variable_Expression : public Expression
                         Unit const &units)
         :
         Expression(number_of_variables,
-                   units),
+                   (are_unit_expressions_disabled()? dimensionless : units)),
         
         index_(index)
     {
@@ -1587,6 +1587,64 @@ SP<Expression> Expression::parse(unsigned const number_of_variables,
         Result = new Or_Expression(Result, parse_or(number_of_variables,
                                                     variable_map,
                                                     tokens));
+    }
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \param number_of_variables Number of distinct independent variables in the
+ * expression.
+ *
+ * \param variable_map Map specifying variable names and the associated index
+ * and units. It is acceptable to alias variable names. The unit dimensions
+ * must be identical for aliases. The conversion factor is ignored but should
+ * be nonzero.
+ *
+ * \param expected_units Unit dimensions the final expression is expected to
+ * have. If the final expression does not have these units, and if
+ * unit checking is not disabled (as determined by a call to
+ * rtt_parser::are_units_disabled()), then a semantic error will be reported
+ * to tokens.
+ *
+ * \paran expected_units_text Human-friendly description of the units that
+ * were expected, e.g. "force", "energy density"
+ *
+ * \param tokens Token stream from which to parse an Expression.
+ *
+ * \return Pointer to the Expression. If null, the expression was empty or
+ * grammatically ill-formed.
+ */
+
+SP<Expression> Expression::parse(unsigned const number_of_variables,
+                                 Variable_Map const &variable_map,
+                                 Unit const &expected_units,
+                                 string const &expected_units_text,
+                                 Token_Stream &tokens)
+{
+    // No index in the variable map can be greater than or equal to the number
+    // of variables.
+    
+    // The top expression is the or expression, which we anticipate
+    // will be useful for piecewise functions.
+
+    SP<Expression> Result = parse_or(number_of_variables, variable_map, tokens);
+    while (tokens.lookahead().text()=="|")
+    {
+        tokens.shift();
+        Result = new Or_Expression(Result, parse_or(number_of_variables,
+                                                    variable_map,
+                                                    tokens));
+    }
+    if (!are_unit_expressions_disabled())
+    {
+        tokens.check_semantics(is_compatible(Result->units(), expected_units),
+                               ("expected units of " + expected_units_text).c_str());
+    }
+    else
+    {
+        tokens.check_semantics(is_compatible(Result->units(), dimensionless),
+                               "unit expressions are disabled");
     }
     return Result;
 }

@@ -95,38 +95,14 @@ macro( setupMPILibrariesUnix )
          set( MPI_Fortran_NO_INTERROGATE ${CMAKE_Fortran_COMPILER} )
       endif()
 
-      # On CT, only look for .a MPI libraries when build type is STATIC
-      # if( "${SITE}" MATCHES "c[it]" AND
-      #       "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
-      #    set( CMAKE_FIND_LIBRARY_SUFFIXES .a ) # automatic for Catamount.cmake
-      # endif()
-
       # First attempt to find mpi
       find_package( MPI QUIET )
-
-      # On CI/CT, we need to link to STATIC libraries, but
-      # findMPI.cmake will conly return shared libraries.  Force
-      # conversion to static iff CT with STATIC and openmpi are
-      # selected.
-#       if( "${SITE}" MATCHES "c[it]" AND
-#             "${MPIEXEC}" MATCHES "openmpi" AND
-#             "${DRACO_LIBRARY_TYPE}" MATCHES "STATIC" )
-#          foreach( VAR MPI_CXX_LIBRARIES MPI_C_LIBRARIES 
-#                MPI_Fortran_LIBRARIES MPI_EXTRA_LIBRARY MPI_LIBRARIES )
-#             string( REGEX REPLACE "mpi_cxx[.]so" "mpi_cxx.a" ${VAR} "${${VAR}}" )
-#             string( REGEX REPLACE "mpi[.]so" "mpi.a" ${VAR} "${${VAR}}" )
-#             string( REGEX REPLACE "mpi_mpifh[.]so" "mpi_mpifh.a" ${VAR} "${${VAR}}" )
-#             string( REGEX REPLACE "mpi_usempif08[.]so" "mpi_usempif08.a" ${VAR} "${${VAR}}" )
-#             string( REGEX REPLACE "pmi[.]so" "pmi.a" ${VAR} "${${VAR}}" )
-#             set( ${VAR} "${${VAR}}" CACHE STRING
-#                "MPI libraries to link against." FORCE )
-#       endif()
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
          set( DRACO_C4 "MPI" )  
          if( NOT MPIEXEC )
-            if( "${SITE}" MATCHES "c[it]" ) # AND "${MPIEXEC}" MATCHES "openmpi"
+            if( "${SITE}" MATCHES "c[it]" ) 
                set( MPIEXEC aprun )
             else()
                message( FATAL_ERROR 
@@ -173,20 +149,22 @@ macro( setupMPILibrariesUnix )
 
       # Check flavor and add optional flags
       if( "${MPIEXEC}" MATCHES openmpi OR
-            "${DBS_MPI_VER}" MATCHES open-mpi )
+            "${DBS_MPI_VER}" MATCHES open-mpi OR
+            "${MPIEXEC}" MATCHES intel-mpi )
+
          set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." )
 
          # Find the version of OpenMPI
 
-         if( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9].[0-9]" )
-            string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\1"
+         if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
+            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
                DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9]).([0-9]).([0-9]).*" "\\2"
+            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-         elseif( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9]" )
-            string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\1"
+         elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
+            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
                DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\2"
+            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
          endif()
 
@@ -215,7 +193,7 @@ macro( setupMPILibrariesUnix )
            set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
            set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
          else()
-           # Flag provided by Sam Gutierrez (2014-04-08, #
+           # Flag provided by Sam Gutierrez (2014-04-08),
            set( MPIEXEC_POSTFLAGS -mca hwloc_base_binding_policy none )
            set( MPIEXEC_POSTFLAGS_STRING "-mca hwloc_base_binding_policy none" )
          endif()
@@ -239,7 +217,8 @@ macro( setupMPILibrariesUnix )
                endif()
             endforeach()
          endif()
-         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+         math( EXPR MPI_CPUS_PER_NODE 
+           "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
          set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
             "Number of multi-core CPUs per node" FORCE )
          set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
@@ -253,9 +232,11 @@ macro( setupMPILibrariesUnix )
          math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
             "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
          if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
+            set( MPI_HYPERTHREADING "OFF" CACHE BOOL 
+              "Are we using hyperthreading?" FORCE )
          else()
-            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
+            set( MPI_HYPERTHREADING "ON" CACHE BOOL 
+              "Are we using hyperthreading?" FORCE )
          endif()
          
          #
@@ -280,16 +261,27 @@ macro( setupMPILibrariesUnix )
              "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
              CACHE STRING "extra mpirun flags (list)." FORCE)
         else()
+           # Version 1.6 or 1.8 ?????
+           # set( MPIEXEC_OMP_POSTFLAGS 
+           #   -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
+           #   CACHE STRING "extra mpirun flags (list)." FORCE )
+           # set( MPIEXEC_OMP_POSTFLAGS_STRING 
+           #   "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
+           #   CACHE STRING "extra mpirun flags (list)." FORCE)
+ 
+          # Version 1.7.4
            set( MPIEXEC_OMP_POSTFLAGS 
-             -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
+             -bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}
              CACHE STRING "extra mpirun flags (list)." FORCE )
            set( MPIEXEC_OMP_POSTFLAGS_STRING 
-             "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
+             "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
              CACHE STRING "extra mpirun flags (list)." FORCE)
+           
         endif()
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
             MPI_LIBRARIES )         
 
+      ### Cray wrappers for mpirun
       elseif( "${MPIEXEC}" MATCHES aprun)
          # According to email from Mike McKay (2013/04/18), we might
          # need to set the the mpirun command to something like: 
@@ -312,6 +304,7 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          all OMP tests will be disabled." )
          endif()
 
+      ### Sequoia
       elseif( "${MPIEXEC}" MATCHES srun)
          if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
             set( MPI_CPUS_PER_NODE 1 CACHE STRING
@@ -329,9 +322,72 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          endif()
 
          set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
-            STRING "flag used to specify number of processes." FORCE)
+           STRING "flag used to specify number of processes." FORCE)
+
+      ### Intel MPI
+      # elseif( "${MPIEXEC}" MATCHES intel-mpi )
+      #     set( MPI_FLAVOR "intelmpi" CACHE STRING "Flavor of MPI." )
+
+      #    # Find the version of Intel MPI
+
+      #    if( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9].[0-9]" )
+      #       string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
+      #          DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+      #       string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
+      #          DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+      #    elseif( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9]" )
+      #       string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\1"
+      #          DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+      #       string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\2"
+      #          DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+      #    endif()
+
+
+      #    # Find cores/cpu and cpu/node.
+
+      #    set( MPI_CORES_PER_CPU 4 )
+      #    set( MPI_PHYSICAL_CORES 0 )
+      #    if( EXISTS "/proc/cpuinfo" )
+      #       file( READ "/proc/cpuinfo" cpuinfo_data )
+      #       string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
+      #       foreach( line ${cpuinfo_data} )
+      #          if( "${line}" MATCHES "cpu cores" )
+      #             string( REGEX REPLACE ".* ([0-9]+).*" "\\1"
+      #                MPI_CORES_PER_CPU "${line}" )
+      #          elseif( "${line}" MATCHES "physical id" )
+      #             string( REGEX REPLACE ".* ([0-9]+).*" "\\1" tmp "${line}" )
+      #             if( ${tmp} GREATER ${MPI_PHYSICAL_CORES} )
+      #                set( MPI_PHYSICAL_CORES ${tmp} )
+      #             endif()
+      #          endif()
+      #       endforeach()
+      #    endif()
+      #    math( EXPR MPI_CPUS_PER_NODE 
+      #      "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+      #    set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+      #       "Number of multi-core CPUs per node" FORCE )
+      #    set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+      #       "Number of cores per cpu" FORCE )
+
+      #    # Check for hyperthreading - This is important for reserving
+      #    # threads for OpenMP tests...
+
+      #    # correct base-zero indexing
+      #    math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
+      #    math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
+      #       "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+      #    if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+      #       set( MPI_HYPERTHREADING "OFF" CACHE BOOL 
+      #         "Are we using hyperthreading?" FORCE )
+      #    else()
+      #       set( MPI_HYPERTHREADING "ON" CACHE BOOL 
+      #         "Are we using hyperthreading?" FORCE )
+      #    endif()
+
       else()
-         message( FATAL_ERROR "missing if block for MPIEXEC=${MPIEXEC}")
+         message( FATAL_ERROR "
+The Draco build system doesn't know how to configure the build for 
+MPIEXEC=${MPIEXEC}")
       endif()
 
       # Mark some of the variables created by the above logic as

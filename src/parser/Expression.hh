@@ -151,6 +151,15 @@ class DLL_PUBLIC Expression
            map<string, pair<unsigned, Unit> > const &variables,
            Token_Stream &);
 
+    //! Parse an Expression with specified dimensions from a Token_Stream.
+    static
+    SP<Expression>
+    parse( unsigned number_of_variables,
+           map<string, pair<unsigned, Unit> > const &variables,
+           Unit const &expected_units,
+           string const &expected_units_text,
+           Token_Stream &);
+
   protected:
 
     // IMPLEMENTATION

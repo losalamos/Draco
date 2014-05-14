@@ -57,6 +57,8 @@
 	parser:
 	- Updated Class_Parser to take a 4th template parameter to identify
 	  the parse table type.
+	- Extend disabling of unit expressions to Expression::parse
+	  function.
 
 	quadrature:
 	- Added additinal sanity checks and Design-by-Contract checks.
