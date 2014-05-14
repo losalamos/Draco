@@ -37,6 +37,13 @@ void disable_unit_expressions()
 }
 
 //---------------------------------------------------------------------------------------//
+//! Find out whether unit expressions are disabled.
+bool are_unit_expressions_disabled()
+{
+    return no_unit_expressions;
+}
+
+//---------------------------------------------------------------------------------------//
 /*! 
  * \param tokens
  * Token stream from which to parse the quantity.
