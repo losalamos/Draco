@@ -106,6 +106,23 @@ double conversion_factor(Unit const &units, Unit const &unit_system)
     return conv;
 }
 
+//---------------------------------------------------------------------------//
+double conversion_factor(Unit const &units, rtt_units::UnitSystem const &unit_system)
+{
+    using std::pow;
+    
+    double const conv =
+        pow(unit_system.L(), units.m) *
+        pow(unit_system.M(), units.kg) *
+        pow(unit_system.t(), units.s) *
+        pow(unit_system.T(), units.K) *
+        pow(unit_system.I(), units.A) *
+        pow(unit_system.A(), units.rad) *
+        pow(unit_system.Q(), units.mol);
+
+    return conv;
+}
+
 } // namespace rtt_parser
 
 //---------------------------------------------------------------------------//

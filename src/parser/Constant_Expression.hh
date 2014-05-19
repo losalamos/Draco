@@ -15,6 +15,7 @@
 #define parser_Constant_Expression_hh
 
 #include "Expression.hh"
+#include "utilities.hh"
 
 namespace rtt_parser
 {

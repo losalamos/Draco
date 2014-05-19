@@ -21,25 +21,40 @@ namespace rtt_cdi
 
 //---------------------------------------------------------------------------//
 /*!
+ * The arguments to this function must all be in consistent units. For
+ * example, if low and high are expressed in keV, then the temperature must
+ * also be expressed in keV. If low and high are in Hz and temperature is in
+ * K, then low and high must first be multiplied by Planck's constant and
+ * temperature by Boltzmann's constant before they are passed to this function.
+ *
  * \brief Integrate the Planckian and Rosseland spectrum over a frequency
  *        range.
- * \param T the temperature in keV (must be greater than 0.0)
- * \return void the integrated normalized Planckian and Rosseland from x_low
- *        to x_high are passed by reference in the function call
+ *
+ * \param low Lower limit of frequency range.
+ *
+ * \param high Higher limit of frequency range.
+ *
+ * \param T Temperature (must be greater than 0.0).
+ *
+ * \planck On return, contains the integrated normalized Planckian from
+ * low to high.
+ *
+ * \rosseland On return, contains the integrated normalized Rosseland from
+ * low to high
  *
  * \f[
  * planck(T) = \int_{\nu_1}^{\nu_2}{B(\nu,T)d\nu}
  * rosseland(T) = \int_{\nu_1}^{\nu_2}{\frac{\partial B(\nu,T)}{\partial T}d\nu}
  * \f]
  */
-void CDI::integrate_Rosseland_Planckian_Spectrum(double lowFreq,
-						 double highFreq,
+void CDI::integrate_Rosseland_Planckian_Spectrum(double low,
+						 double high,
 						 double const T,
 						 double &planck, 
 						 double &rosseland)
 {
-    Require (lowFreq >= 0.0);
-    Require (highFreq >= lowFreq);
+    Require (low >= 0.0);
+    Require (high >= low);
     Require (T >= 0.0);
 
     if (T==0.0)
@@ -53,15 +68,15 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double lowFreq,
     double planck_low,  rosseland_low;
 
     // Sale the frequencies by temperature
-    lowFreq /= T;
-    highFreq /= T;
+    low /= T;
+    high /= T;
 
-    double const exp_lowFreq  = std::exp(-lowFreq);
-    double const exp_highFreq = std::exp(-highFreq);
+    double const exp_low  = std::exp(-low);
+    double const exp_high = std::exp(-high);
 
-    integrate_planck_rosseland(lowFreq,  exp_lowFreq,  planck_low,
+    integrate_planck_rosseland(low,  exp_low,  planck_low,
                                rosseland_low);
-    integrate_planck_rosseland(highFreq, exp_highFreq, planck_high,
+    integrate_planck_rosseland(high, exp_high, planck_high,
                                rosseland_high);
 
     planck    = planck_high    - planck_low;

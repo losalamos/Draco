@@ -360,9 +360,9 @@ void tstutilities(UnitTest &ut)
     }
 
     old_error_count = tokens.error_count();
-    // Remember( double T = )
-    parse_temperature(tokens);
-    if (tokens.error_count()!=old_error_count)
+    double T = parse_temperature(tokens);
+    if (tokens.error_count()!=old_error_count ||
+        !soft_equiv(T, 273.16))
     {
         ut.failure("temperature NOT successfully parsed");
     }
@@ -370,9 +370,9 @@ void tstutilities(UnitTest &ut)
     {
         ut.passes("temperature successfully parsed");
     }
-    // Remember(T=)
-    parse_temperature(tokens);
-    if (tokens.error_count()!=old_error_count)
+    T = parse_temperature(tokens);
+    if (tokens.error_count()!=old_error_count ||
+        !soft_equiv(T, rtt_units::EV2K))
     {
         ut.failure("temperature NOT successfully parsed");
     }
@@ -382,12 +382,12 @@ void tstutilities(UnitTest &ut)
     }
     {
         String_Token_Stream tokens("3.0 m");
-        try
+        parse_temperature(tokens);
+        if (tokens.error_count()==0)
         {
-            parse_temperature(tokens);
             ut.failure("did NOT detect bad temperature units");
         }
-        catch(...)
+        else
         {
             ut.passes("correctly detected bad temperature units");
         }
@@ -773,12 +773,516 @@ void tstutilities(UnitTest &ut)
         map<std::string, pair<unsigned, Unit> > variable_map;
         Unit one = {0,0,0,0,0,0,0,0,0, 1};
         variable_map[std::string("x")] = std::make_pair(0,one);
-        SP<Expression> T = parse_quantity(string, J, "energy", 1, variable_map);
+        SP<Expression> T = parse_quantity(string, K, "temperature", 1, variable_map);
         vector<double> x(1,0.0);
         if (soft_equiv((*T)(x), 278.))
             ut.passes("parsed temperature correctly");
         else
             ut.failure("did NOT parse temperature correctly");
+    }
+
+    // Screw around with the internal unit system and with optional unit
+    // expressions.
+    {
+        using namespace rtt_units;
+        
+        String_Token_Stream quantity_with_units("3e10 cm/s");
+        String_Token_Stream bare_quantity("3e10");
+
+        // Check defaults
+        double c = parse_quantity(quantity_with_units, m/s, "velocity");
+        if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e8))
+        {
+            ut.passes("parsed quantity with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to SI correctly");
+        }
+        quantity_with_units.rewind();
+
+        c = parse_quantity(bare_quantity, m/s, "velocity");
+        if (bare_quantity.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare quantity");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare quantity");
+        }
+        bare_quantity.rewind();
+
+        // Turn off mandatory units
+        set_unit_expressions_are_required(false);
+       
+        c = parse_quantity(quantity_with_units, m/s, "velocity");
+        if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e8))
+        {
+            ut.passes("parsed quantity with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to SI correctly");
+        }
+        quantity_with_units.rewind();
+
+        c = parse_quantity(bare_quantity, m/s, "velocity");
+        if (bare_quantity.error_count()==0 && soft_equiv(c, 3e10))
+        {
+            ut.passes("parsed bare quantity to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare quantity to SI correctly");
+        }
+        bare_quantity.rewind();
+
+        // Turn mandatory units back on but switch internal units to cgs
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().CGS()));
+       
+        c = parse_quantity(quantity_with_units, m/s, "velocity");
+        if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e10))
+        {
+            ut.passes("parsed quantity with units to cgs correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to cgs correctly");
+        }
+        quantity_with_units.rewind();
+
+        c = parse_quantity(bare_quantity, m/s, "velocity");
+        if (bare_quantity.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare quantity");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare quantity");
+        }
+        bare_quantity.rewind();
+
+        // Turn mandatory units off again
+        set_unit_expressions_are_required(false);
+       
+        c = parse_quantity(quantity_with_units, m/s, "velocity");
+        if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e10))
+        {
+            ut.passes("parsed quantity with units to cgs correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to cgs correctly");
+        }
+        quantity_with_units.rewind();
+
+        c = parse_quantity(bare_quantity, m/s, "velocity");
+        if (bare_quantity.error_count()==0 && soft_equiv(c, 3e10))
+        {
+            ut.passes("parsed bare quantity to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare quantity to SI correctly");
+        }
+        bare_quantity.rewind();
+    }
+    // Screw around with unit expression settings, as before, but for
+    // temperature expressions in K.
+    {
+        using namespace rtt_units;
+        
+        String_Token_Stream quantity_with_units("273 K");
+        String_Token_Stream bare_quantity("273");
+
+        // Check defaults
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().SI()));
+
+        double T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.))
+        {
+            ut.passes("parsed T with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse T with units to SI correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare quantity");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare quantity");
+        }
+        bare_quantity.rewind();
+
+        // Turn off mandatory units
+        set_unit_expressions_are_required(false);
+       
+        T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.))
+        {
+            ut.passes("parsed quantity with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to SI correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()==0 && soft_equiv(T, 273.))
+        {
+            ut.passes("parsed bare quantity to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare quantity to SI correctly");
+        }
+        bare_quantity.rewind();
+
+        // Turn mandatory units back on but switch internal units to X4
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().X4()));
+       
+        T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.e-3/EV2K))
+        {
+            ut.passes("parsed quantity with units to X4 correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to X4 correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare quantity");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare quantity");
+        }
+        bare_quantity.rewind();
+
+        // Turn mandatory units off again
+        set_unit_expressions_are_required(false);
+       
+        T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.e-3/EV2K))
+        {
+            ut.passes("parsed quantity with units to X4 correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to X4 correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()==0 && soft_equiv(T, 273.))
+        {
+            ut.passes("parsed bare quantity to X4 correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare quantity to X4 correctly");
+        }
+        bare_quantity.rewind();
+    }
+    // Screw around with unit expression settings, as before, but for
+    // temperature expressions in keV.
+    {
+        using namespace rtt_units;
+        
+        String_Token_Stream quantity_with_units("0.001 keV");
+        String_Token_Stream bare_quantity("0.001");
+
+        // Check defaults
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().SI()));
+
+        double T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, EV2K))
+        {
+            ut.passes("parsed T with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse T with units to SI correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare quantity");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare quantity");
+        }
+        bare_quantity.rewind();
+
+        // Turn off mandatory units
+        set_unit_expressions_are_required(false);
+       
+        T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, EV2K))
+        {
+            ut.passes("parsed quantity with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to SI correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()==0 && soft_equiv(T, 0.001))
+        {
+            ut.passes("parsed bare quantity to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare quantity to SI correctly");
+        }
+        bare_quantity.rewind();
+
+        // Turn mandatory units back on but switch internal units to X4
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().X4()));
+       
+        T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, 0.001))
+        {
+            ut.passes("parsed quantity with units to X4 correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to X4 correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare quantity");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare quantity");
+        }
+        bare_quantity.rewind();
+
+        // Turn mandatory units off again
+        set_unit_expressions_are_required(false);
+       
+        T = parse_temperature(quantity_with_units);
+        if (quantity_with_units.error_count()==0 && soft_equiv(T, 0.001))
+        {
+            ut.passes("parsed quantity with units to X4 correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to X4 correctly");
+        }
+        quantity_with_units.rewind();
+
+        T = parse_temperature(bare_quantity);
+        if (bare_quantity.error_count()==0 && soft_equiv(T, 0.001))
+        {
+            ut.passes("parsed bare quantity to X4 correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare quantity to X4 correctly");
+        }
+        bare_quantity.rewind();
+    }
+    // Screw around, etc., but this time with quantity expressions
+    {
+        using namespace rtt_units;
+
+        std::map<string, pair<unsigned, Unit> > vmap;
+        vmap["t"] = pair<unsigned, Unit>(0, s);
+        vmap["x"] = pair<unsigned, Unit>(1, m);
+
+        vector<double> var(2, 1U);
+        
+        String_Token_Stream expression_with_units("0.5*(t+2*x*s/cm)*erg");
+        String_Token_Stream expression_appending_units("3.7 erg-s");
+        String_Token_Stream bare_expression("0.5*(t+2*x)");
+
+        // Check defaults
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().SI()));
+
+        SP<Expression> c =
+            parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
+        
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 0.5*(1.+2*1./0.01)*1e-7))
+        {
+            ut.passes("parsed expression with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT expression with units to SI correctly");
+        }
+        expression_with_units.rewind();
+
+        c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
+        
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 3.7*1e-7))
+        {
+            ut.passes("parsed expression appending units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT expression appending units to SI correctly");
+        }
+        expression_appending_units.rewind();
+
+        c = parse_quantity(bare_expression, erg*s, "action", 2U, vmap);
+        if (bare_expression.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare expression");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare expression");
+        }
+        bare_expression.rewind();
+
+        // Turn off mandatory units
+        set_unit_expressions_are_required(false);
+       
+        c = parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 0.5*(1.+2*1./0.01)*1e-7))
+        {
+            ut.passes("parsed quantity with units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to SI correctly");
+        }
+        expression_with_units.rewind();
+
+        c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
+        
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 3.7*1e-7))
+        {
+            ut.passes("parsed expression appending units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT expression appending units to SI correctly");
+        }
+        expression_appending_units.rewind();
+
+        c = parse_quantity(bare_expression, erg*s, "action", 2U, vmap);
+        if (bare_expression.error_count()==0 &&
+            soft_equiv((*c)(var), 0.5*(1.+2*1.)))
+        {
+            ut.passes("parsed bare expression to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare expression to SI correctly");
+        }
+        bare_expression.rewind();
+
+        // Turn mandatory units back on but switch internal units to cgs
+        set_unit_expressions_are_required(true);
+        set_internal_unit_system(UnitSystem(UnitSystemType().CGS()));
+       
+        c = parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 0.5*(1.+2*1./1.)*1.))
+        {
+            ut.passes("parsed quantity with units to cgs correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to cgs correctly");
+        }
+        expression_with_units.rewind();
+
+        c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
+        
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 3.7))
+        {
+            ut.passes("parsed expression appending units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT expression appending units to SI correctly");
+        }
+        expression_appending_units.rewind();
+
+        c = parse_quantity(bare_expression, erg*s, "action", 2U, vmap);
+        if (bare_expression.error_count()>0)
+        {
+            ut.passes("correctly flagged missing units in bare expression");
+        }
+        else
+        {
+            ut.failure("did NOT correctly flag missing units in bare expression");
+        }
+        bare_expression.rewind();
+
+        // Turn mandatory units off again
+        set_unit_expressions_are_required(false);
+       
+        c = parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 0.5*(1.+2*1./1.)*1.))
+        {
+            ut.passes("parsed quantity with units to cgs correctly");
+        }
+        else
+        {
+            ut.failure("did NOT quantity with units to cgs correctly");
+        }
+        expression_with_units.rewind();
+
+        c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
+        
+        if (expression_with_units.error_count()==0 &&
+            soft_equiv((*c)(var), 3.7))
+        {
+            ut.passes("parsed expression appending units to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT expression appending units to SI correctly");
+        }
+        expression_appending_units.rewind();
+
+        c = parse_quantity(bare_expression, erg*s, "action", 2U, vmap);
+        if (bare_expression.error_count()==0 &&
+            soft_equiv((*c)(var), 0.5*(1.+2*1.)))
+        {
+            ut.passes("parsed bare expression to SI correctly");
+        }
+        else
+        {
+            ut.failure("did NOT parse bare expression to SI correctly");
+        }
+        bare_expression.rewind();
     }
     return;
 }
