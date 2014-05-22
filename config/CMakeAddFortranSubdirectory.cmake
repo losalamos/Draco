@@ -30,6 +30,8 @@
 #    ARCHIVE_DIR <dir>       # dir where project places .lib files
 #    RUNTIME_DIR <dir>       # dir where project places .dll files
 #    LIBRARIES <lib>...      # names of library targets to import
+#    TARGET_NAMES <string>...# target names assigned to the libraries listed above available 
+#                              in the primary project.
 #    LINK_LIBRARIES          # link interface libraries for LIBRARIES
 #     [LINK_LIBS <lib> <dep>...]...
 #    DEPENDS                 # Register dependencies external for this AFSD project.

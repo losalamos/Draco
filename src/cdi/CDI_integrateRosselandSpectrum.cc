@@ -21,27 +21,34 @@ namespace rtt_cdi
 
 //---------------------------------------------------------------------------//
 /*!
- *
  * \brief Integrate the Rosseland spectrum over a frequency range.
  *
- 
- * \param T the temperature in keV (must be greater than 0.0)
+ * The arguments to this function must all be in consistent units. For
+ * example, if low and high are expressed in keV, then the temperature must
+ * also be expressed in keV. If low and high are in Hz and temperature is in
+ * K, then low and high must first be multiplied by Planck's constant and
+ * temperature by Boltzmann's constant before they are passed to this
+ * function.
+ *
+ * \param low lower frequency bound.
+ * \param high higher frequency bound.
+ * \param T the temperature (must be greater than 0.0)
  * 
- * \return integrated normalized Rosseland from x_low to x_high
+ * \return integrated normalized Rosseland from low to high
  *
  */
 double CDI::integrateRosselandSpectrum(
-    const double lowFreq,
-    const double highFreq, 
+    const double low,
+    const double high, 
     const double T)
 {
-    Require (lowFreq  >= 0.0);
-    Require (highFreq >= lowFreq);
+    Require (low  >= 0.0);
+    Require (high >= low);
     Require (T >= 0.0);
 
     double planck, rosseland;
 
-    integrate_Rosseland_Planckian_Spectrum(lowFreq, highFreq, T, planck,
+    integrate_Rosseland_Planckian_Spectrum(low, high, T, planck,
                                            rosseland); 
 
     return rosseland;

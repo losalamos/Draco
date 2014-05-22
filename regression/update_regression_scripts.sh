@@ -2,7 +2,7 @@
 
 # Ensure that the permissions are correct
 umask 0002
-SNV=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn
+SVN=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn
 
 # Helper function
 run () {

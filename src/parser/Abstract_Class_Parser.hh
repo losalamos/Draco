@@ -13,7 +13,6 @@
 #ifndef parser_Abstract_Class_Parser_hh
 #define parser_Abstract_Class_Parser_hh
 
-#include "Token_Stream.hh"
 #include "Parse_Table.hh"
 #include "ds++/SP.hh"
 #include <iostream>

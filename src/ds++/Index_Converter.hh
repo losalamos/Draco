@@ -13,7 +13,6 @@
 #ifndef dsxx_Index_Converter_hh
 #define dsxx_Index_Converter_hh
 
-#include "Index_Set.hh"
 #include "Index_Counter.hh"
 #include "ds++/config.h"
 

@@ -19,30 +19,36 @@ namespace rtt_cdi
 /*!
  * \brief Integrate the Planckian spectrum over a frequency range.
  *
- * \param lowFreq lower frequency bound in keV
- * \param highFreq higher frequency bound in keV
- * \param T the temperature in keV (must be greater than 0.0)
+ * The arguments to this function must all be in consistent units. For
+ * example, if low and high are expressed in keV, then the temperature must
+ * also be expressed in keV. If low and high are in Hz and temperature is in
+ * K, then low and high must first be multiplied by Planck's constant and
+ * temperature by Boltzmann's constant before they are passed to this function.
+ *
+ * \param low lower frequency bound.
+ * \param high higher frequency bound.
+ * \param T the temperature (must be greater than 0.0)
  * 
- * \return integrated normalized Plankian from x_low to x_high
+ * \return integrated normalized Plankian from low to high
  *
  */
-double CDI::integratePlanckSpectrum(double lowFreq, 
-				    double highFreq, 
+double CDI::integratePlanckSpectrum(double low, 
+				    double high, 
 				    const double T) 
 {
-    Require (lowFreq  >= 0.0);
-    Require (highFreq >= lowFreq);
+    Require (low  >= 0.0);
+    Require (high >= low);
     Require (T        >= 0.0);
 
     // return 0 if temperature is a hard zero
     if (T == 0.0) return 0.0;
 
     // Sale the frequencies by temperature
-    lowFreq /= T;
-    highFreq /= T;
+    low /= T;
+    high /= T;
 
     double integral =
-        integrate_planck(highFreq) - integrate_planck(lowFreq);
+        integrate_planck(high) - integrate_planck(low);
     
 
     Ensure ( integral >= 0.0 );

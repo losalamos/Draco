@@ -17,11 +17,13 @@
 #include <errno.h>
 #include "utilities.hh"
 #include "units/PhysicalConstants.hh"
+#include "units/PhysicalConstantsSI.hh"
 
 namespace // anonymous
 {
 
-bool no_unit_expressions = false;
+bool require_unit_expressions = true;
+rtt_units::UnitSystem internal_unit_system;  // SI-K initially
 
 } // namespace anonymous
 
@@ -30,18 +32,87 @@ namespace rtt_parser
 using namespace std;
 
 //---------------------------------------------------------------------------------------//
-//! Disable parsing of unit expressions. Unit names become ordinary keywords.
-void disable_unit_expressions()
+/*! Set the unit system to which all parser code converts unit expressions.
+ *
+ * By default, all unit expressions are converted to SI values by the parser
+ * utility routines. For example, if the double parse_quantity function is
+ * given the text "2.7 cm", it will return a value of 0.027. The function
+ * set_common_unit_system can be used to change the internal unit system,
+ * for example, to cgs, so that if the double parse_quantity function is given
+ * the text "2.7 cm", it will return a value of 2.7.
+ *
+ * Similarly, by default,the Expression parse_quantity function assumes that
+ * all input quantities to the Expression it constructs will be in SI units,
+ * but this will be overriden if set_common_unit_system is used to change the
+ * internal unit system. Thus, if Expression parse_quantity is given the text
+ * "0.5*(t+2*x*s/cm)*erg" then by default it will construct an Expression that
+ * computes 0.5e-7*(t+200*x). However, if set_internal_unit_system had
+ * previously been called to set the internal unit system to cgs, the
+ * Expression constructed would compute 0.5*(t+2*x).
+ *
+ * This function will normally be called once at the beginning of a parse, since
+ * if the internal unit system changes halfway through a parse, there is
+ * rarely any easy way to go back and convert quantities parsed earlier to the
+ * new internal unit system. For example, if an input file is allowed to
+ * specify the internal unit system, this specification should normally be
+ * requred to be the first line in the input file.
+ */
+void set_internal_unit_system(rtt_units::UnitSystem const &units)
 {
-    no_unit_expressions = true;
+    internal_unit_system = units;
 }
 
 //---------------------------------------------------------------------------------------//
-//! Find out whether unit expressions are disabled.
-bool are_unit_expressions_disabled()
+/*! Set whether unit expressions are mandatory.
+ *
+ * By default,the parse_quantity routines expect the texts they parse to be of
+ * the form "2.99792e10 cm/s", that is, a real number followed by a unit
+ * expression. However, set_are_unit_expressions_required can be used to
+ * either turn on or turn off the mandatory unit expression. Quantities can
+ * always have a unit expression, and the quantity will then be converted to
+ * the internal unit system, but if the mandatory unit expression flag is
+ * turned off, quantities may optionally omit the unit expression and will be
+ * assumed to be expressed in the internal unit system.
+ *
+ * Thus, if unit
+ * expessions are mandatory and the internal unit system has been set to cgs,
+ * then "2.7 m" will be read by double parse_quantity as 270 while "2.7" will
+ * be an error. If unit expressions are not mandatory and the internal unit
+ * system has been set to cgs, then "2.7 m" will still be read by double
+ * parse_quantity as 270, but "2.7" will be read as 2.7.
+ *
+ * It should be clear that mandatory unit expressions are preferable when
+ * humans are writing the input files being parsed, since input files that
+ * consistenly use unit expressions will be less ambiguous, better documented,
+ * and more likely to be free from error. The ability to turn off mandatory
+ * unit expressions is targeted primarily at situations where it is programs
+ * that are communicating with each other through text files rather than
+ * humans communicating to a program.
+ *
+ * It is particularly not recommended that unit expressions be made optional
+ * where humans will be composing Expressions, since the effect of turning off
+ * mandatory unit expressions is to turn off checking of internal dimensional
+ * consistency of Expressions. This is a powerful error checking capability
+ * that should not be discarded lightly.
+ */
+void set_unit_expressions_are_required(bool const b)
 {
-    return no_unit_expressions;
+    require_unit_expressions = b;
 }
+
+//---------------------------------------------------------------------------------------//
+//! Get the default unit system
+DLL_PUBLIC rtt_units::UnitSystem const &get_internal_unit_system()
+{
+    return internal_unit_system;
+}
+
+//---------------------------------------------------------------------------------------//
+bool unit_expressions_are_required()
+{
+    return require_unit_expressions;
+}
+
 
 //---------------------------------------------------------------------------------------//
 /*! 
@@ -323,10 +394,8 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size)
  * \return \c true if we are at the start of a unit term; \c false otherwise
  */
 
-bool at_unit_term(Token_Stream &tokens, unsigned position = 0)
+bool at_unit_term(Token_Stream &tokens, unsigned position)
 {
-    if (no_unit_expressions) return false;
-    
     Token const token = tokens.lookahead(position);
     if (token.type()==KEYWORD)
     {
@@ -724,9 +793,9 @@ double parse_quantity(Token_Stream &tokens,
 		      char const *const name)
 {
     double const value = parse_real(tokens);
-    if (no_unit_expressions)
+    if (!unit_expressions_are_required() && !at_unit_term(tokens))
     {
-        return value;
+            return value;
     }
     else
     {
@@ -737,7 +806,7 @@ double parse_quantity(Token_Stream &tokens,
             buffer << "expected quantity with dimensions of " << name;
             tokens.report_semantic_error(buffer.str().c_str());
         }
-        return  value*unit.conv/target_unit.conv;
+        return value*unit.conv*conversion_factor(unit, get_internal_unit_system());
     }
 }
 
@@ -759,38 +828,39 @@ double parse_quantity(Token_Stream &tokens,
 
 double parse_temperature(Token_Stream &tokens)
 {
-    double const T = parse_real(tokens);
-    if (no_unit_expressions)
+    double T = parse_real(tokens);
+    
+    if (T<0.0)
+    {
+        tokens.report_semantic_error("temperature must be nonnegative");
+        T = 0.0;
+    }
+
+    if (!unit_expressions_are_required() && !at_unit_term(tokens))
     {
         return T;
     }
     else
     {
         Unit const u = parse_unit(tokens);
-        double Result;
+        T *= u.conv * conversion_factor(u, get_internal_unit_system());
         if (is_compatible(u, K))
         {
-            Result = T * u.conv;
+            // no action needed
         }
         else if (is_compatible(u, J))
         {
-            Result = T * u.conv/rtt_units::boltzmannSI;
+            T *= get_internal_unit_system().T()/
+                 (rtt_units::boltzmannSI*
+                  conversion_factor(u, get_internal_unit_system()));
         }
         else
         {
-            tokens.report_syntax_error("expected quantity with units of "
-                                       "temperature");
+            tokens.report_semantic_error("expected quantity with units of "
+                                         "temperature");
             return 0.0;
         }
-        if (Result<0.0)
-        {
-            tokens.report_semantic_error("temperature must be nonnegative");
-            return 0.0;
-        }
-        else
-        {
-            return Result;
-        }
+        return T;
     }
 }
 
@@ -826,24 +896,32 @@ parse_temperature(Token_Stream &tokens,
     SP<Expression> T = Expression::parse(number_of_variables,
                                          variable_map,
                                          tokens);
-
-    if (no_unit_expressions)
+    
+    if (!unit_expressions_are_required() && !at_unit_term(tokens))
     {
         return T;
     }
     else
     {
+        rtt_units::UnitSystem const &unit_system = get_internal_unit_system();
         Unit const u = parse_unit(tokens)*T->units();
+        double const conv = conversion_factor(u, unit_system);
         if (is_compatible(u, K))
         {
-            T->set_units(u);
+            // no action needed
+            T->set_units( conv*u );
+        }
+        else if (is_compatible(u, J))
+        {
+            double const boltzmann =
+                rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
+            
+            T->set_units( conv*u / boltzmann );
         }
         else
         {
-            tokens.check_syntax(is_compatible(u, J),
-                                "expected quantity with units of temperature");
-            
-            T->set_units(u*K/(J*rtt_units::boltzmannSI));
+            tokens.report_syntax_error("expected quantity with units of "
+                                       "temperature");
         }
         return T;
     }
@@ -980,7 +1058,7 @@ SP<Expression> parse_quantity(Token_Stream &tokens,
                                              variable_map,
                                              tokens);
 
-    if (no_unit_expressions)
+    if (!unit_expressions_are_required() && !at_unit_term(tokens))
     {
         return value;
     }
@@ -993,6 +1071,7 @@ SP<Expression> parse_quantity(Token_Stream &tokens,
             buffer << "expected quantity with dimensions of " << name;
             tokens.report_semantic_error(buffer.str().c_str());
         }
+        unit.conv *= conversion_factor(unit, get_internal_unit_system());
         value->set_units(unit);
         return value;
     }

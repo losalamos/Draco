@@ -563,6 +563,7 @@ auto-mode-alist."
     (autoload 'change-log-mode "change-log-mode" 
       "ChangeLog Editing Mode" t)
     (require 'add-log)
+    (set-fill-column 120)
     (if draco-colorize-modeline 
 	(add-hook 'change-log-mode-hook        
 		  '(lambda () 
@@ -823,6 +824,7 @@ auto-mode-alist and set up some customizations for DRACO."
     (defun draco-dired-mode-hook ()
       "Hooks added to dired-mode"
       (local-set-key [(f5)] 'dired-redisplay-subdir)
+      (setq dired-listing-switches "-alh")
       (if draco-colorize-modeline 
 	  (add-hook 'dired-mode-hook        
 		    '(lambda () 
