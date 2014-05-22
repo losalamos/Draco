@@ -1,7 +1,7 @@
 2014-05-13  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_11_0.  This is a minor Draco release.
-	https://rtt.lanl.gov/redmine/versions/22
+	  https://rtt.lanl.gov/redmine/versions/22
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
@@ -14,7 +14,7 @@
 	  SQ                 XLC   12.1      MPICH2-1.4
 
 	* Summary of changes:
-	  - 195 files changed, added or removed in 96 commits.
+	  - 213 files changed, added or removed in 100 commits.
 	  - Improved support for XCode, new support for Ninja
 	  - Improved support for Fortran code from within XCode, Ninja and
 	    MVS build tools.
@@ -59,6 +59,25 @@
 	  the parse table type.
 	- Extend disabling of unit expressions to Expression::parse
 	  function.
+	- Improve parse_quantity and parse_temperature functions by
+	  providing more options for handling unit expressions. These are
+	  set using set_internal_unit_system, and
+	  set_unit_expressions_are_required. The default behavior is
+	  unchanged: A call to parse_quantity expects to see a unit
+	  expression matching the expected units in the argument, and all
+	  quantities are converted to SI. However,
+	  set_internal_unit_system causes parse_quantity to convert
+	  internally to a new unit
+	  system. set_unit_expressions_are_required can turn off the
+	  expectation that a unit expression will be seen: If there is a
+	  unit expression, it must match the argument list and will be
+	  converted to the internal unit system, but if there is no unit
+	  expression, the quantity is assumed to already be in the
+	  internal unit system. These options are intended primarily for
+	  communication between computer codes and not as something that
+	  should normally be used in human-written input decks, since the
+	  mandatory unit expressions provide a lot of checking and do a
+	  lot of documenting.
 
 	quadrature:
 	- Added additinal sanity checks and Design-by-Contract checks.
