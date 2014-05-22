@@ -12,7 +12,6 @@
 //---------------------------------------------------------------------------------------//
 
 #include "Parse_Table.hh"
-#include "Token_Stream.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <cctype>

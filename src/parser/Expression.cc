@@ -10,7 +10,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "utilities.hh"
 #include "Constant_Expression.hh"
 
 namespace rtt_parser

@@ -19,8 +19,6 @@
 #include "mesh_element/Geometry.hh"
 #include "units/UnitSystem.hh"
 #include "Expression.hh"
-#include "Token_Stream.hh"
-#include "Unit.hh"
 
 namespace rtt_parser 
 {
