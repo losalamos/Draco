@@ -27,10 +27,6 @@ if( DRACO_SHARED_LIBS )
   set( CMAKE_GNUtoMS ON CACHE BOOL "Compatibility flag for MinGW/MSVC." FORCE)
 endif()
 
-# if( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
-  # message( FATAL_ERROR "You requested SHARED libraries for a Windows build.  This feature not available - yell at KT." )
-# endif()
-
 # Extra setup (ds++/config.h) for MSVC
 # 1. Allow M_PI to be found via <cmath>
 set( _USE_MATH_DEFINES 1 )
@@ -91,6 +87,13 @@ if( ${CMAKE_GENERATOR} STREQUAL "Visual Studio 8 2005" OR
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /Ob1 /DNDEBUG" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" ) # /O2 /Ob2
   
+  # If building static libraries, inlcude debugging information in the
+  # library.
+  if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
+    set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /Z7"   )
+    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7" )
+  endif()  
+
   # Suppress some MSVC warnings about "unsafe" pointer use.
   if(MSVC_VERSION GREATER 1399)
     set( CMAKE_C_FLAGS 
