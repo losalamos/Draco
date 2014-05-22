@@ -3,8 +3,8 @@
  * \file   ds++/Index_Set.hh
  * \author Mike Buksas
  * \date   Thu Feb  2 10:01:46 2006
- * \note   Copyright © 2006-2014 Los Alamos National Security, LLC.  All
- *         rights reserved. 
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC. 
+ *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
 // $Id$
