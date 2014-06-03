@@ -155,6 +155,9 @@ class DLL_PUBLIC Element_Definition
                      *   standard quadratic-serendipity finite element quad.*/
 	QUAD_9,     /*!< Same as "QUAD_8" except a node is added in the 
                      *   center of the quad. */
+	PENTAGON_5, /*!< The basic two-D, five-node "pentagon"
+                     *   element. Elements with this topology are quite common
+                     *   in an AMR mesh. */
 	TETRA_4,    /*!< The basic three-D, four-node "tetrahedral" element. */
 	TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the 
 		     *   middle  of each edge. This is the
@@ -492,6 +495,7 @@ class DLL_PUBLIC Element_Definition
     void construct_bar();
     void construct_tri();
     void construct_quad();
+    void construct_pentagon();
     void construct_tetra();
     void construct_pyra();
     void construct_penta();

@@ -56,6 +56,11 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
         Ensure( invariant_satisfied() );
 	break;
 
+    case PENTAGON_5 :
+	construct_pentagon();
+        Ensure( invariant_satisfied() );
+	break;
+
     case TETRA_4  :
     case TETRA_10 :
 	construct_tetra();
@@ -386,6 +391,47 @@ void Element_Definition::construct_quad()
 	default :
 	    Insist(false,"#4 Unrecognized Element-Type Flag");
 	}
+	break;
+    default :
+	Insist(false,"#5 Unrecognized Element-Type Flag");
+    }
+
+    for( size_t i = 0; i < number_of_sides; i++ )
+	side_type.push_back(0);
+}
+
+//---------------------------------------------------------------------------//
+
+void Element_Definition::construct_pentagon()
+{
+    std::vector<size_t> tmp;
+    dimension=2;
+    number_of_sides=5;
+    tmp.clear();
+    tmp.push_back(0);
+    tmp.push_back(1);    
+    side_nodes.push_back(tmp);
+    tmp[0] = 1;
+    tmp[1] = 2;
+    side_nodes.push_back(tmp);
+    tmp[0] = 2;
+    tmp[1] = 3;
+    side_nodes.push_back(tmp);
+    tmp[0] = 3;
+    tmp[1] = 4;
+    side_nodes.push_back(tmp);
+    tmp[0] = 4;
+    tmp[1] = 0;
+    side_nodes.push_back(tmp);
+    for( size_t i=0; i < 4; i++ )
+	node_loc.push_back(CORNER);
+
+    switch ( type )
+    {
+    case PENTAGON_5 :
+	name = "PENTAGON_5";
+	number_of_nodes=5;
+	elem_defs.push_back(Element_Definition(BAR_2));
 	break;
     default :
 	Insist(false,"#5 Unrecognized Element-Type Flag");
