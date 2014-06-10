@@ -38,6 +38,7 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
 {
     Require(outgoing_pid.size()==outgoing_data.size());
     Require(incoming_pid.size()==incoming_data.size());
+    Require(&outgoing_data != &incoming_data);
     
     unsigned incoming_processor_count = incoming_pid.size();
     unsigned outgoing_processor_count = outgoing_pid.size();
@@ -51,7 +52,7 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
         for (unsigned p=0; p<outgoing_processor_count; ++p)
         {
             outgoing_C4_Req[p] =
-                rtt_c4::send_async(&outgoing_data[p][0],
+                rtt_c4::send_async((outgoing_data[p].size()>0? &outgoing_data[p][0] : NULL),
                                    outgoing_data[p].size(),
                                    outgoing_pid[p],
                                    tag);
@@ -62,7 +63,7 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
         for (unsigned p=0; p<incoming_processor_count; ++p)
         {
             incoming_C4_Req[p] =
-                receive_async(&incoming_data[p][0],
+                receive_async((incoming_data[p].size()>0? &incoming_data[p][0] : NULL),
                               incoming_data[p].size(),
                               incoming_pid[p],
                               tag);
@@ -90,6 +91,7 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
 {
     Require(static_cast<int>(outgoing_data.size())==rtt_c4::nodes());
     Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
+    Require(&outgoing_data != &incoming_data);
 
     { // This block is a no-op for with-c4=scalar 
 
@@ -102,7 +104,7 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
             if (outgoing_data[p].size()>0)
             {
                 outgoing_C4_Req[p] =
-                    rtt_c4::send_async(&outgoing_data[p][0],
+                    rtt_c4::send_async((outgoing_data[p].size()>0? &outgoing_data[p][0] : NULL),
                                        outgoing_data[p].size(),
                                        p,
                                        tag);
@@ -116,7 +118,7 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
             if (incoming_data[p].size()>0)
             {
                 incoming_C4_Req[p] =
-                    receive_async(&incoming_data[p][0],
+                    receive_async((incoming_data[p].size()>0? &incoming_data[p][0] : NULL),
                                   incoming_data[p].size(),
                                   p,
                                   tag);
@@ -144,6 +146,7 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
                           int tag )
 {
     Require(outgoing_pid.size()==outgoing_data.size());
+    Require(&outgoing_data != &incoming_data);
 
     unsigned incoming_processor_count = incoming_pid.size();
     unsigned outgoing_processor_count = outgoing_pid.size();
@@ -172,7 +175,7 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
         for (unsigned p=0; p<outgoing_processor_count; ++p)
         {
             outgoing_C4_Req[p] =
-                rtt_c4::send_async(&outgoing_data[p][0],
+                rtt_c4::send_async((outgoing_data[p].size()>0? &outgoing_data[p][0] : NULL),
                                    outgoing_data[p].size(),
                                    outgoing_pid[p],
                                    tag);
@@ -185,7 +188,7 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
         {
             incoming_data[p].resize(incoming_size[p][0]);
             incoming_C4_Req[p] =
-                receive_async(&incoming_data[p][0],
+                receive_async((incoming_data[p].size()>0? &incoming_data[p][0] : NULL),
                               incoming_data[p].size(),
                               incoming_pid[p],
                               tag);
