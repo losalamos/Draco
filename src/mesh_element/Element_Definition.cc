@@ -56,11 +56,6 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
         Ensure( invariant_satisfied() );
 	break;
 
-    case PENTAGON_5 :
-	construct_pentagon();
-        Ensure( invariant_satisfied() );
-	break;
-
     case TETRA_4  :
     case TETRA_10 :
 	construct_tetra();
@@ -77,11 +72,6 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
     case PENTA_15 :
     case PENTA_18 :
 	construct_penta();
-        Ensure( invariant_satisfied() );
-	break;	
-
-    case PENTAGON_5  :
-	construct_pentagon();
         Ensure( invariant_satisfied() );
 	break;	
 
@@ -404,8 +394,10 @@ void Element_Definition::construct_quad()
     for( size_t i = 0; i < number_of_sides; i++ )
 	side_type.push_back(0);
 }
+
 //---------------------------------------------------------------------------//
 
+/*
 void Element_Definition::construct_pentagon()
 {
     return;
@@ -466,6 +458,7 @@ void Element_Definition::construct_pentagon()
     for( size_t i = 0; i < number_of_sides; i++ )
         side_type.push_back(0);
 }
+*/
 
 //---------------------------------------------------------------------------//
 
