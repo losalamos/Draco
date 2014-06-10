@@ -80,6 +80,11 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
         Ensure( invariant_satisfied() );
 	break;	
 
+    case PENTAGON_5  :
+	construct_pentagon();
+        Ensure( invariant_satisfied() );
+	break;	
+
     case HEXA_8  :
     case HEXA_20 :
     case HEXA_27 :
@@ -398,6 +403,68 @@ void Element_Definition::construct_quad()
 
     for( size_t i = 0; i < number_of_sides; i++ )
 	side_type.push_back(0);
+}
+//---------------------------------------------------------------------------//
+
+void Element_Definition::construct_pentagon()
+{
+    return;
+    std::vector<size_t> tmp;
+    dimension=2;
+    number_of_sides=4;
+    tmp.clear();
+    tmp.push_back(0);
+    tmp.push_back(1);
+    side_nodes.push_back(tmp);
+    tmp[0] = 1;
+    tmp[1] = 2;
+    side_nodes.push_back(tmp);
+    tmp[0] = 2;
+    tmp[1] = 3;
+    side_nodes.push_back(tmp);
+    tmp[0] = 3;
+    tmp[1] = 0;
+    side_nodes.push_back(tmp);
+    for( size_t i=0; i < 4; i++ )
+        node_loc.push_back(CORNER);
+
+    switch ( type )
+    {
+    case QUAD_4 :
+        name = "QUAD_4";
+        number_of_nodes=4;
+        elem_defs.push_back(Element_Definition(BAR_2));
+        break;
+    case QUAD_8 :
+    case QUAD_9 :
+        elem_defs.push_back(Element_Definition(BAR_3));
+        for (size_t i=0; i < 4; i++)
+            node_loc.push_back(EDGE);
+        side_nodes[0].push_back(4);
+        side_nodes[1].push_back(5);
+        side_nodes[2].push_back(6);
+        side_nodes[3].push_back(7);
+        switch ( type )
+        {
+        case QUAD_8 :
+            name = "QUAD_8";
+            number_of_nodes=8;
+            break;
+        case QUAD_9 :
+            name = "QUAD_9";
+            number_of_nodes=9;
+            node_loc.push_back(FACE);
+            break;
+        default :
+            Insist(false,"#4 Unrecognized Element-Type Flag");
+        }
+        break;
+    default :
+        Insist(false,"#5 Unrecognized Element-Type Flag");
+    }
+
+    for( size_t i = 0; i < number_of_sides; i++ )
+        side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//

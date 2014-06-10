@@ -168,6 +168,7 @@ class DLL_PUBLIC Element_Definition
                      *   each edge, and one at the center. */
 	PENTA_6,    /*!< The basic three-D, six-node "pentahedron". Also 
                      *   known as a "triangular-prism", or "wedge". */
+	PENTAGON_5, /*!< A 2D quadrilateral with one hanging node */
 	PENTA_15,   /*!< Same as "PENTA-6" except that nodes are added in 
                      *   the center of each edge. This is the
                      *   standard quadratic-serendipity finite element wedge.*/
@@ -499,6 +500,7 @@ class DLL_PUBLIC Element_Definition
     void construct_tetra();
     void construct_pyra();
     void construct_penta();
+    void construct_pentagon();
     void construct_hexa();
     void construct_poly_2d();
 
