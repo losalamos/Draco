@@ -1,3 +1,120 @@
+2014-06-19 Jae Chang <jhchang@lanl.gov>
+
+	* Release draco-6_12_0. This is a minor Draco release.
+
+	* This release was required by Capsaicin. It is linked to:
+	  - Capsaicin-4_1_0.
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 13.1.3    OpenMPI-1.6.5
+	  PI/ML/MP/MU/LU/TY  Intel 14.0.2    OpenMPI-1.7.4
+	  CT/CI              Intel 14.0.2    MPICH2-5.6.4
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	- 42 files changed, added or removed in 19 commits.
+	- Added PENTAGON_5 element for AMR meshes.
+	
+	* Details per package:
+
+	Build System:
+	- Updated mpirun flags used to execute c4's tstOMP unit tests to
+	  support OpenMPI 1.7+.
+	- Document new optional argument TARGET_NAMES that can be used
+	  when calling cmake_add_fortran_subdirectory.
+	- For Win32, embed more debug information in binaries when using
+	  STATIC libraries.
+
+	Developer Environment:
+	- Made dired mode show fiels sizes in human readable form.
+	- Added Algorithm style files.
+	
+	c4:
+	- Added checks for zero-length std::vector arguments for
+	  portability.
+	- Added preconditions for swap operations that the input and
+	  output data array arguments must not reference the same object.
+	
+	cdi:
+	- Improved documentation for Planck and Rosseland integral
+	  functions to indicate that temperature and energy bounds must be
+	  identical units.
+
+	mesh_element:
+	- Added PENTAGON_5 element, which is needed to represent a quad
+	  element with a single hanging node in AMR meshes.
+	
+	parser:
+	- Extended disabling of unit expressions to Expression::parse function.
+	- Improved parse_quantity and parse_temperature functions for
+	  handling unit expressions.
+	
+	* Known Defects:
+	  Bug #315 Code coverage for Capsaicin is broken
+	  Bug # 59 cdi_eospac design flaw
+	
+-------------
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             439          12133          21657          64850
+C/C++ Header                    339           7409          21515          19854
+Lisp                             14           1862           2649          12291
+CMake                           113           1845           4673           7249
+Python                           27           1227           1369           2237
+Bourne Again Shell               19            343            659           1249
+Bourne Shell                     16            290            673           1163
+CSS                               1            113             37            395
+C Shell                           3             39             91            238
+C                                 4             45            113            238
+Fortran 90                        3             38             72            118
+DOS Batch                         1             19             10             59
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            986          25410          53608         110068
+--------------------------------------------------------------------------------
+
+
+Code coverage
+-------------
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/rng/                    57 /    57 = 100%      22 /    22 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0      
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    43 /    43 = 100%      49 /    58 =  84%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+../source/src/viz/                    40 /    40 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/diagnostics/            10 /    10 = 100%      21 /    30 =  70%
+../source/src/cdi_eospac/             52 /    52 = 100%      67 /   132 =  50%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/parser/                274 /   278 =  98%    1110 /  1391 =  79%
+../source/src/ds++/                  315 /   320 =  98%     377 /   431 =  87%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/quadrature/            196 /   200 =  98%     509 /   657 =  77%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/c4/                    172 /   190 =  90%     518 /   594 =  87%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2044 /  2104 =  97%    4934 /  6194 =  79%
+
+
 2014-05-13  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_11_0.  This is a minor Draco release.
