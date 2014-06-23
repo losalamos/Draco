@@ -8,6 +8,11 @@
 
 01 02 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
 
+01 04 * * * VENDOR_DIR=/var/tmp/vendors /home/kellyt/bin/sync_vendors.sh >& /home/kellyt/logs/sync_vendors_ccscs9.log
+
+01 23 * * * /home/kellyt/draco/regression/push_repositories_xf.sh >& /home/kellyt/logs/push_repositories_xf.log
+
+
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command 
 # |    |    |    |    +----- day of week (0 - 6) (Sunday=0)

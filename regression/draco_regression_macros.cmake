@@ -517,6 +517,14 @@ macro( setup_for_code_coverage )
                "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
                "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
 
+            # create a cdash link to redmine
+            # http://www.kitware.com/source/home/post/59
+            # https://github.com/Slicer/Slicer/blob/57f14d0d233ee103e365161cfc0b3962df0bc203/CMake/MIDASCTestUploadURL.cmake#L69
+            file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
+              "http://rtt.lanl.gov/redmine" )
+            ctest_upload( FILES
+              "${CMAKE_CURRENT_BINARY_DIR}/redmine.url" )
+
          endif()
       endif()
    endif()
@@ -536,6 +544,17 @@ macro(process_cc_or_da)
          if(ENABLE_C_CODECOVERAGE)
             message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
             ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )
+            message( "Generating code coverage log file: ${CTEST_BINARY_DIRECTORY}/covdir.log
+
+cd ${CTEST_BINARY_DIRECTORY}
+/ccs/codes/radtran/vendors/BullseyeCoverage-8.7.17/bin/covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
+            execute_process(
+              COMMAND
+              /ccs/codes/radtran/vendors/BullseyeCoverage-8.7.17/bin/covdir
+              -o ${CTEST_BINARY_DIRECTORY}/covdir.log
+              WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+              )
+            list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
             execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
          else()
             message( "ctest_memcheck( SCHEDULE_RANDOM ON )")
