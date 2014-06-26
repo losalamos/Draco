@@ -222,7 +222,14 @@ export subproj=capsaicin
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for draco regressions to finish
-  cmd+=" ${draco_jobid}"
+  case $extra_params in
+  coverage)
+     # We can only run one instance of bullseye at a time - so wait
+     # for jayenne to finish before starting capsaicin.
+     cmd+=" ${draco_jobid} ${jayenne_jobid}" ;;
+  *)
+     cmd+=" ${draco_jobid}" ;;
+  esac
   cmd+=" &> ${regdir}/logs/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
