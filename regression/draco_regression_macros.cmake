@@ -513,9 +513,7 @@ macro( setup_for_code_coverage )
                )
             message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
 
-            set( CTEST_NOTES_FILES 
-               "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
-               "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
+            # set( CTEST_NOTES_FILES file1 file2 )
 
             # create a cdash link to redmine
             # http://www.kitware.com/source/home/post/59
@@ -523,7 +521,9 @@ macro( setup_for_code_coverage )
             file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
               "http://rtt.lanl.gov/redmine" )
             ctest_upload( FILES
-              "${CMAKE_CURRENT_BINARY_DIR}/redmine.url" )
+              "${CMAKE_CURRENT_BINARY_DIR}/redmine.url" 
+              "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
+              "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
 
          endif()
       endif()
