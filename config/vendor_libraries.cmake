@@ -490,6 +490,12 @@ endmacro()
 macro( setupCudaEnv )
 
    message( STATUS "Looking for CUDA..." )
+   # special code for CT/CI
+   if( "${CMAKE_SYSTEM_PROCESSOR}notset" STREQUAL "notset" AND 
+       ${CMAKE_SYSTEM_NAME} MATCHES "Catamount")
+     set( CMAKE_SYSTEM_PROCESSOR "x86_64" CACHE STRING 
+       "For unix, this value is set from uname -p.")
+   endif()
    find_package( CUDA QUIET )
    set_package_properties( CUDA PROPERTIES
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
