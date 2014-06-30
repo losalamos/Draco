@@ -14,7 +14,7 @@
 	* Summary of changes:
 	- 42 files changed, added or removed in 19 commits.
 	- Added PENTAGON_5 element for AMR meshes.
-	
+
 	* Details per package:
 
 	Build System:
@@ -26,15 +26,15 @@
 	  STATIC libraries.
 
 	Developer Environment:
-	- Made dired mode show fiels sizes in human readable form.
-	- Added Algorithm style files.
-	
+	- Made dired mode show file sizes in human readable form.
+	- Added LaTeX Algorithm style files.
+
 	c4:
 	- Added checks for zero-length std::vector arguments for
 	  portability.
 	- Added preconditions for swap operations that the input and
 	  output data array arguments must not reference the same object.
-	
+
 	cdi:
 	- Improved documentation for Planck and Rosseland integral
 	  functions to indicate that temperature and energy bounds must be
@@ -43,16 +43,16 @@
 	mesh_element:
 	- Added PENTAGON_5 element, which is needed to represent a quad
 	  element with a single hanging node in AMR meshes.
-	
+
 	parser:
 	- Extended disabling of unit expressions to Expression::parse function.
 	- Improved parse_quantity and parse_temperature functions for
 	  handling unit expressions.
-	
+
 	* Known Defects:
 	  Bug #315 Code coverage for Capsaicin is broken
 	  Bug # 59 cdi_eospac design flaw
-	
+
 -------------
 Lines of code
 -------------
@@ -86,7 +86,7 @@ Directory                             Function Coverage           C/D Coverage
 --------------------------------  ---------------------  ---------------------
 ../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
 ../source/src/rng/                    57 /    57 = 100%      22 /    22 = 100%
-../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0      
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
 ../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
 ../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
 ../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%

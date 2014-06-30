@@ -6,7 +6,7 @@
 # note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required(VERSION 3.0.0)
 project( draco_src_dir )
 
 # Platform Checks 

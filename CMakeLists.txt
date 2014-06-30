@@ -85,12 +85,7 @@
 #       http://www.cmake.org/Wiki/CMake_Version_Compatibility_Matrix
 #------------------------------------------------------------------------------#
 
-cmake_minimum_required( VERSION 2.8.8 FATAL_ERROR ) 
-# 2.8.7 Improved support for Eclipse CDT.  Add support for CUDA_PATH.
-# 2.8.8 Support for CMAKE_CXX_COMPILER_VERSION.
-#       Addition of CMakePackageConfigHelpers
-#       Support MSVC builds mixed with MingGW gfortran
-#       Support for Xcode 4.3
+cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 project( Draco CXX C )
  
  # Do not look for Fortran for 

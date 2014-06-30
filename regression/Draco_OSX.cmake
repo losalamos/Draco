@@ -4,7 +4,7 @@
 # Notes: added a requirement to use static libraries and
 #        pointed VENDOR_LIB to the default "ports" install
 #        location of /opt/local/
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0.0)
 
 # Use:
 # - See jayenne/regression/nightly_cmake_script.sh or
@@ -37,8 +37,6 @@ CTEST_CMAKE_GENERATOR:STRING=${CTEST_CMAKE_GENERATOR}
 CTEST_USE_LAUNCHERS:STRING=${CTEST_USE_LAUNCHERS}
 CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
 
-ENABLE_C_CODECOVERAGE:BOOL=${ENABLE_C_CODECOVERAGE}
-ENABLE_Fortran_CODECOVERAGE:BOOL=${ENABLE_Fortran_CODECOVERAGE}
 VENDOR_DIR:PATH=/opt/local/
 DRACO_LIBRARY_TYPE:STRING=STATIC
 ${TEST_PPE_BINDIR}

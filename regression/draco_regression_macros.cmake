@@ -84,7 +84,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
 
   set( CTEST_USE_LAUNCHERS 0 )
   set( ENABLE_C_CODECOVERAGE OFF )
-  set( ENABLE_Fortran_CODECOVERAGE OFF )
 
   # Dashboard setup (in place of CTestConfig.cmake)
   if( NOT CTEST_PROJECT_NAME )
@@ -270,7 +269,6 @@ macro( parse_args )
       message( FATAL_ERROR "Cannot run coverage for \"Release\" mode builds." )
     endif()
     set( ENABLE_C_CODECOVERAGE ON )
-    set( ENABLE_Fortran_CODECOVERAGE ON )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_Cov" )
   endif()
   
@@ -305,7 +303,6 @@ compiler_short_name         = ${compiler_short_name}
 compiler_version            = ${compiler_version}
 CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
-ENABLE_Fortran_CODECOVERAGE = ${ENABLE_Fortran_CODECOVERAGE}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
 MPIEXEC_MAX_NUMPROCS        = ${MPIEXEC_MAX_NUMPROCS}
 ")
@@ -518,8 +515,10 @@ macro( setup_for_code_coverage )
             # create a cdash link to redmine
             # http://www.kitware.com/source/home/post/59
             # https://github.com/Slicer/Slicer/blob/57f14d0d233ee103e365161cfc0b3962df0bc203/CMake/MIDASCTestUploadURL.cmake#L69
+            # In CDash, ensure that
+            # Settings->Project->Miscellaneous->File upload quota > 0.
             file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
-              "http://rtt.lanl.gov/redmine" )
+               "http://rtt.lanl.gov/redmine" )
             ctest_upload( FILES
               "${CMAKE_CURRENT_BINARY_DIR}/redmine.url" 
               "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
