@@ -5,6 +5,7 @@
 # setenv DRACO_ENV_DIR ~/draco/environment
 # source $DRACO_ENV_DIR/cshrc/.cshrc
 #
+
 if( ! $?DRACO_ENV_DIR )then
   if( -d /usr/projects/draco/environment )then
     setenv DRACO_ENV_DIR /usr/projects/draco/environment
@@ -49,7 +50,7 @@ case mp*.localdomain:
     breaksw
 
 case redfta[0-9]*:
-case rfta**:
+case rfta*:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load git svn
@@ -98,6 +99,29 @@ case ci*:
    setenv KMP_AFFINITY none
    setenv VENDOR_DIR /usr/projects/draco/vendors
    breaksw
+   
+case seqlac*:
+    setenv PATH $DRACO_ENV_DIR/bin:$PATH
+
+    setenv VENDOR_DIR /usr/gapps/jayenne/vendors
+    setenv PATH $VENDOR_DIR/numdiff-5.6.1/bin:$PATH
+
+    setenv CXX mpixlcxx_r
+    setenv CC  mpixlc_r
+    setenv FC  mpixlf2003_r
+
+    setenv GSL_INC_DIR $VENDOR_DIR/gls-1.16/include
+    setenv GSL_LIB_DIR $VENDOR_DIR/gls-1.16/lib
+    setenv RANDOM123_INC_DIR $VENDOR_DIR/Random123-1.08/include
+
+    setenv OMP_NUM_THREADS 4
+    use cmake
+    use erase=del
+    use alia1++
+    unalias rm
+
+breaksw
+   
 case gondolin*:
     source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
     module load grace totalview numdiff git gsl svn gcc lapack/3.4.0
