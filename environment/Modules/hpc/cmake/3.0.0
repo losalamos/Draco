@@ -13,7 +13,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # local variables
-set version     3.0.0-rc4-Linux-i386
+set version     3.0.0-Linux-i386
 set prefix      /usr/projects/draco/vendors/cmake-$version
 set bindir      $prefix/bin;
 set mandir      $prefix/man;
