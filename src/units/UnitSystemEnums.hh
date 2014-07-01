@@ -79,10 +79,10 @@ enum Ttype
 {
     T_null, //!< no temperature type
     T_K,    //!< Kelvin
-    T_keV,  //!< keV     (1 K = 8.6173843847e-8 keV or 1 keV = 1.160451923e7 K)
+    T_keV,  //!< keV     (1 K = 8.61733238496e-8 keV or 1 keV = 1.1604519302808940e7 K)
     // This conversion factor between K and keV must agree with the value
     // given in PhysicalConstants.hh.
-    T_eV    //!< eV      (1 K = 8.6173843847e-5 keV or 1 eV = 11604.51923 K)
+    T_eV    //!< eV      (1 K = 8.61733238496e-5 keV or 1 eV = 11604.519302808940 K)
 };
 
 int    const num_Ttype(4);
