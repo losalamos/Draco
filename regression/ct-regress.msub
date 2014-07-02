@@ -97,7 +97,8 @@ done
 
 module unload PrgEnv-intel PrgEnv-pgi
 module unload cmake numdiff svn gsl
-module load PrgEnv-intel
+module load PrgEnv-intel # also loads intel/13.X.X
+module swap intel intel/14.0.2.144
 module load gsl lapack
 module load cmake numdiff svn
 module load trilinos SuperLU_DIST 
@@ -113,10 +114,10 @@ export OMP_NUM_THREADS=8
 # Extra parameers
 case $extra_params in
 "")
-    # revert to intel/12 as the default setup.
+    # revert to intel/14 as the default setup.
     ;;
 intel13)
-    # intel/13 is the default for PrgEnv-intel
+    # use older intel/13
     module unload intel
     module load intel/13.0.1.117
     comp="intel-13.0.1"
