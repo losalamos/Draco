@@ -23,7 +23,11 @@ if( ! -d "${DRACO_ENV_DIR}" )then
   exit 1
 endif
 
+# Setup PATH
 setenv PATH $DRACO_ENV_DIR/bin:$PATH
+if( -d ~/bin )then
+    setenv PATH ~/bin:$PATH
+endif
 
 # Extra module stuff
 switch ("`uname -n`")
@@ -101,26 +105,25 @@ case ci*:
    breaksw
    
 case seqlac*:
-    setenv PATH $DRACO_ENV_DIR/bin:$PATH
-
     setenv VENDOR_DIR /usr/gapps/jayenne/vendors
-    setenv PATH $VENDOR_DIR/numdiff-5.6.1/bin:$PATH
-
-    setenv CXX mpixlcxx_r
-    setenv CC  mpixlc_r
-    setenv FC  mpixlf2003_r
-
-    setenv GSL_INC_DIR $VENDOR_DIR/gls-1.16/include
-    setenv GSL_LIB_DIR $VENDOR_DIR/gls-1.16/lib
-    setenv RANDOM123_INC_DIR $VENDOR_DIR/Random123-1.08/include
-
-    setenv OMP_NUM_THREADS 4
+    
+    # LLNL uses dotkit instead of modules
+    setenv DK_NODE ${DK_NODE}:${VENDOR_DIR}/Modules/sq
+    
+    # Draco dotkits
+    use xlc12 # use gcc472
+    use numdiff
+    use gsl
+    use random123
+    
+    # LLNL dotkits
     use cmake
     use erase=del
     use alia1++
+    
     unalias rm
 
-breaksw
+    breaksw
    
 case gondolin*:
     source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
