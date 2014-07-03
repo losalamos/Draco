@@ -5,7 +5,16 @@ REM %comspec% /k ""C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\vcvars
 rem capture all output from batch file like this...
 rem win32_draco_regression.bat > mylog.txt 2>&1
 
-set vs12loc="C:\Progra~2\Microsoft Visual Studio 11.0\VC\bin"
+rem In Task Scheduler, create to actions:
+rem 1. d:\cdash\draco\regression\update_regression_dir.bat
+rem 2. c:\windows\system32\cmd.exe /k ""d:\cdash\draco\regression\win32_draco_regression.bat"" x86
+
+rem set VisualStudioVersion=11.0
+rem set vsloc="C:\Progra~2\Microsoft Visual Studio %VisualStudioVersion%\VC\bin"
+rem set vsenvbat=vcvars32.bat
+set VisualStudioVersion=12.0
+set vsloc="C:\Progra~2\Microsoft Visual Studio %VisualStudioVersion%\Common7\Tools"
+set vsenvbat=VsDevCmd.bat
 
 @echo off
 if "%1" == "" goto x86
@@ -20,12 +29,8 @@ if /i %1 == x86_amd64 goto x86_amd64
 goto usage
 
 :x86
-if not exist "C:\Progra~2\Microsoft Visual Studio 11.0\VC\bin\vcvars32.bat" goto missing
-call "C:\Progra~2\Microsoft Visual Studio 11.0\VC\bin\vcvars32.bat"
-goto :SetVisualStudioVersion
-
-:SetVisualStudioVersion
-set VisualStudioVersion=11.0
+if not exist "%vsloc%\%vsenvbat%" goto missing
+call "%vsloc%\%vsenvbat%"
 goto :cdash
 
 :usage
