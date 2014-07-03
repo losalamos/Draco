@@ -49,7 +49,7 @@ else
     module use $DRACO_MODULE_DIR/hpc
     module use $DRACO_MODULE_DIR/tu-fe
     module load friendly-testing 
-    module load intel/13.1.3 openmpi/1.6.3 # cudatoolkit
+    module load intel/14.0.2 openmpi/1.6.3 # cudatoolkit
     module load gsl svn 
     module load cmake numdiff git lapack/3.4.1 totalview
     module load trilinos SuperLU_DIST
