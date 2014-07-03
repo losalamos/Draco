@@ -60,6 +60,7 @@ set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
 set VENDOR_DIR=d:\work\vendors
 set GSL_INC_DIR=%VENDOR_DIR%\gsl-1.16\include
 set GSL_LIB_DIR=%VENDOR_DIR%\gsl-1.16\lib
+set QTDIR=c:/Qt/5.3/msvc2012_opengl
 
 rem print some information
 echo Environment:

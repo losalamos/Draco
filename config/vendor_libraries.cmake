@@ -531,6 +531,44 @@ macro( setupCudaEnv )
 endmacro()
 
 #------------------------------------------------------------------------------
+# Setup QT (any)
+#------------------------------------------------------------------------------
+macro( setupQt )
+   message( STATUS "Looking for Qt SDK..." )
+
+   # The CMake package information should be found in
+   # $QTDIR/lib/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake.  On CCS Linux
+   # machines, QTDIR is set when loading the qt module
+   # (QTDIR=/ccs/codes/radtran/vendors/Qt53/5.3/gcc_64):
+   if( "${QTDIR}notset" STREQUAL "notset" AND EXISTS "$ENV{QTDIR}" )
+     set( QTDIR $ENV{QTDIR} CACHE PATH "This path should include /lib/cmake/Qt5Widgets" )
+   endif()
+   set( CMAKE_PREFIX_PATH_QT "$ENV{QTDIR}/lib/cmake/Qt5Widgets" )
+
+   if( NOT EXISTS ${CMAKE_PREFIX_PATH_QT}/Qt5WidgetsConfig.cmake )
+     # message( FATAL_ERROR "Could not find cQt cmake macros.  Try
+     # setting CMAKE_PREFIX_PATH_QT to the path that contains
+     # Qt5WidgetsConfig.cmake" )
+     message( STATUS "Looking for Qt SDK...not found." )
+   else()
+     file( TO_CMAKE_PATH "${CMAKE_PREFIX_PATH_QT}" CMAKE_PREFIX_PATH_QT )
+     list( APPEND CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH_QT}" )
+     find_package(Qt5Widgets)     
+     find_package(Qt5Core)
+     get_target_property(QtCore_location Qt5::Core LOCATION)
+     if( Qt5Widgets_FOUND )
+       set( QT_FOUND 1 )
+       # Instruct CMake to run moc automatically when needed.
+       set(CMAKE_AUTOMOC ON)
+       message( STATUS "Looking for Qt SDK...${QTDIR}." )
+     else()
+       set( QT_FOUND "QT-NOTFOUND" )
+       message( STATUS "Looking for Qt SDK...not found." )
+     endif()
+   endif()
+endmacro()
+
+#------------------------------------------------------------------------------
 # Helper macros for setup_global_libraries()
 #------------------------------------------------------------------------------
 macro( SetupVendorLibrariesUnix )
@@ -575,15 +613,18 @@ macro( SetupVendorLibrariesUnix )
    #  PYTHONINTERP_FOUND - Was the Python executable found
    #  PYTHON_EXECUTABLE  - path to the Python interpreter
    set_package_properties( PythonInterp PROPERTIES
-      DESCRIPTION "Python interpreter"
-      TYPE OPTIONAL
-      PURPOSE "Required for running the fpe_trap tests." 
-      )
-      if( GSL_FOUND )
-      message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
+     DESCRIPTION "Python interpreter"
+     TYPE OPTIONAL
+     PURPOSE "Required for running the fpe_trap tests." 
+     )
+   if( PYTHONINTERP_FOUND )
+     message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
    else()
-      message( STATUS "Looking for Python....not found" )
+     message( STATUS "Looking for Python....not found" )
    endif()
+   
+   # Qt -----------------------------------------------------------------------
+   setupQt()
 
 endmacro()
 
@@ -781,6 +822,9 @@ macro( SetupVendorLibrariesWindows )
       TYPE OPTIONAL
       PURPOSE "Required for running the fpe_trap tests." 
       )
+
+   # Qt -----------------------------------------------------------------------
+   setupQt()
 
 endmacro()
 
