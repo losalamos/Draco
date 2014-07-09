@@ -36,20 +36,26 @@ source /opt/modules/3.2.6.7/init/bash
 module use $DRACO_MODULE_DIR/hpc
 module use $DRACO_MODULE_DIR/ct-fe
 
-# modules
-module unload PrgEnv-intel PrgEnv-pgi
-module unload cmake numdiff gsl
-# svn
-# load the Intel programming env, but then unloda libsci and totalview
-module load PrgEnv-intel
-module unload xt-libsci xt-totalview intel
-#module load intel/13.0.1.117 xt-mpich2
-module load emacs cmake subversion # gsl/1.15
-# draco modules start here.
-module load gsl/1.14 lapack/3.4.1-intel
-module load numdiff svn
-module load trilinos SuperLU_DIST/3.0-intel 
-module load ParMetis/3.1.1-intel ndi random123 eospac
+   # Move some environment out of the way.
+   module unload PrgEnv-intel PrgEnv-pgi
+   module unload cmake numdiff svn gsl
+   module unload papi perftools
+   # load the Intel programming env, but then unloda libsci and totalview
+   module load PrgEnv-intel
+   module unload xt-libsci # xt-totalview intel
+   # module load intel/13.0.1.117
+   # draco modules start here.
+   module load gsl lapack/3.4.1
+   module load cmake numdiff svn emacs
+   module load trilinos SuperLU_DIST 
+   module load ParMetis ndi random123 eospac/v6.2.4beta.3
+
+   setenv OMP_NUM_THREADS 8
+
+   # Avoid run time messages of the form:
+   # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
+   # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
+   setenv KMP_AFFINITY none
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_ct

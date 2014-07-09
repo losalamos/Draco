@@ -45,7 +45,7 @@ case mp*.localdomain:
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
     module unload intel openmpi
-    module load intel/13.1.3 openmpi/1.6.3
+    module load intel/14.0.2 openmpi
     module load gsl svn emacs
     module load cmake numdiff git lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
@@ -65,7 +65,7 @@ case ml*.localdomain:
     module use $DRACO_ENV_DIR/Modules/hpc
     module use $DRACO_ENV_DIR/Modules/tu-fe
     module load friendly-testing 
-    module load intel/13.1.0 openmpi/1.6.3 
+    module load intel/14.0.2 openmpi
     module load cmake gsl svn fstools 
     module load numdiff lapack/3.4.1 totalview
     module load SuperLU_DIST
