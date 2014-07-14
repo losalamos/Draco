@@ -68,10 +68,12 @@ message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
 if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
-   # Empty the binary directory and recreate the CMakeCache.txt
-   message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
-   ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-   file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
+  if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+    # Empty the binary directory and recreate the CMakeCache.txt
+    message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
+    ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+    file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
+  endif()
 endif()
 
 # Start
