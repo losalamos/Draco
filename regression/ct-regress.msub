@@ -150,9 +150,8 @@ if test "${dashboard_type}x" == "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-    base_dir=${regdir}/cdash/ct
-    #base_dir=/lscratch1/kellyt/cdash/ct
-    #base_dir=/usr/projects/jayenne/regress/ct
+    #base_dir=${regdir}/cdash/ct
+    base_dir=/lscratch1/kellyt/cdash/ct
 fi
 
 echo " "
