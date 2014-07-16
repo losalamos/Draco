@@ -26,6 +26,9 @@ template
 void global_merge(map<unsigned, double> &);
 
 template
+void global_merge(map<unsigned, unsigned> &);
+
+template
 void global_merge(map<unsigned, bool> &);
 
 } // end namespace rtt_c4

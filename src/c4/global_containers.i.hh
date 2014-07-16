@@ -138,23 +138,21 @@ void global_merge(map<IndexType, ElementType> &local_map)
             Check(other_index.size() == other_elements.size());
             for (unsigned i=0; i<number_of_other_elements; ++i)
             {
-                IndexType const &index = other_index[i];
+                local_map.insert(pair<IndexType,ElementType>(other_index[i], other_elements[i]));                
                 
-                if (local_map.find(index)!=local_map.end() &&
-                    local_map[index] != other_elements[i])
-                {
-                    throw invalid_argument("inconsistent global map");
-                }
-                local_map[index] = other_elements[i];
+                //IndexType const &index = other_index[i];
+                //if (local_map.find(index)!=local_map.end() && local_map[index] != other_elements[i])
+                //{
+                //    throw invalid_argument("inconsistent global map");
+                //}
+                //local_map[index] = other_elements[i];
             }
         }
         number_of_elements = local_map.size();
         index.resize(number_of_elements);
         elements.resize(number_of_elements);
 
-        for (i = local_map.begin(), j = 0;
-             i != local_map.end();
-             ++i, ++j)
+        for (i = local_map.begin(), j = 0; i != local_map.end(); ++i, ++j)
         {
             index[j] = i->first;
             elements[j] = i->second;
@@ -172,7 +170,8 @@ void global_merge(map<IndexType, ElementType> &local_map)
     {            
         for (unsigned i=0; i<number_of_elements; ++i)
         {
-            local_map[index[i]] = elements[i];
+            //local_map[index[i]] = elements[i];
+            local_map.insert(pair<IndexType,ElementType>(index[i], elements[i]));                
         }
     }
 }
