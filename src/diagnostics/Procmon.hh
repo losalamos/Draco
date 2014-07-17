@@ -125,8 +125,8 @@ namespace rtt_diagnostics
  */
 //===========================================================================//
 DLL_PUBLIC void procmon_resource_print(std::string const & identifier,
-                                       int         const & mynode,
-                                       std::ostream      & msg = std::cout );
+                                       int         const & mynode = -1,
+                                       std::ostream      & msg    = std::cout );
 
 } // end namespace rtt_diagnostics
 

@@ -161,7 +161,7 @@ void procmon_resource_print( std::string const & identifier,
         // std::cout << line << std::endl;
 
         // tokenize the string
-        std::vector<std::string> tokens = tokenize( line, " \t" );
+        std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize( line, " \t" );
 
         if( tokens.size() > 1 ) // protect against empty line.
         {
