@@ -16,10 +16,6 @@
 #include "ds++/Release.hh"
 #include <sstream>
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 using namespace std;
 using namespace rtt_c4;
 

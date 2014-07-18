@@ -23,8 +23,6 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_rng;
 
-#define ITFAILS ut.failure(__LINE__, __FILE__)
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -730,23 +728,9 @@ int main(int argc, char *argv[])
         test_spawn(ut);
         test_unique(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstCounter_RNG, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstCounter_RNG, " 
-                  << "an unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//
-//                        end of tstCounter_RNG.cc
+// end of tstCounter_RNG.cc
 //---------------------------------------------------------------------------//

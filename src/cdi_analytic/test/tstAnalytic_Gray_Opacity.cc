@@ -39,10 +39,6 @@ using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

@@ -15,10 +15,6 @@
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 using namespace std;
 
 using rtt_c4::global_sum;

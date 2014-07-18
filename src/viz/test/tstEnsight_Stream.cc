@@ -20,10 +20,6 @@
 using namespace std;
 using rtt_viz::Ensight_Stream;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // Utility functions
 //---------------------------------------------------------------------------//

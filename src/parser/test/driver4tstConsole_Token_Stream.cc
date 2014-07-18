@@ -22,11 +22,6 @@
 
 using namespace std;
 
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__)
-#define FAILURE    ut.failure(__LINE__, __FILE__)
-#define FAILMSG(a) ut.failure(a)
-
 //---------------------------------------------------------------------------//
 // In this unit test we need to check the parser's ability to accept a
 // collection of tokens from standard input.  This cannot be done with a

@@ -22,7 +22,6 @@
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <sstream>
 
 using namespace std;
@@ -33,11 +32,6 @@ using rtt_cdi::OdfmgOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 using rtt_dsxx::soft_equiv_deep;
-
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__);
-#define FAILURE    ut.failure(__LINE__, __FILE__);
-#define FAILMSG(a) ut.failure(a);
 
 //---------------------------------------------------------------------------//
 // TESTS

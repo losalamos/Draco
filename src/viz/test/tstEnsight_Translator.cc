@@ -19,10 +19,6 @@
 using namespace std;
 using rtt_viz::Ensight_Translator;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 #ifdef MSVC_IDE
 // When configuring for the MSVC_IDE, ut.getTestPath() will point to viz/test/[Release|Debug].
 #define WIN32PATHOFFSET std::string("..\\")

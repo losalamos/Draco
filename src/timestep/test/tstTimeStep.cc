@@ -25,10 +25,6 @@
 #include <string>
 #include <cmath>
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 // forward declaration
 void run_tests(rtt_dsxx::UnitTest &ut);
 void check_field_ts_advisor(rtt_dsxx::UnitTest &ut);

@@ -17,10 +17,6 @@
 //#include <new> // std::set_new_handler
 #include <limits>
 
-#define PASSMSG(a) ut.passes(a)
-#define FAILMSG(a) ut.failure(a)
-#define ITFAILS    ut.failure(__LINE__)
-
 using namespace std;
 using namespace rtt_memory;
 

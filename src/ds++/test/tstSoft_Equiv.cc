@@ -23,10 +23,6 @@
 #include <array>
 #endif
 
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-
 using namespace std;
 using rtt_dsxx::soft_equiv;
 using rtt_dsxx::soft_equiv_deep;

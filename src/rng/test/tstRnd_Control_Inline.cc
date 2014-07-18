@@ -20,8 +20,6 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_rng;
 
-#define ITFAILS ut.failure(__LINE__, __FILE__)
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -237,21 +235,7 @@ int main(int argc, char *argv[])
         test_control(ut);
         test_exceptions(ut);
     }
-    catch (std::exception &err)
-    {
-        cout << "ERROR: While testing tstRnd_Control, "
-             << err.what()
-             << endl;
-        ut.numFails++;
-    }
-    catch (...)
-    {
-        cout << "ERROR: While testing tstRnd_Control, "
-             << "an unknown exception was thrown."
-             << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

@@ -18,11 +18,6 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__);
-#define FAILURE    ut.failure(__LINE__, __FILE__);
-#define FAILMSG(a) ut.failure(a);
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

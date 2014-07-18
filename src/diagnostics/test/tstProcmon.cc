@@ -20,10 +20,6 @@
 using namespace std;
 using namespace rtt_diagnostics;
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

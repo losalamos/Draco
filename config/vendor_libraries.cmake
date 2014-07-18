@@ -558,8 +558,9 @@ macro( setupQt )
      get_target_property(QtCore_location Qt5::Core LOCATION)
      if( Qt5Widgets_FOUND )
        set( QT_FOUND 1 )
-       # Instruct CMake to run moc automatically when needed.
-       set(CMAKE_AUTOMOC ON)
+       # Instruct CMake to run moc automatically when needed (only for
+       # subdirectories that need Qt)
+       # set(CMAKE_AUTOMOC ON)
        message( STATUS "Looking for Qt SDK...${QTDIR}." )
      else()
        set( QT_FOUND "QT-NOTFOUND" )

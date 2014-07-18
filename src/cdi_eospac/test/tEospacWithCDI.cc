@@ -24,10 +24,6 @@
 #include <string>
 #include <sstream>
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 using namespace std;
 
 namespace rtt_cdi_eospac_test
@@ -346,30 +342,8 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-    try
-    {
-	// >>> UNIT TESTS
-        rtt_cdi_eospac_test::eospac_with_cdi_test(ut);
-    }
-    catch (rtt_cdi_eospac::EospacException &err )
-    {
-        std::cout << "EospacException ERROR: While testing " << argv[0] << ", "
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch (rtt_dsxx::assertion &err)
-    {
-	cout << "While testing tEospacWithCDI, " << err.what()
-	     << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown on processor " << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { rtt_cdi_eospac_test::eospac_with_cdi_test(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

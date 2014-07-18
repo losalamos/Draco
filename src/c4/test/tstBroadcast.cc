@@ -29,10 +29,6 @@ using rtt_c4::C4_Traits;
 using rtt_c4::broadcast;
 using rtt_dsxx::soft_equiv;
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

@@ -22,10 +22,6 @@ using namespace std;
 using rtt_dsxx::soft_equiv;
 typedef rtt_diagnostics::Timing_Diagnostics D;
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 //---------------------------------------------------------------------------//
 // TEST HELPERS
 //---------------------------------------------------------------------------//

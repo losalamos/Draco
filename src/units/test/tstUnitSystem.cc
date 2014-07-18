@@ -9,16 +9,10 @@
 //---------------------------------------------------------------------------//
 
 #include "../UnitSystem.hh"
-
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-
 #include <sstream>
-
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
 
 //---------------------------------------------------------------------------//
 // TESTS

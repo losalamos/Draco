@@ -15,13 +15,6 @@
 #include "ds++/ScalarUnitTest.hh"
 #include <iostream>
 
-using namespace std;
-
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__)
-#define FAILURE    ut.failure(__LINE__, __FILE__)
-#define FAILMSG(a) ut.failure(a)
-
 //---------------------------------------------------------------------------//
 // forward declaration of f90 functions
 extern "C" void sub1(double alpha, size_t *numPass, size_t *numFail);
@@ -44,10 +37,7 @@ void test_isocbinding_sub1( rtt_dsxx::UnitTest & ut )
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {
-        test_isocbinding_sub1(ut);
-    }
+    try { test_isocbinding_sub1(ut); }
     UT_EPILOG(ut);
 }   
 

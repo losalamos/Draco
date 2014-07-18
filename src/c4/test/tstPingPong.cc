@@ -16,10 +16,6 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 using namespace std;
 
 using rtt_c4::C4_Req;
@@ -399,22 +395,21 @@ void probe_ping_pong( rtt_dsxx::UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-	rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
         std::cout << "This is " << rtt_c4::get_processor_name() << std::endl;        
 
-		Insist(rtt_c4::nodes() == 2, "This designed is designed for exactly 2 Processors.");
+        Insist(rtt_c4::nodes() == 2, "This designed is designed for exactly 2 Processors.");
 
-		blocking_ping_pong(ut);
-		non_blocking_ping_pong(ut);
-		probe_ping_pong(ut);
+        blocking_ping_pong(ut);
+        non_blocking_ping_pong(ut);
+        probe_ping_pong(ut);
         tstC4_Req_free();
-	}
-	UT_EPILOG(ut);
+    }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

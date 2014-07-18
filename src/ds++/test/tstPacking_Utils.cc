@@ -27,11 +27,6 @@ using rtt_dsxx::pack_data;
 using rtt_dsxx::unpack_data;
 using rtt_dsxx::soft_equiv;
 
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__);
-#define FAILURE    ut.failure(__LINE__, __FILE__);
-#define FAILMSG(a) ut.failure(a);
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

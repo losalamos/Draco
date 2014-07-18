@@ -36,12 +36,7 @@ using namespace rtt_c4;
 // TESTS
 //---------------------------------------------------------------------------//
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 //---------------------------------------------------------------------------//
-
 bool topology_report(void)
 {
     size_t const mpi_ranks = rtt_c4::nodes();
@@ -447,19 +442,7 @@ int main(int argc, char *argv[])
         if( rtt_c4::nodes() == 1 )
             MandelbrotDriver(ut);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstOMP, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstOMP, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

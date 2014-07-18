@@ -52,10 +52,6 @@ namespace rtt_dsxx
  * Scalar UnitTests should have the following syntax.
  * \code
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
- 
 int main(int argc, char *argv[])
 {
     rtt_utils::ScalarUnitTest ut( argc, argv, release );
@@ -175,10 +171,10 @@ class DLL_PUBLIC UnitTest
 
 } // end namespace rtt_dsxx
 
-//#define PASSMSG(ut,m)  ut.passes(m)
-//#define FAILMSG(ut,m)  ut.failure(m)
-//#define ITFAILS(ut)    ut.failure( __LINE__, __FILE__ )
-//#define FAILURE(ut)    ut.failure( __LINE__, __FILE__ );
+#define PASSMSG(m)  ut.passes(m)
+#define FAILMSG(m)  ut.failure(m)
+#define ITFAILS     ut.failure( __LINE__, __FILE__ )
+#define FAILURE     ut.failure( __LINE__, __FILE__ );
 //#define UT_PROLOG(foo) typedef ut foo
 #define UT_EPILOG(foo) \
 catch (rtt_dsxx::assertion &err) {     \

@@ -27,10 +27,6 @@
 // TESTS
 //---------------------------------------------------------------------------//
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 //---------------------------------------------------------------------------//
 void test_trace( rtt_dsxx::UnitTest &ut )
 {
@@ -191,28 +187,11 @@ void test_trace( rtt_dsxx::UnitTest &ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {
-        // Unit tests
-        test_trace(ut);
-    }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstTigsTrace, " 
-                  << err.what() << std::endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstTigsTrace, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { test_trace(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

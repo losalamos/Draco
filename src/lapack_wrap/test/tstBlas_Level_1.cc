@@ -13,10 +13,6 @@
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 using namespace std;
 
 using rtt_lapack_wrap::blas_copy;
@@ -200,10 +196,9 @@ void tst_nrm2( rtt_dsxx::UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-        // >>> UNIT TESTS
         tst_copy<float>(ut);
         tst_scal<float>(ut);
         tst_dot<float>(ut);
@@ -215,32 +210,7 @@ int main(int argc, char *argv[])
         tst_axpy<double>(ut);
         tst_nrm2<double>(ut);
     }
-    catch (rtt_dsxx::assertion &err)
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        {
-            cout << "ERROR: While testing " << argv[0] << ", "
-                << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-            << err.what() << endl;
-        return 1;
-    }
-
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-            << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

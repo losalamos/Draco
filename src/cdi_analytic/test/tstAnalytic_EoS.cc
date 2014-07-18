@@ -35,10 +35,6 @@ using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -444,10 +440,10 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-	    // >>> UNIT TESTS
-	    analytic_eos_test(ut);
-	    CDI_test(ut);
-	    packing_test(ut);
+        // >>> UNIT TESTS
+        analytic_eos_test(ut);
+        CDI_test(ut);
+        packing_test(ut);
     }
     UT_EPILOG(ut);
 }   

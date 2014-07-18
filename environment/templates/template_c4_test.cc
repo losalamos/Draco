@@ -15,20 +15,12 @@
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 
-using namespace std;
-
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__)
-#define FAILURE    ut.failure(__LINE__, __FILE__)
-#define FAILMSG(a) ut.failure(a)
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);

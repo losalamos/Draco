@@ -26,10 +26,6 @@
 
 using namespace std;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // In this unit test we need to check binary utility Ipcress_Interpreter's
 // ability to accept a collection of commands from standard input. 

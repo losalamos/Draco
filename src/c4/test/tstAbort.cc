@@ -14,18 +14,14 @@
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
-using namespace std;
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
 
 void abort_test(rtt_dsxx::UnitTest & ut)
 {
+    using namespace std;
+    
     cout << "Entering abort_test on proc " << rtt_c4::node() << endl;
     
     rtt_c4::global_barrier();

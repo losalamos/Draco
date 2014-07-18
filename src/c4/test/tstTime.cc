@@ -18,11 +18,6 @@
 #include <sstream>
 #include <vector>
 
-// helper macros.
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 rtt_c4::Global_Timer do_timer(    "do_global_timer");
 rtt_c4::Global_Timer do_not_timer("do_not_global_timer");
 

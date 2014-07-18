@@ -23,10 +23,6 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -74,43 +70,18 @@ void tstProcessor_Group( rtt_dsxx::UnitTest & ut )
 #endif // C4_MPI
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    // version tag
+    ParallelUnitTest ut( argc, argv, release );
     try
     {
-        ParallelUnitTest ut( argc, argv, release );
-        
 #ifdef C4_MPI
-       tstProcessor_Group(ut);
+        tstProcessor_Group(ut);
 #else
-       ut.passes("Test inactive for scalar");
+        ut.passes("Test inactive for scalar");
 #endif //C4_MPI
     }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-    return 0;
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

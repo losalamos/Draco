@@ -14,10 +14,6 @@
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 using namespace std;
 
 //---------------------------------------------------------------------------//
@@ -143,11 +139,9 @@ void tstScalar( rtt_dsxx::UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    using std::cout;
-	using std::endl;
-	rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
-	try { tstScalar(ut); }
-	UT_EPILOG(ut);
+    rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
+    try { tstScalar(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

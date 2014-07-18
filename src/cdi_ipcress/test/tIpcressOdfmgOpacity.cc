@@ -22,10 +22,6 @@
 #include "ds++/Release.hh"
 #include <cstdio>
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 using rtt_cdi_ipcress::IpcressFile;

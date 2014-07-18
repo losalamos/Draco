@@ -18,11 +18,6 @@
 using namespace std;
 using namespace rtt_dsxx;
 
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__)
-#define FAILURE    ut.failure(__LINE__, __FILE__)
-#define FAILMSG(a) ut.failure(a)
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -104,14 +99,10 @@ void test_index_converter( rtt_dsxx::UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-    try
-    {
-        test_index_converter(ut);
-    }
+    try { test_index_converter(ut); }
     UT_EPILOG(ut);
 }   
 

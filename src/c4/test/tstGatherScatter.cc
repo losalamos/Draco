@@ -20,11 +20,6 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-// helper macros.
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

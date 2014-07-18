@@ -36,10 +36,6 @@ using namespace rtt_c4;
 // TESTS
 //---------------------------------------------------------------------------//
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 /*
  * Demonstrate that the normal access functions work as indended.
  */

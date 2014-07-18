@@ -34,10 +34,6 @@ using rtt_cdi::OdfmgOpacity;
 using rtt_parser::Expression;
 using rtt_parser::Constant_Expression;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 
 bool checkOpacityEquivalence( vector< vector<double> > sigma,

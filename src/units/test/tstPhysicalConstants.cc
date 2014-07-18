@@ -20,10 +20,6 @@
 #include "../PhysicalConstants.hh"
 #include "../PhysicalConstantsSI.hh"
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//

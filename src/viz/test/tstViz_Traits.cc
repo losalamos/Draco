@@ -18,11 +18,6 @@
 using namespace std;
 using rtt_viz::Viz_Traits;
 
-#define PASSMSG(a) ut.passes(a)
-#define ITFAILS    ut.failure(__LINE__)
-#define FAILURE    ut.failure(__LINE__, __FILE__)
-#define FAILMSG(a) ut.failure(a)
-
 //---------------------------------------------------------------------------//
 // simple test field class for checking viz traits
 

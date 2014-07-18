@@ -20,10 +20,6 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -57,38 +53,11 @@ void tstTermDet( UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    // version tag
-    try
-    {
-       ParallelUnitTest ut( argc, argv, release );
-       tstTermDet(ut);
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", " 
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-    return 0;
+    ParallelUnitTest ut( argc, argv, release );
+    try { tstTermDet(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

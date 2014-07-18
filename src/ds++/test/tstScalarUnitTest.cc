@@ -24,7 +24,11 @@ using namespace std;
 using namespace rtt_dsxx;
 
 // Provide old style call to pass/fail macros.  Use object name unitTest for
-// this unit test.
+// this unit test. (remove the defines found in ScalarUnitTest.hh).
+#undef PASSMSG
+#undef ITFAILS
+#undef FAILURE
+#undef FAILMSG
 #define PASSMSG(a) unitTest.passes(a)
 #define ITFAILS    unitTest.failure(__LINE__);
 #define FAILURE    unitTest.failure(__LINE__, __FILE__);

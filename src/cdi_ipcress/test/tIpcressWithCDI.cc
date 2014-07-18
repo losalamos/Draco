@@ -37,10 +37,6 @@ using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::CDI;
 using rtt_dsxx::SP;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-#define ITFAILS    ut.failure( __LINE__, __FILE__ )
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -322,26 +318,11 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
-    try
-    {	// >>> UNIT TESTS
-	test_ipcress_CDI(ut);
-    }
-    catch (rtt_dsxx::assertion &excpt)
-    {
-	cout << "While testing tIpcressWithCDI, " << excpt.what()  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tIpcressWithCDI, " 
-                  << "An unknown exception was thrown." << std::endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
+    try { test_ipcress_CDI(ut); }
+    UT_EPILOG(ut);
 }   
 
 //---------------------------------------------------------------------------//

@@ -19,9 +19,6 @@
 #include "ds++/Release.hh"
 #include <sstream>
 
-#define PASSMSG(A) ut.passes(A)
-#define FAILMSG(A) ut.failure(A)
-#define ITFAILS    ut.failure( __LINE__ )
 #define UNIT_TEST(A) if(!(A)) ITFAILS
 
 using namespace std;
