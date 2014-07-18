@@ -387,7 +387,7 @@ names: C;CXX;EXE_LINKER.")
       endif()
       
       string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS
-         ${CMAKE_${comp}_FLAGS} )
+         "${CMAKE_${comp}_FLAGS}" )
 
       if( "${build_modes}x" STREQUAL "x" ) # set flags for all build modes
 
