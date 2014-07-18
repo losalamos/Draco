@@ -1,3 +1,9 @@
+2014-07-18  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Repository HEAD tagged for draco-6_12_1.  A few build system
+  	  changes were needed for our release on SQ and this tag captures
+	  those changes.  This patch version is only used on SQ.
+
 2014-06-19 Jae Chang <jhchang@lanl.gov>
 
 	* Release draco-6_12_0. This is a minor Draco release.
