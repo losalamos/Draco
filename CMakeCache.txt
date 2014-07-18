@@ -15,7 +15,7 @@
 
 # Location where 'make install' will copy files to.
 # CMAKE_INSTALL_PREFIX:PATH=c:/Release-x64/draco
-CMAKE_INSTALL_PREFIX:PATH=/var/tmp/$ENV{USER}/cmake/gcc/mpid/t
+CMAKE_INSTALL_PREFIX:PATH=/var/tmp/user/gcc-mpid/t
 
 # VENDOR_DIR:PATH=$ENV{VENDOR_DIR}
 # Windows: k:/vendors/x64-Windows
@@ -40,6 +40,13 @@ DRACO_C4:STRING=MPI
 
 # Design-by-Contract (0-15)?
 DRACO_DBC_LEVEL:STRING=7
+
+# Diagnostic output (0-7)?
+# turns on catching of IEEE FPE signals, expensive checks/prints).
+DRACO_DIAGNOSTICS:STRING=0
+
+# Enable probing the local system for available/used memory resources.
+USE_PROCMON:BOOL=OFF
  
 # Keyword for creating new libraries (STATIC or SHARED).
 DRACO_LIBRARY_TYPE:STRING=SHARED

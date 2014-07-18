@@ -11,13 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-//#include "c4_test.hh"
 #include "../ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-//#include "../global.hh"
-//#include "../SpinLock.hh"
-//#include "../C4_Tags.hh"
-// #include <iostream>
 
 #define PASSMSG(A) ut.passes(A)
 #define FAILMSG(A) ut.failure(A)

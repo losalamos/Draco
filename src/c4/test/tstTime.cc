@@ -323,12 +323,37 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 }
 
 //---------------------------------------------------------------------------//
+void test_pause( rtt_dsxx::UnitTest & ut )
+{
+    using rtt_c4::Timer;
+    
+    std::cout << "Starting tstTime::test_pause tests..." << std::endl;
 
+    double begin( rtt_c4::wall_clock_time() );
+
+    double const pauseTime(1.0); // seconds
+
+    Timer::pause(pauseTime);
+
+    double end( rtt_c4::wall_clock_time() );
+
+    if( end-begin < pauseTime ) ITFAILS;
+
+    std::cout << "Starting tstTime::test_pause tests...done\n" << std::endl;
+        
+    return;
+}
+
+//---------------------------------------------------------------------------//
 int main( int argc, char *argv[] )
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     rtt_c4::Timer::initialize(argc, argv);
-    try { wall_clock_test(ut); }
+    try
+    {
+        wall_clock_test(ut);
+        test_pause(ut);
+    }
     UT_EPILOG(ut);
 }   
 

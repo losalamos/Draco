@@ -12,7 +12,6 @@
 //---------------------------------------------------------------------------//
 
 #include "../global.hh"
-#include "../SpinLock.hh"
 #include "../ParallelUnitTest.hh"
 
 #include "ds++/Assert.hh"

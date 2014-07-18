@@ -237,6 +237,7 @@ class DLL_PUBLIC Timer
 #endif
 
     inline void reset();
+    static void pause( double const pauseSeconds );
 
     void print( std::ostream &, int p = 2 ) const;
 
