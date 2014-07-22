@@ -2,11 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include <QDialog>
-#include <QGridLayout>
-#include <QLabel>
-//#include <QLineEdit>
-#include <QPushButton>
+#include "diWidget.hh"
 
 namespace Ui {
 class MainWindow;
@@ -18,21 +14,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    ~MainWindow(){};
 
 private slots:
-    /* void on_actionAbout_triggered(); */
-    /* void on_actionDialog_with_Layout_triggered(); */
-    /* void on_actionEdit_File_triggered(); */
+    // None
 
 private:
-    QGridLayout * layout;
-    QLabel      * label1;
-    QPushButton * pushbutton1;
-
-    QMenu *mainWindowMenu;
-    
-    void setupMenuBar();
+    // Widgets
+    diWidget    * diw;
 };
 
 #endif // MAINWINDOW_H

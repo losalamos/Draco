@@ -3,8 +3,10 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow mw;
-    mw.show();
-    return a.exec();
+    QApplication app(argc, argv);
+    app.setApplicationName("draco_info-gui");
+    app.setOrganizationName("LANL CCS-2");
+    MainWindow *mainWin = new MainWindow;
+    mainWin->show();
+    return app.exec();
 }
