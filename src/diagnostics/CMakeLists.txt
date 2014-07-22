@@ -90,6 +90,10 @@ set_target_properties( Exe_draco_info
    PROJECT_LABEL draco_info
    FOLDER        diagnostics )
 
+if( QT_FOUND )
+  add_subdirectory( qt )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
