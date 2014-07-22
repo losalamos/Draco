@@ -103,13 +103,10 @@ void ParallelUnitTest::status()
       // have a barrier on the destructor.  Otherwise, we can find ourselves
       // in a race condition between this function and the destructor (in the
       // case of an exception).]
-        
-        // HTSyncSpinLock slock;
         if( node() == 0 )
             out << std::endl;
     }
     {
-        // HTSyncSpinLock slock;
         out << "Done testing " << testName << " on node "
             << node() << "." << std::endl;
     }

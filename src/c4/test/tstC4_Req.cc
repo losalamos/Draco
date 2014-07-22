@@ -56,8 +56,6 @@ void tstTraits(rtt_dsxx::UnitTest &ut)
     using rtt_c4::C4_Traits;
 
     {
-        // rtt_c4::HSyncSpinLock headsyncspinlock;
-        
         if( C4_Traits<unsigned char>::tag  != 432 ) ITFAILS;
         if( C4_Traits<short>::tag          != 433 ) ITFAILS;
         if( C4_Traits<unsigned short>::tag != 434 ) ITFAILS;
@@ -68,8 +66,6 @@ void tstTraits(rtt_dsxx::UnitTest &ut)
 #ifdef C4_MPI
     {
         using rtt_c4::MPI_Traits;
-        // rtt_c4::TSyncSpinLock tailsyncspinlock;
-        
         if( MPI_Traits<unsigned char>::element_type()  != MPI_UNSIGNED_CHAR )  ITFAILS;
         if( MPI_Traits<short>::element_type()          != MPI_SHORT )          ITFAILS;
         if( MPI_Traits<unsigned short>::element_type() != MPI_UNSIGNED_SHORT ) ITFAILS;
