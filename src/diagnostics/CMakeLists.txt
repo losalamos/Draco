@@ -52,7 +52,7 @@ file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 list( REMOVE_ITEM headers
    ${template_implementations} 
-   ${PROJECT_SOURCE_DIR}/draco_info.cc
+   ${PROJECT_SOURCE_DIR}/draco_info_main.cc
    )
 
 # Make the header files available in the IDE.
@@ -83,8 +83,8 @@ add_component_library(
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 
-add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info.cc )
-target_link_libraries( Exe_draco_info Lib_dsxx  )
+add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info_main.cc )
+target_link_libraries( Exe_draco_info Lib_diagnostics  )
 set_target_properties( Exe_draco_info
    PROPERTIES OUTPUT_NAME draco_info 
    PROJECT_LABEL draco_info

@@ -2,13 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-/* #include "aboutdialog.h" */
-/* #include "dialog_with_layout.h" */
-/* #include "editwindow.h" */
-#include <QDialog>
+//#include <QDialog>
 #include <QGridLayout>
 #include <QLabel>
-#include <QLineEdit>
+//#include <QLineEdit>
 #include <QPushButton>
 
 namespace Ui {
@@ -29,17 +26,13 @@ private slots:
     /* void on_actionEdit_File_triggered(); */
 
 private:
-    Ui::MainWindow *ui;
-    bool use_ui_file;
-    /* AboutDialog *aboutdialog; */
-    /* dialog_with_layout * m_dialog_with_layout; */
-    /* EditWindow * editwindow; */
     QGridLayout * layout;
     QLabel      * label1;
-    QLineEdit   * text1;
-    QLabel      * label2;
-    QLineEdit   * text2;
     QPushButton * pushbutton1;
+
+    QMenu *mainWindowMenu;
+    
+    void setupMenuBar();
 };
 
 #endif // MAINWINDOW_H

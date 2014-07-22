@@ -545,8 +545,8 @@ class DLL_PUBLIC CDI
     
   public:
         
-    // STRUCTORS
-    // ---------
+    // CONSTRUCTORS
+    // ------------
         
     CDI(const std_string &id = std_string());
     virtual ~CDI();

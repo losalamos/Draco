@@ -11,185 +11,184 @@
 // $Id: tstScalarUnitTest.cc 6864 2012-11-08 01:34:45Z kellyt $
 //---------------------------------------------------------------------------//
 
+#include "draco_info.hh"
 #include "diagnostics/config.h"
 #include "c4/config.h"
 #include "ds++/Release.hh"
 #include "ds++/UnitTest.hh"
-#include "ds++/Assert.hh"
 #include <iostream>
-#include <string>
-#include <stdexcept>
+#include <sstream>
 #include <algorithm> // tolower
 
-//---------------------------------------------------------------------------//
-// Draco-6_5_20121113, build date 2012/11/13; build type: DEBUG; DBC: 7
-//
-// Draco Contributers: 
-//     Kelly G. Thompson, Kent G. Budge, Tom M. Evans,
-//     Rob Lowrie, B. Todd Adams, Mike W. Buksas,
-//     James S. Warsa, John McGhee, Gabriel M. Rockefeller,
-//     Paul J. Henning, Randy M. Roberts, Seth R. Johnson,
-//     Allan B. Wollaber, Peter Ahrens, Jeff Furnish,
-//     Paul W. Talbot, Jae H. Chang, and Benjamin K. Bergen.
-//
-// Copyright (C) 1995-2014 LANS, LLC
-// Build information:
-//     Library type   : shared
-//     System type    : Linux
-//     CUDA support   : disabled
-//     MPI support    : enabled
-//       mpirun cmd   : mpirun --mca mpi_paffinity_alone 0 -np 
-//     OpenMPI support: enabled
-//     Diagnostics    : disabled
-//     Diagnostics Timing: disabled
-//     C++11 Support  : enabled
-//       Feature list : HAS_CXX11_AUTO 
-//                      HAS_CXX11_NULLPTR 
-//                      HAS_CXX11_LAMBDA 
-//                      HAS_CXX11_STATIC_ASSERT 
-//                      HAS_CXX11_SHARED_PTR 
+namespace rtt_diagnostics
+{
 
-int main( int /*argc*/, char *argv[] )
+//---------------------------------------------------------------------------//
+//! Constructor
+DracoInfo::DracoInfo(void)
+    : release(   rtt_dsxx::release()   ),
+      copyright( rtt_dsxx::copyright() ),
+      contact( "For information, send e-mail to draco@lanl.gov." ),
+      build_type( normalizeCapitalization(CMAKE_BUILD_TYPE) ),
+      library_type( "static" ),
+      system_type(  "Unknown" ),
+      site_name(    "Unknown" ),
+      cuda(   false ),
+      mpi(    false ),
+      mpirun_cmd(   "" ),
+      openmp( false ),
+      diagnostics_level( "disabled" ),
+      diagnostics_timing( false ),
+      cxx11(false),
+      cxx11_features(),
+      cxx(       CMAKE_CXX_COMPILER ),
+      cxx_flags( CMAKE_CXX_FLAGS    ),
+      cc(        CMAKE_C_COMPILER   ),
+      cc_flags(  CMAKE_C_FLAGS      ),
+      fc(        "none" ),
+      fc_flags(  "none" )
+{
+#ifdef DRACO_SHARED_LIBS
+    library_type = "shared";
+#endif
+#if DRACO_UNAME == Linux
+    system_type = "Linux";
+#endif
+#ifdef SITENAME
+    site_name = SITENAME;
+#endif
+#ifdef HAVE_CUDA
+    cuda = true;
+#endif
+#ifdef C4_MPI
+    mpi = true;
+    mpirun_cmd = C4_MPICMD;
+#endif
+#if USE_OPENMP == ON
+    openmp = true;
+#endif
+#ifdef DRACO_DIAGNOSTICS
+    std::ostringstream msg;
+    msg << DRACO_DIAGNOSTICS;
+    diagnostics_level = msg.str();
+#endif
+#ifdef DRACO_TIMING
+    diagnostics_timing = true;
+#endif
+#ifdef DRACO_ENABLE_CXX11
+    cxx11 = true;
+    cxx11_features = rtt_dsxx::UnitTest::tokenize(
+        CXX11_FEATURE_LIST, ";", false );
+#endif
+    if( build_type == std::string("Release") )
+    {
+        cxx_flags += CMAKE_CXX_FLAGS_RELEASE;
+        cc_flags  += CMAKE_C_FLAGS_RELEASE;
+    }
+    else if( build_type == std::string("Debug") )
+    {
+        cxx_flags += CMAKE_CXX_FLAGS_DEBUG;
+        cc_flags  += CMAKE_C_FLAGS_DEBUG;
+    }
+#ifdef CMAKE_Fortran_COMPILER
+    fc = CMAKE_Fortran_COMPILER;
+    fc_flags = CMAKE_Fortran_FLAGS;
+    if( build_type == std::string("Release") )
+        fc_flags += CMAKE_Fortran_FLAGS_RELEASE;
+    else if( build_type == std::string("Debug") )
+        fc_flags += CMAKE_Fortran_FLAGS_DEBUG;
+#endif
+}
+
+//---------------------------------------------------------------------------//
+std::string DracoInfo::fullReport(void)
 {
     using std::cout;
     using std::endl;
-    try
+    
+    std::ostringstream infoMessage;
+
+    // Print version and copyright information to the screen:
+    infoMessage << briefReport();
+
+    // Build Information
+    //------------------
+       
+    infoMessage
+        << "Build information:"
+        << "\n    Build type     : " << build_type
+        << "\n    Library type   : " << library_type
+        << "\n    System type    : " << system_type
+        << "\n    Site name      : " << site_name
+        << "\n    CUDA support   : " << (cuda?"enabled":"disabled")
+        << "\n    MPI support    : " << (mpi?"enabled":"disabled (c4 scalar mode)");
+
+    if(mpi) infoMessage
+        << "\n      mpirun cmd   : " << mpirun_cmd;
+
+    infoMessage
+        << "\n    OpenMP support : " << (openmp?"enabled":"disabled")
+        << "\n    Diagnostics    : " << diagnostics_level
+        << "\n    Diagnostics Timing: " << (diagnostics_timing?"enabled":"disabled");
+
+    // C++11
+
+    infoMessage
+        << "\n    C++11 Support  : " << (cxx11?"enabled":"disabled");
+
+    if(cxx11)
     {
-        // Print version and copyright information to the screen:
-        cout << "\n"
-             << rtt_dsxx::release() << "\n\n"
-             << rtt_dsxx::copyright() << endl;
-
-//---------------------------------------------------------------------------//
-// Build Information
-//---------------------------------------------------------------------------//
-
-        // Create a string to hold build_type and normalize the case.
-        std::string build_type( CMAKE_BUILD_TYPE );
-        std::transform( build_type.begin(), build_type.end(),
-                        build_type.begin(), ::tolower);
-        build_type[0] = ::toupper(build_type[0]);
-        
-        cout << "Build information:"
-             << "\n    Build type     : " << build_type
-             << "\n    Library type   : "
-#ifdef DRACO_SHARED_LIBS
-             << "shared"
-#else
-             << "static"
-#endif
-             << "\n    System type    : "
-#if DRACO_UNAME == Linux
-             << "Linux"
-#else
-             << "Unknown"
-#endif
-             << "\n    Site name      : "
-#ifdef SITENAME
-             << SITENAME
-#endif
-             << "\n    CUDA support   : "
-#ifdef HAVE_CUDA
-             << "enabled"
-#else
-             << "disabled"
-#endif
-           
-             << "\n    MPI support    : "
-#ifdef C4_MPI
-             << "enabled"
-             << "\n      mpirun cmd   : " << C4_MPICMD
-#else
-             << "disabled (c4 scalar mode)"
-#endif
-             << "\n    OpenMPI support: "
-#if USE_OPENMP == ON
-             << "enabled"
-#else
-             << "disabled (c4 scalar mode)"
-#endif
-             << "\n    Diagnostics    : "
-#ifdef DRACO_DIAGNOSTICS
-             << DRACO_DIAGNOSTICS
-#else
-             << "disabled"
-#endif
-             << "\n    Diagnostics Timing: " 
-#ifdef DRACO_TIMING
-             << "enabled"
-#else
-             << "disabled"
-#endif
-            
-//---------------------------------------------------------------------------//
-// C++11 Features
-//---------------------------------------------------------------------------//
-            
-             << "\n    C++11 Support  : "
-#ifdef DRACO_ENABLE_CXX11
-             << "enabled"
-             << "\n      Feature list : ";
-
-        std::vector<std::string> cxx11_features(
-            rtt_dsxx::UnitTest::tokenize( CXX11_FEATURE_LIST, ";", false ) );
+        infoMessage << "\n      Feature list : ";
         for( size_t i=0; i<cxx11_features.size(); ++i )
             if( i==0 )
-                cout << cxx11_features[i];
+                infoMessage << cxx11_features[i];
             else
-                cout << "\n                     " << cxx11_features[i];
-#else
-            << "disabled";
-#endif
+                infoMessage << "\n                     " << cxx11_features[i];
+    }        
 
-            // Compilers and Flags
+    // Compilers and Flags
             
-        cout << "\n    CXX Compiler      : " << CMAKE_CXX_COMPILER
-             << "\n    CXX_FLAGS         : " << CMAKE_CXX_FLAGS;
-        if( build_type == std::string("Release") )
-            cout << " " << CMAKE_CXX_FLAGS_RELEASE;
-        else if( build_type == std::string("Release") )
-            cout << " " << CMAKE_CXX_FLAGS_DEBUG;
+    infoMessage
+        << "\n    CXX Compiler      : " << cxx
+        << "\n    CXX_FLAGS         : " << cxx_flags
+        << "\n    C Compiler        : " << cc
+        << "\n    C_FLAGS           : " << cc_flags
+        << "\n    Fortran Compiler  : " << fc
+        << "\n    Fortran_FLAGS     : " << fc_flags;
 
-        cout << "\n    C Compiler        : " << CMAKE_C_COMPILER
-             << "\n    C_FLAGS           : " << CMAKE_C_FLAGS;
-        if( build_type == std::string("Release") )
-            cout << " " << CMAKE_C_FLAGS_RELEASE;
-        else if( build_type == std::string("Release") )
-            cout << " " << CMAKE_C_FLAGS_DEBUG;
-#ifdef CMAKE_Fortran_COMPILER
-        cout << "\n    Fortran Compiler  : " << CMAKE_Fortran_COMPILER;
-#ifdef CMAKE_Fortran_FLAGS
-        cout << "\n    Fortran_FLAGS     : " << CMAKE_Fortran_FLAGS;
-        if( build_type == std::string("Release") )
-            cout << " " << CMAKE_Fortran_FLAGS_RELEASE;
-        else if( build_type == std::string("Release") )
-            cout << " " << CMAKE_Fortran_FLAGS_DEBUG;
-#endif
-#endif        
-        cout << "\n" << endl;
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        std::cout << "ERROR: While running " << argv[0] << ", "
-             << err.what() << std::endl;;
-        return 1;
-    }
-    catch( std::exception &err )
-    {
-        std::cout << "ERROR: While running " << argv[0] << ", "
-             << err.what() << std::endl;;
-        return 1;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While running " << argv[0] << ", " 
-             << "An unknown C++ exception was thrown" << std::endl;;
-        return 1;
-    }
+    infoMessage << "\n" << endl;
+        
+    return infoMessage.str();
+}
 
-    return 0;
-}   
+//---------------------------------------------------------------------------//
+std::string DracoInfo::briefReport(void)
+{
+    using std::cout;
+    using std::endl;
+    
+    std::ostringstream infoMessage;
+
+    // Print version and copyright information to the screen:
+    infoMessage << "\n"
+                << release << "\n\n" << copyright
+                << contact << "\n"   << endl;
+
+    return infoMessage.str();
+}
+
+//---------------------------------------------------------------------------//
+// Create a string to hold build_type and normalize the case.
+
+std::string DracoInfo::normalizeCapitalization( std::string mystring )
+{
+    std::transform( mystring.begin(), mystring.end(),
+                    mystring.begin(), ::tolower);
+    mystring[0] = ::toupper(mystring[0]);
+    return mystring;
+}
+
+} // end namespace rtt_diagnostics
 
 //---------------------------------------------------------------------------//
 // end of draco_info.cc
