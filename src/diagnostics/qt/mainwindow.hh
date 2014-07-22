@@ -20,6 +20,9 @@ private slots:
     // None
 
 private:
+    // Forms
+    Ui::MainWindow *ui;
+    
     // Widgets
     diWidget    * diw;
 };

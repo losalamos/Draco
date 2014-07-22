@@ -27,7 +27,7 @@ project( diagnostics_qt CXX )
 
 file( GLOB sources   *.cc *.cpp )
 file( GLOB headers   *.hh *.h )
-#file( GLOB ui_files  *.ui )
+file( GLOB ui_files  *.ui )
 #file( GLOB resources *.qrc )
 
 # Make the header files available in the IDE.
@@ -63,7 +63,7 @@ include_directories(
 add_executable(        Exe_draco_info_gui ${sources} )
 target_link_libraries( Exe_draco_info_gui 
   Lib_diagnostics
-  Qt5::Widgets)
+  Qt5::Widgets )
 set_target_properties( Exe_draco_info_gui
   PROPERTIES OUTPUT_NAME draco_info-gui
   PROJECT_LABEL diagnostics
@@ -84,11 +84,11 @@ set_target_properties( Exe_draco_info_gui
 
 # Copy Qt dll files to build directory
 if (WIN32)
-  file( GLOB qtdlls C:/Qt/5.3/msvc2013/bin/*.dll )
+  file( GLOB qtdlls ${QTDIR}/bin/*.dll )
   foreach( qtdll ${qtdlls} )
-    add_custom_command( TARGET milagro-gui POST_BUILD
+    add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdll} 
-                               $<TARGET_FILE_DIR:milagro-gui> )
+                               $<TARGET_FILE_DIR:Exe_draco_info_gui> )
   endforeach()
 endif()
 

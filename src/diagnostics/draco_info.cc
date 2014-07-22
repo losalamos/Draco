@@ -171,7 +171,7 @@ std::string DracoInfo::briefReport(void)
 
     // Print version and copyright information to the screen:
     infoMessage << "\n"
-                << release << "\n\n" << copyright
+                << release << "\n\n" << copyright << "\n"
                 << contact << "\n"   << endl;
 
     return infoMessage.str();

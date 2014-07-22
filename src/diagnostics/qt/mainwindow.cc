@@ -1,9 +1,11 @@
 #include "mainwindow.hh"
+#include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* /*parent*/)
+MainWindow::MainWindow(QWidget * parent)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow)
 {
-    // http://qt-project.org/doc/qt-4.8/QMainWindow.html#qt-main-window-framework
-    setObjectName("MainWindow");
+    ui->setupUi(this);
 
     // Set the window title
     setWindowTitle("draco_info-gui");
