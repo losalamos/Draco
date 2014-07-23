@@ -96,9 +96,9 @@ if (WIN32)
            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info> )
 endif()
 
-# if( QT_FOUND )
-#   add_subdirectory( qt )
-# endif()
+if( QT_FOUND )
+  add_subdirectory( qt )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

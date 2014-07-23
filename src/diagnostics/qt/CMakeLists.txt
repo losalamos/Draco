@@ -21,6 +21,10 @@ project( diagnostics_qt CXX )
 # 2. <file>.qrc files generate qrc_<file>.cpp in the build directory
 #    via the qt5_add_resources macro.
 
+# Instruct CMake to run moc automatically when needed (only for
+# subdirectories that need Qt)
+set(CMAKE_AUTOMOC ON)
+
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
