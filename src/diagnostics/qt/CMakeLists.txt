@@ -66,7 +66,7 @@ target_link_libraries( Exe_draco_info_gui
   Qt5::Widgets )
 set_target_properties( Exe_draco_info_gui
   PROPERTIES OUTPUT_NAME draco_info-gui
-  PROJECT_LABEL diagnostics
+  PROJECT_LABEL draco_info-gui
   FOLDER        diagnostics )
 
 # add_component_library( 
@@ -90,6 +90,11 @@ if (WIN32)
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdll} 
                                $<TARGET_FILE_DIR:Exe_draco_info_gui> )
   endforeach()
+  
+  add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx> $<TARGET_FILE_DIR:Exe_draco_info_gui>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info_gui> 
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_diagnostics> $<TARGET_FILE_DIR:Exe_draco_info_gui> )
 endif()
 
 # ---------------------------------------------------------------------------- #

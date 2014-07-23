@@ -14,8 +14,14 @@
 #ifndef rtt_diagnostics_draco_info_hh
 #define rtt_diagnostics_draco_info_hh
 
+#include "ds++/config.h"
 #include <string>
 #include <vector>
+
+#if defined(MSVC)
+#   pragma warning (push)
+#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<Elem, _Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
+#endif
 
 namespace rtt_diagnostics
 {
@@ -56,7 +62,7 @@ namespace rtt_diagnostics
  * \endverbatim
  */
 //===========================================================================//
-class DracoInfo
+class DLL_PUBLIC DracoInfo
 {
   public:
 

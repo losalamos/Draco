@@ -89,6 +89,12 @@ set_target_properties( Exe_draco_info
    PROPERTIES OUTPUT_NAME draco_info 
    PROJECT_LABEL draco_info
    FOLDER        diagnostics )
+# Copy required dlls to the executable directory
+if (WIN32)
+    add_custom_command( TARGET Exe_draco_info POST_BUILD
+           COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx> $<TARGET_FILE_DIR:Exe_draco_info>
+           COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info> )
+endif()
 
 # if( QT_FOUND )
 #   add_subdirectory( qt )
