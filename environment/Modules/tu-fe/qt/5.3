@@ -5,27 +5,27 @@
 ## modulefiles/modules.  Generated from modules.in by configure.
 ##
 
-conflict cmake
-
 # global control file
 if { [file exists $env(MODULESHOME)/etc/control] } {
    source $env(MODULESHOME)/etc/control;
 }
 
 # local variables
-set version     2.8.10-Linux-i386
-set prefix      /usr/projects/draco/vendors/cmake-$version
-set bindir      $prefix/bin;
-set mandir      $prefix/man;
+set version     5.3
+# set platform    linux-x86_64
+set prefix       /usr/projects/draco/vendors/Qt5.3.1
+set toolset      /$version/gcc_64
+set bindir1      $prefix/Tools/QtCreator/bin
+set bindir2      $prefix/$toolset/bin
 
 # module whatis
-module-whatis   "CMake $version";
+module-whatis   "Qt";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tCMake $version\n";
+   puts stderr "\tQt - $version\n";
 }
 
 if { ![file exists $prefix] } {
@@ -36,7 +36,12 @@ if { ![file exists $prefix] } {
 
 # Converting clients to embedded info in module files, rather
 # than supporting client license files in the installation directory(s). 
-prepend-path    PATH            $bindir;
-prepend-path    MANPATH         $mandir;
+
+prepend-path    PATH            $bindir2;
+prepend-path    PATH            $bindir1;
+prepend-path    LD_LIBRARY_PATH $prefix/$toolset/lib
+prepend-path    LD_LIBRARY_PATH $prefix/Tools/QtCreator/lib/qtcreator
+setenv          QTDIR           $prefix/$toolset
+       
 
 
