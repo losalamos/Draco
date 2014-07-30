@@ -158,6 +158,9 @@ class DLL_PUBLIC Element_Definition
 	PENTAGON_5, /*!< The basic two-D, five-node "pentagon"
                      *   element. Elements with this topology are quite common
                      *   in an AMR mesh. */
+	HEXAGON_6,  /*!< The basic two-D, six-node "hexagon"
+                     *   element. Elements with this topology are quite common
+                     *   in an AMR mesh. */
 	TETRA_4,    /*!< The basic three-D, four-node "tetrahedral" element. */
 	TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the 
 		     *   middle  of each edge. This is the
