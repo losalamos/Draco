@@ -24,7 +24,7 @@ private:
     Ui::MainWindow *ui;
     
     // Widgets
-    diWidget    * diw;
+    diWidget       *diw;
 };
 
 #endif // MAINWINDOW_H
