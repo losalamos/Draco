@@ -621,7 +621,7 @@ macro( SetupVendorLibrariesUnix )
    if( PYTHONINTERP_FOUND )
      message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
    else()
-     message( STATUS "Looking for Python....not found" )
+      message( STATUS "Looking for Python....not found" )
    endif()
    
    # Qt -----------------------------------------------------------------------
