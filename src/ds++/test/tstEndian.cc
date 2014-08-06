@@ -14,6 +14,7 @@
 #include "../ScalarUnitTest.hh"
 #include "../Release.hh"
 #include "../Endian.hh"
+#include "../Soft_Equivalence.hh"
 #include <sstream>
 #include <limits>
 
@@ -25,7 +26,6 @@ using namespace rtt_dsxx;
 //---------------------------------------------------------------------------//
 void test_char_data(ScalarUnitTest& ut)
 {
-
     unsigned char data[] = {'a', 'b', 'c'};
     unsigned int length = sizeof(data)/sizeof(unsigned char);
 
@@ -41,14 +41,13 @@ void test_char_data(ScalarUnitTest& ut)
 
     if ((pdata[0] != 'c') || (pdata[1] != 'b') || (pdata[2] != 'a'))
         ut.failure("plain char_byte_swap function failed");
-    
 }
 
+//---------------------------------------------------------------------------//
 void test_integer(ScalarUnitTest& ut)
 {
-
     // Integer. This value overflows unsigned ints.
-    int moo = 0xDEADBEEF;
+    int moo = 0xDE AD BE EF;
 
     byte_swap(moo);
 
@@ -62,10 +61,33 @@ void test_integer(ScalarUnitTest& ut)
 
     if (u_moo != 0xEFBEADDE)
         ut.failure("byte_swap failed for for unsigned integer type");
-
 }
 
+//---------------------------------------------------------------------------//
+void test_int64(ScalarUnitTest& ut)
+{
+    // Integer. 
+    int64_t moo = 0xFADEDDEADBEEFBAD;
 
+    byte_swap(moo);
+
+    if (static_cast<uint64_t>(moo) != 0xADFBEEDBEADDDEFA )
+        ut.failure("byte_swap failed for for int64 type");
+
+    // Unsigned integer
+    uint64_t u_moo = 0xFADEDDEADBEEFBAD;
+
+    byte_swap(u_moo);
+
+    if (u_moo != 0xADFBEEDBEADDDEFA)
+        ut.failure("byte_swap failed for for uint64 integer type");
+
+    byte_swap(u_moo);
+    if (u_moo != 0xFADEDDEADBEEFBAD)
+        ut.failure("2x byte_swap failed for for uint64 integer type");
+}
+
+//---------------------------------------------------------------------------//
 void test_idempotence(ScalarUnitTest& ut)
 {
     
@@ -98,11 +120,11 @@ void test_idempotence(ScalarUnitTest& ut)
         if (neg_local != -value)
             ut.failure("byte_swap failed to reproduce original number");
     }
+
     return;
 }
 
 //---------------------------------------------------------------------------//
-
 void test_ieee_float(ScalarUnitTest& ut)
 {
     // These tests always pass, but they may print different messages.
@@ -131,6 +153,33 @@ void test_ieee_float(ScalarUnitTest& ut)
 }
 
 //---------------------------------------------------------------------------//
+void test_externc(ScalarUnitTest& ut)
+{
+   int result(42);
+   result = dsxx_is_big_endian();
+   if( result < 0 || result > 1 ) ITFAILS;
+   
+   result = 0xDEADBEEF;
+   dsxx_byte_swap_int(result);
+   if( result != static_cast<int>(0xEFBEADDE) ) ITFAILS;
+   
+   int64_t i64(0xFADEDDEADBEEFBAD);
+   dsxx_byte_swap_int64_t(i64);
+   if( i64 != static_cast<int64_t>(0xADFBEEDBEADDDEFA) ) ITFAILS;
+
+   // Hexedecimal floating-point
+   double d(42);
+   dsxx_byte_swap_double(d);
+   // should not be 42
+   if( rtt_dsxx::soft_equiv(d,42.0,1.0e-15)) ITFAILS;
+   dsxx_byte_swap_double(d);
+   // double swap should return 42
+   if(! rtt_dsxx::soft_equiv(d,42.0,1.0e-15)) ITFAILS;
+   
+   
+   return;
+}
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -139,8 +188,10 @@ int main(int argc, char *argv[])
     {
         test_char_data(ut);
         test_integer(ut);
+        test_int64(ut);
         test_idempotence(ut);
         test_ieee_float(ut);
+        test_externc(ut);
         ut.passes("Just Because.");
     }
     UT_EPILOG(ut);

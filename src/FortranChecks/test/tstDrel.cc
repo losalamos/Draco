@@ -13,13 +13,16 @@
 
 //---------------------------------------------------------------------------//
 // forward declaration of f90 functions
-extern "C" void drelf90(void);
+extern "C" void drelf90( int & nf );
 
 //---------------------------------------------------------------------------//
 int main(int /*argc*/, char * /*argv*/ [])
 {
-    drelf90();
-    return 0;
+    int nf(0); // number of fails returned by the Fortran subroutine.  This
+               // will be used as the C++ return code to trigger ctest failure
+               // when nf /= 0.
+    drelf90(nf);
+    return nf;
 }   
 
 //---------------------------------------------------------------------------//

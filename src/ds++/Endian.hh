@@ -258,6 +258,15 @@ inline double swap( double const input)
 
 } // end namespace rtt_dsxx
 
+//! These versions can be called by Fortran.  They wrap the C++ implementation.
+extern "C" 
+{
+DLL_PUBLIC int  dsxx_is_big_endian();
+DLL_PUBLIC void dsxx_byte_swap_int(     int     & value );
+DLL_PUBLIC void dsxx_byte_swap_int64_t( int64_t & value );
+DLL_PUBLIC void dsxx_byte_swap_double(  double  & value );
+}
+
 #endif // dsxx_Endian_hh
 
 //---------------------------------------------------------------------------//

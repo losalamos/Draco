@@ -76,6 +76,22 @@ bool has_ieee_float_representation(void)
 
 } // end namespace rtt_dsxx
 
+//! These versions can be called by Fortran.  They wrap the C++ implementation.
+extern "C" 
+{
+int dsxx_is_big_endian()
+{
+   if( rtt_dsxx::is_big_endian()) return 1;
+   return 0;
+}
+void dsxx_byte_swap_int(     int     & value ) {
+   rtt_dsxx::byte_swap( value ); return; }
+void dsxx_byte_swap_int64_t( int64_t & value ) {
+   rtt_dsxx::byte_swap( value ); return; }
+void dsxx_byte_swap_double(  double  & value ) {
+   rtt_dsxx::byte_swap( value ); return; }
+}
+
 //---------------------------------------------------------------------------//
 // end of ds++/Endian.cc
 //---------------------------------------------------------------------------//
