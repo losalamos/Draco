@@ -48,7 +48,7 @@ else
 
     module use $DRACO_MODULE_DIR/hpc
     module use $DRACO_MODULE_DIR/tu-fe
-    module load svn cmake numdiff git hsi-htar psi
+    module load svn numdiff git hsi-htar psi
 
 fi
 
