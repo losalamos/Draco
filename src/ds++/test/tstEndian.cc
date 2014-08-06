@@ -47,7 +47,7 @@ void test_char_data(ScalarUnitTest& ut)
 void test_integer(ScalarUnitTest& ut)
 {
     // Integer. This value overflows unsigned ints.
-    int moo = 0xDE AD BE EF;
+    int moo = 0xDEADBEEF;
 
     byte_swap(moo);
 
