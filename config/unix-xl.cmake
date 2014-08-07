@@ -19,7 +19,7 @@
 #                 divide-by-zero checks.
 # -O3             -O2 plus memory- and compile-time-intensive
 #                 operations that can alter the semantics of programs.
-# -qstrict=nans:operationprecision
+# -qstrict=nans:operationprecision:ieeefp:nans:infinities:zerosigns:exceptions
 #                 Disable optimizations at -O3 and above that may
 #                 produce incorrect results in the presence of NaNs,
 #                 or that produce approximate results for individual
@@ -36,6 +36,7 @@
 #                 eXtension (QPX) units.
 # -qnostaticlink  Allow linking with shared libraries.
 # -qsmp=omp       Enable parallelization using OpenMP pragmas.
+# -qfloat=nofenv:nofltint:nomaf:nans:norelax:rngchk:norsqrt
 
 # Suppressions:
 # -qsuppress  Suppress specific informational or warning messages.
@@ -47,7 +48,7 @@
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-qinfo=all -qflag=i:w -qsuppress=1540-0072 -qsuppress=1506-1197 -qarch=auto" )
+   set( CMAKE_C_FLAGS                "-qinfo=all -qflag=i:w -qsuppress=1540-0072 -qsuppress=1506-1197 -qarch=auto -qfloat=nomaf" )
    set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -qnosmp -qcheck -DDEBUG")
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
