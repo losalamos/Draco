@@ -42,8 +42,8 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "XL" )
 #                 eXtension (QPX) units.
 # -qsmp=omp       Enable parallelization using OpenMP pragmas.
 
-if( NOT CXX_FLAGS_INITIALIZED )
-   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+if( NOT Fortran_FLAGS_INITIALIZED )
+   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
    set( CMAKE_Fortran_FLAGS                "-qlanglvl=2003std -qinfo=all -qflag=i:w -qarch=auto" )
    set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -qnosmp -qcheck" )
