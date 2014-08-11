@@ -215,13 +215,8 @@ double ts_manager::compute_new_timestep()
  * Defines a functor which determines if one timestep advisor is less than
  * another. This is done by comparing the recommended time step of each
  * advisor.
- *
- * \bug It is not advisable to inherit from STL containers because they do not 
- * provide virtual distructors.
  */
-class sptsa_less_than : public std::binary_function<
-    SP<ts_advisor>,
-    SP<ts_advisor>, bool > 
+class sptsa_less_than
 {
   public:
     // The timestep manager

@@ -16,21 +16,18 @@
 #ifndef rtt_c4_Functors_hh
 #define rtt_c4_Functors_hh
 
-#include <functional>
-
 namespace rtt_c4
 {
 
 //---------------------------------------------------------------------------//
-//! A binary functor to return the maximum of two items
-/** 
- * 
- * @param x, the first operand
- * @param y, the second operand
- * @return the greater value of x or y
+/*!
+ * \brief A binary functor to return the maximum of two items
+ * \param x, the first operand
+ * \param y, the second operand
+ * \return the greater value of x or y
  */
 template <class T>
-struct max : public std::binary_function<T,T,T>
+struct max
 {
     T operator()(const T& x, const T& y) const
     { 
@@ -39,15 +36,14 @@ struct max : public std::binary_function<T,T,T>
 };
 
 //---------------------------------------------------------------------------//
-//! A binary functor to find the minimum of two items
-/** 
- * 
- * @param x, the first operand
- * @param y, the second operand
- * @return the lesser value of x or y
+/*! 
+ * \brief A binary functor to find the minimum of two items
+ * \param x, the first operand
+ * \param y, the second operand
+ * \return the lesser value of x or y
  */  
 template <class T>
-struct min : public std::binary_function<T,T,T>
+struct min 
 {
     T operator()(const T& x, const T& y) const
     { 
