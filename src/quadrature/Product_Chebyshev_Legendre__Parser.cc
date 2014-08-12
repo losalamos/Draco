@@ -34,12 +34,12 @@ SP<Quadrature> Product_Chebyshev_Legendre::parse(Token_Stream &tokens)
     // The second number is the number of azimuthal points on each level
     // corresponding to the Gauss-Legendre points
 
-    std::cout << " found sn order = " << sn_order << std::endl;
+    //std::cout << " found sn order = " << sn_order << std::endl;
 
     unsigned azimuthal_order = parse_positive_integer(tokens);
     tokens.check_semantics(azimuthal_order > 0, "order must be greater than zero");
 
-    std::cout << " found azimuthal order = " << azimuthal_order << std::endl;
+    //std::cout << " found azimuthal order = " << azimuthal_order << std::endl;
 
     bool has_axis_assignments;
     unsigned mu_axis, eta_axis;
