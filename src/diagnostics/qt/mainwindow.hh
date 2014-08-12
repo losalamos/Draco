@@ -1,5 +1,17 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   diagnostics/qt/mainwindow.hh
+ * \author Kelly Thompson
+ * \date   Monday, Aug 11, 2014, 17:05 pm
+ * \brief  Declarations for draco info main Qt window.
+ * \note   Copyright (C) 2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+#ifndef diagnostics_qt_mainwindow_hh
+#define diagnostics_qt_mainwindow_hh
 
 #include <QMainWindow>
 #include "diWidget.hh"
@@ -20,6 +32,13 @@ private slots:
     // None
 
 private:
+
+    // disable copy construction
+    MainWindow( MainWindow const & rhs);
+
+    // disable assignment
+    MainWindow & operator=( MainWindow const & rhs );
+    
     // Forms
     Ui::MainWindow *ui;
     
@@ -27,4 +46,8 @@ private:
     diWidget       *diw;
 };
 
-#endif // MAINWINDOW_H
+#endif // diagnostics_qt_mainwindow_hh
+
+//---------------------------------------------------------------------------//
+// end of diagnostics/qt/mainwindow.hh
+//---------------------------------------------------------------------------//

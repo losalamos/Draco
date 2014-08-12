@@ -1,12 +1,27 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   diagnostics/qt/diWidget.cc
+ * \author Kelly Thompson
+ * \date   Monday, Aug 11, 2014, 17:05 pm
+ * \brief  Implementation for draco info widget.
+ * \note   Copyright (C) 2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
 #include "diWidget.hh"
 #include "../draco_info.hh"
 
-diWidget::diWidget(QWidget *parent) :
-    QWidget(parent)
+diWidget::diWidget(QWidget *parent)
+    : QWidget(parent),
+      layout( new QGridLayout(this) ),
+      label1( NULL ),
+      pushbutton1( new QPushButton("&Ok") )
 {
-    layout = new QGridLayout(this);
+    // layout = new QGridLayout(this);
     
-    pushbutton1 = new QPushButton("&Ok");
+    // pushbutton1 = new QPushButton("&Ok");
     connect(pushbutton1,SIGNAL(clicked()),parent,SLOT(close()));
 
     // Get the release information from Lib_diagnostics
@@ -18,7 +33,8 @@ diWidget::diWidget(QWidget *parent) :
     layout->addWidget(label1,0,0);
     layout->addWidget(pushbutton1,1,0,Qt::AlignCenter);
     layout->columnStretch(0);
-
 }
 
-
+//---------------------------------------------------------------------------//
+// end of diagnostics/qt/diWidget.cc
+//---------------------------------------------------------------------------//
