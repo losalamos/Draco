@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
-#include <string.h>
 
 namespace rtt_parser 
 {
@@ -24,7 +23,6 @@ using namespace std;
 
 //---------------------------------------------------------------------------------------//
 /*! 
- * 
  * \param table Pointer to an array of keywords.
  *
  * \param count Length of the array of keywords pointed to by \c table.
@@ -37,11 +35,10 @@ using namespace std;
  * \note See documentation for \c Parse_Table::add for an explanation of the
  * low-level argument list.
  */
-
-Parse_Table::Parse_Table(Keyword const *const table,
-                         size_t const count,
+Parse_Table::Parse_Table(Keyword  const *const table,
+                         size_t   const count,
                          unsigned const flags)
-    : flags_(flags)
+    : vec(), flags_(flags)
 {
     Require(count == 0 || table != NULL);
     Require(count == 0 || std::find_if(table,
@@ -56,7 +53,6 @@ Parse_Table::Parse_Table(Keyword const *const table,
 
 //-------------------------------------------------------------------------------------//
 /*!
- *
  * \param table Array of keywords to be added to the table.
  *   
  * \param count Number of valid elements in the array of keywords.
@@ -68,7 +64,6 @@ Parse_Table::Parse_Table(Keyword const *const table,
  * tables as static C arrays.  This justifies a low-level interface in place
  * of, say, vector<Keyword>.
  */
-
 void Parse_Table::add(Keyword const *const table, size_t const count)
 {
     Require(count == 0  ||  table != NULL);
@@ -80,7 +75,7 @@ void Parse_Table::add(Keyword const *const table, size_t const count)
     {
 	Require(Is_Well_Formed_Keyword(table[i]));
 
-	push_back(table[i]);
+	vec.push_back(table[i]);
     }
 
     sort_table_();
@@ -90,21 +85,19 @@ void Parse_Table::add(Keyword const *const table, size_t const count)
 
 //-------------------------------------------------------------------------------------//
 /*!
- *
  * \param source Parse_Table whose keywords are to be added to this
  * Parse_Table. 
  *
  * \throw invalid_argument If the keyword table is ill-formed or
  * ambiguous.
  */
-
 void Parse_Table::add(Parse_Table const &source)
 {
     // Add the new keywords.
     
-    for (Parse_Table::const_iterator i=source.begin(); i!=source.end(); ++i)
+    for (auto i=source.vec.begin(); i!=source.vec.end(); ++i)
     {
-	push_back(*i);
+	vec.push_back(*i);
     }
 
     sort_table_();
@@ -116,18 +109,18 @@ void Parse_Table::add(Parse_Table const &source)
 /* private */
 void Parse_Table::sort_table_()
 {
-    if (size()==0) return;
+    if (vec.size()==0) return;
 
     // Sort the parse table, using a comparator predicate appropriate for the
     // selected parser flags.
 
     Keyword_Compare_ const comp(flags_);
-    std::sort(begin(), end(), comp);
+    std::sort(vec.begin(), vec.end(), comp);
 
     // Look for ambiguous keywords, and resolve the ambiguity, if possible.
     
-    std::vector<Keyword>::iterator i = begin();
-    while (i+1 != end())
+    std::vector<Keyword>::iterator i = vec.begin();
+    while (i+1 != vec.end())
     {
 	Check(i->moniker != NULL  &&  (i+1)->moniker != NULL);
 	if (!comp(i[0], i[1]))
@@ -143,7 +136,7 @@ void Parse_Table::sort_table_()
 		// copies keywords from two other parse tables, which
 		// in turn copy keywords from a fourth parse table.
 
-		erase(i+1);
+		vec.erase(i+1);
 	    }
 	    else
 	    {
@@ -174,7 +167,6 @@ void Parse_Table::sort_table_()
 
 //-------------------------------------------------------------------------------------//
 /*!
- *
  * Parse the stream of tokens until an END, EXIT, or ERROR token is 
  * reached.
  *
@@ -185,7 +177,6 @@ void Parse_Table::sort_table_()
  *
  * \throw rtt_dsxx::assertion If the keyword table is ambiguous.
  */
-
 Token Parse_Table::parse(Token_Stream &tokens) const
 {
     // The is_recovering flag is used during error recovery to suppress
@@ -242,9 +233,9 @@ Token Parse_Table::parse(Token_Stream &tokens) const
 	    // by the comp object.
 
 	    vector<Keyword>::const_iterator const match = 
-		lower_bound(begin(), end(), token, comp);
+		lower_bound(vec.begin(), vec.end(), token, comp);
 	    
-	    if (match == end() || 
+	    if (match == vec.end() || 
 		comp.kt_comparison(match->moniker, token.text().c_str()) != 0)
 	    {
 		// The token was not lexically equal to anything in the
@@ -280,7 +271,7 @@ Token Parse_Table::parse(Token_Stream &tokens) const
 		// keyword token may partially match more than one keyword in
 		// the keyword table.  Check for an ambiguous match:
 
-		if (match+1 != end() &&
+		if (match+1 != vec.end() &&
 		    comp.kt_comparison(match[1].moniker,
 				       token.text().c_str()) == 0)
 		{
@@ -369,7 +360,6 @@ Token Parse_Table::parse(Token_Stream &tokens) const
  * \param f
  * Flags to be set, ORed together.
  */
-
 void Parse_Table::set_flags(unsigned char const f)
 {
     flags_ = f;
@@ -393,7 +383,6 @@ void Parse_Table::set_flags(unsigned char const f)
  *
  * \param flags The flags controlling this comparator's operations.
  */
-
 Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
     : flags_(flags)
 {
@@ -425,7 +414,6 @@ Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
  *
  * \return <CODE>kk_comparison(k1.moniker, k2.moniker)<0 </CODE>
  */
-
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1, 
                                                Keyword const &k2) const
 {
@@ -578,7 +566,6 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
  * of one or more valid C++ identifiers separated by single spaces.</li>
  * <li>\c key.func must point to a parsing function.</li></ul>
  */
-
 bool Is_Well_Formed_Keyword(Keyword const &key)
 {
     using namespace std;
@@ -615,10 +602,10 @@ bool Parse_Table::check_class_invariants() const
     // The keyword table must be well-formed, sorted, and unambiguous.
 
     Keyword_Compare_ const comparator(flags_);
-    for (std::vector<Keyword>::const_iterator i=begin(); i!=end(); ++i)
+    for (std::vector<Keyword>::const_iterator i=vec.begin(); i!=vec.end(); ++i)
     {
 	if (!Is_Well_Formed_Keyword(i[0])) return false;
-	if (i+1!=end())
+	if (i+1!=vec.end())
 	{
 	    if (comparator.kk_comparison(i[0].moniker, i[1].moniker)>=0)
 		return false;
@@ -629,5 +616,5 @@ bool Parse_Table::check_class_invariants() const
 
 }  // rtt_parser
 //---------------------------------------------------------------------------------------//
-//                      end of Parse_Table.cc
+// end of Parse_Table.cc
 //---------------------------------------------------------------------------------------//

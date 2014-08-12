@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file Token_Stream.cc
+ * \file   Token_Stream.cc
  * \author Kent G. Budge
- * \brief Definitions of Token_Stream member functions.
- * \note   Copyright 2006-2014 Los Alamos National Security, LLC
+ * \brief  Definitions of Token_Stream member functions.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -31,11 +32,10 @@ Syntax_Error::Syntax_Error()
  *
  * \return <code>old lookahead()</code>
  */
-
 Token Token_Stream::shift()
 {    
     Token const Result = lookahead();
-    pop_front();
+    deq.pop_front();
     
     Ensure(check_class_invariants());
     // Ensure the cursor advances one place to the right, discarding the
@@ -57,16 +57,15 @@ Token Token_Stream::shift()
  * \return The token at the specified position relative to the
  * cursor.
  */
-
 Token Token_Stream::lookahead(unsigned const pos)
 {
-    while (size()<=pos)
+    while (deq.size()<=pos)
     {
-	push_back(fill_());
+	deq.push_back(fill_());
     }
 
     Ensure(check_class_invariants());
-    return operator[](pos);
+    return deq[pos];
 }
 
 //-----------------------------------------------------------------------//
@@ -75,10 +74,9 @@ Token Token_Stream::lookahead(unsigned const pos)
  * This function pushes the specified token onto the front of the token
  * stream, so that it is now the token in the lookahead(0) position.
  */
-
 void Token_Stream::pushback(Token const &token)
 {
-    push_front(token);
+    deq.push_front(token);
 
     Ensure(check_class_invariants());
     Ensure(lookahead()==token);
@@ -101,7 +99,6 @@ void Token_Stream::pushback(Token const &token)
  * \throw Syntax_Error This function never returns.  It always throws a
  * Syntax_Error exception to be handled by the parsing software.
  */
-
 void Token_Stream::report_syntax_error(Token const &token,
 				       string const &message)
 {
@@ -139,7 +136,6 @@ void Token_Stream::report_syntax_error(Token const &token,
  * \throw Syntax_Error This function never returns.  It always throws a
  * Syntax_Error exception to be handled by the parsing software.
  */
-
 void Token_Stream::report_syntax_error(string const &message)
 {
     try 
@@ -173,7 +169,6 @@ void Token_Stream::report_syntax_error(string const &message)
  * \param message
  * The message to be passed to the user.
  */
-
 void Token_Stream::report_semantic_error(Token const &token,
 					 string const &message)
 {
@@ -198,7 +193,6 @@ void Token_Stream::report_semantic_error(Token const &token,
  * \param message
  * The message to be passed to the user.
  */
-
 void Token_Stream::report_semantic_error(string const &message)
 {
     error_count_++;
@@ -222,7 +216,6 @@ void Token_Stream::report_semantic_error(string const &message)
  * \param message
  * The exception whose message is to be passed to the user.
  */
-
 void Token_Stream::report_semantic_error(exception const &message)
 {
     error_count_++;
@@ -238,16 +231,16 @@ void Token_Stream::report_semantic_error(exception const &message)
  * This function is normally called by its overriding version in children of
  * Token_Stream. It flushes the queues and resets the error count.
  */
-
 void Token_Stream::rewind()
 {
     error_count_ = 0;
-    clear();
+    deq.clear();
 
     Ensure(check_class_invariants());
 }
 
 } // rtt_parser
+
 //---------------------------------------------------------------------------//
-//                          end of Token_Stream.cc
+// end of Token_Stream.cc
 //---------------------------------------------------------------------------//

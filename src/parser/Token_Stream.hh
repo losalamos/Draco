@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*! 
- * \file Token_Stream.hh
+ * \file   Token_Stream.hh
  * \author Kent G. Budge
- * \brief Definition of class Token_Stream.
- * \note Copyright (C) 2006-2014 Los Alamos National Security, LLC
+ * \brief  Definition of class Token_Stream.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -103,7 +104,7 @@ class Syntax_Error : public std::runtime_error
  */
 
 class DLL_PUBLIC Token_Stream
-    : private std::deque<Token>
+//    : private std::deque<Token>
 {
   public:
 
@@ -213,7 +214,7 @@ class DLL_PUBLIC Token_Stream
      * false.
      */
     void check_semantics(bool const condition,
-                              char const *const message)
+                         char const *const message)
     {
         if (!condition)
             report_semantic_error(message);
@@ -260,6 +261,11 @@ class DLL_PUBLIC Token_Stream
     //! Number of errors reported to the stream since it was constructed or
     //! last rewound.
     unsigned error_count_;
+
+  private:
+
+    // DATA
+    std::deque<Token> deq;
 };
 
 //-----------------------------------------------------------------------//
@@ -267,9 +273,9 @@ class DLL_PUBLIC Token_Stream
  * Construct a Token_Stream and place the cursor at the start of the
  * stream.
  */
-
 inline Token_Stream::Token_Stream() 
-    : error_count_(0) 
+    : error_count_(0),
+      deq()
 {
     Ensure(check_class_invariants());
     Ensure(error_count() == 0);

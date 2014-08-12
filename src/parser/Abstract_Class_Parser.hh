@@ -33,17 +33,18 @@ using rtt_dsxx::SP;
  * allowing all such parsers to share the same keyword table and ensuring that
  * the keyword table is properly cleaned up when the program terminates.
  */
-
 class DLL_PUBLIC Abstract_Class_Parser_Base
 {
   protected:
 
     // TYPES
 
-    class DLL_PUBLIC c_string_vector : public vector<char *>
+    class DLL_PUBLIC c_string_vector 
     {
       public:
         ~c_string_vector();
+        c_string_vector(void) : data(0) {/* empty */}
+        vector<char *> data;
     };
 
     // provide a virtual destrcutor for the base class.
@@ -97,7 +98,6 @@ class DLL_PUBLIC Abstract_Class_Parser_Base
  * specifying a child class.
  */
 //===========================================================================//
-
 template< typename Abstract_Class,
           Parse_Table &get_parse_table(),
           SP<Abstract_Class> &get_parsed_object() >

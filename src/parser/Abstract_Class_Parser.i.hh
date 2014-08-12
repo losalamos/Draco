@@ -52,7 +52,7 @@ register_child(string const &keyword,
 
     char *cptr = new char[keyword.size()+1];
     std::strcpy(cptr, keyword.c_str());
-    keys_.push_back(cptr);
+    keys_.data.push_back(cptr);
 
     int const N = static_cast<int>(map_.size());
     map_.push_back(parse_function);

@@ -150,7 +150,7 @@ struct Keyword
  */
 
 class DLL_PUBLIC Parse_Table
-    : private std::vector<Keyword>
+//    : private std::vector<Keyword>
 {
   public:
 
@@ -167,15 +167,13 @@ class DLL_PUBLIC Parse_Table
     // CREATORS
     
     //! Create an empty Parse_Table.
-    Parse_Table()
-        : flags_(0)
-    {}
+    Parse_Table(void) : vec(0), flags_(0) {/* empty */}
 
     //! Construct a parse table with the specified keywords.
     Parse_Table(Keyword const *table, size_t count, unsigned flags=0);
 
     //! This class is meant to be heritable.
-    virtual ~Parse_Table(){}
+    virtual ~Parse_Table(void){/* empty */}
 
     // MANIPULATORS
 
@@ -185,14 +183,19 @@ class DLL_PUBLIC Parse_Table
     //! Add the keywords from another Parse_Table
     void add(Parse_Table const &);
 
-    using std::vector<Keyword>::reserve;
+    //! Request a change in capacity.
+    // using std::vector<Keyword>::reserve;
+    void reserve (std::vector<Keyword>::size_type n) { vec.reserve(n); }
 
     //! Set parser options.
     void set_flags(unsigned char);
 
+
     // ACCESSORS
-    
-    using std::vector<Keyword>::size;
+
+    //! Return the number of elements in the vector
+    // using std::vector<Keyword>::size;
+    std::vector<Keyword>::size_type size() const { return vec.size(); }
 
     //! Return the current parser options.
     unsigned char get_flags() const { return flags_; }
@@ -207,6 +210,7 @@ class DLL_PUBLIC Parse_Table
     
   private:
 
+    
     // TYPEDEFS AND ENUMERATIONS
 
     //-----------------------------------------------------------------------//
@@ -240,7 +244,8 @@ class DLL_PUBLIC Parse_Table
     void sort_table_();
 
     // DATA
-    
+
+    std::vector<Keyword> vec;
     unsigned char flags_;  //!< Option flags for this parse table.
 };
 

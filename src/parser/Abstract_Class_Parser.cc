@@ -20,10 +20,10 @@ DLL_PUBLIC Abstract_Class_Parser_Base::c_string_vector Abstract_Class_Parser_Bas
 //---------------------------------------------------------------------------//
 Abstract_Class_Parser_Base::c_string_vector::~c_string_vector()
 {
-    unsigned const n = size();
+    unsigned const n = data.size();
     for (unsigned i=0; i<n; ++i)
     {
-        delete[] operator[](i);
+        delete[] data[i];
     }
 }
 
