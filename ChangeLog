@@ -1,3 +1,197 @@
+2014-08-18  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_13_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/26
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_5_0,   http://rtt.lanl.gov/redmine/versions/24
+	  - Capsaicin-4_2_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 13.1.3    OpenMPI-1.6.5
+	                     Intel 14.0.2    OpenMPI-1.6.5
+	  CT/CI              Intel 13.1.3    Cray_MPICH2-7.0.1
+	                     Intel 14.0.2    Cray_MPICH2-7.0.1
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	  - 195 files changed, added or removed in 55 commits.
+	  - Require cmake/3.0.0+.
+	  - Remove SpinLock, Sync and NodeInfo from c4.
+	  - Eliminate inheritance from STL containers and remove use of
+  	    deprecated std::binary_function.
+
+	* Details per package:
+
+	Build System:
+	- Require the build system to use cmake/3.0 or later.
+	- For xlc and xlc++ compilers, add the option -qfloat=nomaf.  This
+	  disables the use of floating-point multiply-add instructions.
+	  According to the IBM xlc 12.1 compiler manual, setting
+	  -qfloat=maf (the default setting) should make floating point
+	  calculations faster and more accurate.  However, turning this
+	  feature on has the side effect of results not being exactly
+	  equivalent to those produced by other compilers.  Negative zero
+	  results may be produced.  Turning off the maf feature allows
+	  Jayenne tests to produce the same results as those produced by
+	  the same code compiled with gcc-4.7.2 and intel-14.0.2. This
+	  change allows debug versions of Jayenne to produce the same
+	  results on SQ for both gcc/4.7.2 and xlc 12.1. (#403)
+	- Fix a long standing bug in the toggle_compiler_flag macro.  The
+	  script was working fortuitously, but would have crashed if a
+	  compiler flag was provided that used an unsafe symbol for
+	  CMake's regex (e.g.: '+').  In fact, the macro did crash on SQ
+	  with cmake/3.0.0 and resulted in this fix.
+
+	Developer Environment:
+	- Provide example of using USE_PROCMON in the sample
+	  CMakeCache.txt.
+	- Provide a default developer .cshrc for Sequoia.  Install dotkit
+	  files (equivalent to LANL's module files) at
+	  /usr/gapps/jayenne/vendors/Modules that are loaded to provide
+	  access to numdiff, GSL, Random123 and compilers.
+	- Make Intel/14.0.2 the default compiler for ML/LU and similar
+	  machines.  This includes updating the default developer
+	  environment and the regression scripts.
+
+	c4:
+	- Provide a pause function in c4's Timer.  This can be used to
+	  pause execution for a set number of seconds.
+	- liminate the use of std:binary_function as this feature is
+	  deprecated in C++11.  It is actually a case of over
+	  specialization (#405)
+
+	ds++:
+	- Clean up unit tests that use Draco's UnitTest framework.  In
+	  particular move the standard #defines into UnitTest.hh.
+	- Add extern "C" signatures for is_big_endian and byte_swap_int,
+	  byte_swap_int64_t, and byte_swap_double.  These are used in
+	  Fortran-based Wedgehog tests. Add unit tests for these new
+	  functions by calling them from both C and Fortran. Demonstrate
+	  polymorphic Fortran interfaces wrapping polymorphic C++
+	  functions via non-polymorphic extern "C" functions.
+
+	mesh_element:
+	- Add HEXAGON_6 element to support AMR meshs.
+
+	parser:
+	- Modify the design of 3 classes to elminate inheritance from
+	  standard C++ containers.  I changed the IS-A relationship to a
+	  HAS-A (composition in place of inheritance).  This change was
+	  motivated by a deep desire to eliminate compiler warnings.
+	  However, after reading a bit on this topic it appears that the
+	  current advice agrees with the compiler warning message.  That
+	  is we should avoid inheriting from standard containers because
+	  the STL containers do not have virtual destructors. In our case,
+	  I believe we were careful to avoid cleanup issues in the derived
+	  classes -- however, changing the design to composition is
+	  encapsulated with these classes and does not impact other code.
+	  Also, this design change reduces the chance that we might not
+	  clean up adequately if these classes are extended in the
+	  future.
+
+	* Details for defects and features can be found at
+	  https://rtt.lanl.gov/redmine/isues/#.
+
+	* Corrected defects:
+	  Bug  #315 Code coverage for Capsaicin is broken.
+	  Task #396 Remove SpinLock, Sync and NodeInfo from c4
+	  Bug  #405 Remove deprecated std::binary_function
+
+	* New features:
+	  Support #366 Complete ASC offsite backup.
+	  Feature #388 Require cmake/3.0 or newer
+	  Feature #392 Upgrade CDash to version 2.2
+	  Feature #406 Eliminate inheritance from STL containers.
+
+	* Known Defects:
+	  Bug # 59 cdi_eospac design flaw
+	  Bug #315 Code coverage for Capsaicin is broken
+	  Bug #394 Intel 14.0.2 is unable to compile C++11 code if '-mmic' is specified.
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+73446: kellyt+kgt+107638
+47913: kgbudge
+10662: tme
+ 5970: bta
+ 5204: gaber
+ 5165: lowrie
+ 4028: mcghee
+ 3848: mwbuksas
+ 2184: warsa
+  984: wollaber
+  953: rsqrd
+  863: sethrj
+  435: talbotp
+  202: furnish
+  136: phenning
+  130: bergen
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             441          12047          21680          64520
+C/C++ Header                    338           7384          21492          19839
+Lisp                             14           1862           2649          12291
+CMake                           113           1860           4718           7345
+Python                           27           1227           1369           2237
+Bourne Again Shell               20            382            705           1329
+Bourne Shell                     14            265            625           1083
+CSS                               1            113             37            395
+C Shell                           3             49             94            254
+C                                 4             45            113            238
+Fortran 90                        3             45             80            172
+DOS Batch                         2             28             17             74
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            987          25354          53669         109904
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/rng/                    57 /    57 = 100%      22 /    22 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    43 /    43 = 100%      49 /    58 =  84%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+../source/src/viz/                    40 /    40 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/diagnostics/            14 /    14 = 100%      26 /    40 =  65%
+../source/src/cdi_eospac/             52 /    52 = 100%      67 /   132 =  50%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/parser/                277 /   281 =  98%    1110 /  1391 =  79%
+../source/src/ds++/                  319 /   324 =  98%     378 /   433 =  87%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/quadrature/            196 /   200 =  98%     509 /   657 =  77%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/c4/                    173 /   180 =  96%     518 /   574 =  90%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2056 /  2105 =  97%    4940 /  6186 =  79%
+
+
 2014-07-18  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Repository HEAD tagged for draco-6_12_1.  A few build system
@@ -128,7 +322,7 @@ Total                               2044 /  2104 =  97%    4934 /  6194 =  79%
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Jayenne-7_4_0,   http://coder/redmine/versions/20
+	  - Jayenne-7_4_0,   http://rtt.lanl.gov/redmine/versions/20
 	  - Capsaicin-4_0_0
 
 	* Platforms:
@@ -317,8 +511,8 @@ Total                               2039 /  2098 =  97%    4900 /  6142 =  79%
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Jayenne-7_3_1,   http://coder/redmine/versions/16
-	  - Capsaicin-3_8_1, http://coder/redmine/versions/21
+	  - Jayenne-7_3_1,   http://rtt.lanl.gov/redmine/versions/16
+	  - Capsaicin-3_8_1, http://rtt.lanl.gov/redmine/versions/21
 
 	* Corrected Defects (rtt.lanl.gov/redmine/issues)
 	  Bug #336 Bug in unit conversion k->keV.
@@ -330,8 +524,8 @@ Total                               2039 /  2098 =  97%    4900 /  6142 =  79%
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Jayenne-7_3_0,   http://coder/redmine/versions/16
-	  - Capsaicin-3_8_0, http://coder/redmine/versions/21
+	  - Jayenne-7_3_0,   http://rtt.lanl.gov/redmine/versions/16
+	  - Capsaicin-3_8_0, http://rtt.lanl.gov/redmine/versions/21
 
 	* Platforms:
 	  PI/ML/MP/MU/LU/TY  Intel 13.1.3    OpenMPI-1.6.3
@@ -476,7 +670,7 @@ Total                     2050 /  2097 =  97%    4901 /  6108 =  80%
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Capsaicin-3_7_0,  http://coder/redmine/versions/18
+	  - Capsaicin-3_7_0,  http://rtt.lanl.gov/redmine/versions/18
 
 	* Platforms:
 	  PI/ML/TY/LU    Intel 13.1.3    OpenMPI-1.6.3
@@ -661,8 +855,8 @@ Total                               2083 /  2144 =  97%    4957 /  6158 =  80%
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
-	  - Jayenne-7_2_0,    http://coder/redmine/versions/12
-	  - Capsaicin-3_6_0,  http://coder/redmine/versions/15
+	  - Jayenne-7_2_0,    http://rtt.lanl.gov/redmine/versions/12
+	  - Capsaicin-3_6_0,  http://rtt.lanl.gov/redmine/versions/15
 
 	* Platforms:
 	  PI/ML/TY/LU    Intel 13.1.3    OpenMPI-1.6.3
@@ -920,12 +1114,12 @@ Total                               2075 /  2138 =  97%    4941 /  6146 =  80%
 2013-08-19  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_7_0.  This is a minor Draco release.
-	  http://coder.lanl.gov/redmine/versions/6
+	  http://rtt.lanl.gov.lanl.gov/redmine/versions/6
 
 	* This release was required by Jayenne and Capsaicin.  It is
           linked to:
-	  - Jayenne-7_1_0,    http://coder/redmine/versions/9
-	  - Capsaicin-3_4_0,  http://coder/redmine/versions/8
+	  - Jayenne-7_1_0,    http://rtt.lanl.gov/redmine/versions/9
+	  - Capsaicin-3_4_0,  http://rtt.lanl.gov/redmine/versions/8
 
 	* Platforms:
 	  PI/ML/TY/LU    Intel 13.1.0    OpenMPI-1.6.3

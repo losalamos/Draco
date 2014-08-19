@@ -74,30 +74,40 @@ const std::string release()
 const std::string author_list()
 {
 
-// 73130: kellyt+kgt+107638
-// 47240: kgbudge
-// 10832: tme
+// 73446: kellyt+kgt+107638
+// 47913: kgbudge
+// 10662: tme
 // 5970: bta
-// 5234: gaber
-// 5166: lowrie
-// 4031: mcghee
-// 3867: mwbuksas
-// 2107: warsa
-// 1180: rsqrd
-// 987: wollaber
-// 863: sethrj
-// --- 500 lines ---    
-// 434: talbotp
-// 342: furnish
-// 135: phenning
-// 129: bergen
+// 5204: gaber
+// 5165: lowrie
+// 4028: mcghee
+// 3848: mwbuksas
+// 2184: warsa
+// 984: wollaber    
+// 953: rsqrd
+// 863: sethrj  
+// 435: talbotp
+// 202: furnish
+// 136: phenning
+// 130: bergen
+// --- 100 lines ---
+// 92: pahrens
+// 91: jhchang
+// 48: jdd
+// 47: batcho
+// 30: tmonster
+// 24: swmosher
+// 9: tkelley
+// 7: clevelam
+// 1: wawiesel
 
     std::stringstream alist;
 //            0         1         2         3         4         5         6         7
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
     alist << "    Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,\n"
           << "    Gabriel M. Rockefeller, Rob Lowrie, John McGhee, Mike W. Buksas,\n"
-          << "    James S. Warsa, Randy M. Roberts, Allan B. Wollaber, Seth R. Johnson.";
+          << "    James S. Warsa, Allan B. Wollaber, Randy M. Roberts, Seth R. Johnson,\n"
+          << "    Paul W. Talbot, Jeff Furnish, Paul J. Henning, Benjamin K. Bergen.";
     return alist.str();
 }
 

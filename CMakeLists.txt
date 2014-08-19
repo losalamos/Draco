@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -113,7 +113,7 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 12)
+set(DRACO_VERSION_MINOR 13)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )
