@@ -3,13 +3,13 @@
 #MSUB -l walltime=01:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_11_0/logs/release_ct_test.log
+#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_ct_test_intel14.log
 
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
 
-echo "Here we go..." > /usr/projects/draco/draco-6_11_0/logs/release_ct_test.log
+echo "Here we go..." > /usr/projects/draco/draco-6_13_0/logs/release_ct_test_intel14.log
 
 # Permissions - new files should be marked u+rwx,g+rwx,o+rx
 umask 0002
@@ -30,6 +30,7 @@ module unload PrgEnv-intel PrgEnv-pgi
 module unload cmake numdiff svn gsl
 module unload papi perftools
 module load PrgEnv-intel
+# module swap intel intel/13.1.3.192
 module unload xt-libsci xt-totalview 
 module load gsl/1.14 lapack/3.4.1
 module load cmake numdiff subversion emacs
@@ -41,18 +42,17 @@ export OMP_NUM_THREADS=8
 
 # Define your source and build information here.
 
-ddir="draco-6_11_0"
+ddir="draco-6_13_0"
 platform="ct"
-dmpi=mpich2
-df90=intel1313
-dcpp=intel1313
+dmpi=craympich2
+df90=intel1402
+dcpp=intel1402
 
 source_prefix="/usr/projects/draco/$ddir"
 build_prefix="/lscratch1/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
 install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 
 MAKE="make -j48"
-CONFIG_BASE="-DDRACO_VERSION_PATCH=1"
 CC=`which cc`
 CXX=`which CC`
 FC=`which ftn`

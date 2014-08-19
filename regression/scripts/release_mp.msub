@@ -3,7 +3,7 @@
 #MSUB -l walltime=04:00:00
 #MSUB -l nodes=1:ppn=8
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_11_0/logs/release_mp.log
+#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_mp_intel14.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -26,7 +26,7 @@ install_permissions="g+rwX,o-rwX"
 
 # environment (use draco modules)
 # Loading modules
-ddir=draco-6_11_0
+ddir=draco-6_13_0
 dirs="/usr/projects/draco/$ddir/source/draco/environment/Modules/hpc /usr/projects/draco/$ddir/source/draco/environment/Modules/tu-fe"
 for dir in $dirs; do 
   if test -z `echo $MODULEPATH | grep $dir`; then 
@@ -35,8 +35,8 @@ for dir in $dirs; do
   fi
 done
 module purge
-module load friendly-testing cmake/2.8.12 svn numdiff
-module load intel/14.0.2 openmpi/1.7.4
+module load friendly-testing cmake/3.0.0 svn numdiff
+module load intel/14.0.2 openmpi/1.6.5
 module load gsl/1.14 lapack/3.4.1 random123 eospac/v6.2.4beta.3
 module list
 
@@ -45,7 +45,7 @@ CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 # Define your source and build information here.
 
 platform=mp
-dmpi=openmpi174
+dmpi=openmpi165
 df90=intel1402
 dcpp=intel1402
 
