@@ -140,7 +140,7 @@ class SP
 
   public:
     //! Default constructor.
-    SP() : p(0), r(new SPref) { Ensure (r); Ensure (r->refs == 1); }
+    SP() : p(NULL), r(new SPref) { Ensure (r); Ensure (r->refs == 1); }
 
     // Explicit constructor for type T *.
     inline explicit SP(T *p_in);
@@ -183,10 +183,10 @@ class SP
     T* bp() const { return p; }
 
     //! Boolean conversion operator.
-    operator bool() const { return p != 0; }
+    operator bool() const { return p != NULL; }
 
     //! Operator not.
-    bool operator!() const { return p == 0; }
+    bool operator!() const { return p == NULL; }
 
     //! Equality operator for T*.
     bool operator==(const T *p_in) const { return p == p_in; }
