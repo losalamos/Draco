@@ -80,7 +80,7 @@ case $extra_params in
 coverage)
     echo "Coverage option selected."
     build_type=Coverage
-    run "module load bullseyecoverage/8.7.17"
+    run "module load bullseyecoverage"
     CXX=`which g++`
     CC=`which gcc`
     ;;
