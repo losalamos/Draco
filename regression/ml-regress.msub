@@ -8,6 +8,19 @@
 # The script starts here
 #----------------------------------------------------------------------#
 
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then eval $1; fi
+}
+
 # Sanity Check
 # ----------------------------------------
 if test "${subproj}x" == "x"; then
@@ -52,14 +65,6 @@ echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
 ulimit -a
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
 # Modules
 # ----------------------------------------
 result=`fn_exists module`
@@ -68,25 +73,21 @@ if test $result -eq 0; then
     echo 'module function is defined'
 else
     echo 'module function does not exist. defining a local function ...'
-    source /usr/share/Modules/init/bash
-    # module () 
-    # { 
-    #     eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
-    # }
+    run "source /usr/share/Modules/init/bash"
 fi
 
 # Use modules found in the draco directory
-module use ${regdir}/draco/environment/Modules/tu-fe
-module use ${regdir}/draco/environment/Modules/hpc
+run "module use ${regdir}/draco/environment/Modules/tu-fe"
+run "module use ${regdir}/draco/environment/Modules/hpc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
-module purge &> /dev/null
-module load friendly-testing 
-module load intel/14.0.2 openmpi/1.6.5
-module load gsl lapack
-module load trilinos SuperLU_DIST
-module load ParMetis ndi
-module load cmake numdiff svn random123 eospac
+run "module purge &> /dev/null"
+run "module load friendly-testing "
+run "module load intel/14.0.2 openmpi/1.6.5"
+run "module load gsl lapack"
+run "module load trilinos SuperLU_DIST"
+run "module load ParMetis ndi"
+run "module load cmake numdiff svn random123 eospac"
 comp=`basename $CXX`
 
 case $extra_params in
@@ -94,7 +95,7 @@ case $extra_params in
     # no-op
     ;;
 cuda)
-    module load cudatoolkit/5.0
+    run "module load cudatoolkit/5.0"
     comp="intel-cuda"
     ;;
 fulldiagnostics)
@@ -112,9 +113,11 @@ perfbench)
     comp="intel-perfbench"
     ;;
 pgi)
-    module unload eospac ParMetis trilinos SuperLU_DIST gsl
-    module unload lapack cudatoolkit openmpi intel
-    module load pgi/13.10 openmpi/1.6.3 gsl lapack
+    run "module unload eospac ParMetis trilinos SuperLU_DIST gsl"
+    run "module unload lapack cudatoolkit openmpi intel"
+    run "module load friendly-testing"
+    run "module load pgi/13.10 openmpi gsl lapack"
+    export TMPDIR=/usr/projects/jayenne/regress/tmp
     comp=`basename $CXX`
     ;;
 *)
@@ -124,7 +127,7 @@ pgi)
     exit 1
     ;;
 esac
-module list
+run "module list"
 
 # ----------------------------------------
 # Run the CTest script:
@@ -144,7 +147,10 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   base_dir=/scratch/kellyt/cdash/ml
+   base_dir=/usr/projects/jayenne/regress/cdash/ml
+   # Keep build and target dirs out of /usr/projects locations to
+   # prevent the .snapshots directory from filling up.
+   scratch_dir=/scratch/kellyt/cdash/ml
 fi
 
 echo " "
@@ -174,21 +180,41 @@ elif test "${subproj}" == asterisk; then
 fi
 
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+
 echo "ml-regress.msub: work_dir       = ${work_dir}"
+echo "ml-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
 if ! test "${setup_dirs}x" = "x"; then
-   if ! test -d ${work_dir}; then
-      /usr/bin/install -d ${work_dir}/source
-      /usr/bin/install -d ${work_dir}/build
-      /usr/bin/install -d ${work_dir}/target
-   else
-      if test -d ${work_dir}/target/lib; then
-         rm -rf ${work_dir}/target/*
-      fi
-      # keep the purger from removing the source files.
-      find ${work_dir}/source/ -exec touch {} \;
+   if ! test -d ${work_dir}/source; then
+      run "/usr/bin/install -d ${work_dir}/source"
    fi
+   # See notes above where scratch_dir is set concerning why these
+   # are soft links.
+   if ! test -d ${scratch_dir}/build; then
+      run "/usr/bin/install -d ${scratch_dir}/build"
+   fi
+   if ! test -d ${work_dir}/build; then
+      run "ln -s ${scratch_dir}/build ${work_dir}/build"
+   fi
+   if ! test -d ${scratch_dir}/target; then
+      run "/usr/bin/install -d ${scratch_dir}/target"
+   fi
+   if ! test -d ${work_dir}/target; then
+      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+   fi
+
+   # clean the installation directory to remove any files that might
+   # no longer be generated.
+   if test -d ${work_dir}/target/lib; then
+       run "rm -rf ${work_dir}/target/*"
+   fi
+   if test -f ${work_dir}/build/CMakeCache.txt; then
+       run "rm -rf ${work_dir}/build/*"
+   fi
+   # keep the purger from removing the source files.
+   # find ${work_dir}/source/ -exec touch {} \;
 fi
 
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}

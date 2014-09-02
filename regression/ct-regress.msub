@@ -7,6 +7,19 @@
 # The script starts here
 #----------------------------------------------------------------------#
 
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then eval $1; fi
+}
+
 # Sanity Check
 # ----------------------------------------
 if test "${subproj}x" == "x"; then
@@ -65,14 +78,6 @@ echo "Cielito regression: ${ctestparts} from ${machine}."
 echo "                    ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
 # Modules
 # ----------------------------------------
 result=`fn_exists module`
@@ -90,21 +95,20 @@ fi
 moddirs="Modules/hpc Modules/ct-fe"
 for dir in $moddirs; do 
   if test -z `echo $MODULEPATH | grep $dir`; then 
-    echo "module use ${regdir}/draco/environment/$dir"
-    module use ${regdir}/draco/environment/$dir
+    run "module use ${regdir}/draco/environment/$dir"
   fi
 done
 
-module unload PrgEnv-intel PrgEnv-pgi
-module unload cmake numdiff svn gsl
-module load PrgEnv-intel # also loads intel/13.X.X
-module swap intel intel/14.0.2.144
-module load gsl lapack
-module load cmake numdiff svn
-module load trilinos SuperLU_DIST 
-module load random123 
-module load eospac
-module load ParMetis ndi
+run "module unload PrgEnv-intel PrgEnv-pgi"
+run "module unload cmake numdiff svn gsl"
+run "module load PrgEnv-intel "
+# module swap intel intel/14.0.2.144
+run "module load gsl lapack"
+run "module load cmake numdiff svn"
+run "module load trilinos SuperLU_DIST "
+run "module load random123 "
+run "module load eospac"
+run "module load ParMetis ndi"
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
@@ -118,8 +122,8 @@ case $extra_params in
     ;;
 intel13)
     # use older intel/13
-    module unload intel
-    module load intel/13.0.1.117
+    run "module unload intel"
+    run "module load intel/13.0.1.117"
     comp="intel-13.0.1"
     ;;
 *)
@@ -129,8 +133,8 @@ intel13)
     exit 1
     ;;
 esac
-module unload xt-totalview xt-libsci 
-module list
+run "module unload xt-totalview xt-libsci "
+run "module list"
 
 # ----------------------------------------
 # Run the CTest script:
@@ -150,8 +154,13 @@ if test "${dashboard_type}x" == "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-    #base_dir=${regdir}/cdash/ct
-    base_dir=/lscratch1/kellyt/cdash/ct
+    base_dir=${regdir}/cdash/ct
+    # There is a bug with how CI/CT mount NFS files spaces (Gabe
+    # R. has an open ticket for this).  Basically, recursively
+    # deleting a directory with data and imediately recreating that
+    # structure will not work correctly (meta data issue?)  Thus,
+    # build and target directories will be in the scratch directory.
+    scratch_dir=/lscratch1/${USER}/cdash/ct
 fi
 
 echo " "
@@ -173,15 +182,6 @@ if test "${subproj}" == draco; then
 elif test "${subproj}" == jayenne; then
     script_dir=${regdir}/jayenne/regression
     script_name=Jayenne_Linux64.cmake
-elif test "${subproj}" == clubimc; then
-    script_dir=${regdir}/jayenne/regression
-    script_name=ClubIMC_Linux64.cmake
-elif test "${subproj}" == wedgehog; then
-    script_dir=${regdir}/jayenne/regression
-    script_name=Wedgehog_Linux64.cmake
-elif test "${subproj}" == milagro; then
-    script_dir=${regdir}/jayenne/regression
-    script_name=Milagro_Linux64.cmake
 elif test "${subproj}" == capsaicin; then
     script_dir=${regdir}/capsaicin/scripts
     script_name=Capsaicin_Linux64.cmake
@@ -191,20 +191,35 @@ elif test "${subproj}" == asterisk; then
 fi
 
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 echo "ct-regress.msub: work_dir       = ${work_dir}"
+echo "ct-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
 if test "${ctestparts}" = "Configure,Build"; then
-   if ! test -d ${work_dir}; then
-      /usr/bin/install -d ${work_dir}/source
-      /usr/bin/install -d ${work_dir}/build
-      /usr/bin/install -d ${work_dir}/target
-   else
-      if test -d ${work_dir}/target/lib; then
-         rm -rf ${work_dir}/target/*
-      fi
-      # keep the purger from removing the source files.
-      find ${work_dir}/source/ -exec touch {} \;
+   if ! test -d ${work_dir}/source; then
+      run "/usr/bin/install -d ${work_dir}/source"
    fi
+   # See notes above where scratch_dir is set concerning why these
+   # are soft links.
+   if ! test -d ${scratch_dir}/build; then
+      run "/usr/bin/install -d ${scratch_dir}/build"
+   fi
+   if ! test -d ${work_dir}/build; then
+      run "ln -s ${scratch_dir}/build ${work_dir}/build"
+   fi
+   if ! test -d ${scratch_dir}/target; then
+      run "/usr/bin/install -d ${scratch_dir}/target"
+   fi
+   if ! test -d ${work_dir}/target; then
+      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+   fi
+
+   # clean the installation directory to remove any files that might
+   # no longer be generated.
+   if test -d ${work_dir}/target/lib; then
+       run "rm -rf ${work_dir}/target/*"
+   fi
+
 fi
 
 echo "--------------------------------------------------------------------------------"

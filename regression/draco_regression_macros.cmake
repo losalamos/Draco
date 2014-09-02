@@ -15,6 +15,35 @@ set( drm_verbose ON )
 
 # Call this script from regress/Draco_*.cmake
 
+##---------------------------------------------------------------------------------------##
+## Testing parallelism:
+## Use the result of this command in the main ctest script like this:
+##     find_num_procs_avail_for_running_tests( num_test_procs )
+##     set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${num_test_procs})
+## Find the number of processors that can be used for testing.
+##---------------------------------------------------------------------------------------##
+macro( find_num_procs_avail_for_running_tests num_test_procs)
+
+  # Default value is 1
+  set( num_test_procs 1 )
+
+  # If this job is running under Torque (msub script), use the
+  # environment variable PBS_NP or SLURM_NPROCS
+  if( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
+    set( num_test_procs $ENV{PBS_NP} )
+  elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
+    set( num_test_procs $ENV{SLURM_NPROCS} )
+  endif()
+
+  # If this is not a known batch system, the attempt to set values
+  # according to machine name:
+  if( ${num_test_procs} EQUAL 1 )
+    include(ProcessorCount)
+    ProcessorCount(num_test_procs)
+  endif()
+
+endmacro()
+
 # ------------------------------------------------------------
 # Defaults (override with optional arguments)
 # ------------------------------------------------------------
@@ -100,13 +129,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
   set( CTEST_DROP_SITE_CDASH TRUE )
   set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF CURLOPT_SSL_VERIFYHOST_OFF )
 
-
-  if( WIN32) 
-     set( MPIEXEC_MAX_NUMPROCS 4 CACHE STRING  "Number of cores on the local machine." )
-  else()
-     set( MPIEXEC_MAX_NUMPROCS 1 CACHE STRING  "Number of cores on the local machine." )
-  endif()
-
   if( EXISTS "$ENV{VENDOR_DIR}" )
     file( TO_CMAKE_PATH $ENV{VENDOR_DIR} VENDOR_DIR )
   endif()
@@ -128,8 +150,33 @@ win32$ set work_dir=c:/full/path/to/work_dir
    # The default timeout is 10 min, change this to 30 min.
    set( CTEST_TEST_TIMEOUT "1800" ) # seconds
 
-  # Echo settings
-  if( ${drm_verbose} )  
+   # Parallelism for the regression:
+   # - Assume that the compile phase done on the same
+   #   platform/partition as the configure phase.  Query the system
+   #   using ProcessorCount to find out how many cores we can use.
+   include(ProcessorCount)
+   ProcessorCount(num_compile_procs)
+   if(NOT num_compile_procs EQUAL 0)
+     set(CTEST_BUILD_FLAGS -j${num_compile_procs})
+     if( "${sitename}" STREQUAL "Cielito" )
+       # We compile on the front end for this machine. Since we don't
+       # know the actual load apriori, we use the -l option to limit
+       # the total load on the machine.  For CT, my experience shows
+       # that 'make -l N' actually produces a machine load ~ 1.5*N, so
+       # we will specify the max load to be half of the total number
+       # of procs.
+       math(EXPR num_compile_procs "${num_compile_procs} / 2" ) 
+       set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
+     endif()
+   endif()
+   
+   # Testing parallelism
+   # - Call the macro
+   #   find_num_procs_avail_for_running_tests(num_test_procs) from the
+   #   each projects ctest script (Draco_Linux64.ctest). 
+   
+   # Echo settings
+   if( ${drm_verbose} )  
      message("
 ARGV     = ${ARGV}
 
@@ -152,6 +199,8 @@ CTEST_DROP_SITE           = ${CTEST_DROP_SITE}
 CTEST_DROP_LOCATION       = ${CTEST_DROP_LOCATION}
 CTEST_DROP_SITE_CDASH     = ${CTEST_DROP_SITE_CDASH}
 CTEST_CURL_OPTIONS        = ${CTEST_CURL_OPTIONS}
+CTEST_BUILD_FLAGS         = ${CTEST_BUILD_FLAGS}
+num_compile_procs         = ${num_compile_procs}
 VENDOR_DIR                = ${VENDOR_DIR}
 ")
   endif()
@@ -273,27 +322,27 @@ macro( parse_args )
   endif()
   
   # For Experimental builds, use launchers and parallel builds.
-  if( ${CTEST_SCRIPT_ARG} MATCHES Experimental )
-     if( UNIX )
-        if( EXISTS "/proc/cpuinfo" )
-           file( READ "/proc/cpuinfo" cpuinfo )
-           # convert one big string into a set of strings, one per line
-           string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
-           set( proc_ids "" )
-# consider using:
-# include(ProcessorCount)
-# ProcessorCount(DRACO_NUM_CORES)
-           foreach( line ${cpuinfo} )
-              if( ${line} MATCHES "processor" )
-                 list( APPEND proc_ids ${line} )
-              endif()
-           endforeach()
-           list( LENGTH proc_ids DRACO_NUM_CORES )
-           set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
-              "Number of cores on the local machine." )
-        endif()
-     endif()
-  endif()
+#   if( ${CTEST_SCRIPT_ARG} MATCHES Experimental )
+#      if( UNIX )
+#         if( EXISTS "/proc/cpuinfo" )
+#            file( READ "/proc/cpuinfo" cpuinfo )
+#            # convert one big string into a set of strings, one per line
+#            string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
+#            set( proc_ids "" )
+# # consider using:
+# # include(ProcessorCount)
+# # ProcessorCount(DRACO_NUM_CORES)
+#            foreach( line ${cpuinfo} )
+#               if( ${line} MATCHES "processor" )
+#                  list( APPEND proc_ids ${line} )
+#               endif()
+#            endforeach()
+#            list( LENGTH proc_ids DRACO_NUM_CORES )
+#            set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
+#               "Number of cores on the local machine." )
+#         endif()
+#      endif()
+#   endif()
 
   if( ${drm_verbose} )
     message("
@@ -304,8 +353,8 @@ compiler_version            = ${compiler_version}
 CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
-MPIEXEC_MAX_NUMPROCS        = ${MPIEXEC_MAX_NUMPROCS}
 ")
+# MPIEXEC_MAX_NUMPROCS        = ${MPIEXEC_MAX_NUMPROCS}
   endif()
 endmacro( parse_args )
 

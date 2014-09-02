@@ -181,11 +181,18 @@ pgi)
     projects="draco jayenne"
     ;;
 *)
-    #projects="draco capsaicin clubimc wedgehog milagro asterisk"
     projects="draco capsaicin jayenne asterisk"
+    # projects="jayenne"
+    # projects="draco"
     epdash=""
     ;;
 esac
+
+# case ${host} in
+# ct-*)
+#     projects="draco"
+#     ;;
+# esac
 
 # The job launch logic spawns a job for each project immediately, but
 # the *-job-launch.sh script will spin until all dependencies (jobids)

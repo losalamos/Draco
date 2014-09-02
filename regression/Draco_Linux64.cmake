@@ -68,12 +68,12 @@ message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
 if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
-  if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
-    # Empty the binary directory and recreate the CMakeCache.txt
-    message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
-    ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-    file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
-  endif()
+  # if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+  #   # Empty the binary directory and recreate the CMakeCache.txt
+  #   message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
+  #   ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+  # endif()
+  file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 endif()
 
 # Start
@@ -127,8 +127,9 @@ endif()
 
 # Test
 if( "${CTEST_TEST}" STREQUAL "ON" )
-   message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-   ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} 
+   find_num_procs_avail_for_running_tests(num_test_procs)
+   message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
+   ctest_test( PARALLEL_LEVEL ${num_test_procs} 
                SCHEDULE_RANDOM ON 
                # INCLUDE_LABEL <LABEL>
    ) 
