@@ -1,0 +1,14 @@
+# crontab for darwin
+
+01 22 * * 0-6 /projects/opt/draco/regress/draco/regression/update_regression_scripts.sh &> /projects/opt/draco/regress/logs/update_regression_scripts.log
+
+# 01 01 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug &> /home/regress/logs/ccscs-Debug-master.log
+
+# |    |    |    |    |   |
+# |    |    |    |    |   +- command 
+# |    |    |    |    +----- day of week (0 - 6) (Sunday=0)
+# |    |    |    +---------- month (1 - 12)
+# |    |    +--------------- day of month (1 - 31)
+# |    +-------------------- hour (0 - 23)
+# +------------------------- min (0 - 59)
+#
