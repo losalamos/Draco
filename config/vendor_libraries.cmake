@@ -253,22 +253,26 @@ macro( setupMPILibrariesUnix )
          #   socket 0, then rank 1 onto socket 1, etc.)
 
          # --bind-to-core added in OpenMPI-1.4 
+
+         message("MPI Version = ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+           message( "MPI Version < 1.7" )
            set( MPIEXEC_OMP_POSTFLAGS 
              -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
              CACHE STRING "extra mpirun flags (list)." FORCE )
            set( MPIEXEC_OMP_POSTFLAGS_STRING 
              "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
              CACHE STRING "extra mpirun flags (list)." FORCE)
-        else()
-           # Version 1.6 or 1.8 ?????
-           # set( MPIEXEC_OMP_POSTFLAGS 
-           #   -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
-           #   CACHE STRING "extra mpirun flags (list)." FORCE )
-           # set( MPIEXEC_OMP_POSTFLAGS_STRING 
-           #   "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
-           #   CACHE STRING "extra mpirun flags (list)." FORCE)
- 
+         elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
+           message( "MPI Version > 1.7" )
+           set( MPIEXEC_OMP_POSTFLAGS 
+             -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
+             CACHE STRING "extra mpirun flags (list)." FORCE )
+           set( MPIEXEC_OMP_POSTFLAGS_STRING 
+             "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
+             CACHE STRING "extra mpirun flags (list)." FORCE)
+        else() 
+          message( "MPI Version = 1.7" )
           # Version 1.7.4
            set( MPIEXEC_OMP_POSTFLAGS 
              -bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}
