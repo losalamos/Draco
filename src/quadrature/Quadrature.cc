@@ -358,7 +358,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                  quadrature_class(),
                                                  number_of_levels(),
                                                  moment_expansion_order,
-                                                 1,
+                                                 GQ1,
                                                  include_extra_directions,
                                                  ordering);
             break;
@@ -370,7 +370,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                  quadrature_class(),
                                                  number_of_levels(),
                                                  moment_expansion_order,
-                                                 1,
+                                                 GQ2,
                                                  include_extra_directions,
                                                  ordering);
             break;
@@ -409,6 +409,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
 {
     Require(dimension>0 && dimension<4);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
+    Require(qim == SN || qim == GQ1 || qim == GQ2 || qim == GQF);
     
     vector<Ordinate> ordinates = create_ordinates(dimension,
                                                   geometry,
@@ -417,55 +418,23 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                   include_extra_directions);
     
     SP<Ordinate_Space> Result;
-    switch (qim)
-    {
-        case SN:
-            Result = new Sn_Ordinate_Space(dimension,
-                                           geometry,
-                                           ordinates,
-                                           moment_expansion_order,
-                                           include_extra_directions,
-                                           ordering);
-            break;
-
-        case GQ1:
-            Result = new Galerkin_Ordinate_Space(dimension,
-                                                 geometry,
-                                                 ordinates,
-                                                 quadrature_class(),
-                                                 number_of_levels(),
-                                                 moment_expansion_order,
-                                                 1,
-                                                 include_extra_directions,
-                                                 ordering);
-            break;
-
-        case GQ2:
-            Result = new Galerkin_Ordinate_Space(dimension,
-                                                 geometry,
-                                                 ordinates,
-                                                 quadrature_class(),
-                                                 number_of_levels(),
-                                                 moment_expansion_order,
-                                                 2,
-                                                 include_extra_directions,
-                                                 ordering);
-
-        case GQF:
-            Result = new Galerkin_Ordinate_Space(dimension,
-                                                 geometry,
-                                                 ordinates,
-                                                 quadrature_class(),
-                                                 number_of_levels(),
-                                                 moment_expansion_order,
-                                                 3,
-                                                 include_extra_directions,
-                                                 ordering);
-            break;
-
-        default:
-            Insist(false, "bad case");
-    }
+    if (qim == SN)
+        Result = new Sn_Ordinate_Space(dimension,
+                                       geometry,
+                                       ordinates,
+                                       moment_expansion_order,
+                                       include_extra_directions,
+                                       ordering);
+    else
+        Result = new Galerkin_Ordinate_Space(dimension,
+                                             geometry,
+                                             ordinates,
+                                             quadrature_class(),
+                                             number_of_levels(),
+                                             moment_expansion_order,
+                                             qim,
+                                             include_extra_directions,
+                                             ordering);
 
     return Result;
 }

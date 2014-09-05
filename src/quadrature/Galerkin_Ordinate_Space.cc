@@ -209,7 +209,7 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
                                                   Quadrature_Class quadrature_class,
                                                   unsigned sn_order,
                                                   unsigned const  expansion_order,
-                                                  unsigned const method,
+                                                  QIM const method,
                                                   bool const  extra_starting_directions,
                                                   Ordering const ordering)
     : Ordinate_Space(dimension,
@@ -225,6 +225,7 @@ Galerkin_Ordinate_Space::Galerkin_Ordinate_Space( unsigned const  dimension,
     Require(dimension>0 && dimension<4);
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);
     Require(sn_order>0 && sn_order%2==0);
+    Require(method_ == GQ1 || method_ == GQ2 || method_ == GQF);
 
     // May be relaxed in the future
     Require(expansion_order <= sn_order);  
@@ -251,14 +252,8 @@ bool Galerkin_Ordinate_Space::check_class_invariants() const
 //---------------------------------------------------------------------------------------//
 QIM Galerkin_Ordinate_Space::quadrature_interpolation_model() const
 {
-    QIM result=GQ1;
-
-    if (method_ == 2)
-        result = GQ2;
-    else if (method_ != 1)
-        Insist(false, "Could not identify the particular Galerkin Quadrature method specified."); 
-
-    return result;
+    Check(method_ == GQ1 || method_ == GQ2 || method_ == GQF);
+    return method_;
 }
 
 
