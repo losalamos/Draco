@@ -595,11 +595,10 @@ macro(process_cc_or_da)
             message( "Generating code coverage log file: ${CTEST_BINARY_DIRECTORY}/covdir.log
 
 cd ${CTEST_BINARY_DIRECTORY}
-/ccs/codes/radtran/vendors/BullseyeCoverage-8.7.17/bin/covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
+covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
             execute_process(
               COMMAND
-              /ccs/codes/radtran/vendors/BullseyeCoverage-8.7.17/bin/covdir
-              -o ${CTEST_BINARY_DIRECTORY}/covdir.log
+              covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log
               WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
               )
             list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
