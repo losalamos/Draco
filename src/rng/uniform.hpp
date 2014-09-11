@@ -197,7 +197,7 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
     typedef typename make_unsigned<Itype>::type Utype;
     R123_CONSTEXPR int excess = std::numeric_limits<Utype>::digits - std::numeric_limits<Ftype>::digits;
     if(excess>=0){
-        R123_CONSTEXPR int ex_nowarn = excess;
+        R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
         R123_CONSTEXPR Ftype factor = Ftype(1.)/(Ftype(1.) + ((maxTvalue<Utype>()>>ex_nowarn)));
         return (1 | (Utype(in)>>ex_nowarn)) * factor;
     }else
