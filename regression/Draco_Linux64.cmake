@@ -127,12 +127,16 @@ endif()
 
 # Test
 if( "${CTEST_TEST}" STREQUAL "ON" )
-   find_num_procs_avail_for_running_tests(num_test_procs)
-   message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
-   ctest_test( PARALLEL_LEVEL ${num_test_procs} 
-               SCHEDULE_RANDOM ON 
-               # INCLUDE_LABEL <LABEL>
-   ) 
+   if(ENABLE_C_CODECOVERAGE)
+     message( "ctest_test( SCHEDULE_RANDOM ON )" )
+     ctest_test( SCHEDULE_RANDOM ON )
+   else()
+     find_num_procs_avail_for_running_tests(num_test_procs)
+     message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
+     ctest_test( PARALLEL_LEVEL ${num_test_procs} 
+                 SCHEDULE_RANDOM ON 
+                 # INCLUDE_LABEL <LABEL>  ) 
+   endif()
 
    # Process code coverage (bullseye) or dynamic analysis (valgrind)
    message("Processing code coverage or dynamic analysis")

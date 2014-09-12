@@ -169,6 +169,11 @@ win32$ set work_dir=c:/full/path/to/work_dir
        set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
      endif()
    endif()
+   if(ENABLE_C_CODECOVERAGE)
+     set( num_compile_procs 1 )
+     set(CTEST_BUILD_FLAGS -j${num_compile_procs})
+   endif()
+
    
    # Testing parallelism
    # - Call the macro
