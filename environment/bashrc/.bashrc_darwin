@@ -21,10 +21,11 @@ if test -n "$MODULESHOME"; then
     if test -d ${DRACO_SRC_DIR}/environment/Modules/darwin; then
         module use ${DRACO_SRC_DIR}/environment/Modules/darwin
         module unload compilers mpi cmake
-        module load cmake/3.0.0 compilers/gcc/4.7.2
-        module load mpi/openmpi-1.6.4-gcc.4.7.2 other/emacs-24.3
+        module load compilers/intel/15.0.0 mpi/openmpi-1.8.2-intel_15.0.0
+        module load cmake/3.0.0 other/emacs-24.3
         module load other/gnuplot-4.6.1 python/2.7.3 totalview/8.11.0-2
         module load numdiff gsl eospac random123 lapack/3.4.1
+        # module load compilers/gcc/4.7.2 mpi/openmpi-1.6.4-gcc.4.7.2 
     fi
 fi
 
