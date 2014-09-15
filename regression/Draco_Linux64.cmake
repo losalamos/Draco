@@ -135,7 +135,8 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
      message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
      ctest_test( PARALLEL_LEVEL ${num_test_procs} 
                  SCHEDULE_RANDOM ON 
-                 # INCLUDE_LABEL <LABEL>  ) 
+                 # INCLUDE_LABEL <LABEL>
+                 ) 
    endif()
 
    # Process code coverage (bullseye) or dynamic analysis (valgrind)
