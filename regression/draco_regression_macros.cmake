@@ -89,6 +89,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
      set( sitename "Cielito" )
   elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
      set( sitename "Moonlight" )
+  elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-login")
+     set( sitename "Darwin" )
   endif()
 #  message( "sitename = ${sitename}")
   set( CTEST_SITE ${sitename} )
@@ -256,6 +258,7 @@ macro( parse_args )
   endif()
   
   # refine compiler short name.
+  set(USE_CUDA OFF)
   if( $ENV{CXX} MATCHES "pgCC" )
      set( compiler_short_name "pgi" )
   elseif($ENV{CXX} MATCHES "icpc" )
@@ -264,6 +267,7 @@ macro( parse_args )
            compiler_version ${work_dir} )
      elseif( ${work_dir} MATCHES ".*cuda.*" )
         set( compiler_version "cuda" )
+        set(USE_CUDA ON)
      elseif( ${work_dir} MATCHES ".*fulldiagnostics.*" )
         set( compiler_version "fulldiagnostics" )
         set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
@@ -471,9 +475,12 @@ macro( set_svn_command svnpath )
          set( CTEST_CVS_CHECKOUT
             "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
          message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
-      elseif( EXISTS /usr/projects/jayenne/regress/svn )
+      elseif( EXISTS /usr/projects/jayenne/regress/svn ) # HPC machines (ML, CT)
          set( CTEST_CVS_CHECKOUT
             "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
+      elseif( EXISTS /projects/opt/draco/regress/svn ) # CCS-7's Darwin
+         set( CTEST_CVS_CHECKOUT
+            "${CTEST_CVS_COMMAND} checkout file:///projects/opt/draco/regress/svn/${svnpath} source" )
       else()
          set( CTEST_CVS_CHECKOUT
             "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
