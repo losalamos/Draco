@@ -96,6 +96,11 @@ ccscs[0-9])
        export regdir=/home/regress
     fi
     ;;
+darwin*)
+    machine_name_long="Linux64 on CCS Darwin cluster"
+    machine_name_short=darwin
+    export regdir=/projects/opt/draco/regress
+    ;;
 *)
     echo "FATAL ERROR: I don't know how to run regression on host = ${host}."
     print_use
@@ -181,9 +186,9 @@ pgi)
     projects="draco jayenne"
     ;;
 *)
-    projects="draco capsaicin jayenne asterisk"
+    # projects="draco capsaicin jayenne asterisk"
     # projects="jayenne"
-    # projects="draco"
+    projects="draco jayenne capsaicin"
     epdash=""
     ;;
 esac

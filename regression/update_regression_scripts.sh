@@ -3,19 +3,8 @@
 umask 0002
 
 target="`uname -n | sed -e s/[.].*//`"
+MYHOSTNAME="`uname -n`"
 arch=`uname -m`
-
-# Ensure that the permissions are correct
-case ${target} in
-darwin* | cn[0-9]*)
-   SVN=/projects/opt/subversion/1.7.14/bin/svn
-   REGDIR=/projects/opt/draco/regress
-   ;;
-*)
-   SVN=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn
-   REGDIR=/home/regress
-   ;;
-esac
 
 # Helper function
 run () {
@@ -23,6 +12,53 @@ run () {
     if ! [ $dry_run ]; then eval $1; fi
 }
 
+# Ensure that the permissions are correct
+case ${target} in
+darwin* | cn[0-9]*)
+   /projects/opt/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+      source $HOME/.keychain/$MYHOSTNAME-sh
+   fi
+   SVN=/projects/opt/subversion/1.7.14/bin/svn
+   REGDIR=/projects/opt/draco/regress
+
+   svnroot=/projects/opt/draco/regress/svn
+   if ! test -d; then
+      echo "*** SVN repository not found ***"
+      exit 1
+      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
+      # mkdir -p ${svnroot}; cd ${svnroot}
+      # svnadmin create ${svnroot}/jayenne
+      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
+      # cd jayenne/hooks
+      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
+      # vi pre-commit; comment out all code and add...
+      #if ! test `whoami` = 'kellyt'; then
+      #echo "This is a read only repository.  The real SVN repository is"
+      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
+      #exit 1
+      #fi
+      #exit 0
+      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
+      #    pre-revprop-change
+      # vi pre-revprop-change --> comment out all code.
+      # cd $svnroot
+      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
+      # svnsync sync file:///${svnroot}/jayenne
+   fi
+
+   run "svnsync --non-interactive sync file:///${svnroot}/draco"
+   run "svnsync --non-interactive sync file:///${svnroot}/jayenne"
+   run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+   # run "svnsync --non-interactive sync file:///${svnroot}/asterisk"
+   ;;
+*)
+   SVN=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn
+   REGDIR=/home/regress
+   ;;
+esac
+
+# Update main regression scripts
 run "cd ${REGDIR}/draco/config; ${SVN} update"
 run "cd ${REGDIR}/draco/regression; ${SVN} update"
 run "cd ${REGDIR}/draco/environment; ${SVN} update"
