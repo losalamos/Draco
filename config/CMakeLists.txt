@@ -24,6 +24,7 @@ set( CMake_src
    dracoVersion.cmake
    parse_arguments.cmake
    platform_checks.cmake
+   setupMPI.cmake
    unix-g++.cmake
    unix-gfortran.cmake
    unix-ifort.cmake
