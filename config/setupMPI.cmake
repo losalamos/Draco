@@ -95,16 +95,19 @@ macro( setupMPILibrariesUnix )
       message(STATUS "Looking for MPI...")
 
       # Preserve data that may already be set.
+      if( DEFINED ENV{MPIEXEC} )
+        set( MPIEXEC $ENV{MPIEXEC} )
+      endif()
       if( DEFINED MPIEXEC )
-         set( MPIEXEC ${MPIEXEC} CACHE FILEPATH "Executable for running MPI programs." )
+        set( MPIEXEC ${MPIEXEC} CACHE FILEPATH "Executable for running MPI programs." )
       endif()
       if( DEFINED MPIEXEC_MAX_NUMPROCS )
-         set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
-            "Maximum number of processors available to run MPI applications.")
+        set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
+          "Maximum number of processors available to run MPI applications.")
       endif()
       if( DEFINED MPIEXEC_NUMPROC_FLAG )
-         set( MPIEXEC_NUMPROC_FLAG ${MPIEXEC_NUMPROC_FLAG} CACHE
-            STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
+        set( MPIEXEC_NUMPROC_FLAG ${MPIEXEC_NUMPROC_FLAG} CACHE
+          STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
       endif()
 
       # Before calling find_package(MPI), if CMAKE_<lang>_COMPILER is
@@ -134,15 +137,6 @@ macro( setupMPILibrariesUnix )
       if( "${compiler_wo_path}" MATCHES "mpi" )
          set( MPI_Fortran_COMPILER ${CMAKE_Fortran_COMPILER} )
          set( MPI_Fortran_NO_INTERROGATE ${CMAKE_Fortran_COMPILER} )
-      endif()
-
-      # Intel MPI does not play nice with FindMPI.cmake.  Hijack the
-      # logic here:  
-
-      # First attempt to find mpi
-      if( EXISTS $ENV{MPIEXEC} )
-        set( MPIEXEC $ENV{MPIEXEC} CACHE FILEPATH "Executable for running MPI programs" FORCE)
-        message( "set( MPIEXEC $ENV{MPIEXEC} CACHE FILEPATH \"Executable for running MPI programs\" FORCE)")
       endif()
 
       # Call the standard CMake FindMPI macro.
