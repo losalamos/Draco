@@ -196,12 +196,32 @@ template <typename Ftype, typename Itype>
 R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
     typedef typename make_unsigned<Itype>::type Utype;
     R123_CONSTEXPR int excess = std::numeric_limits<Utype>::digits - std::numeric_limits<Ftype>::digits;
-    if(excess>=0){
+    if(excess>=0)
+    {
+
+// 2014-09-26 KT - Suppress warnings for the following expressions (see https://rtt.lanl.gov/redmine/issues/416)
+//
+// Basically, GCC under BullseyeCoverage issues the following warning every time this file is included:
+//         
+// Counter_RNG.hh:124:65:   required from here
+// uniform.hpp:200:48: warning: second operand of conditional expression has no effect [-Wunused-value]
+//         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
+//
+// Unfortunately, if this expression is simplified (see r7628) some compilers will not compile the code because the RHS of the
+// assignment may contain values that are not known at comile time (not constexpr).  We don't want to spend to much time debugging
+// this issue because the code is essentially vendor owned (Random123).
+        
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-value"
         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
+#pragma GCC diagnostic pop
         R123_CONSTEXPR Ftype factor = Ftype(1.)/(Ftype(1.) + ((maxTvalue<Utype>()>>ex_nowarn)));
         return (1 | (Utype(in)>>ex_nowarn)) * factor;
-    }else
+    }
+    else
+    {
         return u01<Ftype>(in);
+    }
 }
 
 } // namespace r123
