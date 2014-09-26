@@ -352,6 +352,7 @@ function( cafs_create_imported_targets targetName libName targetPath )
     set_target_properties(${targetName} PROPERTIES
        IMPORTED_IMPLIB_NOCONFIG   "${libloc}/${libsharedprefix}${libName}${libstaticsuffix}" #.LIB
        IMPORTED_LOCATION_NOCONFIG "${libloc}/${libsharedprefix}${libName}${libsharedsuffix}" #.DLL
+       MACOSX_RPATH TRUE
        )
     unset(lib CACHE)
 endfunction()
