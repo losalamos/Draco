@@ -210,11 +210,18 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
 // Unfortunately, if this expression is simplified (see r7628) some compilers will not compile the code because the RHS of the
 // assignment may contain values that are not known at comile time (not constexpr).  We don't want to spend to much time debugging
 // this issue because the code is essentially vendor owned (Random123).
-        
+
+#ifndef __PGI
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
+#endif
+        
         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
+
+#ifndef __PGI
 #pragma GCC diagnostic pop
+#endif
+
         R123_CONSTEXPR Ftype factor = Ftype(1.)/(Ftype(1.) + ((maxTvalue<Utype>()>>ex_nowarn)));
         return (1 | (Utype(in)>>ex_nowarn)) * factor;
     }
