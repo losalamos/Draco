@@ -51,7 +51,7 @@ else
     module load friendly-testing 
     module load intel/14.0.2 openmpi/1.6.5 # cudatoolkit
     module load gsl svn 
-    module load cmake numdiff git lapack/3.4.1 totalview
+    module load cmake/3.0.0 numdiff git lapack/3.4.1 totalview
     module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
     module load emacs
