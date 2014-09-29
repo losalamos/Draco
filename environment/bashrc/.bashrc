@@ -208,7 +208,7 @@ darwin* | cn[0-9]*)
    ;; 
 
 # Cielito | Cielo
-ct-fe[0-9] | ct-login[0-9] | ci-fe[0-9] | ci-login[0-9])
+c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
