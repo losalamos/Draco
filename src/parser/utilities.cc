@@ -257,7 +257,14 @@ double parse_real(Token_Stream &tokens)
 	const double Result = strtod(text.c_str(), &endptr);
 	if (errno==ERANGE)
 	{
-	    tokens.report_semantic_error("real value overflows");
+	    if (Result > 1.0 || Result < -1.0)
+            {
+	      tokens.report_semantic_error("real value overflows: "+text);
+	    }
+            else
+            {
+              tokens.report("note: real value underflows: "+text);
+            }
 	}
 	Check(endptr != NULL && *endptr=='\0');
 	return Result;
