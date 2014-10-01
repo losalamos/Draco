@@ -6,10 +6,10 @@
 ##
 
 # module whatis
-set version     3.3
-module-whatis   "SuperLU_DIST $version";
+set version     4.0.3
+module-whatis   "ParMetis $version";
 
-conflict SuperLU_DIST
+conflict ParMetis
 conflict PrgEnv-cray PrgEnv-gnu PrgEnv-pgi
 
 # What MPI
@@ -38,19 +38,22 @@ if { [info exists ::env(MPI_ROOT) ] } {
 }
 
 # local variables
-#set prefix      /usr/projects/draco/vendors/SuperLU_DIST_$version/ct-mpich2-intel1313192-intel1313192
-set prefix      /usr/projects/draco/vendors/SuperLU_DIST_$version/ci-${mpiflavor}-${compilerver}
+set prefix      /usr/projects/draco/vendors/ParMetis-${version}/ci-${mpiflavor}-${compilerver}
 set libdir      $prefix/lib
 set incdir      $prefix/include
 
+# module whatis
+module-whatis   "Parmetis";
 
 # module help
 proc ModulesHelp { } {
    global version prefix bindir;
 
-   puts stderr "\tSuperLU_DIST $version\n";
-   puts stderr "\tSUPERLUDIST_LIB_DIR\t= $libdir";
-   puts stderr "\tSUPERLUDIST_INC_DIR\t= $incdir";
+   puts stderr "\tParmetis\n";
+   puts stderr "\tPARMETIS_LIB_DIR\t= $libdir";
+   puts stderr "\tPARMETIS_INC_DIR\t= $incdir";
+   puts stderr "\tMETIS_LIB_DIR\t= $libdir";
+   puts stderr "\tMETIS_INC_DIR\t= $incdir";
 }
 
 if { ![file exists $prefix] } {
@@ -59,5 +62,7 @@ if { ![file exists $prefix] } {
    exit 1;
 }
 
-setenv SUPERLUDIST_LIB_DIR $libdir
-setenv SUPERLUDIST_INC_DIR $incdir
+setenv PARMETIS_LIB_DIR $libdir
+setenv PARMETIS_INC_DIR $incdir
+setenv METIS_LIB_DIR $libdir
+setenv METIS_INC_DIR $incdir
