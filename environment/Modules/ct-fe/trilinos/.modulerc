@@ -1,2 +1,2 @@
 #%Module1.0
-module-version trilinos/11.4.1 default
+module-version trilinos/11.10.2 default
