@@ -48,6 +48,7 @@ set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
 
 set( DRACO_ENABLE_CXX11 "@DRACO_ENABLE_CXX11@" )
 set( CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@" )
+set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
 
 ## ---------------------------------------------------------------------------
 ## Set library specifications and paths 
