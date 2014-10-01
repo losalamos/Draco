@@ -39,7 +39,7 @@ module use $DRACO_MODULE_DIR/ct-fe
 # Move some environment out of the way.
 module unload PrgEnv-intel PrgEnv-pgi
 module unload cmake numdiff svn gsl
-module unload papi perftools
+module unload papi perftools trilinos
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
 module unload xt-libsci xt-totalview
@@ -48,7 +48,7 @@ module unload xt-libsci xt-totalview
 module load gsl lapack/3.4.1
 module load cmake numdiff svn emacs
 module load trilinos SuperLU_DIST 
-module load ParMetis ndi random123 eospac/v6.2.4beta.3
+module load ParMetis ndi random123 eospac
 
 export OMP_NUM_THREADS=8
 
