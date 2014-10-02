@@ -9,12 +9,10 @@
 project( device_test CXX )
 
 # ---------------------------------------------------------------------------- #
-# Build one of DACS_Device or GPU_Device
+# Build GPU_Device
 # ---------------------------------------------------------------------------- #
 
-if( ENABLE_HET_CODE )
-   include( DACS_Device.cmake )
-elseif( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
+if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
    include( GPU_Device.cmake )
 endif()
 
