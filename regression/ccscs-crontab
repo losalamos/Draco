@@ -4,14 +4,9 @@
 
 01 00 * * 0-6 /home/regress/draco/regression/regression-master.sh Release &> /home/regress/logs/ccscs-Release-master.log
 
-01 01 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug &> /home/regress/logs/ccscs-Debug-master.log
+01 00 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug &> /home/regress/logs/ccscs-Debug-master.log
 
-01 02 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
-
-01 04 * * * VENDOR_DIR=/var/tmp/vendors /home/kellyt/bin/sync_vendors.sh >& /home/kellyt/logs/sync_vendors_ccscs9.log
-
-01 23 * * * /home/kellyt/draco/regression/push_repositories_xf.sh >& /home/kellyt/logs/push_repositories_xf.log
-
+01 01 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command 

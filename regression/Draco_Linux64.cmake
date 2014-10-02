@@ -69,11 +69,11 @@ message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
 if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
-  # if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
-  #   # Empty the binary directory and recreate the CMakeCache.txt
-  #   message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
-  #   ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-  # endif()
+  if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+    # Empty the binary directory and recreate the CMakeCache.txt
+    message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
+    ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+  endif()
   file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 endif()
 
@@ -128,17 +128,17 @@ endif()
 
 # Test
 if( "${CTEST_TEST}" STREQUAL "ON" )
-   if(ENABLE_C_CODECOVERAGE)
-     message( "ctest_test( SCHEDULE_RANDOM ON )" )
-     ctest_test( SCHEDULE_RANDOM ON )
-   else()
+#   if(ENABLE_C_CODECOVERAGE)
+#     message( "ctest_test( SCHEDULE_RANDOM ON )" )
+#     ctest_test( SCHEDULE_RANDOM ON )
+#   else()
      find_num_procs_avail_for_running_tests(num_test_procs)
      message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
      ctest_test( PARALLEL_LEVEL ${num_test_procs} 
                  SCHEDULE_RANDOM ON 
                  # INCLUDE_LABEL <LABEL>
                  ) 
-   endif()
+#   endif()
 
    # Process code coverage (bullseye) or dynamic analysis (valgrind)
    message("Processing code coverage or dynamic analysis")

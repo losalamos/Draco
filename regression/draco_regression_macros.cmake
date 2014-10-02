@@ -171,11 +171,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
        set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
      endif()
    endif()
-   if(ENABLE_C_CODECOVERAGE)
-     set( num_compile_procs 1 )
-     set(CTEST_BUILD_FLAGS -j${num_compile_procs})
-   endif()
-
    
    # Testing parallelism
    # - Call the macro
@@ -328,31 +323,12 @@ macro( parse_args )
     endif()
     set( ENABLE_C_CODECOVERAGE ON )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_Cov" )
+    # Also reset the build parallelism to scalar.
+    #set( num_compile_procs 1 )
+    #set(CTEST_BUILD_FLAGS "-j${num_compile_procs}")
+
   endif()
   
-  # For Experimental builds, use launchers and parallel builds.
-#   if( ${CTEST_SCRIPT_ARG} MATCHES Experimental )
-#      if( UNIX )
-#         if( EXISTS "/proc/cpuinfo" )
-#            file( READ "/proc/cpuinfo" cpuinfo )
-#            # convert one big string into a set of strings, one per line
-#            string( REGEX REPLACE "\n" ";" cpuinfo ${cpuinfo} )
-#            set( proc_ids "" )
-# # consider using:
-# # include(ProcessorCount)
-# # ProcessorCount(DRACO_NUM_CORES)
-#            foreach( line ${cpuinfo} )
-#               if( ${line} MATCHES "processor" )
-#                  list( APPEND proc_ids ${line} )
-#               endif()
-#            endforeach()
-#            list( LENGTH proc_ids DRACO_NUM_CORES )
-#            set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
-#               "Number of cores on the local machine." )
-#         endif()
-#      endif()
-#   endif()
-
   if( ${drm_verbose} )
     message("
 CTEST_MODEL                 = ${CTEST_MODEL}
@@ -363,7 +339,7 @@ CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
 ")
-# MPIEXEC_MAX_NUMPROCS        = ${MPIEXEC_MAX_NUMPROCS}
+# CTEST_BUILD_FLAGS           = ${CTEST_BUILD_FLAGS}
   endif()
 endmacro( parse_args )
 
@@ -375,7 +351,7 @@ macro( find_tools )
   find_program( CTEST_CMD
     NAMES ctest
     HINTS
-      "c:/Program Files (x86)/CMake 2.8/bin"
+      "c:/Program Files (x86)/CMake 3.0/bin"
       # NO_DEFAULT_PATH
     )
   if( NOT EXISTS ${CTEST_CMD} )
@@ -397,7 +373,7 @@ macro( find_tools )
   find_program( CTEST_CMAKE_COMMAND
     NAMES cmake
     HINTS
-      "c:/Program Files (x86)/CMake 2.8/bin"
+      "c:/Program Files (x86)/CMake 3.0/bin"
       # NO_DEFAULT_PATH
     )
   if( NOT EXISTS "${CTEST_CMAKE_COMMAND}" )
@@ -427,7 +403,7 @@ macro( find_tools )
   endif()
 
   if(ENABLE_C_CODECOVERAGE)
-     find_program( COV01 NAMES cov01 )
+    find_program( COV01 NAMES cov01 )
     if( COV01 )
        get_filename_component( beyedir ${COV01} PATH )
        set( CC ${beyedir}/gcc )
@@ -435,17 +411,14 @@ macro( find_tools )
        set( ENV{CC} ${beyedir}/gcc )
        set( ENV{CXX} ${beyedir}/g++ )
        set( RES 1 )
-       execute_process(COMMAND ${COV01} -1
-          RESULT_VARIABLE RES )
+       execute_process(COMMAND ${COV01} --on RESULT_VARIABLE RES )
        if( RES )
           message(FATAL_ERROR "could not run cov01 -1")
        else()
           message("BullseyeCoverage turned on")
        endif()
     else()
-       message( FATAL_ERROR 
-          "Coverage requested, but bullseyecoverage's cov01 binary not in PATH."
-          )
+       message( FATAL_ERROR "Coverage requested, but bullseyecoverage's cov01 binary not in PATH." )
     endif()
   endif()
 
@@ -463,6 +436,14 @@ CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}
 CTEST_CONFIGURE_COMMAND           = ${CTEST_CONFIGURE_COMMAND}
 
 ")
+    if(ENABLE_C_CODECOVERAGE)
+       message("
+CC    = ${CC}
+CXX   = ${CXX}
+COV01 = ${COV01}
+RES   = ${RES}
+")
+    endif()
   endif()
 endmacro( find_tools )
 
@@ -507,7 +488,15 @@ macro( setup_for_code_coverage )
             set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
             set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
             set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
-            execute_process(COMMAND "${COV01}" --on RESULT_VARIABLE RES)
+#             message("Setting up environment for Bullseye Coverage...
+# COVDIRCFG  = $ENV{COVDIRCFG}
+# COVFNCFG   = $ENV{COVFNCFG}
+# COVCLASSCFG= $ENV{COVCLASSCFG}
+# COVSRCCFG  = $ENV{COVSRCCFG}
+# COVFILE    = $ENV{COVFILE}
+# ${COV01} --on
+# ")
+            execute_process(COMMAND "${COV01}" --on --verbose RESULT_VARIABLE RES)
 
             # Process and save lines of code 
             message( "Generating lines of code statistics...
