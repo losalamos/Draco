@@ -129,6 +129,10 @@ if( USE_CUDA )
   set( HAVE_CUDA                      "@HAVE_CUDA@" )
 endif()
 
+# Python
+set( PYTHONINTERP_FOUND "@PYTHONINTERP_FOUND@" ) 
+set( PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@" ) 
+
 ## ---------------------------------------------------------------------------
 ## Set useful general variables 
 ## ---------------------------------------------------------------------------
