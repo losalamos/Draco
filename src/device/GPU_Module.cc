@@ -61,7 +61,7 @@ std::string GPU_Module::findPtxFile( std::string const & myPtxFile )
     Require( myPtxFile.length() > 0 );
 
     // Location of GPU ptx files - read from config.h
-    std::string const testDir( rtt_device::test_ppe_bindir ); 
+    std::string const testDir( rtt_device::test_kernel_bindir ); 
     // return value
     std::string ptxFile;
 

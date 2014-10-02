@@ -17,7 +17,7 @@
 
 namespace rtt_device
 {
-    std::string const test_ppe_bindir("@TEST_PPE_BINDIR@");
+    std::string const test_kernel_bindir("@TEST_KERNEL_BINDIR@");
 }
 
 #endif /* device_config_h */
