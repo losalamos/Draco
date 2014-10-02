@@ -11,7 +11,7 @@ if { [file exists $env(MODULESHOME)/etc/control] } {
 }
 
 # load system grace module
-module load grace/5.1.20
+module load friendly-testing grace/5.1.24
 
 # local variables
 set prefix      $env(GRACE_HOME)
