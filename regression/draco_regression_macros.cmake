@@ -326,9 +326,12 @@ macro( parse_args )
     # Also reset the build parallelism to scalar.
     #set( num_compile_procs 1 )
     #set(CTEST_BUILD_FLAGS "-j${num_compile_procs}")
-
   endif()
   
+  if( NOT "$ENV{buildname_append}x" STREQUAL "x" )
+    set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )    
+  endif()
+
   if( ${drm_verbose} )
     message("
 CTEST_MODEL                 = ${CTEST_MODEL}

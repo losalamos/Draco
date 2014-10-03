@@ -2,11 +2,15 @@
 
 01 22 * * 0-6 /home/regress/draco/regression/update_regression_scripts.sh &> /home/regress/logs/update_regression_scripts.log
 
-01 00 * * 0-6 /home/regress/draco/regression/regression-master.sh Release &> /home/regress/logs/ccscs-Release-master.log
+01 00 * * 0-6 /home/regress/draco/regression/regression-master-getopt.sh -r -b Release -d Nightly -p "draco jayenne capsaicin" &> /home/regress/logs/ccscs-Release-master.log
 
-01 00 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug &> /home/regress/logs/ccscs-Debug-master.log
+01 00 * * 0-6 /home/regress/draco/regression/regression-master-getopt.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" &> /home/regress/logs/ccscs-Debug-master.log
 
-01 01 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
+01 01 * * 0-6 /home/regress/draco/regression/regression-master-getopt.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
+
+#01 00 * * 0-6 /home/regress/draco/regression/regression-master.sh Release &> /home/regress/logs/ccscs-Release-master.log
+#01 00 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug &> /home/regress/logs/ccscs-Debug-master.log
+#01 01 * * 0-6 /home/regress/draco/regression/regression-master.sh Debug coverage &> /home/regress/logs/ccscs-Debug-coverage-master.log
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command 
