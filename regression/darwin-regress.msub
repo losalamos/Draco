@@ -2,12 +2,41 @@
 
 #SBATCH -N 1
 #SBATCH --time=480
-#SBATCH --partition=regular,batch,dl585
+#SBATCH --partition=dl585
 # https://computing.llnl.gov/linux/slurm/sbatch.html
 
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
+
+# Sanity Check
+# ----------------------------------------
+if test "${subproj}x" == "x"; then
+   echo "Fatal Error, subproj not found in environment."
+   exit 1
+fi
+if test "${regdir}x" == "x"; then
+   echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${build_type}x" == "x"; then
+   echo "Fatal Error, build_type not found in environment."
+   exit 1
+fi
+if test "${logdir}x" == "x"; then
+   echo "Fatal Error, logdir not found in environment."
+   exit 1
+fi
+
+# Environment setup
+# ----------------------------------------
+umask 0002
+ulimit -a
+
+unset http_proxy
+unset HTTP_PROXY
+export VENDOR_DIR=/projects/opt/draco/vendors
+moniker=`whoami`
 
 fn_exists()
 {
@@ -27,39 +56,12 @@ if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     source $HOME/.keychain/$MYHOSTNAME-sh
 fi
 
-# Sanity Check
-# ----------------------------------------
-if test "${subproj}x" == "x"; then
-   echo "Fatal Error, subproj not found in environment."
-   exit 1
-fi
-if test "${regdir}x" == "x"; then
-   echo "Fatal Error, regdir not found in environment."
-   exit 1
-fi
-if test "${build_type}x" == "x"; then
-   echo "Fatal Error, build_type not found in environment."
-   exit 1
-fi
-
-# Environment setup
-# ----------------------------------------
-umask 0002
-unset http_proxy
-unset HTTP_PROXY
-export VENDOR_DIR=/projects/opt/draco/vendors
-
-epdash="-"
-if test "${extra_params}x" = "x"; then
-   epdash=""
-fi
-
 machine=`uname -n`
 case $machine in
 cn*) 
     ctestparts=Configure,Build,Test
     # Force new log file (vs appending)
-    echo "     " > ${regdir}/logs/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log 
+    echo "     " > ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log 
     ;;
 darwin-*)
     ctestparts=Submit ;;
@@ -87,12 +89,20 @@ run "module use /projects/opt/draco/vendors/Modules"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
 run "module purge &> /dev/null"
-run "module load compilers/intel/15.0.0 mpi/openmpi-1.8.2-intel_15.0.0"
+#run "module load compilers/intel/15.0.0 mpi/openmpi-1.8.2-intel_15.0.0"
+run "module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035"
 run "module load gsl lapack"
-#run "module load ParMetis ndi"
 run "module load cmake/3.0.1 numdiff subversion random123 eospac"
 run "module load other/gnuplot-4.6.1 python/2.7.3"
 run "module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2"
+#run "module load ndi"
+
+# For Intel MPI, we must set these 4 variables:
+export CXX=`which mpiicpc`
+export CC=`which mpiicc`
+export FC=`which mpiifort`
+export MPIEXEC=`which mpirun`
+# export OMP_NUM_THREADS=16
 comp=`basename $CXX`
 printenv
 
@@ -144,6 +154,7 @@ echo "darwin-regress.msub: build_type     = $build_type"
 echo "darwin-regress.msub: comp           = $comp"
 echo "darwin-regress.msub: machine        = $machine"
 echo "darwin-regress.msub: subproj        = $subproj"
+echo "darwin-regress.msub: regdir         = $regdir"
 
 #----------------------------------------------------------------------#
 # CTest
@@ -197,9 +208,13 @@ if ! test "${setup_dirs}x" = "x"; then
    if test -f ${work_dir}/build/CMakeCache.txt; then
        run "rm -rf ${work_dir}/build/*"
    fi
-   # keep the purger from removing the source files.
-   # find ${work_dir}/source/ -exec touch {} \;
 fi
+
+# Environment
+echo " "
+echo "--------------------(environment)------------------------------"
+set
+echo "--------------------(end environment)--------------------------"
 
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}

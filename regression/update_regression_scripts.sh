@@ -47,9 +47,9 @@ darwin* | cn[0-9]*)
       # svnsync sync file:///${svnroot}/jayenne
    fi
 
-   run "svnsync --non-interactive sync file:///${svnroot}/draco"
-   run "svnsync --non-interactive sync file:///${svnroot}/jayenne"
-   run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+   run "svnsync --non-interactive sync file://${svnroot}/draco"
+   run "svnsync --non-interactive sync file://${svnroot}/jayenne"
+   run "svnsync --non-interactive sync file://${svnroot}/capsaicin"
    # run "svnsync --non-interactive sync file:///${svnroot}/asterisk"
    ;;
 *)

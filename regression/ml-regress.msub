@@ -37,7 +37,6 @@ unset HTTP_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
 moniker=`whoami`
 
-
 fn_exists()
 {
     type $1 2>/dev/null | grep -q 'is a function'
@@ -50,12 +49,6 @@ run () {
     echo $1
     if ! [ $dry_run ]; then eval $1; fi
 }
-
-
-# epdash="-"
-# if test "${extra_params}x" = "x"; then
-#    epdash=""
-# fi
 
 machine=`uname -n`
 case $machine in
@@ -177,7 +170,7 @@ echo "ml-regress.msub: build_type     = $build_type"
 echo "ml-regress.msub: comp           = $comp"
 echo "ml-regress.msub: machine        = $machine"
 echo "ml-regress.msub: subproj        = $subproj"
-echo "ct-regress.msub: regdir         = $regdir"
+echo "ml-regress.msub: regdir         = $regdir"
 
 #----------------------------------------------------------------------#
 # CTest
@@ -235,8 +228,6 @@ if ! test "${setup_dirs}x" = "x"; then
    if test -f ${work_dir}/build/CMakeCache.txt; then
        run "rm -rf ${work_dir}/build/*"
    fi
-   # keep the purger from removing the source files.
-   # find ${work_dir}/source/ -exec touch {} \;
 fi
 
 # Environment

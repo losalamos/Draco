@@ -9,6 +9,8 @@
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
+scriptname=`basename $0`
+host=`uname -n`
 
 # if test ${nargs} -lt 1; then
 #     echo "Fatal Error: launch job requires a subproject name"
@@ -42,31 +44,35 @@ if test "${build_type}x" = "x"; then
     echo "FATAL ERROR in darwin-job-launch.sh: You did not set 'build_type' in the environment!"
     exit 1
 fi
+if test "${logdir}x" = "x"; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
+    exit 1
+fi
 
 # Banner
 echo "==========================================================================="
-echo "Darwin Regression job launcher for ${subproj} - ${build_type} flavor."
+echo "Darwin Regression job launcher."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
-echo "   subproj      = ${subproj}"
-echo "   build_type   = ${build_type}"
-echo "   extra_params = ${extra_params}"
-echo "   regdir       = ${regdir}"
-echo " "
-echo "Optional environment:"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   base_dir       = ${base_dir}"
-echo " "
-
-epdash="-"
-if test "${extra_params}x" = "x"; then
-   epdash=""
+echo "   subproj        = ${subproj}"
+echo "   build_type     = ${build_type}"
+if test "${extra_params}x" == "x"; then
+echo "   extra_params   = none"
+else
+echo "   extra_params   = ${extra_params}"
 fi
+echo "   regdir         = ${regdir}"
+echo "   logdir         = ${logdir}"
+echo "   dashboard_type = ${dashboard_type}"
+#echo "   base_dir       = ${base_dir}"
+echo " "
+echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+echo " "
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
-echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+
 for jobid in ${dep_jobids}; do
     while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
        echo "   ${subproj}: waiting for jobid = $jobid to finish."
@@ -75,7 +81,7 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build, Test on back end
-cmd="/usr/bin/sbatch -v -o ${regdir}/logs/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log -e ${regdir}/logs/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/darwin-regress.msub"
+cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log -e ${regdir}/logs/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/darwin-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -90,7 +96,7 @@ done
 
 # Submit from the front end
 echo "Jobs done, now submitting ${build_type} results from darwin."
-cmd="${regdir}/draco/regression/darwin-regress.msub >& ${regdir}/logs/darwin-${build_type}-${extra_params}${epdash}${subproj}-s.log"
+cmd="${regdir}/draco/regression/darwin-regress.msub >& ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-s.log"
 echo "${cmd}"
 eval "${cmd}"
 

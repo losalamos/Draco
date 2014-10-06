@@ -454,22 +454,22 @@ endmacro( find_tools )
 # Setup SVNROOT
 # ------------------------------------------------------------
 macro( set_svn_command svnpath )
-   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
-      if( EXISTS /ccs/codes/radtran/svn )
-         set( CTEST_CVS_CHECKOUT
-            "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
-         message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
-      elseif( EXISTS /usr/projects/jayenne/regress/svn ) # HPC machines (ML, CT)
-         set( CTEST_CVS_CHECKOUT
-            "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
-      elseif( EXISTS /projects/opt/draco/regress/svn ) # CCS-7's Darwin
-         set( CTEST_CVS_CHECKOUT
-            "${CTEST_CVS_COMMAND} checkout file:///projects/opt/draco/regress/svn/${svnpath} source" )
-      else()
-         set( CTEST_CVS_CHECKOUT
-            "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
-      endif()
-   endif()
+  if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
+    if( EXISTS /ccs/codes/radtran/svn )
+      set( CTEST_CVS_CHECKOUT
+        "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
+      message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
+    elseif( EXISTS /projects/opt/draco/regress/svn ) # CCS-7's Darwin
+      set( CTEST_CVS_CHECKOUT
+        "${CTEST_CVS_COMMAND} checkout file:///projects/opt/draco/regress/svn/${svnpath} source" )
+    elseif( EXISTS /usr/projects/jayenne/regress/svn ) # HPC machines (ML, CT)
+      set( CTEST_CVS_CHECKOUT
+        "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
+    else()
+      set( CTEST_CVS_CHECKOUT
+        "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
+    endif()
+  endif()
 endmacro()
 
 # ------------------------------------------------------------
