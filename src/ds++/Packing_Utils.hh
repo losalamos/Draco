@@ -861,7 +861,7 @@ pack_vec_double( double const * start,
     {
         for( size_t i = 0; i < num_elements; ++i)
         {
-            packer << swap(*start++);
+            packer << byte_swap_copy(*start++);
         }
     }
     return;

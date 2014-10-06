@@ -157,12 +157,9 @@ DLL_PUBLIC bool has_ieee_float_representation(void);
  * bad: GCC for example seems to optimize it down to about 5 instructions in
  * the 32 bit case, including loads, versus 2 instructions (including load)
  * for the inline asm case.
- *
- * \todo Using template specialization for T={uint32_t,double}, rename Tim's
- *       "swap" functions to byte_swap_copy<T>.
- * \todo Add unit tests for these specialized swap functions.
  */
-inline uint32_t swap(uint32_t const input)
+template <>
+inline uint32_t byte_swap_copy<uint32_t>(uint32_t const input)
 {
 #ifdef __use_x86_gnu_asm
     uint32_t output = input;
@@ -198,12 +195,9 @@ inline uint32_t swap(uint32_t const input)
  * bad: GCC for example seems to optimize it down to about 5 instructions in
  * the 32 bit case, including loads, versus 2 instructions (including load)
  * for the inline asm case.
- *
- * \todo Using template specialization for T={uint32_t,double}, rename Tim's
- *       "swap" functions to byte_swap_copy<T>.
- * \todo Add unit tests for these specialized swap functions.
  */
-inline double swap( double const input)
+template <>
+inline double byte_swap_copy<double>(double const input)
 {
 #ifdef __use_x86_gnu_asm
     double output = input;

@@ -61,6 +61,14 @@ void test_integer(ScalarUnitTest& ut)
 
     if (u_moo != 0xEFBEADDE)
         ut.failure("byte_swap failed for for unsigned integer type");
+
+    // uint32_t, to test the specialized version of byte_swap_copy
+    uint32_t uint32_moo = 0xDEADBEEF;
+
+    uint32_t uint32_moo_swapped = byte_swap_copy(uint32_moo);
+
+    if (uint32_moo_swapped != 0xEFBEADDE)
+        ut.failure("byte_swap_copy failed for for unsigned integer type");
 }
 
 //---------------------------------------------------------------------------//
@@ -85,6 +93,12 @@ void test_int64(ScalarUnitTest& ut)
     byte_swap(u_moo);
     if (u_moo != 0xFADEDDEADBEEFBAD)
         ut.failure("2x byte_swap failed for for uint64 integer type");
+
+    // Swap again, using byte_swap_copy
+    uint64_t u_moo_swapped = byte_swap_copy(u_moo);
+
+    if (u_moo_swapped != 0xADFBEEDBEADDDEFA)
+        ut.failure("byte_swap_copy failed for for uint64 integer type");
 }
 
 //---------------------------------------------------------------------------//
