@@ -116,7 +116,7 @@ void byte_swap(T& value)
 /*!
  * \brief General byte-swapping routine.
  *
- * This function returns a bite-swapped copy of the argument.
+ * This function returns a byte-swapped copy of the argument.
  */
 template <typename T>
 T byte_swap_copy(T value) 
