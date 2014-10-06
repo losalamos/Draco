@@ -8,19 +8,6 @@
 # The script starts here
 #----------------------------------------------------------------------#
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
-run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
-}
-
 # Sanity Check
 # ----------------------------------------
 if test "${subproj}x" == "x"; then
@@ -35,25 +22,47 @@ if test "${build_type}x" == "x"; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
+if test "${logdir}x" == "x"; then
+   echo "Fatal Error, logdir not found in environment."
+   exit 1
+fi
 
 # Environment setup
 # ----------------------------------------
 umask 0002
+ulimit -a
+
 unset http_proxy
 unset HTTP_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
+moniker=`whoami`
 
-epdash="-"
-if test "${extra_params}x" = "x"; then
-   epdash=""
-fi
+
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then eval $1; fi
+}
+
+
+# epdash="-"
+# if test "${extra_params}x" = "x"; then
+#    epdash=""
+# fi
 
 machine=`uname -n`
 case $machine in
 ml[0-9][0-9][0-9].localdomain) 
     ctestparts=Configure,Build,Test
     # Force new log file (vs appending)
-    echo "     " > ${regdir}/logs/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log 
+    echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log 
     ;;
 ml-fey*)
     ctestparts=Submit ;;
@@ -63,7 +72,6 @@ echo "==========================================================================
 echo "Moonlight regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
-ulimit -a
 
 # Modules
 # ----------------------------------------
@@ -123,7 +131,7 @@ pgi)
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
-    echo "the regression system."
+    echo "the regression system (edit ml-regress.msub)."
     exit 1
     ;;
 esac
@@ -144,13 +152,22 @@ run "module list"
 # Build type     : Release, Debug
 
 if test "${dashboard_type}x" = "x"; then
-   dashboard_type=Nightly
+   dashboard_type=Experimental
 fi
 if test "${base_dir}x" = "x"; then
-   base_dir=/usr/projects/jayenne/regress/cdash/ml
    # Keep build and target dirs out of /usr/projects locations to
    # prevent the .snapshots directory from filling up.
-   scratch_dir=/scratch/kellyt/cdash/ml
+   scratch_dir=/scratch/${moniker}/cdash/ml
+   mkdir -p $scratch_dir
+   if ! test -d ${scratch_dir}; then
+      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+      exit 1
+   fi
+   if test "${regress_mode}" = "off"; then
+      base_dir=${scratch_dir}
+   else
+      base_dir=/usr/projects/jayenne/regress/cdash/ml
+   fi
 fi
 
 echo " "
@@ -160,6 +177,7 @@ echo "ml-regress.msub: build_type     = $build_type"
 echo "ml-regress.msub: comp           = $comp"
 echo "ml-regress.msub: machine        = $machine"
 echo "ml-regress.msub: subproj        = $subproj"
+echo "ct-regress.msub: regdir         = $regdir"
 
 #----------------------------------------------------------------------#
 # CTest
@@ -177,6 +195,10 @@ elif test "${subproj}" == capsaicin; then
 elif test "${subproj}" == asterisk; then
     script_dir=${regdir}/asterisk/regression
     script_name=Asterisk_Linux64.cmake
+fi
+
+if test "${regress_mode}" = "off"; then
+    export buildname_append="-${USER}"
 fi
 
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
@@ -216,6 +238,12 @@ if ! test "${setup_dirs}x" = "x"; then
    # keep the purger from removing the source files.
    # find ${work_dir}/source/ -exec touch {} \;
 fi
+
+# Environment
+echo " "
+echo "--------------------(environment)------------------------------"
+set
+echo "--------------------(end environment)--------------------------"
 
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}

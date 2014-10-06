@@ -7,19 +7,6 @@
 # The script starts here
 #----------------------------------------------------------------------#
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
-run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
-}
-
 # Sanity Check
 # ----------------------------------------
 if test "${subproj}x" == "x"; then
@@ -34,24 +21,39 @@ if test "${build_type}x" == "x"; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-
-# work around: the CT batch system is appending $regdir with the
-# string "NACCESSPOLICY=singlejob" (change.lanl.gov ticket #72119).
-# Strip this string to allow the job to run:
-regdir=`echo $regdir | sed -e 's/NACCESS.*//'`
-subproj=`echo $subproj | sed -e 's/NACCESS.*//'`
+if test "${logdir}x" == "x"; then
+   echo "Fatal Error, logdir not found in environment."
+   exit 1
+fi
 
 # Environment setup
 # ----------------------------------------
 umask 0002
+ulimit -a
+
 unset http_proxy
 unset HTTP_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
+moniker=`whoami`
 
-epdash="-"
-if test "${extra_params}x" = "x"; then
-   epdash=""
-fi
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then eval $1; fi
+}
+
+# work around: the CT batch system is appending $regdir with the
+# string "NACCESSPOLICY=singlejob" (change.lanl.gov ticket #72119).
+# Strip this string to allow the job to run:
+# regdir=`echo $regdir | sed -e 's/NACCESS.*//'`
+# subproj=`echo $subproj | sed -e 's/NACCESS.*//'`
 
 machine=`uname -n`
 case $machine in
@@ -102,7 +104,6 @@ done
 run "module unload PrgEnv-intel PrgEnv-pgi"
 run "module unload cmake numdiff svn gsl"
 run "module load PrgEnv-intel "
-# module swap intel intel/14.0.2.144
 run "module load gsl lapack"
 run "module load cmake numdiff svn"
 run "module load trilinos SuperLU_DIST "
@@ -120,16 +121,16 @@ case $extra_params in
 "")
     # revert to intel/14 as the default setup.
     ;;
-intel13)
-    # use older intel/13
-    run "module unload intel"
-    run "module load intel/13.0.1.117"
-    comp="intel-13.0.1"
-    ;;
+# intel13)
+#     # use older intel/13
+#     run "module unload intel"
+#     run "module load intel/13.0.1.117"
+#     comp="intel-13.0.1"
+#     ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
-    echo "the regression system."
+    echo "the regression system (edit ct-regress.msub)."
     exit 1
     ;;
 esac
@@ -151,16 +152,27 @@ run "module list"
 # Build type     : Release, Debug
 
 if test "${dashboard_type}x" == "x"; then
-   dashboard_type=Nightly
+   dashboard_type=Experimental
 fi
 if test "${base_dir}x" = "x"; then
-    base_dir=${regdir}/cdash/ct
+    # base_dir=${regdir}/cdash/ct
+
     # There is a bug with how CI/CT mount NFS files spaces (Gabe
     # R. has an open ticket for this).  Basically, recursively
     # deleting a directory with data and imediately recreating that
     # structure will not work correctly (meta data issue?)  Thus,
     # build and target directories will be in the scratch directory.
     scratch_dir=/lscratch1/${USER}/cdash/ct
+    mkdir -p $scratch_dir
+    if ! test -d ${scratch_dir}; then
+      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+      exit 1
+    fi
+    if test "${regress_mode}" = "off"; then
+      base_dir=${scratch_dir}
+    else
+      base_dir=/usr/projects/jayenne/regress/cdash/ct
+    fi
 fi
 
 echo " "
@@ -192,6 +204,7 @@ fi
 
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+
 echo "ct-regress.msub: work_dir       = ${work_dir}"
 echo "ct-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
@@ -219,11 +232,18 @@ if test "${ctestparts}" = "Configure,Build"; then
    if test -d ${work_dir}/target/lib; then
        run "rm -rf ${work_dir}/target/*"
    fi
+   if test -f ${work_dir}/build/CMakeCache.txt; then
+       run "rm -rf ${work_dir}/build/*"
+   fi
 
 fi
 
-echo "--------------------------------------------------------------------------------"
-echo "Starting ctest at..."
+# Environment
+echo " "
+echo "--------------------(environment)------------------------------"
+set
+echo "--------------------(end environment)--------------------------"
+
 date
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 echo " "

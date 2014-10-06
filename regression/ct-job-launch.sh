@@ -9,6 +9,8 @@
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
+scriptname=`basename $0`
+host=`uname -n`
 
 # if test ${nargs} -lt 1; then
 #     echo "Fatal Error: launch job requires a subproject name"
@@ -41,36 +43,44 @@ if test "${build_type}x" = "x"; then
     echo "FATAL ERROR in ct-job-launch.sh: You did not set 'build_type' in the environment!"
     exit 1
 fi
+if test "${logdir}x" = "x"; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
+    exit 1
+fi
 
 # Banner
 echo "==========================================================================="
 echo "CT Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
-
 echo " "
-echo "Environment variables used by script:"
-echo "  subproj      = ${subproj}"
-echo "  build_type   = ${build_type}"
-echo "  extra_params = ${extra_params}"
-echo "  regdir       = ${regdir}"
-echo " "
-echo "Optional environment:"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   base_dir       = ${base_dir}"
-echo " "
-
-epdash="-"
-if test "${extra_params}x" = "x"; then
-   epdash=""
+echo "Environment:"
+echo "   subproj        = ${subproj}"
+echo "   build_type     = ${build_type}"
+if test "${extra_params}x" == "x"; then
+echo "   extra_params   = none"
+else
+echo "   extra_params   = ${extra_params}"
 fi
+echo "   regdir         = ${regdir}"
+echo "   logdir         = ${logdir}"
+echo "   dashboard_type = ${dashboard_type}"
+#echo "   base_dir       = ${base_dir}"
+echo " "
+echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+echo " "
+
+# epdash="-"
+# if test "${extra_params}x" = "x"; then
+#    epdash=""
+# fi
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
-echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+
 for jobid in ${dep_jobids}; do
     while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
        echo "   ${subproj}: waiting for jobid = $jobid to finish."
-       sleep 10m
+       sleep 5m
     done
 done
 
@@ -78,7 +88,7 @@ done
 export mode=cb
 echo " "
 echo "Configure and Build on the front end..."
-cmd="${regdir}/draco/regression/ct-regress.msub >& ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+cmd="${regdir}/draco/regression/ct-regress.msub >& ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
 echo "${cmd}"
 eval "${cmd}"
 
@@ -87,7 +97,7 @@ eval "${cmd}"
 
 echo " "
 echo "Test from the login node..."
-cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log ${regdir}/draco/regression/ct-regress.msub"
+cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log ${regdir}/draco/regression/ct-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 jobid=`echo $jobid | sed '/^$/d'`
@@ -103,13 +113,12 @@ done
 # Submit from the front end
 mode=s
 echo "Jobs done, now submitting ${build_type} results from ct-fe1."
-cmd="${regdir}/draco/regression/ct-regress.msub >& ${regdir}/logs/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+cmd="${regdir}/draco/regression/ct-regress.msub >& ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
 echo "${cmd}"
 eval "${cmd}"
 
-
 # Submit from the front end
-echo "Jobs done on ct."
+echo "Jobs done."
 
 ##---------------------------------------------------------------------------##
 ## End of ct-job-launch.sh

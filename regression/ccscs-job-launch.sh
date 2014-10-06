@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # called from regression-master.sh
-# assumes the following variables are defined in ccscs-master.sh:
+# assumes the following variables are defined in regression-master.sh:
 #    $regdir     - /home/regress
 #    $subproj    - 'draco', 'clubimc', 'jaynne', etc.
 #    $build_type - 'Debug', 'Release'
