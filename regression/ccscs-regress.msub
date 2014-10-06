@@ -83,6 +83,10 @@ case $extra_params in
     ;;
 coverage)
     echo "Coverage option selected."
+    if ! test "${build_type}" == "Debug"; then
+       echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+       exit 1
+    fi
     build_type=Coverage
     run "module load bullseyecoverage"
     CXX=`which g++`
