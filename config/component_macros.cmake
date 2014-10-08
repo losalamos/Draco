@@ -168,9 +168,9 @@ set_target_properties(${acl_TARGET} PROPERTIES
    endif()
  
    # Set the install rpath for apple builds
-   if( ${DRACO_SHARED_LIBS} )
-     set_target_properties( ${acl_TARGET} PROPERTIES INSTALL_RPATH "${imploc}" )
-   endif()
+   # if( ${DRACO_SHARED_LIBS} )
+   #   set_target_properties( ${acl_TARGET} PROPERTIES INSTALL_RPATH "${imploc}" )
+   # endif()
 
    # Only publish information to draco-config.cmake for non-test
    # libraries.  Also, omit any libraries that are marked as NOEXPORT

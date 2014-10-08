@@ -38,19 +38,9 @@ if( BUILD_TESTING )
     add_custom_target( check
       COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
       COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $$(ARGS) )
-    # As of cmake 3.0, use 'ctest --rerun-failed'
-    # add_custom_target( failedtests
-    #   COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
-    #   COMMAND "${CMAKE_COMMAND}" -P "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
-    #   COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} $$(ARGS) -I FailedTests.log )
   else()
     add_custom_target( check
       COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
       COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $(ARGS) )
-    # As of cmake 3.0, use 'ctest --rerun-failed'
-    # add_custom_target( failedtests
-    #   COMMAND "${CMAKE_COMMAND}" --build "${Draco_BINARY_DIR}" -- ${pbuildtestflags}
-    #   COMMAND "${CMAKE_COMMAND}" -P "${Draco_SOURCE_DIR}/config/rerun_failed.cmake" 
-    #   COMMAND "${CMAKE_CTEST_COMMAND}" ${pbuildtestflags} $(ARGS) -I FailedTests.log )
   endif() 
 endif() 

@@ -59,11 +59,6 @@ macro( dbsSetDefaults )
      set( CMAKE_SUPPRESS_REGENERATION ON )  
   endif()
   
-  # Set RPATH for all libraries on Apple platform
-  if (APPLE)
-    set(CMAKE_MACOSX_RPATH 1)
-  endif()
-  
   # Design-by-Contract
 
   #   Insist() assertions    : always on
@@ -94,23 +89,34 @@ macro( dbsSetDefaults )
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
 
+  # Set RPATH for all libraries on Apple platform
+  if (APPLE)
+    set(CMAKE_MACOSX_RPATH 1)
+  endif()
+
   if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
      # Set replacement RPATH for installed libraries and executables
      # See http://www.cmake.org/Wiki/CMake_RPATH_handling
 
      # Do not skip the full RPATH for the build tree
-     # set( CMAKE_SKIP_BUILD_RPATH FALSE )
+     set( CMAKE_SKIP_BUILD_RPATH OFF )
      # When building, don't use the install RPATH already
      # (but later on when installing)
-     # set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-     if( EXISTS "${DRACO_DIR}" )
-        set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${DRACO_DIR}/lib )
-     else()
-        set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
-     endif()
+     set( CMAKE_BUILD_WITH_INSTALL_RPATH OFF )
+
+     # For libraries created within the build tree, replace the RPATH
+     # in the installed files with the install location.
+     set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+
+#      if( EXISTS "${DRACO_DIR}" )
+#        if( NOT "${DRACO_DIR}" STREQUAL "${CMAKE_INSTALL_PREFIX}" )
+#          set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${DRACO_DIR}/lib )
+#        endif()
+#      endif()
+
      # add the automatically determined parts of the RPATH
      # which point to directories outside the build tree to the install RPATH
-     # set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
+     set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
   endif()
 
 endmacro()
