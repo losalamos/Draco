@@ -57,6 +57,18 @@ message("CTEST_INITIAL_CACHE =
 ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
 
+if( "${CTEST_CONFIGURE}x" STREQUAL "x" )
+   set( CTEST_CONFIGURE OFF )
+endif()
+if( "${CTEST_BUILD}x" STREQUAL "x" )
+   set( CTEST_BUILD OFF )
+endif()
+if( "${CTEST_TEST}x" STREQUAL "x" )
+   set( CTEST_TEST OFF )
+endif()
+if( "${CTEST_SUBMIT}x" STREQUAL "x" )
+   set( CTEST_SUBMIT OFF )
+endif()
 message("
 --> Draco_Linux64.cmake modes:
     CTEST_CONFIGURE = ${CTEST_CONFIGURE}
@@ -78,8 +90,25 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
 endif()
 
 # Start
-message( "ctest_start( ${CTEST_MODEL} )")
-ctest_start( ${CTEST_MODEL} )
+# if this is the 2nd (or 3rd) call to this script (i.e.: test and submit
+# on different calls) then append the results.
+if( ${CTEST_SUBMIT} AND NOT ${CTEST_TEST} )
+  # Test and Submit on different calls -> The submit step should
+  # append the previous run.
+  message( "ctest_start( ${CTEST_MODEL} APPEND )")
+  ctest_start( ${CTEST_MODEL} APPEND )
+else()
+  message( "ctest_start( ${CTEST_MODEL} )")
+  ctest_start( ${CTEST_MODEL} )
+endif()
+
+#if( NOT "${CTEST_MODEL}" MATCHES "Nightly" )
+#   file  ( READ "${CTEST_BINARY_DIRECTORY}/Testing/TAG" tag_file )
+#   string( REGEX MATCH "[^\n]*" BuildTag ${tag_file} )
+#   set   ( TEST_OUTPUT_DIR "${CTEST_BINARY_DIRECTORY}/Testing/${BuildTag}" )
+#   set   ( TEST_TEMP_DIR "${TEST_OUTPUT_DIR}/temp" )
+#   file  ( MAKE_DIRECTORY ${TEST_TEMP_DIR} )
+#endif()
 
 # Update and Configure
 if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
