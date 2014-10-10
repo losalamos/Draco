@@ -158,18 +158,20 @@ win32$ set work_dir=c:/full/path/to/work_dir
    #   using ProcessorCount to find out how many cores we can use.
    include(ProcessorCount)
    ProcessorCount(num_compile_procs)
-   if(NOT num_compile_procs EQUAL 0)
-     set(CTEST_BUILD_FLAGS -j${num_compile_procs})
-     if( "${sitename}" STREQUAL "Cielito" )
-       # We compile on the front end for this machine. Since we don't
-       # know the actual load apriori, we use the -l option to limit
-       # the total load on the machine.  For CT, my experience shows
-       # that 'make -l N' actually produces a machine load ~ 1.5*N, so
-       # we will specify the max load to be half of the total number
-       # of procs.
-       math(EXPR num_compile_procs "${num_compile_procs} / 2" ) 
-       set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
-     endif()
+   if( NOT WIN32 )
+       if(NOT num_compile_procs EQUAL 0)
+         set(CTEST_BUILD_FLAGS -j${num_compile_procs})
+         if( "${sitename}" STREQUAL "Cielito" )
+           # We compile on the front end for this machine. Since we don't
+           # know the actual load apriori, we use the -l option to limit
+           # the total load on the machine.  For CT, my experience shows
+           # that 'make -l N' actually produces a machine load ~ 1.5*N, so
+           # we will specify the max load to be half of the total number
+           # of procs.
+           math(EXPR num_compile_procs "${num_compile_procs} / 2" ) 
+           set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
+         endif()
+       endif()
    endif()
    
    # Testing parallelism

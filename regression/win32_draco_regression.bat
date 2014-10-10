@@ -1,6 +1,7 @@
-
 @echo off
-REM %comspec% /k ""C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\vcvarsall.bat"" x86
+rem This file copied from c:\program files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
+
+REM %comspec% /k ""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"" x86
 
 rem capture all output from batch file like this...
 rem win32_draco_regression.bat > mylog.txt 2>&1
@@ -19,17 +20,23 @@ if /i %1 == x64       goto amd64
 if /i %1 == arm       goto arm
 if /i %1 == x86_arm   goto x86_arm
 if /i %1 == x86_amd64 goto x86_amd64
+if /i %1 == amd64_x86 goto amd64_x86
+if /i %1 == amd64_arm goto amd64_arm
 goto usage
 
 :x86
-if not exist "%vsloc%\%vsenvbat%" goto missing
-call "c:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd.bat" x86
+if not exist "%~dp0bin\vcvars32.bat" goto missing
+call "%~dp0bin\vcvars32.bat"
+goto :SetVisualStudioVersion
+
+:SetVisualStudioVersion
+set VisualStudioVersion=12.0
 goto :vendorsetup
 
 :usage
 echo Error in script usage. The correct usage is:
 echo     %0 [option]
-echo where [option] is: x86 ^| amd64 ^| arm ^| x86_amd64 ^| x86_arm
+echo where [option] is: x86 ^| amd64 ^| arm ^| x86_amd64 ^| x86_arm ^| amd64_x86 ^| amd64_arm
 echo:
 echo For example:
 echo     %0 x86_amd64
@@ -40,19 +47,26 @@ echo The specified configuration type is missing.  The tools for the
 echo configuration might not be installed.
 goto :eof
 
+rem -------------------------------------------------------------------------------------------
+rem The main regression script starts here.
+rem -------------------------------------------------------------------------------------------
+
 :vendorsetup
-set VENDOR_DIR=d:\work\vendors
+set PATH=%PATH%;c:\MinGW\bin
+set VENDOR_DIR=e:\work\vendors
 set GSL_INC_DIR=%VENDOR_DIR%\gsl-1.16\include
 set GSL_LIB_DIR=%VENDOR_DIR%\gsl-1.16\lib
+set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
+set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
 set QTDIR=c:/Qt/5.3/msvc2013
 set SVN_SSH=c:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe
 
 :cdash
 rem set dashboard_type=Experimental
 set dashboard_type=Nightly
-set base_dir=d:\cdash
+set base_dir=e:\cdash
 set comp=cl
-set script_dir=d:\cdash\draco\regression
+set script_dir=e:\cdash\draco\regression
 set script_name=Draco_Win32.cmake
 set ctestparts=Configure,Build,Test,Submit
 

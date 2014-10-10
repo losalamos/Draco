@@ -92,9 +92,7 @@ set_svn_command("draco/trunk")
 string( REPLACE "//ccscs8/" "//kellyt@ccscs8.lanl.gov/" 
    CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
 # Make machine name lower case   
-if( ${CTEST_SITE} MATCHES "KTHOMPSON" )
-   set( CTEST_SITE "kthompson" )
-endif()
+string( TOLOWER "${CTEST_SITE}" CTEST_SITE )
    
 # Platform customization:
 # 1. Ceilito - set TOOCHAIN_SETUP
@@ -117,7 +115,6 @@ CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
 
 VENDOR_DIR:PATH=${VENDOR_DIR}
 AUTODOCDIR:PATH=${AUTODOCDIR}
-${TEST_PPE_BINDIR}
 
 CMAKE_MAKE_PROGRAM:FILEPATH=${MAKECOMMAND}
 
