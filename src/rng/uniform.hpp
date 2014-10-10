@@ -211,14 +211,14 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
 // assignment may contain values that are not known at comile time (not constexpr).  We don't want to spend to much time debugging
 // this issue because the code is essentially vendor owned (Random123).
 
-#ifndef __PGI
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
         
         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
 
-#ifndef __PGI
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
