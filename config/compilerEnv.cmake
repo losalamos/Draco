@@ -215,6 +215,7 @@ macro(dbsSetupCxx)
 
    # C++11 support:
    option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
+   get_filename_component( my_cxx_compiler ${my_cxx_compiler} NAME )
    if( ${my_cxx_compiler} MATCHES "clang" OR 
          ${my_cxx_compiler} MATCHES "llvm")
       include( apple-clang )
@@ -229,7 +230,7 @@ macro(dbsSetupCxx)
       include( unix-xl )
    elseif( ${my_cxx_compiler} MATCHES "[cg][+]+" )
       include( unix-g++ )
-   else( ${my_cxx_compiler} MATCHES "cl" )
+   else()
       message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
    endif()
 
