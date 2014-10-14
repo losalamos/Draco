@@ -1,7 +1,7 @@
 @echo off
 rem This file copied from c:\program files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
 
-REM %comspec% /k ""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"" x86
+REM %comspec% /[k|c] ""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"" x86
 
 rem capture all output from batch file like this...
 rem win32_draco_regression.bat > mylog.txt 2>&1
@@ -10,7 +10,6 @@ rem In Task Scheduler, create to actions:
 rem 1. d:\cdash\draco\regression\update_regression_dir.bat
 rem 2. c:\windows\system32\cmd.exe /k ""d:\cdash\draco\regression\win32_draco_regression.bat"" x86
 
-@echo off
 if "%1" == "" goto x86
 if not "%2" == "" goto usage
 
@@ -25,8 +24,8 @@ if /i %1 == amd64_arm goto amd64_arm
 goto usage
 
 :x86
-if not exist "%~dp0bin\vcvars32.bat" goto missing
-call "%~dp0bin\vcvars32.bat"
+if not exist "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" goto missing
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
 goto :SetVisualStudioVersion
 
 :SetVisualStudioVersion
