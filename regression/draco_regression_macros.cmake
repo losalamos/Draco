@@ -40,6 +40,7 @@ macro( find_num_procs_avail_for_running_tests num_test_procs)
   if( ${num_test_procs} EQUAL 1 )
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
+    math(EXPR num_test_procs "${num_test_procs} / 2" ) 
   endif()
 
 endmacro()
@@ -160,7 +161,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
    ProcessorCount(num_compile_procs)
    if( NOT WIN32 )
        if(NOT num_compile_procs EQUAL 0)
-         set(CTEST_BUILD_FLAGS -j${num_compile_procs})
+         set(CTEST_BUILD_FLAGS -j${num_compile_procs} -l${num_compile_procs})
          if( "${sitename}" STREQUAL "Cielito" )
            # We compile on the front end for this machine. Since we don't
            # know the actual load apriori, we use the -l option to limit
@@ -469,7 +470,7 @@ macro( set_svn_command svnpath )
         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
     else()
       set( CTEST_CVS_CHECKOUT
-        "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs8/ccs/codes/radtran/svn/${svnpath} source" )
+        "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs7/ccs/codes/radtran/svn/${svnpath} source" )
     endif()
   endif()
 endmacro()
@@ -678,7 +679,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     HINTS
     # if DRACO_DIR is defined, use it.
     $ENV{DRACO_DIR}
-    # regress account on ccscs8
+    # regress account on ccscs7
     /home/regress/cmake_draco/${CTEST_MODEL}_${compiler_short_name}/${CTEST_BUILD_CONFIGURATION}/target
     # Try a path parallel to the work_dir
     ${${dep_pkg}_work_dir}/target

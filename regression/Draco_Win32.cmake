@@ -89,7 +89,7 @@ parse_args()
 find_tools()
 set_svn_command("draco/trunk")
 # Add username and fully qualified machine name.
-string( REPLACE "//ccscs8/" "//kellyt@ccscs8.lanl.gov/" 
+string( REPLACE "//ccscs7/" "//kellyt@ccscs7.lanl.gov/" 
    CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
 # Make machine name lower case   
 string( TOLOWER "${CTEST_SITE}" CTEST_SITE )
@@ -172,21 +172,21 @@ endif()
 
 # Build
 if( "${CTEST_BUILD}" STREQUAL "ON" )
-   # Autodoc
-   if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
-         "${CTEST_SITE}" MATCHES "ccscs8" )
-      message( "ctest_build( TARGET autodoc RETURN_VALUE res )" )
-      ctest_build( 
-         TARGET autodoc
-         RETURN_VALUE res
-         NUMBER_ERRORS num_errors
-         NUMBER_WARNINGS num_warnings
-         )
-      message( "build result: 
-   ${res}
-   Build errors  : ${num_errors}
-   Build warnings: ${num_warnings}" )
-   endif()
+   # # Autodoc
+   # if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
+   #       "${CTEST_SITE}" MATCHES "ccscs8" )
+   #    message( "ctest_build( TARGET autodoc RETURN_VALUE res )" )
+   #    ctest_build( 
+   #       TARGET autodoc
+   #       RETURN_VALUE res
+   #       NUMBER_ERRORS num_errors
+   #       NUMBER_WARNINGS num_warnings
+   #       )
+   #    message( "build result: 
+   # ${res}
+   # Build errors  : ${num_errors}
+   # Build warnings: ${num_warnings}" )
+   # endif()
    # Main build
    message( "ctest_build( TARGET install RETURN_VALUE res )" )
    ctest_build( 

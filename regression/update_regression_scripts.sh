@@ -35,7 +35,7 @@ darwin* | cn[0-9]*)
       # vi pre-commit; comment out all code and add...
       #if ! test `whoami` = 'kellyt'; then
       #echo "This is a read only repository.  The real SVN repository is"
-      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
+      #echo "at svn+ssh://ccscs7/ccs/codes/radtran/svn/draco."
       #exit 1
       #fi
       #exit 0
@@ -43,7 +43,7 @@ darwin* | cn[0-9]*)
       #    pre-revprop-change
       # vi pre-revprop-change --> comment out all code.
       # cd $svnroot
-      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
+      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs7/ccs/codes/radtran/svn/jayenne
       # svnsync sync file:///${svnroot}/jayenne
    fi
 
