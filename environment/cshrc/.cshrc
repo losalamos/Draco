@@ -33,6 +33,8 @@ endif
 switch ("`uname -n`")
 case pi-fey*.lanl.gov:
 case pi*.localdomain:
+case wf-fey*.lanl.gov
+case wf*.localdomain:
 case mu-fey*.lanl.gov:
 case mu*.localdomain:
 case lu*.lanl.gov:

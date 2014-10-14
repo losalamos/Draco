@@ -213,7 +213,7 @@ c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     ;;
 
 # Luna | Moonlight | Mustang
-mp* | lu* | ml* | mu* | pi* | ty*)
+mp* | lu* | ml* | mu* | pi* | wf* | ty*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 
