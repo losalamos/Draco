@@ -63,8 +63,12 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
-add_executable(        Exe_draco_info_gui ${sources} )
+if( WIN32 )
+   # The Win32 option prevents the command console from activating while the GUI is running.
+   add_executable(        Exe_draco_info_gui WIN32 ${sources} )
+else()
+   add_executable(        Exe_draco_info_gui ${sources} )
+endif()
 target_link_libraries( Exe_draco_info_gui 
   Lib_diagnostics
   Qt5::Widgets )

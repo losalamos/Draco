@@ -19,6 +19,9 @@ diWidget::diWidget(QWidget *parent)
       label1( NULL ),
       pushbutton1( new QPushButton("&Ok") )
 {
+    // Set the window title.
+    setWindowTitle( "draco_info-gui" );
+
     // layout = new QGridLayout(this);
     
     // pushbutton1 = new QPushButton("&Ok");
@@ -27,12 +30,15 @@ diWidget::diWidget(QWidget *parent)
     // Get the release information from Lib_diagnostics
     QString msg( rtt_diagnostics::DracoInfo().briefReport().c_str() );
     
-    label1 = new QLabel(msg);
+    label1 = new QLabel(msg,this);
     label1->setWordWrap(false);
     
     layout->addWidget(label1,0,0);
     layout->addWidget(pushbutton1,1,0,Qt::AlignCenter);
     layout->columnStretch(0);
+
+    setLayout( layout );
+
 }
 
 //---------------------------------------------------------------------------//

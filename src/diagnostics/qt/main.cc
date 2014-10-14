@@ -15,6 +15,7 @@
 
 int main(int argc, char *argv[])
 {
+    // http://qt-project.org/doc/qt-5/qtwidgets-mainwindows-mainwindow-main-cpp.html
     QApplication app(argc, argv);
     app.setApplicationName("draco_info-gui");
     app.setOrganizationName("LANL CCS-2");

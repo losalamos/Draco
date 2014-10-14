@@ -534,11 +534,49 @@ macro( setupMPILibrariesWindows )
             CACHE STRING "extra mpirun flags (list)." FORCE)
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
             MPI_LIBRARIES )    
+      elseif("${MPIEXEC}" MATCHES "MPICH2" )
+         set( MPI_FLAVOR "MPICH2" CACHE STRING "Flavor of MPI." )
+         
+         include(ProcessorCount)
+         ProcessorCount(MPIEXEC_MAX_NUMPROCS)
+         set( MPI_CORES_PER_CPU ${MPIEXEC_MAX_NUMPROCS} )
+         set( MPI_PHYSICAL_CORES 0 )
+         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+            "Number of multi-core CPUs per node" FORCE )
+         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+            "Number of cores per cpu" FORCE )
+            
+         # Check for hyperthreading - This is important for reserving
+         # threads for OpenMP tests...
+
+         # correct base-zero indexing
+         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
+         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
+            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         else()
+            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
+         endif()  
+         
+         #
+         set( MPIEXEC_OMP_POSTFLAGS -exitcodes            
+            CACHE STRING "extra mpirun flags (list)." FORCE )
+         set( MPIEXEC_OMP_POSTFLAGS_STRING "-exitcodes"
+            CACHE STRING "extra mpirun flags (list)." FORCE)
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
+            MPI_LIBRARIES )                
       endif()
       
    endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
 
    set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+   if( ${MPI_FOUND} )
+      message(STATUS "Looking for MPI...${MPIEXEC}")
+   else()
+      message(STATUS "Looking for MPI...not found")
+   endif()
 
 endmacro( setupMPILibrariesWindows )
 

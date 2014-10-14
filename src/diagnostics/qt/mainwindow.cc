@@ -11,7 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 #include "mainwindow.hh"
-#include "ui_mainwindow.h"
+#include <QStatusBar>
+//#include "ui_mainwindow.h"
 
 // Compiling with high warning levels will produce this warning:
 // warning: base class 'class Ui_MainWindow' has a non-virtual destructor [-Weffc++]
@@ -22,13 +23,12 @@
 //! Constructor
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    diw(NULL)
+    //ui(new Ui::MainWindow),
+    diw(new diWidget(this))
 {
-    ui->setupUi(this);
-
-    // Set the window title
-    setWindowTitle("draco_info-gui");
+    //ui->setupUi(this);
+    setCentralWidget( diw );
+    statusBar()->showMessage( tr( "Status Bar" ) );
 }
 
 //---------------------------------------------------------------------------//

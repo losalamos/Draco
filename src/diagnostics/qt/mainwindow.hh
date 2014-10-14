@@ -16,9 +16,10 @@
 #include <QMainWindow>
 #include "diWidget.hh"
 
-namespace Ui {
-class MainWindow;
-}
+//namespace Ui 
+//{
+//   class MainWindow;
+//}
 
 class MainWindow : public QMainWindow
 {
@@ -40,7 +41,7 @@ private:
     MainWindow & operator=( MainWindow const & rhs );
     
     // Forms
-    Ui::MainWindow *ui;
+    //Ui::MainWindow *ui;
     
     // Widgets
     diWidget       *diw;
