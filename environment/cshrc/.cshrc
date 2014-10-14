@@ -43,8 +43,9 @@ case ty*.lanl.gov:
 case ty*.localdomain:
 case mp*.lanl.gov:
 case mp*.localdomain:
-    module use $DRACO_ENV_DIR/Modules/hpc
-    module use $DRACO_ENV_DIR/Modules/tu-fe
+    setenv VENDOR_DIR /usr/projects/draco/vendors
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing 
     module unload intel openmpi
     module load intel/14.0.2 openmpi
@@ -52,20 +53,21 @@ case mp*.localdomain:
     module load cmake numdiff git lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
-    setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 
 case redfta[0-9]*:
 case rfta*:
-    module use $DRACO_ENV_DIR/Modules/hpc
-    module use $DRACO_ENV_DIR/Modules/tu-fe
+    setenv VENDOR_DIR /usr/projects/draco/vendors
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
     module load git svn
     breaksw
 
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
-    module use $DRACO_ENV_DIR/Modules/hpc
-    module use $DRACO_ENV_DIR/Modules/tu-fe
+    setenv VENDOR_DIR /usr/projects/draco/vendors
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing 
     module load intel/14.0.2 openmpi
     module load cmake gsl svn fstools 
@@ -75,14 +77,14 @@ case ml*.localdomain:
     module load ParMetis 
     module load ndi random123 eospac
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
-    setenv VENDOR_DIR /usr/projects/draco/vendors
     breaksw
 
 case ct*:
 case ci*:
+    setenv VENDOR_DIR /usr/projects/draco/vendors
    # source /usr/projects/crestone/dotfiles/Cshrc
-   module use $DRACO_ENV_DIR/Modules/hpc
-   module use $DRACO_ENV_DIR/Modules/ct-fe
+   module use $VENDOR_DIR/Modules/hpc
+   module use $VENDOR_DIR/Modules/ct-fe
    # Move some environment out of the way.
    module unload PrgEnv-intel PrgEnv-pgi
    module unload cmake numdiff svn gsl
@@ -103,7 +105,6 @@ case ci*:
    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
    # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
    setenv KMP_AFFINITY none
-   setenv VENDOR_DIR /usr/projects/draco/vendors
    breaksw
    
 case seqlac*:

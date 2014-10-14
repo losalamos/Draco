@@ -15,8 +15,8 @@ fi
 ulimit -s unlimited
 
 # Where is draco
-_BINDIR=`dirname "$BASH_ARGV"`
-export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
+#_BINDIR=`dirname "$BASH_ARGV"`
+#export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
 # Where is the vendor directory
 if test "${VENDOR_DIR}x" == "x"; then
@@ -46,8 +46,8 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-    module use $DRACO_MODULE_DIR/hpc
-    module use $DRACO_MODULE_DIR/tu-fe
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing 
     module unload intel
     module load intel/14.0.4 openmpi

@@ -15,8 +15,8 @@ fi
 ulimit -s unlimited
 
 # Where is draco
-_BINDIR=`dirname "$BASH_ARGV"`
-export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
+#_BINDIR=`dirname "$BASH_ARGV"`
+#export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
 
 # Where is the vendor directory
 if test "${VENDOR_DIR}x" == "x"; then
@@ -33,8 +33,8 @@ fi
 # source /opt/modules/3.2.6.7/init/bash
 
 # Use modules found in the draco directory
-module use $DRACO_MODULE_DIR/hpc
-module use $DRACO_MODULE_DIR/ct-fe
+module use $VENDOR_DIR/Modules/hpc
+module use $VENDOR_DIR/Modules/ct-fe
 
 # Move some environment out of the way.
 module unload PrgEnv-intel PrgEnv-pgi
