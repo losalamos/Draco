@@ -161,7 +161,7 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
 #     message( "ctest_test( SCHEDULE_RANDOM ON )" )
 #     ctest_test( SCHEDULE_RANDOM ON )
 #   else()
-     find_num_procs_avail_for_running_tests(num_test_procs)
+     find_num_procs_avail_for_running_tests() # returns num_test_procs
      message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
      ctest_test( PARALLEL_LEVEL ${num_test_procs} 
                  SCHEDULE_RANDOM ON 

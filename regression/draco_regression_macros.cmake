@@ -22,10 +22,10 @@ set( drm_verbose ON )
 ##     set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${num_test_procs})
 ## Find the number of processors that can be used for testing.
 ##---------------------------------------------------------------------------------------##
-macro( find_num_procs_avail_for_running_tests num_test_procs)
+macro( find_num_procs_avail_for_running_tests )
 
   # Default value is 1
-  set( num_test_procs 1 )
+  unset( num_test_procs )
 
   # If this job is running under Torque (msub script), use the
   # environment variable PBS_NP or SLURM_NPROCS
@@ -33,14 +33,14 @@ macro( find_num_procs_avail_for_running_tests num_test_procs)
     set( num_test_procs $ENV{PBS_NP} )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
-  endif()
+  else()
 
-  # If this is not a known batch system, the attempt to set values
-  # according to machine name:
-  if( ${num_test_procs} EQUAL 1 )
+    # If this is not a known batch system, the attempt to set values
+    # according to machine name:
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
-    math(EXPR num_test_procs "${num_test_procs} / 2" ) 
+    math( EXPR num_test_procs "${num_test_procs} / 2" ) 
+
   endif()
 
 endmacro()
