@@ -78,8 +78,8 @@ else
 fi
 
 # Use modules found in the draco directory
-run "module use ${regdir}/draco/environment/Modules/tu-fe"
-run "module use ${regdir}/draco/environment/Modules/hpc"
+run "module use $VENDOR_DIR/Modules/tu-fe"
+run "module use $VENDOR_DIR/Modules/hpc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
 run "module purge &> /dev/null"
