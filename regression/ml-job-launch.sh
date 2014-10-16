@@ -50,6 +50,15 @@ if test "${logdir}x" = "x"; then
     exit 1
 fi
 
+# What queue should we use
+access_queue=""
+if test -x /opt/MOAB/bin/drmgroups; then
+   avail_queues=`/opt/MOAB/bin/drmgroups`
+   case $avail_queues in
+   *access*) access_queue="-A access" ;;
+   esac
+fi
+
 # Banner
 echo "==========================================================================="
 echo "ML Regression job launcher"
@@ -67,6 +76,7 @@ echo "   regdir         = ${regdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
 #echo "   base_dir       = ${base_dir}"
+echo "   MOAB queue     = ${access_queue}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -87,7 +97,7 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build, Test on back end
-cmd="/opt/MOAB/bin/msub -A access -j oe -V -o ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/ml-regress.msub"
+cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/ml-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
