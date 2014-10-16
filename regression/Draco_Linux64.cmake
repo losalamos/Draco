@@ -128,7 +128,7 @@ endif()
 if( "${CTEST_BUILD}" STREQUAL "ON" )
    # Autodoc
    if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
-         "${CTEST_SITE}" MATCHES "ccscs8" )
+         "${CTEST_SITE}" MATCHES "ccscs7" )
       message( "ctest_build( TARGET autodoc RETURN_VALUE res )" )
       ctest_build( 
          TARGET autodoc
