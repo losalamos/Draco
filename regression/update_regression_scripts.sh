@@ -19,7 +19,7 @@ darwin* | cn[0-9]*)
    if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
       source $HOME/.keychain/$MYHOSTNAME-sh
    fi
-   SVN=/projects/opt/subversion/1.7.14/bin/svn
+   SVN=/projects/opt/subversion/1.8.10/bin/svn
    REGDIR=/projects/opt/draco/regress
 
    svnroot=/projects/opt/draco/regress/svn
@@ -47,10 +47,10 @@ darwin* | cn[0-9]*)
       # svnsync sync file:///${svnroot}/jayenne
    fi
 
-   run "svnsync --non-interactive sync file://${svnroot}/draco"
-   run "svnsync --non-interactive sync file://${svnroot}/jayenne"
-   run "svnsync --non-interactive sync file://${svnroot}/capsaicin"
-   # run "svnsync --non-interactive sync file:///${svnroot}/asterisk"
+   run "${SVN}sync --non-interactive sync file://${svnroot}/draco"
+   run "${SVN}sync --non-interactive sync file://${svnroot}/jayenne"
+   run "${SVN}sync --non-interactive sync file://${svnroot}/capsaicin"
+   # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
    ;;
 *)
    SVN=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn

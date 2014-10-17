@@ -75,8 +75,8 @@ echo " "
 
 for jobid in ${dep_jobids}; do
     while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
-       echo "   ${subproj}: waiting for jobid = $jobid to finish."
-       sleep 10m
+       echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 minutes)."
+       sleep 5m
     done
 done
 
@@ -91,7 +91,8 @@ jobid=`echo ${jobid//[^0-9]/}`
 sleep 1m
 while test "`$SHOWQ | grep $jobid`" != ""; do
    $SHOWQ | grep $jobid
-   sleep 10m
+   echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 minutes)."
+   sleep 5m
 done
 
 # Submit from the front end

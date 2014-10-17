@@ -71,7 +71,7 @@ echo "==========================================================================
 echo "Darwin regression: ${ctestparts} from ${machine}."
 echo "                   ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
-ulimit -a
+run "ulimit -a"
 
 # Modules
 # ----------------------------------------
@@ -104,6 +104,7 @@ export FC=`which mpiifort`
 export MPIEXEC=`which mpirun`
 # export OMP_NUM_THREADS=16
 comp=`basename $CXX`
+run "mpd --daemon"
 printenv
 
 case $extra_params in
@@ -141,10 +142,19 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   base_dir=/panfs/scratch1/$USER/cdash/darwin
-   # Keep build and target dirs out of /usr/projects locations to
-   # prevent the .snapshots directory from filling up.
-   scratch_dir=$base_dir
+   if test "${regress_mode}" = "off"; then
+      scratch_dir=/panfs/scratch1/${moniker}/cdash/darwin
+      base_dir=${scratch_dir}
+   else
+      scratch_dir=/projects/opt/draco/cdash/darwin
+      base_dir=/projects/opt/draco/cdash/darwin
+   fi
+   mkdir -p $scratch_dir
+   mkdir -p $base_dir
+   if ! test -d ${scratch_dir}; then
+      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+      exit 1
+   fi
 fi
 
 echo " "
