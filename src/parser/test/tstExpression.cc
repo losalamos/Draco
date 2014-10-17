@@ -123,10 +123,16 @@ void tstExpression(UnitTest &ut)
     xs[1] = y;
     xs[2] = z;
     xs[3] = t;
-    
+
+#if defined(MSVC)
+#pragma warning (push)
+    // warning C4804: '/' : unsafe use of type 'bool' in operation
+#pragma warning (disable:4804)
+#endif
+
     if (soft_equiv((*expression)(xs),
-                   (((1 && 1.3) || !(y<-1))/5.
-                    + (2>1) * r*square(2.7-1.1*z))*t))
+                   (((1 && 1.3) || !((y<-1))/5.0)
+                    + (2>1) * r*square(2.7-1.1*z))*t)) 
     {
         ut.passes("expression successfully evaluated");
     }
@@ -134,6 +140,10 @@ void tstExpression(UnitTest &ut)
     {
         ut.failure("expression NOT successfully evaluated");
     }
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
     tokens = string("20*(r>=1.1*m && z<=1.5*m || r>=2.0*m)");
 
