@@ -11,14 +11,14 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <stdlib.h>
-#include <cmath>
+// #include <iostream>
+// #include <sstream>
+// #include <vector>
+// #include <stdlib.h>
+// #include <cmath>
 
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
+// #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/DracoMath.hh"
 #include "../String_Token_Stream.hh"
@@ -61,11 +61,11 @@ void tstExpression(UnitTest &ut)
 
     if (tokens.error_count()==0 && tokens.lookahead().type()==EXIT)
     {
-        ut.passes("expression successfully parsed");
+        PASSMSG("expression successfully parsed");
     }
     else
     {
-        ut.failure("expression NOT successfully parsed");
+        FAILMSG("expression NOT successfully parsed");
         cerr << tokens.messages() << endl;
     }
 
@@ -78,11 +78,11 @@ void tstExpression(UnitTest &ut)
     // parentheses, and positive prefix
     if (expression_text_copy.str()==expression_text_raw)
     {
-        ut.passes("expression successfully rendered as text");
+        PASSMSG("expression successfully rendered as text");
     }
     else
     {
-        ut.failure("expression NOT successfully rendered as text");
+        FAILMSG("expression NOT successfully rendered as text");
         cerr << expression_text_raw << endl;
         cerr << expression_text_copy.str() << endl;
     }
@@ -100,11 +100,11 @@ void tstExpression(UnitTest &ut)
 
     if (deriv_text.str()==expression_text_raw)
     {
-        ut.passes("expression successfully derived");
+        PASSMSG("expression successfully derived");
     }
     else
     {
-        ut.failure("expression NOT successfully derived");
+        FAILMSG("expression NOT successfully derived");
         cerr << expression_text_raw << endl;
         cerr << deriv_text.str() << endl;
     }
@@ -131,14 +131,14 @@ void tstExpression(UnitTest &ut)
 #endif
 
     if (soft_equiv((*expression)(xs),
-                   (((1 && 1.3) || !((y<-1))/5.0)
-                    + (2>1) * r*square(2.7-1.1*z))*t)) 
+                   (((1 && 1.3) || !(y<-1))/5.
+                    + (2>1) * r*square(2.7-1.1*z))*t))
     {
-        ut.passes("expression successfully evaluated");
+        PASSMSG("expression successfully evaluated");
     }
     else
     {
-        ut.failure("expression NOT successfully evaluated");
+        FAILMSG("expression NOT successfully evaluated");
     }
 
 #if defined(MSVC)
@@ -150,22 +150,18 @@ void tstExpression(UnitTest &ut)
     expression = Expression::parse(4, variable_map, tokens);
 
     if (expression != SP<Expression>())
-    {
-        ut.passes("expression successfully parsed");
-    }
+        PASSMSG("expression successfully parsed");
     else
-    {
-        ut.failure("expression NOT successfully parsed");
-    }        
+        FAILMSG("expression NOT successfully parsed");
 
     if (soft_equiv((*expression)(xs),
                    20.0*((r>=1.1) && ((z<=1.5) || (r>=2.0)))))
     {
-        ut.passes("expression successfully evaluated");
+        PASSMSG("expression successfully evaluated");
     }
     else
     {
-        ut.failure("expression NOT successfully evaluated");
+        FAILMSG("expression NOT successfully evaluated");
     }
 
     {
@@ -178,11 +174,11 @@ void tstExpression(UnitTest &ut)
         // parentheses, and positive prefix
         if (expression_text_copy.str()==expression_text_raw)
         {
-            ut.passes("expression successfully rendered as text");
+            PASSMSG("expression successfully rendered as text");
         }
         else
         {
-            ut.failure("expression NOT successfully rendered as text");
+            FAILMSG("expression NOT successfully rendered as text");
             cerr << expression_text_raw << endl;
             cerr << expression_text_copy.str() << endl;
         }
@@ -197,56 +193,44 @@ void tstExpression(UnitTest &ut)
 
     if (tokens.error_count()==0 && tokens.lookahead().type()==EXIT)
     {
-        ut.passes("expression successfully parsed");
+        PASSMSG("expression successfully parsed");
     }
     else
     {
-        ut.failure("expression NOT successfully parsed");
+        FAILMSG("expression NOT successfully parsed");
         cerr << tokens.messages() << endl;
     }        
 
     if (soft_equiv((*expression)(xs),
                     pow(r, t) + -3 - z))
-    {
-        ut.passes("expression successfully evaluated");
-    }
+        PASSMSG("expression successfully evaluated");
     else
-    {
-        ut.failure("expression NOT successfully evaluated");
-    }
+        FAILMSG("expression NOT successfully evaluated");
 
     if (!expression->is_constant() &&
         !expression->is_constant(0) &&
         expression->is_constant(1))
-    {
-        ut.passes("is_constant good");
-    }
+        PASSMSG("is_constant good");
     else
-    {
-        ut.failure("is_constant NOT good");
-    }
+        FAILMSG("is_constant NOT good");
 
     tokens = String_Token_Stream("exp(-0.5*r/m)*(3*cos(2*y/m) + 5*sin(3*y/m))");
 
     expression = Expression::parse(4, variable_map, tokens);
 
     if (expression != SP<Expression>())
-    {
-        ut.passes("expression successfully parsed");
-    }
+        PASSMSG("expression successfully parsed");
     else
-    {
-        ut.failure("expression NOT successfully parsed");
-    }        
+        FAILMSG("expression NOT successfully parsed");
 
     if (soft_equiv((*expression)(xs),
                    exp(-0.5*r)*(3*cos(2*y) + 5*sin(3*y))))
     {
-        ut.passes("expression successfully evaluated");
+        PASSMSG("expression successfully evaluated");
     }
     else
     {
-        ut.failure("expression NOT successfully evaluated");
+        FAILMSG("expression NOT successfully evaluated");
     }
 
     {
@@ -259,11 +243,11 @@ void tstExpression(UnitTest &ut)
         // parentheses, and positive prefix
         if (expression_text_copy.str()==expression_text_raw)
         {
-            ut.passes("expression successfully rendered as text");
+            PASSMSG("expression successfully rendered as text");
         }
         else
         {
-            ut.failure("expression NOT successfully rendered as text");
+            FAILMSG("expression NOT successfully rendered as text");
             cerr << expression_text_raw << endl;
             cerr << expression_text_copy.str() << endl;
         }
@@ -274,22 +258,14 @@ void tstExpression(UnitTest &ut)
     expression = Expression::parse(4, variable_map, tokens);
 
     if (expression != SP<Expression>())
-    {
-        ut.passes("expression successfully parsed");
-    }
+        PASSMSG("expression successfully parsed");
     else
-    {
-        ut.failure("expression NOT successfully parsed");
-    }        
+        FAILMSG("expression NOT successfully parsed");
 
     if (soft_equiv((*expression)(xs), 0.0))
-    {
-        ut.passes("expression successfully evaluated");
-    }
+        PASSMSG("expression successfully evaluated");
     else
-    {
-        ut.failure("expression NOT successfully evaluated");
-    }
+        FAILMSG("expression NOT successfully evaluated");
 
     {
         ostringstream expression_text_copy;
@@ -300,11 +276,11 @@ void tstExpression(UnitTest &ut)
         // parentheses, and positive prefix
         if (expression_text_copy.str()==expression_text_raw)
         {
-            ut.passes("expression successfully rendered as text");
+            PASSMSG("expression successfully rendered as text");
         }
         else
         {
-            ut.failure("expression NOT successfully rendered as text");
+            FAILMSG("expression NOT successfully rendered as text");
             cerr << expression_text_raw << endl;
             cerr << expression_text_copy.str() << endl;
         }
@@ -316,23 +292,15 @@ void tstExpression(UnitTest &ut)
         SP<Expression> expression = Expression::parse(4, variable_map, tokens);
         
         if (expression->is_constant(0))
-        {
-            ut.passes("expression successfully const tested");
-        }
+            PASSMSG("expression successfully const tested");
         else
-        {
-            ut.failure("expression NOT successfully const tested");
-        }
+            FAILMSG("expression NOT successfully const tested");
 
         expression->set_units(J);
         if (is_compatible(J, expression->units()))
-        {
-            ut.passes("units correctly set");
-        }
+            PASSMSG("units correctly set");
         else
-        {
-            ut.failure("units NOT correctly set");
-        }
+            FAILMSG("units NOT correctly set");
     }
 
     {
@@ -341,13 +309,9 @@ void tstExpression(UnitTest &ut)
         SP<Expression> expression = Expression::parse(4, variable_map, tokens);
         
         if (expression->is_constant(0))
-        {
-            ut.passes("expression successfully const tested");
-        }
+            PASSMSG("expression successfully const tested");
         else
-        {
-            ut.failure("expression NOT successfully const tested");
-        }
+            FAILMSG("expression NOT successfully const tested");
         
         ostringstream expression_text_copy;
         expression->write(vars, expression_text_copy);
@@ -360,30 +324,24 @@ void tstExpression(UnitTest &ut)
         // parentheses, and positive prefix
         if (expression_text_copy.str()==expression_text_raw)
         {
-            ut.passes("expression successfully rendered as text");
+            PASSMSG("expression successfully rendered as text");
         }
         else
         {
-            ut.failure("expression NOT successfully rendered as text");
+            FAILMSG("expression NOT successfully rendered as text");
             cerr << expression_text_raw << endl;
             cerr << expression_text_copy.str() << endl;
         }
 
-
         expression->set_units(J);
         if (is_compatible(J, expression->units()))
-        {
-            ut.passes("units correctly set");
-        }
+            PASSMSG("units correctly set");
         else
-        {
-            ut.failure("units NOT correctly set");
-        }
+            FAILMSG("units NOT correctly set");
     }
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
