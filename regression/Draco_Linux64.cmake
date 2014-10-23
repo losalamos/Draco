@@ -92,7 +92,8 @@ endif()
 # Start
 # if this is the 2nd (or 3rd) call to this script (i.e.: test and submit
 # on different calls) then append the results.
-if( ${CTEST_SUBMIT} AND NOT ${CTEST_TEST} )
+if( (${CTEST_SUBMIT} AND NOT ${CTEST_TEST}) OR
+    (${CTEST_TEST}   AND NOT ${CTEST_BUILD}) )
   # Test and Submit on different calls -> The submit step should
   # append the previous run.
   message( "ctest_start( ${CTEST_MODEL} APPEND )")
