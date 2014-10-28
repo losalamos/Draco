@@ -39,7 +39,11 @@ add_component_library(
    TARGET       Lib_quadrature
    TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element"
    LIBRARY_NAME ${PROJECT_NAME} 
-   SOURCES      "${sources}" )
+   SOURCES      "${sources}" 
+   VENDOR_LIST         "GSL"
+   VENDOR_LIBS         "gsl::gsl"
+   VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR}"
+)
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

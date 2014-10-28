@@ -33,7 +33,7 @@ include_directories(
 
 add_scalar_tests( 
    SOURCES "${test_sources}"
-   DEPS    "Lib_special_functions;Lib_units;Lib_ode;Lib_diagnostics" ) 
+   DEPS    "Lib_special_functions;Lib_diagnostics" ) 
 
 # ---------------------------------------------------------------------------- #
 # Copy vendor dll files to test directory (binary_dir)

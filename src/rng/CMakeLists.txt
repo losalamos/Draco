@@ -50,21 +50,14 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-if( RANDOM123_FOUND )
-   set( rng_vendor_include_dirs
-      "${GSL_INCLUDE_DIRS};${RANDOM123_INCLUDE_DIR}" )
-else()
-   set( rng_vendor_include_dirs "${GSL_INCLUDE_DIRS}" )
-endif()
-
 add_component_library( 
    TARGET       Lib_rng
-   TARGET_DEPS  Lib_dsxx
+   TARGET_DEPS  "Lib_dsxx"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}"  
-   VENDOR_LIST         "GSL"
-   VENDOR_LIBS         "${GSL_LIBRARIES}"
-   VENDOR_INCLUDE_DIRS "${rng_vendor_include_dirs}"
+   VENDOR_LIST  "GSL"
+   VENDOR_LIBS  "gsl::gsl"
+   VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR};${RANDOM123_INCLUDE_DIR}"
 )
 
 # ---------------------------------------------------------------------------- #
