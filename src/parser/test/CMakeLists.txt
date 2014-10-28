@@ -42,6 +42,7 @@ set_target_properties( Ut_parser_tstConsole_Token_Stream
      OUTPUT_NAME tstConsole_Token_Stream
      VS_KEYWORD  tstConsole_Token_Stream
      PROJECT_LABEL Ut_parser_tstConsole_Token_Stream
+     FOLDER      parser_test
    )
 target_link_libraries( Ut_parser_tstConsole_Token_Stream
    Lib_parser

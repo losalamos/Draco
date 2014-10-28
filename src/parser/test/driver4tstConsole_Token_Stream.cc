@@ -22,6 +22,13 @@
 
 using namespace std;
 
+#ifdef MSVC_IDE
+// When configuring for the MSVC_IDE, ut.getTestPath() will point to viz/test/[Release|Debug].
+#define WIN32PATHOFFSET std::string("..\\")
+#else
+#define WIN32PATHOFFSET std::string("")
+#endif
+
 //---------------------------------------------------------------------------//
 // In this unit test we need to check the parser's ability to accept a
 // collection of tokens from standard input.  This cannot be done with a
@@ -42,18 +49,15 @@ void runtest( rtt_dsxx::UnitTest &ut )
     string tctsApp = rtt_dsxx::getFilenameComponent(
         ut.getTestPath() + std::string("tstConsole_Token_Stream"),
         rtt_dsxx::FC_NATIVE) + rtt_dsxx::exeExtension;
-// #ifndef _MSC_VER    
-//     // Unix needs the leading dot-slash.
-//     tctsApp = std::string("./") + tctsApp;
-// #endif
 
     // Build path for the input file "console_test.inp"
     string const ctInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + std::string("console_test.inp"),
+        ut.getTestPath() + WIN32PATHOFFSET + std::string( "console_test.inp" ),
         rtt_dsxx::FC_NATIVE);
 
     // String to hold command that will start the test.  For example:
-    // "mpirun -np 1 ./tstConsole_Token_Stream < console_test.inp"    
+    // "/full/path/to/tstConsole_Token_Stream < /full/path/to/console_test.inp"    
+    std::cout << tctsApp << " < " << ctInputFile << std::endl;
     std::string consoleCommand( tctsApp + " < " + ctInputFile );
 
     // return code from the system command
