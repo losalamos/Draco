@@ -49,13 +49,14 @@ else
     module use $VENDOR_DIR/Modules/hpc
     module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing 
+    # compiler, mpi
     module unload intel
     module load intel/14.0.4 openmpi
-    module load gsl svn 
-    module load cmake/3.0.0 numdiff git lapack/3.4.1 totalview
-    module load trilinos SuperLU_DIST
+    # other vendor libraries
+    module load lapack/3.4.1 trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
-    module load emacs
+    # support tools
+    module load svn cmake/3.0.0 numdiff git totalview emacs
 
 fi
 

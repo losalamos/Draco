@@ -45,7 +45,7 @@ module load PrgEnv-intel
 module unload xt-libsci xt-totalview
 
 # draco modules start here.
-module load gsl lapack/3.4.1
+module load gsl/1.15 lapack/3.4.1
 module load cmake numdiff svn emacs
 module load trilinos SuperLU_DIST 
 module load ParMetis ndi random123 eospac
