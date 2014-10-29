@@ -53,8 +53,7 @@ rem ----------------------------------------------------------------------------
 :vendorsetup
 set PATH=%PATH%;c:\MinGW\bin
 set VENDOR_DIR=e:\work\vendors
-set GSL_INC_DIR=%VENDOR_DIR%\gsl-1.16\include
-set GSL_LIB_DIR=%VENDOR_DIR%\gsl-1.16\lib
+set GSL_ROOT_DIR=%VENDOR_DIR%\gsl-1.16
 set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
 set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
 set QTDIR=c:/Qt/5.3/msvc2013
