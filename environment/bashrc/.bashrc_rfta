@@ -14,10 +14,6 @@ fi
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
 
-# Where is draco
-_BINDIR=`dirname "$BASH_ARGV"`
-export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
-
 # Where is the vendor directory
 if test "${VENDOR_DIR}x" == "x"; then
    if test -d /usr/projects/draco/vendors; then
@@ -46,8 +42,8 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-    module use $DRACO_MODULE_DIR/hpc
-    module use $DRACO_MODULE_DIR/tu-fe
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
     module load svn numdiff git hsi-htar psi
 
 fi

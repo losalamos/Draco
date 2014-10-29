@@ -128,3 +128,8 @@ if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin"; fi
 run "cd ${work_dir}/.."
 run "chgrp -R draco svn"
 run "chmod -R g+rwX,o-rwX svn"
+
+# Update Module directories
+cd /usr/projects/draco/vendors/environment
+/usr/projects/draco/vendors/subversion-1.8.5/ml/bin/svn up
+

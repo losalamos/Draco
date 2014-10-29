@@ -48,7 +48,7 @@ module unload xt-libsci xt-totalview
 module load gsl/1.15 lapack/3.4.1
 module load cmake numdiff svn emacs
 module load trilinos SuperLU_DIST 
-module load ParMetis ndi random123 eospac
+module load ParMetis ndi random123 eospac/v6.2.4
 
 export OMP_NUM_THREADS=8
 
