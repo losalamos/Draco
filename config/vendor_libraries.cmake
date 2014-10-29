@@ -193,21 +193,35 @@ macro( setupGSL )
     get_target_property( gslimploc      gsl::gsl      IMPORTED_LOCATION )
     get_target_property( gslcblasimploc gsl::gslcblas IMPORTED_LOCATION )
     
+    # If this platform doesn't support shared libraries (e.g. cross
+    # compiling), assume static. This suppresses cmake (3.0.0) warnings
+    # of the form: 
+    #     "ADD_LIBRARY called with MODULE option but the target platform
+    #     does not support dynamic linking.  Building a STATIC library
+    #     instead.  This may lead to problems."
+  if( TARGET_SUPPORTS_SHARED_LIBS )
+    set( library_type UNKNOWN )
+  else()
+    set( library_type STATIC )
+  endif()
+
     set( Draco_EXPORT_TARGET_PROPERTIES 
       "${Draco_EXPORT_TARGET_PROPERTIES}
-add_library( gsl::gsl UNKNOWN IMPORTED )
+add_library( gsl::gsl ${library_type} IMPORTED )
 set_target_properties( gsl::gsl PROPERTIES
     IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
     IMPORTED_LINK_INTERFACE_LIBRARIES \"gsl::gslcblas\"
     IMPORTED_LOCATION                 \"${gslimploc}\" 
 )
 
-add_library( gsl::gslcblas UNKNOWN IMPORTED )
+add_library( gsl::gslcblas ${library_type} IMPORTED )
 set_target_properties( gsl::gslcblas PROPERTIES
     IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
     IMPORTED_LOCATION                 \"${gslcblasimploc}\" 
 )
 ")    
+
+  unset(library_type)
 
 else()
   message( STATUS "Looking for GSL.......not found" )
