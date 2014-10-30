@@ -252,7 +252,6 @@ macro( setupMPILibrariesUnix )
 
          # --bind-to-core added in OpenMPI-1.4 
 
-         message("MPI Version = ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
            #message( "MPI Version < 1.7" )
            set( MPIEXEC_OMP_POSTFLAGS 

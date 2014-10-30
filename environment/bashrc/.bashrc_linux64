@@ -52,8 +52,7 @@ case ${target} in
    fi
    module use /ccs/codes/radtran/vendors/Modules
    module load gcc/4.8.1
-   module load gsl/1.16
-   module load emacs/24.2
+   module load emacs/24.4
    module load openmpi totalview 
    module load cmake grace lapack random123 eospac numdiff git svn
    module load dia graphviz doxygen git valgrind

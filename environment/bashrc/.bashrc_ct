@@ -38,7 +38,7 @@ module use $VENDOR_DIR/Modules/ct-fe
 
 # Move some environment out of the way.
 module unload PrgEnv-intel PrgEnv-pgi
-module unload cmake numdiff svn gsl
+module unload cmake numdiff svn
 module unload papi perftools trilinos
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel

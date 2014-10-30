@@ -71,5 +71,4 @@ GCC_ENABLE_GLIBCXX_DEBUG:BOOL=OFF
 #GRACE_LIB_DIR:PATH=/ccs/opt/x86_64/grace/grace/lib
 
 # Where is GSL?
-#GSL_INC_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/include
-#GSL_LIB_DIR:PATH=/ccs/codes/radtran/vendors/gsl/Linux64/1.13/lib
+#GSL_ROOT_DIR:PATH=/ccs/codes/radtran/vendors/gsl-1.16

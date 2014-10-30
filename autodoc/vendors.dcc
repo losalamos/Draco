@@ -11,11 +11,6 @@
 Some Draco packages use third party libraries.  This page provides some
 information about these third parties and how to obtian or build them.
 
-\par Table of Contents
-- \ref vendor_locations
-- \ref vendor_versions
-- \ref vendor_how2build
-
 \par Introduction
 
 The vendors used by Draco and associated projects are maintained by the Draco
@@ -25,42 +20,9 @@ Linux64, etc.) and stored in either the \c /ccs/codes/radtran/vendors or \c
 
 Draco uses the compilers and MPI files provided by the systems team for each
 platform.  Each MPI installation requires a custom installation to correctly
-use the high speed interconnect hardware.  The nomenclature is \c
-<platform>-<mpi vendor>-<c++ compiler>-<f90 compiler>.
-
-For example:
-\code
-/usr/projects/draco/vendors/
-   cmake-2.8.5-Linux-i386/
-   git-1.7.5/
-   numdiff-5.2.1/
-   ...
-
-   tu-openmpi143-intel100023-intel100023/
-      atlas/
-         lib/
-         include/
-      gandolf/
-         lib/
-      gsl-1.14
-         lib/
-         include/
-   yr-openmpi143-pgi903-pgi903/
-      atlas/
-         lib/
-         include/
-      gandolf/
-         lib/
-      gsl-1.14
-         lib/
-         include/   
-   ...      
-\endcode
-
+use the high speed interconnect hardware.
 
 <hr><!-- ------------------------------------------------------------ -->
-
-\section vendor_versions Vendor versions
 
 <!-- See http://www.mcternan.me.uk/mscgen/ for command syntax -->
 
@@ -87,88 +49,6 @@ d600 abox d620 [label="OpenMPI-1.4.3", textbgcolour="#ff7f7f"];
 d521 abox d620 [label="GSL-1.14", textbgcolour="#7fff7f"];
 
 \endmsc
-
-<hr><!-- ------------------------------------------------------------ -->
-
-\section vendor_locations Location of pre-built vendor code:
-
-\subsection vendor_location_ccs2_lan CCS2 LAN
-
-\par GLS - GNU Scientific Library
-
-Linux64/GCC - <tt>/ccs/codes/radtran/vendors/Linux64/gsl/</tt>.
-
-\subsection vendor_location_icn ICN machines
-
-\par GLS - GNU Scientific Library
-
-Linux64/GCC - <tt>/usr/projects/draco/vendors/gsl/</tt>.
-
-<hr><!-- ------------------------------------------------------------ -->
-
-\section vendor_how2build Building vendor code:
-
-\subsection vendor_how2build_gsl GSL - PGI - ccscs8
-
-\code
-% CC=/ccs/opt/x86_64/pgi_7.0-5/linux86-64/7.0-5/bin/pgcc
-% CFLAGS="-fPIC -O2"
-% cd /ccs/codes/radtran/vendors/gsl/Linux64-pgi/b
-% ../s/gsl-1.8/configure --prefix=/ccs/codes/radtran/vendors/gsl/Linux64-pgi
-% make -j4 install
-\endcode
-
-<hr><!-- ------------------------------------------------------------ -->
-
-\subsection vendor_how2build_atlas ATLAS - Intel - turing
-
-\code
-% /usr/projects/draco/vendors/atlas/atlas3.8.3/ATLAS/configure -Si cputhrchk 
-0 --prefix=/usr/projects/draco/vendors/atlas/Linux64/openmpi133-intel100023-i
-ntel100023 --with-netlib-lapack=/opt/Ptools/lapack/3.1.1/lib/liblapack.a -C i
-f ifort -F if '-std90 -warn unused -vec-report0 -ip -fpe0 -fp-model precise -
-fp-speculation strict -ftz -fpic -O3'
-% make nj=2
-% make install
-\endcode
-
-<hr><!-- ------------------------------------------------------------ -->
-
-\subsection vendor_how2buildopenmpi OpenMPI - Linux64
-
-- Download from www.openmpi.com
-- For SMP machines (e.g.: CCS-2 Linux64 machines), no special drivers are
-  required.  If building for systems that have custom interconnect hardware
- (infiniband, etc), you must link against hardware drivers.
-
-\code
-% mkdir -p /var/tmp/kgt/openmpi
-% cd /var/tmp/kgt/openmpi
-% ~/openmpi-1.5.4/configure --prefix=/ccs/codes/radtran/vendors/openmpi-1.5.4
-% make -j16
-% make -j16 install
-\endcode
-
-<hr><!-- ------------------------------------------------------------ -->
-
-\subsection vendor_how2buildcmake CMeke - PPC64
-
-- For most platforms, you can download the precompiled binary and simply
-  extract the files.
-- Download installer from http://www.cmake.org/files/v2.8.
-
-- You must build CMake from scratch when on PPC64/Linux (Roadrunner backend). 
-- Download sources from http://www.cmake.org/files/v2.8.
-
-- log onto a PPC backend node (e.g.: \c rra[0-9][0-9][0-9]b). You must \c msub
-  \c -I onto the x86 backend and then ssh into the PPE node (\cb).
-  
-\code
-% ./bootstrap --prefix=<install loc>
-% make -j8
-% make -j8 install
-\endcode
-
 
 */
 //---------------------------------------------------------------------------//

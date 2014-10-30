@@ -50,17 +50,6 @@ if( GRACE_FOUND )
       FILEPATH "Grace libraries for linking."  )
    mark_as_advanced( Grace_LIBRARIES )
    
-#   string( REPLACE "_dll.lib" ".dll" Grace_DLL ${Grace_LIBRARY} )
-#   string( REPLACE "_dll.lib" ".dll" Grace_BLAS_DLL ${Grace_BLAS_LIBRARY} )
-#   mark_as_advanced( Grace_DLL Grace_BLAS_DLL )
-#   if( EXISTS ${Grace_DLL} )
-#      set(Grace_DLL_LIBRARIES "${Grace_DLL};${Grace_BLAS_DLL}" CACHE STRING 
-#         "list of gsl dll files.")
-#   mark_as_advanced( Grace_DLL_LIBRARIES Grace_LIBRARIES )
-#   else()
-#      set( Grace_DLL "NOTFOUND")
-#      set( Grace_BLAS_DLL "NOTFOUND" )
-#   endif()
 endif()
 
 if( VERBOSE )

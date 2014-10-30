@@ -27,7 +27,7 @@
 #   ICN this is done for you automatically.  If not set, CMake will
 #   use whatever it can find in your path (e.g.: /usr/bin/g++)
 # - Vendor locations can be specified by setting $<VENDOR>_LIB_DIR and
-#   $<VENDOR>_INC_DIR. For example, $MPI_INC_DIR, $GSL_LIB_DIR,
+#   $<VENDOR>_INC_DIR. For example, $MPI_INC_DIR, $GSL_ROOT_DIR,
 #   etc. When using the Draco modules feature, this is done
 #   automatically. 
 #
@@ -36,8 +36,8 @@
 # 1. By default MPI is selected by finding 
 #    mpirun/mpiexec/aprun/srun/etc in your PATH. 
 # 2. GSL must be found in a standard system location or the
-#    environment variables GSL_INC_DIR and GSL_LIB_DIR must be set to
-#    point to the local GSL installation.
+#    environment variable GSL_ROOT_DIR must be set to point to the
+#    local GSL installation.
 #
 # Building:
 # 
