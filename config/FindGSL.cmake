@@ -16,10 +16,12 @@
 # ::
 #
 #  GSL_FOUND          - True if GSL found on the local system
-#  GSL_INCLUDE_DIR    - Locaiton of GSL header files.
-#  GSL_LIBRARIES      - List of GSL libraries.
-#  GSL_VERSION        - 
-#  GSL_ROOT_DIR       - 
+#  GSL_INCLUDE_DIR    - Location of GSL header files.
+#  GSL_LIBRARY        - The GSL library.
+#  GSL_CBLAS_LIBRARY  - The GSL CBLAS library.
+#  GSL_VERSION        - The version of the discovered GSL install.
+#  GSL_ROOT_DIR       - The top level directory of the discovered GSL 
+#                       install (useful if GSL is not in a standard location)
 #
 # It will also provide the cmake library target names gsl::gsl and
 # gsl::gslcblas. 
@@ -31,15 +33,16 @@
 # auto- detected configuration for your language, then you're done.  If
 # not, you have one option:
 #
-# ::
-#
-#    1. Set GSL_ROOT_DIR to a directory that contains bin/gsl-config.
-#    2. Set GSL_INC_DIR and GSL_LIB_DIR to the locations of the
-#       installed GSL include files and libraries are located.
+#    - Set GSL_ROOT_DIR to a directory that contains a GSL install. This 
+#      script expects to find libraries at $GSL_ROOT_DIR/lib and the 
+#      GSL headers at $GSL_ROOT_DIR/include/gsl.  The library directory
+#      may optionally provide Release and Debug folders.  For Unix-like 
+#      systems, this script will use $GSL_ROOT_DIR/bin/gsl-config (if found)
+#      to aid in the discovery GSL.
 #
 # When configuration is successful, GSL_INCLUDE_DIR will be set to
-# the location of the GSL header files and GSL_LIBRARIES will be set
-# to a list of fully qualified path locations of the GSL libraries. 
+# the location of the GSL header files and GSL_LIBRARY and GSL_CBLAS_LIBRARY 
+# will be set to fully qualified path locations of the GSL libraries. 
 
 #=============================================================================
 # Copyright (C) 2010-2014 Los Alamos National Security, LLC.
@@ -50,169 +53,187 @@
 # See the License for more information.
 #=============================================================================
 
-# include this to handle the QUIETLY and REQUIRED arguments
+# Warn about using with older versions of cmake...
+# - This module uses PkgConfig (since 2.8), import libraries (since
+#   2.6), but developed and only tested with cmake 3.0+
+if(CMAKE_MINIMUM_REQUIRED_VERSION VERSION_LESS 3.0.0)
+  message(AUTHOR_WARNING
+    "Your project should require at least CMake 3.0.0 to use FindFoo.cmake")
+endif()
+
+# Include these modules to handle the QUIETLY and REQUIRED arguments. See
+# - http://www.cmake.org/cmake/help/v3.0/module/FindPackageHandleStandardArgs.html
+# - http://www.cmake.org/cmake/help/v3.0/module/GetPrerequisites.html
 include(FindPackageHandleStandardArgs)
 include(GetPrerequisites)
 
-# In the future, we might be able to modify this module to use:
-# find_package(PkgConfig)
-# pkg_check_modules( PC_GSL QUIET GSL )
-
 #=============================================================================
-
 # If the user has provided $GSL_ROOT_DIR, use it!  Choose items found
 # at this location over system locations.
 if( EXISTS "$ENV{GSL_ROOT_DIR}" )
   set( GSL_ROOT_DIR "$ENV{GSL_ROOT_DIR}" CACHE PATH "Prefix for GSL installation." )
 endif()
-
-# Find and use 'gsl-config' to determine version, library locations, etc.
-find_program( GSL_CONFIG gsl-config
-  HINTS ${GSL_ROOT_DIR}/bin
-  )
-
-if( EXISTS "${GSL_CONFIG}" )
-
-  # If we have gsl-config, use it to locate the include directory, libraries 
-  # and version number.  Some installations of GSL (including Win32) will not 
-  # have this script so we must rely on the libraries being in system locations 
-  # or the user providing GSL_BOOST_ROOT.
-  
-  # set the version:
-  exec_program( "${GSL_CONFIG}"
-    ARGS --version
-    OUTPUT_VARIABLE GSL_VERSION )
-
-  # set CXXFLAGS to be fed into CXX_FLAGS by the user:
-  exec_program( "${GSL_CONFIG}"
-    ARGS --cflags
-    OUTPUT_VARIABLE GSL_CFLAGS )
-  
-  # set INCLUDE_DIR to prefix+include
-  exec_program( "${GSL_CONFIG}"
-    ARGS --prefix
-    OUTPUT_VARIABLE GSL_PREFIX)
-  set( GSL_INCLUDE_DIR ${GSL_PREFIX}/include CACHE STRING INTERNAL )
-  # Reset GSL_ROOT_DIR based on what we found.
-  set( GSL_ROOT_DIR ${GSL_PREFIX} CACHE STRING "Location of GSL.")
-  
-  # set link libraries and link flags
-  exec_program( "${GSL_CONFIG}"
-    ARGS --libs
-    OUTPUT_VARIABLE GSL_LIBRARIES )
-
-  # extract link dirs (if any)
-  # use regular expression to match wildcard equivalent "-L*<endchar>" with 
-  # <endchar> is a space or a semicolon
-  string( REGEX MATCHALL "[-][L]([^ ;])+" GSL_LINK_DIRECTORIES_WITH_PREFIX 
-    "${GSL_LIBRARIES}" )
-  if( GSL_LINK_DIRECTORIES_WITH_PREFIX )
-    string( REGEX REPLACE "[-][L]" "" GSL_LINK_DIRECTORIES 
-      ${GSL_LINK_DIRECTORIES_WITH_PREFIX} )
-  endif()
-
+if( NOT EXISTS "${GSL_ROOT_DIR}" )
+  set( GSL_USE_PKGCONFIG ON )
 endif()
 
 #=============================================================================
+# As a first try, use the PkgConfig module.  This will work on many
+# *NIX systems.  See http://www.cmake.org/cmake/help/v3.0/module/FindPkgConfig.html
+if( GSL_USE_PKGCONFIG )
+  find_package(PkgConfig)
+  pkg_check_modules( GSL QUIET gsl )
 
-if( NOT EXISTS "${GSL_INCLUDE_DIR}" )
-  find_path( GSL_INCLUDE_DIR 
-    NAMES gsl/gsl_sf.h
-    HINTS ${GSL_ROOT_DIR}/include
-    )
+  if( EXISTS "${GSL_INCLUDEDIR}" )
+    get_filename_component( GSL_ROOT_DIR "${GSL_INCLUDEDIR}" DIRECTORY CACHE)
+  endif() 
 endif()
 
+#=============================================================================
+# Set GSL_INCLUDE_DIR, GSL_LIBRARY and GSL_CBLAS_LIBRARY.
+# If we skipped the PkgConfig step, try to find the libraries at
+# $GSL_ROOT_DIR (if provided) or in standard system locations.
+  
+find_path( GSL_INCLUDE_DIR 
+  NAMES gsl/gsl_sf.h
+  HINTS ${GSL_ROOT_DIR}/include ${GSL_INCLUDEDIR}
+)
 find_library( GSL_LIBRARY
   NAMES gsl 
-  HINTS 
-  ${GSL_ROOT_DIR}/lib
-  ${GSL_LINK_DIRECTORIES}
+  HINTS ${GSL_ROOT_DIR}/lib ${GSL_LIBDIR}
   PATH_SUFFIXES Release Debug
-  )
-
-# On Linux systems, this library is typically named libgslcblas.a
-# On Windows systems, this library is typically named cblas.dll
+)
 find_library( GSL_CBLAS_LIBRARY
   NAMES gslcblas cblas
-  HINTS
-  ${GSL_ROOT_DIR}/lib
-  ${GSL_LINK_DIRECTORIES}
+  HINTS ${GSL_ROOT_DIR}/lib ${GSL_LIBDIR}
   PATH_SUFFIXES Release Debug
-  )
+)
+# Do we also have debug versions?
+find_library( GSL_LIBRARY_DEBUG
+  NAMES gsl 
+  HINTS ${GSL_ROOT_DIR}/lib ${GSL_LIBDIR}
+  PATH_SUFFIXES Debug
+)
+find_library( GSL_CBLAS_LIBRARY_DEBUG
+  NAMES gslcblas cblas
+  HINTS ${GSL_ROOT_DIR}/lib ${GSL_LIBDIR}
+  PATH_SUFFIXES Debug
+)
 
-# For windows platforms, look for the debug libraries also
-if(WIN32)
-  find_library( gsl_library_debug
-    names gsl 
-    hints ${gsl_root_dir}/lib
-    path_suffixes debug
+# If we didn't use PkgConfig, try to find the version via gsl-config
+# or by reading gsl_version.h.
+if( NOT GSL_VERSION )
+  # 1. If gsl-config exists, query for the version.
+  find_program( GSL_CONFIG
+    NAMES gsl-config
+    HINTS "${GSL_ROOT_DIR}/bin"
     )
-  find_library( gsl_cblas_library_debug
-    names gslcblas cblas
-    hints ${gsl_root_dir}/lib
-    path_suffixes debug
-    )
+  if( EXISTS "${GSL_CONFIG}" )
+    exec_program( "${GSL_CONFIG}"
+      ARGS --version
+      OUTPUT_VARIABLE GSL_VERSION )
+  endif()
+  
+  # 2. If gsl-config is not available, try looking in gsl/gsl_version.h
+  if( NOT GSL_VERSION AND EXISTS "${GSL_INCLUDE_DIR}/gsl/gsl_version.h" )
+    file( STRINGS "${GSL_INCLUDE_DIR}/gsl/gsl_version.h" gsl_version_h_contents )
+    foreach( entry ${gsl_version_h_contents} )
+      if( ${entry} MATCHES "define GSL_VERSION")
+         string( REGEX REPLACE ".*([0-9].[0-9][0-9]).*" "\\1" GSL_VERSION ${entry} )
+      endif()
+    endforeach()    
+  endif()
+  
+  # might also try scraping the directory name for a regex match "gsl-X.X"
 endif()
 
+#=============================================================================
 # handle the QUIETLY and REQUIRED arguments and set GSL_FOUND to TRUE if 
 # all listed variables are TRUE
 find_package_handle_standard_args( GSL
-  FOUND_VAR GSL_FOUND
+  FOUND_VAR
+    GSL_FOUND
   REQUIRED_VARS 
-  GSL_INCLUDE_DIR 
-  GSL_LIBRARY
-  GSL_CBLAS_LIBRARY 
-  GSL_ROOT_DIR
-  VERSION_VAR GSL_VERSION
+    GSL_INCLUDE_DIR 
+    GSL_LIBRARY
+    GSL_CBLAS_LIBRARY 
+    GSL_ROOT_DIR
+  VERSION_VAR
+    GSL_VERSION
   )
 mark_as_advanced( GSL_FOUND GSL_LIBRARY GSL_CBLAS_LIBRARY
-  GSL_INCLUDE_DIR GSL_ROOT_DIR )
+  GSL_INCLUDE_DIR GSL_ROOT_DIR GSL_VERSION )
 
-# Register imported libraries
+#=============================================================================
+# Register imported libraries:
+# 1. If we can find a Windows .dll file (or if we can find both Debug and 
+#    Release libraries), we will set appropriate target properties for these.  
+# 2. However, for most systems, we will only register the import location and 
+#    include directory.
+
+# Look for dlls, or Release and Debug libraries.
+
+if(WIN32)
+  string( REPLACE ".lib" ".dll" GSL_LIBRARY_DLL       "${GSL_LIBRARY}" )
+  string( REPLACE ".lib" ".dll" GSL_CBLAS_LIBRARY_DLL "${GSL_CBLAS_LIBRARY}" )
+  string( REPLACE ".lib" ".dll" GSL_LIBRARY_DEBUG_DLL "${GSL_LIBRARY_DEBUG}" )
+  string( REPLACE ".lib" ".dll" GSL_CBLAS_LIBRARY_DEBUG_DLL "${GSL_CBLAS_LIBRARY_DEBUG}" )
+endif()
+
 if( GSL_FOUND )
+  if( EXISTS "${GSL_LIBRARY_DLL}" AND EXISTS "${GSL_CBLAS_LIBRARY_DLL}")
+    # Windows systems with dll libraries.
+    add_library( gsl::gsl      SHARED IMPORTED )
+    add_library( gsl::gslcblas SHARED IMPORTED )
+    # If we have both Debug and Release libraries
+    if( EXISTS "${GSL_LIBRARY_DEBUG_DLL}" AND EXISTS "${GSL_CBLAS_LIBRARY_DEBUG_DLL}")
+      set_target_properties( gsl::gslcblas PROPERTIES
+        IMPORTED_LOCATION                 "${GSL_CBLAS_LIBRARY_DLL}"
+        IMPORTED_IMPLIB                   "${GSL_CBLAS_LIBRARY}"
+        IMPORTED_LOCATION_DEBUG           "${GSL_CBLAS_LIBRARY_DEBUG_DLL}"
+        IMPORTED_IMPLIB_DEBUG             "${GSL_CBLAS_LIBRARY_DEBUG}"
+        INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}"
+        IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+      set_target_properties( gsl::gsl PROPERTIES
+        IMPORTED_LOCATION                 "${GSL_LIBRARY_DLL}"
+        IMPORTED_IMPLIB                   "${GSL_LIBRARY}"
+        IMPORTED_LOCATION_DEBUG           "${GSL_LIBRARY_DEBUG_DLL}"
+        IMPORTED_IMPLIB_DEBUG             "${GSL_LIBRARY_DEBUG}"
+        INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}" 
+        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        IMPORTED_LINK_INTERFACE_LIBRARIES gsl::gslcblas )
+    else()
+      # Windows with dlls, but only Release libraries.
+      set_target_properties( gsl::gslcblas PROPERTIES
+        IMPORTED_LOCATION                 "${GSL_CBLAS_LIBRARY_DLL}"
+        IMPORTED_IMPLIB                   "${GSL_CBLAS_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}"
+        IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+      set_target_properties( gsl::gsl PROPERTIES
+        IMPORTED_LOCATION                 "${GSL_LIBRARY_DLL}"
+        IMPORTED_IMPLIB                   "${GSL_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}" 
+        IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+        IMPORTED_LINK_INTERFACE_LIBRARIES gsl::gslcblas )    
+    endif()
 
-  # If this platform doesn't support shared libraries (e.g. cross
-  # compiling), assume static. This suppresses cmake (3.0.0) warnings
-  # of the form: 
-  #     "ADD_LIBRARY called with MODULE option but the target platform
-  #     does not support dynamic linking.  Building a STATIC library
-  #     instead.  This may lead to problems."
-  if( TARGET_SUPPORTS_SHARED_LIBS )
+  else()
+    # *NIX systems or simple installs.
     add_library( gsl::gsl      UNKNOWN IMPORTED )
     add_library( gsl::gslcblas UNKNOWN IMPORTED )
-  else()
-    add_library( gsl::gsl      STATIC IMPORTED )
-    add_library( gsl::gslcblas STATIC IMPORTED )
-  endif()
-  if( EXISTS "${GSL_LIBRARY_DEBUG}" )
     set_target_properties( gsl::gslcblas PROPERTIES
-      IMPORTED_LOCATION_RELEASE "${GSL_CBLAS_LIBRARY}"
-      IMPORTED_LOCATION_DEBUG "${GSL_CBLAS_LIBRARY_DEBUG}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GSL_INCLUDE_DIR}"
+      IMPORTED_LOCATION                 "${GSL_CBLAS_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
     set_target_properties( gsl::gsl PROPERTIES
-      IMPORTED_LOCATION_RELEASE "${GSL_LIBRARY}"
-      IMPORTED_LOCATION_DEBUG "${GSL_LIBRARY_DEBUG}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GSL_INCLUDE_DIR}" 
-      IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-      IMPORTED_LINK_INTERFACE_LIBRARIES gsl::gslcblas )        
-    # cleanup
-    unset( GSL_LIBRARY_DEBUG CACHE)
-    unset( GSL_CBLAS_LIBRARY_DEBUG CACHE)
-  else()
-    set_target_properties( gsl::gslcblas PROPERTIES
-      IMPORTED_LOCATION "${GSL_CBLAS_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GSL_INCLUDE_DIR}"
-      IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-    set_target_properties( gsl::gsl PROPERTIES
-      IMPORTED_LOCATION "${GSL_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES "${GSL_INCLUDE_DIR}" 
+      IMPORTED_LOCATION                 "${GSL_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}" 
       IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       IMPORTED_LINK_INTERFACE_LIBRARIES gsl::gslcblas )
   endif()
-
 endif()
 
+#=============================================================================
 # Include some information that can be printed by the build system.
 include( FeatureSummary )
 set_package_properties( GSL PROPERTIES
@@ -221,10 +242,11 @@ set_package_properties( GSL PROPERTIES
   PURPOSE "The GNU Scientific Library (GSL) is a numerical library for C and C++ programmers."
   )
 
+#=============================================================================
 # cleanup
+unset( GSL_USE_PKGCONFIG )
 unset( GSL_CONFIG CACHE )
 
-# See also
-# http://sourceforge.net/p/openmodeller/svn/HEAD/tree/trunk/openmodeller/cmake/FindGSL.cmake
-# http://www.cmake.org/cmake/help/git-master/manual/cmake-developer.7.html#modules
-
+#=============================================================================
+# References:
+# - http://www.cmake.org/cmake/help/git-master/manual/cmake-developer.7.html#modules
