@@ -900,6 +900,10 @@ auto-mode-alist and set up some customizations for DRACO."
         ;; Find and set the draco vendor directory.
         (if (file-accessible-directory-p "/ccs/codes/radtran/vendors")
             (setq draco-vendor-dir "/ccs/codes/radtran/vendors"))
+        ;; if a vendor directory exists on the local disk, use it
+        ;; instead of the NFS mounted location.
+        (if (file-accessible-directory-p "/var/tmp/vendors")
+            (setq draco-vendor-dir "/var/tmp/vendors"))
         ;; HPC 
         (if (file-accessible-directory-p "/usr/projects/draco/vendors")
             (setq draco-vendor-dir "/usr/projects/draco/vendors"))

@@ -5,13 +5,16 @@
 # https://rtt.lanl.gov/redmine/projects/draco/wiki/Kelly_Thompson#Generating-keytab-file-that-works-with-transfer-20
 # or see the comments at the end of this file.
 
-# Use a different cache location to avoid destroying any active user's
-# kerberos.
-export KRB5CCNAME=/tmp/regress_kerb_cache
+# When kellyt runs this as a crontab, a special kerberos key must be used.
+user=`whoami`
+if test $user = "kellyt"; then
+    # Use a different cache location to avoid destroying any active user's
+    # kerberos.
+    export KRB5CCNAME=/tmp/regress_kerb_cache
 
-# Obtain kerberos authentication via keytab
-kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
-#kinit -f -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
+    # Obtain kerberos authentication via keytab
+    kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
+fi
 
 # Helpful functions:
 die () { echo "FATAL ERROR: $1"; exit 1;}
@@ -22,6 +25,11 @@ run () {
       eval $1
    fi
 }
+
+# Sanity check
+if test `klist -l | grep $user | wc -l` = 0; then
+    die "You must have an active kerberos ticket to run this script."
+fi
 
 # Working directory
 if test -d /ccs/codes/radtran/svn; then
@@ -54,6 +62,7 @@ for repo in $repos; do
    # Ensure the new files have group rwX permissions.
    run "chgrp -R draco ${repo}.hotcopy.tar ${repo}.hotcopy"
    run "chmod -R g+rwX,o=g-w ${repo}.hotcopy.tar ${repo}.hotcopy"
+
 done
 
 #------------------------------------------------------------------------------#
