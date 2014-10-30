@@ -3,7 +3,8 @@
  * \file   rng/Halton_Subrandom_Generator.cc
  * \author Kent Budge
  * \brief  Define methods of class Halton_Subrandom_Generator
- * \note   © Copyright 2006-2014 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Laboratory,
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -54,5 +55,5 @@ double Halton_Subrandom_Generator::shift()
 } // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
-//                 end of Halton_Subrandom_Generator.cc
+// end of Halton_Subrandom_Generator.cc
 //---------------------------------------------------------------------------//

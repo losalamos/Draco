@@ -3,7 +3,8 @@
  * \file   rng/LC_Subrandom_Generator.cc
  * \author Kent Budge
  * \brief  Define methods of class LC_Subrandom_Generator
- * \note   © Copyright 2006-2014 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Laboratory,
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -65,5 +66,5 @@ bool LC_Subrandom_Generator::check_class_invariants() const
 } // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
-//                 end of LC_Subrandom_Generator.cc
+// end of LC_Subrandom_Generator.cc
 //---------------------------------------------------------------------------//

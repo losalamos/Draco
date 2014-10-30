@@ -3,8 +3,8 @@
  * \file   rng/Halton_Sequence.cc
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
- * \brief  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \note   Copyright (C) 2006-2014 Los Alamos National Laboratory,
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -9693,5 +9693,5 @@ bool Halton_Sequence::check_class_invariants() const
 } // end namespace rtt_rng
 
 //---------------------------------------------------------------------------//
-//                 end of Halton_Sequence.cc
+// end of Halton_Sequence.cc
 //---------------------------------------------------------------------------//
