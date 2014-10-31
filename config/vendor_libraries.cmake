@@ -185,6 +185,19 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupGSL )
   message( STATUS "Looking for GSL..." )
+
+  # If gsl-config is in the PATH, query the value for GSL_ROOT_DIR
+  # This bit of logic is needed on Cielo/Cielito because gsl is not in
+  # a system location (it is provided by a module)
+  if( "$ENV{GSL_ROOT_DIR}x" STREQUAL "x" AND "${GSL_ROOT_DIR}x" STREQUAL "x")
+    find_program( GSL_CONFIG gsl-config )
+    if( EXISTS "${GSL_CONFIG}" )
+      exec_program( "${GSL_CONFIG}"
+        ARGS --prefix
+        OUTPUT_VARIABLE GSL_ROOT_DIR )
+    endif()
+  endif()
+
   find_package( GSL QUIET REQUIRED )
   if( GSL_FOUND )
     message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )

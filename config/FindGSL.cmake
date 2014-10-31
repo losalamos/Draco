@@ -218,9 +218,22 @@ if( GSL_FOUND )
     endif()
 
   else()
+
+  # If this platform doesn't support shared libraries (e.g. cross
+  # compiling), assume static. This suppresses cmake (3.0.0) warnings
+  # of the form: 
+  #     "ADD_LIBRARY called with MODULE option but the target platform
+  #     does not support dynamic linking.  Building a STATIC library
+  #     instead.  This may lead to problems."
+  if( TARGET_SUPPORTS_SHARED_LIBS )
     # *NIX systems or simple installs.
     add_library( gsl::gsl      UNKNOWN IMPORTED )
     add_library( gsl::gslcblas UNKNOWN IMPORTED )
+  else()
+    # cross compiling or platform only supports static libs.
+    add_library( gsl::gsl      STATIC IMPORTED )
+    add_library( gsl::gslcblas STATIC IMPORTED )
+  endif()
     set_target_properties( gsl::gslcblas PROPERTIES
       IMPORTED_LOCATION                 "${GSL_CBLAS_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}"
