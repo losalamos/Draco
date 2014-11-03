@@ -26,7 +26,7 @@ macro( find_num_procs_avail_for_running_tests )
 
   # Default value is 1
   unset( num_test_procs )
-
+  
   # If this job is running under Torque (msub script), use the
   # environment variable PBS_NP or SLURM_NPROCS
   if( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
@@ -34,13 +34,18 @@ macro( find_num_procs_avail_for_running_tests )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
-
+    
     # If this is not a known batch system, the attempt to set values
     # according to machine name:
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
     math( EXPR num_test_procs "${num_test_procs} / 2" ) 
 
+  endif()
+
+  # Machine specific override:
+  if( "${sitename}" STREQUAL "Cielito" )
+    set( num_test_procs 1 )
   endif()
 
 endmacro()
