@@ -109,6 +109,9 @@ void procmon_resource_print( std::string const & identifier,
 
     MemTotal = statex.ullTotalPhys / 1024.0; // bytes -> kB.
 
+#elif APPLE
+    // can we use use 'system_profiler?'
+    MemTotal = 1;
 #else
 
     std::string file_meminfo( "/proc/meminfo" );
