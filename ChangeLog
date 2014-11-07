@@ -1,3 +1,172 @@
+2014-11-07  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_14_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/29.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_6_0,   http://rtt.lanl.gov/redmine/versions/30
+	  - Capsaicin-4_3_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 14.0.4    OpenMPI-1.6.5
+	  CT/CI              Intel 14.0.2    Cray_MPICH2-7.0.1
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	  - 275 files changed, added or removed in 91 commits.
+	  - Begin support for Intel 15 compilers and Intel MPI.
+	  - New versions of Trilinos, SuperLU_DIST and ParMetis are provided for all platforms.
+	  - Support for DACS (roadrunner) retired.
+
+	* Details per package:
+
+	Build System:
+	- Begin supporting the Intel 15.0.0 compiler suite.
+	- Eliminate the special make target "failedtests."  Starting with CMake 3.0, ctest provides
+	  this features with the built in option '--rerun-failed'.
+	- For Linux builds, modify how the build system embeds RPATH information into installed
+	  applications (e.g.: draco_info, anaheim, etc.)  Jim reported bad rpaths (refs #424) for
+	  anaheim.  It looks like newer rpath handling algorithms in CMake 3.0+ were conflicting
+	  with some hacks we had used to force setting rpaths in applications.
+	- Provide a completely rewritten FindGSL.cmake macro that will be suitable for submitting to
+	  Kitware to be distributed with CMake.
+
+	Developer Environment:
+	- Move the modulefiles directory out of the draco svn source tree and into:
+	  Darwin: /projects/opt/draco/vendors/Modules
+	  HPC   : /usr/projects/draco/vendors/Modules
+	- Provide module files for new vendors on darwin (intel/15.0.0 + OpenMPI/1.8.2) inlcuding
+	  LAPACK/3.4.1, ParMetis/4.0.3, SuperLU_DIST/3.3 and Trilinos/11.10.2.
+	- Provide a module for loading eospac/v6.2.4.  This should be used in place of
+	  eospac/v6.2.4beta.3.
+
+	Regression System:
+	- Restructure regression scripts to improve parallel builds/tests and to move portions of
+	  the regression directories to NFS file space to eliminate 'touch' commands on parallel
+	  scratch file systems.
+	- Stand up regression testing on Darwin.
+	- Master regression scripts were updated to allow any draco developer to kick off a
+	  regression suite that reports to CDash.
+
+	diagnostics:
+	- Minor improvements to the sample Qt (gui) code.
+
+	* Details for defects and features can be found at https://rtt.lanl.gov/redmine/isues/#.
+
+	* Corrected defects:
+	  Bug  #416 Use of constexpr in rng/uniform.hpp causes warinings
+	  Bug  #417 Examine c4/tstOMP performance with VTune on Darwin
+	  Bug  #424 Rpath for installed libraries and binaries is broken on ML/LU.
+
+	* New features:
+	  Task #244 Eliminate individual clubimc, milagro and wedgehog builds in favor of a single
+	            jayenne build.
+	  Task #393 Explore options for GUI driver code.
+	  Task #408 Move ML and CT regressions to NFS space.
+	  Task #409 Change regression system to use parallel builds and parallel testing.
+	  Task #411 Add support for Intel MPI
+	  Task #412 Stand up regression on Darwin for Intel/15 + IntelMPI
+	  Task #415 Update draco and vendors to allow building Capsaicin with Intel/15 and
+	            OpenMPI/1.8.2 on Darwin.
+	  Task #421 Provide ParMetis/4.0.3, SuperLU_DIST/3.3 and Trilinos/11.10.2 on supported
+  	            platforms.
+	  Task #423 Make it easier for developers to run the nightly regression scripts
+	  Task #432 Prepare a FindGSL.cmake macro for inclusion in the next CMake release
+
+	* Known Defects:
+	  Bug  # 59 cdi_eospac design flaw
+	  Task #297 Work with HPC/ptools teams to create a common user-contributed module feature
+ 	  Task #370 Provide CMakeAddFortranSubdirectory modifications to CMake
+	  Bug  #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	  Task #422 FindMPI.cmake doesn't find Intel MPI on Moonlight
+	  Task #435 Update to CMake 3.1 and consider implementing new features.
+	  Task #436 Provide FindGSL.cmake for release within CMake
+	  Task #437 Obtain LA-CC for FindGSL.cmake
+	  Task #438 Submit FindGSL.cmake to CMake developers list for review/inclusion.
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+73593: kellyt
+47634: kgbudge
+10654: tme
+5970: bta
+5165: lowrie
+4028: mcghee
+3847: mwbuksas
+3622: gaber
+2184: warsa
+967: wollaber
+953: rsqrd
+863: sethrj
+435: talbotp
+202: furnish
+136: phenning
+130: bergen
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             432          11821          21259          63752
+C/C++ Header                    333           7308          21308          19632
+Lisp                             14           1862           2651          12293
+CMake                           112           1863           4777           7412
+Bourne Again Shell               18            376            692           1398
+Python                           19            800            948           1184
+Bourne Shell                     14            250            647           1078
+CSS                               1            113             37            395
+C Shell                           3             49             96            257
+C                                 4             45            113            238
+Fortran 90                        3             45             80            172
+DOS Batch                         3             30             21             82
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            963          24609          52719         108020
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    43 /    43 = 100%      49 /    58 =  84%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+../source/src/viz/                    40 /    40 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/cdi_eospac/             52 /    52 = 100%      67 /   132 =  50%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/ds++/                  321 /   324 =  99%     378 /   433 =  87%
+../source/src/parser/                277 /   281 =  98%    1112 /  1397 =  79%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/quadrature/            196 /   200 =  98%     507 /   650 =  78%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/c4/                    173 /   180 =  96%     518 /   574 =  90%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/diagnostics/            14 /    19 =  73%      26 /    40 =  65%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+../source/src/diagnostics/qt/          0 /     5 =   0%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2058 /  2118 =  97%    4941 /  6203 =  79%
+
 2014-08-18  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_13_0.  This is a minor Draco release.
