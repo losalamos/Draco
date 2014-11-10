@@ -3,7 +3,7 @@
 #MSUB -l walltime=04:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_ml_intel14.log
+#MSUB -o /usr/projects/draco/draco-6_14_0/logs/release_ml.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -25,29 +25,23 @@ build_permissions="g+rwX"
 install_permissions="g+rwX,o-rwX"
 
 # environment (use draco modules)
-# Loading modules
-ddir=draco-6_13_0
-dirs="/usr/projects/draco/$ddir/source/draco/environment/Modules/hpc /usr/projects/draco/$ddir/source/draco/environment/Modules/tu-fe"
-for dir in $dirs; do 
-  if test -z `echo $MODULEPATH | grep $dir`; then 
-    echo "module use $dir"
-    module use $dir
-  fi
-done
+module use /usr/projects/draco/vendors/Modules/hpc
+module use /usr/projects/draco/vendors/Modules/tu-fe
 module purge
 module load friendly-testing cmake/3.0.0 svn numdiff
-module load intel/14.0.2 openmpi/1.6.5
-module load gsl/1.14 lapack/3.4.1 random123 eospac/v6.2.4beta.3
+module load intel/14.0.4 openmpi/1.6.5
+module load random123 eospac/v6.2.4
 module list
 
 CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # Define your source and build information here.
 
+ddir=draco-6_14_0
 platform=ml
 dmpi=openmpi165
-df90=intel1402
-dcpp=intel1402
+df90=intel1404
+dcpp=intel1404
 
 source_prefix="/usr/projects/draco/$ddir"
 build_prefix="/scratch/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
