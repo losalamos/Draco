@@ -35,8 +35,8 @@ if test "${4}x" = "x"; then
 fi
 
 mach=`uname -n`
-if test "$mach" != "ccscs8.lanl.gov"; then
-   echo "FATAL ERROR: This script must be run from ccscs8."
+if test "$mach" != "ccscs7.lanl.gov"; then
+   echo "FATAL ERROR: This script must be run from ccscs7."
    exit 1
 fi
 
