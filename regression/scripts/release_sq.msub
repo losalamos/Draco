@@ -38,34 +38,34 @@ build_permissions="g+rwX,o=g-w"
 install_permissions="g+rwX,o=g-w"
 
 # --------------------
-# Compilers 
+# Environment
 # --------------------
 
-# GCC compilers
-# export CXX=mpig++-4.7.2
-# export CC=mpigcc-4.7.2
-# export FC=mpigfortran-4.7.2
-
-# IBM XL compilers
-export CXX=mpixlcxx_r
-export CC=mpixlc_r
-export FC=mpixlf2003_r
-export OMP_NUM_THREADS=4
-
-# --------------------
-# Vendor setup
-# --------------------
-
+# Vendor/Environment setup
 export VENDOR_DIR=/usr/gapps/jayenne/vendors
-export GSL_INC_DIR=${VENDOR_DIR}/gsl-1.16/include
-export GSL_LIB_DIR=${VENDOR_DIR}/gsl-1.16/lib
-export RANDOM123_INC_DIR=${VENDOR_DIR}/Random123-1.08/include
+
+# LLNL uses dotkit instead of modules
+export DK_NODE=${DK_NODE}:${VENDOR_DIR}/Modules/sq
+source /usr/local/tools/dotkit/init.sh
+
+# Draco dotkits
+use xlc121
+# use gcc472
+use numdiff
+use gsl
+use random123
+
+# LLNL dotkits
 use cmake
-export PATH=${VENDOR_DIR}/numdiff-5.6.1/bin:${PATH}
+use erase=del
+use alia1++
+
+export OMP_NUM_THREADS=4
 
 # Define your source and build information here.
 
-ddir="draco-6_12_1"
+PATCH_VER=0
+ddir="draco-6_14_${PATCH_VER}"
 platform=sq
 dmpi=mpich215
 df90=xl141
@@ -136,7 +136,7 @@ for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
         run "mkdir -p $build_dir" || die "Could not create directory $build_dir."
         run "cd $build_dir"
         run "cmake -DCMAKE_INSTALL_PREFIX=$install_dir \
-             -DDRACO_LIBRARY_TYPE=STATIC -DDRACO_VERSION_PATCH=0 \
+             -DDRACO_LIBRARY_TYPE=STATIC -DDRACO_VERSION_PATCH=${PATCH_VER} \
             $options $source_dir" \
             || die "Could not configure in $build_dir from source at $source_dir"
         run "make -j32 install"  || die "Could not build code/tests in $build_dir"
