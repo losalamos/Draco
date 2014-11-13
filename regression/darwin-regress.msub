@@ -2,7 +2,7 @@
 
 #SBATCH -N 1
 #SBATCH --time=480
-#SBATCH --partition=dl585
+#SBATCH --partition=dl585,batch,hdfs
 # https://computing.llnl.gov/linux/slurm/sbatch.html
 
 #----------------------------------------------------------------------#
@@ -51,10 +51,10 @@ run () {
     if ! [ $dry_run ]; then eval $1; fi
 }
 
-/projects/opt/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
-if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-    source $HOME/.keychain/$MYHOSTNAME-sh
-fi
+#/projects/opt/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+#if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+#    source $HOME/.keychain/$MYHOSTNAME-sh
+#fi
 
 machine=`uname -n`
 case $machine in
@@ -102,7 +102,9 @@ export CXX=`which mpiicpc`
 export CC=`which mpiicc`
 export FC=`which mpiifort`
 export MPIEXEC=`which mpirun`
-# export OMP_NUM_THREADS=16
+# http://stackoverflow.com/questions/11959906/openmp-and-numa-relation
+export OMP_NUM_THREADS=8
+export OMP_PROC_BIND=true
 comp=`basename $CXX`
 run "mpd --daemon"
 printenv

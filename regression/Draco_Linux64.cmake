@@ -92,15 +92,24 @@ endif()
 # Start
 # if this is the 2nd (or 3rd) call to this script (i.e.: test and submit
 # on different calls) then append the results.
-if( (${CTEST_SUBMIT} AND NOT ${CTEST_TEST}) OR
-    (${CTEST_TEST}   AND NOT ${CTEST_BUILD}) )
-  # Test and Submit on different calls -> The submit step should
-  # append the previous run.
-  message( "ctest_start( ${CTEST_MODEL} APPEND )")
-  ctest_start( ${CTEST_MODEL} APPEND )
-else()
+# if( (${CTEST_SUBMIT} AND NOT ${CTEST_TEST}) OR
+#     (${CTEST_TEST}   AND NOT ${CTEST_BUILD}) )
+# if( ${CTEST_CONFIGURE} )
+#   # Test and Submit on different calls -> The submit step should
+#   # append the previous run.
+#   message( "ctest_start( ${CTEST_MODEL} APPEND )")
+#   ctest_start( ${CTEST_MODEL} APPEND )
+# else()
+#   message( "ctest_start( ${CTEST_MODEL} )")
+#   ctest_start( ${CTEST_MODEL} )
+# endif()
+
+if( ${CTEST_CONFIGURE} )
   message( "ctest_start( ${CTEST_MODEL} )")
   ctest_start( ${CTEST_MODEL} )
+else()
+  message( "ctest_start( ${CTEST_MODEL} APPEND )")
+  ctest_start( ${CTEST_MODEL} APPEND )
 endif()
 
 #if( NOT "${CTEST_MODEL}" MATCHES "Nightly" )
