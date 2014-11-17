@@ -271,14 +271,19 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
                       << "\t" << t2_omp_accumulate.wall_clock() << std::endl;
         }
         
-        if( omrpn && nthreads > 4 )
-        {
-            if( t2_omp_accumulate.wall_clock()
-                < t2_serial_accumulate.wall_clock() )
-                PASSMSG( "OMP accumulate was faster than Serial accumulate.");
-            else
-                FAILMSG( "OMP accumulate was slower than Serial accumulate.");
-        } 
+
+        // [2014-11-17 KT] The accumulate test no longer provides enough work
+        // to offset the overhead of OpenMP, especially for the optimized
+        // build.  Turn this test off...
+        
+        // if( omrpn && nthreads > 4 )
+        // {
+        //     if( t2_omp_accumulate.wall_clock()
+        //         < t2_serial_accumulate.wall_clock() )
+        //         PASSMSG( "OMP accumulate was faster than Serial accumulate.");
+        //     else
+        //         FAILMSG( "OMP accumulate was slower than Serial accumulate.");
+        // } 
         
     }
 #else // SCALAR
@@ -444,12 +449,7 @@ int main(int argc, char *argv[])
         
         // Unit tests
         topo_report( ut, omrpn );
-
-        // [2014-11-17 KT] The accumulate test no longer provides enough work
-        // to offset the overhead of OpenMP, especially for the optimized
-        // build.  Turn this test off...
-
-        // sample_sum( ut, omrpn );
+        sample_sum(  ut, omrpn );
         
         if( rtt_c4::nodes() == 1 )
             MandelbrotDriver(ut);

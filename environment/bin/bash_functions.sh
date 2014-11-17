@@ -33,13 +33,13 @@
 ## EOSPAC Setup
 ##---------------------------------------------------------------------------##
 
-if test -d /ccs/codes/radtran/physical_data/eos; then
-   export SESPATHU=/ccs/codes/radtran/physical_data/eos
-   export SESPATHC=/ccs/codes/radtran/physical_data/eos
-elif test -d /usr/projects/data/eos; then
-   export SESPATHU=/usr/projects/data/eos
-   export SESPATHU=/usr/projects/data/eos
-fi
+# if test -d /ccs/codes/radtran/physical_data/eos; then
+#    export SESPATHU=/ccs/codes/radtran/physical_data/eos
+#    export SESPATHC=/ccs/codes/radtran/physical_data/eos
+# elif test -d /usr/projects/data/eos; then
+#    export SESPATHU=/usr/projects/data/eos
+#    export SESPATHU=/usr/projects/data/eos
+# fi
 
 ##---------------------------------------------------------------------------##
 ## Find all matches in PATH (not just the first one)
@@ -75,11 +75,6 @@ function cleanemacs
   fi;
   echo "done."
 }
-
-##---------------------------------------------------------------------------##
-
-function ssh1 { ssh -x -1 $*; }
-function scp1 { scp -oProtocol=1 $*; }
 
 ##---------------------------------------------------------------------------##
 ## Used for formatting PROMPT.
