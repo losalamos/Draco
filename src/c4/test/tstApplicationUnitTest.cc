@@ -122,10 +122,17 @@ void tstThree( ApplicationUnitTest &unitTest)
             ApplicationUnitTest::get_word_count( data, verbose ) );
         
         if( word_count[ string("world!") ] == 1 )
+        {
             unitTest.passes("Found single occurance of \"world!\"");
+        }
         else
+        {
             unitTest.failure("Did NOT find single occurance of \"world!\" (count is " +
                              rtt_dsxx::to_string(word_count[string("world!")]) + ')');
+            // print the word_list
+            for( auto it = word_count.begin(); it != word_count.end(); ++it)
+                cout << it->first << ": " << it->second << endl;
+        }
     }
     else
     {

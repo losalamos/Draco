@@ -194,14 +194,10 @@ UnitTest::get_word_count( std::ostringstream const & msg, bool verbose )
 
     if( verbose )
     {
-        cout << "The messages from tstTwo contained the following words/occurances."
-             << endl;
+        cout << "The messages from the message stream contained the following words/occurances." << endl;
         // print the word_list
-        for( std::map<string,unsigned>::iterator it = word_list.begin();
-             it != word_list.end(); ++it)
-        {
+        for( auto it = word_list.begin(); it != word_list.end(); ++it)
             cout << it->first << ": " << it->second << endl;
-        }
     }
 
     return word_list;
