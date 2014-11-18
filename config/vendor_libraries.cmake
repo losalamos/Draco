@@ -67,6 +67,40 @@ macro( setupLAPACKLibrariesUnix )
 
   mark_as_advanced( lapack_DIR lapack_FOUND )
 
+  # Above we tried to find lapack-config.cmake at
+  # $LAPACK_LIB_DIR/cmake/lapack.  This is a draco supplied version of
+  # lapack.  If that search failed, then try to find MKL on the local
+  # system. 
+
+  if( NOT lapack_FOUND )
+    if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
+      set( BLA_VENDOR Intel10_64lp )
+      find_package( LAPACK )
+      if( LAPACK_FOUND )
+        set( lapack_FOUND ON )
+        add_library( lapack SHARED IMPORTED)
+        add_library( blas   SHARED IMPORTED)
+        add_library( blas::mkl_thread  SHARED IMPORTED)
+        add_library( blas::mkl_core    SHARED IMPORTED)
+        set_target_properties( blas::mkl_thread PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_mkl_intel_thread_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        set_target_properties( blas::mkl_core PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_mkl_core_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" 
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_thread )
+        set_target_properties( blas PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" 
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_core )
+        set_target_properties( lapack PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas )
+      endif()
+    endif()
+  endif()
+
 endmacro()
 
 #------------------------------------------------------------------------------
