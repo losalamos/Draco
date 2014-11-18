@@ -57,12 +57,16 @@ add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
+add_dir_if_exists( viz )          # needs ds++
    add_dir_if_exists( FortranChecks )
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()
 if( GRACE_FOUND )
   add_dir_if_exists( plot2D )
+endif()
+if( NOT WIN32 )
+   add_dir_if_exists( memory )         # needs dsxx
 endif()
 
 # Level 3
@@ -77,7 +81,6 @@ add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4
 add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( timestep )     # needs c4, ds++
-add_dir_if_exists( viz )          # needs traits, ds++
 
 # Level 4
 message(" ")
@@ -86,9 +89,6 @@ add_dir_if_exists( special_functions ) # needs roots, units, ode
 add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
 add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
-if( NOT WIN32 )
-   add_dir_if_exists( memory )         # needs diagnostics
-endif()
 
 # Level 5
 if( NOT WIN32 )
