@@ -66,13 +66,7 @@ set( _USE_MATH_DEFINES 1 )
     set( numproc 1 )
   endif( "${numproc}notfound" STREQUAL "notfound" )     
   
-if( ${CMAKE_GENERATOR} STREQUAL "Visual Studio 8 2005" OR 
-   ${CMAKE_GENERATOR}  STREQUAL "Visual Studio 9 2008" OR 
-   ${CMAKE_GENERATOR}  STREQUAL "Visual Studio 10" OR
-   ${CMAKE_GENERATOR}  STREQUAL "Visual Studio 11" OR
-   ${CMAKE_GENERATOR}  STREQUAL "Visual Studio 12" OR
-   ${CMAKE_GENERATOR}  STREQUAL "Visual Studio 12 2013" OR
-   ${CMAKE_GENERATOR}  STREQUAL "Visual Studio 11 2012" OR
+if( ${CMAKE_GENERATOR} MATCHES "Visual Studio" OR 
    ${CMAKE_GENERATOR}  MATCHES  "NMake Makefiles" )
    
   set( CMAKE_C_FLAGS "/W2 /Gy /DWIN32 /D_WINDOWS /MP${numproc}" ) # /Za
