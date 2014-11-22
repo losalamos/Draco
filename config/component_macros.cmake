@@ -7,7 +7,7 @@
 # note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: component_macros.cmake 7677 2014-10-08 20:35:55Z kellyt $ 
+# $Id$ 
 #------------------------------------------------------------------------------#
 
 # requires parse_arguments()
@@ -425,7 +425,7 @@ macro( copy_win32_dll_to_test_dir )
       # Also grab the file with debug info
       string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
       
-      if( "${comp_target}_loc" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
+      if( "${${comp_target}_loc}" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
         add_custom_command( TARGET Ut_${compname}_${testname}_exe 
           POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
