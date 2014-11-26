@@ -254,6 +254,8 @@ function wiki()
 ##---------------------------------------------------------------------------##
 function xfpush()
 {
+    saveifs=$IFS
+    IFS=$(echo -en "\n\b")
     myfiles="$*"
     if ! test -n "$1"; then
        echo "ERROR: You must profile a file for transfering: xfpush foo.txt"
@@ -263,6 +265,7 @@ function xfpush()
        scp $myfile red@transfer.lanl.gov:
        echo scp $myfile red@transfer.lanl.gov:
     done
+    IFS=$saveifs
 }
 function xfstatus()
 {
@@ -270,6 +273,8 @@ function xfstatus()
 }
 function xfpull()
 {
+    saveifs=$IFS
+    IFS=$(echo -en "\n\b")
     wantfiles="$*"
     filesavailable=`ssh red@transfer.lanl.gov myfiles`
     for wantfile in $wantfiles; do
@@ -304,13 +309,5 @@ function xfpull()
     done
 
     done # end loop over $wantfiles
+    IFS=$saveifs
 }
-
-
-##---------------------------------------------------------------------------##
-## Publish all functions to the current shell.
-##---------------------------------------------------------------------------##
-
-#export -f whichall cleanemacs ssh1 scp1 npwd fixperms mpush mpull
-#export -f loadandlistmodules findsymbol xe pkgdepends cuo
-
