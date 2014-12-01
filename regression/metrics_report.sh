@@ -5,9 +5,9 @@
 #    <path>/metrics_report.sh -e "email1 [email2]" -p "project1 [project2]"
 
 # Typical use:
-# ./metrics_report.sh -e kellyt@lanl.gov -p "draco jayenne"
+# ./metrics_report.sh -e kgt@lanl.gov -p "draco jayenne"
 # ./metrics_report.sh -e "kgt@lanl.gov jhchang@lanl.gov" -p "draco capsaicin"
-# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov caw@lanl.gov jayenne@lanl.gov" -p "draco jayenne"
+# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov jomc@lanl.gov sriram@lanl.gov draco@lanl.gov" -p "draco jayenne capsaicin"
 
 ##---------------------------------------------------------------------------##
 ## Support functions
