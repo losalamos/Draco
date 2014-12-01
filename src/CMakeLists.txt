@@ -20,11 +20,16 @@ query_have_gethostname()
 query_have_maxpathlen()
 query_have_sys_headers() # sets HAVE_UNISTD_H, etc.
 query_have_restrict_keyword()
-if( DRACO_ENABLE_CXX11 )
-   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+
+if( "${CMAKE_VERSION}" VERSION_GREATER "3.0.2" )
+  query_cxx11_features()
+else()
+  if( DRACO_ENABLE_CXX11 )
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
       "${Draco_SOURCE_DIR}/config/cxx11")
-   include(CheckCXX11Features)
-   # Results are saved in ds++/config.h
+    include(CheckCXX11Features)
+    # Results are saved in ds++/config.h
+  endif()
 endif()
 
 # Provide helper functions used by component CMakeLists.txt files

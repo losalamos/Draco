@@ -185,6 +185,56 @@ macro( query_have_restrict_keyword )
 endmacro()
 
 ##---------------------------------------------------------------------------##
+## Detect C++11 features
+##
+## This macro requires CMake 3.1+
+##
+## 1. This macro detects available C++11 features and sets CPP macros in
+##    the build system that have the form HAS_CXX11_<FEATURE>.  These
+##    values are saved in ds++/config.h.
+## 2. This macro also checks to ensure that the current C++ compiler
+##    supports the C++11 features already in use by draco.
+##
+## http://stackoverflow.com/questions/23042722/how-to-detect-which-c11-features-are-used-in-my-source-code
+## http://www.cmake.org/cmake/help/v3.1/prop_gbl/CMAKE_CXX_KNOWN_FEATURES.html
+##
+## CMake will automatically add the '-std=c++11' compiler flag if it
+## sees a command of the following form:
+##
+## target_compile_features( Lib_dsxx PRIVATE cxx_auto_type )
+##
+## Draco adds this flag automatically in config/unix-g++.cmake so the
+## above probably isn't needed anywhere.
+##
+##---------------------------------------------------------------------------##
+macro( query_cxx11_features )
+
+  message( STATUS "Looking for required C++11 features..." )
+  get_property(cxx_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
+  # compatibility with the old C++11 feature detection system
+  set( CXX11_FEATURE_LIST "${cxx_features}" CACHE STRING "List of known C++11 features (ds++/config.h)." FORCE )
+  set( cxx11_required_features
+    cxx_auto_type
+    cxx_decltype_auto
+    cxx_rvalue_references
+    cxx_long_long_type
+    cxx_static_assert
+    cxx_decltype
+    )
+  foreach( cxx11reqfeature ${cxx11_required_features} )
+    string( TOUPPER ${cxx11reqfeature} reqfeat )
+    string( REPLACE "CXX_" "HAS_CXX11_" reqfeat ${reqfeat} )
+    if( NOT "${cxx_features}" MATCHES "${cxx11reqfeature}" )
+      message( FATAL_ERROR "Draco requires a C++ compiler that can support the '${cxx11reqfeature}' feature of the C++11 standard.")
+    endif()
+    # if not available, the variable will not be defined
+    set( "${reqfeat}" ON CACHE BOOL "C++11 feature macro value." FORCE )
+  endforeach()
+  message( STATUS "Looking for required C++11 features...done.  See ds++/config.h for details." )
+  
+endmacro()
+
+##---------------------------------------------------------------------------##
 ## Sample platform checks
 ##---------------------------------------------------------------------------##
 

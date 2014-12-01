@@ -54,7 +54,7 @@ namespace rtt_diagnostics
  *     Diagnostics    : disabled
  *     Diagnostics Timing: disabled
  *     C++11 Support  : enabled
- *       Feature list : HAS_CXX11_AUTO 
+ *       Feature list : HAS_CXX11_AUTO_TYPE
  *                      HAS_CXX11_NULLPTR 
  *                      HAS_CXX11_LAMBDA 
  *                      HAS_CXX11_STATIC_ASSERT 
