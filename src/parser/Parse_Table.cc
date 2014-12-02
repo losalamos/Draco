@@ -309,7 +309,7 @@ Token Parse_Table::parse(Token_Stream &tokens) const
 			// If the parse function detects a syntax error, and
 			// if it does not have its own error recovery policy
 			// (or is unable to recover), it should call
-			// tokens->Report_Syntax_Error which generates a
+			// tokens.Report_Syntax_Error which generates a
 			// diagnostic and throws a Syntax_Error
 			// exception. This puts the main parser into recovery
 			// mode.

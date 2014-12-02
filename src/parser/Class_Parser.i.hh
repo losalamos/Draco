@@ -14,15 +14,22 @@
 #ifndef utils_Class_Parser_i_hh
 #define utils_Class_Parser_i_hh
 
+// This file defines the main parse routine for a Class_Parser. This routine
+// creates an object of the templated ReturnClass based on the specification
+// in the input "deck".
+//
+// For further explanation of the three template classes, see the Class_Parser
+// template definition.
+
 //---------------------------------------------------------------------------//
 /*! 
  *
  * \param tokens Token stream from which to parse the user input.
  *
  * \param allow_exit If \c true, the class parser is permitted to terminate on
- * either an END or an EXIT token. If \c false, the class parser may only
- * terminate on an END token. This allows checking for a final missing END in
- * a host code.
+ * either an END or an EXIT (end of file) token. If \c false, the class parser
+ * may only terminate on an END token. This allows a host code to check for a
+ * missing END in an input deck.
  *
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
@@ -48,7 +55,9 @@ Class_Parser<Class,
     // Is this the first call to the parser?
     static bool is_first_time = true;
     
-    // The following code checks for reentrancy and treats it as a fatal error.
+    // The following code checks for reentrancy and treats it as a fatal
+    // error, unless the is_reentrant parameter is set to show that the parse
+    // has been carefully coded for safe reentrancy.
     static bool has_reentered = false;
     Insist(is_reentrant || !has_reentered,
            "Class_Parser::Parse_Specification is not reentrant");
