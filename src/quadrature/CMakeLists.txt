@@ -41,7 +41,7 @@ add_component_library(
    LIBRARY_NAME ${PROJECT_NAME} 
    SOURCES      "${sources}" 
    VENDOR_LIST         "GSL"
-   VENDOR_LIBS         "gsl::gsl"
+   VENDOR_LIBS         "GSL::gsl"
    VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR}"
 )
 

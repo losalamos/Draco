@@ -23,8 +23,8 @@
 #  GSL_ROOT_DIR       - The top level directory of the discovered GSL 
 #                       install (useful if GSL is not in a standard location)
 #
-# It will also provide the CMake library target names gsl::gsl and
-# gsl::gslcblas. 
+# It will also provide the CMake library target names GSL::gsl and
+# GSL::gslcblas. 
 #
 # === Usage ===
 #
@@ -43,7 +43,7 @@
 # When configuration is successful, GSL_INCLUDE_DIR will be set to
 # the location of the GSL header files and GSL_LIBRARY and GSL_CBLAS_LIBRARY 
 # will be set to fully qualified path locations of the GSL
-# libraries. Also, the imported targets gsl::gsl and gsl::gslcblas will be
+# libraries. Also, the imported targets GSL::gsl and GSL::gslcblas will be
 # available for use in your project.
 
 #=============================================================================
@@ -195,27 +195,27 @@ endif()
 if( GSL_FOUND )
   if( EXISTS "${GSL_LIBRARY_DLL}" AND EXISTS "${GSL_CBLAS_LIBRARY_DLL}")
     # Windows systems with dll libraries.
-    add_library( gsl::gsl      SHARED IMPORTED )
-    add_library( gsl::gslcblas SHARED IMPORTED )
+    add_library( GSL::gsl      SHARED IMPORTED )
+    add_library( GSL::gslcblas SHARED IMPORTED )
     
     # Windows with dlls, but only Release libraries.
-    set_target_properties( gsl::gslcblas PROPERTIES
+    set_target_properties( GSL::gslcblas PROPERTIES
       IMPORTED_LOCATION                 "${GSL_CBLAS_LIBRARY_DLL}"
       IMPORTED_IMPLIB                   "${GSL_CBLAS_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-    set_target_properties( gsl::gsl PROPERTIES
+    set_target_properties( GSL::gsl PROPERTIES
       IMPORTED_LOCATION                 "${GSL_LIBRARY_DLL}"
       IMPORTED_IMPLIB                   "${GSL_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}" 
       IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-      IMPORTED_LINK_INTERFACE_LIBRARIES gsl::gslcblas )    
+      IMPORTED_LINK_INTERFACE_LIBRARIES GSL::gslcblas )    
     # If we have both Debug and Release libraries
     if( EXISTS "${GSL_LIBRARY_DEBUG_DLL}" AND EXISTS "${GSL_CBLAS_LIBRARY_DEBUG_DLL}")
-      set_target_properties( gsl::gslcblas PROPERTIES
+      set_target_properties( GSL::gslcblas PROPERTIES
         IMPORTED_LOCATION_DEBUG           "${GSL_CBLAS_LIBRARY_DEBUG_DLL}"
         IMPORTED_IMPLIB_DEBUG             "${GSL_CBLAS_LIBRARY_DEBUG}" )
-      set_target_properties( gsl::gsl PROPERTIES
+      set_target_properties( GSL::gsl PROPERTIES
         IMPORTED_LOCATION_DEBUG           "${GSL_LIBRARY_DEBUG_DLL}"
         IMPORTED_IMPLIB_DEBUG             "${GSL_LIBRARY_DEBUG}" )
     endif()
@@ -230,22 +230,22 @@ if( GSL_FOUND )
   #     instead.  This may lead to problems."
   if( TARGET_SUPPORTS_SHARED_LIBS )
     # *NIX systems or simple installs.
-    add_library( gsl::gsl      UNKNOWN IMPORTED )
-    add_library( gsl::gslcblas UNKNOWN IMPORTED )
+    add_library( GSL::gsl      UNKNOWN IMPORTED )
+    add_library( GSL::gslcblas UNKNOWN IMPORTED )
   else()
     # cross compiling or platform only supports static libs.
-    add_library( gsl::gsl      STATIC IMPORTED )
-    add_library( gsl::gslcblas STATIC IMPORTED )
+    add_library( GSL::gsl      STATIC IMPORTED )
+    add_library( GSL::gslcblas STATIC IMPORTED )
   endif()
-    set_target_properties( gsl::gslcblas PROPERTIES
+    set_target_properties( GSL::gslcblas PROPERTIES
       IMPORTED_LOCATION                 "${GSL_CBLAS_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-    set_target_properties( gsl::gsl PROPERTIES
+    set_target_properties( GSL::gsl PROPERTIES
       IMPORTED_LOCATION                 "${GSL_LIBRARY}"
       INTERFACE_INCLUDE_DIRECTORIES     "${GSL_INCLUDE_DIR}" 
       IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-      IMPORTED_LINK_INTERFACE_LIBRARIES gsl::gslcblas )
+      IMPORTED_LINK_INTERFACE_LIBRARIES GSL::gslcblas )
   endif()
 endif()
 

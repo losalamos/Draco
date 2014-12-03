@@ -237,8 +237,8 @@ macro( setupGSL )
     message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
 
     # Create an entry in draco-config.cmake for the gsl libs
-    get_target_property( gslimploc      gsl::gsl      IMPORTED_LOCATION )
-    get_target_property( gslcblasimploc gsl::gslcblas IMPORTED_LOCATION )
+    get_target_property( gslimploc      GSL::gsl      IMPORTED_LOCATION )
+    get_target_property( gslcblasimploc GSL::gslcblas IMPORTED_LOCATION )
     
     # If this platform doesn't support shared libraries (e.g. cross
     # compiling), assume static. This suppresses cmake (3.0.0) warnings
@@ -254,15 +254,15 @@ macro( setupGSL )
 
     set( Draco_EXPORT_TARGET_PROPERTIES 
       "${Draco_EXPORT_TARGET_PROPERTIES}
-add_library( gsl::gsl ${library_type} IMPORTED )
-set_target_properties( gsl::gsl PROPERTIES
+add_library( GSL::gsl ${library_type} IMPORTED )
+set_target_properties( GSL::gsl PROPERTIES
     IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
-    IMPORTED_LINK_INTERFACE_LIBRARIES \"gsl::gslcblas\"
+    IMPORTED_LINK_INTERFACE_LIBRARIES \"GSL::gslcblas\"
     IMPORTED_LOCATION                 \"${gslimploc}\" 
 )
 
-add_library( gsl::gslcblas ${library_type} IMPORTED )
-set_target_properties( gsl::gslcblas PROPERTIES
+add_library( GSL::gslcblas ${library_type} IMPORTED )
+set_target_properties( GSL::gslcblas PROPERTIES
     IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
     IMPORTED_LOCATION                 \"${gslcblasimploc}\" 
 )
@@ -273,6 +273,7 @@ set_target_properties( gsl::gslcblas PROPERTIES
 else()
   message( STATUS "Looking for GSL.......not found" )
 endif()
+
 endmacro()
 
 #------------------------------------------------------------------------------
