@@ -352,20 +352,26 @@ macro( copy_win32_dll_to_test_dir )
         # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual path
         # to a library (c:\lib\gsl.lib).
         if( NOT EXISTS ${lib} )
-          # Must be a CMake target... find it's dependencies...different logic for 'imported' targets like gsl::gsl.
+          # Must be a CMake target... find it's dependencies...different logic for 'imported' targets like GSL::gsl.
           get_target_property( isimp ${lib} IMPORTED )
           if(isimp)
             get_target_property( link_libs2 ${lib} IMPORTED_LINK_INTERFACE_LIBRARIES )
+            # cmake 3.0+, cmp0022 states that INTERFACE_LINK_LIBRARIES
+            # should be used in place of IMPORTED_LINK_INTERFACE_LIBRARIES.
+            get_target_property( link_libs3 ${lib} INTERFACE_LINK_LIBRARIES)
             if(${link_libs2} MATCHES NOTFOUND)
               unset(link_libs2)
+            else()
+              list( APPEND link_libs ${link_libs2} )
+            endif()
+            if(${link_libs3} MATCHES NOTFOUND)
+              unset(link_libs3)
+            else()
+              list( APPEND link_libs ${link_libs3} )
             endif()
           else()
             get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
           endif()
-          # if( ${compname} MATCHES Fortran )
-          # message("   ${lib} --> ${link_libs2}")
-          # endif()
-          list( APPEND link_libs ${link_libs2} )
         endif()
       endforeach()
       list( REMOVE_DUPLICATES link_libs )
