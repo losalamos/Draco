@@ -17,8 +17,6 @@
 ## cleanemacs        - recursively remove ~ files, .flc files and .rel
 ##                     files.
 ##
-## ssh1/scp1         - force use of protocol version 1.
-##
 ## findsymbol <sym>  - search all libraries (.so and .a files) in the
 ##                     current directory for symbol <sym>.
 ##
@@ -28,18 +26,6 @@
 ## npwd              - function used to set the prompt under bash.
 ##
 ##---------------------------------------------------------------------------##
-
-##---------------------------------------------------------------------------##
-## EOSPAC Setup
-##---------------------------------------------------------------------------##
-
-# if test -d /ccs/codes/radtran/physical_data/eos; then
-#    export SESPATHU=/ccs/codes/radtran/physical_data/eos
-#    export SESPATHC=/ccs/codes/radtran/physical_data/eos
-# elif test -d /usr/projects/data/eos; then
-#    export SESPATHU=/usr/projects/data/eos
-#    export SESPATHU=/usr/projects/data/eos
-# fi
 
 ##---------------------------------------------------------------------------##
 ## Find all matches in PATH (not just the first one)
@@ -154,7 +140,6 @@ function findsymbol()
     echo " "
 }
 
-
 ##---------------------------------------------------------------------------##
 ## Usage:
 ##    pkgdepends
@@ -236,14 +221,6 @@ function archive()
 }
 
 ##---------------------------------------------------------------------------##
-## Use 'wiki <term>'
-##---------------------------------------------------------------------------##
-function wiki()
-{
-  dig +short txt $1.wp.dg.cx;
-}
-
-##---------------------------------------------------------------------------##
 ## Transfer 2.0 (Mercury replacement)
 ## Ref: http://transfer.lanl.gov
 ##
@@ -252,62 +229,8 @@ function wiki()
 ##   xfstatus
 ##   xfpull foo.txt
 ##---------------------------------------------------------------------------##
-function xfpush()
-{
-    saveifs=$IFS
-    IFS=$(echo -en "\n\b")
-    myfiles="$*"
-    if ! test -n "$1"; then
-       echo "ERROR: You must profile a file for transfering: xfpush foo.txt"
-       return
-    fi
-    for myfile in $myfiles; do
-       scp $myfile red@transfer.lanl.gov:
-       echo scp $myfile red@transfer.lanl.gov:
-    done
-    IFS=$saveifs
-}
+
 function xfstatus()
 {
     ssh red@transfer.lanl.gov myfiles
-}
-function xfpull()
-{
-    saveifs=$IFS
-    IFS=$(echo -en "\n\b")
-    wantfiles="$*"
-    filesavailable=`ssh red@transfer.lanl.gov myfiles`
-    for wantfile in $wantfiles; do
-
-    # sanity check: is the requested file in the list?
-    fileready=`echo $filesavailable | grep $wantfile`
-    if test "${fileready}x" = "x"; then
-        echo "ERROR: File '${wantfile}' is not available (yet?) to pull."
-        echo "       Run 'xfstatus' to see list of available files."
-        return
-    fi
-    # Find the file identifier for the requested file.  The variable
-    # filesavailable contains a list of pairs:  
-    # { (id1, file1), (id2, file2), ... }.  Load each pair and if the
-    # filename matches the requested filename then pull that file id.
-    # Once pulled, remove the file from transfer.lanl.gov.
-    is_file_id=1
-    for entry in $filesavailable; do
-        if test $is_file_id = 1; then
-            fileid=$entry
-            is_file_id=0
-        else
-            if test $entry = $wantfile; then
-                echo "scp red@transfer.lanl.gov:${fileid} ."
-                scp red@transfer.lanl.gov:${fileid} .
-                echo "ssh red@transfer.lanl.gov delete ${fileid}"
-                ssh red@transfer.lanl.gov delete ${fileid}
-                return
-            fi
-            is_file_id=1
-        fi
-    done
-
-    done # end loop over $wantfiles
-    IFS=$saveifs
 }

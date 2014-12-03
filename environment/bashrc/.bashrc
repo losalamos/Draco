@@ -161,7 +161,7 @@ case ${-} in
    # No need to use ssh to pop a terminal from the current machine
    # alias ${target}='${term} ${term_opts}'
 
-   # Turquise network
+   # Turquoise network
    alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
    alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
    alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
@@ -239,17 +239,6 @@ red-wtrw* | rfta*)
     ;;
 
 esac
-
-# Only print the loaded modules if this is an interactive session.
-# if ! test "${NoModules}" == "1"; then
-#   case ${-} in 
-#   *i*)
-#     if test -n "$MODULESHOME"; then
-#       module list
-#     fi
-#     ;;
-#   esac
-# fi
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc

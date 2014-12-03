@@ -1,0 +1,25 @@
+#!/bin/bash
+
+##---------------------------------------------------------------------------##
+## Transfer 2.0 (Mercury replacement)
+## Ref: http://transfer.lanl.gov
+##
+## Examples:
+##   xfpush foo.txt
+##   xfstatus
+##   xfpull foo.txt
+##---------------------------------------------------------------------------##
+
+saveifs=$IFS
+IFS=$(echo -en "\n\b")
+myfiles="$*"
+if ! test -n "$1"; then
+    echo "ERROR: You must profile a file for transfering: xfpush foo.txt"
+    return
+fi
+for myfile in $myfiles; do
+    scp $myfile red@transfer.lanl.gov:
+    echo scp $myfile red@transfer.lanl.gov:
+done
+IFS=$saveifs
+
