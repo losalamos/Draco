@@ -541,6 +541,7 @@ macro( add_scalar_tests test_sources )
   if( "${addscalartest_FAIL_REGEX}none" STREQUAL "none" )
     set( addscalartest_FAIL_REGEX ".*[Tt]est: FAILED" )
     list( APPEND addscalartest_FAIL_REGEX ".*ERROR:.*" )
+    list( APPEND addscalartest_FAIL_REGEX "forrtl: error" )
   endif()
   
   # Format resource lock command
@@ -647,6 +648,7 @@ macro( add_parallel_tests )
   if( "${addparalleltest_FAIL_REGEX}none" STREQUAL "none" )
     set( addparalleltest_FAIL_REGEX ".*[Tt]est: FAILED" )
     list( APPEND addparalleltest_FAIL_REGEX ".*ERROR:.*" )
+    list( APPEND addparalleltest_FAIL_REGEX "forrtl: error" )
   endif()
 
   # Format resource lock command
