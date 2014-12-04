@@ -59,7 +59,7 @@ Class_Parser<Parent, Parent, true>::parse_table_(NULL, 0);
 template<>
 void Class_Parser<Parent, Parent, true>::post_sentinels_()
 {
-    parsed_child = NULL;
+    parsed_child.reset();
 }
 
 template<>
@@ -187,9 +187,7 @@ template<>
 SP<Son>
 Class_Parser<Son>::create_object_()
 {
-    SP<Son> Result;
-    
-    Result = new Son(parsed_snips_and_snails);
+    SP<Son> Result(new Son(parsed_snips_and_snails));
     
     return Result;
 }
@@ -284,9 +282,7 @@ template<>
 SP<Daughter>
 Class_Parser<Daughter>::create_object_()
 {
-    SP<Daughter> Result;
-    
-    Result = new Daughter(parsed_sugar_and_spice);
+    SP<Daughter> Result(new Daughter(parsed_sugar_and_spice));
     
     return Result;
 }

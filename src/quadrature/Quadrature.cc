@@ -142,13 +142,12 @@ Quadrature::create_ordinate_set(unsigned const dimension,
                                                    include_starting_directions,
                                                    include_extra_directions);
     
-    SP<Ordinate_Set> Result =
-        SP<Ordinate_Set>(new Ordinate_Set(dimension,
-                                          geometry,
-                                          ordinates,
-                                          include_starting_directions,
-                                          include_extra_directions,
-                                          ordering));
+    SP<Ordinate_Set> Result(new Ordinate_Set(dimension,
+                                             geometry,
+                                             ordinates,
+                                             include_starting_directions,
+                                             include_extra_directions,
+                                             ordering));
 
     return Result;
 }
@@ -343,16 +342,16 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     switch (qim)
     {
         case SN:
-            Result = new Sn_Ordinate_Space(dimension,
+            Result.reset(new Sn_Ordinate_Space(dimension,
                                            geometry,
                                            ordinates,
                                            moment_expansion_order,
                                            include_extra_directions,
-                                           ordering);
+                                           ordering));
             break;
             
         case GQ1:
-            Result = new Galerkin_Ordinate_Space(dimension,
+            Result.reset(new Galerkin_Ordinate_Space(dimension,
                                                  geometry,
                                                  ordinates,
                                                  quadrature_class(),
@@ -360,11 +359,11 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                  moment_expansion_order,
                                                  GQ1,
                                                  include_extra_directions,
-                                                 ordering);
+                                                 ordering));
             break;
 
         case GQ2:
-            Result = new Galerkin_Ordinate_Space(dimension,
+            Result.reset(new Galerkin_Ordinate_Space(dimension,
                                                  geometry,
                                                  ordinates,
                                                  quadrature_class(),
@@ -372,7 +371,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                  moment_expansion_order,
                                                  GQ2,
                                                  include_extra_directions,
-                                                 ordering);
+                                                 ordering));
             break;
 
         default:
@@ -419,14 +418,14 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     
     SP<Ordinate_Space> Result;
     if (qim == SN)
-        Result = new Sn_Ordinate_Space(dimension,
+        Result.reset(new Sn_Ordinate_Space(dimension,
                                        geometry,
                                        ordinates,
                                        moment_expansion_order,
                                        include_extra_directions,
-                                       ordering);
+                                           ordering));
     else
-        Result = new Galerkin_Ordinate_Space(dimension,
+        Result.reset(new Galerkin_Ordinate_Space(dimension,
                                              geometry,
                                              ordinates,
                                              quadrature_class(),
@@ -434,7 +433,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                              moment_expansion_order,
                                              qim,
                                              include_extra_directions,
-                                             ordering);
+                                                 ordering));
 
     return Result;
 }

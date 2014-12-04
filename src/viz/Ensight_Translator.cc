@@ -121,7 +121,7 @@ open(const int        icycle,
     {
 	// open file for this data
 	std::string filename  = d_vdata_dirs[nvd] + "/" + postfix;
-	d_vertex_out[nvd] = new Ensight_Stream(filename, d_binary);
+	d_vertex_out[nvd].reset(new Ensight_Stream(filename, d_binary));
 
 	*d_vertex_out[nvd] << d_vdata_names[nvd] << endl;
     }
@@ -135,7 +135,7 @@ open(const int        icycle,
     {
 	// open file for this data
 	std::string filename  = d_cdata_dirs[ncd] + "/" + postfix;
-	d_cell_out[ncd] = new Ensight_Stream(filename, d_binary);
+	d_cell_out[ncd].reset(new Ensight_Stream(filename, d_binary));
 
 	*d_cell_out[ncd] << d_cdata_names[ncd] << endl;
     }

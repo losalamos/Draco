@@ -106,11 +106,11 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
     // now determine which analytic model we need to build
     if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
     {
-	analytic_model = new Constant_Analytic_Opacity_Model(packed_analytic);
+	analytic_model.reset(new Constant_Analytic_Opacity_Model(packed_analytic));
     }
     else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
     {
-	analytic_model = new Polynomial_Analytic_Opacity_Model(packed_analytic);
+	analytic_model.reset(new Polynomial_Analytic_Opacity_Model(packed_analytic));
     }
     else
     {

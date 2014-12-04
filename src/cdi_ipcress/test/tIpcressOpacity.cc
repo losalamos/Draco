@@ -50,7 +50,7 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
     // Attempt to instantiate the object.
     try
     {
-	spIF = new IpcressFile( op_data_file ); 
+	spIF.reset(new IpcressFile( op_data_file )); 
     }
     catch ( rtt_dsxx::assertion const & error )
     {
@@ -108,10 +108,9 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
 	    
     try
     {
-        SP<IpcressFile> spIF;
-        spIF = new IpcressFile( op_data_file ); 
-        spOp_Al_rgt = new IpcressGrayOpacity( 
-            spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL );
+        SP<IpcressFile> spIF(new IpcressFile( op_data_file )); 
+        spOp_Al_rgt.reset(new IpcressGrayOpacity( 
+                              spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL ));
         // spIF goes out of scope
     }
     catch( rtt_dsxx::assertion const & excpt )
@@ -189,10 +188,9 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try
     {
-        SP<IpcressFile> spIF;
-        spIF = new IpcressFile( op_data_file ); 
-        spOp_Al_rtmg = new IpcressMultigroupOpacity( 
-            spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL );
+        SP<IpcressFile> spIF(new IpcressFile( op_data_file )); 
+        spOp_Al_rtmg.reset(new IpcressMultigroupOpacity( 
+                               spIF, matid, rtt_cdi::ROSSELAND, rtt_cdi::TOTAL ));
         // spIF goes out of scope
     }
     catch( rtt_dsxx::assertion const & excpt )
@@ -307,7 +305,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the object.
     try 
     {
-	spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
+	spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile( op_data_file )); 
     }
     catch( rtt_dsxx::assertion const & error )
     {
@@ -363,8 +361,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try 
     {
-	spOp_Analytic_ragray = new IpcressGrayOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
+	spOp_Analytic_ragray.reset(new IpcressGrayOpacity( 
+                                       spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION ));
     }
     catch( rtt_dsxx::assertion const & error )
 	// Alternatively, we could use:
@@ -410,8 +408,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try 
     { 
-	spOp_Analytic_ramg = new IpcressMultigroupOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
+	spOp_Analytic_ramg.reset(new IpcressMultigroupOpacity( 
+                                     spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION ));
     } 
     catch( rtt_dsxx::assertion const & error )
     {
@@ -469,8 +467,10 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try 
     { 
-	spOp_Analytic_pgray = new IpcressGrayOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION);
+	spOp_Analytic_pgray.reset(new IpcressGrayOpacity( 
+                                      spGFAnalytic,
+                                      matid,
+                                      rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
     } 
     catch ( rtt_dsxx::assertion const & error )
     {
@@ -514,8 +514,10 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try 
     { 
-	spOp_Analytic_pmg = new IpcressMultigroupOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION); 
+	spOp_Analytic_pmg.reset(new IpcressMultigroupOpacity( 
+                                    spGFAnalytic,
+                                    matid,
+                                    rtt_cdi::PLANCK, rtt_cdi::ABSORPTION)); 
     } 
     catch ( rtt_dsxx::assertion const & error )
     {
@@ -796,7 +798,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the object.
     try 
     {
-	spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
+	spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile( op_data_file )); 
     }
     catch( rtt_dsxx::assertion const & error )
     {
@@ -824,8 +826,10 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
     // try to instantiate the Opacity object.
     try
     {
-	spGGOp_Analytic_ra = new IpcressGrayOpacity(
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
+	spGGOp_Analytic_ra.reset(new IpcressGrayOpacity(
+                                     spGFAnalytic,
+                                     matid,
+                                     rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION ));
     }
     catch( rtt_dsxx::assertion const & error )
     {
@@ -1020,8 +1024,10 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
     // try to instantiate the Opacity object.
     try
     {
-	spGMGOp_Analytic_ra = new IpcressMultigroupOpacity(
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
+	spGMGOp_Analytic_ra.reset(new IpcressMultigroupOpacity(
+                                      spGFAnalytic,
+                                      matid,
+                                      rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
     }
     catch( rtt_dsxx::assertion const & error )
     {
@@ -1212,7 +1218,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 	// Try to instantiate the object.
 	try 
 	{
-	    spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
+	    spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile( op_data_file )); 
 	}
 	catch( rtt_dsxx::assertion const & error )
 	{
@@ -1228,8 +1234,10 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 	// material ID
 	int const matid=10001;
     
-	spOp_Analytic_ragray = new IpcressGrayOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION );
+	spOp_Analytic_ragray.reset(new IpcressGrayOpacity( 
+                                       spGFAnalytic,
+                                       matid,
+                                       rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION ));
 
 	// pack up the opacity
 	packed = spOp_Analytic_ragray->pack();
@@ -1241,7 +1249,7 @@ void gray_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try 
     {
-	unpacked_opacity = new IpcressGrayOpacity(packed); 
+	unpacked_opacity.reset(new IpcressGrayOpacity(packed)); 
     }
     catch( rtt_dsxx::assertion const & error )
     {
@@ -1316,7 +1324,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 	// Try to instantiate the object.
 	try 
 	{
-	    spGFAnalytic = new rtt_cdi_ipcress::IpcressFile( op_data_file ); 
+	    spGFAnalytic.reset(new rtt_cdi_ipcress::IpcressFile( op_data_file )); 
 	}
 	catch( rtt_dsxx::assertion const & error )
 	{
@@ -1336,8 +1344,10 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
 	// Create a smart pointer to an Opacity object.
 	SP<MultigroupOpacity> spOp_Analytic_pmg;
 	
-	spOp_Analytic_pmg = new IpcressMultigroupOpacity( 
-	    spGFAnalytic, matid, rtt_cdi::PLANCK, rtt_cdi::ABSORPTION );
+	spOp_Analytic_pmg.reset(new IpcressMultigroupOpacity( 
+                                    spGFAnalytic,
+                                    matid,
+                                    rtt_cdi::PLANCK, rtt_cdi::ABSORPTION ));
 
 	packed = spOp_Analytic_pmg->pack();
     }
@@ -1348,7 +1358,7 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the Opacity object.
     try 
     {
-	unpacked_opacity = new IpcressMultigroupOpacity(packed); 
+	unpacked_opacity.reset(new IpcressMultigroupOpacity(packed)); 
     }
     catch( rtt_dsxx::assertion const & error )
 	// Alternatively, we could use:

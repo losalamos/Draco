@@ -303,34 +303,34 @@ void test_CDI(rtt_dsxx::UnitTest & ut)
     SP<const EoS>               eos;
 
     // assign to dummy state objects
-    gray_planck_abs  = new DummyGrayOpacity(rtt_cdi::ABSORPTION,
-                                            rtt_cdi::PLANCK);
-    gray_iso_scatter = new DummyGrayOpacity(rtt_cdi::SCATTERING,
-                                            rtt_cdi::ISOTROPIC);
+    gray_planck_abs.reset(new DummyGrayOpacity(rtt_cdi::ABSORPTION,
+                                            rtt_cdi::PLANCK));
+    gray_iso_scatter.reset(new DummyGrayOpacity(rtt_cdi::SCATTERING,
+                                            rtt_cdi::ISOTROPIC));
 
-    mg_planck_abs    = new DummyMultigroupOpacity(rtt_cdi::ABSORPTION,
-                                                  rtt_cdi::PLANCK);
-    mg_iso_scatter   = new DummyMultigroupOpacity(rtt_cdi::SCATTERING,
-                                                  rtt_cdi::ISOTROPIC);
+    mg_planck_abs.reset(new DummyMultigroupOpacity(rtt_cdi::ABSORPTION,
+                                                  rtt_cdi::PLANCK));
+    mg_iso_scatter.reset(new DummyMultigroupOpacity(rtt_cdi::SCATTERING,
+                                                  rtt_cdi::ISOTROPIC));
     //multigroup with different boundaries
-    mg_diff_bound    = new DummyMultigroupOpacity(rtt_cdi::SCATTERING,
+    mg_diff_bound.reset(new DummyMultigroupOpacity(rtt_cdi::SCATTERING,
                                                   rtt_cdi::THOMSON,
-                                                  6);
+                                                  6));
 
-    odfmg_planck_abs  = new DummyOdfmgOpacity(rtt_cdi::ABSORPTION,
-                                              rtt_cdi::PLANCK);
-    odfmg_iso_scatter = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
-                                              rtt_cdi::ISOTROPIC);
+    odfmg_planck_abs.reset(new DummyOdfmgOpacity(rtt_cdi::ABSORPTION,
+                                              rtt_cdi::PLANCK));
+    odfmg_iso_scatter.reset(new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
+                                              rtt_cdi::ISOTROPIC));
     //odfmg with different group boundaries
-    odfmg_diff_bound  = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
+    odfmg_diff_bound.reset(new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
                                               rtt_cdi::THOMSON,
-                                              6, 5);
+                                              6, 5));
     //odfmg with different band boundaries
-    odfmg_diff_bound2 = new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
+    odfmg_diff_bound2.reset(new DummyOdfmgOpacity(rtt_cdi::SCATTERING,
                                               rtt_cdi::THOMSON,
-                                              4, 3);
+                                              4, 3));
     // EOS
-    eos              = new DummyEoS();
+    eos.reset(new DummyEoS());
 
     // make a CDI, it should be empty
     std::string const matName("dummyMaterial");

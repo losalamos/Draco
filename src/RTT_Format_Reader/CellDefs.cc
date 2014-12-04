@@ -57,7 +57,7 @@ void CellDefs::readDefs(ifstream & meshfile)
 	if (dummyString[dummyString.size()-1] == 's')
 	    dummyString.resize(dummyString.size()-1);
 	Check(i<defs.size());
-	defs[i] = new CellDef(*this, dummyString);
+	defs[i].reset(new CellDef(*this, dummyString));
 	std::getline(meshfile, dummyString);
 	defs[i]->readDef(meshfile);
     }

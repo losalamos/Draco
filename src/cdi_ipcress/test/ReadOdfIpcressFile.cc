@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     SP<const IpcressFile> file;
     try
     {
-        file = new IpcressFile(ipcressFileName);
+        file.reset(new IpcressFile(ipcressFileName));
     }
     catch ( rtt_dsxx::assertion const & excpt )
     {
@@ -254,11 +254,11 @@ int main(int argc, char *argv[])
     //load the Ipcress ODFMG Opacity
     SP<const IpcressOdfmgOpacity> spGandOpacity;
 
-    spGandOpacity = new IpcressOdfmgOpacity(file,
+    spGandOpacity.reset(new IpcressOdfmgOpacity(file,
                                             matID,
                                             model,
                                             reaction,
-                                            numBands);
+                                                numBands));
 
     cerr        << "Successfully read Ipcress file \"" << ipcressFileName 
                 << "\"." << endl;

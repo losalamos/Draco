@@ -57,13 +57,13 @@ IpcressGrayOpacity::IpcressGrayOpacity(
 	    
     // Create the data table object and fill it with the table
     // data from the IPCRESS file.
-    spIpcressDataTable = new IpcressDataTable(
+    spIpcressDataTable.reset(new IpcressDataTable(
 	energyPolicyDescriptor,
 	opacityModel, 
 	opacityReaction,
 	fieldNames,
 	materialID, 
-	spIpcressFile );
+	spIpcressFile ));
 	    
 } // end of IpcressData constructor
     
@@ -136,7 +136,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(
     
     // build a new IpcressFile
     rtt_dsxx::SP<IpcressFile> spIpcressFile;
-    spIpcressFile = new IpcressFile(ipcressFilename);
+    spIpcressFile.reset(new IpcressFile(ipcressFilename));
     Check (spIpcressFile);
 
     // Verify that the requested material ID is available in the
@@ -150,13 +150,13 @@ IpcressGrayOpacity::IpcressGrayOpacity(
 	    
     // Create the data table object and fill it with the table
     // data from the IPCRESS file.
-    spIpcressDataTable = new IpcressDataTable(
+    spIpcressDataTable.reset(new IpcressDataTable(
 	energyPolicyDescriptor,
 	opacityModel, 
 	opacityReaction,
 	fieldNames,
 	materialID, 
-	spIpcressFile );
+	spIpcressFile ));
 
     Ensure (spIpcressFile);
     Ensure (spIpcressDataTable);

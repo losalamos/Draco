@@ -162,7 +162,6 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
                                    double emax,
                                    unsigned seed)
     :
-    continuum_( NULL ),
     continuum_table_(std::vector<double>()),
     emax_(emax),
     nu0_(-1), // as fast flag
@@ -226,7 +225,6 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
                                    double emax,
                                    unsigned seed)
     :
-    continuum_( NULL ),
     continuum_table_(std::vector<double>()),
     emax_(emax),
     nu0_(nu0),

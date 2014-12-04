@@ -39,7 +39,7 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
     SP<EoS> spEoS;
 	    
     // The actual instatniate is specific (dummyEoS).
-    if ( (spEoS = new rtt_cdi_test::DummyEoS()) )
+    if ( (spEoS.reset(new rtt_cdi_test::DummyEoS())), spEoS )
     {
 	// If we get here then the object was successfully instantiated.
 	PASSMSG("Smart Pointer to new EoS object created.");

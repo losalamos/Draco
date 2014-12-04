@@ -75,8 +75,8 @@ void query_eospac()
         }
         
         // Generate EOS Table
-        rtt_dsxx::SP< rtt_cdi_eospac::Eospac const > spEospac;
-        spEospac = new rtt_cdi_eospac::Eospac( SesameTab );
+        rtt_dsxx::SP< rtt_cdi_eospac::Eospac const >
+            spEospac(new rtt_cdi_eospac::Eospac( SesameTab ));
                 
         // Parameters
         double temp(0.0);

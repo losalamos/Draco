@@ -80,8 +80,8 @@ Analytic_EoS::Analytic_EoS(const sf_char &packed)
     // now determine which analytic model we need to build
     if (indicator == POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL)
     {
-	analytic_model = new Polynomial_Specific_Heat_Analytic_EoS_Model(
-	    packed_analytic);
+	analytic_model.reset(new Polynomial_Specific_Heat_Analytic_EoS_Model(
+                                 packed_analytic));
     }
     else
     {

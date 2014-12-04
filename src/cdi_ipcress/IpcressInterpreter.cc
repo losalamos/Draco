@@ -64,7 +64,7 @@ void ipcress_file_read(std::string const & op_data_file)
     SP<IpcressFile> spGF;
     try
     {
-	spGF = new rtt_cdi_ipcress::IpcressFile( op_data_file );
+	spGF.reset(new rtt_cdi_ipcress::IpcressFile( op_data_file ));
     }
     catch (  rtt_dsxx::assertion const & excpt )
     {
@@ -89,9 +89,9 @@ void ipcress_file_read(std::string const & op_data_file)
     SP<MultigroupOpacity> spMgOp;
     try
     {
-        spMgOp = new IpcressMultigroupOpacity( spGF, matIDs[i],
+        spMgOp.reset(new IpcressMultigroupOpacity( spGF, matIDs[i],
                                                rtt_cdi::ROSSELAND,
-                                               rtt_cdi::TOTAL);
+                                                   rtt_cdi::TOTAL));
     }
     catch ( rtt_dsxx::assertion const & excpt )
     {
@@ -161,9 +161,9 @@ void ipcress_file_read(std::string const & op_data_file)
         if (selID == 1)
         {
             SP<GrayOpacity> spGOp;
-            spGOp = new IpcressGrayOpacity( spGF, matIDs[matID],
+            spGOp.reset(new IpcressGrayOpacity( spGF, matIDs[matID],
                                             rtt_cdi::ROSSELAND,
-                                            rtt_cdi::ABSORPTION);
+                                                rtt_cdi::ABSORPTION));
             cout << "The Gray Rosseland Absorption Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
@@ -173,9 +173,9 @@ void ipcress_file_read(std::string const & op_data_file)
         else if (selID == 2)
         {
             SP<GrayOpacity> spGOp;
-            spGOp = new IpcressGrayOpacity( spGF, matIDs[matID],
+            spGOp.reset(new IpcressGrayOpacity( spGF, matIDs[matID],
                                             rtt_cdi::PLANCK,
-                                            rtt_cdi::ABSORPTION);
+                                                rtt_cdi::ABSORPTION));
             cout << "The Gray Planck Absorption Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
@@ -186,9 +186,9 @@ void ipcress_file_read(std::string const & op_data_file)
         else if (selID == 3)
         {
             SP<MultigroupOpacity> spMGOp;
-            spMGOp = new IpcressMultigroupOpacity( spGF, matIDs[matID],
+            spMGOp.reset(new IpcressMultigroupOpacity( spGF, matIDs[matID],
                                                    rtt_cdi::ROSSELAND,
-                                                   rtt_cdi::ABSORPTION);
+                                                       rtt_cdi::ABSORPTION));
             cout << "The Multigroup Rosseland Absorption Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
@@ -203,9 +203,9 @@ void ipcress_file_read(std::string const & op_data_file)
         else if (selID == 4)
         {
             SP<MultigroupOpacity> spMGOp;
-            spMGOp = new IpcressMultigroupOpacity( spGF, matIDs[matID],
+            spMGOp.reset(new IpcressMultigroupOpacity( spGF, matIDs[matID],
                                                    rtt_cdi::PLANCK,
-                                                   rtt_cdi::ABSORPTION);
+                                                       rtt_cdi::ABSORPTION));
             cout << "The Multigroup Planck Absorption Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
@@ -220,9 +220,9 @@ void ipcress_file_read(std::string const & op_data_file)
         if (selID == 5)
         {
             SP<GrayOpacity> spGOp;
-            spGOp = new IpcressGrayOpacity( spGF, matIDs[matID],
+            spGOp.reset(new IpcressGrayOpacity( spGF, matIDs[matID],
                                             rtt_cdi::ROSSELAND,
-                                            rtt_cdi::TOTAL);
+                                                rtt_cdi::TOTAL));
             cout << "The Gray Rosseland Total Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "

@@ -202,7 +202,7 @@ int main(int argc, char *argv[] )
     SP<IpcressFile const> file;
     try
     {
-        file = new IpcressFile(ipcressFileName);
+        file.reset(new IpcressFile(ipcressFileName));
     }
     catch ( rtt_dsxx::assertion const & excpt )
     {
@@ -220,12 +220,12 @@ int main(int argc, char *argv[] )
 
     try
     {
-        spGandOpacity = new IpcressOdfmgOpacity(
+        spGandOpacity.reset(new IpcressOdfmgOpacity(
             file,
             benchmarkData::matID,
             benchmarkData::model,
             benchmarkData::reaction,
-            benchmarkData::numBands);
+            benchmarkData::numBands));
         
         ostringstream message;
         message << "Successfully read Ipcress file \"" << ipcressFileName 
@@ -264,7 +264,7 @@ int main(int argc, char *argv[] )
 
     try
     {
-        spUnpackedGandOpacity = new IpcressOdfmgOpacity(packed);
+        spUnpackedGandOpacity.reset(new IpcressOdfmgOpacity(packed));
         PASSMSG( "Successfully unpacked IpcressOdfmgOpacity.");
     }
     catch ( rtt_dsxx::assertion const & excpt )

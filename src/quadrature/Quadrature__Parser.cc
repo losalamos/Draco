@@ -144,7 +144,7 @@ void Class_Parser<Quadrature>::post_sentinels_()
         first_time = false;
     }
     
-    parsed_quadrature = NULL;
+    parsed_quadrature.reset();
 }
 //---------------------------------------------------------------------------//
 template<>

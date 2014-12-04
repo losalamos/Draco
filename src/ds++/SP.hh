@@ -124,10 +124,10 @@ class SP
     // >>> DATA
 
     //! Raw pointer held by smart pointer.
-    T *p;
+    T *p_;
 
     //! Pointer to reference counter.
-    SPref *r;
+    SPref *r_;
 
   private:
     // >>> IMPLEMENTATION
@@ -135,70 +135,63 @@ class SP
     // Free the pointer.
     inline void free();
 
-    //! All derivatives of SP are friends. 
-    template<class X> friend class SP;
+    //! All instantiations of SP are friends. 
+    template<class U> friend class SP;
 
+    template <class V, class U> friend
+    SP<V> dynamic_pointer_cast(const SP<U>& sp);
+    
   public:
     //! Default constructor.
-    SP() : p(NULL), r(new SPref) { Ensure (r); Ensure (r->refs == 1); }
-
-    // Explicit constructor for type T *.
-    inline explicit SP(T *p_in);
+    inline /* constexpr */ SP();
 
     // Explicit constructor for type X *.
-    template<class X>
-    inline explicit SP(X *px_in);
+    template<class U>
+    inline explicit SP(U *p);
 
     // Copy constructor for SP<T>.
     inline SP(const SP<T> &sp_in);
 
     // Copy constructor for SP<X>.
     template<class X>
-    inline SP(const SP<X> &spx_in);
+    inline SP(const SP<X> &x);
 
     //! Destructor, memory is released when count goes to zero.
     ~SP(void) { free(); }
 
-    // Assignment operator for type T *.
-    inline SP<T>& operator=(T *p_in);
-
-    // Assignment operator for type X *.
-    template<class X>
-    inline SP<T>& operator=(X *px_in);
-
     // Assignment operator for type SP<T>.
-    inline SP<T>& operator=(const SP<T> sp_in);
+    inline SP<T>& operator=(const SP<T> &x);
 
-    // Assignment operator for type SP<X>.
-    template<class X>
-    inline SP<T>& operator=(const SP<X> spx_in);
+    // Assignment operator for type SP<U>.
+    template<class U>
+    inline SP<T>& operator=(const SP<U> &x);
 
+    //! CLear the pointer
+    void reset() { SP().swap(*this); }
+
+    //! Reset to a different pointer
+    template <class U>
+    inline void reset(U* p);
+
+    //! Swap pointers
+    void swap(SP &r);
+	
     //! Access operator.
-    T* operator->() const { Require(p); return p; }
+    T* operator->() const { Require(p_); return p_; }
 
     //! Dereference operator.
-    T& operator*() const { Require(p); return *p; }
+    T& operator*() const { Require(p_); return *p_; }
 
     //! Get the base-class pointer; better know what you are doing.
-    T* bp() const { return p; }
+    T* get() const { return p_; }
+
+    //! Get the use count.
+    long use_count() const { return r_? r_->refs : 0L; }
+
+    bool unique() const { return r_? r_->refs==1L : false; }
 
     //! Boolean conversion operator.
-    operator bool() const { return p != NULL; }
-
-    //! Operator not.
-    bool operator!() const { return p == NULL; }
-
-    //! Equality operator for T*.
-    bool operator==(const T *p_in) const { return p == p_in; }
-
-    //! Inequality operator for T*.
-    bool operator!=(const T *p_in) const { return p != p_in; }
-
-    //! Equality operator for SP<T>.
-    bool operator==(const SP<T> &sp_in) const { return p == sp_in.p; }
-
-    //! Inequality operator for SP<T>.
-    bool operator!=(const SP<T> &sp_in) const { return p != sp_in.p; }
+    operator bool() const { return p_ != NULL; }
 };
 
 DLL_PUBLIC void incompatible(std::type_info const &X, std::type_info const &T);
@@ -207,96 +200,99 @@ DLL_PUBLIC void incompatible(std::type_info const &X, std::type_info const &T);
 // OVERLOADED OPERATORS
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Do equality check between smart pointers.
+ */
+template<typename T, typename U>
+bool operator==(const SP<T> &lhs, const SP<U> &rhs)
+{
+    return lhs.get() == rhs.get();
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Do equality check with a free pointer.
+ *
+ * This is not part of the C++11 shared_ptr library, but we include it because
+ * we do not have the C++11 nullptr type.
  */
 template<typename T>
 bool operator==(const T *pt, const SP<T> &sp)
 {
-    return sp == pt;
+    return sp.get() == pt;
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check with a free pointer.
+ *
+ * This is not part of the C++11 shared_ptr library, but we include it because
+ * we do not have the C++11 nullptr type.
  */
 template<typename T>
 bool operator!=(const T *pt, const SP<T> &sp)
 {
-    return sp != pt;
+    return sp.get() != pt;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Do equality check with a free pointer.
+ *
+ * This is not part of the C++11 shared_ptr library, but we include it because
+ * we do not have the C++11 nullptr type.
+ */
+template<typename T>
+bool operator==(const SP<T> &sp, const T *pt)
+{
+    return sp.get() == pt;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Do inequality check with a free pointer.
+ *
+ * This is not part of the C++11 shared_ptr library, but we include it because
+ * we do not have the C++11 nullptr type.
+ */
+template<typename T>
+bool operator!=(const SP<T> &sp, const T *pt)
+{
+    return sp.get() != pt;
 }
 
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Explicit constructor for type T *.
+ * \brief  Default constructor
  *
- * This constructor is used to initialize a SP with a pointer, ie.
- * \code
- *     Foo *f = new Foo;
- *     SP<Foo> spf(f);   // f now owned by spf
- *     SP<Foo> spf2 = f; // error! does not do implicit conversion
- * \endcode
- * Once a pointer is "given" to a SP, the SP takes control. This means that
- * spf will delete f when the last SP to f is destroyed.
- *
- * \param p_in pointer to type T
+ * This constructs an empty smart pointer (owns no pointer, use_count()==0).
  */
 template<typename T>
-SP<T>::SP(T *p_in)
-    : p(p_in),
-      r(new SPref)
+SP<T>::SP()
+    : p_(NULL), r_(NULL)
 {
-    Ensure (r);
-    Ensure (r->refs == 1);
+    Ensure(get()==NULL);
+    Ensure(use_count()==0);
 }
-
 //---------------------------------------------------------------------------//
 /*!
- * \brief  Explicit constructor for type X *.
+ * \brief  Explicit constructor for type U *.
  *
- * This constructor is used to initialize a base class smart pointer of type
- * T with a derived class pointer of type X or, equivalently, any types in
- * which X * is convertible to T * through a dynamic_cast.  Consider,
- * \code
- *     class Base {//...}; 
- *     class Derived : public Base {//...};
- *     
- *     SP<Base> spb(new Derived); // spb base class SP to Derived type
- *     Derived *d = new Derived;
- *     SP<Base> spb2(d);          // different syntax
- *     SP<Base> spb3 = d;         // error! no implicit conversion
- *     
- *     Derived *d2;
- *     SP<Base> spb4(d2);         // error! cannot initialize with NULL
- *                                // pointer of different type than T
- * \endcode
- * The pointer to X must not be equal to NULL.  The SP owns the pointer when
- * it is constructed.
+ * This constructor is used to initialize a smart pointer of type
+ * T with a smart pointer of type U, where U must be implicitly convertible to
+ * T. This generally means U is either T or a child class of T.
  *
- * \param px_in pointer to type X that is convertible to T *
+ * \param p pointer to type U that is convertible to T *
  */
 template<typename T>
-template<class X>
-SP<T>::SP(X *px_in)
-    : p(NULL), r(NULL)
+template<class U>
+SP<T>::SP(U *p)
+    : p_(p),
+      r_(new SPref)
 {
-    Require (px_in);
-
-    // make a dynamic cast to check that we can cast between X and T
-    T *np = dynamic_cast<T *>(px_in);
-
-    // check that we have made a successfull cast if px exists
-    if(!np)
-        incompatible(typeid(X), typeid(T));
-
-    // assign the pointer and reference
-    p = np;
-    r = new SPref;
-
-    Ensure (p);
-    Ensure (r);
-    Ensure (r->refs == 1);
+    Ensure (get()==p);
+    Ensure (unique());
 }
 
 //---------------------------------------------------------------------------//
@@ -307,190 +303,96 @@ SP<T>::SP(X *px_in)
  */
 template<typename T>
 SP<T>::SP(const SP<T> &sp_in)
-    : p(sp_in.p),
-      r(sp_in.r)
+    : p_(sp_in.p_),
+      r_(sp_in.r_)
 {
-    Require (r);
-
-    // advance the reference to T
-    r->refs++;
+    // advance the reference to T if not empty
+    if (r_) r_->refs++;
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Copy constructor for SP<X>.
+ * \brief Copy constructor for SP<U>.
  *
- * This copy constructor requires that X * is convertible to T * through a
- * dynamic_cast.  The pointer in spx_in can point to NULL; however, it must
- * still be convertible to T * through a dynamic_cast.
+ * This copy constructor requires that U * is implicitly convertible to T *.
  *
- * \param spx_in smart pointer of type SP<X>
+ * \param x smart pointer of type SP<U>
  */
 template<typename T>
-template<class X>
-SP<T>::SP(const SP<X> &spx_in)
-    :p(NULL), r(NULL)
+template<class U>
+SP<T>::SP(const SP<U> &x)
+    : p_(x.p_),
+      r_(x.r_)
 {
-    Require (spx_in.r);
-
-    // make a pointer to T *
-    T *np = dynamic_cast<T *>(spx_in.p);
-    if (spx_in.p ? np == 0 : false)
-        incompatible(typeid(X), typeid(T));
-
-    // assign the pointer and reference
-    p = np;
-    r = spx_in.r;
-    
-    // advance the reference to T
-    r->refs++;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Assignment operator for type T *.
- *
- * The assignment operator checks the existing count of the smart pointer and
- * then assigns the smart pointer to the raw pointer.  As in copy
- * construction, the smart pointer owns the pointer after assignment. Here is
- * an example of usage:
- * \code
- *     SP<Foo> f;         // has reference to NULL pointer
- *     f      = new Foo;  // now has 1 count of Foo
- *     Foo *g = new Foo; 
- *     f      = g;        // f's original pointer to Foo is deleted
- *                        // because count goes to zero; f now has
- *                        // 1 reference to g
- * \endcode
- * 
- * \param p_in pointer to T
- */
-template<typename T>
-SP<T>& SP<T>::operator=(T *p_in)
-{
-    // check if we already own this pointer
-    if (p == p_in)
-	return *this;
-
-    // next free the existing pointer
-    free();
-    
-    // now make add p_in to this pointer and make a new reference to it
-    p = p_in;
-    r = new SPref;
-
-    Ensure (r->refs == 1);
-    return *this;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Assignment operator for type X *.
- *
- * This assignment requires that X * is convertible to T * through a
- * dynamic_cast.  It follows the same principle as SP(X*); however,
- * this is assignment:
- * \code
- *     SP<Base> b;
- *     b = new Derived;
- * \endcode
- * The pointer to X must not be equal to NULL.
- *
- * \param px_in pointer to type X * that is convertible to type T * through a
- * dynamic cast
- */
-template<typename T>
-template<class X>
-SP<T>& SP<T>::operator=(X *px_in)
-{
-    Require (px_in);
-
-    // do a dynamic cast to ensure convertiblility between T* and X*
-    T *np = dynamic_cast<T *>(px_in);
-    if (!np)
-        incompatible(typeid(X), typeid(T));
-
-    // now assign this to np (using previously defined assignment operator)
-    *this = np;
-    
-    Ensure (r->refs == 1);
-    return *this;
+    // advance the reference to T if not empty
+    if (r_) r_->refs++;
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator for type SP<T>.
  *
- * \param sp_in smart pointer of type SP<T>
+ * \param x smart pointer of type SP<T>
  */
 template<typename T>
-SP<T>& SP<T>::operator=(const SP<T> sp_in)
+SP<T>& SP<T>::operator=(const SP<T> &x)
 {
-    Require (sp_in.r);
-
-    // see if they are equal
-    if (this == &sp_in || p == sp_in.p)
-	return *this;
-
-    // free the existing pointer
-    free();
-
-    // assign p and r to sp_in
-    p = sp_in.p;
-    r = sp_in.r;
-
-    // add the reference count and return
-    r->refs++;
+    SP<T>(x).swap(*this);
     return *this;
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Assignment operator for type SP<X>.
+ * \brief Assignment operator for type SP<U>.
  *
- * This assignment requires that X * is convertible to T * through a
- * dynamic_cast.  The pointer in spx_in can point to NULL; however, it must
- * still be convertible to T * through a dynamic_cast.
+ * This assignment requires that U * is implicitly convertible to T *.  The
+ * pointer in x can point to NULL.
  *
- * \param spx_in smart pointer of type SP<X>
+ * \param x smart pointer of type SP<U>
  */
 template<typename T>
-template<class X>
-SP<T>& SP<T>::operator=(const SP<X> spx_in)
+template<class U>
+SP<T>& SP<T>::operator=(const SP<U> &x)
 {
-    Require (spx_in.r);
-
-    // make a pointer to T *
-    T *np = dynamic_cast<T *>(spx_in.p);
-    if (spx_in.p ? np == 0 : false)
-        incompatible(typeid(X), typeid(T));
-
-    // check to see if we are holding the same pointer (and np is not NULL);
-    // to NULL pointers to the same type are defined to be equal by the
-    // standard 
-    if (p == np && p)
-    {
-	// if the pointers are the same the reference count better be the
-	// same 
-	Check (r == spx_in.r);
-	return *this;
-    }
-
-    // we don't need to worry about the case where p == np and np == NULL
-    // because this combination is impossible; if np is NULL then it belongs
-    // to a different smart pointer; in other words, if p == np and np ==
-    // NULL then r != spx_in.r
-
-    // free the existing pointer and reference
-    free();
-
-    // assign new values
-    p = np;
-    r = spx_in.r;
-
-    // advance the counter and return
-    r->refs++;
+    SP<T>(x).swap(*this);
     return *this;
+}
+
+//---------------------------------------------------------------------------//
+template <class T, class U>
+SP<T> dynamic_pointer_cast (const SP<U>& sp)
+{
+    SP<T> Result;
+    T *pt = dynamic_cast<T*>(sp.p_);
+    if (pt)
+    {
+        Result.p_ = pt;
+        Result.r_ = sp.r_;
+        sp.r_->refs++;
+    }
+    return Result;
+}
+
+//---------------------------------------------------------------------------//
+template <class T>
+template <typename U>
+void SP<T>::reset(U* p)
+{
+    free();
+    p_ = p;
+    r_ = new SPref;
+}
+
+//---------------------------------------------------------------------------//
+template<class T>
+void SP<T>::swap(SP<T> &r)
+{
+    T *tp = p_;
+    p_ = r.p_;
+    r.p_ = tp;
+    SPref *rp = r_;
+    r_ = r.r_;
+    r.r_ = rp;
 }
 
 //---------------------------------------------------------------------------//
@@ -504,13 +406,11 @@ SP<T>& SP<T>::operator=(const SP<X> spx_in)
 template<typename T>
 void SP<T>::free()
 {
-    Require (r);
-    
     // if the count goes to zero then we free the data
-    if (--r->refs == 0)
+    if (r_ && --r_->refs == 0)
     {
-	delete p;
-	delete r;
+	delete p_;
+	delete r_;
     }
 }
 

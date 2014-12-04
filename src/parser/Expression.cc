@@ -37,8 +37,8 @@ class And_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(e1->number_of_variables()==e2->number_of_variables());
 
         Ensure(check_class_invariant());
@@ -98,7 +98,7 @@ class Cos_Expression : public Expression
         
         expression_(expression)
     {
-        Require(expression != pE(0));
+        Require(expression);
         Require(is_compatible(expression_->units(), dimensionless));
 
         Ensure(check_class_invariant());
@@ -157,8 +157,8 @@ class Difference_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(e1->units(), e2->units()));
         Require(e1->number_of_variables()==e2->number_of_variables());
 
@@ -219,7 +219,7 @@ class Exp_Expression : public Expression
         
         expression_(expression)
     {
-        Require(expression != pE(0));
+        Require(expression);
         Require(is_compatible(expression_->units(), dimensionless));
 
         Ensure(check_class_invariant());
@@ -278,8 +278,8 @@ class Greater_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(e1->units(), e2->units()));
         Require(e1->number_of_variables()==e2->number_of_variables());
 
@@ -342,8 +342,8 @@ class GE_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(e1->units(), e2->units()));
         Require(e1->number_of_variables()==e2->number_of_variables());
 
@@ -406,8 +406,8 @@ class Less_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(e1->units(), e2->units()));
         Require(e1->number_of_variables()==e2->number_of_variables());
 
@@ -470,8 +470,8 @@ class LE_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(e1->units(), e2->units()));
         Require(e1->number_of_variables()==e2->number_of_variables());
 
@@ -533,7 +533,7 @@ class Log_Expression : public Expression
         
         expression_(expression)
     {
-        Require(expression != pE(0));
+        Require(expression);
         Require(is_compatible(expression_->units(), dimensionless));
 
         Ensure(check_class_invariant());
@@ -591,7 +591,7 @@ class Negate_Expression : public Expression
 
         expression_(expression)
     {
-        Require(expression != pE(0));
+        Require(expression);
 
         Ensure(check_class_invariant());
     }
@@ -646,7 +646,7 @@ class Not_Expression : public Expression
         
         expression_(expression)
     {
-        Require(expression != pE(0));
+        Require(expression);
 
         Ensure(check_class_invariant());
     }
@@ -702,8 +702,8 @@ class Or_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(e1->number_of_variables()==e2->number_of_variables());
 
         Ensure(check_class_invariant());
@@ -766,8 +766,8 @@ class Power_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(dimensionless, e2->units()));
         Require(e2->is_constant() || 
                 is_compatible(dimensionless, e1->units()));
@@ -833,8 +833,8 @@ class Product_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(e1->number_of_variables()==e2->number_of_variables());
 
         Ensure(check_class_invariant());
@@ -895,8 +895,8 @@ class Quotient_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(e1->number_of_variables()==e2->number_of_variables());
 
         Ensure(check_class_invariant());
@@ -956,7 +956,7 @@ class Sin_Expression : public Expression
         
         expression_(expression)
     {
-        Require(expression != pE(0));
+        Require(expression);
         Require(is_compatible(expression_->units(), dimensionless));
 
         Ensure(check_class_invariant());
@@ -1015,8 +1015,8 @@ class Sum_Expression : public Expression
         e1_(e1),
         e2_(e2)
     {
-        Require(e1 != pE(0));
-        Require(e2 != pE(0));
+        Require(e1);
+        Require(e2);
         Require(is_compatible(e1->units(), e2->units()));
         Require(e1->number_of_variables()==e2->number_of_variables());
 
@@ -1304,8 +1304,8 @@ static pE parse_power(unsigned const number_of_variables,
         }
         else
         {
-            Result = new Power_Expression(Result,
-                                          exponent);
+            Result.reset(new Power_Expression(Result,
+                                              exponent));
         }
     }
     return Result;
@@ -1354,20 +1354,19 @@ static pE parse_multiplicative(unsigned const number_of_variables,
         if (tokens.lookahead().text()=="*")
         {
             tokens.shift();
-            Result = new Product_Expression(Result,
-                                            parse_unary(number_of_variables,
+            Result.reset(new Product_Expression(Result,
+                                                parse_unary(number_of_variables,
                                                         variable_map,
-                                                        tokens));
+                                                            tokens)));
         }
         else
         {
             Check(tokens.lookahead().text()=="/");
             tokens.shift();
-            Result =
-                new Quotient_Expression(Result,
-                                        parse_unary(number_of_variables,
-                                                    variable_map,
-                                                    tokens));
+            Result.reset(new Quotient_Expression(Result,
+                                                 parse_unary(number_of_variables,
+                                                             variable_map,
+                                                             tokens)));
         }            
     }
     return Result;
@@ -1397,8 +1396,8 @@ static pE parse_additive(unsigned const number_of_variables,
             }
             else
             {
-                Result = new Sum_Expression(Result,
-                                            Right);
+                Result.reset(new Sum_Expression(Result,
+                                                Right));
             }
         }
         else
@@ -1415,8 +1414,8 @@ static pE parse_additive(unsigned const number_of_variables,
             }
             else
             {
-                Result = new Difference_Expression(Result,
-                                                   Right);
+                Result.reset(new Difference_Expression(Result,
+                                                       Right));
             }
         }            
     }
@@ -1447,8 +1446,8 @@ static pE parse_relational(unsigned const number_of_variables,
             }
             else
             {
-                Result = new Less_Expression(Result,
-                                             Right);
+                Result.reset(new Less_Expression(Result,
+                                                 Right));
             }
         }
         else if (token.text()=="<=")
@@ -1464,8 +1463,8 @@ static pE parse_relational(unsigned const number_of_variables,
             }
             else
             {
-                Result = new LE_Expression(Result,
-                                             Right);
+                Result.reset(new LE_Expression(Result,
+                                               Right));
             }
         }
         else if (token.text()==">")
@@ -1481,8 +1480,8 @@ static pE parse_relational(unsigned const number_of_variables,
             }
             else
             {
-                Result = new Greater_Expression(Result,
-                                                Right);
+                Result.reset(new Greater_Expression(Result,
+                                                    Right));
             }
         }
         else
@@ -1499,8 +1498,8 @@ static pE parse_relational(unsigned const number_of_variables,
             }
             else
             {
-                Result = new GE_Expression(Result,
-                                                Right);
+                Result.reset(new GE_Expression(Result,
+                                               Right));
             }
         }
         token = tokens.lookahead();
@@ -1517,10 +1516,9 @@ static pE parse_and(unsigned const number_of_variables,
     while (tokens.lookahead().text()=="&&")
     {
         tokens.shift();
-        Result =
-            new And_Expression(Result, parse_relational(number_of_variables,
-                                                        variable_map,
-                                                        tokens));
+        Result.reset(new And_Expression(Result, parse_relational(number_of_variables,
+                                                                 variable_map,
+                                                                 tokens)));
     }
     return Result;
 }
@@ -1534,10 +1532,9 @@ static pE parse_or(unsigned const number_of_variables,
     while (tokens.lookahead().text()=="||")
     {
         tokens.shift();
-        Result =
-            new Or_Expression(Result, parse_relational(number_of_variables,
-                                                       variable_map,
-                                                       tokens));
+        Result.reset(new Or_Expression(Result, parse_relational(number_of_variables,
+                                                                variable_map,
+                                                                tokens)));
     }
     return Result;
 }
@@ -1590,9 +1587,9 @@ SP<Expression> Expression::parse(unsigned const number_of_variables,
     while (tokens.lookahead().text()=="|")
     {
         tokens.shift();
-        Result = new Or_Expression(Result, parse_or(number_of_variables,
-                                                    variable_map,
-                                                    tokens));
+        Result.reset(new Or_Expression(Result, parse_or(number_of_variables,
+                                                        variable_map,
+                                                        tokens)));
     }
     return Result;
 }
@@ -1638,9 +1635,9 @@ SP<Expression> Expression::parse(unsigned const number_of_variables,
     while (tokens.lookahead().text()=="|")
     {
         tokens.shift();
-        Result = new Or_Expression(Result, parse_or(number_of_variables,
-                                                    variable_map,
-                                                    tokens));
+        Result.reset(new Or_Expression(Result, parse_or(number_of_variables,
+                                                        variable_map,
+                                                        tokens)));
     }
     if (unit_expressions_are_required() ||
         !is_compatible(Result->units(), dimensionless))

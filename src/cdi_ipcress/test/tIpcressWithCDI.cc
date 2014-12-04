@@ -74,7 +74,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the object.
     try 
     {
-	spGFAnalytic = new const IpcressFile( op_data_file ); 
+	spGFAnalytic.reset(new const IpcressFile( op_data_file )); 
     }
     catch( rtt_dsxx::assertion const & excpt )
     {
@@ -103,8 +103,11 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the opacity object.
     try
     {
-	spOp_Analytic_ragray = new const IpcressGrayOpacity(
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION ); 
+	spOp_Analytic_ragray.reset(new const IpcressGrayOpacity(
+                                       spGFAnalytic,
+                                       matid,
+                                       rtt_cdi::ROSSELAND,
+                                       rtt_cdi::ABSORPTION )); 
     }
     catch( rtt_dsxx::assertion const & excpt )
     {
@@ -130,7 +133,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     // ----------------- //
 	    
     SP< CDI > spCDI_Analytic;
-    if ( (spCDI_Analytic = new CDI()) )
+    if ( (spCDI_Analytic.reset(new CDI())), spCDI_Analytic )
     {
 	ostringstream message;
 	message << "SP to CDI object created successfully (GrayOpacity).";
@@ -221,8 +224,11 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     // Try to instantiate the opacity object.
     try
     {
-	spOp_Analytic_ramg = new const IpcressMultigroupOpacity(
-	    spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION);
+	spOp_Analytic_ramg.reset(new const IpcressMultigroupOpacity(
+                                     spGFAnalytic,
+                                     matid,
+                                     rtt_cdi::ROSSELAND,
+                                     rtt_cdi::ABSORPTION));
     }
     catch( rtt_dsxx::assertion const & excpt )
     {
