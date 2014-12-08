@@ -216,6 +216,15 @@ macro(dbsSetupCxx)
    # C++11 support:
    option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
    get_filename_component( my_cxx_compiler ${my_cxx_compiler} NAME )
+   if( ${my_cxx_compiler} MATCHES "mpicxx" )
+     # MPI wrapper
+     execute_process( COMMAND ${my_cxx_compiler} --version
+       OUTPUT_VARIABLE mpicxx_version_output
+       OUTPUT_STRIP_TRAILING_WHITESPACE )
+     if( ${mpicxx_version_output} MATCHES icpc )
+       set( my_cxx_compiler icpc )
+     endif()
+   endif()
    if( ${my_cxx_compiler} MATCHES "clang" OR 
          ${my_cxx_compiler} MATCHES "llvm")
       include( apple-clang )
@@ -342,6 +351,16 @@ macro(dbsSetupFortran)
          my_fc_compiler ${my_fc_compiler})
    else()
       set( my_fc_compiler ${CMAKE_Fortran_COMPILER} )
+   endif()
+
+   # MPI wrapper
+   if( ${my_fc_compiler} MATCHES "mpif90" )
+     execute_process( COMMAND ${my_fc_compiler} --version
+       OUTPUT_VARIABLE mpifc_version_output
+       OUTPUT_STRIP_TRAILING_WHITESPACE )
+     if( ${mpifc_version_output} MATCHES ifort )
+       set( my_fc_compiler ifort )
+     endif()
    endif()
 
    if( ${my_fc_compiler} MATCHES "pgf9[05]" OR
