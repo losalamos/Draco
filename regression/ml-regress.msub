@@ -83,7 +83,7 @@ run "module use $VENDOR_DIR/Modules/hpc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell. 
 run "module purge &> /dev/null"
-run "module load friendly-testing "
+run "module load friendly-testing user_contrib"
 run "module load intel/14.0.4 openmpi/1.6.5"
 run "module load lapack trilinos SuperLU_DIST"
 run "module load ParMetis ndi"
