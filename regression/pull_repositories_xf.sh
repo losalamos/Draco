@@ -131,5 +131,5 @@ run "chmod -R g+rwX,o-rwX svn"
 
 # Update Module directories
 cd /usr/projects/draco/vendors/environment
-/usr/projects/draco/vendors/subversion-1.8.5/ml/bin/svn up
+/usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin/svn up
 
