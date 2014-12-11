@@ -30,7 +30,7 @@ set( C4_MPI ${C4_MPI} CACHE STRING
 mark_as_advanced( C4_MPI C4_SCALAR )
 
 if( UNIX )
-   set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS_STRING} -np " )
+   set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS} -np " )
 elseif( WIN32 )
    set( C4_MPICMD "mpiexec -np " )
 elseif( OSF1 )

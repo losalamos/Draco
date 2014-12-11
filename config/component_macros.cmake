@@ -274,10 +274,11 @@ macro( register_parallel_test targetname numPE command cmd_args )
     message( "      Adding test: ${targetname}" )
   endif()
   if( addparalleltest_MPI_PLUS_OMP )
+    string( REPLACE " " ";" mpiexec_omp_postflags_list ${MPIEXEC_OMP_POSTFLAGS} )
     add_test( 
       NAME    ${targetname}
       COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-      ${MPIEXEC_OMP_POSTFLAGS}
+      ${mpiexec_omp_postflags_list}
       ${command}
       ${cmdarg}
       )
@@ -704,7 +705,7 @@ macro( add_parallel_tests )
   else()
     set( MPIRUN_POSTFLAGS "${addparalleltest_MPIFLAGS}" )
   endif()
-  
+  string( REPLACE " " ";" MPIRUN_POSTFLAGS ${MPIRUN_POSTFLAGS} )
 
   # Loop over each test source files:
   # 1. Compile the executable

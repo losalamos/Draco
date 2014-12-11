@@ -188,12 +188,12 @@ macro( setupMPILibrariesUnix )
          # This flag also shows up in
          # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-           set( MPIEXEC_POSTFLAGS --mca mpi_paffinity_alone 0 )
-           set( MPIEXEC_POSTFLAGS_STRING "--mca mpi_paffinity_alone 0" )
+           set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0" CACHE
+               STRING "extra mpirun flags (list)." FORCE)
          else()
            # Flag provided by Sam Gutierrez (2014-04-08),
-           set( MPIEXEC_POSTFLAGS -mca hwloc_base_binding_policy none )
-           set( MPIEXEC_POSTFLAGS_STRING "-mca hwloc_base_binding_policy none" )
+           set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none" CACHE
+               STRING "extra mpirun flags (list)." FORCE)
          endif()
 
          # Find cores/cpu and cpu/node.
@@ -253,34 +253,22 @@ macro( setupMPILibrariesUnix )
          # --bind-to-core added in OpenMPI-1.4 
 
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-           #message( "MPI Version < 1.7" )
            set( MPIEXEC_OMP_POSTFLAGS 
-             -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-           set( MPIEXEC_OMP_POSTFLAGS_STRING 
              "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE)
+             CACHE STRING "extra mpirun flags (list)." FORCE )
          elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
            #message( "MPI Version > 1.7" )
            set( MPIEXEC_OMP_POSTFLAGS 
-             -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-           set( MPIEXEC_OMP_POSTFLAGS_STRING 
              "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE)
+             CACHE STRING "extra mpirun flags (list)." FORCE )
         else() 
-          #message( "MPI Version = 1.7" )
           # Version 1.7.4
            set( MPIEXEC_OMP_POSTFLAGS 
-             -bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-           set( MPIEXEC_OMP_POSTFLAGS_STRING 
              "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
-             CACHE STRING "extra mpirun flags (list)." FORCE)
+             CACHE STRING "extra mpirun flags (list)." FORCE )
            
         endif()
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
-            MPI_LIBRARIES )         
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )         
 
       ### Cray wrappers for mpirun
       elseif( "${MPIEXEC}" MATCHES aprun)
@@ -295,10 +283,8 @@ macro( setupMPILibrariesUnix )
                "Number of multi-core CPUs per node" FORCE )
             set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
                "Number of cores per cpu" FORCE )
-            set( MPIEXEC_OMP_POSTFLAGS -d ${MPI_CORES_PER_CPU} CACHE
+            set( MPIEXEC_OMP_POSTFLAGS "-d ${MPI_CORES_PER_CPU}" CACHE
                STRING "extra mpirun flags (list)." FORCE)
-            set( MPIEXEC_OMP_POSTFLAGS_STRING "-d ${MPI_CORES_PER_CPU}" CACHE
-               STRING "extra mpirun flags (string)." FORCE)
          else()
             message( STATUS "
 WARNING: ENV{OMP_NUM_THREADS} is not set in your environment, 
@@ -312,10 +298,8 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
                "Number of multi-core CPUs per node" FORCE )
             set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
                "Number of cores per cpu" FORCE )
-            set( MPIEXEC_OMP_POSTFLAGS -c${MPI_CORES_PER_CPU} CACHE
+            set( MPIEXEC_OMP_POSTFLAGS "-c${MPI_CORES_PER_CPU}" CACHE
                STRING "extra mpirun flags (list)." FORCE)
-            set( MPIEXEC_OMP_POSTFLAGS_STRING "-c${MPI_CORES_PER_CPU}" CACHE
-               STRING "extra mpirun flags (string)." FORCE)
          else()
             message( STATUS "
 WARNING: ENV{OMP_NUM_THREADS} is not set in your environment, 
@@ -486,21 +470,14 @@ macro( setupMPILibrariesWindows )
          # --bind-to-core added in OpenMPI-1.4
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
            set( MPIEXEC_OMP_POSTFLAGS 
-             -bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-           set( MPIEXEC_OMP_POSTFLAGS_STRING 
              "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE)
+             CACHE STRING "extra mpirun flags (list)." FORCE )
          else()
            set( MPIEXEC_OMP_POSTFLAGS 
-             -bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-           set( MPIEXEC_OMP_POSTFLAGS_STRING 
              "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE)
+             CACHE STRING "extra mpirun flags (list)." FORCE )
          endif()
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
-           MPI_LIBRARIES )    
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )    
             
       elseif("${MPIEXEC}" MATCHES "Microsoft HPC" )
          set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
@@ -527,12 +504,9 @@ macro( setupMPILibrariesWindows )
          endif()  
          
          #
-         set( MPIEXEC_OMP_POSTFLAGS -exitcodes            
+         set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
             CACHE STRING "extra mpirun flags (list)." FORCE )
-         set( MPIEXEC_OMP_POSTFLAGS_STRING "-exitcodes"
-            CACHE STRING "extra mpirun flags (list)." FORCE)
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
-            MPI_LIBRARIES )    
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )    
       elseif("${MPIEXEC}" MATCHES "MPICH2" )
          set( MPI_FLAVOR "MPICH2" CACHE STRING "Flavor of MPI." )
          
@@ -560,12 +534,9 @@ macro( setupMPILibrariesWindows )
          endif()  
          
          #
-         set( MPIEXEC_OMP_POSTFLAGS -exitcodes            
+         set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
             CACHE STRING "extra mpirun flags (list)." FORCE )
-         set( MPIEXEC_OMP_POSTFLAGS_STRING "-exitcodes"
-            CACHE STRING "extra mpirun flags (list)." FORCE)
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS_STRING MPIEXEC_OMP_POSTFLAGS
-            MPI_LIBRARIES )                
+         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )                
       endif()
       
    endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
