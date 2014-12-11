@@ -76,8 +76,8 @@ class DLL_PUBLIC Ensight_Stream
     
     //! Constructor.
     explicit Ensight_Stream(const std::string &file_name = "",
-			    const bool binary = false,
-			    const bool geom_file = false);
+                            const bool binary = false,
+                            const bool geom_file = false);
 
     //! Destructor.
     ~Ensight_Stream();
@@ -88,8 +88,8 @@ class DLL_PUBLIC Ensight_Stream
 
     //! Opens the stream.
     void open(const std::string &file_name,
-	      const bool binary = false,
-	      const bool geom_file = false);
+              const bool binary = false,
+              const bool geom_file = false);
 
     //! Closes the stream.
     void close();

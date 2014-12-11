@@ -32,7 +32,7 @@ Ensight_Stream& endl(Ensight_Stream &s)
     Require(s.d_stream.is_open());
     
     if ( ! s.d_binary )
-	s.d_stream << '\n';
+        s.d_stream << '\n';
 
     Require(s.d_stream.good());
     
@@ -51,14 +51,14 @@ Ensight_Stream& endl(Ensight_Stream &s)
  * \param geom_file  If true, then a geometry file will be dumped.
  */
 Ensight_Stream::Ensight_Stream(const std::string &file_name,
-			       const bool binary,
-			       const bool geom_file)
+                               const bool binary,
+                               const bool geom_file)
     : d_stream(),
       d_binary(false)
 {
     if (! file_name.empty())
     {
-	open(file_name, binary, geom_file);
+        open(file_name, binary, geom_file);
     }
 }
 
@@ -87,34 +87,33 @@ Ensight_Stream::~Ensight_Stream(void)
  * \param geom_file  If true, then a geometry file will be dumped.
  */
 void Ensight_Stream::open(const std::string &file_name,
-			  const bool binary,
-			  const bool geom_file)
+                          const bool binary,
+                          const bool geom_file)
 {
     Require(! file_name.empty());
 
     d_binary = binary;
     
     // Open the stream.
-    
     if ( binary )
-	d_stream.open(file_name.c_str(), std::ios::binary);
+        d_stream.open(file_name.c_str(), std::ios::binary);
     else
-	d_stream.open(file_name.c_str());
+        d_stream.open(file_name.c_str());
 
     Check(d_stream);
 
     // Set up the file.
-	
+        
     if ( binary )
     {
-	if ( geom_file )
-	    *this << "C Binary";
+        if ( geom_file )
+            *this << "C Binary";
     }
     else
     {
-	// set precision for ascii mode
-	d_stream.precision(5);
-	d_stream.setf(std::ios::scientific, std::ios::floatfield);
+        // set precision for ascii mode
+        d_stream.precision(5);
+        d_stream.setf(std::ios::scientific, std::ios::floatfield);
     }
 
     Ensure(d_stream.good());
@@ -128,7 +127,7 @@ void Ensight_Stream::close()
 {
     if ( d_stream.is_open() )
     {
-	d_stream.close();
+        d_stream.close();
     }
 }
 
@@ -141,9 +140,9 @@ Ensight_Stream& Ensight_Stream::operator<<(const int i)
     Require(d_stream.is_open());
     
     if ( d_binary )
-	binary_write(i);
+        binary_write(i);
     else
-	d_stream << std::setw(10) << i;
+        d_stream << std::setw(10) << i;
 
     Ensure(d_stream.good());
     
@@ -181,9 +180,9 @@ Ensight_Stream& Ensight_Stream::operator<<(const double d)
     Require(d_stream.is_open());
 
     if ( d_binary )
-	binary_write(float(d));
+        binary_write(float(d));
     else
-	d_stream << std::setw(12) << d;
+        d_stream << std::setw(12) << d;
 
     Ensure(d_stream.good());
     
@@ -200,13 +199,13 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::string &s)
 
     if ( d_binary )
     {
-	// Ensight demands all character strings be 80 chars.  Make it so.
-	std::string sc(s);
-	sc.resize(80);
-	d_stream.write(sc.c_str(), 80);
+        // Ensight demands all character strings be 80 chars.  Make it so.
+        std::string sc(s);
+        sc.resize(80);
+        d_stream.write(sc.c_str(), 80);
     }
     else
-	d_stream << s;
+        d_stream << s;
     
     Ensure(d_stream.good());
 

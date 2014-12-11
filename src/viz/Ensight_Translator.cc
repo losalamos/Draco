@@ -49,7 +49,7 @@ open(const int        icycle,
      const double     dt)
 {
     Insist(! d_geom_out.is_open(),
-	   "Attempted to open an already open geometry file!");
+           "Attempted to open an already open geometry file!");
 
     using std::string;
     using std::ostringstream;
@@ -64,82 +64,78 @@ open(const int        icycle,
     ostringstream post_number;
 
     if (igrdump_num < 10)
-	post_number << "000" << igrdump_num;
+        post_number << "000" << igrdump_num;
     else if (igrdump_num < 100) 
-	post_number << "00" << igrdump_num;
+        post_number << "00" << igrdump_num;
     else if (igrdump_num < 1000) 
-	post_number << "0" << igrdump_num;
+        post_number << "0" << igrdump_num;
     else 
-	post_number << igrdump_num;
+        post_number << igrdump_num;
 
     postfix_build << "data." << post_number.str();
     string postfix = postfix_build.str();
 
     // announce the graphics dump
     std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle 
-	      << " time= " << time << " dt= " << dt << std::endl
-	      << "dir= " << d_prefix << ", dump_number= " 
-	      << igrdump_num << std::endl;
+              << " time= " << time << " dt= " << dt << std::endl
+              << "dir= " << d_prefix << ", dump_number= " 
+              << igrdump_num << std::endl;
     
     // write case file
     write_case();
 
     // >>> Open the geometry file.
-
     if ( (! d_static_geom ) ||
-	 (d_dump_times.size() == 1) )
+         (d_dump_times.size() == 1) )
     {
 
-	// make output file for this timestep
-	string filename  = d_geo_dir + "/";
-	if ( d_static_geom ) {
-	    filename += "data";
-	}
-	else {
-	    filename += postfix;
-	}
+        // make output file for this timestep
+        string filename  = d_geo_dir + "/";
+        if ( d_static_geom ) 
+            filename += "data";
+        else 
+            filename += postfix;
 
-	d_geom_out.open(filename, d_binary, true);
-	
-	// write the header
-	d_geom_out << "Description line 1" << endl;
-	
-	ostringstream s;
-	s << "probtime " << time << " cycleno " << icycle;
-	d_geom_out << s.str() << endl;
+        d_geom_out.open(filename, d_binary, true);
+
+        // write the header
+        d_geom_out << "Description line 1" << endl;
+        
+        ostringstream s;
+        s << "probtime " << time << " cycleno " << icycle;
+        d_geom_out << s.str() << endl;
     
-	d_geom_out << "node id given" << endl;
-	d_geom_out << "element id given" << endl;
+        d_geom_out << "node id given" << endl;
+        d_geom_out << "element id given" << endl;
     }
 
     // >>> Open the vertex data files.
-
     d_vertex_out.resize(d_vdata_names.size());
     
     // loop over all vertex data fields and write out data for each field
     for (size_t nvd = 0; nvd < d_vdata_names.size(); nvd++)
     {
-	// open file for this data
-	std::string filename  = d_vdata_dirs[nvd] + "/" + postfix;
-	d_vertex_out[nvd] = new Ensight_Stream(filename, d_binary);
+        // open file for this data
+        std::string filename  = d_vdata_dirs[nvd] + "/" + postfix;
+        d_vertex_out[nvd] = new Ensight_Stream(filename, d_binary);
 
-	*d_vertex_out[nvd] << d_vdata_names[nvd] << endl;
+        *d_vertex_out[nvd] << d_vdata_names[nvd] << endl;
     }
 
     // >>> Open the cell data files.
-
     d_cell_out.resize(d_cdata_names.size());
     
     // loop over all cell data fields
     for (size_t ncd = 0; ncd < d_cdata_names.size(); ncd++)
     {
-	// open file for this data
-	std::string filename  = d_cdata_dirs[ncd] + "/" + postfix;
-	d_cell_out[ncd] = new Ensight_Stream(filename, d_binary);
+        // open file for this data
+        std::string filename  = d_cdata_dirs[ncd] + "/" + postfix;
+        d_cell_out[ncd] = new Ensight_Stream(filename, d_binary);
 
-	*d_cell_out[ncd] << d_cdata_names[ncd] << endl;
+        *d_cell_out[ncd] << d_cdata_names[ncd] << endl;
     }
 }
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Closes any open file streams.
@@ -153,12 +149,12 @@ close()
 
     for ( size_t i = 0; i < d_vertex_out.size(); i++ )
     {
-	if ( d_vertex_out[i]->is_open() ) d_vertex_out[i]->close();
+        if ( d_vertex_out[i]->is_open() ) d_vertex_out[i]->close();
     }
 
     for ( size_t i = 0; i < d_cell_out.size(); i++ )
     {
-	if ( d_cell_out[i]->is_open() ) d_cell_out[i]->close();
+        if ( d_cell_out[i]->is_open() ) d_cell_out[i]->close();
     }
 }
 
@@ -269,7 +265,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     {
         std::ostringstream dir_error;
         dir_error << "Error opening dump directory \"" 
-		        << d_dump_dir << "\": " << strerror(errno);
+                        << d_dump_dir << "\": " << strerror(errno);
         Insist( dumpDirStat.isdir(),  dir_error.str() );
     }
 
@@ -328,58 +324,58 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     // Create a name list for testing.
     sf_string name_tmp(nvdata+ncdata);
     for (size_t i=0; i < nvdata; i++ )
-	name_tmp[i] = d_vdata_names[i];
+        name_tmp[i] = d_vdata_names[i];
     for (size_t i=0; i < ncdata; i++ )
-	name_tmp[i+nvdata] = d_cdata_names[i];
+        name_tmp[i+nvdata] = d_cdata_names[i];
     // Check for name lengths out of limits
     {
-	int low = 1;
-	int high= 19;
-	SFS_iter_vec result =
-	    rtt_dsxx::check_string_lengths(name_tmp.begin(), 
-					   name_tmp.end(), low, high);
-	if (result.size() != 0) 
-	{
-	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (size_t i=0; i<result.size(); i++)
-		std::cerr << "Size of name is not in allowable range: \"" 
-			  << *result[i] << "\"" << std::endl;
-	    std::cerr << "Name lengths must be greater than " << low 
-		      << " and less than " << high << "." << std::endl;
-	    Insist (0, "Ensight variable name length out of limits!");
-	}
+        int low = 1;
+        int high= 19;
+        SFS_iter_vec result =
+            rtt_dsxx::check_string_lengths(name_tmp.begin(), 
+                                           name_tmp.end(), low, high);
+        if (result.size() != 0) 
+        {
+            std::cerr << "*** Error in variable name(s) -" << std::endl;
+            for (size_t i=0; i<result.size(); i++)
+                std::cerr << "Size of name is not in allowable range: \"" 
+                          << *result[i] << "\"" << std::endl;
+            std::cerr << "Name lengths must be greater than " << low 
+                      << " and less than " << high << "." << std::endl;
+            Insist (0, "Ensight variable name length out of limits!");
+        }
     }
     // Check for bad characters.
     {
-	std::string bad_chars = "()[]+-@!#*^$/ ";
-	SFS_iter_vec result =
-	    rtt_dsxx::check_string_chars(name_tmp.begin(), 
-					 name_tmp.end(), bad_chars);
-	if (result.size() != 0) 
-	{
-	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (size_t i=0; i<result.size(); i++) 
-	        std::cerr << "Found disallowed character(s) in name: \"" 
-	                  << *result[i] << "\"" << std::endl;
-	    std::cerr << "The following characters are forbidden:" << 
-		std::endl << " \"" << bad_chars << "\"," << 
-		" as well as any white-space characters." << std::endl;
-	    Insist (0, "Found illegal character in ensight variable names!");
-	}
+        std::string bad_chars = "()[]+-@!#*^$/ ";
+        SFS_iter_vec result =
+            rtt_dsxx::check_string_chars(name_tmp.begin(), 
+                                         name_tmp.end(), bad_chars);
+        if (result.size() != 0) 
+        {
+            std::cerr << "*** Error in variable name(s) -" << std::endl;
+            for (size_t i=0; i<result.size(); i++) 
+                std::cerr << "Found disallowed character(s) in name: \"" 
+                          << *result[i] << "\"" << std::endl;
+            std::cerr << "The following characters are forbidden:" << 
+                std::endl << " \"" << bad_chars << "\"," << 
+                " as well as any white-space characters." << std::endl;
+            Insist (0, "Found illegal character in ensight variable names!");
+        }
     }
     // Check for non-unique names
     {
-	SFS_iter_vec result =
-	    rtt_dsxx::check_strings_unique(name_tmp.begin(), name_tmp.end());
-	if (result.size() != 0) 
-	{
-	    std::cerr << "*** Error in variable name(s) -" << std::endl;
-	    for (size_t i=0; i<result.size(); i++)
-		std::cerr << "Duplicate name found: \"" 
-			  << *result[i] << "\"" << std::endl;
-	    std::cerr << "All variable names must be unique!" << std::endl;
-	    Insist (0, "Duplicate ensight variable names found!");
-	}
+        SFS_iter_vec result =
+            rtt_dsxx::check_strings_unique(name_tmp.begin(), name_tmp.end());
+        if (result.size() != 0) 
+        {
+            std::cerr << "*** Error in variable name(s) -" << std::endl;
+            for (size_t i=0; i<result.size(); i++)
+                std::cerr << "Duplicate name found: \"" 
+                          << *result[i] << "\"" << std::endl;
+            std::cerr << "All variable names must be unique!" << std::endl;
+            Insist (0, "Duplicate ensight variable names found!");
+        }
     }
 
     // calculate and make the geometry directory if this is not a
@@ -393,18 +389,18 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     d_cdata_dirs.resize(d_cdata_names.size());
     for (size_t i = 0; i < d_vdata_names.size(); i++)
     {
-	d_vdata_dirs[i] = d_prefix + "/" + d_vdata_names[i];
-	
-	// if this is not a continuation make the directory
-	if (!graphics_continue)
+        d_vdata_dirs[i] = d_prefix + "/" + d_vdata_names[i];
+        
+        // if this is not a continuation make the directory
+        if (!graphics_continue)
             rtt_dsxx::draco_mkdir( d_vdata_dirs[i] );
     }
     for (size_t i = 0; i < d_cdata_names.size(); i++)
     {
-	d_cdata_dirs[i] = d_prefix + "/" + d_cdata_names[i];
+        d_cdata_dirs[i] = d_prefix + "/" + d_cdata_names[i];
 
-	// if this is not a continuation make the directory
-	if (!graphics_continue)
+        // if this is not a continuation make the directory
+        if (!graphics_continue)
             rtt_dsxx::draco_mkdir( d_cdata_dirs[i] );
     }   
 }
@@ -428,9 +424,9 @@ void Ensight_Translator::write_case()
     // write the geometry file block
     caseout << "GEOMETRY" << endl;
     if ( d_static_geom )
-	caseout << "model: ./geo/data";
+        caseout << "model: ./geo/data";
     else
-	caseout << "model: 1   ./geo/data.****";
+        caseout << "model: 1   ./geo/data.****";
     caseout << endl << endl;
 
     // write the variable block header
@@ -438,24 +434,24 @@ void Ensight_Translator::write_case()
 
     // write the pointer to the node variables
     for (size_t i = 0; i < d_vdata_names.size(); i++)
-	caseout << "scalar per node:    1  " << setw(19)
-		<< setiosflags(ios::left)
-		<< d_vdata_names[i] << setw(4) << " "
-		<< "./" << d_vdata_names[i] << "/data.****" << endl;
+        caseout << "scalar per node:    1  " << setw(19)
+                << setiosflags(ios::left)
+                << d_vdata_names[i] << setw(4) << " "
+                << "./" << d_vdata_names[i] << "/data.****" << endl;
 
     // write the pointer to the cell variables
     for (size_t i = 0; i < d_cdata_names.size(); i++)
-	caseout << "scalar per element: 1  " << setw(19)
-		<< setiosflags(ios::left)
-		<< d_cdata_names[i] << setw(4) << " "
-		<< "./" << d_cdata_names[i] << "/data.****" << endl;
+        caseout << "scalar per element: 1  " << setw(19)
+                << setiosflags(ios::left)
+                << d_cdata_names[i] << setw(4) << " "
+                << "./" << d_cdata_names[i] << "/data.****" << endl;
 
     caseout << endl;
     // write out the time block
     caseout << "TIME" << endl;
     caseout << "time set:              " << setw(4) << "   1" << endl;
     caseout << "number of steps:       " << setw(4) << setiosflags(ios::right) 
-	    << d_dump_times.size() << endl;
+            << d_dump_times.size() << endl;
     caseout << "filename start number: " << setw(4) << "   1" << endl;
     caseout << "filename increment:    " << setw(4) << "   1" << endl;
     caseout << "time values:           " << endl;
@@ -464,8 +460,8 @@ void Ensight_Translator::write_case()
     caseout.precision(5);
     caseout.setf(ios::scientific, ios::floatfield);
     for (size_t i = 0; i < d_dump_times.size(); i++)
-	caseout << setw(12) << setiosflags(ios::right) << d_dump_times[i] 
-		<< endl;
+        caseout << setw(12) << setiosflags(ios::right) << d_dump_times[i] 
+                << endl;
 }
 
 } // end of rtt_viz
