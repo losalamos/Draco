@@ -705,7 +705,7 @@ macro( add_parallel_tests )
   else()
     set( MPIRUN_POSTFLAGS "${addparalleltest_MPIFLAGS}" )
   endif()
-  string( REPLACE " " ";" MPIRUN_POSTFLAGS ${MPIRUN_POSTFLAGS} )
+  string( REPLACE " " ";" MPIRUN_POSTFLAGS "${MPIRUN_POSTFLAGS}" )
 
   # Loop over each test source files:
   # 1. Compile the executable

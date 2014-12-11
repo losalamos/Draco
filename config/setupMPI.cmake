@@ -35,33 +35,9 @@ macro( setupDracoMPIVars )
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
-         set( DRACO_C4 "MPI" )  
-         if( NOT MPIEXEC )
-            if( "${SITE}" MATCHES "c[it]" ) 
-               set( MPIEXEC aprun )
-            else()
-               message( FATAL_ERROR 
-                  "MPI found but mpirun not in PATH. Aborting" )
-            endif()
-         endif()
-         # Try to find the fortran mpi library
-         if( EXISTS ${MPI_LIB_DIR} )
-            find_library( MPI_Fortran_LIB mpi_f77 HINTS ${MPI_LIB_DIR} )
-            mark_as_advanced( MPI_Fortran_LIB )
-         endif()
-         set( MPI_LIBRARIES "${MPI_LIBRARIES}" CACHE FILEPATH 
-            "no mpi library for scalar build." FORCE )
-         set( MPI_Fortran_LIBRARIES "${MPI_Fortran_LIBRARIES}" CACHE FILEPATH 
-            "no mpi library for scalar build." FORCE )
-         
+         set( DRACO_C4 "MPI" )           
       else()
          set( DRACO_C4 "SCALAR" )
-         set( MPI_INCLUDE_PATH "" CACHE FILEPATH 
-            "no mpi library for scalar build." FORCE )
-         set( MPI_LIBRARY "" CACHE FILEPATH 
-            "no mpi library for scalar build." FORCE )
-         set( MPI_LIBRARIES "" CACHE FILEPATH 
-            "no mpi library for scalar build." FORCE )
       endif()
 
       # Save the result in the cache file.
@@ -75,13 +51,98 @@ macro( setupDracoMPIVars )
       else()
          message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
       endif()
-
+      
+      # Find the version
       execute_process( COMMAND ${MPIEXEC} --version
          OUTPUT_VARIABLE DBS_MPI_VER_OUT 
          ERROR_VARIABLE DBS_MPI_VER_ERR)
 
-      set( DBS_MPI_VER "${DBS_MPI_VER_OUT} ${DBS_MPI_VER_ERR}") 
+      set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}") 
 
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Query CPU topology
+##
+## Returns:
+##   MPI_CORES_PER_CPU
+##   MPI_CPUS_PER_NODE
+##   MPI_PHYSICAL_CORES
+##   MPI_MAX_NUMPROCS_PHYSICAL
+##   MPI_HYPERTHREADING
+##
+## See also:
+##   - Try running 'lstopo' for a graphical view of the local
+##     topology.
+##   - EAP's flags can be found in Test.rh/General/run_job.pl (look
+##     for $other_args).  In particular, it may be useful to examine
+##     EAP's options for srun or aprun.
+##   - http://blogs.cisco.com/performance/open-mpi-v1-5-processor-affinity-options/
+##
+##---------------------------------------------------------------------------##
+macro( query_topology )
+
+  # start with default values
+  set( MPI_CORES_PER_CPU 4 )
+  set( MPI_PHYSICAL_CORES 0 )
+
+  # read the system's cpuinfo...
+  if( EXISTS "/proc/cpuinfo" )
+    file( READ "/proc/cpuinfo" cpuinfo_data )
+    string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
+    foreach( line ${cpuinfo_data} )
+      if( "${line}" MATCHES "cpu cores" )
+        string( REGEX REPLACE ".* ([0-9]+).*" "\\1"
+          MPI_CORES_PER_CPU "${line}" )
+      elseif( "${line}" MATCHES "physical id" )
+        string( REGEX REPLACE ".* ([0-9]+).*" "\\1" tmp "${line}" )
+        if( ${tmp} GREATER ${MPI_PHYSICAL_CORES} )
+          set( MPI_PHYSICAL_CORES ${tmp} )
+        endif()
+      endif()
+    endforeach()
+  endif()
+  
+  math( EXPR MPI_CPUS_PER_NODE 
+    "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+  set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
+    "Number of multi-core CPUs per node" FORCE )
+  set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
+    "Number of cores per cpu" FORCE )
+
+  #
+  # Check for hyperthreading - This is important for reserving threads for OpenMP tests...
+  #
+  # correct base-zero indexing
+  math( EXPR MPI_PHYSICAL_CORES        "${MPI_PHYSICAL_CORES} + 1" )
+  math( EXPR MPI_MAX_NUMPROCS_PHYSICAL "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+  if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
+    set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
+  else()
+    set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
+  endif()
+
+  #
+  # Setup for OMP plus MPI
+  #
+  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+    set( MPIEXEC_OMP_POSTFLAGS 
+      "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
+      CACHE STRING "extra mpirun flags (list)." FORCE )
+  elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
+    set( MPIEXEC_OMP_POSTFLAGS 
+      "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
+      CACHE STRING "extra mpirun flags (list)." FORCE )
+  else() 
+    # Version 1.7.4
+    set( MPIEXEC_OMP_POSTFLAGS
+      "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
+      CACHE STRING "extra mpirun flags (list)." FORCE )
+  endif()
+
+  mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
+     MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+        
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -91,52 +152,12 @@ macro( setupMPILibrariesUnix )
 
    # MPI ---------------------------------------------------------------------
    if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
-      
+
       message(STATUS "Looking for MPI...")
 
       # Preserve data that may already be set.
       if( DEFINED ENV{MPIEXEC} )
         set( MPIEXEC $ENV{MPIEXEC} )
-      endif()
-      if( DEFINED MPIEXEC )
-        set( MPIEXEC ${MPIEXEC} CACHE FILEPATH "Executable for running MPI programs." )
-      endif()
-      if( DEFINED MPIEXEC_MAX_NUMPROCS )
-        set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
-          "Maximum number of processors available to run MPI applications.")
-      endif()
-      if( DEFINED MPIEXEC_NUMPROC_FLAG )
-        set( MPIEXEC_NUMPROC_FLAG ${MPIEXEC_NUMPROC_FLAG} CACHE
-          STRING "Flag used by MPI to specify the number of processes for MPIEXEC; the next option will be the number of processes." )
-      endif()
-
-      # Before calling find_package(MPI), if CMAKE_<lang>_COMPILER is
-      # actually an MPI wrapper script:
-      #
-      # - set MPI_<lang>_COMPILER, so that FindMPI will skip automatic
-      #   compiler detection; and
-      # - set MPI_<lang>_NO_INTERROGATE, so that FindMPI will skip MPI
-      #   include-path and library detection and trust that the
-      #   provided compilers can build MPI binaries without further
-      #   help.
-      get_filename_component( compiler_wo_path "${CMAKE_CXX_COMPILER}" NAME )
-      if( "${compiler_wo_path}" MATCHES "mpi" )
-         set( MPI_CXX_COMPILER ${CMAKE_CXX_COMPILER} )
-         set( MPI_CXX_NO_INTERROGATE ${CMAKE_CXX_COMPILER} )
-      endif()
-
-      get_filename_component( compiler_wo_path
-         "${CMAKE_C_COMPILER}" NAME )
-      if( "${compiler_wo_path}" MATCHES "mpi" )
-         set( MPI_C_COMPILER ${CMAKE_C_COMPILER} )
-         set( MPI_C_NO_INTERROGATE ${CMAKE_C_COMPILER} )
-      endif()
-
-      get_filename_component( compiler_wo_path
-         "${CMAKE_Fortran_COMPILER}" NAME )
-      if( "${compiler_wo_path}" MATCHES "mpi" )
-         set( MPI_Fortran_COMPILER ${CMAKE_Fortran_COMPILER} )
-         set( MPI_Fortran_NO_INTERROGATE ${CMAKE_Fortran_COMPILER} )
       endif()
 
       # Call the standard CMake FindMPI macro.
@@ -171,19 +192,9 @@ macro( setupMPILibrariesUnix )
             message( FATAL_ERROR "OpenMPI version < 1.4 found." )
          endif()
                
-         # Ref: http://www.open-mpi.org/faq/?category=tuning#using-paffinity-v1.2
-         # The --bind-to-none option available (and the default) in
-         # OpenMPI 1.4+ is apparently not a synonym for this;
-         #
-         # % ompi_info -param mpi all
-         #
-         # with OpenMPI 1.6.3 on Moonlight reports that
-         # mpi_paffinity_alone is 1, which means, "[A]ssume that this
-         # job is the only (set of) process(es) running on each node
-         # and bind processes to processors, starting with processor
-         # ID 0."  Setting mpi_paffinity_alone to 0 allows parallel
-         # ctest to work correctly.  MPIEXEC_POSTFLAGS only affects
-         # MPI-only tests (and not MPI+OpenMP tests).
+         # Setting mpi_paffinity_alone to 0 allows parallel ctest to
+         # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
+         # tests (and not MPI+OpenMP tests).
 
          # This flag also shows up in
          # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
@@ -196,78 +207,31 @@ macro( setupMPILibrariesUnix )
                STRING "extra mpirun flags (list)." FORCE)
          endif()
 
-         # Find cores/cpu and cpu/node.
-
-         set( MPI_CORES_PER_CPU 4 )
-         set( MPI_PHYSICAL_CORES 0 )
-         if( EXISTS "/proc/cpuinfo" )
-            file( READ "/proc/cpuinfo" cpuinfo_data )
-            string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
-            foreach( line ${cpuinfo_data} )
-               if( "${line}" MATCHES "cpu cores" )
-                  string( REGEX REPLACE ".* ([0-9]+).*" "\\1"
-                     MPI_CORES_PER_CPU "${line}" )
-               elseif( "${line}" MATCHES "physical id" )
-                  string( REGEX REPLACE ".* ([0-9]+).*" "\\1" tmp "${line}" )
-                  if( ${tmp} GREATER ${MPI_PHYSICAL_CORES} )
-                     set( MPI_PHYSICAL_CORES ${tmp} )
-                  endif()
-               endif()
-            endforeach()
-         endif()
-         math( EXPR MPI_CPUS_PER_NODE 
-           "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
-         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
-            "Number of multi-core CPUs per node" FORCE )
-         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-            "Number of cores per cpu" FORCE )
-
-         # Check for hyperthreading - This is important for reserving
-         # threads for OpenMP tests...
-
-         # correct base-zero indexing
-         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
-         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
-         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-            set( MPI_HYPERTHREADING "OFF" CACHE BOOL 
-              "Are we using hyperthreading?" FORCE )
-         else()
-            set( MPI_HYPERTHREADING "ON" CACHE BOOL 
-              "Are we using hyperthreading?" FORCE )
-         endif()
+         # Find cores/cpu, cpu/node, hyperthreading
+         query_topology()
          
          #
-         # EAP's flags can be found in Test.rh/General/run_job.pl
-         # (look for $other_args).  In particular, it may be useful to
-         # examine EAP's options for srun or aprun.
-         # 
-         # \sa
-         # http://blogs.cisco.com/performance/open-mpi-v1-5-processor-affinity-options/
+         # Setup for OMP plus MPI
          #
-         # --cpus-per-proc <N> option is needed for multi-threaded
-         #   processes.  Use this as "threads per MPI rank."
-         # --bind-to-socket will bind MPI ranks ordered by socket first (rank 0 onto
-         #   socket 0, then rank 1 onto socket 1, etc.)
-
-         # --bind-to-core added in OpenMPI-1.4 
-
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
            set( MPIEXEC_OMP_POSTFLAGS 
              "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
              CACHE STRING "extra mpirun flags (list)." FORCE )
          elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
-           #message( "MPI Version > 1.7" )
            set( MPIEXEC_OMP_POSTFLAGS 
              "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
              CACHE STRING "extra mpirun flags (list)." FORCE )
-        else() 
-          # Version 1.7.4
-           set( MPIEXEC_OMP_POSTFLAGS 
+         else() 
+           # Version 1.7.4
+           set( MPIEXEC_OMP_POSTFLAGS
              "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
              CACHE STRING "extra mpirun flags (list)." FORCE )
-           
-        endif()
+         endif()
+
+         mark_as_advanced( MPI_CORES_PER_CPU MPI_PHYSICAL_CORES
+           MPI_CPUS_PER_NODE MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING
+           MPIEXEC_OMP_POSTFLAGS )
+         
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )         
 
       ### Cray wrappers for mpirun
@@ -278,6 +242,18 @@ macro( setupMPILibrariesUnix )
          #   setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}; aprun ... -d ${MPI_CORES_PER_CPU}
          # 
          # consider '-cc none'
+
+         if( "${DBS_MPI_VER}x" STREQUAL "x" AND 
+             NOT "$ENV{CRAY_MPICH2_VER}x" STREQUAL "x" )
+           set( DBS_MPI_VER $ENV{CRAY_MPICH2_VER} )
+           if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
+            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
+               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
+               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+             endif()
+         endif()
+
          if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
             set( MPI_CPUS_PER_NODE 1 CACHE STRING
                "Number of multi-core CPUs per node" FORCE )
@@ -317,58 +293,20 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
 
          # Find the version of Intel MPI
 
-         if( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9].[0-9]" )
+         if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
             string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
                DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
             string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-         elseif( "${DBS_MPI_VER}" MATCHES "[0-9].[0-9]" )
-            string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\1"
+         elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
+            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
                DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9]).([0-9]).*" "\\2"
+            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
          endif()
 
-         # Find cores/cpu and cpu/node.
-
-         set( MPI_CORES_PER_CPU 4 )
-         set( MPI_PHYSICAL_CORES 0 )
-         if( EXISTS "/proc/cpuinfo" )
-            file( READ "/proc/cpuinfo" cpuinfo_data )
-            string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
-            foreach( line ${cpuinfo_data} )
-               if( "${line}" MATCHES "cpu cores" )
-                  string( REGEX REPLACE ".* ([0-9]+).*" "\\1"
-                     MPI_CORES_PER_CPU "${line}" )
-               elseif( "${line}" MATCHES "physical id" )
-                  string( REGEX REPLACE ".* ([0-9]+).*" "\\1" tmp "${line}" )
-                  if( ${tmp} GREATER ${MPI_PHYSICAL_CORES} )
-                     set( MPI_PHYSICAL_CORES ${tmp} )
-                  endif()
-               endif()
-            endforeach()
-         endif()
-         math( EXPR MPI_CPUS_PER_NODE 
-           "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
-         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
-            "Number of multi-core CPUs per node" FORCE )
-         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-            "Number of cores per cpu" FORCE )
-
-         # Check for hyperthreading - This is important for reserving
-         # threads for OpenMP tests...
-
-         # correct base-zero indexing
-         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
-         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
-         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-            set( MPI_HYPERTHREADING "OFF" CACHE BOOL 
-              "Are we using hyperthreading?" FORCE )
-         else()
-            set( MPI_HYPERTHREADING "ON" CACHE BOOL 
-              "Are we using hyperthreading?" FORCE )
-         endif()
+         # Find cores/cpu, cpu/node, hyperthreading
+         query_topology()
 
       else()
          message( FATAL_ERROR "
@@ -383,7 +321,6 @@ MPIEXEC=${MPIEXEC}")
       set( file_cmd ${file_cmd} CACHE INTERNAL "file command" )
 
       message(STATUS "Looking for MPI.......found ${MPIEXEC}")
-      # (version ${DBS_MPI_VER})")
 
       # Sanity Checks for DRACO_C4==MPI
       if( "${MPI_CORES_PER_CPU}x" STREQUAL "x" )
@@ -394,19 +331,6 @@ MPIEXEC=${MPIEXEC}")
 
    set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
 
-   # We use variables like ${MPI_CXX_INCLUDE_PATH} with the
-   # assumption that the stirng will be empty if MPI is not found.
-   # Make sure the string is empty...
-
-   if( "${MPI_CXX_INCLUDE_PATH}" STREQUAL "MPI_CXX_INCLUDE_PATH-NOTFOUND")
-      set( MPI_HEADER_PATH "" CACHE PATH 
-         "MPI not found, empty value." FORCE )
-      set( MPI_CXX_INCLUDE_PATH "" CACHE PATH 
-         "MPI not found, empty value." FORCE )
-      set( MPI_C_INCLUDE_PATH "" CACHE PATH 
-         "MPI not found, empty value." FORCE )
-   endif()
-
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -416,7 +340,7 @@ endmacro()
 macro( setupMPILibrariesWindows )
 
    # MPI ---------------------------------------------------------------------
-   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" ) # AND "${MPIEXEC}x" STREQUAL "x" )
+   if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
       message(STATUS "Looking for MPI...")
       find_package( MPI )
