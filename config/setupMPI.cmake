@@ -35,7 +35,8 @@ macro( setupDracoMPIVars )
 
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
-         set( DRACO_C4 "MPI" )           
+         set( DRACO_C4 "MPI" )  
+         
       else()
          set( DRACO_C4 "SCALAR" )
       endif()
@@ -51,13 +52,13 @@ macro( setupDracoMPIVars )
       else()
          message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
       endif()
-      
+
       # Find the version
       execute_process( COMMAND ${MPIEXEC} --version
          OUTPUT_VARIABLE DBS_MPI_VER_OUT 
          ERROR_VARIABLE DBS_MPI_VER_ERR)
 
-      set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}") 
+      set( DBS_MPI_VER "${DBS_MPI_VER_OUT} ${DBS_MPI_VER_ERR}") 
 
 endmacro()
 
@@ -144,7 +145,6 @@ macro( query_topology )
      MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
         
 endmacro()
-
 #------------------------------------------------------------------------------#
 # Setup MPI when on Linux
 #------------------------------------------------------------------------------#
@@ -152,13 +152,25 @@ macro( setupMPILibrariesUnix )
 
    # MPI ---------------------------------------------------------------------
    if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
-
+      
       message(STATUS "Looking for MPI...")
 
       # Preserve data that may already be set.
       if( DEFINED ENV{MPIEXEC} )
         set( MPIEXEC $ENV{MPIEXEC} )
       endif()
+
+      # Temporary work around until FindMPI.cmake is fixed:
+      # Setting MPI_<LANG>_COMPILER and MPI_<LANG>_NO_INTERROGATE
+      # forces FindMPI to skip it's bad logic and just rely on the MPI
+      # compiler wrapper to do the right thing. see Bug #467.
+      foreach( lang C CXX Fortran )
+        if( "${CMAKE_${lang}_COMPILER}" MATCHES "mpi[A-z+]+" )
+          get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}" NAME )
+          set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
+          set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
+        endif()
+      endforeach()
 
       # Call the standard CMake FindMPI macro.
       find_package( MPI QUIET )
@@ -212,7 +224,8 @@ macro( setupMPILibrariesUnix )
          
          #
          # Setup for OMP plus MPI
-         #
+         # 
+
          if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
            set( MPIEXEC_OMP_POSTFLAGS 
              "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
@@ -221,17 +234,17 @@ macro( setupMPILibrariesUnix )
            set( MPIEXEC_OMP_POSTFLAGS 
              "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
              CACHE STRING "extra mpirun flags (list)." FORCE )
-         else() 
-           # Version 1.7.4
-           set( MPIEXEC_OMP_POSTFLAGS
+        else() 
+          # Version 1.7.4
+           set( MPIEXEC_OMP_POSTFLAGS 
              "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
              CACHE STRING "extra mpirun flags (list)." FORCE )
          endif()
-
+           
          mark_as_advanced( MPI_CORES_PER_CPU MPI_PHYSICAL_CORES
            MPI_CPUS_PER_NODE MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING
-           MPIEXEC_OMP_POSTFLAGS )
-         
+           MPIEXEC_OMP_POSTFLAGS )      
+
          mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )         
 
       ### Cray wrappers for mpirun
@@ -242,7 +255,6 @@ macro( setupMPILibrariesUnix )
          #   setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}; aprun ... -d ${MPI_CORES_PER_CPU}
          # 
          # consider '-cc none'
-
          if( "${DBS_MPI_VER}x" STREQUAL "x" AND 
              NOT "$ENV{CRAY_MPICH2_VER}x" STREQUAL "x" )
            set( DBS_MPI_VER $ENV{CRAY_MPICH2_VER} )
@@ -253,7 +265,6 @@ macro( setupMPILibrariesUnix )
                DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
              endif()
          endif()
-
          if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
             set( MPI_CPUS_PER_NODE 1 CACHE STRING
                "Number of multi-core CPUs per node" FORCE )
@@ -330,6 +341,7 @@ MPIEXEC=${MPIEXEC}")
    endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
    set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+
 
 endmacro()
 
