@@ -662,6 +662,32 @@ endmacro()
 #    DEPS    "${library_dependencies}" 
 #    PE_LIST "1;2;4" )
 #
+# Optional parameters that require arguments.
+#
+#    SOURCES         - semi-colon delimited list of files.
+#    PE_LIST         - semi-colon deliminte list of integers (number
+#                      of MPI ranks).
+#    DEPS            - CMake target dependencies.
+#    TEST_ARGS       - Command line arguments to use when running the test.
+#    PASS_REGEX      - This regex must exist in the output to produce
+#                      a 'pass.'
+#    FAIL_REGEX      - If this regex exists in the output, the test
+#                      will 'fail.'
+#    RESOURCE_LOCK   - Tests with this common string identifier will
+#                      not be run concurrently.
+#    RUN_AFTER       - The argument to this option is a test name that
+#                      must complete before the current test will be
+#                      allowed to run
+#    MPIFLAGS
+#    LABEL           - Label that can be used to select tests via
+#                      ctest's -R or -E options.
+#
+# Optional parameters that require arguments.
+#
+#    MPI_PLUS_OMP    - This bool indicates that the test uses OpenMP
+#                      for each MPI rank. 
+#    LINK_WITH_FORTRAN - Use the Fortran compiler to perform the final
+#                      link of the unit test.
 #----------------------------------------------------------------------#
 macro( add_parallel_tests )
 
