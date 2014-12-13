@@ -36,7 +36,6 @@ macro( setupDracoMPIVars )
       # Set Draco build system variables based on what we know about MPI.
       if( MPI_FOUND )
          set( DRACO_C4 "MPI" )
-
       else()
          set( DRACO_C4 "SCALAR" )
       endif()
@@ -126,18 +125,19 @@ macro( query_topology )
   #
   # Setup for OMP plus MPI
   #
-  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-    set( MPIEXEC_OMP_POSTFLAGS
-      "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-      CACHE STRING "extra mpirun flags (list)." FORCE )
-  elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
-    set( MPIEXEC_OMP_POSTFLAGS
-      "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
-      CACHE STRING "extra mpirun flags (list)." FORCE )
-  else()
-    # Version 1.7.4
-    set( MPIEXEC_OMP_POSTFLAGS
-      "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
+  if( MPI_FLAVOR STREQUAL "openmpi" )
+    if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+      set( MPIEXEC_OMP_POSTFLAGS
+        "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings" )
+    elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
+      set( MPIEXEC_OMP_POSTFLAGS
+        "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
+    else()  # Version 1.7.4
+      set( MPIEXEC_OMP_POSTFLAGS
+        "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}" )
+    endif()
+
+    set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
       CACHE STRING "extra mpirun flags (list)." FORCE )
   endif()
 
@@ -145,6 +145,7 @@ macro( query_topology )
      MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
 
 endmacro()
+
 #------------------------------------------------------------------------------#
 # Setup MPI when on Linux
 #------------------------------------------------------------------------------#

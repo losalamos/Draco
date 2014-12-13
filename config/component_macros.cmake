@@ -274,7 +274,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     message( "      Adding test: ${targetname}" )
   endif()
   if( addparalleltest_MPI_PLUS_OMP )
-    string( REPLACE " " ";" mpiexec_omp_postflags_list ${MPIEXEC_OMP_POSTFLAGS} )
+    string( REPLACE " " ";" mpiexec_omp_postflags_list "${MPIEXEC_OMP_POSTFLAGS}" )
     add_test( 
       NAME    ${targetname}
       COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
