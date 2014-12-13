@@ -21,14 +21,14 @@ if test -n "$MODULESHOME"; then
     module use ${VENDOR_DIR}/Modules
     module unload compilers mpi cmake
     # setup for draco
-    module load compilers/intel/15.0.0 mpi/openmpi-1.8.2-intel_15.0.0
+    module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035
     module load cmake/3.0.1 
     module load other/gnuplot-4.6.1 python/2.7.3
     module load numdiff eospac random123 lapack/3.4.1
     # additional setup for capsaicin
     module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2 
     # developer tools
-    module load other/emacs-24.3 totalview/8.11.0-2
+    module load other/emacs-24.3 totalview/8.11.0-2 subversion
     # gsl-config can be found in /usr/bin/.
 fi
 
