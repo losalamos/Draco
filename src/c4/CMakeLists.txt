@@ -22,10 +22,10 @@ else()
   set( C4_SCALAR 1 )
   set( C4_MPI 0 )
 endif()
-set( C4_SCALAR ${C4_SCALAR} CACHE STRING 
+set( C4_SCALAR ${C4_SCALAR} CACHE STRING
    "Are we building a scalar-only version (no mpi in c4/config.h)?"
    FORCE )
-set( C4_MPI ${C4_MPI} CACHE STRING 
+set( C4_MPI ${C4_MPI} CACHE STRING
    "Are we building an MPI aware version? (c4/config.h)" FORCE )
 mark_as_advanced( C4_MPI C4_SCALAR )
 
@@ -76,19 +76,19 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-set( c4_VENDOR_LIBS "${MPI_LIBRARIES}")
+set( c4_VENDOR_LIBS "${MPI_CXX_LIBRARIES}")
 if( PAPI_LIBRARY )
    list( APPEND c4_VENDOR_LIBS ${PAPI_LIBRARY} )
 endif()
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_c4
    TARGET_DEPS  Lib_dsxx
-   LIBRARY_NAME c4 
+   LIBRARY_NAME c4
    SOURCES      "${sources}"
-   VENDOR_LIST  "MPI" 
+   VENDOR_LIST  "MPI"
    VENDOR_LIBS  "${c4_VENDOR_LIBS}"
-   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_PATH}" 
+   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_PATH}"
    )
 
 # ---------------------------------------------------------------------------- #
@@ -104,7 +104,7 @@ install( FILES ${headers} DESTINATION include/c4 )
 
 if( BUILD_TESTING )
  add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

@@ -33,31 +33,38 @@ include( FeatureSummary )
 ##---------------------------------------------------------------------------##
 macro( setupDracoMPIVars )
 
-      # Set Draco build system variables based on what we know about MPI.
-      if( MPI_FOUND )
-         set( DRACO_C4 "MPI" )
-      else()
-         set( DRACO_C4 "SCALAR" )
-      endif()
+  # Set Draco build system variables based on what we know about MPI.
+  if( MPI_FOUND )
+    set( DRACO_C4 "MPI" )
+  else()
+    set( DRACO_C4 "SCALAR" )
+  endif()
 
-      # Save the result in the cache file.
-      set( DRACO_C4 "${DRACO_C4}" CACHE STRING
-         "C4 communication mode (SCALAR or MPI)" )
-      # Provide a constrained pull down list in cmake-gui
-      set_property( CACHE DRACO_C4 PROPERTY STRINGS SCALAR MPI )
-      if( "${DRACO_C4}" STREQUAL "MPI"    OR
-            "${DRACO_C4}" STREQUAL "SCALAR" )
-         # no-op
-      else()
-         message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
-      endif()
+  # Save the result in the cache file.
+  set( DRACO_C4 "${DRACO_C4}" CACHE STRING
+    "C4 communication mode (SCALAR or MPI)" )
+  # Provide a constrained pull down list in cmake-gui
+  set_property( CACHE DRACO_C4 PROPERTY STRINGS SCALAR MPI )
+  if( "${DRACO_C4}" STREQUAL "MPI"    OR
+      "${DRACO_C4}" STREQUAL "SCALAR" )
+    # no-op
+  else()
+    message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
+  endif()
 
-      # Find the version
-      execute_process( COMMAND ${MPIEXEC} --version
-         OUTPUT_VARIABLE DBS_MPI_VER_OUT
-         ERROR_VARIABLE DBS_MPI_VER_ERR)
+  # Find the version
+  execute_process( COMMAND ${MPIEXEC} --version
+    OUTPUT_VARIABLE DBS_MPI_VER_OUT
+    ERROR_VARIABLE DBS_MPI_VER_ERR)
 
-      set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+  set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+
+  set_package_properties( MPI PROPERTIES
+    URL "http://www.open-mpi.org/"
+    DESCRIPTION "A High Performance Message Passing Library"
+    TYPE RECOMMENDED
+    PURPOSE "If not available, all Draco components will be built as scalar applications."
+    )
 
 endmacro()
 
@@ -122,27 +129,156 @@ macro( query_topology )
     set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
   endif()
 
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Setup OpenMPI
+##---------------------------------------------------------------------------##
+macro( setupOpenMPI )
+
+  set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." ) # OpenMPI
+
+  # Find the version of OpenMPI
+
+  if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
+      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
+      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+  elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
+      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
+      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+  endif()
+
+  # sanity check, these OpenMPI flags (below) require version >= 1.4
+  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.4 )
+    message( FATAL_ERROR "OpenMPI version < 1.4 found." )
+  endif()
+
+  # Setting mpi_paffinity_alone to 0 allows parallel ctest to
+  # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
+  # tests (and not MPI+OpenMP tests).
+
+  # This flag also shows up in
+  # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
+  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+    set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0" CACHE
+      STRING "extra mpirun flags (list)." FORCE)
+  else()
+    # Flag provided by Sam Gutierrez (2014-04-08),
+    set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none" CACHE
+      STRING "extra mpirun flags (list)." FORCE)
+  endif()
+
+  # Find cores/cpu, cpu/node, hyperthreading
+  query_topology()
+
   #
   # Setup for OMP plus MPI
   #
-  if( MPI_FLAVOR STREQUAL "openmpi" )
-    if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-      set( MPIEXEC_OMP_POSTFLAGS
-        "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings" )
-    elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
-      set( MPIEXEC_OMP_POSTFLAGS
-        "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
-    else()  # Version 1.7.4
-      set( MPIEXEC_OMP_POSTFLAGS
-        "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}" )
-    endif()
-
-    set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
-      CACHE STRING "extra mpirun flags (list)." FORCE )
+  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+    set( MPIEXEC_OMP_POSTFLAGS
+      "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings" )
+  elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
+    set( MPIEXEC_OMP_POSTFLAGS
+      "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
+  else()  # Version 1.7.4
+    set( MPIEXEC_OMP_POSTFLAGS
+      "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}" )
   endif()
+
+  set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
+    CACHE STRING "extra mpirun flags (list)." FORCE )
 
   mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
      MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Setup Intel MPI
+##---------------------------------------------------------------------------##
+macro( setupIntelMPI )
+
+  set( MPI_FLAVOR "impi" CACHE STRING "Flavor of MPI." )
+
+  # Find the version of Intel MPI
+
+  if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
+      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
+      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+  elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
+      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
+      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+  endif()
+
+  # Find cores/cpu, cpu/node, hyperthreading
+  query_topology()
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Setup Cray MPI wrappers
+##---------------------------------------------------------------------------##
+macro( setupCrayMPI )
+
+  # According to email from Mike McKay (2013/04/18), we might
+  # need to set the the mpirun command to something like:
+  #
+  #   setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}; aprun ... -d ${MPI_CORES_PER_CPU}
+  #
+  # consider '-cc none'
+  if( "${DBS_MPI_VER}x" STREQUAL "x" AND
+      NOT "$ENV{CRAY_MPICH2_VER}x" STREQUAL "x" )
+    set( DBS_MPI_VER $ENV{CRAY_MPICH2_VER} )
+    if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
+      string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
+        DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+      string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
+        DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+    endif()
+  endif()
+  if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
+    set( MPI_CPUS_PER_NODE 1 CACHE STRING
+      "Number of multi-core CPUs per node" FORCE )
+    set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
+      "Number of cores per cpu" FORCE )
+    set( MPIEXEC_OMP_POSTFLAGS "-d ${MPI_CORES_PER_CPU}" CACHE
+      STRING "extra mpirun flags (list)." FORCE)
+  else()
+    message( STATUS "
+WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
+         all OMP tests will be disabled." )
+  endif()
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Setup Sequoia MPI wrappers
+##---------------------------------------------------------------------------##
+macro( setupSequoiaMPI )
+
+  if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
+    set( MPI_CPUS_PER_NODE 1 CACHE STRING
+      "Number of multi-core CPUs per node" FORCE )
+    set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
+      "Number of cores per cpu" FORCE )
+    set( MPIEXEC_OMP_POSTFLAGS "-c${MPI_CORES_PER_CPU}" CACHE
+      STRING "extra mpirun flags (list)." FORCE)
+  else()
+    message( STATUS "
+WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
+         all OMP tests will be disabled." )
+  endif()
+
+  set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
+    STRING "flag used to specify number of processes." FORCE)
 
 endmacro()
 
@@ -176,149 +312,25 @@ macro( setupMPILibrariesUnix )
       # Call the standard CMake FindMPI macro.
       find_package( MPI QUIET )
 
+
+
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
 
       # -------------------------------------------------------------------------------- #
       # Check flavor and add optional flags
-      if( "${MPIEXEC}"     MATCHES openmpi   OR
-          "${DBS_MPI_VER}" MATCHES open-mpi )
 
-        set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." ) # OpenMPI
+      if( "${MPIEXEC}" MATCHES openmpi   OR "${DBS_MPI_VER}" MATCHES open-mpi )
+        setupOpenMPI()
 
-         # Find the version of OpenMPI
+      elseif( "${MPIEXEC}" MATCHES intel-mpi OR "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
+        setupIntelMPI()
 
-         if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
-               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
-               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-         elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
-               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
-               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-         endif()
-
-         # sanity check, these OpenMPI flags (below) require version >= 1.4
-         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.4 )
-            message( FATAL_ERROR "OpenMPI version < 1.4 found." )
-         endif()
-
-         # Setting mpi_paffinity_alone to 0 allows parallel ctest to
-         # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
-         # tests (and not MPI+OpenMP tests).
-
-         # This flag also shows up in
-         # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
-         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-           set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0" CACHE
-               STRING "extra mpirun flags (list)." FORCE)
-         else()
-           # Flag provided by Sam Gutierrez (2014-04-08),
-           set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none" CACHE
-               STRING "extra mpirun flags (list)." FORCE)
-         endif()
-
-         # Find cores/cpu, cpu/node, hyperthreading
-         query_topology()
-
-         #
-         # Setup for OMP plus MPI
-         #
-
-         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-           set( MPIEXEC_OMP_POSTFLAGS
-             "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-         elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
-           set( MPIEXEC_OMP_POSTFLAGS
-             "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-        else()
-          # Version 1.7.4
-           set( MPIEXEC_OMP_POSTFLAGS
-             "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}"
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-         endif()
-
-         mark_as_advanced( MPI_CORES_PER_CPU MPI_PHYSICAL_CORES
-           MPI_CPUS_PER_NODE MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING
-           MPIEXEC_OMP_POSTFLAGS )
-
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
-
-      ### Cray wrappers for mpirun
       elseif( "${MPIEXEC}" MATCHES aprun)
-         # According to email from Mike McKay (2013/04/18), we might
-         # need to set the the mpirun command to something like:
-         #
-         #   setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}; aprun ... -d ${MPI_CORES_PER_CPU}
-         #
-         # consider '-cc none'
-         if( "${DBS_MPI_VER}x" STREQUAL "x" AND
-             NOT "$ENV{CRAY_MPICH2_VER}x" STREQUAL "x" )
-           set( DBS_MPI_VER $ENV{CRAY_MPICH2_VER} )
-           if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
-               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
-               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-             endif()
-         endif()
-         if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
-            set( MPI_CPUS_PER_NODE 1 CACHE STRING
-               "Number of multi-core CPUs per node" FORCE )
-            set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
-               "Number of cores per cpu" FORCE )
-            set( MPIEXEC_OMP_POSTFLAGS "-d ${MPI_CORES_PER_CPU}" CACHE
-               STRING "extra mpirun flags (list)." FORCE)
-         else()
-            message( STATUS "
-WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
-         all OMP tests will be disabled." )
-         endif()
+        setupCrayMPI()
 
-      ### Sequoia
       elseif( "${MPIEXEC}" MATCHES srun)
-         if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
-            set( MPI_CPUS_PER_NODE 1 CACHE STRING
-               "Number of multi-core CPUs per node" FORCE )
-            set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
-               "Number of cores per cpu" FORCE )
-            set( MPIEXEC_OMP_POSTFLAGS "-c${MPI_CORES_PER_CPU}" CACHE
-               STRING "extra mpirun flags (list)." FORCE)
-         else()
-            message( STATUS "
-WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
-         all OMP tests will be disabled." )
-         endif()
-
-         set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
-           STRING "flag used to specify number of processes." FORCE)
-
-      ### Intel MPI
-      elseif( "${MPIEXEC}" MATCHES intel-mpi OR
-          "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
-
-         set( MPI_FLAVOR "impi" CACHE STRING "Flavor of MPI." )
-
-         # Find the version of Intel MPI
-
-         if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
-               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
-               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-         elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
-               DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-            string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
-               DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-         endif()
-
-         # Find cores/cpu, cpu/node, hyperthreading
-         query_topology()
+        setupSequoiaMPI()
 
       else()
          message( FATAL_ERROR "
@@ -330,7 +342,6 @@ MPIEXEC=${MPIEXEC}")
       # 'advanced' so that they do not show up in the 'simple' ccmake
       # view.
       mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
-      set( file_cmd ${file_cmd} CACHE INTERNAL "file command" )
 
       message(STATUS "Looking for MPI.......found ${MPIEXEC}")
 
@@ -339,12 +350,11 @@ MPIEXEC=${MPIEXEC}")
          message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU is not set!")
       endif()
 
-   endif( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
+   endif()
 
-   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+   mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
 
-
-endmacro()
+ endmacro()
 
 ##---------------------------------------------------------------------------##
 ##
@@ -414,7 +424,6 @@ macro( setupMPILibrariesWindows )
              "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
              CACHE STRING "extra mpirun flags (list)." FORCE )
          endif()
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
 
       elseif("${MPIEXEC}" MATCHES "Microsoft HPC" )
          set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
@@ -443,7 +452,6 @@ macro( setupMPILibrariesWindows )
          #
          set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
             CACHE STRING "extra mpirun flags (list)." FORCE )
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
       elseif("${MPIEXEC}" MATCHES "MPICH2" )
          set( MPI_FLAVOR "MPICH2" CACHE STRING "Flavor of MPI." )
 
@@ -473,17 +481,18 @@ macro( setupMPILibrariesWindows )
          #
          set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
             CACHE STRING "extra mpirun flags (list)." FORCE )
-         mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
       endif()
 
    endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
 
-   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
+#   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
    if( ${MPI_FOUND} )
       message(STATUS "Looking for MPI...${MPIEXEC}")
    else()
       message(STATUS "Looking for MPI...not found")
    endif()
+
+   mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
 
 endmacro( setupMPILibrariesWindows )
 

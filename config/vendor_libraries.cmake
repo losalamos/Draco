@@ -6,38 +6,22 @@
 # note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$ 
+# $Id$
 #------------------------------------------------------------------------------#
 
 #
 # Look for any libraries which are required at the toplevel.
-# 
+#
 
 include( FeatureSummary )
 include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
-
-##---------------------------------------------------------------------------##
-## Items to consider...
-##---------------------------------------------------------------------------##
-
-#
-# Getting .so requirements?
-#
-#include( GetPrerequisites )
-#get_prerequisites( library LIST_OF_REQS 1 0 <exepath> <dirs>)
-#list_prerequisites(<target> [<recurse> [<exclude_system> [<verbose>]]])
-
-#
-# Install all required system libraries?
-#
-# include( InstallRequiredSystemLibraries)
 
 #------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
 #
 # This module sets the following variables:
 # lapack_FOUND - set to true if a library implementing the LAPACK
-#         interface is found 
+#         interface is found
 # lapack_VERSION - '3.4.1'
 # provides targets: lapack, blas
 #------------------------------------------------------------------------------
@@ -45,8 +29,8 @@ macro( setupLAPACKLibrariesUnix )
 
   message( STATUS "Looking for lapack...")
   set( lapack_FOUND FALSE )
-  # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK. 
-  foreach( version 3.4.1 3.4.2 3.5.0 )   
+  # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
+  foreach( version 3.4.1 3.4.2 3.5.0 )
     if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
       list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
       find_package( lapack CONFIG )
@@ -70,7 +54,7 @@ macro( setupLAPACKLibrariesUnix )
   # Above we tried to find lapack-config.cmake at
   # $LAPACK_LIB_DIR/cmake/lapack.  This is a draco supplied version of
   # lapack.  If that search failed, then try to find MKL on the local
-  # system. 
+  # system.
 
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
@@ -87,11 +71,11 @@ macro( setupLAPACKLibrariesUnix )
           IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
         set_target_properties( blas::mkl_core PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_core_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" 
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_thread )
         set_target_properties( blas PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" 
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_core )
         set_target_properties( lapack PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
@@ -109,7 +93,7 @@ endmacro()
 # Processes FindCUDA.cmake from the standard CMake Module location.
 # This standard file establishes many macros and variables used by the
 # build system for compiling CUDA code.
-# (try 'cmake --help-module FindCUDA' for details) 
+# (try 'cmake --help-module FindCUDA' for details)
 #
 # Override the FindCUDA defaults in a way that is standardized for
 # Draco and Draco clients.
@@ -118,7 +102,7 @@ endmacro()
 #    cuda_add_library(    target )
 #    cuda_add_executable( target )
 #    ...
-# 
+#
 # Provided variables:
 #    CUDA_FOUND
 #    CUDA_PROPAGATE_HOST_FLAGS
@@ -134,9 +118,9 @@ macro( setupCudaEnv )
 
   message( STATUS "Looking for CUDA..." )
   # special code for CT/CI
-  if( "${CMAKE_SYSTEM_PROCESSOR}notset" STREQUAL "notset" AND 
+  if( "${CMAKE_SYSTEM_PROCESSOR}notset" STREQUAL "notset" AND
       ${CMAKE_SYSTEM_NAME} MATCHES "Catamount")
-    set( CMAKE_SYSTEM_PROCESSOR "x86_64" CACHE STRING 
+    set( CMAKE_SYSTEM_PROCESSOR "x86_64" CACHE STRING
       "For unix, this value is set from uname -p." FORCE)
   endif()
   find_package( CUDA QUIET )
@@ -158,17 +142,17 @@ macro( setupCudaEnv )
         set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
       endif()
       set( cudalibs ${CUDA_CUDART_LIBRARY} )
-      set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING 
+      set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
         "static or shared (dll) libraries" FORCE )
     endif()
     message( STATUS "Looking for CUDA......found ${CUDA_NVCC_EXECUTABLE}" )
   else()
     message( STATUS "Looking for CUDA......not found" )
   endif()
-  mark_as_advanced( 
-    CUDA_SDK_ROOT_DIR 
+  mark_as_advanced(
+    CUDA_SDK_ROOT_DIR
     CUDA_VERBOSE_BUILD
-    CUDA_TOOLKIT_ROOT_DIR 
+    CUDA_TOOLKIT_ROOT_DIR
     CUDA_BUILD_CUBIN
     CUDA_BUILD_EMULATION
     )
@@ -198,7 +182,7 @@ macro( setupQt )
   else()
     file( TO_CMAKE_PATH "${CMAKE_PREFIX_PATH_QT}" CMAKE_PREFIX_PATH_QT )
     list( APPEND CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH_QT}" )
-    find_package(Qt5Widgets)     
+    find_package(Qt5Widgets)
     find_package(Qt5Core)
     get_target_property(QtCore_location Qt5::Core LOCATION)
     if( Qt5Widgets_FOUND )
@@ -211,6 +195,11 @@ macro( setupQt )
       set( QT_FOUND "QT-NOTFOUND" )
       message( STATUS "Looking for Qt SDK...not found." )
     endif()
+  endif()
+
+  if( QT_FOUND )
+    mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
+      Qt5Widgets_DIR )
   endif()
 endmacro()
 
@@ -239,10 +228,10 @@ macro( setupGSL )
     # Create an entry in draco-config.cmake for the gsl libs
     get_target_property( gslimploc      GSL::gsl      IMPORTED_LOCATION )
     get_target_property( gslcblasimploc GSL::gslcblas IMPORTED_LOCATION )
-    
+
     # If this platform doesn't support shared libraries (e.g. cross
     # compiling), assume static. This suppresses cmake (3.0.0) warnings
-    # of the form: 
+    # of the form:
     #     "ADD_LIBRARY called with MODULE option but the target platform
     #     does not support dynamic linking.  Building a STATIC library
     #     instead.  This may lead to problems."
@@ -252,21 +241,21 @@ macro( setupGSL )
     set( library_type STATIC )
   endif()
 
-    set( Draco_EXPORT_TARGET_PROPERTIES 
+    set( Draco_EXPORT_TARGET_PROPERTIES
       "${Draco_EXPORT_TARGET_PROPERTIES}
 add_library( GSL::gsl ${library_type} IMPORTED )
 set_target_properties( GSL::gsl PROPERTIES
     IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
     IMPORTED_LINK_INTERFACE_LIBRARIES \"GSL::gslcblas\"
-    IMPORTED_LOCATION                 \"${gslimploc}\" 
+    IMPORTED_LOCATION                 \"${gslimploc}\"
 )
 
 add_library( GSL::gslcblas ${library_type} IMPORTED )
 set_target_properties( GSL::gslcblas PROPERTIES
     IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
-    IMPORTED_LOCATION                 \"${gslcblasimploc}\" 
+    IMPORTED_LOCATION                 \"${gslcblasimploc}\"
 )
-")    
+")
 
   unset(library_type)
 
@@ -283,7 +272,7 @@ macro( SetupVendorLibrariesUnix )
 
   # GSL ----------------------------------------------------------------------
   setupGSL()
-  
+
   # Random123 ----------------------------------------------------------------
   message( STATUS "Looking for Random123...")
   find_package( Random123 REQUIRED QUIET )
@@ -313,14 +302,14 @@ macro( SetupVendorLibrariesUnix )
   set_package_properties( PythonInterp PROPERTIES
     DESCRIPTION "Python interpreter"
     TYPE OPTIONAL
-    PURPOSE "Required for running the fpe_trap tests." 
+    PURPOSE "Required for running the fpe_trap tests."
     )
   if( PYTHONINTERP_FOUND )
     message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
   else()
     message( STATUS "Looking for Python....not found" )
   endif()
-  
+
   # Qt -----------------------------------------------------------------------
   setupQt()
 
@@ -351,7 +340,7 @@ macro( SetupVendorLibrariesWindows )
   set_package_properties( PythonInterp PROPERTIES
     DESCRIPTION "Python interpreter"
     TYPE OPTIONAL
-    PURPOSE "Required for running the fpe_trap tests." 
+    PURPOSE "Required for running the fpe_trap tests."
     )
 
   # Qt -----------------------------------------------------------------------
@@ -398,7 +387,7 @@ macro( setVendorVersionDefaults )
 WARNING: VENDOR_DIR not defined locally or in user environment,
 individual vendor directories should be defined." )
   endif()
-  
+
   # Import environment variables related to vendors
   # 1. Use command line variables (-DLAPACK_LIB_DIR=<path>
   # 2. Use environment variables ($ENV{LAPACK_LIB_DIR}=<path>)
@@ -434,29 +423,23 @@ individual vendor directories should be defined." )
   if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY ${VENDOR_DIR}/Random123-1.08/include )
     set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.08/include" )
   endif()
-  
-  set_package_properties( MPI PROPERTIES
-    URL "http://www.open-mpi.org/"
-    DESCRIPTION "A High Performance Message Passing Library"
-    TYPE RECOMMENDED
-    PURPOSE "If not available, all Draco components will be built as scalar applications."
-    )
+
   set_package_properties( BLAS PROPERTIES
     DESCRIPTION "Basic Linear Algebra Subprograms"
     TYPE OPTIONAL
-    PURPOSE "Required for bulding the lapack_wrap component." 
+    PURPOSE "Required for bulding the lapack_wrap component."
     )
   set_package_properties( lapack PROPERTIES
     DESCRIPTION "Linear Algebra PACKage"
     TYPE OPTIONAL
-    PURPOSE "Required for bulding the lapack_wrap component." 
-    )     
+    PURPOSE "Required for bulding the lapack_wrap component."
+    )
   # set_package_properties( GSL PROPERTIES
   #    URL "http://www.gnu.org/s/gsl/"
   #    DESCRIPTION "GNU Scientific Library"
   #    TYPE REQUIRED
   #    PURPOSE "Required for bulding quadrature and rng components."
-  #    )  
+  #    )
   set_package_properties( Random123 PROPERTIES
     URL "http://www.deshawresearch.com/resources_random123.html"
     DESCRIPTION "a library of counter-based random number generators
@@ -477,28 +460,30 @@ macro( setupVendorLibraries )
 
   #
   # General settings
-  # 
+  #
   setVendorVersionDefaults()
 
   # System specific settings
   if ( UNIX )
-    
-    if( NOT MPI_SETUP_DONE )
+
+    if( NOT MPI_CXX_COMPILER )
       setupMPILibrariesUnix()
     endif()
     setupLAPACKLibrariesUnix()
     setupVendorLibrariesUnix()
-    
+
   elseif( WIN32 )
-    
-    setupMPILibrariesWindows()
+
+    if( NOT MPI_CXX_COMPILER )
+      setupMPILibrariesWindows()
+    endif()
     setupLAPACKLibrariesUnix()
     setupVendorLibrariesWindows()
-    
+
   else()
     message( FATAL_ERROR "
 I don't know how to setup global (vendor) libraries for this platform.
-WIN32=0; UNIX=0; CMAKE_SYSTEM=${CMAKE_SYSTEM}; 
+WIN32=0; UNIX=0; CMAKE_SYSTEM=${CMAKE_SYSTEM};
 CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}" )
   endif()
 

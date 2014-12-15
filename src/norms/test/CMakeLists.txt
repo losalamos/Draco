@@ -20,7 +20,7 @@ file( GLOB test_sources *.cc )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
@@ -32,8 +32,4 @@ include_directories(
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"
-   DEPS    "Lib_norms;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
-
-
-
-
+   DEPS    "Lib_norms;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
