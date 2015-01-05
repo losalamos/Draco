@@ -39,21 +39,20 @@ module unload xt-libsci xt-totalview
 
 # draco modules start here.
 module load gsl/1.15 lapack/3.4.1
-module load cmake numdiff emacs
-module load trilinos SuperLU_DIST 
+module load numdiff emacs
+module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac/v6.2.4
 
 # temporary logic that can go away when user_contrib appears on cielo.
 case ${target} in
 ct-fe[0-9] | ct-login[0-9] | ct-vizlogin[0-9])
    module load user_contrib
-   module load svn/1.8.10 git/2.1.3
+   module load svn/1.8.10 git/2.1.3 cmake/3.1.0
    ;;
 *)
-   module load svn
+   module load svn cmake/3.1.0
    ;;
 esac
-
 
 export OMP_NUM_THREADS=8
 

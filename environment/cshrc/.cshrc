@@ -48,10 +48,10 @@ case ml*.localdomain:
     module unload intel openmpi
     module load intel/14.0.4 openmpi
     module load gsl git svn emacs
-    module load cmake numdiff lapack/3.4.1 random123 eospac
+    module load cmake/3.1.0 numdiff lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
-    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
+    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
     breaksw
 
 case lu*.lanl.gov:
@@ -65,7 +65,7 @@ case ty*.localdomain:
     module unload intel openmpi
     module load intel/14.0.4 openmpi
     module load gsl svn emacs
-    module load cmake numdiff git lapack/3.4.1 random123 eospac
+    module load cmake/3.1.0 numdiff git lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     breaksw
@@ -81,7 +81,7 @@ case rfta*:
 case ct*:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     # source /usr/projects/crestone/dotfiles/Cshrc
-    
+
     # Move some environment out of the way.
     module unload PrgEnv-intel PrgEnv-pgi
     module unload cmake numdiff svn gsl
@@ -98,12 +98,12 @@ case ct*:
 
     # draco modules start here.
     module load gsl/1.15 lapack/3.4.1
-    module load cmake numdiff svn git emacs
-    module load trilinos SuperLU_DIST 
+    module load cmake/3.1.0 numdiff svn git emacs
+    module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac/v6.2.4
-    
+
     setenv OMP_NUM_THREADS 8
-    
+
     # Avoid run time messages of the form:
     # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
     # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
@@ -125,10 +125,10 @@ case ci*:
     module load intel/14.0.2.144
     # draco modules start here.
     module load gsl/1.15 lapack/3.4.1
-    module load cmake numdiff svn emacs
-    module load trilinos SuperLU_DIST 
+    module load cmake/3.1.0 numdiff svn emacs
+    module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac/v6.2.4
-    
+
     setenv OMP_NUM_THREADS 8
 
     # Avoid run time messages of the form:
@@ -136,35 +136,28 @@ case ci*:
     # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
     setenv KMP_AFFINITY none
     breaksw
-   
+
 case seqlac*:
     setenv VENDOR_DIR /usr/gapps/jayenne/vendors
-    
+
     # LLNL uses dotkit instead of modules
     setenv DK_NODE ${DK_NODE}:${VENDOR_DIR}/Modules/sq
-    
+
     # Draco dotkits
     use xlc12 # use gcc472
     use numdiff
     use gsl
     use random123
-    
+
     # LLNL dotkits
-    use cmake
+    use cmake310
     use erase=del
     use alia1++
-    
+
     unalias rm
 
     breaksw
-   
-case gondolin*:
-    source /ccs/codes/radtran/vendors/modules-3.2.7/init/csh
-    module load grace totalview numdiff git gsl svn gcc lapack/3.4.0
-    module load cmake openmpi emacs random123
-    module load trilinos BLACS SCALAPACK SuperLU_DIST hypre/2.0.0 ndi 
-    module load ParMetis/3.1.1
-    breaksw
+
 endsw
 
 # Set term title
@@ -202,5 +195,3 @@ alias watchioblocks 'ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
 alias which 'alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
 alias wmdstat 'watch -n 2 "cat /proc/mdstat"'
 alias xload 'xload -label ${myhost}'
-
-
