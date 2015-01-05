@@ -118,8 +118,8 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
     // assigned material IDs to more SesameTable values.
     
     if ( 
-	spEospac = new const rtt_cdi_eospac::Eospac( 
-            AlSt.Ue_DT( Al3717 ).Zfc_DT( Al23714 ) ) )
+	spEospac.reset(new const rtt_cdi_eospac::Eospac( 
+                           AlSt.Ue_DT( Al3717 ).Zfc_DT( Al23714 ) )), spEospac )
 
 	PASSMSG("SP to new Eospac object created.");
     else
@@ -162,7 +162,7 @@ void eospac_with_cdi_test( rtt_dsxx::UnitTest & ut )
     // ------------------- //
     
     rtt_dsxx::SP< rtt_cdi::CDI > spCdiEos;
-    if ( spCdiEos = new rtt_cdi::CDI() )
+    if ( spCdiEos.reset(new rtt_cdi::CDI()), spCdiEos )
 	PASSMSG("SP to CDI object created successfully.");
     else
 	FAILMSG("Failed to create SP to CDI object.");

@@ -121,18 +121,18 @@ nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
         // now determine which analytic model we need to build
         if (indicator ==  rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL)
         {
-            group_models[i] = new Constant_Analytic_Opacity_Model(models[i]);
+            group_models[i].reset(new Constant_Analytic_Opacity_Model(models[i]));
         }
         else if (indicator ==
                  rtt_cdi_analytic::POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
         {
-            group_models[i] = new Polynomial_Analytic_Opacity_Model(models[i]);
+            group_models[i].reset(new Polynomial_Analytic_Opacity_Model(models[i]));
         }
         else if (indicator ==
                  rtt_cdi_analytic::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
         {
-            group_models[i] =
-                new Stimulated_Emission_Analytic_Opacity_Model(models[i]);
+            group_models[i].reset(
+                new Stimulated_Emission_Analytic_Opacity_Model(models[i]));
         }
         else
         {

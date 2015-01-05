@@ -38,6 +38,7 @@ using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
+using rtt_dsxx::dynamic_pointer_cast;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -172,14 +173,14 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
     if (!soft_equiv(smodel->calculate_opacity(1.0, 1.0, 1.0), 1.0))
         FAILMSG("FAILED to calculate grey scattering opacity");
 
-    absorption = new const Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION);
-    scattering = new const Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING);
+    absorption.reset(new const Analytic_Gray_Opacity(amodel, rtt_cdi::ABSORPTION));
+    scattering.reset(new const Analytic_Gray_Opacity(smodel, rtt_cdi::SCATTERING));
     if (absorption->getDataDescriptor() != "Analytic Gray Absorption") ITFAILS;
     if (scattering->getDataDescriptor() != "Analytic Gray Scattering") ITFAILS;
     {
-        SP<const GrayOpacity> total;
-        total =
-            new const Analytic_Gray_Opacity(smodel, rtt_cdi::TOTAL);
+        SP<const GrayOpacity> total(new const Analytic_Gray_Opacity(smodel,
+                                                                    rtt_cdi::TOTAL));
+        
         if (total->getDataDescriptor() != "Analytic Gray Total") ITFAILS;
     }
 
@@ -315,7 +316,7 @@ void type_test( rtt_dsxx::UnitTest & ut )
     if (typeid(*op) == typeid(rtt_cdi_analytic::Analytic_Gray_Opacity))
     {
 	PASSMSG("RTTI type info is correct for SP to GrayOpacity.");
-	opac = op;
+	opac = dynamic_pointer_cast<Analytic_Gray_Opacity>(op);
     }
     
     vector<double> parm = opac->get_Analytic_Model()->get_parameters();

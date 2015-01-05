@@ -52,8 +52,7 @@ void ipcress_file_test( rtt_dsxx::ScalarUnitTest &ut )
 	    
     std::cout << "Creating a Ipcress File object\n" << std::endl;
 	    
-    SP<IpcressFile> spGF;
-    spGF = new rtt_cdi_ipcress::IpcressFile( op_data_file );
+    SP<IpcressFile> spGF(new rtt_cdi_ipcress::IpcressFile( op_data_file ));
 
 
     // Test the new object to verify the constructor and accessors.

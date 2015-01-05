@@ -47,8 +47,8 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
     // Assign and check gray opacity  
     SP<rtt_cdi_test::DummyGrayOpacity> gray_total;
     SP<rtt_cdi_test::DummyGrayOpacity> gray_abs;
-    gray_total = new rtt_cdi_test::DummyGrayOpacity();
-    gray_abs   = new rtt_cdi_test::DummyGrayOpacity(rtt_cdi::ABSORPTION);
+    gray_total.reset(new rtt_cdi_test::DummyGrayOpacity());
+    gray_abs.reset(new rtt_cdi_test::DummyGrayOpacity(rtt_cdi::ABSORPTION));
 
     // check gray opacity for total opacities
     {
@@ -91,8 +91,8 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
     // Assign and check multigroup opacity 
     SP<rtt_cdi_test::DummyMultigroupOpacity> mg_total;
     SP<rtt_cdi_test::DummyMultigroupOpacity> mg_abs;
-    mg_total = new rtt_cdi_test::DummyMultigroupOpacity();
-    mg_abs   = new rtt_cdi_test::DummyMultigroupOpacity(rtt_cdi::ABSORPTION); 
+    mg_total.reset(new rtt_cdi_test::DummyMultigroupOpacity());
+    mg_abs.reset(new rtt_cdi_test::DummyMultigroupOpacity(rtt_cdi::ABSORPTION)); 
 
     // check multigroup total opacities
     {
@@ -152,8 +152,8 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
     // Assign and check odfmg opacity 
     SP<rtt_cdi_test::DummyOdfmgOpacity> odfmg_total;
     SP<rtt_cdi_test::DummyOdfmgOpacity> odfmg_abs;
-    odfmg_total = new rtt_cdi_test::DummyOdfmgOpacity();
-    odfmg_abs   = new rtt_cdi_test::DummyOdfmgOpacity(rtt_cdi::ABSORPTION); 
+    odfmg_total.reset(new rtt_cdi_test::DummyOdfmgOpacity());
+    odfmg_abs.reset(new rtt_cdi_test::DummyOdfmgOpacity(rtt_cdi::ABSORPTION)); 
 
     // check multigroup total opacities
     {
@@ -222,7 +222,7 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
 
     SP< GrayOpacity > spDGO;
 
-    if ( (spDGO = new rtt_cdi_test::DummyGrayOpacity()) )
+    if ( (spDGO.reset(new rtt_cdi_test::DummyGrayOpacity())), spDGO )
         PASSMSG("SP to new GrayOpacity object created.");
     else
         FAILMSG("Unable to create a SP to new GrayOpacity object.");
@@ -326,7 +326,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
 
     SP< MultigroupOpacity > spDmgO;
 
-    if ( (spDmgO = new rtt_cdi_test::DummyMultigroupOpacity()) )
+    if ( (spDmgO.reset(new rtt_cdi_test::DummyMultigroupOpacity())), spDmgO )
     {
         ostringstream message;
         message << "SP to new MultigroupOpacity object created.";
@@ -456,7 +456,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
     // CDI. 
 
     SP< rtt_cdi_test::DummyMultigroupOpacity > spDumMgOp;
-    if ( (spDumMgOp = new rtt_cdi_test::DummyMultigroupOpacity()) )
+    if ( (spDumMgOp.reset(new rtt_cdi_test::DummyMultigroupOpacity())), spDumMgOp )
     {
         ostringstream message;
         message << "SP to new DummyMultigroupOpacity object created.";
@@ -519,7 +519,8 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
 
     SP< OdfmgOpacity > spDumOdfmgOpacity;
 
-    if ( (spDumOdfmgOpacity = new rtt_cdi_test::DummyOdfmgOpacity()) )
+    if ( (spDumOdfmgOpacity.reset(new rtt_cdi_test::DummyOdfmgOpacity())),
+         spDumOdfmgOpacity )
     {
         ostringstream message;
         message << "SP to new OdfmgOpacity object created.";
@@ -687,7 +688,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
     // CDI. 
 
     SP< rtt_cdi_test::DummyOdfmgOpacity > spDumMgOp;
-    if ( (spDumMgOp = new rtt_cdi_test::DummyOdfmgOpacity()) )
+    if ( (spDumMgOp.reset(new rtt_cdi_test::DummyOdfmgOpacity())), spDumMgOp)
     {
         ostringstream message;
         message << "SP to new DummyOdfmgOpacity object created.";

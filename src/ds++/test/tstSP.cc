@@ -68,8 +68,8 @@ class ListD : public ListWithDerived
     ~ListD(void);
 };
 
-ListWithDerived::ListWithDerived( void) : next(NULL) {/*empty*/}
-ListWithDerived::~ListWithDerived(void)              {/*empty*/}
+ListWithDerived::ListWithDerived( void) : next() {/*empty*/}
+ListWithDerived::~ListWithDerived(void)          {/*empty*/}
 
 ListD::ListD( void) : ListWithDerived() {/*empty*/}
 ListD::~ListD(void)                     {/*empty*/}
@@ -169,7 +169,7 @@ void temp_change_SP( rtt_dsxx::UnitTest & ut, SP<Foo> f)
     CHECK_N_OBJECTS(1, 1, 0, 0);
 
     // this is a temporary change
-    f = new Foo(100);
+    f.reset(new Foo(100));
 
     CHECK_N_OBJECTS(2, 1, 0, 0);
 
@@ -270,7 +270,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
 
             // now make a foo pointer and assign
             Foo *ff = new Foo(10);
-            ispfoo  = ff;
+            ispfoo.reset(ff);
 
             // still no new foos created
             CHECK_N_OBJECTS(4, 2, 1, 0);
@@ -307,9 +307,6 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             if (spfoo != f)      ITFAILS;
             if (spbar != b)      ITFAILS;
             if (spbaz != bz)     ITFAILS;
-
-            if (spfoo == b)      ITFAILS; // this is ok because a Bar * can
-                                          // be passed to Foo *
 
             if (spbar == dynamic_cast<Bar *>(f)) ITFAILS;
 
@@ -516,12 +513,12 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
         Foo ff = *spfoo;
         if (ff.vf() != 10) ITFAILS;
 
-        Bar *b = dynamic_cast<Bar *>(spfoo.bp());
+        Bar *b = dynamic_cast<Bar *>(spfoo.get());
         if (b->vf() != 12) ITFAILS;
         if (b->f() != 13)  ITFAILS;
 
-        if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
-        if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
+        if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
+        if (typeid(*spfoo.get()) != typeid(Bar))  ITFAILS;
 
         CHECK_N_OBJECTS(2, 1, 0, 0);
     }
@@ -542,7 +539,7 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
         if (spbar)  ITFAILS;
         if (spfoo2) ITFAILS;
         {
-            spbar = new Bar(50);
+            spbar.reset(new Bar(50));
             CHECK_N_OBJECTS(1, 1, 0, 0);
 
             if (spbar->f() != 53)  ITFAILS;
@@ -559,9 +556,9 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
             if (spfoo->f() != 51)  ITFAILS;
             if (spfoo->vf() != 52) ITFAILS;
 
-            if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
-            if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
-            if (typeid(spbar.bp()) != typeid(Bar *)) ITFAILS;
+            if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
+            if (typeid(*spfoo.get()) != typeid(Bar))  ITFAILS;
+            if (typeid(spbar.get()) != typeid(Bar *)) ITFAILS;
 
             if (ut.numFails == 0)
                 PASSMSG("Assignment with SP<X> ok.");
@@ -573,49 +570,44 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
             if (rspfoo->f() != 51)  ITFAILS;
             if (rspfoo->vf() != 52) ITFAILS;
 
-            if (typeid(rspfoo.bp()) != typeid(Foo *)) ITFAILS;
-            if (typeid(*rspfoo.bp()) != typeid(Bar))  ITFAILS;
+            if (typeid(rspfoo.get()) != typeid(Foo *)) ITFAILS;
+            if (typeid(*rspfoo.get()) != typeid(Bar))  ITFAILS;
             
             if (ut.numFails == 0)
                 PASSMSG("Copy constructor with SP<X> ok.");
 
             // now check assignment with X *
-            rspfoo = new Bar(12);
+            rspfoo.reset(new Bar(12));
             CHECK_N_OBJECTS(2, 2, 0, 0);
 
             if (rspfoo->f() != 13)  ITFAILS;
             if (rspfoo->vf() != 14) ITFAILS;
 
-            if (typeid(rspfoo.bp()) != typeid(Foo *)) ITFAILS;
-            if (typeid(*rspfoo.bp()) != typeid(Bar))  ITFAILS;
+            if (typeid(rspfoo.get()) != typeid(Foo *)) ITFAILS;
+            if (typeid(*rspfoo.get()) != typeid(Bar))  ITFAILS;
 
             if (ut.numFails == 0)
                 PASSMSG("Assignment with X * ok.");
 
             // assign SPfoo2 to a bar
-            spfoo2 = new Bar(20);
+            spfoo2.reset(new Bar(20));
             CHECK_N_OBJECTS(3, 3, 0, 0);
 
             // assign SPfoo2 to itself
             spfoo2 = spfoo2;
             CHECK_N_OBJECTS(3, 3, 0, 0);
-            
-            // assign SPfoo2 to itself (underlying object)
-            spfoo2 = spfoo2.bp();
-            CHECK_N_OBJECTS(3, 3, 0, 0);
-            
         }
         // still have 2 object
         CHECK_N_OBJECTS(2, 2, 0, 0);
 
         // assign spfoo to a baz
-        spfoo2 = new Baz(45);
+        spfoo2.reset(new Baz(45));
         CHECK_N_OBJECTS(2, 2, 1, 0);
 
         if (spfoo2->f() != 46)  ITFAILS;
         if (spfoo2->vf() != 49) ITFAILS;
 
-        if (typeid(*spfoo2.bp()) != typeid(Baz)) ITFAILS;
+        if (typeid(*spfoo2.get()) != typeid(Baz)) ITFAILS;
 
         // assign spbar to NULL
         spbar = SP<Bar>();
@@ -625,9 +617,9 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
         if (spfoo->f() != 51)  ITFAILS;
         if (spfoo->vf() != 52) ITFAILS;
         
-        if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
-        if (typeid(*spfoo.bp()) != typeid(Bar))  ITFAILS;
-        if (typeid(spbar.bp()) != typeid(Bar *)) ITFAILS;
+        if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
+        if (typeid(*spfoo.get()) != typeid(Bar))  ITFAILS;
+        if (typeid(spbar.get()) != typeid(Bar *)) ITFAILS;
         
         if (ut.numFails == 0)
             PASSMSG("Set to SP<>() releases pointer.");
@@ -764,7 +756,7 @@ void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
             
             // assign spfoo2 to itself (underlying object)
             // !!! THIS BEHAVIOR IS DIFFERENT FROM rtt_dsxx:SP<X> !!! //
-            // spfoo2.reset( spfoo2.get() ); // spfoo2 = spfoo2.bp();
+            // spfoo2.reset( spfoo2.get() ); // spfoo2 = spfoo2.get();
             // CHECK_N_OBJECTS(2, 2, 0, 0);  // CHECK_N_OBJECTS(3, 3, 0, 0);
         }
         // still have 2 object
@@ -854,107 +846,20 @@ void fail_modes_test( rtt_dsxx::UnitTest & ut )
         // try assigning a derived NULL to a base; the spfoo base pointer is
         // still a foo in the case 
         spfoo = spbar;
-        if (typeid(spfoo.bp()) != typeid(Foo *)) ITFAILS;
+        if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
 
         CHECK_0_OBJECTS;
-
-        // now try assigning to a non-derived class of Foo that is NULL,
-        // unfortunately, even though this shouldn't be allowed we get away with
-        // it because wombat has some virtual functions and is NULL; however,
-        // this isn't really dangerous because spfoo still doesn't point to
-        // anything 
-        spfoo  = spbat;
-        caught = false;
-        try
-        {
-            spfoo->f();
-        }
-        catch (rtt_dsxx::assertion & /* assertion */ )
-        {
-            caught = true;
-            ostringstream m;
-            m << "Good, caught null access on member function " << endl;
-            PASSMSG(m.str());
-        }
-        if (!caught)
-            FAILMSG("Failed to catch illegal access exception.");
     }
     // now make a wombat and try
-    spbat  = new Wombat;
+    spbat.reset(new Wombat);
     CHECK_N_OBJECTS(0, 0, 0, 1);
-
-    caught = false;
-    try
-    {
-        spfoo = spbat;
-    }
-    catch (rtt_dsxx::assertion &assert)
-    {
-        caught = true;
-        ostringstream m;
-        m << "Good, caught the following exception, " << endl
-          << assert.what();
-        PASSMSG(m.str());
-    }
-    if (!caught)
-        FAILMSG("Failed to catch illegal assignment.");
-
-    // now try copy construction
-    caught = false;
-    try
-    {
-        SP<Foo> s(spbat);
-    }
-    catch (rtt_dsxx::assertion &assert)
-    {
-        caught = true;
-        ostringstream m;
-        m << "Good, caught the following exception, " << endl
-          << assert.what();
-        PASSMSG(m.str());
-    }
-    if (!caught)
-        FAILMSG("Failed to catch illegal assignment.");
 
     // now try copy and assignment on X *
     Wombat *bat = new Wombat();
     CHECK_N_OBJECTS(0, 0, 0, 2);
-
-    caught = false;
-    try
-    {
-        spfoo = bat;
-    }
-    catch (rtt_dsxx::assertion &assert)
-    {
-        caught = true;
-        ostringstream m;
-        m << "Good, caught the following exception, " << endl
-          << assert.what();
-        PASSMSG(m.str());
-    }
-    if (!caught)
-        FAILMSG("Failed to catch illegal assignment.");
-
-    // now try copy construction
-    caught = false;
-    try
-    {
-        SP<Foo> s(bat);
-    }
-    catch (rtt_dsxx::assertion &assert)
-    {
-        caught = true;
-        ostringstream m;
-        m << "Good, caught the following exception, " << endl
-          << assert.what();
-        PASSMSG(m.str());
-    }
-    if (!caught)
-        FAILMSG("Failed to catch illegal assignment.");
     
     // assign wombat to a pointer to clean it up
-    spbat = bat;
+    spbat.reset(bat);
     CHECK_N_OBJECTS(0, 0, 0, 1);
     
     if (ut.numFails == 0)
@@ -976,14 +881,14 @@ void equality_test( rtt_dsxx::UnitTest & ut )
     Foo *f  = new Foo(5);
     Foo *ff = new Foo(5);
 
-    f1 = f;
+    f1.reset(f);
     f2 = f1;
 
     if (f2 != f1) ITFAILS;
 
     // now f and ff are equivalent, but the smart pointers won't be because
     // they don't point to the same instance of Foo *
-    f2 = ff;
+    f2.reset(ff);
 
     if (f2 == f1) ITFAILS;
 
@@ -1041,11 +946,11 @@ void access_test( rtt_dsxx::UnitTest & ut )
     kill_SPBar(b);
     CHECK_0_OBJECTS;
 
-    b = new Bar(12);
+    b.reset(new Bar(12));
     temp_change_SP(ut, b); // this temporarily changes to a Foo
 
     if (b->vf() != 14)                   ITFAILS;
-    if (typeid(b.bp()) != typeid(Bar *)) ITFAILS;
+    if (typeid(b.get()) != typeid(Bar *)) ITFAILS;
 
     CHECK_N_OBJECTS(1, 1, 0, 0);
 

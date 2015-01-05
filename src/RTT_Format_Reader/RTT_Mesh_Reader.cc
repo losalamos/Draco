@@ -75,7 +75,7 @@ void RTT_Mesh_Reader::transform2CGNS(void)
                 std::vector<Element_Definition::Node_Location>
                     node_loc(cell_definition->get_nnodes(), Element_Definition::CORNER);
                 
-                cell = new rtt_mesh_element::Element_Definition(
+                cell.reset(new rtt_mesh_element::Element_Definition(
                     cell_definition->get_name(),
                     rttMesh->get_dims_ndim(),
                     cell_definition->get_nnodes(),
@@ -83,7 +83,7 @@ void RTT_Mesh_Reader::transform2CGNS(void)
                     elem_defs,
                     side_types,
                     cell_definition->get_all_sides(),
-                    node_loc);
+                    node_loc));
             }
             else
             {
@@ -92,7 +92,7 @@ void RTT_Mesh_Reader::transform2CGNS(void)
         }
         else
         {
-            cell = new rtt_mesh_element::Element_Definition(cell_def);
+            cell.reset(new rtt_mesh_element::Element_Definition(cell_def));
         }
 
         cell_definitions.push_back(cell);

@@ -114,13 +114,13 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
         // now determine which analytic model we need to build
         if (indicator == CONSTANT_ANALYTIC_OPACITY_MODEL)
         {
-	        group_models[i] = new Constant_Analytic_Opacity_Model(
-	        models[i]);
+            group_models[i].reset(new Constant_Analytic_Opacity_Model(
+                                      models[i]));
         }
         else if (indicator == POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
         {
-	        group_models[i] = new Polynomial_Analytic_Opacity_Model(
-	        models[i]);
+            group_models[i].reset(new Polynomial_Analytic_Opacity_Model(
+                                      models[i]));
         }
         else
         {

@@ -66,9 +66,9 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(
 
     // Create the data table object and fill it with the table data from the
     // IPCRESS file.  As far as the data table is concerned, this is MG data.
-    spIpcressDataTable = new IpcressDataTable(
+    spIpcressDataTable.reset(new IpcressDataTable(
         "mg", opacityModel, opacityReaction,
-        vKnownKeys, materialID, spIpcressFile );
+        vKnownKeys, materialID, spIpcressFile ));
 
     //load the group and band structure
     loadGroupsAndBands(numBands);
@@ -153,7 +153,7 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(
     Ensure (unpacker.get_ptr() == &packed[0] + packed.size());
 
     // build a new IpcressFile
-    spIpcressFile = new IpcressFile(filename);
+    spIpcressFile.reset(new IpcressFile(filename));
     Check (spIpcressFile);
 
     // Verify that the requested material ID is available in the specified
@@ -167,9 +167,9 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(
 
     // Create the data table object and fill it with the table data from the
     // IPCRESS file.  To the data table, this is a 'mg' object.
-    spIpcressDataTable = new IpcressDataTable(
+    spIpcressDataTable.reset(new IpcressDataTable(
         "mg", opacityModel, opacityReaction,
-        vKnownKeys, materialID, spIpcressFile );
+        vKnownKeys, materialID, spIpcressFile ));
 
     Ensure (spIpcressFile);
     Ensure (spIpcressDataTable);

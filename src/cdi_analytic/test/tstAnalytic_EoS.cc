@@ -34,6 +34,7 @@ using rtt_cdi::CDI;
 using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
+using rtt_dsxx::dynamic_pointer_cast;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -147,7 +148,7 @@ void analytic_eos_test( rtt_dsxx::UnitTest & ut )
     // Test the get_Analytic_Model() member function.
     {
         SP<Polynomial_Model const> myEoS_model
-            = analytic.get_Analytic_Model();
+            = dynamic_pointer_cast<Polynomial_Model const>(analytic.get_Analytic_Model());
         SP<Polynomial_Model const> expected_model( model );
         
         if( expected_model == myEoS_model )

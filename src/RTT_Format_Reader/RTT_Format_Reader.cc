@@ -23,20 +23,7 @@ namespace rtt_RTT_Format_Reader
  */
 RTT_Format_Reader::RTT_Format_Reader(string const & RTT_File)
     : header(),
-      dims(),
-      spNodeFlags(NULL),
-      spSideFlags(NULL),
-      spCellFlags(NULL),
-      spNodeDataIds(NULL),
-      spSideDataIds(NULL),
-      spCellDataIds(NULL),
-      spCellDefs(NULL),
-      spNodes(NULL),
-      spSides(NULL),
-      spCells(NULL),
-      spNodeData(NULL),
-      spSideData(NULL),
-      spCellData(NULL)
+      dims()
 {
     readMesh(RTT_File);
 }
@@ -101,19 +88,19 @@ void RTT_Format_Reader::readKeyword(ifstream & meshfile)
  */
 void RTT_Format_Reader::createMembers()
 {
-    spNodeFlags = new NodeFlags(dims);
-    spSideFlags = new SideFlags(dims);
-    spCellFlags = new CellFlags(dims);
-    spNodeDataIds = new NodeDataIDs(dims);
-    spSideDataIds = new SideDataIDs(dims);
-    spCellDataIds = new CellDataIDs(dims);
-    spCellDefs = new CellDefs(dims);
-    spNodes = new Nodes(* spNodeFlags, dims);
-    spSides = new Sides(* spSideFlags, dims, * spCellDefs);
-    spCells = new Cells(* spCellFlags, dims, * spCellDefs);
-    spNodeData = new NodeData(dims);
-    spSideData = new SideData(dims);
-    spCellData = new CellData(dims);
+    spNodeFlags.reset(new NodeFlags(dims));
+    spSideFlags.reset(new SideFlags(dims));
+    spCellFlags.reset(new CellFlags(dims));
+    spNodeDataIds.reset(new NodeDataIDs(dims));
+    spSideDataIds.reset(new SideDataIDs(dims));
+    spCellDataIds.reset(new CellDataIDs(dims));
+    spCellDefs.reset(new CellDefs(dims));
+    spNodes.reset(new Nodes(* spNodeFlags, dims));
+    spSides.reset(new Sides(* spSideFlags, dims, * spCellDefs));
+    spCells.reset(new Cells(* spCellFlags, dims, * spCellDefs));
+    spNodeData.reset(new NodeData(dims));
+    spSideData.reset(new SideData(dims));
+    spCellData.reset(new CellData(dims));
 }
 
 /*!
