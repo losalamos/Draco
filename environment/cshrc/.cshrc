@@ -37,18 +37,33 @@ case wf-fey*.lanl.gov
 case wf*.localdomain:
 case mu-fey*.lanl.gov:
 case mu*.localdomain:
+case mp*.lanl.gov:
+case mp*.localdomain:
+case ml-fey*.lanl.gov:
+case ml*.localdomain:
+    setenv VENDOR_DIR /usr/projects/draco/vendors
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
+    module load friendly-testing user_contrib
+    module unload intel openmpi
+    module load intel/14.0.4 openmpi
+    module load gsl git svn emacs
+    module load cmake numdiff lapack/3.4.1 random123 eospac
+    module load trilinos SuperLU_DIST
+    module load ParMetis ndi
+    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
+    breaksw
+
 case lu*.lanl.gov:
 case lu*.localdomain:
 case ty*.lanl.gov:
 case ty*.localdomain:
-case mp*.lanl.gov:
-case mp*.localdomain:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     module use $VENDOR_DIR/Modules/hpc
     module use $VENDOR_DIR/Modules/tu-fe
-    module load friendly-testing 
+    module load friendly-testing
     module unload intel openmpi
-    module load intel/14.0.2 openmpi
+    module load intel/14.0.4 openmpi
     module load gsl svn emacs
     module load cmake numdiff git lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
@@ -63,49 +78,64 @@ case rfta*:
     module load git svn
     breaksw
 
-case ml-fey*.lanl.gov:
-case ml*.localdomain:
+case ct*:
     setenv VENDOR_DIR /usr/projects/draco/vendors
+    # source /usr/projects/crestone/dotfiles/Cshrc
+    
+    # Move some environment out of the way.
+    module unload PrgEnv-intel PrgEnv-pgi
+    module unload cmake numdiff svn gsl
+    module unload papi perftools
+
     module use $VENDOR_DIR/Modules/hpc
-    module use $VENDOR_DIR/Modules/tu-fe
-    module load friendly-testing 
-    module load intel/14.0.2 openmpi
-    module load cmake gsl svn fstools 
-    module load numdiff lapack/3.4.1 totalview
-    module load SuperLU_DIST
-    module load trilinos
-    module load ParMetis 
-    module load ndi random123 eospac
-    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn' 
+    module use $VENDOR_DIR/Modules/ct-fe
+    module load user_contrib
+
+    # load the Intel programming env, but then unloda libsci and totalview
+    module load PrgEnv-intel # this loads xt-libsci and intel/XXX
+    module unload xt-libsci intel # xt-totalview
+    module load intel/14.0.2.144
+
+    # draco modules start here.
+    module load gsl/1.15 lapack/3.4.1
+    module load cmake numdiff svn git emacs
+    module load trilinos SuperLU_DIST 
+    module load ParMetis ndi random123 eospac/v6.2.4
+    
+    setenv OMP_NUM_THREADS 8
+    
+    # Avoid run time messages of the form:
+    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
+    # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
+    setenv KMP_AFFINITY none
     breaksw
 
-case ct*:
 case ci*:
     setenv VENDOR_DIR /usr/projects/draco/vendors
-   # source /usr/projects/crestone/dotfiles/Cshrc
-   module use $VENDOR_DIR/Modules/hpc
-   module use $VENDOR_DIR/Modules/ct-fe
-   # Move some environment out of the way.
-   module unload PrgEnv-intel PrgEnv-pgi
-   module unload cmake numdiff svn gsl
-   module unload papi perftools
-   # load the Intel programming env, but then unloda libsci and totalview
-   module load PrgEnv-intel # this loads xt-libsci and intel/XXX
-   module unload xt-libsci intel # xt-totalview
-   module load intel/14.0.2.144
-   # draco modules start here.
-   module load gsl lapack/3.4.1
-   module load cmake numdiff svn emacs
-   module load trilinos SuperLU_DIST 
-   module load ParMetis ndi random123 eospac/v6.2.4beta.3
+    # source /usr/projects/crestone/dotfiles/Cshrc
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/ct-fe
+    # Move some environment out of the way.
+    module unload PrgEnv-intel PrgEnv-pgi
+    module unload cmake numdiff svn gsl
+    module unload papi perftools
+    # load the Intel programming env, but then unloda libsci and totalview
+    module load PrgEnv-intel # this loads xt-libsci and intel/XXX
+    module unload xt-libsci intel # xt-totalview
+    module load intel/14.0.2.144
+    # draco modules start here.
+    module load gsl/1.15 lapack/3.4.1
+    module load cmake numdiff svn emacs
+    module load trilinos SuperLU_DIST 
+    module load ParMetis ndi random123 eospac/v6.2.4
+    
+    setenv OMP_NUM_THREADS 8
 
-   setenv OMP_NUM_THREADS 8
-
-   # Avoid run time messages of the form:
-   # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
-   # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
-   setenv KMP_AFFINITY none
-   breaksw
+    # Avoid run time messages of the form:
+    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
+    # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
+    setenv KMP_AFFINITY none
+    breaksw
    
 case seqlac*:
     setenv VENDOR_DIR /usr/gapps/jayenne/vendors

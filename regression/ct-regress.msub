@@ -103,11 +103,12 @@ done
 
 run "module unload PrgEnv-intel PrgEnv-pgi"
 run "module unload cmake numdiff svn gsl"
-run "module load PrgEnv-intel "
+run "module load user_contrib"
+run "module load PrgEnv-intel"
 run "module load gsl/1.15 lapack"
 run "module load cmake numdiff svn"
-run "module load trilinos SuperLU_DIST "
-run "module load random123 "
+run "module load trilinos SuperLU_DIST"
+run "module load random123"
 run "module load eospac"
 run "module load ParMetis ndi"
 export CC=`which cc`

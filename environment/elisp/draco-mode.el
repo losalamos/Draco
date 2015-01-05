@@ -1,6 +1,6 @@
 ;; -*-emacs-lisp-*-
 ;;======================================================================
-;; file   : draco-mode.el 
+;; file   : draco-mode.el
 ;; Author : Kelly Thompson
 ;; Created: 30 Nov 2004
 ;;
@@ -57,8 +57,8 @@
 
 (defcustom draco-companion-file-alist nil
   "A list of possible file pairs.  The file type of the current buffer
-is located within the list (first regexp).  The filename extension 
-is loaded from the 2nd part of the pair and a filename with this 
+is located within the list (first regexp).  The filename extension
+is loaded from the 2nd part of the pair and a filename with this
 new extension is loaded (if it exists)."
   :type 'list
   :group 'draco-mode)
@@ -73,7 +73,7 @@ new extension is loaded (if it exists)."
 "\nIf non-nil, an RTT menu will be placed in the XEmacs menubar.
 This menu includes selections to create new files from RTT templates
 and selections for frequently used XEmacs features (CVS, compile,
-etc.)" 
+etc.)"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
@@ -231,12 +231,12 @@ to anything else will generate errors."
    ;; DRACO DBC - One shot keywords that take no arguments but are
    ;; followed by parenthesis.
    (list
-    ;; Match single keyword that is followed by 0 or more spaces, 
+    ;; Match single keyword that is followed by 0 or more spaces,
     ;; followed by an opening paren.
     (concat "\\(Assert\\|Check\\|Ensure\\|Insist\\|Require"
             "\\|Remember\\)\\>\\(\\s-*[(]\\)")
     '(1 font-lock-preprocessor-face prepend))
-   
+
    ;; DRACO Unit testing - One shot keywords that take no arguments
    (list
     ;; Match single keyword
@@ -402,8 +402,8 @@ and continue."
       (message (concat "Warning: " libname ".el not found"))))
 
 (defun draco-set-companion-file-alist ()
-"Setup a default list of companion files.  The user may use 
-his/her own bindings by setting the variable 
+"Setup a default list of companion files.  The user may use
+his/her own bindings by setting the variable
 draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
   (if (not draco-companion-file-alist)
       (setq draco-companion-file-alist
@@ -429,6 +429,9 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 	      ))))
 (add-hook 'draco-mode-hook 'draco-set-companion-file-alist)
 
+;; Remove whitespace found at the end of every line before saving.
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
 ;;======================================================================
 ;; Comment blocks
 ;;======================================================================
@@ -438,9 +441,9 @@ draco-companion-file-alist from the Options:Advanced:Group:Draco menu."
 function or method. Width is set by draco-code-comment-width.
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief 
- * 
+/*!
+ * \brief
+ *
  * \param name description
  * \return description
  */
@@ -465,8 +468,8 @@ by draco-code-comment-width.
 
 //===========================================================================//
 /*!
- * \class 
- * \brief 
+ * \class
+ * \brief
 //===========================================================================//
 "
   (interactive)
@@ -507,10 +510,10 @@ by draco-code-comment-width.
 (defun draco-find-companion-file ()
   "
 Function to locate the corresponding .hh .i.hh or .cc file.
-When a .hh file is in the current buffer and this function is run, 
+When a .hh file is in the current buffer and this function is run,
 the corresponding .cc file will be loaded if it is available.
-If it is not available, the script will look for a corresponding 
-.i.hh file to load. 
+If it is not available, the script will look for a corresponding
+.i.hh file to load.
 
 The mapping between file types is stored in the emacs variable
 draco-companion-file-alist."
@@ -594,12 +597,12 @@ c-----------------------------------------------------------------------------c
 c-----------------------------------------------------------------------------c
 "
   (interactive)
-  (beginning-of-line) 
+  (beginning-of-line)
   (insert "c")
   (insert (make-string (- draco-code-comment-width 3) ?-))
   (insert "c\n")
   (end-of-line)
-) 
+)
 
 
 (defun draco-latex-divider ()
@@ -753,17 +756,17 @@ c-----------------------------------------------------------------------------c
   (interactive)
   (require 'time-stamp)
   (time-stamp-toggle-active 1)
-  
+
   (setq draco-user-name (concat fill-prefix
-				"Author: " 
-				(user-full-name) 
+				"Author: "
+				(user-full-name)
 				", " (user-login-name)
 				"@lanl.gov\n" ))
   (defvar time-stamp-format "%a, %y %b %d, %H:%M:%S %Z")
   (defvar draco-time-stamp (concat fill-prefix
-				 "Date  : " 
+				 "Date  : "
 				 (time-stamp-string)))
-  (insert draco-user-name) 
+  (insert draco-user-name)
   (insert draco-time-stamp))
 
 ;;============================================================

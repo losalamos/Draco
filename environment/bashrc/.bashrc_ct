@@ -1,6 +1,6 @@
 ##-*- Mode: sh -*-
 ##---------------------------------------------------------------------------##
-## .bashrc_ccs4_linux - my bash configuration file upon bash login
+## .bashrc_ct - my bash configuration file upon bash login
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
@@ -14,10 +14,6 @@ fi
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
 
-# Where is draco
-#_BINDIR=`dirname "$BASH_ARGV"`
-#export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
-
 # Where is the vendor directory
 if test "${VENDOR_DIR}x" == "x"; then
    if test -d /usr/projects/draco/vendors; then
@@ -28,9 +24,6 @@ fi
 #
 # MODULES
 #
-# Use this module command when running bash.
-# function module() { eval `/usr/bin/modulecmd bash $*`; }
-# source /opt/modules/3.2.6.7/init/bash
 
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
@@ -46,9 +39,21 @@ module unload xt-libsci xt-totalview
 
 # draco modules start here.
 module load gsl/1.15 lapack/3.4.1
-module load cmake numdiff svn emacs
+module load cmake numdiff emacs
 module load trilinos SuperLU_DIST 
 module load ParMetis ndi random123 eospac/v6.2.4
+
+# temporary logic that can go away when user_contrib appears on cielo.
+case ${target} in
+ct-fe[0-9] | ct-login[0-9] | ct-vizlogin[0-9])
+   module load user_contrib
+   module load svn/1.8.10 git/2.1.3
+   ;;
+*)
+   module load svn
+   ;;
+esac
+
 
 export OMP_NUM_THREADS=8
 

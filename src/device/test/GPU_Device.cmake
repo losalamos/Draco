@@ -14,9 +14,9 @@ endif()
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_sources 
+set( test_sources
    # gpu_hello_rt_api.cc
-   gpu_hello_driver_api.cc 
+   gpu_hello_driver_api.cc
    )
 set( cuda_sources
    gpu_kernel.cu
@@ -27,7 +27,7 @@ set( cuda_sources
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}        # headers for tests
    ${PROJECT_SOURCE_DIR}/..     # headers for package
    ${PROJECT_BINARY_DIR}/..     # config.h
@@ -70,12 +70,12 @@ target_link_libraries( gpu_hello_rt_api_exe Lib_dsxx )
 
 # Binary using Device API and links to libcudahello.
 #   add_executable( gpu_hello_driver_api_exe
-#      ${PROJECT_SOURCE_DIR}/gpu_hello_driver_api.cc 
+#      ${PROJECT_SOURCE_DIR}/gpu_hello_driver_api.cc
 #      )
 #   target_link_libraries( gpu_hello_driver_api_exe
 #      Lib_device
 #      Lib_dsxx
-#      ${CUDA_CUDA_LIBRARY} 
+#      ${CUDA_CUDA_LIBRARY}
 #      )
 
 # ---------------------------------------------------------------------------- #
@@ -85,12 +85,12 @@ target_link_libraries( gpu_hello_rt_api_exe Lib_dsxx )
 set( test_deps
    Lib_device
    ${CUDA_CUDA_LIBRARY} )
-add_scalar_tests( 
+add_scalar_tests(
    SOURCES  "${test_sources}"
    DEPS     "${test_deps}"
    )
 
-add_test( 
+add_test(
    NAME    device_gpu_hello_rt_api_exe
    COMMAND $<TARGET_FILE:gpu_hello_rt_api_exe>
    )
@@ -99,23 +99,6 @@ set_tests_properties( device_gpu_hello_rt_api_exe
    PASS_REGULAR_EXPRESSION ".*[Tt]est: PASSED"
    FAIL_REGULAR_EXPRESSION ".*[Tt]est: FAILED"
    )
-
-
-# set( test_deps
-#    Lib_c4
-#    Lib_dsxx
-#    ${MPI_LIBRARIES}
-#    )
-
-# # Add tests
-# add_parallel_tests(
-#    SOURCES  "${test_sources}"
-#    PE_LIST  "1;2;4"
-#    DEPS     "${test_deps}"
-#    MPIFLAGS "-q"
-#    RESOURCE_LOCK "singleton"
-#    )
-
 
 set( extra_clean_files
    cuda_compile_generated_gpu_kernel.ptx
@@ -128,4 +111,3 @@ set( extra_clean_files
 set_directory_properties(
    PROPERTIES
    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
-

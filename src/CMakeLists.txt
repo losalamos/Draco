@@ -144,7 +144,7 @@ if( _LANGUAGES_ MATCHES Fortran)
    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
 endif()
 message(
-"mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS_STRING}")
+"mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
 message("Library Type: ${DRACO_LIBRARY_TYPE}
 
 DRACO_DBC_LEVEL  : ${DRACO_DBC_LEVEL}")

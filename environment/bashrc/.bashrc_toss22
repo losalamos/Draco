@@ -1,0 +1,61 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_toss22 - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_toss22"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is the vendor directory
+if test "${VENDOR_DIR}x" == "x"; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+   fi
+fi
+
+#
+# MODULES
+#
+# 1. Determine if the module command is available
+modcmd=`declare -f module`
+#    If not found, look for it in /usr/share/Modules (ML)
+if test "${modcmd}x" = "x"; then
+   if test -f /usr/share/Modules/init/bash; then
+      source /usr/share/Modules/init/bash
+   else
+      echo "ERROR: The module command was not found. No modules will be loaded."
+   fi
+fi
+modcmd=`declare -f module`
+
+# 2. Use modules found in the draco directory
+
+if test "${modcmd}x" = "x"; then
+   echo "ERROR: The module command was not found. No modules will be loaded."
+else
+
+    module use $VENDOR_DIR/Modules/hpc
+    module use $VENDOR_DIR/Modules/tu-fe
+    module load friendly-testing user_contrib
+    # compiler, mpi
+    module unload intel
+    module load intel/14.0.4 openmpi
+    # other vendor libraries
+    module load lapack/3.4.1 trilinos SuperLU_DIST
+    module load ParMetis ndi random123 eospac
+    # support tools
+    module load svn/1.8.10 cmake/3.0.0 numdiff git/2.1.3 totalview emacs
+
+fi
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_lu
+##---------------------------------------------------------------------------##

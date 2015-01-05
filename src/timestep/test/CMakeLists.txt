@@ -14,8 +14,8 @@ project( timestep_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/dummy_package.cc 
+set( test_lib_sources
+   ${PROJECT_SOURCE_DIR}/dummy_package.cc
    ${PROJECT_SOURCE_DIR}/dummy_package.hh
 )
 file( GLOB test_sources *.cc )
@@ -25,7 +25,7 @@ list( REMOVE_ITEM test_sources ${test_lib_sources} )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
@@ -34,7 +34,7 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_timestep_test
    TARGET_DEPS  Lib_timestep
    LIBRARY_NAME ${PROJECT_NAME}
@@ -47,5 +47,4 @@ add_component_library(
 add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2;4"
-   DEPS    "Lib_timestep_test;${MPI_LIBRARIES};${PAPI_LIBRARY}" )
-
+   DEPS    "Lib_timestep_test;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )

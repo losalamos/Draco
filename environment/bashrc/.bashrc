@@ -212,8 +212,13 @@ c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
-# Luna | Moonlight | Mustang
-mp* | lu* | ml* | mu* | pi* | wf* | ty*)
+# Moonlight | Mustang
+mp* | ml* | mu* | pi* | wf*)
+    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_toss22
+    ;;
+
+# Luna | Typhoon
+lu* | ty*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 

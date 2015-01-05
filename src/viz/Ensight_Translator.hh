@@ -227,27 +227,27 @@ class DLL_PUBLIC Ensight_Translator
     void write_case();
 
     // Write out geometry file.
-    template<class IVF, class FVF, class ISF>
+    template<typename IVF, typename FVF, typename ISF>
     void write_geom(const int,
-		    const std_string &,
-		    const rtt_viz::Viz_Traits<IVF> &,
-		    const rtt_viz::Viz_Traits<FVF> &,
-		    const sf2_int &,
-		    const sf_int &, 
-		    const ISF &,
-		    const ISF &); 
+                    const std_string &,
+                    const rtt_viz::Viz_Traits<IVF> &,
+                    const rtt_viz::Viz_Traits<FVF> &,
+                    const sf2_int &,
+                    const sf_int &, 
+                    const ISF &,
+                    const ISF &); 
 
     // Write out vertex data.
-    template<class FVF>
+    template<typename FVF>
     void write_vrtx_data(const int,
-			 const rtt_viz::Viz_Traits<FVF> &,
-			 const sf_int &);
+                         const rtt_viz::Viz_Traits<FVF> &,
+                         const sf_int &);
 
     // Write out cell data.
-    template<class FVF>
+    template<typename FVF>
     void write_cell_data(const int,
-			 const rtt_viz::Viz_Traits<FVF> &,
-			 const sf2_int &);
+                         const rtt_viz::Viz_Traits<FVF> &,
+                         const sf2_int &);
 
     // Initializer used by constructors
     void initialize(const bool graphics_continue);
@@ -255,42 +255,42 @@ class DLL_PUBLIC Ensight_Translator
 
   public:
     // Constructor.
-    template<class SSF>
+    template<typename SSF>
     Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
-		       const SSF &vdata_names,
-		       const SSF &cdata_names,
-		       const bool overwrite = false,
-		       const bool static_geom = false,
-		       const bool binary = false); 
+                       const SSF &vdata_names,
+                       const SSF &cdata_names,
+                       const bool overwrite = false,
+                       const bool static_geom = false,
+                       const bool binary = false); 
 
     // Do an Ensight_Dump.
-    template<class ISF, class IVF, class SSF, class FVF>
+    template<typename ISF, typename IVF, typename SSF, typename FVF>
     void ensight_dump(int icycle, double time, double dt,
-		      const IVF &ipar, const ISF &iel_type, 
-		      const ISF &cell_rgn_index, const FVF &pt_coor,
-		      const FVF &vrtx_data, 
-		      const FVF &cell_data, const ISF &rgn_numbers, 
-		      const SSF &rgn_name); 
+                      const IVF &ipar, const ISF &iel_type, 
+                      const ISF &cell_rgn_index, const FVF &pt_coor,
+                      const FVF &vrtx_data, 
+                      const FVF &cell_data, const ISF &rgn_numbers, 
+                      const SSF &rgn_name); 
 
     // Opens the geometry and variable files.
     void open(const int    icycle,
-	      const double time,
-	      const double dt);
+              const double time,
+              const double dt);
 
     // Closes any open file streams.
     void close();
 
     // Write ensight data for a single part.
-    template<class ISF, class IVF, class FVF>
+    template<typename ISF, typename IVF, typename FVF>
     void write_part(int               part_num,
-		    const std_string &part_name,
-		    const IVF        &ipar,
-		    const ISF        &iel_type, 
-		    const FVF        &pt_coor,
-		    const FVF        &vrtx_data, 
-		    const FVF        &cell_data,
-		    const ISF        &g_vrtx_indices,
-		    const ISF        &g_cell_indices);
+                    const std_string &part_name,
+                    const IVF        &ipar,
+                    const ISF        &iel_type, 
+                    const FVF        &pt_coor,
+                    const FVF        &vrtx_data, 
+                    const FVF        &cell_data,
+                    const ISF        &g_vrtx_indices,
+                    const ISF        &g_cell_indices);
 
     // >>> ACCESSORS
 
