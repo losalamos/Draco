@@ -46,7 +46,7 @@ else
     module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing user_contrib
     # compiler, mpi
-    module unload intel
+    module unload intel cmake
     module load intel/14.0.4 openmpi
     # other vendor libraries
     module load lapack/3.4.1 trilinos SuperLU_DIST
