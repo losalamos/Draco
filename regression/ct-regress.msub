@@ -57,7 +57,7 @@ run () {
 
 machine=`uname -n`
 case $machine in
-ct-login[0-9].localdomain) 
+ct-login[0-9].localdomain)
     ctestparts=Test
     # Force create of a new log file (don't append)
     echo "Purging ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log"
@@ -65,7 +65,7 @@ ct-login[0-9].localdomain)
     ;;
 ct-fe1*)
     if test "${mode}" = "cb"; then
-       ctestparts=Configure,Build 
+       ctestparts=Configure,Build
     elif test "${mode}" = "s"; then
        ctestparts=Submit
     else
@@ -84,19 +84,19 @@ echo "==========================================================================
 # ----------------------------------------
 result=`fn_exists module`
 #echo "result = $result"
-if test $result -eq 0; then 
+if test $result -eq 0; then
     echo 'module function is defined'
 else
     echo 'module function does not exist. defining a local function ...'
-    module () 
-    { 
+    module ()
+    {
         eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
     }
 fi
 
 moddirs="Modules/hpc Modules/ct-fe"
-for dir in $moddirs; do 
-  if test -z `echo $MODULEPATH | grep $dir`; then 
+for dir in $moddirs; do
+  if test -z `echo $MODULEPATH | grep $dir`; then
     run "module use ${VENDOR_DIR}/$dir"
   fi
 done
@@ -106,7 +106,7 @@ run "module unload cmake numdiff svn gsl"
 run "module load user_contrib"
 run "module load PrgEnv-intel"
 run "module load gsl/1.15 lapack"
-run "module load cmake numdiff svn"
+run "module load cmake/3.1.0 numdiff svn"
 run "module load trilinos SuperLU_DIST"
 run "module load random123"
 run "module load eospac"
@@ -141,7 +141,7 @@ run "module list"
 # ----------------------------------------
 # Run the CTest script:
 # ----------------------------------------
-# This script will take the following build steps: 
+# This script will take the following build steps:
 # 1. cvs update
 # 2. run cmake to build Makefiles
 # 3. run make to build libraries and tests
@@ -259,4 +259,3 @@ echo "All done."
 ##---------------------------------------------------------------------------##
 ## End of script
 ##---------------------------------------------------------------------------##
-

@@ -52,10 +52,10 @@ run () {
 
 machine=`uname -n`
 case $machine in
-ml[0-9][0-9][0-9].localdomain) 
+ml[0-9][0-9][0-9].localdomain)
     ctestparts=Configure,Build,Test
     # Force new log file (vs appending)
-    echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log 
+    echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
     ;;
 ml-fey*)
     ctestparts=Submit ;;
@@ -70,7 +70,7 @@ echo "==========================================================================
 # ----------------------------------------
 result=`fn_exists module`
 #echo "result = $result"
-if test $result -eq 0; then 
+if test $result -eq 0; then
     echo 'module function is defined'
 else
     echo 'module function does not exist. defining a local function ...'
@@ -81,13 +81,13 @@ fi
 run "module use $VENDOR_DIR/Modules/tu-fe"
 run "module use $VENDOR_DIR/Modules/hpc"
 
-# Clear any tcsh loaded modules as these are invalid when staring a new shell. 
+# Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
 run "module load friendly-testing user_contrib"
 run "module load intel/14.0.4 openmpi/1.6.5"
 run "module load lapack trilinos SuperLU_DIST"
 run "module load ParMetis ndi"
-run "module load cmake/3.0.0 numdiff svn random123 eospac"
+run "module load cmake/3.1.0 numdiff svn random123 eospac"
 comp=`basename $CXX`
 
 case $extra_params in
@@ -132,7 +132,7 @@ run "module list"
 # ----------------------------------------
 # Run the CTest script:
 # ----------------------------------------
-# This script will take the following build steps: 
+# This script will take the following build steps:
 # 1. cvs update
 # 2. run cmake to build Makefiles
 # 3. run make to build libraries and tests
@@ -243,4 +243,3 @@ echo "All done."
 ##---------------------------------------------------------------------------##
 ## End of script
 ##---------------------------------------------------------------------------##
-

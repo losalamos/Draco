@@ -58,10 +58,10 @@ run () {
 
 machine=`uname -n`
 case $machine in
-cn*) 
+cn*)
     ctestparts=Configure,Build,Test
     # Force new log file (vs appending)
-    echo "     " > ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log 
+    echo "     " > ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
     ;;
 darwin-*)
     ctestparts=Submit ;;
@@ -77,7 +77,7 @@ run "ulimit -a"
 # ----------------------------------------
 result=`fn_exists module`
 #echo "result = $result"
-if test $result -eq 0; then 
+if test $result -eq 0; then
     echo 'module function is defined'
 else
     echo 'module function does not exist. defining a local function ...'
@@ -87,12 +87,12 @@ fi
 # Use modules found in the draco directory
 run "module use /projects/opt/draco/vendors/Modules"
 
-# Clear any tcsh loaded modules as these are invalid when staring a new shell. 
+# Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
 #run "module load compilers/intel/15.0.0 mpi/openmpi-1.8.2-intel_15.0.0"
 run "module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035"
 run "module load lapack"
-run "module load cmake/3.0.1 numdiff subversion random123 eospac"
+run "module load cmake/3.1.0 numdiff subversion random123 eospac"
 run "module load other/gnuplot-4.6.1 python/2.7.3"
 run "module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2"
 #run "module load ndi"
@@ -129,7 +129,7 @@ run "module list"
 # ----------------------------------------
 # Run the CTest script:
 # ----------------------------------------
-# This script will take the following build steps: 
+# This script will take the following build steps:
 # 1. cvs update
 # 2. run cmake to build Makefiles
 # 3. run make to build libraries and tests
@@ -236,4 +236,3 @@ echo "All done."
 ##---------------------------------------------------------------------------##
 ## End of script
 ##---------------------------------------------------------------------------##
-
