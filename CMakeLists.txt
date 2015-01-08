@@ -13,12 +13,12 @@
 # How to build Draco using CMake:
 #------------------------------------------------------------------------------#
 # Background:
-# 
+#
 # There are 3 directories: source; build; target.
 #   source - this is the location of svn co files
 #   build  - this is the location for makefiles, object files, etc.
 #   target - this is the install location for final headers, libraries
-#            and binaries. 
+#            and binaries.
 #
 # Environment:
 #
@@ -29,23 +29,23 @@
 # - Vendor locations can be specified by setting $<VENDOR>_LIB_DIR and
 #   $<VENDOR>_INC_DIR. For example, $MPI_INC_DIR, $GSL_ROOT_DIR,
 #   etc. When using the Draco modules feature, this is done
-#   automatically. 
+#   automatically.
 #
 # Requirements:
 #
-# 1. By default MPI is selected by finding 
-#    mpirun/mpiexec/aprun/srun/etc in your PATH. 
+# 1. By default MPI is selected by finding
+#    mpirun/mpiexec/aprun/srun/etc in your PATH.
 # 2. GSL must be found in a standard system location or the
 #    environment variable GSL_ROOT_DIR must be set to point to the
 #    local GSL installation.
 #
 # Building:
-# 
+#
 # 1. Change to your build directory.
 # 2. [optional] Copy the $SRC_DIR/CMakeCache.txt file to the build
 #    directory and edit the file as needed.
 # 3. Run 'cmake $SRC_DIR'.  This generates Makefiles in the build
-#    directory. 
+#    directory.
 # 4. [optional] Use command line arguments to cmake to configure your
 #    build (instead of using CMakeCache.txt).  For example:
 #    cmake -DCMAKE_INSTALL_PREFIX=/var/tmp/draco-install-dir \
@@ -53,7 +53,7 @@
 #          -DCMAKE_BUILD_TYPE=Release \
 #          /path/to/draco/source
 # 5. [optional] Run 'make edit_cache' to review your build setup.
-#    Edit as needed. 
+#    Edit as needed.
 # 6. Run 'make -j' to compile the code. (also try 'make VERBOSE=1')
 # 7. Run 'ctest -j16' to run the tests.
 # 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
@@ -64,7 +64,7 @@
 # If you prefer working in a GUI instead of using the command line,
 # run 'cmake-gui' and provide values for 'where is the source code'
 # and 'where to build the binaries'.  Press the 'configure' and
-# 'generate' buttons to generate Makefiles or project files. 
+# 'generate' buttons to generate Makefiles or project files.
 #
 # Development Environments
 #
@@ -81,17 +81,17 @@
 # CMake Wiki:     http://www.cmake.org/Wiki/CMake
 # CMake FAQ:      http://www.cmake.org/Wiki/CMake_FAQ
 # CMake Documentation: http://www.cmake.org/cmake/help/documentation.html
-# CMake version compatibility matrix: 
+# CMake version compatibility matrix:
 #       http://www.cmake.org/Wiki/CMake_Version_Compatibility_Matrix
 #------------------------------------------------------------------------------#
 
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 project( Draco CXX C )
- 
- # Do not look for Fortran for 
+
+ # Do not look for Fortran for
  # 1. XCode based Generators, or
  # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
- #    look for Fortran. 
+ #    look for Fortran.
  # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
    enable_language( Fortran OPTIONAL )
@@ -121,7 +121,7 @@ set_ccs2_software_version( DRACO )
 #
 # Unit Test Setup
 #
-include(dracoTesting) 
+include(dracoTesting)
 
 # Set default compile environment:
 
@@ -154,10 +154,12 @@ setupVendorLibraries()
 
 #
 # Build Draco components:
-# 
+#
 # add_subdirectory( doc ) Now at svnroot/draco/dracodoc.
 add_subdirectory( src )
-add_subdirectory( autodoc ) # This must be processed after 'src'
+if( NOT HAVE_MIC )
+  add_subdirectory( autodoc ) # This must be processed after 'src'
+endif()
 add_subdirectory( config )  # This must be processed after 'src'
 
 #
@@ -170,8 +172,8 @@ configure_file(
   COPYONLY )
 
 # install top level documents
-install( 
-   FILES 
+install(
+   FILES
       ChangeLog
       Copyright
       README.draco

@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project( draco_src_dir )
 
-# Platform Checks 
+# Platform Checks
 # Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
 message("
 Platform Checks...
@@ -63,7 +63,11 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
-   add_dir_if_exists( FortranChecks )
+if( NOT HAVE_MIC )
+  # FortranChecks needs to be updated to link to the correct fortran
+  # system libraries (libifport.so.5, libifcoremt.so.5)
+  add_dir_if_exists( FortranChecks )
+endif()
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()
@@ -106,24 +110,24 @@ endif()
 # Summary
 message(" ")
 
-feature_summary( 
-   WHAT PACKAGES_FOUND 
+feature_summary(
+   WHAT PACKAGES_FOUND
    INCLUDE_QUIET_PACKAGES
    DESCRIPTION "Packages found:")
 
-feature_summary( 
-   WHAT PACKAGES_NOT_FOUND 
+feature_summary(
+   WHAT PACKAGES_NOT_FOUND
    INCLUDE_QUIET_PACKAGES
    FATAL_ON_MISSING_REQUIRED_PACKAGES
    DESCRIPTION "Packages missing:")
 
-feature_summary( 
-   WHAT ENABLED_FEATURES 
+feature_summary(
+   WHAT ENABLED_FEATURES
    INCLUDE_QUIET_PACKAGES
    DESCRIPTION "Enabled features:")
 
-feature_summary( 
-   WHAT DISABLED_FEATURES 
+feature_summary(
+   WHAT DISABLED_FEATURES
    INCLUDE_QUIET_PACKAGES
    DESCRIPTION "Disabled features:")
 
@@ -139,7 +143,7 @@ Build dir   : ${Draco_BINARY_DIR}
 CXX Compiler: ${CMAKE_CXX_COMPILER}
 CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}
 C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
-if( _LANGUAGES_ MATCHES Fortran) 
+if( _LANGUAGES_ MATCHES Fortran)
    message("Fortran     : ${CMAKE_Fortran_COMPILER}")
    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
 endif()

@@ -22,7 +22,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
-   message("cuda")
    include( GPU_Device.cmake )
 endif()
 
@@ -32,8 +31,8 @@ endif()
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
-  
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #

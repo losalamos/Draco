@@ -312,18 +312,24 @@ macro( setupMPILibrariesUnix )
       # Call the standard CMake FindMPI macro.
       find_package( MPI QUIET )
 
-
-
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
 
       # -------------------------------------------------------------------------------- #
       # Check flavor and add optional flags
+      #
+      # Notes:
+      # 1. For Intel MPI when cross compiling for MIC, the variable DBS_MPI_VER will be
+      #    bad because this configuration is done on x86 but mpiexec is a mic executable
+      #    and cannot be run on the x86.  To correctly match the MPI flavor to Intel (on
+      #    darwin), we rely on the path MPIEXEC to match the string "impi/[0-9.]+/mic".
 
       if( "${MPIEXEC}" MATCHES openmpi   OR "${DBS_MPI_VER}" MATCHES open-mpi )
         setupOpenMPI()
 
-      elseif( "${MPIEXEC}" MATCHES intel-mpi OR "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
+      elseif( "${MPIEXEC}" MATCHES intel-mpi OR
+          "${MPIEXEC}" MATCHES "impi/.*/mic" OR
+          "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
         setupIntelMPI()
 
       elseif( "${MPIEXEC}" MATCHES aprun)
@@ -335,7 +341,8 @@ macro( setupMPILibrariesUnix )
       else()
          message( FATAL_ERROR "
 The Draco build system doesn't know how to configure the build for
-MPIEXEC=${MPIEXEC}")
+  MPIEXEC     = ${MPIEXEC}
+  DBS_MPI_VER = ${DBS_MPI_VER}")
       endif()
 
       # Mark some of the variables created by the above logic as

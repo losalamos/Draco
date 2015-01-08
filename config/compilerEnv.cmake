@@ -7,34 +7,14 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
-# Global
-
 include( FeatureSummary )
-
-# Library type to build
-# Linux: STATIC is a lib<XXX>.a
-#        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
-# MSVC : STATIC is <XXX>.lib
-#        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
-if( NOT DEFINED DRACO_LIBRARY_TYPE )
-   set( DRACO_LIBRARY_TYPE "SHARED" )
-endif()
-set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING 
-	"Keyword for creating new libraries (STATIC or SHARED).")
-# Provide a constrained drop down list in cmake-gui.
-set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
-
-# OpenMP default setup
-if( NOT DEFINED USE_OPENMP )
-   option( USE_OPENMP "Turn on OpenMP features?" ON )
-endif()
 
 # ----------------------------------------
 # PAPI
 # ----------------------------------------
 if( EXISTS $ENV{PAPI_HOME} )
     set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-    set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH 
+    set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH
        "PAPI headers at this location" )
     set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
        "PAPI library." )
@@ -48,7 +28,7 @@ if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
        $ENV{PAPI_POST_LINK_OPTS} )
 endif()
 if( HAVE_PAPI )
-    set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH 
+    set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH
        "PAPI headers at this location" )
     set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
        "PAPI library." )
@@ -56,8 +36,45 @@ if( HAVE_PAPI )
        message( FATAL_ERROR "PAPI requested, but library not found.  Set PAPI_LIBDIR to correct path." )
     endif()
     mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
-    add_feature_info( HAVE_PAPI HAVE_PAPI 
+    add_feature_info( HAVE_PAPI HAVE_PAPI
        "Provide PAPI hardware counters if available." )
+endif()
+
+# ----------------------------------------
+# MIC processors
+# ----------------------------------------
+message( STATUS "Looking for micctrl")
+if( EXISTS /usr/sbin/micctrl )
+  set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
+  # possibly run micctl and capture the output looking for the string
+  # "knightscorner."
+  # set( DRACO_LIBRARY_TYPE "STATIC" )
+  set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
+  message( STATUS "Looking for micctrl - knights corner found")
+else()
+  message( STATUS "Looking for micctrl - knights corner not found")
+endif()
+
+# ----------------------------------------
+# STATIC or SHARED libraries?
+# ----------------------------------------
+
+# Library type to build
+# Linux: STATIC is a lib<XXX>.a
+#        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
+# MSVC : STATIC is <XXX>.lib
+#        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
+if( NOT DEFINED DRACO_LIBRARY_TYPE )
+   set( DRACO_LIBRARY_TYPE "SHARED" )
+endif()
+set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING
+	"Keyword for creating new libraries (STATIC or SHARED).")
+# Provide a constrained drop down list in cmake-gui.
+set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
+
+# OpenMP default setup
+if( NOT DEFINED USE_OPENMP )
+   option( USE_OPENMP "Turn on OpenMP features?" ON )
 endif()
 
 # ------------------------------------------------------------------------------
@@ -76,18 +93,18 @@ endif()
 set( SITENAME ${SITENAME} CACHE "STRING" "Name of the current machine" FORCE)
 
 #----------------------------------------------------------------------#
-# Macro to establish which runtime libraries to link against 
+# Macro to establish which runtime libraries to link against
 #
 # Control link behavior for Run-Time Library.
 # /MT - Causes your application to use the multithread, static
 #       version of the run-time library. Defines _MT and causes
 #       the compiler to place the library name LIBCMT.lib into the
 #       .obj file so that the linker will use LIBCMT.lib to
-#       resolve external symbols. 
+#       resolve external symbols.
 # /MTd - Defines _DEBUG and _MT. This option also causes the
 #       compiler to place the library name LIBCMTD.lib into the
 #       .obj file so that the linker will use LIBCMTD.lib to
-#       resolve external symbols. 
+#       resolve external symbols.
 # /MD - Causes appliation to use the multithread and DLL specific
 #       version of the run-time library.  Places MSVCRT.lib into
 #       the .obj file.
@@ -96,15 +113,15 @@ set( SITENAME ${SITENAME} CACHE "STRING" "Name of the current machine" FORCE)
 #       code that allows the linker to resolve external
 #       references. The actual working code is contained in
 #       MSVCR90.DLL, which must be available at run time to
-#       applications linked with MSVCRT.lib. 
+#       applications linked with MSVCRT.lib.
 # /MD /D_STATIC_CPPLIB - applications link with the static
 #       multithread Standard C++ Library (libcpmt.lib) instead of
 #       the dynamic version (msvcprt.lib), but still links
-#       dynamically to the main CRT via msvcrt.lib. 
+#       dynamically to the main CRT via msvcrt.lib.
 # /MDd - Defines _DEBUG, _MT, and _DLL and causes your application
 #       to use the debug multithread- and DLL-specific version of
 #       the run-time library. It also causes the compiler to place
-#       the library name MSVCRTD.lib into the .obj file. 
+#       the library name MSVCRTD.lib into the .obj file.
 #----------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
@@ -115,8 +132,8 @@ macro(dbsSetupCompilers)
    # Bad platform
    if( NOT WIN32 AND NOT UNIX)
       message( FATAL_ERROR "Unsupported platform (not WIN32 and not UNIX )." )
-   endif()  
-   
+   endif()
+
    # Defaults for 1st pass:
 
    # shared or static libararies?
@@ -128,7 +145,7 @@ macro(dbsSetupCompilers)
    elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
       # message(STATUS "Building shared libraries.")
       set( MD_or_MT "MD" )
-      # This CPP symbol is used by config.h to signal if we are need to add 
+      # This CPP symbol is used by config.h to signal if we are need to add
       # declspec(dllimport) or declspec(dllexport) for MSVC.
       set( DRACO_SHARED_LIBS 1 )
       mark_as_advanced(DRACO_SHARED_LIBS)
@@ -136,9 +153,9 @@ macro(dbsSetupCompilers)
    else()
       message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
    endif()
-   set( DRACO_SHARED_LIBS ${DRACO_SHARED_LIBS} CACHE STRING 
+   set( DRACO_SHARED_LIBS ${DRACO_SHARED_LIBS} CACHE STRING
       "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
-   
+
    ##---------------------------------------------------------------------------##
    ## Check for OpenMP
 
@@ -149,7 +166,7 @@ macro(dbsSetupCompilers)
       check_include_files( omp.h HAVE_OMP_H )
       if( NOT ${HAVE_OMP_H} )
          set( USE_OPENMP OFF )
-      endif()   
+      endif()
    endif()
    set( USE_OPENMP ${USE_OPENMP} CACHE BOOL "Turn on OpenMP features?" )
    # endif()
@@ -164,11 +181,11 @@ endmacro()
 # Setup C++ Compiler
 #------------------------------------------------------------------------------#
 macro(dbsSetupCxx)
-   
+
    # if( NOT gen_comp_env_set STREQUAL 1 )
       dbsSetupCompilers()
    # endif()
-   
+
    # Deal with compiler wrappers
    if( ${CMAKE_CXX_COMPILER} MATCHES "tau_cxx.sh" )
       # When using the TAU profiling tool, the actual compiler vendor
@@ -178,7 +195,7 @@ macro(dbsSetupCxx)
       execute_process(
          COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
          OUTPUT_VARIABLE my_cxx_compiler )
-   elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" ) 
+   elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" )
       # Ceilo (catamount) uses a wrapper script
       # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
       # compiler.  Use the following command to determine the actual
@@ -188,12 +205,12 @@ macro(dbsSetupCxx)
          COMMAND ${CMAKE_CXX_COMPILER} --version
          OUTPUT_VARIABLE my_cxx_compiler
          ERROR_QUIET )
-      string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
+      string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
          my_cxx_compiler ${my_cxx_compiler})
       # If a wrapper script is used, CMake will not have found the
       # compiler version...
       # icpc (ICC) 12.1.2 20111128
-      # pgCC 11.10-0 64-bit target 
+      # pgCC 11.10-0 64-bit target
       # g++ (GCC) 4.6.2 20111026 (Cray Inc.)
       if( "x${CMAKE_CXX_COMPILER_VERSION}" STREQUAL "x" )
          string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
@@ -202,7 +219,7 @@ macro(dbsSetupCxx)
    else()
       set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
    endif()
-   
+
    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\1"
       DBS_CXX_COMPILER_VER_MAJOR "${CMAKE_CXX_COMPILER_VERSION}" )
    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
@@ -225,7 +242,7 @@ macro(dbsSetupCxx)
        set( my_cxx_compiler icpc )
      endif()
    endif()
-   if( ${my_cxx_compiler} MATCHES "clang" OR 
+   if( ${my_cxx_compiler} MATCHES "clang" OR
          ${my_cxx_compiler} MATCHES "llvm")
       include( apple-clang )
    elseif( ${my_cxx_compiler} MATCHES "cl" )
@@ -244,9 +261,9 @@ macro(dbsSetupCxx)
    endif()
 
    # Force possibly new values to cache
-   set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL 
+   set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL
       "Support C++11 features." FORCE )
-   set( DRACO_ENABLE_C99 ${DRACO_ENABLE_C99} CACHE BOOL 
+   set( DRACO_ENABLE_C99 ${DRACO_ENABLE_C99} CACHE BOOL
       "Support C99 features." FORCE )
    set( DRACO_ENABLE_STRICT_ANSI ${DRACO_ENABLE_STRICT_ANSI} CACHE
       BOOL "use strict ANSI flags, C98" FORCE )
@@ -296,7 +313,7 @@ macro(dbsSetupCxx)
          "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112" )
       set( CMAKE_REQUIRED_DEFINITIONS
          "${CMAKE_REQUIRED_DEFINITIONS} -D_XOPEN_SOURCE=600")
-      if ( APPLE ) 
+      if ( APPLE )
           # Defining the above requires adding POSIX extensions,
           # otherwise, include ordering still goes wrong on Darwin,
           # (i.e., putting fstream before iostream causes problems)
@@ -304,7 +321,7 @@ macro(dbsSetupCxx)
           add_definitions(-D_DARWIN_C_SOURCE)
           set( CMAKE_REQUIRED_DEFINITIONS
             "${CMAKE_REQUIRED_DEFINITIONS} -D_DARWIN_C_SOURCE ")
-      endif() 
+      endif()
   endif()
 
 endmacro()
@@ -327,7 +344,7 @@ endmacro()
 #    ENABLE_SINGLE_PRECISION - bool
 #    DBS_FLOAT_PRECISION     - string (config.h)
 #    PRECISION_DOUBLE | PRECISION_SINGLE - bool
-# 
+#
 #------------------------------------------------------------------------------#
 macro(dbsSetupFortran)
 
@@ -336,7 +353,7 @@ macro(dbsSetupFortran)
    #endif()
 
    # Deal with comiler wrappers
-   if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" ) 
+   if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" )
       # Ceilo (catamount) uses a wrapper script
       # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
       # compiler.  Use the following command to determine the actual
@@ -347,7 +364,7 @@ macro(dbsSetupFortran)
          # COMMAND ${CMAKE_Fortran_COMPILER} -V
          OUTPUT_VARIABLE my_fc_compiler
          ERROR_QUIET )
-      string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
+      string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
          my_fc_compiler ${my_fc_compiler})
    else()
       set( my_fc_compiler ${CMAKE_Fortran_COMPILER} )
@@ -389,7 +406,7 @@ macro( toggle_compiler_flag switch compiler_flag
       compiler_flag_var_names build_modes )
 
    # generate names that are safe for CMake RegEx MATCHES commands
-   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})      
+   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})
 
    # Loop over types of variables to check: CMAKE_C_FLAGS,
    # CMAKE_CXX_FLAGS, etc.
@@ -405,7 +422,7 @@ toggle_compiler_flag(switch, compiler_flag, compiler_flag_var_names),
 compiler_flag_var_names must be set to one or more of these valid
 names: C;CXX;EXE_LINKER.")
       endif()
-      
+
       string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS
          "${CMAKE_${comp}_FLAGS}" )
 
@@ -413,43 +430,43 @@ names: C;CXX;EXE_LINKER.")
 
          if( ${switch} )
             if( NOT "${safe_CMAKE_${comp}_FLAGS}" MATCHES "${safe_compiler_flag}" )
-               set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag}" 
+               set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag}"
                   CACHE STRING "compiler flags" FORCE )
             endif()
          else()
             if( "${safe_CMAKE_${comp}_FLAGS}" MATCHES "${safe_compiler_flag}" )
-               string( REPLACE "${compiler_flag}" "" 
+               string( REPLACE "${compiler_flag}" ""
                   CMAKE_${comp}_FLAGS ${CMAKE_${comp}_FLAGS} )
-               set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}" 
+               set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS}"
                   CACHE STRING "compiler flags" FORCE )
             endif()
          endif()
 
       else() # build_modes listed
-         
+
          foreach( bm ${build_modes} )
 
             string( REPLACE "+" "x" safe_CMAKE_${comp}_FLAGS_${bm}
                ${CMAKE_${comp}_FLAGS_${bm}} )
-            
+
             if( ${switch} )
-               if( NOT "${safe_CMAKE_${comp}_FLAGS_${bm}}" MATCHES 
+               if( NOT "${safe_CMAKE_${comp}_FLAGS_${bm}}" MATCHES
                      "${safe_compiler_flag}" )
-                  set( CMAKE_${comp}_FLAGS_${bm} 
-                     "${CMAKE_${comp}_FLAGS_${bm}} ${compiler_flag}" 
+                  set( CMAKE_${comp}_FLAGS_${bm}
+                     "${CMAKE_${comp}_FLAGS_${bm}} ${compiler_flag}"
                      CACHE STRING "compiler flags" FORCE )
                endif()
             else()
-               if( "${safe_CMAKE_${comp}_FLAGS_${bm}}" MATCHES 
+               if( "${safe_CMAKE_${comp}_FLAGS_${bm}}" MATCHES
                      "${safe_compiler_flag}" )
-                  string( REPLACE "${compiler_flag}" "" 
+                  string( REPLACE "${compiler_flag}" ""
                      CMAKE_${comp}_FLAGS_${bm} ${CMAKE_${comp}_FLAGS_${bm}} )
-                  set( CMAKE_${comp}_FLAGS_${bm} 
-                     "${CMAKE_${comp}_FLAGS_${bm}}" 
+                  set( CMAKE_${comp}_FLAGS_${bm}
+                     "${CMAKE_${comp}_FLAGS_${bm}}"
                      CACHE STRING "compiler flags" FORCE )
                endif()
             endif()
-            
+
          endforeach()
 
       endif()

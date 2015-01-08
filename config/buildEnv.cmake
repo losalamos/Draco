@@ -16,13 +16,13 @@ macro( dbsSetDefaults )
 
   # if undefined, force build_type to "release"
   if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-    set( CMAKE_BUILD_TYPE "Debug" CACHE STRING 
+    set( CMAKE_BUILD_TYPE "Debug" CACHE STRING
        "Release, Debug, RelWithDebInfo" FORCE )
   endif( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
 
   # constrain pull down values in cmake-gui
-  set_property( CACHE CMAKE_BUILD_TYPE 
-     PROPERTY 
+  set_property( CACHE CMAKE_BUILD_TYPE
+     PROPERTY
        STRINGS Release Debug MinSizeRel RelWithDebInfo )
 
   # Provide default value for install_prefix
@@ -35,16 +35,16 @@ macro( dbsSetDefaults )
      endif()
      get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
         ABSOLUTE )
-     set( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH 
+     set( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
         "Install path prefix, prepended onto install directories" FORCE)
   endif()
   mark_as_advanced( EXECUTABLE_OUTPUT_PATH )
   mark_as_advanced( LIBRARY_OUTPUT_PATH )
   mark_as_advanced( DART_TESTING_TIMEOUT )
-  
+
   # Establish the sitename
   site_name( current_site )
-  set( SITE ${current_site} CACHE INTERNAL 
+  set( SITE ${current_site} CACHE INTERNAL
      "Name of the computer/site where compile is being run." FORCE )
   mark_as_advanced( current_site )
 
@@ -56,9 +56,9 @@ macro( dbsSetDefaults )
 
   # Special setup for Visual Studio builds.
   if(WIN32 AND NOT UNIX AND NOT BORLAND AND NOT MINGW )
-     set( CMAKE_SUPPRESS_REGENERATION ON )  
+     set( CMAKE_SUPPRESS_REGENERATION ON )
   endif()
-  
+
   # Design-by-Contract
 
   #   Insist() assertions    : always on
@@ -73,9 +73,9 @@ macro( dbsSetDefaults )
      set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-15)?" )
   endif()
   # provide a constrained drop down menu in cmake-gui
-  set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS 
+  set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
      0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
-  
+
   if( CMAKE_CONFIGURATION_TYPES )
      set( NESTED_CONFIG_TYPE -C "${CMAKE_CFG_INTDIR}" )
   else()
@@ -85,7 +85,7 @@ macro( dbsSetDefaults )
         set( NESTED_CONFIG_TYPE )
      endif()
   endif()
-  
+
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
 
@@ -108,12 +108,6 @@ macro( dbsSetDefaults )
      # in the installed files with the install location.
      set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
 
-#      if( EXISTS "${DRACO_DIR}" )
-#        if( NOT "${DRACO_DIR}" STREQUAL "${CMAKE_INSTALL_PREFIX}" )
-#          set( CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib ${DRACO_DIR}/lib )
-#        endif()
-#      endif()
-
      # add the automatically determined parts of the RPATH
      # which point to directories outside the build tree to the install RPATH
      set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
@@ -132,10 +126,10 @@ macro( dbsInitExportTargets PREFIX )
    set( ${PREFIX}_LIBRARIES ""  CACHE INTERNAL "List of draco targets" FORCE)
    set( ${PREFIX}_PACKAGE_LIST ""  CACHE INTERNAL
       "List of known package targets" FORCE)
-   set( ${PREFIX}_TPL_LIST ""  CACHE INTERNAL 
+   set( ${PREFIX}_TPL_LIST ""  CACHE INTERNAL
       "List of third party libraries known by this package" FORCE)
    set( ${PREFIX}_TPL_INCLUDE_DIRS ""  CACHE
-      INTERNAL "List of include paths used by this package to find thrid party vendor header files." 
+      INTERNAL "List of include paths used by this package to find thrid party vendor header files."
       FORCE)
    set( ${PREFIX}_TPL_LIBRARIES ""  CACHE INTERNAL
       "List of third party libraries used by this package." FORCE)
@@ -175,10 +169,10 @@ macro( dbsConfigInfo )
             endif()
          endforeach()
          list( LENGTH proc_ids DRACO_NUM_CORES )
-         set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING 
+         set( MPIEXEC_MAX_NUMPROCS ${DRACO_NUM_CORES} CACHE STRING
             "Number of cores on the local machine." )
       endif()
-      
+
    elseif() # WIN32
 
       # OS version information
@@ -197,18 +191,7 @@ macro( dbsConfigInfo )
       else()
          set( DBS_OPERATING_SYSTEM "${win_prod_name} ${win_sp}" )
       endif()
-      
-      # execute_process(
-      #    COMMAND ${CMAKE_CXX_COMPILER}
-      #    ERROR_VARIABLE tmp
-      #    OUTPUT_STRIP_TRAILING_WHITESPACE
-      #    OUTPUT_QUIET
-      #    )
-      # string( REGEX REPLACE "^(.*)Copyright.*" "\\1"
-      #    tmp "${tmp}" )
-      # string( STRIP "${tmp}" DBS_CXX_COMPILER_VER )
-      # set( DBS_C_COMPILER_VER "${DBS_CXX_COMPILER_VER}" )
-      
+
       # Did we build 32-bit or 64-bit code?
       execute_process(
          COMMAND ${CMAKE_CXX_COMPILER}
@@ -230,11 +213,11 @@ macro( dbsConfigInfo )
          OUTPUT_VARIABLE windows_ip_configuration
          )
       string( REGEX REPLACE ".*Host Name[.: ]+([A-z]+).*Primary.*" "\\1" DBS_TARGET "${windows_ip_configuration}" )
-      
+
    endif()
 
 endmacro()
 
 #------------------------------------------------------------------------------#
-# End 
+# End
 #------------------------------------------------------------------------------#
