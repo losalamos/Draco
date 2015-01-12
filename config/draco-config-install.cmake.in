@@ -24,15 +24,15 @@ set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco" )
 include( FeatureSummary )
 set_package_properties( draco PROPERTIES
    URL "https://rtt.lanl.gov/redmine/projects/draco"
-   DESCRIPTION 
+   DESCRIPTION
 "Draco is a comprehensive, radiation transport framework that provides
      key, reusable components for serial and parallel computational physics
-     codes." 
+     codes."
    TYPE REQUIRED
-   PURPOSE 
-"Provides underlying capabilities required by ClubIMC (smart pointers, 
+   PURPOSE
+"Provides underlying capabilities required by ClubIMC (smart pointers,
      data access, random number generators, etc.)"
-   )   
+   )
 
 ## ---------------------------------------------------------------------------
 ## Compilers used by Draco build
@@ -51,7 +51,7 @@ set( CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@" )
 set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
 
 ## ---------------------------------------------------------------------------
-## Set library specifications and paths 
+## Set library specifications and paths
 ## ---------------------------------------------------------------------------
 
 ## The project version number
@@ -104,9 +104,9 @@ if( USE_CUDA )
   set( CUDA_CUDART_LIBRARY            "@CUDA_CUDART_LIBRARY@" )
   set( CUDA_CUDA_LIBRARY              "@CUDA_CUDA_LIBRARY@" )
   set( CUDA_CUDA_LIBRARY              "@CUDA_CUDA_LIBRARY@" )
-  set( CUDA_GENERATED_OUTPUT_DIR      "@CUDA_GENERATED_OUTPUT_DIR @" )
-  set( CUDA_HOST_COMPILATION_CPP      "@CUDA_HOST_COMPILATION_CPP @" )
-  set( CUDA_HOST_COMPILER             "@CUDA_HOST_COMPILER @" )
+  set( CUDA_GENERATED_OUTPUT_DIR      "@CUDA_GENERATED_OUTPUT_DIR@" )
+  set( CUDA_HOST_COMPILATION_CPP      "@CUDA_HOST_COMPILATION_CPP@" )
+  set( CUDA_HOST_COMPILER             "@CUDA_HOST_COMPILER@" )
   set( CUDA_NVCC_EXECUTABLE           "@CUDA_NVCC_EXECUTABLE@" )
   set( CUDA_NVCC_FLAGS                "@CUDA_NVCC_FLAGS@" )
   set( CUDA_NVCC_FLAGS_DEBUG          "@CUDA_NVCC_FLAGS_DEBUG@" )
@@ -129,11 +129,11 @@ if( USE_CUDA )
 endif()
 
 # Python
-set( PYTHONINTERP_FOUND "@PYTHONINTERP_FOUND@" ) 
-set( PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@" ) 
+set( PYTHONINTERP_FOUND "@PYTHONINTERP_FOUND@" )
+set( PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@" )
 
 ## ---------------------------------------------------------------------------
-## Set useful general variables 
+## Set useful general variables
 ## ---------------------------------------------------------------------------
 
 ## The packages enabled for this project
@@ -147,4 +147,3 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 ## ---------------------------------------------------------------------------
 
 @Draco_EXPORT_TARGET_PROPERTIES@
-
