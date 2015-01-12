@@ -45,14 +45,25 @@ endif()
 # ----------------------------------------
 message( STATUS "Looking for micctrl")
 if( EXISTS /usr/sbin/micctrl )
-  set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
-  # possibly run micctl and capture the output looking for the string
-  # "knightscorner."
-  # set( DRACO_LIBRARY_TYPE "STATIC" )
-  set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
-  message( STATUS "Looking for micctrl - knights corner found")
-else()
-  message( STATUS "Looking for micctrl - knights corner not found")
+  exec_program(
+    /usr/sbin/micctrl
+    ARGS -s
+    OUTPUT_VARIABLE mic_status
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_QUIET
+    )
+  message("mic_status = ${mic_status}")
+  if( mic_status MATCHES online )
+    set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
+    # possibly run micctl and capture the output looking for the string
+    # "knightscorner."
+    # set( DRACO_LIBRARY_TYPE "STATIC" )
+    set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
+    message( STATUS "Looking for micctrl - knights corner found")
+  else()
+    set( HAVE_MIC OFF CACHE BOOL "Does the local machine have MIC chips?" )
+    message( STATUS "Looking for micctrl - knights corner not found")
+  endif()
 endif()
 
 # ----------------------------------------
