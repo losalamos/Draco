@@ -63,11 +63,7 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
-if( NOT HAVE_MIC )
-  # FortranChecks needs to be updated to link to the correct fortran
-  # system libraries (libifport.so.5, libifcoremt.so.5)
-  add_dir_if_exists( FortranChecks )
-endif()
+add_dir_if_exists( FortranChecks )
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()

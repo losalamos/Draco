@@ -157,9 +157,7 @@ setupVendorLibraries()
 #
 # add_subdirectory( doc ) Now at svnroot/draco/dracodoc.
 add_subdirectory( src )
-if( NOT HAVE_MIC )
-  add_subdirectory( autodoc ) # This must be processed after 'src'
-endif()
+add_subdirectory( autodoc ) # This must be processed after 'src'
 add_subdirectory( config )  # This must be processed after 'src'
 
 #

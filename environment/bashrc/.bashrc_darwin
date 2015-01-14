@@ -20,16 +20,29 @@ export VENDOR_DIR=/projects/opt/draco/vendors
 if test -n "$MODULESHOME"; then
     module use ${VENDOR_DIR}/Modules
     module unload compilers mpi cmake
-    # setup for draco
-    module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035
-    module load cmake/3.1.0
-    module load other/gnuplot-4.6.1 python/2.7.3
-    module load numdiff eospac random123 lapack/3.4.1
-    # additional setup for capsaicin
-    module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
+
+    module load compilers/intel/15.0.0 cmake/3.1.0
+    module load other/gnuplot-4.6.1 python/2.7.3 random123
     # developer tools
     module load other/emacs-24.3 totalview/8.11.0-2 subversion
-    # gsl-config can be found in /usr/bin/.
+
+    # Nodes that have MIC capability use different modules...
+    if test -x /usr/sbin/micctrl; then
+        # setup for draco
+        module load mpi/intelmpi-5.0.1.035-mic
+        module load numdiff/5.6.1-mic mkl/11.2-mic gsl/1.16-mic
+        # additional setup for capsaicin
+        # module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
+        export CXX=`which mpiicpc`
+        export CC=`which mpiicc`
+        export FC=`which mpiifort`
+    else
+        # setup for draco
+        module load mpi/intelmpi-5.0.1.035
+        module load numdiff/5.2.1 eospac lapack/3.4.1
+        # additional setup for capsaicin
+        module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
+    fi
 fi
 
 # Avoid printing trigraph chars to the screen (eg: ���)

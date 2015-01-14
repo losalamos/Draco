@@ -18,7 +18,7 @@ file( GLOB test_sources *.cc )
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${dsxx_SOURCE_DIR}/..      # headers for ds++
    ${dsxx_BINARY_DIR}   )     # ds++/config.h
@@ -33,7 +33,7 @@ if( ${CMAKE_Fortran_COMPILER_FLAVOR} MATCHES "XL" )
    remove_lib_from_link( "xlomp_ser" )
 endif()
 
-# When building with MVSE and linking Fortran libraries generated with MinGW's 
+# When building with MVSE and linking Fortran libraries generated with MinGW's
 # gfortran, the libquadmath-0.dll library must be found in the path.
 if( MSVC )
    find_file( mingw_libquadmath libquadmath-0.dll )
@@ -43,13 +43,22 @@ if( MSVC )
    endif()
 endif()
 
+
 # Create the test.
 set( test_deps "Lib_dsxx;Lib_FC_f90sub;Lib_FC_Derived_Type" )
-add_scalar_tests( 
-   SOURCES "${test_sources}" 
+
+# When cross-compiling with '-mmic', rpaths for libraries built from
+# Fortran code don't appear to be reported to the icpc linker.  As a
+# hack, these libraries (discovered in unix-ifort.cmake) are manually
+# added to the link line.
+if( HAVE_MIC )
+  list( APPEND test_deps ${libifport_loc} ${libifcoremt_loc} )
+endif()
+
+add_scalar_tests(
+   SOURCES "${test_sources}"
    DEPS    "${test_deps}" )
 
 # ---------------------------------------------------------------------------- #
 # end of FortranChecks/test/CMakeLists.txt
 # ---------------------------------------------------------------------------- #
-

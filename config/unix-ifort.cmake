@@ -50,6 +50,14 @@ toggle_compiler_flag( HAVE_MIC    "-mmic"           "Fortran" "")
 toggle_compiler_flag( USE_OPENMP  "-openmp"         "Fortran" "")
 toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") # sse3, ssse3
 
+# When cross-compiling with '-mmic', rpaths for libraries built from
+# Fortran code don't appear to be reported to the icpc linker.  As a
+# hack, save these libraries here for manual linking.
+if( HAVE_MIC )
+  find_library( libifport_loc   NAMES ifport   HINTS ENV LD_LIBRARY_PATH )
+  find_library( libifcoremt_loc NAMES ifcoremt HINTS ENV LD_LIBRARY_PATH )
+endif()
+
 #------------------------------------------------------------------------------#
 # End config/unix-ifort.cmake
 #------------------------------------------------------------------------------#
