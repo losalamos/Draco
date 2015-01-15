@@ -17,19 +17,35 @@ include( parse_arguments )
 # When on MIC Configure a script that helps run tests on the MIC node.
 #------------------------------------------------------------------------------#
 if( HAVE_MIC )
+  if( EXISTS ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in AND
+      NOT EXISTS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
 
-  # Generate a script that will be used to start tests on the MIC
-  # processor.
+    # When configuring Draco, generate a script that will be used to
+    # start tests on the MIC processor.
 
-  # This script sets up Intel MPI to allow code execution on the backend
-  # (mic) portion of the node.
-  set( PATH $ENV{PATH} )
-  set( LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH} )
-  find_program( MPIVARS_SCRIPT mpivars.sh )
-  configure_file(
-    ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in
-    ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-    @ONLY )
+    # This script sets up Intel MPI to allow code execution on the backend
+    # (mic) portion of the node.
+    set( PATH $ENV{PATH} )
+    set( LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH} )
+    find_program( MPIVARS_SCRIPT mpivars.sh )
+    configure_file(
+      ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in
+      ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
+      @ONLY )
+    set( DRACO_MIC_TEST_DRIVER
+      ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
+      CACHE FILEPATH
+      "Shell script used to run unit tests on Knights Corner MIC processor.")
+
+  else()
+    # For Jayenne and Capsaicin, locate the run_test_on_mic.sh script
+    if( EXISTS ${DRACO_CONFIG_DIR}/run_test_on_mic.sh )
+      set( DRACO_MIC_TEST_DRIVER
+        ${DRACO_CONFIG_DIR}/run_test_on_mic.sh
+        CACHE FILEPATH
+        "Shell script used to run unit tests on Knights Corner MIC processor.")
+    endif()
+  endif()
 
 endif()
 
@@ -298,7 +314,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     # For MIC nodes, ssh to the node and then run a script that
     # setups the local environment (PATHS, LD_LIBRARY_PATH, etc.)
     # and then run the test normally.
-    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${CMAKE_CURRENT_BINARY_DIR})
+    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
@@ -574,7 +590,7 @@ macro( add_scalar_tests test_sources )
     set( RUN_CMD ${MPIEXEC} -n 1 )
   elseif( HAVE_MIC )
     # ssh mic-node <wrapper-script> <work_dir> <unit_test arg1 arg2 arg3...>
-    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${CMAKE_CURRENT_BINARY_DIR})
+    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
