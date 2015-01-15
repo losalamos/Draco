@@ -3,19 +3,39 @@
 # author Kelly G. Thompson, kgt@lanl.gov
 # date   2010 Dec 1
 # brief  Provide extra macros to simplify CMakeLists.txt for component
-#        directories. 
+#        directories.
 # note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$ 
+# $Id$
 #------------------------------------------------------------------------------#
 
 # requires parse_arguments()
 include( parse_arguments )
 
+#------------------------------------------------------------------------------#
+# When on MIC Configure a script that helps run tests on the MIC node.
+#------------------------------------------------------------------------------#
+if( HAVE_MIC )
+
+  # Generate a script that will be used to start tests on the MIC
+  # processor.
+
+  # This script sets up Intel MPI to allow code execution on the backend
+  # (mic) portion of the node.
+  set( PATH $ENV{PATH} )
+  set( LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH} )
+  find_program( MPIVARS_SCRIPT mpivars.sh )
+  configure_file(
+    ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in
+    ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
+    @ONLY )
+
+endif()
+
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_library'
-# 
+#
 # Purpose 1: In addition to adding a library built from $sources, set
 # Draco-specific properties for the library.  This macro reduces ~20
 # lines of code down to 1-2.
@@ -24,8 +44,8 @@ include( parse_arguments )
 # package.
 #
 # Purpose 3: Use information from 1 and 2 above to generate exported
-# targets. 
-# 
+# targets.
+#
 # Usage:
 #
 # add_component_library(
@@ -53,11 +73,11 @@ include( parse_arguments )
 # Note: you must use quotes around ${list_of_sources} to preserve the list.
 #------------------------------------------------------------------------------
 macro( add_component_library )
-  #target_name outputname sources 
-  # optional argument: libraryPrefix 
+  #target_name outputname sources
+  # optional argument: libraryPrefix
 
   # These become variables of the form ${acl_NAME}, etc.
-  parse_arguments( 
+  parse_arguments(
     # prefix
     acl
     # list names
@@ -69,7 +89,7 @@ macro( add_component_library )
 
   #
   # Defaults:
-  # 
+  #
   # Optional 3rd argument is the library prefix.  The default is "rtt_".
   if( "${acl_LIBRARY_NAME_PREFIX}x" STREQUAL "x" )
     set( acl_LIBRARY_NAME_PREFIX "rtt_" )
@@ -91,7 +111,7 @@ macro( add_component_library )
   if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
     set( compdefs COMPILE_DEFINITIONS BUILDING_DLL )
   endif()
-  set_target_properties( ${acl_TARGET} PROPERTIES 
+  set_target_properties( ${acl_TARGET} PROPERTIES
     # Provide compile define macro to enable declspec(dllexport) linkage.
     ${compdefs}
     # COMPILE_DEFINITIONS BUILDING_DLL
@@ -116,12 +136,12 @@ macro( add_component_library )
   #
   # Register the library for exported library support
   #
-  
+
   # Defaults
   if( "${acl_PREFIX}x" STREQUAL "x" )
     set( acl_PREFIX "Draco" )
   endif()
-  
+
   # Find target file name and location
   get_target_property( impname ${acl_TARGET} OUTPUT_NAME )
 
@@ -144,11 +164,11 @@ macro( add_component_library )
   else()
     set( ilil "${acl_TARGET_DEPS};${acl_VENDOR_LIBS}" )
   endif()
-  
+
   # For non-test libraries, save properties to the
-  # project-config.cmake file     
+  # project-config.cmake file
   if( "${ilil}x" STREQUAL "x" )
-    set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
+    set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
       "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
 set_target_properties(${acl_TARGET} PROPERTIES
    IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
@@ -156,7 +176,7 @@ set_target_properties(${acl_TARGET} PROPERTIES
 )
 ")
 else()
-  set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES 
+  set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
     "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
 set_target_properties(${acl_TARGET} PROPERTIES
    IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
@@ -185,16 +205,16 @@ if( NOT ${acl_NOEXPORT} AND
     list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIBRARIES )
   endif()
   if( ${acl_PREFIX}_TPL_LIST )
-    list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIST )   
+    list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIST )
   endif()
-  
+
   set( ${acl_PREFIX}_LIBRARIES "${${acl_PREFIX}_LIBRARIES}"  CACHE INTERNAL "List of component targets" FORCE)
   set( ${acl_PREFIX}_PACKAGE_LIST "${${acl_PREFIX}_PACKAGE_LIST}"  CACHE INTERNAL
     "List of known ${acl_PREFIX} targets" FORCE)
-  set( ${acl_PREFIX}_TPL_LIST "${${acl_PREFIX}_TPL_LIST}"  CACHE INTERNAL 
+  set( ${acl_PREFIX}_TPL_LIST "${${acl_PREFIX}_TPL_LIST}"  CACHE INTERNAL
     "List of third party libraries known by ${acl_PREFIX}" FORCE)
   set( ${acl_PREFIX}_TPL_INCLUDE_DIRS "${${acl_PREFIX}_TPL_INCLUDE_DIRS}"  CACHE
-    INTERNAL "List of include paths used by ${acl_PREFIX} to find thrid party vendor header files." 
+    INTERNAL "List of include paths used by ${acl_PREFIX} to find thrid party vendor header files."
     FORCE)
   set( ${acl_PREFIX}_TPL_LIBRARIES "${${acl_PREFIX}_TPL_LIBRARIES}"  CACHE INTERNAL
     "List of third party libraries used by ${acl_PREFIX}." FORCE)
@@ -213,13 +233,13 @@ endmacro()
 # 3. Register the pass/fail criteria.
 # ------------------------------------------------------------
 macro( register_scalar_test targetname runcmd command cmd_args )
-  
+
   # Cielito needs the ./ in front of the binary name.
-  if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" )
+  if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" OR HAVE_MIC )
     set( APT_TARGET_FILE_PREFIX "./" )
   endif()
   separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
-  add_test( 
+  add_test(
     NAME    ${targetname}
     COMMAND ${RUN_CMD} ${APT_TARGET_FILE_PREFIX}${command} ${cmdargs}
     )
@@ -240,7 +260,7 @@ macro( register_scalar_test targetname runcmd command cmd_args )
 
   # set pass fail criteria, processors required, etc.
   set_tests_properties( ${targetname}
-    PROPERTIES        
+    PROPERTIES
     PASS_REGULAR_EXPRESSION "${addscalartest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addscalartest_FAIL_REGEX}"
     PROCESSORS              "${num_procs}"
@@ -273,26 +293,36 @@ macro( register_parallel_test targetname numPE command cmd_args )
   if( VERBOSE )
     message( "      Adding test: ${targetname}" )
   endif()
+
+  if( HAVE_MIC )
+    # For MIC nodes, ssh to the node and then run a script that
+    # setups the local environment (PATHS, LD_LIBRARY_PATH, etc.)
+    # and then run the test normally.
+    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${CMAKE_CURRENT_BINARY_DIR})
+  else()
+    unset( RUN_CMD )
+  endif()
+
   if( addparalleltest_MPI_PLUS_OMP )
     string( REPLACE " " ";" mpiexec_omp_postflags_list "${MPIEXEC_OMP_POSTFLAGS}" )
-    add_test( 
+    add_test(
       NAME    ${targetname}
-      COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+      COMMAND ${RUN_CMD} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
       ${mpiexec_omp_postflags_list}
       ${command}
       ${cmdarg}
       )
   else()
-    add_test( 
+    add_test(
       NAME    ${targetname}
-      COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+      COMMAND ${RUN_CMD} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
       ${MPIRUN_POSTFLAGS}
       ${command}
       ${cmdarg}
       )
   endif()
   set_tests_properties( ${targetname}
-    PROPERTIES        
+    PROPERTIES
     PASS_REGULAR_EXPRESSION "${addparalleltest_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${addparalleltest_FAIL_REGEX}"
     WORKING_DIRECTORY       "${PROJECT_BINARY_DIR}"
@@ -305,7 +335,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     set_tests_properties( ${targetname}
       PROPERTIES DEPENDS "${addparalleltest_RUN_AFTER}" )
   endif()
-  if( addparalleltest_MPI_PLUS_OMP ) 
+  if( addparalleltest_MPI_PLUS_OMP )
     math( EXPR numthreads "${numPE} * ${MPI_CORES_PER_CPU}" )
     # message("target = ${targetname}, numthreads = ${numthreads}")
     if( MPI_HYPERTHREADING )
@@ -341,7 +371,7 @@ macro( copy_win32_dll_to_test_dir )
   if( WIN32 )
     # For Win32 with shared libraries, the package dll must be
     # located in the test directory.
-    
+
     # Debug dependencies for a particular target (uncomment the next line and provide the targetname):
     # set( target_for_debugging_deps "Ut_c4_phw_exe" )
 
@@ -370,14 +400,14 @@ macro( copy_win32_dll_to_test_dir )
           if(isimp)
             if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
               message("  This target is IMPORTED")
-            endif()          
+            endif()
             get_target_property( link_libs2 ${lib} IMPORTED_LINK_INTERFACE_LIBRARIES )
             # cmake 3.0+, cmp0022 states that INTERFACE_LINK_LIBRARIES
             # should be used in place of IMPORTED_LINK_INTERFACE_LIBRARIES.
             get_target_property( link_libs3 ${lib} INTERFACE_LINK_LIBRARIES)
           else()
             get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
-          endif()  
+          endif()
           # if(${link_libs2} MATCHES NOTFOUND)
             # unset(link_libs2)
           # else()
@@ -395,7 +425,7 @@ macro( copy_win32_dll_to_test_dir )
           endif()
         endif()
       endforeach()
-      # Loop through all current dependencies, remove static libraries 
+      # Loop through all current dependencies, remove static libraries
       #(they do not need to be in the run directory).
       list( REMOVE_DUPLICATES link_libs )
       foreach( lib ${link_libs} )
@@ -403,32 +433,32 @@ macro( copy_win32_dll_to_test_dir )
           # nothing to add so remove from list
           list( REMOVE_ITEM link_libs ${lib} )
         elseif( "${lib}" MATCHES ".[lL]ib$" )
-          # We have a path to a static library. Static libraries do not 
-          # need to be copied.  
+          # We have a path to a static library. Static libraries do not
+          # need to be copied.
           list( REMOVE_ITEM link_libs ${lib} )
-          # However, if there is a corresponding dll, we should add it 
+          # However, if there is a corresponding dll, we should add it
           # to the list.
           string( REPLACE ".lib" ".dll" dll_lib ${lib} )
           if( ${dll_lib} MATCHES "[.]dll$" AND EXISTS ${dll_lib} )
             list( APPEND link_libs "${dll_lib}" )
-          endif()               
+          endif()
         endif()
       endforeach()
       if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
         message("    updated dependencies list: link_libs = ${link_libs}")
       endif()
-      
+
     endwhile()
-    
+
     list( REMOVE_DUPLICATES link_libs )
     # if( ${compname} MATCHES Fortran )
     # message("   ${compname}_${testname} --> ${link_libs}")
     # endif()
-    
+
     if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
       message("  Create post build commande for target Ut_${compname}_${testname}_exe")
     endif()
-    
+
     # Add a post-build command to copy each dll into the test directory.
     foreach( lib ${link_libs} )
       unset( ${comp_target}_loc )
@@ -441,8 +471,8 @@ macro( copy_win32_dll_to_test_dir )
         get_target_property( isimp ${lib} IMPORTED )
         if( isimp )
           get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION )
-          # CMakeAddFortranSubdirectory registers the property 
-          # IMPORTED_LOCATION_NOCONFIG, if the above fails try the 
+          # CMakeAddFortranSubdirectory registers the property
+          # IMPORTED_LOCATION_NOCONFIG, if the above fails try the
           # NOCONFIG version.
           if( ${${comp_target}_loc} MATCHES NOTFOUND )
             get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION_NOCONFIG )
@@ -462,13 +492,13 @@ macro( copy_win32_dll_to_test_dir )
       endif()
       # Also grab the file with debug info
       string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
-      
+
       if( "${${comp_target}_loc}" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
-        add_custom_command( TARGET Ut_${compname}_${testname}_exe 
+        add_custom_command( TARGET Ut_${compname}_${testname}_exe
           POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file} 
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
           )
           if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
@@ -476,9 +506,9 @@ macro( copy_win32_dll_to_test_dir )
             message("    CMAKE_COMMAND -E copy_if_different ${pdb_file} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
           endif()
       else()
-        add_custom_command( TARGET Ut_${compname}_${testname}_exe 
+        add_custom_command( TARGET Ut_${compname}_${testname}_exe
           POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc} 
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
           )
           if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
@@ -493,12 +523,12 @@ endmacro()
 # add_scalar_tests
 #
 # Given a list of sources, create unit test executables, one exe for
-# each source file.  Register the test to be run by ctest.  
+# each source file.  Register the test to be run by ctest.
 #
 # Usage:
 #
-# add_scalar_tests( 
-#    SOURCES "${test_sources}" 
+# add_scalar_tests(
+#    SOURCES "${test_sources}"
 #    [ DEPS    "${library_dependencies}" ]
 #    [ TEST_ARGS     "arg1;arg2" ]
 #    [ PASS_REGEX    "regex" ]
@@ -515,13 +545,13 @@ endmacro()
 #        reset any value provided in TEST_ARGS to be "--np scalar".
 #   LINK_WITH_FORTRAN - Tell the compiler to use the Fortran compiler
 #        for the final link of the test.  This is needed for Intel and
-#        PGI. 
+#        PGI.
 #
 #----------------------------------------------------------------------#
 macro( add_scalar_tests test_sources )
 
   # These become variables of the form ${addscalartests_SOURCES}, etc.
-  parse_arguments( 
+  parse_arguments(
     # prefix
     addscalartest
     # list names
@@ -542,6 +572,9 @@ macro( add_scalar_tests test_sources )
     set( RUN_CMD ${MPIEXEC} -np 1 )
   elseif( "${MPIEXEC}" MATCHES "srun" )
     set( RUN_CMD ${MPIEXEC} -n 1 )
+  elseif( HAVE_MIC )
+    # ssh mic-node <wrapper-script> <work_dir> <unit_test arg1 arg2 arg3...>
+    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
@@ -556,7 +589,7 @@ macro( add_scalar_tests test_sources )
     if( "${MPIEXEC}" MATCHES "aprun" )
       unset( RUN_CMD )
     endif()
-    
+
     # If this is an ApplicationUnitTest based test then the
     # TEST_ARGS will look like "--np 1;--np 2;--np 4".  For the case
     # where DRACO_C4 = SCALAR, we will automatically demote these
@@ -582,10 +615,10 @@ macro( add_scalar_tests test_sources )
     list( APPEND addscalartest_FAIL_REGEX ".*ERROR:.*" )
     list( APPEND addscalartest_FAIL_REGEX "forrtl: error" )
   endif()
-  
+
   # Format resource lock command
   if( NOT "${addscalartest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set( addscalartest_RESOURCE_LOCK 
+    set( addscalartest_RESOURCE_LOCK
       "RESOURCE_LOCK ${addscalartest_RESOURCE_LOCK}")
   endif()
 
@@ -599,49 +632,49 @@ macro( add_scalar_tests test_sources )
   # Generate the executable
   # ------------------------------------------------------------
   foreach( file ${addscalartest_SOURCES} )
-    
+
     if( "${file}" MATCHES "tstParallelUnitTest" )
       message("RUN_CMD = ${RUN_CMD}")
     endif()
 
     get_filename_component( testname ${file} NAME_WE )
     add_executable( Ut_${compname}_${testname}_exe ${file} )
-    set_target_properties( Ut_${compname}_${testname}_exe 
-      PROPERTIES 
-      OUTPUT_NAME ${testname} 
+    set_target_properties( Ut_${compname}_${testname}_exe
+      PROPERTIES
+      OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
       )
     # Do we need to use the Fortran compiler as the linker?
     if( addscalartest_LINK_WITH_FORTRAN )
-      set_target_properties( Ut_${compname}_${testname}_exe 
+      set_target_properties( Ut_${compname}_${testname}_exe
         PROPERTIES LINKER_LANGUAGE Fortran )
     endif()
-    target_link_libraries( 
-      Ut_${compname}_${testname}_exe 
+    target_link_libraries(
+      Ut_${compname}_${testname}_exe
       ${test_lib_target_name}
       ${addscalartest_DEPS}
       )
-    
+
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
     copy_win32_dll_to_test_dir()
-    
+
   endforeach()
-  
+
   # Register the unit test
   # ------------------------------------------------------------
   foreach( file ${addscalartest_SOURCES} )
     get_filename_component( testname ${file} NAME_WE )
 
     if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
-      register_scalar_test( ${compname}_${testname} 
+      register_scalar_test( ${compname}_${testname}
         "${RUN_CMD}" ${testname} "" )
     else()
       set( iarg "0" )
-      foreach( cmdarg ${addscalartest_TEST_ARGS} ) 
+      foreach( cmdarg ${addscalartest_TEST_ARGS} )
         math( EXPR iarg "${iarg} + 1" )
-        register_scalar_test( ${compname}_${testname}_arg${iarg} 
+        register_scalar_test( ${compname}_${testname}_arg${iarg}
           "${RUN_CMD}" ${testname} "${cmdarg}" )
       endforeach()
     endif()
@@ -653,13 +686,13 @@ endmacro()
 # add_parallel_tests
 #
 # Given a list of sources, create unit test executables, one exe for
-# each source file.  Register the test to be run by ctest.  
+# each source file.  Register the test to be run by ctest.
 #
 # Usage:
 #
-# add_parallel_tests( 
-#    SOURCES "${test_sources}" 
-#    DEPS    "${library_dependencies}" 
+# add_parallel_tests(
+#    SOURCES "${test_sources}"
+#    DEPS    "${library_dependencies}"
 #    PE_LIST "1;2;4" )
 #
 # Optional parameters that require arguments.
@@ -685,13 +718,13 @@ endmacro()
 # Optional parameters that require arguments.
 #
 #    MPI_PLUS_OMP    - This bool indicates that the test uses OpenMP
-#                      for each MPI rank. 
+#                      for each MPI rank.
 #    LINK_WITH_FORTRAN - Use the Fortran compiler to perform the final
 #                      link of the unit test.
 #----------------------------------------------------------------------#
 macro( add_parallel_tests )
 
-  parse_arguments( 
+  parse_arguments(
     # prefix
     addparalleltest
     # list names
@@ -718,7 +751,7 @@ macro( add_parallel_tests )
 
   # Format resource lock command
   if( NOT "${addparalleltest_RESOURCE_LOCK}none" STREQUAL "none" )
-    set( addparalleltest_RESOURCE_LOCK 
+    set( addparalleltest_RESOURCE_LOCK
       "RESOURCE_LOCK ${addparalleltest_RESOURCE_LOCK}")
   endif()
 
@@ -743,57 +776,56 @@ macro( add_parallel_tests )
       message( "   add_executable( Ut_${compname}_${testname}_exe ${file} )")
     endif()
     add_executable( Ut_${compname}_${testname}_exe ${file} )
-    set_target_properties( 
-      Ut_${compname}_${testname}_exe 
-      PROPERTIES 
-      OUTPUT_NAME ${testname} 
+    set_target_properties(
+      Ut_${compname}_${testname}_exe
+      PROPERTIES
+      OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
       )
     if( addparalleltest_MPI_PLUS_OMP )
       if( ${CMAKE_GENERATOR} MATCHES Xcode )
-        set_target_properties( Ut_${compname}_${testname}_exe 
+        set_target_properties( Ut_${compname}_${testname}_exe
           PROPERTIES XCODE_ATTRIBUTE_ENABLE_OPENMP_SUPPORT YES )
       endif()
     endif()
     # Do we need to use the Fortran compiler as the linker?
     if( addparalleltest_LINK_WITH_FORTRAN )
-      set_target_properties( Ut_${compname}_${testname}_exe 
+      set_target_properties( Ut_${compname}_${testname}_exe
         PROPERTIES LINKER_LANGUAGE Fortran )
     endif()
 
-    target_link_libraries( 
-      Ut_${compname}_${testname}_exe 
-      ${test_lib_target_name} 
+    target_link_libraries(
+      Ut_${compname}_${testname}_exe
+      ${test_lib_target_name}
       ${addparalleltest_DEPS}
       )
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
     copy_win32_dll_to_test_dir()
-    
+
   endforeach()
 
   # 3. Register the unit test
   # 4. Register the pass/fail criteria.
   if( ${DRACO_C4} MATCHES "MPI" )
-    foreach( file ${addparalleltest_SOURCES} )
-
+      foreach( file ${addparalleltest_SOURCES} )
       get_filename_component( testname ${file} NAME_WE )
       foreach( numPE ${addparalleltest_PE_LIST} )
         set( iarg 0 )
         if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
-          register_parallel_test( 
+          register_parallel_test(
             ${compname}_${testname}_${numPE}
             ${numPE}
             $<TARGET_FILE:Ut_${compname}_${testname}_exe>
             "" )
         else()
-          foreach( cmdarg ${addparalleltest_TEST_ARGS} ) 
+          foreach( cmdarg ${addparalleltest_TEST_ARGS} )
             math( EXPR iarg "${iarg} + 1" )
-            register_parallel_test( 
+            register_parallel_test(
               ${compname}_${testname}_${numPE}_arg${iarg}
-              ${numPE} 
+              ${numPE}
               $<TARGET_FILE:Ut_${compname}_${testname}_exe>
               ${cmdarg} )
           endforeach()
@@ -812,12 +844,12 @@ macro( add_parallel_tests )
       set( addscalartest_RUN_AFTER "${addparalleltest_RUN_AFTER}" )
 
       if( "${addparalleltest_TEST_ARGS}none" STREQUAL "none" )
-        
-        register_scalar_test( ${compname}_${testname} 
+
+        register_scalar_test( ${compname}_${testname}
           "${RUN_CMD}" ${testname} "" )
       else()
 
-        foreach( cmdarg ${addparalleltest_TEST_ARGS} ) 
+        foreach( cmdarg ${addparalleltest_TEST_ARGS} )
           math( EXPR iarg "${iarg} + 1" )
           register_scalar_test( ${compname}_${testname}_arg${iarg}
             "${RUN_CMD}" ${testname} "${cmdarg}" )
@@ -832,14 +864,14 @@ endmacro()
 
 #----------------------------------------------------------------------#
 # provide_aux_files
-# 
-# Call this macro from a package CMakeLists.txt to instruct the build 
+#
+# Call this macro from a package CMakeLists.txt to instruct the build
 # system that some files should be copied from the source directory
 # into the build directory.
 #----------------------------------------------------------------------#
 macro( provide_aux_files )
 
-  parse_arguments( 
+  parse_arguments(
     # prefix
     auxfiles
     # list names
@@ -872,7 +904,7 @@ macro( provide_aux_files )
       endif()
     endif()
     set( outfile ${PROJECT_BINARY_DIR}/${srcfilenameonly} )
-    add_custom_command( 
+    add_custom_command(
       OUTPUT  ${outfile}
       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} ${outfile}
       DEPENDS ${file}
@@ -891,28 +923,28 @@ macro( provide_aux_files )
       "${Ut_${compname}_install_inputs_iarg} + 1" )
   endif()
   add_custom_target(
-    Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg} 
+    Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg}
     ALL
     DEPENDS ${required_files}
     )
   set( folder_name ${compname}_test )
-  set_target_properties( Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg} 
+  set_target_properties( Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg}
     PROPERTIES FOLDER ${folder_name}
     )
-  
+
 endmacro()
 
 #----------------------------------------------------------------------#
-# CONDITIONALLY_ADD_SUBDIRECTORY - add a directory to the build while 
+# CONDITIONALLY_ADD_SUBDIRECTORY - add a directory to the build while
 #      allowing exceptions:
-# 
-# E.g.: conditionally_add_subdirectory( 
+#
+# E.g.: conditionally_add_subdirectory(
 #      COMPONENT "mc"
 #      CXX_COMPILER_EXCEPTION "spu-g[+][+]" )
 #----------------------------------------------------------------------#
 macro( conditionally_add_subdirectory )
 
-  parse_arguments( 
+  parse_arguments(
     # prefix
     caddsubdir
     # list names
@@ -945,7 +977,7 @@ macro( conditionally_add_subdirectory )
       endforeach()
     endif()
   endif()
-  
+
 endmacro()
 
 #----------------------------------------------------------------------#
@@ -957,7 +989,7 @@ endmacro()
 #
 # This allows CMAKE variables to be inserted into the .dcc files
 # (e.g.: @DRACO_VERSION@)
-# 
+#
 # E.g.: process_autodoc_pages()
 #----------------------------------------------------------------------#
 macro( process_autodoc_pages )

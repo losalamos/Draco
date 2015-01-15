@@ -13,6 +13,7 @@ include( FeatureSummary )
 # PAPI
 # ----------------------------------------
 if( EXISTS $ENV{PAPI_HOME} )
+
     set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
     set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH
        "PAPI headers at this location" )
@@ -43,28 +44,30 @@ endif()
 # ----------------------------------------
 # MIC processors
 # ----------------------------------------
-message( STATUS "Looking for micctrl")
-if( EXISTS /usr/sbin/micctrl )
-  exec_program(
-    /usr/sbin/micctrl
-    ARGS -s
-    OUTPUT_VARIABLE mic_status
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_QUIET
-    )
-  if( mic_status MATCHES online )
-    set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
-    # possibly run micctl and capture the output looking for the string
-    # "knightscorner."
-    # set( DRACO_LIBRARY_TYPE "STATIC" )
-    set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
-    message( STATUS "Looking for micctrl - knights corner found")
-  endif()
-endif()
+if( "${HAVE_MIC}x" STREQUAL "x" )
 
-if( NOT HAVE_MIC )
-  set( HAVE_MIC OFF CACHE BOOL "Does the local machine have MIC chips?" )
-  message( STATUS "Looking for micctrl - knights corner not found")
+  message( STATUS "Looking for micctrl")
+  if( EXISTS /usr/sbin/micctrl )
+    exec_program(
+      /usr/sbin/micctrl
+      ARGS -s
+      OUTPUT_VARIABLE mic_status
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_QUIET
+      )
+    if( mic_status MATCHES online )
+      set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
+      # If we areusing MIC, then disable CUDA.
+      set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
+      message( STATUS "Looking for micctrl - knights corner found")
+    endif()
+  endif()
+
+  if( NOT HAVE_MIC )
+    set( HAVE_MIC OFF CACHE BOOL "Does the local machine have MIC chips?" )
+    message( STATUS "Looking for micctrl - knights corner not found")
+  endif()
+
 endif()
 
 # ----------------------------------------

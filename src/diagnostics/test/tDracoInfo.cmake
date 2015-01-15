@@ -8,10 +8,10 @@
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
 #------------------------------------------------------------------------------#
-# 
+#
 
 # Some useful macros
-get_filename_component( draco_config_dir 
+get_filename_component( draco_config_dir
    ${CMAKE_CURRENT_LIST_DIR}/../../../config ABSOLUTE )
 set( CMAKE_MODULE_PATH ${draco_config_dir} )
 include( ApplicationUnitTest )
@@ -23,22 +23,35 @@ aut_setup()
 
 ##---------------------------------------------------------------------------##
 # Run the application and capture the output.
-message("Running tests...
-${APP} > ${OUTFILE}")
+message("Running tests...")
 
-execute_process( 
-   COMMAND ${APP} 
-   WORKING_DIRECTORY ${WORKDIR}
-#   INPUT_FILE ${STDINFILE}
-   RESULT_VARIABLE testres
-   OUTPUT_VARIABLE testout
-   ERROR_VARIABLE  testerror
-)
+if( HAVE_MIC )
+  set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
+  message("${RUN_CMD} ${WORKDIR} ${APP} > ${OUTFILE}")
+  execute_process(
+    COMMAND ${RUN_CMD} ${WORKDIR} ${APP}
+    WORKING_DIRECTORY ${WORKDIR}
+    #   INPUT_FILE ${STDINFILE}
+    RESULT_VARIABLE testres
+    OUTPUT_VARIABLE testout
+    ERROR_VARIABLE  testerror
+  )
+else()
+  message("${APP} > ${OUTFILE}")
+  execute_process(
+    COMMAND ${APP}
+    WORKING_DIRECTORY ${WORKDIR}
+    #   INPUT_FILE ${STDINFILE}
+    RESULT_VARIABLE testres
+    OUTPUT_VARIABLE testout
+    ERROR_VARIABLE  testerror
+  )
+endif()
 
 ##---------------------------------------------------------------------------##
 # Ensure there are no errors
 if( NOT "${testerror}x" STREQUAL "x" OR NOT "${testres}" STREQUAL "0" )
-   message( FATAL_ERROR "Test FAILED: 
+   message( FATAL_ERROR "Test FAILED:
      error message = ${testerror}")
 endif()
 

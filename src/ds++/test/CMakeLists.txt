@@ -16,14 +16,14 @@ project( dsxx_test CXX )
 
 file( GLOB test_sources *.cc )
 
-list( REMOVE_ITEM test_sources 
+list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/do_exception.cc )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/.. ) # config.h
@@ -50,7 +50,7 @@ list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/tstScalarUnitTest.cc )
 
 # The remaining tests
-add_scalar_tests( 
+add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    Lib_dsxx
    )
@@ -61,7 +61,7 @@ add_scalar_tests(
 # supress warnings, I am turning off warnings for Ut_dsxx_tstdbc_exe
 # when the compiler is PGI.
 if( draco_isPGI )
-   set_source_files_properties( 
+   set_source_files_properties(
       ${PROJECT_SOURCE_DIR}/tstdbc.cc
       PROPERTIES
         COMPILE_FLAGS --no_warnings
@@ -70,32 +70,33 @@ endif()
 
 # ---------------------------------------------------------------------------- #
 # This tests requries python.
+# Python is not available on Darwin's MIC backends.
 # ---------------------------------------------------------------------------- #
-if( PYTHONINTERP_FOUND )
+if( PYTHONINTERP_FOUND AND NOT HAVE_MIC )
 
    set( do_exception_sources ${PROJECT_SOURCE_DIR}/do_exception.cc )
 
     # Build the test executable
     add_executable( Ut_dsxx_do_exception_exe ${do_exception_sources} )
-    set_target_properties( 
-       Ut_dsxx_do_exception_exe 
-       PROPERTIES 
-           OUTPUT_NAME do_exception 
+    set_target_properties(
+       Ut_dsxx_do_exception_exe
+       PROPERTIES
+           OUTPUT_NAME do_exception
            VS_KEYWORD do_exception
            PROJECT_LABEL do_exception
            FOLDER dsxx_test
     )
     target_link_libraries( Ut_dsxx_do_exception_exe Lib_dsxx )
-    add_test( 
-        NAME dsxx_fpe_trap_test 
+    add_test(
+        NAME dsxx_fpe_trap_test
         COMMAND ${PYTHON_EXECUTABLE}
-                ${PROJECT_SOURCE_DIR}/python/test_fpe_trap.py 
+                ${PROJECT_SOURCE_DIR}/python/test_fpe_trap.py
                 $<TARGET_FILE:Ut_dsxx_do_exception_exe>
     )
-    set_tests_properties( dsxx_fpe_trap_test 
+    set_tests_properties( dsxx_fpe_trap_test
        PROPERTIES
-         PASS_REGULAR_EXPRESSION ".*PASSED" 
-         FAIL_REGULAR_EXPRESSION ".*FAILED" 
+         PASS_REGULAR_EXPRESSION ".*PASSED"
+         FAIL_REGULAR_EXPRESSION ".*FAILED"
          LABELS                  "nomemcheck"
     )
 
@@ -106,11 +107,11 @@ if( PYTHONINTERP_FOUND )
       foreach( lib Lib_dsxx )
          set( lib_loc $<TARGET_FILE:${lib}> )
          add_custom_command( TARGET Ut_dsxx_do_exception_exe
-            POST_BUILD 
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc} 
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} 
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc}
+                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
                     )
       endforeach()
    endif()
-    
+
 endif() # PYTHONINTERP_FOUND

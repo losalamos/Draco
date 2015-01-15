@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# use:
+# ssh $HOSTNAME-mic0 /path/config/run_test_on_mic <workdir> <testname>
+
+workdir=$1
+testname=$2
+testargs="$3 $4 $5 $6 $7 $8 $9"
+
+export PATH=$PATH:@PATH@
+export LD_LIBRARY_PATH=@LD_LIBRARY_PATH@:@GSL_ROOT_DIR@/lib
+
+source @MPIVARS_SCRIPT@
+
+echo "cd $workdir"
+cd $workdir
+
+echo ${testname} ${testargs}
+eval ${testname} ${testargs}
+
+if test $? -eq 0; then
+  exit 0;
+else
+  exit 255;
+fi
