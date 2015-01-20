@@ -26,7 +26,7 @@ macro( find_num_procs_avail_for_running_tests )
 
   # Default value is 1
   unset( num_test_procs )
-  
+
   # If this job is running under Torque (msub script), use the
   # environment variable PBS_NP or SLURM_NPROCS
   if( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
@@ -34,12 +34,12 @@ macro( find_num_procs_avail_for_running_tests )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
-    
+
     # If this is not a known batch system, the attempt to set values
     # according to machine name:
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
-    math( EXPR num_test_procs "${num_test_procs} / 2" ) 
+    math( EXPR num_test_procs "${num_test_procs} / 2" )
 
   endif()
 
@@ -56,9 +56,9 @@ endmacro()
 macro( set_defaults )
 
   # Prerequisits:
-  # 
+  #
   # This setup assumes that the project work_dir will contain 3
-  # subdirectories: source, build and target.  See how 
+  # subdirectories: source, build and target.  See how
   # CMAKE_SOURCE_DIRECTORY, CMAKE_BUILD_DIRECTORY AND
   # CMAKE_INSTALL_PREFIX are set just below.
   if( NOT work_dir )
@@ -103,21 +103,21 @@ win32$ set work_dir=c:/full/path/to/work_dir
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
   set( CTEST_BINARY_DIRECTORY "${work_dir}/build"  )
   set( CMAKE_INSTALL_PREFIX   "${work_dir}/target" )
-  
-  # Default is "Experimental." Special builds are "Nightly" or "Continuous"
-  set( CTEST_MODEL "Experimental" ) 
 
-  # Default is "Release." 
+  # Default is "Experimental." Special builds are "Nightly" or "Continuous"
+  set( CTEST_MODEL "Experimental" )
+
+  # Default is "Release."
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
   set( CTEST_BUILD_CONFIGURATION "Release" )
-  
+
   if( WIN32 )
     # add option for "NMake Makefiles JOM"?
     set( CTEST_CMAKE_GENERATOR "NMake Makefiles" )
     # set( CTEST_CMAKE_GENERATOR "Visual Studio 11" )
   else()
     set( CTEST_CMAKE_GENERATOR "Unix Makefiles" )
-  endif()      
+  endif()
 
   set( CTEST_USE_LAUNCHERS 0 )
   set( ENABLE_C_CODECOVERAGE OFF )
@@ -129,10 +129,10 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # ALL CRON JOBS MUST START AFTER THIS TIME + 1 HOUR (FOR DST).
   # This should be set in each projects CTestConfig.cmake file.
   #set( CTEST_NIGHTLY_START_TIME "00:00:01 MST")
-  
+
   set( CTEST_DROP_METHOD "https")
   set( CTEST_DROP_SITE "rtt.lanl.gov")
-  set( CTEST_DROP_LOCATION 
+  set( CTEST_DROP_LOCATION
      "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" )
   set( CTEST_DROP_SITE_CDASH TRUE )
   set( CTEST_CURL_OPTIONS CURLOPT_SSL_VERIFYPEER_OFF CURLOPT_SSL_VERIFYHOST_OFF )
@@ -174,19 +174,19 @@ win32$ set work_dir=c:/full/path/to/work_dir
            # that 'make -l N' actually produces a machine load ~ 1.5*N, so
            # we will specify the max load to be half of the total number
            # of procs.
-           math(EXPR num_compile_procs "${num_compile_procs} / 2" ) 
+           math(EXPR num_compile_procs "${num_compile_procs} / 2" )
            set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
          endif()
        endif()
    endif()
-   
+
    # Testing parallelism
    # - Call the macro
    #   find_num_procs_avail_for_running_tests(num_test_procs) from the
-   #   each projects ctest script (Draco_Linux64.ctest). 
-   
+   #   each projects ctest script (Draco_Linux64.ctest).
+
    # Echo settings
-   if( ${drm_verbose} )  
+   if( ${drm_verbose} )
      message("
 ARGV     = ${ARGV}
 
@@ -228,8 +228,8 @@ macro( parse_args )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES Continuous  )
     set( CTEST_MODEL "Continuous" )
   endif()
-  
-  # Default is "Release." 
+
+  # Default is "Release."
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
   if( ${CTEST_SCRIPT_ARG} MATCHES Debug )
      set( CTEST_BUILD_CONFIGURATION "Debug" )
@@ -238,7 +238,7 @@ macro( parse_args )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES MinSizeRel )
      set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
-  
+
   # Post options: SubmitOnly or NoSubmit
   if( ${CTEST_SCRIPT_ARG} MATCHES Configure )
      set( CTEST_CONFIGURE "ON" )
@@ -259,7 +259,7 @@ macro( parse_args )
   else()
     set( compiler_short_name "gcc" )
   endif()
-  
+
   # refine compiler short name.
   set(USE_CUDA OFF)
   if( $ENV{CXX} MATCHES "pgCC" )
@@ -271,6 +271,8 @@ macro( parse_args )
      elseif( ${work_dir} MATCHES ".*cuda.*" )
         set( compiler_version "cuda" )
         set(USE_CUDA ON)
+     elseif( ${work_dir} MATCHES ".*-knc.*" )
+        set( compiler_version "knc" )
      elseif( ${work_dir} MATCHES ".*fulldiagnostics.*" )
         set( compiler_version "fulldiagnostics" )
         set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
@@ -335,9 +337,9 @@ macro( parse_args )
     #set( num_compile_procs 1 )
     #set(CTEST_BUILD_FLAGS "-j${num_compile_procs}")
   endif()
-  
+
   if( NOT "$ENV{buildname_append}x" STREQUAL "x" )
-    set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )    
+    set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )
   endif()
 
   if( ${drm_verbose} )
@@ -403,7 +405,7 @@ macro( find_tools )
   endif()
 
   find_program( CTEST_MEMORYCHECK_COMMAND NAMES valgrind )
-  set(          CTEST_MEMORYCHECK_COMMAND_OPTIONS  
+  set(          CTEST_MEMORYCHECK_COMMAND_OPTIONS
      "-q --tool=memcheck --leak-check=full --trace-children=yes --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt --gen-suppressions=all" )
   # --show-reachable --num-callers=50
   # --suppressions=<filename>
@@ -490,9 +492,9 @@ macro( setup_for_code_coverage )
 
             # Code coverage setup
             message("Generating ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg")
-            configure_file( 
+            configure_file(
                ${CTEST_SCRIPT_DIRECTORY}/covclass_cmake.cfg
-               ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg 
+               ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg
                @ONLY )
             set( ENV{COVDIRCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
             set( ENV{COVFNCFG}    ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
@@ -509,33 +511,33 @@ macro( setup_for_code_coverage )
 # ")
             execute_process(COMMAND "${COV01}" --on --verbose RESULT_VARIABLE RES)
 
-            # Process and save lines of code 
+            # Process and save lines of code
             message( "Generating lines of code statistics...
  /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
-               --categorize=cloc-categorize.log 
-               --counted=cloc-counted.log 
-               --ignored=cloc-ignored.log 
-               --progress-rate=0 
-               --report-file=lines-of-code.log 
+               --categorize=cloc-categorize.log
+               --counted=cloc-counted.log
+               --ignored=cloc-ignored.log
+               --progress-rate=0
+               --report-file=lines-of-code.log
                --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
             ")
-            execute_process( 
+            execute_process(
                COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
-               --categorize=cloc-categorize.log 
-               --counted=cloc-counted.log 
-               --ignored=cloc-ignored.log 
-               --progress-rate=0 
-               --report-file=lines-of-code.log 
+               --categorize=cloc-categorize.log
+               --counted=cloc-counted.log
+               --ignored=cloc-ignored.log
+               --progress-rate=0
+               --report-file=lines-of-code.log
                --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
-               #  --3 
+               #  --3
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
@@ -545,27 +547,27 @@ macro( setup_for_code_coverage )
                --exclude-dir=heterogeneous,chimpy,test
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
-               --categorize=cloc-categorize-notest.log 
-               --counted=cloc-counted-notest.log 
-               --ignored=cloc-ignored-notest.log 
-               --progress-rate=0 
-               --report-file=lines-of-code-notest.log 
+               --categorize=cloc-categorize-notest.log
+               --counted=cloc-counted-notest.log
+               --ignored=cloc-ignored-notest.log
+               --progress-rate=0
+               --report-file=lines-of-code-notest.log
                --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
             ")
-            execute_process( 
+            execute_process(
                COMMAND /home/regress/draco/regression/cloc
                --exclude-dir=heterogeneous,chimpy,test
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
-               --categorize=cloc-categorize.log 
-               --counted=cloc-counted.log 
-               --ignored=cloc-ignored.log 
-               --progress-rate=0 
-               --report-file=lines-of-code-notest.log 
+               --categorize=cloc-categorize.log
+               --counted=cloc-counted.log
+               --ignored=cloc-ignored.log
+               --progress-rate=0
+               --report-file=lines-of-code-notest.log
                --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
-               #  --3 
+               #  --3
                #  --diff
                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                )
@@ -581,8 +583,8 @@ macro( setup_for_code_coverage )
             file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
                "http://rtt.lanl.gov/redmine" )
             ctest_upload( FILES
-              "${CMAKE_CURRENT_BINARY_DIR}/redmine.url" 
-              "${CTEST_BINARY_DIRECTORY}/lines-of-code.log" 
+              "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
+              "${CTEST_BINARY_DIRECTORY}/lines-of-code.log"
               "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
 
          endif()
@@ -592,7 +594,7 @@ endmacro( setup_for_code_coverage )
 
 # ------------------------------------------------------------
 # Process Code Coverage or Dynamic Memory Analysis
-# 
+#
 # If BUILD_CONFIG = Debug do dynamic analysis (valgrind)
 # If BUILD_CONFIG = Coverage to code coverage (bullseye)
 #
@@ -618,7 +620,7 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
          else()
             message( "ctest_memcheck( SCHEDULE_RANDOM ON )")
             ctest_memcheck(
-               SCHEDULE_RANDOM ON 
+               SCHEDULE_RANDOM ON
                EXCLUDE_LABEL "nomemcheck")
          endif()
       endif()
@@ -628,18 +630,18 @@ endmacro(process_cc_or_da)
 
 # ------------------------------------------------------------
 # Special default settings for a couple of platforms
-# 
+#
 # ------------------------------------------------------------
 macro(platform_customization)
    if( "${sitename}" MATCHES "Cielito" )
 #      set( TOOLCHAIN_SETUP
 #         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake"
 # )
-      set(CT_CUSTOM_VARS 
+      set(CT_CUSTOM_VARS
 "DRACO_LIBRARY_TYPE:STRING=STATIC
 CMAKE_SYSTEM_NAME:STRING=Catamount
 CMAKE_C_COMPILER:FILEPATH=cc
-CMAKE_CXX_COMPILER:FILEPATH=CC 
+CMAKE_CXX_COMPILER:FILEPATH=CC
 CMAKE_Fortran_COMPILER:FILEPATH=ftn
 MPIEXEC:FILEPATH=/usr/bin/aprun
 MPIEXEC_NUMPROC_FLAG:STRING=-n
@@ -656,7 +658,7 @@ endmacro(platform_customization)
 # Special default settings for a couple of platforms
 #
 # Sets DRACO_DIR and CLUBIMC_DIR
-# 
+#
 # ------------------------------------------------------------
 macro(set_pkg_work_dir this_pkg dep_pkg)
 
@@ -665,7 +667,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
 
   if( "${dep_pkg}" MATCHES "draco" )
-    string( REPLACE "cmake_jayenne/draco" "cmake_draco" 
+    string( REPLACE "cmake_jayenne/draco" "cmake_draco"
       ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
   endif()
 
@@ -689,9 +691,9 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # Try a path parallel to the work_dir
     ${${dep_pkg}_work_dir}/target
     )
-  
+
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
-    message( FATAL_ERROR 
+    message( FATAL_ERROR
       "Could not locate the ${dep_pkg} installation directory. "
       "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}" )
   endif()
@@ -699,4 +701,3 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
 
 endmacro(set_pkg_work_dir)
-

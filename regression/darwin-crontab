@@ -6,9 +6,11 @@
 
 01 01 * * 0-6 /projects/opt/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin" &> /projects/opt/draco/regress/logs/darwin-Release-master.log
 
+01 02 * * 0-6 /projects/opt/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e knightscorner -p "draco jayenne capsaicin" &> /projects/opt/draco/regress/logs/darwin-Release-master.log
+
 
 # |    |    |    |    |   |
-# |    |    |    |    |   +- command 
+# |    |    |    |    |   +- command
 # |    |    |    |    +----- day of week (0 - 6) (Sunday=0)
 # |    |    |    +---------- month (1 - 12)
 # |    |    +--------------- day of month (1 - 31)

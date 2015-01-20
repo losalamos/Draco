@@ -2,7 +2,7 @@
 
 #SBATCH -N 1
 #SBATCH --time=480
-#SBATCH --partition=dl585,batch,hdfs
+#SBATCH --partition=knc-mic,knc-mic-preprod
 # https://computing.llnl.gov/linux/slurm/sbatch.html
 
 #----------------------------------------------------------------------#
@@ -88,13 +88,15 @@ fi
 run "module use /projects/opt/draco/vendors/Modules"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
+run "module list"
 run "module purge &> /dev/null"
-#run "module load compilers/intel/15.0.0 mpi/openmpi-1.8.2-intel_15.0.0"
-run "module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035"
-run "module load lapack"
-run "module load cmake/3.1.0 numdiff/5.2.1 subversion random123 eospac"
+run "module list"
+run "module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035-mic"
+run "module load mkl/11.2-mic gsl/1.16-mic"
+run "module load cmake/3.1.0 numdiff/5.6.1-mic subversion random123"
 run "module load python/2.7.3"
-run "module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2"
+# run "module unload ParMetis SuperLU_DIST trilinos"
+run "module load ParMetis/4.0.3-mic SuperLU_DIST/3.3-mic trilinos/11.10.2-mic"
 #run "module load ndi"
 
 # For Intel MPI, we must set these 4 variables:
@@ -106,16 +108,15 @@ export MPIEXEC=`which mpirun`
 export OMP_NUM_THREADS=8
 export OMP_PROC_BIND=true
 comp=`basename $CXX`
-run "mpd --daemon"
+# run "mpd --daemon"
 printenv
 
 case $extra_params in
 "")
     # no-op
     ;;
-cuda)
-    run "module load cudatoolkit/5.0"
-    comp="intel-cuda"
+knightscorner)
+    comp="intel-knc"
     ;;
 *)
     echo "FATAL ERROR"
