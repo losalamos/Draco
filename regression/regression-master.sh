@@ -30,7 +30,7 @@ print_use()
     echo "   -p    project names  = { draco, jayenne, capsaicin, asterisk }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, coverage, cuda, fulldiagnostics,"
-    echo "                            nr, perfbench, pgi}"
+    echo "                            nr, perfbench, pgi, knightscorner}"
 #    echo " "
 #    echo "Extra parameters read from environment:"
 #    echo "   ENV{base_dir}       = {/var/tmp/$USER/cdash, /scratch/$USER/cdash}"
@@ -73,7 +73,7 @@ while getopts ":b:d:e:hp:r" opt; do
 case $opt in
 b)  build_type=$OPTARG ;;
 d)  dashboard_type=$OPTARG ;;
-e)  extra_params=$OPTARG 
+e)  extra_params=$OPTARG
     epdash="-";;
 h)  print_use; exit 0 ;;
 p)  projects=$OPTARG ;;
@@ -91,7 +91,7 @@ case ${build_type} in
 "Debug" | "Release" ) # known $build_type, continue
     ;;
 *)  echo "" ;echo "FATAL ERROR: unsupported build_type (-b) = ${build_type}"
-    print_use; exit 1 ;; 
+    print_use; exit 1 ;;
 esac
 
 case ${dashboard_type} in
@@ -111,11 +111,11 @@ for proj in ${projects}; do
 done
 
 if ! test "${extra_params}x" = "x"; then
-   case $extra_params in 
+   case $extra_params in
    none)
       # if 'none' set to blank
       extra_params=""; epdash="" ;;
-   coverage | cuda | fulldiagnostics | nr | perfbench | pgi ) # known, continue
+   coverage | cuda | fulldiagnostics | nr | perfbench | pgi | knightscorner ) # known, continue
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -123,7 +123,7 @@ if ! test "${extra_params}x" = "x"; then
 fi
 
 case $regress_mode in
-on) ;; 
+on) ;;
 off) userlogdir="/${USER}" ;;
 *)  echo "" ;echo "FATAL ERROR: value of regress_mode=$regress_mode is incorrect."
     exit 1 ;;
@@ -141,12 +141,22 @@ ct-*)
     machine_name_long=Cielito
     machine_name_short=ct
     export regdir=/usr/projects/jayenne/regress
+    # Argument checks
+    if ! test "${extra_params}x" = "x"; then
+        case $extra_params in
+        none) extra_params=""; epdash="" ;;
+        fulldiagnostics | nr | perfbench ) # known, continue
+        ;;
+        *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+            print_use; exit 1 ;;
+        esac
+    fi
     ;;
 ml-*)
     machine_name_long=Moonlight
     machine_name_short=ml
     result=`fn_exists module`
-    if test $result -eq 0; then 
+    if test $result -eq 0; then
         echo 'module function is defined'
     else
         echo 'module function does not exist. defining a local function ...'
@@ -154,6 +164,16 @@ ml-*)
     fi
     module purge
     export regdir=/usr/projects/jayenne/regress
+    # Argument checks
+    if ! test "${extra_params}x" = "x"; then
+        case $extra_params in
+        none)  extra_params=""; epdash="" ;;
+        cuda | fulldiagnostics | nr | perfbench | pgi ) # known, continue
+        ;;
+        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+           print_use; exit 1 ;;
+        esac
+    fi
     ;;
 ccscs[0-9])
     machine_name_long="Linux64 on CCS LAN"
@@ -161,11 +181,31 @@ ccscs[0-9])
     if ! test -d "${regdir}/draco/regression"; then
        export regdir=/home/regress
     fi
+    # Argument checks
+    if ! test "${extra_params}x" = "x"; then
+        case $extra_params in
+        none)  extra_params=""; epdash="" ;;
+        coverage | fulldiagnostics | nr | perfbench ) # known, continue
+        ;;
+        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+           print_use; exit 1 ;;
+        esac
+    fi
     ;;
 darwin*)
     machine_name_long="Linux64 on CCS Darwin cluster"
     machine_name_short=darwin
     export regdir=/projects/opt/draco/regress
+    # Argument checks
+    if ! test "${extra_params}x" = "x"; then
+        case $extra_params in
+        none)  extra_params=""; epdash="" ;;
+        cuda | fulldiagnostics | nr | perfbench | knightscorner ) # known, continue
+        ;;
+        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+           print_use; exit 1 ;;
+        esac
+    fi
     ;;
 *)
     echo "FATAL ERROR: I don't know how to run regression on host = ${host}."
@@ -214,8 +254,8 @@ echo " "
 
 # use forking to reduce total wallclock runtime, but do not fork
 # when there is a dependency:
-# 
-# draco --> capsaicin  --\ 
+#
+# draco --> capsaicin  --\
 #       --> jayenne     --+--> asterisk
 
 # special cases
