@@ -314,7 +314,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     # For MIC nodes, ssh to the node and then run a script that
     # setups the local environment (PATHS, LD_LIBRARY_PATH, etc.)
     # and then run the test normally.
-    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
+    set( RUN_CMD ssh -o StrictHostKeyChecking=no $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
