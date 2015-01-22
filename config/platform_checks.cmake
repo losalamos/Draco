@@ -1,10 +1,9 @@
-#----------------------------------------------------------------------#
+##---------------------------------------------------------------------------##
 # file   : platform_checks.cmake
 # brief  : Platform Checks for Draco Build System
-# note   : Copyright (C) 2011 Los Alamos National Security, LLC.  
+# note   : Copyright (C) 2011-2014 Los Alamos National Security, LLC.
 #          All rights reserved
-# version: $Id$
-#----------------------------------------------------------------------#
+##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
 ## Determine System Type and System Names
@@ -40,7 +39,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 ## Determine if gethostname() is available.
 ## Determine the value of HOST_NAME_MAX.
-## 
+##
 ## Used by ds++/SystemCall.cc and ds++/path.cc
 ##---------------------------------------------------------------------------##
 macro( query_have_gethostname )
@@ -83,7 +82,7 @@ macro( query_have_gethostname )
     if( NOT HAVE_MAXHOSTNAMELEN )
        unset( HAVE_MAXHOSTNAMELEN )
     endif()
-    
+
     # MAX_COMPUTERNAME_LENGTH
     # check_symbol_exists( MAX_COMPUTERNAME_LENGTH "windows.h" HAVE_MAX_COMPUTERNAME_LENGTH )
     # if( NOT HAVE_MAX_COMPUTERNAME_LENGTH )
@@ -94,7 +93,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 ## Determine if gethostname() is available.
 ## Determine the value of HOST_NAME_MAX.
-## 
+##
 ## Used by ds++/SystemCall.cc and ds++/path.cc
 ##---------------------------------------------------------------------------##
 macro( query_have_maxpathlen )
@@ -119,7 +118,7 @@ endmacro()
 ## Determine if some system headers exist
 ##---------------------------------------------------------------------------##
 macro( query_have_sys_headers )
-   
+
    include( CheckIncludeFiles )
    check_include_files( sys/types.h HAVE_SYS_TYPES_H )
    check_include_files( unistd.h    HAVE_UNISTD_H    )
@@ -150,14 +149,14 @@ endmacro()
 ## Detect support for the C99 restrict keyword
 ## Borrowed from http://cmake.3232098.n2.nabble.com/AC-C-RESTRICT-td7582761.html
 ##
-## A restrict-qualified pointer (or reference) is basically a promise to the 
-## compiler that for the scope of the pointer, the target of the pointer will 
+## A restrict-qualified pointer (or reference) is basically a promise to the
+## compiler that for the scope of the pointer, the target of the pointer will
 ## only be accessed through that pointer (and pointers copied from it).
 ##
 ## http://www.research.scea.com/research/pdfs/GDC2003_Memory_Optimization_18Mar03.pdf
 ##---------------------------------------------------------------------------##
 macro( query_have_restrict_keyword )
-   
+
    message(STATUS "Looking for the C99 restrict keyword")
    include( CheckCSourceCompiles )
    foreach( ac_kw __restrict __restrict__ _Restrict restrict )
@@ -170,7 +169,7 @@ macro( query_have_restrict_keyword )
             t[0] = 0;
             return foo(t); }
          "
-         HAVE_RESTRICT) 
+         HAVE_RESTRICT)
 
       if( HAVE_RESTRICT )
          set( RESTRICT_KEYWORD ${ac_kw} )
@@ -231,7 +230,7 @@ macro( query_cxx11_features )
     set( "${reqfeat}" ON CACHE BOOL "C++11 feature macro value." FORCE )
   endforeach()
   message( STATUS "Looking for required C++11 features...done.  See ds++/config.h for details." )
-  
+
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -277,6 +276,3 @@ endmacro()
 
 
 ##---------------------------------------------------------------------------##
-
-
-

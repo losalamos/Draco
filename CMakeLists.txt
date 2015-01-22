@@ -9,91 +9,19 @@
 # $Id$
 #------------------------------------------------------------------------------#
 
-#------------------------------------------------------------------------------#
-# How to build Draco using CMake:
-#------------------------------------------------------------------------------#
-# Background:
-#
-# There are 3 directories: source; build; target.
-#   source - this is the location of svn co files
-#   build  - this is the location for makefiles, object files, etc.
-#   target - this is the install location for final headers, libraries
-#            and binaries.
-#
-# Environment:
-#
-# - CMake must be in your path.
-# - The compiler is chosen by setting $CXX, $CC, $FC, etc.  On the
-#   ICN this is done for you automatically.  If not set, CMake will
-#   use whatever it can find in your path (e.g.: /usr/bin/g++)
-# - Vendor locations can be specified by setting $<VENDOR>_LIB_DIR and
-#   $<VENDOR>_INC_DIR. For example, $MPI_INC_DIR, $GSL_ROOT_DIR,
-#   etc. When using the Draco modules feature, this is done
-#   automatically.
-#
-# Requirements:
-#
-# 1. By default MPI is selected by finding
-#    mpirun/mpiexec/aprun/srun/etc in your PATH.
-# 2. GSL must be found in a standard system location or the
-#    environment variable GSL_ROOT_DIR must be set to point to the
-#    local GSL installation.
-#
-# Building:
-#
-# 1. Change to your build directory.
-# 2. [optional] Copy the $SRC_DIR/CMakeCache.txt file to the build
-#    directory and edit the file as needed.
-# 3. Run 'cmake $SRC_DIR'.  This generates Makefiles in the build
-#    directory.
-# 4. [optional] Use command line arguments to cmake to configure your
-#    build (instead of using CMakeCache.txt).  For example:
-#    cmake -DCMAKE_INSTALL_PREFIX=/var/tmp/draco-install-dir \
-#          -DDRACO_DBC_LEVEL=0 \
-#          -DCMAKE_BUILD_TYPE=Release \
-#          /path/to/draco/source
-# 5. [optional] Run 'make edit_cache' to review your build setup.
-#    Edit as needed.
-# 6. Run 'make -j' to compile the code. (also try 'make VERBOSE=1')
-# 7. Run 'ctest -j16' to run the tests.
-# 8. Run 'make install' to install libraries in the $CMAKE_PREFIX_DIR.
-# 9. [optional] Run 'make help' for a list of targets.
-#
-# GUI
-#
-# If you prefer working in a GUI instead of using the command line,
-# run 'cmake-gui' and provide values for 'where is the source code'
-# and 'where to build the binaries'.  Press the 'configure' and
-# 'generate' buttons to generate Makefiles or project files.
-#
-# Development Environments
-#
-# If you prefer working in XCode or Eclipse CDT, you should tell CMake
-# to generate project files instead of makefiles:
-#    cmake -G"Eclipse CDT4 - Unix Makefiles" ...
-#    cmake -G"XCode"
-#
-# Reference:
-#
-# Draco build system: /ccs/codes/radtran/svn/draco/dracodoc/build or
-#    https://rtt.lanl.gov/redmine/projects/draco/repository/dracodoc/changes/build/dbs.pdf
-# CMake Tutorial: http://www.cmake.org/cmake/help/cmake_tutorial.html
-# CMake Wiki:     http://www.cmake.org/Wiki/CMake
-# CMake FAQ:      http://www.cmake.org/Wiki/CMake_FAQ
-# CMake Documentation: http://www.cmake.org/cmake/help/documentation.html
-# CMake version compatibility matrix:
-#       http://www.cmake.org/Wiki/CMake_Version_Compatibility_Matrix
-#------------------------------------------------------------------------------#
+# Build notes: http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
 
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 project( Draco CXX C )
 
- # Do not look for Fortran for
- # 1. XCode based Generators, or
- # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
- #    look for Fortran.
- # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
-if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
+# Do not look for Fortran for
+# 1. XCode based Generators, or
+# 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
+#    look for Fortran).
+# 3. Ninja, Codeblocks or Eclipse CDT4 generators.
+# 4. Unix Makefile generators when $ENV{FC} is not set (clang on Linux)
+if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
+    NOT "$ENV{FC}x" STREQUAL "x" )
    enable_language( Fortran OPTIONAL )
 endif()
 
@@ -139,16 +67,10 @@ dbsConfigInfo()
 include( compilerEnv )
 dbsSetupCompilers()
 dbsSetupCxx()
-
-# Is Fortran enabled (it is considered 'optional' for draco)?
-get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
-if( _LANGUAGES_ MATCHES Fortran )
-   dbsSetupFortran()
-endif()
-
-include( FeatureSummary )
+dbsSetupFortran()
 
 # Find any globally required libraries
+include( FeatureSummary )
 include( vendor_libraries )
 setupVendorLibraries()
 

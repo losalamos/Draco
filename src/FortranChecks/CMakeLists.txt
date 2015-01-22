@@ -25,20 +25,20 @@ file( GLOB Csources *.cc )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${dsxx_BINARY_DIR} ) # ds++/config.h
 
 # ---------------------------------------------------------------------------- #
 # Build package libraries
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
-   TARGET       Lib_FC_Derived_Type 
+add_component_library(
+   TARGET       Lib_FC_Derived_Type
    LIBRARY_NAME FC_Derived_Type
-   SOURCES      "${Csources}" 
+   SOURCES      "${Csources}"
    NOEXPORT )
-   
-set_target_properties( Lib_FC_Derived_Type 
+
+set_target_properties( Lib_FC_Derived_Type
    PROPERTIES FOLDER FortranChecks )
 
 # For Unix, this will simply run add_subdirectory(f90sub). For MVSE or XCode, an
@@ -48,26 +48,24 @@ include(CMakeAddFortranSubdirectory)
 
 # CMake will put some run scripts in $build_dir/f90sub Another directory for
 # the build is generated at $build_dir/FortranChecks_f90sub_build-prefix
-cmake_add_fortran_subdirectory( 
+cmake_add_fortran_subdirectory(
   f90sub                       # directory name
   PROJECT FortranChecks_f90sub # project name in toplevel CMakeLists.txt
-                               # Creates target named 'FortranChecks_f90sub_build' 
+                               # Creates target named 'FortranChecks_f90sub_build'
   ARCHIVE_DIR  f90sub          # .lib location relative to root binary tree
   RUNTIME_DIR  f90sub          # .dll location relative to root binary tree
   LIBRARIES    rtt_FC_f90sub   # Sub project will create a library with this name.
                                # --> librtt_FC_f90.dll.
   TARGET_NAMES Lib_FC_f90sub
-  DEPENDS      "Lib_FC_Derived_Type;Lib_dsxx" 
-  NO_EXTERNAL_INSTALL 
+  DEPENDS      "Lib_FC_Derived_Type;Lib_dsxx"
+  NO_EXTERNAL_INSTALL
 # VERBOSE
-)      
-   
-#set_target_properties( FortranChecks_f90sub_build PROPERTIES FOLDER FortranChecks ) 
+)
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-# No need to install this library as it is not used by anyone else.  This 
+# No need to install this library as it is not used by anyone else.  This
 # component is only used to test Fortran/C binding.
 # install( TARGETS Lib_FC_Derived_Type EXPORT draco-targets DESTINATION lib )
 
@@ -76,7 +74,7 @@ cmake_add_fortran_subdirectory(
 # ---------------------------------------------------------------------------- #
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

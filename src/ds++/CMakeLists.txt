@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Sep 24
 # brief  Generate build project files for ds++.
-# note   Copyright (C) 2010-2014, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -76,7 +76,7 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}   # sources
    ${PROJECT_BINARY_DIR} ) # config.h
 
@@ -84,10 +84,10 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
-   TARGET       Lib_dsxx 
-   LIBRARY_NAME ds++ 
-   SOURCES      "${sources}" 
+add_component_library(
+   TARGET       Lib_dsxx
+   LIBRARY_NAME ds++
+   SOURCES      "${sources}"
    )
 target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 
@@ -104,7 +104,7 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 if( WIN32 )
   add_subdirectory( bin )
 endif()

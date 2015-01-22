@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Nov 2
 # brief  Install the config directory in the target directory
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -13,6 +13,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project( config )
 
 set( CMake_src
+   CMakeAddFortranSubdirectory.cmake
    apple-clang.cmake
    buildEnv.cmake
    compilerEnv.cmake
@@ -36,7 +37,6 @@ set( CMake_src
    vendor_libraries.cmake
    windows-cl.cmake
    windows-ifort.cmake
-   CMakeAddFortranSubdirectory.cmake
 )
 set( CMake_in
    cmake_uninstall.cmake.in

@@ -363,50 +363,53 @@ endmacro()
 #------------------------------------------------------------------------------#
 macro(dbsSetupFortran)
 
-   #if( NOT gen_comp_env_set STREQUAL 1 )
-      dbsSetupCompilers()
-   #endif()
+  dbsSetupCompilers()
 
-   # Deal with comiler wrappers
-   if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" )
+  # Is Fortran enabled (it is considered 'optional' for draco)?
+  get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
+  if( _LANGUAGES_ MATCHES Fortran )
+
+    # Deal with comiler wrappers
+    if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" )
       # Ceilo (catamount) uses a wrapper script
       # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
       # compiler.  Use the following command to determine the actual
       # compiler flavor before setting compiler flags (end of this
       # macro).
       execute_process(
-         COMMAND ${CMAKE_Fortran_COMPILER} --version
-         # COMMAND ${CMAKE_Fortran_COMPILER} -V
-         OUTPUT_VARIABLE my_fc_compiler
-         ERROR_QUIET )
+        COMMAND ${CMAKE_Fortran_COMPILER} --version
+        OUTPUT_VARIABLE my_fc_compiler
+        ERROR_QUIET )
       string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
-         my_fc_compiler ${my_fc_compiler})
-   else()
+        my_fc_compiler ${my_fc_compiler})
+    else()
       set( my_fc_compiler ${CMAKE_Fortran_COMPILER} )
-   endif()
+    endif()
 
-   # MPI wrapper
-   if( ${my_fc_compiler} MATCHES "mpif90" )
-     execute_process( COMMAND ${my_fc_compiler} --version
-       OUTPUT_VARIABLE mpifc_version_output
-       OUTPUT_STRIP_TRAILING_WHITESPACE )
-     if( ${mpifc_version_output} MATCHES ifort )
-       set( my_fc_compiler ifort )
-     endif()
-   endif()
+    # MPI wrapper
+    if( ${my_fc_compiler} MATCHES "mpif90" )
+      execute_process( COMMAND ${my_fc_compiler} --version
+        OUTPUT_VARIABLE mpifc_version_output
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+      if( ${mpifc_version_output} MATCHES ifort )
+        set( my_fc_compiler ifort )
+      endif()
+    endif()
 
-   if( ${my_fc_compiler} MATCHES "pgf9[05]" OR
-         ${my_fc_compiler} MATCHES "pgfortran" )
+    if( ${my_fc_compiler} MATCHES "pgf9[05]" OR
+        ${my_fc_compiler} MATCHES "pgfortran" )
       include( unix-pgf90 )
-   elseif( ${my_fc_compiler} MATCHES "ifort" )
+    elseif( ${my_fc_compiler} MATCHES "ifort" )
       include( unix-ifort )
-   elseif( ${my_fc_compiler} MATCHES "xl" )
+    elseif( ${my_fc_compiler} MATCHES "xl" )
       include( unix-xlf )
-   elseif( ${my_fc_compiler} MATCHES "gfortran" )
+    elseif( ${my_fc_compiler} MATCHES "gfortran" )
       include( unix-gfortran )
-   else()
+    else()
       message( FATAL_ERROR "Build system does not support F90=${my_fc_compiler}" )
-   endif()
+    endif()
+
+  endif()
 
 endmacro()
 

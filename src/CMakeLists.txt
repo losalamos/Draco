@@ -46,6 +46,12 @@ macro( add_dir_if_exists package )
    endif()
 endmacro()
 
+# If CC=clang and FC is not defined, turn off Fortran for now.
+set( HAVE_FORTRAN ON )
+if( ${CMAKE_C_COMPILER} MATCHES clang AND "$ENV{FC}x" STREQUAL "x" )
+  set( HAVE_FORTRAN OFF )
+endif()
+
 # Level 1
 message(" ")
 message( STATUS "Configuring Level 1 packages --" )
@@ -63,9 +69,11 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
-add_dir_if_exists( FortranChecks )
-if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
-  add_dir_if_exists( lapack_wrap )  # needs ds++
+if( HAVE_FORTRAN )
+  add_dir_if_exists( FortranChecks )
+  if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
+    add_dir_if_exists( lapack_wrap )  # needs ds++
+  endif()
 endif()
 if( GRACE_FOUND )
   add_dir_if_exists( plot2D )

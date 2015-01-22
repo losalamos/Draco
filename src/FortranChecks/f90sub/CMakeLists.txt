@@ -34,23 +34,27 @@ file( GLOB f90sources *.f90 )
 # Build package libraries
 # ---------------------------------------------------------------------------- #
 
-# If we are using cmake_add_fortran_subdirectory to include this package, the 
-# library targets Lib_dsxx and Lib_FC_derived_typ will not be defined. 
+# If we are using cmake_add_fortran_subdirectory to include this package, the
+# library targets Lib_dsxx and Lib_FC_derived_typ will not be defined.
 # We must manually find these libraries.
 if(NOT TARGET Lib_dsxx)
    include(CMakeAddFortranSubdirectory)
-   cafs_create_imported_targets( Lib_dsxx "rtt_ds++" 
+   cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
       "${PROJECT_BINARY_DIR}/../../ds++" )
 endif()
 if( NOT TARGET Lib_FC_Derived_Type)
-   cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type" 
+   cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
       "${PROJECT_BINARY_DIR}/../../FortranChecks" )
 endif()
 
 add_component_library(
    TARGET       Lib_FC_f90sub
    LIBRARY_NAME FC_f90sub
-   SOURCES      "${f90sources}" 
+   SOURCES      "${f90sources}"
    LINK_LANGUAGE "Fortran"
    TARGET_DEPS   "Lib_FC_Derived_Type;Lib_dsxx"
    NOEXPORT )
+
+# Debug target properties:
+#include(print_target_properties)
+#echo_targets("Lib_FC_f90sub;Lib_FC_Derived_Type;Lib_dsxx")
