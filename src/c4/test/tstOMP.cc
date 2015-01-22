@@ -46,15 +46,15 @@ bool topology_report(void)
     std::string my_pname = rtt_c4::get_processor_name();
     Remember( size_t namelen = my_pname.size(); );
 
-    // Create a container on IO proc to hold names of all nodes.    
+    // Create a container on IO proc to hold names of all nodes.
     std::vector< std::string > procnames(mpi_ranks);
-    
+
     // Gather names into pnames on IO proc.
     rtt_c4::indeterminate_gatherv( my_pname, procnames );
 
     // Is there only 1 MPI rank per machine node?
     int one_mpi_rank_per_node(0);
-    
+
     // Look at the data found on the IO proc.
     if( my_mpi_rank == 0 )
     {
@@ -75,7 +75,7 @@ bool topology_report(void)
         // Print a report
         std::cout << "\nWe are using " << mpi_ranks << " mpi rank(s) on "
                   << unique_processor_names.size() << " unique nodes.";
-        
+
         for( size_t i=0; i<mpi_ranks; ++i )
             std::cout << "\n  - MPI rank " << i <<" is on " << procnames[i];
         std::cout << "\n" << std::endl;
@@ -85,7 +85,7 @@ bool topology_report(void)
     }
 
     rtt_c4::broadcast( &one_mpi_rank_per_node, 1, 0 );
-    
+
     // return 't' if 1 MPI rank per machine node.
     return (one_mpi_rank_per_node == 1);
 }
@@ -111,12 +111,12 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
 
     std::string procname = rtt_c4::get_processor_name();
 
-#ifdef USE_OPENMP
+#ifdef OPENMP_FOUND
 
     // Turn on the dynamic thread adjustment capability.
     omp_set_dynamic(1);
     int num_dynamic_threads = omp_get_dynamic();
-    
+
     int tid(-1);
     int nthreads(-1),maxthreads(-1);
 
@@ -168,7 +168,7 @@ void topo_report(rtt_dsxx::UnitTest &ut, bool & one_mpi_rank_per_node )
         PASSMSG("topology report finished successfully.");
     else
         FAILMSG("topology report failed.");
-    
+
     return;
 }
 
@@ -177,7 +177,7 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
 {
     if( rtt_c4::node() == 0 )
         std::cout << "Begin test sample_sum()...\n" << std::endl;
-    
+
     // Generate data and benchmark values:
     int N(10000000);
     std::vector<double> foo(N,0.0);
@@ -186,7 +186,7 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
 
     Timer t1_serial_build;
     t1_serial_build.start();
-    
+
     for(int i=0;i<N;++i)
     {
         foo[i] = 99.00+i;
@@ -197,21 +197,21 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
 
     Timer t2_serial_accumulate;
     t2_serial_accumulate.start();
-    
+
     double sum = std::accumulate(foo.begin(), foo.end(), 0.0);
 
     t2_serial_accumulate.stop();
-    
+
     if( node() == 0 )
         std::cout << "benchmark: sum(foo) = " << sum << std::endl;
 
-#ifdef USE_OPENMP
+#ifdef OPENMP_FOUND
     {
         // More than 1 MPI rank per node --> turn off OMP.
         if( ! omrpn )
             omp_set_num_threads( 1 );
 
-        // Generate omp_result 
+        // Generate omp_result
         std::vector<double> omp_result(N,0.0);
         double omp_sum(0.0);
 
@@ -227,12 +227,12 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
                 std::cout << "\nNow computing sum using "
                           << nthreads
                           << " OMP threads." << std::endl;
-                
+
             }
         }
 
 #pragma omp parallel for shared(foo,bar)
-        
+
         for(int i=0;i<N;++i)
         {
             foo[i] = 99.00+i;
@@ -240,18 +240,18 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
             result[i] = std::sqrt(foo[i]+bar[i])+1.0;
         }
         t1_omp_build.stop();
-        
+
         // Accumulate via OMP
 
         Timer t2_omp_accumulate;
         t2_omp_accumulate.start();
-        
+
 #pragma omp parallel for reduction(+: omp_sum)
         for( int i=0; i<N; ++i )
             omp_sum += foo[i];
 
         t2_omp_accumulate.stop();
-        
+
         // Sanity check
         if( rtt_dsxx::soft_equiv(sum,omp_sum) )
             PASSMSG( "OpenMP sum matches std::accumulate() value!" );
@@ -270,12 +270,12 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
                       << t2_serial_accumulate.wall_clock()
                       << "\t" << t2_omp_accumulate.wall_clock() << std::endl;
         }
-        
+
 
         // [2014-11-17 KT] The accumulate test no longer provides enough work
         // to offset the overhead of OpenMP, especially for the optimized
         // build.  Turn this test off...
-        
+
         // if( omrpn && nthreads > 4 )
         // {
         //     if( t2_omp_accumulate.wall_clock()
@@ -283,8 +283,8 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
         //         PASSMSG( "OMP accumulate was faster than Serial accumulate.");
         //     else
         //         FAILMSG( "OMP accumulate was slower than Serial accumulate.");
-        // } 
-        
+        // }
+
     }
 #else // SCALAR
     PASSMSG("OMP is disabled.  No checks made.");
@@ -294,7 +294,7 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
 
 //---------------------------------------------------------------------------//
 // This is a simple demonstration problem for OMP.  Nothing really to check
-// for PASS/FAIL. 
+// for PASS/FAIL.
 int MandelbrotCalculate(std::complex<double> c, int maxiter)
 {
     // iterates z = z*z + c until |z| >= 2 or maxiter is reached, returns the
@@ -327,7 +327,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     t.start();
 
     int nthreads(-1);
-#ifdef USE_OPENMP
+#ifdef OPENMP_FOUND
 #pragma omp parallel
         {
             if( node() == 0 && omp_get_thread_num() == 0 )
@@ -338,7 +338,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
                           << std::endl;
             }
         }
-        
+
 #pragma omp parallel for ordered schedule(dynamic)
     for( int pix=0; pix<num_pixels; ++pix)
     {
@@ -367,8 +367,8 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
             if(x+1 == width) image1 << "|\n"; //std::puts("|");
         }
     }
-#endif // USE_OPENMP
-    
+#endif // OPENMP_FOUND
+
     t.stop();
     double const gen_time_omp = t.wall_clock();
 
@@ -376,7 +376,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     if( rtt_c4::node() == 0 )
         std::cout << "\nGenerating Mandelbrot image (Serial)...\n"
                   << std::endl;
-    
+
     t.reset();
     t.start();
 
@@ -409,7 +409,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
     t.stop();
     double const gen_time_serial = t.wall_clock();
 
-#ifdef USE_OPENMP
+#ifdef OPENMP_FOUND
     if( image1.str() == image2.str() )
     {
         // std::cout << image1.str() << std::endl;
@@ -420,7 +420,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
         FAILMSG("Scalar and OMP generated Mandelbrot images do not match.");
     }
 #endif
-    
+
     std::cout << "\nTime to generate Mandelbrot:"
               << "\n   Normal: " << gen_time_serial << " sec." << std::endl;
 
@@ -432,7 +432,7 @@ void MandelbrotDriver(rtt_dsxx::UnitTest & ut)
         else
             FAILMSG( "OMP generation of Mandelbrot image is slower.");
     }
-    
+
     return;
 }
 
@@ -446,16 +446,16 @@ int main(int argc, char *argv[])
     {
         // One MPI rank per machine node?
         bool omrpn(false);
-        
+
         // Unit tests
         topo_report( ut, omrpn );
         sample_sum(  ut, omrpn );
-        
+
         if( rtt_c4::nodes() == 1 )
             MandelbrotDriver(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstOMP.cc

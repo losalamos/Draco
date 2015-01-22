@@ -1,6 +1,6 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-gfortran.cmake
-# author Kelly Thompson 
+# author Kelly Thompson
 # date   2010 Sep 27
 # brief  Establish flags for Unix/Linux - Gnu Fortran
 # note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
@@ -20,7 +20,7 @@ if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
       COMMAND ${CMAKE_Fortran_COMPILER} --version
       OUTPUT_VARIABLE CMAKE_Fortran_COMPILER_VERSION
       ERROR_QUIET )
-   string( REGEX REPLACE "^(.*).Copyright.*" "\\1" 
+   string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
       CMAKE_Fortran_COMPILER_VERSION
       ${CMAKE_Fortran_COMPILER_VERSION})
    string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
@@ -35,18 +35,18 @@ endif()
 
 #
 # Compiler Flags
-# 
+#
 
 if( NOT Fortran_FLAGS_INITIALIZED )
    set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
    set( CMAKE_Fortran_FLAGS "-ffree-line-length-none -cpp" )
-   set( CMAKE_Fortran_FLAGS_DEBUG 
+   set( CMAKE_Fortran_FLAGS_DEBUG
       "-g -gdwarf-3 -fbounds-check -frange-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-integer=2147483647 -finit-real=NAN -finit-character=127 -DDEBUG" )
    set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -mtune=native -ftree-vectorize -funroll-loops -DNDEBUG" )
    set( CMAKE_Fortran_FLAGS_MINSIZEREL "${CMAKE_Fortran_FLAGS_RELEASE}" )
    set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -gdwarf-3 ${CMAKE_Fortran_FLAGS_RELEASE}")
-   
+
    if (NOT APPLE AND HAS_MARCH_NATIVE)
       set( CMAKE_Fortran_FLAGS    "${CMAKE_Fortran_FLAGS} -march=native" )
    endif()
@@ -56,10 +56,15 @@ endif()
 # Ensure cache values always match current selection
 ##---------------------------------------------------------------------------##
 set( CMAKE_Fortran_FLAGS                "${CMAKE_Fortran_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+#
+# Toggle compiler flags for optional features
+#
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-gfortran.cmake

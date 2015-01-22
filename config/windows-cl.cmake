@@ -6,21 +6,32 @@
 # note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$ 
+# $Id$
 #------------------------------------------------------------------------------#
 
-# Prepare
-string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE )
+#
+# Sanity Checks
+#
+if( NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio" AND
+    NOT ${CMAKE_GENERATOR} MATCHES  "NMake Makefiles" )
+  message( FATAL_ERROR "config/windows-cl.cmake must be taught to build for this compiler (CMAKE_GENERATOR = ${CMAKE_GENERATOR}).  Yell atkt for help on this error." )
+endif()
+
+#
+# Compiler flag checks
+#
+include(platform_checks)
+query_openmp_availability()
 
 # OpenMP is not available in free MSVC products.
-if( USE_OPENMP )
-    # Platform checks for gethostname()
-    include( CheckIncludeFiles )
-    check_include_files( omp.h HAVE_OMP_H )
-    if( NOT HAVE_OMP_H )
-       set( USE_OPENMP OFF CACHE BOOL "Turn on OpenMP features?" FORCE )
-    endif()
-endif()
+# if( USE_OPENMP )
+#     # Platform checks for gethostname()
+#     include( CheckIncludeFiles )
+#     check_include_files( omp.h HAVE_OMP_H )
+#     if( NOT HAVE_OMP_H )
+#        set( USE_OPENMP OFF CACHE BOOL "Turn on OpenMP features?" FORCE )
+#     endif()
+# endif()
 
 # This is required to provide compatibility between MSVC and MinGW generated libraries.
 if( DRACO_SHARED_LIBS )
@@ -31,87 +42,84 @@ endif()
 # 1. Allow M_PI to be found via <cmath>
 set( _USE_MATH_DEFINES 1 )
 
-  # MSVC 9 2008 SP1 Flags
-  # http://msdn.microsoft.com/en-us/library/19z1t1wy.aspx
-  # /arch:SSE2 - enable use of SSE2 instructions (not compatible with /fp:strict)
-  # /EHsc - The exception-handling model that catches C++ exceptions only and
-  #       tells the compiler to assume that extern C functions never throw 
-  #       a C++ exception.
-  # /EHa - The exception-handling model that catches asynchronous (structured)
-  #       and synchronous (C++) exceptions.
-  # /fp:strict - The strictest floating-point model.
-  # /GR - Enables run-time type information (RTTI).
-  # /Gy - Enables function-level linking
-  # /GZ - Enable stack checks (deprecated, use /RTC1 instead, http://msdn.microsoft.com/en-us/library/hddybs7t.aspx)
-  # /Od - Disable optimization.
-  # /O2 - Create fast code.
-  # /01 - Create small code.
-  # /Ob - Controls inline expansion
-  # /openmp - Enables #pragma omp in source code.
-  # /MD - Creates a multithreaded DLL using MSVCRT.lib
-  # /MP<N> - Enable parallel builds
-  # /MT - Creates a multithreaded executable file using LIBCMT.lib
-  # /RTC1 - Enable run-time error checking.
-  # /W4 - Issue all warnings.
-  # /Za - Disables language extensions. Emits an error for language constructs that are not compatible with either ANSI C or ANSI C++. (DOM parser fails to compile with this flag).
-  # /Zi - Generates complete debugging information.
+set( MD_or_MT_debug "${MD_or_MT}d" )
+if( "${DEBUG_RUNTIME_EXT}" STREQUAL "d" )
+  set( MD_or_MT_debug "${MD_or_MT}${DEBUG_RUNTIME_EXT} /RTC1" ) # RTC requires /MDd
+endif()
 
-  set( MD_or_MT_debug "${MD_or_MT}d" )
-  if( "${DEBUG_RUNTIME_EXT}" STREQUAL "d" )
-    set( MD_or_MT_debug "${MD_or_MT}${DEBUG_RUNTIME_EXT} /RTC1" ) # RTC requires /MDd
-  endif()
+set( numproc $ENV{NUMBER_OF_PROCESSORS} )
+if( "${numproc}notfound" STREQUAL "notfound" )
+  set( numproc 1 )
+endif()
 
-  set( numproc $ENV{NUMBER_OF_PROCESSORS} )
-  if( "${numproc}notfound" STREQUAL "notfound" )
-    set( numproc 1 )
-  endif( "${numproc}notfound" STREQUAL "notfound" )     
-  
-if( ${CMAKE_GENERATOR} MATCHES "Visual Studio" OR 
-   ${CMAKE_GENERATOR}  MATCHES  "NMake Makefiles" )
-   
-  set( CMAKE_C_FLAGS "/W2 /Gy /DWIN32 /D_WINDOWS /MP${numproc}" ) # /Za
+if( NOT CXX_FLAGS_INITIALIZED )
+  set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+
+  set( CMAKE_C_FLAGS "/W2 /Gy /DWIN32 /D_WINDOWS /MP${numproc}" )
   set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /Ob0 /DDEBUG /D_DEBUG" )
-  set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /Ob2 /DNDEBUG" ) # /O2 /Ob2
+  set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /Ob2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /Ob1 /DNDEBUG" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" ) # /O2 /Ob2
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" )
 
-  set( CMAKE_CXX_FLAGS "/W2 /Gy /EHa /DWIN32 /D_WINDOWS /MP${numproc}" ) # /Zm1000 /GX /GR /Za
+  set( CMAKE_CXX_FLAGS "/W2 /Gy /EHa /DWIN32 /D_WINDOWS /MP${numproc}" )
   set( CMAKE_CXX_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /Ob0 /DDEBUG /D_DEBUG" )
-  set( CMAKE_CXX_FLAGS_RELEASE "/${MD_or_MT} /O2 /Ob2 /DNDEBUG" ) # /O2 /Ob2
+  set( CMAKE_CXX_FLAGS_RELEASE "/${MD_or_MT} /O2 /Ob2 /DNDEBUG" )
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /Ob1 /DNDEBUG" )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" ) # /O2 /Ob2
-  
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" )
+
   # If building static libraries, inlcude debugging information in the
   # library.
   if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
     set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /Z7"   )
     set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7" )
-  endif()  
+  endif()
 
   # Suppress some MSVC warnings about "unsafe" pointer use.
   if(MSVC_VERSION GREATER 1399)
-    set( CMAKE_C_FLAGS 
+    set( CMAKE_C_FLAGS
       "${CMAKE_C_FLAGS} /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
-    set( CMAKE_CXX_FLAGS 
+    set( CMAKE_CXX_FLAGS
       "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
     #set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
     #set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
-  endif(MSVC_VERSION GREATER 1399)
-
-  find_library( Lib_win_winsock 
-     NAMES wsock32;winsock32;ws2_32 
-     HINTS 
-        "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Lib"
-        "C:/Windows/SysWOW64"
-  )  
-  if( ${Lib_win_winsock} MATCHES "NOTFOUND" )
-     message( FATAL_ERROR "Could not find library winsock32 or ws2_32!" )
   endif()
-  
-else() 
 
-  message( FATAL_ERROR "config/windows-cl.cmake must be taught to build for this compiler (CMAKE_GENERATOR = ${CMAKE_GENERATOR}).  Yell at kt for help on this error." )
-  
+endif()
+
+##---------------------------------------------------------------------------##
+# Ensure cache values always match current selection
+##---------------------------------------------------------------------------##
+set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+#
+# Toggle compiler flags for optional features
+#
+if( NOT "${OpenMP_C_FLAGS}x" STREQUAL "x" )
+  toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+endif()
+
+#
+# Extra runtime libraries...
+#
+
+find_library( Lib_win_winsock
+  NAMES wsock32;winsock32;ws2_32
+  HINTS
+  "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Lib"
+  "C:/Windows/SysWOW64"
+  )
+if( ${Lib_win_winsock} MATCHES "NOTFOUND" )
+  message( FATAL_ERROR "Could not find library winsock32 or ws2_32!" )
 endif()
 
 #------------------------------------------------------------------------------#

@@ -3,7 +3,7 @@
 # author Kelly Thompson
 # date   2010 Nov 1
 # brief  Establish flags for Linux64 - Intel C++
-# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -16,6 +16,12 @@
 # 11/18/2013 - For RELEASE builds, begin using -fp-model precise
 #              -fp-speculation safe.  Jayenne sees about 10%
 #              performance bump.
+
+#
+# Compiler flag checks
+#
+include(platform_checks)
+query_openmp_availability()
 
 #
 # Compiler Flags
@@ -66,10 +72,10 @@ include(CheckCCompilerFlag)
 check_c_compiler_flag(-xHost HAS_XHOST)
 
 toggle_compiler_flag( HAS_XHOST                "-xHost"       "C;CXX"  "")
-toggle_compiler_flag( USE_OPENMP               "-openmp"      "C;CXX;EXE_LINKER" "")
 toggle_compiler_flag( DRACO_ENABLE_CXX11       "-std=c++0x"   "CXX" "")
 toggle_compiler_flag( DRACO_ENABLE_C99         "-std=c99"     "C"   "")
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-strict-ansi" "C;CXX" "")
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-intel.cmake

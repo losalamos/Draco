@@ -1,8 +1,8 @@
 /*-----------------------------------*-C-*-----------------------------------*/
-/* file  : c4_omp.h 
- * author: Kelly Thompson 
- * date  : Wednesday, Nov 23, 2011, 08:42 am 
- * brief : wraper for omp.h 
+/* file  : c4_omp.h
+ * author: Kelly Thompson
+ * date  : Wednesday, Nov 23, 2011, 08:42 am
+ * brief : wraper for omp.h
  * note  : Copyright (C) 2011-2014 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -15,7 +15,7 @@
 
 #include "c4/config.h"
 
-#ifdef USE_OPENMP
+#ifdef OPENMP_FOUND
 #include <omp.h>
 #endif
 

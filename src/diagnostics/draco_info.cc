@@ -49,7 +49,7 @@ DracoInfo::DracoInfo(void)
       fc_flags(  "none" )
 {
 #ifdef DRACO_SHARED_LIBS
-    library_type = "shared";
+    library_type = "Shared";
 #endif
 #if DRACO_UNAME == Linux
     system_type = "Linux";
@@ -64,7 +64,7 @@ DracoInfo::DracoInfo(void)
     mpi = true;
     mpirun_cmd = C4_MPICMD;
 #endif
-#if USE_OPENMP == ON
+#ifdef OPENMP_FOUND
     openmp = true;
 #endif
 #ifdef DRACO_DIAGNOSTICS
@@ -105,7 +105,7 @@ std::string DracoInfo::fullReport(void)
 {
     using std::cout;
     using std::endl;
-    
+
     std::ostringstream infoMessage;
 
     // Print version and copyright information to the screen:
@@ -113,7 +113,7 @@ std::string DracoInfo::fullReport(void)
 
     // Build Information
     //------------------
-       
+
     infoMessage
         << "Build information:"
         << "\n    Build type     : " << build_type
@@ -144,10 +144,10 @@ std::string DracoInfo::fullReport(void)
                 infoMessage << cxx11_features[i];
             else
                 infoMessage << "\n                     " << cxx11_features[i];
-    }        
+    }
 
     // Compilers and Flags
-            
+
     infoMessage
         << "\n    CXX Compiler      : " << cxx
         << "\n    CXX_FLAGS         : " << cxx_flags
@@ -157,7 +157,7 @@ std::string DracoInfo::fullReport(void)
         << "\n    Fortran_FLAGS     : " << fc_flags;
 
     infoMessage << "\n" << endl;
-        
+
     return infoMessage.str();
 }
 
@@ -166,7 +166,7 @@ std::string DracoInfo::briefReport(void)
 {
     using std::cout;
     using std::endl;
-    
+
     std::ostringstream infoMessage;
 
     // Print version and copyright information to the screen:

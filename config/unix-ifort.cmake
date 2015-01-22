@@ -47,8 +47,8 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 
 # Optional compiler flags
 toggle_compiler_flag( HAVE_MIC    "-mmic"           "Fortran" "")
-toggle_compiler_flag( USE_OPENMP  "-openmp"         "Fortran" "")
 toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") # sse3, ssse3
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "C;CXX;EXE_LINKER" "" )
 
 # When cross-compiling with '-mmic', rpaths for libraries built from
 # Fortran code don't appear to be reported to the icpc linker.  As a

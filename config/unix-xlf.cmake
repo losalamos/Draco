@@ -33,7 +33,11 @@ set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        
 set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-toggle_compiler_flag( USE_OPENMP "-qsmp=omp" "Fortran" "")
+#
+# Toggle compiler flags for optional features
+#
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
+#toggle_compiler_flag( USE_OPENMP "-qsmp=omp" "Fortran" "")
 
 # ----------------------------------------------------------------------------
 # Helper macro to fix the value of

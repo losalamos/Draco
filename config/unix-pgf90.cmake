@@ -34,6 +34,10 @@ set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        
 set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRIG "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRIG "compiler flags" FORCE )
 
+#
+# Toggle compiler flags for optional features
+#
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
 
 # [2015-01-21 KT] Not sure if we still need the code below...
 # ------------------------------------------------------------

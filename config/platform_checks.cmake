@@ -234,6 +234,24 @@ macro( query_cxx11_features )
 endmacro()
 
 ##---------------------------------------------------------------------------##
+## Query OpenMP availability
+##
+## This feature is usually compiler specific and a compile flag must be
+## added.  For this to work the <platform>-<compiler>.cmake files (eg.
+## unix-g++.cmake) call this macro.
+##---------------------------------------------------------------------------##
+macro( query_openmp_availability )
+  message( STATUS "Looking for OpenMP...")
+  find_package(OpenMP QUIET)
+  if( OPENMP_FOUND )
+    message(STATUS "Looking for OpenMP... ${OpenMP_C_FLAGS}")
+    set( OPENMP_FOUND ${OPENMP_FOUND} CACHE BOOL "Is OpenMP availalable?" FORCE )
+  else()
+    message(STATUS "Looking for OpenMP... not found")
+  endif()
+endmacro()
+
+##---------------------------------------------------------------------------##
 ## Sample platform checks
 ##---------------------------------------------------------------------------##
 

@@ -34,7 +34,7 @@
 /* ---------------------------------------- */
 
 /* Use OpenMP ? */
-#cmakedefine USE_OPENMP @USE_OPENMP@
+#cmakedefine OPENMP_FOUND
 
 /* POSIX DEFINES */
 #undef _POSIX_SOURCE
@@ -42,7 +42,7 @@
 
 /* Turn off C++ bindings */
 #undef MPI_NO_CPPBIND
-#define MPICH_SKIP_MPICXX 
+#define MPICH_SKIP_MPICXX
 #define OMPI_SKIP_MPICXX
 
 /* Add version check for Compaq ALASKA MPI releases */

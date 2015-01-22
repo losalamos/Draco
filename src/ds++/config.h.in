@@ -1,6 +1,6 @@
 /*-----------------------------------*-C-*-----------------------------------*/
 /*!
- * \file   config.h 
+ * \file   config.h
  * \brief  CPP defines necessary for the ds++ package.
  * \note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
  * \version $Id$
@@ -97,20 +97,20 @@
 #endif
 
 /* In MSVC, constants like M_PI are not defined by default in math.h.
- * To include them, we must set the following: */  
-#if defined _WIN32 || defined __CYGWIN__ 
+ * To include them, we must set the following: */
+#if defined _WIN32 || defined __CYGWIN__
     #define _USE_MATH_DEFINES
 #endif /* Win32 */
 
 /* OpenMP Setup */
-#cmakedefine USE_OPENMP @USE_OPENMP@
+#cmakedefine OPENMP_FOUND
 
 /* ---------------------------------------- */
 /* FPE_TRAP Settings */
 /* ---------------------------------------- */
 
 // At most, only one of these should be defined in config/ac_platforms.m4
-#cmakedefine FPETRAP_OSF_ALPHA    @FPETRAP_OSF_ALPHA@ 
+#cmakedefine FPETRAP_OSF_ALPHA    @FPETRAP_OSF_ALPHA@
 #cmakedefine FPETRAP_DARWIN_INTEL @FPETRAP_DARWIN_INTEL@
 #cmakedefine FPETRAP_DARWIN_PPC   @FPETRAP_DARWIN_PPC@
 #cmakedefine FPETRAP_LINUX_X86    @FPETRAP_LINUX_X86@
@@ -125,7 +125,7 @@
 #define FPETRAP_SUPPORTED
 #else
 #define FPETRAP_UNSUPPORTED
-#endif 
+#endif
 
 /* ---------------------------------------- */
 /*!
@@ -136,7 +136,7 @@
  * - Bit 0, (001), activates Level 1 (negligible performance impact)
  * - Bit 1, (010), activates Level 2 (some performance impact and possible
  *                                    intrusive output, rtt_memory trackin is
- *                                    activated.) 
+ *                                    activated.)
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .
  * The following integer settings activate Levels in the following way:
@@ -160,13 +160,13 @@
  * The value for DRACO_DIAGNOSTICS is set and saved in ds++'s CMakeLists.tx
  * and config.h, respectively.
  */
-/* ---------------------------------------- */   
+/* ---------------------------------------- */
 
 #cmakedefine DRACO_DIAGNOSTICS @DRACO_DIAGNOSTICS@
 
 #if !defined(DRACO_DIAGNOSTICS)
 #define DRACO_DIAGNOSTICS 0
-#endif 
+#endif
 
 #if DRACO_DIAGNOSTICS & 1
 #define DRACO_DIAGNOSTICS_LEVEL_1
@@ -182,7 +182,7 @@
 
 /* ---------------------------------------- */
 /* C++ 11 support */
-/* ---------------------------------------- */   
+/* ---------------------------------------- */
 
 /* These values are set in
  * config/platform_checks.cmake::query_cxx11_features. */
@@ -207,7 +207,7 @@
 
 /* ---------------------------------------- */
 /* Configuration Options used by CMake      */
-/* ---------------------------------------- */   
+/* ---------------------------------------- */
 #cmakedefine CMAKE_CXX_COMPILER      "@CMAKE_CXX_COMPILER@"
 #cmakedefine CMAKE_CXX_FLAGS         "@CMAKE_CXX_FLAGS@"
 #cmakedefine CMAKE_CXX_FLAGS_DEBUG   "@CMAKE_CXX_FLAGS_DEBUG@"
@@ -224,7 +224,7 @@
 
 /* ---------------------------------------- */
 /* GENERAL build system setup               */
-/* ---------------------------------------- */   
+/* ---------------------------------------- */
 
 /*!
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC
@@ -255,40 +255,40 @@
  * };
  *
  * // ds++/isFinite_pt.cc file:
- * template DLL_PUBLIC 
+ * template DLL_PUBLIC
  * bool isInfinity( float const & x );
- * \endcode 
+ * \endcode
  */
 
 #cmakedefine CMAKE_COMPILER_IS_GNUCXX @CMAKE_COMPILER_IS_GNUCXX@
 
 /* Help for GSL on Windows ---------------------------------- */
-#if defined _WIN32 || defined __CYGWIN__ 
+#if defined _WIN32 || defined __CYGWIN__
   #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
      #define GSL_DLL 1
   #endif
 #endif
 
 /* Windows ---------------------------------------- */
-#if defined _WIN32 || defined __CYGWIN__ 
+#if defined _WIN32 || defined __CYGWIN__
   #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
     #ifdef BUILDING_DLL /* building dll or importing symbols? */
       #ifdef __GNUC__
         #define DLL_PUBLIC __attribute__((dllexport))
       #else
         /* Note: actually gcc seems to also supports this syntax. */
-        #define DLL_PUBLIC __declspec(dllexport) 
+        #define DLL_PUBLIC __declspec(dllexport)
       #endif /* __GNUC__ */
     #else  /* BUILDING_DLL */
       #ifdef __GNUC__
         #define DLL_PUBLIC __attribute__((dllimport))
       #else
         /* Note: actually gcc seems to also supports this syntax. */
-        #define DLL_PUBLIC __declspec(dllimport) 
+        #define DLL_PUBLIC __declspec(dllimport)
       #endif /* __GNUC__ */
     #endif  /* BUILDING_DLL */
     #define DLL_LOCAL
-        
+
   #else /* DRACO_SHARED_LIBS */
     /* when building static libraries, no need to export symbols. */
     #define DLL_PUBLIC
@@ -296,12 +296,12 @@
   #endif /* DRACO_SHARED_LIBS */
 
 /* Linux ---------------------------------------- */
-#else 
+#else
   #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
     #if defined CMAKE_COMPILER_IS_GNUCXX && __GNUC__ >= 4
       #define DLL_PUBLIC __attribute__ ((visibility("default")))
       #define DLL_LOCAL  __attribute__ ((visibility("hidden")))
-      /* These defines are taken from ds++/Compiler.hh written by Paul Henning */ 
+      /* These defines are taken from ds++/Compiler.hh written by Paul Henning */
       /* #define HIDE_FUNC __attribute__ ((visibility ("hidden"))) */
       /* #define EXPORT_FUNC __attribute__ ((visibility ("default"))) */
       /* #define HIDE_CLASS __attribute ((visibility ("hidden"))) */

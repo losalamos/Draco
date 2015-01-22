@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/unix-pgi.cmake
 # brief  Establish flags for Linux64 - Portland Group C/C++
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -15,124 +15,72 @@ set( draco_isPGI 1 CACHE BOOL "Are we using PGI CXX? -> ds++/config.h" )
 
 #
 # Sanity Checks
-# 
+#
 
 if( BUILD_SHARED_LIBS )
   message( FATAL_ERROR "Feature not available - yell at KT." )
 endif( BUILD_SHARED_LIBS )
 
-# Disable OpenMP for now (it doesn't appear to be working correctly.)
-set( USE_OPENMP NO )
-
-# Disable DRACO_ENABLE_CXX11 if the compiler version < 13.  pgCC did
-# not support C++11 prior to version 13.
 if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0 )
-   set( DRACO_ENABLE_CXX11 OFF )
+  message( FATAL_ERROR "PGI must be version 13.0 or later to support C++ features used by this software.")
 endif()
-
-#
-# C++ libraries required by Fortran linker
-# 
 
 #
 # Compiler Flags
-# 
-
-# http://www.pgroup.com/support/compile.htm
-
-# Flags from Draco autoconf build system:
-# -Xa
-# -A                       ansi
-# --no_using_std           Enable (disable) implicit use of the std
-#                          namespace when standard header files are
-#                          included. 
-# --diag_suppress 940      Suppress warning #940
-# --diag_suppress 11           "      "     # 11
-# -DNO_PGI_OFFSET
-# -Kieee                   Perform floating-point operations in strict
-#                          conformance with the IEEE 754 standard. 
-# --no_implicit_include    Disable implicit inclusion of source files
-#                          as a method of finding definitions of
-#                          template entities to be instantiated. 
-# -Mdaz                    Enable (disable) mode to treat denormalized
-#                          floating point numbers as zero.  -Mdaz is
-#                          default for -tp p7-64 targets; -Mnodaz is
-#                          default otherwise. 
-# -pgf90libs               Link-time option to add the pgf90 runtime
-#                          libraries, allowing mixed-language programming. 
-# -Mipa                    Enable and specify options for
-#                          InterProcedural Analysis (IPA). 
-# -Mnoframe                Don't setup a true stack frame pointer for
-#                          functions. allows slightly more efficient
-#                          operation when a stack frame is not needed.
-# -Mlre                    Enable loop-carried redundancy elimination.
-# -Mautoinline=levels:n    Enable inlining of functions with the
-#                          inline attribute up to n levels deep.  The
-#                          default is to inline up to 5 levels. 
-# -Mvect=sse               Use SSE, SSE2, 3Dnow, and prefetch
-#                          instructions in loops where possible. 
-# -Mcache_align            Align unconstrained data objects of size
-#                          greater than or equal to 16 bytes on
-#                          cache-line boundaries.  An unconstrained
-#                          object is a variable or array that is not a
-#                          member of an aggregate structure or common
-#                          block, is not allocatable, and is not an
-#                          automatic array.
-# -Mflushz                 Set SSE to flush-to-zero mode.
+#
+include(platform_checks)
+query_openmp_availability()
 
 
 if( NOT CXX_FLAGS_INITIALIZED )
-   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+  set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" ) # -mp
-   set( CMAKE_C_FLAGS_DEBUG          "-g -O0") # -DDEBUG") 
-   set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" ) # -O4
-   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gopt" )
+  set( CMAKE_C_FLAGS                "-Kieee -Mdaz -pgf90libs" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -O0")
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
+  set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gopt" )
+  set( CMAKE_CXX_FLAGS              "${CMAKE_C_FLAGS} --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+  # Extra flags for pgCC-11.2+
+  # --nozc_eh    (default for 11.2+) Use low cost exception handling. This
+  #              option appears to break our exception handling model resulting
+  #              in SEGV.
+  # This may be related to PGI bug 1858 (http://www.pgroup.com/support/release_tprs.htm).
+  if( "${DBS_CXX_COMPILER_VER_MAJOR}.${DBS_CXX_COMPILER_VER_MINOR}" GREATER 10 )
+    if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
+    endif()
+  endif()
 
-   # Extra flags for pgCC-11.2+
-   # --nozc_eh    (default for 11.2+) Use low cost exception handling. This 
-   #              option appears to break our exception handling model resulting
-   #              in SEGV.
-   # This may be related to PGI bug 1858 (http://www.pgroup.com/support/release_tprs.htm).
-   if( "${DBS_CXX_COMPILER_VER_MAJOR}.${DBS_CXX_COMPILER_VER_MINOR}" GREATER 10 )
-      if( NOT "${CMAKE_CXX_FLAGS}" MATCHES "--nozc_eh" )
-         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --nozc_eh" )
-      endif()
-   endif()
-   
-   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
-   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
+  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
+  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
 
-# -Mipa=fast,inline
-# -tp x64      Create a PGI Unified Binary which functions correctly
-#              on and is optimized for both Intel and AMD processors. 
-# -Mprefetch   Control generation of prefetch instructions to improve
-#              memory performance in compute-intensive loops. 
+  # -Mipa=fast,inline
+  # -tp x64      Create a PGI Unified Binary which functions correctly
+  #              on and is optimized for both Intel and AMD processors.
+  # -Mprefetch   Control generation of prefetch instructions to improve
+  #              memory performance in compute-intensive loops.
 
-# -Mnoframe (we use this to debug crashed programs).
-# -Mcache_align (breaks some tests in wedgehog)
-# -Msafeptr (breaks some array operations in MatRA).
-   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
+  # -Mnoframe (we use this to debug crashed programs).
+  # -Mcache_align (breaks some tests in wedgehog)
+  # -Msafeptr (breaks some array operations in MatRA).
+  set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
 
 endif()
-
-string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPER )
 
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
 ##---------------------------------------------------------------------------##
 set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
 set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
 set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE ) 
+set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
@@ -140,17 +88,8 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 # Do we add '-ansi -pedantic'?
 toggle_compiler_flag( DRACO_ENABLE_C99         "-c99"   "C"   "" )
 toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-Xa -A" "CXX" "" )
-
-# Support for C++ enabled in PGI 13+
-if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 13.0 )
-   toggle_compiler_flag( DRACO_ENABLE_CXX11 "--c++11" "CXX" "") 
-else()
-   if( DRACO_ENABLE_CXX11 )
-      message( FATAL_ERROR 
-         "PGI < v13 does not provide support for the C++11 standard.  Please "
-         "set DRACO_ENABLE_CXX11=OFF.")
-   endif()
-endif()
+toggle_compiler_flag( DRACO_ENABLE_CXX11 "--c++11" "CXX" "")
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgi.cmake
