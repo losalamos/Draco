@@ -67,8 +67,9 @@ done
 
 #------------------------------------------------------------------------------#
 # Notes on using Transfer 2.0 (copied from the Draco wiki):
-
+#
 # * See http://transfer.lanl.gov.
+# * See notes in cassio/Tools.rh/General/my_xf.pl
 
 # <pre>
 # % kinit -kt ~/.ssh/xfkeytab transfer/${USER}push@lanl.gov
@@ -87,11 +88,11 @@ done
 
 # * Part1: Obtain a business account via http://register.lanl.gov
 # ** Under "Business Accounts Menu", click "Create a Business Account"
-# ** Enter a name, (throughout this example, I will use <your_account>), then [Next]. 
+# ** Enter a name, (throughout this example, I will use <your_account>), then [Next].
 # ** Enter Account Description, then [Next]
 # *** [Confirm]
 # ** Now, click "Manage Kerberos Principals"
-# ** In the box, enter "transfer/" (without the quotes!) and [Create]. 
+# ** In the box, enter "transfer/" (without the quotes!) and [Create].
 # ** At the "Are you sure..." prompt, [Create]
 # ** You should have gotten a message that says,
 # <pre>
@@ -116,7 +117,7 @@ done
 # </pre>
 # ** Now, at the kadmin: prompt, use the principal that you created, and append @lanl.gov (note in the xst command, “transfer_keytab” is the name of the file that will be created)
 # <pre>
-#    kadmin:   xst -k transfer_keytab transfer/<your_account>@lanl.gov 
+#    kadmin:   xst -k transfer_keytab transfer/<your_account>@lanl.gov
 # Entry for principal transfer/<your_account>@lanl.gov with kvno 2, encryption type des-cbc-crc added to keytab WRFILE:transfer_keytab.
 # Entry for principal transfer/<your_account>@lanl.gov with kvno 2, encryption type arcfour-hmac added to keytab WRFILE:transfer_keytab.
 # Entry for principal transfer/<your_account>@lanl.gov with kvno 2, encryption type des3-cbc-sha1 added to keytab WRFILE:transfer_keytab.
@@ -130,7 +131,7 @@ done
 # * Part 4: Test the file
 # ** [first example, without the extracted key, no credentials]
 # <pre>
-#   % kdestroy 
+#   % kdestroy
 #   kdestroy: No credentials cache found while destroying cache
 
 #   % ssh yellow@transfer.lanl.gov myfiles
