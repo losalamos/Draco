@@ -33,9 +33,6 @@
 /* All build systems                        */
 /* ---------------------------------------- */
 
-/* Use OpenMP ? */
-#cmakedefine OPENMP_FOUND
-
 /* POSIX DEFINES */
 #undef _POSIX_SOURCE
 #undef _POSIX_C_SOURCE
