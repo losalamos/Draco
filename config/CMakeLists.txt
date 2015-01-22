@@ -26,6 +26,7 @@ set( CMake_src
    parse_arguments.cmake
    platform_checks.cmake
    setupMPI.cmake
+   unix-clang.cmake
    unix-g++.cmake
    unix-gfortran.cmake
    unix-ifort.cmake
