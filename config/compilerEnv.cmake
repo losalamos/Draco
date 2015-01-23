@@ -427,7 +427,7 @@ names: C;CXX;EXE_LINKER.")
 
       if( ${switch} )
         if( NOT "${safe_CMAKE_${comp}_FLAGS}" MATCHES "${safe_compiler_flag}" )
-          set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag}"
+          set( CMAKE_${comp}_FLAGS "${CMAKE_${comp}_FLAGS} ${compiler_flag} "
             CACHE STRING "compiler flags" FORCE )
         endif()
       else()
@@ -450,7 +450,7 @@ names: C;CXX;EXE_LINKER.")
           if( NOT "${safe_CMAKE_${comp}_FLAGS_${bm}}" MATCHES
               "${safe_compiler_flag}" )
             set( CMAKE_${comp}_FLAGS_${bm}
-              "${CMAKE_${comp}_FLAGS_${bm}} ${compiler_flag}"
+              "${CMAKE_${comp}_FLAGS_${bm}} ${compiler_flag} "
               CACHE STRING "compiler flags" FORCE )
           endif()
         else()

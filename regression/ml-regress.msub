@@ -118,6 +118,7 @@ pgi)
     run "module load friendly-testing"
     run "module load pgi/13.10 openmpi gsl lapack"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
+    export OMP_NUM_THREADS=8
     comp=`basename $CXX`
     ;;
 *)
