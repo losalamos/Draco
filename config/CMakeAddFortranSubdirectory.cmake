@@ -252,6 +252,7 @@ function(cmake_add_fortran_subdirectory subdir)
     set_target_properties(${tgt} PROPERTIES
       IMPORTED_IMPLIB_NOCONFIG   "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" 
       IMPORTED_LOCATION_NOCONFIG "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"  
+      IMPORTED_LOCATION          "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"  
       )
     add_dependencies(${tgt} ${project_name}_build)
 
