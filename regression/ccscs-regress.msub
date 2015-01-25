@@ -69,7 +69,7 @@ if test -z "$MODULESHOME"; then
  fi
 fi
 run "module purge"
-run "module load gcc openmpi cmake"
+run "module load gcc openmpi cmake/3.1.0"
 run "module load valgrind numdiff svn random123"
 run "module load eospac grace lapack valgrind"
 run "module load SCALAPACK SuperLU_DIST hypre/2.0.0"
