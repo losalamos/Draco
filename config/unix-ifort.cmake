@@ -48,7 +48,12 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 # Optional compiler flags
 toggle_compiler_flag( HAVE_MIC    "-mmic"           "Fortran" "")
 toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") # sse3, ssse3
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "C;CXX;EXE_LINKER" "" )
+# Use OpenMP_C_FLAGS here because cmake/3.1.1 fails to set
+# CMAKE_Fortran_COMPILER_VERSION for FC=mpiifort and FindOpenMP
+# chooses the deprecated '-openmp' instead of '-qopenmp'
+# Bug reported to Kitware by KT on 2015-01-26
+# http://public.kitware.com/Bug/view.php?id=15372
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "Fortran" "" )
 
 # When cross-compiling with '-mmic', rpaths for libraries built from
 # Fortran code don't appear to be reported to the icpc linker.  As a
