@@ -585,6 +585,12 @@ class DLL_PUBLIC CDI
         std::vector<double> const & planckSpectrum,
         std::vector<double>       & emission_group_cdf );
 
+    //! Collapse Multigroup data to single-interval reciprocal data with Planck weighting.
+    static double collapseMultigroupReciprocalOpacitiesPlanck(
+        std::vector<double> const & groupBounds,
+        std::vector<double> const & opacity,
+        std::vector<double> const & planckSpectrum);
+
     //! Collapse Multigroup data to single-interval data with Rosseland weighting.
     static double collapseMultigroupOpacitiesRosseland(
         std::vector<double> const & groupBounds,
@@ -599,6 +605,13 @@ class DLL_PUBLIC CDI
         std::vector<double> const & planckSpectrum,
         std::vector<double> const & bandWidths,
         std::vector<double>       & emission_group_cdf );
+
+    //! Collapse Multigroup+Multiband data to single-interval reciprocal data with Planck weighting.
+    static double collapseOdfmgReciprocalOpacitiesPlanck(
+        std::vector<double> const & groupBounds,
+        std::vector<std::vector<double> > const & opacity,
+        std::vector<double> const & planckSpectrum,
+        std::vector<double> const & bandWidths);
 
     //! Collapse Multigroup+Multiband data to single-interval data with Rosseland weighting.
     static double collapseOdfmgOpacitiesRosseland(

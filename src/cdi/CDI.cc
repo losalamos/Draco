@@ -461,6 +461,67 @@ double CDI::collapseMultigroupOpacitiesPlanck(
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Collapse a multigroup reciprocal opacity set into a single representative value
+ *        weighted by the Planckian function.
+ *
+ * \param groupBounds The vector of group boundaries.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param plankSpectrum A vector of Planck integrals for all groups in the
+ *                  spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ * \return A single interval Planckian weighted reciprocal opacity value.
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
+ * this function to obtain planckSpectrum. 
+ */
+double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
+    std::vector<double> const & groupBounds,
+    std::vector<double> const & opacity,
+    std::vector<double> const & planckSpectrum)
+{
+    Require( groupBounds.size() > 0 );
+    Require( opacity.size()        == groupBounds.size() -1 );
+    Require( planckSpectrum.size() == groupBounds.size() -1 );
+
+    // Integrate the unnormalized Planckian over the group spectrum
+    // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
+    double const planck_integral =
+        std::accumulate(planckSpectrum.begin(), planckSpectrum.end(), 0.0);
+    Check( planck_integral >= 0.0 );
+
+    // Perform integration of sigma * b_g over all groups:
+    // int_{\nu_0}^{\nu_G}{d\nu sigma(\nu,T) * B(\nu,T)}
+    
+    // Initialize sum:
+    double inv_sig_planck_sum( 0.0 );
+    // Multiply by the absorption opacity and accumulate.
+    for( size_t g=1; g<groupBounds.size(); ++g )
+    {
+        Check( planckSpectrum[g-1] >= 0.0 );
+        Check( opacity[g-1]         >= 0.0 );
+        if(opacity[g-1]>0)
+            inv_sig_planck_sum += planckSpectrum[g-1] / opacity[g-1];
+        else
+            inv_sig_planck_sum += std::numeric_limits<float>::max();
+    }
+
+    //                             int_{\nu_0}^{\nu_G}{d\nu 1/sigma(\nu,T) * B(\nu,T)}
+    // Planck opac:  inv_sigma_P = --------------------------------------------------
+    //                              int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
+
+    double reciprocal_planck_opacity(0.0);
+    if( planck_integral > 0.0 )
+        reciprocal_planck_opacity = inv_sig_planck_sum/planck_integral;
+    else
+    {
+        reciprocal_planck_opacity = std::numeric_limits<float>::max();
+    }
+    Ensure( reciprocal_planck_opacity >= 0.0 );
+    return reciprocal_planck_opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Collapse a multigroup opacity set into a single representative value
  *        weighted by the Rosseland function.
  *
@@ -631,6 +692,76 @@ double CDI::collapseOdfmgOpacitiesPlanck(
     // }
     Ensure( planck_opacity >= 0.0 );
     return planck_opacity;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Collapse a multigroup-multiband opacity set into a single
+ * representative reciprocal value weighted by the Planckian function.
+ *
+ * \param groupBounds The vector of group boundaries.
+ * \param opacity   A vector of multigroup opacity data.
+ * \param plankSpectrum A vector of Planck integrals for all groups in the
+ *                  spectrum (normally generated via
+ *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
+ *
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
+ * this function to obtain planckSpectrum. 
+ */
+double CDI::collapseOdfmgReciprocalOpacitiesPlanck(
+    std::vector<double> const & groupBounds,
+    std::vector<std::vector<double> > const & opacity,
+    std::vector<double> const & planckSpectrum,
+    std::vector<double> const & bandWidths)
+{
+    Require( groupBounds.size() > 0 );
+    Require( opacity.size()        == groupBounds.size() -1 );
+    Require( opacity[0].size()     == bandWidths.size() );
+    Require( planckSpectrum.size() == groupBounds.size() -1 );
+
+    // Integrate the unnormalized Planckian over the group spectrum
+    // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
+    double const planck_integral =
+        std::accumulate(planckSpectrum.begin(), planckSpectrum.end(), 0.0);
+    Check( planck_integral >= 0.0 );
+
+    // Perform integration of b_g/sigma over all groups:
+    // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T) / sigma(\nu,T)}
+    
+    // Initialize sum:
+    double inv_sig_planck_sum( 0.0 );
+    
+    size_t const numGroups = groupBounds.size() - 1;
+    size_t const numBands  = bandWidths.size();
+
+    // Multiply by the absorption opacity and accumulate.
+    for( size_t g=1; g<=numGroups; ++g )
+    {
+        for( size_t ib=1; ib<=numBands; ++ib )
+        {
+            Check( planckSpectrum[g-1] >= 0.0 );
+            Check( opacity[g-1][ib-1]  >= 0.0 );
+            Check((g-1)*numBands + ib-1 < numBands*numGroups);
+            double denom =  opacity[g-1][ib-1];
+            if(denom>0)
+                inv_sig_planck_sum += planckSpectrum[g-1]*bandWidths[ib-1]/denom;
+            else
+                inv_sig_planck_sum += std::numeric_limits<float>::max();
+        }
+    }
+
+    //                             int_{\nu_0}^{\nu_G}{d\nu B(\nu,T) / sigma(\nu,T)}
+    // Planck opac:  inv_sigma_P = --------------------------------------------------
+    //                             int_{\nu_0}^{\nu_G}{d\nu * B(\nu,T)}
+
+    double reciprocal_planck_opacity(0.0);
+    if( planck_integral > 0.0 )
+        reciprocal_planck_opacity = inv_sig_planck_sum / planck_integral;
+    else
+        reciprocal_planck_opacity = std::numeric_limits<float>::max();
+
+    Ensure( reciprocal_planck_opacity >= 0.0 );
+    return reciprocal_planck_opacity;
 }
 
 //---------------------------------------------------------------------------//

@@ -1152,10 +1152,12 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         // Generate reference solutions
         std::vector<double> emission_group_cdf_ref(bounds.size()-1);
         double opacity_pl_ref(0.0);
+        double opacity_pl_recip_ref(0.0);
         double opacity_ross_ref(0.0);
         for( size_t ig=0; ig<bounds.size()-1; ++ig )
         {
             opacity_pl_ref += planck_spectrum[ig]*mgOpacities[ig];
+            opacity_pl_recip_ref += planck_spectrum[ig]/mgOpacities[ig];
             emission_group_cdf_ref[ig] = opacity_pl_ref;
             opacity_ross_ref += rosseland_spectrum[ig]/mgOpacities[ig];
         }
@@ -1164,10 +1166,13 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         // Collapse the opacities:
         double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
             bounds, mgOpacities, planck_spectrum, emission_group_cdf );
+        double const opacity_pl_recip = CDI::collapseMultigroupReciprocalOpacitiesPlanck(
+            bounds, mgOpacities, planck_spectrum);
         double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
             bounds,mgOpacities, rosseland_spectrum );
         
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )     ITFAILS;
+        if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) )     ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
@@ -1191,6 +1196,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         // Collapse the opacities:
         double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
             bounds, mgOpacities, planck_spectrum, emission_group_cdf );
+        double const opacity_pl_recip = CDI::collapseMultigroupReciprocalOpacitiesPlanck(
+            bounds, mgOpacities, planck_spectrum);
         double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
             bounds, mgOpacities, rosseland_spectrum );
         
@@ -1199,9 +1206,11 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         emission_group_cdf_ref[1] = 0.291967514874147;
         emission_group_cdf_ref[2] = 0.300902510426928;
         double const opacity_pl_ref(0.300904405142659);
+        double const opacity_pl_recip_ref(8.80345577340399);
         double const opacity_ross_ref(0.0778314764921229);
 
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )     ITFAILS;
+        if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) )     ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
@@ -1225,6 +1234,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         // Generate reference solutions
         std::vector<double> emission_group_cdf_ref(bounds.size()-1);
         double opacity_pl_ref(0.0);
+        double opacity_pl_recip_ref(3.0*std::numeric_limits<float>::max());
         double opacity_ross_ref(0.0);
         for( size_t ig=0; ig<bounds.size()-1; ++ig )
         {
@@ -1237,10 +1247,13 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         // Collapse the opacities:
         double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
             bounds, mgOpacities, planck_spectrum, emission_group_cdf );
+        double const opacity_pl_recip = CDI::collapseMultigroupReciprocalOpacitiesPlanck(
+            bounds, mgOpacities, planck_spectrum);
         double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
             bounds,mgOpacities, rosseland_spectrum );
         
         if( ! soft_equiv( opacity_pl,   opacity_pl_ref   ) ) ITFAILS;
+        if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) )     ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
@@ -1332,6 +1345,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         std::vector<double> emission_group_cdf_ref( emission_group_cdf.size() );
         double opacity_pl_ref(0.0);
         double opacity_ross_ref(0.0);
+        double opacity_pl_recip_ref(0.0);
         for( size_t ig=0; ig<bounds.size()-1; ++ig )
         {
             for( size_t ib=0; ib<numBands; ++ib )
@@ -1339,6 +1353,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
                 opacity_pl_ref += planck_spectrum[ig]*bandWidths[ib]*odfmgOpacities[ig][ib];
                 emission_group_cdf_ref[ig*numBands+ib] = opacity_pl_ref;
                 opacity_ross_ref += rosseland_spectrum[ig]/odfmgOpacities[ig][ib];
+                opacity_pl_recip_ref += planck_spectrum[ig]*bandWidths[ib]/odfmgOpacities[ig][ib];
             }
         }
         opacity_ross_ref = 1.0/opacity_ross_ref;
@@ -1347,10 +1362,13 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         double const opacity_pl = CDI::collapseOdfmgOpacitiesPlanck(
             bounds, odfmgOpacities, planck_spectrum, bandWidths,
             emission_group_cdf );
+        double const opacity_pl_recip = CDI::collapseOdfmgReciprocalOpacitiesPlanck(
+            bounds, odfmgOpacities, planck_spectrum, bandWidths);
         double const opacity_ross = CDI::collapseOdfmgOpacitiesRosseland(
             bounds,odfmgOpacities, rosseland_spectrum, bandWidths );
         
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )     ITFAILS;
+        if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) )     ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
@@ -1379,6 +1397,8 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         double const opacity_pl = CDI::collapseOdfmgOpacitiesPlanck(
             bounds, odfmgOpacities, planck_spectrum, bandWidths,
             emission_group_cdf );
+        double const opacity_pl_recip = CDI::collapseOdfmgReciprocalOpacitiesPlanck(
+            bounds, odfmgOpacities, planck_spectrum, bandWidths);
         double const opacity_ross = CDI::collapseOdfmgOpacitiesRosseland(
             bounds, odfmgOpacities, rosseland_spectrum, bandWidths );
         
@@ -1397,8 +1417,10 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         emission_group_cdf_ref[11] = 1.58387558925974;
         double const opacity_pl_ref(1.58388556256967);
         double const opacity_ross_ref(0.00553960686776675);
+        double const opacity_pl_recip_ref(123.688553616326);
 
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )     ITFAILS;
+        if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) )     ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) ) ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
