@@ -7,10 +7,12 @@
 # available.
 
 # Use svn 1.8+
-set PATH = ( /usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin ${PATH} )
-set SVN=/usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin/svn
+#set PATH = ( /usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin ${PATH} )
+module load user_contrib svn
+# set SVN=/usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin/svn
 #set PATH = ( /usr/projects/eap/tools/TLCC/bin ${PATH} )
 #set SVN=/usr/projects/eap/tools/TLCC/bin/svn
+set SVN=`which svn`
 
 # source system dotfiles if running batch (cron) and not already set up
 # if( -f /etc/csh.cshrc ) then
