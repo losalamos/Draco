@@ -46,9 +46,9 @@ case ml*.localdomain:
     module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing user_contrib
     module unload intel openmpi
-    module load intel/14.0.4 openmpi
+    module load intel/15.0.1 openmpi
     module load gsl git svn emacs
-    module load cmake/3.1.0 numdiff lapack/3.4.1 random123 eospac
+    module load cmake/3.1.1 numdiff lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
@@ -65,7 +65,7 @@ case ty*.localdomain:
     module unload intel openmpi
     module load intel/14.0.4 openmpi
     module load gsl svn emacs
-    module load cmake/3.1.0 numdiff git lapack/3.4.1 random123 eospac
+    module load cmake/3.1.1 numdiff git lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     breaksw
@@ -98,7 +98,7 @@ case ct*:
 
     # draco modules start here.
     module load gsl/1.15 lapack/3.4.1
-    module load cmake/3.1.0 numdiff svn git emacs
+    module load cmake/3.1.1 numdiff svn git emacs
     module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac/v6.2.4
 
@@ -125,7 +125,7 @@ case ci*:
     module load intel/14.0.2.144
     # draco modules start here.
     module load gsl/1.15 lapack/3.4.1
-    module load cmake/3.1.0 numdiff svn emacs
+    module load cmake/3.1.1 numdiff svn emacs
     module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac/v6.2.4
 
