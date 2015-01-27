@@ -502,7 +502,7 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
         if(opacity[g-1]>0)
             inv_sig_planck_sum += planckSpectrum[g-1] / opacity[g-1];
         else
-            inv_sig_planck_sum += std::numeric_limits<float>::max();
+            return std::numeric_limits<float>::max();
     }
 
     //                             int_{\nu_0}^{\nu_G}{d\nu 1/sigma(\nu,T) * B(\nu,T)}
@@ -746,7 +746,7 @@ double CDI::collapseOdfmgReciprocalOpacitiesPlanck(
             if(denom>0)
                 inv_sig_planck_sum += planckSpectrum[g-1]*bandWidths[ib-1]/denom;
             else
-                inv_sig_planck_sum += std::numeric_limits<float>::max();
+                return std::numeric_limits<float>::max();
         }
     }
 
