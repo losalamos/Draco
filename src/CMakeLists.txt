@@ -9,29 +9,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project( draco_src_dir )
 
-# Platform Checks
-# Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
-message("
-Platform Checks...
-")
-include( platform_checks )
-set_draco_uname()
-query_have_gethostname()
-query_have_maxpathlen()
-query_have_sys_headers() # sets HAVE_UNISTD_H, etc.
-query_have_restrict_keyword()
-
-if( "${CMAKE_VERSION}" VERSION_GREATER "3.0.2" )
-  query_cxx11_features()
-else()
-  if( DRACO_ENABLE_CXX11 )
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-      "${Draco_SOURCE_DIR}/config/cxx11")
-    include(CheckCXX11Features)
-    # Results are saved in ds++/config.h
-  endif()
-endif()
-
 # Provide helper functions used by component CMakeLists.txt files
 include( component_macros )
 
@@ -45,12 +22,6 @@ macro( add_dir_if_exists package )
       add_subdirectory( ${package} )
    endif()
 endmacro()
-
-# If CC=clang and FC is not defined, turn off Fortran for now.
-set( HAVE_FORTRAN ON )
-if( ${CMAKE_C_COMPILER} MATCHES clang AND "$ENV{FC}x" STREQUAL "x" )
-  set( HAVE_FORTRAN OFF )
-endif()
 
 # Level 1
 message(" ")
@@ -69,9 +40,10 @@ add_dir_if_exists( ode )          # needs ds++
 add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
-if( HAVE_FORTRAN )
+if( HAVE_Fortran )
   add_dir_if_exists( FortranChecks )
-  if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" )
+  if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
+      NOT CMAKE_C_COMPILER MATCHES clang )
     add_dir_if_exists( lapack_wrap )  # needs ds++
   endif()
 endif()
@@ -150,6 +122,9 @@ C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
 if( _LANGUAGES_ MATCHES Fortran)
    message("Fortran     : ${CMAKE_Fortran_COMPILER}")
    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
+endif()
+if( CAFS_Fortran_COMPILER )
+   message("CAFS Fortran: ${CAFS_Fortran_COMPILER}")
 endif()
 message(
 "mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")

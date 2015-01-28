@@ -21,8 +21,8 @@ project( Draco CXX C )
 # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
 # 4. Unix Makefile generators when $ENV{FC} is not set (clang on Linux)
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
-    NOT "$ENV{FC}x" STREQUAL "x" )
-   enable_language( Fortran OPTIONAL )
+    ( NOT "$ENV{FC}x" STREQUAL "x" OR CMAKE_Fortran_COMPILER ))
+  enable_language( Fortran OPTIONAL )
 endif()
 
 
@@ -32,10 +32,12 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 #
 # Debug cmake scripts:
 #
-# 1. Review macros defined at config/debug_macros.cmake.
+# 1. Review macros defined at config/debug_macros.cmake and
+#    config/print_target_properties.cmake.
 # 2. Uncomment this feature to tell CMake to print include paths
 #    during target registration (requires cmake-2.8.11+).
-# set( CMAKE_DEBUG_TARGET_PROPERTIES INCLUDE_DIRECTORIES )
+#    set( CMAKE_DEBUG_TARGET_PROPERTIES INCLUDE_DIRECTORIES )
+# 3. Optionally use --trace
 
 #
 # The Draco version number.
@@ -62,6 +64,29 @@ dbsSetDefaults()
 dbsInitExportTargets( "Draco" )
 # Save config info
 dbsConfigInfo()
+
+# Platform Checks
+# Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
+message("
+Platform Checks...
+")
+include( platform_checks )
+set_draco_uname()
+query_have_gethostname()
+query_have_maxpathlen()
+query_have_sys_headers() # sets HAVE_UNISTD_H, etc.
+query_have_restrict_keyword()
+
+if( "${CMAKE_VERSION}" VERSION_GREATER "3.0.2" )
+  query_cxx11_features()
+else()
+  if( DRACO_ENABLE_CXX11 )
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+      "${Draco_SOURCE_DIR}/config/cxx11")
+    include(CheckCXX11Features)
+    # Results are saved in ds++/config.h
+  endif()
+endif()
 
 # Set compiler options
 include( compilerEnv )
