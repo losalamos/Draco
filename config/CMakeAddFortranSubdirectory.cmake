@@ -1,7 +1,7 @@
 #.rst:
 # CMakeAddFortranSubdirectory
 # ---------------------------
-# 
+#
 # Use a version of gfortran that is not available from within the current project.  For
 # example, use MinGW gfortran from Visual Studio if a Fortran compiler is not found, or
 # use GNU gfortran from a XCode/clang build project.
@@ -25,12 +25,12 @@
 #   cmake_add_fortran_subdirectory(
 #    <subdir>                # name of subdirectory
 #    PROJECT <project_name>  # project name in subdir top CMakeLists.txt
-#                            # recommendation: use the same project name as listed in 
+#                            # recommendation: use the same project name as listed in
 #                            # <subdir>/CMakeLists.txt
 #    ARCHIVE_DIR <dir>       # dir where project places .lib files
 #    RUNTIME_DIR <dir>       # dir where project places .dll files
 #    LIBRARIES <lib>...      # names of library targets to import
-#    TARGET_NAMES <string>...# target names assigned to the libraries listed above available 
+#    TARGET_NAMES <string>...# target names assigned to the libraries listed above available
 #                              in the primary project.
 #    LINK_LIBRARIES          # link interface libraries for LIBRARIES
 #     [LINK_LIBS <lib> <dep>...]...
@@ -76,7 +76,7 @@ function(_setup_cafs_config_and_build source_dir build_dir)
     PATHS
       c:/MinGW/bin
       "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin"
-    )  
+    )
   if( NOT EXISTS ${CAFS_Fortran_COMPILER} )
     message(FATAL_ERROR
       "A Fortran compiler was not found.  Please set CAFS_Fortran_COMPILER to the full
@@ -84,7 +84,7 @@ path of a working Fortran compiler. For Windows platforms, you need to install M
 with the gfortran option." )
   endif()
 
-  # Validate flavor/architecture of specified gfortran 
+  # Validate flavor/architecture of specified gfortran
   if( MSVC )
       # MinGW gfortran under MSVS.
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -92,20 +92,20 @@ with the gfortran option." )
       else()
         set(_cafs_fortran_target_arch "Target:.*mingw32")
       endif()
-  elseif( APPLE ) 
+  elseif( APPLE )
       # GNU gfortran under XCode.
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_cafs_fortran_target_arch "Target:.*64-apple*")
       else()
         set(_cafs_fortran_target_arch "Target:.*86-apple*")
-      endif()  
+      endif()
     else()
       # GNU gfortran with Ninja generator or clang CXX compiler.
       if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(_cafs_fortran_target_arch "Target: x86_64*")
       else()
         set(_cafs_fortran_target_arch "Target:.*86*")
-      endif()  
+      endif()
   endif() # MSVC
   execute_process(COMMAND "${CAFS_Fortran_COMPILER}" -v
     ERROR_VARIABLE out ERROR_STRIP_TRAILING_WHITESPACE)
@@ -120,7 +120,7 @@ with the gfortran option." )
       "Set CAFS_Fortran_COMPILER to a compatible Fortran compiler for this architecture."
       )
   endif()
-      
+
   # Configure scripts to run Fortran tools with the proper PATH.
   get_filename_component(CAFS_Fortran_COMPILER_PATH ${CAFS_Fortran_COMPILER} PATH)
   file(TO_NATIVE_PATH "${CAFS_Fortran_COMPILER_PATH}" CAFS_Fortran_COMPILER_PATH)
@@ -155,7 +155,7 @@ function(_add_fortran_library_link_interface library depend_library)
 endfunction()
 
 ###--------------------------------------------------------------------------------####
-### This is the main function.  This generates the required external_project pieces 
+### This is the main function.  This generates the required external_project pieces
 ### that will be run under a different generator (MinGW Makefiles).
 ###--------------------------------------------------------------------------------####
 function(cmake_add_fortran_subdirectory subdir)
@@ -172,21 +172,12 @@ function(cmake_add_fortran_subdirectory subdir)
   endif()
 
   # If the current generator/system already supports Fortran, then simply add the
-  # requested directory to the project.  
-  check_language(Fortran)
+  # requested directory to the project.
   if( _LANGUAGES_ MATCHES Fortran OR
       (MSVC AND "${CMAKE_Fortran_COMPILER}" MATCHES ifort ) )
     add_subdirectory(${subdir})
     return()
   endif()
-  
-  # If we get here, we should be using a CMake Generator/System that lacks built-in
-  # support for Fortran.  Currently, only  Xcode, Ninja or MSVC have been tested.  If a
-  # different generator is requested, abort.
-#  if( NOT (MSVC OR ${CMAKE_GENERATOR} MATCHES Xcode
-#                OR ${CMAKE_GENERATOR} MATCHES Ninja) )
-#     message( FATAL_ERROR "Add_fortran_subdirectory only tested for MSVC, Ninja/Linux and XCode." )
-#  endif()
 
   # Setup external projects to build with alternate Fortran:
   set(source_dir   "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
@@ -251,19 +242,19 @@ function(cmake_add_fortran_subdirectory subdir)
     # target before it runs any build commands.  Since this library will not exist until
     # the external project is built, we need to trick Ninja by creating a place-holder
     # file to satisfy Ninja's dependency checker.  This library will be overwritten during
-    # the actual build. 
-    if( ${CMAKE_GENERATOR} MATCHES Ninja ) 
+    # the actual build.
+    if( ${CMAKE_GENERATOR} MATCHES Ninja )
       # artificially create some targets to help Ninja resolve dependencies.
-      execute_process( COMMAND ${CMAKE_COMMAND} -E touch 
+      execute_process( COMMAND ${CMAKE_COMMAND} -E touch
         "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
-#       add_custom_command( 
+#       add_custom_command(
 #         # OUTPUT ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
 #         OUTPUT src/FortranChecks/f90sub/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
 #         COMMAND ${CMAKE_MAKE_PROGRAM} ${project_name}_build
 #         )
 #       # file( RELATIVE_PATH var dir1 dir2)
 #       message("
-#       add_custom_command( 
+#       add_custom_command(
 #         OUTPUT ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
 #         OUTPUT src/FortranChecks/f90sub/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
 #         COMMAND ${CMAKE_MAKE_PROGRAM} ${project_name}_build
@@ -317,12 +308,12 @@ endfunction()
 function( cafs_create_imported_targets targetName libName targetPath linkLang)
 
     get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
- 
+
     find_library( lib
         NAMES ${libName}
         PATHS ${pkgloc}
         PATH_SUFFIXES Release Debug
-    )    
+    )
     get_filename_component( libloc ${lib} DIRECTORY )
 
   # Debug case?

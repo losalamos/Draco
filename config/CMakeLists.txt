@@ -14,6 +14,8 @@ project( config )
 
 set( CMake_src
    CMakeAddFortranSubdirectory.cmake
+   FindGSL.cmake
+   FindRandom123.cmake
    apple-clang.cmake
    buildEnv.cmake
    compilerEnv.cmake
@@ -44,8 +46,8 @@ set( CMake_in
    doxygen_config.in
    )
 set( CMake_AFSD
-   CMakeAddFortranSubdirectory/build_mingw.cmake.in
-   CMakeAddFortranSubdirectory/config_mingw.cmake.in
+   CMakeAddFortranSubdirectory/build_cafs_proj.cmake.in
+   CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
    )
 
 # include(debug_macros)
