@@ -40,11 +40,11 @@ file( GLOB f90sources *.f90 )
 if(NOT TARGET Lib_dsxx)
    include(CMakeAddFortranSubdirectory)
    cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
-      "${PROJECT_BINARY_DIR}/../../ds++" )
+      "${PROJECT_BINARY_DIR}/../../ds++" CXX )
 endif()
 if( NOT TARGET Lib_FC_Derived_Type)
    cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
-      "${PROJECT_BINARY_DIR}/../../FortranChecks" )
+      "${PROJECT_BINARY_DIR}/../../FortranChecks" CXX )
 endif()
 
 add_component_library(
@@ -57,4 +57,4 @@ add_component_library(
 
 # Debug target properties:
 #include(print_target_properties)
-#echo_targets("Lib_FC_f90sub;Lib_FC_Derived_Type;Lib_dsxx")
+#echo_targets("Lib_FC_f90sub;Lib_FC_Derived_Type")

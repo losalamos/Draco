@@ -344,9 +344,18 @@ macro(dbsSetupFortran)
 
   dbsSetupCompilers()
 
+  # Toggle if we should try to build Fortran parts of the project.
+  # This will be set to true if $ENV{FC} points to a working compiler
+  # (e.g.: GNU or Intel compilers with Unix Makefiles) or if the
+  # current project doesn't support Fortran but
+  # CMakeAddFortranSubdirectory can be used.
+  option( HAVE_Fortran "Should we build Fortran parts of the project?" OFF )
+
   # Is Fortran enabled (it is considered 'optional' for draco)?
   get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
   if( _LANGUAGES_ MATCHES Fortran )
+
+    set( HAVE_Fortran ON )
 
     # Deal with comiler wrappers
     if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" )
@@ -386,6 +395,26 @@ macro(dbsSetupFortran)
       include( unix-gfortran )
     else()
       message( FATAL_ERROR "Build system does not support F90=${my_fc_compiler}" )
+    endif()
+
+  else()
+    # If CMake doesn't know about a Fortran compiler, $ENV{FC}, then
+    # also look for a compiler to use with
+    # CMakeAddFortranSubdirectory.
+    message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler...")
+
+    # Try to find a Fortran compiler (use MinGW gfortran for MSVC).
+    find_program( CAFS_Fortran_COMPILER
+      NAMES ${CAFS_Fortran_COMPILER} $ENV{CAFS_Fortran_COMPILER} gfortran
+      PATHS
+         c:/MinGW/bin
+         "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
+
+    if( EXISTS ${CAFS_Fortran_COMPILER} )
+      set( HAVE_Fortran ON )
+      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... found ${CAFS_Fortran_COMPILER}")
+    else()
+      message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... not found")
     endif()
 
   endif()

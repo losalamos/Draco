@@ -24,22 +24,18 @@ file( GLOB Csources *.cc )
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${dsxx_BINARY_DIR} ) # ds++/config.h
+include_directories( ${dsxx_BINARY_DIR} ) # ds++/config.h
 
 # ---------------------------------------------------------------------------- #
 # Build package libraries
 # ---------------------------------------------------------------------------- #
-
 add_component_library(
    TARGET       Lib_FC_Derived_Type
    LIBRARY_NAME FC_Derived_Type
    SOURCES      "${Csources}"
    NOEXPORT )
 
-set_target_properties( Lib_FC_Derived_Type
-   PROPERTIES FOLDER FortranChecks )
+set_target_properties( Lib_FC_Derived_Type PROPERTIES FOLDER FortranChecks )
 
 # For Unix, this will simply run add_subdirectory(f90sub). For MVSE or XCode, an
 # ExternalProject will be created that uses an alternate gfortran via Makefiles
