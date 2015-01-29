@@ -235,7 +235,15 @@ function(cmake_add_fortran_subdirectory subdir)
       IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran"
       IMPORTED_LINK_INTERFACE_LIBRARIES "${ARGS_DEPENDS}"
       )
-    add_dependencies(${tgt} ${project_name}_build)
+    # [2015-01-29 KT/Wollaber: We don't understand why this is needed,
+    # but adding IMPORTED_LOCATION_DEBUG to the target_properties
+    # fixes a missing RPATH problem for Xcode builds.  Possibly, this
+    # is related to the fact that the Fortran project is always built
+    # in Debug mode.
+    if( APPLE )
+      set_target_properties(${tgt} PROPERTIES
+        IMPORTED_LOCATION_DEBUG "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+    endif()
 
     # The Ninja Generator appears to want to find the imported library
     # ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX or a rule to generate this
