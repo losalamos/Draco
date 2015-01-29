@@ -228,13 +228,15 @@ function(cmake_add_fortran_subdirectory subdir)
   foreach(lib ${libraries})
     list(GET target_names idx tgt)
     add_library(${tgt} SHARED IMPORTED GLOBAL)
-    # set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
     set_target_properties(${tgt} PROPERTIES
-      IMPORTED_IMPLIB   "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}"
       IMPORTED_LOCATION "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran"
       IMPORTED_LINK_INTERFACE_LIBRARIES "${ARGS_DEPENDS}"
       )
+    if( WIN32 )
+      set_target_properties(${tgt} PROPERTIES
+        IMPORTED_IMPLIB "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" )
+    endif()
     # [2015-01-29 KT/Wollaber: We don't understand why this is needed,
     # but adding IMPORTED_LOCATION_DEBUG to the target_properties
     # fixes a missing RPATH problem for Xcode builds.  Possibly, this
@@ -244,6 +246,7 @@ function(cmake_add_fortran_subdirectory subdir)
       set_target_properties(${tgt} PROPERTIES
         IMPORTED_LOCATION_DEBUG "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
     endif()
+    add_dependencies( ${tgt} ${project_name}_build )
 
     # The Ninja Generator appears to want to find the imported library
     # ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX or a rule to generate this
@@ -315,14 +318,14 @@ endfunction()
 
 function( cafs_create_imported_targets targetName libName targetPath linkLang)
 
-    get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
+  get_filename_component( pkgloc "${targetPath}" ABSOLUTE )
 
-    find_library( lib
-        NAMES ${libName}
-        PATHS ${pkgloc}
-        PATH_SUFFIXES Release Debug
+  find_library( lib
+    NAMES ${libName}
+    PATHS ${pkgloc}
+    PATH_SUFFIXES Release Debug
     )
-    get_filename_component( libloc ${lib} DIRECTORY )
+  get_filename_component( libloc ${lib} DIRECTORY )
 
   # Debug case?
   find_library( lib_debug
@@ -335,19 +338,14 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
   #
   # Generate the imported library target and set properties...
   #
-    add_library( ${targetName} SHARED IMPORTED GLOBAL)
-  set_target_properties( ${targetName}
-    PROPERTIES
-    IMPORTED_LOCATION
-    "${libloc}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+  add_library( ${targetName} SHARED IMPORTED GLOBAL)
+  set_target_properties( ${targetName} PROPERTIES
+    IMPORTED_LOCATION "${libloc}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     IMPORTED_LINK_INTERFACE_LANGUAGES ${linkLang}
-       )
-  if( lib_debug )
-    set_target_properties( ${targetName}
-      PROPERTIES
-      IMPORTED_LOCATION_DEBUG
-      "${libloc_debug}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     )
+  if( lib_debug )
+    set_target_properties( ${targetName} PROPERTIES
+      IMPORTED_LOCATION_DEBUG "${libloc_debug}/${CMAKE_SHARED_LIBRARY_PREFIX}${libName}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
   endif()
 
   # platform specific properties
@@ -368,8 +366,8 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
         PROPERTIES
         IMPORTED_IMPLIB_DEBUG
         "${libloc_debug}/${CMAKE_IMPORT_LIBRARY_PREFIX}${libName}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-      )
+        )
     endif()
   endif()
-    unset(lib CACHE)
+  unset(lib CACHE)
 endfunction()
