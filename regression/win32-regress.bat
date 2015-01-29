@@ -51,13 +51,14 @@ rem The main regression script starts here.
 rem -------------------------------------------------------------------------------------------
 
 :vendorsetup
-set PATH=%PATH%;c:\MinGW\bin
-set VENDOR_DIR=e:\work\vendors
-set GSL_ROOT_DIR=%VENDOR_DIR%\gsl-1.16
-set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
-set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
-set QTDIR=c:/Qt/5.3/msvc2013
-set SVN_SSH=c:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe
+call e:\work\vendors\setupvendors.bat
+REM set PATH=%PATH%;c:\MinGW\bin
+REM set VENDOR_DIR=e:\work\vendors
+REM set GSL_ROOT_DIR=%VENDOR_DIR%\gsl-1.16
+REM set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
+REM set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
+REM set QTDIR=c:/Qt/5.3/msvc2013
+REM set SVN_SSH=c:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe
 
 :cdash
 rem set dashboard_type=Experimental
@@ -93,7 +94,7 @@ if not exist %work_dir%\target mkdir target
 
 rem run the ctest script
 
-echo ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts%
+echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log"
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log
 
 :cdashrelease
@@ -112,7 +113,7 @@ if not exist %work_dir%\target mkdir target
 
 rem run the ctest script
 
-echo ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts%
+echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log"
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log
 
 :done
