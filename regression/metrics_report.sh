@@ -5,8 +5,7 @@
 #    <path>/metrics_report.sh -e "email1 [email2]" -p "project1 [project2]"
 
 # Typical use:
-# ./metrics_report.sh -e kgt@lanl.gov -p "draco jayenne"
-# ./metrics_report.sh -e "kgt@lanl.gov jhchang@lanl.gov" -p "draco capsaicin"
+# ./metrics_report.sh -e kgt@lanl.gov -p "draco jayenne capsaicin"
 # ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov jomc@lanl.gov sriram@lanl.gov draco@lanl.gov" -p "draco jayenne capsaicin"
 
 ##---------------------------------------------------------------------------##
@@ -90,7 +89,7 @@ p)
    #echo "Processing project(s): $projects"
    ;;
 :)
-   echo "Option -$OPTARG requires an argument." 
+   echo "Option -$OPTARG requires an argument."
    print_use
    exit 1
    ;;
@@ -171,18 +170,13 @@ for proj in $projects; do
    cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
 done
 # create the new coverage file via covmerge
-eval $cmd 
+eval $cmd
 # run covdir to generate a report (but omit entry for /source/src/)
-covdir | grep -v "source/.*src/ " | grep -v "source/ "
+covdir | grep -v "source/.*src/ " | grep -v "source/ " | grep -v "^src"
 
 echo " "
 echo "* C/D Coverage is condition/decision coverage"
 echo "  http://www.bullseye.com/coverage.html#basic_conditionDecision"
 
 # Send the email
-
-#echo " "
-#echo /bin/mailx -s \"${subj}\" ${recipients} < ${logfile}
 /bin/mailx -r "${USER}@lanl.gov" -s "${subj}" ${recipients} < ${logfile}
-#/bin/mailx -r "${USER}@lanl.gov" -s "${subj}" kellyt@lanl.gov < ${logfile}
-#/bin/mailx -r "${USER}@lanl.gov" -s "${subj}" jsbrock@lanl.gov barcher@lanl.gov jayenne@lanl.gov < ${logfile}
