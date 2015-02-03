@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2012-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -43,7 +43,7 @@ namespace rtt_diagnostics
  *     Allan B. Wollaber, Peter Ahrens, Jeff Furnish,
  *     Paul W. Talbot, Jae H. Chang, and Benjamin K. Bergen.
  *
- * Copyright (C) 1995-2014 LANS, LLC
+ * Copyright (C) 1995-2015 LANS, LLC
  * Build information:
  *     Library type   : shared
  *     System type    : Linux

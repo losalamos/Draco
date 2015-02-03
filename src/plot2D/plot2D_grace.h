@@ -3,7 +3,7 @@
  * \file   plot2D/plot2D_grace.h
  * \author Thomas M. Evans
  * \brief  Solve a system of equations by Gaussian elimination.
- * \note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

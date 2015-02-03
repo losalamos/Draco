@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Test the Draco class ApplicationUnitTest
- * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -1,5 +1,5 @@
 /*
-Copyright 2010-2014, D. E. Shaw Research.
+Copyright 2010-2015, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -199,7 +199,7 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
     if(excess>=0)
     {
 
-// 2014-09-26 KT - Suppress warnings for the following expressions (see https://rtt.lanl.gov/redmine/issues/416)
+// 2015-09-26 KT - Suppress warnings for the following expressions (see https://rtt.lanl.gov/redmine/issues/416)
 //
 // Basically, GCC under BullseyeCoverage issues the following warning every time this file is included:
 //         

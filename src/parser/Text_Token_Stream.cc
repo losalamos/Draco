@@ -3,7 +3,7 @@
  * \file   Text_Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Contains definitions of all Text_Token_Stream member functions.
- * \note   Copyright © 2006-2014 Los Alamos National Security, LLC
+ * \note   Copyright © 2006-2015 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Sep 20 14:55:09 2004
  * \brief  Test the F_eta_inv function
- * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -34,7 +34,7 @@ void tstF_eta_inv( rtt_dsxx::UnitTest & ut )
     const double C_C = 2.99792e10;    // Speed of light in cm/sec
 
     const unsigned ntests = 18;
-    // [2014-01-03 KT] I commented out the test for eta=800.0, T=1 because
+    // [2015-01-03 KT] I commented out the test for eta=800.0, T=1 because
     // F_eta(reta,gamma) overflows. 
     double eta[ntests] = {
         -70.0, -5.0, -0.694, -0.693, 0.0, 5.0, 10.0, 20.0, 50.0, 100.0,

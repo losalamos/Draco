@@ -47,7 +47,7 @@
 # available for use in your project.
 
 #=============================================================================
-# Copyright 2014 Kelly Thompson kgt@lanl.gov
+# Copyright 2015 Kelly Thompson kgt@lanl.gov
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.

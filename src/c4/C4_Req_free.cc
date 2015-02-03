@@ -4,11 +4,11 @@
  * \author Thomas M. Evans, Geoffrey Furnish
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req member definitions.
- * \note   Copyright (C) 2005-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id: C4_Req_free.cc 7388 2014-01-22 16:02:07Z kellyt $
+// $Id: C4_Req_free.cc 7388 2015-01-22 16:02:07Z kellyt $
 //---------------------------------------------------------------------------//
 
 #include "C4_Req.hh"

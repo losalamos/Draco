@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   diagnostics/qt/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
-# date   2014 June 26
+# date   2015 June 26
 # brief  Generate build project files for diagnostics/qt
-# note   Copyright (C) 2010-2014, Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

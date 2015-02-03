@@ -3,7 +3,7 @@
  * \file   linear/test/tstludcmp.cc
  * \author Kent Budge
  * \brief  
- * \note   Copyright (C) 2004-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

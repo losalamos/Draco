@@ -1,5 +1,5 @@
 /*
-Copyright 2010-2014, D. E. Shaw Research.
+Copyright 2010-2015, D. E. Shaw Research.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

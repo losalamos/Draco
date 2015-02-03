@@ -4,7 +4,7 @@
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
  * \brief  
- * \note   Copyright (c) 2000-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2000-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

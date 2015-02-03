@@ -3,7 +3,7 @@
  * \file   rng/Halton_Sequence.cc
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
- * \note   Copyright (C) 2006-2014 Los Alamos National Laboratory,
+ * \note   Copyright (C) 2006-2015 Los Alamos National Laboratory,
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -2294,9 +2294,9 @@ unsigned prime[] =
 20117,
 20123,
 20129,
-20143,
-20147,
-20149,
+20153,
+20157,
+20159,
 20161,
 20173,
 20177,

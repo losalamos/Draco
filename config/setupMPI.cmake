@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/setupMPI.cmake
 # author Kelly Thompson <kgt@lanl.gov>
-# date   2014 Sep 22
+# date   2015 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2014 Los Alamos National Security, LLC.
+# note   Copyright (C) 2015 Los Alamos National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
@@ -167,7 +167,7 @@ macro( setupOpenMPI )
     set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
-    # Flag provided by Sam Gutierrez (2014-04-08),
+    # Flag provided by Sam Gutierrez (2015-04-08),
     set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   endif()

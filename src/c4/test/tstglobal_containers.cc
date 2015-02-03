@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Mar 24 09:41:04 2008
  * \brief  
- * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

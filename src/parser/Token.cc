@@ -3,7 +3,7 @@
  * \file   Token.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token helper functions.
- * \note   Copyright © 2006-2014 Los Alamos National Security, LLC.
+ * \note   Copyright © 2006-2015 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

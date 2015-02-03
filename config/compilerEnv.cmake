@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compiler_env.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2010-2014 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

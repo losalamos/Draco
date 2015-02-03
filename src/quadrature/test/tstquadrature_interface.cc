@@ -5,7 +5,7 @@
  * \author Jae Chang
  * \date   Tue Feb  3 13:08:49 2012
  * \brief  Quadrature Interface test
- * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $

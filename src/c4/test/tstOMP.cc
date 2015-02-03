@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Parallel application used by the unit test for tstApplicationUnitTest.
- * \note   Copyright (C) 2006-2014 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -272,7 +272,7 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
         }
 
 
-        // [2014-11-17 KT] The accumulate test no longer provides enough work
+        // [2015-11-17 KT] The accumulate test no longer provides enough work
         // to offset the overhead of OpenMP, especially for the optimized
         // build.  Turn this test off...
 
