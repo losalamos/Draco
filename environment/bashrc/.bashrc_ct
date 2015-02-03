@@ -35,7 +35,8 @@ module unload cmake numdiff svn
 module unload papi perftools trilinos
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
-module unload xt-libsci xt-totalview
+module unload xt-libsci xt-totalview intel
+module load intel/14.0.4.211
 
 # draco modules start here.
 module load gsl/1.15 lapack/3.4.1

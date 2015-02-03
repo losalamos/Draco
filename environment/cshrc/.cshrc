@@ -94,7 +94,7 @@ case ct*:
     # load the Intel programming env, but then unloda libsci and totalview
     module load PrgEnv-intel # this loads xt-libsci and intel/XXX
     module unload xt-libsci intel # xt-totalview
-    module load intel/14.0.2.144
+    module load intel/14.0.4.211
 
     # draco modules start here.
     module load gsl/1.15 lapack/3.4.1

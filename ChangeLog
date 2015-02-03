@@ -1,3 +1,180 @@
+2015-02-03  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_15_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/35.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_7_0,   http://rtt.lanl.gov/redmine/versions/33
+	  - Capsaicin-4_4_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 14.0.4    OpenMPI-1.6.5
+	  CT/CI              Intel 14.0.4    Cray_MPICH2-7.0.1
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	- 904 files changed, added or removed in 97 commits.
+	- Begin support for Intel Knights Corner platforms with Intel 15 compilers and MPI (#476)
+	- Provided a new python program that plots multigroup opacities loaded from IPCRESS files.
+	- The smart pointer, rtt_dsxx::SP, class was refactored to work more similarly to C++11's shared_ptr.  This includes
+	  checks to prevent up casting (#460).
+	- Added a Planck weighted reciprocal opacity weighting functions to collapse multigroup and odfmg opacities.
+	- An external interface was provided in quadrature for accessing quadrature ordinates and weights.
+
+	* Details per package:
+
+	Build System:
+	- Provided support for linking to MKL as a replacement for LAPACK.
+	- Updates implemented to provide support for CMake 3.1+ (#471).
+	- Retired build system feature that detected available C++11 features. Begin using CMake 3.1's new CMAKE_CXX_KNOWN_FEATURES
+	  global property (#370, #435).
+	- Allow the compiler to be a compiler wrapper (e.g.: mpicxx, mpiifort).
+	- Reworked vendor setup for MPI to simplify the build system (#466, #467, #468)
+	- Begin support for Intel Knights Corner platforms with Intel 15 compilers and MPI (#474, #476, #477, #478, #486).
+	- Updated how the build system detects OpenMP and sets compile flags (refs #479)
+	- Modified the logic that enabled Fortran as a class 1 language for the generated project.  This registers Fortran as a
+	  class 1 language only if the Generator is "Unix Makefies" (the default on Linux) and neither ENV{FC} or
+	  CMAKE_Fortran_Compiler are set (the case for LLVM on Linux).
+	- Moved some platform checks from src/CMakeLists.txt to CMakeLists.txt so that all platform checks are done in the same
+	  block before the vendor's are setup.
+	- Reworked some of the CMakeAddFortranSubdirectory features (#370).
+	- Changed the imported target name for the gsl library to GSL::gsl (#436).
+	- Added support for LLVM/clang on Linux platforms (#487).
+
+	Developer Environment:
+	- Retired many scripts from environment/bin.
+	- Retired the environment/python and environment/share directories.
+	- Begin relying on user_contrib module system found on HPC Yellow machines.
+	- Vendors and modulefiles provided for the Knights Corner platform (#474, #476)
+	- Changed the default compiler suite on Toss 2.2 machines to be Intel/15.0.090.
+
+	Regression System:
+	- Improved regression system for CCS-7's Darwin cluster.
+
+	cdi:
+	- Added a Planck weighted reciprocal opacity weighting functions to collapse multigroup and odfmg opacities.
+
+	cdi_ipcress:
+	- Provided a new python program that plots multigroup opacities loaded from IPCRESS files.
+
+	ds++:
+	- The smart pointer, rtt_dsxx::SP, class was refactored to work more similarly to C++11's shared_ptr.  This includes checks
+	  to prevent up casting (#460).
+
+	quadrature:
+	- An external interface was provided in quadrature for accessing quadrature ordinates and weights.
+
+	* Details for defects and features can be found at https://rtt.lanl.gov/redmine/isues/#.
+
+	* Corrected defects:
+	  Bug #481 CMake 3.1 - FindCUDA is failing on ML
+	  Bug #467 Draco regressions fail on Darwin after r7787
+	  Bug #468 Draco fails to compile after reconfiguring (issue began with r7787)
+	  Bug #466 Installed versions of draco incorrectly set MPIEXEC_POSTFLAGS.
+
+	* New features:
+	  Feature #471 Implement CMake 3.1's cxx11 feature detection feature.
+	  Feature #473 Update Draco to build/run on knights corner (darwin)
+	  Feature #486 KNC - Stand up regression on Darwin for Knights Corner builds
+	  Feature #479 DBS cmake31 - Start using FindOpenMP.cmake
+	  Feature #478 Knights corner - update unit testing to include ssh to mic node before running the test
+	  Feature #482 Knights corner - demonstrate capsaicin build and test.
+	  Feature #475 Provide vendors and modulefiles compatible with knights corner (Capsaicin)
+	  Feature #474 Provide vendors and modulefiles compatible with knights corner (Draco)
+	  Feature #477 Knights corner - FortranChecks has missing F90 libs
+	  Feature #476 Knights corner - update build system to cross compile draco
+	  Feature #456 Update ds++/SP to act more like C++11's shared_ptr
+	  Feature #457 update to SP: branch draco repo for initial cut
+	  Feature #458 update to SP: update Capsaicin to use new SP
+	  Feature #459 update to SP: update Jayenne to use new SP
+	  Feature #460 update to SP: merge branched code back to HEAD
+	  Feature #387 Consider creating convenience library libdraco.so
+	  Feature #135 Build on WIN32
+	  Feature #487 Provide support for clang on Linux
+	  Task    #448 Completed ASC Backup Exercise - Dec 2014.
+	  Task    #438 Submit FindGSL.cmake to CMake developers list for review/inclusion
+	  Task    #437 Obtain LA-CC for FindGSL.cmake
+
+	* Known Defects:
+	  Bug  # 59 cdi_eospac design flaw
+ 	  Task #370 Provide CMakeAddFortranSubdirectory modifications to CMake
+	  Task #422 FindMPI.cmake doesn't find Intel MPI on Moonlight
+	  Bug  #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	  Task #435 Update to CMake 3.1 and consider implementing new features.
+	  Task #436 Provide FindGSL.cmake for release within CMake
+	  Bug  #469 FindMPI.cmake can choose wrong libraries
+	  Feature #485 CMake 3.1: Deprecate build option DRACO_ENABLE_CXX11
+	  Task #488 Re-establish a nightly Mac build.
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             409          11858          21328          63780
+C/C++ Header                    334           7291          21291          19652
+Lisp                             14           1863           2652          12293
+CMake                           111           1866           4708           7627
+Bourne Again Shell               22            420            755           1631
+Bourne Shell                     12            232            592           1037
+Python                            7            255            339            797
+CSS                               1            113             37            395
+C Shell                           3             54            105            266
+C                                 4             45            113            238
+Fortran 90                        3             45             80            172
+DOS Batch                         3             31             29             76
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            930          24120          52119         108091
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    45 /    45 = 100%      60 /    72 =  83%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     191 /   252 =  75%
+../source/src/viz/                    40 /    40 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/cdi_eospac/             52 /    52 = 100%      67 /   132 =  50%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/ds++/                  321 /   325 =  98%     364 /   421 =  86%
+../source/src/parser/                277 /   281 =  98%    1112 /  1397 =  79%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/quadrature/            199 /   203 =  98%     527 /   674 =  78%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/c4/                    173 /   180 =  96%     518 /   574 =  90%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/diagnostics/            14 /    19 =  73%      26 /    40 =  65%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+../source/src/diagnostics/qt/          0 /     5 =   0%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2063 /  2124 =  97%    4958 /  6229 =  79%
+
+
 2014-11-07  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_14_0.  This is a minor Draco release.
@@ -3542,7 +3719,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         config
                 - added vendor support for ParMetis which is needed by
-	          SuperLU_Dist, v. 2.2 
+	          SuperLU_Dist, v. 2.2
 
         environment
                 - Refactored python script for the pitch and repoman tools
@@ -4461,7 +4638,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
           cdi_analytic/           66 /    76 =  86%      66 /    82 =  80%
           cdi_gandolf/            63 /   101 =  62%      93 /   172 =  54%
           ds++/                  441 /   531 =  83%     348 /   530 =  65%
-          lapack_wrap/            11 /    17 =  64%       0 /     0       
+          lapack_wrap/            11 /    17 =  64%       0 /     0
           meshReaders/            14 /    14 = 100%     127 /   172 =  73%
           mesh_element/           21 /    21 = 100%     150 /   204 =  73%
           norms/                  19 /    24 =  79%      20 /    34 =  58%
@@ -4471,7 +4648,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
           rng/                    21 /    26 =  80%      19 /    30 =  63%
           shared_lib/             12 /    18 =  66%       7 /    10 =  70%
           timestep/               49 /    62 =  79%      84 /   176 =  47%
-          traits/                 12 /    17 =  70%       0 /     0       
+          traits/                 12 /    17 =  70%       0 /     0
           units/                  83 /    83 = 100%      58 /    58 = 100%
           viz/                    23 /    26 =  88%     140 /   190 =  73%
           xm/                     89 /   169 =  52%      29 /    32 =  90%
@@ -4666,9 +4843,9 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
      draco/src/xm/                        89 /   169 =  52%      29 /    32 =  90%
      draco/src/c4/                        66 /   107 =  61%      25 /    40 =  62%
      draco/src/cdi_gandolf/               63 /   101 =  62%      93 /   172 =  54%
-     draco/src/lapack_wrap/               11 /    17 =  64%       0 /     0       
+     draco/src/lapack_wrap/               11 /    17 =  64%       0 /     0
      draco/src/ds++/                     377 /   556 =  67%     280 /   592 =  47%
-     draco/src/traits/                    12 /    17 =  70%       0 /     0       
+     draco/src/traits/                    12 /    17 =  70%       0 /     0
      draco/src/plot2D/                    20 /    28 =  71%      50 /    84 =  59%
      draco/src/xm/test/                   19 /    26 =  73%      14 /    22 =  63%
      draco/src/timestep/                  49 /    62 =  79%      88 /   178 =  49%
@@ -4728,12 +4905,12 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         This draco release includes the following packages:
 
-                RTT_Format_Reader 
+                RTT_Format_Reader
                 c4
-                cdi 
-                cdi_analytic 
-                cdi_gandolf 
-                ds++ 
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
                 lapack_wrap
                 meshReaders
                 meshReaders_Services
@@ -4747,7 +4924,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 units
                 viz
                 xm
-        
+
         We are not releasing cdi_eospac in draco until the compiler issues
         have been resolved [hopefully with the release of a C version of
         EOSPAC].
@@ -4755,7 +4932,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         We are not releasing pcgWrap in draco until the pcgWrap component
         in Draco is updated to only call double precision routines.  The
         single precision routines in libpcg have been removed in recent
-        versions. 
+        versions.
 
         We are not releaseing shared_lib in draco until this package
         passes its unit tests on QSC.
@@ -4765,7 +4942,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         * draco: Released draco-5_2_0.  This is a minor draco release.  A
         summary of changes are:
 
-        - build systems chages: more darwin support, vendors added 
+        - build systems chages: more darwin support, vendors added
         - timestep: improvements to field_ts_advisor
         - quadrature: beginning of significant redesign
         - shared_lib: added to released packages; only on when compile in
@@ -4776,12 +4953,12 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         This draco release includes the following packages:
 
-                RTT_Format_Reader 
+                RTT_Format_Reader
                 c4
-                cdi 
-                cdi_analytic 
-                cdi_gandolf 
-                ds++ 
+                cdi
+                cdi_analytic
+                cdi_gandolf
+                ds++
                 lapack_wrap
                 meshReaders
                 meshReaders_Services
@@ -4872,7 +5049,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         because of compiler issues involving EOSPAC.
 
         There are significant build system changes particularly with
-        regard to the autodoc system [see CCS-4:04-25].  
+        regard to the autodoc system [see CCS-4:04-25].
 
         The Project Thuban [CCS-4:04-21] directory reorganization has been
         completed.  The draco development environment files have been
@@ -4919,7 +5096,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 - moved elisp XEmacs development environment to draco
 
         This draco release includes the following packages:
-        
+
                 RTT_Format_Reader
                 c4
                 cdi
@@ -4947,7 +5124,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         imc packages into a Jayenne project source directory.
 
 2004-01-13  Thomas M. Evans  <tme@lanl.gov>
-        
+
         * draco: release draco-4_2_0.  This is a minor release, as such it
         does not have a release memo associated with it.  In summary, the
         changes are:
@@ -4965,9 +5142,9 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                   cdi_eospac/ChangeLog for details.
 
         This version of draco has been tested successfully with gcc-3.3.2.
-                
+
         This draco release includes the following packages:
-        
+
                 RTT_Format_Reader
                 c4
                 cdi
@@ -5009,7 +5186,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         See the individual package changelogs for more details.
 
         This draco release includes the following packages:
-        
+
                 RTT_Format_Reader
                 c4
                 cdi
@@ -5128,7 +5305,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 - gray random walk implemented in imc package
                 - surfaces added to mc package
                 - small mods to c4 that returns the count after an async
-                  receive 
+                  receive
                 - improved templates
                 - additions for IBM xlC compiler support
                 - the find_tags.py and find_tags_diff.py tools have
@@ -5161,43 +5338,43 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         Because this is a minor release we have not formally documented it
         with a release note. Also, we have not updated the code
-        statistics. 
+        statistics.
 
 2003-06-04  Thomas M. Evans  <tme@lanl.gov>
 
         * draco: released draco-3_0_0.  We have adopted some new policies,
         in particular, we now will not require package tags to be
         synchronized with the draco tag.  The package tags should be used
-        for interim package releases [in between draco releases].  
+        for interim package releases [in between draco releases].
 
         We will now be more proactive about documenting major draco
         releases.  As part of that spirit, see "Release of Draco-3_0_0" in
         draco/doc/releases/draco-3_0_0.tex for details of this release.
 
         The following packages are part of this release:
-        
-                c4 
+
+                c4
                 cdi
                 cdi_analytic
-                cdi_eospac 
-                cdi_gandolf 
-                ds++ 
-                imc 
+                cdi_eospac
+                cdi_gandolf
+                ds++
+                imc
                 lapack_wrap
-                mc 
-                meshReaders 
+                mc
+                meshReaders
                 meshReaders_Services
-                pcgWrap 
-                plot2D 
-                quadrature 
-                rng 
-                RTT_Format_Reader 
+                pcgWrap
+                plot2D
+                quadrature
+                rng
+                RTT_Format_Reader
                 stdheaders
-                timestep 
-                traits 
-                units 
-                viz 
-                xm 
+                timestep
+                traits
+                units
+                viz
+                xm
 
         They all have draco-3_0_0 tags as their latest release.
 
@@ -5219,7 +5396,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         * draco, draco/config: committed first set of changes to make the
         build system autoconf > 2.5 compliant.  This commit changed the
-        following: 
+        following:
 
                 - Each directory now has its own aclocal.m4 [generated by
                 automake] and configure [generated by autoconf].  Both of
@@ -5251,11 +5428,11 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         We will be releasing a technical note describing the build
         system updates.  We will also update the draco release procedures
         document.  The draco build system doxygen page will also get
-        updated.  
+        updated.
 
         We will continue to tweak this until draco-3_0_0.  This release
         will be the first draco release with the "new" build system.
-        
+
 2003-04-28  Thomas M. Evans  <tme@lanl.gov>
 
         * draco, draco/config: updated draco build system to use autoconf
@@ -5306,12 +5483,12 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         See package ChangeLogs for package details.  On the draco front we
         changed:
-                
+
                 1) better doxygen front page
                 2) build-system documentation
                 3) new improved templates
                 4) small build system fixes [Compaq link options]
-                5) moved draco/Merge and draco/assesment to 
+                5) moved draco/Merge and draco/assesment to
                    draco/doc/merge and draco/doc/assessment
 
         Made significant update to build system.  The libraries are now
@@ -5341,7 +5518,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         * html: removed old John McGhee html info directory.
 
         * stopwatch: retired stopwatch package (corresponded to
-        stopwatch-1_2_0). 
+        stopwatch-1_2_0).
 
 2002-12-11  Thomas M. Evans  <tme@lanl.gov>
 
@@ -5349,27 +5526,27 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         following updates to packages:
 
                 c4-2_2_0
-                cdi-1_3_0 
+                cdi-1_3_0
                 cdi_analytic-1_0_0
                 cdi_eospac-1_2_0
-                cdi_gandolf-1_3_0 
+                cdi_gandolf-1_3_0
                 ds++-1_8_0
-                imc-3_2_0 
+                imc-3_2_0
                 lapack_wrap-1_0_0
                 mc-3_2_0
-                meshReaders-1_4_0 
-                meshReaders_Services-1_0_0          
+                meshReaders-1_4_0
+                meshReaders_Services-1_0_0
                 pcgWrap-1_1_0
                 plot2D-1_1_0
                 quadrature-1_2_0
-                rng-1_6_0 
+                rng-1_6_0
                 RTT_Format_Reader-1_3_0
                 stdheaders-1_3_0
                 stopwatch-1_2_0
                 timestep-1_3_0
                 traits-1_5_0
                 units-1_3_0
-                viz-1_3_0 
+                viz-1_3_0
                 xm-1_5_0
 
                 radphys-retired (no longer part of head)
@@ -5385,18 +5562,18 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         * draco: released draco-2_2_0.  This release includes the
         following packages:
-        
+
                 c4-2_2_0
                 cdi-1_2_0
                 cdi_analytic-1_0_0
                 cdi_eospac-1_1_0
                 cdi_gandolf-1_2_0
                 ds++-1_7_0
-                imc-3_2_0 
-                lapack_wrap-1_0_0 
+                imc-3_2_0
+                lapack_wrap-1_0_0
                 mc-3_2_0
                 meshReaders-1_4_0
-                meshReaders_Services-1_0_0          
+                meshReaders_Services-1_0_0
                 pcgWrap-1_1_0
                 plot2D-1_1_0
                 quadrature-1_1_0
@@ -5404,10 +5581,10 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 rng-1_6_0
                 RTT_Format_Reader-1_3_0
                 stdheaders-1_3_0
-                stopwatch-1_2_0 
+                stopwatch-1_2_0
                 timestep-1_3_0
                 traits-1_4_0
-                units-1_3_0 
+                units-1_3_0
                 viz-1_3_0
                 xm-1_4_0
 
@@ -5456,7 +5633,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         system.  It also has expanded COMPAQ support.
 
         We still have the following to work on:
-                
+
                 - support for the draco/doc and draco/src/<pkg>/doc
                   builds, native format is not important, but pdfs
                   must be able to be generated
@@ -5503,11 +5680,11 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
 
         Pre-built versions of draco are available on
         /radtran/vendors/draco.  This is a link that points to the latest
-        release. 
+        release.
 
         As of this release, all of draco is required to build with the g++
         (> 3.0.1) compiler.  This is, of course, subject to discussion;
-        however, we will keep this as a general rule.  
+        however, we will keep this as a general rule.
 
         The build system has been significantly updated:
 
@@ -5517,7 +5694,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 - improved support for F90
 
         We still have the following to work on:
-                
+
                 - support for the draco/doc and draco/src/<pkg>/doc
                   builds, native format is not important, but pdfs
                   must be able to be generated
@@ -5548,7 +5725,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 level 1: ds++ stdheaders
                 level 2: xm rng c4 units traits UnitTestFrame cdi
                 level 3: timestep pcgWrap stopwatch quadrature radphys
-                         ConjGrad meshReaders viz cdi_eospac 
+                         ConjGrad meshReaders viz cdi_eospac
                          cdi_gandolf cdi_analytic
                 level 4: RTT_Format_Reader
                 level 5: mc meshReaders_Services
@@ -5585,7 +5762,7 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 mc-1_2_0
                 rng-1_3_0
                 c4-1_3_0
-                viz-1_0_0 
+                viz-1_0_0
                 timestep-1_2_0
                 xm-1_2_0
                 stopwatch-1_1_0
@@ -5602,13 +5779,13 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
                 ConjGrad-1_0_0
                 meshTest-1_2_0
 
-        All regression tests in these packages passed on mikonos utilizing 
+        All regression tests in these packages passed on mikonos utilizing
         the following configuration:
 
-                draco_config .. --with-c4=mpi 
-                --with-mpi-inc=/usr/local/mpich/include 
-                --with-mpi-lib=/usr/local/mpich/lib 
-                --with-sprng-inc=/usr/local/vendors/sprng/include 
+                draco_config .. --with-c4=mpi
+                --with-mpi-inc=/usr/local/mpich/include
+                --with-mpi-lib=/usr/local/mpich/lib
+                --with-sprng-inc=/usr/local/vendors/sprng/include
                 --with-sprng-lib=/usr/local/vendors/sprng/lib
 
         KCC 3.4g (LINUX) was used as the compiler.  See Memo
@@ -5620,25 +5797,25 @@ Total                 2245 /  2341 =  95%    4693 /  5875 =  79%
         templates directory.  In the future, each package in draco that
         maintains its own numbered release tag, autodoc, templates,
         config, c4, ds++, etc. should have their own ChangeLog files to
-        record package-wide changes.  The draco ChangeLog will only record 
+        record package-wide changes.  The draco ChangeLog will only record
         draco-specific changes, releases, etc.  Of course, developers
         should feel free to "mirror" any changes noted in the individual
         package ChangeLogs to the draco ChangeLogs.  Even comments such
         as, "made changes in templates" are effective, as a user could
         simply peruse the templates ChangeLog file to see actual changes
-        made. 
+        made.
 
 1999-09-03  Thomas M. Evans  <tme@lanl.gov>
 
         * autodoc, Makefile.in: added autodoc directory for automatic
-        document generation.  added gmake autodoc target that runs doxygen 
+        document generation.  added gmake autodoc target that runs doxygen
         to build the documentation in the installation directory.  The
-        documentation is built in the html and latex directories.  Running 
+        documentation is built in the html and latex directories.  Running
         gmake autodoc automatically does an install of the documentation.
         Running gmake clean will remove the documentation files from html
         and latex.  Note that no dependencies have been added to this
         target yet.
 
-$Id$ 
+$Id$
 
         * src (all directories): initial release.
