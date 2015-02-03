@@ -4,13 +4,13 @@ Terms and Conditions of Use
 ----------------------------------------
 
 Please read these terms and conditions of use carefully before using
-this software.   
+this software.
 
 Copyright
 --------------------
 
-(C) Copyright 1997-2014 Los Alamos National Security, LLC.  All rights
-reserved. 
+(C) Copyright 1997-2015 Los Alamos National Security, LLC.  All rights
+reserved.
 
 This material was prepared by the Los Alamos National Security, LLC
 (LANS) under Contract DE-AC52-06NA25396 with the U.S. Department of
@@ -25,7 +25,7 @@ RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY
 INFORMATION, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS
 THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
 
-Note: 
+Note:
 
 Unless otherwise indicated, this information has been authored by an
 employee or employees of the Los Alamos National Security, LLC (LANS),
@@ -43,7 +43,7 @@ Policy and Disclaimer
 Policy Statement: The Los Alamos National Laboratory strongly supports
 academic freedom and a researcher's right to publish; therefore, the
 Laboratory as an institution does not endorse the viewpoint of a
-publication or guarantee its technical correctness. 
+publication or guarantee its technical correctness.
 
 Disclaimer of Liability: With respect to documents available from this
 server, neither the United States Government nor the Los Alamos
@@ -53,7 +53,7 @@ merchantability and fitness for a particular purpose, or assumes any
 legal liability or responsibility for the accuracy, completeness, or
 usefulness of any information, apparatus, product, or process
 disclosed, or represents that its use would not infringe privately
-owned rights. 
+owned rights.
 
 Disclaimer of Endorsement: Reference herein to any specific commercial
 products, process, or service by trade name, trademark, manufacturer,
@@ -63,7 +63,7 @@ Government or the Los Alamos National Security, LLC. The views and
 opinions of authors expressed herein do not necessarily state or
 reflect those of the United States Government or the Los Alamos
 National Security, LLC., and shall not be used for advertising or
-product endorsement purposes. 
+product endorsement purposes.
 
 
 Additional Copyrights:
@@ -84,5 +84,3 @@ Documentation", the Front-Cover text being "A GNU Manual," and with
 the Back-Cover Text being (a) (see below). A copy of the license is included in
 the section entitled "GNU Free Documentation License".
 (a) The Back-Cover Text is: "You have the freedom to copy and modify this GNU Manual."
-
-

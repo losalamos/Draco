@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   viz/test/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for viz/test.
@@ -22,7 +22,7 @@ file( GLOB bench_files bench/*.0001 )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
@@ -36,7 +36,7 @@ if( NOT APPLE )
    # tests.
    add_scalar_tests(
       SOURCES "${test_sources}"
-      DEPS    "Lib_viz;Lib_dsxx" 
+      DEPS    "Lib_viz;Lib_dsxx"
       )
 endif()
 
@@ -69,5 +69,3 @@ set( extra_clean_files
 set_directory_properties(
    PROPERTIES
    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
-
-

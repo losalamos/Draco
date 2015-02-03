@@ -35,8 +35,8 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
         cout << "\nGenerating ascii files...\n" << endl;
 
     // dimensions
-    int ncells   = 27; 
-    int nvert    = 64; 
+    int ncells   = 27;
+    int nvert    = 64;
     int ndim     = 3;
     int ndata    = 2;
     int nhexvert = 8;
@@ -52,8 +52,8 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 
     // do an Ensight Dump
     vec2_i ipar(ncells, vec_i(nhexvert));
-    vec2_d vrtx_data(nvert, vec_d(ndata, 5.0)); 
-    vec2_d cell_data(ncells, vec_d(ndata, 10.));   
+    vec2_d vrtx_data(nvert, vec_d(ndata, 5.0));
+    vec2_d cell_data(ncells, vec_d(ndata, 10.));
     vec2_d pt_coor(nvert, vec_d(ndim));
 
     vec_i iel_type(ncells, rtt_viz::eight_node_hexahedron);
@@ -149,8 +149,8 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
         int p_ncells = g_cell_indices[i].size();
         int p_nvert  = g_vrtx_indices[i].size();
         p_ipar[i].resize(p_ncells, vec_i(nhexvert));
-        p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0)); 
-        p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));   
+        p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0));
+        p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));
         p_pt_coor[i].resize(p_nvert, vec_d(ndim));
         p_iel_type[i].resize(p_ncells, rtt_viz::eight_node_hexahedron);
 
@@ -182,10 +182,10 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     }
 
     // build an Ensight_Translator (make sure it overwrites any existing
-    // stuff) 
+    // stuff)
     Ensight_Translator translator(prefix, gd_wpath, vdata_names,
                                   cdata_names, true, static_geom,
-                                  binary); 
+                                  binary);
 
     translator.ensight_dump(icycle, time, dt,
                             ipar, iel_type, rgn_index, pt_coor,
@@ -200,7 +200,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     // directories
     Ensight_Translator translator2(prefix, gd_wpath, vdata_names,
                                    cdata_names, true, static_geom,
-                                   binary); 
+                                   binary);
 
     translator2.ensight_dump(icycle, time, dt,
                              ipar, iel_type, rgn_index, pt_coor,
@@ -212,30 +212,30 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 
     Ensight_Translator translator3(prefix, gd_wpath, vdata_names,
                                    cdata_names, false, static_geom,
-                                   binary); 
+                                   binary);
 
     // now add another dump to the existing data
     translator3.ensight_dump(2, .05, dt,
                              ipar, iel_type, rgn_index, pt_coor,
                              vrtx_data, cell_data,
-                             rgn_data, rgn_name);    
+                             rgn_data, rgn_name);
 
     // make yet a fourth translator that will append
     Ensight_Translator translator4(prefix, gd_wpath, vdata_names,
                                    cdata_names, false, static_geom,
-                                   binary); 
+                                   binary);
 
     // add yet another dump to the existing data
     translator4.ensight_dump(3, .10, dt,
                              ipar, iel_type, rgn_index, pt_coor,
                              vrtx_data, cell_data,
-                             rgn_data, rgn_name);    
+                             rgn_data, rgn_name);
 
     // build an Ensight_Translator and do the per-part dump.
     string p_prefix = "part_" + prefix;
     Ensight_Translator translator5(p_prefix, gd_wpath, vdata_names,
                                    cdata_names, true, static_geom,
-                                   binary); 
+                                   binary);
 
     translator5.open(icycle, time, dt);
 
@@ -253,7 +253,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 }
 
 //---------------------------------------------------------------------------//
-// 
+//
 //---------------------------------------------------------------------------//
 void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
 {
@@ -293,25 +293,25 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
              itd != dirs.end(); ++itd )
         {
             // file string
-            string output   = baseDir + *itp + rtt_dsxx::dirSep + *itd 
+            string output   = baseDir + *itp + rtt_dsxx::dirSep + *itd
                               + rtt_dsxx::dirSep + string("data") + postfix;
-            string ref_out, diff_out;
+            string ref_out, diff_out, diff_line;
             if( binary )
             {
                 ref_out  = baseDir +WIN32PATHOFFSET+ *itd + string(".bin") + postfix;
                 diff_out = baseDir + *itd + string(".bin.diff");
+                diff_line = string("diff ");
             }
             else
             {
                 ref_out  = baseDir +WIN32PATHOFFSET+ *itd + postfix;
                 diff_out = baseDir + *itd + string(".diff");
+                diff_line = string("numdiff ");
             }
 
             // Diff the output and reference
-            string diff_line = string("numdiff ")
-                               + output + string(" ")
-                               + ref_out + string(" > ")
-                               + diff_out;
+            diff_line += output + string(" ")
+                         + ref_out + string(" > ") + diff_out;
             cout << diff_line << endl;
             int ret=system( diff_line.c_str() );
             if( ret != 0 )                                             ITFAILS;
@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
     try
     {
         { // ASCII dumps
-            ensight_dump_test(ut, false); 
+            ensight_dump_test(ut, false);
             checkOutputFiles( ut, false );
         }
         { // Binary dumps
