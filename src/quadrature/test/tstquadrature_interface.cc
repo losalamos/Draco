@@ -257,6 +257,10 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
         PASSMSG("test successfull.");
 
 
+    delete [] mu;
+    delete [] eta;
+    delete [] weights;
+
     return;
 }
 
