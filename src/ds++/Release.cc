@@ -30,7 +30,7 @@ const std::string release()
                 << DRACO_VERSION_MAJOR << "_"
                 << DRACO_VERSION_MINOR << "_"
                 << DRACO_VERSION_PATCH ;
-    
+
     // build date and type
     std::string const build_date( DRACO_BUILD_DATE );
     std::string const build_type( DRACO_BUILD_TYPE );
@@ -48,7 +48,7 @@ const std::string release()
 #endif
 #endif
         ;
-    
+
     return pkg_release.str();
 }
 
@@ -69,36 +69,35 @@ const std::string release()
  * Note 1: the annotate step can take a long time (do this on a local disk!)
  *
  * Note 2: I only included contributers that supplied more than 500 lines of
- * code. 
+ * code.
  */
 const std::string author_list()
 {
-// 73593: kellyt
-// 47634: kgbudge
-// 10654: tme
-// 5970: bta
-// 5165: lowrie
-// 4028: mcghee
+// 74263: kellyt
+// 47436: kgbudge
+// 10295: tme
+// 5960: bta
+// 4869: lowrie
+// 4027: mcghee
 // 3847: mwbuksas
-// 3622: gaber
-// 2184: warsa
-// 967: wollaber
+// 3428: gaber
+// 2175: warsa
 // 953: rsqrd
-// 863: sethrj
+// 929: wollaber
+// 859: sethrj
+// 597: jhchang
 // 435: talbotp
-// 202: furnish
-// 136: phenning
+// 191: furnish
+// 169: clevelam
 // 130: bergen
+// 117: phenning
 // --- 100 lines ---
-// 101: regress
 // 93: pahrens
-// 92: jhchang
-// 49: jdd
+// 48: jdd
 // 48: batcho
 // 31: tmonster
 // 25: swmosher
 // 10: tkelley
-// 8: clevelam
 // 2: wawiesel
 
     std::stringstream alist;
@@ -106,8 +105,9 @@ const std::string author_list()
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
     alist << "    Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,\n"
           << "    Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller, \n"
-          << "    James S. Warsa, Allan B. Wollaber, Randy M. Roberts, Seth R. Johnson,\n"
-          << "    Paul W. Talbot, Jeff Furnish, Paul J. Henning, Benjamin K. Bergen.";
+          << "    James S. Warsa, Randy M. Roberts, Allan B. Wollaber, Seth R. Johnson,\n"
+          << "    Jae H. Chang, Paul W. Talbot, Jeff Furnish, Matthew A. Cleveland, \n"
+          << "    Benjamin K. Bergen, Paul J. Henning.";
     return alist.str();
 }
 
@@ -122,7 +122,7 @@ const std::string copyright()
         << author_list() << "\n\n"
         << "Copyright (C) 1995-2015 Los Alamos National Security, LLC."
         << std::endl;
-  
+
     return msg.str();
 }
 
@@ -138,7 +138,7 @@ extern "C" void ec_release( char * release_string, size_t maxlen )
         tmp_rel = tmp_rel.substr(0,maxlen-1);
     }
     std::memcpy(release_string,tmp_rel.c_str(),tmp_rel.size()+1);
-    return;    
+    return;
 }
 
 //---------------------------------------------------------------------------//
