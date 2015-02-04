@@ -204,6 +204,66 @@ macro( setupQt )
 endmacro()
 
 #------------------------------------------------------------------------------
+# save_vendor_imported_library_to_draco_config
+#
+# Save imported target information to the installed file
+# "draco-config.cmake"
+#
+# Append the variable Draco_EXPORT_TARGET_PROPERTIES with enough
+# information to use the imported library from Jayenne or
+# Capsaicin.  The string  Draco_EXPORT_TARGET_PROPERTIES is written
+# to lib/cmake/draco/draco-config.cmake during the 'install' phase
+# of the build.
+# - Examine each imported target specified in the the list 'targets'
+#   and generate an 'import_library' for the imported target.
+# - Query each target for each of the properites listed in
+#   'target_properties'
+# - If the target has the requested property, save this value to
+#   Draco_EXPORT_TARGET_PROPERTIES.
+#------------------------------------------------------------------------------
+macro( save_vendor_imported_library_to_draco_config targets target_properties )
+  foreach( tgt ${targets} )
+    # The target's TYPE may not be set correctly, set it manually.
+    get_target_property( fplib ${tgt} IMPORTED_LOCATION )
+    if( "${fplib}" MATCHES "${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+      set( library_type SHARED )
+    else()
+      set( library_type STATIC )
+      #set( library_type UNKNOWN )
+    endif()
+
+    set( tmp "add_library( ${tgt} ${library_type} IMPORTED )" )
+    set( tmp "${tmp}
+set_target_properties( ${tgt} PROPERTIES")
+    if(TARGET ${tgt})
+      foreach( prop ${target_properties} )
+        get_property(v TARGET ${tgt} PROPERTY ${prop})
+        #get_property(d TARGET ${tgt} PROPERTY ${prop} DEFINED)
+        get_property(s TARGET ${tgt} PROPERTY ${prop} SET)
+        if( s )
+          set( tmp "${tmp}
+   ${prop} \"${v}\"")
+        endif()
+      endforeach()
+      set( tmp "${tmp}
+   TYPE \"${library_type}_LIBRARY\" )
+")
+    else()
+      message(FATAL_ERROR "There is no target named '${tgt}'")
+    endif()
+
+    # Append to Draco_EXPORT_TARGET_PROPERTIES the commands needed to
+    # import the library and set all of its properties.
+    set( Draco_EXPORT_TARGET_PROPERTIES
+      "${Draco_EXPORT_TARGET_PROPERTIES}
+${tmp}")
+    # message("${tmp}")
+  endforeach()
+  unset( fplib )
+  unset( library_type )
+endmacro()
+
+#------------------------------------------------------------------------------
 # Setup GSL (any)
 #------------------------------------------------------------------------------
 macro( setupGSL )
@@ -225,40 +285,13 @@ macro( setupGSL )
   if( GSL_FOUND )
     message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
 
-    # Create an entry in draco-config.cmake for the gsl libs
-    get_target_property( gslimploc      GSL::gsl      IMPORTED_LOCATION )
-    get_target_property( gslcblasimploc GSL::gslcblas IMPORTED_LOCATION )
-
-    # If this platform doesn't support shared libraries (e.g. cross
-    # compiling), assume static. This suppresses cmake (3.0.0) warnings
-    # of the form:
-    #     "ADD_LIBRARY called with MODULE option but the target platform
-    #     does not support dynamic linking.  Building a STATIC library
-    #     instead.  This may lead to problems."
-  if( TARGET_SUPPORTS_SHARED_LIBS )
-    set( library_type UNKNOWN )
-  else()
-    set( library_type STATIC )
-  endif()
-
-    set( Draco_EXPORT_TARGET_PROPERTIES
-      "${Draco_EXPORT_TARGET_PROPERTIES}
-add_library( GSL::gsl ${library_type} IMPORTED )
-set_target_properties( GSL::gsl PROPERTIES
-    IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
-    IMPORTED_LINK_INTERFACE_LIBRARIES \"GSL::gslcblas\"
-    IMPORTED_LOCATION                 \"${gslimploc}\"
-)
-
-add_library( GSL::gslcblas ${library_type} IMPORTED )
-set_target_properties( GSL::gslcblas PROPERTIES
-    IMPORTED_LINK_INTERFACE_LANGUAGES \"C\"
-    IMPORTED_LOCATION                 \"${gslcblasimploc}\"
-)
-")
-
-  unset(library_type)
-
+    # Export GSL target information to draco-config.cmake
+    # Choose items for props list via:
+    # include(print_target_properties)
+    # echo_targets("GSL::gsl;GSL::gslcblas")
+    set( props "BUILD_WITH_INSTALL_RPATH;IMPORTED_LINK_INTERFACE_LANGUAGES;IMPORTED_LINK_INTERFACE_LIBRARIES;IMPORTED_LOCATION;IMPORTED;INSTALL_RPATH;INSTALL_RPATH_USE_LINK_PATH;INTERFACE_INCLUDE_DIRECTORIES;SKIP_BUILD_RPATH;GNUtoMS;IMPORTED_IMPLIB_DEBUG;IMPORTED_IMPLIB;IMPORTED_LOCATION_DEBUG;POSITION_INDEPENDENT_CODE" )
+    save_vendor_imported_library_to_draco_config(
+      "GSL::gsl;GSL::gslcblas" "${props}" )
 else()
   message( STATUS "Looking for GSL.......not found" )
 endif()

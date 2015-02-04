@@ -189,6 +189,7 @@ macro( add_component_library )
 set_target_properties(${acl_TARGET} PROPERTIES
    IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
    IMPORTED_LOCATION                 \"${imploc}\"
+   INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/include\"
 )
 ")
 else()
@@ -198,6 +199,7 @@ set_target_properties(${acl_TARGET} PROPERTIES
    IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
    IMPORTED_LINK_INTERFACE_LIBRARIES \"${ilil}\"
    IMPORTED_LOCATION                 \"${imploc}\"
+   INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/include\"
 )
 ")
 endif()
@@ -424,16 +426,6 @@ macro( copy_win32_dll_to_test_dir )
           else()
             get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
           endif()
-          # if(${link_libs2} MATCHES NOTFOUND)
-            # unset(link_libs2)
-          # else()
-            # list( APPEND link_libs ${link_libs2} )
-          # endif()
-          # if(${link_libs3} MATCHES NOTFOUND)
-            # unset(link_libs3)
-          # else()
-            # list( APPEND link_libs ${link_libs3} )
-          # endif()
           list( APPEND link_libs ${link_libs2} )
           list( APPEND link_libs ${link_libs3} )
           if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
@@ -493,9 +485,6 @@ macro( copy_win32_dll_to_test_dir )
           if( ${${comp_target}_loc} MATCHES NOTFOUND )
             get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION_NOCONFIG )
           endif()
-          # if( ${compname} MATCHES Fortran )
-          # message("   ${lib} is imported from ${${comp_target}_loc}")
-          # endif()
           # copy the dll, not the lib
           string( REPLACE ".lib" ".dll" dll_file ${${comp_target}_loc} )
           if( EXISTS ${dll_file})
@@ -506,30 +495,33 @@ macro( copy_win32_dll_to_test_dir )
         endif()
         get_target_property( ${comp_target}_gnutoms ${lib} GNUtoMS )
       endif()
-      # Also grab the file with debug info
-      string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
 
       if( "${${comp_target}_loc}" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
         add_custom_command( TARGET Ut_${compname}_${testname}_exe
           POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
-          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
-          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-          )
-          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-            message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-            message("    CMAKE_COMMAND -E copy_if_different ${pdb_file} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-          endif()
+          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+        if( ${CMAKE_CFG_INTDIR} STREQUAL Debug)
+          # Also grab the file with debug info
+          string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
+          add_custom_command( TARGET Ut_${compname}_${testname}_exe
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
+            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+        endif()
+        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+          message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+          message("    CMAKE_COMMAND -E copy_if_different ${pdb_file} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+        endif()
       else()
         add_custom_command( TARGET Ut_${compname}_${testname}_exe
           POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
           )
-          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-            message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-          endif()
+        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+          message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+        endif()
       endif()
     endforeach()
   endif()
@@ -947,52 +939,6 @@ macro( provide_aux_files )
   set_target_properties( Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg}
     PROPERTIES FOLDER ${folder_name}
     )
-
-endmacro()
-
-#----------------------------------------------------------------------#
-# CONDITIONALLY_ADD_SUBDIRECTORY - add a directory to the build while
-#      allowing exceptions:
-#
-# E.g.: conditionally_add_subdirectory(
-#      COMPONENT "mc"
-#      CXX_COMPILER_EXCEPTION "spu-g[+][+]" )
-#----------------------------------------------------------------------#
-macro( conditionally_add_subdirectory )
-
-  parse_arguments(
-    # prefix
-    caddsubdir
-    # list names
-    "COMPONENTS;CXX_COMPILER_EXCEPTION;CXX_COMPILER_MATCHES"
-    # option names
-    "NONE"
-    ${ARGV}
-    )
-
-  # if the current compiler doesn't match the provided regex, then
-  # add the directory to the build
-  if( caddsubdir_CXX_COMPILER_EXCEPTION )
-    if( NOT "${CMAKE_CXX_COMPILER}" MATCHES
-        "${caddsubdir_CXX_COMPILER_EXCEPTION}" )
-      foreach( comp ${caddsubdir_COMPONENTS} )
-        message(STATUS "Configuring ${comp}")
-        add_subdirectory( ${comp} )
-      endforeach()
-    endif()
-  endif()
-
-  # Only add the component if the current compiler matches the
-  # requested regex
-  if( caddsubdir_CXX_COMPILER_MATCHES )
-    if( "${CMAKE_CXX_COMPILER}" MATCHES
-        "${caddsubdir_CXX_COMPILER_MATCHES}" )
-      foreach( comp ${caddsubdir_COMPONENTS} )
-        message(STATUS "Configuring ${comp}")
-        add_subdirectory( ${comp} )
-      endforeach()
-    endif()
-  endif()
 
 endmacro()
 
