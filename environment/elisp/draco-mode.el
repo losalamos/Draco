@@ -88,6 +88,11 @@ to anything else will generate errors."
 		(const :tag "C++" "C++"))
   :group 'draco-mode)
 
+(defcustom draco-code-comment-width
+  80
+  "The number of colums wide to use for inserted comment blocks."
+  :type 'draco-mode)
+
 ;;============================================================
 ;; End of customizable variables
 ;;============================================================
