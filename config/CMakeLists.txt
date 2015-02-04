@@ -8,48 +8,15 @@
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
-
 cmake_minimum_required(VERSION 3.0.0)
 project( config )
 
-set( CMake_src
-   CMakeAddFortranSubdirectory.cmake
-   FindGSL.cmake
-   FindRandom123.cmake
-   apple-clang.cmake
-   buildEnv.cmake
-   compilerEnv.cmake
-   component_macros.cmake
-   configureFileOnMake.cmake
-   debug_macros.cmake
-   doc_macros.cmake
-   dracoTesting.cmake
-   dracoVersion.cmake
-   parse_arguments.cmake
-   platform_checks.cmake
-   print_target_properties.cmake
-   setupMPI.cmake
-   unix-clang.cmake
-   unix-g++.cmake
-   unix-gfortran.cmake
-   unix-ifort.cmake
-   unix-intel.cmake
-   unix-pgf90.cmake
-   unix-pgi.cmake
-   unix-xl.cmake
-   unix-xlf.cmake
-   vendor_libraries.cmake
-   windows-cl.cmake
-   windows-ifort.cmake
-)
+file( GLOB CMake_src *.cmake )
 set( CMake_in
    cmake_uninstall.cmake.in
    doxygen_config.in
    )
-set( CMake_AFSD
-   CMakeAddFortranSubdirectory/build_cafs_proj.cmake.in
-   CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
-   )
+set( CMake_AFSD CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in  )
 
 # include(debug_macros)
 # echo_all_cmake_variable_values()
