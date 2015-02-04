@@ -54,8 +54,9 @@ cmake_add_fortran_subdirectory(
                                # --> librtt_FC_f90.dll.
   TARGET_NAMES Lib_FC_f90sub
   DEPENDS      "Lib_FC_Derived_Type;Lib_dsxx"
+  CMAKE_COMMAND_LINE "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
   NO_EXTERNAL_INSTALL
-# VERBOSE
+  # VERBOSE
 )
 
 # ---------------------------------------------------------------------------- #

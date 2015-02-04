@@ -1,2 +1,0 @@
-set(ENV{PATH} "@CAFS_Fortran_COMPILER_PATH@\;$ENV{PATH}")
-execute_process(COMMAND "@CMAKE_COMMAND@" --build . )

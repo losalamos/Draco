@@ -41,10 +41,16 @@ if(NOT TARGET Lib_dsxx)
    include(CMakeAddFortranSubdirectory)
    cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
       "${PROJECT_BINARY_DIR}/../../ds++" CXX )
-endif()
-if( NOT TARGET Lib_FC_Derived_Type)
    cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
       "${PROJECT_BINARY_DIR}/../../FortranChecks" CXX )
+  # If we get here, we also need to use the Draco scripts to setup
+  # compiler flags and MPI options
+  include( platform_checks )
+  query_openmp_availability()
+  include( compilerEnv )
+  dbsSetupFortran()
+  #include( vendor_libraries )
+  #setupVendorLibraries()
 endif()
 
 add_component_library(

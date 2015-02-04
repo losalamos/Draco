@@ -132,14 +132,25 @@ with the gfortran option." )
   else() # Unix Makefiles, Xcode or Ninja.
     set( GENERATOR_TYPE "-GUnix Makefiles")
   endif()
+
+  # Generate the config_cafs_proj.cmake command file:
   configure_file(
     ${_CAFS_CURRENT_SOURCE_DIR}/CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
     ${build_dir}/config_cafs_proj.cmake
     @ONLY)
-  configure_file(
-    ${_CAFS_CURRENT_SOURCE_DIR}/CMakeAddFortranSubdirectory/build_cafs_proj.cmake.in
-    ${build_dir}/build_cafs_proj.cmake
-    @ONLY)
+
+  # Generate the build_cafs_proj.cmake command file:
+  set( build_cafs_proj_command
+"set(ENV{PATH} \"${CAFS_Fortran_COMPILER_PATH}\;\$ENV{PATH}\")
+set(VERBOSE ${ARGS_VERBOSE})
+if( VERBOSE )
+    message(\"${CMAKE_COMMAND} --build .\")
+endif()
+execute_process( COMMAND \"${CMAKE_COMMAND}\" --build . )")
+  if( ARGS_VERBOSE )
+    message( "Generating ${build_dir}/build_cafs_proj.cmake")
+  endif()
+  file(WRITE "${build_dir}/build_cafs_proj.cmake" ${build_cafs_proj_command})
 endfunction()
 
 ###--------------------------------------------------------------------------------####
@@ -211,7 +222,7 @@ function(cmake_add_fortran_subdirectory subdir)
     DEPENDS           ${ARGS_DEPENDS}
     SOURCE_DIR        ${source_dir}
     BINARY_DIR        ${build_dir}
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -P ${build_dir}/config_cafs_proj.cmake
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=$<CONFIG> -P ${build_dir}/config_cafs_proj.cmake
     BUILD_COMMAND     ${CMAKE_COMMAND} -P ${build_dir}/build_cafs_proj.cmake
     INSTALL_COMMAND   ""
     )
@@ -276,10 +287,12 @@ function(cmake_add_fortran_subdirectory subdir)
     if( ARGS_VERBOSE )
       message("
 cmake_add_fortran_subdirectory
+   Project    : ${project_name}
    Directory  : ${source_dir}
    Target name: ${tgt}
    Library    : ${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
    Target deps: ${project_name}_build --> ${ARGS_DEPENDS}
+   Extra args : ${ARGS_CMAKE_COMMAND_LINE}
       ")
   endif()
   endforeach()
@@ -330,8 +343,7 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
   # Debug case?
   find_library( lib_debug
     NAMES ${libName}
-    PATHS ${pkgloc}
-    PATH_SUFFIXES Debug
+    PATHS ${pkgloc}/Debug
     )
   get_filename_component( libloc_debug ${lib_debug} DIRECTORY )
 
@@ -370,4 +382,5 @@ function( cafs_create_imported_targets targetName libName targetPath linkLang)
     endif()
   endif()
   unset(lib CACHE)
+  unset(lib_debug CACHE)
 endfunction()
