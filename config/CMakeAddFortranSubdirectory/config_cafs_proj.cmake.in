@@ -1,3 +1,12 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/CMakeAddFortranSubdirectory/config_cafs_proj.cmake.in
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2014 April 23
+# brief  Instructions for configuring a Fortran subproject registered
+#        via CMakeAddFortranSubdirectory.
+# note   Copyright (C) 2014-2015 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 set(ENV{PATH} "@CAFS_Fortran_COMPILER_PATH@\;$ENV{PATH}")
 set(CMAKE_COMMAND_LINE "@ARGS_CMAKE_COMMAND_LINE@")
 set(VERBOSE @ARGS_VERBOSE@)
@@ -6,7 +15,7 @@ if( VERBOSE )
     execute_process(
       COMMAND @CMAKE_COMMAND@ @GENERATOR_TYPE@
       -DCMAKE_Fortran_COMPILER:PATH=@CAFS_Fortran_COMPILER@
-      -DBUILD_SHARED_LIBS=ON @CAFS_GNUtoMS@ 
+      -DBUILD_SHARED_LIBS=ON @CAFS_GNUtoMS@
       ${CMAKE_COMMAND_LINE}
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       @source_dir@)

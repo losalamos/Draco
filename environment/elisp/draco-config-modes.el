@@ -1,6 +1,8 @@
 ;; ======================================================================
 ;; draco-config-modes.el
 ;;
+;; Copyright (C) 2004-2015 Los Alamos National Security, LLC
+;;
 ;; $Id$
 ;;
 ;; Configure a variety of packages, upon request of user.

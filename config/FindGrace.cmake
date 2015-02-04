@@ -1,3 +1,11 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/FindGrace.cmake
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2011 September 29
+# brief  Instructions for discovering the Grace vendor libraries.
+# note   Copyright (C) 2011-2015 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # - Find Grace
 # Find the native Grace includes and library
 #
@@ -9,7 +17,7 @@ if (APPLE)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
 endif()
 
-find_path( Grace_INCLUDE_DIR 
+find_path( Grace_INCLUDE_DIR
     NAMES
        grace_np.h
     PATHS
@@ -33,12 +41,12 @@ find_library(Grace_LIBRARY
         $ENV{GRACE_LIB_DIR}
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
-    NO_DEFAULT_PATH 
+    NO_DEFAULT_PATH
 )
 
 mark_as_advanced( Grace_LIBRARY Grace_INCLUDE_DIR )
 
-# handle the QUIETLY and REQUIRED arguments and set GRACE_FOUND to TRUE if 
+# handle the QUIETLY and REQUIRED arguments and set GRACE_FOUND to TRUE if
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Grace DEFAULT_MSG Grace_INCLUDE_DIR Grace_LIBRARY)
@@ -49,7 +57,7 @@ if( GRACE_FOUND )
    set(Grace_LIBRARIES    ${Grace_LIBRARY} ${Grace_BLAS_LIBRARY} CACHE
       FILEPATH "Grace libraries for linking."  )
    mark_as_advanced( Grace_LIBRARIES )
-   
+
 endif()
 
 if( VERBOSE )

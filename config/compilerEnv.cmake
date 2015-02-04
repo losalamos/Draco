@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/compiler_env.cmake
+# file   config/compilerEnv.cmake
 # brief  Default CMake build parameters
 # note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
 #        All rights reserved.
