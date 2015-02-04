@@ -397,7 +397,9 @@ macro(dbsSetupFortran)
       message( FATAL_ERROR "Build system does not support F90=${my_fc_compiler}" )
     endif()
 
-    include(FortranCInterface)
+    if( _LANGUAGES_ MATCHES "^C$" OR _LANGUAGES_ MATCHES CXX )
+      include(FortranCInterface)
+    endif()
 
   else()
     # If CMake doesn't know about a Fortran compiler, $ENV{FC}, then

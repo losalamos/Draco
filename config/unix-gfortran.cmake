@@ -64,7 +64,9 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 #
 # Toggle compiler flags for optional features
 #
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
+if( OpenMP_Fortran_FLAGS )
+  toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
+endif()
 
 #------------------------------------------------------------------------------#
 # End config/unix-gfortran.cmake

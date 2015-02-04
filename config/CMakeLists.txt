@@ -27,6 +27,7 @@ set( CMake_src
    dracoVersion.cmake
    parse_arguments.cmake
    platform_checks.cmake
+   print_target_properties.cmake
    setupMPI.cmake
    unix-clang.cmake
    unix-g++.cmake
