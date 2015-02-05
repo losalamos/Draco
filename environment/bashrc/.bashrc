@@ -5,7 +5,7 @@
 ##---------------------------------------------------------------------------##
 
 ## Instructions (customization)
-## 
+##
 ## Before sourcing this file, you may wish to set the following
 ## variables to customize your environment (ie: set in ~/.bashrc
 ## before sourcing this file).
@@ -53,7 +53,7 @@ for mydir in ${extradirs}; do
 done
 
 # Tell wget to use LANL's www proxy (see
-# trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage) 
+# trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
 # export http_proxy=http://wpad.lanl.gov/wpad.dat
 found=`nslookup proxyout.lanl.gov | grep Name | wc -l`
 if test ${found} == 1; then
@@ -75,7 +75,7 @@ CDPATH=
 
 # If this is an interactive shell then the environment variable $-
 # should contain an "i":
-case ${-} in 
+case ${-} in
 *i*)
    export INTERACTIVE=true
    export verbose=
@@ -144,7 +144,7 @@ case ${-} in
    fi
 
    # Provide special ls commands if this is a color-xterm or compatible terminal.
-   if test "${TERM}" != emacs && 
+   if test "${TERM}" != emacs &&
        test "${TERM}" != dumb; then
    # replace list aliases with ones that include colorized output.
        alias ll='ls --color -Flh'
@@ -205,21 +205,16 @@ case ${target} in
 # backend nodes with GPUs are cn[1-4].
 darwin* | cn[0-9]*)
    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_darwin
-   ;; 
+   ;;
 
 # Cielito | Cielo
 c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
     ;;
 
-# Moonlight | Mustang
-mp* | ml* | mu* | pi* | wf*)
+# Moonlight | Mustang | Luna | Typhoon
+mp* | ml* | mu* | pi* | wf* | ly* | ty* )
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_toss22
-    ;;
-
-# Luna | Typhoon
-lu* | ty*)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_lu
     ;;
 
 # wtrw and rfta
@@ -229,7 +224,7 @@ red-wtrw* | rfta*)
 
 # Assume CCS machine (ccscs[0-9] or personal workstation)
 *)
-    if test -d /ccs/codes/radtran; then 
+    if test -d /ccs/codes/radtran; then
         # assume this is a CCS LAN machine (64-bit)
         if test `uname -m` = 'x86_64'; then
           # draco environment only supports 64-bit linux...
@@ -237,7 +232,7 @@ red-wtrw* | rfta*)
         else
           echo "Draco's environment is not fully supported on 32-bit Linux."
           echo "Module support may not be available. Email kgt@lanl.gov for more information."
-          source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux32          
+          source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux32
         fi
     fi
     export NoModules=1
