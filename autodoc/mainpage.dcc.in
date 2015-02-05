@@ -22,7 +22,7 @@ Alamos National Laboratory. In addition to providing infrastructure for
 radiation transport code development, Draco serves as a "model Development
 Environment (DE)" for code development activities within CCS-2.  Most CCS-2
 code projects are based on the coding standards, idioms, style, organization,
-and architecture of Draco. 
+and architecture of Draco.
 
 \par Getting Started
 To get started building Draco see \ref build_system.  Package
@@ -36,7 +36,7 @@ section of the documentation. Also see:
 
 <!--
 \par Code Access
-To gain access to Draco source contact 
+To gain access to Draco source contact
 <a href="mailto:draco@lanl.gov">CCS-2</a> or see the Draco LANL SourceForge
 <a href=http://tf.lanl.gov/projects/draco>page</a>.
 -->
@@ -49,7 +49,6 @@ the namespace reference rtt_<pkg> -->
 - \ref overview_cdi
 - \ref overview_cdi_analytic
 - \ref overview_cdi_eospac
-<!-- retired - \ref overview_cdi_gandolf -->
 - \ref rtt_device
 - \ref overview_diagnostics
 - \ref overview_dsxx
@@ -63,15 +62,12 @@ the namespace reference rtt_<pkg> -->
 - \ref overview_norms
 - \ref rtt_ode
 - \ref overview_parser
-<!-- retired - \ref rtt_pcgwrap -->
 - \ref rtt_plot2d
 - \ref overview_quadrature
 - \ref overview_rng
 - \ref rtt_roots
-- \ref overview_shared_lib
 - \ref overview_sf
 - \ref overview_timestep
-- \ref overview_traits
 - \ref overview_units
 - \ref overview_viz
 
@@ -85,4 +81,3 @@ the namespace reference rtt_<pkg> -->
 //---------------------------------------------------------------------------//
 // end of mainpage.dcc
 //---------------------------------------------------------------------------//
-
