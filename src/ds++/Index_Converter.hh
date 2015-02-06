@@ -134,7 +134,6 @@ inline void Index_Converter<D,OFFSET>::set_size(unsigned dimension)
     compute_sub_sizes();
 }
 
-
 //---------------------------------------------------------------------------//
 /**
  * \brief Convert an N-index to a 1-index
@@ -158,10 +157,8 @@ int Index_Converter<D,OFFSET>::get_index(IT indices) const
 
     Ensure(Base::index_in_range(one_index_value));
 
-    return one_index_value;
-    
+    return one_index_value;   
 }
-
 
 //---------------------------------------------------------------------------//
 /**
@@ -175,9 +172,7 @@ template <unsigned D, int OFFSET>
 template <typename IT>
 void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 {
-
     Check(Base::index_in_range(index));
-
     index -= OFFSET;
 
     for (size_t d = 0; d <= D-1; ++d)
@@ -188,7 +183,6 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
     }
 
     Ensure (index == 0);
-
 }
 
 //---------------------------------------------------------------------------//
@@ -207,7 +201,6 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
 template <unsigned D, int OFFSET>
 std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
 {
-
     Check(Base::index_in_range(index));
 
     static int indices[D];
@@ -216,7 +209,6 @@ std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
 
     // Construct in return statement for RVO.
     return std::vector<int>(indices, indices+D);
-    
 }
 
 //---------------------------------------------------------------------------//
@@ -241,9 +233,6 @@ int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) c
 
 }
 
-
-
-
 //---------------------------------------------------------------------------//
 /**
  * \brief Return the next index in a given direction. Return -1 if this
@@ -257,7 +246,6 @@ int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) c
 template <unsigned D, int OFFSET>
 int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 {
-
     Check(Base::index_in_range(index));
     Check(Base::direction_okay(direction));
 
@@ -272,7 +260,6 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
 
     return index + sign*sub_sizes[dimension];
 }
-
 
 //---------------------------------------------------------------------------//
 /**
@@ -289,7 +276,6 @@ int Index_Converter<D,OFFSET>::get_next_index(
     const typename Index_Converter<D,OFFSET>::Counter& counter,
     int direction) const
 {
-
     --direction;
 
     unsigned dimension = direction / 2;
@@ -301,10 +287,7 @@ int Index_Converter<D,OFFSET>::get_next_index(
     if (!Base::index_in_range(sub_index, dimension)) return -1;
 
     return index + sign*sub_sizes[dimension];
-
 }
-
-
 
 //---------------------------------------------------------------------------//
 // IMPLEMENTATION ROUTINES
@@ -337,11 +320,10 @@ void Index_Converter<D,OFFSET>::compute_sub_sizes()
 
 }
 
-
 } // end namespace rtt_dsxx
 
 #endif // dsxx_Index_Converter_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Index_Converter.hh
+// end of ds++/Index_Converter.hh
 //---------------------------------------------------------------------------//

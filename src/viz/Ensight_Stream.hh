@@ -126,7 +126,6 @@ class DLL_PUBLIC Ensight_Stream
 #   pragma warning (pop)
 #endif
 
-
 #endif // rtt_viz_Ensight_Stream_hh
 
 //---------------------------------------------------------------------------//
