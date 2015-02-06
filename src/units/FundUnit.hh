@@ -15,11 +15,6 @@
 
 #include "UnitSystemEnums.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_units::FundUnit<F>::d_label' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_units::FundUnit<F>'
-#endif
-
 namespace rtt_units
 {
 
@@ -49,18 +44,18 @@ class DLL_PUBLIC FundUnit    // Length, Mass, time, etc...
 	  d_cf( rhs.cf() ),
 	  d_label( rhs.label() )
     { /* empty */ }
-    
+
     // ACCESSORS
-    
+
     //! return defining enumeration as specified in units/UnitSystemEnums.hh
     F      enumVal() const { return d_definingEnum; }
-    //! return conversion factor.  
+    //! return conversion factor.
     //! Multiply by this number to get a value in SI units.
     double cf()      const { return d_cf; }
     //! return unit label (e.g.: cm or keV)
     std::string label()   const { return d_label; }
 
-  private:     
+  private:
 
     // DATA
 
@@ -70,10 +65,6 @@ class DLL_PUBLIC FundUnit    // Length, Mass, time, etc...
 };
 
 } // end namespace rtt_units
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif  // __units_FundUnit_hh__
 

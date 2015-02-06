@@ -23,13 +23,6 @@
 #include <map>
 #include <vector>
 
-#if defined(MSVC)
-#pragma warning (push)
-// class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by 
-// clients of class 'rtt_c4::TigsTrace'
-#pragma warning (disable:4251)
-#endif
-
 namespace rtt_c4
 {
 
@@ -42,7 +35,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC TigsTrace 
+class DLL_PUBLIC TigsTrace
 {
   public:
     // Useful typedefs.
@@ -58,10 +51,10 @@ class DLL_PUBLIC TigsTrace
         WARN       = 3,
         TRACE_INIT = 4
     };
-    
+
   private:
     // >>> DATA
-    
+
     // These variables store the "local" sizes of the range and domain of
     // the trace map.
     unsigned const onProcDomain;
@@ -73,7 +66,7 @@ class DLL_PUBLIC TigsTrace
     std::vector<int> IMV;
     std::vector<unsigned> counts;
 
-    // These variables store the indirection information for the parallel, 
+    // These variables store the indirection information for the parallel,
     // multiprocessor case. The Domain of the trace map is refered to as
     // the Iside, and the Range of the map is the Jside. Where the map
     // should be thought of as Jmap:I->J
@@ -81,7 +74,7 @@ class DLL_PUBLIC TigsTrace
     // The connects vectors store the processor to which a message must be
     // communicated to fill or send the data for the gather/scatter
     //
-    // the Indirect vectors store the indirection vector to load/unload the 
+    // the Indirect vectors store the indirection vector to load/unload the
     // communciation buffer with data from the arrays provided to the
     // gather/scatter call.
     //
@@ -92,9 +85,9 @@ class DLL_PUBLIC TigsTrace
     // communicated with the above processor
     //
     // BmapList is an indirection array to [un]pack the scatterList result
-    // following communicationint a CSR like structure. countsList is 
-    // The count of items in the CSR like list for each range location 
-    // (on the current processor) 
+    // following communicationint a CSR like structure. countsList is
+    // The count of items in the CSR like list for each range location
+    // (on the current processor)
     //
     unsigned          IsideBufferSize;
     unsigned          JsideBufferSize;
@@ -112,26 +105,26 @@ class DLL_PUBLIC TigsTrace
     // >>> GATHER OPERATIONS
 
     // Copy data from the range to the domain.
-    template < typename iterA, typename iterB > 
+    template < typename iterA, typename iterB >
     void gather( iterB Bfirst, iterB Blast,
                  iterA Afirst, iterA Alast );
 
     // >>> SCATTER OPERATIONS
 
     // Copy data defined on the domain (I) to the range (J).
-    template < typename iterA , typename iterC, typename iterB > 
+    template < typename iterA , typename iterC, typename iterB >
     void scatterList( iterA Afirst,   iterA Alast,
                       iterC Cntfirst, iterC Cntlast,
                       iterB Bfirst,   iterB Blast ) const;
 
     // Copy with reduction of data from the domain to the range.
-    template < typename iterA , typename iterB , typename BinaryOp > 
+    template < typename iterA , typename iterB , typename BinaryOp >
     void scatter( iterA Afirst, iterA Alast,
                   iterB Bfirst, iterB Blast,
                   BinaryOp op );
 
     // >>> QUERIES
-    
+
     /*!
      * \brief A routine to determine allocation size for the scatterList
      * output.
@@ -142,7 +135,7 @@ class DLL_PUBLIC TigsTrace
      *
      * \return The size of the container that holds scatterList data
      */
-    int getListSize() const { return JsideBufferSize; } 
+    int getListSize() const { return JsideBufferSize; }
 };
 
 } // end namespace rtt_c4
@@ -152,10 +145,6 @@ class DLL_PUBLIC TigsTrace
 //---------------------------------------------------------------------------//
 
 #include "TigsTrace.i.hh"
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // c4_TigsTrace_hh
 

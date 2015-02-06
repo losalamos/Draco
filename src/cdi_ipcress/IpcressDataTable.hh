@@ -16,18 +16,13 @@
 
 #include "IpcressFile.hh"
 // We must include IpcressOpacity.hh so that the following two
-// enumerated items are defined: { Model, Reaction } 
+// enumerated items are defined: { Model, Reaction }
 #include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_ipcress
 {
-    
+
 //===========================================================================//
 /*!
  * \class IpcressDataTable encapsulates all of the data associated with a
@@ -43,7 +38,7 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class DLL_PUBLIC IpcressDataTable 
+class DLL_PUBLIC IpcressDataTable
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -84,13 +79,13 @@ class DLL_PUBLIC IpcressDataTable
 
     //! A list of keys that are known by the IPCRESS file.
     std::vector< std::string > const & fieldNames;
-    
+
     /*!
      * \brief The IPCRESS material number assocated with the data contained in
      *     this object.
      */
     size_t const matID;
-    
+
     // Data Sizes:
 
     /*
@@ -127,33 +122,33 @@ class DLL_PUBLIC IpcressDataTable
      *     With this information the DataTypeKey is set, then the data table
      *     sizes are loaded and finally the table data is loaded.
      *
-     * \param opacityEnergyDescriptor This string variable 
+     * \param opacityEnergyDescriptor This string variable
      *     specifies the energy model { "gray" or "mg" } for the
-     *     opacity data contained in this IpcressDataTable object. 
+     *     opacity data contained in this IpcressDataTable object.
      * \param opacityModel This enumerated value specifies the
      *     physics model { Rosseland or Plank } for the opacity data
      *     contained in this object.  The enumeration is defined in
-     *     IpcressOpacity.hh 
-     * \param opacityReaction This enumerated value specifies the 
-     *     interaction model { total, scattering, absorption " for the 
+     *     IpcressOpacity.hh
+     * \param opacityReaction This enumerated value specifies the
+     *     interaction model { total, scattering, absorption " for the
      *     opacity data contained in this object.  The enumeration is
      *     defined in IpcressOpacity.hh
      * \param fieldNames This vector of strings is a list of
      *     data keys that the IPCRESS file knows about.  This list is
      *     read from the IPCRESS file when a IpcressOpacity object is
      *     instantiated but before the associated IpcressDataTable
-     *     object is created. 
+     *     object is created.
      * \param matID The material identifier that specifies a
      *     particular material in the IPCRESS file to associate with
      *     the IpcressDataTable container.
      * \param spIpcressFile A DS++ SmartPointer to a IpcressFile
      *     object.  One GanolfFile object should exist for each
      *     IPCRESS file.  Many IpcressOpacity (and thus
-     *     IpcressDataTable) objects may point to the same IpcressFile 
-     *     object. 
-     */    
+     *     IpcressDataTable) objects may point to the same IpcressFile
+     *     object.
+     */
     IpcressDataTable( std::string                const & opacityEnergyDescriptor,
-		      rtt_cdi::Model                     opacityModel, 
+		      rtt_cdi::Model                     opacityModel,
 		      rtt_cdi::Reaction                  opacityReaction,
 		      std::vector< std::string > const & fieldNames,
 		      size_t                             matID,
@@ -174,9 +169,9 @@ class DLL_PUBLIC IpcressDataTable
     // size_t getNumOpacities() const { return numOpacities; };
 
     //! Retrieve the logarithmic temperature grid.
-    // std::vector<double> const & getLogTemperatures() const { 
+    // std::vector<double> const & getLogTemperatures() const {
     //     return logTemperatures; };
-    std::vector<double> const & getTemperatures()    const { 
+    std::vector<double> const & getTemperatures()    const {
 	return temperatures; };
 
     //! Retrieve the logarithmic density grid.
@@ -205,7 +200,7 @@ class DLL_PUBLIC IpcressDataTable
     double interpOpac( double const T,
                        double const rho,
                        size_t const group = 0 ) const;
-    
+
   private:
 
     /*!
@@ -228,11 +223,7 @@ class DLL_PUBLIC IpcressDataTable
 
 };
 
-} // end namespace 
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
+} // end namespace
 
 #endif // __cdi_ipcress_IpcressDataTable_hh__
 

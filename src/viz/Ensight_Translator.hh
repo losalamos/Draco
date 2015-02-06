@@ -20,11 +20,6 @@
 #include "ds++/Check_Strings.hh"
 #include <set>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_viz::Ensight_Translator::d_dump_dir' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_viz::Ensight_Translator'
-#endif
-
 namespace rtt_viz
 {
 
@@ -37,14 +32,14 @@ namespace rtt_viz
  * Values from this enumeration are assigned (by the user) to each cell in
  * the mesh through the rtt_viz::Ensight_Translator::ensight_dump() function
  * input field argument iel_type.  See Section 2.5 (Figure 2-22) in the
- * Ensight 6.2 user manual for further information on Ensight cell types.  
+ * Ensight 6.2 user manual for further information on Ensight cell types.
  *
  * \sa Ensight example page for examples of how this enumeration is used to
  * generate the iel_type field.
  */
 //===========================================================================//
 
-enum Ensight_Cell_Types 
+enum Ensight_Cell_Types
 {
     point = 0,
     two_node_bar,
@@ -62,7 +57,7 @@ enum Ensight_Cell_Types
     six_node_wedge,
     fifteen_node_wedge
 };
- 
+
 //===========================================================================//
 /*!
  * \class Ensight_Translator
@@ -119,7 +114,7 @@ enum Ensight_Cell_Types
  * To launch ensight: select the "prefix".case file that resides in the
  * top-level ensight dump directory from the "file/Data (reader)" menu.  Set
  * the data file "Format" option in Ensight to "case" and hit the "(Set)
- * Geometry" button.  From there see the Ensight manual.  
+ * Geometry" button.  From there see the Ensight manual.
  */
 /*!
  * \example viz/test/tstEnsight_Translator.cc
@@ -139,10 +134,10 @@ enum Ensight_Cell_Types
 //                IBM platforms because of a bug in xlC.
 // 2) 15-Nov-04 : Changed to Ensight Gold format.  Added option for binary
 //                dumps.
-// 
+//
 //===========================================================================//
 
-class DLL_PUBLIC Ensight_Translator 
+class DLL_PUBLIC Ensight_Translator
 {
   public:
     // Ensight_Translator typedefs.
@@ -157,9 +152,9 @@ class DLL_PUBLIC Ensight_Translator
     typedef std::vector<set_int>       vec_set_int;
 
     typedef set_int::const_iterator    set_const_iterator;
-    
+
     typedef std::vector<rtt_dsxx::SP<Ensight_Stream> > vec_stream;
-    
+
   private:
     // >>> DATA
 
@@ -180,7 +175,7 @@ class DLL_PUBLIC Ensight_Translator
 
     // Number of vertices for a given Ensight cell type.
     sf_int d_vrtx_cnt;
-    
+
     // Cell types.
     sf_int d_cell_type_index;
 
@@ -192,7 +187,7 @@ class DLL_PUBLIC Ensight_Translator
 
     // Names of vertex data.
     sf_string d_vdata_names;
-    
+
     // Names of cell data.
     sf_string d_cdata_names;
 
@@ -222,7 +217,7 @@ class DLL_PUBLIC Ensight_Translator
 
     // Creates some of the file prefixes and names.
     void create_filenames(const std_string &prefix);
-    
+
     // Write out case file.
     void write_case();
 
@@ -233,9 +228,9 @@ class DLL_PUBLIC Ensight_Translator
                     const rtt_viz::Viz_Traits<IVF> &,
                     const rtt_viz::Viz_Traits<FVF> &,
                     const sf2_int &,
-                    const sf_int &, 
+                    const sf_int &,
                     const ISF &,
-                    const ISF &); 
+                    const ISF &);
 
     // Write out vertex data.
     template<typename FVF>
@@ -261,16 +256,16 @@ class DLL_PUBLIC Ensight_Translator
                        const SSF &cdata_names,
                        const bool overwrite = false,
                        const bool static_geom = false,
-                       const bool binary = false); 
+                       const bool binary = false);
 
     // Do an Ensight_Dump.
     template<typename ISF, typename IVF, typename SSF, typename FVF>
     void ensight_dump(int icycle, double time, double dt,
-                      const IVF &ipar, const ISF &iel_type, 
+                      const IVF &ipar, const ISF &iel_type,
                       const ISF &cell_rgn_index, const FVF &pt_coor,
-                      const FVF &vrtx_data, 
-                      const FVF &cell_data, const ISF &rgn_numbers, 
-                      const SSF &rgn_name); 
+                      const FVF &vrtx_data,
+                      const FVF &cell_data, const ISF &rgn_numbers,
+                      const SSF &rgn_name);
 
     // Opens the geometry and variable files.
     void open(const int    icycle,
@@ -285,9 +280,9 @@ class DLL_PUBLIC Ensight_Translator
     void write_part(int               part_num,
                     const std_string &part_name,
                     const IVF        &ipar,
-                    const ISF        &iel_type, 
+                    const ISF        &iel_type,
                     const FVF        &pt_coor,
-                    const FVF        &vrtx_data, 
+                    const FVF        &vrtx_data,
                     const FVF        &cell_data,
                     const ISF        &g_vrtx_indices,
                     const ISF        &g_cell_indices);
@@ -305,10 +300,6 @@ class DLL_PUBLIC Ensight_Translator
 // automatically instantiated in client code
 
 #include "Ensight_Translator.t.hh"
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rtt_viz_Ensight_Translator_hh
 

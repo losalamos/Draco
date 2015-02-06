@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   parser/Token.hh
  * \author Kent G. Budge
  * \brief  Define class Token and enum Token_Type
@@ -16,50 +16,44 @@
 #include <string>
 #include "ds++/Assert.hh"
 
-#if defined(MSVC)
-#   undef ERROR
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Token::text_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::Token'
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 using std::string;
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Token types recognized by a Token_Stream.
  */
 
-enum Token_Type 
+enum Token_Type
 {
-    END,    
+    END,
     /*!< The identifier <CODE>end</CODE>, denoting that the Parse_Table
-     *   should return control to its client.  Can be used to implement 
+     *   should return control to its client.  Can be used to implement
      *   nested parse tables.*/
-    
-    EXIT,    
+
+    EXIT,
     /*!< Denotes that the end of the Token_Stream has been reached.
      *   The Token_Stream will continue to return EXIT indefinitely
      *   once its end has been reached. */
-    
-    KEYWORD, 
+
+    KEYWORD,
     /*!< A sequence of one or more C++ identifiers separated by whitespace. */
-    
+
     REAL,
     /*!< A valid C++ floating-point constant. */
-    
+
     INTEGER,
     /*!< A valid C++ integer constant. */
-    
+
     STRING,
     /*!< A valid C++ string constant. */
-    
+
     ERROR,
     /*!< The error token, indicating something wrong with the token stream.
      *   For example, a file-based token stream would return this token if
      *   the file failed to open. */
-    
+
     OTHER
     /*! A single character or sequence of characters (such as "==") that does
      *  not belong to one of the regular token types described above.
@@ -67,7 +61,7 @@ enum Token_Type
 };
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Description of a token.
  *
  * This class represents a lexical token, for use in simple parsing systems
@@ -98,13 +92,13 @@ class DLL_PUBLIC Token
     { /* empty */ }
 
     // ACCESSORS
-    
+
     //! Return the token type.
     Token_Type type() const { return type_; }
-    
+
     //! Return the token text.
     string text() const { return text_; }
-    
+
     //! Return the location information.
     string location() const { return location_; }
 
@@ -112,7 +106,7 @@ class DLL_PUBLIC Token
     bool check_class_invariants() const;
 
   private:
-    
+
     Token_Type type_; //!< Type of this token
     string text_;     //!< Text of this token
     string location_; //!< Location information (such as file and line)
@@ -130,7 +124,7 @@ DLL_PUBLIC bool Is_Other_Text  (char const *string);
 DLL_PUBLIC bool operator==(Token const &, Token const &);
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \param type
  * Type of the Token.
  *
@@ -141,10 +135,10 @@ DLL_PUBLIC bool operator==(Token const &, Token const &);
  * The token location.
  */
 inline
-Token::Token(Token_Type const type, 
-	     string const &text, 
+Token::Token(Token_Type const type,
+	     string const &text,
 	     string const &location)
-    : 
+    :
     type_(type), text_(text), location_(location)
 {
     Require(Is_Text_Token(type));
@@ -161,7 +155,7 @@ Token::Token(Token_Type const type,
 }
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \param c
  * The token text (a single character)
  *
@@ -173,7 +167,7 @@ Token::Token(char const c, string const &location)
     : type_(OTHER), text_(1, c), location_(location)
 {
     Require(Is_Other_Text(string(1, c).c_str()));
-    
+
     Ensure(check_class_invariants());
     Ensure(this->type()==OTHER);
     Ensure(this->text()==string(1,c));
@@ -181,7 +175,7 @@ Token::Token(char const c, string const &location)
 }
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \param type
  * Token type to create; must be one of END, EXIT, or ERROR.
  *
@@ -204,11 +198,8 @@ Token::Token(Token_Type const type, string const &location)
 
 }  // namespace rtt_parser
 
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
-
 #endif  // CCS4_Token_HH
+
 //--------------------------------------------------------------------//
 // end of Token.hh
 //--------------------------------------------------------------------//

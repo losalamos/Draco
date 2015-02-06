@@ -20,31 +20,26 @@
 #include <iostream>
 #include <fstream>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_cdi_ipcress::IpcressFile::dataFilename' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_cdi_ipcress::IpcressFile'
-#endif
-
 namespace rtt_cdi_ipcress
 {
- 
+
 //===========================================================================//
 /*!
  * \class IpcressFile
  *
  * \brief This class controls access the the physical IPCRESS data
- *        file for IpcressOpacity.  Only one IpcressFile object should 
+ *        file for IpcressOpacity.  Only one IpcressFile object should
  *        exist for each data file.  Several IpcressOpacity objects
  *        will access the same IpcressFile object (one per material
  *        found in the data file).
  *
  * This class is designed to be used in conjuction with
- * IpcressOpacity.  The client code should create a IpcressFile object 
+ * IpcressOpacity.  The client code should create a IpcressFile object
  * and that object is passed to the IpcressOpacity constructor to
  * create a link between the opacity object and the IPCRESS data file.
  *
  * Ipcress file layout
- * 
+ *
  * - all words are 8 byte entries.  [] denotes 1 word.
  * - see doc/IPCRESS_File_Format.pdf
  *
@@ -64,7 +59,7 @@ namespace rtt_cdi_ipcress
  * dtf[1] == {matid, field_name} == {10001,tgrid} (tgrid exists for mat10001)
  * ds[1]           tgrid has this many values.
  * dfo[1]          the tgrid values can be loaded from this address.
- * 
+ *
  * dtf[2]          Mat 10001 has field rgrid
  * ds[2]           rgrid has ds[2] entries.
  * dfo[2]          rgrid's values can be loaded from this address.
@@ -78,13 +73,13 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class DLL_PUBLIC IpcressFile 
+class DLL_PUBLIC IpcressFile
 {
 
     // NESTED CLASSES AND TYPEDEFS
 
     // DATA
-    
+
     /*!
      * \brief IPCRESS data filename
      */
@@ -141,14 +136,14 @@ class DLL_PUBLIC IpcressFile
 
     /*!
      * \brief A vector of containers.  Each contains all field data (tgrid,
-     * ramg,...) for one material as loaded from the IPCRESS file. 
+     * ramg,...) for one material as loaded from the IPCRESS file.
      */
     std::vector<IpcressMaterial> materialData;
-    
+
   public:
 
     // CREATORS
-    
+
     /*!
      * \brief Standard IpcressFile constructor.
      *
@@ -167,14 +162,14 @@ class DLL_PUBLIC IpcressFile
     // (defaulted) ~IpcressFile();
 
     // MANIPULATORS
-    
+
     // (defaulted) IpcressFile& operator=(const IpcressFile &rhs);
 
     // ACCESSORS
 
     //! Returns the IPCRESS data filename.
     std::string const & getDataFilename() const { return dataFilename; }
-    
+
     //! Returns the number of materials found in the data file.
     size_t getNumMaterials() const { return matIDs.size(); }
 
@@ -218,7 +213,7 @@ class DLL_PUBLIC IpcressFile
     void printSummary( size_t const matid, std::ostream & out = std::cout ) const;
 
   private:
-    
+
     // IMPLEMENTATION
 
     //! Attempt to locate the requested ipcress file.
@@ -226,11 +221,11 @@ class DLL_PUBLIC IpcressFile
 
     /*!
      * \brief Load the list of field data names and the associated data arrays
-     * for the requested material from the Ipcress file and save them into the 
+     * for the requested material from the Ipcress file and save them into the
      * IpcressMaterial container.
      */
     void loadFieldData( void );
-    
+
     //! Read an array of ints or doubles from the ipcress file.
     template< typename T >
     void read_v( size_t const offset_bytes, std::vector< T > & vdata ) const;
@@ -244,10 +239,6 @@ class DLL_PUBLIC IpcressFile
 } // end namespace rtt_cdi_ipcress
 
 #endif // __cdi_ipcress_IpcressFile_hh__
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 //---------------------------------------------------------------------------//
 // end of cdi_ipcress/IpcressFile.hh

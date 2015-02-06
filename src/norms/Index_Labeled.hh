@@ -17,11 +17,6 @@
 #include "ds++/config.h"
 #include <string>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_norms
 {
 
@@ -32,7 +27,7 @@ namespace rtt_norms
  */
 //===========================================================================//
 
-struct DLL_PUBLIC Index_Labeled 
+struct DLL_PUBLIC Index_Labeled
 {
     //! The index.
     size_t index;
@@ -52,10 +47,6 @@ struct DLL_PUBLIC Index_Labeled
 };
 
 } // end namespace rtt_norms
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rtt_norms_Index_Labeled_hh
 

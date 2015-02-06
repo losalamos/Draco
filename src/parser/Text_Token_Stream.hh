@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   parser/Text_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of the Text_Token_Stream class.
@@ -16,15 +16,10 @@
 #include "Token_Stream.hh"
 #include <set>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Text_Token_Stream::default_whitespace' : class 'std::set<_Kty>' needs to have dll-interface to be used by clients of class 'rtt_parser::Text_Token_Stream'
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Abstract text-based token stream for simple parsers.
  *
  * A Text_Token_Stream constructs its stream of tokens by scanning a stream of
@@ -37,7 +32,7 @@ namespace rtt_parser
  */
 
 class DLL_PUBLIC Text_Token_Stream : public Token_Stream
-{    
+{
   public:
 
     // ACCESSORS
@@ -47,16 +42,16 @@ class DLL_PUBLIC Text_Token_Stream : public Token_Stream
 
     //! Return the current set of whitespace characters.
     std::set<char> const &whitespace() const { return whitespace_; }
-       
+
     //! Check the class invariants.
     bool check_class_invariants() const;
 
     // MANIPULATORS
-    
+
     virtual void rewind() = 0;
 
     // SERVICES
-    
+
     //! Does the Token_Stream consider \c c to be whitespace?
     bool is_whitespace(char c) const;
 
@@ -80,41 +75,41 @@ class DLL_PUBLIC Text_Token_Stream : public Token_Stream
 
     //! Scan the next token.
     virtual Token fill_();
-    
+
     //! Push a character onto the back of the character queue.
     void character_push_back_(char c);
 
     //! Move one or more characters from the text stream into the character
-    //! buffer. 
+    //! buffer.
     virtual void fill_character_buffer_() = 0;
-    
+
     virtual bool error_() const = 0;
     virtual bool end_(void) const = 0;
     virtual std::string location_(void) const = 0;
 
-    //! Pop a character off the internal buffer. 
+    //! Pop a character off the internal buffer.
     char pop_char_(void);
-    //! Peek ahead at the internal buffer. 
+    //! Peek ahead at the internal buffer.
     char peek_(unsigned pos = 0);
 
     //! Skip any whitespace at the cursor position.
     void eat_whitespace_(void);
 
     // The following scan_ functions are for numeric scanning.  The names
-    // reflect the context-free grammar given by Stroustrup in appendix A 
+    // reflect the context-free grammar given by Stroustrup in appendix A
     // of _The C++ Programming Language_.  However, we do not presently
     // recognize type suffixes on either integers or floats.
     unsigned scan_floating_literal_(void);
     unsigned scan_digit_sequence_(unsigned &);
     unsigned scan_exponent_part_(unsigned &);
     unsigned scan_fractional_constant_(unsigned &);
-    
+
     unsigned scan_integer_literal_();
     unsigned scan_decimal_literal_(unsigned &);
     unsigned scan_hexadecimal_literal_(unsigned &);
     unsigned scan_octal_literal_(unsigned &);
 
-  private:    
+  private:
 
     // IMPLEMENTATION
 
@@ -125,16 +120,12 @@ class DLL_PUBLIC Text_Token_Stream : public Token_Stream
 
     std::set<char> whitespace_;
     //!< The whitespace character list
-         
+
     unsigned line_;
     //!< Current line in input file.
 };
 
 }  // namespace rtt_parser
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif  // CCS4_Text_Token_Stream_HH
 //--------------------------------------------------------------------//

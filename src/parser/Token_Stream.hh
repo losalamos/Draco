@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Token_Stream.
@@ -17,15 +17,10 @@
 #include <deque>
 #include <stdexcept>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) 
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Parser exception class
  *
  * This is an exception class for reporting syntax errors in simple parsers.
@@ -36,12 +31,12 @@ class Syntax_Error : public std::runtime_error
   public:
 
     // CREATORS
-    
+
     Syntax_Error();
 };
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Abstract token stream for simple parsers
  *
  * Modern simulation codes require detailed problem specifications, which
@@ -71,7 +66,7 @@ class Syntax_Error : public std::runtime_error
  * specification language. This sequence or stream of tokens is then analyzed
  * by a parser that understands the syntax of the problem specification
  * language and can extract the semantic meaning of each part of the problem
- * specification. 
+ * specification.
  *
  * A Token_Stream is an abstract representation of a stream of tokens that can
  * be presented to a Parse_Table or other parsing client. Each token is
@@ -109,23 +104,23 @@ class DLL_PUBLIC Token_Stream
   public:
 
     // CREATORS
-    
+
     virtual ~Token_Stream(){}
-    
+
 
     // MANIPULATORS
 
     //! Return the next token in the stream and advance the cursor.
     Token shift();
-    
+
     //! Look ahead at tokens.
     Token lookahead(unsigned pos=0);
-    
+
     //! Insert a token into the stream at the cursor position.
     void pushback(Token const &token);
 
     //-----------------------------------------------------------------------//
-    /*! 
+    /*!
      * \brief Reset the stream
      *
      * This function resets the token stream to some initial state defined
@@ -150,9 +145,9 @@ class DLL_PUBLIC Token_Stream
     //! Report a semantic error to the user.
     virtual void report_semantic_error(std::exception const &message);
 
-    
+
     //-----------------------------------------------------------------------//
-    /*! 
+    /*!
      * \brief Report an error to the user.
      *
      * This function sends a message to the user in a stream-specific manner.
@@ -165,9 +160,9 @@ class DLL_PUBLIC Token_Stream
      */
     virtual void report(Token const &token,
                         std::string const &message) = 0;
-    
+
     //-----------------------------------------------------------------------//
-    /*! 
+    /*!
      * \brief Report an error to the user.
      *
      * This function sends a message to the user in a stream-specific
@@ -219,7 +214,7 @@ class DLL_PUBLIC Token_Stream
         if (!condition)
             report_semantic_error(message);
     }
-    
+
 
     // ACCESSORS
 
@@ -229,9 +224,9 @@ class DLL_PUBLIC Token_Stream
 
     //! Check that all class invariants are satisfied.
     bool check_class_invariants() const { return true; }
-    
+
     // STATICS
-    
+
   protected:
 
     // IMPLEMENTATION
@@ -240,7 +235,7 @@ class DLL_PUBLIC Token_Stream
     inline Token_Stream();
 
     //-----------------------------------------------------------------------//
-    /*! 
+    /*!
      * \brief Add one or more tokens to the end of the lookahead buffer.
      *
      * This function is used by \c shift and \c lookahead to keep the token
@@ -253,7 +248,7 @@ class DLL_PUBLIC Token_Stream
      * \return Next token to put on the token buffer.
      */
     virtual Token fill_() = 0;
-    
+
   private:
 
     // DATA
@@ -269,11 +264,11 @@ class DLL_PUBLIC Token_Stream
 };
 
 //-----------------------------------------------------------------------//
-/*! 
+/*!
  * Construct a Token_Stream and place the cursor at the start of the
  * stream.
  */
-inline Token_Stream::Token_Stream() 
+inline Token_Stream::Token_Stream()
     : error_count_(0),
       deq()
 {
@@ -282,10 +277,6 @@ inline Token_Stream::Token_Stream()
 }
 
 }  // namespace rtt_parser
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif  // CCS4_Token_Stream_HH
 //---------------------------------------------------------------------------//

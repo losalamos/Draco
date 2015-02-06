@@ -21,11 +21,6 @@
 #include <cstring>
 #include <string>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
-#endif
-
 namespace rtt_dsxx
 {
 
@@ -90,7 +85,7 @@ namespace rtt_dsxx
 class DLL_PUBLIC File_Output
 {
   private:
-    
+
     // DATA
 
     // The stream to which data is written.
@@ -118,7 +113,7 @@ class DLL_PUBLIC File_Output
 
     // Closes the stream.
     void close();
-    
+
     // General stream output.
     template <class T>
     inline File_Output& operator<<(const T i);
@@ -154,7 +149,7 @@ class DLL_PUBLIC File_Output
 class DLL_PUBLIC File_Input
 {
   private:
-    
+
     // DATA
 
     // The stream from which data is read.
@@ -162,7 +157,7 @@ class DLL_PUBLIC File_Input
 
     // The last line read from d_stream.  Used only in non-binary mode.
     std::string d_line;
-    
+
     // Location within d_line to read type char.  Used only in non-binary
     // mode.
     int d_char_line;
@@ -183,7 +178,7 @@ class DLL_PUBLIC File_Input
 
     // Closes the stream.
     void close();
-    
+
     // General stream input.
     template <class T>
     inline File_Input& operator>>(T &i);
@@ -269,10 +264,6 @@ File_Input& File_Input::operator>>(T &i)
 }
 
 } // end namespace rtt_dsxx
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rtt_dsxx_File_Streams_hh
 

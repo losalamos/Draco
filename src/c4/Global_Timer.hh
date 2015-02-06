@@ -19,11 +19,6 @@
 #include <string>
 #include "Timer.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  warning C4251: 'rtt_c4::Global_Timer::active_list_' : class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by clients of class 'rtt_c4::Global_Timer'
-#endif
-
 namespace rtt_c4
 {
 
@@ -60,7 +55,7 @@ class DLL_PUBLIC Global_Timer : public Timer
     bool active_;
 
     //! All Global_Timers are active
-    static bool global_active_; 
+    static bool global_active_;
 
     struct timer_entry
     {
@@ -71,18 +66,18 @@ class DLL_PUBLIC Global_Timer : public Timer
     };
 
     //! Selected Global_Timers are active
-    static std::map<std::string, timer_entry> active_list_; 
+    static std::map<std::string, timer_entry> active_list_;
 
     //! Disable copy construction
     Global_Timer( Global_Timer const & rhs );
 
     // Disable assignment
     Global_Timer operator=( Global_Timer const & rhs );
-    
+
   public:
 
     // Constructors
-    
+
     Global_Timer(char const *name); //! default constructor
 
     // Accessors
@@ -118,10 +113,6 @@ class DLL_PUBLIC Global_Timer : public Timer
 };
 
 } // end namespace rtt_c4
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __c4_Global_Timer_hh__
 

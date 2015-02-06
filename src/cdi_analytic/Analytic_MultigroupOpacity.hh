@@ -19,11 +19,6 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
 
@@ -52,7 +47,7 @@ namespace rtt_cdi_analytic
  * \example cdi_analytic/nGray_Analytic_MultigroupOpacity.hh
  *
  * Example usage of Analytic_MultigroupOpacity.
- */ 
+ */
 //===========================================================================//
 
 class DLL_PUBLIC Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
@@ -63,7 +58,7 @@ class DLL_PUBLIC Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
     typedef std::vector<sf_double>                     vf_double;
     typedef std::string                                std_string;
     typedef std::vector<char>                          sf_char;
-    
+
   private:
     // Group structure.
     sf_double group_boundaries;
@@ -76,7 +71,7 @@ class DLL_PUBLIC Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
 
   protected:
     // Constructor.
-    Analytic_MultigroupOpacity(const sf_double &, 
+    Analytic_MultigroupOpacity(const sf_double &,
                                rtt_cdi::Reaction,
                                rtt_cdi::Model = rtt_cdi::ANALYTIC);
 
@@ -158,10 +153,10 @@ class DLL_PUBLIC Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the energy policy descriptor (mg). 
+ * \brief Return the energy policy descriptor (mg).
  */
-Analytic_MultigroupOpacity::std_string 
-Analytic_MultigroupOpacity::getEnergyPolicyDescriptor() const 
+Analytic_MultigroupOpacity::std_string
+Analytic_MultigroupOpacity::getEnergyPolicyDescriptor() const
 {
     return std_string("mg");
 }
@@ -171,16 +166,12 @@ Analytic_MultigroupOpacity::getEnergyPolicyDescriptor() const
  * \brief Return NULL string for the data filename.
  */
 Analytic_MultigroupOpacity::std_string
-Analytic_MultigroupOpacity::getDataFilename() const 
+Analytic_MultigroupOpacity::getDataFilename() const
 {
     return std_string();
 }
 
 } // end namespace rtt_cdi_analytic
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __cdi_analytic_Analytic_MultigroupOpacity_hh__
 

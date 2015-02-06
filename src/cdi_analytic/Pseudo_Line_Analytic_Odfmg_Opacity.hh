@@ -20,11 +20,6 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
 using std::pair;
@@ -37,7 +32,7 @@ using std::pair;
  *
  * Primarily code from Analytic_Multigroup_Opacity.
  */
-// 
+//
 //===========================================================================//
 
 class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
@@ -72,7 +67,7 @@ class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
         Averaging averaging,
         unsigned qpoints,
         unsigned seed);
-    
+
     // Constructor.
     Pseudo_Line_Analytic_Odfmg_Opacity(
         const sf_double         &groups,
@@ -91,7 +86,7 @@ class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
         Averaging averaging,
         unsigned qpoints,
         unsigned seed);
-    
+
     // Constructor.
     Pseudo_Line_Analytic_Odfmg_Opacity(
         const sf_double         &groups,
@@ -118,17 +113,17 @@ class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
     // Constructor for packed Pseudo_Line_Analytic_Odfmg_Opacities
     explicit Pseudo_Line_Analytic_Odfmg_Opacity(const sf_char &);
 
-    std::vector< std::vector<double> > getOpacity( 
+    std::vector< std::vector<double> > getOpacity(
         double targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const;
 
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         const std::vector<double>& targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const;
 
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         double targetTemperature,
-        const std::vector<double>& targetDensity ) const; 
+        const std::vector<double>& targetDensity ) const;
 
     // Get the data description of the opacity.
     std_string getDataDescriptor() const;
@@ -138,10 +133,6 @@ class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
 };
 
 } // end namespace rtt_cdi_analytic
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
 

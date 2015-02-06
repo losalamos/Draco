@@ -20,18 +20,13 @@
 #include <map>
 #include <vector>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  warning C4251: 'rtt_dsxx::UnitTest::testName' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::UnitTest'
-#endif
-
 namespace rtt_dsxx
 {
 
 //===========================================================================//
 /*!
  * \class UnitTest
- * \brief Object to encapsulate unit testing of Draco classes and functions. 
+ * \brief Object to encapsulate unit testing of Draco classes and functions.
  *
  * This is a virtual class.  You should use one of the following UnitTest
  * classes in your test appliation:
@@ -39,7 +34,7 @@ namespace rtt_dsxx
  * \li ScalarUnitTest      - Used for testing code that does not use parallel
  *                       communication (rtt_c4).
  * \li ParallelUnitTest    - Used for testing code that does use parallel
- *                       communications (rtt_c4). 
+ *                       communications (rtt_c4).
  * \li ApplicationUnitTest - Used for testing applications that run in
  *                       parallel. The unit test code is run in scalar-mode
  *                       and calls mpirun to run the specified application.
@@ -61,12 +56,12 @@ int main(int argc, char *argv[])
  * \endcode
  *
  * \test All of the member functions of this class are tested by
- * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
+ * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
  * \c --version on the command line.
  */
 //===========================================================================//
 
-class DLL_PUBLIC UnitTest 
+class DLL_PUBLIC UnitTest
 {
   public:
 
@@ -74,35 +69,35 @@ class DLL_PUBLIC UnitTest
 
     //! Typedef for function pointer to this package's release function.
     typedef std::string const (*string_fp_void)(void);
-    
+
     // CREATORS
-        
+
     //! Default constructors.
     UnitTest( int    & argc,
               char **& argv,
               string_fp_void   release_,
               std::ostream   & out_         = std::cout );
-    
+
     //! The copy constructor is disabled.
     UnitTest( UnitTest const &rhs );
 
     //! Destructor is virtual because this class will be inherited from.
     virtual ~UnitTest(void){/*empty*/};
 
-    // MANIPULATORS    
+    // MANIPULATORS
 
     //! The assignment operator is disabled.
     UnitTest& operator=( UnitTest const &rhs );
 
     //! Only special cases should use these (like the unit test
-    //! tstScalarUnitTest.cc). 
+    //! tstScalarUnitTest.cc).
     void dbcRequire( bool b ) { m_dbcRequire=b; return; }
     void dbcCheck(   bool b ) { m_dbcCheck=b;   return; }
     void dbcEnsure(  bool b ) { m_dbcEnsure=b;  return; }
 
     //! Change the target for output
     // void setostream( std::ostream out_ ) { out = out_; return; };
-    
+
     // ACCESSORS
     bool failure(int line);
     bool failure(int line, char const *file);
@@ -140,14 +135,14 @@ class DLL_PUBLIC UnitTest
         std::string const & source,
         char        const * delimiter_list = " ",
         bool                keepEmpty      = false);
-    
+
   protected:
 
     // IMPLEMENTATION
     std::string resultMessage(void) const;
 
     // DATA
-    
+
     //! The name of this unit test.
     std::string const testName;
     //! Relative path to the unit test.
@@ -189,11 +184,7 @@ catch( ... ) { \
    std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
              << "An unknown exception was thrown on processor " \
              << std::endl; foo.numFails++; }; \
-return foo.numFails; 
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
+return foo.numFails;
 
 #endif // dsxx_UnitTest_hh
 

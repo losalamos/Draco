@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   parser/File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class File_Token_Stream.
@@ -16,23 +16,18 @@
 #include <fstream>
 #include "Text_Token_Stream.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::File_Token_Stream::filename_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::File_Token_Stream'
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 using std::string;
 using std::set;
 using std::ifstream;
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief File-based token stream
  *
  * File_Token_Stream represents a text token stream that derives its text
- * stream from a file in the file system.  It reports errors to the standard 
+ * stream from a file in the file system.  It reports errors to the standard
  * console error stream \c cerr.
  */
 
@@ -41,7 +36,7 @@ class DLL_PUBLIC File_Token_Stream : public Text_Token_Stream
   public:
 
     // CREATORS
-    
+
     //! Construct an uninitialized File_Token_Stream.
     File_Token_Stream();
 
@@ -73,22 +68,19 @@ class DLL_PUBLIC File_Token_Stream : public Text_Token_Stream
     virtual void fill_character_buffer_();
     virtual bool error_() const;
     virtual bool end_() const;
- 
+
   private:
 
     // DATA
-    
+
     string filename_;  //!< File from which to take token text.
     ifstream infile_;  //!< Stream from which to take token text.
 };
 
 } // rtt_parser
 
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
-
 #endif  // CCS4_File_Token_Stream_HH
+
 //---------------------------------------------------------------------------//
 // end of File_Token_Stream.hh
 //---------------------------------------------------------------------------//

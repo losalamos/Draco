@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file    timestep/ts_manager.hh
  * \author  John McGhee
  * \date    Mon Apr  6 17:22:53 1998
@@ -19,11 +19,6 @@
 #include "ds++/SP.hh"
 #include <list>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_timestep::ts_manager::controlling_advisor' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_timestep::ts_manager'
-#endif
-
 namespace rtt_timestep
 {
 
@@ -32,12 +27,12 @@ namespace rtt_timestep
  * \brief Manages a list of time-step advisors.
  *
  * \sa  The ts_advisor class provides the advisors to be registerd
- *      the the ts_manager class. Also, the \ref timestep_overview 
+ *      the the ts_manager class. Also, the \ref timestep_overview
  *      page provides useful info.
  *
- * Calculates a new timestep based on the 
+ * Calculates a new timestep based on the
  * recommended time-steps of its component advisors (i.e. electron energy,
- * radiation energy, ion energy, max allowed change, etc...). 
+ * radiation energy, ion energy, max allowed change, etc...).
  */
 //===========================================================================//
 class DLL_PUBLIC ts_manager
@@ -50,17 +45,17 @@ class DLL_PUBLIC ts_manager
   private:
 
     //! the recommendation for the next time-step (time)
-    double dt_new; 
+    double dt_new;
     //! problem time at the end of current cycle  (time)
-    double time;  
-    //! the current time-step (time) 
-    double dt;  
-    //! current cycle number   
-    int    cycle;  
+    double time;
+    //! the current time-step (time)
+    double dt;
+    //! current cycle number
+    int    cycle;
     //! name of the advisor in control
-    std::string controlling_advisor; 
+    std::string controlling_advisor;
     //! a list of Smart Pointers to time step advisors
-    std::list < rtt_dsxx::SP<ts_advisor> > advisors; 
+    std::list < rtt_dsxx::SP<ts_advisor> > advisors;
 
 // CREATORS
 
@@ -79,7 +74,7 @@ class DLL_PUBLIC ts_manager
     void add_advisor(const rtt_dsxx::SP<ts_advisor> &new_advisor);
 
     //! Removes a timestep advisor from a RTT timestep manager
-    /*! \param advisor_to_remove the advisor to be removed 
+    /*! \param advisor_to_remove the advisor to be removed
      */
     void remove_advisor(const rtt_dsxx::SP<ts_advisor> &advisor_to_remove);
 
@@ -112,7 +107,7 @@ class DLL_PUBLIC ts_manager
      */
     void print_adv_states() const;
 
-    //! Returns the recommendation for the next timestep 
+    //! Returns the recommendation for the next timestep
     /*! \return the recommended timestep
      */
     double get_dt_new() const
@@ -144,10 +139,6 @@ class DLL_PUBLIC ts_manager
 };
 
 } // end of rtt_timestep namespace
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __timestep_ts_manager_hh__
 

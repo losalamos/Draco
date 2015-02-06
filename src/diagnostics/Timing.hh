@@ -20,11 +20,6 @@
 #include <map>
 #include <vector>
 
-#if defined(MSVC)
-#pragma warning (push)
-#pragma warning (disable:4251) // warning C4251: 'rtt_diagnostics::Timing_Diagnostics::timers' : class 'std::map<_Kty,_Ty>' needs to have dll-interface to be used by clients of class 'rtt_diagnostics::Timing_Diagnostics'
-#endif
-
 namespace rtt_diagnostics
 {
 
@@ -50,9 +45,9 @@ namespace rtt_diagnostics
  *
  * The easiest way to use this class is through the TIMER macros.
  */
-/*! 
- * \example diagnostics/test/tstTiming.cc 
- * 
+/*!
+ * \example diagnostics/test/tstTiming.cc
+ *
  * description of example
  */
 //===========================================================================//
@@ -62,10 +57,10 @@ class DLL_PUBLIC Timing_Diagnostics
   public:
     // Useful typedef.
     typedef std::vector<std::string> Vec_Keys;
-    
+
   private:
     // >>> PRIVATE DATA MEMBERS
-    
+
     //! Map of timers.
     static std::map<std::string, double> timers;
 
@@ -95,7 +90,7 @@ class DLL_PUBLIC Timing_Diagnostics
 
     // Delete all timers from the map of timers.
     static void delete_timers();
-    
+
   private:
     // >>> IMPLEMENTATION
 
@@ -124,11 +119,11 @@ class DLL_PUBLIC Timing_Diagnostics
  * - 2 turns on all TIMER macros (include TIMER_REPORT)
  * .
  * The default is 0.
- * 
- * In code, 
+ *
+ * In code,
  * \code
  * #include "diagnostics/Timing.hh"
- * 
+ *
  * TIMER( foo);
  * TIMER_START( foo);
  * // ...
@@ -159,7 +154,7 @@ class DLL_PUBLIC Timing_Diagnostics
 
 /*!
  * \def TIMER( timer_name)
- * 
+ *
  * If DRACO_TIMING_ON is defined, TIMER( timer_name) expands to:
  * \code
  *     rtt_c4::Timer timer_name
@@ -167,9 +162,9 @@ class DLL_PUBLIC Timing_Diagnostics
  * Otherwise it is empty.
  */
 
-/*! 
+/*!
  * \def TIMER_START( timer_name)
- * 
+ *
  * If DRACO_TIMING > 0 TIMER_START( timer_name) expands to:
  * \code
  *     timer_name.start()
@@ -177,9 +172,9 @@ class DLL_PUBLIC Timing_Diagnostics
  * Otherwise it is empty.
  */
 
-/*! 
+/*!
  * \def TIMER_STOP( timer_name)
- * 
+ *
  * If DRACO_TIMING_ON > 0, TIMER_STOP( timer_name) expands to:
  * \code
  *     timer_name.stop()
@@ -187,9 +182,9 @@ class DLL_PUBLIC Timing_Diagnostics
  * Otherwise it is empty.
  */
 
-/*! 
+/*!
  * \def TIMER_RECORD( name, timer)
- * 
+ *
  * If DRACO_TIMING_ON > 0, TIMER_RECORD( name, timer) expands to:
  * \code
  *     rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
@@ -197,9 +192,9 @@ class DLL_PUBLIC Timing_Diagnostics
  * Otherwise it is empty.
  */
 
-/*! 
+/*!
  * \def TIMER_REPORT( timer_name, ostream, comment)
- * 
+ *
  * If DRACO_TIMING > 1, TIMER_REPORT( timer_name, ostream,
  * comment) expands to:
  * \code
@@ -209,9 +204,9 @@ class DLL_PUBLIC Timing_Diagnostics
  *             << " seconds; elapsed sys_time: " << timer.system_cpu()\
  *             << " seconds.\n" << flush
  * \endcode
- * Otherwise it is empty. The flush ensures that regression tests 
- * continue to pass (otherwise, in parallel runs, output may arrive "out of 
- * order" and trample the output that the regression tests look for). 
+ * Otherwise it is empty. The flush ensures that regression tests
+ * continue to pass (otherwise, in parallel runs, output may arrive "out of
+ * order" and trample the output that the regression tests look for).
  */
 //---------------------------------------------------------------------------//
 
@@ -225,15 +220,15 @@ class DLL_PUBLIC Timing_Diagnostics
  */
 #if DRACO_TIMING == 0
 
-#define TIMER( timer) 
+#define TIMER( timer)
 
-#define TIMER_START( timer) 
+#define TIMER_START( timer)
 
 #define TIMER_STOP( timer)
 
 #define TIMER_RECORD( name, timer)
 
-#define TIMER_REPORT( timer, ostream, comment) 
+#define TIMER_REPORT( timer, ostream, comment)
 
 #endif
 
@@ -276,10 +271,6 @@ class DLL_PUBLIC Timing_Diagnostics
 
 #define TIMER_REPORT( timer, ostream, comment)
 
-#endif 
-
-#if defined(MSVC)
-#   pragma warning (pop)
 #endif
 
 #endif // diagnostics_Timing_hh

@@ -4,8 +4,8 @@
  * \author John McGhee
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
- * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -20,19 +20,14 @@
 #include <stdexcept>
 #include <ostream>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
-#endif
-
 namespace rtt_mesh_element
 {
- 
+
 //===========================================================================//
 /*!
  * \class Element_Definition
  *
- * \brief Provides some descriptive information on the standard mesh 
+ * \brief Provides some descriptive information on the standard mesh
  *        elements used in the RTT meshReader class.
  *
  * A few high points, trying not to wax eloquent. It was originally desired to
@@ -95,10 +90,10 @@ namespace rtt_mesh_element
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //===========================================================================//
 
-class DLL_PUBLIC Element_Definition 
+class DLL_PUBLIC Element_Definition
 {
 
     // NESTED CLASSES AND TYPEDEFS
@@ -143,7 +138,7 @@ class DLL_PUBLIC Element_Definition
     enum Element_Type {
 	NODE,       /*!< A dimensionless point in space. */
 	BAR_2,      /*!< The basic one-D, two-node "line" element. */
-	BAR_3,      /*!< Same as "BAR_2" except that a node is added in the 
+	BAR_3,      /*!< Same as "BAR_2" except that a node is added in the
                      *   center. */
 	TRI_3,      /*!< The basic two-D, three-node, "triangle" element. */
 	TRI_6,      /*!< Same as "TRI_3" except that nodes are added in the *
@@ -153,7 +148,7 @@ class DLL_PUBLIC Element_Definition
 	QUAD_8,     /*!< Same as "QUAD_4" except a node is added in the
 		     *   middle of each edge. This is the
                      *   standard quadratic-serendipity finite element quad.*/
-	QUAD_9,     /*!< Same as "QUAD_8" except a node is added in the 
+	QUAD_9,     /*!< Same as "QUAD_8" except a node is added in the
                      *   center of the quad. */
 	PENTAGON_5, /*!< The basic two-D, five-node "pentagon"
                      *   element. Elements with this topology are quite common
@@ -162,26 +157,26 @@ class DLL_PUBLIC Element_Definition
                      *   element. Elements with this topology are quite common
                      *   in an AMR mesh. */
 	TETRA_4,    /*!< The basic three-D, four-node "tetrahedral" element. */
-	TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the 
+	TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the
 		     *   middle  of each edge. This is the
                      *   standard quadratic-serendipity finite element tet.*/
-	PYRA_5,     /*!< The basic three-D, five-node, "pyramid" element. 
+	PYRA_5,     /*!< The basic three-D, five-node, "pyramid" element.
 		    *    This is a hex with one face collapsed to a point.*/
-	PYRA_14,    /*!< Same as "PYRA_5" except that a node is added on 
+	PYRA_14,    /*!< Same as "PYRA_5" except that a node is added on
                      *   each edge, and one at the center. */
-	PENTA_6,    /*!< The basic three-D, six-node "pentahedron". Also 
+	PENTA_6,    /*!< The basic three-D, six-node "pentahedron". Also
                      *   known as a "triangular-prism", or "wedge". */
-	PENTA_15,   /*!< Same as "PENTA-6" except that nodes are added in 
+	PENTA_15,   /*!< Same as "PENTA-6" except that nodes are added in
                      *   the center of each edge. This is the
                      *   standard quadratic-serendipity finite element wedge.*/
-	PENTA_18,   /*!< Same as "PENTA-15" except that nodes are added in 
+	PENTA_18,   /*!< Same as "PENTA-15" except that nodes are added in
                      *   the center of each quadrilateral face. */
 	HEXA_8,     /*!< The basic three-D, eight-node "hexahedron". */
-	HEXA_20,    /*!< Same as "HEXA_8" except that a node is added in 
+	HEXA_20,    /*!< Same as "HEXA_8" except that a node is added in
                      *   the center of each edge. This is the
                      *   standard quadratic-serendipity finite element hex.*/
-	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added 
-		     *   in the center of each face, and at the center of 
+	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added
+		     *   in the center of each face, and at the center of
                      *   the element. */
         POLYGON,     /*!< A polygon element with straight sides. */
 
@@ -189,7 +184,7 @@ class DLL_PUBLIC Element_Definition
     };
 
   private:
-    
+
     // DATA
 
     std::string  name;
@@ -205,13 +200,13 @@ class DLL_PUBLIC Element_Definition
   public:
 
     // CREATORS
-    
+
     /*!
      * \brief Constructor for the Element_Definition class.
      * \param type_ The element type to be constructed.
      */
     explicit Element_Definition( Element_Type const & type_ );
-    
+
     /*!
      * \brief Constructor for the Element_Definition class.
      *
@@ -254,7 +249,7 @@ class DLL_PUBLIC Element_Definition
      * \pre <code>number_of_sides_>=0</code>
      *
      * \pre All elements of \c elem_defs_ must satisfy
-     * <code>elem_defs_[i].get_dimension()+1==dimension_</code> 
+     * <code>elem_defs_[i].get_dimension()+1==dimension_</code>
      *
      * \pre <code>side_type_.size()==number_of_sides_</code>
      *
@@ -265,7 +260,7 @@ class DLL_PUBLIC Element_Definition
      *
      * \pre All elements of \c side_nodes_ must satisfy
      * <code>side_nodes_[i].size() ==
-     * elem_defs_[side_type_[i]].get_number_of_nodes() </code>  
+     * elem_defs_[side_type_[i]].get_number_of_nodes() </code>
      *
      * \pre All elements of \c side_nodes_ must satisfy
      * <code>static_cast<unsigned>(side_nodes_[i][j])<number_of_nodes_ </code>
@@ -311,7 +306,7 @@ class DLL_PUBLIC Element_Definition
      * extensible by inheritance.
      */
     virtual ~Element_Definition(void){/*empty*/}
-    
+
     // ACCESSORS
 
     /*!
@@ -325,14 +320,14 @@ class DLL_PUBLIC Element_Definition
 
     /*!
      * \brief Returns the type of an element.
-     * \return Returns the element type. 
+     * \return Returns the element type.
      */
     Element_Type get_type(void) const
     {
 	return type;
     }
 
-    /*! 
+    /*!
      * \brief Returns the total number of nodes in an element.
      * \return Total number of nodes in an element.
      */
@@ -361,7 +356,7 @@ class DLL_PUBLIC Element_Definition
     {
 	return number_of_sides;
     }
-    
+
     /*!
      * \brief Returns the location of a node within the element.
      *
@@ -376,7 +371,7 @@ class DLL_PUBLIC Element_Definition
     Node_Location get_node_location( size_t const node_number ) const
     {
         Insist( node_number < number_of_nodes, "Node index out of range!");
-        return node_loc[node_number]; 
+        return node_loc[node_number];
     }
 
     /*!
@@ -456,12 +451,12 @@ class DLL_PUBLIC Element_Definition
     std::vector<std::vector<unsigned> > get_face_nodes() const
     {
         std::vector<std::vector<unsigned> > face_nodes(side_nodes.size());
-        
+
         for (unsigned s=0; s < face_nodes.size(); ++s)
         {
-            std::vector<size_t> nodes(get_side_nodes(s)); 
+            std::vector<size_t> nodes(get_side_nodes(s));
             face_nodes[s].resize(nodes.size());
-            
+
             for (unsigned n=0; n < nodes.size(); ++n)
                 face_nodes[s][n] = nodes[n];
         }
@@ -484,14 +479,14 @@ class DLL_PUBLIC Element_Definition
      * \brief Define convenience ostream inserter.
      *
      */
-    friend std::ostream &operator<<( std::ostream &os, 
+    friend std::ostream &operator<<( std::ostream &os,
 				     Element_Definition const & rhs )
     {
 	return rhs.print( os );
     }
 
   private:
-    
+
     // IMPLEMENTATION
 
     void construct_node();
@@ -508,10 +503,6 @@ class DLL_PUBLIC Element_Definition
 };
 
 } // end namespace rtt_mesh_element
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __mesh_element_Element_Definition_hh__
 

@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:00:32 2005
  * \brief  Header file for Norms_Index.
- * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -16,12 +16,7 @@
 
 #include "Norms_Base.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_norms::Norms_Index<Index_t>::d_index_Linf' : struct 'rtt_norms::Index_Labeled' needs to have dll-interface to be used by clients of class 'rtt_norms::Norms_Index<Index_t>'
-#endif
-
-namespace rtt_norms 
+namespace rtt_norms
 {
 
 //===========================================================================//
@@ -34,11 +29,11 @@ namespace rtt_norms
   \f[
       L_1(v) = \frac{\sum_i w_i |v_i|}{\sum_i w_i}, \quad
       L_2(v) = \sqrt{\frac{\sum_i w_i v_i^2}{\sum_i w_i}}, \quad
-      L_{\infty}(v) = \max_i(|v_i|). 
+      L_{\infty}(v) = \max_i(|v_i|).
   \f]
   where \f$ i \f$ is the index, \f$ w_i \f$ the weight factor, and
   \f$ v_i \f$ the corresponding value.
-  
+
   The norms are computed by making consecutive calls to Norms_Index<>::add.
   Each call to Norms_Index<>::add adds a term to the above summations.
   Norms_Index<>::reset() re-initializes the sums to zero.  The member
@@ -60,11 +55,11 @@ class DLL_PUBLIC Norms_Index
 
     //! Expose the template parameter
     typedef Index_t Index;
-    
+
   private:
-    
+
     // DATA
-    
+
     // index location of max norm
     Index_t d_index_Linf;
 
@@ -99,10 +94,6 @@ class DLL_PUBLIC Norms_Index
 };
 
 } // namespace rtt_norms
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rtt_norms_Norms_Index_hh
 

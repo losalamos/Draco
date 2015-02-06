@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Nov 12 22:28:37 2004
  * \brief  Header for Ensight_Stream.
- * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -17,11 +17,6 @@
 #include "ds++/config.h"
 #include <string>
 #include <fstream>
-
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_viz::Ensight_Stream::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_viz::Ensight_Stream'
-#endif
 
 namespace rtt_viz
 {
@@ -52,7 +47,7 @@ DLL_PUBLIC Ensight_Stream& endl(Ensight_Stream &s);
  */
 //===========================================================================//
 
-class DLL_PUBLIC Ensight_Stream 
+class DLL_PUBLIC Ensight_Stream
 {
   private:
 
@@ -69,11 +64,11 @@ class DLL_PUBLIC Ensight_Stream
 
     // If true, in binary mode.  Otherwise, ascii mode.
     bool d_binary;
-    
+
   public:
 
     // CREATORS
-    
+
     //! Constructor.
     explicit Ensight_Stream(const std::string &file_name = "",
                             const bool binary = false,
@@ -101,7 +96,7 @@ class DLL_PUBLIC Ensight_Stream
     // void flush() { d_stream.flush(); }
 
     // The supported output stream functions.
-    
+
     Ensight_Stream& operator<<(const int i);
 
     Ensight_Stream& operator<<(const std::size_t i);
@@ -121,10 +116,6 @@ class DLL_PUBLIC Ensight_Stream
 };
 
 } // end namespace rtt_viz
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rtt_viz_Ensight_Stream_hh
 

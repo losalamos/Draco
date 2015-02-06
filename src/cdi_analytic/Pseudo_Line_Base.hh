@@ -17,11 +17,6 @@
 #include <cmath>
 #include <cstdio>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
 using std::vector;
@@ -59,7 +54,7 @@ class DLL_PUBLIC Pseudo_Line_Base
 
         END_AVERAGING //!< sentinel value
     };
-    
+
   private:
     // Coefficients
     SP<Expression const> continuum_;  // continuum opacity [cm^2/g]
@@ -71,7 +66,7 @@ class DLL_PUBLIC Pseudo_Line_Base
     double Bn_;
     double Bd_;
     double R_;
-    
+
     unsigned seed_;
     int number_of_lines_;
     double line_peak_; // peak line opacity [cm^2/g]
@@ -135,7 +130,7 @@ class DLL_PUBLIC Pseudo_Line_Base
     explicit  Pseudo_Line_Base(vector<char> const &packed);
 
     virtual ~Pseudo_Line_Base() { /* empty */ };
-    
+
     double line_width() const { return line_width_; }
 
     double Tref() const { return Tref_; }
@@ -172,10 +167,6 @@ class DLL_PUBLIC Pseudo_Line_Base
 };
 
 } // end namespace rtt_cdi_analytic
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif  // __cdi_analytic_Pseudo_Line_Base_hh__
 

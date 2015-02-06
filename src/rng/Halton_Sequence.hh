@@ -17,11 +17,6 @@
 #include "ds++/config.h"
 #include <vector>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_rng::Halton_Sequence::n_' : class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of class 'rtt_rng::Halton_Sequence'
-#endif
-
 namespace rtt_rng
 {
 
@@ -69,18 +64,18 @@ namespace rtt_rng
  * These are the same points mapped by the corresponding Sobol' sequence, but
  * they are not scrambled at the lowest level using a gray code. Hence the
  * sequence is easier to generate but not truly subrandom.
- * 
+ *
  */
 //===========================================================================//
 
-class DLL_PUBLIC Halton_Sequence 
+class DLL_PUBLIC Halton_Sequence
 {
   public:
 
     // NESTED CLASSES AND TYPEDEFS
 
     // CREATORS
-    
+
     //! Default constructor for declaring arrays et al.
     Halton_Sequence() : base_(0), count_(0), value_(0.0), n_() {/*empty*/}
 
@@ -119,10 +114,6 @@ class DLL_PUBLIC Halton_Sequence
 };
 
 } // end namespace rtt_rng
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rng_Halton_Sequence_hh
 

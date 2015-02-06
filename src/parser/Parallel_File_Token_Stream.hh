@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   Parallel_File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Parallel_File_Token_Stream.
@@ -16,19 +16,14 @@
 #include <fstream>
 #include "Text_Token_Stream.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Parallel_File_Token_Stream::filename_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::Parallel_File_Token_Stream'
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 using std::string;
 using std::set;
 using std::ifstream;
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Parallel file-based token stream
  *
  * \c Parallel_File_Token_Stream is similar to \c File_Token_Stream. However,
@@ -69,13 +64,13 @@ class DLL_PUBLIC Parallel_File_Token_Stream : public Text_Token_Stream
 
     //! Check the class invariants.
     bool check_class_invariants() const;
-    
+
   protected:
 
     // IMPLEMENTATION
-    
+
     virtual string location_() const;
-    
+
     virtual void fill_character_buffer_();
 
     virtual bool error_() const;
@@ -99,11 +94,8 @@ class DLL_PUBLIC Parallel_File_Token_Stream : public Text_Token_Stream
 
 } // rtt_parser
 
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
-
 #endif  // CCS4_Parallel_File_Token_Stream_HH
+
 //---------------------------------------------------------------------------//
 // end of Parallel_File_Token_Stream.hh
 //---------------------------------------------------------------------------//

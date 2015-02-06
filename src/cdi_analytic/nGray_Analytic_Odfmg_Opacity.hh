@@ -20,11 +20,6 @@
 #include "ds++/SP.hh"
 #include <string>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
 
@@ -36,7 +31,7 @@ namespace rtt_cdi_analytic
  *
  * Primarily code from Analytic_Multigroup_Opacity.
  */
-// 
+//
 //===========================================================================//
 
 class DLL_PUBLIC nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
@@ -44,7 +39,7 @@ class DLL_PUBLIC nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
   public:
     // Useful typedefs.
     typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model; 
+    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
     typedef std::vector<SP_Analytic_Model>             sf_Analytic_Model;
     typedef std::vector<double>                        sf_double;
     typedef std::vector<sf_double>                     vf_double;
@@ -71,7 +66,7 @@ class DLL_PUBLIC nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
     const_Model get_Analytic_Model(int g) const
     { return group_models[g-1]; }
 
-    //! right now, all bands have same model (same opacity) 
+    //! right now, all bands have same model (same opacity)
     const_Model get_Analytic_Model(int g, int /*b*/) const
     { return group_models[g-1]; }
 
@@ -80,25 +75,25 @@ class DLL_PUBLIC nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
     /*!
      * \brief Opacity accessor that returns a 2-D vector of opacities (
      *     groups * bands ) that correspond to the
-     *     provided temperature and density. 
+     *     provided temperature and density.
      *
      * \param targetTemperature The temperature value for which an
      *     opacity value is being requested.
-     * \param targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity
      *     value is being requested.
      * \return A vector of opacities.
      */
-    std::vector< std::vector<double> > getOpacity( 
+    std::vector< std::vector<double> > getOpacity(
         double targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const;
 
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         const std::vector<double>& targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const;
 
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         double targetTemperature,
-        const std::vector<double>& targetDensity ) const; 
+        const std::vector<double>& targetDensity ) const;
 
     // Get the data description of the opacity.
     inline std_string getDataDescriptor() const;
@@ -133,10 +128,6 @@ nGray_Analytic_Odfmg_Opacity::getDataDescriptor() const
 }
 
 } // end namespace rtt_cdi_analytic
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __cdi_analytic_nGray_Analytic_Odfmg_Opacity_hh__
 

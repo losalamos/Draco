@@ -18,11 +18,6 @@
 #include <string>
 #include <vector>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<Elem, _Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
-#endif
-
 namespace rtt_diagnostics
 {
 
@@ -35,7 +30,7 @@ namespace rtt_diagnostics
  * \verbatim
  * Draco-6_5_20121113, build date 2012/11/13; build type: DEBUG; DBC: 7
  *
- * Draco Contributers: 
+ * Draco Contributers:
  *     Kelly G. Thompson, Kent G. Budge, Tom M. Evans,
  *     Rob Lowrie, B. Todd Adams, Mike W. Buksas,
  *     James S. Warsa, John McGhee, Gabriel M. Rockefeller,
@@ -49,15 +44,15 @@ namespace rtt_diagnostics
  *     System type    : Linux
  *     CUDA support   : disabled
  *     MPI support    : enabled
- *       mpirun cmd   : mpirun --mca mpi_paffinity_alone 0 -np 
+ *       mpirun cmd   : mpirun --mca mpi_paffinity_alone 0 -np
  *     OpenMPI support: enabled
  *     Diagnostics    : disabled
  *     Diagnostics Timing: disabled
  *     C++11 Support  : enabled
  *       Feature list : HAS_CXX11_AUTO_TYPE
- *                      HAS_CXX11_NULLPTR 
- *                      HAS_CXX11_LAMBDA 
- *                      HAS_CXX11_STATIC_ASSERT 
+ *                      HAS_CXX11_NULLPTR
+ *                      HAS_CXX11_LAMBDA
+ *                      HAS_CXX11_STATIC_ASSERT
  *                      HAS_CXX11_SHARED_PTR
  * \endverbatim
  */
@@ -77,7 +72,7 @@ class DLL_PUBLIC DracoInfo
     // -------
 
     /*! \brief Construct an information message that includes Draco's version,
-     * copyright and basic build parameters. */    
+     * copyright and basic build parameters. */
     std::string fullReport(void);
 
     //! Version and Copyright only
@@ -87,10 +82,10 @@ class DLL_PUBLIC DracoInfo
 
     //! Convert the string to all lowercase except the first character.
     std::string normalizeCapitalization( std::string in );
-    
+
     // DATA
     // ----
-    
+
     std::string const release;
     std::string const copyright;
     std::string const contact;

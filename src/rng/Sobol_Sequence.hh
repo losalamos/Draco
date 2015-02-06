@@ -17,11 +17,6 @@
 #include "gsl/gsl_qrng.h"
 #include "ds++/config.h"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  warning C4251: 'rtt_rng::Sobol_Sequence::values_' : class 'std::vector<_Ty>' needs to have dll-interface to be used by clients of class 'rtt_rng::Sobol_Sequence'
-#endif
-
 namespace rtt_rng
 {
 
@@ -41,12 +36,12 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC Sobol_Sequence 
+class DLL_PUBLIC Sobol_Sequence
 {
   public:
 
     // CREATORS
-    
+
     //! Default constructor.
     explicit Sobol_Sequence(unsigned const dimension=1);
 
@@ -70,7 +65,7 @@ class DLL_PUBLIC Sobol_Sequence
     // NESTED CLASSES AND TYPEDEFS
 
     // IMPLEMENTATION
-    
+
     //! Not implemented
     Sobol_Sequence(Sobol_Sequence const &);
 
@@ -85,10 +80,6 @@ class DLL_PUBLIC Sobol_Sequence
 };
 
 } // end namespace rtt_rng
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // rng_Sobol_Sequence_hh
 

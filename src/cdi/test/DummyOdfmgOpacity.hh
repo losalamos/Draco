@@ -3,10 +3,10 @@
  * \file   cdi/test/DummyOdfmgOpacity.hh
  * \author Kelly Thompson
  * \date   Mon Jan 8 17:12:51 2001
- * \brief  DummyOdfmgOpacity class header file (derived from 
+ * \brief  DummyOdfmgOpacity class header file (derived from
  *         ../OdfmgOpacity)
- * \note   Copyright (C) 2001-2015 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2001-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -16,11 +16,6 @@
 #define __cdi_DummyOdfmgOpacity_hh__
 
 #include "../OdfmgOpacity.hh"
-
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
-#endif
 
 namespace rtt_cdi_test
 {
@@ -40,7 +35,7 @@ namespace rtt_cdi_test
  *     EnergyBoundaries = { 0.05, 0.5, 5.0, 50.0 }
  *     BandBoundaries   = { 0.00, 0.125, 0.25, 0.50, 1.00 }
  *
- *     Opacity = 2 * ( temperature + density/1000 ) 
+ *     Opacity = 2 * ( temperature + density/1000 )
  *                 / ( E_high + E_low )
  *
  * In addition to providing definitions for the member functions
@@ -61,12 +56,12 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
     std::string const dataFilename;            // "none"
     std::string const dataDescriptor;          // "DummyOdfmgOpacity"
     std::string const energyPolicyDescriptor;  // "Odfmg"
-    
+
     size_t const numTemperatures;     // = 3
     size_t const numDensities;        // = 2
     size_t const numGroupBoundaries;  // = 4
     size_t const numBandBoundaries;   // = 5
-    
+
     std::vector< double > groupBoundaries;  // = { 0.05, 0.5, 5.0, 50.0 }
     std::vector< double > bandBoundaries;   // = { 0.00, 0.125, 0.25, 0.50, 1.00 }
     std::vector< double > temperatureGrid;  // = { 1.0, 2.0, 3.0 }
@@ -83,16 +78,16 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 
     /*!
      * \brief Constructor for DummyOdfmgOpacity object.
-     * 
+     *
      * \sa The constructor assigns fixed values for all of the member data.
-     *     Every instance of this object has the same member data. 
+     *     Every instance of this object has the same member data.
      */
     DummyOdfmgOpacity(rtt_cdi::Reaction = rtt_cdi::TOTAL,
                       rtt_cdi::Model    = rtt_cdi::ANALYTIC);
 
     /*!
      * \brief Constructor for DummyOdfmgOpacity object.
-     * 
+     *
      * This constructor allows the user to enter a different number of
      * frequency boundaries.
      */
@@ -105,7 +100,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      * \brief Default DummyOdfmgOpacity destructor.
      *
      * This is required to correctly release memory when a DummyOdfmgOpacity
-     * object is destroyed. 
+     * object is destroyed.
      */
     ~DummyOdfmgOpacity(void) {/*empty*/};
 
@@ -116,9 +111,9 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
     /*!
      * \brief Opacity accessor that returns a vector of opacities (one for
      *     each group) that corresponds to the provided temperature and
-     *     density.    
+     *     density.
      *
-     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *     Opacity = 2 * ( temperature + density/1000 )
      *                 / ( E_high + E_low )
      *
      * \param targetTemperature The temperature value for which an opacity
@@ -128,9 +123,9 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      * \return A vector of interpolated opacities (cm^2/g).  Each entry of
      *     this vector corresponds to one energy group.
      */
-    std::vector< std::vector<double> > getOpacity( 
+    std::vector< std::vector<double> > getOpacity(
         double targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const;
 
     /*!
      * \brief Opacity accessor that returns a vector of multigroup opacities
@@ -138,7 +133,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     density.  Each multigroup opacity is in itself a vector of
      *     numGroups opacities.
      *
-     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *     Opacity = 2 * ( temperature + density/1000 )
      *                 / ( E_high + E_low )
      *
      * \param targetTemperature A vector of temperature values for which
@@ -149,9 +144,9 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     entry of this vector corresponds to one of the provided
      *     temperatures and is itself a vector of numGroups opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         const std::vector<double>& targetTemperature,
-        double targetDensity ) const; 
+        double targetDensity ) const;
 
     /*!
      * \brief Opacity accessor that returns a vector of multigroup opacities
@@ -159,7 +154,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     temperature.  Each multigroup opacity is in itself a vector of
      *     numGroups opacities.
      *
-     *     Opacity = 2 * ( temperature + density/1000 ) 
+     *     Opacity = 2 * ( temperature + density/1000 )
      *                 / ( E_high + E_low )
      *
      * \param targetTemperature The temperature value for which corresponding
@@ -172,11 +167,11 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     entry of this vector corresponds to one of the provided densities
      *     and is itself a vector of numGroups opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         double targetTemperature,
-        const std::vector<double>& targetDensity ) const; 
+        const std::vector<double>& targetDensity ) const;
 
-    /*! 
+    /*!
      * \brief Opacity accessor that returns an STL container of opacities that
      *     correspond to a tuple of provided STL containers (temperatures and
      *     densities).  The length of the temperature and the the density
@@ -202,7 +197,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     provided tuple of (temperature, density) values and the total
      *     number of energy groups.
      */
-    template < class TemperatureIterator, class DensityIterator, 
+    template < class TemperatureIterator, class DensityIterator,
                class OpacityIterator >
     OpacityIterator getOpacity( TemperatureIterator tempIter,
                                 TemperatureIterator templast,
@@ -210,7 +205,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
                                 DensityIterator densLast,
                                 OpacityIterator opacityIter ) const;
 
-    /*! 
+    /*!
      * \brief Opacity accessor that returns an STL container of opacities that
      *     correspond to a list of provided STL temperature values.  The
      *     length of the opacity container should be numGroups x
@@ -231,7 +226,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
      *     which multigroup opacity values corresponding to the given list of
      *     temperature values and the number of energy groups will be stored
      *     (cm^2/g).
-     * 
+     *
      * \return A list (of type OpacityIterator) of multigroup opacities are
      *     returned (cm^2/g).  These multigroup opacities correspond to the
      *     provided list of temperature values, the fixed density and the
@@ -243,7 +238,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 				double targetDensity,
 				OpacityIterator opacityIter ) const;
 
-    /*! 
+    /*!
      * \brief Opacity accessor that returns an STL container of opacities that
      *     correspond to a list of provided STL density values and a fixed
      *     temperature.  The length of the opacity container should be
@@ -296,8 +291,8 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
     /*!
      * \brief Returns a "plain English" description of the energy group
      *     structure (gray vs. multigroup).
-     */	
-    std::string getEnergyPolicyDescriptor() const { 
+     */
+    std::string getEnergyPolicyDescriptor() const {
         return energyPolicyDescriptor; };
 
     /*!
@@ -335,13 +330,13 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
     size_t getNumTemperatures() const {
         return numTemperatures; };
 
-    /*! 
+    /*!
      * \brief Returns the size of the density grid.
      */
     size_t getNumDensities() const {
         return numDensities; };
 
-    /*! 
+    /*!
      * \brief Returns the number of energy group boundaries.
      */
     size_t getNumGroupBoundaries() const {
@@ -369,7 +364,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
     size_t getNumBandBoundaries() const {
         return bandBoundaries.size();
     };
-	
+
     /*!
      * \brief Returns the number of band boundaries set in the current
      *     multigroup data set. The lower boundary is always zero, and the
@@ -385,7 +380,7 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 
     /*!
      * \brief Returns the general opacity model type, defined in
-     *     OpacityCommon.hh 
+     *     OpacityCommon.hh
      */
     rtt_cdi::OpacityModelType getOpacityModelType() const {
         return rtt_cdi::DUMMY_TYPE;
@@ -397,14 +392,14 @@ class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 // TEMPLATE DEFINITIONS
 // (enable us to use automatic instantiation)
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Opacity accessor that returns an STL container of opacities that
  *     correspond to a tuple of provided STL containers (temperatures and
  *     densities).  The length of the temperature and the the density
  *     container should be equal and the length of the opacity container
  *     should be numGroups x temperature.size().
  */
-template < class TemperatureIterator, class DensityIterator, 
+template < class TemperatureIterator, class DensityIterator,
            class OpacityIterator >
 OpacityIterator DummyOdfmgOpacity::getOpacity(
     TemperatureIterator tempIter,
@@ -412,7 +407,7 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
     DensityIterator densIter,
     DensityIterator densLast,
     OpacityIterator opacityIter ) const
-{ 
+{
     size_t ng = numGroupBoundaries - 1;
     // loop over all temperatures and densities in the range
     // (tempFirst,tempLast) & (densIter,densLast).
@@ -424,8 +419,8 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
     return opacityIter;
 }
 
-//---------------------------------------------------------------------------//    
-/*! 
+//---------------------------------------------------------------------------//
+/*!
  * \brief Opacity accessor that returns an STL container of opacities that
  *     correspond to a list of provided STL temperature values.  The length of
  *     the opacity container should be numGroups x temperature.size().
@@ -436,7 +431,7 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
     TemperatureIterator templast,
     double targetDensity,
     OpacityIterator opacityIter ) const
-{ 
+{
     size_t ng = numGroupBoundaries - 1;
     // loop over all temperatures in the range
     // (tempFirst,tempLast).
@@ -447,8 +442,8 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
     return opacityIter;
 }
 
-//---------------------------------------------------------------------------//   
-/*! 
+//---------------------------------------------------------------------------//
+/*!
  * \brief Opacity accessor that returns an STL container of opacities that
  *     correspond to a list of provided STL density values and a fixed
  *     temperature.  The length of the opacity container should be numGroups x
@@ -460,7 +455,7 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
     DensityIterator densIter,
     DensityIterator densLast,
     OpacityIterator opacityIter ) const
-{ 
+{
     size_t ng = numGroupBoundaries - 1;
     // loop over all densities in the range
     // (densIter,densLast).
@@ -472,10 +467,6 @@ OpacityIterator DummyOdfmgOpacity::getOpacity(
 }
 
 } // end namespace rtt_cdi_test
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __cdi_DummyOdfmgOpacity_hh__
 

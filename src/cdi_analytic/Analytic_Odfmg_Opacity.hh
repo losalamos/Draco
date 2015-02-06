@@ -21,11 +21,6 @@
 #include <vector>
 #include <string>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
 
@@ -37,7 +32,7 @@ namespace rtt_cdi_analytic
  *
  * Primarily code from Analytic_Multigroup_Opacity.
  */
-// 
+//
 //===========================================================================//
 
 class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
@@ -45,7 +40,7 @@ class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
   public:
     // Useful typedefs.
     typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model; 
+    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
     typedef std::vector<SP_Analytic_Model>             sf_Analytic_Model;
     typedef std::vector<double>                        sf_double;
     typedef std::vector<sf_double>                     vf_double;
@@ -93,17 +88,17 @@ class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
     /*!
      * \brief Opacity accessor that returns a 2-D vector of opacities (
      *     groups * bands ) that correspond to the
-     *     provided temperature and density. 
+     *     provided temperature and density.
      *
      * \param targetTemperature The temperature value for which an
      *     opacity value is being requested.
-     * \param targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity
      *     value is being requested.
      * \return A vector of opacities.
      */
-    std::vector< std::vector<double> > getOpacity( 
+    std::vector< std::vector<double> > getOpacity(
         double targetTemperature,
-        double targetDensity ) const = 0; 
+        double targetDensity ) const = 0;
 
     /*!
      * \brief Opacity accessor that returns a vector of multigroupband
@@ -112,11 +107,11 @@ class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      *
      * \param targetTemperature A vector of temperature values for
      *     which opacity values are being requested.
-     * \param targetDensity The density value for which an opacity 
+     * \param targetDensity The density value for which an opacity
      *     value is being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         const std::vector<double>& targetTemperature,
         double targetDensity ) const = 0;
 
@@ -125,15 +120,15 @@ class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
      *     opacities that correspond to the provided vector of
      *     densities and a single temperature value.
      *
-     * \param targetTemperature The temperature value for which an 
+     * \param targetTemperature The temperature value for which an
      *     opacity value is being requested.
      * \param targetDensity A vector of density values for which
      *     opacity values are being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity( 
+    std::vector< std::vector< std::vector<double> > > getOpacity(
         double targetTemperature,
-        const std::vector<double>& targetDensity ) const = 0; 
+        const std::vector<double>& targetDensity ) const = 0;
 
     //! Query to see if data is in tabular or functional form (false).
     bool data_in_tabular_form() const { return false; }
@@ -175,7 +170,7 @@ class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
     size_t getNumGroups() const { return groupBoundaries.size() - 1; }
 
     /*!
-     * \brief Returns a vector of points along the cumulative opacity 
+     * \brief Returns a vector of points along the cumulative opacity
      *          distribution that mark the fraction of each band. First point is
      *          always zero, last point is always one.
      */
@@ -218,10 +213,10 @@ class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the energy policy descriptor (mg). 
+ * \brief Return the energy policy descriptor (mg).
  */
-Analytic_Odfmg_Opacity::std_string 
-Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const 
+Analytic_Odfmg_Opacity::std_string
+Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const
 {
     return std_string("odfmg");
 }
@@ -231,16 +226,12 @@ Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const
  * \brief Return NULL string for the data filename.
  */
 Analytic_Odfmg_Opacity::std_string
-Analytic_Odfmg_Opacity::getDataFilename() const 
+Analytic_Odfmg_Opacity::getDataFilename() const
 {
     return std_string();
 }
 
 } // end namespace rtt_cdi_analytic
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __cdi_analytic_Analytic_Odfmg_Opacity_hh__
 

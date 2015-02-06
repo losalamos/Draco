@@ -22,11 +22,6 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <algorithm>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  C4251: 'rtt_dsxx::File_Output::d_stream' : class 'std::basic_ofstream<_Elem,_Traits>' needs to have dll-interface to be used by clients of class 'rtt_dsxx::File_Output'
-#endif
-
 //---------------------------------------------------------------------------//
 // UNNAMED NAMESPACE
 //---------------------------------------------------------------------------//
@@ -57,7 +52,7 @@ static double const NORM_FACTOR = 0.25*coeff;         // 15/(4*pi^4);
 /*!
  * \fn inline double taylor_series_planck(double x)
  * \brief Computes the normalized Planck integral via a 21 term Taylor
- * expansion. 
+ * expansion.
  *
  * The taylor expansion of the planckian integral looks as follows:
  * \code
@@ -117,7 +112,7 @@ static inline double taylor_series_planck(double x)
 
     taylor += coeff_3;
     taylor *= x * xsqrd * coeff;
-    
+
     Ensure (taylor >= 0.0);
 
     return taylor;
@@ -133,7 +128,7 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
 
     double const xsqrd = x * x;
 
-    static double const i_plus_two_inv[9] = 
+    static double const i_plus_two_inv[9] =
         {
             0.5000000000000000, // 1/2
             0.3333333333333333, // 1/3
@@ -146,12 +141,12 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
             0.1000000000000000  // 1/10
         };
     double const * curr_inv = i_plus_two_inv;
-    
+
     // initialize to what would have been the calculation of the i=1 term.
     // This saves a number of "mul by one" ops.
     double eixp = eix;
     double li1  = eix;
-    double li2  = eix; 
+    double li2  = eix;
     double li3  = eix;
     double li4  = eix;
 
@@ -170,7 +165,7 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
         eixp *= eix;
         double eixr_ip2 = eixp * ip2_inv;
 
-        
+
         double const r10 = eixr_ip0;
         double const r11 = eixr_ip1;
         double const r12 = eixr_ip2;
@@ -199,7 +194,7 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
     double const poly = -coeff * (xsqrd * x * li1 +
                                   3 * xsqrd * li2 +
                                   6.0 * (x * li3 + li4));
-    
+
     Ensure (poly <= 0.0);
     return poly;
 }
@@ -207,9 +202,9 @@ static double polylog_series_minus_one_planck(double const x, double const eix)
 static double Planck2Rosseland(double const freq, double const exp_freq)
 {
     Check(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
-    
+
     double const freq_3 = freq*freq*freq;
-    
+
     double factor;
 
     if (freq > 1.0e-5)
@@ -224,7 +219,7 @@ static double Planck2Rosseland(double const freq, double const exp_freq)
 
 namespace rtt_cdi
 {
-    
+
 //===========================================================================//
 /*!
  * \class CDI
@@ -243,7 +238,7 @@ namespace rtt_cdi
  * that mixture has been defined in the underlying data tables.  However, CDI
  * will not mix data table entries to create a new material.  This type of
  * mixing should be done by a seperate package or the client code.
- * 
+ *
  * Since this header file does not include the definitions for GrayOpacity or
  * MultigroupOpacity, the calling routine must include these header files.  If
  * the calling routine does not make use of one of these classes then it's
@@ -261,7 +256,7 @@ namespace rtt_cdi
  * Including CDI.hh in the client file will automatically include all of the
  * pertinent cdi headers and definitions (rtt_cdi::GrayOpacity,
  * rtt_cdi::MultigroupOpacity, EoS, rtt_cdi::Model, rtt_cdi::Reaction).
- * 
+ *
  * CDI also contains static services that allow a client to integrate the
  * (normalized) Planckian and Rosseland (\f$ \partial B/\partial T \f$)
  * integrals.  The overloaded functions that perform these services are:
@@ -273,7 +268,7 @@ namespace rtt_cdi
  *
  * \arg integrateRosselandSpectrum(double const lowf, double const hif,
  * double T);
- * 
+ *
  * \arg integrate_Rosseland_Planckian_Spectrum(double const lowf, const
  * double hif, double const T, double& PL, double& ROSL);
  *
@@ -282,7 +277,7 @@ namespace rtt_cdi
  * \arg integratePlanckSpectrum(double const T);
  *
  * \arg integrateRosselandSpectrum(int const groupIndex,  double const T);
- * 
+ *
  * \arg integrate_Rosseland_Planckian_Spectrum(int const groupIndex, const
  * double T, double& PL, double& ROSL);
  *
@@ -310,18 +305,18 @@ namespace rtt_cdi
  *    b(x) = \frac{15}{\pi^4} \frac{x^3}{e^x - 1}
  * \f]
  *
- * where 
- * 
+ * where
+ *
  * \f[
  *    x = \frac{h\nu}{kT}
  * \f]
  *
- * and 
+ * and
  *
- * \f[ 
+ * \f[
  *    B(\nu,T)d\nu = \frac{acT^4}{4\pi} b(x)dx
  * \f]
- * 
+ *
  * where \f$B(\nu,T)\f$ is the Plankian and is defined
  *
  * \f[
@@ -346,7 +341,7 @@ namespace rtt_cdi
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
  * \f[
- *      \int_{\nu_{low}}^{\nu_{high}} B(\nu,T) d\nu 
+ *      \int_{\nu_{low}}^{\nu_{high}} B(\nu,T) d\nu
  * \f]
  * then you must multiply by a factor of \f$\frac{acT^4}{4\pi}\f$ where a is
  * the radiation constant.  If you want to evaluate expressions like the
@@ -374,11 +369,11 @@ namespace rtt_cdi
  * \f[
  *    r(x) = \frac{15}{4\pi^4} \frac{x^4 e^x}{(e^x - 1)^2}
  * \f]
- * where 
+ * where
  * \f[
  *    x = \frac{h\nu}{kT}
  * \f]
- * and 
+ * and
  * \f[
  *    R(\nu, T)d\nu = \frac{4 acT^3}{4\pi}r(x)dx
  * \f]
@@ -411,7 +406,7 @@ namespace rtt_cdi
  * \f]
  * Therefore our Rosslenad group integration function can simply wrap the
  * Planckian function integratePlanckSpectrum(lowFreq, highFreq, T)
- * 
+ *
  * The user is responsible for applying the appropriate constants to the
  * result of this integration.  For example, to make the result of this
  * integration equivalent to
@@ -443,7 +438,7 @@ namespace rtt_cdi
  */
 //===========================================================================//
 
-class DLL_PUBLIC CDI 
+class DLL_PUBLIC CDI
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef rtt_dsxx::SP<const GrayOpacity>       SP_GrayOpacity;
@@ -457,9 +452,9 @@ class DLL_PUBLIC CDI
     typedef std::vector<SP_OdfmgOpacity>          SF_OdfmgOpacity;
     typedef std::vector<SF_OdfmgOpacity>          VF_OdfmgOpacity;
     typedef std::string                           std_string;
-    
+
     // DATA
-        
+
     /*!
      * \brief Array that stores the matrix of possible GrayOpacity types.
      *
@@ -472,17 +467,17 @@ class DLL_PUBLIC CDI
      *
      */
     VF_GrayOpacity grayOpacities;
-        
+
     /*!
      * \brief Array that stores the list of possible MultigroupOpacity types.
      *
      * multigroupOpacities contains a list of smart pointers to
      * MultigroupOpacity objects for different rtt_cdi::Reaction types.  It
      * is indexed [0,num_Models-1][0,num_Reactions-1].  It is accessed by
-     * [rtt_cdi::Model][rtt_cdi::Reaction]. 
+     * [rtt_cdi::Model][rtt_cdi::Reaction].
      */
     VF_MultigroupOpacity multigroupOpacities;
-        
+
     /*!
      * \brief Array that stores the list of possible OdfmgOpacity types.
      *
@@ -494,7 +489,7 @@ class DLL_PUBLIC CDI
      *
      * This is a static vector that contains the frequency boundaries for
      * multigroup data sets.  The number of frequency (energy) groups is the
-     * size of the vector minus one.  
+     * size of the vector minus one.
      *
      * This data is stored as static so that the same structure is guaranteed
      * for all multigroup data sets.  Thus, each CDI object will have access
@@ -512,14 +507,14 @@ class DLL_PUBLIC CDI
      *
      */
     static std::vector<double> opacityCdfBandBoundaries;
-        
+
     /*!
      * \brief Smart pointer to the equation of state object.
      *
      * spEoS is a smart pointer that links a CDI object to an equation of
      * state object (any type of EoS - EOSPAC, Analytic, etc.).  The pointer
      * is established in the CDI constructor.
-     */      
+     */
     SP_EoS spEoS;
 
     //! Material ID.
@@ -531,7 +526,7 @@ class DLL_PUBLIC CDI
     //! Integrate the normalized Planckian from 0 to x (hnu/kT).
     inline static double integrate_planck(
         double const scaled_frequency);
-    
+
     inline static double integrate_planck(
         double const scaled_frequency,
         double const exp_scaled_freqeuency);
@@ -542,12 +537,12 @@ class DLL_PUBLIC CDI
         double const exp_scaled_frequency,
         double& planck,
         double& rosseland);
-    
+
   public:
-        
+
     // CONSTRUCTORS
     // ------------
-        
+
     CDI(const std_string &id = std_string());
     virtual ~CDI();
 
@@ -562,7 +557,7 @@ class DLL_PUBLIC CDI
 
     //! Register an ODF Multigroup opacity (rtt_cdi::OdfmgOpacity) with CDI.
     void setOdfmgOpacity(const SP_OdfmgOpacity &spMGOp);
-         
+
     //! Register an EOS (rtt_cdi::Eos) with CDI.
     void setEoS(const SP_EoS &in_spEoS);
 
@@ -571,7 +566,7 @@ class DLL_PUBLIC CDI
 
     // GETTERS
     // -------
-        
+
     SP_GrayOpacity       gray (rtt_cdi::Model m, rtt_cdi::Reaction r) const;
     SP_MultigroupOpacity mg   (rtt_cdi::Model m, rtt_cdi::Reaction r) const;
     SP_OdfmgOpacity      odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
@@ -596,7 +591,7 @@ class DLL_PUBLIC CDI
         std::vector<double> const & groupBounds,
         std::vector<double> const & opacity,
         std::vector<double> const & rosselendSpectrum );
-    
+
     //! Collapse Multigroup+Multiband data to single-interval data with Planck weighting.
     static double collapseOdfmgOpacitiesPlanck(
         std::vector<double> const & groupBounds,
@@ -619,7 +614,7 @@ class DLL_PUBLIC CDI
         std::vector<std::vector<double> > const & opacity,
         std::vector<double> const & rosselendSpectrum,
         std::vector<double> const & bandWidths );
-    
+
     //! Return material ID string.
     const std_string& getMatID() const { return matID; }
 
@@ -645,21 +640,21 @@ class DLL_PUBLIC CDI
     //! Integrate the normalized Planckian over a frequency range.
     static double integratePlanckSpectrum(
         double const lowf,
-        double const hif, 
-        double const T); 
-    
-    //! Integrate the normalized Rosseland over a frequency range.  
+        double const hif,
+        double const T);
+
+    //! Integrate the normalized Rosseland over a frequency range.
     static double integrateRosselandSpectrum(
         double const lowf,
-        double const hif, 
+        double const hif,
         double const T);
 
     //! Integrate the Planckian and Rosseland over a frequency range.
     static void integrate_Rosseland_Planckian_Spectrum(
         double const   lowf,
         double const   hif,
-        double const   T, 
-        double       & planck, 
+        double const   T,
+        double       & planck,
         double       & rosseland);
 
     // Over a specific group:
@@ -672,7 +667,7 @@ class DLL_PUBLIC CDI
 
     //! Integrate the normalized Rosseland spectrum over a frequency group
     static double integrateRosselandSpectrum(
-        size_t const groupIndex, 
+        size_t const groupIndex,
         double const T);
 
     //! Integrate the Planckian and Rosseland over a frequency group.
@@ -684,13 +679,13 @@ class DLL_PUBLIC CDI
 
     // Over the entire group spectrum:
     // ------------------------------
-    
+
     //! Integrate the normalized Planckian spectrum over all frequency groups.
     static double integratePlanckSpectrum(double const T);
-    
+
     // Over a provided vector of frequency bounds at once:
     // --------------------------------------------------
-    
+
     //! Integrate the Planckian over all frequency groups
     static void integrate_Planckian_Spectrum(
         std::vector<double> const & bounds,
@@ -715,7 +710,7 @@ class DLL_PUBLIC CDI
  * (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq upper integration limit, scaled by the temperature.
- * 
+ *
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  */
 double CDI::integrate_planck(double const scaled_freq)
@@ -730,7 +725,7 @@ double CDI::integrate_planck(double const scaled_freq)
  * (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq upper integration limit, scaled by the temperature.
- * 
+ *
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
  *
  */
@@ -765,10 +760,10 @@ void CDI::integrate_planck_rosseland(double const scaled_freq,
 {
     Require(scaled_freq >= 0.0);
     Require(rtt_dsxx::soft_equiv(exp_scaled_freq, std::exp(-scaled_freq)));
-    
-    // Calculate the Planckian integral 
+
+    // Calculate the Planckian integral
     planck = integrate_planck(scaled_freq);
-    
+
     Require (planck >= 0.0);
     Require (planck <= 1.0);
 
@@ -781,12 +776,8 @@ void CDI::integrate_planck_rosseland(double const scaled_freq,
 
     return;
 }
-    
-} // end namespace rtt_cdi
 
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
+} // end namespace rtt_cdi
 
 #endif // rtt_cdi_CDI_hh
 

@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   parser/Parse_Table.hh
  * \author Kent G. Budge
  * \brief  Definition of Keyword and Parse_Table.
@@ -17,15 +17,10 @@
 #include <cstring> // strcmp
 #include <vector>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'std::_Vector_val<_Ty,_Alloc>::_Alval' : class 'std::allocator<_Ty>' needs to have dll-interface to be used by clients of class 'std::_Vector_val<_Ty,_Alloc>'
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Structure to describe a parser keyword.
  *
  * A Keyword describes a keyword in a Parse_Table.  It is a POD struct so that
@@ -34,7 +29,7 @@ namespace rtt_parser
  *
  * \code
  *   Keyword my_table[] = {{"FIRST",  Parse_First,  0, "TestModule"},
- *                         {"SECOND", Parse_Second, 0, "TestModule"}}; 
+ *                         {"SECOND", Parse_Second, 0, "TestModule"}};
  * \endcode
  *
  * As a POD struct, Keyword can have no invariants.  However, Parse_Table
@@ -53,8 +48,8 @@ struct Keyword
      * monikers in its Keyword table according to a set of rules stored in the
      * Parse_Table (q.v.)
      */
-    char const *moniker;  
-    
+    char const *moniker;
+
     /*! \brief The keyword parsing function.
      *
      * When a Parse_Table finds a match to a moniker in its keyword table, the
@@ -65,13 +60,13 @@ struct Keyword
      *
      * \param stream
      * The token stream currently being parsed.
-     * 
+     *
      * \param index
      * An integer argument that optionally allows a single parse function to
-     * handle a set of related keywords. The 
+     * handle a set of related keywords. The
      */
     void (*func)(Token_Stream &stream, int index);
-    
+
     /*! \brief The index argument to the parse function.
      *
      * This is the index value that is passed to the parse function when the
@@ -82,8 +77,8 @@ struct Keyword
      * enumerated or Boolean option may be set using a single parse function
      * that simply copies the index argument to the option variable.
      */
-    int index;  
-    
+    int index;
+
     /*! Name of the module that supplied the keyword.
      *
      * This member is significant only if certain options are set in the
@@ -95,18 +90,18 @@ struct Keyword
      * clashes, where two modules have registered keywords with the same
      * moniker in the same Parse_Table.
      */
-    char const *module;  
-}; 
+    char const *module;
+};
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Simple keyword-matching parse table
  *
  * A Parse_Table is a table of keywords and associated parsing functions.
- * It accepts tokens from a Token_Stream, matching the keywords in the 
+ * It accepts tokens from a Token_Stream, matching the keywords in the
  * Token_Stream to its table and dispatching control to the corresponding
  * parsing functions.  The parsing functions can take additional
- * tokens, such as parameter values, from the Token_Stream prior to 
+ * tokens, such as parameter values, from the Token_Stream prior to
  * returning control to the Parse_Table.
  *
  * How a Parse_Table determines whether an input keyword token matches a
@@ -118,18 +113,18 @@ struct Keyword
  * identifier.  These options are described in more detail in connection with
  * the Set_Flags member function and the Keyword_Compare member functions.
  *
- * When the Parse_Table fails to match an input keyword to its keyword 
+ * When the Parse_Table fails to match an input keyword to its keyword
  * table, or when the input token is not a keyword, END, EXIT,
  * or ERROR, the parse table reports an error, then attempts recovery
  * by reading additional tokens until it encounters either a keyword
  * it recognizes or an END, EXIT, or ERROR.  During this recovery, no
  * additional errors are reported, to avoid swamping the user with
  * additional messages that are unlikely to be helpful.  If recovery
- * is successful (a keyword is recognized in the token stream) parsing 
+ * is successful (a keyword is recognized in the token stream) parsing
  * resumes as normal.
  *
  * User parse routines may also encounter errors.  These may be reported
- * to the Token_Stream through either the Report_Syntax_Error or 
+ * to the Token_Stream through either the Report_Syntax_Error or
  * Report_Semantic_Error functions.  The former is used when there is
  * an error in the input syntax, as when a keyword is encountered when
  * a numerical value is expected.  In this case, an exception is thrown
@@ -165,7 +160,7 @@ class DLL_PUBLIC Parse_Table
     };
 
     // CREATORS
-    
+
     //! Create an empty Parse_Table.
     Parse_Table(void) : vec(0), flags_(0) {/* empty */}
 
@@ -207,34 +202,34 @@ class DLL_PUBLIC Parse_Table
 
     //! Check the class invariants
     bool check_class_invariants() const;
-    
+
   private:
 
-    
+
     // TYPEDEFS AND ENUMERATIONS
 
     //-----------------------------------------------------------------------//
-    /*! 
+    /*!
      * \brief Ordering functor for Keyword
      *
      * Provides an ordering for Keyword compatible with STL sort and search
      * routines.
      */
-    
-    class Keyword_Compare_ 
+
+    class Keyword_Compare_
     {
       public:
 	Keyword_Compare_(unsigned char flags);
-	
+
 	bool operator()( Keyword const &k1, Keyword const &k2 ) const;
-	
+
 	bool operator()( Keyword const &keyword, Token const &token  ) const;
 
 	int kk_comparison(char const *, char const *) const;
 	int kt_comparison(char const *, char const *) const;
-	
+
       private:
-        
+
 	unsigned char flags_;
     };
 
@@ -250,7 +245,7 @@ class DLL_PUBLIC Parse_Table
 };
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Test equality of Keywords
  *
  * Tests equality of two Keyword structs. Note that this is strict equality,
@@ -271,12 +266,12 @@ class DLL_PUBLIC Parse_Table
 
 inline bool operator==(Keyword const &a, Keyword const &b)
 {
-    return 
+    return
         strcmp( a.moniker, b.moniker ) == 0 &&
         a.func  == b.func                   &&
         a.index == b.index                  &&
         strcmp( a.module, b.module ) == 0;
-}    
+}
 
 //---------------------------------------------------------------------------//
 //! Check whether a keyword is well-formed.
@@ -285,12 +280,8 @@ DLL_PUBLIC bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // rtt_parser
 
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
-
 #endif  // CCS4_Parse_Table_HH
+
 //---------------------------------------------------------------------------//
 // end of Parse_Table.hh
 //---------------------------------------------------------------------------//
-

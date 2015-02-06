@@ -17,14 +17,9 @@
 #include "ds++/SP.hh"
 #include <vector>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Parallel_File_Token_Stream::filename_' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_parser::Parallel_File_Token_Stream'
-#endif
-
 // FORWARD REFERENCES
 
-namespace rtt_timestep 
+namespace rtt_timestep
 {
 class ts_manager;
 class field_ts_advisor;
@@ -42,7 +37,7 @@ namespace rtt_timestep_test
  */
 //===========================================================================//
 
-class DLL_PUBLIC dummy_package 
+class DLL_PUBLIC dummy_package
 {
   public:
 
@@ -52,7 +47,7 @@ class DLL_PUBLIC dummy_package
     ~dummy_package(void);
 
     // MANIPULATORS
-    
+
     //! \brief Method to advance the time-step
     void advance_state(void);
 
@@ -64,10 +59,10 @@ class DLL_PUBLIC dummy_package
 
     //! \brief Provide recommended dt values (RI).
     double get_dt_rec_ri(void) const;
-    
+
   private:
 
-    std::vector< double > element_wise_multiply( 
+    std::vector< double > element_wise_multiply(
 	double const a,
 	std::vector< double > const & v );
 
@@ -76,14 +71,10 @@ class DLL_PUBLIC dummy_package
     rtt_timestep::ts_manager & tsm;
     rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_te;
     rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_ti;
-    rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_ri; 
+    rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_ri;
 };
 
 } // end namespace rtt_timestep_test
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __timestep_test_dummy_package_hh__
 

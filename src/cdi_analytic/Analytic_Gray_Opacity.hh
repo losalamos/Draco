@@ -22,14 +22,9 @@
 #include <vector>
 #include <string>
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
- 
+
 //===========================================================================//
 /*!
  * \class Analytic_Gray_Opacity
@@ -69,7 +64,7 @@ namespace rtt_cdi_analytic
 // -----------------
 // 0) original
 // 1) 06-MAR-03 : added model specification; default is still ANALYTIC
-// 
+//
 //===========================================================================//
 
 class DLL_PUBLIC Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
@@ -77,11 +72,11 @@ class DLL_PUBLIC Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
   public:
     // Useful typedefs.
     typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_SP_Model; 
+    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_SP_Model;
     typedef std::vector<double>                        sf_double;
     typedef std::string                                std_string;
     typedef std::vector<char>                          sf_char;
-    
+
   private:
     // Analytic opacity model.
     SP_Analytic_Model analytic_model;
@@ -91,10 +86,10 @@ class DLL_PUBLIC Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 
     // CDI model.
     rtt_cdi::Model model;
-    
+
   public:
     // Constructor.
-    Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction, 
+    Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction,
 			  rtt_cdi::Model = rtt_cdi::ANALYTIC);
 
     // Constructor for packed Analytic_Gray_Opacities.
@@ -162,10 +157,10 @@ class DLL_PUBLIC Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return the energy policy descriptor (gray for
- * Analytic_Gray_Opacity). 
+ * Analytic_Gray_Opacity).
  */
-Analytic_Gray_Opacity::std_string 
-Analytic_Gray_Opacity::getEnergyPolicyDescriptor() const 
+Analytic_Gray_Opacity::std_string
+Analytic_Gray_Opacity::getEnergyPolicyDescriptor() const
 {
     return std_string("gray");
 }
@@ -196,16 +191,12 @@ Analytic_Gray_Opacity::getDataDescriptor() const
  * \brief Return NULL string for the data filename.
  */
 Analytic_Gray_Opacity::std_string
-Analytic_Gray_Opacity::getDataFilename() const 
+Analytic_Gray_Opacity::getDataFilename() const
 {
     return std_string();
 }
 
 } // end namespace rtt_cdi_analytic
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __cdi_analytic_Analytic_Gray_Opacity_hh__
 

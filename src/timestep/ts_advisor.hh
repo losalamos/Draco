@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   timestep/ts_advisor.hh
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
@@ -19,27 +19,22 @@
 #include <iostream>
 #include "ds++/config.h"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_timestep::ts_manager::controlling_advisor' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_timestep::ts_manager'
-#endif
-
 namespace rtt_timestep
 {
 
 // FORWARD REFERENCES
 
-class ts_manager; 
+class ts_manager;
 
 //===========================================================================//
-/*! 
+/*!
  * \brief Defines the base class time-step advisor.
  *
  * \sa The ts_manager class provides a means to manage this advisor.
  * The \ref timestep_overview page gives a summary of the Draco time
- * step control utilities. 
+ * step control utilities.
  */
-// 
+//
 //===========================================================================//
 class DLL_PUBLIC ts_advisor
 {
@@ -48,8 +43,8 @@ class DLL_PUBLIC ts_advisor
 
   public:
 
-    //! Flag to determine how the recommended timestep is to be used. 
-    /*! The recommended value "dt_rec" is to be used as indicated by 
+    //! Flag to determine how the recommended timestep is to be used.
+    /*! The recommended value "dt_rec" is to be used as indicated by
      *  the enumeration value selected
      */
     enum usage_flag
@@ -65,7 +60,7 @@ class DLL_PUBLIC ts_advisor
   private:
 
     std::string name;                 //!< ID string
-    usage_flag  usage;                //!< how to use dt_rec 
+    usage_flag  usage;                //!< how to use dt_rec
     bool        active;               //!< on-off switch
 
 // STATIC CLASS METHODS
@@ -73,25 +68,25 @@ class DLL_PUBLIC ts_advisor
   public:
 
     //! Returns a number close to machine precision
-    static double eps() 
+    static double eps()
     {
-        return 100.*std::numeric_limits<double>::epsilon(); 
+        return 100.*std::numeric_limits<double>::epsilon();
     }
 
     //! Returns a small number
-    static double ts_small() 
+    static double ts_small()
     {
-        return 100.*std::numeric_limits<double>::min(); 
+        return 100.*std::numeric_limits<double>::min();
     }
 
     //! Returns a large number
-    static double large() 
+    static double large()
     {
-        return 0.01*std::numeric_limits<double>::max(); 
+        return 0.01*std::numeric_limits<double>::max();
     }
 
     //! Returns the name of the usage flag requested
-    static std::string usage_flag_name(const int i) 
+    static std::string usage_flag_name(const int i)
     {
 	static const std::string usage_flag_names [last_usage] =
             {	"minimum",
@@ -106,7 +101,7 @@ class DLL_PUBLIC ts_advisor
     //! Constucts the advisor
     /*! \param name the name of the advisor
      *  \param usage_ Specifies how the advisor is to be used
-     *  \param active_ turns the advisor on/off 
+     *  \param active_ turns the advisor on/off
      */
     ts_advisor(const std::string &name_  = std::string("Unlabeled"),
                const usage_flag usage_   = max,
@@ -145,12 +140,12 @@ class DLL_PUBLIC ts_advisor
 
     //! Get the name
     const std::string &get_name() const { return name; }
-    
+
     //! Vomit the entire internal state of the advisor to std out
     virtual void print_state( std::ostream &out = std::cout ) const = 0;
 
     //! Invariant function
-    /*! \return True if the invariant is satisfied. 
+    /*! \return True if the invariant is satisfied.
      */
     virtual bool invariant_satisfied() const
     {
@@ -161,18 +156,14 @@ class DLL_PUBLIC ts_advisor
 
     //! Print out advisor data
     /*! \param tsm the timestep manager in which the advisor resides
-     *  \param controlling flags the advisor as the controlling advisor 
+     *  \param controlling flags the advisor as the controlling advisor
      */
-    virtual void print(const ts_manager &tsm, 
+    virtual void print(const ts_manager &tsm,
 		       const bool controlling = false) const;
 
 };
 
 } // end of rtt_timestep namespace
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __timestep_ts_advisor_hh__
 

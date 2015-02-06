@@ -17,11 +17,6 @@
 #include "Analytic_Models.hh"
 #include "Analytic_MultigroupOpacity.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 
-#endif
-
 namespace rtt_cdi_analytic
 {
 
@@ -70,7 +65,7 @@ namespace rtt_cdi_analytic
  *
  * Example usage of nGray_Analytic_MultigroupOpacity, Analytic_Opacity_Model,
  * and their incorporation into rtt_cdi::CDI.
- */ 
+ */
 //===========================================================================//
 
 class DLL_PUBLIC nGray_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity
@@ -78,20 +73,20 @@ class DLL_PUBLIC nGray_Analytic_MultigroupOpacity : public Analytic_MultigroupOp
   public:
     // Useful typedefs.
     typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model; 
+    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
     typedef std::vector<SP_Analytic_Model>             sf_Analytic_Model;
     typedef std::vector<double>                        sf_double;
     typedef std::vector<sf_double>                     vf_double;
     typedef std::string                                std_string;
     typedef std::vector<char>                          sf_char;
-    
+
   private:
     // Analytic models for each group.
     sf_Analytic_Model group_models;
 
   public:
     // Constructor.
-    nGray_Analytic_MultigroupOpacity(const sf_double         & groups, 
+    nGray_Analytic_MultigroupOpacity(const sf_double         & groups,
                                      const sf_Analytic_Model & models,
                                      rtt_cdi::Reaction         reaction_in,
                                      rtt_cdi::Model            model_in = rtt_cdi::ANALYTIC);
@@ -132,7 +127,7 @@ nGray_Analytic_MultigroupOpacity::getDataDescriptor() const
     std_string descriptor;
 
     rtt_cdi::Reaction const reaction = getReactionType();
-    
+
     if (reaction == rtt_cdi::TOTAL)
 	descriptor = "nGray Multigroup Total";
     else if (reaction == rtt_cdi::ABSORPTION)
@@ -142,7 +137,7 @@ nGray_Analytic_MultigroupOpacity::getDataDescriptor() const
     else
     {
 	Insist( reaction == rtt_cdi::TOTAL      ||
-                reaction == rtt_cdi::ABSORPTION || 
+                reaction == rtt_cdi::ABSORPTION ||
                 reaction == rtt_cdi::SCATTERING,
                 "Invalid nGray multigroup model opacity!");
     }
@@ -150,11 +145,7 @@ nGray_Analytic_MultigroupOpacity::getDataDescriptor() const
     return descriptor;
 }
 
-} // end namespace 
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
+} // end namespace
 
 #endif // __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
 

@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   parser/String_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class String_Token_Stream.
@@ -16,18 +16,13 @@
 #include <fstream>
 #include "Text_Token_Stream.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Abstract_Class_Parser_Base::keys_' : class 'rtt_parser::Abstract_Class_Parser_Base::c_string_vector' needs to have dll-interface to be used by clients of class 'rtt_parser::Abstract_Class_Parser_Base'
-#endif
-
-namespace rtt_parser 
+namespace rtt_parser
 {
 using std::string;
 using std::set;
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief std::string-based token stream
  *
  * String_Token_Stream is a Text_Token_Stream that obtains its text from a
@@ -67,12 +62,12 @@ class DLL_PUBLIC String_Token_Stream : public Text_Token_Stream
 
     //! Check the class invariant.
     bool check_class_invariants() const;
-    
+
   protected:
 
     //! Generate a locator string.
     virtual string location_() const;
-    
+
     virtual void fill_character_buffer_();
 
     virtual bool error_() const;
@@ -92,11 +87,8 @@ class DLL_PUBLIC String_Token_Stream : public Text_Token_Stream
 
 } // rtt_parser
 
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
-
 #endif  // CCS4_String_Token_Stream_HH
+
 //---------------------------------------------------------------------------//
 // end of String_Token_Stream.hh
 //---------------------------------------------------------------------------//

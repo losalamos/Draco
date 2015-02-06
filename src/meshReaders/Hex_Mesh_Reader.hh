@@ -19,11 +19,6 @@
 #include "mesh_element/Element_Definition.hh"
 #include "Mesh_Reader.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_meshReaders::Hex_Mesh_Reader::meshfile_name' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_meshReaders::Hex_Mesh_Reader'
-#endif
-
 namespace rtt_meshReaders
 {
 
@@ -35,15 +30,15 @@ namespace rtt_meshReaders
  *
  * \sa The rtt_mesh_element::Element_Definition class provides
  *     information on the hex, quad, and line elements used in
- *     this class. The \ref rtt_meshreaders_overview page provides 
- *     an overview of the other utilities in the rtt_meshReaders 
+ *     this class. The \ref rtt_meshreaders_overview page provides
+ *     an overview of the other utilities in the rtt_meshReaders
  *     namespace. the \ref rtt_meshreaders_hexformat page provides
  *     a description of the Hex file format.
  */
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //===========================================================================//
 
 class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
@@ -75,18 +70,18 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     std::vector<std::vector<int> > ipar_rb;
 
     std::map<std::string, std::set<int> > node_sets;
-    
+
   public:
 
     // CREATORS
-    
+
     explicit Hex_Mesh_Reader( std::string filename );
 
     // Defaulted Hex_Mesh_Reader(const Hex_Mesh_Reader &rhs);
     // Defaulted ~Hex_Mesh_Reader();
 
     // MANIPULATORS
-    
+
     // Defaulted Hex_Mesh_Reader& operator=(const Hex_Mesh_Reader &rhs);
 
     // ACCESSORS
@@ -98,7 +93,7 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
     {
         return point_coords;
     }
-    
+
     /*!
      * The Hex mesh format has no provision for labeling coordinate units
      * Consequently, this method always returns the default string:
@@ -120,7 +115,7 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
         return node_sets;
     }
 
-    /*! 
+    /*!
      * There is no provision in the Hex format for naming a mesh.
      * This function always returns the defualt string:
      * "Untitled -- CIC-19 Hex Mesh"
@@ -144,19 +139,15 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
         get_unique_element_types() const;
 
     size_t get_dims_ndim() const {return ndim;};
-    
+
   private:
-    
+
     bool check_dims() const;
-    
+
     // IMPLEMENTATION
 };
 
 } // end namespace rtt_meshReaders
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __meshReaders_Hex_Mesh_Reader_hh__
 
@@ -169,21 +160,21 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  * A Hex mesh format
  * file is usually only a few hundred lines long, and is in ASCII text
  * format that can easily be directly modified by the developer with any
- * text editor. Moreover, the format does not requires a sophisticated 
+ * text editor. Moreover, the format does not requires a sophisticated
  * mesh generator. These
  * characteristics make the Hex format very useful for the creation and
- * manipulation of small, simple test problems in  support of an initial 
+ * manipulation of small, simple test problems in  support of an initial
  * debugging and development effort.
  *
  * The format is restricted to three element types: Line elements in
  * 1D, quadrilateral elements in 2D, and hexahedra in 3D. One flag
  * field is provided for interior elements, and one for non-reflective
  * boundary elements. Reflective boundary elements are listed separately.
- * 
- * Support for reading this file format is provided by the 
+ *
+ * Support for reading this file format is provided by the
  * rtt_meshReaders::Hex_Mesh_Reader class.
 
- * <h3> Format Details </h3> 
+ * <h3> Format Details </h3>
  * Node and element numbering is one-based on the
  * file. The format is as follows:
  * <ul>
@@ -199,15 +190,15 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  *   the number of vacuum boundary faces. nrb_faces is the number of
  *   reflective boundary faces. nmat is the number of unique flag values
  *   assigned to interior cells.
- * <li> Next npoints lines -- (x,y,z)mesh point coordinates, ndim real numbers 
+ * <li> Next npoints lines -- (x,y,z)mesh point coordinates, ndim real numbers
  *      on each line.
  * <li> Next ncells lines -- cell vertex numbers. These
- *      numbers refer to the point coordinates line numbers 
+ *      numbers refer to the point coordinates line numbers
  *      in the previous section. Vertex labeling follows
- *      the conventions detailed in 
+ *      the conventions detailed in
  *      rtt_meshReaders::Element_Definition::BAR_2,
- *      rtt_meshReaders::Element_Definition::QUAD_4, 
- *      and rtt_meshReaders::Element_Definition::HEXA_8 
+ *      rtt_meshReaders::Element_Definition::QUAD_4,
+ *      and rtt_meshReaders::Element_Definition::HEXA_8
  *      There are nvrtx integers on each line.
  * <li> Next ncells/10 (+1?) lines -- Interior cell flag data. An integer
  *      flag to be associated with each interior cell. 10 integers on
@@ -217,22 +208,19 @@ class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
  * <li> Next nrb_faces lines -- reflective boundary face vertex numbers.
  *      nvrpf+1 integers per line.
  *</ul>
- * 
+ *
  * The  "cube.mesh.in" file found in the Examples section provides
  * an example CIC-19 Hex format mesh file.
  *
  */
 
-/*! 
+/*!
  * \example meshReaders/test/cube.mesh.in
- *
  *
  *   The following provides an example of a 3D, 5x5x5 hexahedra CIC-19
  *   Hex mesh format file. The mesh has 125 cells, 125 vacuum boundary
  *   faces, 25 reflective boundary faces, and four cell flag values.
- *
  */
-        
 
 //---------------------------------------------------------------------------//
 // end of meshReaders/Hex_Mesh_Reader.hh
