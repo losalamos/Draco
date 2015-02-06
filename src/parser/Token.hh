@@ -16,6 +16,10 @@
 #include <string>
 #include "ds++/Assert.hh"
 
+#if defined(MSVC)
+#   undef ERROR
+#endif
+
 namespace rtt_parser
 {
 using std::string;
