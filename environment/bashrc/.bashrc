@@ -213,7 +213,7 @@ c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     ;;
 
 # Moonlight | Mustang | Luna | Typhoon
-mp* | ml* | mu* | pi* | wf* | ly* | ty* )
+mp* | ml* | mu* | pi* | wf* | lu* | ty* )
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_toss22
     ;;
 
