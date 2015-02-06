@@ -225,7 +225,9 @@ macro( save_vendor_imported_library_to_draco_config targets target_properties )
   foreach( tgt ${targets} )
     # The target's TYPE may not be set correctly, set it manually.
     get_target_property( fplib ${tgt} IMPORTED_LOCATION )
-    if( "${fplib}" MATCHES "${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+    if( "${fplib}" MATCHES "[.]so$"  OR
+        "${fplib}" MATCHES "[.]dll$" OR
+        "${fplib}" MATCHES "[.]dylib$" )
       set( library_type SHARED )
     else()
       set( library_type STATIC )
