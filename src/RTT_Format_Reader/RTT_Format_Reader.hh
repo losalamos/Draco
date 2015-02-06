@@ -31,11 +31,6 @@
 #include "SideData.hh"
 #include "CellData.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) // warning C4251: 'rtt_parser::Abstract_Class_Parser_Base::keys_' : class 'rtt_parser::Abstract_Class_Parser_Base::c_string_vector' needs to have dll-interface to be used by clients of class 'rtt_parser::Abstract_Class_Parser_Base'
-#endif
-
 namespace rtt_RTT_Format_Reader
 {
 //===========================================================================//
@@ -739,10 +734,6 @@ class DLL_PUBLIC RTT_Format_Reader
 };
 
 } // end namespace rtt_RTT_Format_Reader
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // __RTT_Format_Reader_RTT_Format_Reader_hh__
 

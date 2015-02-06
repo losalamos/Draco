@@ -409,14 +409,14 @@ void SP<T>::free()
     // if the count goes to zero then we free the data
     if (r_ && --r_->refs == 0)
     {
-	delete p_;
-	delete r_;
+        delete p_;
+        delete r_;
     }
 }
 
 } // end namespace rtt_dsxx
 
-#endif                          // RTT_ds_SP_HH
+#endif // RTT_ds_SP_HH
 
 //---------------------------------------------------------------------------//
 // end of ds++/SP.hh

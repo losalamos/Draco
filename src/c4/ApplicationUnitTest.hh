@@ -21,11 +21,6 @@
 #include "ds++/UnitTest.hh"
 #include "Timer.hh"
 
-#if defined(MSVC)
-#   pragma warning (push)
-#   pragma warning (disable:4251) //  warning C4251: 'rtt_c4::ApplicationUnitTest::applicationName' : class 'std::basic_string<_Elem,_Traits,_Ax>' needs to have dll-interface to be used by clients of class 'rtt_c4::ApplicationUnitTest'
-#endif
-
 namespace rtt_c4
 {
 
@@ -196,10 +191,6 @@ class DLL_PUBLIC ApplicationUnitTest : public rtt_dsxx::UnitTest
 };
 
 } // end namespace rtt_c4
-
-#if defined(MSVC)
-#   pragma warning (pop)
-#endif
 
 #endif // c4_ApplicationUnitTest_hh
 

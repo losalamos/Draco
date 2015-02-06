@@ -270,6 +270,7 @@
 #endif
 
 /* Windows ---------------------------------------- */
+/* An explanation of DLL_EXTERN is here: http://support.microsoft.com/kb/168958/en-us */
 #if defined _WIN32 || defined __CYGWIN__
   #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
     #ifdef BUILDING_DLL /* building dll or importing symbols? */
@@ -278,6 +279,7 @@
       #else
         /* Note: actually gcc seems to also supports this syntax. */
         #define DLL_PUBLIC __declspec(dllexport)
+        #define DLL_EXTERN
       #endif /* __GNUC__ */
     #else  /* BUILDING_DLL */
       #ifdef __GNUC__
@@ -285,6 +287,7 @@
       #else
         /* Note: actually gcc seems to also supports this syntax. */
         #define DLL_PUBLIC __declspec(dllimport)
+        #define DLL_EXTERN extern
       #endif /* __GNUC__ */
     #endif  /* BUILDING_DLL */
     #define DLL_LOCAL

@@ -23,16 +23,6 @@ endif()
 include(platform_checks)
 query_openmp_availability()
 
-# OpenMP is not available in free MSVC products.
-# if( USE_OPENMP )
-#     # Platform checks for gethostname()
-#     include( CheckIncludeFiles )
-#     check_include_files( omp.h HAVE_OMP_H )
-#     if( NOT HAVE_OMP_H )
-#        set( USE_OPENMP OFF CACHE BOOL "Turn on OpenMP features?" FORCE )
-#     endif()
-# endif()
-
 # This is required to provide compatibility between MSVC and MinGW generated libraries.
 if( DRACO_SHARED_LIBS )
   set( CMAKE_GNUtoMS ON CACHE BOOL "Compatibility flag for MinGW/MSVC." FORCE)
@@ -55,15 +45,16 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS "/W2 /Gy /DWIN32 /D_WINDOWS /MP${numproc}" )
+  # /wd 4251 disable warning #4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'  
+  set( CMAKE_C_FLAGS "/W2 /Gy /DWIN32 /D_WINDOWS /MP${numproc} /wd4251" )
   set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /Ob0 /DDEBUG /D_DEBUG" )
   set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /Ob2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /Ob1 /DNDEBUG" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" )
 
-  set( CMAKE_CXX_FLAGS "/W2 /Gy /EHa /DWIN32 /D_WINDOWS /MP${numproc}" )
-  set( CMAKE_CXX_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /Ob0 /DDEBUG /D_DEBUG" )
-  set( CMAKE_CXX_FLAGS_RELEASE "/${MD_or_MT} /O2 /Ob2 /DNDEBUG" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHa" )
+  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /Ob1 /DNDEBUG" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Ob2 /Zi /DDEBUG" )
 
