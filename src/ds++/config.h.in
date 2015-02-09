@@ -38,6 +38,7 @@
 /* System Type */
 #cmakedefine MSVC @MSVC@
 #cmakedefine MSVC_IDE @MSVC_IDE@
+#cmakedefine MSVC_VERSION @MSVC_VERSION@
 #cmakedefine UNIX @UNIX@
 #cmakedefine draco_isLinux
 #cmakedefine draco_isOSF1
