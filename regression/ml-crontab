@@ -1,18 +1,6 @@
 # crontab for ml-fey
 
-# Create copy of the svn repository
-
-01 22 * * 0-6 /usr/projects/jayenne/regress/draco/regression/sync_repository.csh &> /usr/projects/jayenne/regress/logs/ml_sync_repo.log
-
-# Regressions:
-# 1. Debug   + Cuda
-# 2. Release + Cuda
-# 3. Debug
-# 4. Release
-# 5. Debug   with PGI compiler
-# 6. Release + NR (jayenne only)
-# 7. Release + perfbench (capsaicin only)
-# 8. Debug   + fulldiagnostics
+01 22 * * 0-6 /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/ml_sync_repo.log
 
 01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e cuda -p "draco jayenne" &> /usr/projects/jayenne/regress/logs/ml-Debug-cuda-master.log
 
@@ -30,13 +18,7 @@
 
 01 04 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e fulldiagnostics -p "draco jayenne capsaicin"  &> /usr/projects/jayenne/regress/logs/ml-Debug-fulldiagnostics-master.log
 
-# Summary report with disk allocation for draco, jayenne, capsaicin, scratch spaces.
-
 01 01 * * 4 /users/kellyt/bin/weekly_report.sh
-
-# User contrib montly report and archive
-
-01 00 01 * * /usr/projects/packages/user_contrib/usage_logs/bin/user_contrib_monthly_report.sh &>  /usr/projects/packages/user_contrib/usage_logs/bin/cron.log
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command
