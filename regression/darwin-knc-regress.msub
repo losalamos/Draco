@@ -2,7 +2,7 @@
 
 #SBATCH -N 1
 #SBATCH --time=480
-#SBATCH --partition=knc-mic,knc-mic-preprod
+#SBATCH --partition=knc-mic
 # https://computing.llnl.gov/linux/slurm/sbatch.html
 
 #----------------------------------------------------------------------#
