@@ -58,7 +58,6 @@ REM set GSL_ROOT_DIR=%VENDOR_DIR%\gsl-1.16
 REM set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
 REM set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
 REM set QTDIR=c:/Qt/5.3/msvc2013
-REM set SVN_SSH=c:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe
 
 :cdash
 rem set dashboard_type=Experimental
@@ -69,9 +68,9 @@ set script_dir=e:\cdash\draco\regression
 set script_name=Draco_Win32.cmake
 set ctestparts=Configure,Build,Test,Submit
 
-set subproj=draco
-
 :cdashdebug
+
+set subproj=draco
 set build_type=Debug
 set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
 
@@ -98,6 +97,8 @@ echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%cte
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log
 
 :cdashrelease
+
+set subproj=draco
 set build_type=Release
 set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
 
@@ -115,6 +116,53 @@ rem run the ctest script
 
 echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log"
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log
+
+rem --------------------------------------------------------------------------
+
+:jayennerelease
+
+set script_dir=e:\cdash\jayenne\regression
+set script_name=Jayenne_Win32.cmake
+
+set subproj=jayenne
+set build_type=Release
+set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+
+rem navigate to the workdir
+if not exist %work_dir% mkdir %work_dir%
+cd /d %work_dir%
+
+rem clear the build directory (need to do this here to avoid a hang).
+rem if exist %work_dir%\build rmdir /s /q build
+if not exist %work_dir%\build mkdir build
+if not exist %work_dir%\source mkdir source
+if not exist %work_dir%\target mkdir target
+
+rem run the ctest script
+
+echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\%subproj%-%build_type%-cbts.log"
+ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\%subproj%-%build_type%-cbts.log
+
+:jayennedebug
+
+set build_type=Debug
+set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+
+rem navigate to the workdir
+if not exist %work_dir% mkdir %work_dir%
+cd /d %work_dir%
+
+rem clear the build directory (need to do this here to avoid a hang).
+rem if exist %work_dir%\build rmdir /s /q build
+if not exist %work_dir%\build mkdir build
+if not exist %work_dir%\source mkdir source
+if not exist %work_dir%\target mkdir target
+
+rem run the ctest script
+
+echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\%subproj%-%build_type%-cbts.log"
+ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\%subproj%-%build_type%-cbts.log
+
 
 :done
 echo You need to remove -k from script launch to let this window close automatically.
