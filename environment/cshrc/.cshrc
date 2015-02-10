@@ -51,7 +51,7 @@ case ty*.localdomain:
     module load friendly-testing user_contrib
     module unload intel openmpi
     module load intel/14.0.4 openmpi
-    module load gsl git svn emacs
+    module load git svn emacs
     module load cmake/3.1.1 numdiff lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
