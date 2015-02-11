@@ -5,7 +5,7 @@
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Parser for various quadrature classes.
  * \note   Copyright © 2000-2015 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ *         reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -143,7 +143,7 @@ void Class_Parser<Quadrature>::post_sentinels_()
 
         first_time = false;
     }
-    
+
     parsed_quadrature.reset();
 }
 //---------------------------------------------------------------------------//
@@ -151,7 +151,7 @@ template<>
 void Class_Parser<Quadrature>::
 check_completeness_(Token_Stream &tokens)
 {
-    tokens.check_semantics(parsed_quadrature != SP<Quadrature>(),
+    tokens.check_semantics(parsed_quadrature,
                            "no quadrature specified");
 }
 
@@ -172,7 +172,7 @@ SP<Quadrature> Quadrature::parse(Token_Stream &tokens)
 {
     Token token = tokens.shift();
     tokens.check_syntax(token.text()=="type", "expected type keyword");
-    
+
     return Class_Parser<Quadrature>::parse(tokens);
 }
 
