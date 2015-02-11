@@ -144,7 +144,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
     Require(emin>=0.0);
     Require(emax>emin);
     // Require parameter (other than emin and emax) to be same on all processors
-    
+
     setup_(emin,
            emax);
 }
@@ -162,6 +162,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
                                    double emax,
                                    unsigned seed)
     :
+    continuum_(),
     continuum_table_(std::vector<double>()),
     emax_(emax),
     nu0_(-1), // as fast flag
@@ -203,7 +204,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string& cont_file,
     }
 
     rtt_c4::global_max(emax_);
-    
+
     setup_(emin,
            emax);
 }
@@ -225,6 +226,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
                                    double emax,
                                    unsigned seed)
     :
+    continuum_(),
     continuum_table_(std::vector<double>()),
     emax_(emax),
     nu0_(nu0),
@@ -255,7 +257,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
     Require(emin>=0.0);
     Require(emax>emin);
     // Require parameter (other than emin and emax) to be same on all processors
-    
+
     setup_(emin,
            emax);
 }
@@ -263,12 +265,12 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0,
 //---------------------------------------------------------------------------//
 // Packing function
 
-vector<char> Pseudo_Line_Base::pack() const 
+vector<char> Pseudo_Line_Base::pack() const
 {
     throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
     // Because we haven't implemented packing functionality for Expression
     // trees yet.
-    
+
 #if 0
 // caculate the size in bytes
     unsigned const size =
@@ -282,7 +284,7 @@ vector<char> Pseudo_Line_Base::pack() const
     // set the packer buffer
     packer.set_buffer(size, &pdata[0]);
 
-	
+
     // pack the data
     continuum_->pack(packer);
     packer << seed_;
@@ -294,7 +296,7 @@ vector<char> Pseudo_Line_Base::pack() const
 
     // Check the size
     Ensure (packer.get_ptr() == &pdata[0] + size);
-	
+
     return pdata;
 #endif
 }
@@ -343,9 +345,9 @@ double Pseudo_Line_Base::monoOpacity(double const x,
         // consistent behavior.
         Result += peak*static_cast<double>(rand())/RAND_MAX;
     }
-        
+
     unsigned const number_of_edges = abs(number_of_edges_);
-    
+
     for (unsigned i=0; i<number_of_edges; ++i)
     {
         double const nu0 = edge_[i];

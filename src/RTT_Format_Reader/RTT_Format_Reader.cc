@@ -1,11 +1,11 @@
 //----------------------------------*-C++-*--------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/RTT_Format_Reader.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader library.
- * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -23,7 +23,20 @@ namespace rtt_RTT_Format_Reader
  */
 RTT_Format_Reader::RTT_Format_Reader(string const & RTT_File)
     : header(),
-      dims()
+      dims(),
+      spNodeFlags(),
+      spSideFlags(),
+      spCellFlags(),
+      spNodeDataIds(),
+      spSideDataIds(),
+      spCellDataIds(),
+      spCellDefs(),
+      spNodes(),
+      spSides(),
+      spCells(),
+      spNodeData(),
+      spSideData(),
+      spCellData()
 {
     readMesh(RTT_File);
 }
@@ -69,7 +82,7 @@ void RTT_Format_Reader::readMesh(const string & RTT_File)
 
 }
 /*!
- * \brief Reads and validates the magic cookie at the beginning of the mesh 
+ * \brief Reads and validates the magic cookie at the beginning of the mesh
  *        file.
  * \param meshfile Mesh file name.
  */
@@ -124,7 +137,7 @@ void RTT_Format_Reader::readDataIDs(ifstream & meshfile)
     spCellDataIds->readDataIDs(meshfile);
 }
 /*!
- * \brief Reads and validates the end_rtt_mesh keyword at the end of the mesh 
+ * \brief Reads and validates the end_rtt_mesh keyword at the end of the mesh
  *        file.
  * \param meshfile Mesh file name.
  */
@@ -138,11 +151,11 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
     std::getline(meshfile, dummyString);
 }
 /*!
- * \brief Transforms the RTT_Format data to an alternative coordinate-system 
+ * \brief Transforms the RTT_Format data to an alternative coordinate-system
  *        independent format.
- * \param cell_side_types New side types for each of the existing cell 
+ * \param cell_side_types New side types for each of the existing cell
  *        definitions.
- * \param cell_ordered_sides New ordered sides for each of the existing cell 
+ * \param cell_ordered_sides New ordered sides for each of the existing cell
  *        definitions.
  */
 void RTT_Format_Reader::reformatData(

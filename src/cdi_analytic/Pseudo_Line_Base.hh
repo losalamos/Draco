@@ -40,7 +40,6 @@ double expm1( double const & x );
  * The mass opacity coefficient is assumed independent of temperature or
  * density, which allows precalculation of the opacity structure, an important
  * time saver.
- *
  */
 class DLL_PUBLIC Pseudo_Line_Base
 {
