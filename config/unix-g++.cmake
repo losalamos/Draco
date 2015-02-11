@@ -12,6 +12,12 @@
 # http://gcc.gnu.org/wiki/TransactionalMemory
 # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
+# Require GCC-4.7 or later
+if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
+  message( FATAL_ERROR "Draco requires GNU compilers v.4.7 or later.
+This requirement is tied to support of the C++11 standard.")
+endif()
+
 #
 # Declare CMake options related to GCC
 #
@@ -61,11 +67,14 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+
+   # Use C99 standard.
+   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
    # Extra Debug flags that only exist in newer gcc versions.
    if( HAS_WNOEXCEPT )
@@ -105,25 +114,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
 toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG
    "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c++98" "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c90"   "C" "")
-toggle_compiler_flag( DRACO_ENABLE_C99         "-std=c99" "C" "" )
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
-
-# Toggle for C++11 support
-# can use -std=c++11 with version 4.7+
-if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 OR CMAKE_CXX_COMPILER VERSION_EQUAL 4.7)
-   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX" "")
-elseif(  CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.3 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.3)
-   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX" "")
-else()
-   if( DRACO_ENABLE_CXX11 )
-      message(FATAL_ERROR "
-C++11 requested via DRACO_ENABLE_CXX11=${DRACO_ENABLE_CXX11}.
-Therefore a gcc compiler with a version higher than 4.3 is needed.
-Found gcc version ${GCC_VERSION}")
-   endif()
-endif()
 
 # On SQ, our Random123/1.08 vendor uses a series of include directives
 # that fail to compile with g++-4.7.2 when the -pedantic option is

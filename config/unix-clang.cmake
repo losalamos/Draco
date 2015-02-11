@@ -29,11 +29,14 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -Wextra -funroll-loops" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+
+   # Use C99 standard.
+   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 endif()
 
@@ -53,15 +56,10 @@ set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE ST
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
 # Toggle for C++11 support
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c++98" "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-std=c90"   "C" "")
-toggle_compiler_flag( DRACO_ENABLE_C99         "-std=c99" "C" "" )
 if( OpenMP_C_FLAGS )
   message("toggle_compiler_flag( OPENMP_FOUND \"${OpenMP_C_FLAGS}\" \"C;CXX;EXE_LINKER\" \"\" )")
   toggle_compiler_flag( OPENMP_FOUND "${OpenMP_C_FLAGS}" "C;CXX;EXE_LINKER" "" )
 endif()
-# toggle_compiler_flag( DRACO_ENABLE_CXX11 "-stdlib=libc++ -std=c++11" "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++11" "CXX" "")
 
 #============================================================
 # Notes for bulding clang 3.5.0

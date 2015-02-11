@@ -32,15 +32,23 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -ftz" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
+  if( HAVE_MIC )
+    # For floating point consistency with Xeon when using Intel
+    # 15.0.090 + Intel MPI 5.0.2
+    set( CMAKE_C_FLAGS_DEBUG        "${CMAKE_C_FLAGS_DEBUG} -fp-model precise -fp-speculation safe" )
+  endif()
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp  -pthread -fp-model precise -fp-speculation safe" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++0x" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+
+   # Use C99 standard.
+   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 endif()
 
@@ -72,9 +80,6 @@ include(CheckCCompilerFlag)
 check_c_compiler_flag(-xHost HAS_XHOST)
 
 toggle_compiler_flag( HAS_XHOST                "-xHost"       "C;CXX"  "")
-toggle_compiler_flag( DRACO_ENABLE_CXX11       "-std=c++0x"   "CXX" "")
-toggle_compiler_flag( DRACO_ENABLE_C99         "-std=c99"     "C"   "")
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-strict-ansi" "C;CXX" "")
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 
 #------------------------------------------------------------------------------#

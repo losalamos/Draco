@@ -40,7 +40,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -gopt" )
-  set( CMAKE_CXX_FLAGS              "${CMAKE_C_FLAGS} --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
+  set( CMAKE_CXX_FLAGS              "${CMAKE_C_FLAGS} --c++11 --no_using_std --no_implicit_include --diag_suppress 940 --diag_suppress 11 --diag_suppress 450 -DNO_PGI_OFFSET" )
 
   # Extra flags for pgCC-11.2+
   # --nozc_eh    (default for 11.2+) Use low cost exception handling. This
@@ -68,6 +68,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
 
+  # Use the C99 standard
+  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -c99")
+
 endif()
 
 ##---------------------------------------------------------------------------##
@@ -85,10 +88,6 @@ set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE ST
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-# Do we add '-ansi -pedantic'?
-toggle_compiler_flag( DRACO_ENABLE_C99         "-c99"   "C"   "" )
-toggle_compiler_flag( DRACO_ENABLE_STRICT_ANSI "-Xa -A" "CXX" "" )
-toggle_compiler_flag( DRACO_ENABLE_CXX11 "--c++11" "CXX" "")
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 
 #------------------------------------------------------------------------------#

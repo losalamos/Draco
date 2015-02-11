@@ -214,14 +214,12 @@ macro(dbsSetupCxx)
   string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
     DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
 
-  set( DRACO_ENABLE_STRICT_ANSI OFF CACHE BOOL "use strict ANSI flags, C98" )
-
   # C99 support:
-  option( DRACO_ENABLE_C99 "Support C99 features." ON )
+  set( CMAKE_C_STANDARD 99 )
 
   # C++11 support:
-  # set( CMAKE_CXX_STANDARD 11 )
-  option( DRACO_ENABLE_CXX11 "Support C++11 features." ON )
+  set( CMAKE_CXX_STANDARD 11 )
+
   get_filename_component( my_cxx_compiler ${my_cxx_compiler} NAME )
   if( ${my_cxx_compiler} MATCHES "mpicxx" )
     # MPI wrapper
@@ -246,29 +244,11 @@ macro(dbsSetupCxx)
   elseif( ${my_cxx_compiler} MATCHES "pgCC" )
     include( unix-pgi )
   elseif( ${my_cxx_compiler} MATCHES "xl" )
-    set( DRACO_ENABLE_CXX11 ON )
     include( unix-xl )
   elseif( ${my_cxx_compiler} MATCHES "[cg][+]+" )
     include( unix-g++ )
   else()
     message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
-  endif()
-
-  # Force possibly new values to cache
-  set( DRACO_ENABLE_CXX11 ${DRACO_ENABLE_CXX11} CACHE BOOL
-    "Support C++11 features." FORCE )
-  set( DRACO_ENABLE_C99 ${DRACO_ENABLE_C99} CACHE BOOL
-    "Support C99 features." FORCE )
-  set( DRACO_ENABLE_STRICT_ANSI ${DRACO_ENABLE_STRICT_ANSI} CACHE
-    BOOL "use strict ANSI flags, C98" FORCE )
-
-  # Sanity check
-  if( (DRACO_ENABLE_CXX11 AND DRACO_ENABLE_STRICT_ANSI) OR
-      (DRACO_ENABLE_C99 AND DRACO_ENABLE_STRICT_ANSI) )
-    message( FATAL_ERROR "Both DRACO_ENABLE_CXX11=ON and "
-      "DRACO_ENABLE_STRICT_ANSI=ON, or DRACO_ENABLE_C99=ON and "
-      "DRACO_ENABLE_STRICT_ANSI=ON, are not supported because "
-      "STRICT_ANSI implied C++98 standard only." )
   endif()
 
   # To the greatest extent possible, installed versions of packages
@@ -301,21 +281,16 @@ macro(dbsSetupCxx)
   # definitions conforming to POSIX.1-2001, POSIX.2, XPG4, SUSv2,
   # SUSv3, and C99.  See the feature_test_macros(7) man page for more
   # information.
-  if( DRACO_ENABLE_C99 )
-    add_definitions(-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600)
-    set( CMAKE_REQUIRED_DEFINITIONS
-      "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112" )
-    set( CMAKE_REQUIRED_DEFINITIONS
-      "${CMAKE_REQUIRED_DEFINITIONS} -D_XOPEN_SOURCE=600")
-    if ( APPLE )
-      # Defining the above requires adding POSIX extensions,
-      # otherwise, include ordering still goes wrong on Darwin,
-      # (i.e., putting fstream before iostream causes problems)
-      # see https://code.google.com/p/wmii/issues/detail?id=89
-      add_definitions(-D_DARWIN_C_SOURCE)
-      set( CMAKE_REQUIRED_DEFINITIONS
-        "${CMAKE_REQUIRED_DEFINITIONS} -D_DARWIN_C_SOURCE ")
-    endif()
+  add_definitions(-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600)
+  set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112" )
+  set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_XOPEN_SOURCE=600")
+  if ( APPLE )
+    # Defining the above requires adding POSIX extensions,
+    # otherwise, include ordering still goes wrong on Darwin,
+    # (i.e., putting fstream before iostream causes problems)
+    # see https://code.google.com/p/wmii/issues/detail?id=89
+    add_definitions(-D_DARWIN_C_SOURCE)
+    set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_DARWIN_C_SOURCE ")
   endif()
 
 endmacro()
@@ -430,7 +405,6 @@ endmacro()
 ##
 ## Examples:
 ##   toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" "")
-##   toggle_compiler_flag( DRACO_ENABLE_CXX11 "-std=c++0x" "CXX" "DEBUG")
 ##---------------------------------------------------------------------------##
 macro( toggle_compiler_flag switch compiler_flag
     compiler_flag_var_names build_modes )

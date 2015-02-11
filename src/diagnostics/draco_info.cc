@@ -75,11 +75,9 @@ DracoInfo::DracoInfo(void)
 #ifdef DRACO_TIMING
     diagnostics_timing = true;
 #endif
-#ifdef DRACO_ENABLE_CXX11
     cxx11 = true;
     cxx11_features = rtt_dsxx::UnitTest::tokenize(
         CXX11_FEATURE_LIST, ";", false );
-#endif
     if( build_type == std::string("Release") )
     {
         cxx_flags += CMAKE_CXX_FLAGS_RELEASE;

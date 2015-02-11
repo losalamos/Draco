@@ -16,9 +16,7 @@
 #include "../SP.hh"
 #include "../Assert.hh"
 
-#ifdef DRACO_ENABLE_CXX11
 #include <memory> // shared_ptr
-#endif
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -73,7 +71,7 @@ ListWithDerived::~ListWithDerived(void)          {/*empty*/}
 
 ListD::ListD( void) : ListWithDerived() {/*empty*/}
 ListD::~ListD(void)                     {/*empty*/}
-      
+
 
 class Foo
 {
@@ -120,7 +118,7 @@ class Baz : public Bar
 
 //---------------------------------------------------------------------------//
 
-class Wombat 
+class Wombat
 {
   private:
     Wombat(const Wombat &);
@@ -131,7 +129,7 @@ class Wombat
 };
 
 //---------------------------------------------------------------------------//
- 
+
 SP<Foo> get_foo()
 {
     SP<Foo> f(new Foo(10));
@@ -196,8 +194,8 @@ void temp_change_SP( rtt_dsxx::UnitTest & ut, SP<Foo> f)
 //    bool operator!=(const T *) const;
 //    bool operator==(const SP<T> &) const;
 //    bool operator!=(const SP<T> &) const;
-// 
-// plus we test 
+//
+// plus we test
 //
 //    bool operator==(const T *, const SP<T> &);
 //    bool operator!=(const T *, const SP<T> &);
@@ -212,7 +210,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
         SP<Foo> spfoo(new Foo(1));
         SP<Bar> spbar(new Bar(2));
         SP<Baz> spbaz(new Baz(3));
-        
+
         // there should be 3 Foos, 2 Bars and 1 Baz
         CHECK_N_OBJECTS(3, 2, 1, 0);
     }
@@ -235,11 +233,11 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             Foo *f  = new Foo(1);
             Bar *b  = new Bar(2);
             Baz *bz = new Baz(3);
-            
+
             SP<Foo> spfoo(f);
             SP<Bar> spbar(b);
             SP<Baz> spbaz(bz);
-            
+
             // there should be 3 Foos, 2 Bars and 1 Baz
             CHECK_N_OBJECTS(3, 2, 1, 0);
 
@@ -247,7 +245,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             rspfoo = spfoo;
             rspbar = spbar;
             rspbaz = spbaz;
-            
+
             // there are no additional objects made because the SP will make
             // additional references
             CHECK_N_OBJECTS(3, 2, 1, 0);
@@ -281,7 +279,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             if (ut.numFails == 0)
                 PASSMSG("Assignment of T* ok.");
 
-            // now we can check equality 
+            // now we can check equality
             if (rspfoo == spfoo)
             {
                 PASSMSG("Equality operation ok.");
@@ -290,7 +288,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             {
                 FAILMSG("Equality operation failed.");
             }
-            
+
             // now check inequality
             if (rspfoo != spfoo)
             {
@@ -326,7 +324,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             if (ut.numFails == 0)
                 PASSMSG("Equality/Inequality operations ok.");
         }
-        
+
         // we should still have objects left even because we still have
         // viable SPs in scope
         CHECK_N_OBJECTS(3, 2, 1, 0);
@@ -348,7 +346,7 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
 void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
 {
     using std::shared_ptr;
-    
+
     CHECK_0_OBJECTS;
 
     // test explicit constructor for type T *
@@ -357,7 +355,7 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
         shared_ptr<Foo> spfoo(new Foo(1));
         shared_ptr<Bar> spbar(new Bar(2));
         shared_ptr<Baz> spbaz(new Baz(3));
-        
+
         // there should be 3 Foos, 2 Bars and 1 Baz
         CHECK_N_OBJECTS(3, 2, 1, 0);
     }
@@ -380,11 +378,11 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
             Foo *f  = new Foo(1);
             Bar *b  = new Bar(2);
             Baz *bz = new Baz(3);
-            
+
             shared_ptr<Foo> spfoo(f);
             shared_ptr<Bar> spbar(b);
             shared_ptr<Baz> spbaz(bz);
-            
+
             // there should be 3 Foos, 2 Bars and 1 Baz
             CHECK_N_OBJECTS(3, 2, 1, 0);
 
@@ -392,7 +390,7 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
             rspfoo = spfoo;
             rspbar = spbar;
             rspbaz = spbaz;
-            
+
             // there are no additional objects made because the shared_ptr will make
             // additional references
             CHECK_N_OBJECTS(3, 2, 1, 0);
@@ -426,12 +424,12 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
             if (ut.numFails == 0)
                 PASSMSG("Assignment of T* ok. (std::shared_ptr)");
 
-            // now we can check equality 
+            // now we can check equality
             if (rspfoo == spfoo)
                 PASSMSG("Equality operation ok. (std::shared_ptr)");
             else
                 FAILMSG("Equality operation failed. (std::shared_ptr)");
-            
+
             // now check inequality
             if (rspfoo != spfoo)
                 FAILMSG("Equality operation failed. (std::shared_ptr)");
@@ -462,7 +460,7 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
             if (ut.numFails == 0)
                 PASSMSG("Equality/Inequality operations ok. (std::shared_ptr)");
         }
-    
+
         // we should still have objects left even because we still have
         // viable shared_ptrs in scope
         CHECK_N_OBJECTS(3, 2, 1, 0);
@@ -492,7 +490,7 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
 //    T* bp() const;
 //    operator bool() const;
 //    bool operator!() const;
-// 
+//
 void type_X_test( rtt_dsxx::UnitTest & ut )
 {
     CHECK_0_OBJECTS;
@@ -572,7 +570,7 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
 
             if (typeid(rspfoo.get()) != typeid(Foo *)) ITFAILS;
             if (typeid(*rspfoo.get()) != typeid(Bar))  ITFAILS;
-            
+
             if (ut.numFails == 0)
                 PASSMSG("Copy constructor with SP<X> ok.");
 
@@ -616,11 +614,11 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
         // spfoo should still point to the same bar
         if (spfoo->f() != 51)  ITFAILS;
         if (spfoo->vf() != 52) ITFAILS;
-        
+
         if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
         if (typeid(*spfoo.get()) != typeid(Bar))  ITFAILS;
         if (typeid(spbar.get()) != typeid(Bar *)) ITFAILS;
-        
+
         if (ut.numFails == 0)
             PASSMSG("Set to SP<>() releases pointer.");
 
@@ -637,7 +635,7 @@ void type_X_test( rtt_dsxx::UnitTest & ut )
         if (!spfoo2) ITFAILS;
 
         if (ut.numFails == 0)
-            PASSMSG("Overloaded ! (not) ok."); 
+            PASSMSG("Overloaded ! (not) ok.");
     }
 
     CHECK_0_OBJECTS;
@@ -698,7 +696,7 @@ void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
         {
             spbar.reset( new Bar(50) ); // spbar = new Bar(50);
             CHECK_N_OBJECTS(1, 1, 0, 0);
-            
+
             if (spbar->f()  != 53) ITFAILS;
             if (spbar->vf() != 52) ITFAILS;
 
@@ -729,7 +727,7 @@ void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
 
             if (typeid(rspfoo.get())  != typeid(Foo *)) ITFAILS;
             if (typeid(*rspfoo.get()) != typeid(Bar))   ITFAILS;
-            
+
             if (ut.numFails == 0)
                 PASSMSG("Copy constructor with shared_ptr<X> ok.");
 
@@ -753,7 +751,7 @@ void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
             // assign spfoo2 to itself
             spfoo2 = spfoo2;
             CHECK_N_OBJECTS(3, 3, 0, 0);
-            
+
             // assign spfoo2 to itself (underlying object)
             // !!! THIS BEHAVIOR IS DIFFERENT FROM rtt_dsxx:SP<X> !!! //
             // spfoo2.reset( spfoo2.get() ); // spfoo2 = spfoo2.get();
@@ -778,11 +776,11 @@ void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
         // spfoo should still point to the same bar
         if (spfoo->f()  != 51) ITFAILS;
         if (spfoo->vf() != 52) ITFAILS;
-        
+
         if (typeid(spfoo.get())  != typeid(Foo *)) ITFAILS;
         if (typeid(*spfoo.get()) != typeid(Bar))   ITFAILS;
         if (typeid(spbar.get() ) != typeid(Bar *)) ITFAILS;
-        
+
         if (ut.numFails == 0)
             PASSMSG("Set to shared_ptr<>() releases pointer.");
 
@@ -799,9 +797,9 @@ void type_X_test_shared_ptr( rtt_dsxx::UnitTest & ut )
         if (!spfoo2) ITFAILS;
 
         if (ut.numFails == 0)
-            PASSMSG("Overloaded ! (not) ok (std::shared_ptr<X>)."); 
+            PASSMSG("Overloaded ! (not) ok (std::shared_ptr<X>).");
     }
-    
+
     CHECK_0_OBJECTS;
 
     if (ut.numFails == 0)
@@ -844,7 +842,7 @@ void fail_modes_test( rtt_dsxx::UnitTest & ut )
             FAILMSG("Failed to catch illegal access exception.");
 
         // try assigning a derived NULL to a base; the spfoo base pointer is
-        // still a foo in the case 
+        // still a foo in the case
         spfoo = spbar;
         if (typeid(spfoo.get()) != typeid(Foo *)) ITFAILS;
 
@@ -857,11 +855,11 @@ void fail_modes_test( rtt_dsxx::UnitTest & ut )
     // now try copy and assignment on X *
     Wombat *bat = new Wombat();
     CHECK_N_OBJECTS(0, 0, 0, 2);
-    
+
     // assign wombat to a pointer to clean it up
     spbat.reset(bat);
     CHECK_N_OBJECTS(0, 0, 0, 1);
-    
+
     if (ut.numFails == 0)
         PASSMSG("Failure modes work ok.");
 
@@ -908,19 +906,19 @@ void get_test( rtt_dsxx::UnitTest & ut )
 
     // get a foo and bar
     {
-        
+
         SP<Foo> f  = get_foo();
         SP<Foo> fb = get_bar();
         SP<Bar> b  = get_bar();
-        
+
         CHECK_N_OBJECTS(3, 2, 0, 0);
-        
+
         if (fb == b) ITFAILS;
-        
+
         if (f->f() != 11)   ITFAILS;
         if (fb->vf() != 22) ITFAILS;
         if (b->vf() != 22)  ITFAILS;
-        
+
         if (fb->f() != 21)  ITFAILS;
         if (b->f() != 23)   ITFAILS;
     }
@@ -966,7 +964,7 @@ void list_test( rtt_dsxx::UnitTest & ut )
 {
     {
         // This test was borrowed from Boost's shared_ptr_test.cpp
-        
+
         SP<List> p(new List);
         p->next = SP<List>(new List);
         p = p->next;
@@ -975,7 +973,7 @@ void list_test( rtt_dsxx::UnitTest & ut )
 
     {
         // Test of a derived class.
-        
+
         SP<ListWithDerived> p(new ListWithDerived);
         p->next = SP<ListD>(new ListD);
         p = p->next;
@@ -1011,12 +1009,12 @@ int main(int argc, char *argv[])
 #ifdef HAS_CXX11_SHARED_PTR
         type_T_test_shared_ptr(ut);
         type_X_test_shared_ptr(ut);
-        CHECK_0_OBJECTS;        
+        CHECK_0_OBJECTS;
 #endif
-        
+
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstSP.cc
