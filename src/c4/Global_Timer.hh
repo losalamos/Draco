@@ -17,6 +17,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <iostream>
 #include "Timer.hh"
 
 namespace rtt_c4
@@ -32,13 +33,11 @@ namespace rtt_c4
  * features that make it more convenient for timing sections of code without
  * being tied to specific objects that use those sections of code.
  *
- * All Global_Timers have a unique name assigned via the destructor. They can
- * be can be enabled or disabled as a whole by setting or unsetting a single
- * global variable, or they can be activated selectively by name. When
- * enabled, they automatically generate a report to cout when they go out of
- * scope. The class is carefully designed to avoid order of initialization or
- * destruction issues. Since instances of this class are normally declared at
- * global scope, the timing reports appear at the end of a calculation.
+ * All Global_Timers have a unique name assigned via the constructor. They can
+ * be enabled or disabled as a whole by setting or unsetting a single global
+ * variable, or they can be activated selectively by name. The timings can be
+ * reset manually, and reports for all active timers can be generated with a
+ * single static function call.
  *
  * Global_Timers are only active on processor 0.
  */
@@ -52,21 +51,26 @@ class DLL_PUBLIC Global_Timer : public Timer
                        // distinguish its output from that of any other
                        // timers.
 
-    bool active_;
+    bool active_;     // This timer is active. This does not mean it is
+                      // currently accumulating timing statistics, but only
+                      // that it is flagged to do so when start() is
+                      // called. If not active, a call to start() is ignored.
 
     //! All Global_Timers are active
     static bool global_active_;
 
     struct timer_entry
     {
-        bool is_active;
+        bool is_active;   // permits activation of timers not yet constructed.
         Global_Timer *timer;
 
         timer_entry() : is_active(false), timer(NULL) {}
     };
 
+    typedef std::map<std::string, timer_entry> active_list_type;
+
     //! Selected Global_Timers are active
-    static std::map<std::string, timer_entry> active_list_;
+    static active_list_type active_list_;
 
     //! Disable copy construction
     Global_Timer( Global_Timer const & rhs );
@@ -78,7 +82,9 @@ class DLL_PUBLIC Global_Timer : public Timer
 
     // Constructors
 
-    Global_Timer(char const *name); //! default constructor
+    explicit Global_Timer(char const *name); //! default constructor
+
+    ~Global_Timer();
 
     // Accessors
 
@@ -90,26 +96,28 @@ class DLL_PUBLIC Global_Timer : public Timer
 
     void set_activity(bool active) { active_ = active; }
 
-    // void start()
-    // {
-    //     if (active_ || global_active_) Timer::start();
-    // }
+    void start()
+    {
+        if (active_ || global_active_) Timer::start();
+    }
 
-    // void stop()
-    // {
-    //     if (active_ || global_active_) Timer::stop();
-    // }
+    void stop()
+    {
+        if (active_ || global_active_) Timer::stop();
+    }
 
     // Statics
 
-    // static bool is_global_active() { return global_active_; }
+    static bool is_global_active() { return global_active_; }
 
     static void set_global_activity(bool active);
 
     static void set_selected_activity(std::set<std::string> const &timer_list,
                                       bool active);
 
-    ~Global_Timer();
+    static void reset_all();
+
+    static void report_all(std::ostream &);
 };
 
 } // end namespace rtt_c4

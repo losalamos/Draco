@@ -19,7 +19,7 @@ using namespace std;
 
 bool Global_Timer::global_active_ = false;
 map<string, Global_Timer::timer_entry> Global_Timer::active_list_;
-     
+
 //---------------------------------------------------------------------------------------//
 Global_Timer::Global_Timer(char const *name)
     :
@@ -81,13 +81,61 @@ void Global_Timer::set_global_activity(bool const active)
     if (rtt_c4::node()==0)
     {
         global_active_ = active;
-        
+
         cout << "***** Global timers are now ";
         if (active)
             cout << "ACTIVE";
         else
             cout << "INACTIVE";
-        
+
+        cout << endl;
+    }
+}
+
+//---------------------------------------------------------------------------------------//
+/*static*/
+void Global_Timer::reset_all()
+{
+    if (rtt_c4::node()==0)
+    {
+        cout << "***** Resetting all global timers" << endl;
+        for (active_list_type::const_iterator i=active_list_.begin();
+             i!=active_list_.end();
+             ++i)
+        {
+            timer_entry const entry = i->second;
+            if ((entry.is_active || global_active_) && entry.timer)
+            {
+                entry.timer->reset();
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------//
+/*static*/
+void Global_Timer::report_all(ostream &out)
+{
+    if (rtt_c4::node()==0)
+    {
+        for (unsigned i=0; i<80; ++i)
+            cout << '-';
+        cout << endl;
+        cout << "Timing report for all global timers:" << endl << endl;
+        cout << "N           user           system         wall" << endl;
+        for (active_list_type::const_iterator i=active_list_.begin();
+             i!=active_list_.end();
+             ++i)
+        {
+            timer_entry const entry = i->second;
+            if ((entry.is_active || global_active_)  && entry.timer)
+            {
+                out << entry.timer->name() << endl;
+                entry.timer->printline(out);
+            }
+        }
+        for (unsigned i=0; i<80; ++i)
+            cout << '-';
         cout << endl;
     }
 }

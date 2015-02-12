@@ -33,7 +33,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     using std::set;
     using std::string;
 
-    using rtt_dsxx::soft_equiv; 
+    using rtt_dsxx::soft_equiv;
     using rtt_c4::wall_clock_time;
     using rtt_c4::wall_clock_resolution;
     using rtt_c4::Timer;
@@ -46,7 +46,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     {
         ut.failure("do_timer should NOT be active");
     }
-    
+
     set<string> active_timers;
     active_timers.insert("do_timer");
     active_timers.insert("do_global_timer");
@@ -56,6 +56,8 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     {
         ut.failure("do_timer SHOULD be active");
     }
+
+    do_timer.start();
 
     double const wcr( rtt_c4::wall_clock_resolution() );
     if( wcr > 0.0 && wcr <= 100.0)
@@ -73,25 +75,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
             << endl;
         FAILMSG(msg.str());
     }
-    // double tolerance(1.0e-14);
-    // if( rtt_dsxx::soft_equiv( wcr, wcrDeprecated, tolerance ) )
-    // {
-    //     ostringstream msg;
-    //     msg << "Wtick() and wall_clock_resolution() returned equivalent "
-    //         << "values (tolerance = " << tolerance << ")." << endl;
-    //     PASSMSG(msg.str());
-    // }
-    // else
-    // {
-    //     ostringstream msg;
-    //     msg << "The function wall_clock_resolution() returned a value of "
-    //         << wcr << " ticks, but the equivalent deprecated function "
-    //         << "Wtick() returned a value of " << wcrDeprecated
-    //         << " ticks.  These values are not equivalent as they should be."
-    //         << endl;
-    //     FAILMSG(msg.str());
-    // }
-    
+
     Timer t;
 
 #ifdef WIN32
@@ -107,7 +91,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     //   t.wall_clock() = 1.40682
     //   error          = 0.0160977
     //   prec           = 0.002
-    // 
+    //
     // This may be due to the system being busy or scans done by LANL IT.  I'm
     // not really sure what is going on.  It always passes for interactive
     // jobs.
@@ -121,29 +105,6 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 #endif
     double       begin( rtt_c4::wall_clock_time() );
 
-    //double beginDeprecated = C4::Wtime();
-
-    // if( rtt_dsxx::soft_equiv(begin,beginDeprecated,prec) )
-    // {
-    //     PASSMSG("Wtime() and wall_clock_time() returned equivalent values.");
-    // }
-    // else
-    // {
-    //     ostringstream msg;
-    //     msg << "Wtime() and wall_clock_time() failed to return "
-    //         << "equivalent values.";
-    //     cout.precision(14);
-    //     if( beginDeprecated < begin )
-    //         msg << "\n\tFound begin < beginDeprecated."
-    //             << "\n\tbegin           = " << begin
-    //             << "\n\tbeginDeprecated = " << beginDeprecated;
-    //     else
-    //         msg << "\n\tFound begin != beginDeprecated."
-    //             << "\n\tbegin           = " << begin
-    //             << "\n\tbeginDeprecated = " << beginDeprecated;
-    //     msg << endl;
-    //     FAILMSG(msg.str());
-    // }
     t.start();
 
     // do some work
@@ -185,15 +146,15 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     //
     // Due to round off errors, the wall clock time might be less than the
     // system + user time.  But this difference should never exceed
-    // t.posix_err(). 
+    // t.posix_err().
     //---------------------------------------------------------------------//
-    
-    double const deltaWallTime( t.wall_clock() - 
+
+    double const deltaWallTime( t.wall_clock() -
                                 ( t.system_cpu() + t.user_cpu() ) );
 #ifdef _MSC_VER
-    double const time_resolution( 1.0 );  
+    double const time_resolution( 1.0 );
 #else
-    double const time_resolution( prec );  
+    double const time_resolution( prec );
 #endif
     if( deltaWallTime > 0.0 || std::fabs(deltaWallTime) <= time_resolution )
     {
@@ -227,14 +188,14 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
              << endl;
 
     cout << "Timer = " << t << endl;
-        
+
     //------------------------------------------------------//
     // Do a second timing:
     //------------------------------------------------------//
 
     cout << "\nCreate a Timer Report after two timing cycles:\n"
          << endl;
-    
+
     t.start();
     for( size_t i = 0; i < len; ++i )
         foo[i]=i*4;
@@ -258,7 +219,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
         else
             FAILMSG( "printline() did not return a line of the expected length." );
     }
-    
+
     //------------------------------------------------------//
     // Check the number of intervals
     //------------------------------------------------------//
@@ -268,7 +229,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
         PASSMSG("Found the expected number of intervals.");
     else
         FAILMSG("Did not find the expected number of intervals.");
-          
+
     //------------------------------------------------------//
     // Check the merge method
     //------------------------------------------------------//
@@ -278,7 +239,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     double old_user_time = t.sum_user_cpu();
     double old_intervals = t.intervals();
     t.merge(t);
-   
+
     if (2*old_wall_time==t.sum_wall_clock() &&
         2*old_system_time==t.sum_system_cpu() &&
         2*old_user_time==t.sum_user_cpu() &&
@@ -296,7 +257,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     long long flops       = t.sum_floating_operations();
 
 #ifdef HAVE_PAPI
-    
+
     std::cout << "PAPI metrics report:\n"
               << "   Cache misses : " << cachemisses << "\n"
               << "   Cache hits   : " << cachehits << "\n"
@@ -306,14 +267,22 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
         FAILMSG( "PAPI metrics returned 0 when PAPI was available.");
     else
         PASSMSG( "PAPI metrics returned >0 values when PAPI is available.");
-    
+
 #else
     if( cachemisses == 0 && cachehits == 0  && flops == 0 )
         PASSMSG( "PAPI metrics return 0 when PAPI is not available.");
     else
         FAILMSG( "PAPI metrics did not return 0 when PAPI was not available.");
 #endif
-    
+
+    // Exercise the global report and reset. Unfortunately, there's no easy
+    // way to check the validity of the output except to eyeball.
+
+    do_timer.stop();
+    Global_Timer::report_all(cout);
+    Global_Timer::reset_all();
+    Global_Timer::report_all(cout);
+
     return;
 }
 
@@ -321,7 +290,7 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
 void test_pause( rtt_dsxx::UnitTest & ut )
 {
     using rtt_c4::Timer;
-    
+
     std::cout << "Starting tstTime::test_pause tests..." << std::endl;
 
     double begin( rtt_c4::wall_clock_time() );
@@ -335,7 +304,7 @@ void test_pause( rtt_dsxx::UnitTest & ut )
     if( end-begin < pauseTime ) ITFAILS;
 
     std::cout << "Starting tstTime::test_pause tests...done\n" << std::endl;
-        
+
     return;
 }
 
@@ -350,7 +319,7 @@ int main( int argc, char *argv[] )
         test_pause(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstTime.cc
