@@ -34,7 +34,7 @@ run "module load user_contrib svn"
 
 # Ensure that the permissions are correct
 run "umask 0002"
-set MYHOSTNAME = `uname -n`
+MYHOSTNAME=`uname -n`
 regdir=/usr/projects/jayenne/regress
 svnroot=$regdir/svn
 svnhostmachine=ccscs7
@@ -42,8 +42,10 @@ svnhostmachine=ccscs7
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
 /usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
-if test -f $HOME/.keychain/$MYHOSTNAME.-sh; then
-    run "source $HOME/.keychain/$MYHOSTNAME.-sh"
+if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+else
+    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
 fi
 
 #
