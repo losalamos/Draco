@@ -491,7 +491,7 @@ auto-mode-alist."
       (local-set-key [(control f6)] 'draco-f90-insert-document)
       (local-set-key [(f6)]         'draco-f90-comment-divider)
       (draco-mode-update-menu (draco-menu-insert-comments-f90))
-      (set-fill-column 'draco-code-comment-width))
+      (set-fill-column draco-code-comment-width))
      ;; let .F denone Fortran and not freeze files
     (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'f90-mode-hook 'draco-f90-mode-hook)
@@ -565,7 +565,7 @@ auto-mode-alist."
     (autoload 'change-log-mode "change-log-mode"
       "ChangeLog Editing Mode" t)
     (require 'add-log)
-    (set-fill-column 'draco-code-comment-width)
+    (set-fill-column draco-code-comment-width)
     (if draco-colorize-modeline
 	(add-hook 'change-log-mode-hook
 		  '(lambda ()
