@@ -70,12 +70,12 @@ namespace rtt_c4
  * struct tms
  * {
  *    clock_t tms_utime;   // User CPU time.
- *    clock_t tms_stime;   // System CPU time. 
- *    clock_t tms_cutime;  // User CPU time of dead children. 
- *    clock_t tms_cstime;  // System CPU time of dead children. 
+ *    clock_t tms_stime;   // System CPU time.
+ *    clock_t tms_cutime;  // User CPU time of dead children.
+ *    clock_t tms_cstime;  // System CPU time of dead children.
  * };
  * \endocde
- * 
+ *
  * Store the CPU time used by this process and all its dead children (and
  * their dead children) in \c BUFFER. Return the elapsed real time, or (\c
  * clock_t) -1 for errors.  All times are in \c CLK_TCK ths of a second.
@@ -90,19 +90,19 @@ namespace rtt_c4
  * #include <sys/types.h>
  * #include <sys/timeb.h>
  * __time64_t ltime;
- * // Get UNIX-style time and display as number and string. 
+ * // Get UNIX-style time and display as number and string.
  * _time64( &ltime );
  * printf( "Time in seconds since UTC 1/1/70:\t%ld\n", ltime );
  * printf( "UNIX time and date:\t\t\t%s", _ctime64( &ltime ) );
  *
- *  // Print additional time information. 
+ *  // Print additional time information.
  *  struct __timeb64 tstruct;
  * _ftime64( &tstruct );
  * printf( "Plus milliseconds:\t\t\t%u\n", tstruct.millitm );
- * printf( "Zone difference in hours from UTC:\t%u\n", 
+ * printf( "Zone difference in hours from UTC:\t%u\n",
  *          tstruct.timezone/60 );
  * printf( "Time zone name:\t\t\t\t%s\n", _tzname[0] );
- * printf( "Daylight savings:\t\t\t%s\n", 
+ * printf( "Daylight savings:\t\t\t%s\n",
  *          tstruct.dstflag ? "YES" : "NO" );
  * \endcode
  *
@@ -114,15 +114,15 @@ namespace rtt_c4
 // 1) 2003/01/21 Added sum_* member functions (Lowrie).
 // 2) 2010/09/27 Added support for MSVC & CMake (KT).
 // 3) 2011/09/01 Added support for PAPI cache performance monitoring (KGB).
-// 
+//
 //===========================================================================//
 
-class DLL_PUBLIC Timer 
+class DLL_PUBLIC Timer
 {
   private:
     //! Beginning wall clock time.
     double begin;
-    
+
     //! Ending wall clock time.
     double end;
 
@@ -140,7 +140,7 @@ class DLL_PUBLIC Timer
 
     //! True if we can access MPI timers.
     bool const isMPIWtimeAvailable;
-    
+
     //! sum of wall clock time over all intervals.
     double sum_wall;
 
@@ -155,7 +155,7 @@ class DLL_PUBLIC Timer
 
     //! determine if MPI Wtime is available.
     bool setIsMPIWtimeAvailable() const;
-    
+
 #ifdef HAVE_PAPI
     static unsigned const papi_max_counters_ = 3U;
 
@@ -191,9 +191,9 @@ class DLL_PUBLIC Timer
 
     static void papi_init_();
 #endif
-    
+
   public:
-    
+
     Timer(); //! default constructor
     // Use default copy constructor and assignment operator
     // Timer const & operator=( Timer const & rhs ); //! assignment operator
@@ -205,6 +205,8 @@ class DLL_PUBLIC Timer
     inline double system_cpu() const;
     inline double user_cpu()   const;
     inline double posix_err()  const;
+
+    bool on() const { return timer_on; }
 
     //! Return the wall clock time in seconds, summed over all intervals.
     double sum_wall_clock() const { Require(! timer_on); return sum_wall; }
@@ -274,7 +276,7 @@ void Timer::start()
 #endif
 
     // set both begin and tms_begin.
-    begin = wall_clock_time( tms_begin );  
+    begin = wall_clock_time( tms_begin );
 }
 
 //---------------------------------------------------------------------------//
@@ -285,7 +287,7 @@ void Timer::stop()
     using namespace std;
     // set both end and tms_end.
     end      = wall_clock_time( tms_end );
-    timer_on = false; 
+    timer_on = false;
 
     sum_wall   += wall_clock();
     sum_system += system_cpu();
@@ -346,7 +348,7 @@ double Timer::user_cpu() const
     return difftime( tms_end, tms_begin );
 #else
     return( tms_end.tms_utime - tms_begin.tms_utime )
-	/ static_cast<double>(posix_clock_ticks_per_second); 
+	/ static_cast<double>(posix_clock_ticks_per_second);
 #endif
 }
 
@@ -370,7 +372,7 @@ void Timer::reset()
     sum_system    = 0.0;
     sum_user      = 0.0;
     num_intervals = 0;
-    
+
 #ifdef HAVE_PAPI
     for (unsigned i=0; i<papi_num_counters_; ++i)
 	papi_counts_[i] = 0;
@@ -393,7 +395,7 @@ void Timer::merge(Timer const &t)
     sum_system    += t.sum_system;
     sum_user      += t.sum_user;
     num_intervals += t.num_intervals;
-    
+
 #ifdef HAVE_PAPI
     for (unsigned i=0; i<papi_num_counters_; ++i)
 	papi_counts_[i] += t.papi_counts_[i];

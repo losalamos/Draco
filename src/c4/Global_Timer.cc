@@ -30,7 +30,7 @@ Global_Timer::Global_Timer(char const *name)
 
     timer_entry &entry = active_list_[name];
     active_ = entry.is_active;
-    Check(entry.timer == NULL);
+//    Check(entry.timer == NULL);
     entry.timer = this;
 
     Ensure(name == this->name());
