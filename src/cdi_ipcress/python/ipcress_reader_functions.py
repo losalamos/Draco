@@ -28,7 +28,7 @@ def get_interpolated_data(T_grid, rho_grid, hnu_grid, op_table, target_rho, targ
   n_T = len(T_grid)
   n_hnu = len(hnu_grid)
 
-  #don't allow extrapolation
+  # don't allow extrapolation
   if (target_rho  < np.min(rho_grid)):  target_rho = np.min(rho_grid)
   if (target_rho  > np.max(rho_grid)):  target_rho = np.max(rho_grid)
   if (target_T    < np.min(T_grid)):    target_T = np.min(T_grid)
@@ -64,7 +64,7 @@ def get_interpolated_data(T_grid, rho_grid, hnu_grid, op_table, target_rho, targ
     log_op_T_G  = log(rho_L_T_G[i]) + log(target_rho/rho_grid[rho_L]) / log(rho_grid[rho_G]/rho_grid[rho_L]) * log(rho_G_T_G[i]/rho_L_T_G[i])
     log_op =  log_op_T_L + log(target_T/T_grid[T_L]) / log(T_grid[T_G]/T_grid[T_L]) * (log_op_T_G - log_op_T_L)
     interp_op.append(exp(log_op))
-  print(interp_op)
+  #print(interp_op)
   return interp_op 
 ###############################################################################
 

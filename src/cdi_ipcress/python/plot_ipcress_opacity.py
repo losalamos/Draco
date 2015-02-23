@@ -35,6 +35,7 @@ ipcress_file = sys.argv[1]
 
 # regular expressions for properties
 re_ramg = re.compile("ramg")
+re_pmg = re.compile("pmg")
 re_rsmg = re.compile("rsmg")
 re_rtmg = re.compile("rtmg")
 re_tgrid = re.compile("tgrid")
@@ -58,55 +59,74 @@ for mat in materials:
       table_key_dict["{0}_{1}".format("ramg", mat_ID)] = op_read.get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
     if re_rsmg.search(prop[1])  and int(prop[0]) == mat_ID:
       table_key_dict["{0}_{1}".format("rsmg", mat_ID)] = op_read.get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
+    if re_pmg.search(prop[1])  and int(prop[0]) == mat_ID:
+      table_key_dict["{0}_{1}".format("pmg", mat_ID)] = op_read.get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
     if re_tgrid.search(prop[1])  and int(prop[0]) == mat_ID:
       table_key_dict["{0}_{1}".format("tgrid", mat_ID)] = op_read.get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
     if re_hnu.search(prop[1])  and int(prop[0]) == mat_ID:
       table_key_dict["{0}_{1}".format("hnugrid", mat_ID)] = op_read.get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
     if re_rho.search(prop[1])  and int(prop[0]) == mat_ID:
       table_key_dict["{0}_{1}".format("rgrid", mat_ID)] = op_read.get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
-     
+
+################################################################################
 # set Tk values that can be tied to entry fields
 target_rho = DoubleVar()
 target_rho.set(1.0)
 target_T = DoubleVar()
 target_T.set(1.0)
+op_type = IntVar()
+op_type.set(1)
+
 # select the first material in the file as default
 selected_ID = IntVar()
 selected_ID.set(materials[0][1])
+################################################################################
 
 
 f = Figure(figsize=(5,4), dpi=100)
 a = f.add_subplot(111)
 
 # set values for the first material (selected)
-T_grid = table_key_dict["{0}_{1}".format("tgrid", selected_ID.get())] 
-rho_grid = table_key_dict["{0}_{1}".format("rgrid", selected_ID.get())] 
-hnu_grid = table_key_dict["{0}_{1}".format("hnugrid", selected_ID.get())] 
-mg_grid = table_key_dict["{0}_{1}".format("ramg", selected_ID.get())]
+T_grid = table_key_dict["{0}_{1}".format("tgrid", selected_ID.get())]
+rho_grid = table_key_dict["{0}_{1}".format("rgrid", selected_ID.get())]
+hnu_grid = table_key_dict["{0}_{1}".format("hnugrid", selected_ID.get())]
+mgr_grid = table_key_dict["{0}_{1}".format("ramg", selected_ID.get())]
+mgp_grid = table_key_dict["{0}_{1}".format("pmg", selected_ID.get())]
 mgs_grid = table_key_dict["{0}_{1}".format("rsmg", selected_ID.get())]
 
 # get interpolated opacity data for this temperature and density
-mg_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mg_grid, target_rho.get(), target_T.get())
+mgr_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mgr_grid, target_rho.get(), target_T.get())
+mgp_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mgp_grid, target_rho.get(), target_T.get())
 mgs_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mgs_grid, target_rho.get(), target_T.get())
-op_data = []
-ops_data = []
+opr_data = []  # Rosseland absorption
+opp_data = []  # Planck absorption
+ops_data = []  # Rosseland scattering
 hnu_data = []
+
+# add points to plotting data twice to get the bar structure
 for hnu_i, hnu in enumerate(hnu_grid[:-1]):
   hnu_data.append(hnu)
   hnu_data.append(hnu_grid[hnu_i+1])
-  op_data.append(mg_interp[hnu_i])
-  op_data.append(mg_interp[hnu_i])
+
+  opr_data.append(mgr_interp[hnu_i])
+  opr_data.append(mgr_interp[hnu_i])
+
+  opp_data.append(mgp_interp[hnu_i])
+  opp_data.append(mgp_interp[hnu_i])
+
   ops_data.append(mgs_interp[hnu_i])
   ops_data.append(mgs_interp[hnu_i])
 
+
+# Plot data with the initial settings
 a.set_xscale('log') 
 a.set_yscale('log') 
 a.set_xlabel('hnu (keV)')
 a.set_ylabel('opacity (sq. cm/g)')
-a.plot(hnu_data, op_data, label = "{0} Rosseland Absorption".format(selected_ID.get()))
-a.plot(hnu_data, ops_data, label = "{0} Rosseland Scattering".format(selected_ID.get()))
+a.plot(hnu_data, opr_data, 'b-', label = "{0} Rosseland Absorption".format(selected_ID.get()))
+a.plot(hnu_data, ops_data, 'r-', label = "{0} Rosseland Scattering".format(selected_ID.get()))
 a.set_xlim([0.9*min(hnu_grid), 1.1*max(hnu_grid)]) 
-a.set_ylim([ 0.7*min( [min(op_data), min(ops_data)]), 1.3*max( [max(op_data), max(ops_data)])]) 
+a.set_ylim([ 0.7*min( [min(opr_data), min(ops_data)]), 1.3*max( [max(opr_data), max(ops_data)])]) 
 a.legend(loc='best')
 
 canvas = FigureCanvasTkAgg(f, master=root)
@@ -116,8 +136,10 @@ canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 toolbar = NavigationToolbar2TkAgg( canvas, root )
 toolbar.update()
 canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=1)
- 
 
+
+###############################################################################
+# Plot loop executed when the "Plot" button is pressed
 ###############################################################################
 def plot_op():
   f.clf()
@@ -135,22 +157,39 @@ def plot_op():
   T_grid = table_key_dict["{0}_{1}".format("tgrid", selected_ID.get())] 
   rho_grid = table_key_dict["{0}_{1}".format("rgrid", selected_ID.get())] 
   hnu_grid = table_key_dict["{0}_{1}".format("hnugrid", selected_ID.get())] 
-  mg_grid = table_key_dict["{0}_{1}".format("ramg", selected_ID.get())]
-  mgs_grid = table_key_dict["{0}_{1}".format("rsmg", selected_ID.get())]
 
+  # select the absorption opacity weighting type based on the op_type variable
+  # Rosseland
+  if (op_type.get() == 1):
+    mg_grid = table_key_dict["{0}_{1}".format("ramg", selected_ID.get())]
+
+  #Planck
+  else:
+    mg_grid = table_key_dict["{0}_{1}".format("pmg", selected_ID.get())]
+
+  # scattering is only availabe with Rosseland weighting
+  mgs_grid = table_key_dict["{0}_{1}".format("rsmg", selected_ID.get())]
   
   # get interpolated opacity data for this temperature and density
-  mg_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mg_grid, target_rho.get(), target_T.get())
+  mgr_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mgr_grid, target_rho.get(), target_T.get())
+  mgp_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mgp_grid, target_rho.get(), target_T.get())
   mgs_interp = op_read.get_interpolated_data(T_grid, rho_grid, hnu_grid, mgs_grid, target_rho.get(), target_T.get())
+
   # make the piecewise constant data to be plotted
-  op_data = []
+  opr_data = []
+  opp_data = []
   ops_data = []
   hnu_data = []
   for hnu_i, hnu in enumerate(hnu_grid[:-1]):
     hnu_data.append(hnu)
     hnu_data.append(hnu_grid[hnu_i+1])
-    op_data.append(mg_interp[hnu_i])
-    op_data.append(mg_interp[hnu_i])
+
+    opr_data.append(mgr_interp[hnu_i])
+    opr_data.append(mgr_interp[hnu_i])
+
+    opp_data.append(mgp_interp[hnu_i])
+    opp_data.append(mgp_interp[hnu_i])
+
     ops_data.append(mgs_interp[hnu_i])
     ops_data.append(mgs_interp[hnu_i])
   
@@ -158,11 +197,18 @@ def plot_op():
   a.set_yscale('log') 
   a.set_xlabel('hnu (keV)')
   a.set_ylabel('opacity (sq. cm/g)')
-  a.plot(hnu_data, op_data, label = "{0} Rosseland Absorption".format(selected_ID.get()))
-  a.plot(hnu_data, ops_data, label = "{0} Rosseland Scattering".format(selected_ID.get()))
+  # use label for Planck or Rosseland
+  if (op_type.get() == 1):
+    a.plot(hnu_data, opr_data, 'b-',  label = "{0} Rosseland Absorption".format(selected_ID.get()))
+  elif(op_type.get() == 2):
+    a.plot(hnu_data, opp_data, 'g-', label = "{0} Planckian Absorption".format(selected_ID.get()))
+  else:
+    a.plot(hnu_data, opr_data, 'b-',  label = "{0} Rosseland Absorption".format(selected_ID.get()))
+    a.plot(hnu_data, opp_data, 'g-', label = "{0} Planckian Absorption".format(selected_ID.get()))
+  a.plot(hnu_data, ops_data, 'r-', label = "{0} Rosseland Scattering".format(selected_ID.get()))
   a.legend(loc='best')
   a.set_xlim([0.9*min(hnu_grid), 1.1*max(hnu_grid)]) 
-  a.set_ylim([ 0.7*min( [min(op_data), min(ops_data)]), 1.3*max( [max(op_data), max(ops_data)])]) 
+  a.set_ylim([ 0.7*min( [min(opr_data), min(ops_data)]), 1.3*max( [max(opp_data), max(ops_data)])]) 
   canvas.show()
   canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 ###############################################################################
@@ -194,6 +240,14 @@ def _quit():
     root.destroy()  # this is necessary on Windows to prevent
                     # Fatal Python Error: PyEval_RestoreThread: NULL tstate
 ###############################################################################
+
+
+L_opacity = Label(root, text = "Opacity Weighting Method")
+L_opacity.pack(anchor = W)
+Radiobutton(root, text="Rosseland", padx = 20, variable=op_type, value=1).pack(anchor=W)
+Radiobutton(root, text="Planckian",  padx = 20, variable=op_type, value=2).pack(anchor=W)
+Radiobutton(root, text="Show Both",  padx = 20, variable=op_type, value=3).pack(anchor=W)
+
 
 button = Button(master=root, text='Quit', command=_quit)
 button.pack(side=BOTTOM)
