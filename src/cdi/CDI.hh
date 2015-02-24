@@ -739,6 +739,7 @@ double CDI::integrate_planck(double const scaled_freq,
     // precision. At values this large, the next line will always select the
     // polylog value.
     double       integral = std::min(taylor, poly);
+    // FWIW the break is at about scaled_freq == 2.06192398071289
 
     Ensure ( integral >= 0.0 );
     Ensure ( integral <= 1.0 );
