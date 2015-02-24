@@ -3,7 +3,7 @@
 # author Gabriel Rockefeller
 # date   2012 Nov 1
 # brief  Establish flags for Linux64 - IBM XL C++
-# note   Copyright (C) 2012-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -23,7 +23,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
    set( CMAKE_C_FLAGS                "-qinfo=all -qflag=i:w -qsuppress=1540-0072 -qsuppress=1506-1197 -qarch=auto -qfloat=nomaf" )
-   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -qnosmp -qcheck -DDEBUG")
+   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -qcheck -DDEBUG") #-qnosmp
    set( CMAKE_C_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision -DNDEBUG" )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
