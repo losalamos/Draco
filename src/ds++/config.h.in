@@ -192,17 +192,14 @@
 #cmakedefine HAS_CXX11_AUTO_TYPE
 #cmakedefine HAS_CXX11_DECLTYPE_AUTO
 #cmakedefine HAS_CXX11_NULLPTR
-#cmakedefine HAS_CXX11_LAMBDA
-#cmakedefine HAS_CXX11_STATIC_ASSERT
+#cmakedefine HAS_CXX11_LAMBDAS
 #cmakedefine HAS_CXX11_RVALUE_REFERENCES
-#cmakedefine HAS_CXX11_DECLTYPE
-#cmakedefine HAS_CXX11_CSTDINT_H
 #cmakedefine HAS_CXX11_LONG_LONG
+#cmakedefine HAS_CXX11_STATIC_ASSERT
+#cmakedefine HAS_CXX11_DECLTYPE
 #cmakedefine HAS_CXX11_VARIADIC_TEMPLATES
 #cmakedefine HAS_CXX11_SIZEOF_MEMBER
-#cmakedefine HAS_CXX11_INITIALIZER_LISTS
-#cmakedefine HAS_CXX11_SHARED_PTR
-#cmakedefine HAS_CXX11_ARRAY
+#cmakedefine HAS_CXX11_GENERALIZED_INITIALIZERS
 
 /* ---------------------------------------- */
 /* Configuration Options used by CMake      */
