@@ -3,20 +3,16 @@
  * \file   roots/test/tstfdjac.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright 2006-2015 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../fdjac.hh"
+#include "roots/fdjac.hh"
 #include "linear/fnorm.hh"
 
 using namespace std;
@@ -53,36 +49,16 @@ void tstfdjac(UnitTest &ut)
     {
 	ut.passes("fdjac successful");
     }
-   
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, &release );
-	tstfdjac( ut );
-    }
-    catch( exception &err )
-    {
-        // Special case allows exit without errors.
-        if( err.what() != string( "Success" ) )
-        {
-            cout << "ERROR: While testing tstfdjac, " << err.what() << endl;
-            return 1;
-        }
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstfdjac, " 
-             << "An unknown exception was thrown."<< endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, &release );
+    try { tstfdjac( ut ); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
-//                        end of tstfdjac.cc
+// end of tstfdjac.cc
 //---------------------------------------------------------------------------//

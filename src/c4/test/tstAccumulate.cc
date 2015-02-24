@@ -11,9 +11,9 @@
 // $Id: tstAccumulate.cc 6288 2011-12-04 03:43:52Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
-#include "../accumulatev.hh"
-#include "../Functors.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/accumulatev.hh"
+#include "c4/Functors.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 

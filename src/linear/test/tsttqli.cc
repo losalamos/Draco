@@ -11,14 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../tred2.hh"
-#include "../tqli.hh"
+#include "linear/tred2.hh"
+#include "linear/tqli.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -38,7 +35,7 @@ void tsttqli( UnitTest & ut)
     A[0+2*1] = 2.2;
     A[1+2*0] = 2.2;
     A[1+2*1] = 3.2;
-    
+
     vector<double> d, e;
 
     // Trivial example
@@ -79,27 +76,12 @@ void tsttqli( UnitTest & ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tsttqli(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tsttqli, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tsttqli, An unknown exception was thrown."
-             << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, release );
+    try { tsttqli(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tsttqli.cc

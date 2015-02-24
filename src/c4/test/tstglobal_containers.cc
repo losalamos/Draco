@@ -3,22 +3,16 @@
  * \file   c4/test/tstglobal_containers.cc
  * \author Kent Budge
  * \date   Mon Mar 24 09:41:04 2008
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-#include "c4/config.h"
 
 #include "ds++/Release.hh"
-#include "../ParallelUnitTest.hh"
-#include "../C4_Functions.hh"
-#include "../global_containers.i.hh"
-#include "ds++/Assert.hh"
-#include <iostream>
-#include <vector>
+#include "c4/ParallelUnitTest.hh"
+#include "c4/global_containers.i.hh"
 #include <cmath>
 #include <set>
 
@@ -39,9 +33,9 @@ void tstglobal_containers(UnitTest &ut)
         set<unsigned> local_set;
         local_set.insert(pid);
         local_set.insert(number_of_processors+pid);
-        
+
         global_merge(local_set);
-        
+
         if (local_set.size()==2*number_of_processors)
         {
             ut.passes("Correct number of global elements");
@@ -50,7 +44,7 @@ void tstglobal_containers(UnitTest &ut)
         {
             ut.failure("NOT correct number of global elements");
         }
-        
+
         for (unsigned p=0; p<number_of_processors; ++p)
         {
             if (local_set.count(p)!=1 ||
@@ -65,9 +59,9 @@ void tstglobal_containers(UnitTest &ut)
         map<unsigned, double> local_map;
         local_map[pid] = pid;
         local_map[number_of_processors+pid] = 2*pid;
-        
+
         global_merge(local_map);
-        
+
         if (local_map.size()==2*number_of_processors)
         {
             ut.passes("Correct number of global elements");
@@ -76,7 +70,7 @@ void tstglobal_containers(UnitTest &ut)
         {
             ut.failure("NOT correct number of global elements");
         }
-        
+
         for (unsigned p=0; p<number_of_processors; ++p)
         {
             if (local_map.count(p)!=1 ||
@@ -96,9 +90,9 @@ void tstglobal_containers(UnitTest &ut)
         map<unsigned, bool> local_map;
         local_map[pid] = false;
         local_map[number_of_processors+pid] = true;
-        
+
         global_merge(local_map);
-        
+
         if (local_map.size()==2*number_of_processors)
         {
             ut.passes("Correct number of global elements");
@@ -107,7 +101,7 @@ void tstglobal_containers(UnitTest &ut)
         {
             ut.failure("NOT correct number of global elements");
         }
-        
+
         for (unsigned p=0; p<number_of_processors; ++p)
         {
             if (local_map.count(p)!=1 ||
@@ -125,7 +119,7 @@ void tstglobal_containers(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-#endif // C4_MPI 
+#endif // C4_MPI
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, release);
@@ -135,25 +129,25 @@ int main(int argc, char *argv[])
         tstglobal_containers(ut);
         #else
         ut.passes("Test inactive for scalar" );
-        
-#endif // C4_MPI         
+
+#endif // C4_MPI
     }
     catch (std::exception &err)
     {
-        std::cout << "ERROR: While testing tstglobal_containers, " 
+        std::cout << "ERROR: While testing tstglobal_containers, "
                   << err.what()
                   << endl;
         ut.numFails++;
     }
     catch( ... )
     {
-        std::cout << "ERROR: While testing tstglobal_containers, " 
+        std::cout << "ERROR: While testing tstglobal_containers, "
                   << "An unknown exception was thrown."
                   << endl;
         ut.numFails++;
     }
     return ut.numFails;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstglobal_containers.cc

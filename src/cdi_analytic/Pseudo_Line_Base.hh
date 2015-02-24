@@ -14,7 +14,6 @@
 #define __cdi_analytic_Pseudo_Line_Base_hh__
 
 #include "parser/Expression.hh"
-#include <cmath>
 #include <cstdio>
 
 namespace rtt_cdi_analytic

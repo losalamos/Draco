@@ -21,7 +21,7 @@ if( DOXYGEN_FOUND )
       set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
    endif()
    # if AUTODOCDIR is set, use it, otherwise, default to
-   # CMAKE_INSTALL_PREFIX. 
+   # CMAKE_INSTALL_PREFIX.
    if( "${AUTODOCDIR}x" STREQUAL "x" )
       set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc )
    else()
@@ -31,7 +31,7 @@ if( DOXYGEN_FOUND )
   # Source directories that should be examined by doxygen Sets
   # ${DOXYGEN_INPUT}.  This value is embedded in the doxygen_config
   # file below.
-  set( DOXYGEN_INPUT 
+  set( DOXYGEN_INPUT
      "${PROJECT_SOURCE_DIR}/autodoc ${PROJECT_BINARY_DIR}/autodoc" )
 
   file( GLOB package_list ${PROJECT_SOURCE_DIR}/src/* )
@@ -41,6 +41,7 @@ if( DOXYGEN_FOUND )
         # message( "Doxygen will process ${package}" )
      endif()
      if( EXISTS ${package}/test/CMakeLists.txt )
+        set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/test" )
         set( DOXYGEN_EXAMPLES "${DOXYGEN_EXAMPLES} ${package}/test" )
         # message( "Doxygen will process examples found at ${package}/test" )
      endif()
@@ -48,7 +49,7 @@ if( DOXYGEN_FOUND )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
         # message( "Doxygen will process ${package}/autodoc" )
      endif()
-  endforeach()  
+  endforeach()
 
   # Also look for files that have been configured (.in files) and
   # placed in the BINARY_DIR.
@@ -60,7 +61,7 @@ if( DOXYGEN_FOUND )
         set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
         # message( "Doxygen will process ${package}/autodoc" )
      endif()
-  endforeach()  
+  endforeach()
 
   set( DOXYGEN_HTML_OUTPUT draco )
   set( DOXYGEN_DOTFILE_DIRS dot )
@@ -72,7 +73,7 @@ if( DOXYGEN_FOUND )
 
   add_custom_command(
     OUTPUT  "${PROJECT_BINARY_DIR}/autodoc/doxygen_config"
-    COMMAND "${CMAKE_COMMAND}" 
+    COMMAND "${CMAKE_COMMAND}"
             -DINFILE="${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
             -DOUTFILE="${PROJECT_BINARY_DIR}/autodoc/doxygen_config"
             -DPROJECT_NAME=${PROJECT_NAME}
@@ -114,7 +115,7 @@ if( DOXYGEN_FOUND )
     )
   add_custom_command(
     OUTPUT  "${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
-    COMMAND "${CMAKE_COMMAND}" 
+    COMMAND "${CMAKE_COMMAND}"
             -DINFILE="${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
             -DOUTFILE="${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
             -DCOMP_LINKS=${COMP_LINKS}
@@ -126,7 +127,7 @@ if( DOXYGEN_FOUND )
   )
 
   # Copy image files
-  # 
+  #
   # list of source files
   file( GLOB DOXYGEN_IMAGE_SOURCE_FILES *.jpg *.png html/*.jpg)
   # placeholder for final copy of images.
@@ -135,7 +136,7 @@ if( DOXYGEN_FOUND )
   # copy the files from source to binary directory.
   foreach( file ${DOXYGEN_IMAGE_SOURCE_FILES} )
     get_filename_component(tmp ${file} NAME)
-    set( DOXYGEN_IMAGE_FILES 
+    set( DOXYGEN_IMAGE_FILES
       "${DOXYGEN_IMAGE_FILES} ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${tmp}")
     configure_file(
       "${file}"
@@ -146,7 +147,7 @@ if( DOXYGEN_FOUND )
 
   # The actual doxygen command that will be run
   add_custom_command(
-    OUTPUT 
+    OUTPUT
        ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
        ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
     COMMAND "${DOXYGEN_EXECUTABLE}"
@@ -160,23 +161,22 @@ if( DOXYGEN_FOUND )
   # Target for building doxygen files.
   add_custom_target( autodoc
     DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
-    COMMENT "Building Doxygen based autodocs (HTML)...  
+    COMMENT "Building Doxygen based autodocs (HTML)...
 
 *** Autodoc HTML pages are at
     file://${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
 
 " )
 
-  add_custom_target( installandautodoc 
+  add_custom_target( installandautodoc
      COMMAND ${CMAKE_MAKE_PROGRAM} install
      COMMAND ${CMAKE_MAKE_PROGRAM} autodoc
      WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   )
 
 endif( DOXYGEN_FOUND )
-  
+
 # To Do:
 # 1. How to 'make clean'?
 # 2. Consider using tagfiles and building each component as an thread
 #    to decrease wall clock time needed to build docs.
-

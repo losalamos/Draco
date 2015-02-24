@@ -17,9 +17,9 @@
 //---------------------------------------------------------------------------//
 
 #include <string.h>
-#include "../Parse_Table.hh"
-#include "../File_Token_Stream.hh"
-#include "../String_Token_Stream.hh"
+#include "parser/Parse_Table.hh"
+#include "parser/File_Token_Stream.hh"
+#include "parser/String_Token_Stream.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"

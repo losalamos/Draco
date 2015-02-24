@@ -3,7 +3,7 @@
  * \file   roots/test/tstcubic1.cc
  * \author Kent G. Budge
  * \date   Wed Sep 15 10:12:52 2010
- * \brief  
+ * \brief
  * \note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,14 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../cubic1.hh"
+#include "roots/cubic1.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -31,7 +27,7 @@ using namespace rtt_roots;
 void tstcubic1(UnitTest &ut)
 {
     // Solve (x*x+1)*(x-1) = x*x*x-x*x+x-1 = 0
-    
+
     double root = cubic1(-1., 1., -1.);
 
     if (soft_equiv(root, 1.0))
@@ -51,7 +47,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
     try { tstcubic1(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstcubic1.cc

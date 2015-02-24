@@ -14,11 +14,6 @@
 #ifndef min_mnbrak_hh
 #define min_mnbrak_hh
 
-#include <cmath>
-#include <vector>
-#include <algorithm>
-
-#include "ds++/Assert.hh"
 #include "ds++/dbc.hh"
 #include "ds++/DracoMath.hh"
 
@@ -53,11 +48,11 @@ void mnbrak(double &ax,
 {
     using namespace std;
     using namespace rtt_dsxx;
-    
+
     double const GOLD = 1.618034;
     double const GLIMIT = 100.0;
     double const TINY = 1.0e-20;
-    
+
     fa = func(ax);
     fb = func(bx);
     if (fb>fa)

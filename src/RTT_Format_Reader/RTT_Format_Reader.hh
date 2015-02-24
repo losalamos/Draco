@@ -1,11 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/RTT_Format_Reader.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader library.
- * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -17,14 +17,9 @@
 #include "Header.hh"
 #include "Dims.hh"
 #include "Flags.hh"
-#include "NodeFlags.hh"
-#include "SideFlags.hh"
-#include "CellFlags.hh"
 #include "NodeDataIDs.hh"
 #include "SideDataIDs.hh"
 #include "CellDataIDs.hh"
-#include "CellDefs.hh"
-#include "Nodes.hh"
 #include "Sides.hh"
 #include "Cells.hh"
 #include "NodeData.hh"
@@ -34,14 +29,14 @@
 namespace rtt_RTT_Format_Reader
 {
 //===========================================================================//
-// class RTT_Format_Reader - 
+// class RTT_Format_Reader -
 //
 /*!
  * \brief  A generalized input routine to parse an RTT Format mesh file.
  *
- *\sa The RTT_Format_Reader class constructor automatically instantiates and 
- *    executes the readMesh member function used to parse the mesh data. 
- *    Accessor functions are provided for all of the remaining member classes 
+ *\sa The RTT_Format_Reader class constructor automatically instantiates and
+ *    executes the readMesh member function used to parse the mesh data.
+ *    Accessor functions are provided for all of the remaining member classes
  *    to allow data retrieval. The \ref rtt_mesh_reader_overview page presents
  *    a summary of the capabilities provided by the class.
  */
@@ -49,7 +44,7 @@ namespace rtt_RTT_Format_Reader
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //===========================================================================//
 
 class DLL_PUBLIC RTT_Format_Reader
@@ -124,7 +119,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \brief Returns the number of comment lines in the mesh file.
  * \return The number of comment lines.
  */
-    size_t get_header_ncomments() const { return header.get_ncomments(); }	
+    size_t get_header_ncomments() const { return header.get_ncomments(); }
 /*!
  * \brief Returns the specified comment line from the mesh file.
  * \param i Line number of the comment to be returned.
@@ -142,7 +137,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \brief Returns the problem time units (e.g, shakes).
  * \return Time units.
  */
-    string get_dims_prob_time_units() const 
+    string get_dims_prob_time_units() const
     { return dims.get_prob_time_units(); }
 /*!
  * \brief Returns the number of unique cell type definitions.
@@ -185,7 +180,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \brief Returns the number of node flag types.
  * \return The number of node flag types.
  */
-    size_t get_dims_nnode_flag_types() const 
+    size_t get_dims_nnode_flag_types() const
     { return dims.get_nnode_flag_types(); }
 /*!
  * \brief Returns the number of node flags for the specified node flag type.
@@ -221,7 +216,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \brief Returns the number of side flag types.
  * \return The number of side flag types.
  */
-    size_t get_dims_nside_flag_types() const 
+    size_t get_dims_nside_flag_types() const
     { return dims.get_nside_flag_types(); }
 /*!
  * \brief Returns the number of side flags for the specified side flag type.
@@ -245,7 +240,7 @@ class DLL_PUBLIC RTT_Format_Reader
  *        block.
  * \return The number of cell types.
  */
-    size_t get_dims_ncell_types() const { return dims.get_ncell_types(); }    
+    size_t get_dims_ncell_types() const { return dims.get_ncell_types(); }
 /*!
  * \brief Returns the cell type index for the specified cell type.
  * \param i Cell type number.
@@ -256,7 +251,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \brief Returns the number of cell flag types.
  * \return The number of cell flag types.
  */
-    size_t get_dims_ncell_flag_types() const 
+    size_t get_dims_ncell_flag_types() const
     { return dims.get_ncell_flag_types(); }
 /*!
  * \brief Returns the number of cell flags for the specified cell flag type.
@@ -276,7 +271,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flagtype Node flag type number.
  * \return The node flag type name.
  */
-    string get_node_flags_flag_type(int flagtype) const 
+    string get_node_flags_flag_type(int flagtype) const
     { return spNodeFlags->get_flag_type(flagtype); }
 /*!
  * \brief Returns the index to the node flag type that contains the specified
@@ -284,7 +279,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param desired_flag_type Flag type.
  * \return The node flag type index.
  */
-    int get_node_flags_flag_type_index(string & desired_flag_type) const 
+    int get_node_flags_flag_type_index(string & desired_flag_type) const
     { return spNodeFlags->get_flag_type_index(desired_flag_type); }
 /*!
  * \brief Returns the node flag number associated with the specified node flag
@@ -293,14 +288,14 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flag_index Node flag index.
  * \return The node flag number.
  */
-    int get_node_flags_flag_number(int flagtype, int flag_index) const 
+    int get_node_flags_flag_number(int flagtype, int flag_index) const
     { return spNodeFlags->get_flag_number(flagtype, flag_index); }
 /*!
  * \brief Returns the number of node flags for the specified node flag type.
  * \param flagtype Node flag type number.
  * \return The number of node flags.
  */
-    size_t get_node_flags_flag_size(int flagtype) const 
+    size_t get_node_flags_flag_size(int flagtype) const
     { return spNodeFlags->get_flag_size(flagtype); }
 /*!
  * \brief Returns the node flag name associated with the specified node flag
@@ -309,7 +304,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flag_index Node flag index.
  * \return The node flag name.
  */
-    string get_node_flags_flag_name(int flagtype, int flag_index) const 
+    string get_node_flags_flag_name(int flagtype, int flag_index) const
     { return spNodeFlags->get_flag_name(flagtype, flag_index); }
 
     // side flags access
@@ -318,7 +313,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flagtype Side flag type number.
  * \return The side flag type name.
  */
-    string get_side_flags_flag_type(int flagtype) const 
+    string get_side_flags_flag_type(int flagtype) const
     { return spSideFlags->get_flag_type(flagtype); }
 /*!
  * \brief Returns the index to the side flag type that contains the specified
@@ -326,7 +321,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param desired_flag_type Flag type.
  * \return The side flag type index.
  */
-    int get_side_flags_flag_type_index(string & desired_flag_type) const 
+    int get_side_flags_flag_type_index(string & desired_flag_type) const
     { return spSideFlags->get_flag_type_index(desired_flag_type); }
 /*!
  * \brief Returns the side flag number associated with the specified side flag
@@ -334,14 +329,14 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flag_index Side flag index.
  * \return The side flag number.
  */
-    int get_side_flags_flag_number(int flagtype, int flag_index) const 
+    int get_side_flags_flag_number(int flagtype, int flag_index) const
     { return spSideFlags->get_flag_number(flagtype, flag_index); }
 /*!
  * \brief Returns the number of side flags for the specified side flag type.
  * \param flagtype Side flag type number.
  * \return The number of side flags.
  */
-    int get_side_flags_flag_size(int flagtype) const 
+    int get_side_flags_flag_size(int flagtype) const
     { return spSideFlags->get_flag_size(flagtype); }
 /*!
  * \brief Returns the side flag name associated with the specified side flag
@@ -349,7 +344,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flag_index Side flag index.
  * \return The side flag name.
  */
-    string get_side_flags_flag_name(int flagtype, int flag_index) const 
+    string get_side_flags_flag_name(int flagtype, int flag_index) const
     { return spSideFlags->get_flag_name(flagtype, flag_index); }
 
     // cell flags access
@@ -358,7 +353,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flagtype Cell flag type number.
  * \return The cell flag type name.
  */
-    string get_cell_flags_flag_type(int flagtype) const 
+    string get_cell_flags_flag_type(int flagtype) const
     { return spCellFlags->get_flag_type(flagtype); }
 /*!
  * \brief Returns the index to the cell flag type that contains the specified
@@ -366,7 +361,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param desired_flag_type Flag type.
  * \return The cell flag type index.
  */
-    int get_cell_flags_flag_type_index(string & desired_flag_type) const 
+    int get_cell_flags_flag_type_index(string & desired_flag_type) const
     { return spCellFlags->get_flag_type_index(desired_flag_type); }
 /*!
  * \brief Returns the cell flag number associated with the specified cell flag
@@ -375,14 +370,14 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flag_index Cell flag index.
  * \return The cell flag number.
  */
-    int get_cell_flags_flag_number(int flagtype, int flag_index) const 
+    int get_cell_flags_flag_number(int flagtype, int flag_index) const
     { return spCellFlags->get_flag_number(flagtype, flag_index); }
 /*!
  * \brief Returns the number of cell flags for the specified cell flag type.
  * \param flagtype Cell flag type number.
  * \return The number of cell flags.
  */
-    size_t get_cell_flags_flag_size(int flagtype) const 
+    size_t get_cell_flags_flag_size(int flagtype) const
     { return spCellFlags->get_flag_size(flagtype); }
 /*!
  * \brief Returns the cell flag name associated with the specified cell flag
@@ -391,7 +386,7 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param flag_index Cell flag index.
  * \return The cell flag name.
  */
-    string get_cell_flags_flag_name(int flagtype, int flag_index) const 
+    string get_cell_flags_flag_name(int flagtype, int flag_index) const
     { return spCellFlags->get_flag_name( flagtype, flag_index); }
 
     // node data ids access
@@ -400,14 +395,14 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param id_numb node_data_id index number.
  * \return The node_data_id name.
  */
-    string get_node_data_id_name(int id_numb) const 
+    string get_node_data_id_name(int id_numb) const
     { return spNodeDataIds->get_data_id_name(id_numb) ; }
 /*!
  * \brief Returns the units associated with the specified node_data_id.
  * \param id_numb node_data_id index number.
  * \return The node_data_id units.
  */
-    string get_node_data_id_units(int id_numb) const 
+    string get_node_data_id_units(int id_numb) const
     { return spNodeDataIds->get_data_id_units(id_numb); }
 
     // side data ids access
@@ -416,14 +411,14 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param id_numb side_data_id index number.
  * \return The side_data_id name.
  */
-    string get_side_data_id_name(int id_numb) const 
+    string get_side_data_id_name(int id_numb) const
     { return spSideDataIds->get_data_id_name(id_numb) ; }
 /*!
  * \brief Returns the units associated with the specified side_data_id.
  * \param id_numb side_data_id index number.
  * \return The side_data_id units.
  */
-    string get_side_data_id_units(int id_numb) const 
+    string get_side_data_id_units(int id_numb) const
     { return spSideDataIds->get_data_id_units(id_numb); }
 
     // cell data ids access
@@ -432,14 +427,14 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param id_numb cell_data_id index number.
  * \return The cell_data_id name.
  */
-    string get_cell_data_id_name(int id_numb) const 
+    string get_cell_data_id_name(int id_numb) const
     { return spCellDataIds->get_data_id_name(id_numb) ; }
 /*!
  * \brief Returns the units associated with the specified cell_data_id.
  * \param id_numb cell_data_id index number.
  * \return The cell_data_id units.
  */
-    string get_cell_data_id_units(int id_numb) const 
+    string get_cell_data_id_units(int id_numb) const
     { return spCellDataIds->get_data_id_units(id_numb); }
 
     // cell definitions access
@@ -454,27 +449,27 @@ class DLL_PUBLIC RTT_Format_Reader
  * \param i Cell definition index number.
  * \return The cell definition.
  */
-    const CellDef & get_cell_defs_cell_def(int i) const 
+    const CellDef & get_cell_defs_cell_def(int i) const
     { return spCellDefs->get_cell_def(i); }
 
-    rtt_dsxx::SP<CellDef> get_cell_defs_def(int i) const 
+    rtt_dsxx::SP<CellDef> get_cell_defs_def(int i) const
     { return spCellDefs->get_def(i); }
 /*!
- * \brief Returns the number of nodes associated with the specified cell 
+ * \brief Returns the number of nodes associated with the specified cell
  *        definition.
  * \param i Cell definition index number.
  * \return The number of nodes comprising the cell definition.
  */
     size_t get_cell_defs_nnodes(size_t i) const { return spCellDefs->get_nnodes(i); }
 /*!
- * \brief Returns the number of sides associated with the specified cell 
+ * \brief Returns the number of sides associated with the specified cell
  *        definition.
  * \param i Cell definition index number.
  * \return The number of sides comprising the cell definition.
  */
     size_t get_cell_defs_nsides(size_t i) const { return spCellDefs->get_nsides(i); }
 /*!
- * \brief Returns the side type number associated with the specified side 
+ * \brief Returns the side type number associated with the specified side
  *        index and cell definition.
  * \param i Cell definition index number.
  * \param s Side index number.
@@ -491,7 +486,7 @@ class DLL_PUBLIC RTT_Format_Reader
      * \return The side definition (i.e., the cell-node indexes that comprise
      *         the side).
      */
-    std::vector<size_t> const & get_cell_defs_side(int i, int s) const 
+    std::vector<size_t> const & get_cell_defs_side(int i, int s) const
     { return spCellDefs->get_side(i,s); }
     /*!
      * \brief Returns the side definition associated with the specified cell
@@ -503,31 +498,31 @@ class DLL_PUBLIC RTT_Format_Reader
      * \return The side definition (i.e., the cell-node indexes that comprise
      *         the side).
      */
-    std::vector<size_t> const & get_cell_defs_ordered_side(int i, int s) const 
+    std::vector<size_t> const & get_cell_defs_ordered_side(int i, int s) const
     { return spCellDefs->get_ordered_side(i,s); }
 /*!
  * \brief Returns the status of the flag indicating that the cell definitions
  *        have been redefined.
  * \return The status of the redefined flag.
  */
-    bool get_cell_defs_redefined() const 
+    bool get_cell_defs_redefined() const
     { return spCellDefs->get_redefined(); }
 /*!
- * \brief Returns the new node map for the specified cell definition when 
+ * \brief Returns the new node map for the specified cell definition when
  *        redefinition has been performed.
  * \param cell_def Cell definition index.
  * \return New cell definition node map.
  */
-     const vector_int & get_cell_defs_node_map(int cell_def) const 
+     const vector_int & get_cell_defs_node_map(int cell_def) const
      { return spCellDefs->get_node_map(cell_def);}
 /*!
- * \brief Returns the specified new node for the specified cell definition 
+ * \brief Returns the specified new node for the specified cell definition
  *        when redefinition has been performed.
  * \param cell_def Cell definition index.
  * \param node_ind Node number index.
  * \return New node number.
  */
-//    int get_cell_defs_node_map(int cell_def, int node_ind) const 
+//    int get_cell_defs_node_map(int cell_def, int node_ind) const
 //    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
     // nodes access
@@ -545,7 +540,7 @@ class DLL_PUBLIC RTT_Format_Reader
     vector_dbl get_nodes_coords(int node_numb) const
     { return spNodes->get_coords(node_numb); }
 /*!
- * \brief Returns the coordinate value for the specified node and direction 
+ * \brief Returns the coordinate value for the specified node and direction
  *        (i.e., x, y, and z).
  * \param node_numb Node number.
  * \param coord_index Coordinate index number (x = 0, y = 1, z = 2).
@@ -591,7 +586,7 @@ class DLL_PUBLIC RTT_Format_Reader
     vector_int get_sides_nodes(int side_numb) const
     { return spSides->get_nodes(side_numb); }
 /*!
- * \brief Returns the node number associated with the specified side and 
+ * \brief Returns the node number associated with the specified side and
  *        side-node index.
  * \param side_numb Side number.
  * \param node_numb Side-node index number.
@@ -630,7 +625,7 @@ class DLL_PUBLIC RTT_Format_Reader
     vector_int get_cells_nodes(int cell_numb) const
     { return spCells->get_nodes(cell_numb); }
 /*!
- * \brief Returns the node number associated with the specified cell and 
+ * \brief Returns the node number associated with the specified cell and
  *        cell-node index.
  * \param cell_numb Cell number.
  * \param node_numb Cell-node index number.
@@ -728,7 +723,7 @@ class DLL_PUBLIC RTT_Format_Reader
 
   public:
     void reformatData(
-        vector_vector_int const & cell_side_types_, 
+        vector_vector_int const & cell_side_types_,
         std::vector< std::vector< std::vector< size_t > > >
         const& cell_ordered_sides_);
 };

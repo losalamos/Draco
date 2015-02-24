@@ -11,11 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/fpe_trap.hh"
-#include "../zbrac.hh"
+#include "roots/zbrac.hh"
 
 using namespace std;
 using namespace rtt_roots;
@@ -56,7 +55,7 @@ void tstzbrac( UnitTest & ut )
     typedef double(*fpdd)(double);
     fpdd log_fpdd=&foo;
 
-    zbrac<fpdd>(log_fpdd, x1, x2); 
+    zbrac<fpdd>(log_fpdd, x1, x2);
     if (log(x1)*log(x2)<0.0)
     {
 	ut.passes("zbrac bracketed the zero of the log function");
@@ -78,11 +77,11 @@ void tstzbrac( UnitTest & ut )
     {
 	ut.failure("zbrack did NOT bracket the zero of the log function");
     }
-	
+
     x1 = 9.0;
     x2 = 10.0;
-    zbrac(zbrac_test_function, x1, x2); 
-    
+    zbrac(zbrac_test_function, x1, x2);
+
     if (zbrac_test_function(x1)*zbrac_test_function(x2)<0.0)
     {
 	ut.passes("zbrac bracketed the zero of zbrac_test_function");
@@ -110,16 +109,16 @@ void tstzbrac( UnitTest & ut )
 
 int main(int argc, char *argv[])
 {
-    
+
     ScalarUnitTest ut( argc, argv, release );
     // This test includes a check for -NaN by design.  To avoid failure, do
     // not run this test with fpe_trap enabled.
     rtt_dsxx::fpe_trap fpeTrap(true);
-    fpeTrap.disable();    
-    
+    fpeTrap.disable();
+
     try { tstzbrac(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstzbrac.cc

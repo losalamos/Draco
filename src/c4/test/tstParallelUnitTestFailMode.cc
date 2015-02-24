@@ -19,13 +19,12 @@
  * be exposed during normal use.
  */
 
-#include "../ParallelUnitTest.hh"
-#include "../global.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/global.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/SystemCall.hh"
 
-#include <string>
 #include <sstream>
 
 using namespace std;
@@ -83,7 +82,7 @@ void tstOne( UnitTest &ut, std::stringstream & output )
     {
         string msg("Test: failed on line");
         ITFAILS;
-        
+
         string const data( output.str() );
         size_t found = data.find( msg );
         if( ut.numFails == 3 && found != string::npos )
@@ -106,7 +105,7 @@ void tstOne( UnitTest &ut, std::stringstream & output )
         output.str(""); // empty the data
         output.clear(); // reset the flags
     }
-    
+
     // test pass functions
     {
         string msg("Testing the passes member function.");
@@ -140,7 +139,7 @@ void tstOne( UnitTest &ut, std::stringstream & output )
 void tstTwo( UnitTest &ut )
 {
     global_barrier();
-    
+
     // Only issue a failure on PE 1
     if( node() == 1 )
         ut.failure("Forced failure on PE 1");
@@ -182,7 +181,7 @@ int main(int argc, char *argv[])
 
         // ut will destruct now.  Part of this process is a global sum of
         // numPasses and numFails.  We must check these values after the try
-        // block.         
+        // block.
     }
     catch( rtt_dsxx::assertion &err )
     {
@@ -204,7 +203,7 @@ int main(int argc, char *argv[])
     }
     catch( ... )
     {
-        cout << "ERROR: While testing " << argv[0] << ", " 
+        cout << "ERROR: While testing " << argv[0] << ", "
              << "An unknown exception was thrown" << endl;
         return 1;
     }
@@ -225,7 +224,7 @@ int main(int argc, char *argv[])
         else
             tstTwoPass = false;
     }
-        
+
     // Overall test status:
     if( node_is_0 )
     {
@@ -246,7 +245,7 @@ int main(int argc, char *argv[])
     }
 
     return retval;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstunit_test.cc

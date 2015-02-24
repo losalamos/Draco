@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../mnbrak.hh"
+#include "min/mnbrak.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 

@@ -11,10 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../DracoMath.hh"
-#include "../Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/DracoMath.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -23,7 +23,7 @@
 void tstabs( rtt_dsxx::UnitTest &ut )
 {
     using rtt_dsxx::abs;
-    
+
     if (abs(-2.2)==abs(2.2))
         PASSMSG("Correctly calculated abs(double)");
     else
@@ -141,7 +141,7 @@ void test_linear_interpolate(rtt_dsxx::UnitTest & ut )
     ref = 2.5 * x - 1.0;
 
     if (!rtt_dsxx::soft_equiv(y, ref)) ITFAILS;
- 
+
     if( ut.numFails == 0 )
         PASSMSG("Linear interpolation checks ok.");
     else
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
         test_linear_interpolate(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstDracoMath.cc

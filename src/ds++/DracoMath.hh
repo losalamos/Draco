@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   ds++/DracoMath.hh
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
@@ -11,13 +11,12 @@
  * 2013-10-17 Many small header files were combined to create DracoMath.hh.
  */
 //---------------------------------------------------------------------------//
-// $Id$ 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoMath_hh
 #define rtt_dsxx_DracoMath_hh
 
-#include "ds++/config.h"
 #include "Assert.hh"
 #include <cmath>
 #include <cstdlib>
@@ -39,7 +38,7 @@ namespace rtt_dsxx
 // However, PGI does provide the C99 _macros_ of the same name (w/o namespace
 // qualifier).
 // ---------------------------------------------------------------------------//
-#if defined _WIN32 || defined __CYGWIN__ 
+#if defined _WIN32 || defined __CYGWIN__
 
 template< typename T >
 bool isNan(T a) { return _isnan(a); }
@@ -77,9 +76,9 @@ bool isFinite(T a) { return std::isfinite(a); }
  * the standard C library. We do our best to give a templatized version here.
  */
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief abs
- * 
+ *
  * \arg \a Ordered_Group
  *         A type for which operator< and unary operator- are defined.
  * \param a Argument whose absolute value is to be calculated.
@@ -87,7 +86,7 @@ bool isFinite(T a) { return std::isfinite(a); }
  */
 template <typename Ordered_Group>
 inline Ordered_Group abs(Ordered_Group a)
-{ 
+{
     if (a<0) return -a;
     else     return  a;
 }
@@ -113,9 +112,9 @@ inline long abs(long a)
 //---------------------------------------------------------------------------//
 // conj.hh
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Return the conjugate of a quantity.
- * 
+ *
  * The default implementation assumes a field type that is self-conjugate,
  * such as \c double.  An example of a field type that is \em not
  * self-conjugate is \c complex.
@@ -138,9 +137,9 @@ inline std::complex<double> conj(const std::complex<double> &x)
 //---------------------------------------------------------------------------//
 // cube.hh
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Return the cube of a value.
- * 
+ *
  * \arg \a Semigroup A type representing an algebraic structure closed under
  * multiplication such as the integers or the reals.
  *
@@ -156,9 +155,9 @@ inline Semigroup cube(Semigroup const &x)
 //---------------------------------------------------------------------------//
 // dim.hh
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Return the positive difference of the arguments.
- * 
+ *
  * This is a replacement for the FORTRAN DIM function.
  *
  * \arg \a Ordered_Group_Element A type for which operator< and unary
@@ -175,7 +174,7 @@ inline Semigroup cube(Semigroup const &x)
  * \deprecated A FORTRAN relic that should disappear eventually.
  */
 template <typename Ordered_Group_Element>
-inline Ordered_Group_Element dim(Ordered_Group_Element a, 
+inline Ordered_Group_Element dim(Ordered_Group_Element a,
 				 Ordered_Group_Element b)
 {
     if (a<b)
@@ -187,9 +186,9 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
 //---------------------------------------------------------------------------//
 // square.hh
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Return the square of a value.
- * 
+ *
  * \arg \a Semigroup A type representing an algebraic structure closed under
  * multiplication, such as the integers or the reals.
  *
@@ -205,7 +204,7 @@ inline Semigroup square(const Semigroup &x)
 //---------------------------------------------------------------------------//
 // pythag.hh
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute the hypotenuse of a right triangle.
  *
  * This function evaluates the expression \f$\sqrt{a^2+b^2}\f$ in a way that
@@ -256,16 +255,16 @@ inline double pythag(Real a, Real b)
  *
  * \return \f$|a|sgn(b)\f$
  */
- 
+
 template <typename Ordered_Group>
 inline Ordered_Group sign(Ordered_Group a,
 			  Ordered_Group b)
 {
     using rtt_dsxx::abs; // just to be clear
-    
-    if (b<0) 
+
+    if (b<0)
 	return -abs(a);
-    else 
+    else
 	return abs(a);
 }
 
@@ -280,7 +279,7 @@ inline Ordered_Group sign(Ordered_Group a,
  * \param[in] x  x coordinate associated with requested y value.
  * \return The y value associated with x based on linear interpolation between
  * (x1,y1) and (x2,y2).
- * 
+ *
  * Given two points (x1,y1) and (x2,y2), use linaer interpolation to find the
  * y value associated with the provided x value.
  *
@@ -314,5 +313,3 @@ inline double linear_interpolate( double const x1, double const x2,
 //---------------------------------------------------------------------------//
 // end of DracoMath.hh
 //---------------------------------------------------------------------------//
-
-

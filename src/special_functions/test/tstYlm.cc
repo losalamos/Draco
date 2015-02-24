@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Ylm.hh"
+#include "special_functions/Ylm.hh"
 #include "units/PhysicalConstants.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"

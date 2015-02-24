@@ -3,7 +3,6 @@
  * \file   linear/test/tstsvbksb.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,15 +10,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 #include "ds++/Release.hh"
-#include "../svdcmp.hh"
-#include "../svbksb.hh"
+#include "linear/svdcmp.hh"
+#include "linear/svbksb.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -46,45 +42,23 @@ void tstsvbksb(UnitTest &ut)
     svbksb(U, W, V, 2, 2, b, x);
 
     if (soft_equiv(b[0], x[0]*2 + x[1]*3))
-    {
-	ut.passes("0 is correct");
-    }
+	PASSMSG("0 is correct");
     else
-    {
-	ut.failure("0 is NOT correct");
-    }
+	FAILMSG("0 is NOT correct");
+
     if (soft_equiv(b[1], x[0]*1 + x[1]*5))
-    {
-	ut.passes("0 is correct");
-    }
+	PASSMSG("0 is correct");
     else
-    {
-	ut.failure("0 is NOT correct");
-    }
+	FAILMSG("0 is NOT correct");
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstsvbksb(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstsvbksb, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstsvbksb, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstsvbksb(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstsvbksb.cc

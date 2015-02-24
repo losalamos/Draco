@@ -16,10 +16,7 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/OdfmgOpacity.hh"
-#include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
-#include <vector>
-#include <string>
 
 namespace rtt_cdi_analytic
 {

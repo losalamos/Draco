@@ -20,7 +20,6 @@
 #ifndef c4_C4_Functions_hh
 #define c4_C4_Functions_hh
 
-#include "c4/config.h"
 #include "C4_sys_times.h"
 #include "C4_Datatype.hh"
 #include "C4_Traits.hh"
@@ -49,7 +48,7 @@ namespace rtt_c4
  * Example of many-to-one communications
  */
 //---------------------------------------------------------------------------//
- 
+
 // Forward declarations.
 class C4_Req;
 
@@ -139,7 +138,7 @@ DLL_PUBLIC int send(const T *buffer, int size, int destination,
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive.
 template<typename T>
-DLL_PUBLIC int receive(T *buffer, int size, int source, 
+DLL_PUBLIC int receive(T *buffer, int size, int source,
                        int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
@@ -179,8 +178,8 @@ C4_Req send_async( T const * buffer,
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
 // However, PGI-10 doesn't like this syntax and issues the warning:
-//    error: specifying a default argument when redeclaring an unreferenced 
-//    function template is nonstandard 
+//    error: specifying a default argument when redeclaring an unreferenced
+//    function template is nonstandard
 
 // template<typename T>
 // C4_Req send_async( T const * buffer,
@@ -211,8 +210,8 @@ void send_async( C4_Req       & request,
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
 // However, PGI-10 doesn't like this syntax and issues the warning:
-//    error: specifying a default argument when redeclaring an unreferenced 
-//    function template is nonstandard 
+//    error: specifying a default argument when redeclaring an unreferenced
+//    function template is nonstandard
 
 // template<typename T>
 // void send_async( C4_Req       & request,
@@ -225,7 +224,7 @@ void send_async( C4_Req       & request,
 /*!
  * \brief Do a point-to-point, non-blocking synchronous send.
  */
-template<typename T> DLL_PUBLIC 
+template<typename T> DLL_PUBLIC
 void send_is(C4_Req       & request,
              T      const * buffer,
              int            size,
@@ -276,8 +275,8 @@ C4_Req receive_async( T   * buffer,
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
 // However, PGI-10 doesn't like this syntax and issues the warning:
-//    error: specifying a default argument when redeclaring an unreferenced 
-//    function template is nonstandard 
+//    error: specifying a default argument when redeclaring an unreferenced
+//    function template is nonstandard
 
 // template<typename T>
 // C4_Req receive_async( T   * buffer,
@@ -295,7 +294,7 @@ void receive_async( C4_Req & request,
                     int      size,
                     int      source,
                     int      tag );
-template<typename T>  
+template<typename T>
 void receive_async( C4_Req & request,
                     T      * buffer,
                     int      size,
@@ -308,8 +307,8 @@ void receive_async( C4_Req & request,
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
 // However, PGI-10 doesn't like this syntax and issues the warning:
-//    error: specifying a default argument when redeclaring an unreferenced 
-//    function template is nonstandard 
+//    error: specifying a default argument when redeclaring an unreferenced
+//    function template is nonstandard
 
 // template<typename T>
 // void receive_async( C4_Req & request,
@@ -325,7 +324,7 @@ template<typename T>
 DLL_PUBLIC int broadcast(T *buffer, int size, int root);
 
 /*---------------------------------------------------------------------------*/
-/*! 
+/*!
  * \brief Send data from processor 0 to all other processors.
  */
 template<typename ForwardIterator, typename OutputIterator>
@@ -367,7 +366,7 @@ int scatterv(T *send_buffer,
 /*!
  * \brief Do a global sum of a scalar variable.
  */
-template<typename T> 
+template<typename T>
 DLL_PUBLIC void global_sum(T &x);
 
 //---------------------------------------------------------------------------//
@@ -381,21 +380,21 @@ DLL_PUBLIC void global_prod(T &x);
 /*!
  * \brief Do a global minimum of a scalar variable.
  */
-template<typename T> 
+template<typename T>
 DLL_PUBLIC void global_min(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global maximum of a scalar variable.
  */
-template<typename T> 
+template<typename T>
 DLL_PUBLIC void global_max(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global sum of an array.
  */
-template<typename T> 
+template<typename T>
 DLL_PUBLIC void global_sum(T *x, int n);
 
 //---------------------------------------------------------------------------//
@@ -409,20 +408,20 @@ DLL_PUBLIC void global_prod(T *x, int n);
 /*!
  * \brief Do an element-wise, global minimum of an array.
  */
-template<typename T> 
+template<typename T>
 DLL_PUBLIC void global_min(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global maximum of an array.
  */
-template<typename T> 
+template<typename T>
 DLL_PUBLIC void global_max(T *x, int n);
 
 //---------------------------------------------------------------------------//
 // TIMING FUNCTIONS
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Return the wall-clock time in seconds.
  */
 DLL_PUBLIC double wall_clock_time();
@@ -437,9 +436,9 @@ DLL_PUBLIC double wall_clock_resolution();
 //---------------------------------------------------------------------------//
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief See if a message is pending.
- * 
+ *
  * \param source
  * Processor from which a message may be pending.
  * \param tag
@@ -452,9 +451,9 @@ DLL_PUBLIC double wall_clock_resolution();
 DLL_PUBLIC bool probe(int source, int tag, int &message_size);
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Wait until a message (of unknown size) is pending.
- * 
+ *
  * \param source
  * Processor from which a message of unknown size is expected.
  * \param tag
@@ -465,11 +464,11 @@ DLL_PUBLIC bool probe(int source, int tag, int &message_size);
 DLL_PUBLIC void blocking_probe(int source, int tag, int &message_size);
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Wait until every one of a set of posted sends/receives is complete.
  *
  * This version returns no status information.
- * 
+ *
  * \param count
  * Size of the set of requests to wait on.
  * \param requests
@@ -478,9 +477,9 @@ DLL_PUBLIC void blocking_probe(int source, int tag, int &message_size);
 DLL_PUBLIC void wait_all(int count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Wait until one of a set of posted sends/receives is complete.
- * 
+ *
  * \param count
  * Size of the set of requests to wait on.
  * \param requests
@@ -517,7 +516,7 @@ DLL_PUBLIC std::string get_processor_name();
 
 //---------------------------------------------------------------------------//
 // Include the appropriate header for an underlying message passing
-// implementation.  
+// implementation.
 
 #ifdef C4_SCALAR
 #include "C4_Serial.hh"

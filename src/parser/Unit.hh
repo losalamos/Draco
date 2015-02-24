@@ -13,29 +13,28 @@
 #ifndef __parser_Unit_hh__
 #define __parser_Unit_hh__
 
-#include <cmath>
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstantsSI.hh"
 
 namespace rtt_parser
 {
- 
+
 //===========================================================================//
 /*!
  * \class Unit
  * \brief Define units and conversions to SI
  *
- * Unit is a POD struct describing a physical unit.  It gives 
+ * Unit is a POD struct describing a physical unit.  It gives
  * the dimensions of the unit in terms of the nine fundamental SI
  * units as well as the conversion factor to SI. The dimensions are
  * specified as real numbers because there are some physical quantities
  * whose unit description requires noninteger powers of the basic units.
  *
  * Several examples follow the struct definition.
- */ 
+ */
 //===========================================================================//
 
-struct Unit 
+struct Unit
 {
     // ----------------------------------------
     // DATA
@@ -55,9 +54,9 @@ struct Unit
 };
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute product of two units
- * 
+ *
  * \param a First factor
  * \param b Second factor
  * \return Product of the two factors
@@ -83,9 +82,9 @@ inline Unit operator*(Unit const &a, Unit const &b)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute product of unit and scalar
- * 
+ *
  * \param a Scalar factor
  * \param b Unit factor
  * \return Product of the two factors
@@ -101,9 +100,9 @@ inline Unit operator*(double const a, Unit const &b)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute product of unit and scalar
- * 
+ *
  * \param b Unit factor
  * \param a Scalar factor
  * \return Product of the two factors
@@ -115,9 +114,9 @@ inline Unit operator*(Unit const &b, double const a)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute ratio of two units
- * 
+ *
  * \param a Numerator
  * \param b Denominator
  * \return Ratio of the two factors
@@ -143,9 +142,9 @@ inline Unit operator/(Unit const &a, Unit const &b)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute reciprocal of a unit (times a scalar)
- * 
+ *
  * \param a Scalar numerator
  * \param b Unit denominator
  * \return Reciprocal of the unit times the scalar
@@ -171,9 +170,9 @@ inline Unit operator/(double const a, Unit const &b)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute unit divided by a scalar.
- * 
+ *
  * \param b Unit numerator
  * \param a Scalar denominator
  * \return unit divided by the scalar
@@ -185,9 +184,9 @@ inline Unit operator/(Unit const &b, double const a)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute unit raised to the power of a scalar.
- * 
+ *
  * \param b Unit base
  * \param a Scalar power
  * \return unit raised to power of the scalar
@@ -211,13 +210,13 @@ inline Unit pow(Unit const &b, double const a)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Test two units for equality
  *
  * Compare two Units for strict equality, in both dimensions and
  * conversion factor.  To test only the dimensions, ignoring the
  * conversion factor, use the \c is_compatible function.
- * 
+ *
  * \param a First factor
  * \param b Second factor
  * \return \c true if the units are identical; \c false otherwise
@@ -232,18 +231,18 @@ inline bool operator==(Unit const &a, Unit const &b)
         soft_equiv(a.A,b.A)      &&
 	soft_equiv(a.K,b.K)      &&
         soft_equiv(a.mol,b.mol)  &&
-        soft_equiv(a.cd,b.cd)    &&  
+        soft_equiv(a.cd,b.cd)    &&
 	soft_equiv(a.rad,b.rad)  &&
         soft_equiv(a.sr,b.sr)    &&
         soft_equiv(a.conv,b.conv);
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Test two units for inequality
  *
  * Compare two Units for inequality.
- * 
+ *
  * \param a First factor
  * \param b Second factor
  * \return \c !(a==b)
@@ -255,12 +254,12 @@ inline bool operator!=(Unit const &a, Unit const &b)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Test two units for compatibility
  *
  * Compare two Units for equality in dimensions only.  Ignore the conversion
  * factor.  For exact test of equality, use the \c operator== function.
- * 
+ *
  * \param a First factor
  * \param b Second factor
  * \return \c true if the units are compatible; \c false otherwise
@@ -269,7 +268,7 @@ inline bool operator!=(Unit const &a, Unit const &b)
 inline bool is_compatible(Unit const &a, Unit const &b)
 {
     return a.m ==  b.m  &&  a.kg == b.kg  &&  a.s == b.s  &&  a.A == b.A  &&
-	a.K == b.K  &&  a.mol == b.mol  &&  a.cd == b.cd  &&  
+	a.K == b.K  &&  a.mol == b.mol  &&  a.cd == b.cd  &&
 	a.rad == b.rad  &&  a.sr == b.sr;
 }
 
@@ -284,37 +283,37 @@ DLL_PUBLIC std::ostream &operator<<(std::ostream &, const Unit &);
 // No units
 
 //! dimensionless quantity (pure number)
-Unit const dimensionless = { 0, 0, 0, 0, 0, 0, 0, 0, 0,  1}; 
+Unit const dimensionless = { 0, 0, 0, 0, 0, 0, 0, 0, 0,  1};
 
 // Fundamental SI units
 
-Unit const m   = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  1}; //!< meter 
+Unit const m   = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  1}; //!< meter
 Unit const kg  = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  1}; //!< kilogram
 Unit const s   = { 0, 0, 1, 0, 0, 0, 0, 0, 0,  1}; //!< second
 Unit const A   = { 0, 0, 0, 1, 0, 0, 0, 0, 0,  1}; //!< ampere
 Unit const K   = { 0, 0, 0, 0, 1, 0, 0, 0, 0,  1}; //!< Kelvin
 Unit const mol = { 0, 0, 0, 0, 0, 1, 0, 0, 0,  1}; //!< mole
 Unit const cd  = { 0, 0, 0, 0, 0, 0, 1, 0, 0,  1}; //!< candela
-Unit const rad = { 0, 0, 0, 0, 0, 0, 0, 1, 0,  1}; //!< radian 
+Unit const rad = { 0, 0, 0, 0, 0, 0, 0, 1, 0,  1}; //!< radian
 Unit const sr  = { 0, 0, 0, 0, 0, 0, 0, 0, 1,  1}; //!< steradian
 
 // Derived SI units
 
 Unit const C  = { 0, 0, 1, 1, 0, 0, 0, 0, 0,  1}; //!< coulomb
-Unit const Hz = { 0, 0,-1, 0, 0, 0, 0, 0, 0,  1}; //!< hertz 
-Unit const N  = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< newton 
+Unit const Hz = { 0, 0,-1, 0, 0, 0, 0, 0, 0,  1}; //!< hertz
+Unit const N  = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< newton
 Unit const J  = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< joule
 Unit const Pa = {-1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< pascal
 Unit const W  = { 2, 1,-3, 0, 0, 0, 0, 0, 0,  1}; //!< watt
 Unit const V  = { 2, 1,-3,-1, 0, 0, 0, 0, 0,  1}; //!< volt
 Unit const F  = {-2,-1, 4, 2, 0, 0, 0, 0, 0,  1}; //!< farad
-Unit const ohm ={ 2, 1,-3,-2, 0, 0, 0, 0, 0,  1}; //!< ohm 
+Unit const ohm ={ 2, 1,-3,-2, 0, 0, 0, 0, 0,  1}; //!< ohm
 Unit const S  = {-2,-1, 3, 2, 0, 0, 0, 0, 0,  1}; //!< siemens
 Unit const Wb = { 2, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< weber
-Unit const T  = { 0, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< tesla 
-Unit const H  = { 2, 1,-2,-2, 0, 0, 0, 0, 0,  1}; //!< henry 
+Unit const T  = { 0, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< tesla
+Unit const H  = { 2, 1,-2,-2, 0, 0, 0, 0, 0,  1}; //!< henry
 Unit const lm = { 0, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lumen
-Unit const lx = {-2, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lux 
+Unit const lx = {-2, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lux
 
 // CGS units
 
@@ -337,8 +336,8 @@ Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1e3*rtt_units::electronChargeSI};
 //!< Thousands of electron volts
 
 // Numbers for which no conversion is requested
-Unit const constant = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< used for numbers with no units 
-Unit const raw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< another name for numbers with no units, i.e., 
+Unit const constant = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< used for numbers with no units
+Unit const raw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< another name for numbers with no units, i.e.,
 
 //---------------------------------------------------------------------------//
 /*! Systems of units

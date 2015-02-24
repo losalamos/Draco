@@ -11,7 +11,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <fstream>
 
 #include "ds++/Soft_Equivalence.hh"
@@ -19,7 +18,7 @@
 #include "units/PhysicalConstants.hh"
 
 #include "ds++/Release.hh"
-#include "../F1.hh"
+#include "special_functions/F1.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -32,7 +31,7 @@ using rtt_units::PI;
 
 void tstF1( UnitTest & ut )
 {
-    double f1 = F1(-10.0);   
+    double f1 = F1(-10.0);
     if (soft_equiv(f1, 1*exp(-10.0)*(1-exp(-10.0)/4.0), 2e-6))
     {
 	ut.passes("correct F1 for -10.0");
@@ -41,7 +40,7 @@ void tstF1( UnitTest & ut )
     {
 	ut.failure("NOT correct F1 for -10.0");
     }
-    f1 = F1(1000.0);   
+    f1 = F1(1000.0);
     if (soft_equiv(f1,
                    pow(1000.0, 2.0)/2.0
                    + PI*PI*1*pow(1000.0, 0.0)/6.0, 1.0e-10))
@@ -67,7 +66,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstF1(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstF1.cc

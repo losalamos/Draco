@@ -3,21 +3,16 @@
  * \file   roots/test/tstlnsrch.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright 2006-2015 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "c4/global.hh"
 #include "ds++/Release.hh"
-#include "linear/fnorm.hh"
-#include "../lnsrch.hh"
+#include "roots/lnsrch.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -57,11 +52,11 @@ void tstlnsrch(UnitTest &ut)
     bool check;
     lnsrch(xold,
 	   fold,
-	   g, 
+	   g,
 	   p,
 	   x,
 	   f,
-	   check, 
+	   check,
 	   fvec,
 	   &func,
 	   0.01,
@@ -79,11 +74,11 @@ void tstlnsrch(UnitTest &ut)
     for (unsigned i=0; i<p.size(); ++i) p[i] = -p[i];
     lnsrch(xold,
 	   fold,
-	   g, 
+	   g,
 	   p,
 	   x,
 	   f,
-	   check, 
+	   check,
 	   fvec,
 	   &func,
 	   0.01,
@@ -97,7 +92,7 @@ void tstlnsrch(UnitTest &ut)
     {
 	ut.passes("lnsrch successful");
     }
-   
+
 }
 
 //---------------------------------------------------------------------------//
@@ -116,12 +111,12 @@ int main(int argc, char *argv[])
     }
     catch( ... )
     {
-	cout << "ERROR: While testing tstlnsrch, " 
+	cout << "ERROR: While testing tstlnsrch, "
              << "An unknown exception was thrown." << endl;
 	return 1;
     }
     return 0;
-}   
+}
 
 //---------------------------------------------------------------------------//
 //                        end of tstlnsrch.cc

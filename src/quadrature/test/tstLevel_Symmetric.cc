@@ -3,24 +3,16 @@
  * \file   quadrature/test/tstLevel_Symmetric.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
 #include "quadrature_test.hh"
-
-#include "../Level_Symmetric.hh"
+#include "quadrature/Level_Symmetric.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -28,10 +20,6 @@ using namespace rtt_quadrature;
 
 //---------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
-
-
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -51,23 +39,9 @@ int main(int argc, char *argv[])
             quadrature_test(ut, quadrature);
         }
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstLevel_Symmetric, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstLevel_Symmetric, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
-}   
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
-//                        end of tstLevel_Symmetric.cc
+// end of tstLevel_Symmetric.cc
 //---------------------------------------------------------------------------//

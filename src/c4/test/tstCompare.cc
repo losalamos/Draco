@@ -11,8 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
-#include "../Compare.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/Compare.hh"
 #include "ds++/Release.hh"
 #include <sstream>
 

@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \brief  Declaration file for the class rtt_quadrature::Moment.
  * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
- *         All rights reserved. 
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Moment.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -14,7 +14,6 @@
 #define quadrature_Moment_hh
 
 #include "ds++/DracoMath.hh"
-#include "ds++/Assert.hh"
 
 namespace rtt_quadrature
 {
@@ -53,9 +52,9 @@ class Moment
         // Chief constraint satisfied by the Moment.
         Require(static_cast<unsigned>(abs(M))<=L);
     }
-    
+
     // Accessors
-    
+
     unsigned L()  const { return L_; };
     int M() const { return M_; };
 

@@ -8,22 +8,18 @@
 //---------------------------------------------------------------------------//
 
 #include "dummy_package.hh"
-#include "../ts_manager.hh"
-#include "../fixed_ts_advisor.hh"
-#include "../ratio_ts_advisor.hh"
-#include "../target_ts_advisor.hh"
-#include "../field_ts_advisor.hh"
+#include "timestep/ts_manager.hh"
+#include "timestep/fixed_ts_advisor.hh"
+#include "timestep/ratio_ts_advisor.hh"
+#include "timestep/target_ts_advisor.hh"
+#include "timestep/field_ts_advisor.hh"
 
 #include "ds++/Release.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "c4/global.hh"
 
-#include <iostream>
 #include <sstream>
-#include <string>
-#include <cmath>
 
 // forward declaration
 void run_tests(rtt_dsxx::UnitTest &ut);
@@ -80,18 +76,18 @@ void run_tests(rtt_dsxx::UnitTest &ut)
     mngr.add_advisor( sp_dt );
 
     // Set up a required time-step to be activated at the user's discretion
-    
+
     rtt_dsxx::SP< fixed_ts_advisor > sp_ovr(
 	new fixed_ts_advisor( "User Override",
-			      ts_advisor::req, 
+			      ts_advisor::req,
 			      override_dt, false) );
     mngr.add_advisor( sp_ovr );
-    
+
     // Set up a min timestep
 
     rtt_dsxx::SP< fixed_ts_advisor > sp_min(
 	new fixed_ts_advisor( "Minimum",
-			      ts_advisor::min, 
+			      ts_advisor::min,
 			      ts_advisor::ts_small()) );
     mngr.add_advisor( sp_min );
     sp_min -> set_fixed_value( dt_min );
@@ -116,11 +112,11 @@ void run_tests(rtt_dsxx::UnitTest &ut)
     mngr.add_advisor( sp_ulr );
 
     // Set up an advisor to watch for an upper limit on the time-step.
-    
+
     rtt_dsxx::SP< fixed_ts_advisor > sp_max( new fixed_ts_advisor( "Maximum" ) );
     mngr.add_advisor( sp_max );
     sp_max -> set_fixed_value( dt_max );
-    
+
     // Set up a target time advisor
 
     rtt_dsxx::SP< target_ts_advisor > sp_gd(
@@ -148,30 +144,30 @@ void run_tests(rtt_dsxx::UnitTest &ut)
 	{
 	    sp_ovr -> deactivate();
 	}
-	
+
 	// Pass in the advisors owned by package_XXX for
 	// that package to update
 
    	xxx.advance_state();
-	
+
 	// Compute a new time-step and print results to screen
-	
+
 	dt = mngr.compute_new_timestep();
 	mngr.print_summary();
     }
-    
+
     // Dump a list of the advisors to the screen
-    
+
     mngr.print_advisors();
-    
+
     // Dump the advisor states for visual examination.
-    
+
     mngr.print_adv_states();
-    
+
     //------------------------------------------------------------//
     // Confirm that at least some of the output is correct.
     //------------------------------------------------------------//
-    
+
     // Reference Values:
     double const prec( 1.0e-5 );
     double const ref1( 3.345679 );
@@ -195,7 +191,7 @@ void run_tests(rtt_dsxx::UnitTest &ut)
     else
 	FAILMSG("get_cycle() failed to return the expected cycle index.");
 
-    if( mngr.get_controlling_advisor() == "Electron Temperature" ) 
+    if( mngr.get_controlling_advisor() == "Electron Temperature" )
 	PASSMSG("get_controlling_advisor() returned expected string.");
     else
 	FAILMSG("get_controlling_advisor() failed to return the expected string.");
@@ -285,9 +281,9 @@ void run_tests(rtt_dsxx::UnitTest &ut)
         else
             FAILMSG( "target_ts_advisor set_target manipultor/accessors are failing.");
     }
-    
+
     // Check to make sure all processes passed.
-    
+
     int npassed = (ut.numPasses>0 && ut.numFails==0) ? 1 : 0 ;
     rtt_c4::global_sum( npassed );
 
@@ -311,7 +307,7 @@ void run_tests(rtt_dsxx::UnitTest &ut)
 void check_field_ts_advisor(rtt_dsxx::UnitTest &ut)
 {
     std::cout << "\nChecking the field_ts_advisor class...\n" << std::endl;
-    
+
     rtt_timestep::field_ts_advisor ftsa;
 
     // Check manipulators
@@ -345,12 +341,12 @@ void check_field_ts_advisor(rtt_dsxx::UnitTest &ut)
             return;
         }
         std::string line( output.substr(beg,end-beg) );
-        if( line == expected ) 
-            PASSMSG("'Fract Change' was set correctly."); 
-        else 
-            FAILMSG("Failed to set 'Fract Change' correctly."); 
+        if( line == expected )
+            PASSMSG("'Fract Change' was set correctly.");
+        else
+            FAILMSG("Failed to set 'Fract Change' correctly.");
     }
-    
+
    { // Check the Floor value
         std::string const expected( "Floor Value    : 0.0001" );
 
@@ -369,10 +365,10 @@ void check_field_ts_advisor(rtt_dsxx::UnitTest &ut)
             return;
         }
         std::string line( output.substr(beg,end-beg) );
-        if( line == expected ) 
-            PASSMSG("'Floor Value' was set correctly."); 
-        else 
-            FAILMSG("Failed to set 'Floor Value' correctly."); 
+        if( line == expected )
+            PASSMSG("'Floor Value' was set correctly.");
+        else
+            FAILMSG("Failed to set 'Floor Value' correctly.");
     }
 
    { // Check the Update Method value
@@ -393,13 +389,13 @@ void check_field_ts_advisor(rtt_dsxx::UnitTest &ut)
             return;
         }
         std::string line( output.substr(beg,end-beg) );
-        if( line == expected ) 
-            PASSMSG("'Update Method' was set correctly."); 
-        else 
-            FAILMSG("Failed to set 'Update Method' correctly."); 
+        if( line == expected )
+            PASSMSG("'Update Method' was set correctly.");
+        else
+            FAILMSG("Failed to set 'Update Method' correctly.");
     }
-      
-    return;    
+
+    return;
 }
 
 //---------------------------------------------------------------------------//

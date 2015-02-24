@@ -15,7 +15,6 @@
 #define roots_zbrac_i_hh
 
 #include "ds++/DracoMath.hh"
-#include "ds++/Assert.hh"
 
 namespace rtt_roots
 {
@@ -23,7 +22,7 @@ namespace rtt_roots
 //---------------------------------------------------------------------------//
 /*!
  * Bracket a root of a function.
- * 
+ *
  * On entry, <code>[x1,x2]</code> defines an initial search interval.  On
  * successful return, the search interval <code>[x1,x2]</code> is guaranteed
  * to contain an odd number of roots if \c func is analytic in \c
@@ -55,17 +54,17 @@ namespace rtt_roots
  * the function.
  */
 
-template <class Function, class Real>
+template <typename Function, typename Real>
 void zbrac(Function func, Real &x1, Real &x2)
 {
     Require(x2>x1);
 
     using namespace std;
-    
+
     Real f1 = func(x1), f2 = func(x2), f3;
     Real af1 = (f1>0.? f1 : -f1);
     Real af2 = (f2>0.? f2 : -f2);
-    
+
     double scale = 0.5;
     while ((f1<0 && f2<0) ||
            (f1>0 && f2>0))
@@ -78,7 +77,7 @@ void zbrac(Function func, Real &x1, Real &x2)
 		throw std::domain_error("zbrac: "
 					"could not find search interval");
 	    }
-	    try 
+	    try
 	    {
 		Real f0 = func(x0);
 		if (!rtt_dsxx::isFinite(f0)) throw std::runtime_error("");
@@ -123,7 +122,7 @@ void zbrac(Function func, Real &x1, Real &x2)
 		throw std::domain_error("zbrac: "
 					"could not find search interval");
 	    }
-	    try 
+	    try
 	    {
 		Real f0 = func(x0);
 		if (!rtt_dsxx::isFinite(f0)) throw std::runtime_error("");
@@ -142,7 +141,7 @@ void zbrac(Function func, Real &x1, Real &x2)
 	    }
 	}
     }
-    
+
     Ensure((f1<=0 && f2>=0) ||
            (f1>=0 && f2<=0));
 }

@@ -14,7 +14,6 @@
 #define parser_Class_Parser_hh
 
 #include "ds++/SP.hh"
-#include "Token_Stream.hh"
 #include "Parse_Table.hh"
 
 namespace rtt_parser
@@ -58,7 +57,7 @@ template<class Class,
          class ReturnClass = Class,
          bool is_reentrant = false,
          class ParseTableClass = Parse_Table>
-class Class_Parser 
+class Class_Parser
 {
   public:
 

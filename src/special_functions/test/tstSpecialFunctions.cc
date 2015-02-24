@@ -11,10 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
-#include "../Factorial.hh"
-#include "../KroneckerDelta.hh"
+#include "special_functions/Factorial.hh"
+#include "special_functions/KroneckerDelta.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
@@ -103,7 +101,7 @@ void tstFactorial( rtt_dsxx::UnitTest &ut )
     {
         ut.passes("factorial(13) correctly triggered out of range error");
     }
-        
+
     if( factorial(-3) == 1 )
 	ut.passes("Found factorial(-3) == 1, factorial is working.");
     else
@@ -111,7 +109,7 @@ void tstFactorial( rtt_dsxx::UnitTest &ut )
 
     unsigned uOne(1);
     long     lOne(1);
-    
+
     if( factorial(uOne) == uOne )
 	ut.passes("Found factorial<unsigned>(1) == unsigned(1), factorial is working.");
     else
@@ -139,17 +137,17 @@ void tstFF( rtt_dsxx::UnitTest &ut )
         ut.passes("factorial_fraction(6,4) == 30");
     else
         ut.failure("factorial_fraction(6,4) != 30");
-    
+
     if( rtt_dsxx::soft_equiv( factorial_fraction(1,2), 0.5 ) )
         ut.passes("factorial_fraction(1,2) == 0.5");
     else
         ut.failure("factorial_fraction(1,2) != 0.5");
-   
+
     if( factorial_fraction(100,99) == 100 )
         ut.passes("factorial_fraction(100,99) == 100");
     else
         ut.failure("factorial_fraction(100,99) != 100");
-    
+
     return;
 }
 
@@ -167,7 +165,7 @@ int main(int argc, char *argv[])
         tstFF(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of test_sf.cc

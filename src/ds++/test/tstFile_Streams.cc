@@ -11,10 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../File_Streams.hh"
-#include "../Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/File_Streams.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 using rtt_dsxx::File_Input;
@@ -37,7 +37,7 @@ void test_fileio( rtt_dsxx::UnitTest & ut, const bool binary )
     int i = 5;
     string s = "  a string with spaces  ";
     double x = 5.6;
-    bool bf = false; 
+    bool bf = false;
     bool bt = true;
 
     // write the data
@@ -84,7 +84,7 @@ void test_fileio( rtt_dsxx::UnitTest & ut, const bool binary )
 	if(!soft_equiv(x, x_in)) ITFAILS;
 	if(bf != bf_in) ITFAILS;
 	if(bt != bt_in) ITFAILS;
-        
+
         File_Input fnull("");
     }
 
@@ -102,11 +102,11 @@ void test_fileio( rtt_dsxx::UnitTest & ut, const bool binary )
         char c;
         fr >> c;
         if(c!='c') ITFAILS;
-        
+
         fr.open("File_Stream_last_was_char.txt");
         fr >> c;
         if(c!='c') ITFAILS;
-        
+
         f.open("File_Stream_last_was_char.txt", false);
         f.open("File_Stream_last_was_char.txt", false);
         f << 'c';
@@ -134,14 +134,14 @@ void test_fileio( rtt_dsxx::UnitTest & ut, const bool binary )
 
 int main(int argc, char *argv[])
 {
-    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );    
+    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
 	test_fileio(ut,false); // ascii
 	test_fileio(ut,true);  // binary
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstFile_Streams.cc

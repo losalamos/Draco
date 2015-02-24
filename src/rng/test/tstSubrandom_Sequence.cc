@@ -13,7 +13,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <vector>
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -35,7 +34,7 @@ void tstSubrandom_Sequence( UnitTest & ut )
 {
     unsigned BASE = 1;
     unsigned COUNT = 25;
-    
+
     Halton_Sequence seq(BASE);
     for (unsigned i=0; i<COUNT; ++i)
     {
@@ -64,7 +63,7 @@ void tstSubrandom_Sequence( UnitTest & ut )
             ut.failure(__LINE__);
 
         // Test Halton_Sequene default constructor
-        
+
         Halton_Sequence halton;
         if( halton.base()  != 0 ) ut.failure(__LINE__);
         if( halton.count() != 0 ) ut.failure(__LINE__);
@@ -75,9 +74,9 @@ void tstSubrandom_Sequence( UnitTest & ut )
         double value = lcsg.shift();
         if( ! soft_equiv( value, 0.999741748906672 ) )
             ut.failure(__LINE__);
-        lcsg.shift_vector();        
+        lcsg.shift_vector();
     }
-    
+
     Sobol_Sequence sobol(1);
     for (unsigned i=0; i<COUNT; ++i)
     {
@@ -138,7 +137,7 @@ void tstSubrandom_Sequence( UnitTest & ut )
             break;
         }
         generator.shift_vector();
-        
+
 
 //         subrandom_out << (8*subrandom_sum/i - 4*PI/3) << '\n';
         subrandom_out << (8*subrandom_sum/i + 64./27) << '\n';
@@ -165,7 +164,7 @@ void tstSubrandom_Sequence( UnitTest & ut )
         ut.failure("Member function count did not return the expected value (imax=100).");
     }
     return;
-}    
+}
 
 //---------------------------------------------------------------------------//
 
@@ -174,7 +173,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstSubrandom_Sequence( ut ); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstSubrandom_Sequence.cc

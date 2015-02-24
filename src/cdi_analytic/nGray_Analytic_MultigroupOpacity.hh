@@ -14,7 +14,6 @@
 #ifndef __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
 #define __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
 
-#include "Analytic_Models.hh"
 #include "Analytic_MultigroupOpacity.hh"
 
 namespace rtt_cdi_analytic

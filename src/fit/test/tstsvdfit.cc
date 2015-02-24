@@ -3,7 +3,6 @@
  * \file   fit/test/tstsvdfit.cc
  * \author Kent Budge
  * \date   Tue Aug 26 12:02:36 2008
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -14,7 +13,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../svdfit.i.hh"
+#include "fit/svdfit.i.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -47,7 +46,7 @@ void tstsvdfit(UnitTest &ut)
         y[i] = 3.2 + i*(1.7 + 2.1*i);
         sig[i] = 1;
     }
-    
+
     svdfit(x,
            y,
             sig,
@@ -75,7 +74,7 @@ void tstsvdfit(UnitTest &ut)
     {
         y[i] += (i%2? -1.0e-5 : 1.0e-5);
     }
-    
+
     svdfit(x,
            y,
             sig,
@@ -107,7 +106,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try { tstsvdfit(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstsvdfit.cc

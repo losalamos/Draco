@@ -11,10 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Release.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Index_Converter.hh"
-#include "../Index_Counter.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Index_Converter.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -87,10 +86,10 @@ void test_looping( rtt_dsxx::UnitTest & ut )
     for (Index_Counter<3,1> it(box); it.is_in_range(); ++it)
     {
         const int it_index = it.get_index();
-        
+
         // Check the returned index against a manual count.
         if (it_index != index++) ITFAILS;
-        
+
         // Check the first and last index directly.
         if ( (it_index-1) %  3 + 1 != it.get_index(0) ) ITFAILS;
         if ( (it_index-1) / 12 + 1 != it.get_index(2) ) ITFAILS;
@@ -126,7 +125,7 @@ int main(int argc, char *argv[])
         test_next_index(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstIndex_Counter.cc

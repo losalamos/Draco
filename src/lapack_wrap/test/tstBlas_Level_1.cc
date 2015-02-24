@@ -8,7 +8,7 @@
 */
 //---------------------------------------------------------------------------//
 
-#include "../Blas.hh"
+#include "lapack_wrap/Blas.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
         tst_nrm2<double>(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstBlas_Level_1.cc

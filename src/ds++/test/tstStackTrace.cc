@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../StackTrace.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/StackTrace.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include <sstream>
 
 //---------------------------------------------------------------------------//

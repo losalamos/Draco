@@ -14,7 +14,7 @@
 #include <sstream>
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../Console_Token_Stream.hh"
+#include "parser/Console_Token_Stream.hh"
 
 using namespace std;
 using namespace rtt_parser;

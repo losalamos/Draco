@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Safe_Divide.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Safe_Divide.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

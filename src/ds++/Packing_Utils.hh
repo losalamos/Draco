@@ -16,9 +16,7 @@
 
 #include "Assert.hh"
 #include "Endian.hh"
-#include <string>
 #include <vector>
-#include <cstring>
 #include <map>
 
 namespace rtt_dsxx
@@ -41,11 +39,11 @@ namespace rtt_dsxx
  * Test the Packer and Unpacker classes.
  */
 //===========================================================================//
- 
+
 //===========================================================================//
 /*!
  * \class Packer
- 
+
  * \brief Pack data into a byte stream.
 
  * This class allows clients to "register" a char* stream and then load it
@@ -66,14 +64,14 @@ namespace rtt_dsxx
 
  * This class returns real char * pointers through its query functions.  We
  * do not use the STL iterator notation, even though that is how the pointers
- * are used, so as not to confuse the fact that these char * streams are \e 
+ * are used, so as not to confuse the fact that these char * streams are \e
  * continuous \e data byte-streams.  The pointers that are used to "iterate"
  * through the streams are real pointers, not an abstract iterator class.  So
  * one could think of these as iterators (they act like iterators) but they
  * are real pointers into a continguous memory char * stream.
 
  * Data can be unpacked using the Unpacker class.
- 
+
  */
 //===========================================================================//
 
@@ -87,7 +85,7 @@ class Packer
   private:
     // Size of packed stream.
     unsigned int stream_size;
-    
+
     // Pointer (mutable) into data stream.
     pointer ptr;
 
@@ -169,7 +167,7 @@ void Packer::set_buffer(unsigned int size_in, pointer buffer)
     Require (buffer);
 
     size_mode = false;
-    
+
     // set the size, begin and end pointers, and iterator
     stream_size  = size_in;
     ptr          = &buffer[0];
@@ -218,7 +216,7 @@ void Packer::set_buffer(unsigned int size_in, pointer buffer)
  p.set_buffer(p.size(), &buffer[0]);
  p << d1 << d2;                      // packs d1 and d2 into buffer
  \endcode
-   
+
  * Example not using compute_buffer_size_mode():
  \code
  double d1 = 5.0, d2 = 10.3;
@@ -239,10 +237,10 @@ void Packer::pack( T const &value )
         Require( begin_ptr );
         Ensure ( ptr >= begin_ptr );
         Ensure ( ptr + sizeof(T) <= end_ptr );
-	
+
         // copy value into the buffer
         std::memcpy( ptr, &value, sizeof(T) );
-	
+
         // advance the iterator pointer to the next location
         ptr += sizeof(T);
     }
@@ -255,7 +253,7 @@ void Packer::pack( T const &value )
  *
  * \param bytes Number of bytes of data to copy.
  * \param data The data.
- * 
+ *
  */
 template <typename IT>
 void Packer::accept(unsigned int bytes, IT data)
@@ -278,7 +276,7 @@ void Packer::accept(unsigned int bytes, IT data)
  * \brief Add the given number of blank bytes to the stream.
  *
  * \param bytes Number of bytes of blank data to add.
- * 
+ *
  */
 
 void Packer::pad(unsigned int bytes)
@@ -314,7 +312,7 @@ inline Packer& operator<<(Packer &p, const T &value)
 //===========================================================================//
 /*!
  * \class Unpacker
- 
+
  * \brief Unpack data from a byte stream.
 
  * This class allows clients to "register" a char* stream and then unload
@@ -322,7 +320,7 @@ inline Packer& operator<<(Packer &p, const T &value)
  * meaning for the type.  Under the hood it uses std::memcpy to perform the
  * unloading.  This class is easily understood by checking the examples.
 
- * No memory allocation is performed by the Unpacker. 
+ * No memory allocation is performed by the Unpacker.
 
  * The benefit of using the Unpacker class is that byte copies are isolated
  * into this one section of code, thus obviating the need for
@@ -340,7 +338,7 @@ inline Packer& operator<<(Packer &p, const T &value)
  * are real pointers into a continguous memory char * stream.
 
  * This class is the complement to the Packer class.
- 
+
  */
 //===========================================================================//
 
@@ -354,7 +352,7 @@ class Unpacker
   private:
     // Size of packed stream.
     unsigned int stream_size;
-    
+
     // Pointer (mutable) into data stream.
     const_pointer ptr;
 
@@ -373,14 +371,14 @@ class Unpacker
           begin_ptr(0),
           end_ptr(0),
           do_byte_swap(byte_swap)
-    {/*...*/} 
+    {/*...*/}
 
     // Set the buffer.
     inline void set_buffer(unsigned int, const_pointer);
 
     // Unpack value from buffer.
     template<typename T> inline void unpack(T &);
-    
+
     // >>> ACCESSORS
 
     //! Skip a specific number of bytes
@@ -431,7 +429,7 @@ class Unpacker
 void Unpacker::set_buffer(unsigned int size_in, const_pointer buffer)
 {
     Require (buffer);
-    
+
     // set the size, begin and end pointers, and iterator
     stream_size  = size_in;
     ptr          = &buffer[0];
@@ -479,8 +477,8 @@ void Unpacker::unpack(T &value)
  * \param bytes The number of bytes to skip.
  *
  * This is useful for data streams which have space inserted for alignment
- * purposes. 
- * 
+ * purposes.
+ *
  */
 void Unpacker::skip(unsigned int bytes)
 {
@@ -599,7 +597,7 @@ void pack_data(FT const &field, std::vector<char> &packed)
     {
 	packer << *itr;
     }
-    
+
     Ensure (packer.get_ptr() == &packed[0] + size);
     return;
 }
@@ -617,7 +615,7 @@ void pack_data( std::map< keyT, dataT > const & map,
     // determine the number of bytes in the field
     size_t const key_size  = numkeys * sizeof( keyT);
     size_t const data_size = numkeys * sizeof(dataT);
-    
+
     // make a vector<char> large enough to hold the packed field
     size_t const size(sizeof(size_t)+key_size+data_size);
     packed.resize(size);
@@ -659,7 +657,7 @@ void pack_data( std::map< keyT, std::vector< dataT > > const & map,
         // Size of data plus a size_t that indicates the vector length.
         data_size += (*itr).second.size() * sizeof( dataT ) + sizeof(size_t);
     }
-    
+
     // make a vector<char> large enough to hold the packed field
     size_t const size(key_size+data_size);
     packed.resize(size);
@@ -733,7 +731,7 @@ void pack_data( std::map< keyT, std::vector< dataT > > const & map,
  * \param field container or string that is empty; data will be unpacked into
  * it
  * \param packed vector<char> created by pack_data function (or in a manner
- * analogous) 
+ * analogous)
  */
 template<typename FT>
 void unpack_data( FT &field, std::vector<char> const & packed )
@@ -751,7 +749,7 @@ void unpack_data( FT &field, std::vector<char> const & packed )
 
     // make a field big enough to hold all the elements
     field.resize( field_size );
-    
+
     // unpack the data
     for( auto itr = field.begin(); itr != field.end(); itr++ )
 	unpacker >> *itr;
@@ -839,11 +837,11 @@ void unpack_data( std::map<keyT, std::vector<dataT> > & unpacked_map,
  * \param[in]  byte_swap (default: false)
  *
  * This function was written by Tim Kelley and previously lived in
- * jayenne/clubimc/src/imc/Bonus_Pack.hh. 
+ * jayenne/clubimc/src/imc/Bonus_Pack.hh.
  */
 inline void
-pack_vec_double( double const * start, 
-                 char         * dest, 
+pack_vec_double( double const * start,
+                 char         * dest,
                  uint32_t       num_elements,
                  bool           byte_swap = false)
 {

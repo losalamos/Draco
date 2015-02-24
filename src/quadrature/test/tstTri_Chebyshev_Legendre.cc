@@ -3,24 +3,17 @@
  * \file   quadrature/test/tstTri_Chebyshev_Legendre.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
 #include "quadrature_test.hh"
-
-#include "../Tri_Chebyshev_Legendre.hh"
+#include "quadrature/Tri_Chebyshev_Legendre.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -28,10 +21,6 @@ using namespace rtt_quadrature;
 
 //---------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
-
-
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -51,32 +40,18 @@ int main(int argc, char *argv[])
             Tri_Chebyshev_Legendre quadrature(8, 1, 2); // SN order = 8, mu=1, eta=2
             quadrature_test(ut, quadrature);
         }
-        Tri_Chebyshev_Legendre quadrature4(4); 
+        Tri_Chebyshev_Legendre quadrature4(4);
         quadrature_integration_test(ut, quadrature4);
-        Tri_Chebyshev_Legendre quadrature8(8); 
+        Tri_Chebyshev_Legendre quadrature8(8);
         quadrature_integration_test(ut, quadrature8);
-        Tri_Chebyshev_Legendre quadrature12(12); 
+        Tri_Chebyshev_Legendre quadrature12(12);
         quadrature_integration_test(ut, quadrature12);
-        Tri_Chebyshev_Legendre quadrature16(16); 
+        Tri_Chebyshev_Legendre quadrature16(16);
         quadrature_integration_test(ut, quadrature16);
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstGaussLegendre, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstGaussLegendre, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
-}   
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
-//                        end of tstTri_Chebyshev_Legendre.cc
+// end of tstTri_Chebyshev_Legendre.cc
 //---------------------------------------------------------------------------//

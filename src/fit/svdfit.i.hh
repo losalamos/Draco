@@ -14,12 +14,6 @@
 #ifndef fit_svdfit_i_hh
 #define fit_svdfit_i_hh
 
-#include <sstream>
-#include <algorithm>
-#include <vector>
-
-#include "ds++/Assert.hh"
-#include "ds++/DracoMath.hh"
 #include "linear/svdcmp.i.hh"
 #include "linear/svbksb.i.hh"
 #include "svdfit.hh"
@@ -29,7 +23,7 @@ namespace rtt_fit
 using std::vector;
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute a generalized least squares fit.
  *
  * Given a set of data, find the best linear combination of arbitrary basis
@@ -46,7 +40,7 @@ using std::vector;
  * independent variables for each data point.
  *
  * \param y Abscissae of data set.
- * 
+ *
  * \param sig Uncertainty in the data. Where unknown or not applicable, one
  * can set all values to 1.
  *
@@ -95,7 +89,7 @@ void svdfit(RandomContainer const &x,
     vector<double> b(ndata), afunc(ma);
 
     u.resize(ndata*ma);
-    
+
     for (unsigned i=0; i<ndata; ++i)
     {
         funcs(x[i], afunc);

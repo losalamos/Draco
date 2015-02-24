@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Norms.hh"
-#include "../Norms_Labeled.hh"
-#include "../Norms_Proc.hh"
+#include "norms/Norms.hh"
+#include "norms/Norms_Labeled.hh"
+#include "norms/Norms_Proc.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"

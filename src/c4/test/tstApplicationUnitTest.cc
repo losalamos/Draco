@@ -11,13 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ApplicationUnitTest.hh"
+#include "c4/ApplicationUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"
 #include "ds++/to_string.hh"
 #include <fstream>
-#include <sstream>
-#include <map>
 
 using namespace std;
 using namespace rtt_c4;
@@ -39,13 +37,13 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
         else
             unitTest.passes("Some tests did not pass (as expected).");
     }
-    
+
     cout << ">>> Executing unitTest.runTests()..." << endl;
     unitTest.runTests();
 
     //! \bug Consider using Boost or other 3rd party library to aid with
     // file path manipulation, including finding the cwd.
-    
+
     string const logFilename( unitTest.logFileName() );
     std::ostringstream msg;
     msg << appPath << "phw_hello-" << unitTest.nodes() <<".out";
@@ -55,8 +53,8 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
     else
     {
       ostringstream msg2;
-      msg2 << "Did not find expected log filename.  Looking for \"" 
-           << expLogFilename << "\" but found \"" << logFilename 
+      msg2 << "Did not find expected log filename.  Looking for \""
+           << expLogFilename << "\" but found \"" << logFilename
            << "\" instead.";
         unitTest.failure( msg2.str() );
     }
@@ -66,7 +64,7 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
     if( unitTest.reportTimingsI() ) std::cout << "yes";
     else std::cout << "no";
     std::cout << std::endl;
-    
+
     return;
 }
 
@@ -75,7 +73,7 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
 void tstTwo( ApplicationUnitTest &unitTest )
 {
     // This test is designed to fail.
-    
+
     std::string const extraArg;
     std::cout << ">>> Executing unitTest.runTest( extraArg )..." << std::endl;
     if( unitTest.runTest( extraArg ) )
@@ -86,7 +84,7 @@ void tstTwo( ApplicationUnitTest &unitTest )
         unitTest.failure("Didn't expect all tests to pass.");
     else
         unitTest.passes("Some tests failed as expected.");
-    
+
     // Kill fail flag (we expected this failure).
     unitTest.reset();
     // We need at least one pass.
@@ -114,13 +112,13 @@ void tstThree( ApplicationUnitTest &unitTest)
             Check( file );
             data << file.rdbuf();
     }
-        
+
         // Check expected word counts.
-        
+
         bool verbose(false);
         std::map< std::string, unsigned > word_count(
             ApplicationUnitTest::get_word_count( data, verbose ) );
-        
+
         if( word_count[ string("world!") ] == 1 )
         {
             unitTest.passes("Found single occurance of \"world!\"");
@@ -145,9 +143,9 @@ void tstThree( ApplicationUnitTest &unitTest)
 void tstTwoCheck( ApplicationUnitTest &unitTest, std::ostringstream & msg )
 {
     using rtt_dsxx::UnitTest;
-    
+
     std::map<string,unsigned> word_list( UnitTest::get_word_count( msg ) );
-    
+
     // Check the list of occurances against the expected values
     if( word_list[ string("Test") ] == 5 )
         unitTest.passes("Found 5 occurances of \"Test\"");
@@ -155,7 +153,7 @@ void tstTwoCheck( ApplicationUnitTest &unitTest, std::ostringstream & msg )
         unitTest.failure("Did not find 3 occurances of failure.");
     if( word_list[ string("passed") ] == 2 )
         unitTest.passes("Found 2 occurances of \"working\"");
-    
+
     return;
 }
 
@@ -164,16 +162,16 @@ std::string setTestPath( std::string const fqName )
 {
     using std::string;
     string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
-    if( idx == string::npos ) 
+    if( idx == string::npos )
     {
         // Didn't find directory separator, as 2nd chance look for Windows
-        // directory separator. 
+        // directory separator.
         string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
         if( idx == string::npos )
             // If we still cannot find a path separator, return "./"
             return string( string(".") + rtt_dsxx::dirSep );
     }
-    string pathName = fqName.substr(0,idx+1);    
+    string pathName = fqName.substr(0,idx+1);
     return pathName;
 }
 
@@ -187,8 +185,8 @@ int main(int argc, char *argv[])
         // build the application path + name
         string const appPath( setTestPath( argv[0] ) );
         string const appName( appPath + string("phw") );
-        
-        // Test ctor for ApplicationUnitTest 
+
+        // Test ctor for ApplicationUnitTest
         ApplicationUnitTest ut( argc, argv, rtt_dsxx::release, appName );
         tstOne( ut, appPath );
 
@@ -202,7 +200,7 @@ int main(int argc, char *argv[])
         // Overriding processor count. This should probably be run last since
         // it modifies ut.
         tstThree(ut);
-        
+
         ut.status();
     }
     catch( rtt_dsxx::assertion &err )
@@ -223,12 +221,12 @@ int main(int argc, char *argv[])
     }
     catch( ... )
     {
-        cout << "ERROR: While testing " << argv[0] << ", " 
+        cout << "ERROR: While testing " << argv[0] << ", "
              << "An unknown exception was thrown" << endl;
         return 1;
     }
     return 0;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstApplicationUnitTest.cc.cc

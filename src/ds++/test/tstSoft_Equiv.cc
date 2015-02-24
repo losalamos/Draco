@@ -11,11 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/config.h"
-#include "../Release.hh"
-#include "../Soft_Equivalence.hh"
-#include "../ScalarUnitTest.hh"
-#include <vector>
+#include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include <typeinfo>
 #include <deque>
 #include <sstream>
@@ -42,7 +40,7 @@ void test_bad_data_type(rtt_dsxx::ScalarUnitTest & ut)
             INT y = 31416;
             INT tol = 1l;
             /* bool result =  */ soft_equiv(x,y,tol);
-            throw "Bogus!";            
+            throw "Bogus!";
         }
         catch( rtt_dsxx::assertion const & /* error */ )
         {
@@ -73,26 +71,26 @@ void test_soft_equiv_scalar(rtt_dsxx::ScalarUnitTest & ut)
     test_bad_data_type<unsigned int>(ut);
     test_bad_data_type<int64_t     >(ut);
     test_bad_data_type<uint64_t    >(ut);
-    
+
     // test with doubles
     {
         double x = 0.9876543212345678;
         double y = 0.9876543212345678;
-        
+
         if (!soft_equiv(x, y, 1.e-16)) ITFAILS;
         if (!soft_equiv(x, y))         ITFAILS;
-        
+
         double z = 0.9876543212345679;
-        
+
         if (soft_equiv(x, z, 1.e-16)) ITFAILS;
-        
+
         double a = 0.987654321234;
-        
+
         if (!soft_equiv(x, a)) ITFAILS;
-        
+
         a = 0.987654321233;
-        
-        if (soft_equiv(x, a)) ITFAILS;      
+
+        if (soft_equiv(x, a)) ITFAILS;
 
         // checks for the new "reference=zero" coding 4aug00
         double zero = 0.0;
@@ -111,7 +109,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     values[0] = 0.3247333291470;
     values[1] = 0.3224333221471;
     values[2] = 0.3324333522912;
-    
+
     vector<double> const reference( values );
 
     if (soft_equiv(values.begin(), values.end(),
@@ -135,7 +133,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     v[2] = reference[2];
 
     if (soft_equiv(&v[0], &v[3],
-		   reference.begin(), reference.end()))    
+		   reference.begin(), reference.end()))
 	PASSMSG("Passed vector-pointer equivalence test.");
     else
 	ITFAILS;
@@ -178,7 +176,7 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 	PASSMSG("Passed deque<T> equivalence test.");
     else
 	ITFAILS;
-    
+
     return;
 }
 
@@ -188,14 +186,14 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
 #ifdef HAS_CXX11_INITIALIZER_LISTS
 void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
 {
-    
+
     vector<vector<double> > values = {
         { 0.3247333291470, 0.3224333221471, 0.3324333522912 },
         { 0.3247333292470, 0.3224333222471, 0.3324333523912 },
         { 0.3247333293470, 0.3224333223471, 0.3324333524912 }
     };
-    vector<vector<double> > const reference = values; 
-        
+    vector<vector<double> > const reference = values;
+
     if (soft_equiv_deep<2>().equiv(values.begin(), values.end(),
                                    reference.begin(), reference.end()))
         PASSMSG("Passed vector<vector<double>> equivalence test.");
@@ -212,17 +210,17 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
 
     // Compare C++ array to vector<vector<double>> data.
     // This cannot work because the C++ array is fundamentally a 1-D container.
-        
+
     // double v[3];
     // v[0] = 0.3247333291470;
     // v[1] = 0.3224333221471;
     // v[2] = 0.3324333522912;
     // if (soft_equiv(&v[0], &v[3],
-    //     	   reference.begin(), reference.end()))    
+    //     	   reference.begin(), reference.end()))
     //     PASSMSG("Passed vector-pointer equivalence test.");
     // else
     //     ITFAILS;
-       
+
     // if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
     //     ITFAILS;
 
@@ -242,13 +240,13 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
         }
     };
     vector<vector<vector<double> > > val = ref;
-    
+
     if (soft_equiv_deep<3>().equiv(val.begin(), val.end(),
                                    ref.begin(), ref.end()))
         PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
     else
         ITFAILS;
-    
+
     if (!soft_equiv_deep<3>().equiv(val.begin(), val.end(),
                                    ref.begin()+1, ref.end()))
         PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
@@ -277,7 +275,7 @@ int main(int argc, char *argv[])
 #endif
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstSoft_Equiv.cc

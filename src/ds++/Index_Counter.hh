@@ -12,9 +12,7 @@
 #ifndef dsxx_Index_Counter_hh
 #define dsxx_Index_Counter_hh
 
-#include "Assert.hh"
 #include "Index_Set.hh"
-#include "ds++/config.h"
 #include <vector>
 
 namespace rtt_dsxx
@@ -30,12 +28,12 @@ class Index_Converter;
  * \brief Facilitates iterating over a multi-dimensional range of indices.
  * \sa Index_Counter.cc for detailed descriptions.
  */
-/*! 
- * \example ds++/test/tstIndex_Counter.cc 
+/*!
+ * \example ds++/test/tstIndex_Counter.cc
  */
 //===========================================================================//
 template <unsigned D, int OFFSET>
-class Index_Counter 
+class Index_Counter
 {
   public:
 
@@ -44,7 +42,7 @@ class Index_Counter
     // NESTED CLASSES AND TYPEDEFS
 
     // CREATORS
-    
+
     //! Default constructors.
     Index_Counter(const Index_Set<D,OFFSET>& index_set);
 
@@ -52,7 +50,7 @@ class Index_Counter
     ~Index_Counter() { /* ... */ }
 
     // MANIPULATORS
-    
+
     //! Assignment operator for Index_Counter.
     Index_Counter& operator=(const Index_Counter &rhs);
 
@@ -103,7 +101,7 @@ class Index_Counter
 //---------------------------------------------------------------------------//
 /**
  * \brief Construct from an Index_Set object
- * 
+ *
  */
 template <unsigned D, int OFFSET>
 Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& converter)
@@ -121,7 +119,7 @@ Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& converter)
 //---------------------------------------------------------------------------//
 /**
  * \brief Increment the iterator
- * 
+ *
  */
 template <unsigned D, int OFFSET>
 void Index_Counter<D,OFFSET>::increment()
@@ -149,13 +147,13 @@ void Index_Counter<D,OFFSET>::increment()
         in_range = false;
     }
 
-    
+
 }
 
 //---------------------------------------------------------------------------//
 /**
  * \brief Decrement the iterator
- * 
+ *
  */
 template <unsigned D, int OFFSET>
 void Index_Counter<D,OFFSET>::decrement()
@@ -175,7 +173,7 @@ void Index_Counter<D,OFFSET>::decrement()
         }
         else
             break;
-    
+
     }
 
     if (indices[D-1] < index_set.min_of_index(D-1))

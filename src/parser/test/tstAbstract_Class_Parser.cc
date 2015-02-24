@@ -11,14 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "../Class_Parser.hh"
-#include "../Abstract_Class_Parser.hh"
-#include "../utilities.hh"
-#include "../File_Token_Stream.hh"
+#include "parser/Class_Parser.hh"
+#include "parser/Abstract_Class_Parser.hh"
+#include "parser/utilities.hh"
+#include "parser/File_Token_Stream.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/path.hh"
@@ -133,7 +129,7 @@ SP<Parent> parse_son(Token_Stream &tokens)
 }
 
 double parsed_snips_and_snails;
- 
+
 void parse_snips_and_snails(Token_Stream &tokens, int)
 {
     if (parsed_snips_and_snails>=0.0)
@@ -177,7 +173,7 @@ void
 Class_Parser<Son>::
 check_completeness_(Token_Stream &tokens)
 {
-    if (parsed_snips_and_snails == -1) 
+    if (parsed_snips_and_snails == -1)
     {
         tokens.report_semantic_error("no snips and snails specified");
     }
@@ -188,7 +184,7 @@ SP<Son>
 Class_Parser<Son>::create_object_()
 {
     SP<Son> Result(new Son(parsed_snips_and_snails));
-    
+
     return Result;
 }
 
@@ -228,7 +224,7 @@ SP<Parent> parse_daughter(Token_Stream &tokens)
 }
 
 double parsed_sugar_and_spice;
- 
+
 void parse_sugar_and_spice(Token_Stream &tokens, int)
 {
     if (parsed_sugar_and_spice>=0.0)
@@ -272,7 +268,7 @@ void
 Class_Parser<Daughter>::
 check_completeness_(Token_Stream &tokens)
 {
-    if (parsed_sugar_and_spice == -1) 
+    if (parsed_sugar_and_spice == -1)
     {
         tokens.report_semantic_error("no sugar and spice specified");
     }
@@ -283,7 +279,7 @@ SP<Daughter>
 Class_Parser<Daughter>::create_object_()
 {
     SP<Daughter> Result(new Daughter(parsed_sugar_and_spice));
-    
+
     return Result;
 }
 
@@ -354,7 +350,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try { test(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstAbstract_Class_Parser.cc

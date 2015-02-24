@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Check_Strings.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Check_Strings.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 
@@ -54,10 +54,10 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
     {
 	PASSMSG( "Successfully found bad characters in string definition." );
 	for (size_t i=0; i<result.size(); i++)
-	    cout << "Found disallowed character(s) in string: \"" 
+	    cout << "Found disallowed character(s) in string: \""
                  << *result[i] << "\"" << endl;
-	cout << "The following characters are forbidden:" << 
-	    endl << " \"" << bad_chars << "\"," << 
+	cout << "The following characters are forbidden:" <<
+	    endl << " \"" << bad_chars << "\"," <<
 	    " as well as any white-space characters." << endl;
     }
 
@@ -65,7 +65,7 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
         PASSMSG( "result.size() == 3" );
     if ( ut.numFails == 0 )
     {
-        if( *result[0] == "a#"   && 
+        if( *result[0] == "a#"   &&
             *result[1] == "xxx!" &&
             *result[2] == "space check" )
             PASSMSG("result has expected values.");
@@ -73,10 +73,10 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
             FAILMSG("result did not have expected values.");
     }
 
-    if( ut.numFails == 0 ) 
+    if( ut.numFails == 0 )
 	PASSMSG( "*** Illegal character function test: PASSED ***" );
     else
-        FAILMSG( "*** Illegal character function test: FAILED ***" );    
+        FAILMSG( "*** Illegal character function test: FAILED ***" );
 
     //---------------------------------------------------------------------------//
 
@@ -95,9 +95,9 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
     {
 	PASSMSG( "Successfully found bad characters in string definition." );
 	for (size_t i=0; i<result2.size(); i++)
-	    cout << "Size of string is not in allowable range: \"" 
+	    cout << "Size of string is not in allowable range: \""
                  << *result2[i] << "\"" << endl;
-	cout << "Strings lengths must be greater than " << low 
+	cout << "Strings lengths must be greater than " << low
              << " and less than " << high << "." << endl;
     }
 
@@ -110,7 +110,7 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
         else
             FAILMSG(" result2 does not have the expected content.");
     }
-    if( ut.numFails == 0 ) 
+    if( ut.numFails == 0 )
         PASSMSG( "*** String length function test: PASSED ***" );
     else
         FAILMSG( "*** String length function test: FAILED ***" );
@@ -122,7 +122,7 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
     cout << "Unique strings utility test:" << endl;
     vector<VS_iter> result3 =
 	rtt_dsxx::check_strings_unique(names.begin(), names.end());
-    if (result3.size() == 0) 
+    if (result3.size() == 0)
     {
 	FAILMSG( "Failed to find bad characters in string definition." );
     }
@@ -130,7 +130,7 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
     {
         PASSMSG( "Successfully found bad characters in string definition." );
 	for (size_t i=0; i<result3.size(); i++)
-	    cout << "Duplicate string found: \"" 
+	    cout << "Duplicate string found: \""
                  << *result3[i] << "\"" << endl;
 	cout << "All strings must be unique!" << endl;
     }
@@ -143,11 +143,11 @@ void Check_Strings_test( rtt_dsxx::UnitTest &ut )
         else
             FAILMSG( "result3 did not have the expected content." );
     }
-    if( ut.numFails == 0 ) 
+    if( ut.numFails == 0 )
         PASSMSG( "*** Unique string function test: PASSED ***" );
     else
         FAILMSG( "*** Unique string function test: FAILED ***" );
-    
+
     return;
 }
 

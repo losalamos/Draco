@@ -16,11 +16,7 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/GrayOpacity.hh"
-#include "cdi/OpacityCommon.hh"
-#include "ds++/Assert.hh"
 #include "ds++/SP.hh"
-#include <vector>
-#include <string>
 
 namespace rtt_cdi_analytic
 {

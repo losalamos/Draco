@@ -18,7 +18,7 @@
 #include "ds++/Soft_Equivalence.hh"
 
 #include "ds++/Release.hh"
-#include "../qrdcmp.hh"
+#include "linear/qrdcmp.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

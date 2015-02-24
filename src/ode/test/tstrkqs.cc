@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../rkqs.hh"
+#include "ode/rkqs.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 

@@ -11,7 +11,6 @@
 //---------------------------------------------------------------------------//
 
 #include "rng/Rnd_Control_Inline.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -236,7 +235,7 @@ int main(int argc, char *argv[])
         test_exceptions(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstRnd_Control.cc

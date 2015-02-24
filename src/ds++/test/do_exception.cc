@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../fpe_trap.hh"
-#include "../Assert.hh"
-#include "../StackTrace.hh"
+#include "ds++/fpe_trap.hh"
+#include "ds++/Assert.hh"
+#include "ds++/StackTrace.hh"
 #include <fstream>
 #include <cmath>
 #include <iostream>
@@ -33,10 +33,10 @@ void fcout( std::string const & msg, std::ofstream & fout )
 //---------------------------------------------------------------------------//
 /*
   Usage: do_exception test
-  
+
   If test is 0, then simple floating point operations
   are done which should not cause an error.
-     
+
   Otherwise, other test values should cause an exception.
   Specifically, valid test values are
      1: test double division by zero
@@ -123,11 +123,11 @@ void run_test(int /*argc*/, char *argv[])
                 // exp() should work, but on 64-bit linux, it's not raising the
                 // overflow flag:
                 // result = exp(result); // should fail at some i
-                
+
                 // ... so instead:
                 result = result * result * result * result
                          * result; // should fail at some i
-                
+
             }
             fout << "  result = " << result << endl;
             break;
@@ -152,8 +152,8 @@ int main(int argc, char *argv[])
         {
             // keyword 'signal' shows up as a failure when processed by
             // test_filter.py.  To avoid this, we do not print the err.what()
-            // message. 
-            cout << "While running " << argv[0] << ", " 
+            // message.
+            cout << "While running " << argv[0] << ", "
                  << "a SIGFPE was successfully caught.\n\t"
                 // << err.what()
                  << endl;
@@ -165,11 +165,11 @@ int main(int argc, char *argv[])
                  << "An exception was caught when it was not expected.\n\t"
                 // << err.what()
                  << endl;
-        }        
+        }
     }
     catch( ... )
     {
-        cout << "ERROR: While testing " << argv[0] << ", " 
+        cout << "ERROR: While testing " << argv[0] << ", "
              << "An unknown exception was thrown."
              << endl;
         return 1;

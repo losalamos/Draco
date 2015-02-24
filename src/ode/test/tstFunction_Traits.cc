@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Function_Traits.hh"
+#include "ode/Function_Traits.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 

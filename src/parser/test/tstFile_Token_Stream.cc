@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include <sstream>
-#include "../File_Token_Stream.hh"
+#include "parser/File_Token_Stream.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/path.hh"
 #include "ds++/Release.hh"

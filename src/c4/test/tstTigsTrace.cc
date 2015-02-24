@@ -17,10 +17,9 @@
 // $Id: Tigs.hh 6056 2012-06-19 19:05:27Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "../TigsTrace.hh"
-#include "../ParallelUnitTest.hh"
+#include "c4/TigsTrace.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include <iostream>
 #include <functional>
 
 //---------------------------------------------------------------------------//
@@ -58,16 +57,16 @@ void test_trace( rtt_dsxx::UnitTest &ut )
         JstarTest[pe]=runningTot;
         runningTot+=rtt_c4::nodes()+pe;
     }
-   
+
     // reverse the pattern for the communication domain data
     size_t inversePE=rtt_c4::nodes()-rtt_c4::node();
     size_t I=JstarTest[inversePE];
     std::vector<int> M(I, 0);
     for( size_t i=0; i<I; i++ )
         M[i]=i;
-    
+
     rtt_c4::global_barrier();
-    rtt_c4::TigsTrace itrace(M, nRange); 
+    rtt_c4::TigsTrace itrace(M, nRange);
 
     std::vector<int> Jlocal(nRange,0);
     int base=0;
@@ -81,7 +80,7 @@ void test_trace( rtt_dsxx::UnitTest &ut )
     // test gather
 
     rtt_c4::global_barrier();
-    if( rtt_c4::node()==0 ) 
+    if( rtt_c4::node()==0 )
         std::cout << "Gather Test" << std::endl;
 
     std::vector<int> JGather(M.size(),0);
@@ -98,12 +97,12 @@ void test_trace( rtt_dsxx::UnitTest &ut )
         PASSMSG("gather std::vector<int> works.");
     else
         FAILMSG("gather std::vector<int> failed to return expected array.");
-   
+
     //----------------------------------------------------------------------
     //  test the scatterList function
 
     rtt_c4::global_barrier();
-    if( rtt_c4::node()==0 ) 
+    if( rtt_c4::node()==0 )
         std::cout << "ScatterList Test" << std::endl;
 
     int ierrScatterList=0;
@@ -113,7 +112,7 @@ void test_trace( rtt_dsxx::UnitTest &ut )
     std::vector<int> Ilocal(I,0);
     std::vector<int> IScatter(listSize,0);
     std::vector<int> counts_ret(rangeSize);;
-      
+
     // Enumerate the i locations so that when we scatter we know where they
     // went.
     int baseI=0;
@@ -123,9 +122,9 @@ void test_trace( rtt_dsxx::UnitTest &ut )
     }
     for( size_t i=0; i<I; i++ )
         Ilocal[i]=1000*rtt_c4::node()+i+1000;
-      
-    itrace.scatterList(Ilocal.begin(),     Ilocal.end(), 
-                       counts_ret.begin(), counts_ret.end(), 
+
+    itrace.scatterList(Ilocal.begin(),     Ilocal.end(),
+                       counts_ret.begin(), counts_ret.end(),
                        IScatter.begin(),   IScatter.end());
 
     // Test the result:
@@ -157,15 +156,15 @@ void test_trace( rtt_dsxx::UnitTest &ut )
     //  test a scatter sum
 
     rtt_c4::global_barrier();
-    if( rtt_c4::node()==0 ) 
+    if( rtt_c4::node()==0 )
         std::cout << "Scatter Test" << std::endl;
 
     int ierrScatter=0;
     std::vector<int> ICount(I, 1);
     std::vector<int> SSumResult(nRange,0);
 
-    itrace.scatter( ICount.begin(),   ICount.end(), 
-                    SSumResult.begin(), SSumResult.end(), 
+    itrace.scatter( ICount.begin(),   ICount.end(),
+                    SSumResult.begin(), SSumResult.end(),
                     std::plus<int>() );
 
     // Test the result:
@@ -192,7 +191,7 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try { test_trace(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstTigsTrace.cc

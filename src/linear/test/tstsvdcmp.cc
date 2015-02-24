@@ -3,7 +3,6 @@
  * \file   linear/test/tstsvdcmp.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,14 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include "ds++/Release.hh"
-#include "../svdcmp.hh"
+#include "linear/svdcmp.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -57,53 +52,29 @@ void tstsvdcmp(UnitTest &ut)
     UWV[2+3*1] = U[2+3*0]*WV[0+2*1] + U[2+3*1]*WV[1+2*1];
 
     if (soft_equiv(UWV[0+3*0], 2.0))
-    {
-	ut.passes("0,0 is correct");
-    }
+	PASSMSG("0,0 is correct");
     else
-    {
-	ut.failure("0,0 is NOT correct");
-    }
+	FAILMSG("0,0 is NOT correct");
     if (soft_equiv(UWV[0+3*1], 3.0))
-    {
-	ut.passes("0,1 is correct");
-    }
+	PASSMSG("0,1 is correct");
     else
-    {
-	ut.failure("0,1 is NOT correct");
-    }
+	FAILMSG("0,1 is NOT correct");
     if (soft_equiv(UWV[1+3*0], 1.0))
-    {
-	ut.passes("1,0 is correct");
-    }
+	PASSMSG("1,0 is correct");
     else
-    {
-	ut.failure("1,0 is NOT correct");
-    }
+	FAILMSG("1,0 is NOT correct");
     if (soft_equiv(UWV[1+3*1], 5.0))
-    {
-	ut.passes("1,1 is correct");
-    }
+	PASSMSG("1,1 is correct");
     else
-    {
-	ut.failure("1,1 is NOT correct");
-    }
+	FAILMSG("1,1 is NOT correct");
     if (soft_equiv(UWV[2+3*1], 4.0))
-    {
-	ut.passes("2,1 is correct");
-    }
+	PASSMSG("2,1 is correct");
     else
-    {
-	ut.failure("2,1 is NOT correct");
-    }
+	FAILMSG("2,1 is NOT correct");
     if (soft_equiv(UWV[2+3*1], 4.0))
-    {
-	ut.passes("2,1 is correct");
-    }
+	PASSMSG("2,1 is correct");
     else
-    {
-	ut.failure("2,1 is NOT correct");
-    }
+	FAILMSG("2,1 is NOT correct");
 
     // Now decompose transpose, to exercise different code paths
 
@@ -136,77 +107,38 @@ void tstsvdcmp(UnitTest &ut)
     UWV[1+2*2] = U[1+2*0]*WV[0+3*2] + U[1+2*1]*WV[1+3*2] + U[1+2*2]*WV[2+3*2];
 
     if (soft_equiv(UWV[0+2*0], 2.0))
-    {
-	ut.passes("0,0 is correct");
-    }
+	PASSMSG("0,0 is correct");
     else
-    {
-	ut.failure("0,0 is NOT correct");
-    }
+	FAILMSG("0,0 is NOT correct");
     if (soft_equiv(UWV[0+2*1], 1.0))
-    {
-	ut.passes("0,1 is correct");
-    }
+	PASSMSG("0,1 is correct");
     else
-    {
-	ut.failure("0,1 is NOT correct");
-    }
+	FAILMSG("0,1 is NOT correct");
     if (soft_equiv(UWV[0+2*2], 4.0))
-    {
-	ut.passes("0,2 is correct");
-    }
+	PASSMSG("0,2 is correct");
     else
-    {
-	ut.failure("0,2 is NOT correct");
-    }
+	FAILMSG("0,2 is NOT correct");
     if (soft_equiv(UWV[1+2*0], 3.0))
-    {
-	ut.passes("1,0 is correct");
-    }
+	PASSMSG("1,0 is correct");
     else
-    {
-	ut.failure("1,0 is NOT correct");
-    }
+	FAILMSG("1,0 is NOT correct");
     if (soft_equiv(UWV[1+2*1], 5.0))
-    {
-	ut.passes("1,1 is correct");
-    }
+	PASSMSG("1,1 is correct");
     else
-    {
-	ut.failure("1,1 is NOT correct");
-    }
+	FAILMSG("1,1 is NOT correct");
     if (soft_equiv(UWV[1+2*2], 4.0))
-    {
-	ut.passes("1,2 is correct");
-    }
+	PASSMSG("1,2 is correct");
     else
-    {
-	ut.failure("1,2 is NOT correct");
-    }
+	FAILMSG("1,2 is NOT correct");
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstsvdcmp(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstsvdcmp, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstsvdcmp, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstsvdcmp(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstsvdcmp.cc

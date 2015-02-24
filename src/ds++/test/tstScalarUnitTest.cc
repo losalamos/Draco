@@ -11,12 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 #include <sstream>
 #include <fstream>
 #include <cstring>
-#include <vector>
 #include <algorithm>
 #include <iterator>
 
@@ -100,7 +99,7 @@ void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
         unitTest.passes("Found 2 occurrences of \"working\"");
     else
         unitTest.failure("Did not find expected number of occurrences of \"working\"");
-    
+
     return;
 }
 
@@ -108,7 +107,7 @@ void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
 void tstGetWordCountFile( UnitTest & unitTest )
 {
     cout << "\ntstGetWordCountFile...\n" << endl;
-    
+
     // Generate a text file
     string filename("tstScalarUnitTest.sample.txt");
     ofstream myfile( filename.c_str() );
@@ -119,7 +118,7 @@ void tstGetWordCountFile( UnitTest & unitTest )
                << "foo bar baz\n"
                << "foo bar\n"
                << "foo\n\n";
-        myfile.close();            
+        myfile.close();
     }
 
     // Now read the file and parse the contents:
@@ -152,10 +151,10 @@ void tstdbcsettersandgetters( UnitTest & unitTest, int argc, char *argv[] )
 {
     std::cout << "Testing Design-by-Contract setters and getters "
               << "for the UnitTest class..." << std::endl;
-    
+
     // Silent version.
     ostringstream messages;
-    
+
     // DBC = 0 (all off)
     {
         ScalarUnitTest foo( argc, argv, release, messages );
@@ -203,7 +202,7 @@ void tstdbcsettersandgetters( UnitTest & unitTest, int argc, char *argv[] )
 
     if( unitTest.numPasses > 0 && unitTest.numFails == 0 )
         PASSMSG( "UnitTest Design-by-Contract setters and getters are working.");
-    
+
     return;
 }
 
@@ -216,7 +215,7 @@ void tstVersion(UnitTest &unitTest, char *test)
     int argc(3);
     // char *pptr[3];
     std::vector<string> vs_arguments(argc);
-    
+
     // Initialize the argument list
     vs_arguments[0] = std::string(test);
     vs_arguments[1] = std::string("a");
@@ -261,7 +260,7 @@ int main( int argc, char *argv[] )
         // Test ctor for ScalarUnitTest (also tests UnitTest ctor and member
         // function setTestName).
         ScalarUnitTest ut( argc, argv, release );
-    
+
         // Try to print the copyright and author list
         std::cout << copyright() << std::endl;
 
@@ -297,13 +296,13 @@ int main( int argc, char *argv[] )
     }
     catch( ... )
     {
-        cout << "ERROR: While testing " << argv[0] << ", " 
+        cout << "ERROR: While testing " << argv[0] << ", "
              << "An unknown exception was thrown" << endl;
         return 1;
     }
 
     return 0;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstScalarUnitTest.cc

@@ -14,10 +14,8 @@
 #ifndef __cdi_analytic_test_hh__
 #define __cdi_analytic_test_hh__
 
-#include "../Analytic_Models.hh"
+#include "cdi_analytic/Analytic_Models.hh"
 #include "ds++/Packing_Utils.hh"
-#include <iostream>
-#include <vector>
 
 namespace rtt_cdi_analytic_test
 {
@@ -30,7 +28,7 @@ class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
 {
   private:
     double a;
-    
+
   public:
     Marshak_Model(double a_) : a(a_) {/*...*/}
 

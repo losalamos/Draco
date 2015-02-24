@@ -9,7 +9,7 @@
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
  * class is to encapsulate the keywords and behavior of DBS parallel unit
- * tests. 
+ * tests.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -20,7 +20,6 @@
 
 #include "C4_Functions.hh"
 #include "ds++/UnitTest.hh"
-#include <iostream>
 
 namespace rtt_c4
 {
@@ -51,7 +50,7 @@ int main(int argc, char *argv[])
  * \endcode
  *
  * \test All of the member functions of this class are tested by
- * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
+ * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
  * \c --version on the command line.
  *
  * \warning The output from this class is closely tied to the DBS python
@@ -65,9 +64,9 @@ int main(int argc, char *argv[])
  * \c AC_TEST_APPLICATION.  Changes to these classes should be coordinated with
  * changes to these DBS m4 macro command
  */
-/*! 
- * \example c4/test/tstParallelUnitTest.cc 
- * This unit test demonstrates typical usage for ParallelUnitTest. * 
+/*!
+ * \example c4/test/tstParallelUnitTest.cc
+ * This unit test demonstrates typical usage for ParallelUnitTest. *
  */
 //===========================================================================//
 
@@ -76,7 +75,7 @@ class DLL_PUBLIC ParallelUnitTest : public rtt_dsxx::UnitTest
   public:
 
     // CREATORS
-    
+
     //! Default constructor.
     ParallelUnitTest( int            & argc,
                       char         **& argv,
@@ -90,12 +89,12 @@ class DLL_PUBLIC ParallelUnitTest : public rtt_dsxx::UnitTest
     ~ParallelUnitTest();
 
     // MANIPULATORS
-    
+
     //! The assignment operator is disabled.
     ParallelUnitTest& operator=( ParallelUnitTest const &rhs );
 
     // ACCESSORS
-    
+
     //! Provide a report of the number of unit test passes and fails.
     void status(void);
 };

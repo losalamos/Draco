@@ -12,19 +12,11 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
-#include "../Analytic_Gray_Opacity.hh"
-#include "../nGray_Analytic_MultigroupOpacity.hh"
-#include "../Analytic_Models.hh"
+#include "cdi_analytic/Analytic_Gray_Opacity.hh"
+#include "cdi_analytic/nGray_Analytic_MultigroupOpacity.hh"
 #include "cdi/CDI.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
-
-#include <string>
-#include <typeinfo>
-#include <algorithm>
-#include <cmath>
 #include <sstream>
 
 using namespace std;
@@ -68,15 +60,15 @@ void constant_test( rtt_dsxx::UnitTest & ut )
     if (typeid(grayp) != typeid(GrayOpacity *))              ITFAILS;
     if (typeid(*grayp) != typeid(Analytic_Gray_Opacity))     ITFAILS;
 
-    {       
+    {
         Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::ABSORPTION);
         if (anal_opacity.getDataDescriptor() != "Analytic Gray Absorption") ITFAILS;
     }
-    {       
+    {
         Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
         if (anal_opacity.getDataDescriptor() != "Analytic Gray Total") ITFAILS;
     }
-    
+
     // check the output
     vector<double> T(10);
     vector<double> rho(10);
@@ -92,7 +84,7 @@ void constant_test( rtt_dsxx::UnitTest & ut )
     vector<double> opacity_T   = grayp->getOpacity(T, 3.0);
     vector<double> opacity_rho = grayp->getOpacity(1.0, rho);
     vector<double> ref(10, constant_opacity);
-    
+
     if (opacity_T != ref)   ITFAILS;
     if (opacity_rho != ref) ITFAILS;
 
@@ -130,10 +122,10 @@ void user_defined_test( rtt_dsxx::UnitTest & ut )
     {
 	double ref         = 10.0 / (T[i]*T[i]*T[i]);
 	double error       = fabs(grayp->getOpacity(T[i], rho[i]) - ref);
-	double error_field = fabs(opacities[i] - ref);  
+	double error_field = fabs(opacities[i] - ref);
 
-	if (error > 1.0e-12 * ref)       ITFAILS; 
-	if (error_field > 1.0e-12 * ref) ITFAILS; 
+	if (error > 1.0e-12 * ref)       ITFAILS;
+	if (error_field > 1.0e-12 * ref) ITFAILS;
     }
 
     // check to make sure we can't unpack an unregistered analytic model
@@ -180,7 +172,7 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
     {
         SP<const GrayOpacity> total(new const Analytic_Gray_Opacity(smodel,
                                                                     rtt_cdi::TOTAL));
-        
+
         if (total->getDataDescriptor() != "Analytic Gray Total") ITFAILS;
     }
 
@@ -213,11 +205,11 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
 	double ref = 100.0 / (T[i]*T[i]*T[i]);
 	rtt_cdi::Model model   = rtt_cdi::ANALYTIC;
 	rtt_cdi::Reaction abs  = rtt_cdi::ABSORPTION;
-	rtt_cdi::Reaction scat = rtt_cdi::SCATTERING; 
+	rtt_cdi::Reaction scat = rtt_cdi::SCATTERING;
 
 	double error = fabs(cdi.gray(model,abs)->getOpacity(T[i], rho[i]) - ref);
 
-	if (error > 1.0e-12 * ref) ITFAILS; 
+	if (error > 1.0e-12 * ref) ITFAILS;
 
 	error = fabs(cdi.gray(model, scat)->getOpacity(T[i], rho[i]) - 1.0);
 
@@ -227,7 +219,7 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
     // Test the get_parameters() member function
     {
         std::vector<double> params( amodel->get_parameters() );
-        
+
         std::vector<double> expectedValue(8);
         expectedValue[0] =   0.0;
         expectedValue[1] = 100.0;
@@ -239,9 +231,9 @@ void CDI_test( rtt_dsxx::UnitTest & ut )
         expectedValue[7] =   1.0;
 
         double const tol(1.0e-12);
-        
+
         if( params.size() != expectedValue.size() ) ITFAILS;
-        
+
         if( soft_equiv( params.begin(), params.end(), expectedValue.begin(), expectedValue.end(), tol ) )
             PASSMSG("get_parameters() returned the analytic expression coefficients.");
         else
@@ -259,7 +251,7 @@ void packing_test( rtt_dsxx::UnitTest & ut )
     {
 	// lets make two models
 	SP<Analytic_Opacity_Model> amodel(new Polynomial_Analytic_Opacity_Model(0.0,100.0,-3.0,0.0));
-	
+
 	Analytic_Gray_Opacity absorption(amodel, rtt_cdi::ABSORPTION);
 
 	packed = absorption.pack();
@@ -288,9 +280,9 @@ void packing_test( rtt_dsxx::UnitTest & ut )
 
 	double error = fabs(ngray.getOpacity(T[i], rho[i]) - ref);
 
-	if (error > 1.0e-12 * ref)                      ITFAILS; 
+	if (error > 1.0e-12 * ref)                      ITFAILS;
     }
-    
+
     if (ngray.getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
     if (ngray.getModelType()    != rtt_cdi::ANALYTIC)   ITFAILS;
 
@@ -318,7 +310,7 @@ void type_test( rtt_dsxx::UnitTest & ut )
 	PASSMSG("RTTI type info is correct for SP to GrayOpacity.");
 	opac = dynamic_pointer_cast<Analytic_Gray_Opacity>(op);
     }
-    
+
     vector<double> parm = opac->get_Analytic_Model()->get_parameters();
 
     if (parm.size() != 1)                            ITFAILS;
@@ -352,7 +344,7 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
 
         if( datafilename.length()  == 0 &&
             expectedValue.length() == 0 )
-            PASSMSG("getDataFilename() returned an empty string."); 
+            PASSMSG("getDataFilename() returned an empty string.");
         else
             FAILMSG("getDataFilename() did not return an empty string.");
     }
@@ -364,7 +356,7 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
         vector<double> expectedValue;
 
         if( densityGrid == expectedValue )
-            PASSMSG("getDensityGrid() returned an empty string."); 
+            PASSMSG("getDensityGrid() returned an empty string.");
         else
             FAILMSG("getDensityGrid() did not return an empty string.");
     }
@@ -376,12 +368,12 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
         vector<double> expectedValue;
 
         if( opac.getNumDensities() == 0 )
-            PASSMSG("getNumDensities() returned 0."); 
+            PASSMSG("getNumDensities() returned 0.");
         else
             FAILMSG("getNumDensities() did not return 0.");
 
         if( densityGrid == expectedValue )
-            PASSMSG("getDensityGrid() returned an empty vector."); 
+            PASSMSG("getDensityGrid() returned an empty vector.");
         else
             FAILMSG("getDensityGrid() did not return an empty vector.");
     }
@@ -393,16 +385,16 @@ void default_behavior_tests( rtt_dsxx::UnitTest & ut )
         vector<double> expectedValue;
 
         if( opac.getNumTemperatures() == 0 )
-            PASSMSG("getNumTemperatures() returned 0."); 
+            PASSMSG("getNumTemperatures() returned 0.");
         else
-            FAILMSG("getNumTemperatures() did not return 0."); 
+            FAILMSG("getNumTemperatures() did not return 0.");
 
         if( temperatureGrid == expectedValue )
-            PASSMSG("getTemperatureGrid() returned an empty vector."); 
+            PASSMSG("getTemperatureGrid() returned an empty vector.");
         else
-            FAILMSG("getTemperatureGrid() did not return an empty vector."); 
+            FAILMSG("getTemperatureGrid() did not return an empty vector.");
     }
-    
+
     return;
 }
 
@@ -413,7 +405,6 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
         constant_test(ut);
         user_defined_test(ut);
         CDI_test(ut);
@@ -422,7 +413,7 @@ int main(int argc, char *argv[])
         default_behavior_tests(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstAnalytic_Gray_Opacity.cc

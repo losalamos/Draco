@@ -17,7 +17,6 @@
 #include <iostream>
 #include <limits>
 #include <cstring>
-#include <c4/config.h>
 #include "C4_Functions.hh"
 
 namespace rtt_c4

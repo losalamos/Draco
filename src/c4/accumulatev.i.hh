@@ -14,7 +14,6 @@
 #ifndef c4_accumulatev_t_hh
 #define c4_accumulatev_t_hh
 
-#include "accumulatev.hh"
 #include "C4_Functions.hh"
 #include "gatherv.hh"
 
@@ -29,7 +28,7 @@ namespace rtt_c4
 template<typename T, typename Tciter, typename BinaryOp>
 void accumulatev(Tciter   localBegin,
                  Tciter   localEnd,
-                 T        init, 
+                 T        init,
                  BinaryOp op)
 {
     // one processor - nothing to do.
@@ -70,7 +69,7 @@ void accumulatev(Tciter   localBegin,
 template<typename T, typename Tciter, typename BinaryOp>
 void accumulatev(Tciter   ,
                  Tciter   ,
-                 T        , 
+                 T        ,
                  BinaryOp )
 {
     // Nothing to do.

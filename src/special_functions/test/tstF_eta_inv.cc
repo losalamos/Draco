@@ -11,13 +11,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <cmath>
+#include <cmath> // fabs
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../F_eta.hh"
-#include "../F_eta_inv.hh"
+#include "special_functions/F_eta.hh"
+#include "special_functions/F_eta_inv.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -35,11 +34,11 @@ void tstF_eta_inv( rtt_dsxx::UnitTest & ut )
 
     const unsigned ntests = 18;
     // [2015-01-03 KT] I commented out the test for eta=800.0, T=1 because
-    // F_eta(reta,gamma) overflows. 
+    // F_eta(reta,gamma) overflows.
     double eta[ntests] = {
         -70.0, -5.0, -0.694, -0.693, 0.0, 5.0, 10.0, 20.0, 50.0, 100.0,
 // kt        800.0,
-        -50.0, -5.0, 0.0, 5.0, 
+        -50.0, -5.0, 0.0, 5.0,
         -20.0, -5.0, 5.0, 50.0
     };
     double T[ntests] = {
@@ -72,7 +71,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { tstF_eta_inv(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstF_eta_inv.cc

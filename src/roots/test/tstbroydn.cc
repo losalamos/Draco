@@ -11,11 +11,9 @@
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
-#include "../broydn.hh"
+#include "roots/broydn.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "c4/global.hh"
-#include <iostream>
-#include <vector>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -33,7 +31,7 @@ static void broydn_test_function(const vector<double> &x,
     fvec.resize(2);
     fvec[0] = cos(x[0]+x[1]);
     fvec[1] = sin(x[0]-x[1]);
-}    
+}
 
 //---------------------------------------------------------------------------//
 //! Test class for Broydn root finder
@@ -65,11 +63,11 @@ void tstbroydn(UnitTest &ut)
     vector<double> x(2);
     x[0] = 0.2;
     x[1] = -0.1;
-    
+
     // Check broydn solution method for function
     broydn(x, 100.0, &broydn_test_function, 1.0e-2);
-    
-    if (fabs(cos(x[0]+x[1])) > 1.0e-12 || 
+
+    if (fabs(cos(x[0]+x[1])) > 1.0e-12 ||
 	fabs(sin(x[0]-x[1])) > 1.0e-12)
     {
 	ut.failure("broydn: FAILED");
@@ -78,13 +76,13 @@ void tstbroydn(UnitTest &ut)
     {
 	ut.passes("broydn: passed");
     }
-    
+
     // Check broydn solution method for class
     x[0] += 0.2;
     x[1] -= 0.1;
     broydn(x, 100.0, Broydn_Test_Class(), 1.0e-2);
-    
-    if (fabs(cos(x[0]+x[1])) > 1.0e-12 || 
+
+    if (fabs(cos(x[0]+x[1])) > 1.0e-12 ||
 	fabs(sin(x[0]-x[1])) > 1.0e-12)
     {
 	ut.failure("broydn: FAILED");
@@ -98,7 +96,7 @@ void tstbroydn(UnitTest &ut)
     x[0] += 0.2;
     x[1] -= 0.1;
     broydn(x, 100.0, Broydn_Test_Class(), Broydn_Test_Class(), 1.0e-2, 0.0);
-    if (fabs(cos(x[0]+x[1])) > 1.0e-12 || 
+    if (fabs(cos(x[0]+x[1])) > 1.0e-12 ||
 	fabs(sin(x[0]-x[1])) > 1.0e-12)
     {
 	ut.failure("broydn: FAILED");
@@ -110,32 +108,13 @@ void tstbroydn(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, &release );
-	tstbroydn(ut);
-    }
-    catch( exception &err )
-    {
-        // Special case allows exit without errors.
-        if( err.what() != string( "Success" ) )
-        {
-            cout << "ERROR: While testing tstbroydn, " << err.what() << endl;
-            return 1;
-        }
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstbroydn, "
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, &release );
+    try { tstbroydn(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
-//                        end of tstbroydn.cc
+// end of tstbroydn.cc
 //---------------------------------------------------------------------------//

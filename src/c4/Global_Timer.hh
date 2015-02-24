@@ -16,8 +16,6 @@
 
 #include <map>
 #include <set>
-#include <string>
-#include <iostream>
 #include "Timer.hh"
 
 namespace rtt_c4

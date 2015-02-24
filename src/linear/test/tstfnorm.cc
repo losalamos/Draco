@@ -3,7 +3,6 @@
 * \file   linear/test/tstfnorm.cc
 * \author Kent Budge
 * \date   Mon Aug  9 13:39:20 2004
-* \brief  
 * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
 *         All rights reserved.
 */
@@ -11,14 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../fnorm.hh"
+#include "linear/fnorm.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -61,7 +56,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc,argv,release );
     try { tstfnorm(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstfnorm.cc

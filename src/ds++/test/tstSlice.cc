@@ -11,10 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../Slice.hh"
-#include <vector>
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/Slice.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -173,16 +172,12 @@ void tstSlice(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-	tstSlice(ut);
-    }
+    try { tstSlice(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstSlice.cc

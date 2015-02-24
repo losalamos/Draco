@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Index_Set.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Index_Set.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

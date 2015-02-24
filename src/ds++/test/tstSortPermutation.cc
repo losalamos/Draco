@@ -3,7 +3,6 @@
  * \file   test/ds++/tstSortPermutation.cc
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
- * \brief  
  * \note   Copyright (c) 2000-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,9 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../SortPermutation.hh"
-#include "../isSorted.hh"
-#include "../Release.hh"
+#include "ds++/SortPermutation.hh"
+#include "ds++/Release.hh"
 #include <iostream>
 #include <list>
 
@@ -23,6 +21,10 @@ namespace
 using std::cout;
 using std::endl;
 
+//---------------------------------------------------------------------------//
+// TESTS
+//---------------------------------------------------------------------------//
+
 void printStatus(const std::string &name, bool passed)
 {
     // Print the status of the test.
@@ -31,22 +33,21 @@ void printStatus(const std::string &name, bool passed)
     for (size_t i=0; i<name.length(); i++)
         stars += '*';
 
-    cout << endl;
-    cout <<     "********" << stars << "********************\n";
-    if (passed) 
+    cout <<     "\n********" << stars << "********************\n";
+    if (passed)
         cout << "**** " << name  << " Self Test: PASSED ****\n";
     else
         cout << "**** " << name  << " Self Test: FAILED ****\n";
     cout <<     "********" << stars << "********************\n";
     cout << endl;
-
 }
 
-template<class IT>
+//---------------------------------------------------------------------------//
+template<typename IT>
 inline bool testit(const std::string & /*name*/, IT first, IT last)
 {
     rtt_dsxx::SortPermutation lfsp(first, last);
-    
+
     typedef typename std::iterator_traits<IT>::value_type value_type;
     std::vector<value_type> vv1(first, last);
     std::vector<value_type> vv2;
@@ -57,7 +58,7 @@ inline bool testit(const std::string & /*name*/, IT first, IT last)
     IT lfi = first;
     for (size_t i=0; lfi != last; i++, ++lfi)
         vv1[lfsp.inv(i)] = *lfi;
-    
+
     std::copy(first, last,
 	      std::ostream_iterator<value_type>(std::cout, " "));
     std::cout << std::endl;
@@ -81,7 +82,7 @@ inline bool testit(const std::string & /*name*/, IT first, IT last)
     return passed;
 }
 
-template<class IT, class CMP>
+template<typename IT, typename CMP>
 inline bool testit(const std::string & /*name*/, IT first, IT last, const CMP &comp)
 {
     rtt_dsxx::SortPermutation lfsp(first, last, comp);
@@ -140,21 +141,21 @@ struct FooGT
     }
 };
 
-template<class F>
+template<typename F>
 struct evenIsLess
 {
     bool operator()(const F &f1, const F &f2) const
     {
 	int i1 = static_cast<int>(f1.d);
 	int i2 = static_cast<int>(f2.d);
-	
+
 	return i1%2 == 0 ? (
 	    (i2%2 == 0 ? i1 < i2 : true) ) :
 	    (i2%2 == 0 ? false : i1 < i2) ;
     }
 };
 
-  
+
 //---------------------------------------------------------------------------//
 
 int main( int /*argc*/, char * /*argv*/ [] )
@@ -163,7 +164,7 @@ int main( int /*argc*/, char * /*argv*/ [] )
 
     std::string name = "SortPermutation";
 
-    try 
+    try
     {
         bool passed = false;
 
@@ -197,7 +198,7 @@ int main( int /*argc*/, char * /*argv*/ [] )
 
         const FooGT cafg[] = { 64, 89, 64, 73, 14, 90, 63, 14 };
         const int ncafg =  sizeof(cafg)/sizeof(*cafg);
-	
+
         name = "SortPermutation(list<FooGT>, greater<FooGT>)";
         std::list<FooGT> lfg(cafg, cafg+ncafg);
         passed = testit( "list<FooGT>", lfg.begin(), lfg.end(),

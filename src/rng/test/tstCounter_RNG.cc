@@ -10,11 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <set>
-
 #include "rng/Counter_RNG.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -729,7 +726,7 @@ int main(int argc, char *argv[])
         test_unique(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstCounter_RNG.cc

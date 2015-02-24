@@ -21,8 +21,8 @@
 // #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/DracoMath.hh"
-#include "../String_Token_Stream.hh"
-#include "../Expression.hh"
+#include "parser/String_Token_Stream.hh"
+#include "parser/Expression.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

@@ -5,7 +5,7 @@
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Quadrature class header file.
  * \note   Copyright © 2000-2015 Los Alamos National Security, LLC. All rights
- *         reserved. 
+ *         reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id$
@@ -14,13 +14,8 @@
 #ifndef __quadrature_Quadrature_hh__
 #define __quadrature_Quadrature_hh__
 
-#include <vector>
-
 #include "ds++/SP.hh"
-#include "parser/Token_Stream.hh"
 #include "Ordinate_Space.hh"
-#include "QIM.hh"
-#include "Quadrature_Class.hh"
 
 namespace rtt_quadrature
 {
@@ -61,7 +56,7 @@ using rtt_parser::Token_Stream;
  * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
 //=======================================================================================//
-class Quadrature 
+class Quadrature
 {
   public:
 
@@ -114,7 +109,7 @@ class Quadrature
                                       double norm,
                                       bool include_starting_directions,
                                       bool include_extra_directions) const;
-    
+
     SP<Ordinate_Set> create_ordinate_set(unsigned dimension,
                                          Geometry,
                                          double norm,
@@ -123,21 +118,21 @@ class Quadrature
                                          bool include_starting_directions,
                                          bool include_extra_directions,
                                          Ordinate_Set::Ordering ordering) const;
-    
+
     SP<Ordinate_Set> create_ordinate_set(unsigned dimension,
                                          Geometry,
                                          double norm,
                                          bool include_starting_directions,
                                          bool include_extra_directions,
                                          Ordinate_Set::Ordering ordering) const;
-    
+
     SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
                                              Geometry,
                                              unsigned moment_expansion_order,
                                              bool include_extra_directions,
                                              Ordinate_Set::Ordering ordering,
                                              QIM qim) const;
-    
+
     SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
                                              Geometry,
                                              unsigned moment_expansion_order,
@@ -148,7 +143,7 @@ class Quadrature
                                              QIM qim) const;
 
     // STATICS
-    
+
     static void register_quadrature(string const &keyword,
                                     SP<Quadrature> parse_function(Token_Stream&) );
 

@@ -11,10 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <sstream>
-
-#include "../Token_Equivalence.hh"
+#include "parser/Token_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 
@@ -55,7 +53,7 @@ void tstOne( UnitTest & ut )
 
     // look for a keyword.
     check_token_keyword( tokens, "User Cpu time this time step", ut );
-    
+
     return;
 }
 
@@ -66,7 +64,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstOne(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstToken_Equivalence.cc

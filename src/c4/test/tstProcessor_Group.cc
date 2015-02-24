@@ -5,17 +5,14 @@
  * \date   Tue Sep 21 11:45:44 2004
  * \brief  Unit tests for the Processor_Group class and member functions.
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
- *         All rights reserved. 
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-
-#include "../C4_Functions.hh"
-#include "../ParallelUnitTest.hh"
-#include "../Processor_Group.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/Processor_Group.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 
@@ -32,7 +29,7 @@ void tstProcessor_Group( rtt_dsxx::UnitTest & ut )
 {
     unsigned const pid = rtt_c4::node();
 
-    // Test construction    
+    // Test construction
     Processor_Group comm(2);
     PASSMSG("Processor_Group constructed without exception.");
 
@@ -63,8 +60,8 @@ void tstProcessor_Group( rtt_dsxx::UnitTest & ut )
             goldglobalvec.push_back( (base+2*j)*1000+i );
 
     if( ! rtt_dsxx::soft_equiv( goldglobalvec.begin(), goldglobalvec.end(),
-                                globalvec.begin(), globalvec.end() ) ) ITFAILS;                
-    
+                                globalvec.begin(), globalvec.end() ) ) ITFAILS;
+
     return;
 }
 #endif // C4_MPI
@@ -82,7 +79,7 @@ int main(int argc, char *argv[])
 #endif //C4_MPI
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstProcessor_Group.cc

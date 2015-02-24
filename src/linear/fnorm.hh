@@ -14,7 +14,6 @@
 #ifndef linear_fnorm_hh
 #define linear_fnorm_hh
 
-#include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 
 namespace rtt_linear

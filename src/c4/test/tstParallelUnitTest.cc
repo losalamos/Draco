@@ -11,12 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <string>
 #include <sstream>
-
-#include "../ParallelUnitTest.hh"
-#include "../global.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/global.hh"
 #include "ds++/Release.hh"
 
 using namespace std;
@@ -44,7 +41,7 @@ void tstMemberFunctions( ParallelUnitTest &ut, stringstream & output )
         else
             cout << "Test: failed\n\t passes member function failed." << endl;
     }
-    
+
     // Test the PASSMSG macro
     {
         string msg("Testing the PASSMSG macro.");
@@ -64,7 +61,7 @@ void tstMemberFunctions( ParallelUnitTest &ut, stringstream & output )
         msg << "Done testing tstParallelUnitTest on node " << node() << ".";
         string const expectedString(msg.str());
         ut.status();
-        
+
         string const data( output.str() );
         size_t const found = data.find( expectedString );
         if( ut.numPasses == 2 && found != string::npos )
@@ -89,7 +86,7 @@ int main(int argc, char *argv[])
             rtt_c4::ParallelUnitTest ut(argc, argv, release, output);
             tstMemberFunctions(ut,output);
         } // closing scope should call the destructor for ParallelUnitTest
-        
+
         // Since we are capturing the output in a stringstream, we must echo
         // the output to stdout so that ctest can pick up the 'passed'
         // message.
@@ -103,18 +100,18 @@ int main(int argc, char *argv[])
             // Since we are capturing the output in a stringstream, we must
             // echo the output to stdout so that ctest can pick up the
             // 'passed' message.
-            cout << output.str() << endl;  
+            cout << output.str() << endl;
         }
         else
         {
-            cout << "ERROR: While testing " << argv[0] << ", " 
+            cout << "ERROR: While testing " << argv[0] << ", "
                  << err.what() << endl;
             retVal++;
         }
     }
     catch (exception &err)
     {
-        cout << "ERROR: While testing " << argv[0] << ", " 
+        cout << "ERROR: While testing " << argv[0] << ", "
              << err.what() << endl;
         retVal++;
     }
@@ -124,9 +121,9 @@ int main(int argc, char *argv[])
              << "An unknown exception was thrown." << endl;
         retVal++;
     }
-    
+
     return retVal;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstunit_test.cc

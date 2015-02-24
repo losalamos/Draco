@@ -3,7 +3,6 @@
  * \file   ds++/test/tstto_string.cc
  * \author Kent Budge
  * \date   Fri Jul 25 08:49:48 2008
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,11 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/config.h"
-#include "../to_string.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Soft_Equivalence.hh"
-#include "../Release.hh"
+#include "ds++/to_string.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/Release.hh"
 #include <cstdlib> // M_PI
 
 using namespace std;
@@ -44,21 +42,17 @@ void tstto_string( UnitTest &ut)
         ut.passes("double printed using default formatting.");
     else
         ut.failure("double printed with wrong format!");
-        
+
     return;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        tstto_string(ut);
-    }
+    try { tstto_string(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstto_string.cc

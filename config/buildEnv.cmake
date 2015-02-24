@@ -14,6 +14,9 @@
 #------------------------------------------------------------------------------#
 macro( dbsSetDefaults )
 
+  # make install less verbose.
+  set(CMAKE_INSTALL_MESSAGE LAZY)
+
   # if undefined, force build_type to "release"
   if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
     set( CMAKE_BUILD_TYPE "Debug" CACHE STRING

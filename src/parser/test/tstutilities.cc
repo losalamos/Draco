@@ -3,7 +3,6 @@
  * \file   parser/test/tstutilities.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,15 +10,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../utilities.hh"
-#include "../File_Token_Stream.hh"
-#include "../String_Token_Stream.hh"
+#include "parser/utilities.hh"
+#include "parser/File_Token_Stream.hh"
+#include "parser/String_Token_Stream.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/path.hh"
 #include "units/PhysicalConstants.hh"
-#include "units/PhysicalConstantsSI.hh"
-
 #include <limits>
 
 using namespace std;
@@ -37,7 +34,7 @@ void tstutilities(UnitTest &ut)
     // Build path for the input file "utilities.inp"
     string const inputFile(ut.getTestInputPath()
                            + std::string("utilities.inp") );
-    
+
     // Generate a File_Token_Stream
     File_Token_Stream tokens( inputFile );
 
@@ -118,7 +115,7 @@ void tstutilities(UnitTest &ut)
     double v[3];
     parse_vector(tokens, v);
     Token token = tokens.shift();
-    if (v[0] == 3. && v[1] == 0.0 && v[2] == 0.0 && 
+    if (v[0] == 3. && v[1] == 0.0 && v[2] == 0.0 &&
         token.type() == KEYWORD && token.text() == "stop")
     {
         ut.passes("1-D vector successfully parsed");
@@ -130,7 +127,7 @@ void tstutilities(UnitTest &ut)
 
     parse_vector(tokens, v);
     token = tokens.shift();
-    if (v[0] == 1. && v[1] == 2.0 && v[2] == 0.0 && 
+    if (v[0] == 1. && v[1] == 2.0 && v[2] == 0.0 &&
         token.type() == KEYWORD && token.text() == "stop")
     {
         ut.passes("2-D vector successfully parsed");
@@ -525,7 +522,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect bad uinteger correctly");
         }
         catch (...)
-        {        
+        {
             ut.passes("detected bad uinteger correctly");
         }
     }
@@ -537,7 +534,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect bad uinteger correctly");
         }
         else
-        {        
+        {
             ut.passes("detected bad uinteger correctly");
         }
     }
@@ -549,14 +546,14 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect bad positive integer correctly");
         }
         else
-        {        
+        {
             ut.passes("detected bad positive integer correctly");
         }
     }
     {
         String_Token_Stream string("+3");
         if (parse_integer(string) == 3)
-        {        
+        {
             ut.passes("correctly parsed +3");
         }
         else
@@ -572,7 +569,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect bad integer correctly");
         }
         catch (...)
-        {        
+        {
             ut.passes("detected bad integer correctly");
         }
     }
@@ -584,7 +581,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect bad integer correctly");
         }
         else
-        {        
+        {
             ut.passes("detected bad integer correctly");
         }
     }
@@ -595,7 +592,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("detected at real correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT detect at real for -6.5 correctly");
         }
     }
@@ -606,7 +603,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("detected at real correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT detect at real for +3 correctly");
         }
     }
@@ -617,7 +614,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("parsed real correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT parse real +3 correctly");
         }
     }
@@ -629,7 +626,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect bad real correctly");
         }
         catch (...)
-        {        
+        {
             ut.passes("detected bad real correctly");
         }
     }
@@ -641,7 +638,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect real overflow correctly");
         }
         else
-        {        
+        {
             ut.passes("detected real overflow correctly");
         }
     }
@@ -653,7 +650,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect nonpositive real correctly");
         }
         else
-        {        
+        {
             ut.passes("detected nonpositive real correctly");
         }
     }
@@ -666,7 +663,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect too short vector correctly");
         }
         else
-        {        
+        {
             ut.passes("detected too short vector correctly");
         }
     }
@@ -678,7 +675,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT detect no unit");
         }
         else
-        {        
+        {
             ut.passes("detected no unit correctly");
         }
 
@@ -691,7 +688,7 @@ void tstutilities(UnitTest &ut)
             ut.failure("did NOT parse bool");
         }
         else
-        {        
+        {
             ut.passes("parsed bool correctly");
         }
 
@@ -704,7 +701,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("parsed temperature correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT parse temperature correctly");
         }
 
@@ -717,7 +714,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("parsed nonnegative real correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT parse nonnegative real correctly");
         }
 
@@ -730,7 +727,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("parsed quantity correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT parse quantity correctly");
         }
     }
@@ -746,7 +743,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("parsed temperature correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT parse temperature correctly");
         }
 
@@ -763,7 +760,7 @@ void tstutilities(UnitTest &ut)
             ut.passes("parsed temperature correctly");
         }
         else
-        {        
+        {
             ut.failure("did NOT parse temperature correctly");
         }
 
@@ -785,7 +782,7 @@ void tstutilities(UnitTest &ut)
     // expressions.
     {
         using namespace rtt_units;
-        
+
         String_Token_Stream quantity_with_units("3e10 cm/s");
         String_Token_Stream bare_quantity("3e10");
 
@@ -814,7 +811,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn off mandatory units
         set_unit_expressions_are_required(false);
-       
+
         c = parse_quantity(quantity_with_units, m/s, "velocity");
         if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e8))
         {
@@ -840,7 +837,7 @@ void tstutilities(UnitTest &ut)
         // Turn mandatory units back on but switch internal units to cgs
         set_unit_expressions_are_required(true);
         set_internal_unit_system(UnitSystem(UnitSystemType().CGS()));
-       
+
         c = parse_quantity(quantity_with_units, m/s, "velocity");
         if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e10))
         {
@@ -865,7 +862,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn mandatory units off again
         set_unit_expressions_are_required(false);
-       
+
         c = parse_quantity(quantity_with_units, m/s, "velocity");
         if (quantity_with_units.error_count()==0 && soft_equiv(c, 3e10))
         {
@@ -892,7 +889,7 @@ void tstutilities(UnitTest &ut)
     // temperature expressions in K.
     {
         using namespace rtt_units;
-        
+
         String_Token_Stream quantity_with_units("273 K");
         String_Token_Stream bare_quantity("273");
 
@@ -924,7 +921,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn off mandatory units
         set_unit_expressions_are_required(false);
-       
+
         T = parse_temperature(quantity_with_units);
         if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.))
         {
@@ -950,7 +947,7 @@ void tstutilities(UnitTest &ut)
         // Turn mandatory units back on but switch internal units to X4
         set_unit_expressions_are_required(true);
         set_internal_unit_system(UnitSystem(UnitSystemType().X4()));
-       
+
         T = parse_temperature(quantity_with_units);
         if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.e-3/EV2K))
         {
@@ -975,7 +972,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn mandatory units off again
         set_unit_expressions_are_required(false);
-       
+
         T = parse_temperature(quantity_with_units);
         if (quantity_with_units.error_count()==0 && soft_equiv(T, 273.e-3/EV2K))
         {
@@ -1002,7 +999,7 @@ void tstutilities(UnitTest &ut)
     // temperature expressions in keV.
     {
         using namespace rtt_units;
-        
+
         String_Token_Stream quantity_with_units("0.001 keV");
         String_Token_Stream bare_quantity("0.001");
 
@@ -1034,7 +1031,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn off mandatory units
         set_unit_expressions_are_required(false);
-       
+
         T = parse_temperature(quantity_with_units);
         if (quantity_with_units.error_count()==0 && soft_equiv(T, EV2K))
         {
@@ -1060,7 +1057,7 @@ void tstutilities(UnitTest &ut)
         // Turn mandatory units back on but switch internal units to X4
         set_unit_expressions_are_required(true);
         set_internal_unit_system(UnitSystem(UnitSystemType().X4()));
-       
+
         T = parse_temperature(quantity_with_units);
         if (quantity_with_units.error_count()==0 && soft_equiv(T, 0.001))
         {
@@ -1085,7 +1082,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn mandatory units off again
         set_unit_expressions_are_required(false);
-       
+
         T = parse_temperature(quantity_with_units);
         if (quantity_with_units.error_count()==0 && soft_equiv(T, 0.001))
         {
@@ -1117,7 +1114,7 @@ void tstutilities(UnitTest &ut)
         vmap["x"] = pair<unsigned, Unit>(1, m);
 
         vector<double> var(2, 1U);
-        
+
         String_Token_Stream expression_with_units("0.5*(t+2*x*s/cm)*erg");
         String_Token_Stream expression_appending_units("3.7 erg-s");
         String_Token_Stream bare_expression("0.5*(t+2*x)");
@@ -1128,7 +1125,7 @@ void tstutilities(UnitTest &ut)
 
         SP<Expression> c =
             parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
-        
+
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 0.5*(1.+2*1./0.01)*1e-7))
         {
@@ -1141,7 +1138,7 @@ void tstutilities(UnitTest &ut)
         expression_with_units.rewind();
 
         c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
-        
+
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 3.7*1e-7))
         {
@@ -1166,7 +1163,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn off mandatory units
         set_unit_expressions_are_required(false);
-       
+
         c = parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 0.5*(1.+2*1./0.01)*1e-7))
@@ -1180,7 +1177,7 @@ void tstutilities(UnitTest &ut)
         expression_with_units.rewind();
 
         c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
-        
+
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 3.7*1e-7))
         {
@@ -1207,7 +1204,7 @@ void tstutilities(UnitTest &ut)
         // Turn mandatory units back on but switch internal units to cgs
         set_unit_expressions_are_required(true);
         set_internal_unit_system(UnitSystem(UnitSystemType().CGS()));
-       
+
         c = parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 0.5*(1.+2*1./1.)*1.))
@@ -1221,7 +1218,7 @@ void tstutilities(UnitTest &ut)
         expression_with_units.rewind();
 
         c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
-        
+
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 3.7))
         {
@@ -1246,7 +1243,7 @@ void tstutilities(UnitTest &ut)
 
         // Turn mandatory units off again
         set_unit_expressions_are_required(false);
-       
+
         c = parse_quantity(expression_with_units, erg*s, "action", 2U, vmap);
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 0.5*(1.+2*1./1.)*1.))
@@ -1260,7 +1257,7 @@ void tstutilities(UnitTest &ut)
         expression_with_units.rewind();
 
         c = parse_quantity(expression_appending_units, erg*s, "action", 2U, vmap);
-        
+
         if (expression_with_units.error_count()==0 &&
             soft_equiv((*c)(var), 3.7))
         {
@@ -1294,7 +1291,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try { tstutilities(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstutilities.cc

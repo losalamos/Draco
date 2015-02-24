@@ -11,12 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
-#include "../swap.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/swap.hh"
 #include "ds++/Release.hh"
-
-#include <iostream>
-#include <vector>
 #include <cmath>
 
 using namespace std;
@@ -86,7 +83,7 @@ void tstDeterminateSwap(UnitTest &ut)
             incoming_pid[0] = 1;
         }
     }
-    
+
     outgoing_data.resize(outgoing_pid.size());
     incoming_data.resize(incoming_pid.size());
     for (unsigned i=0; i<outgoing_pid.size(); ++i)
@@ -135,7 +132,7 @@ void tstDeterminateSwap(UnitTest &ut)
     }
 
     // Second version (no processor list)
-    
+
     outgoing_data.resize(0);
     outgoing_data.resize(rtt_c4::nodes());
     incoming_data.resize(0);
@@ -236,7 +233,7 @@ void tstSemideterminateSwap(UnitTest &ut)
             incoming_pid[0] = 1;
         }
     }
-    
+
     outgoing_data.resize(outgoing_pid.size());
     incoming_data.resize(incoming_pid.size());
     for (unsigned i=0; i<outgoing_pid.size(); ++i)
@@ -285,7 +282,7 @@ void tstSemideterminateSwap(UnitTest &ut)
     }
 
     // Second version (no processor list)
-    
+
 //     outgoing_data.resize(0);
 //     outgoing_data.resize(rtt_c4::nodes());
 //     incoming_data.resize(0);
@@ -338,7 +335,7 @@ int main(int argc, char *argv[])
         tstSemideterminateSwap(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstSwap.cc

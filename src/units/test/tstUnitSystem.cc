@@ -8,7 +8,7 @@
  */
 //---------------------------------------------------------------------------//
 
-#include "../UnitSystem.hh"
+#include "units/UnitSystem.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"

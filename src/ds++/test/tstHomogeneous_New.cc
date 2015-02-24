@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../Homogeneous_New.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/Homogeneous_New.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         tstHomogeneous_New(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstHomogeneous_New.cc

@@ -11,13 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../tred2.hh"
+#include "linear/tred2.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -25,9 +22,6 @@ using namespace rtt_linear;
 
 //---------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
-
-
 //---------------------------------------------------------------------------//
 void tsttred2( UnitTest & ut )
 {
@@ -93,28 +87,12 @@ void tsttred2( UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tsttred2(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tsttred2, " 
-		  << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tsttred2, " 
-		  << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, release );
+    try { tsttred2(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tsttred2.cc

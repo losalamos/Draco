@@ -11,8 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../zbrac.hh"
-#include "../zbrent.hh"
+#include "roots/zbrac.hh"
+#include "roots/zbrent.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"

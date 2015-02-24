@@ -14,7 +14,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
-#include "../L2norm.hh"
+#include "norms/L2norm.hh"
 
 using namespace std;
 using namespace rtt_dsxx;

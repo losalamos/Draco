@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
- * \file Token_Equivalence.hh
+/*!
+ * \file   Token_Equivalence.hh
  * \author Kelly G. Thompson
- * \brief Provide services for ApplicationUnitTest framework.
- * \note Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ * \brief  Provide services for ApplicationUnitTest framework.
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -13,11 +13,10 @@
 #ifndef rtt_Token_Equivalence_hh
 #define rtt_Token_Equivalence_hh
 
-#include <string>
 #include "ds++/UnitTest.hh"
 #include "String_Token_Stream.hh"
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 //! Search tokens for existance of keyword.
 DLL_PUBLIC
@@ -27,7 +26,7 @@ void check_token_keyword( String_Token_Stream       & tokens,
                           unsigned            const & occurance=1 );
 
 //! Search tokens for keyword and compare associated value.  Report result to
-//! UnitTest. 
+//! UnitTest.
 DLL_PUBLIC
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
@@ -36,7 +35,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
                                 unsigned            const & occurance=1 );
 
 //! Search tokens for keyword and compare associated value.  Report result to
-//! UnitTest. 
+//! UnitTest.
 DLL_PUBLIC
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,

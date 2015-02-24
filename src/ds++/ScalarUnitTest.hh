@@ -15,7 +15,6 @@
 #define dsxx_ScalarUnitTest_hh
 
 #include "UnitTest.hh"
-#include "ds++/config.h"
 
 namespace rtt_dsxx
 {
@@ -40,11 +39,11 @@ int main(int argc, char *argv[])
     rtt_utils::ScalarUnitTest ut( argc, argv, release );
     try { tstOne(ut); }
     UT_EPILOG(ut);
-}  
+}
  * \endcode
  *
  * \test All of the member functions of this class are tested by
- * ds++/test/tstScalarUnitTest.cc, including the early exit caused by 
+ * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
  * \c --version on the command line.
  */
 /*!
@@ -58,7 +57,7 @@ class DLL_PUBLIC ScalarUnitTest : public UnitTest
   public:
 
     // CREATORS
-    
+
     //! Default constructors.
     ScalarUnitTest( int & argc, char **&argv, string_fp_void release_,
                     std::ostream & out_ = std::cout );
@@ -70,7 +69,7 @@ class DLL_PUBLIC ScalarUnitTest : public UnitTest
     ~ScalarUnitTest(void){ out << resultMessage() << std::endl; return; };
 
     // MANIPULATORS
-    
+
     //! The assignment operator for ScalarUnitTest is disabled.
     ScalarUnitTest& operator=(const ScalarUnitTest &rhs);
 

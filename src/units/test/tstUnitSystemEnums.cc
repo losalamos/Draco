@@ -3,7 +3,7 @@
  * \file   units/test/tstUnitSystemEnums.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \brief  
+ * \brief
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -16,9 +16,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../FundUnit.hh"
-#include "../UnitSystemEnums.hh"
-#include "../PhysicalConstants.hh"
+#include "units/PhysicalConstants.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -40,7 +38,7 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	else
 	    FAILMSG("num_Ltype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::L_cf, rtt_units::L_cf+iSenVal, 
+	if( soft_equiv( rtt_units::L_cf, rtt_units::L_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
 	    PASSMSG("L_cf has the expected values.");
 	else
@@ -70,7 +68,7 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	else
 	    FAILMSG("num_Mtype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::M_cf, rtt_units::M_cf+iSenVal, 
+	if( soft_equiv( rtt_units::M_cf, rtt_units::M_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
 	    PASSMSG("M_cf has the expected values.");
 	else
@@ -98,7 +96,7 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	else
 	    FAILMSG("num_ttype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::t_cf, rtt_units::t_cf+iSenVal, 
+	if( soft_equiv( rtt_units::t_cf, rtt_units::t_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
 	    PASSMSG("t_cf has the expected values.");
 	else
@@ -120,13 +118,13 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	int    const iSenVal(4);
 	double       adSenVal[iSenVal] = { 0.0, 1.0, 1.0/keV2K, 1.0e3/keV2K };
 	string const sSenVal( "NA,K,keV,eV" );
-        
+
 	if( rtt_units::num_Ttype == iSenVal )
 	    PASSMSG("num_Ttype has the expected value.");
 	else
 	    FAILMSG("num_Ttype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::T_cf, rtt_units::T_cf+iSenVal, 
+	if( soft_equiv( rtt_units::T_cf, rtt_units::T_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
         {
 	    PASSMSG("T_cf has the expected values.");
@@ -157,7 +155,7 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	else
 	    FAILMSG("num_Itype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::I_cf, rtt_units::I_cf+iSenVal, 
+	if( soft_equiv( rtt_units::I_cf, rtt_units::I_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
 	    PASSMSG("I_cf has the expected values.");
 	else
@@ -179,7 +177,7 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	else
 	    FAILMSG("num_Atype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::A_cf, rtt_units::A_cf+iSenVal, 
+	if( soft_equiv( rtt_units::A_cf, rtt_units::A_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
 	    PASSMSG("A_cf has the expected values.");
 	else
@@ -201,7 +199,7 @@ void test_enumValues( rtt_dsxx::UnitTest & ut )
 	else
 	    FAILMSG("num_Qtype does not have the expected value.");
 
-	if( soft_equiv( rtt_units::Q_cf, rtt_units::Q_cf+iSenVal, 
+	if( soft_equiv( rtt_units::Q_cf, rtt_units::Q_cf+iSenVal,
 			adSenVal,        adSenVal+iSenVal ) )
 	    PASSMSG("Q_cf has the expected values.");
 	else
@@ -221,7 +219,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { test_enumValues(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstUnitSystemEnums.cc

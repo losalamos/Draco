@@ -17,8 +17,8 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../PhysicalConstants.hh"
-#include "../PhysicalConstantsSI.hh"
+#include "units/PhysicalConstants.hh"
+#include "units/PhysicalConstantsSI.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS

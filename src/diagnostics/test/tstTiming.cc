@@ -11,8 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Timing.hh"
-#include "../Diagnostics.hh"
+#include "diagnostics/Timing.hh"
+#include "diagnostics/Diagnostics.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -34,7 +34,7 @@ void do_A()
     // do a mat-vec multiply
 
     int S = 9000;
-    
+
     vector<double> b(S, 0.0);
     vector<double> x(S, 0.0);
 
@@ -52,7 +52,7 @@ void do_A()
     }
 
     b[0]   = B * x[0] + C * x[1];
-    b[S-1] = A * x[S-2] + B * x[S-1]; 
+    b[S-1] = A * x[S-2] + B * x[S-1];
 
     TIMER_STOP(A_timer);
     TIMER_RECORD("A_iteration", A_timer);
@@ -68,7 +68,7 @@ void do_B()
     // do a mat-vec multiply
 
     int S = 6000;
-    
+
     vector<double> b(S, 0.0);
     vector<double> x(S, 0.0);
 
@@ -86,7 +86,7 @@ void do_B()
     }
 
     b[0]   = B * x[0] + C * x[1];
-    b[S-1] = A * x[S-2] + B * x[S-1]; 
+    b[S-1] = A * x[S-2] + B * x[S-1];
 
     TIMER_STOP(B_timer);
     TIMER_RECORD("B_iteration", B_timer);
@@ -102,7 +102,7 @@ void do_C()
     // do a mat-vec multiply
 
     int S = 3000;
-    
+
     vector<double> b(S, 0.0);
     vector<double> x(S, 0.0);
 
@@ -120,7 +120,7 @@ void do_C()
     }
 
     b[0]   = B * x[0] + C * x[1];
-    b[S-1] = A * x[S-2] + B * x[S-1]; 
+    b[S-1] = A * x[S-2] + B * x[S-1];
 
     TIMER_STOP(C_timer);
     TIMER_RECORD("C_iteration", C_timer);
@@ -195,7 +195,7 @@ void test_timing( rtt_dsxx::UnitTest & ut )
     if (!soft_equiv(D::timer_value("A"), 0.0)) ITFAILS;
     if (!soft_equiv(D::timer_value("B"), 0.0)) ITFAILS;
     if (!soft_equiv(D::timer_value("C"), 0.0)) ITFAILS;
-    
+
     if (ut.numFails==0)
         PASSMSG("Diagnostics timer lists ok.");
 }
@@ -237,7 +237,7 @@ void test_macros( rtt_dsxx::UnitTest & ut )
 
         cout.precision(4);
         cout.setf(ios::fixed, ios::floatfield);
-        
+
         for (int i = 0, N = keys.size(); i < N; ++i)
         {
             double fraction = D::timer_value(keys[i]) / total;
@@ -266,7 +266,7 @@ int main(int argc, char *argv[])
         test_macros(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstTiming.cc

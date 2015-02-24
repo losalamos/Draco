@@ -16,7 +16,6 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/MultigroupOpacity.hh"
-#include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
 
 namespace rtt_cdi_analytic

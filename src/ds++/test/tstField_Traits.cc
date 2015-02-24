@@ -3,7 +3,7 @@
  * \file   ds++/test/tstField_Traits.cc
  * \author Kent Budge
  * \date   Tue Aug 26 12:18:55 2008
- * \brief  
+ * \brief
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../Field_Traits.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/Field_Traits.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -37,7 +37,7 @@ void tstFT( UnitTest & ut )
         ut.passes("complex zero good");
     else
         ut.failure("complex zero NOT good");
-        
+
     if (Field_Traits<double const>::zero() == 0.0)
         ut.passes("double zero good");
     else
@@ -67,7 +67,7 @@ namespace rtt_dsxx
 {
 
 template<>
-class Field_Traits<labeled> 
+class Field_Traits<labeled>
 {
   public:
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         tstvalue(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstField_Traits.cc

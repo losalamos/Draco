@@ -3,7 +3,6 @@
  * \file   min/test/tstmrqmin.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,12 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../mrqmin.hh"
+#include "min/mrqmin.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include <fstream>
-#include <vector>
 #include <algorithm>
 
 using namespace std;
@@ -64,7 +62,7 @@ void model(vector<double> const &x,
     dyda[4] = n*c;
     dyda[5] = n*c*an;
     dyda[6] = n*p;
-    dyda[7] = n*p*c;    
+    dyda[7] = n*p*c;
     dyda[8] = n*p*c*an;
 }
 
@@ -641,7 +639,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstmrqmin(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstmrqmin.cc

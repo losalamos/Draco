@@ -10,7 +10,7 @@
 //! \version $Id: tstProcmon.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "../memory.hh"
+#include "memory/memory.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include <sstream>

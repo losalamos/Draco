@@ -3,7 +3,6 @@
  * \file   linear/test/tstqr_unpack.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,14 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../qr_unpack.hh"
-#include "../qrdcmp.hh"
+#include "linear/qr_unpack.hh"
+#include "linear/qrdcmp.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -41,41 +37,22 @@ void tstqr_unpack(UnitTest &ut)
     qrdcmp(A, 2, C, D);
 
     vector<double> Qt;
-    vector<double> R = A;    
+    vector<double> R = A;
     qr_unpack(R, 2, C, D, Qt);
 
     if (soft_equiv(R[0+2*0], D[0]))
-    {
-	ut.passes("R[0+2*0] is correct");
-    }
+	PASSMSG("R[0+2*0] is correct");
     else
-    {
-	ut.failure("R[0+2*0] is NOT correct");
-    }
+	FAILMSG("R[0+2*0] is NOT correct");
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstqr_unpack(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstqr_unpack, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstqr_unpack, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstqr_unpack(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstqr_unpack.cc

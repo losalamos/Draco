@@ -29,18 +29,18 @@ namespace rtt_dsxx
  * sequence, and imposes a subset on the sequence based on a stride.  It can
  * also be used to give standard container semantics to a sequence, which is
  * particularly useful with builtin types like double* that have iterator
- * semantics. 
+ * semantics.
  *
  * \arg \a Ran A random access iterator type, such as double* or
  * std::vector<double>::iterator.
  */
 //===========================================================================//
 
-template<class Ran>
-class Slice 
+template<typename Ran>
+class Slice
 {
   private:
-    
+
     typedef typename std::iterator_traits<Ran> traits;
 
   public:
@@ -222,9 +222,9 @@ class Slice
     // CREATORS
 
     //-----------------------------------------------------------------------//
-    /*! 
-     * \brief Construct from a sequence. 
-     * 
+    /*!
+     * \brief Construct from a sequence.
+     *
      * The constructed Slice has reference semantics to the sequence.  That
      * is, modifications to elements of the Slice are actually modifications
      * to the elements of the underlying sequence, and the Slice becomes
@@ -245,7 +245,7 @@ class Slice
      * \param length Length of the constructed Slice.
      * \param stride Stride to apply to the sequence.
      */
-    Slice(Ran const first,
+    Slice(Ran      const first,
 	  unsigned const length,
 	  unsigned const stride = 1)
 	: first(first), length(length), stride(stride)
@@ -279,16 +279,18 @@ class Slice
     reverse_iterator rend();
     const_reverse_iterator rend() const;
 
-    reference operator[](size_type n);
-    const_reference operator[](size_type n) const;
+    reference operator[](size_type n) {
+        Require(n<size());  return first[stride*n]; }
+    const_reference operator[](size_type n) const {
+        Require(n<size()); return first[stride*n]; }
 
     reference at(size_type n);
     const_reference at(size_type n) const;
 
     reference front();
-    const_reference front() const;
+    const_reference front() const { return first[0]; }
     reference back();
-    const_reference back() const;
+    const_reference back() const { return first[stride*(size()-1)]; }
 
     size_type size() const { return length; }
     bool empty() const { return size()==0; }
@@ -308,12 +310,12 @@ class Slice
 };
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Return a Slice.
  *
  * This is a convenient interface that avoids the necessity for writing a lot
  * of type expressions in user code.
- * 
+ *
  * \arg \a Rab A random access iterator.
  *
  * \param first Start of a sequence
@@ -323,9 +325,9 @@ class Slice
  * \return The desired Slice.
  */
 
-template<class Ran>
+template<typename Ran>
 inline
-Slice<Ran> slice(Ran const first,
+Slice<Ran> slice(Ran      const first,
 		 unsigned const length,
 		 unsigned const stride = 1)
 {
@@ -335,8 +337,6 @@ Slice<Ran> slice(Ran const first,
 }
 
 } // end namespace rtt_dsxx
-
-#include "Slice.t.hh"
 
 #endif // container_Slice_hh
 

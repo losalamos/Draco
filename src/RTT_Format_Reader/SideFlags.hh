@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/SideFlags.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
@@ -17,15 +17,11 @@
 #include "Dims.hh"
 #include "Flags.hh"
 #include "ds++/SP.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader
 {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        side flags block of the mesh file.
  */
 class SideFlags
@@ -38,7 +34,7 @@ class SideFlags
     std::vector<rtt_dsxx::SP<Flags> > flagTypes;
 
   public:
-    SideFlags(const Dims & dims_) : dims(dims_), 
+    SideFlags(const Dims & dims_) : dims(dims_),
         flagTypes(dims.get_nside_flag_types()) {}
     ~SideFlags() {}
 
@@ -60,15 +56,15 @@ class SideFlags
     {
         Insist(flagtype <= dims.get_nside_flag_types() - 1,
 	       "Invalid side flag type number!");
-	return flagTypes[flagtype]->allowed_flag(flag); 
+	return flagTypes[flagtype]->allowed_flag(flag);
     }
 /*!
  * \brief Returns the name of specified side flag type.
  * \param flagtype Side flag type number.
  * \return The side flag type name.
  */
-    string get_flag_type(int flagtype) const 
-    { 
+    string get_flag_type(int flagtype) const
+    {
 	Insist(flagtype <= dims.get_nside_flag_types() - 1,
 	       "Invalid side flag type number!");
 	return flagTypes[flagtype]->getFlagType();
@@ -82,7 +78,7 @@ class SideFlags
  * \param flag_index Side flag index.
  * \return The side flag number.
  */
-    int get_flag_number(int flagtype, int flag_index) const 
+    int get_flag_number(int flagtype, int flag_index) const
     {
         Insist(flagtype  <= dims.get_nside_flag_types() - 1,
 	       "Invalid side flag type number!");
@@ -95,7 +91,7 @@ class SideFlags
  * \param flagtype Side flag type number.
  * \return The number of side flags.
  */
-    int get_flag_size(int flagtype) const 
+    int get_flag_size(int flagtype) const
     {
 	Insist(flagtype  <= dims.get_nside_flag_types() - 1,
 	       "Invalid side flag type number!");
@@ -108,7 +104,7 @@ class SideFlags
  * \param flag_index Side flag index.
  * \return The side flag name.
  */
-    string get_flag_name(int flagtype, int flag_index) const 
+    string get_flag_name(int flagtype, int flag_index) const
     {
 	Insist(flagtype  <= dims.get_nside_flag_types() - 1,
 	       "Invalid side flag type number!");

@@ -15,7 +15,6 @@
 
 #include "Token.hh"
 #include <deque>
-#include <stdexcept>
 
 namespace rtt_parser
 {

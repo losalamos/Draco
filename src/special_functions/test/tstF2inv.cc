@@ -3,7 +3,6 @@
  * \file   sf/test/tstF2inv.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
- * \brief  
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,15 +10,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <cmath>
 #include <limits>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../F2.hh"
-#include "../F2inv.hh"
+#include "special_functions/F2.hh"
+#include "special_functions/F2inv.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -249,7 +245,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstF2inv(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstF2inv.cc

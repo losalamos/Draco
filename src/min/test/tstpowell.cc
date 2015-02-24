@@ -3,7 +3,6 @@
  * \file   min/test/tstpowell.cc
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,12 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../powell.hh"
+#include "min/powell.hh"
 #include "units/PhysicalConstants.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "ds++/DracoMath.hh"
 
 using namespace std;
 using namespace rtt_min;
@@ -58,7 +55,7 @@ void tstpowell( UnitTest & ut )
     unsigned iter = 10000;
     double fret(0);
     double tolerance(1.0e-5);
-    
+
     powell(p, xi, tolerance, iter, fret, func);
 
     for (unsigned i=0; i<NP; ++i)
@@ -88,7 +85,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstpowell(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of testpowell.cc

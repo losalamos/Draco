@@ -16,7 +16,6 @@
 
 #include "SetProps.hh"
 #include "ds++/SP.hh"
-#include <string>
 #include <vector>
 
 namespace rtt_plot2D
@@ -44,7 +43,7 @@ namespace rtt_plot2D
   arranged in 3 rows and columns, numbered as
 
   0 1 2
-  
+
   3 4 5
 
   6 7
@@ -213,7 +212,7 @@ class Plot2D
 		  const int iSet,
 		  const SetProps &setProps);
 
-    
+
     // sets the properties for a data set in all graphs
     // void setProps(const int iSet,
     //     	  const SetProps &setProps);
@@ -243,10 +242,10 @@ class Plot2D
     // We don't implement these because it's not clear how
     // the grace pipe would be copied.  Moreover, these
     // ops are not well defined conceptually.
- 
+
     /// NOT IMPLEMENTED
     Plot2D(const Plot2D &from);
- 
+
     /// NOT IMPLEMENTED
     Plot2D &operator=(const Plot2D &from);
 };

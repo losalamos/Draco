@@ -11,12 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
-#include "../Global_Timer.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/Global_Timer.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
-#include <vector>
 
 rtt_c4::Global_Timer do_timer(    "do_global_timer");
 rtt_c4::Global_Timer do_not_timer("do_not_global_timer");

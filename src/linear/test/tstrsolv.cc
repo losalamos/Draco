@@ -3,7 +3,6 @@
  * \file   linear/test/tstrsolv.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,13 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../rsolv.hh"
+#include "linear/rsolv.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -58,27 +54,12 @@ void tstrsolv(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc,argv,release );
-	tstrsolv(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstrsolv, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstrsolv, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc,argv,release );
+    try { tstrsolv(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstrsolv.cc

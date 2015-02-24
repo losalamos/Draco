@@ -3,7 +3,6 @@
  * \file   units/test/tstUnitSystemTypes.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \brief  
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -16,8 +15,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../UnitSystemEnums.hh"
-#include "../UnitSystemType.hh"
+#include "units/UnitSystemType.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -100,7 +98,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType container does not have " 
+	msg << "UnitSystemType container does not have "
 	    << "L().label() == \"m\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -163,8 +161,8 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
 
     // Add more FundUnits to ust using a cascading set of manipulators...
     ust.Q( rtt_units::Q_mol ).A( rtt_units::A_rad )
-	.I( rtt_units::I_amp ).t( rtt_units::t_sh, 
-				  rtt_units::t_cf, 
+	.I( rtt_units::I_amp ).t( rtt_units::t_sh,
+				  rtt_units::t_cf,
 				  rtt_units::t_long_labels );
 
     //---------------------------------------------------------------------//
@@ -178,7 +176,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     {
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
-	    << "Q().enumVal() == Q_mol.  Instead the valued retuned was: " 
+	    << "Q().enumVal() == Q_mol.  Instead the valued retuned was: "
 	    << ust.Q().enumVal() << endl;
 	FAILMSG( msg.str() );
     }
@@ -190,7 +188,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     {
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
-	    << "Q().cf() == 1.0.  Instead the value returned was: " 
+	    << "Q().cf() == 1.0.  Instead the value returned was: "
 	    << ust.Q().cf() << endl;
         FAILMSG( msg.str() );
     }
@@ -202,7 +200,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     {
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
-	    << "Q().label() == \"mol\".  Instead the value returned was: \"" 
+	    << "Q().label() == \"mol\".  Instead the value returned was: \""
 	    << ust.Q().label() << "\"" << endl;
 	FAILMSG( msg.str() );
     }
@@ -215,8 +213,8 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     {
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
-	    << "A().enumVal() == A_rad." << endl 
-	    << "\tInstead the returned value was: " 
+	    << "A().enumVal() == A_rad." << endl
+	    << "\tInstead the returned value was: "
 	    << ust.A().enumVal() << endl;
 	FAILMSG( msg.str() );
     }
@@ -227,9 +225,9 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType container does not have " 
+	msg << "UnitSystemType container does not have "
 	    << "A().cf() == 1.0." << endl
-	    << "\tInstead the returned value was:" 
+	    << "\tInstead the returned value was:"
 	    << ust.A().cf() << endl;
 	FAILMSG( msg.str() );
     }
@@ -242,7 +240,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
 	    << "A().label() == \"rad\"." << endl
-	    << "\tInstead the returned value was: \"" 
+	    << "\tInstead the returned value was: \""
 	    << ust.A().label() << "\"" << endl;
 	FAILMSG( msg.str() );
     }
@@ -255,8 +253,8 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     {
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
-	    << "I().enumVal() == I_amp." << endl 
-	    << "\tInstead the returned value was: " 
+	    << "I().enumVal() == I_amp." << endl
+	    << "\tInstead the returned value was: "
 	    << ust.I().enumVal() << endl;
 	FAILMSG( msg.str() );
     }
@@ -267,9 +265,9 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType container does not have " 
+	msg << "UnitSystemType container does not have "
 	    << "I().cf() == 1.0." << endl
-	    << "\tInstead the returned value was:" 
+	    << "\tInstead the returned value was:"
 	    << ust.I().cf() << endl;
 	FAILMSG( msg.str() );
     }
@@ -282,7 +280,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
 	    << "I().label() == \"Amp\"." << endl
-	    << "\tInstead the returned value was: \"" 
+	    << "\tInstead the returned value was: \""
 	    << ust.I().label() << "\"" << endl;
 	FAILMSG( msg.str() );
     }
@@ -295,8 +293,8 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     {
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
-	    << "t().enumVal() == t_rad." << endl 
-	    << "\tInstead the returned value was: " 
+	    << "t().enumVal() == t_rad." << endl
+	    << "\tInstead the returned value was: "
 	    << ust.t().enumVal() << endl;
 	FAILMSG( msg.str() );
     }
@@ -307,9 +305,9 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType container does not have " 
+	msg << "UnitSystemType container does not have "
 	    << "t().cf() == 1.0e8." << endl
-	    << "\tInstead the returned value was:" 
+	    << "\tInstead the returned value was:"
 	    << ust.t().cf() << endl;
 	FAILMSG( msg.str() );
     }
@@ -322,7 +320,7 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
 	ostringstream msg;
 	msg << "UnitSystemType container does not have "
 	    << "t().label() == \"shake\"." << endl
-	    << "\tInstead the returned value was: \"" 
+	    << "\tInstead the returned value was: \""
 	    << ust.t().label() << "\"" << endl;
 	FAILMSG( msg.str() );
     }
@@ -333,12 +331,12 @@ void test_default_ctor( rtt_dsxx::UnitTest & ut )
 //------------------------------------------------------------------------//
 
 void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
-{  
+{
     using std::endl;
     using std::ostringstream;
     using rtt_dsxx::soft_equiv;
     using rtt_units::UnitSystemType;
-    
+
     UnitSystemType ust( rtt_units::L_cm, rtt_units::M_g,
 			rtt_units::t_us, rtt_units::T_K,
 			rtt_units::I_amp, rtt_units::A_rad,
@@ -349,32 +347,32 @@ void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
     if( ust.M().enumVal() == rtt_units::M_g )
     {
 	ostringstream msg;
-	msg << "UnitSystemType has " 
+	msg << "UnitSystemType has "
 	    << "ust.M().enumVal() == rtt_units::M_g" << endl;
 	PASSMSG( msg.str() );
     }
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType does not have " 
+	msg << "UnitSystemType does not have "
 	    << "ust.M().enumVal() == rtt_units::M_g" << endl
-	    << "The value reported was " << ust.M().enumVal() 
+	    << "The value reported was " << ust.M().enumVal()
 	    << endl;
 	FAILMSG( msg.str() );
     }
     if( soft_equiv( ust.M().cf(), 1000.0 ) )
     {
 	ostringstream msg;
-	msg << "UnitSystemType has " 
+	msg << "UnitSystemType has "
 	    << "ust.M().cf() == 1000.0" << endl;
 	PASSMSG( msg.str() );
     }
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType does not have " 
+	msg << "UnitSystemType does not have "
 	    << "ust.M().cf() == 1000.0"   << endl
-	    << "The value reported was " << ust.M().cf() 
+	    << "The value reported was " << ust.M().cf()
 	    << endl;
 	FAILMSG( msg.str() );
     }
@@ -388,7 +386,7 @@ void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType did not return the expected value " 
+	msg << "UnitSystemType did not return the expected value "
 	    << endl
 	    << "( ust.M().label() == \"g\" ).  Instead it returned the "
 	    << endl
@@ -401,32 +399,32 @@ void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
     if( ust.t().enumVal() == rtt_units::t_us )
     {
 	ostringstream msg;
-	msg << "UnitSystemType has " 
+	msg << "UnitSystemType has "
 	    << "ust.t().enumVal() == rtt_units::t_us" << endl;
 	PASSMSG( msg.str() );
     }
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType does not have " 
+	msg << "UnitSystemType does not have "
 	    << "ust.t().enumVal() == rtt_units::t_us" << endl
-	    << "\tThe value reported was " << ust.t().enumVal() 
+	    << "\tThe value reported was " << ust.t().enumVal()
 	    << endl;
 	FAILMSG( msg.str() );
     }
     if( soft_equiv( ust.t().cf(), 1.0e6 ) )
     {
 	ostringstream msg;
-	msg << "UnitSystemType has " 
+	msg << "UnitSystemType has "
 	    << "ust.t().cf() == 1.0e6" << endl;
 	PASSMSG( msg.str() );
     }
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType does not have " 
+	msg << "UnitSystemType does not have "
 	    << "ust.t().cf() == 1.0e6"   << endl
-	    << "\tThe value reported was " << ust.t().cf() 
+	    << "\tThe value reported was " << ust.t().cf()
 	    << endl;
 	FAILMSG( msg.str() );
     }
@@ -440,7 +438,7 @@ void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType did not return the expected value " 
+	msg << "UnitSystemType did not return the expected value "
 	    << endl
 	    << "\t( ust.t().label() == \"us\" ).  Instead it returned the "
 	    << endl
@@ -453,32 +451,32 @@ void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
     if( ust.T().enumVal() == rtt_units::T_K )
     {
 	ostringstream msg;
-	msg << "UnitSystemType has " 
+	msg << "UnitSystemType has "
 	    << "ust.T().enumVal() == rtt_units::t_us" << endl;
 	PASSMSG( msg.str() );
     }
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType does not have " 
+	msg << "UnitSystemType does not have "
 	    << "ust.T().enumVal() == rtt_units::T_K" << endl
-	    << "\tThe value reported was " << ust.T().enumVal() 
+	    << "\tThe value reported was " << ust.T().enumVal()
 	    << endl;
 	FAILMSG( msg.str() );
     }
     if( soft_equiv( ust.T().cf(), 1.0 ) )
     {
 	ostringstream msg;
-	msg << "UnitSystemType has " 
+	msg << "UnitSystemType has "
 	    << "ust.T().cf() == 1.0" << endl;
 	PASSMSG( msg.str() );
     }
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType does not have " 
+	msg << "UnitSystemType does not have "
 	    << "ust.T().cf() == 1.0"   << endl
-	    << "\tThe value reported was " << ust.T().cf() 
+	    << "\tThe value reported was " << ust.T().cf()
 	    << endl;
 	FAILMSG( msg.str() );
     }
@@ -492,7 +490,7 @@ void test_qualified_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "UnitSystemType did not return the expected value " 
+	msg << "UnitSystemType did not return the expected value "
 	    << endl
 	    << "\t( ust.T().label() == \"K\" ).  Instead it returned the "
 	    << endl
@@ -515,11 +513,11 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     using rtt_units::UnitSystemType;
 
     // Create the two "speical" unit system types.
-    
+
     UnitSystemType si( UnitSystemType().SI() );
     UnitSystemType x4( UnitSystemType().X4() );
     UnitSystemType cgs( UnitSystemType().CGS() );
-    
+
     // Check Length data...
     if( si.L().enumVal() == rtt_units::L_m )
     {
@@ -570,7 +568,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "L().label() == \"m\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -589,7 +587,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "L().label() == \"cm\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -634,7 +632,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "M().label() == \"kg\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -653,7 +651,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "M().label() == \"g\"." << endl;
 	FAILMSG( msg.str() );
     }
@@ -698,7 +696,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "t().label() == \"s\"." << endl;
 	FAILMSG( msg.str() );
     }
@@ -717,7 +715,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "t().label() == \"sh\"." << endl;
 	FAILMSG( msg.str() );
     }
@@ -762,11 +760,11 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "T().label() == \"K\"." << endl;
 	FAILMSG( msg.str() );
     }
-    
+
     double const keV2K(1.16045193028089e7);
     if( soft_equiv( x4.T().cf(), 1.0/keV2K ) )
     {
@@ -788,7 +786,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "T().label() == \"keV\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -834,7 +832,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "A().label() == \"rad\"." << endl;
 	FAILMSG( msg.str() );
     }
@@ -853,7 +851,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "A().label() == \"rad\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -899,7 +897,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "I().label() == \"Amp\"." << endl;
 	FAILMSG( msg.str() );
     }
@@ -918,7 +916,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "I().label() == \"Amp\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -964,7 +962,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "si container does not have " 
+	msg << "si container does not have "
 	    << "Q().label() == \"mol\"." << endl;
 	FAILMSG( msg.str() );
     }
@@ -983,7 +981,7 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
     else
     {
 	ostringstream msg;
-	msg << "x4 units container does not have " 
+	msg << "x4 units container does not have "
 	    << "Q().label() == \"mol\")." << endl;
 	FAILMSG( msg.str() );
     }
@@ -996,14 +994,14 @@ void test_sust_ctor( rtt_dsxx::UnitTest & ut )
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-    try 
+    try
     {
 	test_default_ctor(  ut);
 	test_qualified_ctor(ut);
 	test_sust_ctor(     ut); // specific UnitSystemType ctors
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstUnitSystemTypes.cc

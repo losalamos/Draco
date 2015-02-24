@@ -12,14 +12,11 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
-#include "../nGray_Analytic_MultigroupOpacity.hh"
-#include "../Analytic_Models.hh"
+#include "cdi_analytic/nGray_Analytic_MultigroupOpacity.hh"
 #include "cdi/CDI.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
-
 #include <sstream>
 
 using namespace std;
@@ -47,7 +44,7 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
 	groups[2] = 5.0;
 	groups[3] = 50.0;
     }
-    
+
     vector<SP<Analytic_Opacity_Model> > models(3);
 
     // make a Marshak (user-defined) model for the first group
@@ -82,14 +79,14 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
 
         if (opacity.getOpacityModelType() != rtt_cdi::ANALYTIC_TYPE) ITFAILS;
     }
-    {       
+    {
         nGray_Analytic_MultigroupOpacity anal_opacity(groups,
                                                  models,
                                                  rtt_cdi::SCATTERING);
         if (anal_opacity.getDataDescriptor() !=
             "nGray Multigroup Scattering") ITFAILS;
     }
-    {       
+    {
         nGray_Analytic_MultigroupOpacity anal_opacity(groups,
                                                  models,
                                                  rtt_cdi::TOTAL);
@@ -101,7 +98,7 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
     // check the group structure
     vector<double> mg_groups = opacity.getGroupBoundaries();
 
-    if (soft_equiv(mg_groups.begin(), mg_groups.end(), 
+    if (soft_equiv(mg_groups.begin(), mg_groups.end(),
 		   groups.begin(), groups.end()))
     {
 	PASSMSG("Group boundaries match.");
@@ -112,7 +109,7 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
     }
 
     // >>> get opacities
-    
+
     // scalar density and temperature
     vector<double> sigma = opacity.getOpacity(2.0, 3.0);
     vector<double> ref(3, 0.0);
@@ -145,7 +142,7 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
     {
 	vector<double> &test = sig_t[i];
 
-	if (soft_equiv(test.begin(), test.end(), 
+	if (soft_equiv(test.begin(), test.end(),
 		       ref.begin(), ref.end()))
 	{
 	    ostringstream message;
@@ -163,7 +160,7 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
 
 	test = sig_rho[i];
 
-	if (soft_equiv(test.begin(), test.end(), 
+	if (soft_equiv(test.begin(), test.end(),
 		       ref.begin(), ref.end()))
 	{
 	    ostringstream message;
@@ -179,13 +176,13 @@ void multigroup_test( rtt_dsxx::UnitTest & ut )
 	    FAILMSG(message.str());
 	}
     }
-    
+
     // Test the get_Analytic_Model() member function.
     {
         SP<Analytic_Opacity_Model const> my_mg_opacity_model
             = opacity.get_Analytic_Model(1);
         SP<Analytic_Opacity_Model const> expected_model( models[0] );
-        
+
         if( expected_model == my_mg_opacity_model )
             PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.");
         else
@@ -207,7 +204,7 @@ void test_CDI( rtt_dsxx::UnitTest & ut )
 	groups[2] = 5.0;
 	groups[3] = 50.0;
     }
-    
+
     vector<SP<Analytic_Opacity_Model> > models(3);
 
     // make a Marshak (user-defined) model for the first group
@@ -221,7 +218,7 @@ void test_CDI( rtt_dsxx::UnitTest & ut )
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    SP<const MultigroupOpacity> mg( 
+    SP<const MultigroupOpacity> mg(
 	new nGray_Analytic_MultigroupOpacity(groups, models, rtt_cdi::ABSORPTION));
 
     // make a CDI object
@@ -233,7 +230,7 @@ void test_CDI( rtt_dsxx::UnitTest & ut )
     // check the energy groups from CDI
     vector<double> mg_groups = CDI::getFrequencyGroupBoundaries();
 
-    if (soft_equiv(mg_groups.begin(), mg_groups.end(), 
+    if (soft_equiv(mg_groups.begin(), mg_groups.end(),
 		   groups.begin(), groups.end()))
     {
 	PASSMSG("CDI Group boundaries match.");
@@ -244,9 +241,9 @@ void test_CDI( rtt_dsxx::UnitTest & ut )
     }
 
     // do a quick access test for getOpacity
-    
+
     // scalar density and temperature
-    vector<double> sigma = cdi.mg(rtt_cdi::ANALYTIC, 
+    vector<double> sigma = cdi.mg(rtt_cdi::ANALYTIC,
 				  rtt_cdi::ABSORPTION)->getOpacity(2.0, 3.0);
     vector<double> ref(3, 0.0);
     {
@@ -284,7 +281,7 @@ void packing_test( rtt_dsxx::UnitTest & ut )
 	groups[2] = 5.0;
 	groups[3] = 50.0;
     }
-    
+
     {
 	vector<SP<Analytic_Opacity_Model> > models(3);
 
@@ -301,7 +298,7 @@ void packing_test( rtt_dsxx::UnitTest & ut )
 
 	// make an analytic multigroup opacity object for absorption
 	SP<const MultigroupOpacity> mg
-	    (new nGray_Analytic_MultigroupOpacity(groups, models, 
+	    (new nGray_Analytic_MultigroupOpacity(groups, models,
 					     rtt_cdi::ABSORPTION));
 
 	// pack it
@@ -334,7 +331,7 @@ void packing_test( rtt_dsxx::UnitTest & ut )
     // check the group structure
     vector<double> mg_groups = opacity.getGroupBoundaries();
 
-    if (soft_equiv(mg_groups.begin(), mg_groups.end(), 
+    if (soft_equiv(mg_groups.begin(), mg_groups.end(),
 		   groups.begin(), groups.end()))
     {
 	PASSMSG("Group boundaries for unpacked MG opacity match.");
@@ -345,7 +342,7 @@ void packing_test( rtt_dsxx::UnitTest & ut )
     }
 
     // >>> get opacities
-    
+
     // scalar density and temperature
     vector<double> sigma = opacity.getOpacity(2.0, 3.0);
     vector<double> ref(3, 0.0);
@@ -375,19 +372,19 @@ void packing_test( rtt_dsxx::UnitTest & ut )
     // unregistered opacity
     {
 	vector<SP<Analytic_Opacity_Model> > models(3);
-	
+
 	// make a Marshak (user-defined) model for the first group
 	models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
-	
+
 	// make a Polynomial model for the second group
 	models[1].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
                             1.5, 0.0, 0.0, 0.0));
-	
+
 	// make a Constant model for the third group
 	models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
-	
+
 	// make an analytic multigroup opacity object for absorption
-	SP<const MultigroupOpacity> mg( 
+	SP<const MultigroupOpacity> mg(
 	    new nGray_Analytic_MultigroupOpacity(groups, models,
 					    rtt_cdi::ABSORPTION));
 
@@ -427,7 +424,7 @@ int main(int argc, char *argv[])
         packing_test(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstnGray_Analytic_MultigroupOpacity.cc

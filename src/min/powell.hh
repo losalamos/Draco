@@ -14,11 +14,6 @@
 #ifndef min_powell_hh
 #define min_powell_hh
 
-#include <cmath>
-#include <vector>
-
-#include "ds++/Assert.hh"
-#include "ds++/DracoMath.hh"
 #include "linmin.hh"
 
 namespace rtt_min
@@ -40,7 +35,7 @@ namespace rtt_min
  * \param[in] ftol Desired function tolerance.  When a search step fails to
  * decrease the function value by more than ftol, the search is done.
  * \param[in,out] iter Number of iterations to take/taken to complete the
- * search. 
+ * search.
  * \param[out] fret Final minimum value of the function.
  * \param[in] func Function to be minimized
  */
@@ -55,7 +50,7 @@ void powell(RandomContainer &p,
 {
     using std::vector;
     using rtt_dsxx::square;
-    
+
     unsigned const ITMAX = iter;
     double const TINY = 1.0e-25;
 

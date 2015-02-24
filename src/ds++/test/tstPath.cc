@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../path.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/path.hh"
 #include <fstream>
 
 using namespace std;
@@ -25,15 +25,15 @@ using namespace rtt_dsxx;
 void test_currentPath( ScalarUnitTest & ut )
 {
     cout << "\nTesting currentPath() function ... \n" << endl;
-    
+
     // currentPath
     string const cp = draco_getcwd();
 
     // if we got here, currentPath didn't throw.
-    
+
     // Note, we have no idea where the this test was run from so we can say
     // nothing about what the path string should contain.
-    
+
     if( fileExists( cp ) )
         PASSMSG( string("Retrieved current path exists. cp = ") + cp);
     else
@@ -41,12 +41,12 @@ void test_currentPath( ScalarUnitTest & ut )
 
     // Test behavior of fileExist when file does not exist.
     string const fileDoesNotExist( "/bounty/hunter/boba_fett" );
-        
+
     if( ! fileExists( fileDoesNotExist ) )
         PASSMSG( string("fileExist() correctly returned false. ")) ;
     else
         FAILMSG( string("fileExist() incorrectly returned true. ")) ;
-    
+
     return;
 }
 
@@ -57,11 +57,11 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
          << fqp << " ...\n" << endl;
 
     bool usesUnixDirSep=true;
-    
+
     // test the FC_PATH mode
     // ------------------------------------------------------------
 
-    // 4 possible cases: ./tstPath, .../test/tstPath,
+    // 4 possible cases: ./tstPath, ../test/tstPath,
     // tstPath.exe or test/tstPath.exe
 
     // Does the provided path use unix or windows directory separator?
@@ -75,7 +75,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     if( usesUnixDirSep )
     {
         // If we are using UnixDirSep, we have 2 cases (./tstPath or
-        // .../test/tstPath).  Look for the case with 'test' first:
+        // ../test/tstPath).  Look for the case with 'test' first:
         idx = mypath.find( string("test") + rtt_dsxx::UnixDirSep );
 
         // If the return string does not have 'test/' then we also need to
@@ -108,7 +108,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
             FAILMSG("Did not find expected partial path. Expected path = "
                        + mypath );
     }
-    
+
     // value if not found
 
     string mypath2 = getFilenameComponent( string("foobar"),
@@ -119,20 +119,20 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
                    +expected);
     else
         FAILMSG("FC_PATH: name w/o path returned incorrect value.");
-    
-    
+
+
     // test the FC_NAME mode
     // ------------------------------------------------------------
-    
+
     string myname = getFilenameComponent( fqp, rtt_dsxx::FC_NAME );
-    
+
     idx = myname.find( string("tstPath") );
     if( idx != string::npos )
         PASSMSG( string("Found expected filename. myname = ") + myname );
     else
         FAILMSG("Did not find expected filename. Expected filename = "
                    + myname );
-        
+
     if( usesUnixDirSep )
     {
         if( mypath+myname == fqp )
@@ -144,7 +144,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
                         string("\n\tmyname = ") + myname +
                         string("\n\tfqp    = ") + fqp
                       );
-    } 
+    }
 
     // value if not found
 
@@ -154,14 +154,14 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
         PASSMSG("name w/o path successfully returned");
     else
         FAILMSG("name w/o path returned incorrect value.");
-        
+
 
     // test the FC_REALPATH
     // ------------------------------------------------------------
     string realpath = getFilenameComponent( fqp, rtt_dsxx::FC_REALPATH );
 
 #if defined( WIN32 )
-    { // The binary should exist.  Windows does not provide an execute bit. 
+    { // The binary should exist.  Windows does not provide an execute bit.
 
         if( realpath.size() > 0 ) PASSMSG( "FC_REALPATH has length > 0.");
         else                      FAILMSG( "FC_REALPATH has length <= 0.");
@@ -174,8 +174,8 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
             FAILMSG( string("FC_REALPATH is invalid or not executable.") +
                      string("  realpath = ") + realpath );
     }
-#else             
-    { // The binary should exist and marked by the filesystem as executable.  
+#else
+    { // The binary should exist and marked by the filesystem as executable.
 
         if( usesUnixDirSep )
         {
@@ -188,7 +188,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
             //                    rtt_dsxx::FC_REALPATH );
             // draco_getstat rpstatus2( realpath2 );
             // bool exebit = rpstatus2.has_permission_bit( 0100 );
-            
+
             if( rpstatus.has_permission_bit( 0100 ) )
                 PASSMSG(
                     string("FC_REALPATH points to a valid executable. Path = ")
@@ -202,7 +202,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
         {
             if( realpath.size() == 0 ) PASSMSG( "FC_REALPATH has length <= 0.");
             else                       FAILMSG( "FC_REALPATH has length > 0.");
-            
+
         }
     }
 #endif
@@ -234,7 +234,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
         PASSMSG( "FC_EXT throws." );
     }
     if( ! caught ) FAILMSG( "FC_EXT failed to throw." );
-    
+
     caught=false;
     try
     {
@@ -259,7 +259,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
         PASSMSG( "FC_LASTVALUE throws." );
     }
     if( ! caught ) FAILMSG( "FC_LASTVALUE failed to throw." );
-    
+
     return;
 }
 
@@ -295,7 +295,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
 
     {
         // Test a more complex sytem of directories and files.
-    
+
         std::cout << "\nCreating files in a directory structure...\n" << std::endl;
 
         std::string dummyFile1("dummydir/d1/dummyFile1.txt");
@@ -305,7 +305,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
         std::string dummyDir2( getFilenameComponent( dummyDir1, FC_PATH ));
 
         // Create directories.
-        
+
         draco_mkdir( dummyDir2 ); // "dummydir"
         if( isDirectory( dummyDir2 ) )
             PASSMSG( std::string("Successfully created directory = ") + dummyDir2 );
@@ -352,7 +352,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
         // Print the directory tree
         std::cout << "The directory tree contains: " << std::endl;
         draco_dir_print( dummyDir2 );
-        
+
         // Recursively remove the file and subdirectory.
         std::cout << "Removing all entries in " << dummyDir2 << std::endl;
         draco_remove_dir( dummyDir2 );
@@ -360,7 +360,7 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
             FAILMSG( string("Failed to remove directory = ") + dummyDir2 );
         else
             PASSMSG( string("Successfully removed directory = ") + dummyDir2 );
-        
+
     }
     return;
 }
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
         test_currentPath(ut);
 
         test_getFilenameComponent(ut, string(argv[0]));
-            
+
         if( rtt_dsxx::dirSep == rtt_dsxx::UnixDirSep )
             test_getFilenameComponent( ut,
                 string("test") + rtt_dsxx::WinDirSep + string("tstPath.exe"));
@@ -383,7 +383,7 @@ int main(int argc, char *argv[])
         test_draco_remove(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstPath.cc

@@ -2,7 +2,6 @@
 /*!
  * \file   linear/test/tstludcmp.cc
  * \author Kent Budge
- * \brief  
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -10,14 +9,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include "ds++/Release.hh"
-#include "../ludcmp.hh"
+#include "linear/ludcmp.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -37,7 +32,7 @@ void tstludcmp(UnitTest &ut)
 
     vector<unsigned> indx(2);
     double d;
-    
+
     ludcmp(U, indx, d);
 
     vector<double> b(2), x;
@@ -65,28 +60,13 @@ void tstludcmp(UnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc, argv, release );
-	tstludcmp(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstsvbksb, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstsvbksb, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc, argv, release );
+    try { tstludcmp(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
-//                        end of tstsvbksb.cc
+// end of tstsvbksb.cc
 //---------------------------------------------------------------------------//

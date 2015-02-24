@@ -14,7 +14,7 @@
 #define quadrature_quadrature_test_hh
 
 #include "ds++/UnitTest.hh"
-#include "../Quadrature.hh"
+#include "quadrature/Quadrature.hh"
 
 namespace rtt_quadrature
 {

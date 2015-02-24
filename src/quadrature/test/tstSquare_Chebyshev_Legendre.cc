@@ -3,24 +3,17 @@
  * \file   quadrature/test/tstTri_Chebyshev_Legendre.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
 #include "quadrature_test.hh"
-
-#include "../Square_Chebyshev_Legendre.hh"
+#include "quadrature/Square_Chebyshev_Legendre.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -28,10 +21,6 @@ using namespace rtt_quadrature;
 
 //---------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
-
-
-
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
@@ -52,35 +41,21 @@ int main(int argc, char *argv[])
             quadrature_test(ut, quadrature);
         }
 
-        Square_Chebyshev_Legendre quadrature4(4); 
+        Square_Chebyshev_Legendre quadrature4(4);
         quadrature_integration_test(ut, quadrature4);
-        Square_Chebyshev_Legendre quadrature8(8); 
+        Square_Chebyshev_Legendre quadrature8(8);
         quadrature_integration_test(ut, quadrature8);
-        Square_Chebyshev_Legendre quadrature10(10); 
+        Square_Chebyshev_Legendre quadrature10(10);
         quadrature_integration_test(ut, quadrature10);
-        Square_Chebyshev_Legendre quadrature12(12); 
+        Square_Chebyshev_Legendre quadrature12(12);
         quadrature_integration_test(ut, quadrature12);
-        Square_Chebyshev_Legendre quadrature16(16); 
+        Square_Chebyshev_Legendre quadrature16(16);
         quadrature_integration_test(ut, quadrature16);
 
     }
-    catch (std::exception &err)
-    {
-        std::cout << "ERROR: While testing tstSquareGaussLegendre, " 
-                  << err.what()
-                  << endl;
-        ut.numFails++;
-    }
-    catch( ... )
-    {
-        std::cout << "ERROR: While testing tstSquareGaussLegendre, " 
-                  << "An unknown exception was thrown."
-                  << endl;
-        ut.numFails++;
-    }
-    return ut.numFails;
-}   
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
-//                        end of tstSquare_Chebyshev_Legendre.cc
+// end of tstSquare_Chebyshev_Legendre.cc
 //---------------------------------------------------------------------------//

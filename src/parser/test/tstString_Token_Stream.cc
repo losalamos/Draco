@@ -12,12 +12,10 @@
 //---------------------------------------------------------------------------//
 
 #include <sstream>
-#include "../String_Token_Stream.hh"
-#include "../utilities.hh"
+#include "parser/String_Token_Stream.hh"
+#include "parser/utilities.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/path.hh"
 
 using namespace std;
 using namespace rtt_parser;
@@ -54,7 +52,7 @@ void tstString_Token_Stream(UnitTest &ut)
 	}
 
 	Token token = tokens.lookahead(4);
-	if (token.type()!=KEYWORD || token.text()!="BLACK") 
+	if (token.type()!=KEYWORD || token.text()!="BLACK")
 	{
 	    FAILMSG("lookahead(4) does NOT have correct value");
 	}
@@ -130,7 +128,7 @@ void tstString_Token_Stream(UnitTest &ut)
 	}
 
 	token = tokens.shift();
-	if (token.type()!=KEYWORD || 
+	if (token.type()!=KEYWORD ||
 	    token.text()!="GENERATE ANOTHER ERROR")
 	{
 	    FAILMSG("Third shift does NOT have correct value");
@@ -153,9 +151,9 @@ void tstString_Token_Stream(UnitTest &ut)
 	    PASSMSG("Shift after pushback has correct value");
 	}
 
-	try 
+	try
 	{
-	    tokens.report_syntax_error(token, "dummy syntax error");  
+	    tokens.report_syntax_error(token, "dummy syntax error");
 	    FAILMSG("Syntax error NOT correctly thrown");
 	}
 	catch (const Syntax_Error &msg)
@@ -184,7 +182,7 @@ void tstString_Token_Stream(UnitTest &ut)
 
 	token = tokens.shift();
 	if (token.type()!=OTHER || token.text()!="=") ITFAILS;
-	
+
 	token = tokens.shift();
 	if (token.type()!=KEYWORD || token.text()!="BLACK") ITFAILS;
 
@@ -247,7 +245,7 @@ void tstString_Token_Stream(UnitTest &ut)
 	    ITFAILS;
 
 	token = tokens.shift();
-	if (token.type()!=STRING || 
+	if (token.type()!=STRING ||
 	    token.text()!="\"manifest \\\"string\\\"\"")
 	    ITFAILS;
 
@@ -284,7 +282,7 @@ void tstString_Token_Stream(UnitTest &ut)
         // Build path for the input file "scanner_recovery.inp"
         string const srInputFile(ut.getTestInputPath()
                                + std::string("scanner_recovery.inp") );
-        
+
         ifstream infile( srInputFile.c_str() );
 	string contents;
 	while (true)
@@ -376,7 +374,7 @@ void tstString_Token_Stream(UnitTest &ut)
         else
         {
             ut.failure("tab NOT correctly identified as nonbreaking "
-                       "whitespace");  
+                       "whitespace");
         }
         Token token = tokens.shift();
         if (token.type()!=INTEGER || token.text()!="0")
@@ -420,7 +418,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstString_Token_Stream(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstString_Token_Stream.cc

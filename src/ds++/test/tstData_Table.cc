@@ -10,9 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../Data_Table.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/Data_Table.hh"
 
 using namespace std;
 using rtt_dsxx::Data_Table;
@@ -57,7 +57,7 @@ void test_array( rtt_dsxx::UnitTest & ut )
         if(dt[2] != array[2]) ITFAILS;
         if(dt.front() != array[0]) ITFAILS;
         if(dt.back() != array[2]) ITFAILS;
-        
+
         if(dt.begin() != array) ITFAILS;
         if(dt.end() != array + 3) ITFAILS;
 
@@ -84,7 +84,7 @@ void test_array( rtt_dsxx::UnitTest & ut )
             if(dt3.back() != dt.back()) ITFAILS;
         }
     }
-    catch(rtt_dsxx::assertion & /* error */) 
+    catch(rtt_dsxx::assertion & /* error */)
     {
         caught = true;
     }
@@ -102,7 +102,7 @@ void test_array( rtt_dsxx::UnitTest & ut )
     {
         std::cout << dt[3];
     }
-    catch(rtt_dsxx::assertion & /* error */) 
+    catch(rtt_dsxx::assertion & /* error */)
     {
         caught = true;
     }
@@ -146,7 +146,7 @@ void test_scalar( rtt_dsxx::UnitTest & ut )
         if(dt[0] != dt3[0]) ITFAILS;
         if(&(dt[0]) == &(dt3[0])) ITFAILS;
     }
-    catch(rtt_dsxx::assertion & /* error */) 
+    catch(rtt_dsxx::assertion & /* error */)
     {
         caught = true;
     }
@@ -158,7 +158,7 @@ void test_scalar( rtt_dsxx::UnitTest & ut )
     {
         std::cout << dt[1];
     }
-    catch(rtt_dsxx::assertion & /* error */) 
+    catch(rtt_dsxx::assertion & /* error */)
     {
         caught = true;
     }
@@ -177,7 +177,7 @@ void test_scalar( rtt_dsxx::UnitTest & ut )
   As noted in the Class Declaration/Definition, this use of Data_Table is no
   longer supported because it did not conform to the C++ standard.
 */
-  
+
 // void test_vector()
 // {
 //     std::vector<char> v;
@@ -204,7 +204,7 @@ void test_scalar( rtt_dsxx::UnitTest & ut )
 //         if(*(dt.begin()) != 'a') ITFAILS;
 //         if((dt.end() - dt.begin()) != 3) ITFAILS;
 //     }
-//     catch(rtt_dsxx::assertion &ass) 
+//     catch(rtt_dsxx::assertion &ass)
 //     {
 //         caught = true;
 //     }
@@ -216,7 +216,7 @@ void test_scalar( rtt_dsxx::UnitTest & ut )
 //     {
 //         std::cout << dt[3];
 //     }
-//     catch(rtt_dsxx::assertion &ass) 
+//     catch(rtt_dsxx::assertion &ass)
 //     {
 //         caught = true;
 //     }
@@ -230,7 +230,7 @@ void test_scalar( rtt_dsxx::UnitTest & ut )
 
 //---------------------------------------------------------------------------//
 
-int 
+int
 main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
@@ -252,9 +252,9 @@ main(int argc, char *argv[])
 
         catch (...)
         {
-            cout << "ERROR: While testing " << argv[0] << ", " 
+            cout << "ERROR: While testing " << argv[0] << ", "
                  << "An unknown exception was thrown" << endl;
-            ut.numFails++;        
+            ut.numFails++;
         }
     }
     else
@@ -263,7 +263,7 @@ main(int argc, char *argv[])
             + std::string("DBC nothrow option is off.") );
     }
     return ut.numFails;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstData_Table.cc

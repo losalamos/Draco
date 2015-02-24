@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
-#include "../gatherv.hh"
-#include "../scatterv.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/gatherv.hh"
+#include "c4/scatterv.hh"
 #include "ds++/Release.hh"
 
 using namespace std;

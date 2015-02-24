@@ -11,8 +11,8 @@
 // $Id: tstVector_Type.cc 6965 2013-01-04 21:54:13Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
-#include "../ParallelUnitTest.hh"
+#include "c4/global.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 
 using namespace std;

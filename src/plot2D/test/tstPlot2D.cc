@@ -9,13 +9,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Plot2D.hh"
+#include "plot2D/Plot2D.hh"
 #include "ds++/Release.hh"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <cmath>
 #include <cstdlib>
 
@@ -67,7 +66,7 @@ tstPlot2D(const bool batch)
 
     string blockName("tmp.block");
     ofstream block(blockName.c_str());
-    
+
     for ( int i = 0; i < n; i++ )
     {
 	block << i;
@@ -160,7 +159,7 @@ tstPlot2D(const bool batch)
     // Must specify the graph number (0) to put all sets into one
     // graph.
     p.readBlock(blockName, 0);
-    
+
     p.setTitles("Same Data, One Graph", "subtitle");
 
     if ( ! batch )
@@ -172,9 +171,9 @@ tstPlot2D(const bool batch)
 void checkOutputFiles( std::string const &filename )
 {
     using std::string;
-    
+
     Check( ! filename.empty() );
-    
+
     cout << "\nChecking contents of generated plot file \""
          << filename << ".agr\"..." << endl;
 
@@ -197,7 +196,7 @@ void checkOutputFiles( std::string const &filename )
         if( end[i] > 0 )
             Check( end[i]   >= begin[i] );
     }
-    
+
     // break the file into portions that do not include these lines and then
     // run numdiff on each portion...
     for( size_t i=0; i<begin.size(); ++i )
@@ -207,7 +206,7 @@ void checkOutputFiles( std::string const &filename )
         std::ostringstream numdiff_cmd;
 
         cout << "\nGenerating part " << i << " (lines ";
-        
+
         // output file
         ndselect_file << "ndselect ";
         if( begin[i]>=0 )
@@ -227,7 +226,7 @@ void checkOutputFiles( std::string const &filename )
         cout << ndselect_file.str() << endl;
         int ret = system( ndselect_file.str().c_str() );
         if( ret != 0 ) pass = false;
-        
+
         // benchmark file
         ndselect_bench << "ndselect ";
         if( begin[i]>=0 )
@@ -256,7 +255,7 @@ int
 main(int argc, char *argv[])
 {
     bool batch = true;
-    
+
     // version tag
     for (int arg = 1; arg < argc; arg++)
     {
@@ -272,7 +271,7 @@ main(int argc, char *argv[])
     }
 
     cout << "\n**********************************************\n";
- 
+
     try
     {
         // tests
@@ -282,7 +281,7 @@ main(int argc, char *argv[])
 
             // Grace doesn't apper to flush the data to disk immediately.  We
             // need to wait a bit before comparing the output to the gold
-            // standards. 
+            // standards.
             std::cout << "\nWaiting for Grace to finish writing files...\n"
                       << std::endl;
             system( "sleep 5" );
@@ -304,7 +303,7 @@ main(int argc, char *argv[])
              << "\nBetter luck next time!\n\n" << endl;
         pass = false;
     }
- 
+
     // status of test
     cout << "\n**********************************************\n";
     if( pass )

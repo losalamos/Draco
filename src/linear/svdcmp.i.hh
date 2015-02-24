@@ -15,23 +15,21 @@
 #define linear_svdcmp_i_hh
 
 #include <sstream>
-#include <algorithm>
 #include <vector>
 
 #include "svdcmp.hh"
-#include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 
 namespace rtt_linear
 {
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Compute the singular value decomposition of a matrix.
  *
  * Compute the decomposition of a matrix \f$A=UWV^T\f$ where \f$U\f$ has the
  * same shape as the original matrix; \f$W\f$ is diagonal with rank equal to
  * the column order of \f$A\f$; and \f$V\f$ is a square full matrix of rank
- * equal to the column order of \f$A\f$.  
+ * equal to the column order of \f$A\f$.
  *
  * The singular value decomposition is tremendously useful for manipulation
  * both nonsquare matrices and nearly singular square matrices.  The
@@ -45,7 +43,7 @@ namespace rtt_linear
  * \param m Number of rows in a
  *
  * \param n Number of columns in a
- * 
+ *
  * \param w
  * On exit, contains  \f$W\f$.
  *
@@ -75,11 +73,11 @@ void svdcmp(RandomContainer &a,
 
     using std::min;
     using std::max;
-    
+
     w.resize(n);
     v.resize(n*n);
     std::vector<double> rv1(n);
-    
+
     // Reduce to bidiagonal form.
     double g = 0;
     double scale = 0;
@@ -151,7 +149,7 @@ void svdcmp(RandomContainer &a,
 	    }
 	}
 	norm = max(norm, fabs(w[i])+fabs(rv1[i]));
-    } 
+    }
     // Accumulation of right-hand transformations
     for (unsigned i=n-1; i<n; i--)
     {
@@ -194,13 +192,13 @@ void svdcmp(RandomContainer &a,
 	    }
 	    for (unsigned j=i; j<m; j++) a[j+m*i] *= rg;
 	}
-	else 
+	else
 	{
 	    for (unsigned j=i; j<m; j++) a[j+m*i] = 0;
 	}
 	a[i+m*i] += 1;
     }
-    
+
     // Reduce to diagonal form.
     for (unsigned k=n-1; k<n; k--)
     {
@@ -209,7 +207,7 @@ void svdcmp(RandomContainer &a,
 	for (; its<30; its++)  // Allow up to 30 iterations.
 	{
 	    bool flag = true;
-	    // Check for splitting. 
+	    // Check for splitting.
 	    Check(rv1[0]+norm==norm);
 	    unsigned l=k;
 	    for (; l<=k; l--)

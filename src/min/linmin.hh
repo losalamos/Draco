@@ -14,11 +14,7 @@
 #ifndef min_linmin_hh
 #define min_linmin_hh
 
-#include <cmath>
 #include <vector>
-
-#include "ds++/Assert.hh"
-#include "linmin.hh"
 #include "mnbrak.hh"
 #include "brent.hh"
 
@@ -104,7 +100,7 @@ void linmin(RandomContainer &p,
                                               fx,
                                               fb,
                                               f1);
-    
+
     fret = brent(ax, xx, bx, f1, TOL, xmin);
     for (unsigned j=0; j<n; ++j)
     {

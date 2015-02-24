@@ -3,7 +3,7 @@
  * \file   ds++/test/tstEndian.cc
  * \author Mike Buksas
  * \date   Tue Oct 23 16:20:59 2007
- * \brief  
+ * \brief
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,10 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../Endian.hh"
-#include "../Soft_Equivalence.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/Endian.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 #include <limits>
 
@@ -74,7 +74,7 @@ void test_integer(ScalarUnitTest& ut)
 //---------------------------------------------------------------------------//
 void test_int64(ScalarUnitTest& ut)
 {
-    // Integer. 
+    // Integer.
     int64_t moo = 0xFADEDDEADBEEFBAD;
 
     byte_swap(moo);
@@ -104,14 +104,14 @@ void test_int64(ScalarUnitTest& ut)
 //---------------------------------------------------------------------------//
 void test_idempotence(ScalarUnitTest& ut)
 {
-    
+
     /* This test demonstrates that two applications of byte-swap in succession
      * return the original value.
      *
      * To do this, we sweep over a lot of double values. We use a non-integral
      * multiplier for successive values to avoid small subsets of the
      * available patterns of bits. E.g. multiples of 2.
-     */ 
+     */
 
     for (double value = 1.0;
          value < std::numeric_limits<double>::max()/4.0; // divide by 4 to
@@ -119,7 +119,7 @@ void test_idempotence(ScalarUnitTest& ut)
     {
         // Use the in-place version to test positive values.
         double local = value;
-        byte_swap(local);   
+        byte_swap(local);
         byte_swap(local);
 
         // These numbers should be identical, so I'm testing for equality.
@@ -172,11 +172,11 @@ void test_externc(ScalarUnitTest& ut)
    int result(42);
    result = dsxx_is_big_endian();
    if( result < 0 || result > 1 ) ITFAILS;
-   
+
    result = 0xDEADBEEF;
    dsxx_byte_swap_int(result);
    if( result != static_cast<int>(0xEFBEADDE) ) ITFAILS;
-   
+
    int64_t i64(0xFADEDDEADBEEFBAD);
    dsxx_byte_swap_int64_t(i64);
    if( i64 != static_cast<int64_t>(0xADFBEEDBEADDDEFA) ) ITFAILS;
@@ -189,8 +189,8 @@ void test_externc(ScalarUnitTest& ut)
    dsxx_byte_swap_double(d);
    // double swap should return 42
    if(! rtt_dsxx::soft_equiv(d,42.0,1.0e-15)) ITFAILS;
-   
-   
+
+
    return;
 }
 //---------------------------------------------------------------------------//
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
         ut.passes("Just Because.");
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstEndian.cc

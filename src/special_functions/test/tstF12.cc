@@ -3,7 +3,7 @@
  * \file   sf/test/tstF12.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
- * \brief  
+ * \brief
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,7 +11,6 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <fstream>
 
 #include <gsl/gsl_sf_gamma.h>
@@ -21,8 +20,8 @@
 #include "units/PhysicalConstants.hh"
 
 #include "ds++/Release.hh"
-#include "../F12.hh"
-#include "../F12inv.hh"
+#include "special_functions/F12.hh"
+#include "special_functions/F12inv.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -35,7 +34,7 @@ using rtt_units::PI;
 
 void tstF12( UnitTest & ut )
 {
-    double f1 = F12(-10.0);   
+    double f1 = F12(-10.0);
     if (soft_equiv(f1,
                    exp(-10.0+gsl_sf_lngamma(1.5))*(1-exp(-10.0)/(2*sqrt(2.))),
                    2e-6))
@@ -46,7 +45,7 @@ void tstF12( UnitTest & ut )
     {
 	ut.failure("NOT correct F12 for -10.0");
     }
-    f1 = F12(1000.0);   
+    f1 = F12(1000.0);
     if (soft_equiv(f1,
                    pow(1000.0, 1.5)/1.5
                    + PI*PI*0.5*pow(1000.0, -0.5)/6.0, 1.0e-10))
@@ -72,7 +71,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstF12(ut); }
     UT_EPILOG(ut)
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstF12.cc

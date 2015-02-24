@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   ds++/dbc.i.hh
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
@@ -13,28 +13,26 @@
  * useful for writing Design by Contract assertions.
  */
 //---------------------------------------------------------------------------//
-// $Id$ 
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_dbc_i_hh
 #define rtt_dsxx_dbc_i_hh
 
 #include <algorithm>
-#include <iterator>
 #include <functional>
-#include <limits>
-#include "Assert.hh"
+//#include <limits>
 #include "Soft_Equivalence.hh"
 
 namespace rtt_dsxx
 {
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \author Kent G. Budge
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Check whether a sequence is monotonically increasing.
- * 
+ *
  * Checks whether every element in a sequence is less than or equal
  * to the next element of the sequence.  This is particularly useful for
  * Design by Contract assertions that check that a sequence is sorted.
@@ -51,14 +49,13 @@ namespace rtt_dsxx
  * \return \c true if \f$a_i<=a_{i+1}\f$ for all \f$a_i\f$ in the sequence;
  * \c false otherwise.
  */
-
-template <class Forward_Iterator>
+template <typename Forward_Iterator>
 bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last)
 {
     Forward_Iterator prev = first;
     while( ++first != last)
     {
-	if (*first < *prev) 
+	if (*first < *prev)
 	    return false;
 	prev = first;
     }
@@ -67,14 +64,14 @@ bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last)
 }
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \author Kent G. Budge
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Check whether a sequence is strictly monotonically increasing.
- * 
+ *
  * Checks whether every element in a sequence is less than the next element
  * of the sequence.  This is particularly useful for Design by Contract
- * assertions that check the validity of a table of data. 
+ * assertions that check the validity of a table of data.
  *
  * \arg \a Forward_Iterator
  * A forward iterator whose value type supports \c operator<.
@@ -88,8 +85,7 @@ bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last)
  * \return \c true if \f$a_i<a_{i+1}\f$ for all \f$a_i\f$ in the sequence;
  * \c false otherwise.
  */
-
-template <class Forward_Iterator>
+template <typename Forward_Iterator>
 bool is_strict_monotonic_increasing(Forward_Iterator first,
                                     Forward_Iterator last)
 {
@@ -103,11 +99,11 @@ bool is_strict_monotonic_increasing(Forward_Iterator first,
 }
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \author Kent G. Budge
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Check whether a sequence is strictly monotonically decreasing.
- * 
+ *
  * Checks whether every element in a sequence is greater than
  * the next element of the sequence.
  *
@@ -125,8 +121,7 @@ bool is_strict_monotonic_increasing(Forward_Iterator first,
  * \return \c true if \f$a_{i+1}<a_i\f$ for all \f$a_i\f$ in the sequence;
  * \c false otherwise.
  */
-
-template <class Forward_Iterator>
+template <typename Forward_Iterator>
 bool is_strict_monotonic_decreasing( Forward_Iterator first,
 				  Forward_Iterator last )
 {
@@ -140,9 +135,8 @@ bool is_strict_monotonic_decreasing( Forward_Iterator first,
     return true;
 }
 
-
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Check whether a matrix is symmetric.
  *
  * \arg \a Random_Access_Container
@@ -160,8 +154,7 @@ bool is_strict_monotonic_decreasing( Forward_Iterator first,
  * \return \c true if <code>A[i+n*j]==A[j+n*i]</code> for all \c i and \c j; \c false
  * otherwise.
  */
-
-template <class Random_Access_Container>
+template <typename Random_Access_Container>
 bool is_symmetric_matrix( Random_Access_Container const &A,
                           unsigned const n,
                           double const tolerance)
@@ -188,6 +181,3 @@ bool is_symmetric_matrix( Random_Access_Container const &A,
 //---------------------------------------------------------------------------//
 // end of dbc.i.hh
 //---------------------------------------------------------------------------//
-
-
-

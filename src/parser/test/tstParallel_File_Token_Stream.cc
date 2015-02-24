@@ -11,12 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
 #include <cmath>
 #include <sstream>
-
-#include "../Parallel_File_Token_Stream.hh"
+#include "parser/Parallel_File_Token_Stream.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/path.hh"
 #include "ds++/Release.hh"
@@ -123,7 +120,7 @@ void tstParallel_File_Token_Stream( rtt_dsxx::UnitTest &ut )
         if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR") ITFAILS;
 
         token = tokens.shift();
-        if (token.type()!=KEYWORD || 
+        if (token.type()!=KEYWORD ||
             token.text()!="GENERATE ANOTHER ERROR") ITFAILS;
 
         token = Token('$', "test_parser");
@@ -132,9 +129,9 @@ void tstParallel_File_Token_Stream( rtt_dsxx::UnitTest &ut )
         token = tokens.shift();
         if (token.type()!=OTHER || token.text()!="$") ITFAILS;
 
-        try 
+        try
         {
-            tokens.report_syntax_error(token, "dummy syntax error");  
+            tokens.report_syntax_error(token, "dummy syntax error");
             {
                 ostringstream msg;
                 msg << "Parallel_File_Token_Stream did not throw an exception when\n"
@@ -221,7 +218,7 @@ void tstParallel_File_Token_Stream( rtt_dsxx::UnitTest &ut )
             ITFAILS;
 
         token = tokens.shift();
-        if (token.type()!=STRING || 
+        if (token.type()!=STRING ||
             token.text()!="\"manifest \\\"string\\\"\"")
             ITFAILS;
 
@@ -323,7 +320,7 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
     try { tstParallel_File_Token_Stream(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstParallel_File_Token_Stream.cc

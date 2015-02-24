@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Token.hh"
+#include "parser/Token.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 

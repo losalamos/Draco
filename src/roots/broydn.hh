@@ -16,23 +16,18 @@
 
 #include "lnsrch.hh"
 #include "fdjac.hh"
-#include "linear/fnorm.hh"
 #include "linear/qr_unpack.hh"
 #include "linear/qrdcmp.hh"
 #include "linear/qrupdt.hh"
 #include "linear/rsolv.hh"
 #include "linear/svdcmp.hh"
 #include "linear/svbksb.hh"
-#include "ds++/Assert.hh"
-#include "ds++/DracoMath.hh"
-
 #include <numeric>
-#include <vector>
 
 namespace rtt_roots
 {
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Use Broyden's method to solve a set of nonlinear equations.
  *
  * This procedure searches for a root of a system of nonlinear equations
@@ -46,7 +41,7 @@ namespace rtt_roots
  * decomposition.  If the Jacobian is singular, the singular value
  * decomposition is computed and used to try to get the algorithm out of a
  * tight spot.  This makes for a fairly robust and efficient method.
- * 
+ *
  * \arg \a Field A field type, such as double or complex.
  * \arg \a Function_N_to_N A multifunctor type, representing a set of N
  * functions in N variables.  Each function returns the residual of the
@@ -79,7 +74,7 @@ void broydn(std::vector<Field> &x,
 	    const double alf)
 {
     Require(x.size()>0);
-    
+
     using std::vector;
     using std::numeric_limits;
     using std::range_error;
@@ -87,7 +82,7 @@ void broydn(std::vector<Field> &x,
     using namespace rtt_roots;
 
     const unsigned n = x.size();
-    
+
     vector<Field> c(n);
     vector<Field> d(n);
     vector<Field> fvcold(n);
@@ -102,7 +97,7 @@ void broydn(std::vector<Field> &x,
     vector<Field> v(n*n);
     vector<Field> xold(n);
     vector<Field> fvec(n);
-    
+
     Field f = fnorm(x, fvec, vecfunc);
     bool restrt = true;
     bool singular = false;
@@ -149,7 +144,7 @@ void broydn(std::vector<Field> &x,
 		// As we approach the root, the change in f will begin to be
 		// swamped by roundoff noise.  Filter out all w that are
 		// likely to be noisy.  If all w are noisy, don't try to
-		// update the Jacobian. 
+		// update the Jacobian.
 		if (fabs(w[i])>
 		    numeric_limits<double>::epsilon()*
 		    (fabs(fvec[i])+fabs(fvcold[i])))
@@ -180,13 +175,13 @@ void broydn(std::vector<Field> &x,
                 }
 		Check(scale);
 		// Shouldn't happen, as a negligible change in x should
-		// already have triggered a successful return. 
+		// already have triggered a successful return.
 		double const rscale = 1/scale;
 		double sum = rtt_dsxx::square(s[0]*rscale);
 		for (unsigned i=1; i<n; i++) sum += rtt_dsxx::square(s[i]*rscale);
-		double const rnorm2 = 1/((scale*sum)*scale); 
+		double const rnorm2 = 1/((scale*sum)*scale);
 		// The ordering of the above expression is important to avoid
-		// overflow. 
+		// overflow.
 		for (unsigned i=0; i<n; i++) s[i] *= rnorm2;
 		qrupdt(r,qt,n,t,s);
 		// Check singularity.
@@ -273,7 +268,7 @@ void broydn(std::vector<Field> &x,
 	    {
 		return;  // limit of accuracy reached
 	    }
-	    else 
+	    else
 	    {
 		double test=0.0;
                 double den;
@@ -303,7 +298,7 @@ void broydn(std::vector<Field> &x,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Use Broyden's method to solve a set of nonlinear equations.
  *
  * This procedure searches for a root of a system of nonlinear equations
@@ -319,8 +314,8 @@ void broydn(std::vector<Field> &x,
  * tight spot.  This makes for a fairly robust and efficient method.
  *
  * This variant of the Broyden method assumes that the Jacobian is available
- * analytically. 
- * 
+ * analytically.
+ *
  * \arg \a Field A field type, such as double or complex.
  *
  * \arg \a Function_N_to_N A multifunctor type, representing a set of N
@@ -371,7 +366,7 @@ void broydn(std::vector<Field> &x,
     using namespace rtt_roots;
 
     const unsigned n = x.size();
-    
+
     vector<Field> c(n);
     vector<Field> d(n);
     vector<Field> fvcold(n);
@@ -386,7 +381,7 @@ void broydn(std::vector<Field> &x,
     vector<Field> v(n*n);
     vector<Field> xold(n);
     vector<Field> fvec(n);
-    
+
     Field f = fnorm(x, fvec, vecfunc);
     bool restrt = true;
     bool singular = false;
@@ -433,7 +428,7 @@ void broydn(std::vector<Field> &x,
 		// As we approach the root, the change in f will begin to be
 		// swamped by roundoff noise.  Filter out all w that are
 		// likely to be noisy.  If all w are noisy, don't try to
-		// update the Jacobian. 
+		// update the Jacobian.
 		if (fabs(w[i])>
 		    numeric_limits<double>::epsilon()*
 		    (fabs(fvec[i])+fabs(fvcold[i])))
@@ -457,13 +452,13 @@ void broydn(std::vector<Field> &x,
 		for (unsigned i=1; i<n; i++) scale = std::max(scale, fabs(s[i]));
 		Check(scale);
 		// Shouldn't happen, as a negligible change in x should
-		// already have triggered a successful return. 
+		// already have triggered a successful return.
 		double const rscale = 1/scale;
 		double sum = rtt_dsxx::square(s[0]*rscale);
 		for (unsigned i=1; i<n; i++) sum += rtt_dsxx::square(s[i]*rscale);
-		double const rnorm2 = 1/((scale*sum)*scale); 
+		double const rnorm2 = 1/((scale*sum)*scale);
 		// The ordering of the above expression is important to avoid
-		// overflow. 
+		// overflow.
 		for (unsigned i=0; i<n; i++) s[i] *= rnorm2;
 		qrupdt(r,qt,n,t,s);
 		// Check singularity.
@@ -546,7 +541,7 @@ void broydn(std::vector<Field> &x,
 	    {
 		return;  // limit of accuracy reached
 	    }
-	    else 
+	    else
 	    {
 		double test=0.0;
 		double den = std::max(f, 0.5*n);

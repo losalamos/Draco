@@ -10,11 +10,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../dbc.hh"
-#include "../DracoMath.hh"
-#include <vector>
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/dbc.hh"
+#include "ds++/DracoMath.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -73,13 +72,13 @@ void dbc_test( UnitTest & ut )
         ut.passes(
             string("is_monotonic_increasing function template worked for ")+
             string("length=1 test.") );
-    
+
     if (is_strict_monotonic_increasing(sum_test_array, sum_test_array+6) ||
 	!is_strict_monotonic_increasing(sum_test_array, sum_test_array+2))
         ut.failure("is_strict_monotonic_increasing function template FAILED");
     else
         ut.passes("is_strict_monotonic_increasing function template ok");
-    
+
     // Ensure that the is_strict_monotonic_increasing() function will return
     // true if there is only one data point.
 
@@ -91,13 +90,13 @@ void dbc_test( UnitTest & ut )
         ut.failure(
             string("is_strict_monotonic_increasing function template ")+
             string("incorrectly reported length=1 container non-monotonic.") );
-    
+
     if (   is_strict_monotonic_decreasing(sum_test_array+1, sum_test_array+3) &&
            ! is_strict_monotonic_decreasing(sum_test_array,   sum_test_array+6) )
         ut.passes("is_strict_monotonic_decreasing function template ok");
     else
         ut.failure("is_strict_monotonic_decreasing function template FAILED");
-    
+
     // Ensure that the is_strict_monotonic_decreasing() function will return
     // true if there is only one data point.
 
@@ -110,8 +109,8 @@ void dbc_test( UnitTest & ut )
             string("is_strict_monotonic_decreasing function template ")+
             string("incorrectly reported length=1 container monotonic.") );
 
-    if (std::find_if(sum_test_array, 
-		     sum_test_array+6, 
+    if (std::find_if(sum_test_array,
+		     sum_test_array+6,
 		     bind2nd(greater<double>(), 2.))!=sum_test_array+1)
         ut.failure("std::bind2nd or std::greater function templates FAILED");
     else
@@ -168,7 +167,7 @@ void isFinite_test( UnitTest & ut )
     if( rtt_dsxx::isFinite(x) )
         ut.passes("Correctly found x to be finite.");
     else
-        ut.failure("Failed to find x to be finite.");    
+        ut.failure("Failed to find x to be finite.");
     return;
 }
 
@@ -183,7 +182,7 @@ int main(int argc, char *argv[])
         isFinite_test(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstdbc.cc

@@ -15,16 +15,13 @@
 #define roots_zbrent_i_hh
 
 #include "ds++/DracoMath.hh"
-#include "ds++/Assert.hh"
-#include <algorithm>
-#include <cmath>
 #include <limits>
 
 namespace rtt_roots
 {
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * Pinpoint a bracketed root of a function.
  *
  * \c zbrent returns when either \c tol or \c ftol achieves the requested
@@ -46,7 +43,7 @@ namespace rtt_roots
  * On entry, the desired absolute tolerance in the argument.  On return,
  * this is replaced with the tolerance actually achieved.
  * \param[in,out] ftol
- * On entry, the desired absolute tolerance in the function value.  
+ * On entry, the desired absolute tolerance in the function value.
  * On return, this is replaced with the tolerance actually achieved.
  *
  * \pre <code>(fa>=0.0 && fb<=0.0) || (fa<=0.0 && fb>=0.0)</code>
@@ -64,7 +61,7 @@ namespace rtt_roots
  * varying near its zero, due to roundoff.
  */
 
-template<class Function, class Real>
+template<typename Function, typename Real>
 Real zbrent(Function func,
             Real x1,
             Real x2,
@@ -74,12 +71,12 @@ Real zbrent(Function func,
 {
     using std::numeric_limits;
     using std::min;
-    
+
     Real a=x1, b=x2, c=x2;
     Real fa = func(a), fb = func(b);
-    
+
     Require((fa>=0.0 && fb<=0.0) || (fa<=0.0 && fb>=0.0));
-    
+
     Real fc = fb;
     Real d=b-a, e=b-a, xm=0;
     for (unsigned iter=0; iter < itmax; iter++)
@@ -109,7 +106,7 @@ Real zbrent(Function func,
         xm = 0.5*(c-b);
         Real axm = (xm>0.? xm : -xm);
         afb = (fb>0.? fb : -fb);
-	if (axm <= tol1 || afb <= ftol) 
+	if (axm <= tol1 || afb <= ftol)
 	{
 	    tol = fabs((xm));
 	    ftol = fabs((fb));

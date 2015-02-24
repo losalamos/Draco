@@ -16,7 +16,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "../FundUnit.hh"
+#include "units/FundUnit.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS

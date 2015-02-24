@@ -239,7 +239,7 @@ to anything else will generate errors."
     ;; Match single keyword that is followed by 0 or more spaces,
     ;; followed by an opening paren.
     (concat "\\(Assert\\|Check\\|Ensure\\|Insist\\|Require"
-            "\\|Remember\\)\\>\\(\\s-*[(]\\)")
+            "\\|Remember\\|UT_EPILOG\\)\\>\\(\\s-*[(]\\)")
     '(1 font-lock-preprocessor-face prepend))
 
    ;; DRACO Unit testing - One shot keywords that take no arguments

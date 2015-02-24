@@ -3,7 +3,6 @@
  * \file   linear/test/tstqrupdt.cc
  * \author Kent Budge
  * \date   Mon Aug  9 13:39:20 2004
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,15 +10,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../qrdcmp.hh"
-#include "../qr_unpack.hh"
-#include "../qrupdt.hh"
+#include "linear/qrdcmp.hh"
+#include "linear/qr_unpack.hh"
+#include "linear/qrupdt.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -45,10 +41,10 @@ void tstqrupdt(UnitTest &ut)
     vector<double> QT;
     qr_unpack(A, 2, C, D, QT);
 
-    // Now do a Householder update.  
+    // Now do a Householder update.
     vector<double> s(2), t(2);
     vector<double> u(2), v(2);
-    
+
     s[0] = -0.1;
     s[1] = 0.1;
     t[0] = 0.1;
@@ -100,31 +96,15 @@ void tstqrupdt(UnitTest &ut)
     {
 	ut.failure("1,1 is NOT correct");
     }
-
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    try
-    {
-        ScalarUnitTest ut( argc,argv, release );
-	tstqrupdt(ut);
-    }
-    catch (exception &err)
-    {
-	cout << "ERROR: While testing tstqrupdt, " << err.what() << endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	cout << "ERROR: While testing tstqrupdt, " 
-             << "An unknown exception was thrown." << endl;
-	return 1;
-    }
-    return 0;
-}   
+    ScalarUnitTest ut( argc,argv, release );
+    try { tstqrupdt(ut); }
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstqrupdt.cc

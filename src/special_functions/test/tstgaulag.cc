@@ -3,7 +3,6 @@
  * \file   special_functions/test/tstgaulag.cc
  * \author Kent Budge
  * \date   Tue Sep 27 12:49:39 2005
- * \brief  
  * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,13 +10,7 @@
 // $Id: tstgaulag.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
-#include "../gaulag.hh"
-#include "ds++/Assert.hh"
-#include "ds++/Soft_Equivalence.hh"
+#include "special_functions/gaulag.hh"
 #include "ds++/Release.hh"
 #include "ds++/DracoMath.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -51,8 +44,8 @@ int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, rtt_dsxx::release );
     try { tstgaulag(ut); }
-    UT_EPILOG(ut);    
-}   
+    UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstgaulag.cc

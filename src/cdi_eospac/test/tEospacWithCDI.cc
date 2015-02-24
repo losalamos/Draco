@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Eospac.hh"
-#include "../SesameTables.hh"
-#include "../EospacException.hh"
+#include "cdi_eospac/Eospac.hh"
+#include "cdi_eospac/SesameTables.hh"
+#include "cdi_eospac/EospacException.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"

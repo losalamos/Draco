@@ -11,9 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include <iostream>
 
 using namespace std;
 
@@ -24,13 +23,13 @@ using namespace std;
 void tstCopyConstructor(rtt_dsxx::UnitTest &ut)
 {
     using rtt_c4::C4_Req;
-    
+
     C4_Req requestA;
     C4_Req requestB( requestA );
 
     // The behavior of the copy constructor is not obvious.  If requestA has
     // not been used (inuse() returns 0) then requestA != requestB.
-    
+
     if( requestA.inuse() == 0 && requestA == requestB  )
         FAILMSG("requestA.inuse()==0, so requestA cannot == requestB.");
 
@@ -43,9 +42,9 @@ void tstCopyConstructor(rtt_dsxx::UnitTest &ut)
     if( requestA.inuse() == 1 && requestA != requestB  )
         FAILMSG("requestA.inuse()=1, so requestA must == requestB.");
 
-    if( ut.numFails == 0 ) 
+    if( ut.numFails == 0 )
         PASSMSG("tstCopyConstructor() is okay.");
-    
+
     return;
 }
 
@@ -74,7 +73,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut)
         if( MPI_Traits<long double>::element_type()    != MPI_LONG_DOUBLE )    ITFAILS;
     }
 #endif
-    
+
     return;
 }
 
@@ -82,7 +81,7 @@ void tstTraits(rtt_dsxx::UnitTest &ut)
 void tstWait(rtt_dsxx::UnitTest &ut)
 {
     using namespace rtt_c4;
-    
+
     if (rtt_c4::node()>0)
     {
         cout << "sending from processor " << get_processor_name() << ':' << endl;
@@ -127,7 +126,7 @@ int main(int argc, char *argv[])
         tstWait(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstC4_Req.cc

@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Viz_Traits.hh"
+#include "viz/Viz_Traits.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 

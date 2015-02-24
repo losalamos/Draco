@@ -12,14 +12,11 @@
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
-#include "../nGray_Analytic_Odfmg_Opacity.hh"
-#include "../Analytic_Models.hh"
-#include "../Pseudo_Line_Analytic_Odfmg_Opacity.hh"
+#include "cdi_analytic/nGray_Analytic_Odfmg_Opacity.hh"
+#include "cdi_analytic/Pseudo_Line_Analytic_Odfmg_Opacity.hh"
 #include "cdi/CDI.hh"
 #include "parser/Constant_Expression.hh"
 #include "c4/ParallelUnitTest.hh"
-#include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 
@@ -151,7 +148,7 @@ void odfmg_test(UnitTest &ut)
     // check the group structure
     vector<double> get_groups = opacity.getGroupBoundaries();
 
-    if (soft_equiv(get_groups.begin(), get_groups.end(), 
+    if (soft_equiv(get_groups.begin(), get_groups.end(),
                    groups.begin(), groups.end()))
     {
         ut.passes("Group boundaries match.");
@@ -164,7 +161,7 @@ void odfmg_test(UnitTest &ut)
     // check the band structure
     vector<double> get_bands = opacity.getBandBoundaries();
 
-    if (soft_equiv(get_bands.begin(), get_bands.end(), 
+    if (soft_equiv(get_bands.begin(), get_bands.end(),
                    bands.begin(), bands.end()))
     {
         ut.passes("Band boundaries match.");
@@ -182,10 +179,10 @@ void odfmg_test(UnitTest &ut)
     ref[0] = 100.0 / 8.0;
     ref[1] = 1.5;
     ref[2] = 3.0;
-        
+
     // load groups * bands opacities; all bands inside each group should be
     // the same
-    vector< vector<double> > sigma = opacity.getOpacity(2.0, 3.0); 
+    vector< vector<double> > sigma = opacity.getOpacity(2.0, 3.0);
 
     // check for each band and group
     bool itPasses = checkOpacityEquivalence(sigma, ref);
@@ -265,7 +262,7 @@ void odfmg_test(UnitTest &ut)
     else
         ut.failure(std::string("get_Analytic_Model() did not return the")
                    + std::string(" expected MG Opacity model."));
-    
+
     return;
 }
 
@@ -299,7 +296,7 @@ void test_CDI(UnitTest &ut)
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    SP<const OdfmgOpacity> odfmg( 
+    SP<const OdfmgOpacity> odfmg(
         new nGray_Analytic_Odfmg_Opacity(groups,
                                          bands,
                                          models,
@@ -314,7 +311,7 @@ void test_CDI(UnitTest &ut)
     // check the energy groups from CDI
     vector<double> odfmg_groups = CDI::getFrequencyGroupBoundaries();
 
-    if (soft_equiv(odfmg_groups.begin(), odfmg_groups.end(), 
+    if (soft_equiv(odfmg_groups.begin(), odfmg_groups.end(),
                    groups.begin(), groups.end()))
     {
         ut.passes("CDI Group boundaries match.");
@@ -323,11 +320,11 @@ void test_CDI(UnitTest &ut)
     {
         ut.failure("CDI Group boundaries do not match.");
     }
-        
+
     // check the energy groups from CDI
     vector<double> odfmg_bands = CDI::getOpacityCdfBandBoundaries();
 
-    if (soft_equiv(odfmg_bands.begin(), odfmg_bands.end(), 
+    if (soft_equiv(odfmg_bands.begin(), odfmg_bands.end(),
                    bands.begin(), bands.end()))
     {
         ut.passes("CDI band boundaries match.");
@@ -342,7 +339,7 @@ void test_CDI(UnitTest &ut)
 
     // scalar density and temperature
     vector< vector<double> > sigma
-        = cdi.odfmg(rtt_cdi::ANALYTIC, 
+        = cdi.odfmg(rtt_cdi::ANALYTIC,
                     rtt_cdi::ABSORPTION)->getOpacity(2.0, 3.0);
 
     vector<double> ref(3, 0.0);
@@ -378,7 +375,7 @@ void packing_test(UnitTest &ut)
     groups[1] = 0.5;
     groups[2] = 5.0;
     groups[3] = 50.0;
-        
+
     // band strucutre
     vector<double> bands(3, 0.0);
     bands[0] = 0.0;
@@ -401,7 +398,7 @@ void packing_test(UnitTest &ut)
 
         // make an analytic multigroup opacity object for absorption
         SP<const OdfmgOpacity> odfmg
-            (new nGray_Analytic_Odfmg_Opacity(groups, bands, models, 
+            (new nGray_Analytic_Odfmg_Opacity(groups, bands, models,
                                         rtt_cdi::ABSORPTION));
 
         // pack it
@@ -436,7 +433,7 @@ void packing_test(UnitTest &ut)
     // check the group structure
     vector<double> mg_groups = opacity.getGroupBoundaries();
 
-    if (soft_equiv(mg_groups.begin(), mg_groups.end(), 
+    if (soft_equiv(mg_groups.begin(), mg_groups.end(),
                    groups.begin(), groups.end()))
     {
         ut.passes("Group boundaries for unpacked ODFMG opacity match.");
@@ -445,11 +442,11 @@ void packing_test(UnitTest &ut)
     {
         ut.failure("Group boundaries for unpacked ODFMG do not match.");
     }
-        
+
     // check the band structure
     vector<double> get_bands = opacity.getBandBoundaries();
 
-    if (soft_equiv(get_bands.begin(), get_bands.end(), 
+    if (soft_equiv(get_bands.begin(), get_bands.end(),
                    bands.begin(), bands.end()))
     {
         ut.passes("Band boundaries match.");
@@ -550,7 +547,7 @@ void pseudo_line_opacity_test(UnitTest &ut)
 
     // continuum
     SP<Expression const> const continuum(new Constant_Expression(1, 1.0));
-    
+
     Pseudo_Line_Analytic_Odfmg_Opacity model(groups,
                                              bands,
                                              rtt_cdi::ABSORPTION,
@@ -625,7 +622,7 @@ int main(int argc, char *argv[])
         pseudo_line_opacity_test(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstAnalytic_Odfmg_Opacity.cc

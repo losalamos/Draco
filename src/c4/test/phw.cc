@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
+#include "c4/global.hh"
 #include <iostream>
 
 using namespace rtt_c4;

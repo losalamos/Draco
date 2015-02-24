@@ -15,11 +15,9 @@
 #define rtt_dsxx_File_Streams_hh
 
 #include "Assert.hh"
-#include "ds++/config.h"
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include <string>
 
 namespace rtt_dsxx
 {

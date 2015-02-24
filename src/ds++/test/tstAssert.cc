@@ -11,13 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Assert.hh"
-#include "../Release.hh"
-
-#include <iostream>
-#include <vector>
-#include <cmath>
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+// #include <cmath>
 
 using namespace std;
 
@@ -37,16 +33,16 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 // Make sure we can differentiate betweeen a std::runtime_error and a
-// rtt_dsxx::assertion. 
+// rtt_dsxx::assertion.
 //---------------------------------------------------------------------------//
 
 static void t1( rtt_dsxx::UnitTest & ut )
 {
     std::cout << "t1 test: ";
-    try 
+    try
     {
 	throw std::runtime_error( "hello1" );
-    } 
+    }
     catch( rtt_dsxx::assertion const & a )
     {
         FAILMSG("rtt_dsxx::assertion caught.");
@@ -60,17 +56,17 @@ static void t1( rtt_dsxx::UnitTest & ut )
 
 //---------------------------------------------------------------------------//
 // Make sure we can catch a rtt_dsxx::assertion and extract the error
-// message. 
+// message.
 //---------------------------------------------------------------------------//
 
 static void t2( rtt_dsxx::UnitTest & ut )
 {
     std::cout << "t2 test: ";
     std::string error_message;
-    try 
+    try
     {
 	throw rtt_dsxx::assertion( "hello1", "myfile", 42 );
-    } 
+    }
     catch( rtt_dsxx::assertion const & a )
     {
         PASSMSG("caught rtt_dsxx::assertion");
@@ -82,8 +78,8 @@ static void t2( rtt_dsxx::UnitTest & ut )
     }
 
     // Make sure we can extract the error message.
-    std::string const compare_value( 
-	"Assertion: hello1, failed in myfile, line 42.\n" ); 
+    std::string const compare_value(
+	"Assertion: hello1, failed in myfile, line 42.\n" );
     if ( error_message.compare( compare_value ) != 0 ) ITFAILS;
 
     return;
@@ -96,10 +92,10 @@ static void t2( rtt_dsxx::UnitTest & ut )
 static void t3( rtt_dsxx::UnitTest & ut )
 {
     std::cout << "t3 test: ";
-    try 
+    try
     {
 	throw "hello";
-    } 
+    }
     catch( rtt_dsxx::assertion const & a )
     {
         FAILMSG("Should not have caught an rtt_dsxx::assertion");
@@ -157,7 +153,7 @@ static void ttoss_cookies( rtt_dsxx::UnitTest & ut )
         catch( ... )
         {
             ITFAILS;
-        } 
+        }
     }
     return;
 }
@@ -390,9 +386,9 @@ static void tinsist( rtt_dsxx::UnitTest & ut )
             Insist( 0, insist_message );
             throw "Bogus!";
         }
-        catch( rtt_dsxx::assertion const & a ) 
+        catch( rtt_dsxx::assertion const & a )
         {
-            PASSMSG("tinsist: caught rtt_dsxx::assertion");            
+            PASSMSG("tinsist: caught rtt_dsxx::assertion");
             std::cout << "t-Insist message value test: ";
             {
                 bool passed( true );
@@ -405,12 +401,12 @@ static void tinsist( rtt_dsxx::UnitTest & ut )
                 if( ! passed ) ITFAILS;
             }
         }
-        catch(...) 
+        catch(...)
         {
             ITFAILS;
         }
     }
-    
+
     {
         std::cout << "t-Insist ptr test: ";
         char const * const insist_message( "You must be kidding!" );
@@ -419,9 +415,9 @@ static void tinsist( rtt_dsxx::UnitTest & ut )
             Insist_ptr( 0, insist_message );
             throw "Bogus!";
         }
-        catch( rtt_dsxx::assertion const & a ) 
+        catch( rtt_dsxx::assertion const & a )
         {
-            PASSMSG("tinsist_ptr: caught rtt_dsxx::assertion"); 
+            PASSMSG("tinsist_ptr: caught rtt_dsxx::assertion");
             std::cout << "t-Insist ptr message value test: ";
             {
                 bool passed( true );
@@ -434,7 +430,7 @@ static void tinsist( rtt_dsxx::UnitTest & ut )
                 if( !passed ) ITFAILS;
             }
         }
-        catch(...) 
+        catch(...)
         {
             ITFAILS;
         }
@@ -454,9 +450,9 @@ static void tinsist_ptr( rtt_dsxx::UnitTest & ut )
 	Insist( 0, "You must be kidding!" );
 	throw "Bogus!";
     }
-    catch( rtt_dsxx::assertion const & a ) 
+    catch( rtt_dsxx::assertion const & a )
     {
-        PASSMSG("tinsist_ptr: caught  rtt_dsxx::assertion");        
+        PASSMSG("tinsist_ptr: caught  rtt_dsxx::assertion");
 	std::cout << "t-Insist_ptr message value test: ";
 	{
 	    std::string msg( a.what() );
@@ -465,7 +461,7 @@ static void tinsist_ptr( rtt_dsxx::UnitTest & ut )
 	    if( idx == string::npos ) ITFAILS;
 	}
     }
-    catch(...) 
+    catch(...)
     {
 	ITFAILS;
     }
@@ -493,7 +489,7 @@ int main( int argc, char *argv[] )
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {   // >>> UNIT TESTS
-    
+
         // Test basic throw and catch functionality.
         t1(ut);
         t2(ut);
@@ -502,7 +498,7 @@ int main( int argc, char *argv[] )
         // Test mechanics of Assert funtions.
         ttoss_cookies(ut);
         tshow_cookies(ut);
-    
+
         // Test Design-by-Constract macros.
         trequire(ut);
         tcheck(ut);
@@ -516,7 +512,7 @@ int main( int argc, char *argv[] )
         tverbose_error(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstAssert.cc

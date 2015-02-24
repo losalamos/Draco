@@ -25,7 +25,7 @@ list( REMOVE_ITEM test_sources
 
 include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
-   ${PROJECT_SOURCE_DIR}/..   # headers for package
+   ${Draco_SOURCE_DIR}/src    # headers for package
    ${PROJECT_BINARY_DIR}/.. ) # config.h
 
 # ---------------------------------------------------------------------------- #

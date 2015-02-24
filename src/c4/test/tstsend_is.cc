@@ -11,10 +11,9 @@
 // $Id: tstsend_is.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "../ParallelUnitTest.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include <sstream>
-#include <vector>
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -52,15 +51,15 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     {
         // send data using non-blocking synchronous send.
         rtt_c4::send_is( comm_int[1], &buffer1[0], buffer1.size(), right );
-    
+
         // wait for all communication to finish
         rtt_c4::wait_all( comm_int.size(), &comm_int[0] );
-        
+
         // exected results
         std::vector<int> expected(bsize);
         for( size_t i=0;i<bsize;++i )
             expected[i] = 1000*left+i;
-        
+
         if( expected == buffer2 )
         {
             std::ostringstream msg;
@@ -84,7 +83,7 @@ void test_simple( rtt_dsxx::UnitTest &ut )
         FAILMSG("Encountered a ds++ exception while testing send_is().");
 #endif
     }
-    
+
     return;
 }
 
@@ -94,7 +93,7 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try { test_simple(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstsend_is.cc

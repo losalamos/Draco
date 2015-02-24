@@ -1,4 +1,3 @@
-
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/test/tstquadrature_interface.cc
@@ -6,23 +5,25 @@
  * \date   Tue Feb  3 13:08:49 2012
  * \brief  Quadrature Interface test
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-
-
-#include "ds++/Assert.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 
-#include "../Quadrature.hh"
-#include "../Quadrature_Interface.hh"
+#include "quadrature/Quadrature.hh"
+#include "quadrature/Quadrature_Interface.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_quadrature;
+
+//---------------------------------------------------------------------------//
+// Unit tests
+//---------------------------------------------------------------------------//
 
 void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
 {
@@ -264,14 +265,14 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
     return;
 }
 
-
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        quadrature_interface_test(ut);
-    }
+    try { quadrature_interface_test(ut); }
     UT_EPILOG(ut);
-
 }
+
+//---------------------------------------------------------------------------//
+// end of tstquadrature_interface.cc
+//---------------------------------------------------------------------------//

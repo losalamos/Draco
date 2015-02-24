@@ -13,7 +13,6 @@
 #ifndef __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
 #define __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
 
-#include "parser/Expression.hh"
 #include "Analytic_MultigroupOpacity.hh"
 #include "Pseudo_Line_Base.hh"
 
@@ -66,7 +65,7 @@ class DLL_PUBLIC Pseudo_Line_Analytic_MultigroupOpacity
                                            Averaging averaging,
                                            unsigned qpoints,
                                            unsigned seed);
-    
+
     //! Constructor for packed state.
     explicit  Pseudo_Line_Analytic_MultigroupOpacity(const sf_char &packed);
 

@@ -3,7 +3,6 @@
  * \file   c4/test/tstTermination_Detector.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:45:44 2004
- * \brief  
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,10 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Termination_Detector.hh"
-#include "../ParallelUnitTest.hh"
+#include "c4/Termination_Detector.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -26,7 +24,6 @@ using namespace rtt_c4;
 
 void tstTermDet( UnitTest & ut )
 {
-    
     Termination_Detector td(1);
 
     td.init();
@@ -48,7 +45,7 @@ void tstTermDet( UnitTest & ut )
     td.update_receive_count(1);
 
     while (!td.is_terminated()) {/* do nothing */};
-    
+
     return;
 }
 
@@ -58,7 +55,7 @@ int main(int argc, char *argv[])
     ParallelUnitTest ut( argc, argv, release );
     try { tstTermDet(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstTermination_Detector.cc

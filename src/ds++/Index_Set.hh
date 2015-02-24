@@ -3,8 +3,8 @@
  * \file   ds++/Index_Set.hh
  * \author Mike Buksas
  * \date   Thu Feb  2 10:01:46 2006
- * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -14,8 +14,8 @@
 #define dsxx_Index_Set_hh
 
 #include "Assert.hh"
-#include <functional>
-#include <numeric>
+// #include <functional>
+// #include <numeric>
 #include <algorithm>
 
 namespace rtt_dsxx
@@ -27,19 +27,19 @@ namespace rtt_dsxx
  * \brief Represents a D-dimensional set if indices.
  * \sa Index_Set.cc for detailed descriptions.
  */
-/*! 
- * \example ds++/test/tstIndex_Set.cc 
+/*!
+ * \example ds++/test/tstIndex_Set.cc
  */
 //===========================================================================//
 template <unsigned D, int OFFSET>
-class Index_Set 
+class Index_Set
 {
   public:
 
     // NESTED CLASSES AND TYPEDEFS
 
     // CREATORS
-    
+
     //! Default constructors.
     Index_Set() :array_size(0) { /* ... */ }
 
@@ -51,7 +51,7 @@ class Index_Set
 
     //! Destructor
     virtual ~Index_Set() { /* ... */ }
-    
+
     //! Comparison operator
     bool operator==(const Index_Set &rhs) const;
 
@@ -90,14 +90,14 @@ class Index_Set
      int limit_of_index(const unsigned d, const bool positive) const {
          return positive ? max_of_index(d) : min_of_index(d);
     }
-            
+
     static bool direction_okay(const size_t d) { return (d > 0) && (d <= 2*D); }
     static bool dimension_okay(const size_t d) { return d <  D; }
 
   private:
 
     void compute_size();
-    
+
     unsigned array_size;    //!< Sizes of the whole index range
     unsigned dimensions[D]; //!< Sizes of each dimension
 
@@ -120,5 +120,5 @@ class Index_Set
 #endif // dsxx_Index_Set_hh
 
 //---------------------------------------------------------------------------//
-//              end of ds++/Index_Set.hh
+// end of ds++/Index_Set.hh
 //---------------------------------------------------------------------------//

@@ -11,22 +11,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
-#include "../ParallelUnitTest.hh"
-#include "../Timer.hh"
-#include "../gatherv.hh"
+#include "c4/global.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/Timer.hh"
+#include "c4/gatherv.hh"
 
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 
-#include <vector>
-#include <iostream>
-#include <cmath>
 #include <numeric>
 #include <complex>
 #include <vector>
-#include <string>
 
 #include "c4_omp.h"
 

@@ -3,7 +3,7 @@
  * \file   sf/test/tstF12inv.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
- * \brief  
+ * \brief
  * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,15 +11,14 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <cmath>
 #include <limits>
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-#include "../F12.hh"
-#include "../F12inv.hh"
+#include "special_functions/F12.hh"
+#include "special_functions/F12inv.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -31,7 +30,7 @@ using namespace rtt_sf;
 
 void tstF12inv( UnitTest & ut )
 {
-    double f12 = F12(1.3);   
+    double f12 = F12(1.3);
     double f12inv = F12inv(f12);
     if (soft_equiv(f12inv, 1.3, 1.0e-9))
     {
@@ -41,7 +40,7 @@ void tstF12inv( UnitTest & ut )
     {
 	ut.failure("NOT correct F12inv");
     }
-    f12 = F12(9.7);   
+    f12 = F12(9.7);
     f12inv = F12inv(f12);
     if (soft_equiv(f12inv, 9.7, 5.0e-9))
     {
@@ -104,7 +103,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstF12inv(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstF12inv.cc

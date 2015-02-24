@@ -3,7 +3,6 @@
  * \file   ds++/test/tstIndex_Converter.cc
  * \author Mike Buksas
  * \date   Fri Jan 20 15:53:51 2006
- * \brief  
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,9 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Index_Converter.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
+#include "ds++/Index_Converter.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -74,7 +73,7 @@ void test_index_converter( rtt_dsxx::UnitTest & ut )
         if (!std::equal(result.begin(), result.end(), indices)) ITFAILS;
 
         int index = box.get_index(indices);
-        if (index != 30 ) ITFAILS;   
+        if (index != 30 ) ITFAILS;
 
         if (box.get_next_index(index, 1) != -1) ITFAILS;
         if (box.get_next_index(index, 2) != 31) ITFAILS;
@@ -84,7 +83,7 @@ void test_index_converter( rtt_dsxx::UnitTest & ut )
 
         if (box.get_next_index(index, 5) != 18) ITFAILS;
         if (box.get_next_index(index, 6) != 42) ITFAILS;
-        
+
         Index_Converter<3,0> copy(box);
         if (copy != box) ITFAILS;
     }
@@ -104,7 +103,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { test_index_converter(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstIndex_Converter.cc

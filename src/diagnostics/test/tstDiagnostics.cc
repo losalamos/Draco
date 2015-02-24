@@ -11,11 +11,10 @@
 //! \version $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Diagnostics.hh"
+#include "diagnostics/Diagnostics.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include <iostream>
 
 using namespace std;
 using namespace rtt_diagnostics;
@@ -39,7 +38,7 @@ void test_ints( rtt_dsxx::UnitTest & ut )
 
     // add another
     Diagnostics::integers["B"] = 51;
-    
+
     if (ut.numFails==0)
         PASSMSG("Diagnostics integers ok.");
 }
@@ -55,7 +54,7 @@ void test_floats( rtt_dsxx::UnitTest & ut )
     Diagnostics::doubles["A_of_B"] = Diagnostics::integers["A"] /
                                      static_cast<double>(
                                          Diagnostics::integers["B"]);
-    
+
     // check it
     if (!soft_equiv(Diagnostics::doubles["A_of_B"], 22.0/51.0)) ITFAILS;
 
@@ -64,7 +63,7 @@ void test_floats( rtt_dsxx::UnitTest & ut )
     if (Diagnostics::doubles.count("A_of_B") != 0) ITFAILS;
 
     Diagnostics::integers.erase("A");
-    
+
     if (ut.numFails==0)
         PASSMSG("Diagnostics doubles ok.");
 }
@@ -78,10 +77,10 @@ void test_vectors( rtt_dsxx::UnitTest & ut )
 
     if (!Diagnostics::vec_integers["A"].empty()) ITFAILS;
     if (!Diagnostics::vec_integers["B"].empty()) ITFAILS;
-    
+
     Diagnostics::vec_integers["A"].resize(10);
     if (Diagnostics::vec_integers["A"].size() != 10) ITFAILS;
-    
+
     Diagnostics::vec_doubles["B"].resize(2);
     Diagnostics::vec_doubles["B"][0] = 1.1;
     Diagnostics::vec_doubles["B"][1] = 2.4;
@@ -96,10 +95,10 @@ void test_vectors( rtt_dsxx::UnitTest & ut )
 
     Diagnostics::vec_doubles["B"].clear();
     if (!Diagnostics::vec_integers["B"].empty()) ITFAILS;
-    
+
     if (Diagnostics::integers["A"] != 0)  ITFAILS;
     if (Diagnostics::integers["B"] != 51) ITFAILS;
-    
+
     if (ut.numFails==0)
         PASSMSG("Diagnostics vectors ok.");
 }
@@ -109,13 +108,13 @@ void test_vectors( rtt_dsxx::UnitTest & ut )
 void test_macro( rtt_dsxx::UnitTest & ut )
 {
     cout << endl;
-    
+
     int level[4];
     level[0] = 1;
     level[1] = 0;
     level[2] = 0;
     level[3] = 0;
-    
+
 #ifdef DRACO_DIAGNOSTICS_LEVEL_1
     cout << ">>> Testing Level 1 Block diagnostics." << endl;
     level[1] = 1;
@@ -127,14 +126,14 @@ void test_macro( rtt_dsxx::UnitTest & ut )
     level[2] = 1;
     level[0] = 0;
 #endif
-    
+
 #ifdef DRACO_DIAGNOSTICS_LEVEL_3
     cout << ">>> Testing Level 3 Block diagnostics." << endl;
     level[3] = 1;
     level[0] = 0;
 
-    
-    
+
+
 #endif
 
     cout << endl;
@@ -158,7 +157,7 @@ void test_macro( rtt_dsxx::UnitTest & ut )
 
     if (level[3] == 1)
         if (Diagnostics::integers["L3"] != 1) ITFAILS;
-    
+
     if (ut.numFails==0)
         PASSMSG("Diagnostics macro ok.");
 }
@@ -177,7 +176,7 @@ int main(int argc, char *argv[])
         test_macro(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstDiagnostics.cc

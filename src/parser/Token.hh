@@ -13,7 +13,6 @@
 #ifndef CCS4_Token_HH
 #define CCS4_Token_HH
 
-#include <string>
 #include "ds++/Assert.hh"
 
 #if defined(MSVC)

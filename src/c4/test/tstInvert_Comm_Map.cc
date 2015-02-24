@@ -11,8 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Invert_Comm_Map.hh"
-#include "../ParallelUnitTest.hh"
+#include "c4/Invert_Comm_Map.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 
 using namespace std;

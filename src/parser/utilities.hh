@@ -17,10 +17,9 @@
 #define parser_utilities_hh
 
 #include "mesh_element/Geometry.hh"
-#include "units/UnitSystem.hh"
 #include "Expression.hh"
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 //! Can the next token in the stream be interpreted as real number?
 DLL_PUBLIC bool at_real(Token_Stream &tokens);
@@ -49,7 +48,7 @@ DLL_PUBLIC void parse_vector(Token_Stream &, double[]);
 //! parser a quote-delimited string, stripping the quotes.
 DLL_PUBLIC std::string parse_manifest_string(Token_Stream &tokens);
 
-DLL_PUBLIC 
+DLL_PUBLIC
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry);
 
@@ -66,7 +65,7 @@ DLL_PUBLIC double parse_quantity(Token_Stream &tokens,
                                  char const *name);
 
 //! parse an expression followed by a unit expression.
-DLL_PUBLIC 
+DLL_PUBLIC
 SP<Expression> parse_quantity(Token_Stream &tokens,
                               Unit const &unit,
                               char const *name,

@@ -11,16 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../ScalarUnitTest.hh"
-#include "../Release.hh"
-#include "../SP.hh"
-#include "../Assert.hh"
-
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/SP.hh"
 #include <memory> // shared_ptr
-#include <iostream>
-#include <vector>
 #include <cmath>
-#include <typeinfo>
 #include <sstream>
 
 using namespace std;

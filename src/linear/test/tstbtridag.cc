@@ -1,8 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   linear/test/tstbtridag.cc
- * \author Kent Budge 
- * \brief  
+ * \author Kent Budge
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -10,14 +9,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 #include "ds++/Release.hh"
-#include "../btridag.hh"
+#include "linear/btridag.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -73,7 +69,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { tstbtridag(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstsvbksb.cc

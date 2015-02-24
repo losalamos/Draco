@@ -3,7 +3,6 @@
  * \file   uncleMcflux/test/tstRange_finder.cc
  * \author Mike Buksas
  * \date   Thu Feb  6 12:43:22 2003
- * \brief  
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -11,10 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../Release.hh"
-#include "../ScalarUnitTest.hh"
-#include "../Range_Finder.hh"
-#include <vector>
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Range_Finder.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -30,7 +28,7 @@ void test_range_finder_left(UnitTest &ut)
 
     vector<double> values(v,v+10);
 
-    int index = Range_finder_left(v,v+10, 1.5);   
+    int index = Range_finder_left(v,v+10, 1.5);
     if (index != 1) ut.failure("test FAILS");
 
     index = Range_finder_left(values.begin(), values.end(), 2.5);
@@ -111,9 +109,7 @@ void test_range_finder_right(UnitTest &ut)
     return;
 }
 
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     ScalarUnitTest ut( argc, argv, release );
@@ -123,7 +119,7 @@ int main(int argc, char *argv[])
 	test_range_finder_right(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstRange_finder.cc

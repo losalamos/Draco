@@ -14,11 +14,8 @@
 #ifndef min_brent_hh
 #define min_brent_hh
 
-#include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
-#include <cmath>
 #include <limits>
-#include <vector>
 
 namespace rtt_min
 {
@@ -57,7 +54,7 @@ double brent(double const ax,
 
     double d = 0.0;
     double e = 0.0;
-    
+
     double a = (ax<cx? ax : cx);
     double b = (ax>cx? ax : cx);
     double x = bx, w = bx, v = bx;

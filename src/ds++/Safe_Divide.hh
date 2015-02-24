@@ -16,7 +16,6 @@
 
 #include "Soft_Equivalence.hh"
 #include <limits>
-#include <cmath>
 #include <algorithm>
 
 namespace rtt_dsxx
@@ -40,22 +39,19 @@ namespace rtt_dsxx
  *
  * Compared to straight division, this function requires an extra multiply and
  * two comparisons. The limit value for the data type must also be determined,
- * but this is only done once for each data type. 
+ * but this is only done once for each data type.
  *
  * The result is only slightly more operations than a straight divide and more
  * readable than including if-blocks around all problematic divisions.
- * 
+ *
  */
 template <typename FT>
 inline FT safe_pos_divide (const FT& dividend, const FT& divisor)
 {
-
     const FT limit = std::numeric_limits<FT>::max();
     const FT dividend_bound = limit * std::min (1.0, divisor);
     return (dividend < dividend_bound) ? dividend / divisor : limit;
-
 }
-
 
 //---------------------------------------------------------------------------//
 /**
@@ -70,17 +66,15 @@ inline FT safe_pos_divide (const FT& dividend, const FT& divisor)
  *
  * Also note that this code cannot make any guarantee about the sign of the
  * result when the divisor is exactly zero..
- * 
+ *
  */
 template <typename FT>
 inline FT safe_divide(const FT& dividend, const FT& divisor)
 {
-
     const FT limit = std::numeric_limits<FT>::max();
     const int sign = 2*static_cast<int>( (dividend>0)==(divisor>0) )-1;
     const FT dividend_bound = limit * std::min (1.0, std::abs(divisor));
     return (std::abs(dividend) < dividend_bound) ? dividend / divisor : limit*sign;
-
 }
 
 } // end namespace rtt_dsxx

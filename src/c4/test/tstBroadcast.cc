@@ -11,15 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "../global.hh"
-#include "../ParallelUnitTest.hh"
-
-#include "ds++/Assert.hh"
+#include "c4/global.hh"
+#include "c4/ParallelUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
-
-#include <iostream>
-#include <vector>
 #include <sstream>
 
 using namespace std;
@@ -36,7 +31,7 @@ using rtt_dsxx::soft_equiv;
 void test_simple( rtt_dsxx::UnitTest &ut )
 {
     using std::vector;
-    
+
     char   c = 0;
     int    i = 0;
     long   l = 0;
@@ -47,7 +42,7 @@ void test_simple( rtt_dsxx::UnitTest &ut )
     string msgref("hello, world!");
     string msg;
     string badmsg; // length never set.
-    
+
     // assign on node 0
     if (rtt_c4::node() == 0)
     {
@@ -64,14 +59,14 @@ void test_simple( rtt_dsxx::UnitTest &ut )
         // reserve enough space to receive the broadcast string.
         msg.resize(msgref.length());
     }
-    
+
     // send out data, using node 0 as root
     broadcast(&c, 1, 0);
     broadcast(&i, 1, 0);
     broadcast(&l, 1, 0);
     broadcast(&f, 1, 0);
     broadcast(&d, 1, 0);
-    
+
     broadcast(  v.begin(),  v.end(),  v.begin());
     broadcast(msg.begin(),msg.end(),msg.begin());
 
@@ -105,8 +100,8 @@ void test_simple( rtt_dsxx::UnitTest &ut )
         msg << "Successfully caught a range violation in broadcast on PE "
             << rtt_c4::node();
         PASSMSG( msg.str() );
-    }    
-    
+    }
+
     rtt_c4::global_barrier();
 
     if( ut.numFails == 0 )
@@ -125,11 +120,11 @@ void test_loop( rtt_dsxx::UnitTest &ut )
 {
     // save state
     unsigned const nf (ut.numFails);
-    
+
     // >>> kmax controls how much data is broadcast.  If kmax is too big
     // >>> (like 10000000), shmem will fail.
     int const kmax = 10;
-    
+
     if (rtt_c4::node() == 0) // host proc
     {
 	// send out the values on host
@@ -147,7 +142,7 @@ void test_loop( rtt_dsxx::UnitTest &ut )
 	// >>> not supported on all all platforms.
 
 	// sleep(10);
-	
+
 	int kk;
 	double foofoo;
 	for ( int k = 0; k < kmax; ++k )
@@ -182,7 +177,7 @@ int main(int argc, char *argv[])
         test_loop(  ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstBroadcast.cc

@@ -16,7 +16,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../ExpInt.hh"
+#include "special_functions/ExpInt.hh"
 
 using rtt_dsxx::soft_equiv;
 using namespace rtt_sf;

@@ -14,11 +14,7 @@
 #ifndef roots_lnsrch_i_hh
 #define roots_lnsrch_i_hh
 
-#include <algorithm>
-#include <cmath>
-
 #include "linear/fnorm.hh"
-#include "ds++/DracoMath.hh"
 
 namespace rtt_roots
 {
@@ -45,7 +41,7 @@ namespace rtt_roots
  *
  * \param xold
  * Starting point for search.
- * \param fold 
+ * \param fold
  * Starting value of the half norm of the set of functions.
  * \param g
  * Gradient of the set of functions at the starting point.
@@ -63,7 +59,7 @@ namespace rtt_roots
  * \param vecfunc
  * Functor whose norm is to be mininized.
  * \param ALF
- * Minimum relative decrease in norm (from starting value) that is 
+ * Minimum relative decrease in norm (from starting value) that is
  * acceptable. A negative value means to accept any search that does not throw
  * an exception.
  * \param min_lambda
@@ -73,16 +69,16 @@ namespace rtt_roots
 template<class RandomContainer, class Function_N_to_N>
 void lnsrch(RandomContainer const &xold,
 	    double const fold,
-	    RandomContainer const &g, 
+	    RandomContainer const &g,
 	    RandomContainer &p,
 	    RandomContainer &x,
 	    double &f,
-	    bool &check, 
+	    bool &check,
 	    RandomContainer &fvec,
 	    Function_N_to_N const &vecfunc,
 	    double const ALF,
             double const min_lambda)
-{    
+{
     Require(g.size()==xold.size());
     Require(p.size()==xold.size());
 
@@ -94,7 +90,7 @@ void lnsrch(RandomContainer const &xold,
 
     x.resize(n);
     fvec.resize(n);
-    
+
     // Calculate initial rate of decrease along search direction.  This is
     // used to determine whether a solution is acceptable.
     double slope = g[0]*p[0];
@@ -120,7 +116,7 @@ void lnsrch(RandomContainer const &xold,
 	    check = true;
 	    return;
 	}
-	try 
+	try
 	{
 	    f = fnorm(x, fvec, vecfunc);
 	    if (ALF<0.0                     ||
@@ -158,7 +154,7 @@ void lnsrch(RandomContainer const &xold,
 		    double x2 = f2 - slope*lambda_2 - fold;
 		    double rden = 1/(lambda_1 - lambda_2);
 		    double a = rden*(x1/square(lambda_1)-x2/square(lambda_2));
-		    double b = 
+		    double b =
 			rden*(-lambda_2*x1/
 			      square(lambda_1)+lambda_1*x2/square(lambda_2));
 		    double det = b*b-3*a*slope;

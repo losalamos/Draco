@@ -15,21 +15,20 @@
 #define RTT_ds_SP_HH
 
 #include <typeinfo>
-#include "ds++/config.h"
 #include "Assert.hh"
 
 namespace rtt_dsxx
 {
- 
+
 //===========================================================================//
 /*!
  * \struct SPref
- * 
+ *
  * \brief Reference holder struct for SP class.
  */
 //===========================================================================//
 
-struct SPref 
+struct SPref
 {
     //! Number of references.
     int refs;
@@ -55,7 +54,7 @@ struct SPref
 //===========================================================================//
 /*!
  * \class SP
- * 
+ *
  * \brief Smart pointer implementation that does reference counting.
  *
  * The smart pointer provides a "safe" encapsulation for a standard C++
@@ -80,7 +79,7 @@ struct SPref
  * smart pointer as a return value, allowing the original bare pointer to go
  * out of scope never to be seen again, is one good example of how to use
  * this.
- * 
+ *
  * One good example of bad usage is assigning the same dumb pointer to
  * multiple SPs.  Consider:
  * \code
@@ -95,7 +94,7 @@ struct SPref
  * Unfortunately, there is no way to check if another SP owns the dumb
  * pointer that you give to a SP.  This is simply something that needs to be
  * watched by the programmer.
- * 
+ *
  * \note
  * Having an std::vector or other array-based container of SPs can have
  * non-obvious implications for object lifetime. Since operations like
@@ -114,13 +113,13 @@ struct SPref
 // -----------------
 // 0) original
 // 1) 020403 : updated with doxygen comments; minor refactoring
-// 
+//
 //===========================================================================//
 
 template<typename T>
-class SP 
+class SP
 {
-  private: 
+  private:
     // >>> DATA
 
     //! Raw pointer held by smart pointer.
@@ -135,12 +134,12 @@ class SP
     // Free the pointer.
     inline void free();
 
-    //! All instantiations of SP are friends. 
+    //! All instantiations of SP are friends.
     template<class U> friend class SP;
 
     template <class V, class U> friend
     SP<V> dynamic_pointer_cast(const SP<U>& sp);
-    
+
   public:
     //! Default constructor.
     inline /* constexpr */ SP();
@@ -175,7 +174,7 @@ class SP
 
     //! Swap pointers
     void swap(SP &r);
-	
+
     //! Access operator.
     T* operator->() const { Require(p_); return p_; }
 

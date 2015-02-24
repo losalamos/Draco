@@ -3,23 +3,18 @@
  * \file   parser/test/tstClass_Parser.cc
  * \author Kent Budge
  * \date   Mon Aug 28 07:36:50 2006
- * \brief  
- * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-#include "../String_Token_Stream.hh"
-#include "../utilities.hh"
-#include "../Class_Parser.hh"
+#include "parser/String_Token_Stream.hh"
+#include "parser/utilities.hh"
+#include "parser/Class_Parser.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -115,7 +110,7 @@ void tstClass_Parser( UnitTest & ut)
 {
     string text = "insouciance = 3.3\nend\n";
     String_Token_Stream tokens(text);
-    
+
     SP<DummyClass> dummy = Class_Parser<DummyClass>::parse(tokens);
 
     if (dummy != SP<DummyClass>())
@@ -145,7 +140,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try { tstClass_Parser(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstClass_Parser.cc
