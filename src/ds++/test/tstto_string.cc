@@ -10,11 +10,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds++/config.h"
 #include "ds++/to_string.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include <cstdlib> // M_PI
+#include <cmath>   // M_PI on other platforms.
 
 using namespace std;
 using namespace rtt_dsxx;
