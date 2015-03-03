@@ -116,46 +116,51 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupCudaEnv )
 
-  message( STATUS "Looking for CUDA..." )
-  # special code for CT/CI (fixed in cmake-3.1.1)
-  # if( "${CMAKE_SYSTEM_PROCESSOR}notset" STREQUAL "notset" AND
-  #     ${CMAKE_SYSTEM_NAME} MATCHES "Catamount")
-  #   set( CMAKE_SYSTEM_PROCESSOR "x86_64" CACHE STRING
-  #     "For unix, this value is set from uname -p." FORCE)
-  # endif()
-  find_package( CUDA QUIET )
-  set_package_properties( CUDA PROPERTIES
-    DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
-    TYPE OPTIONAL
-    PURPOSE "Required for bulding a GPU enabled application." )
-  if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
-    set( CUDA_FOUND 0 )
-  endif()
-  if( CUDA_FOUND )
-    set( HAVE_CUDA 1 )
-    option( USE_CUDA "If CUDA is available, should we use it?" ON )
-    if( USE_CUDA )
-      set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
-      set( CUDA_NVCC_FLAGS "-arch=sm_21" )
-      string( TOUPPER ${CMAKE_BUILD_TYPE} UC_CMAKE_BUILD_TYPE )
-      if( ${UC_CMAKE_BUILD_TYPE} MATCHES DEBUG )
-        set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
-      endif()
-      set( cudalibs ${CUDA_CUDART_LIBRARY} )
-      set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
-        "static or shared (dll) libraries" FORCE )
+  option( USE_CUDA "If CUDA is available, should we use it?" ON )
+  if( USE_CUDA )
+
+    message( STATUS "Looking for CUDA..." )
+    # special code for CT/CI (fixed in cmake-3.1.1)
+    # if( "${CMAKE_SYSTEM_PROCESSOR}notset" STREQUAL "notset" AND
+    #     ${CMAKE_SYSTEM_NAME} MATCHES "Catamount")
+    #   set( CMAKE_SYSTEM_PROCESSOR "x86_64" CACHE STRING
+    #     "For unix, this value is set from uname -p." FORCE)
+    # endif()
+    find_package( CUDA QUIET )
+    set_package_properties( CUDA PROPERTIES
+      DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding a GPU enabled application." )
+    if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
+      set( CUDA_FOUND 0 )
     endif()
-    message( STATUS "Looking for CUDA......found ${CUDA_NVCC_EXECUTABLE}" )
-  else()
-    message( STATUS "Looking for CUDA......not found" )
+    if( CUDA_FOUND )
+      set( HAVE_CUDA 1 )
+      option( USE_CUDA "If CUDA is available, should we use it?" ON )
+      if( USE_CUDA )
+        set( CUDA_PROPAGATE_HOST_FLAGS OFF CACHE BOOL "blah" FORCE)
+        set( CUDA_NVCC_FLAGS "-arch=sm_21" )
+        string( TOUPPER ${CMAKE_BUILD_TYPE} UC_CMAKE_BUILD_TYPE )
+        if( ${UC_CMAKE_BUILD_TYPE} MATCHES DEBUG )
+          set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -g -G" )
+        endif()
+        set( cudalibs ${CUDA_CUDART_LIBRARY} )
+        set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
+          "static or shared (dll) libraries" FORCE )
+      endif()
+      message( STATUS "Looking for CUDA......found ${CUDA_NVCC_EXECUTABLE}" )
+    else()
+      message( STATUS "Looking for CUDA......not found" )
+      set( USE_CUDA OFF CACHE BOOL "cuda" FORCE )
+    endif()
+    mark_as_advanced(
+      CUDA_SDK_ROOT_DIR
+      CUDA_VERBOSE_BUILD
+      CUDA_TOOLKIT_ROOT_DIR
+      CUDA_BUILD_CUBIN
+      CUDA_BUILD_EMULATION
+      )
   endif()
-  mark_as_advanced(
-    CUDA_SDK_ROOT_DIR
-    CUDA_VERBOSE_BUILD
-    CUDA_TOOLKIT_ROOT_DIR
-    CUDA_BUILD_CUBIN
-    CUDA_BUILD_EMULATION
-    )
 
 endmacro()
 
