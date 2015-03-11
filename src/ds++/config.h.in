@@ -97,12 +97,6 @@
     #define HAVE_MAXPATHLEN
 #endif
 
-/* In MSVC, constants like M_PI are not defined by default in math.h.
- * To include them, we must set the following: */
-#if defined _WIN32 || defined __CYGWIN__
-    #define _USE_MATH_DEFINES
-#endif /* Win32 */
-
 /* OpenMP Setup */
 #cmakedefine OPENMP_FOUND
 
@@ -235,7 +229,9 @@
 #include "ds++/dll_declspec.h"
 
 
-/* Help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
+/* In MSVC, constants like M_PI are not defined by default in math.h.
+ * To include them, we must define _USE_MATH_DEFINES. The udefs
+  * help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
 #ifdef _MSC_VER
     #undef max
     #undef min
