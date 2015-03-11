@@ -15,7 +15,7 @@
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
 #include "DummyEoS.hh"
-#include "../CDI.hh"
+#include "cdi/CDI.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
@@ -1433,13 +1433,11 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
         test_CDI(ut);
         test_planck_integration(ut);
         test_rosseland_integration(ut);

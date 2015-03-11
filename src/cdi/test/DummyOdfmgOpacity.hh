@@ -15,7 +15,7 @@
 #ifndef __cdi_DummyOdfmgOpacity_hh__
 #define __cdi_DummyOdfmgOpacity_hh__
 
-#include "../OdfmgOpacity.hh"
+#include "cdi/OdfmgOpacity.hh"
 
 namespace rtt_cdi_test
 {

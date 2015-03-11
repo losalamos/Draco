@@ -15,7 +15,7 @@
 #ifndef __cdi_DummyMultigroupOpacity_hh__
 #define __cdi_DummyMultigroupOpacity_hh__
 
-#include "../MultigroupOpacity.hh"
+#include "cdi/MultigroupOpacity.hh"
 
 namespace rtt_cdi_test
 {

@@ -21,7 +21,6 @@
 #include "cdi/EoS.hh"
 
 // C++ standard library dependencies
-#include <vector>
 #include <iostream>
 
 namespace rtt_cdi_eospac
@@ -33,7 +32,7 @@ namespace rtt_cdi_eospac
  * \brief Provides access to Equation of State data located in Sesame data
  *        files.
  *
- * \sa The web page for <a 
+ * \sa The web page for <a
  *     href="http://xweb.lanl.gov/PROJECTS/DATA/">EOSPAC</a>.
  *
  * Eospac allows the client code to retrive equation of state (EoS) data for a
@@ -65,12 +64,12 @@ namespace rtt_cdi_eospac
  *
  * Because of the way this object hooks into EOSPAC, we have chosen to
  * implement it as a Meyers singleton.  This ensures that the loaded EOS data
- * remains available until program termination. 
+ * remains available until program termination.
  */
 
 /*!
  * \example cdi_eospac/test/tEospac.cc
- * 
+ *
  * This unit test demonstrates the creation of a SesameTable object for
  * aluminum.  Once the Al SesameTable is created the Eospac object for Al is
  * then created using the SesameTable object in the constructor.  The Al
@@ -88,10 +87,10 @@ namespace rtt_cdi_eospac
 // 1) 2012-10-10 Major rewrite to interface with v6+ of EOSPAC.
 
 //===========================================================================//
-    
+
 class Eospac : public rtt_cdi::EoS
 {
-	
+
     // NESTED CLASSES AND TYPEDEFS
 
     enum EosTableDataDerivative
@@ -101,13 +100,13 @@ class Eospac : public rtt_cdi::EoS
         ETDD_DFDY,  //!< Return the first derivative wrt density.
         ETDD_LAST  //!< Last value (invalid)
     };
-    
+
     // DATA
 
     // ----------------------- //
     // Specify unique material //
     // ----------------------- //
-	
+
     /*!
      * \brief The SesameTables object uniquely defines a material.
      *
@@ -118,7 +117,7 @@ class Eospac : public rtt_cdi::EoS
      * \sa rtt_cdi_eospac::SesameTables class definition.
      *
      * \sa Web page for <a href="http://xweb.lanl.gov/projects/data">EOSPAC
-     * Data Types</a> 
+     * Data Types</a>
      */
     SesameTables const SesTabs;
 
@@ -129,7 +128,7 @@ class Eospac : public rtt_cdi::EoS
     // These next four data members are mutalbe because they specify what data
     // is cached by the Eospac object.  The cached data set may be changed
     // when the user calls a get... function.
-	
+
     /*!
      * \brief List of materierial IDs that are specified by SesTabs.
      *
@@ -165,7 +164,7 @@ class Eospac : public rtt_cdi::EoS
      * act as pointers into the table.  Each handle is associated with a
      * tuple {material identifier, data type}.
      */
-     mutable std::vector<EOS_INTEGER> tableHandles; 
+     mutable std::vector<EOS_INTEGER> tableHandles;
 
     /*!
      * \brief A list of information enumerations that can be used to query
@@ -173,9 +172,9 @@ class Eospac : public rtt_cdi::EoS
      */
     mutable std::vector< EOS_INTEGER > infoItems;
     mutable std::vector< std::string > infoItemDescriptions;
-    
+
   public:
-	
+
     // ------------ //
     // Constructors //
     // ------------ //
@@ -203,11 +202,11 @@ class Eospac : public rtt_cdi::EoS
      * avoid including the unnecessary header files.
      */
     ~Eospac(void);
-	
+
     // MANIPULATORS
-	
+
     // (defaulted ) Eospac& operator=(const Eospac &rhs);
-	
+
     // --------- //
     // Accessors //
     // --------- //
@@ -217,7 +216,7 @@ class Eospac : public rtt_cdi::EoS
      */
     void printTableInformation( EOS_INTEGER const tableType,
                                 std::ostream & out = std::cout ) const;
-    
+
     /*!
      * \brief Retrieve the specific electron internal energy given a
      *        temperature and a density for this material.
@@ -239,9 +238,9 @@ class Eospac : public rtt_cdi::EoS
      * \return The specific electron internal energy in kJ/g.
      */
     std::vector< double > getSpecificElectronInternalEnergy(
-        std::vector< double > const & vtemperature, 
+        std::vector< double > const & vtemperature,
         std::vector< double > const & vdensity ) const;
-	    
+
     /*!
      * \brief Retrieve the electron based heat capacity for this material at
      *        the provided density and temperature.
@@ -263,7 +262,7 @@ class Eospac : public rtt_cdi::EoS
      * \return The electron based heat capacity in kJ/g/keV.
      */
     std::vector< double > getElectronHeatCapacity(
-        std::vector< double > const & vtemperature, 
+        std::vector< double > const & vtemperature,
         std::vector< double > const & vdensity ) const;
 
     /*!
@@ -287,7 +286,7 @@ class Eospac : public rtt_cdi::EoS
      * \return A vector of specific ion internal energies in kJ/g.
      */
     std::vector< double > getSpecificIonInternalEnergy(
-        std::vector< double > const & vtemperature, 
+        std::vector< double > const & vtemperature,
         std::vector< double > const & vdensity ) const;
 
     /*!
@@ -364,7 +363,7 @@ class Eospac : public rtt_cdi::EoS
 
     /*!
      * \brief Retrieve an electron temperature based on the specific electron
-     *        internal energy. 
+     *        internal energy.
      *
      * \param density Density of the material in g/cm^3
      * \param SpecificElectronInternalEnergy in kJ/g.
@@ -380,7 +379,7 @@ class Eospac : public rtt_cdi::EoS
 
     /*!
      * \brief Retrieve an ion temperature based on the specific ion
-     *        internal energy. 
+     *        internal energy.
      *
      * \param density Density of the material in g/cm^3
      * \param SpecificIonInternalEnergy in kJ/g.
@@ -404,7 +403,7 @@ class Eospac : public rtt_cdi::EoS
     std::vector<char> pack() const;
 
   private:
-	
+
     // -------------- //
     // Implementation //
     // -------------- //
@@ -421,12 +420,12 @@ class Eospac : public rtt_cdi::EoS
      * \param returnType The integer index that corresponds to the type of
      *        data being retrieved from the EoS tables.
      */
-    std::vector< double > getF( 
-        std::vector< double > const & vdensity, 
-        std::vector< double > const & vtemperature, 
+    std::vector< double > getF(
+        std::vector< double > const & vdensity,
+        std::vector< double > const & vtemperature,
         EOS_INTEGER const returnType,
         EosTableDataDerivative const etdd ) const;
-	    
+
     /*!
      * \brief This member function examines the contents of the data member
      *        "SesTabs" and then calls the EOSPAC routine to load the required
@@ -444,17 +443,17 @@ class Eospac : public rtt_cdi::EoS
     //--------------------//
     // Static Members     //
     //--------------------//
-    
+
     //! Initialize list of available table info items
     static std::vector< EOS_INTEGER > initializeInfoItems(void);
 
     //! Initialize descriptions of available table info items
     static std::vector< std::string > initializeInfoItemDescriptions(void);
-    
+
     //! Converts a double to a length one vector.
     static inline std::vector< double > dbl_v1( double const dbl ) {
         return std::vector< double >(1,dbl); }
-    
+
     /*!
      * \brief keV2K converts keV temperatures into degrees Kelvin.
      *        libeospac.a requires input temperatures to use degrees Kelvin.
@@ -471,7 +470,7 @@ class Eospac : public rtt_cdi::EoS
         return c*tempKeV;
     }
 };
-    
+
 } // end namespace rtt_cdi_eospac
 
 #endif // __cdi_eospac_Eospac_hh__

@@ -14,10 +14,10 @@
 #include "DummyGrayOpacity.hh"
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
-#include "../GrayOpacity.hh"
-#include "../MultigroupOpacity.hh"
-#include "../OdfmgOpacity.hh"
-#include "../OpacityCommon.hh"
+#include "cdi/GrayOpacity.hh"
+#include "cdi/MultigroupOpacity.hh"
+#include "cdi/OdfmgOpacity.hh"
+#include "cdi/OpacityCommon.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
@@ -44,7 +44,7 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
     SP<MultigroupOpacity> mg;
     SP<OdfmgOpacity>      odfmg;
 
-    // Assign and check gray opacity  
+    // Assign and check gray opacity
     SP<rtt_cdi_test::DummyGrayOpacity> gray_total;
     SP<rtt_cdi_test::DummyGrayOpacity> gray_abs;
     gray_total.reset(new rtt_cdi_test::DummyGrayOpacity());
@@ -88,11 +88,11 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
         if (gray->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
     }
 
-    // Assign and check multigroup opacity 
+    // Assign and check multigroup opacity
     SP<rtt_cdi_test::DummyMultigroupOpacity> mg_total;
     SP<rtt_cdi_test::DummyMultigroupOpacity> mg_abs;
     mg_total.reset(new rtt_cdi_test::DummyMultigroupOpacity());
-    mg_abs.reset(new rtt_cdi_test::DummyMultigroupOpacity(rtt_cdi::ABSORPTION)); 
+    mg_abs.reset(new rtt_cdi_test::DummyMultigroupOpacity(rtt_cdi::ABSORPTION));
 
     // check multigroup total opacities
     {
@@ -148,12 +148,12 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
 
         if (mg->getReactionType() != rtt_cdi::ABSORPTION) ITFAILS;
     }
-	
-    // Assign and check odfmg opacity 
+
+    // Assign and check odfmg opacity
     SP<rtt_cdi_test::DummyOdfmgOpacity> odfmg_total;
     SP<rtt_cdi_test::DummyOdfmgOpacity> odfmg_abs;
     odfmg_total.reset(new rtt_cdi_test::DummyOdfmgOpacity());
-    odfmg_abs.reset(new rtt_cdi_test::DummyOdfmgOpacity(rtt_cdi::ABSORPTION)); 
+    odfmg_abs.reset(new rtt_cdi_test::DummyOdfmgOpacity(rtt_cdi::ABSORPTION));
 
     // check multigroup total opacities
     {
@@ -178,7 +178,7 @@ void simple_tests( rtt_dsxx::UnitTest & ut )
         egroups[3] = 50.0;
 
         std::vector<double> const T( odfmg->getTemperatureGrid() );
-        if ( soft_equiv( T.begin(), T.end(), 
+        if ( soft_equiv( T.begin(), T.end(),
                          Tgrid.begin(), Tgrid.end() ) )
             PASSMSG("Odfmg temperature grid correct.");
         else
@@ -237,7 +237,7 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
 
     double opacity = spDGO->getOpacity( temperature, density );
 
-    if ( soft_equiv ( opacity, tabulatedGrayOpacity ) ) 
+    if ( soft_equiv ( opacity, tabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spDGO->getDataDescriptor()
@@ -262,8 +262,8 @@ void gray_opacity_test( rtt_dsxx::UnitTest & ut )
     for ( size_t i=0; i<vtemperature.size(); ++i )
         vRefOpacity[i] = vtemperature[i] + density/1000;
 
-    std::vector< double > vOpacity = spDGO->getOpacity( vtemperature, 
-                                                        density );  
+    std::vector< double > vOpacity = spDGO->getOpacity( vtemperature,
+                                                        density );
 
     if ( soft_equiv ( vOpacity.begin(),    vOpacity.end(),
                       vRefOpacity.begin(), vRefOpacity.end() ) )
@@ -397,16 +397,16 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
         ostringstream message;
         message << spDmgO->getDataDescriptor()
                 << " getOpacity value is out of spec.";
-        FAILMSG( message.str() ); 
+        FAILMSG( message.str() );
     }
 
     // Repeat with a vector of temps.
 
     // Reference values.
 
-    // The opacity container is a vector<vector<double>>.  Each nested 
+    // The opacity container is a vector<vector<double>>.  Each nested
     // vector contains all of the group opacity values for a single
-    // temperature. 
+    // temperature.
 
     // a MG opacity set for a single temperature, density combination
     // can be extracted from this container by using the following
@@ -420,13 +420,13 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
     {
         vRefMgOpacity[it].resize( ng );
         for ( int ig=0; ig<ng; ++ig )
-            vRefMgOpacity[it][ig] = 
-                2.0 * ( vtemperature[it] + density/1000.0 ) 
+            vRefMgOpacity[it][ig] =
+                2.0 * ( vtemperature[it] + density/1000.0 )
                 / ( energyBoundaries[ig] + energyBoundaries[ig+1] );
     }
 
     // Retrieve the same set of opacity values via the getOpacity() accessor.
-    std::vector< std::vector< double > > vMgOpacity 
+    std::vector< std::vector< double > > vMgOpacity
         = spDmgO->getOpacity( vtemperature, density );
 
     // Compare the results.
@@ -453,7 +453,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
     // class so we test them as a DummyMultigroupOpacity.  This demonstrates
     // that one could make an opacity class that contains extra
     // functionality. Of course this functionality is not available through
-    // CDI. 
+    // CDI.
 
     SP< rtt_cdi_test::DummyMultigroupOpacity > spDumMgOp;
     if ( (spDumMgOp.reset(new rtt_cdi_test::DummyMultigroupOpacity())), spDumMgOp )
@@ -480,7 +480,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
     // Reference Values
     for ( size_t it=0; it<vtemperature.size(); ++it )
         for ( int ig=0; ig<ng; ++ig )
-            vRefOpacity[it*ng+ig] = 
+            vRefOpacity[it*ng+ig] =
                 2.0 * ( vtemperature[it] + vdensity[it]/1000.0 )
                 / ( energyBoundaries[ig] + energyBoundaries[ig+1] );
 
@@ -600,7 +600,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
                                            * pow(10.0, band - 2);
         }
     }
-	
+
     // Use the getOpacity accessor to obtain the ODFMG opacities for a
     // specified temperature and density.
     std::vector< std::vector< double > > opacities =
@@ -621,16 +621,16 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
         ostringstream message;
         message << spDumOdfmgOpacity->getDataDescriptor()
                 << " getOpacity value is out of spec.";
-        FAILMSG( message.str() ); 
+        FAILMSG( message.str() );
     }
 
     // Repeat with a vector of temps.
 
     // Reference values.
 
-    // The opacity container is a vector<vector<double>>.  Each nested 
+    // The opacity container is a vector<vector<double>>.  Each nested
     // vector contains all of the group opacity values for a single
-    // temperature. 
+    // temperature.
 
     // a MG opacity set for a single temperature, density combination
     // can be extracted from this container by using the following
@@ -648,7 +648,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
             vRefOpacity[it][group].resize( numBands );
             for ( int band=0; band<numBands; ++band )
             {
-                vRefOpacity[it][group][band] = 2.0 * (vtemperature[it] 
+                vRefOpacity[it][group][band] = 2.0 * (vtemperature[it]
                                                       + dens/1000.0)
                                                / (energyBoundaries[group]
                                                   + energyBoundaries[group+1])
@@ -658,7 +658,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
     }
 
     // Retrieve the same set of opacity values via the getOpacity() accessor.
-    std::vector< std::vector< std::vector< double > > > vCompOpacity 
+    std::vector< std::vector< std::vector< double > > > vCompOpacity
         = spDumOdfmgOpacity->getOpacity( vtemperature, dens );
 
     // Compare the results.
@@ -685,7 +685,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
     // class so we test them as a DummyOdfmgOpacity.  This demonstrates
     // that one could make an opacity class that contains extra
     // functionality. Of course this functionality is not available through
-    // CDI. 
+    // CDI.
 
     SP< rtt_cdi_test::DummyOdfmgOpacity > spDumMgOp;
     if ( (spDumMgOp.reset(new rtt_cdi_test::DummyOdfmgOpacity())), spDumMgOp)
@@ -712,7 +712,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
     // Reference Values
     for ( size_t it=0; it<vtemperature.size(); ++it )
         for ( int ig=0; ig<numGroups; ++ig )
-            vRefOpacityIter[it*numGroups+ig] = 
+            vRefOpacityIter[it*numGroups+ig] =
                 2.0 * ( vtemperature[it] + vdensity[it]/1000.0 )
                 / ( energyBoundaries[ig] + energyBoundaries[ig+1] );
 
@@ -753,9 +753,8 @@ int main(int argc, char *argv[])
         multigroup_opacity_test(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tDummyOpacity.cc
 //---------------------------------------------------------------------------//
- 

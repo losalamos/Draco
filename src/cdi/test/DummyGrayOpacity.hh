@@ -14,8 +14,8 @@
 #ifndef __cdi_DummyGrayOpacity_hh__
 #define __cdi_DummyGrayOpacity_hh__
 
-#include "../GrayOpacity.hh"
-#include "../OpacityCommon.hh"
+#include "cdi/GrayOpacity.hh"
+#include "cdi/OpacityCommon.hh"
 
 namespace rtt_cdi_test
 {

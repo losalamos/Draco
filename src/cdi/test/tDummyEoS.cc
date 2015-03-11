@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
-#include "../EoS.hh"
+#include "cdi/EoS.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
@@ -34,10 +34,10 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
     // --------------------- //
     // Create an EoS object. //
     // --------------------- //
-	    
+
     // The smart pointer points to a generic EoS object.
     SP<EoS> spEoS;
-	    
+
     // The actual instatniate is specific (dummyEoS).
     if ( (spEoS.reset(new rtt_cdi_test::DummyEoS())), spEoS )
     {
@@ -48,23 +48,23 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
     {
 	FAILMSG("Unable to create a Smart Pointer to new EoS object.");
     }
-	    
+
     // --------- //
     // EoS Tests //
     // --------- //
-	    
+
     double temperature = 5800.0; // Kelvin
     double density     = 27.0;   // g/cm^3
     double tabulatedSpecificElectronInternalEnergy
 	= temperature + 1000.0*density; // kJ/g
-	    
-    double seie = spEoS->getSpecificElectronInternalEnergy( 
+
+    double seie = spEoS->getSpecificElectronInternalEnergy(
 	temperature, density );
-	    
-    if ( soft_equiv ( seie, tabulatedSpecificElectronInternalEnergy ) ) 
+
+    if ( soft_equiv ( seie, tabulatedSpecificElectronInternalEnergy ) )
     {
 	ostringstream message;
-	message << "The getSpecificElectronInternalEnergy( dbl, dbl) " 
+	message << "The getSpecificElectronInternalEnergy( dbl, dbl) "
 		<< "request returned the expected value.";
 	PASSMSG( message.str() );
     }
@@ -75,10 +75,10 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
 		<< "request returned a value that is out of spec.";
 	FAILMSG( message.str() );
     }
-	    
+
     // try using a vectors of temps. and densities
     // vtemperature.size() == vdensity.size()
-	    
+
     std::vector< double > vtemperature(3);
     vtemperature[0] = 5000.0; // Kelvin
     vtemperature[1] = 7000.0; // Kelvin
@@ -93,10 +93,10 @@ void test_EoS( rtt_dsxx::UnitTest & ut )
     std::vector< double > vRefCve( vtemperature.size() );
     for ( size_t i=0; i<vtemperature.size(); ++i )
 	vRefCve[i] = vtemperature[i] + vdensity[i]/1000.0;
-	    
+
     std::vector< double > vCve = spEoS->getElectronHeatCapacity(
 	vtemperature, vdensity );
-	    
+
     if ( soft_equiv( vCve.begin(), vCve.end(),
                      vRefCve.begin(), vRefCve.end() ) )
     {
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { test_EoS(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tDummyEoS.cc

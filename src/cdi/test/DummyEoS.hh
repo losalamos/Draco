@@ -14,7 +14,7 @@
 #ifndef __cdi_DummyEoS_hh__
 #define __cdi_DummyEoS_hh__
 
-#include "../EoS.hh"
+#include "cdi/EoS.hh"
 
 namespace rtt_cdi_test
 {
@@ -25,7 +25,7 @@ namespace rtt_cdi_test
  *
  * \brief This is an equation of state class that derives its
  *        interface from cdi/EoS and is used for testing purposes
- *        only. 
+ *        only.
  *
  * This equation of state class always contains the same data (set by the
  * default constructor).  The data table has the following properties:
@@ -34,10 +34,8 @@ namespace rtt_cdi_test
  *     heat capacity   = temperature + density/1000
  *     num free electrons = temperature/100
  *     thermal conductivity = 1000*temperature + density
- *
- */  
+ */
 /*!
- * \example cdi/test/tEoS.cc
  * \example cdi/test/tCDI.cc
  */
 //========================================================================
@@ -45,17 +43,17 @@ namespace rtt_cdi_test
 class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
 {
   public:
-	
+
     // -------------------------- //
     // Constructors & Destructors //
     // -------------------------- //
-	
+
     /*!
      * \brief Constructor for DummyEoS object.
-     * 
+     *
      * The constructor assigns fixed values for all of the member
      * data.  Every instance of this object has the same member
-     * data. 
+     * data.
      */
     DummyEoS();
 
@@ -66,32 +64,32 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * DummyEoS object is destroyed.
      */
     ~DummyEoS();
-	
+
     // --------- //
     // Accessors //
     // --------- //
-	
+
     /*!
-     * \brief EoS accessor that returns a single specific electron 
+     * \brief EoS accessor that returns a single specific electron
      *        internal energy that corresponds to the provided
-     *        temperature and density. 
+     *        temperature and density.
      *
      *    internal energy = temperature + 1000*density
      *
      * \param temperature The temperature value for which an
      *     opacity value is being requested (Kelvin).
-     * \param density The density value for which an opacity 
+     * \param density The density value for which an opacity
      *     value is being requested (g/cm^3).
      * \return A specific electron internal energy (kJ/g).
      */
     double getSpecificElectronInternalEnergy(
 	double temperature, double density ) const;
-	
+
     /*!
      * \brief EoS accessor that returns a vector of specific
      *     electron internal energies that
-     *     correspond to the provided vectors of temperatures and 
-     *     densities. 
+     *     correspond to the provided vectors of temperatures and
+     *     densities.
      *
      *    internal energy[i] = temperature[i] + 1000*density[i]
      *
@@ -102,7 +100,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \return A vector of specific electron internal energies (kJ/g).
      */
     std::vector< double > getSpecificElectronInternalEnergy(
-	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const;
 
     /*!
@@ -121,7 +119,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
     /*!
      * \brief Retrieve a set of electron based heat capacities for
      *        this material that correspond to the tuple list of
-     *        provided densities and temperatures. 
+     *        provided densities and temperatures.
      *
      *     heat capacity = temperature + density/1000
      *
@@ -130,12 +128,12 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \return The electron based heat capacity in kJ/g/K.
      */
     std::vector< double > getElectronHeatCapacity(
-	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const;
 
     /*!
      * \brief Retrieve the specific ion internal energy for this
-     *        material at the provided density and temperature.    
+     *        material at the provided density and temperature.
      *
      *     internal energy = temperature + 1000*density
      *
@@ -149,7 +147,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
     /*!
      * \brief Retrieve a set of specific ion internal energies for
      *        this material that correspond to the tuple list of
-     *        provided densities and temperatures.      
+     *        provided densities and temperatures.
      *
      *     internal energy = temperature + 1000*density
      *
@@ -158,7 +156,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \return A vector of specific ion internal energies in kJ/g.
      */
     std::vector< double > getSpecificIonInternalEnergy(
-	const std::vector< double >& vtemperature, 
+	const std::vector< double >& vtemperature,
 	const std::vector< double >& vdensity ) const;
 
     /*!
@@ -177,7 +175,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
     /*!
      * \brief Retrieve a set of ion based heat capacities for
      *        this material that correspond to the tuple list of
-     *        provided densities and temperatures. 
+     *        provided densities and temperatures.
      *
      *     heat capacity   = temperature + density/1000
      *
@@ -205,7 +203,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
     /*!
      * \brief Retrieve a set of free electrons per ion averages for
      *        this material that correspond to the tuple list of
-     *        provided densities and temperatures. 
+     *        provided densities and temperatures.
      *
      * \param density Density of the material in g/cm^3
      * \param temperature Temperature of the material in Kelvin.
@@ -231,7 +229,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
     /*!
      * \brief Retrieve a set of electron based thermal conductivities for
      *        this material that correspond to the tuple list of
-     *        provided densities and temperatures. 
+     *        provided densities and temperatures.
      *
      *     thermal conductivity = 1000*temperature + density
      *
@@ -246,7 +244,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
 
     /*!
      * \brief Retrieve an electron temperature associated with the provided
-     *        specific electron internal energy (kJ/g) and density (g/cm^3). 
+     *        specific electron internal energy (kJ/g) and density (g/cm^3).
      *
      * \param density Density of the material in g/cm^3
      * \param SpecificElectronInternalEnergy in kJ/g
@@ -261,7 +259,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
 
     /*!
      * \brief Retrieve an ion temperature associated with the provided
-     *        specific ion internal energy (kJ/g) and density (g/cm^3). 
+     *        specific ion internal energy (kJ/g) and density (g/cm^3).
      *
      * \param density Density of the material in g/cm^3
      * \param SpecificIonInternalEnergy in kJ/g
@@ -278,7 +276,7 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
     std::vector<char> pack() const { return std::vector<char>(); }
 
 }; // end of class DummyEoS
-    
+
 } // end namespace rtt_cdi_test
 
 #endif // __cdi_DummyEoS_hh__
