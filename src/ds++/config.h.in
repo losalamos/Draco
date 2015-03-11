@@ -230,8 +230,8 @@
 
 
 /* In MSVC, constants like M_PI are not defined by default in math.h.
- * To include them, we must define _USE_MATH_DEFINES. The udefs
-  * help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
+ * To include them, we must define _USE_MATH_DEFINES. The undefs
+ * help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
 #ifdef _MSC_VER
     #undef max
     #undef min

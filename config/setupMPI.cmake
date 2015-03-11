@@ -52,20 +52,6 @@ macro( setupDracoMPIVars )
     message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
   endif()
 
-  # Find the version
-  execute_process( COMMAND ${MPIEXEC} --version
-    OUTPUT_VARIABLE DBS_MPI_VER_OUT
-    ERROR_VARIABLE DBS_MPI_VER_ERR)
-
-  set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-
-  set_package_properties( MPI PROPERTIES
-    URL "http://www.open-mpi.org/"
-    DESCRIPTION "A High Performance Message Passing Library"
-    TYPE RECOMMENDED
-    PURPOSE "If not available, all Draco components will be built as scalar applications."
-    )
-
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -314,7 +300,21 @@ macro( setupMPILibrariesUnix )
 
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
+      
+      # Find the version
+      execute_process( COMMAND ${MPIEXEC} --version
+        OUTPUT_VARIABLE DBS_MPI_VER_OUT
+        ERROR_VARIABLE DBS_MPI_VER_ERR)
 
+      set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+
+      set_package_properties( MPI PROPERTIES
+        URL "http://www.open-mpi.org/"
+        DESCRIPTION "A High Performance Message Passing Library"
+        TYPE RECOMMENDED
+        PURPOSE "If not available, all Draco components will be built as scalar applications."
+        )
+        
       # -------------------------------------------------------------------------------- #
       # Check flavor and add optional flags
       #
@@ -364,7 +364,7 @@ The Draco build system doesn't know how to configure the build for
  endmacro()
 
 ##---------------------------------------------------------------------------##
-##
+## setupMPILibrariesWindows
 ##---------------------------------------------------------------------------##
 
 macro( setupMPILibrariesWindows )
@@ -383,109 +383,64 @@ macro( setupMPILibrariesWindows )
 
       setupDracoMPIVars()
 
+      # Find the version
+      # This is not working (hardwire it for now)
+      # execute_process( COMMAND "${MPIEXEC}" -help
+        # OUTPUT_VARIABLE DBS_MPI_VER_OUT
+        # ERROR_VARIABLE DBS_MPI_VER_ERR
+        # ERROR_QUIET
+        # OUTPUT_STRIP_TRAILING_WHITESPACE
+        # ERROR_STRIP_TRAILING_WHITESPACE
+        # )
+      # string( REGEX REPLACE "Version ([0-9.]+)" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+     
+      set(DBS_MPI_VER "5.0")
+
+      set_package_properties( MPI PROPERTIES
+        URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
+        DESCRIPTION "Microsoft MPI"
+        TYPE RECOMMENDED
+        PURPOSE "If not available, all Draco components will be built as scalar applications."
+        )
+
       # Check flavor and add optional flags
-      if( "${MPIEXEC}" MATCHES openmpi )
-         set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." )
-
-         set( MPI_CORES_PER_CPU 4 )
-         set( MPI_PHYSICAL_CORES 0 )
-         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
-         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
-            "Number of multi-core CPUs per node" FORCE )
-         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-            "Number of cores per cpu" FORCE )
-
-         # Check for hyperthreading - This is important for reserving
-         # threads for OpenMP tests...
-
-         # correct base-zero indexing
-         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
-         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
-         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
-         else()
-            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
-         endif()
-
-         #
-         # EAP's flags can be found in Test.rh/General/run_job.pl
-         # (look for $other_args).  In particular, it may be useful to
-         # examine EAP's options for srun or aprun.
-         #
-         # \sa
-         # http://blogs.cisco.com/performance/open-mpi-v1-5-processor-affinity-options/
-         #
-         # --cpus-per-proc <N> option is needed for multi-threaded
-         #   processes.  Use this as "threads per MPI rank."
-         # --bind-to-socket will bind MPI ranks ordered by socket first (rank 0 onto
-         #   socket 0, then rank 1 onto socket 1, etc.)
-
-         # --bind-to-core added in OpenMPI-1.4
-         if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-           set( MPIEXEC_OMP_POSTFLAGS
-             "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-         else()
-           set( MPIEXEC_OMP_POSTFLAGS
-             "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings"
-             CACHE STRING "extra mpirun flags (list)." FORCE )
-         endif()
-
-      elseif("${MPIEXEC}" MATCHES "Microsoft HPC"  OR "${MPIEXEC}" MATCHES "Microsoft MPI"  )
+      if("${MPIEXEC}" MATCHES "Microsoft HPC" OR "${MPIEXEC}" MATCHES "Microsoft MPI")
          set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
 
-         set( MPI_CORES_PER_CPU 4 )
-         set( MPI_PHYSICAL_CORES 0 )
-         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
+         # Use wmic to learn about the current machine
+         execute_process(
+            COMMAND wmic cpu get NumberOfCores
+            OUTPUT_VARIABLE MPI_CORES_PER_CPU
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+        execute_process(
+            COMMAND wmic computersystem get NumberOfLogicalProcessors
+            OUTPUT_VARIABLE MPIEXEC_MAX_NUMPROCS
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+         execute_process(
+            COMMAND wmic computersystem get NumberOfProcessors
+            OUTPUT_VARIABLE MPI_CPUS_PER_NODE 
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU})
+         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS})
+         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE})
+
          set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
             "Number of multi-core CPUs per node" FORCE )
          set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
             "Number of cores per cpu" FORCE )
+         set( MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS} CACHE STRING
+            "Total number of available MPI ranks" FORCE )
 
          # Check for hyperthreading - This is important for reserving
          # threads for OpenMP tests...
 
-         # correct base-zero indexing
-         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
-         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
+         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL "${MPI_CPUS_PER_NODE} * ${MPI_CORES_PER_CPU}" )
          if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
             set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
          else()
             set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
          endif()
 
-         #
-         set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
-            CACHE STRING "extra mpirun flags (list)." FORCE )
-      elseif("${MPIEXEC}" MATCHES "MPICH2" )
-         set( MPI_FLAVOR "MPICH2" CACHE STRING "Flavor of MPI." )
-
-         include(ProcessorCount)
-         ProcessorCount(MPIEXEC_MAX_NUMPROCS)
-         set( MPI_CORES_PER_CPU ${MPIEXEC_MAX_NUMPROCS} )
-         set( MPI_PHYSICAL_CORES 0 )
-         math( EXPR MPI_CPUS_PER_NODE "${MPIEXEC_MAX_NUMPROCS} / ${MPI_CORES_PER_CPU}" )
-         set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
-            "Number of multi-core CPUs per node" FORCE )
-         set( MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU} CACHE STRING
-            "Number of cores per cpu" FORCE )
-
-         # Check for hyperthreading - This is important for reserving
-         # threads for OpenMP tests...
-
-         # correct base-zero indexing
-         math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
-         math( EXPR MPI_MAX_NUMPROCS_PHYSICAL
-            "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
-         if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
-            set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
-         else()
-            set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?" FORCE )
-         endif()
-
-         #
          set( MPIEXEC_OMP_POSTFLAGS "-exitcodes"
             CACHE STRING "extra mpirun flags (list)." FORCE )
       endif()

@@ -17,7 +17,7 @@ set( dll_declspec_content
 "/*-----------------------------------*-C-*-----------------------------------*/
 /*!
  * file   dll_declspec.h
- * brief  Defined macros that are used as declarators to control dllexport
+ * brief  Defined macros that are used as declarators to control dllexport 
  *        or dllimport linkage for dll files.
  * note   Copyright (C) 2015 Los Alamos National Security, LLC.
  *        All rights reserved.
@@ -32,16 +32,16 @@ set( dll_declspec_content
  * - https://msdn.microsoft.com/en-us/library/3y1sfaz2.aspx
  * - http://www.cmake.org/Wiki/BuildingWinDLL
  *
- * Fors MSVC, you must also mark functions as dllexport or dllimport.  When
+ * For MSVC, you must also mark functions as dllexport or dllimport.  When
  * compiling a file to place it in a dll, the symbols must be marked
  * 'dllexport', but when including a header that is associated with an
  * external .dll (include Array.hh and linking against -ldsxx.so), the same
- * symbol must be marked as 'dllimport.' The macro 'BUILDING_DLL_<pkg>' will
+ * symbol must be marked as 'dllimport.' The macro 'BUILDING_DLL_<pkg>' will 
  * be used to control how the symbols are marked.  This CPP definition is set
  * by the add_component_library() cmake function.
  *
  * Example use of DLL_PUBLIC_foo CPP Symbol:
- *
+ * 
  * extern \"C\" DLL_PUBLIC_foo void function(int a);
  * class DLL_PUBLIC_foo SomeClass
  * {
@@ -64,7 +64,7 @@ set( dll_declspec_content
 if(CMAKE_COMPILER_IS_GNUCXX)
 set( dll_declspec_content "${dll_declspec_content}
 
-#define CMAKE_COMPILER_IS_GNUCXX 1
+#define CMAKE_COMPILER_IS_GNUCXX 1 
 
 ")
 endif()
@@ -97,10 +97,10 @@ foreach(pkg ${components} )
 ")
 endforeach()
 
-set( dll_declspec_content "${dll_declspec_content}
+set( dll_declspec_content "${dll_declspec_content}  
     #define DLL_LOCAL")
 
-#set( dll_declspec_content "${dll_declspec_content}
+#set( dll_declspec_content "${dll_declspec_content}      
 #  #else /* DRACO_SHARED_LIBS */
 #    /* when building static libraries, no need to export symbols. */")
 
@@ -108,10 +108,10 @@ set( dll_declspec_content "${dll_declspec_content}
   # set( dll_declspec_content "${dll_declspec_content}
     # #define DLL_PUBLIC_${pkg}")
 # endforeach()
-
-# set( dll_declspec_content "${dll_declspec_content}
+  
+# set( dll_declspec_content "${dll_declspec_content}  
     # #define DLL_LOCAL
-
+    
   # #endif /* DRACO_SHARED_LIBS */")
 
 set( dll_declspec_content "${dll_declspec_content}
@@ -119,7 +119,6 @@ set( dll_declspec_content "${dll_declspec_content}
   /* Linux ---------------------------------------- */
   #else
     #if defined CMAKE_COMPILER_IS_GNUCXX && __GNUC__ >= 4
-
 /* GCC's attributes don't work exactly like MSVC's declspec for the
 way we implement explicit instantiations.  In Jayenne, we often have
 class templates defined in the package directory and the explicit
@@ -138,7 +137,7 @@ foreach(pkg ${components} )
       // #define DLL_PUBLIC_${pkg} __attribute__ ((visibility(\"default\")))
       #define DLL_PUBLIC_${pkg} ")
 endforeach()
-
+ 
 set( dll_declspec_content "${dll_declspec_content}
       #define DLL_LOCAL  __attribute__ ((visibility(\"hidden\")))
       /* These defines are taken from ds++/Compiler.hh written by Paul Henning */
@@ -158,7 +157,7 @@ set( dll_declspec_content "${dll_declspec_content}
       #define DLL_LOCAL
     #endif /* __GNUC__ >=4 */
   #endif /* Win or Linux */
-
+  
 /* When building static libraries, no need to export symbols. ---------------*/
 #else /* DRACO_SHARED_LIBS */
 ")
@@ -169,7 +168,7 @@ endforeach()
 
 set( dll_declspec_content "${dll_declspec_content}
   #define DLL_LOCAL
-
+  
 #endif /* DRACO_SHARED_LIBS */
 ")
 
@@ -179,7 +178,7 @@ set( dll_declspec_content "${dll_declspec_content}
 /*---------------------------------------------------------------------------*/
 /* end of dll_declspec.h */
 /*---------------------------------------------------------------------------*/
-")
+") 
 
 file( WRITE ${PROJECT_BINARY_DIR}/${dir}/dll_declspec.h ${dll_declspec_content})
 

@@ -883,7 +883,7 @@ macro( provide_aux_files )
     # prefix
     auxfiles
     # list names
-    "FILES;SRC_EXT;DEST_EXT"
+    "FILES;SRC_EXT;DEST_EXT;FOLDER"
     # option names
     "NONE"
     ${ARGV}
@@ -935,7 +935,11 @@ macro( provide_aux_files )
     ALL
     DEPENDS ${required_files}
     )
-  set( folder_name ${compname}_test )
+  if( auxfiles_FOLDER )
+    set( folder_name ${auxfiles_FOLDER} ) 
+  else()
+    set( folder_name ${compname}_test )
+  endif()
   set_target_properties( Ut_${compname}_install_inputs_${Ut_${compname}_install_inputs_iarg}
     PROPERTIES FOLDER ${folder_name}
     )
