@@ -124,7 +124,7 @@ namespace rtt_diagnostics
  * \example diagnostics/test/tstProcmon.cc 
  */
 //===========================================================================//
-DLL_PUBLIC void procmon_resource_print(std::string const & identifier,
+DLL_PUBLIC_diagnostics void procmon_resource_print(std::string const & identifier,
                                        int         const & mynode = -1,
                                        std::ostream      & msg    = std::cout );
 

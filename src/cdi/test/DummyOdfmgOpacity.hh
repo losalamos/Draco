@@ -47,7 +47,7 @@ namespace rtt_cdi_test
  */
 //===========================================================================//
 
-class DLL_PUBLIC DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
+class DLL_PUBLIC_cdi_test DummyOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 {
 
     // DATA - all of these values are set in the constructor.

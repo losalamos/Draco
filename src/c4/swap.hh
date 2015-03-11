@@ -47,7 +47,7 @@ namespace rtt_c4
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void determinate_swap(std::vector<unsigned> const &outgoing_pid,
                      std::vector<std::vector<T> > const &outgoing_data,
                      std::vector<unsigned> const &incoming_pid,
@@ -74,7 +74,7 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void determinate_swap( std::vector<std::vector<T> > const &outgoing_data,
                        std::vector<std::vector<T> > &incoming_data,
                        int tag = C4_Traits<T*>::tag);
@@ -101,7 +101,7 @@ void determinate_swap( std::vector<std::vector<T> > const &outgoing_data,
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
                           std::vector<std::vector<T> > const &outgoing_data,
                           std::vector<unsigned> const &incoming_pid,

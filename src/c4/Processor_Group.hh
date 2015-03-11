@@ -35,7 +35,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC Processor_Group 
+class DLL_PUBLIC_c4 Processor_Group 
 {
   public:
 
@@ -60,16 +60,16 @@ class DLL_PUBLIC Processor_Group
 
     //! Sum a set of values over the group, returning the sum to all
     //! processors. 
-    template<class T>
+    template<typename T>
     void sum(std::vector<T> &values);
 
     //! Assemble a set of local vectors into global vectors.
-    template<class T>
+    template<typename T>
     void assemble_vector(std::vector<T> const &local_vector,
                          std::vector<T> &global_vector) const;
 
     //! Assemble a set of local vectors into global vectors.
-    template<class T>
+    template<typename T>
     void assemble_vector(T const *local_vector,
                          T *global_vector,
                          unsigned count) const;
@@ -95,7 +95,8 @@ class DLL_PUBLIC Processor_Group
 
 } // end namespace rtt_c4
 
-#endif   // C4_MPI
+#endif // C4_MPI
+
 #endif // c4_Processor_Group_hh
 
 //---------------------------------------------------------------------------//

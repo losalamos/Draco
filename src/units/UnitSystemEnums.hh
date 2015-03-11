@@ -140,7 +140,7 @@ std::string const Q_labels( "NA,mol" );
 //---------------------------------------------------------------------------//
 
 //! Extract unit labels from list in UnitSystemEnums.hh.
-DLL_PUBLIC std::string setUnitLabel( size_t const pos, std::string const & labels );
+DLL_PUBLIC_units std::string setUnitLabel( size_t const pos, std::string const & labels );
 
 } // end namespace rtt_units
 

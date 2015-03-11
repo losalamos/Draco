@@ -24,11 +24,11 @@ namespace rtt_c4
 // MPI COMMUNICATOR
 //---------------------------------------------------------------------------//
 
-extern DLL_PUBLIC MPI_Comm communicator;
+extern MPI_Comm communicator;
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void free_inherited_comm()
+void free_inherited_comm()
 {
     if (communicator != MPI_COMM_WORLD)
     {

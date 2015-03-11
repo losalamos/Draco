@@ -52,7 +52,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC Termination_Detector 
+class DLL_PUBLIC_c4 Termination_Detector 
 {
   public:
 

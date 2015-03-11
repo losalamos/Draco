@@ -124,13 +124,13 @@ macro( add_component_library )
   string( REPLACE "Lib_" "" folder_name ${acl_TARGET} )
 
   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
+
   if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-    set( compdefs COMPILE_DEFINITIONS BUILDING_DLL )
+    # Provide compile define macro to enable declspec(dllexport) linkage.
+    set( compdefs COMPILE_DEFINITIONS BUILDING_${folder_name} )
   endif()
   set_target_properties( ${acl_TARGET} PROPERTIES
-    # Provide compile define macro to enable declspec(dllexport) linkage.
     ${compdefs}
-    # COMPILE_DEFINITIONS BUILDING_DLL
     # Use custom library naming
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}

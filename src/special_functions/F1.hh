@@ -18,7 +18,7 @@
 namespace rtt_sf
 {
 //! Compute the Fermi-Dirac function of index 1.
-DLL_PUBLIC double F1(double eta);
+DLL_PUBLIC_special_functions double F1(double eta);
 
 } // end namespace rtt_sf
 

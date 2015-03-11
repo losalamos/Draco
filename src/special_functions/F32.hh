@@ -19,7 +19,7 @@
 namespace rtt_sf
 {
 //! Calculate Fermi-Dirac integral of index 3/2.
-template<typename OrderedField> DLL_PUBLIC
+template<typename OrderedField> DLL_PUBLIC_special_functions
 OrderedField F32(OrderedField const &x);
 
 } // end namespace rtt_sf

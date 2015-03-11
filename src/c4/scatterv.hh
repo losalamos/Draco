@@ -38,7 +38,7 @@ namespace rtt_c4
  * data.
  */
 template<class T>
-DLL_PUBLIC void determinate_scatterv(
+DLL_PUBLIC_c4 void determinate_scatterv(
     std::vector<std::vector<T> > &outgoing_data,
     std::vector<T>               &incoming_data);
 
@@ -55,7 +55,7 @@ DLL_PUBLIC void determinate_scatterv(
  * \param incoming_data On return, contains the scattered data.
  */
 template<class T>
-DLL_PUBLIC void indeterminate_scatterv(
+DLL_PUBLIC_c4 void indeterminate_scatterv(
     std::vector<std::vector<T> > &outgoing_data,
     std::vector<T>               &incoming_data);
 

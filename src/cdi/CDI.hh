@@ -438,7 +438,7 @@ namespace rtt_cdi
  */
 //===========================================================================//
 
-class DLL_PUBLIC CDI
+class DLL_PUBLIC_cdi CDI
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef rtt_dsxx::SP<const GrayOpacity>       SP_GrayOpacity;

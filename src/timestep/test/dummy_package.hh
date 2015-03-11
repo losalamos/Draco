@@ -37,7 +37,7 @@ namespace rtt_timestep_test
  */
 //===========================================================================//
 
-class DLL_PUBLIC dummy_package
+class DLL_PUBLIC_timestep_test dummy_package
 {
   public:
 

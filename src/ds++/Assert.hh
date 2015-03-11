@@ -123,7 +123,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class DLL_PUBLIC assertion : public std::logic_error
+class DLL_PUBLIC_dsxx  assertion : public std::logic_error
 {
   public:
     /*!
@@ -178,31 +178,31 @@ class DLL_PUBLIC assertion : public std::logic_error
 //---------------------------------------------------------------------------//
 
 //! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-DLL_PUBLIC void toss_cookies( std::string const & cond, 
+DLL_PUBLIC_dsxx  void toss_cookies( std::string const & cond, 
                               std::string const & file, 
                               int         const   line );
 
-DLL_PUBLIC void toss_cookies_ptr(char const * const cond,
+DLL_PUBLIC_dsxx  void toss_cookies_ptr(char const * const cond,
                                  char const * const file, 
                                  int          const line );
 //! Print error w/o throw
-DLL_PUBLIC void show_cookies( std::string const & cond, 
+DLL_PUBLIC_dsxx  void show_cookies( std::string const & cond, 
                               std::string const & file, 
                               int         const   line );
 //! Throw a rtt_dsxx::assertion for Insist.
-DLL_PUBLIC void insist( std::string const & cond, 
+DLL_PUBLIC_dsxx  void insist( std::string const & cond, 
                         std::string const & msg, 
                         std::string const & file, 
                         int         const line);
 
 //! Pointer version of insist
-DLL_PUBLIC void insist_ptr(char const * const cond, 
+DLL_PUBLIC_dsxx  void insist_ptr(char const * const cond, 
                            char const * const msg, 
                            char const * const file, 
                            int          const line);
 
 //! Add hostname and pid to error messages.
-DLL_PUBLIC std::string verbose_error( std::string const & message );
+DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
 
 
 } // end of rtt_dsxx

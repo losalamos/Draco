@@ -12,20 +12,21 @@
 //---------------------------------------------------------------------------//
 
 #include <vector>
-#include "rsolv.i.hh"
+#include "rsolv.hh"
 
 namespace rtt_linear
 {
+
 using std::vector;
 
 //---------------------------------------------------------------------------//
 // T=vector<double> const &
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_linear
 void rsolv(const vector<double> &R,
- 		    const unsigned n,
- 		    vector<double> &b);
+ 		   const unsigned n,
+ 		   vector<double> &b);
 
 } // end namespace rtt_linear
 

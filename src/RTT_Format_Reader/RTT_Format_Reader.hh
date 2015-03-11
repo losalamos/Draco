@@ -47,7 +47,7 @@ namespace rtt_RTT_Format_Reader
 //
 //===========================================================================//
 
-class DLL_PUBLIC RTT_Format_Reader
+class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef std::ifstream ifstream;

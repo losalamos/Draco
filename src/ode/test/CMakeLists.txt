@@ -36,6 +36,7 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_ode;Lib_dsxx"
+   DEPS    "Lib_dsxx"
+   #DEPS    "Lib_ode;Lib_dsxx"
    )
 

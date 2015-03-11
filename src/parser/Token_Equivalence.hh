@@ -19,7 +19,7 @@
 namespace rtt_parser
 {
 //! Search tokens for existance of keyword.
-DLL_PUBLIC
+DLL_PUBLIC_parser
 void check_token_keyword( String_Token_Stream       & tokens,
                           std::string         const & keyword,
                           rtt_dsxx::UnitTest        & ut,
@@ -27,7 +27,7 @@ void check_token_keyword( String_Token_Stream       & tokens,
 
 //! Search tokens for keyword and compare associated value.  Report result to
 //! UnitTest.
-DLL_PUBLIC
+DLL_PUBLIC_parser
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
                                 int                 const   value,
@@ -36,7 +36,7 @@ void check_token_keyword_value( String_Token_Stream       & tokens,
 
 //! Search tokens for keyword and compare associated value.  Report result to
 //! UnitTest.
-DLL_PUBLIC
+DLL_PUBLIC_parser
 void check_token_keyword_value( String_Token_Stream       & tokens,
                                 std::string         const & keyword,
                                 double              const   value,

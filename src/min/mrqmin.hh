@@ -20,7 +20,7 @@ namespace rtt_min
 {
 //! Perform a nonlinear least-squares fit using Levenberg-Marquardt method
 template<class RandomContainer, class RandomBoolContainer, class ModelFunction>
-DLL_PUBLIC
+DLL_PUBLIC_min
 void mrqmin(RandomContainer const &x,
             RandomContainer const &y,
             RandomContainer const &sig,

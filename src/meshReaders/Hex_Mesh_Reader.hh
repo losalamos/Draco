@@ -41,7 +41,7 @@ namespace rtt_meshReaders
 //
 //===========================================================================//
 
-class DLL_PUBLIC Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
+class DLL_PUBLIC_meshReaders Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 {
 
     // NESTED CLASSES AND TYPEDEFS

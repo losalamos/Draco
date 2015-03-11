@@ -35,7 +35,7 @@ using std::ifstream;
  * very flat.
  */
 
-class DLL_PUBLIC Parallel_File_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC_parser Parallel_File_Token_Stream : public Text_Token_Stream
 {
   public:
 

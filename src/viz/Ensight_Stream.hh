@@ -26,7 +26,7 @@ namespace rtt_viz
 class Ensight_Stream;
 
 //! A specific "endl" manipulator for Ensight_Stream.
-DLL_PUBLIC Ensight_Stream& endl(Ensight_Stream &s);
+DLL_PUBLIC_viz Ensight_Stream& endl(Ensight_Stream &s);
 
 //===========================================================================//
 /*!
@@ -47,7 +47,7 @@ DLL_PUBLIC Ensight_Stream& endl(Ensight_Stream &s);
  */
 //===========================================================================//
 
-class DLL_PUBLIC Ensight_Stream
+class DLL_PUBLIC_viz Ensight_Stream
 {
   private:
 
@@ -107,7 +107,7 @@ class DLL_PUBLIC Ensight_Stream
 
     Ensight_Stream& operator<<(FP f);
 
-    friend DLL_PUBLIC Ensight_Stream& endl(Ensight_Stream &s);
+    friend DLL_PUBLIC_viz Ensight_Stream& endl(Ensight_Stream &s);
 
   private:
 

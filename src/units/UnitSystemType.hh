@@ -47,7 +47,7 @@ namespace rtt_units
  */
 //============================================================================//
 
-class DLL_PUBLIC UnitSystemType
+class DLL_PUBLIC_units UnitSystemType
 {
   public:
 

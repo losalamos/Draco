@@ -36,7 +36,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC Sobol_Sequence
+class DLL_PUBLIC_rng Sobol_Sequence
 {
   public:
 

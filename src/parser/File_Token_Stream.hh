@@ -31,7 +31,7 @@ using std::ifstream;
  * console error stream \c cerr.
  */
 
-class DLL_PUBLIC File_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC_parser File_Token_Stream : public Text_Token_Stream
 {
   public:
 

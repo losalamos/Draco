@@ -15,7 +15,8 @@
 namespace rtt_parser
 {
 
-DLL_PUBLIC Abstract_Class_Parser_Base::c_string_vector Abstract_Class_Parser_Base::keys_;
+DLL_PUBLIC_parser 
+Abstract_Class_Parser_Base::c_string_vector Abstract_Class_Parser_Base::keys_;
 
 //---------------------------------------------------------------------------//
 Abstract_Class_Parser_Base::c_string_vector::~c_string_vector()

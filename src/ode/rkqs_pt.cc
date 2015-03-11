@@ -11,42 +11,42 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
-#include "rkqs.i.hh"
-#include "quad.hh"
+//#include <vector>
+//#include "rkqs.hh"
+//#include "quad.i.hh"
 
 namespace rtt_ode
 {
 
-using std::vector;
+//using std::vector;
 
 //---------------------------------------------------------------------------//
 // Field = double, Function = FPderivs
 //---------------------------------------------------------------------------//
+//
+//typedef void (*FPderivs)(double x,
+//                         vector<double> const &y, 
+//                         vector<double> &yderiv);
 
-typedef void (*FPderivs)(double x,
-                         vector<double> const &y, 
-                         vector<double> &yderiv);
-
-template DLL_PUBLIC
-void rkck( vector<double> const &y,
-		   vector<double> const &dydx,
-		   double x,
-		   double h,
-		   std::vector<double> &yout,
-		   std::vector<double> &yerr, 
-		   FPderivs);
-
-template DLL_PUBLIC
-void rkqs( vector<double> &y,
-		   vector<double> const &dydx,
-		   double &x, 
-		   double htry,
-		   double eps,
-		   vector<double> const &yscal,
-		   double &hdid,
-		   double &hnext, 
-		   FPderivs);
+//template DLL_PUBLIC_ode
+//void rkck( vector<double> const &y,
+//		   vector<double> const &dydx,
+//		   double x,
+//		   double h,
+//		   std::vector<double> &yout,
+//		   std::vector<double> &yerr, 
+//		   FPderivs);
+//
+//template DLL_PUBLIC_ode
+//void rkqs( vector<double> &y,
+//		   vector<double> const &dydx,
+//		   double &x, 
+//		   double htry,
+//		   double eps,
+//		   vector<double> const &yscal,
+//		   double &hdid,
+//		   double &hnext, 
+//		   FPderivs);
 
 //---------------------------------------------------------------------------//
 // Field = double, Function = Quad_To_ODE<double (*)(double)>
@@ -59,17 +59,17 @@ void rkqs( vector<double> &y,
 // 		   std::vector<double> &yout,
 // 		   std::vector<double> &yerr, 
 // 		   );
-
-template DLL_PUBLIC
-void rkqs( vector<double> &y,
-		   vector<double> const &dydx,
-		   double &x, 
-		   double htry,
-		   double eps,
-		   vector<double> const &yscal,
-		   double &hdid,
-		   double &hnext, 
-                   Quad_To_ODE<double (*)(double)>);
+//
+//template DLL_PUBLIC_ode
+//void rkqs( vector<double> &y,
+//		   vector<double> const &dydx,
+//		   double &x, 
+//		   double htry,
+//		   double eps,
+//		   vector<double> const &yscal,
+//		   double &hdid,
+//		   double &hnext, 
+//           Quad_To_ODE<double (*)(double)>);
                    
 } // end namespace rtt_ode
 

@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class DLL_PUBLIC ApplicationUnitTest : public rtt_dsxx::UnitTest
+class DLL_PUBLIC_c4 ApplicationUnitTest : public rtt_dsxx::UnitTest
 {
   public:
 

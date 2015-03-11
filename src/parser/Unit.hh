@@ -275,7 +275,7 @@ inline bool is_compatible(Unit const &a, Unit const &b)
 //---------------------------------------------------------------------------//
 //! Write out the unit in text form.
 
-DLL_PUBLIC std::ostream &operator<<(std::ostream &, const Unit &);
+DLL_PUBLIC_parser std::ostream &operator<<(std::ostream &, const Unit &);
 
 
 // Some useful examples
@@ -367,14 +367,14 @@ Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e3*rtt_units::EV2K, 1., 1., 1.,1.,  
 * initially MKS.
 */
 
-DLL_PUBLIC double conversion_factor(Unit const &units, Unit const &unit_system);
+DLL_PUBLIC_parser double conversion_factor(Unit const &units, Unit const &unit_system);
 
 //---------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are
  * initially MKS.
  */
 
-DLL_PUBLIC double conversion_factor(Unit const &units,
+DLL_PUBLIC_parser double conversion_factor(Unit const &units,
                                     rtt_units::UnitSystem const &unit_system);
 
 } // end namespace rtt_parser

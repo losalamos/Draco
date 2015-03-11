@@ -21,14 +21,14 @@ namespace rtt_timestep
 // Explicit instatiation for FT == vector<double>.
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_timestep
 void field_ts_advisor::set_floor( std::vector< double > const & y1, 
-				  double                        frac ); 
+                                  double                        frac ); 
 
-template DLL_PUBLIC
+template DLL_PUBLIC_timestep
 void field_ts_advisor::update_tstep( ts_manager            const & tsm,
-				     std::vector< double > const & y1, 
-				     std::vector< double > const & y2 );
+                                     std::vector< double > const & y1, 
+                                     std::vector< double > const & y2 );
 
 } // end namespace rtt_timestep
 

@@ -29,10 +29,10 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int send(const T *buffer, 
-                    int      size,
-                    int      destination, 
-                    int      tag)
+DLL_PUBLIC_c4 int send(const T *buffer, 
+                       int      size,
+                       int      destination, 
+                       int      tag)
 {
     MPI_Send(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
 	     destination, tag, communicator);
@@ -42,10 +42,10 @@ DLL_PUBLIC int send(const T *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int receive(T   *buffer, 
-                       int  size, 
-                       int  source, 
-                       int  tag)
+DLL_PUBLIC_c4 int receive(T   *buffer, 
+                          int  size, 
+                          int  source, 
+                          int  tag)
 {
     int count = 0;
 
@@ -65,7 +65,7 @@ DLL_PUBLIC int receive(T   *buffer,
 
 //---------------------------------------------------------------------------------------//
 template<typename T>
-DLL_PUBLIC int send_udt(const T     *buffer, 
+DLL_PUBLIC_c4 int send_udt(const T     *buffer, 
                         int          size,
                         int          destination,
                         C4_Datatype &data_type,
@@ -79,7 +79,7 @@ DLL_PUBLIC int send_udt(const T     *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int receive_udt(T           *buffer, 
+DLL_PUBLIC_c4 int receive_udt(T           *buffer, 
                            int          size, 
                            int          source, 
                            C4_Datatype &data_type,
@@ -104,10 +104,10 @@ DLL_PUBLIC int receive_udt(T           *buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC C4_Req send_async(const T *buffer, 
-                             int      size, 
-                             int      destination, 
-                             int      tag)
+DLL_PUBLIC_c4 C4_Req send_async(const T *buffer, 
+                                int      size, 
+                                int      destination, 
+                                int      tag)
 {
     // make a c4 request handle
     C4_Req request;
@@ -125,7 +125,7 @@ DLL_PUBLIC C4_Req send_async(const T *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<typename T> DLL_PUBLIC
+template<typename T> DLL_PUBLIC_c4
 void send_async(C4_Req  &request, 
 		const T *buffer, 
 		int      size, 
@@ -144,7 +144,7 @@ void send_async(C4_Req  &request,
 
 //---------------------------------------------------------------------------//
 
-template<typename T> DLL_PUBLIC 
+template<typename T> DLL_PUBLIC_c4 
 void send_is(C4_Req  &request, 
 	     const T *buffer, 
 	     int      size, 
@@ -189,7 +189,7 @@ C4_Req receive_async(T   *buffer,
 
 //---------------------------------------------------------------------------//
 
-template<typename T> DLL_PUBLIC
+template<typename T> DLL_PUBLIC_c4
 void receive_async(C4_Req &request, 
 		   T      *buffer, 
 		   int     size, 
@@ -214,7 +214,7 @@ void receive_async(C4_Req &request,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int broadcast(
+DLL_PUBLIC_c4 int broadcast(
     T   *buffer, 
     int size,
     int root)
@@ -229,7 +229,7 @@ DLL_PUBLIC int broadcast(
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int gather(T *send_buffer, T *receive_buffer, int size)
+DLL_PUBLIC_c4 int gather(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Gather(send_buffer,
                             size,
@@ -244,7 +244,7 @@ DLL_PUBLIC int gather(T *send_buffer, T *receive_buffer, int size)
 }
 
 template<typename T>
-DLL_PUBLIC int allgather(T *send_buffer, T *receive_buffer, int size)
+DLL_PUBLIC_c4 int allgather(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Allgather(send_buffer,
                                size,
@@ -258,7 +258,7 @@ DLL_PUBLIC int allgather(T *send_buffer, T *receive_buffer, int size)
 }
 
 template<typename T>
-DLL_PUBLIC int scatter(T *send_buffer, T *receive_buffer, int size)
+DLL_PUBLIC_c4 int scatter(T *send_buffer, T *receive_buffer, int size)
 {
     int Result = MPI_Scatter(send_buffer,
                              size,
@@ -319,7 +319,7 @@ int scatterv(T *send_buffer,
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-DLL_PUBLIC void global_sum(T &x)
+DLL_PUBLIC_c4 void global_sum(T &x)
 {
     // copy data into send buffer
     T y = x;
@@ -335,7 +335,7 @@ DLL_PUBLIC void global_sum(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC void global_prod(T &x)
+DLL_PUBLIC_c4 void global_prod(T &x)
 {
     // copy data into send buffer
     T y = x;
@@ -348,7 +348,7 @@ DLL_PUBLIC void global_prod(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-DLL_PUBLIC void global_min(T &x)
+DLL_PUBLIC_c4 void global_min(T &x)
 {
     // copy data into send buffer
     T y = x;
@@ -361,7 +361,7 @@ DLL_PUBLIC void global_min(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-DLL_PUBLIC void global_max(T &x)
+DLL_PUBLIC_c4 void global_max(T &x)
 {
     // copy data into send buffer
     T y = x;
@@ -374,7 +374,7 @@ DLL_PUBLIC void global_max(T &x)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-DLL_PUBLIC void global_sum(T *x, int n)
+DLL_PUBLIC_c4 void global_sum(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -388,7 +388,7 @@ DLL_PUBLIC void global_sum(T *x, int n)
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC void global_prod(T *x, int n)
+DLL_PUBLIC_c4 void global_prod(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -402,7 +402,7 @@ DLL_PUBLIC void global_prod(T *x, int n)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-DLL_PUBLIC void global_min(T *x, int n)
+DLL_PUBLIC_c4 void global_min(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);
@@ -416,7 +416,7 @@ DLL_PUBLIC void global_min(T *x, int n)
 //---------------------------------------------------------------------------//
 
 template<typename T> 
-DLL_PUBLIC void global_max(T *x, int n)
+DLL_PUBLIC_c4 void global_max(T *x, int n)
 {
     // copy data into a send buffer
     std::vector<T> send_buffer(x, x + n);

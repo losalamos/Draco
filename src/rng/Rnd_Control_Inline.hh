@@ -28,7 +28,7 @@ namespace rtt_rng
  * constructing a new generator.
  */
 //===========================================================================//
-class DLL_PUBLIC Rnd_Control 
+class DLL_PUBLIC_rng Rnd_Control 
 {
   private:
     //! Seed for initialization of random number streams.

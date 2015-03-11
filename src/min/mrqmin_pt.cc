@@ -23,7 +23,7 @@ using std::vector;
 // RandomContainer=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_min
 void mrqmin(vector<double> const &x,
             vector<double> const &y,
             vector<double> const &sig,

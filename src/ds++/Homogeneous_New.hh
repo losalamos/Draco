@@ -87,7 +87,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class DLL_PUBLIC Homogeneous_New 
+class DLL_PUBLIC_dsxx  Homogeneous_New 
 {
   public:
 

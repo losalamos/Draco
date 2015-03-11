@@ -22,7 +22,7 @@ namespace rtt_c4
 {
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC unsigned wait_any(int      count,
+unsigned wait_any(int      count,
                              C4_Req * requests)
 {
     using std::vector;

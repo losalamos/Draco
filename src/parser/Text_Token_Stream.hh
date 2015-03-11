@@ -31,7 +31,7 @@ namespace rtt_parser
  * internally to indicate the end of file or an error condition.
  */
 
-class DLL_PUBLIC Text_Token_Stream : public Token_Stream
+class DLL_PUBLIC_parser Text_Token_Stream : public Token_Stream
 {
   public:
 

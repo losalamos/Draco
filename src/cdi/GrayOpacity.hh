@@ -40,7 +40,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class DLL_PUBLIC GrayOpacity
+class DLL_PUBLIC_cdi GrayOpacity
 {
     // DATA
 	

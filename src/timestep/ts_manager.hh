@@ -35,7 +35,7 @@ namespace rtt_timestep
  * radiation energy, ion energy, max allowed change, etc...).
  */
 //===========================================================================//
-class DLL_PUBLIC ts_manager
+class DLL_PUBLIC_timestep ts_manager
 {
 
 // NESTED CLASSES AND TYPEDEFS

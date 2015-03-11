@@ -48,7 +48,7 @@ namespace rtt_norms
 */
 //===========================================================================//
 template <typename Index_t>
-class DLL_PUBLIC Norms_Index
+class DLL_PUBLIC_norms Norms_Index
     : public Norms_Base
 {
   public:

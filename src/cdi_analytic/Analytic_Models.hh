@@ -79,7 +79,7 @@ enum EoS_Models
  */
 //===========================================================================//
 
-class DLL_PUBLIC Analytic_Opacity_Model
+class DLL_PUBLIC_cdi_analytic Analytic_Opacity_Model
 {
   public:
     // Typedefs.
@@ -127,7 +127,7 @@ class DLL_PUBLIC Analytic_Opacity_Model
  * \arg a = [cm^2/g]
  *
  */
-class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
+class DLL_PUBLIC_cdi_analytic Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
   private:
     // Constant opacity.
@@ -185,7 +185,7 @@ class DLL_PUBLIC Constant_Analytic_Opacity_Model : public Analytic_Opacity_Model
  * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
  *
  */
-class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
+class DLL_PUBLIC_cdi_analytic Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
   private:
 
@@ -327,7 +327,7 @@ class DLL_PUBLIC Polynomial_Analytic_Opacity_Model : public Analytic_Opacity_Mod
  * 
  */
 
-class DLL_PUBLIC Stimulated_Emission_Analytic_Opacity_Model : public Analytic_Opacity_Model
+class DLL_PUBLIC_cdi_analytic Stimulated_Emission_Analytic_Opacity_Model : public Analytic_Opacity_Model
 {
   private:
     // Coefficients
@@ -464,7 +464,7 @@ class DLL_PUBLIC Stimulated_Emission_Analytic_Opacity_Model : public Analytic_Op
  */
 //===========================================================================//
 
-class DLL_PUBLIC Analytic_EoS_Model
+class DLL_PUBLIC_cdi_analytic Analytic_EoS_Model
 {
   public:
     // Typedefs.
@@ -544,7 +544,7 @@ class DLL_PUBLIC Analytic_EoS_Model
  * Compton scatter) only require specfic heat data.
  * 
  */
-class DLL_PUBLIC Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
+class DLL_PUBLIC_cdi_analytic Polynomial_Specific_Heat_Analytic_EoS_Model : public Analytic_EoS_Model
 {
   private:
     // Coefficients.   

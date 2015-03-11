@@ -41,7 +41,7 @@ namespace rtt_timestep
  * by the update method flag.
  */ 
 //===========================================================================//
-class DLL_PUBLIC field_ts_advisor : public ts_advisor 
+class DLL_PUBLIC_timestep field_ts_advisor : public ts_advisor 
 {
 
 // NESTED CLASSES AND TYPEDEFS

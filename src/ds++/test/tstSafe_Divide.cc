@@ -3,7 +3,6 @@
  * \file   ds++/test/tstSafe_Divide.cc
  * \author Mike Buksas
  * \date   Tue Jun 21 16:02:52 2005
- * \brief  
  * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
  *         All rights reserved
  */
@@ -17,6 +16,12 @@
 
 using namespace std;
 using namespace rtt_dsxx;
+
+#if defined(MSVC)
+#pragma warning (push)
+// warning C4756: overflow in constant arithmetic
+#pragma warning (disable:4756)
+#endif
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -50,12 +55,13 @@ void test( rtt_dsxx::UnitTest & ut )
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-    try
-    {
-	test(ut);
-    }
+    try { test(ut); }
     UT_EPILOG(ut)
 }   
+
+#if defined(MSVC)
+#   pragma warning (pop)
+#endif
 
 //---------------------------------------------------------------------------//
 //  end of tstSafe_Divide.cc

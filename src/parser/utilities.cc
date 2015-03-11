@@ -102,7 +102,7 @@ void set_unit_expressions_are_required(bool const b)
 
 //---------------------------------------------------------------------------------------//
 //! Get the default unit system
-DLL_PUBLIC rtt_units::UnitSystem const &get_internal_unit_system()
+DLL_PUBLIC_parser rtt_units::UnitSystem const &get_internal_unit_system()
 {
     return internal_unit_system;
 }

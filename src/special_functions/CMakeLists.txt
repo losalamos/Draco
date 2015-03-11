@@ -44,7 +44,8 @@ include_directories(
 
 add_component_library( 
    TARGET       Lib_special_functions
-   TARGET_DEPS  "Lib_units;Lib_ode;Lib_roots"
+   TARGET_DEPS  "Lib_units;Lib_roots"
+   #TARGET_DEPS  "Lib_units;Lib_ode;Lib_roots"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" 
    VENDOR_LIST         "GSL"

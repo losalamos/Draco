@@ -22,7 +22,7 @@ using std::vector;
 // T=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_linear
 void tqli(vector<double> &d,
           vector<double> &e,
           const unsigned n,

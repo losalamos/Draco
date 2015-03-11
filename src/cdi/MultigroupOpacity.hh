@@ -40,7 +40,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class DLL_PUBLIC MultigroupOpacity
+class DLL_PUBLIC_cdi MultigroupOpacity
 {
     // DATA
 	

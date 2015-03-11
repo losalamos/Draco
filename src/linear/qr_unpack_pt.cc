@@ -23,7 +23,7 @@ using std::vector;
 // RandomContainer = vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_linear
 void qr_unpack(vector<double> &r,
 			const unsigned n,
 			const vector<double> &c,

@@ -22,7 +22,7 @@ using std::vector;
 // RandomContainer=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_linear
 bool qrdcmp(vector<double> &a,
     unsigned n,
     vector<double> &c,

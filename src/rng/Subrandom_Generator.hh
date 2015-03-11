@@ -39,7 +39,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC Subrandom_Generator 
+class DLL_PUBLIC_rng Subrandom_Generator 
 {
   public:
 

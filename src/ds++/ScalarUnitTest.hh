@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class DLL_PUBLIC ScalarUnitTest : public UnitTest
+class DLL_PUBLIC_dsxx  ScalarUnitTest : public UnitTest
 {
   public:
 

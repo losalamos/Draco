@@ -38,7 +38,7 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class DLL_PUBLIC IpcressDataTable
+class DLL_PUBLIC_cdi_ipcress IpcressDataTable
 {
 
     // NESTED CLASSES AND TYPEDEFS

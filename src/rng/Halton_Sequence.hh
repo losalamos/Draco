@@ -68,7 +68,7 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC Halton_Sequence
+class DLL_PUBLIC_rng Halton_Sequence
 {
   public:
 

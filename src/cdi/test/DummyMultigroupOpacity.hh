@@ -48,7 +48,7 @@ namespace rtt_cdi_test
  */
 //===========================================================================//
 
-class DLL_PUBLIC DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
+class DLL_PUBLIC_cdi_test DummyMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
 
     // DATA - all of these values are set in the constructor.

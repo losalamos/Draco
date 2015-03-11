@@ -29,7 +29,7 @@ namespace rtt_norms {
   dependent functionality of Norms to be compiled in a single place.
 */
 //===========================================================================//
-class DLL_PUBLIC Norms_Base
+class DLL_PUBLIC_norms Norms_Base
 {
   protected:
     

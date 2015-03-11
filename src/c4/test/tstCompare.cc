@@ -3,7 +3,6 @@
  * \file   c4/test/tstCompare.cc
  * \author Mike Buksas
  * \date   Thu May  1 14:47:00 2008
- * \brief  
  * \note   Copyright (C) 2008-2015 Los Alamos National Security, LLC
  *         All rights reserved.
  */
@@ -23,7 +22,7 @@ using namespace rtt_c4;
 // TESTS
 //---------------------------------------------------------------------------//
 
-template<class T>
+template<typename T>
 void test_equivalence(rtt_dsxx::UnitTest & ut, const T value, const T alt_value)
 {
     T local_value = value;

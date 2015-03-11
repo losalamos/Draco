@@ -11,39 +11,40 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "rkqs.hh"
-#include "quad.i.hh"
+//#include "rkqs.hh"
+//#include "quad.i.hh"
 
 namespace rtt_ode
 {
-using std::vector;
+
+//using std::vector;
 
 // Typdefs to function pointers.
-typedef void (*rule)(vector<double> &y,
-                     vector<double> const &dydx,
-                     double &x, 
-                     double htry,
-                     double eps,
-                     vector<double> const &yscal,
-                     double &hdid,
-                     double &hnext, 
-                     Quad_To_ODE<double (*)(double)>);
-
-typedef double (*fpdd)(double);
+//typedef void (*rule)(vector<double> &y,
+//                     vector<double> const &dydx,
+//                     double &x, 
+//                     double htry,
+//                     double eps,
+//                     vector<double> const &yscal,
+//                     double &hdid,
+//                     double &hnext, 
+//                     Quad_To_ODE<double (*)(double)>);
+//
+//typedef double (*fpdd)(double);
 
 //---------------------------------------------------------------------------//
 // Function = fpdd, Rule = rule
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC 
-double quad( fpdd,
-		     double x1, 
-		     double x2,
-		     double &eps,
-                     rule);
+//template DLL_PUBLIC_ode
+//double quad( fpdd,
+//		     double x1, 
+//		     double x2,
+//		     double &eps,
+//                     rule);
     
 } // end namespace rtt_ode
 
 //---------------------------------------------------------------------------//
-//                 end of quad.cc
+// end of quad.cc
 //---------------------------------------------------------------------------//

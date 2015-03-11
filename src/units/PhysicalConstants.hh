@@ -50,7 +50,7 @@ namespace rtt_units
  */
 //==============================================================================
 
-class DLL_PUBLIC PhysicalConstants
+class DLL_PUBLIC_units PhysicalConstants
 {
   public:
     

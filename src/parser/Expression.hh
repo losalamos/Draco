@@ -63,7 +63,7 @@ using rtt_dsxx::SP;
  */
 //===========================================================================//
 
-class DLL_PUBLIC Expression 
+class DLL_PUBLIC_parser Expression 
 {
   public:
 

@@ -32,7 +32,7 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
+class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
 {
   public:
     // Useful typedefs.

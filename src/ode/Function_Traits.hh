@@ -40,7 +40,7 @@ namespace rtt_ode
  */
 //===========================================================================//
 
-template<typename Function> class DLL_PUBLIC Function_Traits
+template<typename Function> class DLL_PUBLIC_ode Function_Traits
 {
   public:
 

@@ -46,7 +46,7 @@ namespace rtt_cdi_test
  */
 //========================================================================
 
-class DLL_PUBLIC DummyGrayOpacity : public rtt_cdi::GrayOpacity
+class DLL_PUBLIC_cdi_test DummyGrayOpacity : public rtt_cdi::GrayOpacity
 {
     // DATA - all of these values are set in the constructor.
 

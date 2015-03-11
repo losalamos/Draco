@@ -63,7 +63,7 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
+class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
 {
   public:
     // Useful typedefs.

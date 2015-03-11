@@ -65,16 +65,16 @@ std::string const exeExtension( "" );
 //===========================================================================//
 
 //! Return the local hostname
-DLL_PUBLIC std::string draco_gethostname( void );
+DLL_PUBLIC_dsxx  std::string draco_gethostname( void );
 
 //! Return the local process id
-DLL_PUBLIC int draco_getpid( void );
+DLL_PUBLIC_dsxx  int draco_getpid( void );
 
 //! Return the current working directory
-DLL_PUBLIC std::string draco_getcwd( void );
+DLL_PUBLIC_dsxx  std::string draco_getcwd( void );
 
 //! Return the stat value for a file
-class DLL_PUBLIC draco_getstat
+class DLL_PUBLIC_dsxx  draco_getstat
 {
   private:
     int stat_return_code;
@@ -102,10 +102,10 @@ class DLL_PUBLIC draco_getstat
 };
 
 //! Use Linux realpath to resolve symlinks
-DLL_PUBLIC std::string draco_getrealpath( std::string const & path );
+DLL_PUBLIC_dsxx  std::string draco_getrealpath( std::string const & path );
 
 //! Create a directory
-DLL_PUBLIC void draco_mkdir( std::string const & path );
+DLL_PUBLIC_dsxx  void draco_mkdir( std::string const & path );
 
 /*! 
  * \brief Remove file or directory (not recursive)
@@ -113,7 +113,7 @@ DLL_PUBLIC void draco_mkdir( std::string const & path );
  * For recursive directory delete, see path.hh's walk_directory_tree and 
  * the functor wdtOpRemove.
  */
-DLL_PUBLIC void draco_remove( std::string const & path );
+DLL_PUBLIC_dsxx  void draco_remove( std::string const & path );
 
 } // end of rtt_dsxx
 

@@ -19,10 +19,10 @@
 namespace rtt_sf
 {
 //! Compute the inverse Fermi-Dirac function of index 1/2.
-DLL_PUBLIC double F12inv(double f);
+DLL_PUBLIC_special_functions double F12inv(double f);
 
 //! Compute the inverse Fermi-Dirac function of index 1/2 and its derivative. 
-DLL_PUBLIC void F12inv(double f, double &eta, double &deta);
+DLL_PUBLIC_special_functions void F12inv(double f, double &eta, double &deta);
 
 } // end namespace rtt_sf
 

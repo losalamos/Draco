@@ -36,7 +36,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class DLL_PUBLIC EoS
+class DLL_PUBLIC_cdi EoS
 {
     // DATA
 	

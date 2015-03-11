@@ -18,11 +18,12 @@ namespace rtt_linear
 {
 
 //! Solve an upper triangular system of equations.
-template<class RandomContainer>
+template<typename RandomContainer>
 void rsolv(const RandomContainer &R, const unsigned n, RandomContainer &b);
 
-
 } // end namespace rtt_linear
+
+#include "rsolv.i.hh"
 
 #endif // linear_rsolv_hh
 

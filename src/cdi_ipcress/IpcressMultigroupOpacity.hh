@@ -90,7 +90,7 @@ class IpcressDataTable;
  */
 //===========================================================================//
 
-class DLL_PUBLIC IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
+class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
 
     // DATA

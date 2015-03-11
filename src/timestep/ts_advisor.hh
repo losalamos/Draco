@@ -36,7 +36,7 @@ class ts_manager;
  */
 //
 //===========================================================================//
-class DLL_PUBLIC ts_advisor
+class DLL_PUBLIC_timestep ts_advisor
 {
 
 // NESTED CLASSES AND TYPEDEFS

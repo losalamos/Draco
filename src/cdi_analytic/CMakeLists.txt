@@ -43,7 +43,8 @@ include_directories(
 
 add_component_library( 
    TARGET       Lib_cdi_analytic
-   TARGET_DEPS  "Lib_parser;Lib_roots;Lib_cdi;Lib_ode"
+   TARGET_DEPS  "Lib_parser;Lib_roots;Lib_cdi"
+   #TARGET_DEPS  "Lib_parser;Lib_roots;Lib_cdi;Lib_ode"
    LIBRARY_NAME cdi_analytic
    SOURCES      "${sources}"  )
 

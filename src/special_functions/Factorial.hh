@@ -20,11 +20,11 @@ namespace rtt_sf
 {
 
 //! \brief factorial
-template< typename T > DLL_PUBLIC
+template< typename T > DLL_PUBLIC_special_functions
 T factorial( T const k );
 
 //! \brief fraction of factorials, \f$ (k!)/(l!) \f$
-template< typename T > DLL_PUBLIC
+template< typename T > DLL_PUBLIC_special_functions
 double factorial_fraction( T const k, T const l );
 
 } // end namespace rtt_sf

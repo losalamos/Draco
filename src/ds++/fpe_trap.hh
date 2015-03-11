@@ -61,7 +61,7 @@ namespace rtt_dsxx
  * Useful links:
  * - http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
 */
-class DLL_PUBLIC fpe_trap
+class DLL_PUBLIC_dsxx  fpe_trap
 {
   public:
     //! constructor
@@ -119,7 +119,7 @@ class DLL_PUBLIC fpe_trap
 
 namespace rtt_dsxx
 {
-class DLL_PUBLIC CCrashHandler  
+class DLL_PUBLIC_dsxx  CCrashHandler  
 {
 public:
 

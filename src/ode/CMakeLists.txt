@@ -40,18 +40,18 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library(
-   TARGET       Lib_ode 
-   TARGET_DEPS  Lib_dsxx
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${sources}" )
-add_dependencies( Lib_ode Lib_dsxx )
+# add_component_library(
+   # TARGET       Lib_ode 
+   # TARGET_DEPS  Lib_dsxx
+   # LIBRARY_NAME ${PROJECT_NAME}
+   # SOURCES      "${sources}" )
+# add_dependencies( Lib_ode Lib_dsxx )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_ode EXPORT draco-targets DESTINATION lib )
+#install( TARGETS Lib_ode EXPORT draco-targets DESTINATION lib )
 install( FILES ${headers} ${template_implementations} DESTINATION include/ode )
 
 # ---------------------------------------------------------------------------- #

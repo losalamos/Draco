@@ -10,8 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ode/rkqs.i.hh"
-#include "ode/quad.i.hh"
+#include "ode/rkqs.hh"
+#include "ode/quad.hh"
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/DracoMath.hh"

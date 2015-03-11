@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class DLL_PUBLIC UnitTest
+class DLL_PUBLIC_dsxx  UnitTest
 {
   public:
 

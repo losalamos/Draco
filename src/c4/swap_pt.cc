@@ -24,28 +24,28 @@ using std::vector;
 // EXPLICIT INSTANTIATIONS OF NON-BLOCKING SEND/RECEIVE
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC 
+template DLL_PUBLIC_c4  
 void determinate_swap(vector<unsigned>          const &outgoing_pid,
                       vector<vector<unsigned> > const &outgoing_data,
                       vector<unsigned>          const &incoming_pid,
                       vector<vector<unsigned> >       &incoming_data,
                       int tag);
 
-template DLL_PUBLIC 
+template DLL_PUBLIC_c4  
 void determinate_swap(vector<unsigned>          const &outgoing_pid,
                       vector<vector<double> >   const &outgoing_data,
                       vector<unsigned>          const &incoming_pid,
                       vector<vector<double> >         &incoming_data,
                       int tag);
 
-template DLL_PUBLIC 
+template DLL_PUBLIC_c4  
 void semideterminate_swap(vector<unsigned>          const &outgoing_pid,
                           vector<vector<unsigned> > const &outgoing_data,
                           vector<unsigned>          const &incoming_pid,
                           vector<vector<unsigned> >       &incoming_data,
                           int tag);
 
-template DLL_PUBLIC 
+template DLL_PUBLIC_c4  
 void determinate_swap(vector<vector<unsigned> > const &outgoing_data,
                       vector<vector<unsigned> >       &incoming_data,
                       int tag);

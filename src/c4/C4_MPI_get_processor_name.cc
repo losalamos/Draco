@@ -23,7 +23,7 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 // get_processor_name
 //---------------------------------------------------------------------------//
-DLL_PUBLIC std::string get_processor_name()
+std::string get_processor_name()
 {
     int namelen(0);
     char processor_name[DRACO_MAX_PROCESSOR_NAME];

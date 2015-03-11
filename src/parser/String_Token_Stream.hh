@@ -30,7 +30,7 @@ using std::set;
  * an internal string that can be retrieved at will.
  */
 
-class DLL_PUBLIC String_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC_parser String_Token_Stream : public Text_Token_Stream
 {
   public:
 

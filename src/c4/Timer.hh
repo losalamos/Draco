@@ -73,7 +73,7 @@ namespace rtt_c4
  *    clock_t tms_cutime;  // User CPU time of dead children.
  *    clock_t tms_cstime;  // System CPU time of dead children.
  * };
- * \endocde
+ * \endcode
  *
  * Store the CPU time used by this process and all its dead children (and
  * their dead children) in \c BUFFER. Return the elapsed real time, or (\c
@@ -116,7 +116,7 @@ namespace rtt_c4
 //
 //===========================================================================//
 
-class DLL_PUBLIC Timer
+class DLL_PUBLIC_c4 Timer
 {
   private:
     //! Beginning wall clock time.

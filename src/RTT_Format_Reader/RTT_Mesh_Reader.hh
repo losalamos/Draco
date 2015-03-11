@@ -42,7 +42,7 @@ namespace rtt_RTT_Format_Reader
 // 
 //===========================================================================//
 
-class DLL_PUBLIC RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
+class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
 {
     // NESTED CLASSES AND TYPEDEFS
     typedef std::string string;

@@ -62,8 +62,8 @@ using std::vector;
  * \param funcs Functor to calculate the basis functions for a given argument.
  */
 
-template<class RandomContainer,
-         class Functor>
+template<typename RandomContainer,
+         typename Functor>
 void svdfit(RandomContainer const &x,
             RandomContainer const &y,
             RandomContainer const &sig,

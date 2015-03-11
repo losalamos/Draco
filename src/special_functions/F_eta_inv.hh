@@ -22,7 +22,7 @@ namespace rtt_sf
 {
 
 //! Calculate the relativistic Fermi-Dirac dimensionless chemical potential.
-DLL_PUBLIC double F_eta_inv(double n, double gamma);
+DLL_PUBLIC_special_functions double F_eta_inv(double n, double gamma);
 
 } // end namespace rtt_sf
 

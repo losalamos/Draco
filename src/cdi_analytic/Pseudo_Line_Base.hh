@@ -40,7 +40,7 @@ double expm1( double const & x );
  * density, which allows precalculation of the opacity structure, an important
  * time saver.
  */
-class DLL_PUBLIC Pseudo_Line_Base
+class DLL_PUBLIC_cdi_analytic Pseudo_Line_Base
 {
   public:
 

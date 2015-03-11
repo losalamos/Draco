@@ -52,7 +52,7 @@ namespace rtt_diagnostics
  */
 //===========================================================================//
 
-class DLL_PUBLIC Timing_Diagnostics
+class DLL_PUBLIC_diagnostics Timing_Diagnostics
 {
   public:
     // Useful typedef.

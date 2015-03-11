@@ -137,7 +137,7 @@ enum Ensight_Cell_Types
 //
 //===========================================================================//
 
-class DLL_PUBLIC Ensight_Translator
+class DLL_PUBLIC_viz Ensight_Translator
 {
   public:
     // Ensight_Translator typedefs.

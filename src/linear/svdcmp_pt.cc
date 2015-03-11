@@ -18,7 +18,7 @@ namespace rtt_linear
 {
 using std::vector;
 
-template DLL_PUBLIC
+template DLL_PUBLIC_linear
 void svdcmp(vector<double> &a,
 		     const unsigned m,
 		     const unsigned n,

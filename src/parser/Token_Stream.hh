@@ -97,7 +97,7 @@ class Syntax_Error : public std::runtime_error
  * not provide virtual destructors.
  */
 
-class DLL_PUBLIC Token_Stream
+class DLL_PUBLIC_parser Token_Stream
 //    : private std::deque<Token>
 {
   public:

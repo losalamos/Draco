@@ -75,7 +75,7 @@ int send(const T */* buffer*/,
 }
 
 template<class T>
-DLL_PUBLIC void send_is(C4_Req  &/*request*/, 
+DLL_PUBLIC_c4 void send_is(C4_Req  &/*request*/, 
              const T * /*buffer*/, 
              int      /* size*/, 
              int      /*destination*/,
@@ -87,7 +87,7 @@ DLL_PUBLIC void send_is(C4_Req  &/*request*/,
 
 
 template<typename T>
-DLL_PUBLIC int send_udt(const T     * /*buffer*/, 
+DLL_PUBLIC_c4 int send_udt(const T     * /*buffer*/, 
                         int           /*size*/,
                         int           /*destination*/,
                         C4_Datatype & /*data_type*/,
@@ -118,7 +118,7 @@ int receive(T   */* buffer */,
 }
 
 template<typename T>
-DLL_PUBLIC int receive_udt( T           * /*buffer*/, 
+DLL_PUBLIC_c4 int receive_udt( T           * /*buffer*/, 
                             int           /*size*/,
                             int           /*destination*/,
                             C4_Datatype & /*data_type*/,
@@ -144,7 +144,7 @@ C4_Req send_async(T const * /* buffer */,
 
 //---------------------------------------------------------------------------//
 
-template<class T> DLL_PUBLIC
+template<class T> DLL_PUBLIC_c4
 void send_async(C4_Req  & Remember(request), 
                 T const * /* buffer */, 
                 int       /* size   */, 
@@ -269,56 +269,56 @@ int scatterv(T *send_buffer,
 //---------------------------------------------------------------------------//
 
 template<class T> 
-DLL_PUBLIC void global_sum(T &/*x*/)
+DLL_PUBLIC_c4 void global_sum(T &/*x*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T>
-DLL_PUBLIC void global_prod(T &/*x*/)
+DLL_PUBLIC_c4 void global_prod(T &/*x*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-DLL_PUBLIC void global_min(T &/*x*/)
+DLL_PUBLIC_c4 void global_min(T &/*x*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-DLL_PUBLIC void global_max(T &/*x*/)
+DLL_PUBLIC_c4 void global_max(T &/*x*/)
 {  /* empty */ 
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-DLL_PUBLIC void global_sum(T */*x*/, int /*n*/)
+DLL_PUBLIC_c4 void global_sum(T */*x*/, int /*n*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T>
-DLL_PUBLIC void global_prod(T * /*x*/, int /*n*/)
+DLL_PUBLIC_c4 void global_prod(T * /*x*/, int /*n*/)
 { /* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-DLL_PUBLIC void global_min(T * /*x*/, int /*n*/)
+DLL_PUBLIC_c4 void global_min(T * /*x*/, int /*n*/)
 {/* empty */
 }
 
 //---------------------------------------------------------------------------//
 
 template<class T> 
-DLL_PUBLIC void global_max(T * /*x*/, int /*n*/)
+DLL_PUBLIC_c4 void global_max(T * /*x*/, int /*n*/)
 {/* empty */
 }
 

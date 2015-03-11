@@ -28,7 +28,7 @@ namespace rtt_c4
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC void indeterminate_gatherv(
+DLL_PUBLIC_c4 void indeterminate_gatherv(
     std::string              & outgoing_data,
     std::vector<std::string> & incoming_data )
 {
@@ -63,7 +63,7 @@ DLL_PUBLIC void indeterminate_gatherv(
     
 //---------------------------------------------------------------------------//
 template<class T>
-DLL_PUBLIC void indeterminate_gatherv(
+DLL_PUBLIC_c4 void indeterminate_gatherv(
     std::vector<T>               & outgoing_data,
     std::vector<std::vector<T> > & incoming_data )
 {
@@ -143,7 +143,7 @@ DLL_PUBLIC void indeterminate_gatherv(
 
 //---------------------------------------------------------------------------//
 template<class T>
-DLL_PUBLIC void determinate_gatherv(
+DLL_PUBLIC_c4 void determinate_gatherv(
     std::vector<T>               &outgoing_data,
     std::vector<std::vector<T> > &incoming_data)
 {

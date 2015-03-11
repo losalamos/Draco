@@ -31,14 +31,14 @@ namespace rtt_c4
 // MPI Communicator
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC extern MPI_Comm communicator;
+DLL_PUBLIC_c4 extern MPI_Comm communicator;
 extern bool initialized;
 
 //---------------------------------------------------------------------------//
 // Null source/destination rank
 //---------------------------------------------------------------------------//
 
-extern const int proc_null;
+DLL_PUBLIC_c4 extern const int proc_null;
 
 //---------------------------------------------------------------------------//
 // SETUP FUNCTIONS

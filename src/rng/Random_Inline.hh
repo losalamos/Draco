@@ -23,7 +23,7 @@ namespace rtt_rng
 /*! rn_stream is not used for anything in this library.  It is simply a global
  * variable that some applications use for holding a stream number.
  */
-extern uint64_t rn_stream;  
+DLL_PUBLIC_rng extern uint64_t rn_stream;  
 }
 
 #endif // rtt_rng_Random_Inline_hh

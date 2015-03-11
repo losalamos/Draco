@@ -29,7 +29,7 @@ using std::size_t;
  */
 //===========================================================================//
 
-struct DLL_PUBLIC Index_Proc 
+struct DLL_PUBLIC_norms Index_Proc 
 {
     //! The index.
     size_t index;

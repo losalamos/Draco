@@ -48,7 +48,7 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC Analytic_EoS : public rtt_cdi::EoS
+class DLL_PUBLIC_cdi_analytic Analytic_EoS : public rtt_cdi::EoS
 {
   public:
     // Useful typedefs.

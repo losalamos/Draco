@@ -19,7 +19,7 @@
 namespace rtt_parser
 {
 //---------------------------------------------------------------------------//
-DLL_PUBLIC void write_c(Unit const &units, ostream &out);
+DLL_PUBLIC_parser void write_c(Unit const &units, ostream &out);
 
 //===========================================================================//
 /*!

@@ -41,7 +41,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC Global_Timer : public Timer
+class DLL_PUBLIC_c4 Global_Timer : public Timer
 {
   private:
 

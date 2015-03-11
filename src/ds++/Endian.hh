@@ -131,7 +131,7 @@ T byte_swap_copy(T value)
  *
  * \return true if platform uses big endian format
  */
-DLL_PUBLIC bool is_big_endian(void);
+DLL_PUBLIC_dsxx  bool is_big_endian(void);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -142,7 +142,7 @@ DLL_PUBLIC bool is_big_endian(void);
  * 
  * \return true if we support IEEE float representation.
  */
-DLL_PUBLIC bool has_ieee_float_representation(void);
+DLL_PUBLIC_dsxx  bool has_ieee_float_representation(void);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -255,10 +255,10 @@ inline double byte_swap_copy<double>(double const input)
 //! These versions can be called by Fortran.  They wrap the C++ implementation.
 extern "C" 
 {
-DLL_PUBLIC int  dsxx_is_big_endian();
-DLL_PUBLIC void dsxx_byte_swap_int(     int     & value );
-DLL_PUBLIC void dsxx_byte_swap_int64_t( int64_t & value );
-DLL_PUBLIC void dsxx_byte_swap_double(  double  & value );
+DLL_PUBLIC_dsxx  int  dsxx_is_big_endian();
+DLL_PUBLIC_dsxx  void dsxx_byte_swap_int(     int     & value );
+DLL_PUBLIC_dsxx  void dsxx_byte_swap_int64_t( int64_t & value );
+DLL_PUBLIC_dsxx  void dsxx_byte_swap_double(  double  & value );
 }
 
 #endif // dsxx_Endian_hh

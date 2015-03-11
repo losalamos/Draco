@@ -35,7 +35,7 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC TigsTrace
+class DLL_PUBLIC_c4 TigsTrace
 {
   public:
     // Useful typedefs.

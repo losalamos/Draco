@@ -27,7 +27,7 @@ namespace rtt_norms
  */
 //===========================================================================//
 
-struct DLL_PUBLIC Index_Labeled
+struct DLL_PUBLIC_norms Index_Labeled
 {
     //! The index.
     size_t index;

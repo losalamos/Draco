@@ -57,7 +57,7 @@ namespace rtt_diagnostics
  * \endverbatim
  */
 //===========================================================================//
-class DLL_PUBLIC DracoInfo
+class DLL_PUBLIC_diagnostics DracoInfo
 {
   public:
 

@@ -40,7 +40,7 @@ using std::string;
  * under our current unit testing system, since it is inherently interactive.
  */
 
-class DLL_PUBLIC Console_Token_Stream : public Text_Token_Stream
+class DLL_PUBLIC_parser Console_Token_Stream : public Text_Token_Stream
 {
   public:
 

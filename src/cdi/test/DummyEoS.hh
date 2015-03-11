@@ -42,7 +42,7 @@ namespace rtt_cdi_test
  */
 //========================================================================
 
-class DLL_PUBLIC DummyEoS : public rtt_cdi::EoS
+class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
 {
   public:
 	

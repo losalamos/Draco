@@ -30,7 +30,7 @@ namespace rtt_c4
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-DLL_PUBLIC bool check_global_equiv(int local_value)
+bool check_global_equiv(int local_value)
 {
 
     const int node  = rtt_c4::node();
@@ -88,7 +88,7 @@ DLL_PUBLIC bool check_global_equiv(int local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-DLL_PUBLIC bool check_global_equiv(unsigned long local_value)
+bool check_global_equiv(unsigned long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -146,7 +146,7 @@ DLL_PUBLIC bool check_global_equiv(unsigned long local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-DLL_PUBLIC bool check_global_equiv(unsigned long long local_value)
+bool check_global_equiv(unsigned long long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -204,7 +204,7 @@ DLL_PUBLIC bool check_global_equiv(unsigned long long local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-DLL_PUBLIC bool check_global_equiv(long local_value)
+bool check_global_equiv(long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -263,7 +263,7 @@ DLL_PUBLIC bool check_global_equiv(long local_value)
  * \param local_value integer value to check against
  * \return true if equivalent across all processors; false if not
  */
-DLL_PUBLIC bool check_global_equiv(long long local_value)
+bool check_global_equiv(long long local_value)
 {
     
     const int node  = rtt_c4::node();
@@ -321,7 +321,7 @@ DLL_PUBLIC bool check_global_equiv(long long local_value)
  * \param eps precision of double, default 1e-8
  * \return true if equivalent across all processors; false if not 
  */
-DLL_PUBLIC bool check_global_equiv(double local_value, double eps)
+bool check_global_equiv(double local_value, double eps)
 {
     using rtt_dsxx::soft_equiv;
 

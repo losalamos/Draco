@@ -18,7 +18,7 @@ namespace rtt_fit
 {
 using std::vector;
 
-template
+template DLL_PUBLIC_fit
 void svdfit(vector<double> const &x,
             vector<double> const &y,
             vector<double> const &sig,

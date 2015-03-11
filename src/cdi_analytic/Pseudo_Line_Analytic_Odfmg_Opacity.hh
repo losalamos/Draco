@@ -32,7 +32,7 @@ using std::pair;
 //
 //===========================================================================//
 
-class DLL_PUBLIC Pseudo_Line_Analytic_Odfmg_Opacity :
+class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_Odfmg_Opacity :
         public Analytic_Odfmg_Opacity, public Pseudo_Line_Base
 {
   private:

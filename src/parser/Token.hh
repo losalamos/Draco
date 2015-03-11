@@ -72,7 +72,7 @@ enum Token_Type
  * location.
  */
 
-class DLL_PUBLIC Token
+class DLL_PUBLIC_parser Token
 {
   public:
 
@@ -116,15 +116,15 @@ class DLL_PUBLIC Token
 };
 
 // For checking of assertions
-DLL_PUBLIC bool Is_Text_Token  (Token_Type type);
-DLL_PUBLIC bool Is_Integer_Text(char const *string);
-DLL_PUBLIC bool Is_Keyword_Text(char const *string);
-DLL_PUBLIC bool Is_Real_Text   (char const *string);
-DLL_PUBLIC bool Is_String_Text (char const *string);
-DLL_PUBLIC bool Is_Other_Text  (char const *string);
+DLL_PUBLIC_parser bool Is_Text_Token  (Token_Type type);
+DLL_PUBLIC_parser bool Is_Integer_Text(char const *string);
+DLL_PUBLIC_parser bool Is_Keyword_Text(char const *string);
+DLL_PUBLIC_parser bool Is_Real_Text   (char const *string);
+DLL_PUBLIC_parser bool Is_String_Text (char const *string);
+DLL_PUBLIC_parser bool Is_Other_Text  (char const *string);
 
 //! Test equality of two Tokens
-DLL_PUBLIC bool operator==(Token const &, Token const &);
+DLL_PUBLIC_parser bool operator==(Token const &, Token const &);
 
 //-------------------------------------------------------------------------//
 /*!

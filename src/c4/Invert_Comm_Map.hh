@@ -21,9 +21,9 @@
 namespace rtt_c4
 {
 
-DLL_PUBLIC void icm_master_impl( std::vector<int> const & in,
+DLL_PUBLIC_c4 void icm_master_impl( std::vector<int> const & in,
                                  std::vector<int>       & out );
-DLL_PUBLIC void icm_slave_impl(  std::vector<int> const & in,
+DLL_PUBLIC_c4 void icm_slave_impl(  std::vector<int> const & in,
                                  std::vector<int>       & out );
 
 //---------------------------------------------------------------------------//

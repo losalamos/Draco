@@ -49,7 +49,7 @@ namespace rtt_cdi_analytic
  */
 //===========================================================================//
 
-class DLL_PUBLIC Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
+class DLL_PUBLIC_cdi_analytic Analytic_MultigroupOpacity : public rtt_cdi::MultigroupOpacity
 {
   public:
     // Useful typedefs.

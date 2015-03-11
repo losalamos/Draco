@@ -34,7 +34,7 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
+class DLL_PUBLIC_cdi_analytic nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
 {
   public:
     // Useful typedefs.

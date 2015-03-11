@@ -10,10 +10,10 @@
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
-
+ 
 #ifndef __meshReaders_Mesh_Reader_hh__
 #define __meshReaders_Mesh_Reader_hh__
-
+ 
 #include <set>
 #include <map>
 #include "ds++/SP.hh"
@@ -25,7 +25,7 @@ namespace rtt_meshReaders
 //===========================================================================//
 /*!
  * \class Mesh_Reader
- * \brief Base class for the RTT mesh readers.
+ * \brief Base class for the RTT mesh readers. 
  *
  * This class provides the template from which all other
  * mesh readers inherit. It provides a standard intefrace
@@ -37,29 +37,29 @@ namespace rtt_meshReaders
 // revision history:
 // -----------------
 // 0) original
-//
+// 
 //===========================================================================//
 
-class DLL_PUBLIC Mesh_Reader
+class DLL_PUBLIC_meshReaders Mesh_Reader 
 {
     // NESTED CLASSES AND TYPEDEFS
 
     // DATA
-
+    
   public:
 
     // CREATORS
-
+    
     //Defaulted: Mesh_Reader();
     //Defaulted: Mesh_Reader(const Mesh_Reader &rhs);
 
-    virtual ~Mesh_Reader()
+    virtual ~Mesh_Reader() 
     {
         //Empty
     }
 
     // MANIPULATORS
-
+    
     //Defaulted: Mesh_Reader& operator=(const Mesh_Reader &rhs);
 
     // ACCESSORS
@@ -68,7 +68,7 @@ class DLL_PUBLIC Mesh_Reader
      * \brief Provides node coordinates for all the nodes in the
      * mesh.
      *
-     * Not all the nodes returned herein have to be used to define
+     * Not all the nodes returned herein have to be used to define 
      * a mesh element. For example some nodes may be children, dudded,
      * or tracer nodes. The operator [i][j] returns
      * node i, coordinate j.
@@ -78,14 +78,14 @@ class DLL_PUBLIC Mesh_Reader
 
     /*!
      * \brief Provides the units (inches, feet, cm, meters, etc.) of the
-     *        node coordinates.
+     *        node coordinates. 
      */
     virtual std::string get_node_coord_units() const = 0;
 
     /*!
      * \brief Returns node numbers of the mesh elements.
      *
-     * Node numbers are 0 based and refer to the nodes
+     * Node numbers are 0 based and refer to the nodes 
      * returned by the Mesh_Reader.get_node_coords() method. This
      * information determines the connectivity of the mesh. It
      * uniquely defines all the elements in the mesh, and their
@@ -98,25 +98,25 @@ class DLL_PUBLIC Mesh_Reader
     virtual std::vector<std::vector<int> > get_element_nodes() const = 0;
 
     /*!
-     * \brief Returns the type of all the elements in the mesh.
+     * \brief Returns the type of all the elements in the mesh. 
      *
      */
     virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-        get_element_types()
+        get_element_types() 
         const = 0;
 
     /*!
      * \brief Returns the unique element types that are defined in the mesh.
      *
      */
-    virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-        get_unique_element_types()
+    virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
+        get_unique_element_types() 
         const = 0;
 
     /*!
      * \brief Returns node sub-sets.
      *
-     * Returned node numbers are 0 based and refer to the nodes
+     * Returned node numbers are 0 based and refer to the nodes 
      * returned by the Mesh_Reader.get_node_coords() method.
      * This method provides a capability to flag certain sub-sets of the
      * nodes returned by the Mesh_Reader.get_node_coords() method. This
@@ -145,7 +145,7 @@ class DLL_PUBLIC Mesh_Reader
     //! Returns the title of the mesh.
     virtual std::string get_title() const = 0;
 
-    virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> >
+    virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > 
         get_element_defs() const {
         return std::vector<rtt_dsxx::SP<
             rtt_mesh_element::Element_Definition> >(); };
@@ -156,7 +156,7 @@ class DLL_PUBLIC Mesh_Reader
     virtual size_t get_dims_ndim() const = 0;
 
   private:
-
+    
     // IMPLEMENTATION
 };
 

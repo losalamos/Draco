@@ -15,7 +15,6 @@
 #define linear_rsolv_i_hh
 
 #include "ds++/Assert.hh"
-#include "rsolv.hh"
 
 namespace rtt_linear
 {
@@ -39,16 +38,16 @@ namespace rtt_linear
 template<class RandomContainer>
 void rsolv(const RandomContainer &R, const unsigned n, RandomContainer &b)
 {
-    Require(R.size()==n*n);
-    Require(b.size()==n);
+    Require( R.size() == n*n );
+    Require( b.size() == n );
 
-    for (int i=n-1; i>=0; --i)
+    for( int i = n - 1; i >= 0; --i )
     {
-	b[i] /= R[i+n*i];
-	for (int j=i-1; j>=0; --j)
-	{
-	    b[j] -= R[j+n*i]*b[i];
-	}
+        b[i] /= R[i + n*i];
+        for( int j = i - 1; j >= 0; --j )
+        {
+            b[j] -= R[j + n*i] * b[i];
+        }
     }
 }
 

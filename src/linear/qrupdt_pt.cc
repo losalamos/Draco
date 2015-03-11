@@ -22,7 +22,7 @@ using std::vector;
 // T = RandomContainer = vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC
+template DLL_PUBLIC_linear
 void qrupdt(vector<double> &r, 
 		     vector<double> &qt, 
 		     const unsigned n,

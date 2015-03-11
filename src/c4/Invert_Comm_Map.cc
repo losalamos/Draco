@@ -24,8 +24,8 @@ const int HOST = 0;
 
 typedef std::map<int, std::vector<int> > map_type;
 
-DLL_PUBLIC void icm_master_impl( std::vector<int> const & in,
-                                 std::vector<int>       & out )
+void icm_master_impl( std::vector<int> const & in,
+                      std::vector<int>       & out )
 {
     int const nodes = rtt_c4::nodes();
 
@@ -96,7 +96,7 @@ DLL_PUBLIC void icm_master_impl( std::vector<int> const & in,
 }
 
 //----------------------------------------------------------------------------//
-DLL_PUBLIC void icm_slave_impl( std::vector<int> const & in,
+void icm_slave_impl( std::vector<int> const & in,
                                 std::vector<int>       & out )
 {
     // Send size of in map and, if > 0, contents

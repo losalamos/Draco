@@ -86,7 +86,7 @@ class IpcressDataTable;
  */
 //===========================================================================//
 
-class DLL_PUBLIC IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity
+class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity : public rtt_cdi::OdfmgOpacity
 {
 
     // DATA

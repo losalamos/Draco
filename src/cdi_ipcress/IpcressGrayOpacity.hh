@@ -95,7 +95,7 @@ class IpcressFile;
  */
 //===========================================================================//
 
-class DLL_PUBLIC IpcressGrayOpacity : public rtt_cdi::GrayOpacity
+class DLL_PUBLIC_cdi_ipcress IpcressGrayOpacity : public rtt_cdi::GrayOpacity
 {
 
     // DATA

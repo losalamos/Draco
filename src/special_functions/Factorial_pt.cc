@@ -19,22 +19,22 @@ namespace rtt_sf
 //---------------------------------------------------------------------------//
 // Make factorial valid only for int and unsigned.
 
-template DLL_PUBLIC
+template DLL_PUBLIC_special_functions
 unsigned factorial( unsigned const k ) ;
 
-template DLL_PUBLIC
+template DLL_PUBLIC_special_functions
 int factorial( int const k ) ;
 
-template DLL_PUBLIC
+template DLL_PUBLIC_special_functions
 long factorial( long const k ) ;
 
-template DLL_PUBLIC
+template DLL_PUBLIC_special_functions
 double factorial_fraction( unsigned const k, unsigned const l );
 
-template DLL_PUBLIC
+template DLL_PUBLIC_special_functions
 double factorial_fraction( int const k, int const l );
 
-template DLL_PUBLIC
+template DLL_PUBLIC_special_functions
 double factorial_fraction( long const k, long const l );
 
 } // end namespace rtt_sf

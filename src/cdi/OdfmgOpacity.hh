@@ -40,7 +40,7 @@ namespace rtt_cdi
  */
 //========================================================================
     
-class DLL_PUBLIC OdfmgOpacity
+class DLL_PUBLIC_cdi OdfmgOpacity
 {
   // DATA
 

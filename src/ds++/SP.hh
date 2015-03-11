@@ -193,7 +193,7 @@ class SP
     operator bool() const { return p_ != NULL; }
 };
 
-DLL_PUBLIC void incompatible(std::type_info const &X, std::type_info const &T);
+DLL_PUBLIC_dsxx  void incompatible(std::type_info const &X, std::type_info const &T);
 
 //---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS

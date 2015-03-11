@@ -58,7 +58,7 @@ class C4_Req;
 /*!
  * \brief Initialize a parallel job.
  */
-DLL_PUBLIC int initialize(int &argc,
+DLL_PUBLIC_c4 int initialize(int &argc,
                           char **&argv,
                           int required=MPI_THREAD_SINGLE);
 
@@ -66,7 +66,7 @@ DLL_PUBLIC int initialize(int &argc,
 /*!
  * \brief Finish a parallel job.
  */
-DLL_PUBLIC void finalize();
+DLL_PUBLIC_c4 void finalize();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -79,7 +79,7 @@ void inherit(const Comm &);
 /*!
  * \brief Free an inherited communicator from another application.
  */
-DLL_PUBLIC void free_inherited_comm();
+DLL_PUBLIC_c4 void free_inherited_comm();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -99,7 +99,7 @@ int create_vector_type(unsigned count,
 //---------------------------------------------------------------------------//
 //! Free a user defined type, such as a vector type.
 
-DLL_PUBLIC void type_free(C4_Datatype &old_type);
+DLL_PUBLIC_c4 void type_free(C4_Datatype &old_type);
 
 //---------------------------------------------------------------------------//
 // QUERY FUNCTIONS
@@ -109,7 +109,7 @@ DLL_PUBLIC void type_free(C4_Datatype &old_type);
  *
  * The rank is determined by the current communicator.
  */
-DLL_PUBLIC int node();
+DLL_PUBLIC_c4 int node();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -117,7 +117,7 @@ DLL_PUBLIC int node();
  *
  * The number of nodes is determined by the current communicator.
  */
-DLL_PUBLIC int nodes();
+DLL_PUBLIC_c4 int nodes();
 
 //---------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
@@ -125,32 +125,32 @@ DLL_PUBLIC int nodes();
 /*!
  * \brief Set a global barrier for the communicator.
  */
-DLL_PUBLIC void global_barrier();
+DLL_PUBLIC_c4 void global_barrier();
 
 //---------------------------------------------------------------------------//
 // BLOCKING SEND/RECEIVE OPERATIONS
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send.
 template<typename T>
-DLL_PUBLIC int send(const T *buffer, int size, int destination,
+DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination,
                     int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive.
 template<typename T>
-DLL_PUBLIC int receive(T *buffer, int size, int source,
+DLL_PUBLIC_c4 int receive(T *buffer, int size, int source,
                        int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send of a user-defined type.
 template<typename T>
-DLL_PUBLIC int send_udt(const T *buffer, int size, int destination, C4_Datatype &,
+DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination, C4_Datatype &,
                         int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive of a user-defined type.
 template<typename T>
-DLL_PUBLIC int receive_udt(T *buffer, int size, int source,  C4_Datatype &,
+DLL_PUBLIC_c4 int receive_udt(T *buffer, int size, int source,  C4_Datatype &,
                            int tag = C4_Traits<T*>::tag);
 
 //---------------------------------------------------------------------------//
@@ -162,7 +162,7 @@ DLL_PUBLIC int receive_udt(T *buffer, int size, int source,  C4_Datatype &,
  * \return C4_Req object to handle communciation requests
  */
 template<typename T>
-DLL_PUBLIC C4_Req send_async( T const * buffer,
+DLL_PUBLIC_c4 C4_Req send_async( T const * buffer,
                               int       size,
                               int       destination,
                               int       tag );
@@ -191,7 +191,7 @@ C4_Req send_async( T const * buffer,
 /*!
  * \brief Do a point-to-point, non-blocking send.
  */
-template<typename T> DLL_PUBLIC
+template<typename T> DLL_PUBLIC_c4
 void send_async( C4_Req       & request,
                  T      const * buffer,
                  int            size,
@@ -224,7 +224,7 @@ void send_async( C4_Req       & request,
 /*!
  * \brief Do a point-to-point, non-blocking synchronous send.
  */
-template<typename T> DLL_PUBLIC
+template<typename T> DLL_PUBLIC_c4
 void send_is(C4_Req       & request,
              T      const * buffer,
              int            size,
@@ -288,7 +288,7 @@ C4_Req receive_async( T   * buffer,
 /*!
  * \brief Do a point-to-point, non-blocking receive.
  */
-template<typename T> DLL_PUBLIC
+template<typename T> DLL_PUBLIC_c4
 void receive_async( C4_Req & request,
                     T      * buffer,
                     int      size,
@@ -321,7 +321,7 @@ void receive_async( C4_Req & request,
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int broadcast(T *buffer, int size, int root);
+DLL_PUBLIC_c4 int broadcast(T *buffer, int size, int root);
 
 /*---------------------------------------------------------------------------*/
 /*!
@@ -338,10 +338,10 @@ void broadcast(
 //---------------------------------------------------------------------------//
 
 template<typename T>
-DLL_PUBLIC int gather(T *send_buffer, T *receive_buffer, int size);
+DLL_PUBLIC_c4 int gather(T *send_buffer, T *receive_buffer, int size);
 
 template<typename T>
-DLL_PUBLIC int allgather(T *send_buffer, T *receive_buffer, int size);
+DLL_PUBLIC_c4 int allgather(T *send_buffer, T *receive_buffer, int size);
 
 template<typename T>
 int gatherv(T *send_buffer,
@@ -351,7 +351,7 @@ int gatherv(T *send_buffer,
             int *receive_displs);
 
 template<typename T>
-DLL_PUBLIC int scatter(T *send_buffer, T *receive_buffer, int size);
+DLL_PUBLIC_c4 int scatter(T *send_buffer, T *receive_buffer, int size);
 
 template<typename T>
 int scatterv(T *send_buffer,
@@ -367,56 +367,56 @@ int scatterv(T *send_buffer,
  * \brief Do a global sum of a scalar variable.
  */
 template<typename T>
-DLL_PUBLIC void global_sum(T &x);
+DLL_PUBLIC_c4 void global_sum(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global product of a scalar variable.
  */
 template<typename T>
-DLL_PUBLIC void global_prod(T &x);
+DLL_PUBLIC_c4 void global_prod(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global minimum of a scalar variable.
  */
 template<typename T>
-DLL_PUBLIC void global_min(T &x);
+DLL_PUBLIC_c4 void global_min(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do a global maximum of a scalar variable.
  */
 template<typename T>
-DLL_PUBLIC void global_max(T &x);
+DLL_PUBLIC_c4 void global_max(T &x);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global sum of an array.
  */
 template<typename T>
-DLL_PUBLIC void global_sum(T *x, int n);
+DLL_PUBLIC_c4 void global_sum(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global product of an array.
  */
 template<typename T>
-DLL_PUBLIC void global_prod(T *x, int n);
+DLL_PUBLIC_c4 void global_prod(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global minimum of an array.
  */
 template<typename T>
-DLL_PUBLIC void global_min(T *x, int n);
+DLL_PUBLIC_c4 void global_min(T *x, int n);
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do an element-wise, global maximum of an array.
  */
 template<typename T>
-DLL_PUBLIC void global_max(T *x, int n);
+DLL_PUBLIC_c4 void global_max(T *x, int n);
 
 //---------------------------------------------------------------------------//
 // TIMING FUNCTIONS
@@ -424,14 +424,14 @@ DLL_PUBLIC void global_max(T *x, int n);
 /*!
  * \brief Return the wall-clock time in seconds.
  */
-DLL_PUBLIC double wall_clock_time();
+DLL_PUBLIC_c4 double wall_clock_time();
 double wall_clock_time( DRACO_TIME_TYPE & now );
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return the resolution of wall_clock_time.
  */
-DLL_PUBLIC double wall_clock_resolution();
+DLL_PUBLIC_c4 double wall_clock_resolution();
 
 //---------------------------------------------------------------------------//
 // PROBE/WAIT FUNCTIONS
@@ -448,7 +448,7 @@ DLL_PUBLIC double wall_clock_resolution();
  * \return \c true if a message from the specified processor with the
  * specified tag is pending; \c false otherwise.
  */
-DLL_PUBLIC bool probe(int source, int tag, int &message_size);
+DLL_PUBLIC_c4 bool probe(int source, int tag, int &message_size);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -461,7 +461,7 @@ DLL_PUBLIC bool probe(int source, int tag, int &message_size);
  * \param message_size
  * On return, size of the pending message in bytes.
  */
-DLL_PUBLIC void blocking_probe(int source, int tag, int &message_size);
+DLL_PUBLIC_c4 void blocking_probe(int source, int tag, int &message_size);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -474,7 +474,7 @@ DLL_PUBLIC void blocking_probe(int source, int tag, int &message_size);
  * \param requests
  * Set of requests to wait on.
  */
-DLL_PUBLIC void wait_all(int count, C4_Req *requests);
+DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -486,7 +486,7 @@ DLL_PUBLIC void wait_all(int count, C4_Req *requests);
  * Set of requests to wait on.
  * \return The request that completed.
  */
-DLL_PUBLIC unsigned wait_any(int count, C4_Req *requests);
+DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 // ABORT
@@ -496,7 +496,7 @@ DLL_PUBLIC unsigned wait_any(int count, C4_Req *requests);
  *
  * \param error suggested return error, defaults to 1
  */
-DLL_PUBLIC int abort(int error = 1);
+DLL_PUBLIC_c4 int abort(int error = 1);
 
 //---------------------------------------------------------------------------//
 // isScalar
@@ -504,13 +504,13 @@ DLL_PUBLIC int abort(int error = 1);
 /*!
  * \brief Is C4 executing in scalar-only mode?
  */
-DLL_PUBLIC bool isScalar();
+DLL_PUBLIC_c4 bool isScalar();
 
 //---------------------------------------------------------------------------//
 // get_processor_name
 //---------------------------------------------------------------------------//
 //! Return the processor name for each rank.
-DLL_PUBLIC std::string get_processor_name();
+DLL_PUBLIC_c4 std::string get_processor_name();
 
 } // end namespace rtt_c4
 

@@ -28,7 +28,7 @@ namespace rtt_c4
 // MPI COMMUNICATOR
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC MPI_Comm communicator = MPI_COMM_WORLD;
+MPI_Comm communicator = MPI_COMM_WORLD;
 bool initialized(false);
 
 //---------------------------------------------------------------------------//
@@ -41,7 +41,7 @@ const int proc_null = MPI_PROC_NULL;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC int initialize(int &argc, char **&argv, int required)
+int initialize(int &argc, char **&argv, int required)
 {
     int provided;
     int result = MPI_Init_thread(&argc, &argv, required, &provided);
@@ -56,7 +56,7 @@ DLL_PUBLIC int initialize(int &argc, char **&argv, int required)
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void finalize()
+void finalize()
 {
     MPI_Finalize();
     return;
@@ -64,7 +64,7 @@ DLL_PUBLIC void finalize()
 
 //---------------------------------------------------------------------------------------//
 
-DLL_PUBLIC void type_free(C4_Datatype &old_type)
+void type_free(C4_Datatype &old_type)
 {
     MPI_Type_free(&old_type);
 }
@@ -73,7 +73,7 @@ DLL_PUBLIC void type_free(C4_Datatype &old_type)
 // QUERY FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC int node()
+int node()
 {
     int node = 0; 
     MPI_Comm_rank(communicator, &node);
@@ -83,7 +83,7 @@ DLL_PUBLIC int node()
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC int nodes()
+int nodes()
 {
     int nodes = 0;
     MPI_Comm_size(communicator, &nodes);
@@ -95,7 +95,7 @@ DLL_PUBLIC int nodes()
 // BARRIER FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void global_barrier()
+void global_barrier()
 {
     MPI_Barrier(communicator);
     return;
@@ -106,7 +106,7 @@ DLL_PUBLIC void global_barrier()
 //---------------------------------------------------------------------------//
 
 // overloaded function (no args)
-DLL_PUBLIC double wall_clock_time()
+double wall_clock_time()
 {
     return MPI_Wtime();
 }
@@ -127,7 +127,7 @@ double wall_clock_time( DRACO_TIME_TYPE & now )
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC double wall_clock_resolution()
+double wall_clock_resolution()
 {
     return MPI_Wtick();
 }
@@ -136,9 +136,9 @@ DLL_PUBLIC double wall_clock_resolution()
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC bool probe(int   source, 
-                      int   tag,
-                      int & message_size)
+bool probe(int   source, 
+           int   tag,
+           int & message_size)
 {
     Require(source>=0 && source<nodes());
 
@@ -156,9 +156,9 @@ DLL_PUBLIC bool probe(int   source,
 }
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC void blocking_probe(int   source, 
-                               int   tag,
-                               int & message_size)
+void blocking_probe(int   source, 
+                    int   tag,
+                    int & message_size)
 {
     Require(source>=0 && source<nodes());
 
@@ -168,8 +168,8 @@ DLL_PUBLIC void blocking_probe(int   source,
 }
 
 //---------------------------------------------------------------------------//
-DLL_PUBLIC void wait_all(int      count,
-                         C4_Req * requests)
+void wait_all(int      count,
+              C4_Req * requests)
 {
     // Nothing to do if count is zero.
     if( count == 0 ) return;
@@ -191,7 +191,7 @@ DLL_PUBLIC void wait_all(int      count,
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
-DLL_PUBLIC int abort(int error)
+int abort(int error)
 {
     // This test is not recorded as tested by BullseyeCoverage because abort
     // terminates the execution and BullseyeCoverage only reports coverage for
@@ -204,7 +204,7 @@ DLL_PUBLIC int abort(int error)
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-DLL_PUBLIC bool isScalar()
+bool isScalar()
 {
     return ! initialized;
 }

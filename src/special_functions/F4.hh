@@ -19,7 +19,7 @@
 namespace rtt_sf
 {
 //! Calculate Fermi-Dirac integral of index 4.
-DLL_PUBLIC double F4(double eta);
+DLL_PUBLIC_special_functions double F4(double eta);
 
 } // end namespace rtt_sf
 

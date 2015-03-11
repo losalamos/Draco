@@ -17,7 +17,8 @@
 
 namespace rtt_sf
 {
-template DLL_PUBLIC double F32(double const &x);
+
+template DLL_PUBLIC_special_functions double F32(double const &x);
 
 } // end namespace rtt_sf
 

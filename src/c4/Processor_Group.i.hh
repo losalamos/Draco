@@ -19,10 +19,11 @@
 #include "ds++/Assert.hh"
 
 #ifdef C4_MPI
+
 namespace rtt_c4
 {
 //---------------------------------------------------------------------------//
-template<class T>
+template<typename T>
 void Processor_Group::sum(std::vector<T> &x)
 {
     // copy data into send buffer
@@ -40,7 +41,7 @@ void Processor_Group::sum(std::vector<T> &x)
 }
 
 //---------------------------------------------------------------------------//
-template<class T>
+template<typename T>
 void Processor_Group::assemble_vector(std::vector<T> const &local,
                                       std::vector<T>       &global) const
 {
@@ -64,7 +65,7 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
  * \param N Number of local quantities to assemble.
  */
 
-template<class T>
+template<typename T>
 void Processor_Group::assemble_vector(T const *local,
                                       T *global,
                                       unsigned const N) const
@@ -83,6 +84,7 @@ void Processor_Group::assemble_vector(T const *local,
 } // end namespace rtt_c4
 
 #endif  // C4_MPI
+
 #endif // c4_Processor_Group_i_hh
 
 //---------------------------------------------------------------------------//

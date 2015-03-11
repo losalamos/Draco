@@ -12,6 +12,7 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/config.h"
+
 #ifdef C4_MPI
 
 #include "Processor_Group.hh"
@@ -21,13 +22,13 @@ namespace rtt_c4
 {
 using namespace std;
 
-template DLL_PUBLIC void Processor_Group::sum(vector<double> &values);
+template DLL_PUBLIC_c4 void Processor_Group::sum(vector<double> &values);
 
-template DLL_PUBLIC void Processor_Group::assemble_vector(
+template DLL_PUBLIC_c4 void Processor_Group::assemble_vector(
     vector<double> const &local,
     vector<double> &global) const;
 
-template DLL_PUBLIC void Processor_Group::assemble_vector(
+template DLL_PUBLIC_c4 void Processor_Group::assemble_vector(
     double const *local,
     double *global,
     unsigned count) const;

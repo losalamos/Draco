@@ -56,6 +56,10 @@ set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 
+# Generate the dll_declspec.h file that defines DLL_PUBLIC_<pkg> CPP macros.
+include(generate_dll_declspec)
+generate_dll_declspec( "ds++" "c4;cdi;cdi_test;cdi_analytic;cdi_eospac;cdi_ipcress;cdi_ipcress_test;device;diagnostics;dsxx;fit;FC_Derived_Type;linear;meshReaders;mesh_element;min;norms;ode;parser;rng;roots;RTT_Format_Reader;special_functions;timestep;timestep_test;units;viz" )
+    
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
@@ -64,7 +68,9 @@ file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
-list( APPEND headers ${PROJECT_BINARY_DIR}/ds++/config.h )
+list( APPEND headers 
+   ${PROJECT_BINARY_DIR}/ds++/config.h 
+   ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
@@ -114,3 +120,4 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+

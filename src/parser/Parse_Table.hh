@@ -144,7 +144,7 @@ struct Keyword
  * processing.
  */
 
-class DLL_PUBLIC Parse_Table
+class DLL_PUBLIC_parser Parse_Table
 //    : private std::vector<Keyword>
 {
   public:
@@ -276,7 +276,7 @@ inline bool operator==(Keyword const &a, Keyword const &b)
 //---------------------------------------------------------------------------//
 //! Check whether a keyword is well-formed.
 
-DLL_PUBLIC bool Is_Well_Formed_Keyword(Keyword const &key);
+DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // rtt_parser
 

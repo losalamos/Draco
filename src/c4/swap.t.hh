@@ -29,7 +29,7 @@ using std::vector;
 
 #ifdef C4_MPI
     
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void determinate_swap(vector<unsigned>   const &outgoing_pid,
                       vector<vector<T> > const &outgoing_data,
                       vector<unsigned>   const &incoming_pid,
@@ -84,7 +84,7 @@ void determinate_swap(vector<unsigned>   const &outgoing_pid,
 }
 
 //---------------------------------------------------------------------------//
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void determinate_swap(vector<vector<T> > const &outgoing_data,
                       vector<vector<T> >       &incoming_data,
                       int tag )
@@ -138,7 +138,7 @@ void determinate_swap(vector<vector<T> > const &outgoing_data,
     return;
 }
 //---------------------------------------------------------------------------//
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
                           vector<vector<T> > const &outgoing_data,
                           vector<unsigned>   const &incoming_pid,
@@ -212,17 +212,17 @@ void semideterminate_swap(vector<unsigned>   const &outgoing_pid,
 //---------------------------------------------------------------------------//
 #else 
 
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void determinate_swap(vector<unsigned>   const & /*outgoing_pid*/,
                       vector<vector<T> > const & /*outgoing_data*/,
                       vector<unsigned>   const & /*incoming_pid*/,
                       vector<vector<T> >       & /*incoming_data*/,
                       int /*tag*/ ) { return; }
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void determinate_swap(vector<vector<T> > const & /*outgoing_data*/,
                       vector<vector<T> >       & /*incoming_data*/,
                       int /*tag*/ ) { return; }
-template<class T> DLL_PUBLIC 
+template<class T> DLL_PUBLIC_c4 
 void semideterminate_swap(vector<unsigned>   const &/*outgoing_pid*/,
                           vector<vector<T> > const &/*outgoing_data*/,
                           vector<unsigned>   const &/*incoming_pid*/,

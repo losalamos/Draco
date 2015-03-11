@@ -218,44 +218,6 @@
 #cmakedefine CMAKE_Fortran_FLAGS_RELEASE   "@CMAKE_Fortran_FLAGS_RELEASE@"
 #cmakedefine CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
 
-/* ---------------------------------------- */
-/* GENERAL build system setup               */
-/* ---------------------------------------- */
-
-/*!
- * Provide toolset for hiding symbols from shared libraries.  By default MSVC
- * hides everying unless they are marked as 'dllexport'.  By default
- * Linux-based linkers export everything unless they are marked as
- * 'hidden'. The macros DLL_PUBLIC and DLL_LOCAL are provided to help make
- * symbol export portable between Linux and Windows.
- *
- * \ref http://gcc.gnu.org/wiki/Visibility
- *
- * For MSVC, you must also mark functions as dllexport or dllimport.  When
- * compiling a file to place it in a dll, the symbols must be marked
- * 'dllexport', but when including a header that is associated with an
- * external .dll (include Array.hh and linking against -ldsxx.so), the same
- * symbol must be marked as 'dllimport.' The macro 'BUILDING_DLL' will be used
- * to control how the symbols are marked.
- *
- * \example Example use of DLL_PUBLIC CPP Symbol.
- * \code
- * extern "C" DLL_PUBLIC void function(int a);
- * class DLL_PUBLIC SomeClass
- * {
- *    int c;
- *    DLL_LOCAL void privateMethod();  // Only for use within this DSO
- *  public:
- *    Person(int _c) : c(_c) { }
- *    static void foo(int a);
- * };
- *
- * // ds++/isFinite_pt.cc file:
- * template DLL_PUBLIC
- * bool isInfinity( float const & x );
- * \endcode
- */
-
 #cmakedefine CMAKE_COMPILER_IS_GNUCXX @CMAKE_COMPILER_IS_GNUCXX@
 
 /* Help for GSL on Windows ---------------------------------- */
@@ -265,58 +227,13 @@
   #endif
 #endif
 
-/* Windows ---------------------------------------- */
-/* An explanation of DLL_EXTERN is here: http://support.microsoft.com/kb/168958/en-us */
-#if defined _WIN32 || defined __CYGWIN__
-  #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
-    #ifdef BUILDING_DLL /* building dll or importing symbols? */
-      #ifdef __GNUC__
-        #define DLL_PUBLIC __attribute__((dllexport))
-      #else
-        /* Note: actually gcc seems to also supports this syntax. */
-        #define DLL_PUBLIC __declspec(dllexport)
-        #define DLL_EXTERN
-      #endif /* __GNUC__ */
-    #else  /* BUILDING_DLL */
-      #ifdef __GNUC__
-        #define DLL_PUBLIC __attribute__((dllimport))
-      #else
-        /* Note: actually gcc seems to also supports this syntax. */
-        #define DLL_PUBLIC __declspec(dllimport)
-        #define DLL_EXTERN extern
-      #endif /* __GNUC__ */
-    #endif  /* BUILDING_DLL */
-    #define DLL_LOCAL
 
-  #else /* DRACO_SHARED_LIBS */
-    /* when building static libraries, no need to export symbols. */
-    #define DLL_PUBLIC
-    #define DLL_LOCAL
-  #endif /* DRACO_SHARED_LIBS */
+/* ----------------------------------------------------------------
+ * Define declaration specifiers for MSVC and GCC.  This defines 
+ * CPP definitions like DLL_PUBLIC_<pkg>
+ * ---------------------------------------------------------------- */
+#include "ds++/dll_declspec.h"
 
-/* Linux ---------------------------------------- */
-#else
-  #ifdef DRACO_SHARED_LIBS /* building shared or static libs? */
-    #if defined CMAKE_COMPILER_IS_GNUCXX && __GNUC__ >= 4
-      #define DLL_PUBLIC __attribute__ ((visibility("default")))
-      #define DLL_LOCAL  __attribute__ ((visibility("hidden")))
-      /* These defines are taken from ds++/Compiler.hh written by Paul Henning */
-      /* #define HIDE_FUNC __attribute__ ((visibility ("hidden"))) */
-      /* #define EXPORT_FUNC __attribute__ ((visibility ("default"))) */
-      /* #define HIDE_CLASS __attribute ((visibility ("hidden"))) */
-      /* #define EXPORT_CLASS __attribute ((visibility ("default"))) */
-    #else
-      #define DLL_PUBLIC
-      #define DLL_LOCAL
-
-    #endif /* __GNUC__ >=4 */
-
-  #else /* DRACO_SHARED_LIBS */
-    /* when building static libraries, no need to export symbols. */
-    #define DLL_PUBLIC
-    #define DLL_LOCAL
-  #endif /* DRACO_SHARED_LIBS */
-#endif
 
 /* Help MSVC resolve numeric_limits<T>::max() vs. std::max(int,int) */
 #ifdef _MSC_VER

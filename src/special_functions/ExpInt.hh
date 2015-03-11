@@ -20,10 +20,10 @@ namespace rtt_sf
 {
 
 //! Compute general exponential integral, order n, argument x \f$ E_n(x) \f$.
-DLL_PUBLIC double En( unsigned const n, double const x);
+DLL_PUBLIC_special_functions double En( unsigned const n, double const x);
 
 //! Compute exponential integral, argument x \f$ Ei(x) \f$.
-DLL_PUBLIC double Ei( double const x);
+DLL_PUBLIC_special_functions double Ei( double const x);
 
 }
 

@@ -30,16 +30,16 @@ namespace rtt_dsxx
 {
 
 //! Query package for the release number.
-DLL_PUBLIC const std::string release();
+DLL_PUBLIC_dsxx  const std::string release();
 //! Return a list of Draco authors
-DLL_PUBLIC const std::string author_list();
+DLL_PUBLIC_dsxx  const std::string author_list();
 //! Return a list of Draco authors
-DLL_PUBLIC const std::string copyright();
+DLL_PUBLIC_dsxx  const std::string copyright();
 
 } // end of rtt_ds++
 
 //! This version can be called by Fortran and wraps the C++ version.
-extern "C" DLL_PUBLIC void ec_release( char * release_string, size_t maxlen );
+extern "C" DLL_PUBLIC_dsxx  void ec_release( char * release_string, size_t maxlen );
 
 #endif // rtt_ds_Release_hh
 

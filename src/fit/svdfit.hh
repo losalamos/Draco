@@ -18,8 +18,9 @@ namespace rtt_utils
 {
 
 //! Compute a generalized least squares fit.
-template<class RandomContainer,
-         class Functor>
+template<typename RandomContainer,
+         typename Functor>
+DLL_PUBLIC_fit
 void svdfit(RandomContainer const &x,
             RandomContainer const &y,
             RandomContainer const &sig,

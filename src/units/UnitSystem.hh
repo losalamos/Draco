@@ -105,7 +105,7 @@ namespace rtt_units
 // 
 //===========================================================================//
 
-class DLL_PUBLIC UnitSystem
+class DLL_PUBLIC_units UnitSystem
 {
   public:
 
@@ -116,11 +116,11 @@ class DLL_PUBLIC UnitSystem
 // 				 UnitSystem const & op2 );
 
     //! Define the equality operator for Units==Units.
-    friend DLL_PUBLIC bool operator==( UnitSystem const & op1, 
+    friend DLL_PUBLIC_units bool operator==( UnitSystem const & op1, 
 			    UnitSystem const & op2 );
 
     //! Define the equality operator for Units==Units.
-    friend DLL_PUBLIC bool operator!=( UnitSystem const & op1, 
+    friend DLL_PUBLIC_units bool operator!=( UnitSystem const & op1, 
 			    UnitSystem const & op2 );
     // CREATORS
     

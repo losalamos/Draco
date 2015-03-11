@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class DLL_PUBLIC ParallelUnitTest : public rtt_dsxx::UnitTest
+class DLL_PUBLIC_c4 ParallelUnitTest : public rtt_dsxx::UnitTest
 {
   public:
 

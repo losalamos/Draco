@@ -12,8 +12,8 @@
 
 #include <fstream>
 
-#include "ode/rkqs.i.hh"
-#include "ode/quad.i.hh"
+#include "ode/rkqs.hh"
+#include "ode/quad.hh"
 #include "Pseudo_Line_Base.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/DracoMath.hh"

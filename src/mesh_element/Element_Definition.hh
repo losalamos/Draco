@@ -93,7 +93,7 @@ namespace rtt_mesh_element
 //
 //===========================================================================//
 
-class DLL_PUBLIC Element_Definition
+class DLL_PUBLIC_mesh_element Element_Definition
 {
 
     // NESTED CLASSES AND TYPEDEFS

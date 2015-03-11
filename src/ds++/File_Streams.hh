@@ -80,7 +80,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class DLL_PUBLIC File_Output
+class DLL_PUBLIC_dsxx  File_Output
 {
   private:
 
@@ -144,7 +144,7 @@ class DLL_PUBLIC File_Output
  */
 //===========================================================================//
 
-class DLL_PUBLIC File_Input
+class DLL_PUBLIC_dsxx  File_Input
 {
   private:
 

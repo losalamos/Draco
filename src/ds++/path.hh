@@ -38,13 +38,13 @@ enum FilenameComponent
 
 //---------------------------------------------------------------------------//
 //! Get a specific component of a full filename.
-DLL_PUBLIC std::string getFilenameComponent( std::string const & fqName,
+DLL_PUBLIC_dsxx  std::string getFilenameComponent( std::string const & fqName,
                                              FilenameComponent   fc );
 
 //---------------------------------------------------------------------------//
 //! Does the file exist?
-DLL_PUBLIC bool fileExists(  std::string const & filename );
-DLL_PUBLIC bool isDirectory( std::string const & path );
+DLL_PUBLIC_dsxx  bool fileExists(  std::string const & filename );
+DLL_PUBLIC_dsxx  bool isDirectory( std::string const & path );
 
 //---------------------------------------------------------------------------//
 //! Functor for printing all items in a directory tree
@@ -216,9 +216,9 @@ void draco_walk_directory_tree( std::string const & dirname,
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-DLL_PUBLIC void draco_remove_dir( std::string const & path );
+DLL_PUBLIC_dsxx  void draco_remove_dir( std::string const & path );
 //! Recursively print a directory tree.
-DLL_PUBLIC void draco_dir_print( std::string const & path );
+DLL_PUBLIC_dsxx  void draco_dir_print( std::string const & path );
 
 } // end namespace rtt_dsxx
 
