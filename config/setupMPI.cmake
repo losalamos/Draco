@@ -432,7 +432,7 @@ macro( setupMPILibrariesWindows )
              CACHE STRING "extra mpirun flags (list)." FORCE )
          endif()
 
-      elseif("${MPIEXEC}" MATCHES "Microsoft HPC" )
+      elseif("${MPIEXEC}" MATCHES "Microsoft HPC"  OR "${MPIEXEC}" MATCHES "Microsoft MPI"  )
          set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
 
          set( MPI_CORES_PER_CPU 4 )
