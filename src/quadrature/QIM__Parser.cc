@@ -30,9 +30,9 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens,
 {
     tokens.check_semantics(qim==END_QIM,
                            "quadrature interpolation model already specified");
-    
+
     Token token = tokens.shift();
-    
+
     if (token.text()=="SN")
     {
         qim = SN;
@@ -53,6 +53,24 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens,
     {
         tokens.check_semantics(false,
                                "unrecognized quadrature interpolation model");
+    }
+}
+
+std::string quadrature_interpolation_model_as_text(QIM q, std::string const &indent)
+{
+    switch (q)
+    {
+        case SN:
+            return indent + "SN";
+        case GQ1:
+            return indent + "GQ1";
+        case GQ2:
+            return indent + "GQ2";
+        case GQF:
+            return indent + "GQF";
+        default:
+            Insist(false, "bad case");
+            return 0; // to kill warnings; never reached
     }
 }
 

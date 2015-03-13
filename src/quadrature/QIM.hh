@@ -22,7 +22,7 @@ using rtt_parser::Token_Stream;
 //! Quadrature Interpolation Model: specifies how to compute the
 //! Discrete-to-Moment operator.
 
-enum QIM 
+enum QIM
 {
     SN,  /*!< Use the standard SN method. */
     GQ1, /*!< Use Morel's Galerkin Quadrature method. */
@@ -35,6 +35,8 @@ enum QIM
 
 void parse_quadrature_interpolation_model(Token_Stream &,
                                           QIM &);
+
+std::string quadrature_interpolation_model_as_text(QIM, std::string const &indent);
 
 } // end namespace rtt_quadrature
 
