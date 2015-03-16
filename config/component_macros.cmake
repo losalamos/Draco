@@ -376,165 +376,139 @@ endmacro()
 
 #----------------------------------------------------------------------#
 # Special post-build options for Win32 platforms
-# ------------------------------------------------------------
-# copy_win32_dll_to_test_dir()
+# ---------------------------------------------------------------------#
+# copy_dll_link_libraries_to_build_dir( target )
 #
+# For Win32 with shared libraries, all dll dependencies must be located
+# in the PATH or in the application directory.  This cmake function
+# creates POST_BUILD rules for unit tests and applications to ensure
+# that the most up-to-date versions of all dependencies are in the same
+# directory as the application.
 #----------------------------------------------------------------------#
-macro( copy_win32_dll_to_test_dir )
-  if( WIN32 )
-    # For Win32 with shared libraries, the package dll must be
-    # located in the test directory.
+function( copy_dll_link_libraries_to_build_dir target )
 
-    # Debug dependencies for a particular target (uncomment the next line and provide the targetname):
-    # set( target_for_debugging_deps "Ut_rng_kat_cpp_exe" )
+  if( NOT WIN32 )
+    # Win32 platforms require all dll libraries to be in the local
+    # directory (or $PATH)
+    return()
+  endif()
 
-    # Discover all library dependencies for this unit test.
-    get_target_property( link_libs Ut_${compname}_${testname}_exe LINK_LIBRARIES )
-    set( old_link_libs "" )
-    if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-      message("Debugging dependencies for target ${compname}_${testname}")
-      message("  link_libs = ${link_libs}")
-    endif()
-    # Walk through the library dependencies to build a list of all .dll dependencies.
-    while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
-      set( old_link_libs ${link_libs} )
-      foreach( lib ${link_libs} )
-        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-          message("  (re)examine dependencies for lib       = ${lib}")
-        endif()
-        # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual path
-        # to a library (c:\lib\gsl.lib).
-        if( NOT EXISTS ${lib} )
-          # Must be a CMake target... find it's dependencies...
-          # The target may be
-          # 1. A target defined within the current build system (e.g.: Lib_c4), or
-          # 2. an 'imported' targets like GSL::gsl.
-          get_target_property( isimp ${lib} IMPORTED )
-          if(isimp)
-            if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-              message("  This target is IMPORTED")
-            endif()
-            get_target_property( link_libs2 ${lib} IMPORTED_LINK_INTERFACE_LIBRARIES )
-            # cmake 3.0+, cmp0022 states that INTERFACE_LINK_LIBRARIES
-            # should be used in place of IMPORTED_LINK_INTERFACE_LIBRARIES.
-            get_target_property( link_libs3 ${lib} INTERFACE_LINK_LIBRARIES)
-          else()
-            get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
-          endif()
-          list( APPEND link_libs ${link_libs2} )
-          list( APPEND link_libs ${link_libs3} )
-          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-            message("    link_libs[23]                        = ${link_libs2};${link_libs3}")
-          endif()
-        endif()
-      endforeach()
-      # Loop through all current dependencies, remove static libraries
-      #(they do not need to be in the run directory).
-      list( REMOVE_DUPLICATES link_libs )
-      foreach( lib ${link_libs} )
-        if( "${lib}" MATCHES "NOTFOUND" )
-          # nothing to add so remove from list
-          list( REMOVE_ITEM link_libs ${lib} )
-        elseif( "${lib}" MATCHES ".[lL]ib$" )
-          # We have a path to a static library. Static libraries do not
-          # need to be copied.
-          list( REMOVE_ITEM link_libs ${lib} )
-          # However, if there is a corresponding dll, we should add it
-          # to the list.
-          string( REPLACE ".lib" ".dll" dll_lib ${lib} )
-          if( ${dll_lib} MATCHES "[.]dll$" AND EXISTS ${dll_lib} )
-            list( APPEND link_libs "${dll_lib}" )
-          endif()
-        endif()
-      endforeach()
-      if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-        message("    updated dependencies list: link_libs = ${link_libs}")
-      endif()
+  # Debug dependencies for a particular target (uncomment the next line and provide the targetname):
+  # set( target_for_debugging_deps "Ut_rng_kat_c_exe" )
 
-    endwhile()
+  # For Win32 with shared libraries, the package dll must be
+  # located in the test directory.
 
-    list( REMOVE_DUPLICATES link_libs )
-    # if( ${compname} MATCHES Fortran )
-    # message("   ${compname}_${testname} --> ${link_libs}")
-    # endif()
+  # Discover all library dependencies for this unit test.
+  get_target_property( link_libs ${target} LINK_LIBRARIES )
+  set( old_link_libs "" )
+  if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+    message("Debugging dependencies for target ${compname}_${testname}")
+    message("  link_libs = ${link_libs}")
+  endif()
+  # Walk through the library dependencies to build a list of all .dll dependencies.
+  while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
 
-    if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-      message("  Create post build commande for target Ut_${compname}_${testname}_exe")
-    endif()
-
-    # Add a post-build command to copy each dll into the test directory.
+    set( old_link_libs ${link_libs} )
     foreach( lib ${link_libs} )
       if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-        message( "  Generating post-build command to copy ${lib} to cwd.")
+        message("  (re)examine dependencies for lib       = ${lib}")
       endif()
-      unset( ${comp_target}_loc )
-      if( EXISTS ${lib} )
-        # If $lib is a full path to a library, add it to the list
-        set( ${comp_target}_loc ${lib} )
-        set( ${comp_target}_gnutoms NOTFOUND )
-      else()
-        # if $lib is a target name, obtain the file path.
+      # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual path
+      # to a library (c:\lib\gsl.lib).
+      if( NOT EXISTS ${lib} )
+        # Must be a CMake target... find it's dependencies...
+        # The target may be
+        # 1. A target defined within the current build system (e.g.: Lib_c4), or
+        # 2. an 'imported' targets like GSL::gsl.
         get_target_property( isimp ${lib} IMPORTED )
-        if( isimp )
+        if(isimp)
           if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-            message( "    ${lib} is an imported target.")
+            message("  This target is IMPORTED")
           endif()
-          get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION )
-          if( ${${comp_target}_loc} MATCHES NOTFOUND )
-            get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION_RELEASE )
-          endif()
-          # CMakeAddFortranSubdirectory registers the property
-          # IMPORTED_LOCATION_NOCONFIG, if the above fails try the
-          # NOCONFIG version.
-          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-            message( "    ctloc = ${${comp_target}_loc} ")
-          endif()
-          if( ${${comp_target}_loc} MATCHES NOTFOUND )
-            get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION_NOCONFIG )
-          endif()
-          # copy the dll, not the lib
-          string( REPLACE ".lib" ".dll" dll_file ${${comp_target}_loc} )
-          if( EXISTS ${dll_file})
-            set(${comp_target}_loc ${dll_file})
-          endif()
+          get_target_property( link_libs2 ${lib} IMPORTED_LINK_INTERFACE_LIBRARIES )
+          # cmake 3.0+, cmp0022 states that INTERFACE_LINK_LIBRARIES
+          # should be used in place of IMPORTED_LINK_INTERFACE_LIBRARIES.
+          get_target_property( link_libs3 ${lib} INTERFACE_LINK_LIBRARIES)
         else()
-          set( ${comp_target}_loc $<TARGET_FILE:${lib}> )
+          get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
         endif()
-        get_target_property( ${comp_target}_gnutoms ${lib} GNUtoMS )
-      endif()
-
-      if( "${${comp_target}_loc}" MATCHES "rtt" AND NOT ${comp_target}_gnutoms )
-        add_custom_command( TARGET Ut_${compname}_${testname}_exe
-          POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
-          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-        if( ${CMAKE_CFG_INTDIR} STREQUAL Debug)
-          # Also grab the file with debug info
-          string( REPLACE ".dll" ".pdb" pdb_file ${${comp_target}_loc} )
-          add_custom_command( TARGET Ut_${compname}_${testname}_exe
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
-            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-        endif()
+        list( APPEND link_libs ${link_libs2} )
+        list( APPEND link_libs ${link_libs3} )
         if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-          message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-          message("    CMAKE_COMMAND -E copy_if_different ${pdb_file} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-        endif()
-      else()
-        add_custom_command( TARGET Ut_${compname}_${testname}_exe
-          POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
-          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-          BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-          COMMENT "Copying ${lib} to test directory."
-          )
-        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-          message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+          message("    link_libs[23]                        = ${link_libs2};${link_libs3}")
         endif()
       endif()
     endforeach()
+    # Loop through all current dependencies, remove static libraries
+    #(they do not need to be in the run directory).
+    list( REMOVE_DUPLICATES link_libs )
+    foreach( lib ${link_libs} )
+      if( "${lib}" MATCHES "NOTFOUND" )
+        # nothing to add so remove from list
+        list( REMOVE_ITEM link_libs ${lib} )
+      elseif( "${lib}" MATCHES ".[lL]ib$" )
+        # We have a path to a static library. Static libraries do not
+        # need to be copied.
+        list( REMOVE_ITEM link_libs ${lib} )
+        # However, if there is a corresponding dll, we should add it
+        # to the list.
+        string( REPLACE ".lib" ".dll" dll_lib ${lib} )
+        if( ${dll_lib} MATCHES "[.]dll$" AND EXISTS ${dll_lib} )
+          list( APPEND link_libs "${dll_lib}" )
+        endif()
+      endif()
+    endforeach()
+    if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+      message("    updated dependencies list: link_libs = ${link_libs}")
+    endif()
+
+  endwhile()
+
+  list( REMOVE_DUPLICATES link_libs )
+  # if( ${compname} MATCHES Fortran )
+  # message("   ${compname}_${testname} --> ${link_libs}")
+  # endif()
+
+  if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+    message("  Create post build commande for target Ut_${compname}_${testname}_exe")
   endif()
-endmacro()
+
+  # Add a post-build command to copy each dll into the test directory.
+  foreach( lib ${link_libs} )
+    unset( target_loc )
+    if( EXISTS ${lib} )
+      # If $lib is a full path to a library, add it to the list
+      set( target_loc ${lib} )
+      set( target_gnutoms NOTFOUND )
+    else()
+      set( target_loc $<TARGET_FILE:${lib}> )
+      get_target_property( target_gnutoms ${lib} GNUtoMS )
+    endif()
+
+    add_custom_command( TARGET ${target}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${target_loc}
+      ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+    if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+      message("    CMAKE_COMMAND -E copy_if_different ${target_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+    endif()
+    if( "${target_loc}" MATCHES "rtt" AND NOT target_gnutoms )
+      if( ${CMAKE_CFG_INTDIR} STREQUAL Debug)
+        # Also grab the file with debug info
+        string( REPLACE ".dll" ".pdb" pdb_file ${target_loc} )
+        add_custom_command( TARGET ${target}
+          POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
+          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
+        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+          message("    CMAKE_COMMAND -E copy_if_different ${pdb_file} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
+        endif()
+      endif()
+    endif()
+  endforeach()
+
+endfunction()
 
 #----------------------------------------------------------------------#
 # add_scalar_tests
@@ -675,7 +649,7 @@ macro( add_scalar_tests test_sources )
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
-    copy_win32_dll_to_test_dir()
+    copy_dll_link_libraries_to_build_dir( Ut_${compname}_${testname}_exe )
 
   endforeach()
 
@@ -820,7 +794,7 @@ macro( add_parallel_tests )
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
-    copy_win32_dll_to_test_dir()
+    copy_dll_link_libraries_to_build_dir( Ut_${compname}_${testname}_exe )
 
   endforeach()
 

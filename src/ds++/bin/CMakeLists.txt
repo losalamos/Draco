@@ -29,24 +29,24 @@ include_directories(
 add_executable( Exe_testCrashHandler ${PROJECT_SOURCE_DIR}/testCrashHandler.cc )
 target_link_libraries( Exe_testCrashHandler Lib_dsxx  )
 set_target_properties( Exe_testCrashHandler
-   PROPERTIES 
-      OUTPUT_NAME testCrashHandler 
+   PROPERTIES
+      OUTPUT_NAME testCrashHandler
       VS_KEYWORD  testCrashHandler
       FOLDER      dsxx_test
 )
-
+copy_dll_link_libraries_to_build_dir( Exe_testCrashHandler )
 # copy dll to bin directory.
 # get_target_property( Lib_dsxx_loc Lib_dsxx LOCATION )
-set( Lib_dsxx_loc $<TARGET_FILE:Lib_dsxx> )
+# set( Lib_dsxx_loc $<TARGET_FILE:Lib_dsxx> )
 # Also grab the file with debug info
-string( REPLACE ".dll" ".pdb" pdb_file ${Lib_dsxx_loc} )
-add_custom_command( TARGET Exe_testCrashHandler
-   POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_dsxx_loc}
-           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
-           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-   )
+# string( REPLACE ".dll" ".pdb" pdb_file ${Lib_dsxx_loc} )
+# add_custom_command( TARGET Exe_testCrashHandler
+#    POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Lib_dsxx_loc}
+#            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
+#            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+#    )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

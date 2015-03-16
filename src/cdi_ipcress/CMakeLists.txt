@@ -41,47 +41,33 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # sources
    ${PROJECT_SOURCE_DIR}/..   # header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
-) 
+)
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_cdi_ipcress
    TARGET_DEPS  "Lib_cdi"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 
 add_executable( Exe_Ipcress_Interpreter IpcressInterpreter.cc )
-target_link_libraries( 
-   Exe_Ipcress_Interpreter 
-   Lib_cdi_ipcress Lib_cdi Lib_dsxx 
+target_link_libraries(
+   Exe_Ipcress_Interpreter
+   Lib_cdi_ipcress Lib_cdi Lib_dsxx
    ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY} )
-set_target_properties( 
-   Exe_Ipcress_Interpreter 
-   PROPERTIES OUTPUT_NAME Ipcress_Interpreter 
+set_target_properties(
+   Exe_Ipcress_Interpreter
+   PROPERTIES OUTPUT_NAME Ipcress_Interpreter
    PROJECT_LABEL          Ipcress_Interpreter
    FOLDER                 cdi_ipcress)
-if( WIN32 )   
-   # Add a post-build command to copy each dll into the test directory.
-   foreach( lib Lib_cdi_ipcress;Lib_cdi;Lib_dsxx )
-      set( lib_loc $<TARGET_FILE:${lib}> )
-      # Also grab the file with debug info
-      string( REPLACE ".dll" ".pdb" pdb_file ${lib_loc} )
-      add_custom_command( TARGET Exe_Ipcress_Interpreter 
-         POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc} 
-                 ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file} 
-                 ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-         )
-   endforeach()
-endif()      
+copy_dll_link_libraries_to_build_dir( Exe_Ipcress_Interpreter )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
@@ -97,7 +83,7 @@ install( TARGETS Exe_Ipcress_Interpreter DESTINATION bin )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

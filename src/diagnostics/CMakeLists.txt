@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics.
-# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -51,7 +51,7 @@ file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 list( REMOVE_ITEM headers
-   ${template_implementations} 
+   ${template_implementations}
    ${PROJECT_SOURCE_DIR}/draco_info_main.cc
    )
 
@@ -77,7 +77,7 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_diagnostics
    TARGET_DEPS  "Lib_c4"
    LIBRARY_NAME ${PROJECT_NAME}
@@ -86,15 +86,12 @@ add_component_library(
 add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info_main.cc )
 target_link_libraries( Exe_draco_info Lib_diagnostics  )
 set_target_properties( Exe_draco_info
-   PROPERTIES OUTPUT_NAME draco_info 
+   PROPERTIES OUTPUT_NAME draco_info
    PROJECT_LABEL draco_info
-   FOLDER        diagnostics )
+   FOLDER        diagnostics
+)
 # Copy required dlls to the executable directory
-if (WIN32)
-    add_custom_command( TARGET Exe_draco_info POST_BUILD
-           COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx> $<TARGET_FILE_DIR:Exe_draco_info>
-           COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info> )
-endif()
+copy_dll_link_libraries_to_build_dir( Exe_draco_info )
 
 if( QT_FOUND )
   add_subdirectory( qt )
@@ -119,7 +116,7 @@ install( FILES ${headers}  DESTINATION include/diagnostics )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

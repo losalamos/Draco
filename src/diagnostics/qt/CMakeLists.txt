@@ -69,7 +69,7 @@ if( WIN32 )
 else()
    add_executable(        Exe_draco_info_gui ${sources} )
 endif()
-target_link_libraries( Exe_draco_info_gui 
+target_link_libraries( Exe_draco_info_gui
   Lib_diagnostics
   Qt5::Widgets )
 set_target_properties( Exe_draco_info_gui
@@ -77,7 +77,7 @@ set_target_properties( Exe_draco_info_gui
   PROJECT_LABEL draco_info-gui
   FOLDER        diagnostics )
 
-# add_component_library( 
+# add_component_library(
 #    TARGET       Lib_diagnostics
 #    TARGET_DEPS  "Lib_c4"
 #    LIBRARY_NAME ${PROJECT_NAME}
@@ -86,22 +86,23 @@ set_target_properties( Exe_draco_info_gui
 # add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info.cc )
 # target_link_libraries( Exe_draco_info Lib_dsxx  )
 # set_target_properties( Exe_draco_info
-#    PROPERTIES OUTPUT_NAME draco_info 
+#    PROPERTIES OUTPUT_NAME draco_info
 #    PROJECT_LABEL draco_info
 #    FOLDER        diagnostics )
 
 # Copy Qt dll files to build directory
+# copy_dll_link_libraries_to_build_dir( Exe_draco_info_gui )
 if (WIN32)
   file( GLOB qtdlls ${QTDIR}/bin/*.dll )
   foreach( qtdll ${qtdlls} )
     add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdll} 
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdll}
                                $<TARGET_FILE_DIR:Exe_draco_info_gui> )
   endforeach()
-  
+
   add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx> $<TARGET_FILE_DIR:Exe_draco_info_gui>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info_gui> 
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info_gui>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_diagnostics> $<TARGET_FILE_DIR:Exe_draco_info_gui> )
 endif()
 
@@ -124,7 +125,7 @@ endif()
 
 # if( BUILD_TESTING )
 #    add_subdirectory( test )
-# endif()   
+# endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

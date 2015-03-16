@@ -217,7 +217,12 @@ void fpe_trap::disable(void)
 #include <float.h>    // defines _controlfp_s
 #include <new.h>      // _set_new_handler
 #include <signal.h>   // SIGABRT
+
+// typdef ignored on left...
+#pragma warning (push)
+#pragma warning (disable:4091) 
 #include <dbghelp.h>  // minidump_exception_information
+#pragma warning (pop)
 
 #pragma fenv_access (on)
 

@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/quadrature/CMakeLists.txt
 # brief  Instructions for building quadrature Makefiles.
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -43,10 +43,6 @@ add_component_library(
    VENDOR_LIBS         "GSL::gsl"
    VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR}"
 )
-
-include(print_target_properties)
-echo_targets( GSL::gsl )
-
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

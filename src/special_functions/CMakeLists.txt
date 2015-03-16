@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for special_functions.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -44,7 +44,6 @@ include_directories(
 add_component_library(
    TARGET       Lib_special_functions
    TARGET_DEPS  "Lib_units;Lib_roots"
-   #TARGET_DEPS  "Lib_units;Lib_ode;Lib_roots"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}"
    VENDOR_LIST         "GSL"
