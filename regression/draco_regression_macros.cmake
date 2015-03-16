@@ -43,9 +43,13 @@ macro( find_num_procs_avail_for_running_tests )
 
   endif()
 
-  # Machine specific override:
+  # Machine/job specific override:
   if( "${sitename}" STREQUAL "Cielito" )
     set( num_test_procs 1 )
+  elseif( "$ENV{SLURM_JOB_NAME}" MATCHES "darwin-knc-regress" )
+    # The mic I/O processors get overloaded if use the default
+    # logic of 32 simultaneous tests.
+    set( num_test_procs 8 )
   endif()
 
 endmacro()
