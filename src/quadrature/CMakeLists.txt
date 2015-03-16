@@ -28,22 +28,25 @@ endif()
 include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
                      ${dsxx_BINARY_DIR}          # ds++/config.h
-                     ${GSL_INCLUDE_DIRS}
                      )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_quadrature
    TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element"
-   LIBRARY_NAME ${PROJECT_NAME} 
-   SOURCES      "${sources}" 
+   LIBRARY_NAME ${PROJECT_NAME}
+   SOURCES      "${sources}"
    VENDOR_LIST         "GSL"
    VENDOR_LIBS         "GSL::gsl"
    VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR}"
 )
+
+include(print_target_properties)
+echo_targets( GSL::gsl )
+
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
@@ -58,13 +61,10 @@ install( FILES ${headers} DESTINATION include/quadrature )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
-  
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-
-

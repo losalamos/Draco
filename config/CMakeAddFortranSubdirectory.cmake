@@ -78,7 +78,6 @@ function(_setup_cafs_config_and_build source_dir build_dir)
       gfortran
     PATHS
       c:/MinGW/bin
-      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin"
     )
   if( NOT EXISTS ${CAFS_Fortran_COMPILER} )
     message(FATAL_ERROR

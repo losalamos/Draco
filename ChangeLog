@@ -1,3 +1,10 @@
+2015-03-13  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Require CMake/3.2.1 or later required.
+	  - Use CMake provided FindGSL that first appears in the 3.2 release.
+	  - I began using MS-MPI/5 and this version of MPI is only supported by the FindMPI.cmake macro provided with cmake/3.2 or
+	    later.
+
 2015-02-03  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_15_0.  This is a minor Draco release.

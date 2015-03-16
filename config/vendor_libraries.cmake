@@ -230,6 +230,9 @@ macro( save_vendor_imported_library_to_draco_config targets target_properties )
   foreach( tgt ${targets} )
     # The target's TYPE may not be set correctly, set it manually.
     get_target_property( fplib ${tgt} IMPORTED_LOCATION )
+    get_target_property( fplibr ${tgt} IMPORTED_LOCATION_RELEASE )
+    get_target_property( fplibd ${tgt} IMPORTED_LOCATION_DEBUG )
+    set( fplib "${fplib} ${fplibr} ${fplibd}" )
     if( "${fplib}" MATCHES "[.]so$"  OR
         "${fplib}" MATCHES "[.]dll$" OR
         "${fplib}" MATCHES "[.]dylib$" )
@@ -296,12 +299,21 @@ macro( setupGSL )
     # Choose items for props list via:
     # include(print_target_properties)
     # echo_targets("GSL::gsl;GSL::gslcblas")
-    set( props "BUILD_WITH_INSTALL_RPATH;IMPORTED_LINK_INTERFACE_LANGUAGES;IMPORTED_LINK_INTERFACE_LIBRARIES;IMPORTED_LOCATION;IMPORTED;INSTALL_RPATH;INSTALL_RPATH_USE_LINK_PATH;INTERFACE_INCLUDE_DIRECTORIES;SKIP_BUILD_RPATH;GNUtoMS;IMPORTED_IMPLIB_DEBUG;IMPORTED_IMPLIB;IMPORTED_LOCATION_DEBUG;POSITION_INDEPENDENT_CODE" )
+    set( props "BUILD_WITH_INSTALL_RPATH;GNUtoMS;IMPORTED_CONFIGURATIONS;IMPORTED_IMPLIB;IMPORTED_IMPLIB_DEBUG;IMPORTED_LINK_INTERFACE_LANGUAGES;INTERFACE_LINK_LIBRARIES;IMPORTED_LOCATION_DEBUG;IMPORTED_LOCATION_RELEASE;IMPORTED;INSTALL_RPATH;INSTALL_RPATH_USE_LINK_PATH;INTERFACE_INCLUDE_DIRECTORIES;POSITION_INDEPENDENT_CODE;SKIP_BUILD_RPATH;IMPORTED_LOCATION" )
+
     save_vendor_imported_library_to_draco_config(
       "GSL::gsl;GSL::gslcblas" "${props}" )
 else()
   message( STATUS "Looking for GSL.......not found" )
 endif()
+
+#=============================================================================
+# Include some information that can be printed by the build system.
+set_package_properties( GSL PROPERTIES
+  DESCRIPTION "Gnu Scientific Library"
+  URL "www.gnu.org/software/gsl"
+  PURPOSE "The GNU Scientific Library (GSL) is a numerical library for C and C++ programmers."
+  )
 
 endmacro()
 

@@ -30,24 +30,23 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}       # sources
    ${ode_BINARY_DIR}           # ode/config.h
    ${draco_src_dir_SOURCE_DIR} # ds++ header files
    ${dsxx_BINARY_DIR}          # ds++/config.h
-   ${GSL_INCLUDE_DIRS}
    )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_special_functions
    TARGET_DEPS  "Lib_units;Lib_roots"
    #TARGET_DEPS  "Lib_units;Lib_ode;Lib_roots"
    LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${sources}" 
+   SOURCES      "${sources}"
    VENDOR_LIST         "GSL"
    VENDOR_LIBS         "GSL::gsl"
    VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIRS}"
@@ -66,7 +65,7 @@ install( FILES ${headers} ${template_implementations} DESTINATION include/specia
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

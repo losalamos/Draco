@@ -124,11 +124,6 @@ macro( add_component_library )
   string( REPLACE "Lib_" "" folder_name ${acl_TARGET} )
 
   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
-
-  if( "${DRACO_LIBRARY_TYPE}" MATCHES "SHARED" )
-    # Provide compile define macro to enable declspec(dllexport) linkage.
-    set( compdefs COMPILE_DEFINITIONS BUILDING_${folder_name} )
-  endif()
   set_target_properties( ${acl_TARGET} PROPERTIES
     ${compdefs}
     # Use custom library naming
@@ -391,7 +386,7 @@ macro( copy_win32_dll_to_test_dir )
     # located in the test directory.
 
     # Debug dependencies for a particular target (uncomment the next line and provide the targetname):
-    # set( target_for_debugging_deps "Ut_c4_phw_exe" )
+    # set( target_for_debugging_deps "Ut_rng_kat_cpp_exe" )
 
     # Discover all library dependencies for this unit test.
     get_target_property( link_libs Ut_${compname}_${testname}_exe LINK_LIBRARIES )
@@ -469,6 +464,9 @@ macro( copy_win32_dll_to_test_dir )
 
     # Add a post-build command to copy each dll into the test directory.
     foreach( lib ${link_libs} )
+      if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+        message( "  Generating post-build command to copy ${lib} to cwd.")
+      endif()
       unset( ${comp_target}_loc )
       if( EXISTS ${lib} )
         # If $lib is a full path to a library, add it to the list
@@ -478,10 +476,19 @@ macro( copy_win32_dll_to_test_dir )
         # if $lib is a target name, obtain the file path.
         get_target_property( isimp ${lib} IMPORTED )
         if( isimp )
+          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+            message( "    ${lib} is an imported target.")
+          endif()
           get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION )
+          if( ${${comp_target}_loc} MATCHES NOTFOUND )
+            get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION_RELEASE )
+          endif()
           # CMakeAddFortranSubdirectory registers the property
           # IMPORTED_LOCATION_NOCONFIG, if the above fails try the
           # NOCONFIG version.
+          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+            message( "    ctloc = ${${comp_target}_loc} ")
+          endif()
           if( ${${comp_target}_loc} MATCHES NOTFOUND )
             get_target_property( ${comp_target}_loc ${lib} IMPORTED_LOCATION_NOCONFIG )
           endif()
@@ -518,6 +525,8 @@ macro( copy_win32_dll_to_test_dir )
           POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${comp_target}_loc}
           ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+          BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
+          COMMENT "Copying ${lib} to test directory."
           )
         if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
           message("    CMAKE_COMMAND -E copy_if_different ${${comp_target}_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
@@ -936,7 +945,7 @@ macro( provide_aux_files )
     DEPENDS ${required_files}
     )
   if( auxfiles_FOLDER )
-    set( folder_name ${auxfiles_FOLDER} ) 
+    set( folder_name ${auxfiles_FOLDER} )
   else()
     set( folder_name ${compname}_test )
   endif()
