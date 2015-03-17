@@ -56,18 +56,18 @@ void parse_quadrature_interpolation_model(Token_Stream &tokens,
     }
 }
 
-std::string quadrature_interpolation_model_as_text(QIM q, std::string const &indent)
+std::string quadrature_interpolation_model_as_text(QIM q)
 {
     switch (q)
     {
         case SN:
-            return indent + "SN";
+            return "SN";
         case GQ1:
-            return indent + "GQ1";
+            return "GQ1";
         case GQ2:
-            return indent + "GQ2";
+            return "GQ2";
         case GQF:
-            return indent + "GQF";
+            return "GQF";
         default:
             Insist(false, "bad case");
             return 0; // to kill warnings; never reached

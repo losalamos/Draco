@@ -36,7 +36,7 @@ enum QIM
 void parse_quadrature_interpolation_model(Token_Stream &,
                                           QIM &);
 
-std::string quadrature_interpolation_model_as_text(QIM, std::string const &indent);
+std::string quadrature_interpolation_model_as_text(QIM);
 
 } // end namespace rtt_quadrature
 
