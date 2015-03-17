@@ -12,9 +12,8 @@
 //---------------------------------------------------------------------------//
 
 #include "Ensight_Stream.hh"
-
-#include <ds++/Assert.hh>
-#include <ds++/Packing_Utils.hh>
+#include "ds++/Assert.hh"
+#include "ds++/Packing_Utils.hh"
 #include <iomanip>
 
 namespace rtt_viz
@@ -30,12 +29,12 @@ namespace rtt_viz
 Ensight_Stream& endl(Ensight_Stream &s)
 {
     Require(s.d_stream.is_open());
-    
+
     if ( ! s.d_binary )
         s.d_stream << '\n';
 
     Require(s.d_stream.good());
-    
+
     return s;
 }
 
@@ -82,7 +81,7 @@ Ensight_Stream::~Ensight_Stream(void)
  * all data files are also binary.  This class does NOT check whether \a
  * binary is consistent across all geometry and data files.
  *
- * \param file_name  Name of output file.   
+ * \param file_name  Name of output file.
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
  */
@@ -93,8 +92,8 @@ void Ensight_Stream::open(const std::string &file_name,
     Require(! file_name.empty());
 
     d_binary = binary;
-    
-    // Open the stream.
+
+// Open the stream.
     if ( binary )
         d_stream.open(file_name.c_str(), std::ios::binary);
     else
@@ -102,8 +101,8 @@ void Ensight_Stream::open(const std::string &file_name,
 
     Check(d_stream);
 
-    // Set up the file.
-        
+// Set up the file.
+
     if ( binary )
     {
         if ( geom_file )
@@ -111,7 +110,7 @@ void Ensight_Stream::open(const std::string &file_name,
     }
     else
     {
-        // set precision for ascii mode
+// set precision for ascii mode
         d_stream.precision(5);
         d_stream.setf(std::ios::scientific, std::ios::floatfield);
     }
@@ -138,14 +137,14 @@ void Ensight_Stream::close()
 Ensight_Stream& Ensight_Stream::operator<<(const int i)
 {
     Require(d_stream.is_open());
-    
+
     if ( d_binary )
         binary_write(i);
     else
         d_stream << std::setw(10) << i;
 
     Ensure(d_stream.good());
-    
+
     return *this;
 }
 
@@ -177,6 +176,15 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::size_t i)
  */
 Ensight_Stream& Ensight_Stream::operator<<(const double d)
 {
+
+#if defined(MSVC) && MSVC_VERSION < 1900
+    // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
+    // because numeric_limits<double>::max() has a 3-digit exponent.)
+    // Enable two-digit exponent format to stay consistent with GNU and
+    // Intel on Linux.(requires <stdio.h>).
+    unsigned old_exponent_format = _set_output_format( _TWO_DIGIT_EXPONENT );
+#endif
+
     Require(d_stream.is_open());
 
     if ( d_binary )
@@ -185,7 +193,15 @@ Ensight_Stream& Ensight_Stream::operator<<(const double d)
         d_stream << std::setw(12) << d;
 
     Ensure(d_stream.good());
-    
+
+#if defined(MSVC) && MSVC_VERSION < 1900
+    // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
+    // because numeric_limits<double>::max() has a 3-digit exponent.)
+    // Enable two-digit exponent format to stay consistent with GNU and
+    // Intel on Linux.(requires <stdio.h>).
+    unsigned old_exponent_format = _set_output_format( _TWO_DIGIT_EXPONENT );
+#endif
+
     return *this;
 }
 
@@ -206,7 +222,7 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::string &s)
     }
     else
         d_stream << s;
-    
+
     Ensure(d_stream.good());
 
     return *this;
@@ -221,7 +237,7 @@ Ensight_Stream& Ensight_Stream::operator<<(FP f)
     Require(d_stream.is_open());
 
     Require(f);
-    
+
     f(*this);
 
     Ensure(d_stream.good());
@@ -241,7 +257,7 @@ Ensight_Stream& Ensight_Stream::operator<<(FP f)
  */
 // The template implementation is defined here because only functions within
 // this translation unit should be calling this function.
-template <class T>
+template <typename T>
 void Ensight_Stream::binary_write(const T v)
 {
     Require(d_stream.is_open());

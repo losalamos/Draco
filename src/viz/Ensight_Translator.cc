@@ -85,8 +85,7 @@ open(const int        icycle,
     write_case();
 
     // >>> Open the geometry file.
-    if ( (! d_static_geom ) ||
-	 (d_dump_times.size() == 1) )
+    if ( (! d_static_geom ) || (d_dump_times.size() == 1) )
     {
 
         // make output file for this timestep
@@ -141,8 +140,7 @@ open(const int        icycle,
  *
  * Calling this function is unnecessary if this object is destroyed.
  */
-void Ensight_Translator::
-close()
+void Ensight_Translator::close()
 {
     if ( d_geom_out.is_open() ) d_geom_out.close();
 
@@ -179,7 +177,7 @@ void Ensight_Translator::create_filenames(const std_string &prefix)
     else
     {
         // ensight directory name
-        d_prefix = d_dump_dir + "/" + prefix + "_ensight";
+        d_prefix = d_dump_dir + rtt_dsxx::dirSep + prefix + "_ensight";
     }
     // case file name
     d_case_filename = d_prefix + rtt_dsxx::dirSep + prefix + ".case";
@@ -258,20 +256,17 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 
     // Check d_dump_dir
     rtt_dsxx::draco_getstat dumpDirStat( d_dump_dir );
-    //struct stat sbuf;
-    //int stat_ret = stat(d_dump_dir.c_str(), &sbuf);
     if( ! dumpDirStat.isdir() )
     {
         std::ostringstream dir_error;
         dir_error << "Error opening dump directory \""
-		        << d_dump_dir << "\": " << strerror(errno);
+                  << d_dump_dir << "\": " << strerror(errno);
         Insist( dumpDirStat.isdir(),  dir_error.str() );
     }
 
     // try to create d_prefix
     rtt_dsxx::draco_mkdir( d_prefix );
     rtt_dsxx::draco_getstat prefixDirStat( d_prefix );
-    // stat_ret = stat(d_prefix.c_str(), &sbuf);
     if( ! prefixDirStat.isdir() )
     {
         std::ostringstream dir_error;
@@ -306,7 +301,6 @@ void Ensight_Translator::initialize(const bool graphics_continue)
                       << d_prefix << "\" doesn't contain a case file!";
             Insist (0,  dir_error.str().c_str());
         }
-
     }
 
     // Check to make sure the variable names are of acceptable length
@@ -331,8 +325,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	int low = 1;
 	int high= 19;
 	SFS_iter_vec result =
-	    rtt_dsxx::check_string_lengths(name_tmp.begin(),
-					   name_tmp.end(), low, high);
+	    rtt_dsxx::check_string_lengths(name_tmp.begin(), name_tmp.end(), low, high);
 	if (result.size() != 0)
 	{
 	    std::cerr << "*** Error in variable name(s) -" << std::endl;
@@ -356,9 +349,9 @@ void Ensight_Translator::initialize(const bool graphics_continue)
 	    for (size_t i=0; i<result.size(); i++)
 	        std::cerr << "Found disallowed character(s) in name: \""
 	                  << *result[i] << "\"" << std::endl;
-	    std::cerr << "The following characters are forbidden:" <<
-		std::endl << " \"" << bad_chars << "\"," <<
-		" as well as any white-space characters." << std::endl;
+	    std::cerr << "The following characters are forbidden:"
+                      << std::endl << " \"" << bad_chars << "\","
+                      << " as well as any white-space characters." << std::endl;
 	    Insist (0, "Found illegal character in ensight variable names!");
 	}
     }
@@ -388,7 +381,7 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     d_cdata_dirs.resize(d_cdata_names.size());
     for (size_t i = 0; i < d_vdata_names.size(); i++)
     {
-	d_vdata_dirs[i] = d_prefix + "/" + d_vdata_names[i];
+	d_vdata_dirs[i] = d_prefix + rtt_dsxx::dirSep + d_vdata_names[i];
 
 	// if this is not a continuation make the directory
 	if (!graphics_continue)
@@ -396,9 +389,9 @@ void Ensight_Translator::initialize(const bool graphics_continue)
     }
     for (size_t i = 0; i < d_cdata_names.size(); i++)
     {
-	d_cdata_dirs[i] = d_prefix + "/" + d_cdata_names[i];
+	d_cdata_dirs[i] = d_prefix + rtt_dsxx::dirSep + d_cdata_names[i];
 
-	// if this is not a continuation make the directory
+	// if this is not a continuation make the directory (Mat_Erg, Mat_Temp, Rad_Temp, etc.)
 	if (!graphics_continue)
             rtt_dsxx::draco_mkdir( d_cdata_dirs[i] );
     }
@@ -459,8 +452,7 @@ void Ensight_Translator::write_case()
     caseout.precision(5);
     caseout.setf(ios::scientific, ios::floatfield);
     for (size_t i = 0; i < d_dump_times.size(); i++)
-	caseout << setw(12) << setiosflags(ios::right) << d_dump_times[i]
-		<< endl;
+	caseout << setw(12) << setiosflags(ios::right) << d_dump_times[i] << endl;
 }
 
 } // end of rtt_viz
