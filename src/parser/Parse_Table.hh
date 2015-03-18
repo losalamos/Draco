@@ -200,6 +200,9 @@ class DLL_PUBLIC_parser Parse_Table
     //! Parse a token stream.
     Token parse(Token_Stream &tokens) const;
 
+    //! Parse a token stream.
+    Token parseforkeyword(Token_Stream &tokens) const;
+
     //! Check the class invariants
     bool check_class_invariants() const;
 
