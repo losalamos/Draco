@@ -27,16 +27,14 @@ namespace rtt_dsxx
  * \brief Constructor for UnitTest object.
  * \param argc The number of command line arguments provided to main.
  * \param argv A list of command line arguments.
- * \param release_ A function pointer to the local package's release()
- * function.
- * \param out_ A user selectable output stream.  By default this is
- * std::cout. 
+ * \param release_ A function pointer to the local package's release() function.
+ * \param out_ A user selectable output stream.  By default this is std::cout.
  *
  * This constructor automatically parses the command line to setup the name of
- * the unit test (used when generating status reports).  The object produced
- * by this constructor will respond to the command line argument "--version."
+ * the unit test (used when generating status reports).  The object produced by
+ * this constructor will respond to the command line argument "--version."
  */
-UnitTest::UnitTest( int              & /* argc */, 
+UnitTest::UnitTest( int              & /* argc */,
                     char           **& argv,
                     string_fp_void     release_,
                     std::ostream     & out_ )
@@ -77,22 +75,22 @@ UnitTest::UnitTest( int              & /* argc */,
     rtt_dsxx::fpe_trap fpeTrap(abortWithInsist);
     fpe_trap_active = fpeTrap.enable();
 #endif
-    
+
     return;
 }
 
 //---------------------------------------------------------------------------//
-//! Build the final message that will be desplayed when UnitTest is destroyed. 
+//! Build the final message that will be desplayed when UnitTest is destroyed.
 std::string UnitTest::resultMessage() const
 {
     std::ostringstream msg;
     msg << "\n*********************************************\n";
-    if( UnitTest::numPasses > 0 && UnitTest::numFails == 0 ) 
+    if( UnitTest::numPasses > 0 && UnitTest::numFails == 0 )
         msg << "**** " << testName << " Test: PASSED.\n";
     else
         msg << "**** " << testName << " Test: FAILED.\n";
     msg << "*********************************************\n";
-    
+
     return msg.str();
 }
 
@@ -100,7 +98,7 @@ std::string UnitTest::resultMessage() const
 /*!\brief Increment the failure count and print a message with the source line
  * number.
  * \param line The line number of the source code where the failure was
- * ecnountered. 
+ * ecnountered.
  */
 bool UnitTest::failure(int line)
 {
@@ -112,7 +110,7 @@ bool UnitTest::failure(int line)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Increment the failure count and print a message with the source line
- * number. 
+ * number.
  * \param line The line number of the source code where fail was called from.
  * \param file The name of the file where the failure occured.
  */
@@ -161,18 +159,18 @@ UnitTest::get_word_count( std::ostringstream const & msg, bool verbose )
     using std::string;
     using std::cout;
     using std::endl;
-    
+
     map<string,unsigned> word_list;
     string msgbuf( msg.str() );
     string delims(" \n\t:,.;");
-    
+
     { // Build a list of words found in msgbuf.  Count the number of
       // occurances.
-        
+
         // Find the beginning of the first word.
         string::size_type begIdx = msgbuf.find_first_not_of(delims);
         string::size_type endIdx;
-        
+
         // While beginning of a word found
         while( begIdx != string::npos )
         {
@@ -180,15 +178,15 @@ UnitTest::get_word_count( std::ostringstream const & msg, bool verbose )
             endIdx = msgbuf.find_first_of( delims, begIdx );
             if( endIdx == string::npos)
                 endIdx = msgbuf.length();
-            
+
             // the word is we found is...
             string word( msgbuf, begIdx, endIdx-begIdx );
-            
+
             // add it to the map
             word_list[ word ]++;
-            
+
             // search to the beginning of the next word
-            begIdx = msgbuf.find_first_not_of( delims, endIdx );        
+            begIdx = msgbuf.find_first_not_of( delims, endIdx );
         }
     }
 
@@ -261,8 +259,8 @@ UnitTest::get_word_count( std::string const & filename, bool verbose )
  *
  * IDEs often have "configuration" subdirectories like "Debug" and "Release"
  * that they place the test executables in, leaving the input files one level
- * up.  This method attempts to detect that condition in order to provide
- * the correct path, regardless of the selected build system.
+ * up.  This method attempts to detect that condition in order to provide the
+ * correct path, regardless of the selected build system.
  */
 std::string
 UnitTest::getTestInputPath() const
@@ -288,19 +286,28 @@ UnitTest::getTestInputPath() const
         // file is at [package]/test/file.inp, but the test binary is
         // at [package]/test/$(Configuration)/; return the former
         std::string configuration = rtt_dsxx::getFilenameComponent(
-                                              inputDir, rtt_dsxx::FC_NAME );
-        int pos(inputDir.find_last_of(configuration) - configuration.length());
-        Check( pos > 0 );
-        std::string inputDirTrunc( inputDir.substr(0,pos) + rtt_dsxx::dirSep );
+            inputDir, rtt_dsxx::FC_NAME );
+        int pos( inputDir.find_last_of( configuration ) - configuration.length() );
+        std::string inputDirTrunc;
+        if( pos > 0 )
+        {
+            inputDirTrunc = inputDir.substr( 0, pos ) + rtt_dsxx::dirSep;
+        }
+        else
+        {
+            // This case occurs when running from the test directory when the
+            // test binary is located at $(configuration)/.  In this situation,
+            // pos <=0 because we do not have a full path.  However, in this
+            // situation, we just need to use "./" for the path.
+            inputDirTrunc = rtt_dsxx::draco_getcwd() + rtt_dsxx::dirSep;
+        }
 
         // Ensure that the slashes are correct
         inputDir = rtt_dsxx::getFilenameComponent(inputDirTrunc,
                                                   rtt_dsxx::FC_NATIVE);
     }
-
     return (inputDir);
 }
-    
 
 } // end namespace rtt_dsxx
 
