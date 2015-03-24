@@ -300,7 +300,7 @@ macro( setupMPILibrariesUnix )
 
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
-      
+
       # Find the version
       execute_process( COMMAND ${MPIEXEC} --version
         OUTPUT_VARIABLE DBS_MPI_VER_OUT
@@ -314,7 +314,7 @@ macro( setupMPILibrariesUnix )
         TYPE RECOMMENDED
         PURPOSE "If not available, all Draco components will be built as scalar applications."
         )
-        
+
       # -------------------------------------------------------------------------------- #
       # Check flavor and add optional flags
       #
@@ -375,6 +375,16 @@ macro( setupMPILibrariesWindows )
       message(STATUS "Looking for MPI...")
       find_package( MPI )
 
+      # For MS-MPI 5, mpifptr.h is architecture dependent. Figure out
+      # what arch this is and save this path to MPI_Fortran_INCLUDE_PATH
+      if( MPI_LIBRARY AND NOT MPI_Fortran_INCLUDE_PATH )
+        get_filename_component( MPI_Fortran_INCLUDE_PATH "${MPI_LIBRARY}" DIRECTORY )
+        string( REPLACE "lib" "Include" MPI_Fortran_INCLUDE_PATH ${MPI_Fortran_INCLUDE_PATH} )
+        set( MPI_Fortran_INCLUDE_PATH
+             "${MPI_CXX_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
+             CACHE STRING "Location for MPI include files for Fortran.")
+      endif()
+
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
       if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
          set( MPIEXEC $ENV{MPIRUN} )
@@ -393,7 +403,7 @@ macro( setupMPILibrariesWindows )
         # ERROR_STRIP_TRAILING_WHITESPACE
         # )
       # string( REGEX REPLACE "Version ([0-9.]+)" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-     
+
       set(DBS_MPI_VER "5.0")
 
       set_package_properties( MPI PROPERTIES
@@ -418,7 +428,7 @@ macro( setupMPILibrariesWindows )
             OUTPUT_STRIP_TRAILING_WHITESPACE )
          execute_process(
             COMMAND wmic computersystem get NumberOfProcessors
-            OUTPUT_VARIABLE MPI_CPUS_PER_NODE 
+            OUTPUT_VARIABLE MPI_CPUS_PER_NODE
             OUTPUT_STRIP_TRAILING_WHITESPACE )
          string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU})
          string( REGEX REPLACE ".*([0-9]+)" "\\1" MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS})
