@@ -2,7 +2,7 @@
 
 #SBATCH -N 1
 #SBATCH --time=480
-#SBATCH --partition=dl585
+#SBATCH --partition=haswell
 # https://computing.llnl.gov/linux/slurm/sbatch.html
 
 #----------------------------------------------------------------------#
