@@ -51,13 +51,13 @@ case ${target} in
      fi
    fi
    module use /ccs/codes/radtran/vendors/Modules
-   module load gcc/4.8.1
+   module load gcc/4.8.1 openmpi
    module load emacs/24.4
-   module load openmpi totalview 
+   module load totalview
    module load cmake grace lapack random123 eospac numdiff git svn
    module load dia graphviz doxygen git valgrind
-   module load BLACS SCALAPACK SuperLU_DIST hypre ndi
-   module load ParMetis trilinos  
+   # module load BLACS SCALAPACK hypre
+   module load ParMetis SuperLU_DIST trilinos ndi
 
 ;;
 esac
