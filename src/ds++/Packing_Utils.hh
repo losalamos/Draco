@@ -112,7 +112,7 @@ class Packer
     template<typename T> inline void pack(const T&);
 
     // Accept data from another character stream.
-    template<class IT> void accept(unsigned int bytes, IT data);
+    template<typename IT> void accept(unsigned int bytes, IT data);
 
     // Advance the pointer without adding data. Useful for byte-aligning.
     inline void pad(unsigned int bytes);
@@ -338,7 +338,6 @@ inline Packer& operator<<(Packer &p, const T &value)
  * are real pointers into a continguous memory char * stream.
 
  * This class is the complement to the Packer class.
-
  */
 //===========================================================================//
 
