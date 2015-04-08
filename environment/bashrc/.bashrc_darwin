@@ -23,8 +23,9 @@ if test -n "$MODULESHOME"; then
     module load other/emacs-24.3 subversion python/2.7.3 random123
 
     # Nodes that have MIC capability use different modules...
-    if test -x /usr/sbin/micctrl; then
-        mic_status=`/usr/sbin/micctrl -s | egrep mic[0-9]+ | wc -l`
+    if test "$SLURM_JOB_PARTITION" = "knc-mic"; then
+   #     mic_status=`/usr/sbin/micctrl -s | egrep mic[0-9]+ | wc -l`
+         mic_status=1
     else
         mic_status=0
     fi
