@@ -89,7 +89,7 @@ to anything else will generate errors."
   :group 'draco-mode)
 
 (defcustom draco-code-comment-width
-  80
+  92
   "The number of colums wide to use for inserted comment blocks."
   :type 'draco-mode)
 

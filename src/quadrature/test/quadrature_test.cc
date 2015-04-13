@@ -17,6 +17,7 @@
 #include "quadrature_test.hh"
 
 #include "parser/String_Token_Stream.hh"
+#include "parser/utilities.hh"
 
 namespace rtt_quadrature
 {
@@ -26,7 +27,7 @@ using namespace rtt_parser;
 //---------------------------------------------------------------------------------------//
 void test_either(UnitTest &ut,
                  SP<Ordinate_Space> const &ordinate_space,
-                 Quadrature &quadrature, 
+                 Quadrature &quadrature,
                  unsigned const expansion_order)
 {
     vector<Ordinate> const &ordinates = ordinate_space->ordinates();
@@ -34,7 +35,7 @@ void test_either(UnitTest &ut,
 
     rtt_mesh_element::Geometry const geometry = ordinate_space->geometry();
     unsigned const dimension = ordinate_space->dimension();
-        
+
     if (ordinate_space->moments()[0] == Moment(0, 0))
     {
         ut.passes("first moment is correct");
@@ -89,7 +90,7 @@ void test_either(UnitTest &ut,
         {
             ut.failure("bookkeeping coefficient is NOT plausible");
         }
-        
+
         ordinate_space->psi_coefficient(number_of_ordinates-1);
         ordinate_space->source_coefficient(number_of_ordinates-1);
         // check that throws no exception
@@ -110,7 +111,7 @@ void test_either(UnitTest &ut,
         {
             ut.failure("bookkeeping coefficient is NOT plausible");
         }
-        
+
         ordinate_space->psi_coefficient(number_of_ordinates-1);
         ordinate_space->source_coefficient(number_of_ordinates-1);
         // check that throws no exception
@@ -135,7 +136,7 @@ void test_either(UnitTest &ut,
 
         vector<unsigned> const &moments_per_order =
             ordinate_space->moments_per_order();
-            
+
         if (moments_per_order.size()==expansion_order+1)
         {
             ut.passes("moments_per_order size is correct");
@@ -153,7 +154,7 @@ void test_either(UnitTest &ut,
                 return;
             }
         }
-            
+
         if ((dimension == 1 && number_of_levels == 2*ordinate_space->number_of_levels()) ||
             (dimension>1 && number_of_levels == ordinate_space->number_of_levels()))
         {
@@ -273,7 +274,7 @@ void test_either(UnitTest &ut,
                 }
             }
             break;
-            
+
         case SQUARE_QUADRATURE:
             if (dimension==3)
             {
@@ -283,7 +284,7 @@ void test_either(UnitTest &ut,
                 }
             }
             break;
-            
+
         default:
             if (dimension==3)
             {
@@ -296,7 +297,7 @@ void test_either(UnitTest &ut,
     }
 
     // Test that mean and flux are correct
-        
+
     {
         vector<Ordinate> const &ordinates = ordinate_space->ordinates();
         unsigned const N = ordinates.size();
@@ -384,10 +385,10 @@ void test_either(UnitTest &ut,
         }
 
         // Look at the moment to discrete and discrete to moment operator
-        
+
         vector<double> M = ordinate_space->M();
         vector<double> D = ordinate_space->D();
-        
+
         unsigned number_of_moments = ordinate_space->number_of_moments();
 
         if (M.size() == number_of_moments*number_of_ordinates)
@@ -452,13 +453,13 @@ void test_no_axis(UnitTest &ut,
                   Ordinate_Set::Ordering const ordering)
 {
     // Parse the interpolation model
-    
+
     QIM qim = END_QIM;
     String_Token_Stream stokens(ordinate_interpolation_model);
     parse_quadrature_interpolation_model(stokens, qim);
 
     // Build an angle operator
-        
+
     SP<Ordinate_Space> ordinate_space =
         quadrature.create_ordinate_space(dimension,
                                          geometry,
@@ -486,13 +487,13 @@ void test_axis(UnitTest &ut,
                unsigned const eta_axis)
 {
     // Parse the interpolation model
-    
+
     QIM qim = END_QIM;
     String_Token_Stream stokens(ordinate_interpolation_model);
     parse_quadrature_interpolation_model(stokens, qim);
 
     // Build an angle operator
-        
+
     SP<Ordinate_Space> ordinate_space =
         quadrature.create_ordinate_space(dimension,
                                          geometry,
@@ -527,21 +528,21 @@ void quadrature_integration_test(UnitTest &/*ut*/,
 
         vector<Ordinate> const &ordinates = ordinate_set->ordinates();
         unsigned const N = ordinates.size();
-        
+
         double test_int8=0.0;
         double test_int6=0.0;
         double test_int4=0.0;
         double test_int2=0.0;
-        
+
         std::cout << "Testing S-" << quadrature.sn_order() << " quadrature integration" << std::endl;
-    
+
         for (unsigned i=0; i<N; ++i)
         {
             //cout << "  mu = " << setprecision(10) << ordinates[i].mu()
             //     << "  eta = " << setprecision(10) << ordinates[i].eta()
             //     << "  xi = " << setprecision(10) << ordinates[i].xi()
             //     << " weight = " << setprecision(10) << ordinates[i].wt() << endl;
-            
+
             if (ordinates[i].xi() > 0)
             {
                 test_int2 += ordinates[i].mu()*ordinates[i].mu()
@@ -651,7 +652,7 @@ void quadrature_test(UnitTest &ut,
     }
 
     // Test default moment initialization
-    
+
     if (Moment(1,1)==Moment())
     {
         ut.failure("moment comparison NOT correct");
@@ -681,7 +682,7 @@ void quadrature_test(UnitTest &ut,
 
     string text = quadrature.as_text("\n");
     String_Token_Stream tokens(text);
-    SP<Quadrature> parsed_quadrature = Quadrature::parse(tokens);
+    SP<Quadrature> parsed_quadrature = parse_class<Quadrature>(tokens);
 
     if (tokens.error_count())
     {
@@ -697,12 +698,12 @@ void quadrature_test(UnitTest &ut,
     // ***** Test various geometry, dimensionaly, and interpolation model options.
 
     // Test 1-D options. These requre that the axes have not been reassigned.
-    
+
     if (!quadrature.has_axis_assignments())
     {
-        
+
         // Build an ordinate set
-        
+
         SP<Ordinate_Set> ordinate_set =
             quadrature.create_ordinate_set(1U, // dimension
                                            rtt_mesh_element::CARTESIAN,
@@ -710,7 +711,7 @@ void quadrature_test(UnitTest &ut,
                                            false, // add_starting_directions
                                            false, // add_extra_directions,
                                            Ordinate_Set::LEVEL_ORDERED);
-        
+
         if (ordinate_set->ordinates().size()>=2)
         {
             ut.passes("Ordinate count is plausible");
@@ -719,7 +720,7 @@ void quadrature_test(UnitTest &ut,
         {
             ut.failure("Ordinate count is NOT plausible");
         }
-        
+
         if (soft_equiv(ordinate_set->norm(), 1.0))
         {
             ut.passes("Ordinate norm is correct");
@@ -730,7 +731,7 @@ void quadrature_test(UnitTest &ut,
         }
 
         ordinate_set->display();
-        
+
         test_no_axis(ut,
                      quadrature,
                      1U, // dimension,
@@ -748,7 +749,7 @@ void quadrature_test(UnitTest &ut,
                      "GQ1",
                      false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
-        
+
         if (quadrature.is_open_interval())
             // Our curvilinear angular operator algorithm doesn't work with closed
             // interval quadratures (those for which mu=-1 is part of the set).
@@ -761,7 +762,7 @@ void quadrature_test(UnitTest &ut,
                          "SN",
                          false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
-            
+
             test_no_axis(ut,
                          quadrature,
                          1U, // dimension,
@@ -777,7 +778,7 @@ void quadrature_test(UnitTest &ut,
         // Multidimensional cases required a non-interval quadrature.
     {
         // Build an ordinate set
-        
+
         SP<Ordinate_Set> ordinate_set =
             quadrature.create_ordinate_set(3U, // dimension
                                            rtt_mesh_element::CARTESIAN,
@@ -785,7 +786,7 @@ void quadrature_test(UnitTest &ut,
                                            false, // add_starting_directions
                                            false, // add_extra_directions,
                                            Ordinate_Set::LEVEL_ORDERED);
-        
+
         if (ordinate_set->ordinates().size()>=2)
         {
             ut.passes("Ordinate count is plausible");
@@ -794,7 +795,7 @@ void quadrature_test(UnitTest &ut,
         {
             ut.failure("Ordinate count is NOT plausible");
         }
-        
+
         if (soft_equiv(ordinate_set->norm(), 1.0))
         {
             ut.passes("Ordinate norm is correct");
@@ -805,7 +806,7 @@ void quadrature_test(UnitTest &ut,
         }
 
         ordinate_set->display();
-        
+
         test_no_axis(ut,
                      quadrature,
                      2U, // dimension,
@@ -814,7 +815,7 @@ void quadrature_test(UnitTest &ut,
                      "SN",
                      false, // add_extra_directions,
                      Ordinate_Set::OCTANT_ORDERED);
-        
+
         test_no_axis(ut,
                      quadrature,
                      3U, // dimension,
@@ -834,7 +835,7 @@ void quadrature_test(UnitTest &ut,
                          "GQ1",
                          false, // add_extra_directions,
                          Ordinate_Set::OCTANT_ORDERED);
-            
+
             test_no_axis(ut,
                          quadrature,
                          3U, // dimension,
@@ -844,7 +845,7 @@ void quadrature_test(UnitTest &ut,
                          false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
         }
-        
+
         if (!quadrature.has_axis_assignments())
             // Axisymmetric is hosed if axes have been reassigned, since the
             // levels are only guaranteed on the xi axis.
@@ -860,7 +861,7 @@ void quadrature_test(UnitTest &ut,
                              false, // add_extra_directions,
                              Ordinate_Set::LEVEL_ORDERED);
             }
-            
+
             test_no_axis(ut,
                          quadrature,
                          1U, // dimension,
@@ -869,7 +870,7 @@ void quadrature_test(UnitTest &ut,
                          "SN",
                          false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
-            
+
             test_no_axis(ut,
                          quadrature,
                          2U, // dimension,

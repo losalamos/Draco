@@ -19,7 +19,7 @@
 #include "mesh_element/Geometry.hh"
 #include "Expression.hh"
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 //! Can the next token in the stream be interpreted as real number?
 DLL_PUBLIC_parser bool at_real(Token_Stream &tokens);
@@ -48,7 +48,7 @@ DLL_PUBLIC_parser void parse_vector(Token_Stream &, double[]);
 //! parser a quote-delimited string, stripping the quotes.
 DLL_PUBLIC_parser std::string parse_manifest_string(Token_Stream &tokens);
 
-DLL_PUBLIC_parser 
+DLL_PUBLIC_parser
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry);
 
@@ -65,7 +65,7 @@ DLL_PUBLIC_parser double parse_quantity(Token_Stream &tokens,
                                  char const *name);
 
 //! parse an expression followed by a unit expression.
-DLL_PUBLIC_parser 
+DLL_PUBLIC_parser
 SP<Expression> parse_quantity(Token_Stream &tokens,
                               Unit const &unit,
                               char const *name,
@@ -78,6 +78,31 @@ DLL_PUBLIC_parser SP<Expression>
 parse_temperature(Token_Stream &,
                   unsigned number_of_variables,
                   std::map<string, pair<unsigned, Unit> > const &);
+
+//---------------------------------------------------------------------------------------//
+/*! Template for parse function that produces a class object.
+ *
+ * The parse_class template function is intended for general use as a common
+ * signature for all functions that parse an object of a specified class from a
+ * Token_Stream, so that the common code idiom for parsing an object of MyClass
+ * is:
+ *
+ *   SP<MyClass> spMyClass = parse_class<MyClass>(tokens);
+ *
+ * Developers may specialize this function as needed. A particular implementation
+ * is suggested in Class_Parse_Table.hh.
+ *
+ * The template parameter names the type of the object for which a smart pointer
+ * is returned.
+ *
+ * \param tokens Token stream from which to parse the user input.
+ *
+ * \return A pointer to an object matching the user specification, or NULL if
+ * the specification is not valid.
+ */
+
+template<class Class>
+rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
 
 } // rtt_parser
 

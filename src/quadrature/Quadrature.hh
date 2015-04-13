@@ -23,7 +23,6 @@ using std::string;
 using std::vector;
 using rtt_dsxx::SP;
 using rtt_mesh_element::Geometry;
-using rtt_parser::Token_Stream;
 
 //=======================================================================================//
 /*!
@@ -141,13 +140,6 @@ class Quadrature
                                              bool include_extra_directions,
                                              Ordinate_Set::Ordering ordering,
                                              QIM qim) const;
-
-    // STATICS
-
-    static void register_quadrature(string const &keyword,
-                                    SP<Quadrature> parse_function(Token_Stream&) );
-
-    static SP<Quadrature> parse(Token_Stream &);
 
   protected:
 

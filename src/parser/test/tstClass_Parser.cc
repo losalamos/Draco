@@ -14,7 +14,7 @@
 #include "ds++/Release.hh"
 #include "parser/String_Token_Stream.hh"
 #include "parser/utilities.hh"
-#include "parser/Class_Parser.hh"
+#include "parser/Class_Parse_Table.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -24,6 +24,7 @@ using namespace rtt_parser;
 class DummyClass
 {
   public:
+
     DummyClass(double const insouciance)
         :
         insouciance(insouciance)
@@ -38,54 +39,99 @@ class DummyClass
     double insouciance;
 };
 
-namespace
-{
-//---------------------------------------------------------------------------//
-double parsed_insouciance;
-
-//---------------------------------------------------------------------------//
-void Parse_Insouciance(Token_Stream &tokens, int)
-{
-    if (parsed_insouciance>=0.0)
-    {
-        tokens.report_semantic_error("duplicate specification of insouciance");
-    }
-    parsed_insouciance = parse_real(tokens);
-    if (parsed_insouciance<0)
-    {
-        tokens.report_semantic_error("insouciance must be nonnegative");
-        parsed_insouciance = 1;
-    }
-}
-
-//---------------------------------------------------------------------------//
-const Keyword dummy_keywords[] =
-{
-    {"insouciance",           Parse_Insouciance, 0, ""},
-};
-const unsigned number_of_dummy_keywords =
-sizeof(dummy_keywords)/sizeof(Keyword);
-
-} // anonymous namespace
-
 namespace rtt_parser
 {
 //---------------------------------------------------------------------------//
 template<>
-Parse_Table
-Class_Parser<DummyClass>::parse_table_(dummy_keywords,
-                                      number_of_dummy_keywords);
+class Class_Parse_Table<DummyClass>
+{
+  public:
+
+    // TYPEDEFS
+
+    typedef DummyClass Return_Class;
+
+    // MANAGEMENT
+
+    Class_Parse_Table();
+
+    // SERVICES
+
+    Parse_Table const &parse_table() const { return parse_table_; }
+
+    bool allow_exit() const { return false; }
+
+    void check_completeness(Token_Stream &tokens);
+
+    SP<DummyClass> create_object();
+
+  protected:
+
+    // DATA
+
+    double parsed_insouciance;
+
+  private:
+
+    // IMPLEMENTATION
+
+    static void parse_insouciance_(Token_Stream &tokens, int);
+
+    // STATIC
+
+    static Class_Parse_Table *current_;
+    static Parse_Table parse_table_;
+    static bool parse_table_is_initialized_;
+};
+
+//---------------------------------------------------------------------------//
+Class_Parse_Table<DummyClass> *Class_Parse_Table<DummyClass>::current_;
+Parse_Table Class_Parse_Table<DummyClass>::parse_table_;
+bool Class_Parse_Table<DummyClass>::parse_table_is_initialized_ = false;
 
 //---------------------------------------------------------------------------//
 template<>
-void Class_Parser<DummyClass>::post_sentinels_()
+SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens)
 {
-    parsed_insouciance = -1.0;  // sentinel value
+    return parse_class_from_table<Class_Parse_Table<DummyClass> >(tokens);
 }
 
 //---------------------------------------------------------------------------//
-template<>
-void Class_Parser<DummyClass>::check_completeness_(Token_Stream &tokens)
+void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens, int)
+{
+    if (current_->parsed_insouciance>=0.0)
+    {
+        tokens.report_semantic_error("duplicate specification of insouciance");
+    }
+    current_->parsed_insouciance = parse_real(tokens);
+    if (current_->parsed_insouciance<0)
+    {
+        tokens.report_semantic_error("insouciance must be nonnegative");
+        current_->parsed_insouciance = 1;
+    }
+}
+
+//---------------------------------------------------------------------------//
+Class_Parse_Table<DummyClass>::Class_Parse_Table()
+{
+    if (!parse_table_is_initialized_)
+    {
+        Keyword const keywords[] =
+            {
+                {"insouciance", parse_insouciance_, 0, ""},
+            };
+        unsigned const number_of_keywords = sizeof(keywords)/sizeof(Keyword);
+
+        parse_table_.add(keywords, number_of_keywords);
+
+        parse_table_is_initialized_ = true;
+    }
+    parsed_insouciance = -1.0;  // sentinel value
+    current_ = this;
+}
+
+//---------------------------------------------------------------------------//
+void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens)
 {
     if (parsed_insouciance<0)
     {
@@ -94,13 +140,13 @@ void Class_Parser<DummyClass>::check_completeness_(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------//
-template<>
-SP<DummyClass> Class_Parser<DummyClass>::create_object_()
+SP<DummyClass> Class_Parse_Table<DummyClass>::create_object()
 {
-    return SP<DummyClass>(new DummyClass(parsed_insouciance));
+    SP<DummyClass> Result = SP<DummyClass>(new DummyClass(parsed_insouciance));
+    return Result;
 }
 
-}
+} // namespace rtt_parser
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -111,7 +157,7 @@ void tstClass_Parser( UnitTest & ut)
     string text = "insouciance = 3.3\nend\n";
     String_Token_Stream tokens(text);
 
-    SP<DummyClass> dummy = Class_Parser<DummyClass>::parse(tokens);
+    SP<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
     if (dummy != SP<DummyClass>())
     {

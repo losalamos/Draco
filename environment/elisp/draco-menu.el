@@ -23,6 +23,7 @@
    ["New C++ template impl. file (.t.hh)" draco-cc-imp  t]
    ["New C++ instantiation file (_pt.cc)" draco-cc-pt   t]
    ["New C++ unit test executable"        draco-cc-test t]
+   ["New C++ class parser"        draco-parser t]
    "----"
    ["Insert Name and Time" draco-name-and-time t]
    ["New Python file"                     draco-python  t]
@@ -38,7 +39,7 @@
         ["New vision and scope"     draco-viscope  t]
         ["New bug post-mortem memo" draco-bug-pm   t]))
 
-(defun draco-menu-insert-comments-default () 
+(defun draco-menu-insert-comments-default ()
   "Submenu for inserting comments (context sensitive)."
   (list "Insert comment..."
 	["Insert C++ comment divider" draco-insert-comment-divider t]))
@@ -65,7 +66,7 @@
 )
 
 (if want-draco-menu
-    (add-hook 'draco-mode-hook 
+    (add-hook 'draco-mode-hook
 	      '(lambda ()
 		 (draco-mode-update-menu (draco-menu-insert-comments-default)))))
 
@@ -128,7 +129,7 @@
 
 ; default value is "%S: %b"
 ;
-;(setq frame-title-format 
+;(setq frame-title-format
 ;      '("%S: " (buffer-file-name "%f" (dired-directory
 ;				       dired-directory "%b"))))
 ; Formats:

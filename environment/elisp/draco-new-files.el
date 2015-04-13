@@ -61,8 +61,8 @@ These files are based on templates in the draco/templates directory."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -71,16 +71,16 @@ These files are based on templates in the draco/templates directory."
     (draco-guess-names)
 
     ;; Create new buffers from templates (CMakeLists.txt, config.h.in)
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      "CMakeLists.txt"
      (concat draco-templates-dir "/CMakeLists.package.txt"))
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      "config.h.in"
      (concat draco-templates-dir "/template.h")
      "config")
-    
+
     ))
 
 ;;---------------------------------------------------------------------------;;
@@ -96,14 +96,14 @@ These files are based on templates in the draco/templates directory."
 
   (interactive)
   ;; checks
-  
+
   (if (not (string= (draco-get-local-dir-name) "test"))
-      (error "This command must be run from the %s directory." 
+      (error "This command must be run from the %s directory."
 	     (concat (draco-get-local-dir-name) "/test")))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -134,22 +134,22 @@ These files are based on templates in the draco/templates directory."
   ;; checks
 
   (if (not (string= (draco-get-local-dir-name) "autodoc"))
-      (error "This command must be run from the %s directory." 
+      (error "This command must be run from the %s directory."
 	     (concat (draco-get-local-dir-name) "/autodoc")))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
   (draco-guess-names)
-  
+
   ;; Create new buffers from templates (mainpage.dcc):
-  
-  (draco-create-buffer-from-template 
+
+  (draco-create-buffer-from-template
    (concat draco-package-name ".dcc")
    (concat draco-templates-dir "/mainpage.dcc"))
   ))
@@ -159,7 +159,7 @@ These files are based on templates in the draco/templates directory."
 
 (defun draco-class (draco-class-name)
   "Function to set a C++ translation unit in draco (.hh,.t.hh,_pt.cc,.cc)"
-  
+
   ;; get the class draco-class-name
   (interactive "sClass Name: ")
 
@@ -173,8 +173,8 @@ These files are based on templates in the draco/templates directory."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -184,9 +184,9 @@ These files are based on templates in the draco/templates directory."
 
   ;; Create new buffers from templates (.hh, .cc, .i.hh)
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-class-name ".hh")
-   (concat draco-templates-dir "/template.hh")) 
+   (concat draco-templates-dir "/template.hh"))
 
   (draco-create-buffer-from-template
    (concat draco-class-name ".cc")
@@ -224,8 +224,8 @@ markers will be replaced by appropriate strings."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -235,9 +235,9 @@ markers will be replaced by appropriate strings."
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-class-name ".hh")
-   (concat draco-templates-dir "/template.hh")) 
+   (concat draco-templates-dir "/template.hh"))
 
   (draco-create-buffer-from-template
    (concat draco-class-name ".i.hh")
@@ -253,7 +253,7 @@ markers will be replaced by appropriate strings."
 This function will create a new buffer named draco-header-name.hh.in.
 The contents of the file template.hh.in located at draco-templates-dir
 will be inserted and special text markers will be replaced by
-appropriate strings." 
+appropriate strings."
 
   (interactive "sC++ Header.in Name: ")
 
@@ -267,8 +267,8 @@ appropriate strings."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -278,7 +278,7 @@ appropriate strings."
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-header-name ".hh.in")
    (concat draco-templates-dir "/template.hh")
    draco-header-name)
@@ -307,8 +307,8 @@ strings."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -318,7 +318,7 @@ strings."
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-header-name ".h")
    (concat draco-templates-dir "/template.h")
    draco-header-name)
@@ -348,8 +348,8 @@ appropriate strings."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -389,8 +389,8 @@ by appropriate strings."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -400,7 +400,7 @@ by appropriate strings."
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-class-name ".cc")
    (concat draco-templates-dir "/template.cc"))
 
@@ -408,7 +408,7 @@ by appropriate strings."
    (concat draco-class-name ".i.hh")
    (concat draco-templates-dir "/template.i.hh"))
 
-  
+
 ))
 
 ;;---------------------------------------------------------------------------;;
@@ -434,8 +434,8 @@ strings."
 ;      (error "This command must be run from the <pkg> directory."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -445,7 +445,7 @@ strings."
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-class-name "_pt.cc")
    (concat draco-templates-dir "/template_pt.cc"))
 ))
@@ -464,17 +464,17 @@ replaced by appropriate strings."
   (interactive "sC++ Test Executable Name: ")
 
   ;; checks
-  
+
   (if (not (string= (draco-get-local-dir-name) "test"))
-      (error "This command must be run from the %s directory." 
+      (error "This command must be run from the %s directory."
 	     (concat (draco-get-local-dir-name) "/test")))
 
   ;; determine if this is parallel or not
   (defvar draco-test-exe-parallel (read-from-minibuffer "Parallel: " "y"))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -492,7 +492,7 @@ replaced by appropriate strings."
        (concat draco-test-exe-name ".cc")
        (concat draco-templates-dir "/template_c4_test.cc")
        draco-test-exe-name)
-      (draco-create-buffer-from-template 
+      (draco-create-buffer-from-template
        (concat draco-test-exe-name ".cc")
        (concat draco-templates-dir "/template_test.cc")
        draco-test-exe-name))
@@ -503,12 +503,12 @@ replaced by appropriate strings."
 
 (defun draco-python (draco-python-script-name)
   "Function to spontaneously setup a new Python file in draco"
-  
+
   (interactive "sPython name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -518,7 +518,7 @@ replaced by appropriate strings."
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat draco-python-script-name ".py")
    (concat draco-templates-dir "/template.py")
    draco-python-script-name)
@@ -536,15 +536,15 @@ Currently \"type\" is one of \"in\" or \"temp.\""
 ;  (defvar draco-makefile-type (read-from-minibuffer "Type (test|temp): " "test")
 ;    "Makefile template used for creating a new Draco Makefile.
 ;One of \"test\" or \"temp\".")
-  
+
   ;; If choice is not one of "test" or "temp", then abort.
   (if (not (or (string= draco-makefile-type "test")
 	       (string= draco-makefile-type "temp")))
       (error "Makefile type must be one of test or temp."))
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
@@ -554,7 +554,7 @@ Currently \"type\" is one of \"in\" or \"temp.\""
 
   ;; Create the buffer from the template file and replace the text.
 
-  (draco-create-buffer-from-template 
+  (draco-create-buffer-from-template
    (concat "Makefile." draco-makefile-type)
    (concat draco-templates-dir "/Makefile." draco-makefile-type)
    (concat "Makefile." draco-makefile-type))
@@ -569,18 +569,18 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sMemo Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "latex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".tex")
      (concat draco-templates-dir "/draco_memo.tex")
      draco-paper-name)
@@ -595,18 +595,18 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sResearch Note Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "latex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".tex")
      (concat draco-templates-dir "/draco_note.tex")
      draco-paper-name)
@@ -621,18 +621,18 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sPaper Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "latex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".tex")
      (concat draco-templates-dir "/draco_art.tex")
      draco-paper-name)
@@ -647,18 +647,18 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sReport Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "latex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".tex")
      (concat draco-templates-dir "/draco_rep.tex")
      draco-paper-name)
@@ -673,25 +673,25 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sBib Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "bibtex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".bib")
      (concat draco-templates-dir "/draco_bib.bib")
      draco-paper-name)
 ))
 
 ;;---------------------------------------------------------------------------;;
-;; set up a "project vision/scope statement" memo 
+;; set up a "project vision/scope statement" memo
 
 (defun draco-viscope (name)
   "Function to spontaneously setup a new vision/scope memo"
@@ -699,25 +699,25 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sVision/Scope Memo Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "latex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".tex")
      (concat draco-templates-dir "/draco_viscope.tex")
      draco-paper-name)
     ))
 
 ;;---------------------------------------------------------------------------;;
-;; set up a "Bug Post-Mortem" memo 
+;; set up a "Bug Post-Mortem" memo
 
 (defun draco-bug-pm (name)
   "Function to spontaneously setup a new bug post-mortem memo"
@@ -725,21 +725,60 @@ Currently \"type\" is one of \"in\" or \"temp.\""
   (interactive "sMemo Name: ")
 
   ;; Query for package and namespace names and keep them function
-  ;; local. 
-  (let 
+  ;; local.
+  (let
       ((draco-package-name nil)
        (draco-safe-package-name nil)
        (draco-namespace nil)
        (draco-paper-name nil))
 
     (draco-guess-names "latex")
-    
+
     ;; Create the buffer from the template file and replace the text.
-    
-    (draco-create-buffer-from-template 
+
+    (draco-create-buffer-from-template
      (concat draco-paper-name ".tex")
      (concat draco-templates-dir "/draco_bug_pm.tex")
      draco-paper-name)
+))
+
+;;---------------------------------------------------------------------------;;
+;; make a new class parser in a draco pkg
+
+(defun draco-parser (draco-class-name)
+  "Function to create a C++ parser in draco (__parser.hh,__parser.cc)"
+
+  ;; get the class draco-class-name
+  (interactive "sClass Name: ")
+
+  ;; Checks
+
+;  (if (string= (draco-get-local-dir-name) "src")
+;      (error "This command must be run from the <pkg> directory."))
+;  (if (string= (draco-get-local-dir-name) "test")
+;      (error "This command must be run from the <pkg> directory."))
+;  (if (string= (draco-get-local-dir-name) "autodoc")
+;      (error "This command must be run from the <pkg> directory."))
+
+  ;; Query for package and namespace names and keep them function
+  ;; local.
+  (let
+      ((draco-package-name nil)
+       (draco-safe-package-name nil)
+       (draco-namespace nil)
+       (draco-paper-name nil))
+
+  (draco-guess-names)
+
+  ;; Create new buffers from templates (.hh, .cc, .i.hh)
+
+  (draco-create-buffer-from-template
+   (concat draco-class-name "__parser.hh")
+   (concat draco-templates-dir "/template__parser.hh"))
+
+  (draco-create-buffer-from-template
+   (concat draco-class-name "__parser.cc")
+   (concat draco-templates-dir "/template__parser.cc"))
 ))
 
 ;;---------------------------------------------------------------------------;;
