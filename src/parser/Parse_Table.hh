@@ -178,6 +178,9 @@ class DLL_PUBLIC_parser Parse_Table
     //! Add the keywords from another Parse_Table
     void add(Parse_Table const &);
 
+    //! Remove a keyword from the table.
+    void remove(char const *);
+
     //! Request a change in capacity.
     // using std::vector<Keyword>::reserve;
     void reserve (std::vector<Keyword>::size_type n) { vec.reserve(n); }

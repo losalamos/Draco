@@ -9,8 +9,8 @@
  *
  * revision history:
  * 0) original revision
- * 1) kgbudge (03/08/10): 
- *    Solo inspection of documentation, assertions, and tests. 
+ * 1) kgbudge (03/08/10):
+ *    Solo inspection of documentation, assertions, and tests.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -56,7 +56,7 @@ static void Parse_Any_Color(Token_Stream &tokens, int)
         }
 
         tokens.report_syntax_error(token, "expected a color");
-}     
+}
 
 const Keyword raw_table[] = {
     {"BLUE", Parse_Color, 1, "main"},
@@ -386,7 +386,7 @@ void tstParse_Table(UnitTest &ut)
     Keyword test_key = {"THIS SHOULD WORK", Parse_Color, 0, 0};
     if (!Is_Well_Formed_Keyword(test_key)) ut.failure("test FAILS");
 
-    Keyword benign_ambiguous_table[] = 
+    Keyword benign_ambiguous_table[] =
     {
         {"KEY", Parse_Color, 0, 0},
         {"KEY", Parse_Color, 0, 0}
@@ -395,11 +395,11 @@ void tstParse_Table(UnitTest &ut)
     token_stream.rewind();
     table_2.parse(token_stream);
 
-    Keyword malign_ambiguous_table[] = 
+    Keyword malign_ambiguous_table[] =
     {
         {"KEY", Parse_Color, 1, 0}
     };
-    try 
+    try
     {
         table_2.add(malign_ambiguous_table, 1);
         token_stream.rewind();
@@ -421,12 +421,12 @@ void tstParse_Table(UnitTest &ut)
     if (recover_stream.error_count() != 2) ut.failure("test FAILS");
 
     Parse_Table table_3;
-    Keyword case_ambiguous_table[] = 
+    Keyword case_ambiguous_table[] =
     {
         {"key", Parse_Color, 0, 0},
         {"Key", Parse_Color, 1, 0}
-    };    
-    try 
+    };
+    try
     {
         table_3.add(case_ambiguous_table, 2);
         table_3.parse(token_stream);
@@ -442,12 +442,12 @@ void tstParse_Table(UnitTest &ut)
     }
 
     Parse_Table table_3a;
-    Keyword casea_ambiguous_table[] = 
+    Keyword casea_ambiguous_table[] =
     {
         {"key", Parse_Color, 0, 0},
         {"Key", Parse_Any_Color, 0, 0}
-    };    
-    try 
+    };
+    try
     {
         table_3a.add(casea_ambiguous_table, 2);
         table_3a.parse(token_stream);
@@ -497,6 +497,18 @@ void tstParse_Table(UnitTest &ut)
         if (token_stream.error_count() != 5) ut.failure("test FAILS");
     }
 
+    // Test keyword removal
+
+    table.remove("BLUE");
+    {
+        String_Token_Stream tokens("BLUE");
+        table.parse(tokens);
+        if (tokens.error_count()==0)
+        {
+            ut.failure("FAILED to remove token");
+        }
+    }
+
     return;
 }
 
@@ -511,7 +523,7 @@ int main(int argc, char *argv[])
         tstParse_Table(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstParse_Table.cc

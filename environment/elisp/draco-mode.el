@@ -91,7 +91,7 @@ to anything else will generate errors."
 (defcustom draco-code-comment-width
   92
   "The number of colums wide to use for inserted comment blocks."
-  :type 'draco-mode)
+  :group 'draco-mode)
 
 ;;============================================================
 ;; End of customizable variables
