@@ -112,7 +112,7 @@ case seqlac*:
     use random123
 
     # LLNL dotkits
-    use cmake311
+    use cmake321
     use erase=del
     use alia1++
 

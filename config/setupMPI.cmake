@@ -34,7 +34,7 @@ include( FeatureSummary )
 macro( setupDracoMPIVars )
 
   # Set Draco build system variables based on what we know about MPI.
-  if( MPI_FOUND )
+  if( MPI_CXX_FOUND )
     set( DRACO_C4 "MPI" )
   else()
     set( DRACO_C4 "SCALAR" )
@@ -377,8 +377,9 @@ macro( setupMPILibrariesWindows )
 
       # For MS-MPI 5, mpifptr.h is architecture dependent. Figure out
       # what arch this is and save this path to MPI_Fortran_INCLUDE_PATH
-      if( MPI_LIBRARY AND NOT MPI_Fortran_INCLUDE_PATH )
-        get_filename_component( MPI_Fortran_INCLUDE_PATH "${MPI_LIBRARY}" DIRECTORY )
+      list( GET MPI_CXX_LIBRARIES 0 first_cxx_mpi_library )
+      if( first_cxx_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
+        get_filename_component( MPI_Fortran_INCLUDE_PATH "${first_cxx_mpi_library}" DIRECTORY )
         string( REPLACE "lib" "Include" MPI_Fortran_INCLUDE_PATH ${MPI_Fortran_INCLUDE_PATH} )
         set( MPI_Fortran_INCLUDE_PATH
              "${MPI_CXX_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
@@ -386,7 +387,7 @@ macro( setupMPILibrariesWindows )
       endif()
 
       # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
-      if( NOT ${MPI_FOUND} AND EXISTS "${MPIRUN}" )
+      if( NOT ${MPI_CXX_FOUND} AND EXISTS "${MPIRUN}" )
          set( MPIEXEC $ENV{MPIRUN} )
          find_package( MPI )
       endif()
@@ -458,7 +459,7 @@ macro( setupMPILibrariesWindows )
    endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
 
 #   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )
-   if( ${MPI_FOUND} )
+   if( ${MPI_CXX_FOUND} )
       message(STATUS "Looking for MPI...${MPIEXEC}")
    else()
       message(STATUS "Looking for MPI...not found")
