@@ -113,6 +113,7 @@ void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens, int
 
 //---------------------------------------------------------------------------//
 Class_Parse_Table<DummyClass>::Class_Parse_Table()
+    :  parsed_insouciance(-1.0) // sentinel value
 {
     if (!parse_table_is_initialized_)
     {
@@ -126,7 +127,6 @@ Class_Parse_Table<DummyClass>::Class_Parse_Table()
 
         parse_table_is_initialized_ = true;
     }
-    parsed_insouciance = -1.0;  // sentinel value
     current_ = this;
 }
 
