@@ -386,27 +386,26 @@ macro( setupMPILibrariesWindows )
              CACHE STRING "Location for MPI include files for Fortran.")
       endif()
 
-      # Second chance using $MPIRUN (old Draco setup format -- ask JDD).
-      if( NOT ${MPI_CXX_FOUND} AND EXISTS "${MPIRUN}" )
-         set( MPIEXEC $ENV{MPIRUN} )
-         find_package( MPI )
-      endif()
-
       setupDracoMPIVars()
 
       # Find the version
       # This is not working (hardwire it for now)
-      # execute_process( COMMAND "${MPIEXEC}" -help
-        # OUTPUT_VARIABLE DBS_MPI_VER_OUT
-        # ERROR_VARIABLE DBS_MPI_VER_ERR
-        # ERROR_QUIET
-        # OUTPUT_STRIP_TRAILING_WHITESPACE
-        # ERROR_STRIP_TRAILING_WHITESPACE
-        # )
-      # string( REGEX REPLACE "Version ([0-9.]+)" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-
-      set(DBS_MPI_VER "5.0")
-
+      execute_process( COMMAND "${MPIEXEC}" -help
+        OUTPUT_VARIABLE DBS_MPI_VER_OUT
+        ERROR_VARIABLE DBS_MPI_VER_ERR
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_STRIP_TRAILING_WHITESPACE
+        )
+      if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
+          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")          
+          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1" DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2" DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+          set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
+      else()
+         set(DBS_MPI_VER "5.0")
+      endif()
+    
       set_package_properties( MPI PROPERTIES
         URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
         DESCRIPTION "Microsoft MPI"
