@@ -39,14 +39,7 @@ class Double_Gauss : public Interval_Quadrature
     
     // CREATORS
 
-    explicit Double_Gauss(unsigned sn_order)
-        : Interval_Quadrature(sn_order) 
-    {
-        Require(sn_order>0 && sn_order%2==0);
-
-        Ensure(check_class_invariants());
-        Ensure(this->sn_order()==sn_order);
-    }
+    explicit Double_Gauss(unsigned sn_order);
 
     // ACCESSORS
 
@@ -71,8 +64,6 @@ class Double_Gauss : public Interval_Quadrature
     virtual vector<Ordinate> create_level_ordinates_(double norm) const;
 
     // DATA
-
-    // unsigned sn_order_;
 };
 
 } // end namespace rtt_quadrature

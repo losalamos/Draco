@@ -3,7 +3,7 @@
  * \file   quadrature/Interval_Quadrature.hh
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
- * \brief  A class representing an interval Gauss-Legendre quadrature set.
+ * \brief  A class representing an interval Legendre quadrature set.
  * \note   Copyright 2000-2015 Los Alamos National Security, LLC. All rights
  *         reserved. 
  */
@@ -35,15 +35,29 @@ class Interval_Quadrature : public Quadrature
     
     // CREATORS
 
-    Interval_Quadrature(unsigned const sn_order)
-        : Quadrature(sn_order)
-    {/*empty*/};
+    Interval_Quadrature(unsigned const sn_order);
 
     // ACCESSORS
 
     virtual Quadrature_Class quadrature_class() const;
 
     virtual bool has_axis_assignments() const;
+
+    double mu(unsigned const m) const
+    {
+        Require(mu_.size() == sn_order());
+        Require(m < mu_.size());
+
+        return mu_[m];
+    }; 
+
+    double wt(unsigned const m) const
+    {
+        Require(wt_.size() == sn_order());
+        Require(m < wt_.size());
+
+        return wt_[m];
+    };
 
     // STATICS
 
@@ -69,6 +83,11 @@ class Interval_Quadrature : public Quadrature
     
     //! Virtual hook for create_ordinate_set
     virtual vector<Ordinate> create_level_ordinates_(double norm) const = 0;
+
+    // DATA
+
+    vector<double> mu_, wt_;
+
 };
 
 } // end namespace rtt_quadrature

@@ -37,7 +37,7 @@ class Lobatto : public Interval_Quadrature
     
     // CREATORS
 
-    explicit Lobatto(unsigned sn_order);
+    Lobatto(unsigned sn_order);
 
     // ACCESSORS
 
@@ -63,9 +63,6 @@ class Lobatto : public Interval_Quadrature
     
     virtual vector<Ordinate> create_level_ordinates_(double norm) const;
 
-    // DATA
-
-    vector<double> mu_, wt_;
 };
 
 } // end namespace rtt_quadrature

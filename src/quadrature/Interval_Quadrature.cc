@@ -17,6 +17,11 @@ namespace rtt_quadrature
 {
 using namespace std;
 
+Interval_Quadrature::Interval_Quadrature(unsigned const sn_order)
+    : Quadrature(sn_order)
+{
+}
+
 //---------------------------------------------------------------------------------------//
 /* virtual */
 Quadrature_Class Interval_Quadrature::quadrature_class() const
@@ -64,12 +69,12 @@ Interval_Quadrature::create_ordinates_(unsigned const /*dimension*/,
                                   bool const include_extra_directions) const
 {
     return Interval_Quadrature::create_ordinates_(1,  // can only be 1-D
-                                             geometry,
-                                             norm,
-                                             0, // can only be aligned with mu
-                                             0,
-                                             include_starting_directions,
-                                             include_extra_directions);
+                                                  geometry,
+                                                  norm,
+                                                  0, // can only be aligned with mu
+                                                  0,
+                                                  include_starting_directions,
+                                                  include_extra_directions);
 }
 
 } // end namespace rtt_quadrature

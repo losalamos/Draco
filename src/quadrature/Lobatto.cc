@@ -25,12 +25,13 @@ using rtt_dsxx::to_string;
 
 //---------------------------------------------------------------------------------------//
 Lobatto::Lobatto(unsigned sn_order)
-    :
-    Interval_Quadrature(sn_order),
-    mu_(sn_order),
-    wt_(sn_order)
+    : Interval_Quadrature(sn_order)
 {
     Require(sn_order>0 && sn_order%2==0);
+
+    // base class data members
+    mu_.resize(sn_order);
+    wt_.resize(sn_order);
 
     // Mus and weights are worth precomputing
 
@@ -164,7 +165,6 @@ bool Lobatto::check_class_invariants() const
 vector<Ordinate>
 Lobatto::create_level_ordinates_(double const norm) const
 {
-
     // Sanity Checks: none at present
 
     unsigned const numPoints(sn_order());

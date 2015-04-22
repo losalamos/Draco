@@ -36,14 +36,7 @@ class Gauss_Legendre : public Interval_Quadrature
     
     // CREATORS
 
-    explicit Gauss_Legendre(unsigned sn_order)
-        : Interval_Quadrature(sn_order)
-    {
-        Require(sn_order>0 && sn_order%2==0);
-
-        Ensure(check_class_invariants());
-        Ensure(this->sn_order()==sn_order);
-    }
+    Gauss_Legendre(unsigned sn_order);
 
     // ACCESSORS
 
@@ -67,8 +60,6 @@ class Gauss_Legendre : public Interval_Quadrature
   protected:
     
     virtual vector<Ordinate> create_level_ordinates_(double norm) const;
-
-    // DATA
 
 };
 

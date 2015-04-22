@@ -14,14 +14,65 @@
 #include <numeric>
 
 #include "Double_Gauss.hh"
+#include "Gauss_Legendre.hh"
 
 #include "ds++/to_string.hh"
-#include "gauleg.hh"
 
 namespace rtt_quadrature
 {
 using namespace std;
 using rtt_dsxx::to_string;
+
+Double_Gauss::Double_Gauss(unsigned sn_order)
+    : Interval_Quadrature(sn_order) 
+{
+    Require(sn_order>0 && sn_order%2==0);
+
+    // base class data members
+    mu_.resize(sn_order);
+    wt_.resize(sn_order);    
+
+    unsigned const numGaussPoints = sn_order;
+    unsigned const n(numGaussPoints);
+    unsigned const n2(n/2);
+
+    if (n2 == 1)     // 2-point double Gauss is just Gauss
+    {
+        Check(sn_order == 2);
+
+        SP<Gauss_Legendre> GL(new Gauss_Legendre(sn_order));
+        for (unsigned m=0; m<sn_order; ++m)
+        {
+            mu_[m] = GL->mu(m);
+            wt_[m] = GL->wt(m);
+        }
+    }
+    else             // Create an N/2-point Gauss quadrature on [-1,1]
+    {
+
+        Check( n2%2 == 0 );
+        Check( n2 > 2 );
+
+        SP<Gauss_Legendre> GL(new Gauss_Legendre(n2));
+
+        // map the quadrature onto the two half-ranges
+
+        for (unsigned m=0; m<n2; ++m)
+        {
+            // Map onto [-1,0] then skew-symmetrize
+            // (ensuring ascending order on [-1, 1])
+            
+            mu_[m] = 0.5*(GL->mu(m) - 1.0);
+            wt_[m] = 0.5*GL->wt(m);
+
+            mu_[n-m-1] = -mu_[m];
+            wt_[n-m-1] =  wt_[m];
+        }
+    }
+
+    Ensure(check_class_invariants());
+    Ensure(this->sn_order()==sn_order);
+}
 
 //---------------------------------------------------------------------------------------//
 /* virtual */
@@ -68,72 +119,20 @@ Double_Gauss::create_level_ordinates_(double const norm) const
 {
     // Preconditions checked in create_ordinate_set
 
-    unsigned const numGaussPoints = sn_order();
-    unsigned const n(numGaussPoints);
-    unsigned const n2(n/2);
+    unsigned const numPoints(sn_order());
 
-    // size the data vectors
+    double sumwt = 0.0;
+    for ( size_t i = 0; i < numPoints; ++i )
+	sumwt += wt_[i];
 
-    vector<double> mu(numGaussPoints);
-    vector<double> wt(numGaussPoints);
-
-    if (n2 == 1)
-    {
-        // 2-point double Gauss is just Gauss
-
-        double const mu1(-1); // range of direction
-        double const mu2(1);
-        gauleg( mu1, mu2, mu, wt, numGaussPoints );
-
-    }
-    else
-    {
-        // Create an N/2-point Gauss quadrature on [-1,1]
-
-        Check( n2%2 == 0 );
-
-        double const mu1(-1); // range of direction
-        double const mu2(1);
-        std::vector< double > muH;
-        std::vector< double > wtH;
-        gauleg( mu1, mu2, muH, wtH, n2 );
-
-        // map the quadrature onto the two half-ranges
-
-        for (unsigned m=0; m<n2; ++m)
-        {
-            // Map onto [-1,0] then skew-symmetrize
-            // (ensuring ascending order on [-1, 1])
-            
+    double c = norm/sumwt;
     
-            mu[m] = 0.5*(muH[m] - 1.0);
-            wt[m] = 0.5*wtH[m];
-
-            mu[n-m-1] = -mu[m];
-            wt[n-m-1] =  wt[m];
-        }
-    }
-
-    // Compute and store the sum of the weights
-
-    double sumwt( std::accumulate( wt.begin(), wt.end(), // range
-                                   0.0 ) );              // init value.
-
-    // Sanity Checks: always none at present
-
-    if( !soft_equiv(norm,2.0) )
-    {
-        double c = norm/sumwt;
-        for ( size_t i=0; i < numGaussPoints; ++i )
-            wt[i] = c * wt[i];
-    }
-
     // build the set of ordinates
-    vector<Ordinate> Result( numGaussPoints ); // sn_order
-    for ( size_t i=0; i<numGaussPoints; ++i )
+    vector<Ordinate> Result( numPoints);
+    for ( size_t i=0; i<numPoints; ++i )
     {
 	// This is a 1D set.
-	Result[i] = Ordinate(mu[i], wt[i]);
+	Result[i] = Ordinate(mu_[i], c*wt_[i]);
     }
 
     return Result;

@@ -12,9 +12,10 @@
 //---------------------------------------------------------------------------------------//
 
 #include "Product_Chebyshev_Legendre.hh"
+#include "Gauss_Legendre.hh"
 
-#include "gauleg.hh"
 #include "ds++/to_string.hh"
+#include "units/MathConstants.hh"
 
 namespace rtt_quadrature
 {
@@ -69,11 +70,7 @@ Product_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu,
     eta.resize(numOrdinates);
     wt.resize(numOrdinates);
 
-    double const mu1 = -1; // range of direction
-    double const mu2 =  1;
-    vector<double> GL_mu(levels);
-    vector<double> GL_wt(levels);
-    gauleg( mu1, mu2, GL_mu, GL_wt, sn_order() );
+    SP<Gauss_Legendre> GL(new Gauss_Legendre(sn_order_));
 
     // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
 
@@ -81,8 +78,8 @@ Product_Chebyshev_Legendre::create_octant_ordinates_(vector<double> &mu,
 
     for (unsigned i=0; i<levels/2; ++i)
     {
-        double xmu=GL_mu[i];
-        double xwt=GL_wt[i];
+        double xmu=GL->mu(i);
+        double xwt=GL->wt(i);
         double xsr=sqrt(1.0-xmu*xmu);
             
         for (unsigned j=0; j<azimuthal_order_/2; ++j)

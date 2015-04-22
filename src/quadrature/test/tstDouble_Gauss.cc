@@ -27,8 +27,11 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try
     {
-        Double_Gauss quadrature(8); // SN order = 8
-        quadrature_test(ut, quadrature);
+        Double_Gauss quad8(8); // SN order = 8
+        quadrature_test(ut, quad8);
+
+        Double_Gauss quad2(2); // SN order = 2
+        quadrature_test(ut, quad2);
     }
     UT_EPILOG(ut);
 }

@@ -23,6 +23,25 @@ namespace rtt_quadrature
 using namespace std;
 using rtt_dsxx::to_string;
 
+Gauss_Legendre::Gauss_Legendre(unsigned sn_order)
+    : Interval_Quadrature(sn_order)
+{
+    Require(sn_order>0 && sn_order%2==0);
+    
+    // base class data members
+    mu_.resize(sn_order);
+    wt_.resize(sn_order);
+
+    double const mu1 = -1; // range of direction
+    double const mu2 = 1;
+    gauleg( mu1, mu2, mu_, wt_, sn_order_ );
+    
+    // Sanity Checks: none at present
+
+    Ensure(check_class_invariants());
+    Ensure(this->sn_order()==sn_order);
+}
+
 //---------------------------------------------------------------------------------------//
 /* virtual */
 string Gauss_Legendre::name() const
@@ -67,35 +86,21 @@ vector<Ordinate>
 Gauss_Legendre::create_level_ordinates_(double const norm) const
 {
     // Preconditions checked in create_ordinate_set
-    
-    using rtt_dsxx::soft_equiv;
 
-    double const mu1 = -1; // range of direction
-    double const mu2 = 1;
-    vector<double> mu, wt;
-    unsigned const N = sn_order_;
-    mu.reserve(N);
-    wt.reserve(N);
-    gauleg( mu1, mu2, mu, wt, sn_order_ );
-    
-    double sumwt = accumulate( wt.begin(),
-                               wt.end(),
-                               0.0 );  
+    unsigned const numPoints(sn_order());
 
-    // If norm != 2.0 then renormalize the weights to the required values. 
-    if( !soft_equiv(norm,2.0) ) 
-    {
-	double c = norm/sumwt;
-	for ( size_t i=0; i < sn_order_; ++i )
-	    wt[i] = c * wt[i];
-    }
+    double sumwt = 0.0;
+    for ( size_t i = 0; i < numPoints; ++i )
+	sumwt += wt_[i];
+
+    double c = norm/sumwt;
     
     // build the set of ordinates
-    vector<Ordinate> Result( sn_order_ );
-    for ( size_t i=0; i<sn_order_; ++i )
+    vector<Ordinate> Result( numPoints);
+    for ( size_t i=0; i<numPoints; ++i )
     {
 	// This is a 1D set.
-	Result[i] = Ordinate(mu[i], wt[i]);
+	Result[i] = Ordinate(mu_[i], c*wt_[i]);
     }
 
     return Result;
