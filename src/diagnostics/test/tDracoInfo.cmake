@@ -26,7 +26,7 @@ aut_setup()
 message("Running tests...")
 
 if( HAVE_MIC )
-  set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
+  set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
   message("${RUN_CMD} ${WORKDIR} ${APP} > ${OUTFILE}")
   execute_process(
     COMMAND ${RUN_CMD} ${WORKDIR} ${APP}
