@@ -311,7 +311,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     # For MIC nodes, ssh to the node and then run a script that
     # setups the local environment (PATHS, LD_LIBRARY_PATH, etc.)
     # and then run the test normally.
-    set( RUN_CMD ssh -o StrictHostKeyChecking=no $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
+    set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
@@ -565,7 +565,7 @@ macro( add_scalar_tests test_sources )
     set( RUN_CMD ${MPIEXEC} -n 1 )
   elseif( HAVE_MIC )
     # ssh mic-node <wrapper-script> <work_dir> <unit_test arg1 arg2 arg3...>
-    set( RUN_CMD ssh $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
+    set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
