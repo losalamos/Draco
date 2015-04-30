@@ -72,8 +72,8 @@ run "module purge"
 run "module load gcc openmpi cmake/3.2.1"
 run "module load valgrind numdiff svn random123"
 run "module load eospac grace lapack valgrind"
-run "module load SCALAPACK SuperLU_DIST hypre/2.0.0"
-run "module load BLACS ndi ParMetis trilinos"
+run "module load SuperLU_DIST"
+run "module load ndi ParMetis trilinos"
 run "module load doxygen graphviz qt"
 comp=gcc
 
@@ -91,6 +91,17 @@ coverage)
     run "module load bullseyecoverage"
     CXX=`which g++`
     CC=`which gcc`
+    ;;
+bounds_checking)
+    echo "Bounds checking option selected."
+    if ! test "${build_type}" == "Debug"; then
+       echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+       exit 1
+    fi
+    bounds_checking=on
+    run "module swap SuperLU_DIST/3.3 SuperLU_DIST/3.3-bc"
+    run "module swap trilinos/11.10.2 trilinos/11.10.2-bc"
+    run "module swap ParMetis/4.0.3 ParMetis/4.0.3-bc"
     ;;
 fulldiagnostics)
     comp="intel-fulldiagnostics"
@@ -205,6 +216,9 @@ if test "${build_type}" = "Coverage"; then
       run "rm -f ${COVFILE}"
       cov01 --on
    fi
+fi
+if test "${bounds_checking:-off}" = "on"; then
+    build_type="${build_type},bounds_checking"
 fi
 
 # Environment

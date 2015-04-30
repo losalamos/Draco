@@ -115,7 +115,9 @@ if ! test "${extra_params}x" = "x"; then
    none)
       # if 'none' set to blank
       extra_params=""; epdash="" ;;
-   coverage | cuda | fulldiagnostics | nr | perfbench | pgi | knightscorner ) # known, continue
+   coverage | cuda | fulldiagnostics | nr | perfbench | pgi )
+      ;;
+   knightscorner | bounds_checking )
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -185,7 +187,7 @@ ccscs[0-9])
     if ! test "${extra_params}x" = "x"; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        coverage | fulldiagnostics | nr | perfbench ) # known, continue
+        coverage | fulldiagnostics | nr | perfbench | bounds_checking ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;

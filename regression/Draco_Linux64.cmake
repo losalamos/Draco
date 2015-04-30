@@ -17,7 +17,7 @@ set( CTEST_PROJECT_NAME "Draco" )
 message("source ${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 set_defaults()
-parse_args() 
+parse_args()
 find_tools()
 set_svn_command("draco/trunk")
 
@@ -50,9 +50,10 @@ ${TOOLCHAIN_SETUP}
 ${CT_CUSTOM_VARS}
 # Set DRACO_DIAGNOSTICS and DRACO_TIMING:
 ${FULLDIAGNOSTICS}
+${BOUNDS_CHECKING}
 ")
 
-message("CTEST_INITIAL_CACHE =  
+message("CTEST_INITIAL_CACHE =
 ----------------------------------------------------------------------
 ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
@@ -131,7 +132,7 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
    message(  "ctest_configure()" )
    ctest_configure(
       BUILD        "${CTEST_BINARY_DIRECTORY}"
-      RETURN_VALUE res) # LABELS label1 [label2] 
+      RETURN_VALUE res) # LABELS label1 [label2]
 endif()
 
 # Build
@@ -140,26 +141,26 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
    if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
          "${CTEST_SITE}" MATCHES "ccscs7" )
       message( "ctest_build( TARGET autodoc RETURN_VALUE res )" )
-      ctest_build( 
+      ctest_build(
          TARGET autodoc
          RETURN_VALUE res
          NUMBER_ERRORS num_errors
          NUMBER_WARNINGS num_warnings
          )
-      message( "build result: 
+      message( "build result:
    ${res}
    Build errors  : ${num_errors}
    Build warnings: ${num_warnings}" )
    endif()
    # Main build
    message( "ctest_build( TARGET install RETURN_VALUE res )" )
-   ctest_build( 
+   ctest_build(
       TARGET install
       RETURN_VALUE res
       NUMBER_ERRORS num_errors
       NUMBER_WARNINGS num_warnings
       )
-   message( "build result: 
+   message( "build result:
    ${res}
    Build errors  : ${num_errors}
    Build warnings: ${num_warnings}" )
@@ -173,10 +174,10 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
 #   else()
      find_num_procs_avail_for_running_tests() # returns num_test_procs
      message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
-     ctest_test( PARALLEL_LEVEL ${num_test_procs} 
-                 SCHEDULE_RANDOM ON 
+     ctest_test( PARALLEL_LEVEL ${num_test_procs}
+                 SCHEDULE_RANDOM ON
                  # INCLUDE_LABEL <LABEL>
-                 ) 
+                 )
 #   endif()
 
    # Process code coverage (bullseye) or dynamic analysis (valgrind)
@@ -191,4 +192,3 @@ if( "${CTEST_SUBMIT}" STREQUAL "ON" )
 endif()
 
 message("end of ${CTEST_SCRIPT_NAME}.")
-

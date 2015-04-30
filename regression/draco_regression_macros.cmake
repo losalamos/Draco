@@ -342,6 +342,15 @@ macro( parse_args )
     #set(CTEST_BUILD_FLAGS "-j${num_compile_procs}")
   endif()
 
+  # Bounds Checking
+  if( ${CTEST_SCRIPT_ARG} MATCHES bounds_checking )
+    if( "${compiler_short_name}" STREQUAL "gcc" )
+      set( BOUNDS_CHECKING "GCC_ENABLE_GLIBCXX_DEBUG:BOOL=ON" )
+    else()
+      message(FATAL_ERROR "I don't know how to turn on bounds checking for compiler = ${compiler_short_name}" )
+    endif()
+  endif()
+
   if( NOT "$ENV{buildname_append}x" STREQUAL "x" )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )
   endif()
