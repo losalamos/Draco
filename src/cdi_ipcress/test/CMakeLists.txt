@@ -23,16 +23,16 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/config.h )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/cdi_ipcress_test.cc 
+set( test_lib_sources
+   ${PROJECT_SOURCE_DIR}/cdi_ipcress_test.cc
    ${PROJECT_SOURCE_DIR}/cdi_ipcress_test.hh
 )
-set( test_sources 
+set( test_sources
    tIpcressFile.cc
    tIpcressOpacity.cc
    tIpcressWithCDI.cc
    tIpcress_Interpreter.cc
-   ReadOdfIpcressFile.cc
+#   ReadOdfIpcressFile.cc # needs argument '--unittest'
    tIpcressOdfmgOpacity.cc
 )
 file( GLOB ipcress_data *.ipcress )
@@ -43,7 +43,7 @@ file( GLOB ipcress_data *.ipcress )
 
 foreach( file ${ipcress_data} )
    get_filename_component( shortname ${file} NAME )
-   configure_file( ${file} 
+   configure_file( ${file}
       ${PROJECT_BINARY_DIR}/${shortname} COPYONLY )
 endforeach()
 
@@ -51,7 +51,7 @@ endforeach()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_BINARY_DIR}      # test/config.h
    ${PROJECT_SOURCE_DIR}/..   # headers for package
@@ -61,7 +61,7 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_cdi_ipcress_test
    TARGET_DEPS  Lib_cdi_ipcress
    LIBRARY_NAME ${PROJECT_NAME}
@@ -75,5 +75,7 @@ add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    "Lib_cdi_ipcress_test" )
 
-
-
+add_scalar_tests(
+   SOURCES "ReadOdfIpcressFile.cc"
+   DEPS    "Lib_cdi_ipcress_test"
+   TEST_ARGS "--unittest" )
