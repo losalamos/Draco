@@ -52,7 +52,7 @@ case ty*.localdomain:
     module unload intel openmpi
     module load intel/14.0.4 openmpi
     module load git svn emacs
-    module load cmake/3.1.1 numdiff lapack/3.4.1 random123 eospac
+    module load cmake/3.2.2 numdiff lapack/3.4.1 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
@@ -87,7 +87,7 @@ case ci*:
 
     # draco modules start here.
     module load gsl/1.15 lapack/3.4.1
-    module load cmake/3.1.1 numdiff svn git emacs
+    module load cmake/3.2.2 numdiff svn git emacs
     module load trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac/v6.2.4
 

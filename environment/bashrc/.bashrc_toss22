@@ -52,7 +52,7 @@ else
     module load lapack/3.4.1 trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
     # support tools
-    module load svn/1.8.10 cmake/3.2.1 numdiff git totalview emacs
+    module load svn/1.8.10 cmake/3.2.2 numdiff git totalview emacs
 
 fi
 

@@ -45,7 +45,7 @@ module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac/v6.2.4
 
 module load user_contrib
-module load svn git cmake/3.2.1 numdiff
+module load svn git cmake/3.2.2 numdiff
 
 export OMP_NUM_THREADS=8
 

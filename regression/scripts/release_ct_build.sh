@@ -34,7 +34,7 @@ module load PrgEnv-intel
 module unload xt-libsci xt-totalview
 module swap intel intel/14.0.4.211
 module load gsl/1.15
-module load cmake/3.1.1 numdiff svn
+module load cmake/3.2.2 numdiff svn
 module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac/v6.2.4
 module list
