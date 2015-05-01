@@ -689,7 +689,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # coverage  build -> debug   version of Draco
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
-    string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-nr" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-perfbench" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
   endif()
