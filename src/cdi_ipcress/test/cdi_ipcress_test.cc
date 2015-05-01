@@ -13,9 +13,7 @@
 
 #include "cdi_ipcress_test.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <iostream>
 #include <iomanip>
-#include <cmath>
 
 using rtt_dsxx::soft_equiv;
 
@@ -29,10 +27,10 @@ namespace rtt_cdi_ipcress_test
 bool match( double computedValue, double referenceValue )
 {
     return soft_equiv(computedValue, referenceValue );
-} 
+}
 
-bool match( const std::vector< double > &computedValue, 
-            const std::vector< double > &referenceValue ) 
+bool match( const std::vector< double > &computedValue,
+            const std::vector< double > &referenceValue )
 {
     // If the vector sizes don't match then die
     if ( computedValue.size() != referenceValue.size() )
@@ -46,7 +44,7 @@ bool match( const std::vector< double > &computedValue,
     return true;
 }
 
-bool match(const std::vector< std::vector< double > >& computedValue, 
+bool match(const std::vector< std::vector< double > >& computedValue,
            const std::vector< std::vector< double > >& referenceValue )
 {
     // If the vector sizes don't match then die
@@ -76,7 +74,7 @@ bool match(const std::vector< std::vector< double > >& computedValue,
         {
             // If the comparison fails then stop testing and
             // return "false" to indicate that the test
-            // failed. 
+            // failed.
             if (! soft_equiv(computedValue[i][j], referenceValue[i][j] ))
             {
                 std::cout << std::setprecision(14)
@@ -92,7 +90,7 @@ bool match(const std::vector< std::vector< double > >& computedValue,
 }
 
 bool match(
-    const std::vector< std::vector< std::vector< double > > >& computedValue, 
+    const std::vector< std::vector< std::vector< double > > >& computedValue,
     const std::vector< std::vector< std::vector< double > > >& referenceValue )
 {
     // If the vector sizes don't match then die

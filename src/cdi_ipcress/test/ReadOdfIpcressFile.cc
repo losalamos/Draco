@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
     // get the ipcress file name, and create the ipcress file
     string ipcressFileName;
-    if( not is_unittest )
+    if( ! is_unittest )
         ipcressFileName = argv[argc - 1];
     else
         ipcressFileName = ut.getTestInputPath() + std::string("odfregression10.ipcress");
