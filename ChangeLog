@@ -1,3 +1,231 @@
+2015-05-04  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_16_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/36.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_8_0,   http://rtt.lanl.gov/redmine/versions/37
+	  - Capsaicin-4_5_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 14.0.4    OpenMPI-1.6.5
+	                     Intel 13.1.3    OpenMPI-1.6.5
+                             Intel 15.0.090  OpenMPI-1.6.5
+	  CT/CI              Intel 14.0.4    Cray_MPICH2-7.0.1
+	                     Intel 13.1.3    Cray_MPICH2-7.0.1
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	- 833 files changed, added or removed in 83 commits.
+	- A significant redesign of the parser component was comleted (see details below, r7945).
+	- This release includes many build system and minor package updates.
+
+	* Details per package:
+
+	Build System:
+	- Update the CMakeAddFortranSubdirectory (CAFS) feature of the build system to respect the selected build type (Debug,
+	  Release, etc.) in the Fortran subproject.
+	- Began supporting and using user_contrib modules on HPC platforms (removed many modulefiles from Draco).
+	- Reverting back to intel/14 for regressions and the default environment due to issues discovered in intel/15.  When
+	  intel/15.0.2 is available, we will consider moving back to version 15.
+	- Some Win32 specific implementations were implemented to allow nightly regressions of Draco and Jayenne from Win32.
+	- Some cleanup of how OpenMP is detected and toggled on/off by the build system.
+	- Begin requiring cmake/3.2.1 or later (now using cmake's FindGSL.cmake)
+
+	c4:
+	- Reimplemented start, stop, and set_activity functions of Global_Timer to have desired behavior. Add report_all function to
+	  Global_Timer to print a unified report from all active Global_Timers. Add reset_all function to reset all active
+	  Global_Timers. Make constructor "explicit" to avoid even the remote possibility of unwittingy constructing a Global_Timer
+	  from a raw string implicitly. Get rid of destructor. Reports must be generated manually rather than popping up whenever
+	  the destructor fires. Make sure all this code is exercised by the test suite.
+
+	cdi_ipcress:
+	-  Added the ability to plot Planckian or Rosseland absorption opacity (or both) in the python ipcress file plotter
+
+	parser:
+	- Modifications to parser package meant to more cleanly separate parser code from other code and to better support
+	  inheritance and reentrancy in class parsers. First, I have add a function template to parser/utilities.hh:
+
+          template<class MyClass> SP<MyClass> parse_class(Token_Stream &);
+
+	  This will normally be called with code of the form
+
+          SP<MyClass> my_object = parse_class<MyClass>(tokens);
+
+	  This is meant to eliminate the use of static members of classes for parsing, such as Quadrature::parse, so that parsing
+	  code is not entangled with the classes being parsed. It is also consistent with all the other parse functions in
+	  utilities, such as parse_real or parse_integer.
+
+	  No default implementation is provided for this template function. It is meant to be specialized for every class for which
+	  we desire to provide a parser. However, there is a suggested implementation, described below.
+
+	  This is a relatively straightforward change to propagate. In Draco, only the Quadrature class is affected. The change is
+	  more extensive in Capsaicin, but I have propagated the change and will check that in at the same time I check in the Draco
+	  changes.
+
+	  Second, I have eliminated Class_Parser.hh and Class_Parser.i.hh and replaced them with Class_Parse_Table.hh. The old
+	  Class_Parser template defined a class template that was basically a collection of static members and tables, and this was
+	  not amenable either to reentrancy or inheritance. The new Class_Parse_Table.hh does not define a class parser class
+	  template at all, but provides a templatized parser function:
+
+	  template<class Class_Parse_Table>
+	  SP<typename Class_Parse_Table::Return_Class>
+	  parse_class_from_table(Token_Stream &tokens);
+
+	  The class Class_Parse_Table must provide certain member and data functions, which are described in detail in
+	  Class_Parse_Table.hh, but the developer is otherwise given considerable flexibility in writing this class. By convention,
+	  the Class_Parse_Table class providing parsing support for MyClass is named Class_Parse_Table<MyClass>. This class template
+	  is declared but not defined in Class_Parse_Table.hh, the idea being that developers will specialize it for each class for
+	  which they want a parser.
+
+	  To help developers do this, I have added template__parser.hh and template__parser.cc to the draco/environment/templates
+	  directory. If you are still using emacs for editing, you will find that the Draco->New file ... menu now includes "New C++
+	  class parser" as an option, which generates MyClass__parser.hh and MyClass__parser.cc defining Class_Parse_Table<MyClass>
+	  for whatever MyClass you choose.
+
+	  So how is parse_class_from_table intended to be used? As follows:
+
+	  template<>
+	  SP<Class> parse_class(Token_Stream &tokens)
+	  {
+	    return parse_class_from_table<Class_Parse_Table<Class> >(tokens);
+	  }
+
+	  This actually appears in a comment in Class_Parse_Table.hh, from which you can conveniently cut it and paste it into your
+	  parser code, filling in Class with your class name. So why not make this the default definition? It turns out that if such
+	  a default definition is visible, then every time you call parse_class<AnyClass>, the compiler wants to see a definition of
+	  Class_Parse_Table<AnyClass>, which is highly undesirable. We want the compiler to know that parse_class<AnyClass> exists,
+	  but not try to instantiate it anywhere but in AnyClass__parser.cc, where you decide if the above definition is really what
+	  you want.
+
+	quadrature:
+	- Added a reverse parse function to complement parse function for QIM enumeration.
+	- Modified "interval" (1D) quadrature classes to compute and store on construction their data for later access. The multi-D
+	  CL quadrature classes can then create and query an interval quadrature to get the polar ordinates, with all the associated
+	  DBCs that are involved in doing so. Added an S2 double-Gauss quadrature test because it is treated as a special case upon
+	  construction.
+
+
+	* Details for defects and features can be found at https://rtt.lanl.gov/redmine/isues/#.
+
+	* Corrected defects:
+	  (none)
+
+	* New features:
+	  Feature #435 Update to CMake 3.1 and consider implementing new features
+	  Task    #436 Provide FindGSL.cmake for release within CMake
+	  Task    #465 FindGSL: cleanup draco build system to make use of new FindGSL features
+	  Feature #470 Implement new build system features (CMake 3.1)
+	  Feature #472 Review target properties for transitive linking
+	  Feature #485 CMake 3.1: Deprecate build option DRACO_ENABLE_CXX11
+	  Feature #490 CAFS: Update CMakeAddFortranSubdirectory to respect CMAKE_BUILD_TYPE
+	  Feature #495 CMake 3.2: Update build system to use new features
+
+	* Known Defects:
+	  Bug  # 59 cdi_eospac design flaw
+ 	  Task #370 Provide CMakeAddFortranSubdirectory modifications to CMake
+	  Task #422 FindMPI.cmake doesn't find Intel MPI on Moonlight
+	  Bug  #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	  Bug  #469 FindMPI.cmake can choose wrong libraries
+	  Task #488 Re-establish a nightly Mac build.
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+
+74023: kellyt
+46190: kgbudge
+10051: tme
+5898: bta
+4806: lowrie
+3954: mcghee
+3635: mwbuksas
+3403: gaber
+2358: warsa
+942: rsqrd
+875: wollaber
+832: sethrj
+667: kgt
+579: jhchang
+434: talbotp
+350: 107638
+191: furnish
+169: clevelam
+130: bergen
+114: phenning
+103: regress
+92: pahrens
+47: batcho
+44: jdd
+31: tmonster
+24: swmosher
+10: tkelley
+2: wawiesel
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             410          11809          21436          63385
+C/C++ Header                    334           7189          21221          19183
+Lisp                             15           1878           2672          12363
+CMake                           108           1842           4679           7488
+Bourne Again Shell               18            390            687           1571
+Bourne Shell                     14            250            635           1131
+Python                            7            270            351            824
+CSS                               1            113             37            395
+C                                 4             45            113            238
+Fortran 90                        3             45             80            172
+C Shell                           2             31             29            169
+DOS Batch                         3             47             37            100
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            926          23956          52067         107146
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    45 /    45 = 100%      60 /    72 =  83%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     193 /   252 =  76%
+../source/src/viz/                    40 /    40 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/cdi_eospac/             52 /    52 = 100%      67 /   132 =  50%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/ds++/                  321 /   325 =  98%     364 /   423 =  86%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/parser/                278 /   283 =  98%    1112 /  1423 =  78%
+../source/src/quadrature/            202 /   208 =  97%     528 /   677 =  77%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/c4/                    177 /   186 =  95%     552 /   614 =  89%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/diagnostics/            14 /    19 =  73%      26 /    40 =  65%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+../source/src/diagnostics/qt/          0 /     5 =   0%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2071 /  2137 =  96%    4995 /  6300 =  79%
+
+
 2015-03-13  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Require CMake/3.2.1 or later required.

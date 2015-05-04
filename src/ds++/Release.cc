@@ -73,30 +73,31 @@ const std::string release()
  */
 const std::string author_list()
 {
-// 74263: kellyt
-// 47436: kgbudge
-// 10295: tme
-// 5960: bta
-// 4869: lowrie
-// 4027: mcghee
-// 3847: mwbuksas
-// 3428: gaber
-// 2175: warsa
-// 953: rsqrd
-// 929: wollaber
-// 859: sethrj
-// 597: jhchang
-// 435: talbotp
+// 74023: kellyt
+// 46190: kgbudge
+// 10051: tme
+// 5898: bta
+// 4806: lowrie
+// 3954: mcghee
+// 3635: mwbuksas
+// 3403: gaber
+// 2358: warsa
+// 942: rsqrd
+// 875: wollaber
+// 832: sethrj
+// 579: jhchang
+// 434: talbotp
 // 191: furnish
 // 169: clevelam
 // 130: bergen
-// 117: phenning
+// 114: phenning
 // --- 100 lines ---
-// 93: pahrens
-// 48: jdd
-// 48: batcho
+// 103: regress
+// 92: pahrens
+// 47: batcho
+// 44: jdd
 // 31: tmonster
-// 25: swmosher
+// 24: swmosher
 // 10: tkelley
 // 2: wawiesel
 
