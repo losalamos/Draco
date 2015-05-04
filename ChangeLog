@@ -18,7 +18,7 @@
 
 	* Summary of changes:
 	- 833 files changed, added or removed in 83 commits.
-	- A significant redesign of the parser component was comleted (see details below, r7945).
+	- A significant redesign of the parser component was completed (see details below, r7945).
 	- This release includes many build system and minor package updates.
 
 	* Details per package:
