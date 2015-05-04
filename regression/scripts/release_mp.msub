@@ -3,7 +3,7 @@
 #MSUB -l walltime=04:00:00
 #MSUB -l nodes=1:ppn=8
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_mp_intel14.log
+#MSUB -o /usr/projects/draco/draco-6_16_0/logs/release_mp_i1404.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -20,34 +20,34 @@
 
 # Permissions - new files should be marked u+rwx,g+rwx,o+rx
 umask 0002
-install_group="othello"
+if test `groups | grep othello | wc -l` = 1; then
+    install_group="othello"
+    install_permissions="g+rwX,o-rwX"
+else
+    install_group="draco"
+    install_permissions="g+rwX,o=g-w"
+fi
 build_permissions="g+rwX"
-install_permissions="g+rwX,o-rwX"
 
 # environment (use draco modules)
-# Loading modules
-ddir=draco-6_13_0
-dirs="/usr/projects/draco/$ddir/source/draco/environment/Modules/hpc /usr/projects/draco/$ddir/source/draco/environment/Modules/tu-fe"
-for dir in $dirs; do 
-  if test -z `echo $MODULEPATH | grep $dir`; then 
-    echo "module use $dir"
-    module use $dir
-  fi
-done
+module use /usr/projects/draco/vendors/Modules/hpc
+module use /usr/projects/draco/vendors/Modules/tu-fe
 module purge
-module load friendly-testing cmake/3.0.0 svn numdiff
-module load intel/14.0.2 openmpi/1.6.5
-module load gsl/1.14 lapack/3.4.1 random123 eospac/v6.2.4beta.3
+module load friendly-testing user_contrib
+module load cmake/3.2.2 svn numdiff
+module load intel/14.0.4 openmpi/1.6.5
+module load random123 eospac/v6.2.4
 module list
 
 CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # Define your source and build information here.
 
+ddir=draco-6_16_0
 platform=mp
 dmpi=openmpi165
-df90=intel1402
-dcpp=intel1402
+df90=intel1404
+dcpp=intel1404
 
 source_prefix="/usr/projects/draco/$ddir"
 build_prefix="/scratch/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
@@ -67,10 +67,10 @@ install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 # | build_prefix   | build       | Destination directory of the build trees.  |
 # | MAKE           | platform    | Make command.                              |
 # |----------------+-------------+--------------------------------------------|
-# 
+#
 # Optionally, if "dry_run" is defined, all commands are output to
 # stdio, but not executed. This can be useful to create a "rebuild"
-# script which repeats the configure and build process. 
+# script which repeats the configure and build process.
 #
 #
 # Results:
@@ -138,7 +138,7 @@ do
         echo "#    Package: $package"
         echo "#    -------"
         echo
-        
+
         source_dir="$source_prefix/source/$package"
         build_dir="$build_prefix/$version/${package:0:1}"
         if test -d ${build_dir}; then
@@ -167,4 +167,3 @@ done
 # Set access to top level install dir.
 run "chmod $install_permissions $install_prefix"
 run "chgrp -R othello $install_prefix"
-
