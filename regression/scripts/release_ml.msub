@@ -3,7 +3,7 @@
 #MSUB -l walltime=04:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_15_0/logs/release_ml.log
+#MSUB -o /usr/projects/draco/draco-6_16_0/logs/release_ml_i1404.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -43,7 +43,7 @@ CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # Define your source and build information here.
 
-ddir=draco-6_15_0
+ddir=draco-6_16_0
 platform=ml
 dmpi=openmpi165
 df90=intel1404
@@ -170,4 +170,4 @@ run "chmod $install_permissions $install_prefix"
 run "chgrp -R ${install_group} $install_prefix"
 
 run "chgrp draco $source_prefix $source_prefix/source $source_prefix/logs"
-run "chmod $install_permission $source_prefix $source_prefix/source $source_prefix/logs"
+run "chmod $install_permissions $source_prefix $source_prefix/source $source_prefix/logs"

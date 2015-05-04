@@ -3,13 +3,13 @@
 #MSUB -l walltime=01:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_15_0/logs/release_ct_build.log
+#MSUB -o /usr/projects/draco/draco-6_16_0/logs/release_ct_build.log
 
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
 
-echo "Here we go..." > /usr/projects/draco/draco-6_15_0/logs/release_ct_build.log
+echo "Here we go..." > /usr/projects/draco/draco-6_16_0/logs/release_ct_build.log
 
 # Permissions - new files should be marked u+rwx,g+rwx,o+rx
 umask 0002
@@ -43,7 +43,7 @@ export OMP_NUM_THREADS=8
 
 # Define your source and build information here.
 
-ddir="draco-6_15_0"
+ddir="draco-6_16_0"
 platform="ct"
 dmpi=craympich2
 df90=intel1404
