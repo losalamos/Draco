@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   Parallel_File_Token_Stream.cc
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
@@ -18,7 +18,7 @@
 #include <vector>
 #include <limits>
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 using namespace std;
 using namespace rtt_dsxx;
@@ -55,10 +55,10 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
 
 //-------------------------------------------------------------------------//
 /*!
- * 
+ *
  * Construct a Parallel_File_Token_Stream that derives its text from the
  * specified file. If the file cannot be opened, then \c error()
- * will test true. 
+ * will test true.
  *
  * \param file_name Name of the file from which to extract tokens.
  *
@@ -87,10 +87,33 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
     Ensure(whitespace() == ws);
 }
 
-//---------------------------------------------------------------------------//
-/*! 
+//-------------------------------------------------------------------------//
+/*!
+ * Reopen a Parallel_File_Token_Stream with a new file.
  *
- * 
+ * \param file_name Name of the file from which to extract tokens.
+ *
+ * \throw std::invalid_argument If the file cannot be opened.
+ *
+ * \todo Make this constructor more failsafe.
+ */
+
+void Parallel_File_Token_Stream::open(string const &file_name)
+{
+    filename_ = file_name;
+    infile_.close();
+    at_eof_ = false;
+    Text_Token_Stream::rewind();
+
+    open_();
+
+    Ensure(check_class_invariants());
+    Ensure(location_() == file_name + ", line 1");
+}
+//---------------------------------------------------------------------------//
+/*!
+ *
+ *
  * \throw std::invalid_argument If the file cannot be opened.
  *
  * \todo Make this function more failsafe.
@@ -101,7 +124,7 @@ void Parallel_File_Token_Stream::open_()
 {
     // Create in input stream by opening the specified file on the IO proc.
     at_error_ = false;
-    if( is_io_processor_ ) 
+    if( is_io_processor_ )
     {
 	infile_.open(filename_.c_str());
 	if (!infile_)
@@ -116,7 +139,7 @@ void Parallel_File_Token_Stream::open_()
 	ostringstream errmsg;
 	errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
 	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << filename_ 
+	       << "The file requested was: \"" << filename_
 	       << "\"" << " (PE " << rtt_c4::node() << ")\n"
                << "Ensure that the filename includes the full path or "
                << "a relative path from\n"
@@ -146,7 +169,7 @@ string Parallel_File_Token_Stream::location_() const
     Result << filename_ << ", line " << line();
     return Result.str();
 }
-  
+
 //-------------------------------------------------------------------------//
 /*!
  *
@@ -162,7 +185,7 @@ string Parallel_File_Token_Stream::location_() const
  * \return The next character in the text stream.
  *
  * \throw rtt_dsxx::assert If a received message has a length greater than
- * the maximum expected. 
+ * the maximum expected.
  */
 
 void Parallel_File_Token_Stream::fill_character_buffer_()
@@ -178,8 +201,8 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
 
     // i points to the current position in the communications buffer. We
     // initialize it to 1 to reserve the first character for the status
-    // code. 
-    unsigned i = 1; 
+    // code.
+    unsigned i = 1;
     if (is_io_processor_)
     {
         // Read up to numeric_limits<signed char>::max() characters from the
@@ -190,7 +213,7 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
 	    if (infile_.eof() || infile_.fail()) break;
 	    comm_buffer[i++] = c;
 	}
-	
+
 	if (i>1)
 	{
 	    // If there is an end or error condition, but one or more
@@ -200,7 +223,7 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
 
             // Set the status code to the number of valid characters read.
 	    comm_buffer[0] = static_cast<char>(i-1);
-        }   
+        }
         else if (infile_.eof() && !infile_.bad())
 	{
 	    // Normal end of file condition.
@@ -236,14 +259,14 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
 
         // Make sure this is not past the end of the buffer. This should not
         // be possible unless the data has somewhow become corrupted during
-        // transmission. 
+        // transmission.
 	if (i>static_cast<unsigned>(numeric_limits<signed char>::max()+1))
 	{
 	    throw runtime_error("interprocessor communications corrupted");
 	}
 
         // Copy the transmitted characters into the local character buffer.
-        
+
         vector<char>::iterator first=comm_buffer.begin();
         vector<char>::iterator last=first+i;
 
@@ -328,7 +351,7 @@ void Parallel_File_Token_Stream::report(string const &message)
 
     Ensure(check_class_invariants());
 }
-  
+
 //-------------------------------------------------------------------------//
 /*!
  *
@@ -348,7 +371,7 @@ void Parallel_File_Token_Stream::rewind()
     at_eof_ = at_error_ = false;
 
     Text_Token_Stream::rewind();
-    
+
     Ensure(check_class_invariants());
     Ensure(location_() == filename_ + ", line 1");
 }

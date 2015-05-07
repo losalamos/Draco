@@ -310,6 +310,22 @@ void tstParallel_File_Token_Stream( rtt_dsxx::UnitTest &ut )
             exception = true;
         }
         if (!exception) ITFAILS;
+
+        // Try reopening
+        string const inputFile3(ut.getTestInputPath()
+                                + std::string("scanner_test.inp") );
+
+        tokens.open(inputFile3);
+
+        Token token = tokens.lookahead(4);
+        if (token.type()!=KEYWORD || token.text()!="BLACK")
+        {
+            FAILMSG("Keyword not read correctly");
+        }
+        else
+        {
+            PASSMSG("Keyword read correctly.");
+        }
     }
 }
 

@@ -50,6 +50,9 @@ class DLL_PUBLIC_parser Parallel_File_Token_Stream : public Text_Token_Stream
 
     // MANIPULATORS
 
+    //! Reopen the Parallel_File_Token_Stream with a new file.
+    void open(string const &filename);
+
     //! Rewind the Parallel_File_Token_Stream.
     virtual void rewind();
 
