@@ -41,6 +41,9 @@ class DLL_PUBLIC_parser Parallel_File_Token_Stream : public Text_Token_Stream
 
     // CREATORS
 
+    //! Construct an empty Parallel_File_Token_Stream
+    Parallel_File_Token_Stream();
+
     //! Construct a Parallel_File_Token_Stream from a file.
     Parallel_File_Token_Stream(string const &filename);
 

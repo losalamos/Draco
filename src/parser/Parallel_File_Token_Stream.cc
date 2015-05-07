@@ -26,6 +26,23 @@ using namespace rtt_dsxx;
 //-------------------------------------------------------------------------//
 /*!
  *
+ * Construct an empty Parallel_File_Token_Stream..
+ */
+
+Parallel_File_Token_Stream::Parallel_File_Token_Stream()
+    :
+    is_io_processor_(rtt_c4::node()==0),
+    // The current implementation always designates processor 0 as the I/O
+    // processor.
+    at_eof_(   true ),
+    at_error_( false )
+{
+    Ensure(check_class_invariants());
+}
+
+//-------------------------------------------------------------------------//
+/*!
+ *
  * Construct a Parallel_File_Token_Stream that derives its text from the
  * specified file. This Parallel_File_Token_Stream will use the default
  * Text_Token_Stream breaking whitespace characters. If the file cannot be
