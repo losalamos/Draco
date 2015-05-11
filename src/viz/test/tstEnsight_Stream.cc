@@ -25,13 +25,13 @@ using rtt_viz::Ensight_Stream;
 //---------------------------------------------------------------------------//
 
 // Reads binary value from stream.
-template <class T>
+template <typename T>
 void binary_read(ifstream &stream,
 		 T &v)
 {
     char *vc = new char[sizeof(T)];
     stream.read(vc, sizeof(T));
-    
+
     rtt_dsxx::Unpacker p;
     p.set_buffer(sizeof(T), vc);
     p.unpack(v);
@@ -91,17 +91,17 @@ void test_simple( rtt_dsxx::UnitTest & ut, bool const binary )
     const string s("dog");
     const double d(112.3);
     const string file("ensight_stream.out");
-    
+
     {
 	Ensight_Stream f(file, binary);
-	
+
 	f << i << rtt_viz::endl;
 	f << d << rtt_viz::endl;
 	f << s << rtt_viz::endl;
     }
 
     // Read the file back in and check the values.
-    
+
     std::ios::openmode mode = std::ios::in;
 
     if ( binary )
@@ -113,16 +113,16 @@ void test_simple( rtt_dsxx::UnitTest & ut, bool const binary )
 	cout << "Testing ascii mode." << endl;
 
     ifstream in(file.c_str(), mode);
-    
+
     int i_in;
     readit(in, binary, i_in);
     if(i != i_in) ITFAILS;
-    
+
     double d_in;
     readit(in, binary, d_in);
     // floats are inaccurate
     if( !rtt_dsxx::soft_equiv(d, d_in, 0.01) ) ITFAILS;
-    
+
     string s_in;
     readit(in, binary, s_in);
     for ( size_t k = 0; k < s.size(); ++k )
@@ -132,7 +132,7 @@ void test_simple( rtt_dsxx::UnitTest & ut, bool const binary )
         PASSMSG("test_simple() completed successfully.");
     else
         FAILMSG("test_simple() did not complet successfully.");
-    
+
     return;
 }
 
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	test_simple(ut, true);  // test binary again
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstEnsight_Stream.cc

@@ -19,7 +19,7 @@
 
 namespace rtt_viz
 {
- 
+
 //===========================================================================//
 /*!
  * \class Viz_Traits
@@ -27,29 +27,29 @@ namespace rtt_viz
  * \brief Traits that are used by the rtt_viz package.
  *
  * These traits provide a common way to access 2D-styles arrays/fields in the
- * viz package.  Essentially, they allow rtt_dsxx::Mat2 and vector<vector<T>
- * > types to access data using (i,j) operator overloading.  There is a
- * general field templated type class; specializations exist for
- * vector<vector>.  Other specializations can be added as needed.
+ * viz package.  Essentially, they allow vector<vector<T> > types to access data
+ * using (i,j) operator overloading.  There is a general field templated type
+ * class; specializations exist for vector<vector>.  Other specializations can
+ * be added as needed.
  *
  * The generalized class requires the Field Type (FT) template argument to
  * have the following services:
  *
- * \arg operator()(int i, int j) where the range is [0:N-1, 0:N-1]; \arg
- * *nrows() returns the number of rows (i index); \arg ncols(int row) returns
- * *the number of columns in row (j index); \arg FT::value_type defined to
- * the type returned by the field (int, double, etc).  
+ * \arg operator()(int i, int j) where the range is [0:N-1, 0:N-1];
+ * \arg nrows() returns the number of rows (i index);
+ * \arg ncols(int row) returns the number of columns in row (j index);
+ * \arg FT::value_type defined to the type returned by the field (int, double, etc).
  */
 // revision history:
 // -----------------
 // 0) original
 // 1) 28-JAN-00 : added explicit specializations for vector<vector<int>> and
 //                vector<vector<double>> because of totalview goofiness
-// 
+//
 //===========================================================================//
 
 template<typename FT>
-class Viz_Traits 
+class Viz_Traits
 {
   private:
     //! Reference to the field.
@@ -83,13 +83,13 @@ class Viz_Traits< std::vector<std::vector<T> > >
   private:
     // Reference to vector<vector> field.
     const std::vector<std::vector<T> > &field;
-    
+
   public:
     // Constructor.
     Viz_Traits(const std::vector<std::vector<T> > &fin) : field(fin)
     {
         // Nothing to do here
-    } 
+    }
 
     // Overloaded operator().
     T operator()(size_t i, size_t j) const
@@ -114,83 +114,83 @@ class Viz_Traits< std::vector<std::vector<T> > >
 // explicit specialization for vector<vector<int>> --> Need this because of
 // totalviews inability to handle templated specializations
 
-template<>
-class Viz_Traits< std::vector<std::vector<int> > >
-{
-  public:
-    // Type traits
-    typedef int elementType;
+// template<>
+// class Viz_Traits< std::vector<std::vector<int> > >
+// {
+//   public:
+//     // Type traits
+//     typedef int elementType;
 
-  private:
-    // Reference to vector<vector> field.
-    const std::vector<std::vector<int> > &field;
-    
-  public:
-    // Constructor.
-    Viz_Traits(const std::vector<std::vector<int> > &fin) : field(fin)
-    {
-        // Nothing to do here
-    } 
+//   private:
+//     // Reference to vector<vector> field.
+//     const std::vector<std::vector<int> > &field;
 
-    // Overloaded operator().
-    size_t operator()(size_t i, size_t j) const
-    {
-        Require(i < field.size());
-        Require(j < field[i].size());
-        return field[i][j];
-    }
+//   public:
+//     // Constructor.
+//     Viz_Traits(const std::vector<std::vector<int> > &fin) : field(fin)
+//     {
+//         // Nothing to do here
+//     }
 
-    // Row size accessor.
-    size_t nrows() const { return field.size(); }
+//     // Overloaded operator().
+//     size_t operator()(size_t i, size_t j) const
+//     {
+//         Require(i < field.size());
+//         Require(j < field[i].size());
+//         return field[i][j];
+//     }
 
-    // Column size accessor.
-    size_t ncols(size_t row) const
-    {
-        Require (row < field.size());
-        return field[row].size();
-    }
-};
+//     // Row size accessor.
+//     size_t nrows() const { return field.size(); }
+
+//     // Column size accessor.
+//     size_t ncols(size_t row) const
+//     {
+//         Require (row < field.size());
+//         return field[row].size();
+//     }
+// };
 
 //---------------------------------------------------------------------------//
 // explicit specialization for vector<vector<double>> --> Need this because of
 // totalviews inability to handle templated specializations
 
-template<>
-class Viz_Traits< std::vector<std::vector<double> > >
-{
-  public:
-    // Type traits
-    typedef double elementType;
+// template<>
+// class Viz_Traits< std::vector<std::vector<double> > >
+// {
+//   public:
+//     // Type traits
+//     typedef double elementType;
 
-  private:
-    // Reference to vector<vector> field.
-    const std::vector<std::vector<double> > &field;
-    
-  public:
-    // Constructor.
-    Viz_Traits(const std::vector<std::vector<double> > &fin) : field(fin)
-    {
-        // Nothing to do here
-    } 
+//   private:
+//     // Reference to vector<vector> field.
+//     const std::vector<std::vector<double> > &field;
 
-    // Overloaded operator().
-    double operator()(size_t i, size_t j) const
-    {
-        Require(i < field.size());
-        Require(j < field[i].size());
-        return field[i][j];
-    }
+//   public:
+//     // Constructor.
+//     Viz_Traits(const std::vector<std::vector<double> > &fin) : field(fin)
+//     {
+//         // Nothing to do here
+//     }
 
-    // Row size accessor.
-    size_t nrows() const { return field.size(); }
+//     // Overloaded operator().
+//     double operator()(size_t i, size_t j) const
+//     {
+//         Require(i < field.size());
+//         Require(j < field[i].size());
+//         return field[i][j];
+//     }
 
-    // Column size accessor.
-    size_t ncols(size_t row) const
-    {
-        Require (row < field.size());
-        return field[row].size();
-    }
-};
+//     // Row size accessor.
+//     size_t nrows() const { return field.size(); }
+
+//     // Column size accessor.
+//     size_t ncols(size_t row) const
+//     {
+//         Require (row < field.size());
+//         return field[row].size();
+//     }
+// };
 
 } // end namespace rtt_traits
 

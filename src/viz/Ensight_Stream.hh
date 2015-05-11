@@ -77,8 +77,6 @@ class DLL_PUBLIC_viz Ensight_Stream
     //! Destructor.
     ~Ensight_Stream();
 
-    // Use compiler-generated copy ctor and assignment operators.
-
     // MANIPULATORS
 
     //! Opens the stream.
@@ -92,19 +90,12 @@ class DLL_PUBLIC_viz Ensight_Stream
     //! Expose is_open().
     bool is_open() { return d_stream.is_open(); }
 
-    //! Expose flush()
-    // void flush() { d_stream.flush(); }
-
     // The supported output stream functions.
 
     Ensight_Stream& operator<<(const int i);
-
     Ensight_Stream& operator<<(const std::size_t i);
-
     Ensight_Stream& operator<<(const double d);
-
     Ensight_Stream& operator<<(const std::string &s);
-
     Ensight_Stream& operator<<(FP f);
 
     friend DLL_PUBLIC_viz Ensight_Stream& endl(Ensight_Stream &s);
@@ -112,7 +103,7 @@ class DLL_PUBLIC_viz Ensight_Stream
   private:
 
     // Does binary write of v.
-    template <class T> void binary_write(const T v);
+    template <typename T> void binary_write(const T v);
 };
 
 } // end namespace rtt_viz

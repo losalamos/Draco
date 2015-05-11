@@ -77,8 +77,8 @@ open(const int        icycle,
 
     // announce the graphics dump
     std::cout << ">>> ENSIGHT GRAPHICS DUMP: icycle= " << icycle
-	      << " time= " << time << " dt= " << dt << std::endl
-	      << "dir= " << d_prefix << ", dump_number= "
+	      << " time= " << time << " dt= " << dt
+	      << "\ndir= " << d_prefix << ", dump_number= "
 	      << igrdump_num << std::endl;
 
     // write case file
@@ -87,7 +87,6 @@ open(const int        icycle,
     // >>> Open the geometry file.
     if ( (! d_static_geom ) || (d_dump_times.size() == 1) )
     {
-
         // make output file for this timestep
         string filename  = d_geo_dir + "/";
         if ( d_static_geom )
@@ -134,6 +133,7 @@ open(const int        icycle,
 	*d_cell_out[ncd] << d_cdata_names[ncd] << endl;
     }
 }
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Closes any open file streams.
@@ -142,17 +142,16 @@ open(const int        icycle,
  */
 void Ensight_Translator::close()
 {
-    if ( d_geom_out.is_open() ) d_geom_out.close();
+    if ( d_geom_out.is_open() )
+        d_geom_out.close();
 
     for ( size_t i = 0; i < d_vertex_out.size(); i++ )
-    {
-	if ( d_vertex_out[i]->is_open() ) d_vertex_out[i]->close();
-    }
+	if ( d_vertex_out[i]->is_open() )
+            d_vertex_out[i]->close();
 
     for ( size_t i = 0; i < d_cell_out.size(); i++ )
-    {
-	if ( d_cell_out[i]->is_open() ) d_cell_out[i]->close();
-    }
+	if ( d_cell_out[i]->is_open() )
+            d_cell_out[i]->close();
 }
 
 //---------------------------------------------------------------------------//

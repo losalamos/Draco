@@ -56,9 +56,7 @@ Ensight_Stream::Ensight_Stream(const std::string &file_name,
       d_binary(false)
 {
     if (! file_name.empty())
-    {
         open(file_name, binary, geom_file);
-    }
 }
 
 //---------------------------------------------------------------------------//

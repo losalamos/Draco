@@ -81,7 +81,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     int icycle      = 1;
     double time     = .01;
     double dt       = .01;
-    //string gd_wpath = ".";
+
     string const gd_wpath = rtt_dsxx::getFilenameComponent(
         ut.getTestPath(), rtt_dsxx::FC_NATIVE);
 

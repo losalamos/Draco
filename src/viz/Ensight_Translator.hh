@@ -101,9 +101,9 @@ enum Ensight_Cell_Types
  * rtt_viz::Viz_Traits class to determine which 2D vector containers are
  * specialized
  *
- * The vector-field (VF) types will most commonly by rtt_dsxx::Mat2 or
- * std::vector<std::vector> types.  Other types will require specialization
- * in the rtt_viz::Viz_Traits class.
+ * The vector-field (VF) types will most commonly be std::vector<std::vector>
+ * types.  Other types will require specialization in the rtt_viz::Viz_Traits
+ * class.
  *
  * Data dumped to Ensight will be stored in the directory prefix argument
  * given to the constructor (Ensight_Translator::Ensight_Translator()).  The
@@ -111,7 +111,7 @@ enum Ensight_Cell_Types
  * placed in the path specified by the gd_wpath argument to the constructor.
  * This directory must exist.
  *
- * To launch ensight: select the "prefix".case file that resides in the
+ * To launch Ensight: select the "prefix".case file that resides in the
  * top-level ensight dump directory from the "file/Data (reader)" menu.  Set
  * the data file "Format" option in Ensight to "case" and hit the "(Set)
  * Geometry" button.  From there see the Ensight manual.
@@ -299,7 +299,7 @@ class DLL_PUBLIC_viz Ensight_Translator
 // include template definitions so that template functions will be
 // automatically instantiated in client code
 
-#include "Ensight_Translator.t.hh"
+#include "Ensight_Translator.i.hh"
 
 #endif // rtt_viz_Ensight_Translator_hh
 
