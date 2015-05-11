@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #------------------------------------------------------------------------------#
-# Pull SVN repositories from Yellow 
+# Pull SVN repositories from Yellow
 #
 # Assumptions:
 # 1. Mercury requests must have the id tag set
@@ -44,7 +44,7 @@ function xfpull()
         return
     fi
     # Find the file identifier for the requested file.  The variable
-    # filesavailable contains a list of pairs:  
+    # filesavailable contains a list of pairs:
     # { (id1, file1), (id2, file2), ... }.  Load each pair and if the
     # filename matches the requested filename then pull that file id.
     # Once pulled, remove the file from transfer.lanl.gov.
@@ -80,7 +80,7 @@ unpack_repo() {
         run "rm -rf ${pkg}.old"
      fi
    fi
-   
+
    echo "Unpacking SVN repository for $pkg ..."
    run "xfpull ${pkg}.hotcopy.tar"
    run "tar -xvf ${pkg}.hotcopy.tar"
@@ -107,7 +107,7 @@ run "kinit -f -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
 possible_items_to_pull=`ssh red@transfer.lanl.gov myfiles | awk '{print $2}'`
 
 # Loop over all items that mercury listed, if 'draco.repo' is found,
-# then mark it for unpacking. 
+# then mark it for unpacking.
 
 draco_ready=0
 capsaicin_ready=0
@@ -130,6 +130,7 @@ run "chgrp -R draco svn"
 run "chmod -R g+rwX,o-rwX svn"
 
 # Update Module directories
+module load user_contrib svn
 cd /usr/projects/draco/vendors/environment
-/usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin/svn up
-
+# /usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin/svn up
+svn up
