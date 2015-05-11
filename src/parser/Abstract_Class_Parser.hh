@@ -38,7 +38,7 @@ class DLL_PUBLIC_parser Abstract_Class_Parser_Base
 
     // TYPES
 
-    class DLL_PUBLIC_parser c_string_vector 
+    class DLL_PUBLIC_parser c_string_vector
     {
       public:
         ~c_string_vector();
@@ -100,20 +100,18 @@ class DLL_PUBLIC_parser Abstract_Class_Parser_Base
 template< typename Abstract_Class,
           Parse_Table &get_parse_table(),
           SP<Abstract_Class> &get_parsed_object() >
-class DLL_PUBLIC_parser Abstract_Class_Parser : private Abstract_Class_Parser_Base
+class Abstract_Class_Parser : private Abstract_Class_Parser_Base
 {
   public:
-    
+
     // TYPES
-    
+
     typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
 
+    // STATIC members
 
-    // STATIC
-    
     //! Register children of the abstract class
-    static void register_child(string const &keyword,
-                               Parse_Function parse_function);
+    static void register_child( string const &keyword, Parse_Function * parse_function );
 
     //! Check the class invariants
     static bool check_static_class_invariants();
@@ -126,7 +124,7 @@ class DLL_PUBLIC_parser Abstract_Class_Parser : private Abstract_Class_Parser_Ba
     static void parse_child_(Token_Stream &, int);
 
     // DATA
-    
+
     //! Map of child keywords to child creation functions
     static vector<Parse_Function*> map_;
 };

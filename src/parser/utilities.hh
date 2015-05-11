@@ -52,7 +52,6 @@ DLL_PUBLIC_parser
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry);
 
-
 DLL_PUBLIC_parser void parse_unsigned_vector(Token_Stream &, unsigned[], unsigned);
 DLL_PUBLIC_parser void set_internal_unit_system(rtt_units::UnitSystem const &units);
 DLL_PUBLIC_parser void set_unit_expressions_are_required(bool);
@@ -61,8 +60,8 @@ DLL_PUBLIC_parser bool unit_expressions_are_required();
 
 //! parser a real number followed by a unit expression.
 DLL_PUBLIC_parser double parse_quantity(Token_Stream &tokens,
-                                 Unit const &unit,
-                                 char const *name);
+                                        Unit const &unit,
+                                        char const *name);
 
 //! parse an expression followed by a unit expression.
 DLL_PUBLIC_parser
@@ -100,8 +99,7 @@ parse_temperature(Token_Stream &,
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
  */
-
-template<class Class>
+template<typename Class>
 rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
 
 } // rtt_parser

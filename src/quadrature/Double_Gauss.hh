@@ -5,7 +5,7 @@
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval double Gauss-Legendre quadrature set.
  * \note   Copyright 2000-2015 Los Alamos National Security, LLC.
- *         All rights reserved. 
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -33,12 +33,12 @@ namespace rtt_quadrature
  */
 //=======================================================================================//
 
-class Double_Gauss : public Interval_Quadrature 
+class Double_Gauss : public Interval_Quadrature
 {
   public:
-    
-    // CREATORS
 
+    // CREATORS
+    DLL_PUBLIC_quadrature
     explicit Double_Gauss(unsigned sn_order);
 
     // ACCESSORS
@@ -60,7 +60,7 @@ class Double_Gauss : public Interval_Quadrature
     static SP<Quadrature> parse(Token_Stream &tokens);
 
   protected:
-    
+
     virtual vector<Ordinate> create_level_ordinates_(double norm) const;
 
     // DATA

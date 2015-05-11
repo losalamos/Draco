@@ -58,7 +58,7 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 
 # Generate the dll_declspec.h file that defines DLL_PUBLIC_<pkg> CPP macros.
 include(generate_dll_declspec)
-generate_dll_declspec( "ds++" "c4;cdi;cdi_test;cdi_analytic;cdi_eospac;cdi_ipcress;cdi_ipcress_test;device;diagnostics;dsxx;fit;FC_Derived_Type;linear;meshReaders;mesh_element;min;norms;ode;parser;rng;roots;RTT_Format_Reader;special_functions;timestep;timestep_test;units;viz" )
+generate_dll_declspec( "ds++" "c4;cdi;cdi_test;cdi_analytic;cdi_eospac;cdi_ipcress;cdi_ipcress_test;device;diagnostics;dsxx;fit;FC_Derived_Type;linear;meshReaders;mesh_element;min;norms;ode;parser;quadrature;quadrature_test;rng;roots;RTT_Format_Reader;special_functions;timestep;timestep_test;units;viz" )
     
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -101,8 +101,8 @@ target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} ${template_implementations} DESTINATION include/ds++ )
+install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/ds++ )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

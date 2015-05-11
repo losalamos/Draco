@@ -13,7 +13,6 @@
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
-
 #include "quadrature/Quadrature.hh"
 #include "quadrature/Quadrature_Interface.hh"
 

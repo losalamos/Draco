@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Quadrature class header file.
- * \note   Copyright © 2000-2015 Los Alamos National Security, LLC. All rights
+ * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC. All rights
  *         reserved.
  */
 //---------------------------------------------------------------------------------------//
@@ -55,7 +55,7 @@ using rtt_mesh_element::Geometry;
  * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
 //=======================================================================================//
-class Quadrature
+class DLL_PUBLIC_quadrature Quadrature
 {
   public:
 
@@ -184,5 +184,5 @@ class Quadrature
 #endif // __quadrature_Quadrature_hh__
 
 //---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.hh
+// end of quadrature/Quadrature.hh
 //---------------------------------------------------------------------------------------//

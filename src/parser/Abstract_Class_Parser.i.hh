@@ -18,6 +18,8 @@
 /*
  * The following rather lengthy and clumsy declaration declares storage for
  * the parse functions.
+ *
+ * Remember: typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
  */
 template<typename Class,
          Parse_Table &get_parse_table(),
@@ -45,8 +47,7 @@ template<typename Class,
 void Abstract_Class_Parser<Class,
                            get_parse_table,
                            get_parsed_object>::
-register_child(string const &keyword,
-               Parse_Function parse_function )
+register_child( string const &keyword, Parse_Function * parse_function )
 {
     using namespace rtt_parser;
 
@@ -55,13 +56,14 @@ register_child(string const &keyword,
     keys_.data.push_back(cptr);
 
     int const N = static_cast<int>(map_.size());
+
     map_.push_back(parse_function);
-    
+
     Keyword key = {cptr,
                    parse_child_,
                    N,
                    ""};
-    
+
     get_parse_table().add(&key, 1);
 
     Ensure(check_static_class_invariants());
@@ -72,7 +74,6 @@ register_child(string const &keyword,
  * This is the generic parse function associated with all child keywords. It
  * makes use of the Parse_Function associated with each child keyword.
  */
-
 template<typename Class,
          Parse_Table &get_parse_table(),
          SP<Class> &get_parsed_object()>
@@ -105,7 +106,6 @@ Abstract_Class_Parser<Class,
 {
     return true; // no significant invariant for now
 }
-
 
 #endif // utils_Abstract_Class_Parser_i_hh
 

@@ -5,7 +5,7 @@
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
  * \note   Copyright (C)  2006-2015 Los Alamos National Security, LLC.
- *         All rights reserved. 
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id: Ordinate.hh 6607 2012-06-14 22:31:45Z kellyt $
@@ -33,7 +33,7 @@ using rtt_mesh_element::Geometry;
  */
 //===========================================================================//
 
-class Ordinate_Set
+class DLL_PUBLIC_quadrature Ordinate_Set
 {
   public:
 
@@ -43,21 +43,21 @@ class Ordinate_Set
     enum Ordering
     {
         LEVEL_ORDERED,  // Ordered xi, then mu, then eta
-        
+
         OCTANT_ORDERED  // Ordered by xi halfsphere, then eta halfsphere, then
                         // mu halfsphere, then absolute value of xi, then
                         // absolute value of eta, then absolute value of mu
     };
 
     // CREATORS
-    
+
     Ordinate_Set(unsigned const dimension,
                  Geometry geometry,
                  vector<Ordinate> const &ordinates,
                  bool const has_starting_directions=true,
                  bool const has_extra_starting_directions=false,
                  Ordering ordering=LEVEL_ORDERED);
-    
+
     //! destructor
     virtual ~Ordinate_Set(){}
 
@@ -112,7 +112,7 @@ class Ordinate_Set
 
   private:
 
-    // DATA 
+    // DATA
 
     // initialized
     Geometry geometry_;
@@ -129,5 +129,5 @@ class Ordinate_Set
 #endif // quadrature_OrdinateSet_hh
 
 //---------------------------------------------------------------------------//
-//              end of quadrature/OrdinateSet.hh
+// end of quadrature/OrdinateSet.hh
 //---------------------------------------------------------------------------//

@@ -31,7 +31,7 @@ class General_Octant_Quadrature : public Octant_Quadrature
   public:
 
     // CREATORS
-
+    DLL_PUBLIC_quadrature
     General_Octant_Quadrature(unsigned const sn_order,
                               vector<double> const &mu,
                               vector<double> const &eta,
@@ -43,25 +43,25 @@ class General_Octant_Quadrature : public Octant_Quadrature
     General_Octant_Quadrature();    // disable default construction
 
     // ACCESSORS
-    
+
     vector<double> const & mu()     const { return mu_; }
     vector<double> const & eta()    const { return eta_; }
     vector<double> const & xi()     const { return xi_; }
     vector<double> const & wt()     const { return wt_; }
 
     // SERVICES
-    
+
     // These functions override the virtual member functions specifed in the
     // parent class Quadrature.
 
     string name()        const;
-    
+
     string parse_name()  const;
-        
+
     Quadrature_Class quadrature_class() const;
 
     unsigned number_of_levels() const;
-    
+
     string as_text(string const &indent) const;
 
     bool is_open_interval() const;

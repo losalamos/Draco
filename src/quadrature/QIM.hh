@@ -4,7 +4,8 @@
  * \author Kent Budge
  * \date   Mon Mar 26 16:11:19 2007
  * \brief  Definition of QIM enumeration
- * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: QIM.hh 6718 2012-08-30 20:03:01Z warsa $
@@ -33,8 +34,8 @@ enum QIM
     END_QIM  //!< Sentinel value
 };
 
-void parse_quadrature_interpolation_model(Token_Stream &,
-                                          QIM &);
+DLL_PUBLIC_quadrature
+void parse_quadrature_interpolation_model(Token_Stream &, QIM &);
 
 std::string quadrature_interpolation_model_as_text(QIM);
 
@@ -43,5 +44,5 @@ std::string quadrature_interpolation_model_as_text(QIM);
 #endif // quadrature_QIM_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/QIM.hh
+// end of quadrature/QIM.hh
 //---------------------------------------------------------------------------------------//

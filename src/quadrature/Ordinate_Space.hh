@@ -90,7 +90,7 @@ using std::ostream;
  * such blocks to optimize storage of intermediate results.
  *
  * We illustrate with an example. In axisymmetric geometry, <a
- * href="../../pdf/transport_implementation.pdf">Morel's 
+ * href="../../pdf/transport_implementation.pdf">Morel's
  * discretization</a> of the angle derivative term in the streaming operator is
  *
  * \f$\frac{\partial (\eta \psi)}{\partial \omega}\approx
@@ -103,7 +103,7 @@ using std::ostream;
  * Thus we define
  *
  * <code>Psi_Coefficient(m)</code> = \f$P_m =
- * \frac{\alpha_{m+1/2}}{w_m\tau_m}\f$ 
+ * \frac{\alpha_{m+1/2}}{w_m\tau_m}\f$
  *
  * <code>Source_Coefficient(m)</code> =
  \f$S_m = \frac{\alpha_{m+1/2}\frac{1-\tau_m}{\tau_m}+\alpha_{m-1/2}}{w_m}\f$
@@ -113,7 +113,7 @@ using std::ostream;
  * The angle derivative can then be coded as
  *
  * \f$\frac{\partial (\eta \psi)}{\partial \omega} =
- * P_m\psi_m-S_m\psi_{m-1/2}\f$ 
+ * P_m\psi_m-S_m\psi_{m-1/2}\f$
  *
  * and the next midpoint intensity as
  *
@@ -172,7 +172,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     }
 
     //! Return the angle index for the most positively outward-directed angle
-    //! on every level. 
+    //! on every level.
     vector<unsigned> const &first_angles() const
     {
         return first_angles_;
@@ -191,7 +191,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     {
         return alpha_;
     }
-    
+
     //! Return \f$P\tau_m\f$ for ordinate \f$m\f$
     vector<double> const &tau() const
     {
@@ -199,12 +199,15 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     }
 
     //! Return \f$P_m\f$ for ordinate \f$m\f$
+    DLL_PUBLIC_quadrature
     double psi_coefficient(unsigned ordinate_index) const;
 
     //! Return \f$S_m\f$ for ordinate \f$m\f$
+    DLL_PUBLIC_quadrature
     double source_coefficient(unsigned ordinate_index) const;
 
     //! Return \f$B_m\f$ for ordinate \f$m\f$
+    DLL_PUBLIC_quadrature
     double bookkeeping_coefficient(unsigned ordinate_index) const;
 
     unsigned number_of_moments() const
@@ -266,8 +269,8 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     }
 
     // STATICS
-    
-    double compute_azimuthalAngle( double mu, double eta ); 
+
+    double compute_azimuthalAngle( double mu, double eta );
 
   protected:
 
@@ -283,16 +286,16 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
-    
+
     virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
                                              unsigned sn_order) = 0;
-    
+
     virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
-    
+
     virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
                                              unsigned sn_order) = 0;
-    
+
     virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
                                             unsigned sn_order) = 0;
 
@@ -319,9 +322,9 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     //! Reflection maps
     vector<unsigned> reflect_mu_, reflect_eta_, reflect_xi_;
-    
+
     /*! Coefficients for angle derivative terms.  These are defined in
-     * Morel's research note of 12 May 2003 for axisymmetric geometry. 
+     * Morel's research note of 12 May 2003 for axisymmetric geometry.
      */
     vector<double> alpha_;
     vector<double> tau_;
@@ -340,5 +343,5 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 #endif // quadrature_Ordinate_Space_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/Ordinate_Space.hh
+// end of quadrature/Ordinate_Space.hh
 //---------------------------------------------------------------------------------------//

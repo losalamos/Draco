@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Parsers for various quadrature classes.
- * \note   Copyright © 2000-2015 Los Alamos National Security, LLC. All rights
+ * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC. All rights
  *         reserved.
  */
 //---------------------------------------------------------------------------------------//
@@ -170,7 +170,7 @@ register_quadrature(string const &keyword,
 }
 
 //---------------------------------------------------------------------------------------//
-template<>
+template<> DLL_PUBLIC_quadrature
 SP<Quadrature> parse_class<Quadrature>(Token_Stream &tokens)
 {
     Token token = tokens.shift();
@@ -182,5 +182,5 @@ SP<Quadrature> parse_class<Quadrature>(Token_Stream &tokens)
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.hh
+// end of quadrature/Quadrature.hh
 //---------------------------------------------------------------------------------------//

@@ -76,12 +76,9 @@ add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 
 # Level 5
-if( NOT WIN32 )
-  # this is broken on win32 due to a problem with Abstract_Class_Parser
-  message(" ")
-  message( STATUS "Configuring Level 5 packages --" )
-  add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
-endif()
+message(" ")
+message( STATUS "Configuring Level 5 packages --" )
+add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
 
 # Summary
 message(" ")

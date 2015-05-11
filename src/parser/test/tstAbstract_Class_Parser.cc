@@ -57,7 +57,6 @@ class Class_Parse_Table<Parent>
     Class_Parse_Table()
     {
         child_.reset();
-
         current_ = this;
     }
 
@@ -106,21 +105,23 @@ class Class_Parse_Table<Parent>
 
     // DATA
 
-    static SP<Parent> child_;
-
+    static SP<Parent>         child_;
     static Class_Parse_Table *current_;
-    static Parse_Table parse_table_;
+    static Parse_Table        parse_table_;
 };
 
-SP<Parent> Class_Parse_Table<Parent>::child_;
+SP<Parent>                 Class_Parse_Table<Parent>::child_;
 Class_Parse_Table<Parent> *Class_Parse_Table<Parent>::current_;
-Parse_Table Class_Parse_Table<Parent>::parse_table_;
+Parse_Table                Class_Parse_Table<Parent>::parse_table_;
 
 //---------------------------------------------------------------------------//
+/*
+ * Specialization of the parse_class function for T=Parent
+ */
 template<>
 SP<Parent> parse_class<Parent>(Token_Stream &tokens)
 {
-        return parse_class_from_table<Class_Parse_Table<Parent> >(tokens);
+    return parse_class_from_table<Class_Parse_Table<Parent> >(tokens);
 }
 
 } // namespace rtt_parser
@@ -130,7 +131,6 @@ SP<Parent> parse_class<Parent>(Token_Stream &tokens)
  * The following is what you would expect to find in a file associated with
  * the Son class.
  */
-
 class Son : public Parent
 {
   public:
@@ -221,7 +221,7 @@ class Class_Parse_Table<Son>
 
 //---------------------------------------------------------------------------//
 Class_Parse_Table<Son> *Class_Parse_Table<Son>::current_;
-Parse_Table Class_Parse_Table<Son>::parse_table_;
+Parse_Table             Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
 //---------------------------------------------------------------------------//
@@ -344,7 +344,8 @@ SP<Daughter> parse_class<Daughter>(Token_Stream &tokens)
 
 SP<Parent> parent;
 
-static void parse_parent(Token_Stream &tokens, int)
+//static
+void parse_parent(Token_Stream &tokens, int)
 {
     parent = parse_class<Parent>(tokens);
 }
@@ -368,9 +369,7 @@ SP<Parent> parse_daughter(Token_Stream &tokens)
     return parse_class<Daughter>(tokens);
 }
 
-
 //---------------------------------------------------------------------------//
-
 /* Test all the above */
 
 void test(UnitTest &ut)
@@ -383,7 +382,7 @@ void test(UnitTest &ut)
 
     // Build path for the input file
     string const sadInputFile(ut.getTestInputPath()
-                           + std::string("sons_and_daughters.inp") );
+                              + std::string("sons_and_daughters.inp") );
 
     File_Token_Stream tokens( sadInputFile );
 

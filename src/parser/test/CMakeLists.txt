@@ -91,13 +91,6 @@ add_parallel_tests(
    PE_LIST "1"
    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
 
-# Broken on Win32
-if( WIN32 )
-   list( REMOVE_ITEM test_sources
-      ${PROJECT_SOURCE_DIR}/tstAbstract_Class_Parser.cc )
-   message( "parser/tstAbstract_Class_Parser.cc is not running under Win32." )
-endif()
-
 # Run remaining tests with 1 and 2 PEs.
 add_parallel_tests(
    SOURCES "${test_sources}"

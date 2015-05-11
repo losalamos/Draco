@@ -63,7 +63,7 @@ class Octant_Quadrature : public Quadrature
     // ACCESSORS
 
     // SERVICES
-
+    DLL_PUBLIC_quadrature
     virtual bool has_axis_assignments() const;
 
   protected:
@@ -71,14 +71,15 @@ class Octant_Quadrature : public Quadrature
     virtual string as_text(string const &indent) const = 0;
 
     // IMPLEMENTATION
-    
+
     //! Virtual hook for create_ordinate_set
+    DLL_PUBLIC_quadrature
     virtual void create_octant_ordinates_(vector<double> &mu,
                                           vector<double> &eta,
                                           vector<double> &wt) const = 0;
-    
+
     // STATICS
-    
+
     static
     void parse(Token_Stream &tokens,
                bool &has_axis_assignments,
@@ -92,6 +93,7 @@ class Octant_Quadrature : public Quadrature
     using Quadrature::create_ordinates_;
 
     //! Virtual hook for create_ordinates
+    DLL_PUBLIC_quadrature
     virtual vector<Ordinate> create_ordinates_(unsigned dimension,
                                                Geometry,
                                                double norm,
@@ -99,6 +101,7 @@ class Octant_Quadrature : public Quadrature
                                                bool include_extra_directions) const;
 
     //! Virtual hook for create_ordinate_set
+    DLL_PUBLIC_quadrature
     virtual vector<Ordinate> create_ordinates_(unsigned dimension,
                                                Geometry,
                                                double norm,
@@ -108,7 +111,7 @@ class Octant_Quadrature : public Quadrature
                                                bool include_extra_directions) const;
 
     // DATA
-    
+
     bool has_axis_assignments_;
     unsigned mu_axis_, eta_axis_;
 };

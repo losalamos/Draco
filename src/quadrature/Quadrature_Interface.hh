@@ -14,6 +14,8 @@
 #ifndef quadrature_Quadrature_Interface_hh
 #define quadrature_Quadrature_Interface_hh
 
+#include "ds++/Assert.hh"
+
 extern "C"
 {
 
@@ -28,15 +30,24 @@ struct quadrature_data
     double *eta;
     double *xi;
     double *weights;
+
+    DLL_PUBLIC_quadrature
     quadrature_data();
 
 };
 
-    //! An extern "C" interface to default constructor
-    void init_quadrature(quadrature_data&);
+//! An extern "C" interface to default constructor
+DLL_PUBLIC_quadrature
+void init_quadrature(quadrature_data&);
 
-    //! Get quadrature data (eg. wts and cosines)
-    void get_quadrature(quadrature_data&);
+//! Get quadrature data (eg. wts and cosines)
+DLL_PUBLIC_quadrature
+void get_quadrature(quadrature_data&);
 
 }
-#endif //quadrature_Quadrature_Interface_hh
+
+#endif // quadrature_Quadrature_Interface_hh
+
+//---------------------------------------------------------------------------------------//
+// end of quadrature/Quadrature_Interface.hh
+//---------------------------------------------------------------------------------------//
