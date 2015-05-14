@@ -45,52 +45,52 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut)
     // ------------------------- //
 
     {
-	SP<IpcressFile> spIF;
+        SP<IpcressFile> spIF;
 
-	// Attempt to instantiate the object.
-	try
-	{
-	    spIF.reset(new IpcressFile( op_data_file ));
-	}
-	catch ( rtt_dsxx::assertion const & error )
-	{
-	    cout << "While testing tIpcressOpacity, " << error.what() << endl;
-	    return;
-	}
+        // Attempt to instantiate the object.
+        try
+        {
+            spIF.reset(new IpcressFile( op_data_file ));
+        }
+        catch ( rtt_dsxx::assertion const & error )
+        {
+            cout << "While testing tIpcressOpacity, " << error.what() << endl;
+            return;
+        }
 
-	// If we make it here then spIF was successfully instantiated.
-	PASSMSG("SP to new IpcressFile object created for Al_BeCu.ipcress data.");
+        // If we make it here then spIF was successfully instantiated.
+        PASSMSG("SP to new IpcressFile object created for Al_BeCu.ipcress data.");
 
-	// Test the IpcressFile object.
-	if ( spIF->getDataFilename() == op_data_file )
-	{
-	    ostringstream message;
-	    message << "IpcressFile object is now linked to the "
-		    << "Al_BeCu.ipcress data file.";
-	    PASSMSG(message.str());
-	}
-	else
-	{
-	    ostringstream message;
-	    message << "IpcressFile object failed to link itself to the "
-		    << "Al_BeCu.ipcress  data file.";
-	    FAILMSG(message.str());
-	}
+        // Test the IpcressFile object.
+        if ( spIF->getDataFilename() == op_data_file )
+        {
+            ostringstream message;
+            message << "IpcressFile object is now linked to the "
+                    << "Al_BeCu.ipcress data file.";
+            PASSMSG(message.str());
+        }
+        else
+        {
+            ostringstream message;
+            message << "IpcressFile object failed to link itself to the "
+                    << "Al_BeCu.ipcress  data file.";
+            FAILMSG(message.str());
+        }
 
-	if ( spIF->getNumMaterials() == 2 )
-	{
-	    ostringstream message;
-	    message << "The correct number of materials was found in the "
-		    << "Al_BeCu.ipcress data file.";
-	    PASSMSG(message.str());
-	}
-	else
-	{
-	    ostringstream message;
-	    message << "spIF did not find the correct number of materials "
-		    << "in the Al_BeCu.ipcress data file.";
-	    FAILMSG(message.str());
-	}
+        if ( spIF->getNumMaterials() == 2 )
+        {
+            ostringstream message;
+            message << "The correct number of materials was found in the "
+                    << "Al_BeCu.ipcress data file.";
+            PASSMSG(message.str());
+        }
+        else
+        {
+            ostringstream message;
+            message << "spIF did not find the correct number of materials "
+                    << "in the Al_BeCu.ipcress data file.";
+            FAILMSG(message.str());
+        }
 
     }
 
@@ -895,7 +895,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     cvdensity.begin(),
                                     cvdensity.end(),
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -924,7 +924,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     vdensity.begin(),
                                     vdensity.end(),
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -957,7 +957,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     cvtemperature.end(),
                                     density,
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -990,7 +990,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     cvdensity.begin(),
                                     cvdensity.end(),
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -1061,7 +1061,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      cvdensity.end(),
                                      mgOp.begin() );
 
-    if ( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()
@@ -1097,7 +1097,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
 
     // compare the results to the reference solution and report our
     // findings.
-    if ( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()
@@ -1137,7 +1137,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      mgOp.begin() );
 
     // Compare solutions and report the results.
-    if ( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()
@@ -1178,7 +1178,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      mgOp.begin() );
 
     // Compare solutions and report the results.
-    if ( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()

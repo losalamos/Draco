@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/SystemCall.cc
- * \brief  Implementation for the Draco wrapper for system calls. This 
-           routine attempts to hide differences between Unix/Windows system 
-           calls.
+ * \brief  Implementation for the Draco wrapper for system calls. This
+ routine attempts to hide differences between Unix/Windows system
+ calls.
  * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
@@ -44,7 +44,7 @@ namespace rtt_dsxx
  *
  * Catamount systems:
  *     HOST_NAME_MAX hard coded by CMake in config.h
- * 
+ *
  * Unix/Linux:
  *     HOST_NAME_MAX loaded from <climit>
  *
@@ -59,15 +59,15 @@ std::string draco_gethostname( void )
     int err = gethostname(hostname, sizeof(hostname));
     if (err) strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
     return std::string(hostname);
-#endif    
-    
+#endif
+
     // Linux: gethostname from <unistd.h>
-#ifdef HAVE_GETHOSTNAME 
+#ifdef HAVE_GETHOSTNAME
     char hostname[HOST_NAME_MAX];
     int err = gethostname(hostname, HOST_NAME_MAX);
     if (err) strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
     return std::string(hostname);
-    
+
     // Catamount systems do not have gethostname().
 #else
     return std::string("Host (unknown)");
@@ -86,9 +86,9 @@ int draco_getpid(void)
 #ifdef WIN32
     int i = _getpid();
     return i;
-#else    
-    
-#ifdef HAVE_GETHOSTNAME 
+#else
+
+#ifdef HAVE_GETHOSTNAME
     return getpid();
 #else
     // Catamount systems do not have getpid().  This function will return -1.
@@ -108,7 +108,7 @@ std::string draco_getcwd(void)
 #ifdef WIN32
     char * buffer;
     Insist( (buffer = _getcwd(NULL, 0)) != NULL,
-       std::string("getcwd failed: " + std::string(strerror(errno))));
+	    std::string("getcwd failed: " + std::string(strerror(errno))));
     std::string cwd(buffer, buffer+strnlen(buffer,MAXPATHLEN));
     free(buffer);
 #else
@@ -139,8 +139,8 @@ draco_getstat::draco_getstat( std::string const & fqName )
 {
 #ifdef WIN32
     filefound = true;
-    /*! \note If path contains the location of a directory, it cannot 
-     * contain a trailing backslash. If it does, -1 will be returned and 
+    /*! \note If path contains the location of a directory, it cannot
+     * contain a trailing backslash. If it does, -1 will be returned and
      * errno will be set to ENOENT. */
     std::string clean_fqName;
     if( fqName[fqName.size()-1] == rtt_dsxx::WinDirSep ||
@@ -148,22 +148,22 @@ draco_getstat::draco_getstat( std::string const & fqName )
         clean_fqName=fqName.substr(0,fqName.size()-1);
     else
         clean_fqName=fqName;
-    
+
     stat_return_code = _stat(clean_fqName.c_str(), &buf);
     if( stat_return_code != 0 )
     {
-       switch( errno )
-       {
-       case ENOENT: // file not found
-           filefound = false;
-           break;
-       case EINVAL: 
-           Insist( stat_return_code == 0, "invalid parameter given to _stat.");
-           break;
-       default:
-           /* should never get here */
-           Insist( stat_return_code == 0, "_stat returned an error.");
-       }
+	switch( errno )
+	{
+	    case ENOENT: // file not found
+		filefound = false;
+		break;
+	    case EINVAL:
+		Insist( stat_return_code == 0, "invalid parameter given to _stat.");
+		break;
+	    default:
+		/* should never get here */
+		Insist( stat_return_code == 0, "_stat returned an error.");
+	}
     }
 
     if( filefound )
@@ -171,7 +171,7 @@ draco_getstat::draco_getstat( std::string const & fqName )
         // Handle to directory
         HANDLE hFile = ::FindFirstFile( clean_fqName.c_str(), &FileInformation );
         // sanity check
-        Insist( hFile != INVALID_HANDLE_VALUE, "Invalid file handle." ); 
+        Insist( hFile != INVALID_HANDLE_VALUE, "Invalid file handle." );
         // Close handle
         ::FindClose(hFile);
     }
@@ -187,7 +187,7 @@ bool draco_getstat::isreg()
 {
 #if WIN32
     bool b = FileInformation.dwFileAttributes & FILE_ATTRIBUTE_NORMAL;
-	return filefound && b;
+    return filefound && b;
 #else
     bool b = S_ISREG(buf.st_mode);
     return b;
@@ -200,7 +200,7 @@ bool draco_getstat::isdir()
 {
 #if WIN32
     bool b = FileInformation.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
-	return filefound && b;
+    return filefound && b;
 #else
     bool b = S_ISDIR(buf.st_mode);
     return b;
@@ -214,7 +214,7 @@ bool draco_getstat::has_permission_bit( int mask )
     Insist( isreg(), "Can only check permission bit for regular files." );
 #if WIN32
     Insist( false, "draco_getstat::hsa_permission_bit() not implemented for WIN32" );
-	return false;
+    return false;
 #else
     // check execute bit (buf.st_mode & 0111)
     return (buf.st_mode & mask);
@@ -222,7 +222,7 @@ bool draco_getstat::has_permission_bit( int mask )
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Wrapper for system dependent realpath call.
  */
 std::string draco_getrealpath( std::string const & path )
@@ -231,16 +231,18 @@ std::string draco_getrealpath( std::string const & path )
 #ifdef WIN32
     // http://msdn.microsoft.com/en-us/library/506720ff%28v=vs.100%29.aspx
     Insist(_fullpath( buffer, path.c_str(), MAXPATHLEN ) != NULL, "Invalid path." );
+    std::string retVal(buffer);
 #else
-    // char *p;
-    // p =
     Insist((realpath(path.c_str(), buffer)) != NULL, "Invalid path." );
+    // realpath trims the trailing slash, append now.
+    std::string retVal(buffer);
+    retVal += std::string(&dirSep,1);
 #endif
-    return std::string(buffer);
+    return retVal;
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Make a directory
  * boost::filesystem::create_directories("/tmp/a/b/c");
  * \todo Do we need a permissions argument?
@@ -248,12 +250,12 @@ std::string draco_getrealpath( std::string const & path )
 void draco_mkdir( std::string const & path )
 {
 #ifdef WIN32
-    
+
     draco_getstat dirInfo(path);
     if( ! dirInfo.isdir() )
     {
-        /*! \note If path contains the location of a directory, it cannot 
-         * contain a trailing backslash. If it does, -1 will be returned and 
+        /*! \note If path contains the location of a directory, it cannot
+         * contain a trailing backslash. If it does, -1 will be returned and
          * errno will be set to ENOENT. */
         std::string clean_fqName;
         if( path[path.size()-1] == rtt_dsxx::WinDirSep ||
@@ -266,31 +268,31 @@ void draco_mkdir( std::string const & path )
         int errorCode = _mkdir( clean_fqName.c_str() );
         if( errorCode == -1 )
         {
-           switch( errno )
-           {
-           case EEXIST: 
-                Insist( errno != EEXIST, "ERROR: Unable to create directory,"
-                + clean_fqName + ", because it already exists.");
-               break;
-           case ENOENT: 
-               Insist( errno != ENOENT, "ERROR: Unable to create directory,"
-                + clean_fqName + ", because the path is not found.");    
-               break;
-           default:
-               /* should never get here */
-               Insist( errno == 0, "ERROR: Unable to create directory, "
-                + clean_fqName );
-           }          
+	    switch( errno )
+	    {
+		case EEXIST:
+		    Insist( errno != EEXIST, "ERROR: Unable to create directory,"
+			    + clean_fqName + ", because it already exists.");
+		    break;
+		case ENOENT:
+		    Insist( errno != ENOENT, "ERROR: Unable to create directory,"
+			    + clean_fqName + ", because the path is not found.");
+		    break;
+		default:
+		    /* should never get here */
+		    Insist( errno == 0, "ERROR: Unable to create directory, "
+			    + clean_fqName );
+	    }
         }
     }
 #else
     mkdir( path.c_str(), 0700 );
     // S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
-#endif    
+#endif
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Delete a single file or directory (not recursive)
  *
  * \sa wdtOpRemove
@@ -307,7 +309,7 @@ void draco_mkdir( std::string const & path )
  */
 void draco_remove( std::string const & dirpath )
 {
-    // remove() works for all unix items but only for files 
+    // remove() works for all unix items but only for files
     // (not directories) for windows.
     if( draco_getstat( dirpath ).isdir() )
     {
@@ -330,7 +332,7 @@ void draco_remove( std::string const & dirpath )
         {
             int myerr = ::GetLastError();
             std::ostringstream msg;
-            msg << "ERROR: Error deteting file, myerr = " 
+            msg << "ERROR: Error deteting file, myerr = "
                 << myerr << ", file = " << dirpath;
             Insist( ok, msg.str() );
         }

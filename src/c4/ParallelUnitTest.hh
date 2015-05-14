@@ -37,16 +37,16 @@ namespace rtt_c4
  *
  * \par Code Sample:
  * \code
-int main(int argc, char *argv[])
-{
-    rtt_c4::ParallelUnitTest ut(argc, argv, release);
-    try
-    {
-        tstOne(ut);
-        tstTwo(ut);
-    }
-    UT_EPILOG(ut);
-}
+ int main(int argc, char *argv[])
+ {
+ rtt_c4::ParallelUnitTest ut(argc, argv, release);
+ try
+ {
+ tstOne(ut);
+ tstTwo(ut);
+ }
+ UT_EPILOG(ut);
+ }
  * \endcode
  *
  * \test All of the member functions of this class are tested by
@@ -70,13 +70,14 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 ParallelUnitTest : public rtt_dsxx::UnitTest
+class ParallelUnitTest : public rtt_dsxx::UnitTest
 {
   public:
 
     // CREATORS
 
     //! Default constructor.
+    DLL_PUBLIC_c4
     ParallelUnitTest( int            & argc,
                       char         **& argv,
                       string_fp_void   release_,
@@ -86,7 +87,7 @@ class DLL_PUBLIC_c4 ParallelUnitTest : public rtt_dsxx::UnitTest
     ParallelUnitTest( ParallelUnitTest const &rhs );
 
     //! Destructor.
-    ~ParallelUnitTest();
+    DLL_PUBLIC_c4 ~ParallelUnitTest();
 
     // MANIPULATORS
 
@@ -96,7 +97,7 @@ class DLL_PUBLIC_c4 ParallelUnitTest : public rtt_dsxx::UnitTest
     // ACCESSORS
 
     //! Provide a report of the number of unit test passes and fails.
-    void status(void);
+    DLL_PUBLIC_c4 void status( void );
 };
 
 } // end namespace rtt_c4

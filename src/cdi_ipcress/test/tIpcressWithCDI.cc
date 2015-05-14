@@ -185,7 +185,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     vector< double > vOpacity = spCDI_Analytic->gray(r, a)->
                                 getOpacity( vtemperature, density );
 
-    if ( rtt_dsxx::soft_equiv ( vOpacity, vRefOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( vOpacity, vRefOpacity ) )
     {
         ostringstream message;
         message << spCDI_Analytic->gray(r, a)->getDataDescriptor()
@@ -271,7 +271,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     vector< double > mgOpacity =
         spCDI_Analytic->mg(r, a)->getOpacity ( temperature, density );
 
-    if ( rtt_dsxx::soft_equiv ( mgOpacity, tabulatedMGOpacity ) )
+    if ( rtt_dsxx::soft_equiv<double>( mgOpacity, tabulatedMGOpacity ) )
     {
         ostringstream message;
         message << spCDI_Analytic->mg(r, a)->getDataDescriptor()

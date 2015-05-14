@@ -48,9 +48,9 @@ namespace rtt_dsxx
 
  int main(int argc, char *argv[])
  {
-    rtt_utils::ScalarUnitTest ut( argc, argv, release );
-    try { tstOne(ut); }
-    UT_EPILOG(ut);
+ rtt_utils::ScalarUnitTest ut( argc, argv, release );
+ try { tstOne(ut); }
+ UT_EPILOG(ut);
  }
  * \endcode
  *
@@ -60,7 +60,7 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx  UnitTest
+class UnitTest
 {
   public:
 
@@ -72,6 +72,7 @@ class DLL_PUBLIC_dsxx  UnitTest
     // CREATORS
 
     //! Default constructors.
+    DLL_PUBLIC_dsxx
     UnitTest( int    & argc,
               char **& argv,
               string_fp_void   release_,
@@ -98,10 +99,10 @@ class DLL_PUBLIC_dsxx  UnitTest
     // void setostream( std::ostream out_ ) { out = out_; return; };
 
     // ACCESSORS
-    bool failure(int line);
-    bool failure(int line, char const *file);
-    bool failure( std::string const &failmsg );
-    bool passes(  std::string const &passmsg );
+    DLL_PUBLIC_dsxx bool failure( int line );
+    DLL_PUBLIC_dsxx bool failure( int line, char const *file );
+    DLL_PUBLIC_dsxx bool failure( std::string const &failmsg );
+    DLL_PUBLIC_dsxx bool passes( std::string const &passmsg );
     //! This pure virtual function must be provided by the inherited class.
     //It should provide output concerning the status of UnitTest.
     void status(void) const { out << resultMessage() << std::endl; return; }
@@ -114,7 +115,7 @@ class DLL_PUBLIC_dsxx  UnitTest
     bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
     std::string getTestPath(void) const { return testPath; }
     std::string getTestName(void) const { return testName; }
-    std::string getTestInputPath(void) const;
+    DLL_PUBLIC_dsxx std::string getTestInputPath( void ) const;
     /*!
      * \brief Returns the path of the test source directory (useful for locating
      * input files).
@@ -126,14 +127,17 @@ class DLL_PUBLIC_dsxx  UnitTest
      * set_target_property( unit_test_target_name
      *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
      */
-    inline std::string getTestSourcePath(void) const
+    static inline std::string getTestSourcePath(void)
     {
 #ifdef PROJECT_SOURCE_DIR
-        std::string sourcePath( PROJECT_SOURCE_DIR );
+        std::string sourcePath(
+            rtt_dsxx::getFilenameComponent(
+                PROJECT_SOURCE_DIR, rtt_dsxx::FC_NATIVE ) );
         // if absent, append path separator.
         if( sourcePath[sourcePath.size()] != rtt_dsxx::WinDirSep &&
             sourcePath[sourcePath.size()] != rtt_dsxx::UnixDirSep )
             sourcePath += rtt_dsxx::dirSep;
+
         return sourcePath;
 #else
         // We should never get here. However, when compiling ScalarUnitTest.cc,
@@ -153,11 +157,11 @@ class DLL_PUBLIC_dsxx  UnitTest
     bool fpe_trap_active;
 
     // Features
-    static std::map< std::string, unsigned >
-	get_word_count( std::ostringstream const & data, bool verbose=false );
-    static std::map< std::string, unsigned >
-	get_word_count( std::string const & filename, bool verbose=false );
-    static std::vector<std::string> tokenize(
+    DLL_PUBLIC_dsxx static std::map< std::string, unsigned >
+    get_word_count( std::ostringstream const & data, bool verbose=false );
+    DLL_PUBLIC_dsxx static std::map< std::string, unsigned >
+    get_word_count( std::string const & filename, bool verbose=false );
+    DLL_PUBLIC_dsxx static std::vector<std::string> tokenize(
         std::string const & source,
         char        const * delimiter_list = " ",
         bool                keepEmpty      = false);
@@ -165,7 +169,7 @@ class DLL_PUBLIC_dsxx  UnitTest
   protected:
 
     // IMPLEMENTATION
-    std::string resultMessage(void) const;
+    DLL_PUBLIC_dsxx std::string resultMessage( void ) const;
 
     // DATA
 
@@ -197,19 +201,19 @@ class DLL_PUBLIC_dsxx  UnitTest
 #define ITFAILS     ut.failure( __LINE__, __FILE__ )
 #define FAILURE     ut.failure( __LINE__, __FILE__ );
 //#define UT_PROLOG(foo) typedef ut foo
-#define UT_EPILOG(foo)							\
-    catch (rtt_dsxx::assertion &err) {					\
-	std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", " \
-		  << "the following error was thrown...\n"		\
-		  << err.what() << std::endl; foo.numFails++; }		\
-    catch(std::exception &err) {					\
-	std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
-		  << "the following error was thrown...\n"		\
-		  << err.what() << std::endl; foo.numFails++; }		\
-    catch( ... ) {							\
-	std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
-		  << "An unknown exception was thrown on processor "	\
-		  << std::endl; foo.numFails++; };			\
+#define UT_EPILOG(foo)                                                  \
+    catch (rtt_dsxx::assertion &err) {                                  \
+        std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", " \
+                  << "the following error was thrown...\n"              \
+                  << err.what() << std::endl; foo.numFails++; }         \
+    catch(std::exception &err) {                                        \
+        std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+                  << "the following error was thrown...\n"              \
+                  << err.what() << std::endl; foo.numFails++; }         \
+    catch( ... ) {                                                      \
+        std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+                  << "An unknown exception was thrown on processor "    \
+                  << std::endl; foo.numFails++; };                      \
     return foo.numFails;
 
 #endif // dsxx_UnitTest_hh

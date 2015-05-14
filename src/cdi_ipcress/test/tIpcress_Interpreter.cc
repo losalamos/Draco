@@ -168,14 +168,14 @@ void check_output(rtt_dsxx::ScalarUnitTest &ut)
         if( wordsInLine[3] != string("at") )        ITFAILS;
         if( wordsInLine[4] != string("density") )   ITFAILS;
         if( ! rtt_dsxx::soft_equiv( atof(
-					wordsInLine[5].substr(0,wordsInLine[5].size()-1).c_str() ),
-				    1.0e-01 ) ) ITFAILS;
+                                        wordsInLine[5].substr(0,wordsInLine[5].size()-1).c_str() ),
+                                    1.0e-01 ) ) ITFAILS;
         if( wordsInLine[6] != string("temperature") )  ITFAILS;
         if( ! rtt_dsxx::soft_equiv( atof( wordsInLine[7].c_str() ), 1.0 ) )
             ITFAILS;
         if( wordsInLine[8] != string("is:") )          ITFAILS;
 
-        if( dataByLine[70] != string("Index      Group Center            Opacity") )
+        if( dataByLine[70] != string("Index \t Group Center \t\t Opacity") )
             ITFAILS;
         // dataByLine[71] = "1\t8.9050000e-03\t1.0000000e+10"
         wordsInLine = rtt_dsxx::UnitTest::tokenize( dataByLine[71], "\t" );
@@ -190,7 +190,6 @@ void check_output(rtt_dsxx::ScalarUnitTest &ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char* argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);

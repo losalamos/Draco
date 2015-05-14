@@ -31,6 +31,7 @@ namespace rtt_dsxx
  *    FC_EXT         not implemented.
  *    FC_NAME_WE     not implemented.
  *    FC_REALPATH    resolve all symlinks
+ *    FC_NATIVE      convert path to use native slashes for the current filesystem
  *    FC_LASTVALUE
  */
 std::string getFilenameComponent( std::string const & fqName,
@@ -40,7 +41,7 @@ std::string getFilenameComponent( std::string const & fqName,
     string retVal;
     string::size_type idx;
     std::string fullName( fqName );
-    
+
     switch( fc )
     {
         case FC_PATH :
@@ -50,9 +51,9 @@ std::string getFilenameComponent( std::string const & fqName,
                 fullName=fqName.substr(0,fqName.length()-1);
             if( fqName.rfind( rtt_dsxx::WinDirSep ) == fqName.length()-1 )
                 fullName=fqName.substr(0,fqName.length()-1);
-            
+
             idx=fullName.rfind( rtt_dsxx::UnixDirSep );
-            if( idx == string::npos ) 
+            if( idx == string::npos )
             {
                 // Didn't find directory separator, as 2nd chance look for
                 // Windows directory separator.
@@ -62,9 +63,9 @@ std::string getFilenameComponent( std::string const & fqName,
             if( idx == string::npos )
                 retVal = string( string(".") + rtt_dsxx::dirSep );
             else
-                retVal = fullName.substr(0,idx+1); 
+                retVal = fullName.substr(0,idx+1);
             break;
-            
+
         case FC_NAME :
             // if fqName is a directory and ends with "/", trim the trailing
             // dirSep.
@@ -72,7 +73,7 @@ std::string getFilenameComponent( std::string const & fqName,
                 fullName=fqName.substr(0,fqName.length()-1);
             if( fqName.rfind( rtt_dsxx::WinDirSep ) == fqName.length()-1 )
                 fullName=fqName.substr(0,fqName.length()-1);
-            
+
             idx=fullName.rfind( UnixDirSep );
             if( idx == string::npos )
             {
@@ -89,21 +90,21 @@ std::string getFilenameComponent( std::string const & fqName,
             break;
 
         case FC_REALPATH :
+        {
+            std::string path( getFilenameComponent( fqName, FC_PATH ) );
+            std::string name( getFilenameComponent( fqName, FC_NAME ) );
+            if( ! draco_getstat(path).valid() )
             {
-                std::string path( getFilenameComponent( fqName, FC_PATH ) );
-                std::string name( getFilenameComponent( fqName, FC_NAME ) );
-                if( ! draco_getstat(path).valid() )
-                {
-                    // On error, return empty string.
-                    retVal = std::string();
-                    // retVal = draco_getcwd();
-                }
-                else
-                {
-                    retVal = draco_getrealpath(path) + rtt_dsxx::dirSep + name;
-                }
-                break;
+                // On error, return empty string.
+                retVal = std::string();
+                // retVal = draco_getcwd();
             }
+            else
+            {
+                retVal = draco_getrealpath(path) + name;
+            }
+            break;
+        }
         case FC_ABSOLUTE :
             Insist( false, "case for FC_ABSOLUTE not implemented." );
             break;
@@ -114,10 +115,7 @@ std::string getFilenameComponent( std::string const & fqName,
             Insist( false, "case for FC_NAME_WE not implemented." );
             break;
         case FC_NATIVE :
-            if( dirSep == WinDirSep ) // Windows style.
-                std::replace( fullName.begin(), fullName.end(), UnixDirSep, dirSep );
-            else
-                std::replace( fullName.begin(), fullName.end(), WinDirSep, dirSep );            
+            // This is always done before returning (see implementation found after the case statement)
             retVal = fullName;
             break;
 
@@ -126,6 +124,12 @@ std::string getFilenameComponent( std::string const & fqName,
             msg << "Unknown mode for rtt_dsxx::setName(). fc = " << fc;
             Insist( false, msg.str() );
     }
+
+    // Always convert paths to use native format.
+    if( dirSep == WinDirSep ) // Windows style.
+        std::replace( retVal.begin(), retVal.end(), UnixDirSep, dirSep );
+    else
+        std::replace( retVal.begin(), retVal.end(), WinDirSep, dirSep );
     return retVal;
 }
 

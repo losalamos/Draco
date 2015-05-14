@@ -3,7 +3,7 @@
  * \file   c4/ApplicationUnitTest.hh
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
- * \brief  Declaration file for encapsulation of Draco unit test for applications. 
+ * \brief  Declaration file for encapsulation of Draco unit test for applications.
  * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
@@ -37,69 +37,69 @@ namespace rtt_c4
  *
  * \par Code Sample:
  * \code
-int main(int argc, char *argv[])
-{
-    using namespace rtt_c4;
-    try
-    {
-        ApplicationUnitTest ut( argc, argv, release,
-                                std::string("../bin/serrano") );
-        tstOne(ut);
-        ut.status();
-    }
-    catch( rtt_dsxx::assertion &err )
-    {
-        std::string msg = err.what();
-        if( msg != std::string( "Success" ) )
-        { cout << "ERROR: While testing " << argv[0] << ", "
-               << err.what() << endl;
-            return 1;
-        }
-        return 0;
-    }
-    catch (exception &err)
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << err.what() << endl;
-        return 1;
-    }
-    catch( ... )
-    {
-        cout << "ERROR: While testing " << argv[0] << ", "
-             << "An unknown exception was thrown" << endl;
-        return 1;
-    }
-    return 0;
-}
+ int main(int argc, char *argv[])
+ {
+ using namespace rtt_c4;
+ try
+ {
+ ApplicationUnitTest ut( argc, argv, release,
+ std::string("../bin/serrano") );
+ tstOne(ut);
+ ut.status();
+ }
+ catch( rtt_dsxx::assertion &err )
+ {
+ std::string msg = err.what();
+ if( msg != std::string( "Success" ) )
+ { cout << "ERROR: While testing " << argv[0] << ", "
+ << err.what() << endl;
+ return 1;
+ }
+ return 0;
+ }
+ catch (exception &err)
+ {
+ cout << "ERROR: While testing " << argv[0] << ", "
+ << err.what() << endl;
+ return 1;
+ }
+ catch( ... )
+ {
+ cout << "ERROR: While testing " << argv[0] << ", "
+ << "An unknown exception was thrown" << endl;
+ return 1;
+ }
+ return 0;
+ }
  * \endcode
  *
  * \test All of the member functions of this class are tested by
- * c4/test/tstApplicationUnitTest.cc, including the early exit caused by 
+ * c4/test/tstApplicationUnitTest.cc, including the early exit caused by
  * \c --version on the command line.
  *
  * \warning The output from this class is closely tied to the CTest
  * Pass/Fail regular expressions listed in \c config/component_macros.cmake
- * and in the local \c CMakeLists.txt. 
+ * and in the local \c CMakeLists.txt.
  *
  */
-/*! 
- * \example c4/test/tstApplicationUnitTest.cc 
- * This unit test demonstrates typical usage for ApplicationUnitTest. * 
+/*!
+ * \example c4/test/tstApplicationUnitTest.cc
+ * This unit test demonstrates typical usage for ApplicationUnitTest. *
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 ApplicationUnitTest : public rtt_dsxx::UnitTest
+class ApplicationUnitTest : public rtt_dsxx::UnitTest
 {
   public:
 
     // CREATORS
-    
+
     //! Default constructor.
-    ApplicationUnitTest(
+    DLL_PUBLIC_c4 ApplicationUnitTest(
         int & argc, char **&argv, string_fp_void release_,
         std::string const applicationName_,
         std::list< std::string > const & listOfArgs_=std::list<std::string>(),
-        std::ostream & out_ = std::cout ); 
+        std::ostream & out_ = std::cout );
 
     //! The copy constructor is disabled.
     ApplicationUnitTest(const ApplicationUnitTest &rhs);
@@ -113,14 +113,15 @@ class DLL_PUBLIC_c4 ApplicationUnitTest : public rtt_dsxx::UnitTest
     ApplicationUnitTest& operator=(const ApplicationUnitTest &rhs);
 
     //! Add a command line argument to the list that will be tested.
+    DLL_PUBLIC_c4
     void addCommandLineArgument( std::string const & appArgs );
 
     //! Change the number of processors that are to be used for tests.
-    void setNodes(std::string const &nodes);
+    DLL_PUBLIC_c4 void setNodes( std::string const &nodes );
 
     //! Execute the specified binary with the provided arguments.
-    void runTests(void);
-    bool runTest( std::string const & appArgs );
+    DLL_PUBLIC_c4 void runTests( void );
+    DLL_PUBLIC_c4 bool runTest( std::string const & appArgs );
 
     // ACCESSORS
 
@@ -130,11 +131,11 @@ class DLL_PUBLIC_c4 ApplicationUnitTest : public rtt_dsxx::UnitTest
     // (listOfArgs.size()>1) will have at least this many passes and no
     // fails.  numPasses can be greater than listOfArgs.size() if the  user
     // has incremented the pass count manually.
-    bool allTestsPass(void) const
-    { return numPasses>=listOfArgs.size() && numFails == 0; };
-    
+    bool allTestsPass(void) const {
+        return numPasses>=listOfArgs.size() && numFails == 0; };
+
     //! Provide a report of the number of unit test passes and fails.
-    void status(void);
+    DLL_PUBLIC_c4 void status( void );
 
     //! Name of the log file
     std::string logFileName() const { return logFile; }
@@ -144,7 +145,7 @@ class DLL_PUBLIC_c4 ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     //! Return whether problem computation times should be reported
     bool reportTimingsI() const { return reportTimings; }
-        
+
   private:
 
     // NESTED CLASSES AND TYPEDEFS
@@ -164,7 +165,7 @@ class DLL_PUBLIC_c4 ApplicationUnitTest : public rtt_dsxx::UnitTest
 
     //! The name of the binary file to be tested.
     std::string applicationName;
-    
+
     //! The path to the binary file to be tested.
     std::string applicationPath;
 

@@ -53,8 +53,12 @@ void test_currentPath( ScalarUnitTest & ut )
 //---------------------------------------------------------------------------//
 void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 {
-    cout << "\nTesting getFilenameComponent() function with fqp = "
-         << fqp << " ...\n" << endl;
+    // Convert path to Native format
+    std::string const fqpn = getFilenameComponent( fqp,
+                                                   rtt_dsxx::FC_NATIVE );
+
+    cout << "\nTesting getFilenameComponent() function with fqpn = "
+         << fqpn << " ...\n" << endl;
 
     bool usesUnixDirSep=true;
 
@@ -65,13 +69,12 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     // tstPath.exe or test/tstPath.exe
 
     // Does the provided path use unix or windows directory separator?
-    string::size_type idx = fqp.find( rtt_dsxx::UnixDirSep );
+    string::size_type idx = fqpn.find( rtt_dsxx::UnixDirSep );
     if( idx == string::npos )
         usesUnixDirSep = false;
 
     // retrieve the path w/o the filename.
-    string mypath = getFilenameComponent( fqp, rtt_dsxx::FC_PATH );
-
+    string mypath = getFilenameComponent( fqpn, rtt_dsxx::FC_PATH );
     if( usesUnixDirSep )
     {
         // If we are using UnixDirSep, we have 2 cases (./tstPath or
@@ -88,7 +91,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
             PASSMSG( string("Found expected partial path. Path = ") + mypath );
         else
             FAILMSG("Did not find expected partial path. Expected path = "
-                       + mypath );
+                    + mypath );
     }
     else
     {
@@ -106,7 +109,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
             PASSMSG( string("Found expected partial path. Path = ") + mypath );
         else
             FAILMSG("Did not find expected partial path. Expected path = "
-                       + mypath );
+                    + mypath );
     }
 
     // value if not found
@@ -116,7 +119,7 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     string expected = string(".")+string(1,rtt_dsxx::dirSep);
     if( mypath2 == expected )
         PASSMSG( string("FC_PATH: name w/o path successfully returned ")
-                   +expected);
+                 +expected);
     else
         FAILMSG("FC_PATH: name w/o path returned incorrect value.");
 
@@ -124,26 +127,26 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
     // test the FC_NAME mode
     // ------------------------------------------------------------
 
-    string myname = getFilenameComponent( fqp, rtt_dsxx::FC_NAME );
+    string myname = getFilenameComponent( fqpn, rtt_dsxx::FC_NAME );
 
     idx = myname.find( string("tstPath") );
     if( idx != string::npos )
         PASSMSG( string("Found expected filename. myname = ") + myname );
     else
         FAILMSG("Did not find expected filename. Expected filename = "
-                   + myname );
+                + myname );
 
     if( usesUnixDirSep )
     {
-        if( mypath+myname == fqp )
+        if( mypath+myname == fqpn )
             PASSMSG( string("Successfully divided fqp into path+name = ")
-                        + mypath+myname );
+                     + mypath+myname );
         else
-            FAILMSG( string("mypath+myname != fqp") +
-                        string("\n\tmypath = ") + mypath +
-                        string("\n\tmyname = ") + myname +
-                        string("\n\tfqp    = ") + fqp
-                      );
+            FAILMSG( string("mypath+myname != fqpn") +
+                     string("\n\tmypath = ") + mypath +
+                     string("\n\tmyname = ") + myname +
+                     string("\n\tfqp    = ") + fqpn
+                );
     }
 
     // value if not found
@@ -168,9 +171,9 @@ void test_getFilenameComponent( ScalarUnitTest & ut, string const & fqp )
 
         // draco_getstat rpstatus( exeExists );
 
-         if( std::ifstream( realpath.c_str() ) )
+        if( std::ifstream( realpath.c_str() ) )
             PASSMSG( "FC_REALPATH points to a valid executable." );
-         else
+        else
             FAILMSG( string("FC_REALPATH is invalid or not executable.") +
                      string("  realpath = ") + realpath );
     }
@@ -366,7 +369,6 @@ void test_draco_remove( rtt_dsxx::ScalarUnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
@@ -375,10 +377,6 @@ int main(int argc, char *argv[])
         test_currentPath(ut);
 
         test_getFilenameComponent(ut, string(argv[0]));
-
-        if( rtt_dsxx::dirSep == rtt_dsxx::UnixDirSep )
-            test_getFilenameComponent( ut,
-                string("test") + rtt_dsxx::WinDirSep + string("tstPath.exe"));
 
         test_draco_remove(ut);
     }

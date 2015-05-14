@@ -52,10 +52,10 @@ void tstOne( ApplicationUnitTest &unitTest, string const & appPath )
         unitTest.passes( "Found expected log filename." );
     else
     {
-      ostringstream msg2;
-      msg2 << "Did not find expected log filename.  Looking for \""
-           << expLogFilename << "\" but found \"" << logFilename
-           << "\" instead.";
+        ostringstream msg2;
+        msg2 << "Did not find expected log filename.  Looking for \""
+             << expLogFilename << "\" but found \"" << logFilename
+             << "\" instead.";
         unitTest.failure( msg2.str() );
     }
     cout << endl;
@@ -111,7 +111,7 @@ void tstThree( ApplicationUnitTest &unitTest)
             ifstream file( unitTest.logFileName().c_str() );
             Check( file );
             data << file.rdbuf();
-    }
+        }
 
         // Check expected word counts.
 
@@ -157,33 +157,13 @@ void tstTwoCheck( ApplicationUnitTest &unitTest, std::ostringstream & msg )
     return;
 }
 
-// Helper function
-std::string setTestPath( std::string const fqName )
-{
-    using std::string;
-    string::size_type idx=fqName.rfind( rtt_dsxx::UnixDirSep );
-    if( idx == string::npos )
-    {
-        // Didn't find directory separator, as 2nd chance look for Windows
-        // directory separator.
-        string::size_type idx=fqName.rfind( rtt_dsxx::WinDirSep );
-        if( idx == string::npos )
-            // If we still cannot find a path separator, return "./"
-            return string( string(".") + rtt_dsxx::dirSep );
-    }
-    string pathName = fqName.substr(0,idx+1);
-    return pathName;
-}
-
-
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     try
     {
         // build the application path + name
-        string const appPath( setTestPath( argv[0] ) );
+        string const appPath( rtt_dsxx::getFilenameComponent( argv[0], rtt_dsxx::FC_PATH ) );
         string const appName( appPath + string("phw") );
 
         // Test ctor for ApplicationUnitTest

@@ -34,12 +34,12 @@ namespace rtt_dsxx
  *
  * Scalar UnitTests should have the following syntax.
  * \code
-int main(int argc, char *argv[])
-{
-    rtt_utils::ScalarUnitTest ut( argc, argv, release );
-    try { tstOne(ut); }
-    UT_EPILOG(ut);
-}
+ int main(int argc, char *argv[])
+ {
+ rtt_utils::ScalarUnitTest ut( argc, argv, release );
+ try { tstOne(ut); }
+ UT_EPILOG(ut);
+ }
  * \endcode
  *
  * \test All of the member functions of this class are tested by
@@ -52,13 +52,14 @@ int main(int argc, char *argv[])
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx  ScalarUnitTest : public UnitTest
+class ScalarUnitTest : public UnitTest
 {
   public:
 
     // CREATORS
 
     //! Default constructors.
+    DLL_PUBLIC_dsxx
     ScalarUnitTest( int & argc, char **&argv, string_fp_void release_,
                     std::ostream & out_ = std::cout );
 

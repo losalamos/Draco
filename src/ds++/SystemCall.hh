@@ -1,7 +1,7 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/SystemCall.hh
- * \brief  Wrapper for system calls. Hide differences between Unix/Windows 
+ * \brief  Wrapper for system calls. Hide differences between Unix/Windows
  *         system calls.
  * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
@@ -41,19 +41,19 @@ std::string const exeExtension( "" );
 //===========================================================================//
 /*! \section HOST_NAME_MAX
  *
- * The selection of a value for HOST_NAME_MAX is completed by 
-   ds++/CMakeLists.txt and ds++/config.h.in.
+ * The selection of a value for HOST_NAME_MAX is completed by
+ ds++/CMakeLists.txt and ds++/config.h.in.
  *
- * - For most Linux platforms, \c HOST_NAME_MAX is defined in \c \<limits.h\>.  
- *   However, according to the POSIX standard, \c HOST_NAME_MAX is a 
+ * - For most Linux platforms, \c HOST_NAME_MAX is defined in \c \<limits.h\>.
+ *   However, according to the POSIX standard, \c HOST_NAME_MAX is a
  *   \em possibly \em indeterminate definition meaning that it
  *
- * \note ...shall be omitted from \c \<limits.h\> on specific implementations 
+ * \note ...shall be omitted from \c \<limits.h\> on specific implementations
  *       where the corresponding value is equal to or greater than the stated
- *       minimum, but is unspecified. 
- * 
+ *       minimum, but is unspecified.
+ *
  * - The minumum POSIX guarantee is \c HOST_NAME_MAX = \c 256.
- * - An alternate value used by some Unix systems is \c MAXHOSTNAMELEN as 
+ * - An alternate value used by some Unix systems is \c MAXHOSTNAMELEN as
  *   defined in \c <sys/param.h>
  * - On Windows, the variable \c MAX_COMPUTERNAME_LENGTH from \c <windows.h>
  *   can be used. See http://msdn.microsoft.com/en-us/library/windows/desktop/ms738527%28v=vs.85%29.aspx
@@ -85,7 +85,7 @@ class DLL_PUBLIC_dsxx  draco_getstat
 #else
     struct stat buf;
 #endif
-    
+
   public:
     //! constructor
     explicit draco_getstat( std::string const & fqName );
@@ -107,10 +107,10 @@ DLL_PUBLIC_dsxx  std::string draco_getrealpath( std::string const & path );
 //! Create a directory
 DLL_PUBLIC_dsxx  void draco_mkdir( std::string const & path );
 
-/*! 
+/*!
  * \brief Remove file or directory (not recursive)
  *
- * For recursive directory delete, see path.hh's walk_directory_tree and 
+ * For recursive directory delete, see path.hh's walk_directory_tree and
  * the functor wdtOpRemove.
  */
 DLL_PUBLIC_dsxx  void draco_remove( std::string const & path );

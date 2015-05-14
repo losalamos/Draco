@@ -265,6 +265,9 @@ void tstPaths(UnitTest &unitTest, char *test)
 
     // helper data
     std::string const thisFile( __FILE__ );
+    std::string testName_wo_suffix(testName);
+    if( testName.substr( testName.length() - 4, 4 ) == std::string( ".exe" ) )
+        testName_wo_suffix = testName.substr( 0, testName.length() - 4 );
 
     // Report current state
     std::cout << "\nThe unitTest system reports the following paths:"
@@ -275,9 +278,10 @@ void tstPaths(UnitTest &unitTest, char *test)
               << "\n" << std::endl;
 
     // Checks
-    if( std::string(test) != testBinaryDir+testName )                         ITFAILS;
-    if( testName != std::string("tstScalarUnitTest")+rtt_dsxx::exeExtension ) ITFAILS;
-    if( thisFile != testSourceDir+testName+std::string(".cc") )               ITFAILS;
+    std::string const stest = rtt_dsxx::getFilenameComponent( std::string( test ), rtt_dsxx::FC_NATIVE );
+    if( stest != testBinaryDir+testName )                                       ITFAILS;
+    if( testName != std::string("tstScalarUnitTest")+rtt_dsxx::exeExtension )   ITFAILS;
+    if( thisFile != testSourceDir + testName_wo_suffix + std::string( ".cc" ) ) ITFAILS;
 
     // If using a multi-config build tool (i.e. Xcode, Visual Studio),
     //    testBinaryDir == testBinaryInputDir + dirSep + [Debug/Release]
@@ -287,12 +291,15 @@ void tstPaths(UnitTest &unitTest, char *test)
     if( testBinaryDir != testBinaryInputDir )
     {
         // multi-config build tool
-        std::string buildType = testBinaryDir.substr(0,testBinaryInputDir.size());
+        std::string buildType = testBinaryDir.substr( testBinaryInputDir.size(), testBinaryDir.size() - testBinaryInputDir.size() );
+        // trim trailing slash, if any
+        if( buildType.substr( buildType.length() - 1, 1 ) == std::string("\\") )
+            buildType = buildType.substr( 0, buildType.length() - 1 );
         std::cout << "This appears to be a multi-config build tool like Xcode or "
                   << "Visual Studio where build type = " << buildType << "." << std::endl;
-        if( buildType != std::string( "Release" ) ||
-            buildType != std::string( "Debug" ) ||
-            buildType != std::string( "DebWithRelInfo" ) ||
+        if( buildType != std::string( "Release" ) &&
+            buildType != std::string( "Debug" ) &&
+            buildType != std::string( "DebWithRelInfo" ) &&
             buildType != std::string( "MinSizeRel" ) )
             FAILMSG(std::string("Unexpected build type = ") + buildType );
     }
@@ -328,6 +335,7 @@ int main( int argc, char *argv[] )
         tstGetWordCountFile( ut );
         tstdbcsettersandgetters( ut, argc, argv );
         tstVersion(ut, argv[0]);
+
         tstPaths(ut, argv[0]);
     }
 

@@ -45,7 +45,7 @@ bool opacityAccessorPassed(rtt_dsxx::ScalarUnitTest & ut,
     // Make sure that the interpolated value matches previous
     // interpolations.
 
-    if ( rtt_dsxx::soft_equiv( grayOpacity, tabulatedValue ) )
+    if ( rtt_dsxx::soft_equiv<double>( grayOpacity, tabulatedValue ) )
     {
         ostringstream message;
         message << spOpacity->getDataDescriptor()
@@ -96,7 +96,7 @@ void testTemperatureGridAccessor(rtt_dsxx::ScalarUnitTest & ut,
         temps_ref[2] = 10.0;
 
         // Compare the grids.
-        if( rtt_dsxx::soft_equiv( temps, temps_ref ) )
+        if( rtt_dsxx::soft_equiv<double>( temps, temps_ref ) )
         {
             ut.passes( "Temperature grid matches." );
         }
@@ -147,7 +147,7 @@ void testDensityGridAccessor(rtt_dsxx::ScalarUnitTest & ut,
         density_ref[2] = 1.0;
 
         // Compare the grids.
-        if( rtt_dsxx::soft_equiv( density, density_ref ) )
+        if( rtt_dsxx::soft_equiv<double>( density, density_ref ) )
         {
             ut.passes( "Density grid matches." );
         }
@@ -208,7 +208,7 @@ void testEnergyBoundaryAccessor(rtt_dsxx::ScalarUnitTest & ut,
         ebounds_ref[12] = 100.0;
 
         // Compare the grids.
-        if( rtt_dsxx::soft_equiv( ebounds, ebounds_ref ) )
+        if( rtt_dsxx::soft_equiv<double>( ebounds, ebounds_ref ) )
         {
             ut.passes( "Energy group boundary grid matches." );
         }

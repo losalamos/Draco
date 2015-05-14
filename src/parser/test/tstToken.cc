@@ -15,6 +15,10 @@
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 
+#ifdef WIN32
+#undef ERROR
+#endif
+
 using namespace std;
 using namespace rtt_parser;
 using namespace rtt_dsxx;
@@ -50,9 +54,9 @@ void token_test( UnitTest & ut )
     if (Is_Keyword_Text("_$")) ut.failure(__LINE__);
     if (!Is_Keyword_Text("__")) ut.failure(__LINE__);
     if (!Is_Real_Text("+1.56e-3")) ut.failure(__LINE__);
-#ifndef _MSC_VER    
+#ifndef _MSC_VER
     if (Is_Real_Text("1.39d-3")) ut.failure(__LINE__);
-#endif    
+#endif
     if (!Is_String_Text("\"This is a test.\"")) ut.failure(__LINE__);
     if (Is_String_Text("\"This is a test")) ut.failure(__LINE__);
     if (Is_String_Text("This is a test")) ut.failure(__LINE__);
@@ -80,20 +84,20 @@ void token_test( UnitTest & ut )
 
     if (real_token == end_token)
     {
-	ut.failure("unlike token equality test did NOT return false");
+        ut.failure("unlike token equality test did NOT return false");
     }
     else
     {
-	ut.passes("unlike token equality test returned false");
+        ut.passes("unlike token equality test returned false");
     }
 
     if (real_token == real_token)
     {
-	ut.passes("like token equality test did returned true");
+        ut.passes("like token equality test did returned true");
     }
     else
     {
-	ut.failure("like token equality test did NOT return true");
+        ut.failure("like token equality test did NOT return true");
     }
 
     return;
@@ -106,7 +110,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut( argc, argv, release );
     try { token_test( ut ); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstToken.cc
