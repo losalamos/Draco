@@ -11,22 +11,9 @@
 project( cdi_ipcress_test CXX )
 
 # ---------------------------------------------------------------------------- #
-# Configuration files
-# ---------------------------------------------------------------------------- #
-
-set( IPCRESS_INTERPRETER_SOURCE_DIR ${PROJECT_SOURCE_DIR} )
-set( IPCRESS_INTERPRETER_BUILD_DIR ${PROJECT_BINARY_DIR} )
-
-configure_file( config.h.in ${PROJECT_BINARY_DIR}/config.h )
-
-# ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources
-   ${PROJECT_SOURCE_DIR}/cdi_ipcress_test.cc
-   ${PROJECT_SOURCE_DIR}/cdi_ipcress_test.hh
-)
 set( test_sources
    tIpcressFile.cc
    tIpcressOpacity.cc
@@ -58,24 +45,14 @@ include_directories(
 )
 
 # ---------------------------------------------------------------------------- #
-# Build library for test directory
-# ---------------------------------------------------------------------------- #
-
-add_component_library(
-   TARGET       Lib_cdi_ipcress_test
-   TARGET_DEPS  Lib_cdi_ipcress
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${test_lib_sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_cdi_ipcress_test" )
+   DEPS    "Lib_cdi_ipcress" )
 
 add_scalar_tests(
    SOURCES "ReadOdfIpcressFile.cc"
-   DEPS    "Lib_cdi_ipcress_test"
+   DEPS    "Lib_cdi_ipcress"
    TEST_ARGS "--unittest" )

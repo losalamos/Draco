@@ -17,7 +17,6 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
-#include "ds++/Soft_Equivalence.hh"
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressFile;
@@ -38,8 +37,7 @@ typedef std::vector< std::vector<double> >      vec2_d;
 void printGrid(SP_Goo spGandOpacity);
 void askTempDens(double &temperature, double &density, bool is_unittest);
 void analyzeData(SP_Goo spGandOpacity);
-void collapseOpacities(SP_Goo spGandOpacity, double temperature,
-                       double density);
+void collapseOpacities(SP_Goo spGandOpacity, double temperature, double density);
 void printCData(SP_Goo spGandOpacity, double temperature, double density);
 void printData (SP_Goo spGandOpacity, double temperature, double density);
 void printTable(SP_Goo spGandOpacity, double temperature, double density);
