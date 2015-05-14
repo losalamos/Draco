@@ -14,9 +14,8 @@
 #ifndef dsxx_UnitTest_hh
 #define dsxx_UnitTest_hh
 
-#include "Assert.hh"
+#include "path.hh"
 #include <list>
-#include <iostream>
 #include <map>
 #include <vector>
 
@@ -47,12 +46,12 @@ namespace rtt_dsxx
  * Scalar UnitTests should have the following syntax.
  * \code
 
-int main(int argc, char *argv[])
-{
+ int main(int argc, char *argv[])
+ {
     rtt_utils::ScalarUnitTest ut( argc, argv, release );
     try { tstOne(ut); }
     UT_EPILOG(ut);
-}
+ }
  * \endcode
  *
  * \test All of the member functions of this class are tested by
@@ -116,6 +115,33 @@ class DLL_PUBLIC_dsxx  UnitTest
     std::string getTestPath(void) const { return testPath; }
     std::string getTestName(void) const { return testName; }
     std::string getTestInputPath(void) const;
+    /*!
+     * \brief Returns the path of the test source directory (useful for locating
+     * input files).
+     *
+     * This function depends on the cmake build system setting the
+     * COMPILE_DEFINITIONS target property. This should be done in
+     * config/component_macros.cmake.
+     *
+     * set_target_property( unit_test_target_name
+     *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
+     */
+    inline std::string getTestSourcePath(void) const
+    {
+#ifdef PROJECT_SOURCE_DIR
+        std::string sourcePath( PROJECT_SOURCE_DIR );
+        // if absent, append path separator.
+        if( sourcePath[sourcePath.size()] != rtt_dsxx::WinDirSep &&
+            sourcePath[sourcePath.size()] != rtt_dsxx::UnixDirSep )
+            sourcePath += rtt_dsxx::dirSep;
+        return sourcePath;
+#else
+        // We should never get here. However, when compiling ScalarUnitTest.cc,
+        // this function must be valid.  ScalarUnitTest.cc is not a unit test so
+        // PROJECT_SOURCE_DIR is not defnied.
+        return std::string("unknown");
+#endif
+    }
 
     // DATA
     //! The number of passes found for this test.
@@ -128,9 +154,9 @@ class DLL_PUBLIC_dsxx  UnitTest
 
     // Features
     static std::map< std::string, unsigned >
-    get_word_count( std::ostringstream const & data, bool verbose=false );
+	get_word_count( std::ostringstream const & data, bool verbose=false );
     static std::map< std::string, unsigned >
-    get_word_count( std::string const & filename, bool verbose=false );
+	get_word_count( std::string const & filename, bool verbose=false );
     static std::vector<std::string> tokenize(
         std::string const & source,
         char        const * delimiter_list = " ",
@@ -171,20 +197,20 @@ class DLL_PUBLIC_dsxx  UnitTest
 #define ITFAILS     ut.failure( __LINE__, __FILE__ )
 #define FAILURE     ut.failure( __LINE__, __FILE__ );
 //#define UT_PROLOG(foo) typedef ut foo
-#define UT_EPILOG(foo) \
-catch (rtt_dsxx::assertion &err) {     \
-   std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", " \
-             << "the following error was thrown...\n" \
-             << err.what() << std::endl; foo.numFails++; } \
-catch(std::exception &err) { \
-   std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
-             << "the following error was thrown...\n" \
-             << err.what() << std::endl; foo.numFails++; } \
-catch( ... ) { \
-   std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
-             << "An unknown exception was thrown on processor " \
-             << std::endl; foo.numFails++; }; \
-return foo.numFails;
+#define UT_EPILOG(foo)							\
+    catch (rtt_dsxx::assertion &err) {					\
+	std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", " \
+		  << "the following error was thrown...\n"		\
+		  << err.what() << std::endl; foo.numFails++; }		\
+    catch(std::exception &err) {					\
+	std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+		  << "the following error was thrown...\n"		\
+		  << err.what() << std::endl; foo.numFails++; }		\
+    catch( ... ) {							\
+	std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+		  << "An unknown exception was thrown on processor "	\
+		  << std::endl; foo.numFails++; };			\
+    return foo.numFails;
 
 #endif // dsxx_UnitTest_hh
 

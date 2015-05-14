@@ -251,8 +251,61 @@ void tstVersion(UnitTest &unitTest, char *test)
     return;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
+void tstPaths(UnitTest &unitTest, char *test)
+{
+    // Checkpoint
+    size_t const nf = unitTest.numFails;
 
+    // There are 4 member functions of UnitTest that return paths:
+    std::string const testBinaryDir( unitTest.getTestPath() );
+    std::string const testName(      unitTest.getTestName() );
+    std::string const testBinaryInputDir( unitTest.getTestInputPath() );
+    std::string const testSourceDir( unitTest.getTestSourcePath() );
+
+    // helper data
+    std::string const thisFile( __FILE__ );
+
+    // Report current state
+    std::cout << "\nThe unitTest system reports the following paths:"
+              << "\n\tTest Path         = " << testBinaryDir
+              << "\n\tTest Name         = " << testName
+              << "\n\tBinary Input Path = " << testBinaryInputDir
+              << "\n\tSource Input Path = " << testSourceDir
+              << "\n" << std::endl;
+
+    // Checks
+    if( std::string(test) != testBinaryDir+testName )                         ITFAILS;
+    if( testName != std::string("tstScalarUnitTest")+rtt_dsxx::exeExtension ) ITFAILS;
+    if( thisFile != testSourceDir+testName+std::string(".cc") )               ITFAILS;
+
+    // If using a multi-config build tool (i.e. Xcode, Visual Studio),
+    //    testBinaryDir == testBinaryInputDir + dirSep + [Debug/Release]
+    // otherwise (i.e. Makefiles )
+    //    testBinaryDir == testBinaryInputDir
+    if( testBinaryDir.substr(0,testBinaryInputDir.size()) != testBinaryInputDir ) ITFAILS;
+    if( testBinaryDir != testBinaryInputDir )
+    {
+        // multi-config build tool
+        std::string buildType = testBinaryDir.substr(0,testBinaryInputDir.size());
+        std::cout << "This appears to be a multi-config build tool like Xcode or "
+                  << "Visual Studio where build type = " << buildType << "." << std::endl;
+        if( buildType != std::string( "Release" ) ||
+            buildType != std::string( "Debug" ) ||
+            buildType != std::string( "DebWithRelInfo" ) ||
+            buildType != std::string( "MinSizeRel" ) )
+            FAILMSG(std::string("Unexpected build type = ") + buildType );
+    }
+
+    if( unitTest.numFails == nf ) // no new failures
+        PASSMSG( "tstPaths completed successfully." );
+    else
+        FAILMSG( "tstPaths did not complete successfully." );
+
+    return;
+}
+
+//---------------------------------------------------------------------------//
 int main( int argc, char *argv[] )
 {
     try
@@ -275,6 +328,7 @@ int main( int argc, char *argv[] )
         tstGetWordCountFile( ut );
         tstdbcsettersandgetters( ut, argc, argv );
         tstVersion(ut, argv[0]);
+        tstPaths(ut, argv[0]);
     }
 
     catch( rtt_dsxx::assertion &err )

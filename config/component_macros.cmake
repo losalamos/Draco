@@ -635,6 +635,7 @@ macro( add_scalar_tests test_sources )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
+      COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
       )
     # Do we need to use the Fortran compiler as the linker?
     if( addscalartest_LINK_WITH_FORTRAN )
@@ -773,6 +774,7 @@ macro( add_parallel_tests )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
+      COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
       )
     if( addparalleltest_MPI_PLUS_OMP )
       if( ${CMAKE_GENERATOR} MATCHES Xcode )
