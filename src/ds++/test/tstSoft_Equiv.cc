@@ -113,18 +113,18 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     vector<double> const reference( values );
 
     if (soft_equiv(values.begin(), values.end(),
-		   reference.begin(), reference.end()))
-	PASSMSG("Passed vector equivalence test.");
+                   reference.begin(), reference.end()))
+        PASSMSG("Passed vector equivalence test.");
     else
-	ITFAILS;
+        ITFAILS;
 
     // modify one value (delta < tolerance )
     values[1] += 1.0e-13;
     if (!soft_equiv(values.begin(), values.end(),
-		    reference.begin(), reference.end(), 1.e-13))
-	PASSMSG("Passed vector equivalence precision test.");
+                    reference.begin(), reference.end(), 1.e-13))
+        PASSMSG("Passed vector equivalence precision test.");
     else
-	ITFAILS;
+        ITFAILS;
 
     // Tests that compare 1D vector data to 1D array data.
     double v[3];
@@ -133,25 +133,25 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     v[2] = reference[2];
 
     if (soft_equiv(&v[0], &v[3],
-		   reference.begin(), reference.end()))
-	PASSMSG("Passed vector-pointer equivalence test.");
+                   reference.begin(), reference.end()))
+        PASSMSG("Passed vector-pointer equivalence test.");
     else
-	ITFAILS;
+        ITFAILS;
 
     if (!soft_equiv(reference.begin(), reference.end(), &v[0], &v[3]))
-	ITFAILS;
+        ITFAILS;
 
     // Check incompatible size
     if (soft_equiv(reference.begin(), reference.end(), &v[1], &v[3]))
-	ITFAILS;
+        ITFAILS;
 
     // modify one value (delta < tolerance )
     v[1] += 1.0e-13;
     if (!soft_equiv(&v[0], v+3,
-		    reference.begin(), reference.end(), 1.e-13))
-	PASSMSG("Passed vector-pointer equivalence precision test.");
+                    reference.begin(), reference.end(), 1.e-13))
+        PASSMSG("Passed vector-pointer equivalence precision test.");
     else
-	ITFAILS;
+        ITFAILS;
 
 #ifdef HAS_CXX11_ARRAY
 #ifdef HAS_CXX11_INITIALIZER_LISTS
@@ -159,10 +159,10 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     std::array<double,3> cppa_vals{
         { 0.3247333291470, 0.3224333221471, 0.3324333522912 } };
     if (soft_equiv(cppa_vals.begin(), cppa_vals.end(),
-		   reference.begin(), reference.end()))
-	PASSMSG("Passed std::array<int,3> equivalence test.");
+                   reference.begin(), reference.end()))
+        PASSMSG("Passed std::array<int,3> equivalence test.");
     else
-	ITFAILS;
+        ITFAILS;
 #endif
 #endif
 
@@ -173,9 +173,9 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest & ut)
     d.push_back(reference[2]);
     if (soft_equiv(d.begin(), d.end(),
                    reference.begin(), reference.end()))
-	PASSMSG("Passed deque<T> equivalence test.");
+        PASSMSG("Passed deque<T> equivalence test.");
     else
-	ITFAILS;
+        ITFAILS;
 
     return;
 }
@@ -216,7 +216,7 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
     // v[1] = 0.3224333221471;
     // v[2] = 0.3324333522912;
     // if (soft_equiv(&v[0], &v[3],
-    //     	   reference.begin(), reference.end()))
+    //             reference.begin(), reference.end()))
     //     PASSMSG("Passed vector-pointer equivalence test.");
     // else
     //     ITFAILS;
@@ -248,7 +248,7 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
         ITFAILS;
 
     if (!soft_equiv_deep<3>().equiv(val.begin(), val.end(),
-                                   ref.begin()+1, ref.end()))
+				    ref.begin()+1, ref.end()))
         PASSMSG("Passed vector<vector<vector<double>>> equivalence test.");
     else
         ITFAILS;
@@ -259,6 +259,63 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest & ut)
 #endif
 
 //---------------------------------------------------------------------------//
+void test_vector_specialization(rtt_dsxx::ScalarUnitTest & ut)
+{
+    double const epsilon(1.0e-27);
+    {
+        // 1-d vector comparison.
+        std::vector<double> v(27,epsilon);
+        std::vector<double> r(27,epsilon);
+        if( ! soft_equiv(v,r) ) ITFAILS;
+    }
+    {
+        // 2-d vector comparison.
+        std::vector<std::vector<double>> v(5);
+        std::vector<std::vector<double>> r(5);
+        for( size_t i=0; i<5; ++i )
+        {
+            v[i] = std::vector<double>(i*2,epsilon);
+            r[i] = std::vector<double>(i*2,epsilon);
+        }
+        if( ! soft_equiv(v,r) ) ITFAILS;
+    }
+    {
+        // 3-d vector comparison.
+        std::vector<std::vector<std::vector<double>>> v(5);
+        std::vector<std::vector<std::vector<double>>> r(5);
+        for( size_t i=0; i<5; ++i )
+        {
+            v[i].resize(3);
+            r[i].resize(3);
+            for( size_t j=0; j<3; ++j )
+            {
+                v[i][j] = std::vector<double>(j*2,epsilon);
+                r[i][j] = std::vector<double>(j*2,epsilon);
+            }
+        }
+        if( ! soft_equiv(v,r) ) ITFAILS;
+    }
+    {
+        // expect a failure for mismatched data.
+        std::vector<double> v(27,42.42);
+        std::vector<double> r(27,42.42);
+        r[5] = 42.44; // mismatch value
+        if( soft_equiv(v,r) ) ITFAILS;
+    }
+    {
+        // expect a failure for mismatched size.
+        std::vector<double> v(27,42.42);
+        std::vector<double> r(7, 42.42);
+        if( soft_equiv(v,r) )
+            FAILMSG("Comparing different size vectors should not pass!");
+        else
+            PASSMSG("Comparing different size vectors did not pass.");
+
+    }
+    return;
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
@@ -266,13 +323,14 @@ int main(int argc, char *argv[])
     try
     {
         // >>> UNIT TESTS
-	test_soft_equiv_scalar(ut);
-	test_soft_equiv_container(ut);
+        test_soft_equiv_scalar(ut);
+        test_soft_equiv_container(ut);
 #ifdef HAS_CXX11_ARRAY
 #ifdef HAS_CXX11_INITIALIZER_LISTS
-	test_soft_equiv_deep_container(ut);
+        test_soft_equiv_deep_container(ut);
 #endif
 #endif
+        test_vector_specialization(ut);
     }
     UT_EPILOG(ut);
 }
