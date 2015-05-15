@@ -266,7 +266,8 @@ void test_vector_specialization(rtt_dsxx::ScalarUnitTest & ut)
         // 1-d vector comparison.
         std::vector<double> v(27,epsilon);
         std::vector<double> r(27,epsilon);
-        if( ! soft_equiv<double>(v,r) ) ITFAILS;
+        if( ! soft_equiv_deep<1,double>().equiv(v.begin(),v.end(),r.begin(),r.end()) ) ITFAILS;
+        if( ! soft_equiv(v,r) ) ITFAILS;
     }
     {
         // 2-d vector comparison.
@@ -277,7 +278,8 @@ void test_vector_specialization(rtt_dsxx::ScalarUnitTest & ut)
             v[i] = std::vector<double>(i*2,epsilon);
             r[i] = std::vector<double>(i*2,epsilon);
         }
-        if( ! soft_equiv<double>(v,r) ) ITFAILS;
+        if( ! soft_equiv_deep<2,double>().equiv(v.begin(),v.end(),r.begin(),r.end()) ) ITFAILS;
+        if( ! soft_equiv(v,r) ) ITFAILS;
     }
     {
         // 3-d vector comparison.
@@ -293,23 +295,26 @@ void test_vector_specialization(rtt_dsxx::ScalarUnitTest & ut)
                 r[i][j] = std::vector<double>(j*2,epsilon);
             }
         }
-        if( ! soft_equiv<double>(v,r) ) ITFAILS;
+        if( ! soft_equiv_deep<3,double>().equiv(v.begin(),v.end(),r.begin(),r.end()) ) ITFAILS;
+        if( ! soft_equiv(v,r) ) ITFAILS;
     }
     {
         // expect a failure for mismatched data.
         std::vector<double> v(27,42.42);
         std::vector<double> r(27,42.42);
         r[5] = 42.44; // mismatch value
-        if( soft_equiv<double>(v,r) ) ITFAILS;
+        if( soft_equiv_deep<1,double>().equiv(v.begin(),v.end(),r.begin(),r.end()) ) ITFAILS;
+        if( soft_equiv(v,r) ) ITFAILS;
     }
     {
         // expect a failure for mismatched size.
         std::vector<double> v(27,42.42);
         std::vector<double> r(7, 42.42);
-        if( soft_equiv<double>(v,r) )
+        if( soft_equiv_deep<1,double>().equiv(v.begin(),v.end(),r.begin(),r.end()) )
+        if( soft_equiv(v,r) )
             FAILMSG("Comparing different size vectors should not pass!");
         else
-            PASSMSG("Comparing different size vectors did not pass.");
+            PASSMSG("Different size vectors are never equivalent.");
 
     }
     return;

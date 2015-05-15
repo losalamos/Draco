@@ -14,10 +14,6 @@
 #include "DummyGrayOpacity.hh"
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
-#include "cdi/GrayOpacity.hh"
-#include "cdi/MultigroupOpacity.hh"
-#include "cdi/OdfmgOpacity.hh"
-#include "cdi/OpacityCommon.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
@@ -31,7 +27,6 @@ using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::OdfmgOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
-using rtt_dsxx::soft_equiv_deep;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -430,8 +425,7 @@ void multigroup_opacity_test( rtt_dsxx::UnitTest & ut )
         = spDmgO->getOpacity( vtemperature, density );
 
     // Compare the results.
-    if ( soft_equiv_deep<2>().equiv( vMgOpacity.begin(), vMgOpacity.end(),
-                                     vRefMgOpacity.begin(), vRefMgOpacity.end() ) )
+    if ( soft_equiv( vMgOpacity, vRefMgOpacity ) )
     {
         ostringstream message;
         message << spDmgO->getDataDescriptor()
@@ -607,9 +601,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
         spDumOdfmgOpacity->getOpacity( temp, dens );
 
     // Make sure the accessor values match the expected values.
-    if ( soft_equiv_deep<2>().equiv( opacities.begin(), opacities.end(),
-                                     odfmgRefOpacity.begin(),
-                                     odfmgRefOpacity.end() ) )
+    if( soft_equiv( opacities, odfmgRefOpacity ) )
     {
         ostringstream message;
         message << spDumOdfmgOpacity->getDataDescriptor()
@@ -662,8 +654,7 @@ void odfmg_opacity_test( rtt_dsxx::UnitTest & ut )
         = spDumOdfmgOpacity->getOpacity( vtemperature, dens );
 
     // Compare the results.
-    if ( soft_equiv_deep<3>().equiv( vCompOpacity.begin(), vCompOpacity.end(),
-                                     vRefOpacity.begin(), vRefOpacity.end() ) )
+    if( soft_equiv( vCompOpacity, vRefOpacity ) )
     {
         ostringstream message;
         message << spDumOdfmgOpacity->getDataDescriptor()

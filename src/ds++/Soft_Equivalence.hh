@@ -256,35 +256,55 @@ inline bool soft_equiv(
 }
 
 //---------------------------------------------------------------------------//
+// [2015-05-14 KT] Originally, I tried to define the following 3
+// specializations with template FPT instead of 'double'.  However, these
+// overloads did not work as indended.  The MSVC compiler could not
+// disambiguate between these signatures and the non-vector form (T=double
+// looks the same as T=vector<double>).  I can resolve this by providing the
+// template paramter when the function is called.  E.g.: bool result =
+// soft_equiv<double>( vector_a, vector_b ). However, specializing the the
+// calls to soft_equiv caused compile failures with Intel/1[45] (mitigated if
+// gcc/4.8 is loaded paralle to intel/14.0.4).
+//
+// intel/14.0.4 spits out this message:
+//
+// /var/lib/perceus/vnfs/compute/rootfs/usr/bin/../include/c++/4.4.7/bits/stl_iterator_base_types.h(127): error: name followed by "::" must be a class or namespace name
+//         typedef typename _Iterator::iterator_category iterator_category;
+//                         ^
+//          detected during instantiation of class "std::iterator_traits<_Iterator> [with _Iterator=double]" at line 269 of "/.../source/src/ds++/test/tstSoft_Equiv.cc"
+//
+// To get around the problem, I provided fully specified (no template
+// parameters) overloads...
 
-// Specialiation for vector<T>
-template<typename FPT>
-inline bool soft_equiv( const std::vector<FPT> &value,
-                        const std::vector<FPT> &ref,
-                        const FPT precision = 1.0e-12)
+//---------------------------------------------------------------------------//
+// Specialiations for vector<double>
+//---------------------------------------------------------------------------//
+inline bool soft_equiv( const std::vector<double> &value,
+                        const std::vector<double> &ref,
+                        const double precision = 1.0e-12)
 {
-    return soft_equiv_deep<1,FPT>().equiv(value.begin(), value.end(),
-                                          ref.begin(), ref.end(), precision);
+    return soft_equiv_deep<1,double>().equiv(value.begin(), value.end(),
+                                             ref.begin(), ref.end(), precision);
 }
-
+//---------------------------------------------------------------------------//
 // Specialiation for vector<vector<T>>
-template<typename FPT>
-inline bool soft_equiv( const std::vector<std::vector<FPT>> &value,
-                        const std::vector<std::vector<FPT>> &ref,
-                        const FPT precision = 1.0e-12)
+//---------------------------------------------------------------------------//
+inline bool soft_equiv( const std::vector<std::vector<double>> &value,
+                        const std::vector<std::vector<double>> &ref,
+                        const double precision = 1.0e-12)
 {
-    return soft_equiv_deep<2,FPT>().equiv(value.begin(), value.end(),
-                                          ref.begin(), ref.end(), precision);
+    return soft_equiv_deep<2,double>().equiv(value.begin(), value.end(),
+                                             ref.begin(), ref.end(), precision);
 }
-
+//---------------------------------------------------------------------------//
 // Specialiation for vector<vector<vector<T>>>
-template<typename FPT>
-inline bool soft_equiv( const std::vector<std::vector<std::vector<FPT>>> &value,
-                        const std::vector<std::vector<std::vector<FPT>>> &ref,
-                        const FPT precision = 1.0e-12)
+//---------------------------------------------------------------------------//
+inline bool soft_equiv( const std::vector<std::vector<std::vector<double>>> &value,
+                        const std::vector<std::vector<std::vector<double>>> &ref,
+                        const double precision = 1.0e-12)
 {
-    return soft_equiv_deep<3,FPT>().equiv(value.begin(), value.end(),
-                                          ref.begin(), ref.end(), precision);
+    return soft_equiv_deep<3,double>().equiv(value.begin(), value.end(),
+                                             ref.begin(), ref.end(), precision);
 }
 
 } // end namespace rtt_dsxx

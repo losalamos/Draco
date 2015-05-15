@@ -895,7 +895,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     cvdensity.begin(),
                                     cvdensity.end(),
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
+    if( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -924,7 +924,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     vdensity.begin(),
                                     vdensity.end(),
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
+    if( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -957,7 +957,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     cvtemperature.end(),
                                     density,
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
+    if( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -990,7 +990,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                     cvdensity.begin(),
                                     cvdensity.end(),
                                     graOp.begin() );
-    if ( rtt_dsxx::soft_equiv<double>( graOp, vtabulatedGrayOpacity ) )
+    if( rtt_dsxx::soft_equiv( graOp, vtabulatedGrayOpacity ) )
     {
         ostringstream message;
         message << spGGOp_Analytic_ra->getDataDescriptor()
@@ -1061,7 +1061,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      cvdensity.end(),
                                      mgOp.begin() );
 
-    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
+    if( rtt_dsxx::soft_equiv( mgOp,vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()
@@ -1095,9 +1095,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      vdensity.end(),
                                      mgOp.begin() );
 
-    // compare the results to the reference solution and report our
-    // findings.
-    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
+    // compare the results to the reference solution and report our findings.
+    if( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()
@@ -1137,7 +1136,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      mgOp.begin() );
 
     // Compare solutions and report the results.
-    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
+    if( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()
@@ -1178,7 +1177,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut)
                                      mgOp.begin() );
 
     // Compare solutions and report the results.
-    if ( rtt_dsxx::soft_equiv<double>( mgOp, vtabulatedOpacity ) )
+    if( rtt_dsxx::soft_equiv( mgOp, vtabulatedOpacity ) )
     {
         ostringstream message;
         message << spGMGOp_Analytic_ra->getDataDescriptor()

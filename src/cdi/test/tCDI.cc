@@ -22,7 +22,6 @@
 
 #include <limits>
 #include <sstream>
-#include <typeinfo>
 #include <iomanip>
 
 using namespace std;
@@ -38,7 +37,6 @@ using rtt_cdi::OdfmgOpacity;
 using rtt_cdi::EoS;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
-using rtt_dsxx::soft_equiv_deep;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -195,9 +193,7 @@ void check_CDI( rtt_dsxx::UnitTest & ut, CDI const &cdi)
     odfmgOpacity = cdi.odfmg(rtt_cdi::ISOTROPIC, rtt_cdi::SCATTERING)->
                    getOpacity( temp, dens );
 
-    if ( soft_equiv_deep<2>().equiv(
-             odfmgOpacity.begin(), odfmgOpacity.end(),
-             odfmgRefOpacity.begin(), odfmgRefOpacity.end() ) )
+    if ( soft_equiv( odfmgOpacity, odfmgRefOpacity ) )
         PASSMSG("CDI.odfmg()->getOpacity(T,rho) is ok.");
     else
         FAILMSG("CDI.odfmg()->getOpacity(T,rho) is not ok.");

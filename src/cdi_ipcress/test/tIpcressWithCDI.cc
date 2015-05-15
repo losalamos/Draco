@@ -17,9 +17,6 @@
 #include "cdi_ipcress/IpcressMultigroupOpacity.hh"
 #include "cdi/CDI.hh" // this includes everything from CDI
 #include "ds++/Release.hh"
-//#include "ds++/ScalarUnitTest.hh"
-#include <iostream>
-//#include <sstream>
 
 using namespace std;
 
@@ -185,7 +182,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     vector< double > vOpacity = spCDI_Analytic->gray(r, a)->
                                 getOpacity( vtemperature, density );
 
-    if ( rtt_dsxx::soft_equiv<double>( vOpacity, vRefOpacity ) )
+    if ( rtt_dsxx::soft_equiv( vOpacity, vRefOpacity ) )
     {
         ostringstream message;
         message << spCDI_Analytic->gray(r, a)->getDataDescriptor()
@@ -271,7 +268,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut)
     vector< double > mgOpacity =
         spCDI_Analytic->mg(r, a)->getOpacity ( temperature, density );
 
-    if ( rtt_dsxx::soft_equiv<double>( mgOpacity, tabulatedMGOpacity ) )
+    if ( rtt_dsxx::soft_equiv( mgOpacity, tabulatedMGOpacity ) )
     {
         ostringstream message;
         message << spCDI_Analytic->mg(r, a)->getDataDescriptor()
