@@ -134,8 +134,8 @@ class UnitTest
             rtt_dsxx::getFilenameComponent(
                 PROJECT_SOURCE_DIR, rtt_dsxx::FC_NATIVE ) );
         // if absent, append path separator.
-        if( sourcePath[sourcePath.size()] != rtt_dsxx::WinDirSep &&
-            sourcePath[sourcePath.size()] != rtt_dsxx::UnixDirSep )
+        if( sourcePath[sourcePath.size()-1] != rtt_dsxx::WinDirSep &&
+            sourcePath[sourcePath.size()-1] != rtt_dsxx::UnixDirSep )
             sourcePath += rtt_dsxx::dirSep;
 
         return sourcePath;
