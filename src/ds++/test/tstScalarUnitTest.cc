@@ -278,7 +278,8 @@ void tstPaths(UnitTest &unitTest, char *test)
               << "\n" << std::endl;
 
     // Checks
-    std::string const stest = rtt_dsxx::getFilenameComponent( std::string( test ), rtt_dsxx::FC_NATIVE );
+    std::string const stest = rtt_dsxx::getFilenameComponent(
+        rtt_dsxx::getFilenameComponent( std::string( test ), rtt_dsxx::FC_NATIVE ), rtt_dsxx::FC_REALPATH );
     if( stest != testBinaryDir+testName )                                       ITFAILS;
     if( testName != std::string("tstScalarUnitTest")+rtt_dsxx::exeExtension )   ITFAILS;
     if( thisFile != testSourceDir + testName_wo_suffix + std::string( ".cc" ) ) ITFAILS;
