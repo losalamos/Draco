@@ -163,8 +163,14 @@ int main(int argc, char *argv[])
     try
     {
         // build the application path + name
-        string const appPath( rtt_dsxx::getFilenameComponent( argv[0], rtt_dsxx::FC_PATH ) );
-        string const appName( appPath + string("phw") );
+        string path( rtt_dsxx::getFilenameComponent( argv[0], rtt_dsxx::FC_PATH ) );
+        string const appName( rtt_dsxx::getFilenameComponent( path + string("phw"),
+                                                              rtt_dsxx::FC_REALPATH ) );
+        string const appPath( rtt_dsxx::getFilenameComponent( appName, rtt_dsxx::FC_PATH ) );
+
+        std::cout << "\nLocations used by this test:"
+                  << "\n   appPath = " << appPath
+                  << "\n   appName = " << appName << std::endl;
 
         // Test ctor for ApplicationUnitTest
         ApplicationUnitTest ut( argc, argv, rtt_dsxx::release, appName );
