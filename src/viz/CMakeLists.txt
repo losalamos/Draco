@@ -49,8 +49,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_viz EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} ${template_implementations} DESTINATION include/viz )
+install( TARGETS Lib_viz EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/viz )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Default CMake build parameters
-# note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -18,26 +18,20 @@ macro( dbsSetDefaults )
   set(CMAKE_INSTALL_MESSAGE LAZY)
 
   # if undefined, force build_type to "release"
-  if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-    set( CMAKE_BUILD_TYPE "Debug" CACHE STRING
-       "Release, Debug, RelWithDebInfo" FORCE )
-  endif( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
-
-  # constrain pull down values in cmake-gui
-  set_property( CACHE CMAKE_BUILD_TYPE
-     PROPERTY
-       STRINGS Release Debug MinSizeRel RelWithDebInfo )
+  if( NOT CMAKE_CONFIGURATION_TYPES )
+     if( "${CMAKE_BUILD_TYPE}x" STREQUAL "x" )
+        set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Release, Debug, RelWithDebInfo" FORCE )
+     endif()
+     # constrain pull down values in cmake-gui
+     set_property( CACHE CMAKE_BUILD_TYPE
+        PROPERTY STRINGS Release Debug MinSizeRel RelWithDebInfo )
+  endif()
 
   # Provide default value for install_prefix
   if( "${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local" OR
       "${CMAKE_INSTALL_PREFIX}" MATCHES "C:/Program Files" )
-     if( "${CMAKE_CURRENT_BINARY_DIR}" MATCHES "src" )
-        set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/../install" )
-     else()
-        set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/install" )
-     endif()
-     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
-        ABSOLUTE )
+     set( CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/../install" )
+     get_filename_component( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" ABSOLUTE )
      set( CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH
         "Install path prefix, prepended onto install directories" FORCE)
   endif()
@@ -64,30 +58,25 @@ macro( dbsSetDefaults )
 
   # Design-by-Contract
 
+  # Default is on (7), except for Makefile based Release builds .
   #   Insist() assertions    : always on
   #   Require() preconditions: add +1 to DBC_LEVEL
   #   Check() assertions     : add +2 to DBC_LEVEL
   #   Ensure() postconditions: add +4 to DBC_LEVEL
   #   Do not throw on error  : add +8 to DBC_LEVEL
-  string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE )
-  if( "${CMAKE_BUILD_TYPE}" MATCHES "RELEASE" )
-     set( DRACO_DBC_LEVEL "0" CACHE STRING "Design-by-Contract (0-15)?" )
-  else()
-     set( DRACO_DBC_LEVEL "7" CACHE STRING "Design-by-Contract (0-15)?" )
-  endif()
+  set( DRACO_DBC_LEVEL "7" )
+  if( NOT CMAKE_CONFIGURATION_TYPES AND "${CMAKE_BUILD_TYPE}" MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" )
+     set( DRACO_DBC_LEVEL "0" )
+  endif()  
+  set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING "Design-by-Contract (0-15)?" )
   # provide a constrained drop down menu in cmake-gui
   set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
      0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
 
-  if( CMAKE_CONFIGURATION_TYPES )
-     set( NESTED_CONFIG_TYPE -C "${CMAKE_CFG_INTDIR}" )
-  else()
-     if( CMAKE_BUILD_TYPE )
-        set( NESTED_CONFIG_TYPE -C "${CMAKE_BUILD_TYPE}" )
-     else()
-        set( NESTED_CONFIG_TYPE )
-     endif()
-  endif()
+   if( CMAKE_CONFIGURATION_TYPES )
+     # BUILD_TYPE is a macro defined by the builtin 'install' target.
+     set(DBSCFGDIR "\${BUILD_TYPE}/" CACHE STRING "Install subdirectory for multiconfig build tools.")
+   endif()
 
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
@@ -142,9 +131,6 @@ endmacro()
 # Save some build parameters for later use by --config options
 #------------------------------------------------------------------------------#
 macro( dbsConfigInfo )
-
-   # We need this string in all caps to capture the compiler flags correctly.
-   string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE )
 
    set( DBS_OPERATING_SYSTEM "${CMAKE_SYSTEM_NAME}")
    set( DBS_OPERATING_SYSTEM_VER "${CMAKE_SYSTEM}")

@@ -55,8 +55,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_special_functions EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} ${template_implementations} DESTINATION include/special_functions )
+install( TARGETS Lib_special_functions EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/special_functions )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

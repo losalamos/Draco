@@ -48,8 +48,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_units EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/units )
+install( TARGETS Lib_units EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/units )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

@@ -60,8 +60,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_plot2D EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/plot2D )
+install( TARGETS Lib_plot2D EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/plot2D )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

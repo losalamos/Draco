@@ -50,8 +50,8 @@ add_component_library(
 
 install( TARGETS Lib_meshReaders  
    EXPORT draco-targets
-   DESTINATION lib )
-install( FILES ${headers} DESTINATION include/meshReaders )
+   DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/meshReaders )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

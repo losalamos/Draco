@@ -176,28 +176,23 @@ macro( add_component_library )
     set( ilil "${acl_TARGET_DEPS};${acl_VENDOR_LIBS}" )
   endif()
 
-  # For non-test libraries, save properties to the
-  # project-config.cmake file
+  # For non-test libraries, save properties to the project-config.cmake file
   if( "${ilil}x" STREQUAL "x" )
     set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
       "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
-set_target_properties(${acl_TARGET} PROPERTIES
-   IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
-   IMPORTED_LOCATION                 \"${imploc}\"
-   INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/include\"
-)
-")
-else()
-  set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
-    "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
-set_target_properties(${acl_TARGET} PROPERTIES
-   IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
-   IMPORTED_LINK_INTERFACE_LIBRARIES \"${ilil}\"
-   IMPORTED_LOCATION                 \"${imploc}\"
-   INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/include\"
-)
-")
-endif()
+    set_target_properties(${acl_TARGET} PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
+      INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/${DBSCFGDIR}include\" )
+    ")
+  else()
+#      IMPORTED_LINK_INTERFACE_LIBRARIES \"${ilil}\"
+    set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
+      "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}
+    set_target_properties(${acl_TARGET} PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES \"${acl_LINK_LANGUAGE}\"
+      INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/${DBSCFGDIR}include\" )
+  ")
+  endif()
 
 # Only publish information to draco-config.cmake for non-test
 # libraries.  Also, omit any libraries that are marked as NOEXPORT

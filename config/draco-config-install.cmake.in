@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   config/draco-config-install.cmake.in
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Save Draco configuration information for installation (cmake export)
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 5442 2010-11-03 16:50:26Z kellyt $
@@ -12,40 +12,39 @@
 get_filename_component( _SELF_DIR "${CMAKE_CURRENT_LIST_FILE}"  PATH )
 include( "${_SELF_DIR}/draco-targets.cmake" )
 
-# Setup for GNUtoMS (see 'cmake --help-module GNUInstallDirs')
+# Setup for GNUtoMS (see 'cmake --help-property GNUtoMS')
 @DRACO_GNUtoMS_INSTALL@
 
 # Also set the draco install dir
-set( DRACO_DIR "@CMAKE_INSTALL_PREFIX@" )
-set( DRACO_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include")
-set( DRACO_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/lib/cmake/draco" )
+set( DRACO_CONFIG_DIR "${_SELF_DIR}" )
+set( DRACO_CONFIGURATION_TYPES "@DRACO_CONFIGURATION_TYPES@" CACHE STRING "Available build configurations" FORCE )
 
 # Provide some pretty print information during configure
 include( FeatureSummary )
 set_package_properties( draco PROPERTIES
    URL "https://rtt.lanl.gov/redmine/projects/draco"
    DESCRIPTION
-"Draco is a comprehensive, radiation transport framework that provides
-     key, reusable components for serial and parallel computational physics
-     codes."
+"Draco is a comprehensive, radiation transport framework that provides key,
+     reusable components for serial and parallel computational physics codes."
    TYPE REQUIRED
    PURPOSE
-"Provides underlying capabilities required by ClubIMC (smart pointers,
-     data access, random number generators, etc.)"
+"Provides underlying capabilities required by Capsaicin and Jayenne (smart
+     pointers, data access, random number generators, etc.)"
    )
 
 ## ---------------------------------------------------------------------------
-## Compilers used by Draco build
+## Compilers used by Draco build (also: see ds++/config.h)
 ## ---------------------------------------------------------------------------
 
-set( Draco_CXX_COMPILER     "@CMAKE_CXX_COMPILER@" )
-set( Draco_C_COMPILER       "@CMAKE_C_COMPILER@" )
-set( Draco_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@" )
-set( Draco_CXX_COMPILER_FLAGS      "@Draco_CXX_COMPILER_FLAGS@" )
-set( Draco_C_COMPILER_FLAGS        "@Draco_C_COMPILER_FLAGS@" )
-set( Draco_Fortran_COMPILER_FLAGS  "@Draco_Fortran_COMPILER_FLAGS@" )
-set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
+#set( Draco_CXX_COMPILER     "@CMAKE_CXX_COMPILER@" )
+#set( Draco_C_COMPILER       "@CMAKE_C_COMPILER@" )
+#set( Draco_Fortran_COMPILER       "@CMAKE_Fortran_COMPILER@" )
+#set( Draco_Fortran_COMPILER        "@CMAKE_Fortran_COMPILER@" )
+#set( Draco_CXX_COMPILER_FLAGS      "@Draco_CXX_COMPILER_FLAGS@" )
+#set( Draco_C_COMPILER_FLAGS        "@Draco_C_COMPILER_FLAGS@" )
+#set( Draco_Fortran_COMPILER_FLAGS  "@Draco_Fortran_COMPILER_FLAGS@" )
 
+set( DRACO_LIBRARY_TYPE @DRACO_LIBRARY_TYPE@ )
 set( CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@" )
 set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
 
@@ -57,10 +56,10 @@ set( GCC_ENABLE_GLIBCXX_DEBUG "@GCC_ENABLE_GLIBCXX_DEBUG@" )
 set(Draco_VERSION "@DRACO_VERSION@")
 
 ## The project include file directories.
-set(Draco_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include")
+#set(Draco_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include")
 
 ## The project library directories.
-set(Draco_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/lib")
+#set(Draco_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/lib")
 
 ## The project libraries.
 set(Draco_LIBRARIES "@Draco_LIBRARIES@" )
@@ -146,3 +145,4 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 ## ---------------------------------------------------------------------------
 
 @Draco_EXPORT_TARGET_PROPERTIES@
+

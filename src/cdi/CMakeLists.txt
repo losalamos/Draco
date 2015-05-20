@@ -48,8 +48,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_cdi EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/cdi )
+install( TARGETS Lib_cdi EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

@@ -64,8 +64,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_rng EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/rng )
+install( TARGETS Lib_rng EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/rng )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

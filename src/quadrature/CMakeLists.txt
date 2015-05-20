@@ -48,8 +48,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/quadrature )
+install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/quadrature )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

@@ -56,9 +56,9 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_<spkg> EXPORT draco-targets DESTINATION lib )
+install( TARGETS Lib_<spkg> EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 target_link_libraries( Lib_<spkg> ${Lib_win_winsock} )
-install( FILES ${headers} ${template_implementations} DESTINATION include/<pkg> )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/<pkg> )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

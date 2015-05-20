@@ -50,8 +50,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_roots EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} ${template_implementations} DESTINATION include/roots )
+install( TARGETS Lib_roots EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/roots )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

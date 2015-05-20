@@ -67,9 +67,9 @@ set_target_properties( Exe_QueryEospac
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_cdi_eospac EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/cdi_eospac )
-install( TARGETS Exe_QueryEospac DESTINATION bin )
+install( TARGETS Lib_cdi_eospac EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_eospac )
+install( TARGETS Exe_QueryEospac DESTINATION ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

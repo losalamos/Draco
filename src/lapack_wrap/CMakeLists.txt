@@ -106,7 +106,7 @@ include_directories(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( FILES ${headers} DESTINATION include/lapack_wrap )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/lapack_wrap )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

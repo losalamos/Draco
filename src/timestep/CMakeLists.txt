@@ -51,8 +51,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_timestep EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/timestep )
+install( TARGETS Lib_timestep EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/timestep )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

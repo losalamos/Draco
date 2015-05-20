@@ -25,11 +25,11 @@
 ;; - Invoke draco-mode with M-x turn-on-draco-mode.  To have
 ;;   draco-mode invoked automatically when you start XEmacs add the
 ;;   following line to your init.el somewhere after you have loaded
-;;   "draco-setup": 
+;;   "draco-setup":
 ;;
 ;;   (turn-on-draco-mode)
 ;;
-;; - Customize the mode by giving the command 
+;; - Customize the mode by giving the command
 ;;   M-x customize-group <ret> draco-mode <ret>
 ;;
 ;; - NOTE: Fundamental mode will not autoload any of the draco-mode
@@ -37,7 +37,7 @@
 ;;   settings applied (including fonts/colors) you can set the
 ;;   default-mode in XEmacs to be text-mode.  Edit ~/.xemacs/custom.el
 ;;   and add the following command:
-;; 
+;;
 ;;   (custom-set-variables
 ;;      '(default-major-mode ('text-mode) t))
 ;;
@@ -45,9 +45,9 @@
 
 ;; Customizable values (paths, basic setup options, etc.)
 
-(defcustom my-home-dir (concat (getenv "HOME") "/") 
-"Location of $HOME." 
-:group 'draco-mode 
+(defcustom my-home-dir (concat (getenv "HOME") "/")
+"Location of $HOME."
+:group 'draco-mode
 :type 'string)
 
 (defcustom draco-env-dirs nil "\nList of directories that will be
@@ -55,7 +55,7 @@ prepended to the load-path if they exist.  The directories <dir>/elisp
 will also be examined and prepended to the the load-path if they
 exist.  \nAdd to this list by using the following command in personal
 elisp files: \n\t(setq draco-env-dirs (cons \"/path/to/extra/dir/\"))"
-:group 'draco-mode 
+:group 'draco-mode
 :type 'list)
 
 (if (not draco-env-dirs)
@@ -80,7 +80,7 @@ elisp files: \n\t(setq draco-env-dirs (cons \"/path/to/extra/dir/\"))"
    - share
    - templates   Subdirectory that contains templates that support
                  rapid development of C++ source files.  These
-                 templates are used when the user selects 
+                 templates are used when the user selects
                  \"New file ...\" from the XEmacs DRACO menu.
    - tex         currently empty."
 :group 'draco-mode
@@ -98,11 +98,11 @@ used with the Draco elisp code (DRACO Menu)."
 :type 'string)
 
 (defcustom draco-colorize-modeline nil
-  "*Does the user want us to colorize the modeline 
-based on the buffer-mode?  When customizing these colors 
-it may be useful to run the XEmacs command 
+  "*Does the user want us to colorize the modeline
+based on the buffer-mode?  When customizing these colors
+it may be useful to run the XEmacs command
 
-M-x list-colors-display 
+M-x list-colors-display
 
 to obtain a list of colors known to XEmacs."
 :group 'draco-mode
@@ -117,7 +117,7 @@ will be searched for bibfiles associated with \bibliography(file)
 command at the end of a LaTeX document.  This path is used by
 reftex-mode.;
 
-Consider prepending your local directories." 
+Consider prepending your local directories."
   :group 'draco-mode
   :type 'list)
 
@@ -128,14 +128,14 @@ Each directory entry should end with a double slash.  Each directory
 will be searched for LaTeX files (.sty, .bst, .cls, .tex, eps, etc.)
 This path is used by reftex-mode.;
 
-Consider prepending your local directories." 
+Consider prepending your local directories."
   :group 'draco-mode
   :type 'list)
 
 (defcustom draco-code-comment-width 80
   "*Number of characters to use for comments (default 80)"
 :group 'draco-mode
-:type 'string )
+:type '(number) )
 
 ;; ========================================
 ;; Use Draco configuration for these modes
@@ -150,140 +150,140 @@ mode?"
 
 (defcustom draco-want-tcl-mode t
   "*Does the user want to have the Draco minor mode enabled for TCL
-mode?" 
+mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-python-mode t
   "*Does the user want to have  the Draco minor mode enabled for
-Python mode?" 
+Python mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-cmake-mode t
   "*Does the user want to have  the Draco minor mode enabled for CMake
-mode?"  
+mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-autoconf-mode t
   "*Does the user want to have the Draco minor mode enabled for
-autoconf mode?" 
+autoconf mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-makefile-mode t
   "*Does the user want to have the Draco minor mode enabled for
-Makefile mode?" 
+Makefile mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-cc-mode t
   "*Does the user want to have the Draco minor mode enabled for C/C++
-mode?" 
+mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-auctex-mode t
   "*Does the user want to have the Draco minor mode enabled for AucTeX
-mode?" 
+mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-f90-mode t
   "*Does the user want to have the Draco minor mode enabled for
-f90-mode?" 
+f90-mode?"
 :group 'draco-mode)
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil))
 
-(defcustom draco-want-fortran-mode t 
+(defcustom draco-want-fortran-mode t
   "*Does the user want to have the Draco minor mode enabled for
-fortran-mode?" 
+fortran-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-change-log-mode t
   "*Does the user want to have the Draco minor mode enabled for
-change-log-mode?" 
+change-log-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-emacs-lisp-mode t
   "*Does the user want to have the Draco minor mode enabled for
-emacs-lisp-mode?" 
+emacs-lisp-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-shell-mode t
   "*Does the user want to have the Draco minor mode enabled for
-shell-mode?" 
+shell-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-cvs-mode t
   "*Does the user want to have the Draco minor mode enabled for
-cvs-mode?" 
+cvs-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-doxymacs-mode nil
   "*Does the user want to have the Draco minor mode enabled for
-doxymacs-mode?" 
+doxymacs-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-sh-mode t
   "*Does the user want to have the Draco minor mode enabled for
-sh-mode?" 
+sh-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-text-mode t
   "*Does the user want to have the Draco minor mode enabled for
-text-mode?" 
+text-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-sgml-mode t
   "*Does the user want to have the Draco minor mode enabled for
-sgml-mode?" 
+sgml-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-dired-mode t
   "*Does the user want to have the Draco minor mode enabled for
-dired-mode?" 
+dired-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-perl-mode t
   "*Does the user want to have the Draco minor mode enabled for
-perl-mode?" 
+perl-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
 
 (defcustom draco-want-compilation-mode t
   "*Does the user want to have the Draco minor mode enabled for
-compilation-mode?" 
+compilation-mode?"
 :group 'draco-mode
 :type '(radio	(const :tag "Yes" t)
 		(const :tag "No"  nil)))
@@ -295,7 +295,7 @@ compilation-mode?"
 		(const :tag "No"  nil)))
 
 ;; ========================================
-;; Update load path using draco-env-dirs. 
+;; Update load path using draco-env-dirs.
 ;; Also, set draco-elisp-dir
 ;;========================================
 
@@ -305,7 +305,7 @@ compilation-mode?"
     (if (not draco-env-dirs)
 	(setq draco-env-dirs
 	      (list (concat my-home-dir "draco/environment/")
-		    (concat my-home-dir "capsaicin/environment/")	
+		    (concat my-home-dir "capsaicin/environment/")
 		    (concat my-home-dir ".xemacs/")
 		    "/usr/projects/draco/environment/"
 		    "/ccs/codes/radtran/vendors/environment/" )))
@@ -324,7 +324,7 @@ compilation-mode?"
       ;; If we find the draco-mode.el file in this directory then set
       ;; this directory to be the draco-elisp-dir
       (if (file-readable-p (concat ldir "elisp/draco-setup.el"))
-	  (progn	
+	  (progn
 	    (setq draco-env-dir ldir)
 	    (setq draco-elisp-dir (concat ldir "elisp/"))
 	    (setq draco-templates-dir (concat ldir "templates/"))
@@ -333,7 +333,7 @@ compilation-mode?"
       (if (file-accessible-directory-p (concat ldir "info/"))
 	  (setq Info-directory-list (cons (concat ldir "info/")
 					  Info-directory-list )))
-		
+
       ;; remove ldir from dirlist and continue the while-loop.
       (setq dirlist (cdr-safe dirlist)))
     ))
@@ -369,12 +369,12 @@ compilation-mode?"
 ;; ========================================
 
 ; rebuild the auto-mode-alist from scratch using the draco
-; information. 
+; information.
 (setq auto-mode-alist nil)
 (require (quote draco-config-modes))
 
-;; If the bool draco-want-<pkg>-mode is t then setup mode <pkg> 
-;; using draco specific settings.  This includes turning on 
+;; If the bool draco-want-<pkg>-mode is t then setup mode <pkg>
+;; using draco specific settings.  This includes turning on
 ;; draco-mode as a minor mode for each <pkg> mode.
 (if draco-want-auctex-mode     (draco-setup-auctex-mode))
 (if draco-want-autoconf-mode   (draco-setup-autoconf-mode))

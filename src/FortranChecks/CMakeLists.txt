@@ -64,7 +64,7 @@ cmake_add_fortran_subdirectory(
 # ---------------------------------------------------------------------------- #
 # No need to install this library as it is not used by anyone else.  This
 # component is only used to test Fortran/C binding.
-# install( TARGETS Lib_FC_Derived_Type EXPORT draco-targets DESTINATION lib )
+# install( TARGETS Lib_FC_Derived_Type EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

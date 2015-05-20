@@ -73,9 +73,9 @@ copy_dll_link_libraries_to_build_dir( Exe_Ipcress_Interpreter )
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 set( CMAKE_INSTALL_DO_STRIP NO )
-install( TARGETS Lib_cdi_ipcress EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/cdi_ipcress )
-install( TARGETS Exe_Ipcress_Interpreter DESTINATION bin )
+install( TARGETS Lib_cdi_ipcress EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ipcress )
+install( TARGETS Exe_Ipcress_Interpreter DESTINATION ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

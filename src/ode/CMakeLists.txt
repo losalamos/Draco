@@ -51,8 +51,8 @@ include_directories(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-#install( TARGETS Lib_ode EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} ${template_implementations} DESTINATION include/ode )
+#install( TARGETS Lib_ode EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/ode )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

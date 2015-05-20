@@ -25,7 +25,6 @@ if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
   enable_language( Fortran OPTIONAL )
 endif()
 
-
 # Build system configuration files are located here.
 set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 
@@ -122,8 +121,7 @@ configure_file(
    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
    @ONLY )
 add_custom_target( uninstall
-   "${CMAKE_COMMAND}" -P
-   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
+   COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
 # Sometimes CMake does not install the correct RPATH.  This target
 # usually fixes the issue
 add_custom_target( update_rpaths
@@ -133,19 +131,21 @@ add_custom_target( update_rpaths
   )
 
 # Export targets
-install( EXPORT draco-targets DESTINATION lib/cmake/draco )
+install( EXPORT draco-targets 
+         DESTINATION cmake/draco 
+         EXPORT_LINK_INTERFACE_LIBRARIES )     
 
-##---------------------------------------------------------------------------##
-## Notes:
-
-# 1. Use 'cmake -LAH' to list all user set variables.
-# 2. Use 'make rebuild_cache' to regenerate config.h files, directories,
-#   etc.
-# 3. Use 'make edit_cache' to change user set variables.
-# 4. Use 'make -jN' to build in parallel with N processes.
-# 5. Use 'make test' or 'ctest -jN' to run the unit tests.
-# 6. Use 'make install' to strip libraries and copy libraries and
-#    headers to the INSTALL_PREFIX directory.
+# The draco_config and draco-targets may have the string ${BUILD_TYPE} in them.  
+# Replaced this string with the correct value. The "ALL" option ensures that 
+# this command is run before 'install'
+if( CMAKE_CONFIGURATION_TYPES )
+   add_custom_target( update_draco_config ALL
+      COMMAND "${CMAKE_COMMAND}" 
+              -D Draco_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+              -D CMAKE_CFG_INTDIR=${CMAKE_CFG_INTDIR}
+              -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/config/update_draco_config.cmake" ) 
+endif()
 
 ##---------------------------------------------------------------------------##
 ## End of CMakeLists.txt

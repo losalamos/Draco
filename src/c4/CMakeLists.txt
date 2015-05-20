@@ -95,8 +95,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/c4 )
+install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

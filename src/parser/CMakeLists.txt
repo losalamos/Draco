@@ -48,8 +48,8 @@ add_component_library(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_parser EXPORT draco-targets DESTINATION lib )
-install( FILES ${headers} DESTINATION include/parser )
+install( TARGETS Lib_parser EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/parser )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

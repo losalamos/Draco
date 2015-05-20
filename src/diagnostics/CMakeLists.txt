@@ -56,8 +56,9 @@ list( REMOVE_ITEM headers
    )
 
 # Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+if( CMAKE_CONFIGURATION_TYPES )
    list( APPEND sources ${headers} )
+   add_definitions(-DCMAKE_BUILD_TYPE=\"${CMAKE_CFG_INTDIR}\")
 endif()
 
 # ---------------------------------------------------------------------------- #
@@ -82,7 +83,7 @@ add_component_library(
    TARGET_DEPS  "Lib_c4"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
-
+   
 add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info_main.cc )
 target_link_libraries( Exe_draco_info Lib_diagnostics  )
 set_target_properties( Exe_draco_info
@@ -103,12 +104,9 @@ endif()
 
 install( TARGETS Lib_diagnostics
    EXPORT draco-targets
-   DESTINATION lib )
-
-# ??? Do I need to put draco_info into a bin/ directory for RPATH to
-# work correctly after install?
-install( TARGETS Exe_draco_info DESTINATION bin )
-install( FILES ${headers}  DESTINATION include/diagnostics )
+   DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Exe_draco_info DESTINATION ${DBSCFGDIR}bin )
+install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

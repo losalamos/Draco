@@ -48,6 +48,22 @@ if( "${Draco_TPL_LIBRARIES}" STREQUAL "" )
 "Something is wrong with the build system.  Draco_TPL_LIBRARIES is empty." )
 endif()
 
+# Publish the active build_types (A subset of CMAKE_CONFIGURATION_TYPES)
+if( CMAKE_CONFIGURATION_TYPES )
+   unset( DRACO_CONFIGURATION_TYPES CACHE)
+   foreach( cfg ${CMAKE_CONFIGURATION_TYPES} )
+      if( EXISTS ${Draco_BINARY_DIR}/${cfg} )
+         if( "${DRACO_CONFIGURATION_TYPES}x" STREQUAL "x" )
+            set( DRACO_CONFIGURATION_TYPES "${cfg}" )
+         else()
+            list( APPEND DRACO_CONFIGURATION_TYPES ${cfg} )
+         endif()
+      endif()
+   endforeach()
+   set( DRACO_CONFIGURATION_TYPES "${DRACO_CONFIGURATION_TYPES}"
+      CACHE STRING "Available multiconfig builds." )
+endif()   
+
 # Process the config file
 configure_file( draco-config-install.cmake.in
    ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake @ONLY)
@@ -55,22 +71,18 @@ configure_file( draco-config-install.cmake.in
 # For Knights corner systems, also install the unit test driver
 if( HAVE_MIC AND  EXISTS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
   install( PROGRAMS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-    DESTINATION lib/cmake/draco )
+    DESTINATION cmake/draco )
 endif()
 
 # Install scripts and macros to make them available by other projects.
-install(
-   FILES
-     ${CMake_src}
-     ${CMake_in}
-     ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake
-   DESTINATION
-     lib/cmake/draco )
-install(
-  FILES
-    ${CMake_AFSD}
-  DESTINATION
-     lib/cmake/draco/CMakeAddFortranSubdirectory )
+if( CMAKE_CONFIGURATION_TYPES )
+   set( file_list ${CMake_src} ${CMake_in} )
+else()
+   set( file_list ${CMake_src} ${CMake_in} ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
+endif()
+
+install( FILES ${file_list}  DESTINATION cmake/draco )
+install( FILES ${CMake_AFSD} DESTINATION cmake/draco/CMakeAddFortranSubdirectory )
 
 ##---------------------------------------------------------------------------##
 ## End of config/CMakeLists.txt
