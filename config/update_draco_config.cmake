@@ -16,7 +16,7 @@ set( CMAKE_CONFIGURATION_TYPES Debug Release MinSizeRel RelWithDebInfo )
 set( DRACO_CONFIGURATION_TYPES "" )
 
 foreach( bt ${CMAKE_CONFIGURATION_TYPES} )
-   if( EXISTS ${Draco_BINARY_DIR}/${bt} )
+   if( EXISTS ${Draco_BINARY_DIR}/${PACKAGE_PATH}/${bt} )
       list( APPEND DRACO_CONFIGURATION_TYPES ${bt} )
    endif()
 endforeach()

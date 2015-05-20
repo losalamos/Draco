@@ -144,6 +144,7 @@ if( CMAKE_CONFIGURATION_TYPES )
               -D Draco_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
               -D CMAKE_CFG_INTDIR=${CMAKE_CFG_INTDIR}
               -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+              -D PACKAGE_PATH=src/c4/
               -P "${CMAKE_CURRENT_SOURCE_DIR}/config/update_draco_config.cmake" ) 
 endif()
 
