@@ -292,9 +292,11 @@ void tstPaths(UnitTest &unitTest, char *test)
     if( testBinaryDir != testBinaryInputDir )
     {
         // multi-config build tool
-        std::string buildType = testBinaryDir.substr( testBinaryInputDir.size(), testBinaryDir.size() - testBinaryInputDir.size() );
-        // trim trailing slash, if any
-        if( buildType.substr( buildType.length() - 1, 1 ) == std::string("\\") )
+        std::string buildType = testBinaryDir.substr( testBinaryInputDir.size(),
+                                testBinaryDir.size() - testBinaryInputDir.size() );
+        // trim trailing Windows or Unix slash, if any
+        if( buildType.substr( buildType.length() - 1, 1 ) == std::string("\\") ||
+            buildType.substr( buildType.length() - 1, 1 ) == std::string("/") )
             buildType = buildType.substr( 0, buildType.length() - 1 );
         std::cout << "This appears to be a multi-config build tool like Xcode or "
                   << "Visual Studio where build type = " << buildType << "." << std::endl;
