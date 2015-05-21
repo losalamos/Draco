@@ -22,38 +22,6 @@
 #include <iostream>
 #include <iomanip>
 
-/*
-static
-void print_matrix( std::string const & matrix_name,
-                   std::vector<double> const & x,
-                   std::vector<unsigned> const & dims )
-{
-    using std::cout;
-    using std::endl;
-    using std::string;
-
-    Require( dims[0]*dims[1] == x.size() );
-
-    unsigned pad_len( matrix_name.length()+2 );
-    string padding( pad_len, ' ' );
-    cout << matrix_name << " =";
-    // row
-    for( unsigned i=0; i<dims[1]; ++i )
-    {
-        if( i != 0 ) cout << padding;
-
-        cout << "{ ";
-
-        for( unsigned j=0; j<dims[0]-1; ++j )
-            cout << std::setprecision(10) << x[j+dims[0]*i] << ", ";
-
-        cout << std::setprecision(10) << x[dims[0]-1+dims[0]*i] << " }." << endl;
-    }
-    cout << endl;
-    return;
-}
-*/
-
 namespace rtt_quadrature
 {
 
@@ -156,29 +124,25 @@ Sn_Ordinate_Space::compute_M()
 
     // resize the M matrix.
     M_.resize( numMoments*numOrdinates );
-    
-//    double polar, azimuthal;
+
     for( unsigned n=0; n<numMoments; ++n )
     {
         for( unsigned m=0; m<numOrdinates; ++m )
         {
             unsigned const ell ( n2lk[n].L() );
-            int      const k   ( n2lk[n].M() ); 
-        
-            if( dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature 
-            { 
+            int      const k   ( n2lk[n].M() );
+
+            if( dim == 1 && geometry != rtt_mesh_element::AXISYMMETRIC) // 1D mesh, 1D quadrature
+            {
                 double mu ( ordinates[m].mu() );
                 M_[ n + m*numMoments ] = Ylm( ell, k, mu, 0.0, sumwt );
-
-//                polar = mu;
-//                azimuthal = 0.0;
             }
-            else 
+            else
             {
                 double mu ( ordinates[m].mu() );
                 double eta( ordinates[m].eta() );
                 double xi(  ordinates[m].xi() );
-                
+
                 if (geometry == rtt_mesh_element::AXISYMMETRIC)
                 {
                     // R-Z coordinate system
@@ -195,9 +159,6 @@ Sn_Ordinate_Space::compute_M()
 
                     double phi( compute_azimuthalAngle(mu, xi) );
                     M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
-
-//                    polar = eta;
-//                    azimuthal = phi;
                 }
                 else if (geometry == rtt_mesh_element::CARTESIAN)
                 {
@@ -226,22 +187,8 @@ Sn_Ordinate_Space::compute_M()
 
                     double phi( compute_azimuthalAngle(mu, xi) );
                     M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
-
-//                    polar = mu;
-//                    azimuthal = phi;
                 }
-            }        
-/*
-            if (n == 0)
-                    std::cout << "   " << m
-                              << "   " << ordinates[m].mu() 
-                              << "   " << ordinates[m].eta() 
-                              << "   " << ordinates[m].xi() 
-                              << "   " << ordinates[m].wt() 
-                              << "   " << polar
-                              << "   " << azimuthal*180.0/3.141592653589793238462643383279
-                              << std::endl;
-*/
+            }
         } // ordinate loop
     } // moment loop
 
@@ -262,33 +209,33 @@ Sn_Ordinate_Space::compute_D()
     unsigned const numOrdinates = ordinates.size();
     vector<Moment> const &n2lk = this->moments();
     unsigned const numMoments = n2lk.size();
-    
+
     // ---------------------------------------------------
     // Create diagonal matrix of quadrature weights
     // ---------------------------------------------------
-    
+
     gsl_matrix *gsl_W = gsl_matrix_alloc(numOrdinates, numOrdinates);
     gsl_matrix_set_identity(gsl_W);
-    
+
     for( unsigned m=0; m<numOrdinates; ++m )
         gsl_matrix_set(gsl_W, m, m, ordinates[m].wt());
-    
+
     // ---------------------------------------------------
-    // Create the discrete-to-moment matrix 
+    // Create the discrete-to-moment matrix
     // ---------------------------------------------------
-    
+
     std::vector< double > M( M_ );
     Check(M.size()==numOrdinates*numMoments);
     gsl_matrix_view gsl_M = gsl_matrix_view_array( &M[0], numOrdinates, numMoments );
-    
+
     std::vector< double > D( numMoments*numOrdinates );  // rows x cols
     gsl_matrix_view gsl_D = gsl_matrix_view_array( &D[0], numMoments, numOrdinates);
-    
+
     unsigned ierr = gsl_blas_dgemm( CblasTrans, CblasNoTrans, 1.0, &gsl_M.matrix, gsl_W, 0.0, &gsl_D.matrix);
     Insist(!ierr, "GSL blas interface error");
-    
+
     gsl_matrix_free( gsl_W);
-    
+
     D_.swap(D);
 }
 
@@ -344,40 +291,6 @@ Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
     // compute the operators; MUST be called in this order
     compute_M();
     compute_D();
-
-/*
-    unsigned const numOrdinates(this->ordinates().size());
-    unsigned const numMoments(this->moments().size());
-
-    for( unsigned n=0; n<numMoments; ++n )
-    {
-        unsigned const ell ( moments()[n].L() );
-        int      const k   ( moments()[n].M() ); 
-        
-        std::cout << " moment " << n
-                  << "     l = " << ell << " k = " << k
-                  << std::endl;
-    }
-
-    std::vector< unsigned > dimsM;
-    dimsM.push_back( numMoments );
-    dimsM.push_back( numOrdinates );
-    print_matrix( "M", M_, dimsM );
-        
-    std::vector< unsigned > dimsD;
-    dimsD.push_back( numOrdinates );
-    dimsD.push_back( numMoments );
-    print_matrix( "D", D_, dimsD );
-
-    std::cout << " Ordinate Set (may differ from quadrature) " << std::endl; 
-    for (unsigned i=0; i<numOrdinates; ++i)
-        std::cout << "   " << i
-                  << "   " << ordinates[i].mu() 
-                  << "   " << ordinates[i].eta() 
-                  << "   " << ordinates[i].xi() 
-                  << "   " << ordinates[i].wt() 
-                  << std::endl;
-*/
 
     Ensure(check_class_invariants());
 }
