@@ -143,55 +143,48 @@ Sn_Ordinate_Space::compute_M()
                 double eta( ordinates[m].eta() );
                 double xi(  ordinates[m].xi() );
 
-                if (geometry == rtt_mesh_element::AXISYMMETRIC)
-                {
-                    // R-Z coordinate system
-                    //
-                    // It is important to remember here that the positive mu axis points to the
-                    // left and the positive eta axis points up, when the unit sphere is
-                    // projected on the plane of the mu- and eta-axis in R-Z. In this case, phi is
-                    // measured from the mu-axis counterclockwise.
-                    //
-                    // This accounts for the fact that the aziumuthal angle is discretized
-                    // on levels of the xi-axis, making the computation of the azimuthal angle
-                    // here consistent with the discretization by using the eta and mu
-                    // ordinates to define phi.
+                // R-Z coordinate system
+                //
+                // It is important to remember here that the positive mu axis
+                // points to the left and the positive eta axis points up, when
+                // the unit sphere is projected on the plane of the mu- and
+                // eta-axis in R-Z. In this case, phi is measured from the
+                // mu-axis counterclockwise.
+                //
+                // This accounts for the fact that the aziumuthal angle is
+                // discretized on levels of the xi-axis, making the computation
+                // of the azimuthal angle here consistent with the
+                // discretization by using the eta and mu ordinates to
+                // define phi.
 
-                    double phi( compute_azimuthalAngle(mu, xi) );
-                    M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
-                }
-                else if (geometry == rtt_mesh_element::CARTESIAN)
-                {
-                    // X-Y coordinate system
-                    //
-                    // Note that we choose the same moments and spherical
-                    // harmonics as for R-Z in this case, unlike the Galerkin
-                    // method.
-                    //
-                    // This is because we choose the "front" of the
-                    // hemisphere, here, so that the spherical harmoincs
-                    // chosen are even in the azimuthal angle (symmetry from
-                    // front to back) and not even in the polar angle.
-                    // Thus, in this case, the polar angle is measured from the
-                    // eta-axis [0, Pi], and the azimuthal angle is measured
-                    // from the mu-axis [0,Pi].
-                    //
-                    // In contrast, the Galerkin methods chooses the "top"
-                    // hemisphere, and projects down onto the x-y plane.
-                    // Hence the polar angle in that case is xi and extends from
-                    // [0,Pi/2] while the azimuthal angle is on [0, 2 Pi].
-                    // Therefore, in that case, the spherical harmonics must
-                    // be those that are even in the polar angle.
-                    // That may be determined by considering the even-ness
-                    // of the associated legendre polynomials.
+                // X-Y coordinate system
+                //
+                // Note that we choose the same moments and spherical
+                // harmonics as for R-Z in this case, unlike the Galerkin
+                // method.
+                //
+                // This is because we choose the "front" of the
+                // hemisphere, here, so that the spherical harmoincs
+                // chosen are even in the azimuthal angle (symmetry from
+                // front to back) and not even in the polar angle.
+                // Thus, in this case, the polar angle is measured from the
+                // eta-axis [0, Pi], and the azimuthal angle is measured
+                // from the mu-axis [0,Pi].
+                //
+                // In contrast, the Galerkin methods chooses the "top"
+                // hemisphere, and projects down onto the x-y plane.
+                // Hence the polar angle in that case is xi and extends from
+                // [0,Pi/2] while the azimuthal angle is on [0, 2 Pi].
+                // Therefore, in that case, the spherical harmonics must
+                // be those that are even in the polar angle.
+                // That may be determined by considering the even-ness
+                // of the associated legendre polynomials.
 
-                    double phi( compute_azimuthalAngle(mu, xi) );
-                    M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
-                }
+                double phi( compute_azimuthalAngle(mu, xi) );
+                M_[ n + m*numMoments ] = Ylm( ell, k, eta, phi, sumwt );
             }
         } // ordinate loop
     } // moment loop
-
 }
 
 //---------------------------------------------------------------------------------------//
