@@ -53,7 +53,7 @@ fi
 #
 run "cd /usr/projects/draco/vendors/Modules; svn update"
 
-dirs="jayenne/regression capsaicin/scripts asterisk/regression"
+# dirs="jayenne/regression capsaicin/scripts asterisk/regression"
 
 if test -d $regdir/draco/config; then
     run "cd $regdir/draco/config; svn update"

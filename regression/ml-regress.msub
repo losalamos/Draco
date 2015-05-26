@@ -118,7 +118,7 @@ pgi)
     run "module unload eospac ParMetis trilinos SuperLU_DIST gsl"
     run "module unload lapack cudatoolkit openmpi intel"
     run "module load friendly-testing"
-    run "module load pgi/14.10 openmpi lapack"
+    run "module load pgi/15.4 openmpi lapack"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
     export OMP_NUM_THREADS=8
     comp=`basename $CXX`
