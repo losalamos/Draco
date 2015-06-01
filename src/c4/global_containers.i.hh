@@ -82,7 +82,7 @@ void global_merge(set<ElementType> &local_set)
     broadcast(&local_elements[0], number_of_elements, 0);
 
     if (node()!=0)
-    {            
+    {
         for (unsigned i=0; i<number_of_elements; ++i)
         {
             local_set.insert(local_elements[i]);
@@ -104,7 +104,7 @@ void global_merge(map<IndexType, ElementType> &local_map)
     // Flatten the maps
     unsigned const number_of_local_elements = local_map.size();
     vector<IndexType> local_indices(number_of_local_elements);
-    vector<ElementType> local_elements(number_of_local_elements);    
+    vector<ElementType> local_elements(number_of_local_elements);
     unsigned j;
     typename map<IndexType, ElementType>::const_iterator i;
     for (i=local_map.begin(), j=0; i!=local_map.end(); ++i, ++j)
@@ -138,8 +138,8 @@ void global_merge(map<IndexType, ElementType> &local_map)
             Check(other_index.size() == other_elements.size());
             for (unsigned i=0; i<number_of_other_elements; ++i)
             {
-                local_map.insert(pair<IndexType,ElementType>(other_index[i], other_elements[i]));                
-                
+                local_map.insert(pair<IndexType,ElementType>(other_index[i], other_elements[i]));
+
                 //IndexType const &index = other_index[i];
                 //if (local_map.find(index)!=local_map.end() && local_map[index] != other_elements[i])
                 //{
@@ -158,20 +158,26 @@ void global_merge(map<IndexType, ElementType> &local_map)
             elements[j] = i->second;
         }
     }
-    
+
     broadcast(&number_of_elements, 1, 0);
 
     index.resize(number_of_elements);
     elements.resize(number_of_elements);
-    broadcast(&index[0], number_of_elements, 0);
-    broadcast(&elements[0], number_of_elements, 0);
+
+    broadcast(number_of_elements? &index[0]: NULL,
+              number_of_elements,
+              0);
+
+    broadcast(number_of_elements? &elements[0] : NULL,
+              number_of_elements,
+              0);
 
     if (node()!=0)
-    {            
+    {
         for (unsigned i=0; i<number_of_elements; ++i)
         {
             //local_map[index[i]] = elements[i];
-            local_map.insert(pair<IndexType,ElementType>(index[i], elements[i]));                
+            local_map.insert(pair<IndexType,ElementType>(index[i], elements[i]));
         }
     }
 }
@@ -197,7 +203,7 @@ void global_merge(map<IndexType, bool> &local_map)
     // well with C4.
     unsigned const number_of_local_elements = local_map.size();
     vector<IndexType> local_indices(number_of_local_elements);
-    vector<int> local_elements(number_of_local_elements);    
+    vector<int> local_elements(number_of_local_elements);
     unsigned j;
     typename map<IndexType, bool>::const_iterator i;
     for (i=local_map.begin(), j=0; i!=local_map.end(); ++i, ++j)
@@ -232,7 +238,7 @@ void global_merge(map<IndexType, bool> &local_map)
             for (unsigned i=0; i<number_of_other_elements; ++i)
             {
                 IndexType const &index = other_index[i];
-                
+
                 if (local_map.find(index)!=local_map.end() &&
                     local_map[index] != static_cast<bool>(other_elements[i]))
                 {
@@ -253,7 +259,7 @@ void global_merge(map<IndexType, bool> &local_map)
             elements[j] = i->second;
         }
     }
-    
+
     broadcast(&number_of_elements, 1, 0);
 
     index.resize(number_of_elements);
@@ -263,7 +269,7 @@ void global_merge(map<IndexType, bool> &local_map)
 
     // Build the final map, converting the ints back to bool.
     if (node()!=0)
-    {            
+    {
         for (unsigned i=0; i<number_of_elements; ++i)
         {
             local_map[index[i]] = static_cast<bool>(elements[i]);
@@ -273,7 +279,7 @@ void global_merge(map<IndexType, bool> &local_map)
 
 } // end namespace rtt_c4
 
-#endif // C4_MPI 
+#endif // C4_MPI
 
 #endif // c4_global_containers_i_hh
 
