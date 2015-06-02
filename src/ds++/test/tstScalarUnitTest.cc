@@ -284,27 +284,24 @@ void tstPaths(UnitTest &unitTest, char *test)
     if( testName != std::string("tstScalarUnitTest")+rtt_dsxx::exeExtension )   ITFAILS;
     if( thisFile != testSourceDir + testName_wo_suffix + std::string( ".cc" ) ) ITFAILS;
 
-    // If using a multi-config build tool (i.e. Xcode, Visual Studio),
-    //    testBinaryDir == testBinaryInputDir + dirSep + [Debug/Release]
-    // otherwise (i.e. Makefiles )
-    //    testBinaryDir == testBinaryInputDir
-    if( testBinaryDir.substr(0,testBinaryInputDir.size()) != testBinaryInputDir ) ITFAILS;
-    if( testBinaryDir != testBinaryInputDir )
+    // CMake should provide cmake_install.cmake at testBinaryInputDir.
+    if( ! rtt_dsxx::fileExists( testBinaryInputDir + std::string("cmake_install.cmake") ) ) ITFAILS;
+
+    // If this is a multi-config build tool, examine the value of buildType.
+    std::string buildType = rtt_dsxx::getFilenameComponent( testBinaryDir, rtt_dsxx::FC_NAME );
+    if( buildType != std::string( "test" ) )
     {
-        // multi-config build tool
-        std::string buildType = testBinaryDir.substr( testBinaryInputDir.size(),
-                                testBinaryDir.size() - testBinaryInputDir.size() );
         // trim trailing Windows or Unix slash, if any
-        if( buildType.substr( buildType.length() - 1, 1 ) == std::string("\\") ||
-            buildType.substr( buildType.length() - 1, 1 ) == std::string("/") )
+        if( buildType.substr( buildType.length() - 1, 1 ) == std::string( "\\" ) ||
+            buildType.substr( buildType.length() - 1, 1 ) == std::string( "/" ) )
             buildType = buildType.substr( 0, buildType.length() - 1 );
         std::cout << "This appears to be a multi-config build tool like Xcode or "
-                  << "Visual Studio where build type = " << buildType << "." << std::endl;
+		  << "Visual Studio where build type = " << buildType << "." << std::endl;
         if( buildType != std::string( "Release" ) &&
             buildType != std::string( "Debug" ) &&
             buildType != std::string( "DebWithRelInfo" ) &&
             buildType != std::string( "MinSizeRel" ) )
-            FAILMSG(std::string("Unexpected build type = ") + buildType );
+            FAILMSG( std::string( "Unexpected build type = " ) + buildType );
     }
 
     if( unitTest.numFails == nf ) // no new failures

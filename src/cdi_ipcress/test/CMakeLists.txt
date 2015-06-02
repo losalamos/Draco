@@ -56,3 +56,9 @@ add_scalar_tests(
    SOURCES "ReadOdfIpcressFile.cc"
    DEPS    "Lib_cdi_ipcress"
    TEST_ARGS "--unittest" )
+   
+# tIpcress_Interpreter needs to know where the binary Ipcress_Interpreter is located.  
+# Since the build system knows this location and it may be difficult to find from the
+# unit test, simply provide the location via CPP define.
+set_target_properties( Ut_cdi_ipcress_tIpcress_Interpreter_exe
+   PROPERTIES COMPILE_DEFINITIONS "IILOC=\"$<TARGET_FILE:Exe_Ipcress_Interpreter>\"" )

@@ -15,7 +15,6 @@ project( parser_test CXX )
 # ---------------------------------------------------------------------------- #
 
 file( GLOB test_sources *.cc )
-file( GLOB input_files *.inp )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -32,8 +31,7 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 # Special Case:
-# tstConsole_Token_Stream is used by driver4tstConsole_Token_Stream,
-# we do not run it alone.
+# tstConsole_Token_Stream is used by driver4tstConsole_Token_Stream, we do not run it alone.
 
 add_executable( Ut_parser_tstConsole_Token_Stream
    ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc )
@@ -96,9 +94,3 @@ add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"
    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
-
-# ---------------------------------------------------------------------------- #
-# Copy input files to test directory (binary_dir)
-# ---------------------------------------------------------------------------- #
-
-provide_aux_files( FILES "${input_files}" )

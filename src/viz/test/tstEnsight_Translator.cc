@@ -19,13 +19,6 @@
 using namespace std;
 using rtt_viz::Ensight_Translator;
 
-#ifdef MSVC_IDE
-// When configuring for the MSVC_IDE, ut.getTestPath() will point to viz/test/[Release|Debug].
-#define WIN32PATHOFFSET std::string("..\\")
-#else
-#define WIN32PATHOFFSET std::string("")
-#endif
-
 //---------------------------------------------------------------------------//
 void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 {
@@ -83,7 +76,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     double dt       = .01;
 
     string const gd_wpath = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath(), rtt_dsxx::FC_NATIVE);
+        ut.getTestInputPath(), rtt_dsxx::FC_NATIVE );
 
     // make data
     for (int i = 0; i < ndata; i++)
@@ -100,10 +93,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
     // read cell data
 
     // Build path for the input file "cell_data"
-    string const cdInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + WIN32PATHOFFSET + std::string("cell_data"),
-        rtt_dsxx::FC_NATIVE);
-
+    string const cdInputFile = ut.getTestSourcePath() + std::string( "cell_data" );
     ifstream input( cdInputFile.c_str() );
     if( !input ) ITFAILS;
 
@@ -181,8 +171,7 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
         }
     }
 
-    // build an Ensight_Translator (make sure it overwrites any existing
-    // stuff)
+    // build an Ensight_Translator (make sure it overwrites any existing stuff)
     Ensight_Translator translator(prefix, gd_wpath, vdata_names,
                                   cdata_names, true, static_geom,
                                   binary);
@@ -258,8 +247,8 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
 {
     // Build path for the input file "scanner_test.inp"
-    string const baseDir = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath(), rtt_dsxx::FC_NATIVE);
+    string const testBinaryDir = ut.getTestInputPath();
+    string const testBenchDir  = ut.getTestSourcePath() + std::string( "bench" ) + rtt_dsxx::dirSep;
 
     string desc;
     vector<string> prefixes;
@@ -293,7 +282,7 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
              itd != dirs.end(); ++itd )
         {
             // file string
-            string output   = baseDir + *itp + rtt_dsxx::dirSep + *itd
+            string output   = testBinaryDir + *itp + rtt_dsxx::dirSep + *itd
                               + rtt_dsxx::dirSep + string("data") + postfix;
             string ref_out, diff_out, diff_line;
             // Diff the output and reference
@@ -303,8 +292,8 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
 // [2015-02-09 KT]: Newer versions of numdiff (5.8+) refuse to compare binary files.  In r7860, this check was changed to use 'diff'
 // instead of 'numdiff.'  However, 'diff' is not available on Win32 unless MinGW is installed, so just skip this test.  Optionally,
 // the test/CMakeLists.txt could be modified to find a valid 'diff' program and if found, turn this check back on.
-                ref_out  = baseDir +WIN32PATHOFFSET+ *itd + string(".bin") + postfix;
-                diff_out = baseDir + *itd + string(".bin.diff");
+                ref_out  = testBenchDir  + *itd + string(".bin") + postfix;
+                diff_out = testBinaryDir + *itd + string(".bin.diff");
                 diff_line = string("diff ");
                 diff_line += output + string(" ") + ref_out + string(" > ") + diff_out;
                 cout << diff_line << endl;
@@ -314,8 +303,8 @@ void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
             }
             else
             {
-                ref_out  = baseDir +WIN32PATHOFFSET+ *itd + postfix;
-                diff_out = baseDir + *itd + string(".diff");
+                ref_out  = testBenchDir  + *itd + postfix;
+                diff_out = testBinaryDir + *itd + string(".diff");
                 diff_line = string("numdiff ");
                 diff_line += output + string(" ") + ref_out + string(" > ") + diff_out;
                 cout << diff_line << endl;

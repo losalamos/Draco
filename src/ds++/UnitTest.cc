@@ -119,7 +119,7 @@ bool UnitTest::failure(int line)
 bool UnitTest::failure(int line, char const *file)
 {
     out << "Test: failed on line " << line << " in " << file
-	      << std::endl;
+	<< std::endl;
     UnitTest::numFails++;
     return false;
 }
@@ -253,62 +253,6 @@ UnitTest::get_word_count( std::string const & filename, bool verbose )
 
     infile.close();
     return UnitTest::get_word_count( data, verbose );
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Returns the expected path of the input file
- *
- * IDEs often have "configuration" subdirectories like "Debug" and "Release"
- * that they place the test executables in, leaving the input files one level
- * up.  This method attempts to detect that condition in order to provide the
- * correct path, regardless of the selected build system.
- */
-std::string
-UnitTest::getTestInputPath() const
-{
-    std::string inputDir(this->getTestPath());
-
-    // If inputDir is a relative path that points to "./" replace it with a full
-    // path.
-    if( inputDir == std::string("./") )
-        inputDir = rtt_dsxx::draco_getcwd();
-
-    // Next, check to see if we are working with a configuration subdirectory
-    if( rtt_dsxx::getFilenameComponent( inputDir, rtt_dsxx::FC_NAME ) == "test")
-    {
-        // Then there is no configuration subdirectory (like "Debug") at the end
-        // of the path; simply return the inputDir from the current dir
-        // (This simply ensures that the slashes point the right way).
-        inputDir = rtt_dsxx::getFilenameComponent(inputDir,rtt_dsxx::FC_NATIVE);
-    }
-    else
-    {
-        // The project generator does use $(configuration).  So the input
-        // file is at [package]/test/file.inp, but the test binary is
-        // at [package]/test/$(Configuration)/; return the former
-        std::string configuration = rtt_dsxx::getFilenameComponent(
-            inputDir, rtt_dsxx::FC_NAME );
-        int pos( inputDir.find_last_of( configuration ) - configuration.length() );
-        std::string inputDirTrunc;
-        if( pos > 0 )
-        {
-            inputDirTrunc = inputDir.substr( 0, pos ) + rtt_dsxx::dirSep;
-        }
-        else
-        {
-            // This case occurs when running from the test directory when the
-            // test binary is located at $(configuration)/.  In this situation,
-            // pos <=0 because we do not have a full path.  However, in this
-            // situation, we just need to use "./" for the path.
-            inputDirTrunc = rtt_dsxx::draco_getcwd() + rtt_dsxx::dirSep;
-        }
-
-        // Ensure that the slashes are correct
-        inputDir = rtt_dsxx::getFilenameComponent(inputDirTrunc,
-                                                  rtt_dsxx::FC_NATIVE);
-    }
-    return (inputDir);
 }
 
 } // end namespace rtt_dsxx

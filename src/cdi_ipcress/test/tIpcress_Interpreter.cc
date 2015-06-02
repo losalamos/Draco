@@ -14,14 +14,10 @@
 
 #include "cdi_ipcress_test.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/path.hh"
 #include <fstream>
 #include <cstdlib>
 #include <cerrno>
 #include <cstring>
-#include <cmath>
 
 using namespace std;
 
@@ -38,57 +34,26 @@ void runtest(rtt_dsxx::ScalarUnitTest &ut)
 {
     // Setup paths:
 
-    // The Ipcress_Interpreter binary will be at ${build_dir}/${configuration}/
-    // for XCode and MSVC.  For Unix Makefiles it will be at ${build_dir}.
-    string bindir = ut.getTestPath();
-
-    // If bindir is a relative path that points to "./" replace it with a full
-    // path.
-    if( bindir == std::string("./") )
-        bindir = rtt_dsxx::draco_getcwd();
-
-    // Strip the 'test/' from bindir.  This will be the correct path for
-    // Generators that do not use $(Configurations).
-    bindir = rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_PATH );
-
-    // Account for special directory structure used by IDEs like Visual Studio or XCode
-    if( rtt_dsxx::getFilenameComponent( bindir, rtt_dsxx::FC_NAME ) == "test" )
-    {
-        // The project generator does use $(configuration).  So the unit
-        // test is at cdi_ipcress/test/$(Configuration), but the binary is
-        // at cdi_ipcress/$(Configuration)
-        string configuration = rtt_dsxx::getFilenameComponent(
-            ut.getTestPath(), rtt_dsxx::FC_NAME );
-        bindir = rtt_dsxx::getFilenameComponent(
-            bindir, rtt_dsxx::FC_PATH ) + configuration;
-        bindir = rtt_dsxx::getFilenameComponent(
-            bindir, rtt_dsxx::FC_NATIVE );
-        // if absent, append path separator.
-        if( bindir[bindir.size()] != rtt_dsxx::WinDirSep &&
-            bindir[bindir.size()] != rtt_dsxx::UnixDirSep )
-            bindir += rtt_dsxx::dirSep;
-    }
-
-    std::string tpath( ut.getTestPath() );       // path to test binary dir
-    std::string tip(   ut.getTestSourcePath() ); // path to test source dir
+    // The build system knows the location of Ipcress_Interpreter, it is provided
+    // by CPP processor definition.
+    string const ii_application( IILOC );
+    string const tpath( ut.getTestPath() );       // path to test binary dir
+    string const tip(   ut.getTestSourcePath() ); // path to test source dir
 
     // String to hold command that will start the test.  For example:
     // "../Ipcress_Interpreter Al_BeCu.ipcress < IpcressInterpreter.stdin"
     ostringstream cmd;
-    cmd << bindir << "Ipcress_Interpreter Al_BeCu.ipcress"
+    cmd << ii_application << " Al_BeCu.ipcress"
         << " < " << tip   << "IpcressInterpreter.stdin"
         << " > " << tpath << "tstIpcressInterpreter.out";
-
-    cout << "Preparing to run: \n" << endl;
-    string consoleCommand( cmd.str() );
 
     // return code from the system command
     int errorLevel(-1);
 
     // run the test.
+    cout << "Preparing to run: \n" << cmd.str() << endl;
     errno = 0;
-    cout << consoleCommand.c_str() << endl;
-    errorLevel = system( consoleCommand.c_str() );
+    errorLevel = system( cmd.str().c_str() );
 
     // check the errorLevel
     ostringstream msg;

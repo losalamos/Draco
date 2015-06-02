@@ -17,7 +17,6 @@
 #include "parser/File_Token_Stream.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/path.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -381,8 +380,8 @@ void test(UnitTest &ut)
                                               parse_daughter );
 
     // Build path for the input file
-    string const sadInputFile(ut.getTestInputPath()
-                              + std::string("sons_and_daughters.inp") );
+    string const sadInputFile( ut.getTestSourcePath()
+			       + std::string("sons_and_daughters.inp") );
 
     File_Token_Stream tokens( sadInputFile );
 
@@ -394,11 +393,11 @@ void test(UnitTest &ut)
         parent!=SP<Parent>() &&
         parent->name()=="son")
     {
-        ut.passes("Parsed son correctly");
+        PASSMSG("Parsed son correctly");
     }
     else
     {
-        ut.failure("Did NOT parse son correctly");
+        FAILMSG("Did NOT parse son correctly");
     }
 }
 

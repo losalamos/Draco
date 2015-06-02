@@ -131,9 +131,6 @@ void test_macro( rtt_dsxx::UnitTest & ut )
     cout << ">>> Testing Level 3 Block diagnostics." << endl;
     level[3] = 1;
     level[0] = 0;
-
-
-
 #endif
 
     cout << endl;
@@ -169,7 +166,6 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try
     {
-        // >>> UNIT TESTS
         test_ints(ut);
         test_floats(ut);
         test_vectors(ut);

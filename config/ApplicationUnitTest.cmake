@@ -57,7 +57,7 @@ macro( aut_setup)
    else()
       get_filename_component( OUTFILE ${APP} NAME_WE )
    endif()
-   set( OUTFILE "${PROJECT_BINARY_DIR}/${OUTFILE}.out")
+   set( OUTFILE "${CMAKE_CURRENT_BINARY_DIR}/${OUTFILE}.out")
    
    message("Testing ${APP}")
    

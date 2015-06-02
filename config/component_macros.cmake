@@ -471,35 +471,27 @@ function( copy_dll_link_libraries_to_build_dir target )
 
   # Add a post-build command to copy each dll into the test directory.
   foreach( lib ${link_libs} )
-    unset( target_loc )
-    if( EXISTS ${lib} )
-      # If $lib is a full path to a library, add it to the list
-      set( target_loc ${lib} )
-      set( target_gnutoms NOTFOUND )
-    else()
-      set( target_loc $<TARGET_FILE:${lib}> )
-      get_target_property( target_gnutoms ${lib} GNUtoMS )
-    endif()
+    # We do not need to the post_build copy command for Draco Lib_* files.  These should already be in the correct location.
+    if( NOT ${lib} MATCHES "Lib_" )
 
-    add_custom_command( TARGET ${target}
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${target_loc}
-      ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-    if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-      message("    CMAKE_COMMAND -E copy_if_different ${target_loc} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-    endif()
-    if( "${target_loc}" MATCHES "rtt" AND NOT target_gnutoms )
-      if( ${CMAKE_CFG_INTDIR} STREQUAL Debug)
-        # Also grab the file with debug info
-        string( REPLACE ".dll" ".pdb" pdb_file ${target_loc} )
-        add_custom_command( TARGET ${target}
-          POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pdb_file}
-          ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR} )
-        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-          message("    CMAKE_COMMAND -E copy_if_different ${pdb_file} ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
-        endif()
+      unset( target_loc )
+      if( EXISTS ${lib} )
+        # If $lib is a full path to a library, add it to the list
+        set( target_loc ${lib} )
+        set( target_gnutoms NOTFOUND )
+      else()
+        set( target_loc $<TARGET_FILE:${lib}> )
+        get_target_property( target_gnutoms ${lib} GNUtoMS )
       endif()
+
+      add_custom_command( TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${target_loc}
+	${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR} )
+
+      if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+	message("    CMAKE_COMMAND -E copy_if_different ${target_loc} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}")
+      endif()
+
     endif()
   endforeach()
 
@@ -568,7 +560,7 @@ macro( add_scalar_tests test_sources )
   # Special cases for tests that use the ApplicationUnitTest
   # framework (see c4/ApplicationUnitTest.hh).
   if( addscalartest_APPLICATION_UNIT_TEST )
-    # This is a special case for catamount (CI/CT).  For appliation
+    # This is a special case for catamount (CI/CT).  For application
     # unit tests, the main test runs on the 'login' node (1 rank
     # only) and the real test is run under 'aprun'.  So we do not
     # prefix the test command with 'aprun'.
@@ -630,8 +622,9 @@ macro( add_scalar_tests test_sources )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
-      COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+      # COMPILE_DEFINITIONS PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
       )
+    add_definitions( -DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
     # Do we need to use the Fortran compiler as the linker?
     if( addscalartest_LINK_WITH_FORTRAN )
       set_target_properties( Ut_${compname}_${testname}_exe
@@ -656,13 +649,13 @@ macro( add_scalar_tests test_sources )
 
     if( "${addscalartest_TEST_ARGS}none" STREQUAL "none" )
       register_scalar_test( ${compname}_${testname}
-        "${RUN_CMD}" ${testname} "" )
+        "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "" )
     else()
       set( iarg "0" )
       foreach( cmdarg ${addscalartest_TEST_ARGS} )
         math( EXPR iarg "${iarg} + 1" )
         register_scalar_test( ${compname}_${testname}_arg${iarg}
-          "${RUN_CMD}" ${testname} "${cmdarg}" )
+          "${RUN_CMD}" $<TARGET_FILE:Ut_${compname}_${testname}_exe> "${cmdarg}" )
       endforeach()
     endif()
   endforeach()
@@ -769,8 +762,9 @@ macro( add_parallel_tests )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
-      COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+      # COMPILE_DEFINITIONS PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
       )
+    add_definitions( -DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
     if( addparalleltest_MPI_PLUS_OMP )
       if( ${CMAKE_GENERATOR} MATCHES Xcode )
         set_target_properties( Ut_${compname}_${testname}_exe

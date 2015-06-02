@@ -14,20 +14,12 @@
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/path.hh"
 #include <sstream>
 #include <cstdlib> // system
-#include <cerrno> // errno
+#include <cerrno>  // errno
 #include <cstring>
 
 using namespace std;
-
-#ifdef MSVC_IDE
-// When configuring for the MSVC_IDE, ut.getTestPath() will point to viz/test/[Release|Debug].
-#define WIN32PATHOFFSET std::string("..\\")
-#else
-#define WIN32PATHOFFSET std::string("")
-#endif
 
 //---------------------------------------------------------------------------//
 // In this unit test we need to check the parser's ability to accept a
@@ -52,21 +44,21 @@ void runtest( rtt_dsxx::UnitTest &ut )
 
     // Build path for the input file "console_test.inp"
     string const ctInputFile = rtt_dsxx::getFilenameComponent(
-        ut.getTestPath() + WIN32PATHOFFSET + std::string( "console_test.inp" ),
+        ut.getTestSourcePath() + std::string( "console_test.inp" ),
         rtt_dsxx::FC_NATIVE);
 
     // String to hold command that will start the test.  For example:
-    // "/full/path/to/tstConsole_Token_Stream < /full/path/to/console_test.inp"    
+    // "/full/path/to/tstConsole_Token_Stream < /full/path/to/console_test.inp"
     std::cout << tctsApp << " < " << ctInputFile << std::endl;
     std::string consoleCommand( tctsApp + " < " + ctInputFile );
 
     // return code from the system command
     int errorLevel(-1);
-    
+
     // run the test.
     errno = 0;
     errorLevel = system( consoleCommand.c_str() );
-    
+
     // check the errorLevel
     std::ostringstream msg;
     // On Linux, the child process information is sometimes unavailable even
@@ -83,12 +75,12 @@ void runtest( rtt_dsxx::UnitTest &ut )
             << "\n\t Standard input from: console_test.inp\n"
             << "\t errorLevel = " << errorLevel << endl
             << "\t errno = " << errno << ", " << strerror(errno) << endl;
-        FAILMSG( msg.str() );   
+        FAILMSG( msg.str() );
     }
-    
+
     // This setup provides the possibility to parse output from each
-    // run.  This potential feature is not currently implemented.            
-    
+    // run.  This potential feature is not currently implemented.
+
     return;
 }
 
@@ -99,7 +91,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { runtest(ut ); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of driver4tstConsole_Token_Stream.cc

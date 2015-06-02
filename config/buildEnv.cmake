@@ -39,6 +39,16 @@ macro( dbsSetDefaults )
   mark_as_advanced( LIBRARY_OUTPUT_PATH )
   mark_as_advanced( DART_TESTING_TIMEOUT )
 
+  # For win32 platforms avoid copying all dependent dll libraries into the test directories
+  # by using a common runtime directory.
+  if( WIN32 )
+     if( CMAKE_CONFIGURATION_TYPES )
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR} )
+     else() # nmake or mingw32-make
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+     endif()
+  endif()
+
   # Establish the sitename
   site_name( current_site )
   set( SITE ${current_site} CACHE INTERNAL

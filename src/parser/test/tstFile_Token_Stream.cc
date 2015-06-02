@@ -14,7 +14,6 @@
 #include <sstream>
 #include "parser/File_Token_Stream.hh"
 #include "c4/ParallelUnitTest.hh"
-#include "ds++/path.hh"
 #include "ds++/Release.hh"
 
 using namespace std;
@@ -28,41 +27,29 @@ using namespace rtt_dsxx;
 void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
 {
     // Build path for the input file "scanner_test.inp"
-    string const inputFile(ut.getTestInputPath()
-                           + std::string("scanner_test.inp") );
+    string const inputFile( ut.getTestSourcePath()
+			    + std::string("scanner_test.inp") );
 
     {
         File_Token_Stream tokens( inputFile );
         if (tokens.whitespace()!=Text_Token_Stream::default_whitespace)
-        {
             FAILMSG("whitespace characters are NOT correct defaults");
-        }
         else
-        {
             PASSMSG("whitespace characters are correct defaults");
-        }
 
         Token token = tokens.lookahead(4);
-        if (token.type()!=KEYWORD || token.text()!="BLACK") 
-        {
+        if (token.type()!=KEYWORD || token.text()!="BLACK")
             FAILMSG("lookahead(4) does NOT have correct value");
-        }
         else
-        {
             PASSMSG("lookahead(4) has correct value");
-        }
 
         tokens.report_semantic_error(token, "dummy error");
         tokens.check_semantics(false, "dummy error");
         tokens.check_semantics(true, "dummy error");
         if (tokens.error_count()!=2)
-        {
             FAILMSG("Dummy error NOT counted properly");
-        }
         else
-        {
             PASSMSG("Dummy error counted properly");
-        }
 
         try
         {
@@ -73,25 +60,17 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
             tokens.report_semantic_error(msg);
         }
         if (tokens.error_count()!=3)
-        {
             FAILMSG("Dummy exception NOT reported properly");
-        }
         else
-        {
             PASSMSG("Dummy exception reported properly");
-        }
 
         tokens.open( inputFile );
 
         token = tokens.lookahead(4);
         if (token.type()!=KEYWORD || token.text()!="BLACK")
-        {
             FAILMSG("lookahead(4) does NOT have correct value after open");
-        }
         else
-        {
             PASSMSG("lookahead(4) has correct value  after open");
-        }
     }
 
     {
@@ -99,99 +78,71 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
         ws.insert(':');
         File_Token_Stream tokens( inputFile, ws );
         if (tokens.whitespace()!=ws)
-        {
             FAILMSG("whitespace characters are NOT correctly specified");
-        }
         else
-        {
             PASSMSG("whitespace characters are correctly specified");
-        }
 
         Token token = tokens.lookahead(4);
         if (token.type()!=OTHER || token.text()!="=")
-        {
             FAILMSG("lookahead(4) does NOT have correct value");
-        }
         else
-        {
             PASSMSG("lookahead(4) has correct value");
-        }
 
         token = tokens.shift();
         if (token.type()!=KEYWORD || token.text()!="BLUE")
-        {
             FAILMSG("First shift does NOT have correct value");
-        }
         else
-        {
             PASSMSG("First shift has correct value");
-        }
 
         token = tokens.lookahead();
         if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR")
-        {
             FAILMSG("Lookahed after first shift does NOT have correct value");
-        }
         else
-        {
             PASSMSG("Lookahead after first shift has correct value");
-        }
 
         token = tokens.shift();
         if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR")
-        {
             FAILMSG("Second shift does NOT have correct value");
-        }
         else
-        {
             PASSMSG("Second shift has correct value");
-        }
 
         token = tokens.shift();
-        if (token.type()!=KEYWORD || 
+        if (token.type()!=KEYWORD ||
             token.text()!="GENERATE ANOTHER ERROR")
-        {
             FAILMSG("Third shift does NOT have correct value");
-        }
         else
-        {
             PASSMSG("Third shift has correct value");
-        }
 
         token = Token('$', "test_parser");
         tokens.pushback(token);
 
         token = tokens.shift();
         if (token.type()!=OTHER || token.text()!="$")
-        {
             FAILMSG("Shift after pushback does NOT have correct value");
-        }
         else
-        {
             PASSMSG("Shift after pushback has correct value");
-        }
 
-        try 
+        try
         {
-            tokens.report_syntax_error(token, "dummy syntax error");  
+            tokens.report_syntax_error(token, "dummy syntax error");
             FAILMSG("Syntax error NOT correctly thrown");
         }
         catch (const Syntax_Error &msg)
         {
             PASSMSG("Syntax error correctly thrown and caught");
         }
-        try 
+        try
         {
-            tokens.check_syntax(true, "dummy syntax error");  
+            tokens.check_syntax(true, "dummy syntax error");
             PASSMSG("Syntax error correctly checked");
         }
         catch (const Syntax_Error &msg)
         {
             FAILMSG("Syntax error NOT correctly checked");
         }
-        try 
+        try
         {
-            tokens.check_syntax(false, "dummy syntax error");  
+            tokens.check_syntax(false, "dummy syntax error");
             FAILMSG("Syntax error NOT correctly checked");
         }
         catch (const Syntax_Error &msg)
@@ -275,7 +226,7 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
             ITFAILS;
 
         token = tokens.shift();
-        if (token.type()!=STRING || 
+        if (token.type()!=STRING ||
             token.text()!="\"manifest \\\"string\\\"\"")
             ITFAILS;
 
@@ -314,23 +265,23 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
             // The preceeding file does not exist.
             ostringstream errmsg;
             errmsg << "File_Token_Stream did not throw an expected exception.\n"
-                << "\tThe constructor should throw an exception if the requested\n"
-                << "\tfile can not be opened." << endl;
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
             FAILMSG( errmsg.str() );
         }
-        catch (	invalid_argument const &a )
+        catch ( invalid_argument const &a )
         {
             std::ostringstream errmsg;
             errmsg << "File_Token_Stream threw an expected exception.\n"
-                << "\tThe constructor should throw an exception if the requested\n"
-                << "\tfile can not be opened." << endl;
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
             PASSMSG( errmsg.str() );
         }
         catch ( ... )
         {
             ostringstream errmsg;
             errmsg << "File_Token_Stream threw an unknown exception "
-                << "during contruction." << endl;
+		   << "during contruction." << endl;
             FAILMSG( errmsg.str() );
         }
     }
@@ -342,23 +293,23 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
             // The preceeding file does not exist.
             ostringstream errmsg;
             errmsg << "File_Token_Stream did not throw an expected exception.\n"
-                << "\tThe constructor should throw an exception if the requested\n"
-                << "\tfile can not be opened." << endl;
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
             FAILMSG( errmsg.str() );
         }
-        catch (	invalid_argument const &a )
+        catch ( invalid_argument const &a )
         {
             std::ostringstream errmsg;
             errmsg << "File_Token_Stream threw an expected exception.\n"
-                << "\tThe constructor should throw an exception if the requested\n"
-                << "\tfile can not be opened." << endl;
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
             PASSMSG( errmsg.str() );
         }
         catch ( ... )
         {
             ostringstream errmsg;
             errmsg << "File_Token_Stream threw an unknown exception "
-                << "during contruction." << endl;
+		   << "during contruction." << endl;
             FAILMSG( errmsg.str() );
         }
     }
@@ -370,23 +321,23 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
             // The preceeding file does not exist.
             ostringstream errmsg;
             errmsg << "File_Token_Stream did not throw an expected exception.\n"
-                << "\tThe constructor should throw an exception if the requested\n"
-                << "\tfile can not be opened." << endl;
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
             FAILMSG( errmsg.str() );
         }
-        catch (	invalid_argument const &a )
+        catch ( invalid_argument const &a )
         {
             std::ostringstream errmsg;
             errmsg << "File_Token_Stream threw an expected exception.\n"
-                << "\tThe constructor should throw an exception if the requested\n"
-                << "\tfile can not be opened." << endl;
+		   << "\tThe constructor should throw an exception if the requested\n"
+		   << "\tfile can not be opened." << endl;
             PASSMSG( errmsg.str() );
         }
         catch ( ... )
         {
             ostringstream errmsg;
             errmsg << "File_Token_Stream threw an unknown exception "
-                << "during contruction." << endl;
+		   << "during contruction." << endl;
             FAILMSG( errmsg.str() );
         }
     }
@@ -395,9 +346,8 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
 
     {
         // Build path for the input file "scanner_recovery.inp"
-        // Build path for the input file "scanner_recovery.inp"
-        string const inputFile2(ut.getTestInputPath()
-                               + std::string("scanner_recovery.inp") );
+        string const inputFile2( ut.getTestSourcePath()
+				 + std::string("scanner_recovery.inp") );
 
         File_Token_Stream tokens;
         tokens.open( inputFile2 );
@@ -462,13 +412,13 @@ void tstFile_Token_Stream( rtt_dsxx::UnitTest &ut )
 int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
-    try 
+    try
     {
         Insist( rtt_c4::nodes() == 1, "This test requires exactly 1 PE." );
         tstFile_Token_Stream(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstFile_Token_Stream.cc

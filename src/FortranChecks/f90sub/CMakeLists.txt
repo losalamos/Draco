@@ -37,14 +37,22 @@ file( GLOB f90sources *.f90 )
 # If we are using cmake_add_fortran_subdirectory to include this package, the
 # library targets Lib_dsxx and Lib_FC_derived_typ will not be defined.
 # We must manually find these libraries.
+#
+# Note: A more complex example of CMakeAddFortranSubdirectory can be found in jayenne/src/wedgehog/ftest.
+
 if(NOT TARGET Lib_dsxx)
    include(CMakeAddFortranSubdirectory)
-   cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
-      "${PROJECT_BINARY_DIR}/../../ds++" CXX )
-   cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type"
-      "${PROJECT_BINARY_DIR}/../../FortranChecks" CXX )
-  # If we get here, we also need to use the Draco scripts to setup
-  # compiler flags and MPI options
+   get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
+   cafs_create_imported_targets( Lib_dsxx "rtt_ds++" "${draco_BINARY_DIR}/src/ds++" CXX )
+   cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type" "${draco_BINARY_DIR}/src/FortranChecks" CXX )
+   
+  # If we get here, we also need to use the Draco scripts to setup compiler flags and MPI options
+  include( buildEnv )
+  dbsSetDefaults()
+  # On Win32, set the default top level output directory:
+  if(WIN32)
+     set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE} CACHE PATH "Build runtime objects at this location.")
+  endif()
   include( platform_checks )
   query_openmp_availability()
   include( compilerEnv )
@@ -60,7 +68,7 @@ add_component_library(
    LINK_LANGUAGE "Fortran"
    TARGET_DEPS   "Lib_FC_Derived_Type;Lib_dsxx"
    NOEXPORT )
-
+  
 # Debug target properties:
 #include(print_target_properties)
 #echo_targets("Lib_FC_f90sub;Lib_FC_Derived_Type")

@@ -115,7 +115,36 @@ class UnitTest
     bool dbcOn(void)      const { return m_dbcRequire || m_dbcCheck || m_dbcEnsure; }
     std::string getTestPath(void) const { return testPath; }
     std::string getTestName(void) const { return testName; }
-    DLL_PUBLIC_dsxx std::string getTestInputPath( void ) const;
+    /*!
+     * \brief Returns the path of the test binary directory (useful for locating
+     * input files).
+     *
+     * This function depends on the cmake build system setting the
+     * COMPILE_DEFINITIONS target property. This should be done in
+     * config/component_macros.cmake.
+     *
+     * set_target_property( unit_test_target_name
+     *    COMPILE_DEFINITIONS PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
+     */
+    static inline std::string getTestInputPath( void )
+    {
+#ifdef PROJECT_BINARY_DIR
+        std::string sourcePath(
+            rtt_dsxx::getFilenameComponent(
+		PROJECT_BINARY_DIR, rtt_dsxx::FC_NATIVE ) );
+        // if absent, append path separator.
+        if( sourcePath[ sourcePath.size() - 1 ] != rtt_dsxx::WinDirSep &&
+            sourcePath[ sourcePath.size() - 1 ] != rtt_dsxx::UnixDirSep )
+            sourcePath += rtt_dsxx::dirSep;
+
+        return sourcePath;
+#else
+        // We should never get here. However, when compiling ScalarUnitTest.cc,
+        // this function must be valid.  ScalarUnitTest.cc is not a unit test so
+        // PROJECT_SOURCE_DIR is not defnied.
+        return std::string( "unknown" );
+#endif
+    }
     /*!
      * \brief Returns the path of the test source directory (useful for locating
      * input files).

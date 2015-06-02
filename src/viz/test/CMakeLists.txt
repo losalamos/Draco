@@ -15,8 +15,6 @@ project( viz_test CXX )
 # ---------------------------------------------------------------------------- #
 
 file( GLOB test_sources *.cc )
-file( GLOB mesh_input_files *.in )
-file( GLOB bench_files bench/*.0001 )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -39,17 +37,6 @@ if( NOT APPLE )
       DEPS    "Lib_viz;Lib_dsxx"
       )
 endif()
-
-# ---------------------------------------------------------------------------- #
-# Copy input files to test directory (binary_dir)
-# ---------------------------------------------------------------------------- #
-
-provide_aux_files(
-   FILES "${mesh_input_files}"
-   SRC_EXT ".in"
-)
-provide_aux_files( FILES "${python_scripts}" )
-provide_aux_files( FILES "${bench_files}" )
 
 ##---------------------------------------------------------------------------##
 ## Extra 'make clean' files
