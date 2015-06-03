@@ -242,15 +242,8 @@ endmacro()
 # ------------------------------------------------------------
 macro( register_scalar_test targetname runcmd command cmd_args )
 
-  # Cielito needs the ./ in front of the binary name.
-  if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" OR HAVE_MIC )
-    set( APT_TARGET_FILE_PREFIX "./" )
-  endif()
   separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
-  add_test(
-    NAME    ${targetname}
-    COMMAND ${RUN_CMD} ${APT_TARGET_FILE_PREFIX}${command} ${cmdargs}
-    )
+  add_test( NAME ${targetname} COMMAND ${RUN_CMD} ${command} ${cmdargs} )
 
   # reserve enough threads for application unit tests
   set( num_procs 1 ) # normally we only need 1 core for each scalar
