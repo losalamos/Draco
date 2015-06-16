@@ -220,6 +220,10 @@ macro(dbsSetupCxx)
   # C++11 support:
   set( CMAKE_CXX_STANDARD 11 )
 
+  # Do not enable extensions (e.g.: --std=gnu++11)
+  set( CMAKE_CXX_EXTENSIONS OFF )
+  set( CMAKE_C_EXTENSIONS   OFF )
+
   get_filename_component( my_cxx_compiler ${my_cxx_compiler} NAME )
   if( ${my_cxx_compiler} MATCHES "mpicxx" )
     # MPI wrapper

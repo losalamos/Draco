@@ -13,24 +13,26 @@
 # switch on this macro.
 set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
 
-# gfortran < 4.3 won't compile Draco
-# gfortran < 4.7 won't compile Jayenne
-if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
-   execute_process(
+if( NOT Fortran_FLAGS_INITIALIZED )
+  # gfortran < 4.3 won't compile Draco
+  # gfortran < 4.7 won't compile Jayenne
+  if( "${CMAKE_Fortran_COMPILER_VERSION}x" STREQUAL "x" )
+    execute_process(
       COMMAND ${CMAKE_Fortran_COMPILER} --version
       OUTPUT_VARIABLE CMAKE_Fortran_COMPILER_VERSION
       ERROR_QUIET )
-   string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
+    string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
       CMAKE_Fortran_COMPILER_VERSION
       ${CMAKE_Fortran_COMPILER_VERSION})
-   string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-            CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} )
-endif()
-if( "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.7" )
-  message( FATAL_ERROR "
+    string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
+      CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} )
+  endif()
+  if( "${CMAKE_Fortran_COMPILER_VERSION}" STRLESS "4.7" )
+    message( FATAL_ERROR "
 *** Compiler incompatibility:
 gfortran < 4.7 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
 " )
+  endif()
 endif()
 
 #
