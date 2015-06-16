@@ -41,7 +41,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp  -pthread -fp-model precise -fp-speculation safe" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) #  -std=c++0x" )
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -78,9 +78,20 @@ toggle_compiler_flag( HAVE_MIC                 "-mmic"        "C;CXX;EXE_LINKER"
 # xhost will report that it is not available.
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-xHost HAS_XHOST)
-
 toggle_compiler_flag( HAS_XHOST                "-xHost"       "C;CXX"  "")
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+#toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
+
+#
+# Sanity checks
+#
+
+# On Moonlight, Intel-16 requires MKL-11.3
+if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 15.0 )
+  if( NOT $ENV{MKLROOT} MATCHES "2016" )
+    message( FATAL_ERROR "Intel-16 requires MKL-11.3+.")
+  endif()
+endif()
 
 #------------------------------------------------------------------------------#
 # End config/unix-intel.cmake

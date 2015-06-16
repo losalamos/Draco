@@ -288,7 +288,8 @@ macro( setupMPILibrariesUnix )
       # forces FindMPI to skip it's bad logic and just rely on the MPI
       # compiler wrapper to do the right thing. see Bug #467.
       foreach( lang C CXX Fortran )
-        if( "${CMAKE_${lang}_COMPILER}" MATCHES "mpi[A-z+]+" )
+        get_filename_component( CMAKE_${lang}_COMPILER_NOPATH "${CMAKE_${lang}_COMPILER}" NAME )
+        if( "${CMAKE_${lang}_COMPILER_NOPATH}" MATCHES "^mpi[A-z+]+" )
           get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}" NAME )
           set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
           set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
@@ -398,14 +399,14 @@ macro( setupMPILibrariesWindows )
         ERROR_STRIP_TRAILING_WHITESPACE
         )
       if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
-          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")          
+          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
           string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1" DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
           string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2" DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
           set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
       else()
          set(DBS_MPI_VER "5.0")
       endif()
-    
+
       set_package_properties( MPI PROPERTIES
         URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
         DESCRIPTION "Microsoft MPI"
