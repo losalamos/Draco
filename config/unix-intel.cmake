@@ -87,7 +87,7 @@ toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 #
 
 # On Moonlight, Intel-16 requires MKL-11.3
-if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 15.0 )
+if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 15.1 AND DEFINED ENV{MKLROOT} )
   if( NOT $ENV{MKLROOT} MATCHES "2016" )
     message( FATAL_ERROR "Intel-16 requires MKL-11.3+.")
   endif()
