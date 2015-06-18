@@ -103,6 +103,7 @@ class UnitTest
     DLL_PUBLIC_dsxx bool failure( int line, char const *file );
     DLL_PUBLIC_dsxx bool failure( std::string const &failmsg );
     DLL_PUBLIC_dsxx bool passes( std::string const &passmsg );
+    DLL_PUBLIC_dsxx bool check( bool, std::string const &checkmsg );
     //! This pure virtual function must be provided by the inherited class.
     //It should provide output concerning the status of UnitTest.
     void status(void) const { out << resultMessage() << std::endl; return; }
@@ -227,6 +228,7 @@ class UnitTest
 
 #define PASSMSG(m)  ut.passes(m)
 #define FAILMSG(m)  ut.failure(m)
+#define UT_CHECK(ut, m)  ut.check(m, #m);
 #define ITFAILS     ut.failure( __LINE__, __FILE__ )
 #define FAILURE     ut.failure( __LINE__, __FILE__ );
 //#define UT_PROLOG(foo) typedef ut foo

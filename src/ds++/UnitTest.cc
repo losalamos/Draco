@@ -139,6 +139,45 @@ bool UnitTest::passes(const std::string &passmsg)
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Increment either the pass or fail count and print a test description.
+ *
+ * This function is intended to reduce the number of uncovered branches in the test suite
+ * when performing coverage analysis. It is used as follows:
+ *
+ *     ut.check(a>0.0, "a>0.0");
+ *
+ * If a is in fact greater than zero, the pass count is incremented and the output stream
+ * receives
+ *
+ *     Test: passed
+ *     a>0.0
+ *
+ * Otherwise the fail count in incremented and the output stream receives
+ *
+ *     Test: failed
+ *     a>0.0
+ *
+ * No branch is visible in the calling code that will be left uncovered during coverage
+ * analysis.
+ *
+ * \param good True if the test passed, false otherwise.
+ * \param passmsg The message to be printed to the iostream \c UnitTest::out.
+ */
+bool UnitTest::check(bool const good, const std::string &passmsg)
+{
+    if (good)
+    {
+        passes(passmsg);
+    }
+    else
+    {
+        failure(passmsg);
+    }
+    return true;
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Increment the failure count and print a message that a test failed.
  * \param failmsg The message to be printed to the iostream \c UnitTest::out.
  */
