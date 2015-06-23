@@ -145,8 +145,8 @@ parse_class_from_table(Token_Stream &tokens)
 
     // Parse the class keyword block and check for completeness
     Token const terminator = parse_table.parse_table().parse(tokens);
-    if (terminator.type() == END ||
-        (parse_table.allow_exit() && terminator.type()==EXIT))
+    bool allow_exit = parse_table.allow_exit(); // improve code coverage
+    if (terminator.type() == END || (allow_exit && terminator.type()==EXIT))
         // A class keyword block is expected to end with an END or (if
         // allow_exit is true) an EXIT.
     {
