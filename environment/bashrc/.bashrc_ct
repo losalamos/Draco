@@ -27,7 +27,7 @@ fi
 
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
-module use $VENDOR_DIR/Modules/ct-fe
+module load friendly-testing user_contrib
 
 # Move some environment out of the way.
 module unload PrgEnv-intel PrgEnv-pgi
@@ -39,13 +39,11 @@ module unload xt-libsci xt-totalview intel
 module load intel/14.0.4.211
 
 # draco modules start here.
-module load gsl/1.15 lapack/3.4.1
+module load gsl/1.15 lapack/3.5.0
 module load emacs
 module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac/v6.2.4
-
-module load user_contrib
-module load svn git cmake/3.2.2 numdiff
+module load svn cmake/3.2.2 numdiff
 
 export OMP_NUM_THREADS=8
 
