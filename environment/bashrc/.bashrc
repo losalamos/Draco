@@ -221,7 +221,10 @@ mp* | ml* | mu* | pi* | wf* | lu* | ty* )
 red-wtrw* | rfta*)
     source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rfta
     ;;
-
+# trinitite (tt-fey)
+tt-fey* | tt-login*)
+    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tt
+    ;;
 # Assume CCS machine (ccscs[0-9] or personal workstation)
 *)
     if test -d /ccs/codes/radtran; then
