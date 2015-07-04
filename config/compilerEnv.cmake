@@ -180,7 +180,7 @@ macro(dbsSetupCxx)
       COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
       OUTPUT_VARIABLE my_cxx_compiler )
   elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" OR
-      ${CMAKE_CXX_COMPILER} MATCHES "craype" )
+          ${CMAKE_CXX_COMPILER} MATCHES "craype" )
     # Ceilo (catamount) uses a wrapper script
     # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual compiler.
     # Use the following command to determine the actual compiler
@@ -336,7 +336,7 @@ macro(dbsSetupFortran)
 
     # Deal with comiler wrappers
     if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" OR
-        ${CMAKE_CXX_COMPILER} MATCHES "craype" )
+        ${CMAKE_Fortran_COMPILER} MATCHES "craype" )
       # Ceilo (catamount) uses a wrapper script
       # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
       # compiler.  Use the following command to determine the actual
