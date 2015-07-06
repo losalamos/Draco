@@ -246,6 +246,20 @@ class UnitTest
                   << "An unknown exception was thrown on processor "    \
                   << std::endl; foo.numFails++; };                      \
     return foo.numFails;
+#define UT_EPILOG2(foo, bar)                                                \
+    catch (rtt_dsxx::assertion &err) {                                  \
+        std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", " \
+                  << "the following error was thrown...\n"              \
+                  << err.what() << std::endl; foo.numFails++; }         \
+    catch(std::exception &err) {                                        \
+        std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+                  << "the following error was thrown...\n"              \
+                  << err.what() << std::endl; foo.numFails++; }         \
+    catch( ... ) {                                                      \
+        std::cout << "ERROR: While testing " << foo.getTestName() << ", " \
+                  << "An unknown exception was thrown on processor "    \
+                  << std::endl; foo.numFails++; };                      \
+    return foo.numFails + bar.numFails;
 
 #endif // dsxx_UnitTest_hh
 
