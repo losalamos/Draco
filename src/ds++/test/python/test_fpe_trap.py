@@ -3,7 +3,7 @@
 #------------------------------------------------------------------------------#
 # file   ds++/test/python/test_fpe_trap.py
 # author Rob Lowrie, Kelly Thompson
-# date   
+# date
 # brief  Test harnes for checking fpe_trap features.
 # note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
 #        All rights reserved.
@@ -15,11 +15,16 @@
 # We do this via python because we assume that do_exception aborts
 # when a floating-point exception is encountered.
 
-import sys, os
-import platform
+import sys, os, re
+import platform, socket, time
+from subprocess import call
+
+def force_filesystem_sync():
+    """listdir forces the filesystem to resync"""
+    os.listdir(".")
 
 def mesg(s):
-    print 'fpe_trap: %s' % s
+    print 'test_fpe_trap.py: %s' %s
 
 def finish(passed):
     print '*********************************************'
@@ -31,13 +36,16 @@ def finish(passed):
     print '*********************************************'
     sys.exit(0)
 
+nodename = socket.gethostname()
+system = sys.platform
+
 arglist = []
 for arg in sys.argv:
     if arg != "--scalar":
         arglist.append( arg )
 
 if len(arglist) < 2:
-    if platform.system() == 'Windows':
+    if system == 'win32':
         exe = 'do_exception'
     else:
         exe = './do_exception'
@@ -45,18 +53,41 @@ else:
     exe = sys.argv[1]
 file = 'output.dat'
 
-# Check if the platform is supported
-
-c = '%s 0' % exe
+# Cleanup old files...
 if os.path.exists(file):
     mesg('Removing file: %s'%file)
     os.remove(file)
-mesg('Running %s' % c)
-os.system(c)
+
+# Construct the command line
+re_trinitite_nodename1 = re.compile('tt-login*', re.IGNORECASE)
+re_cielo_nodename1 = re.compile('ci-login*', re.IGNORECASE)
+re_cielito_nodename1 = re.compile('ct-login*', re.IGNORECASE)
+craysys = 0
+if re_trinitite_nodename1.match( nodename ) or \
+       re_cielo_nodename1.match( nodename ) or \
+       re_cielito_nodename1.match( nodename ):
+    craysys = 1
+
+if craysys:
+    c = ["aprun", "-n", "1", exe, "0" ]
+else:
+    c = [ exe, "0" ]
+
+mesg('Running %s' % " ".join(c))
+call(c)
+
+# If system() isn't done, the path won't exist yet.  Wait and try the
+# test again.  This was needed when running under aprun (Cray cielo,
+# cielito, trinitite).
+if not os.path.exists(file):
+    force_filesystem_sync()
+
 if not os.path.exists(file):
     # print 'bad bad bad'
-    mesg('Problem running %s' % c)
+    mesg('Problem running %s' % " ".join(c))
     finish(0)
+
+# Read the generated file
 mesg('Reading file: %s'%file)
 fd = open(file)
 
@@ -72,12 +103,12 @@ else:
     finish(0)
 
 # See if the 'Case zero' test worked
-    
+
 line = fd.readline()
 if line[0:12] != '- Case zero:':
     mesg('No Case zero line')
     finish(0)
-    
+
 line = fd.readline()
 if len(line) > 5 and line[2:8] == 'result':
     # The test_filter.py triggers on the keyworld 'signal.' Argh!
@@ -99,10 +130,22 @@ passed = 1 # be optimistic
 # 3: overflow operation
 
 for i in [1,2,3]:
-    if os.path.exists(file): os.remove(file)
-    c = '%s %d' % (exe, i)
-    mesg('Running %s' % c)
-    os.system(c)
+    if os.path.exists(file):
+        os.remove(file)
+    if craysys:
+        c = ["aprun", "-n", "1", exe, str(i) ]
+    else:
+        c = [ exe, str(i) ]
+    # c = '%s %s %d' % (aprun, exe, i)
+    mesg('Running %s' % " ".join(c))
+    call(c)
+
+    # If system() isn't done, the path won't exist yet.  Wait and try the
+    # test again.  This was needed when running under aprun (Cray cielo,
+    # cielito, trinitite).
+    if not os.path.exists(file):
+        force_filesystem_sync()
+
     if not os.path.exists(file):
         mesg('Failed to produce the output file while running "%s"' % c)
         finish(0)

@@ -20,7 +20,7 @@ project( dsxx CXX )
 # Choose platforms for fpe_trap
 if( ${CMAKE_SYSTEM} MATCHES "OSF" )
    set( FPETRAP_OSF_ALPHA 1 )
-elseif( ${CMAKE_SYSTEM} MATCHES "Linux" )
+elseif( ${CMAKE_SYSTEM} MATCHES "Linux" OR ${CMAKE_SYSTEM} MATCHES "Catamount" )
    # If the OS is Linux, fpe_trap should work as long as
    # feenableexscept is available.  That is, it should work for both
    # GNU and Intel compiler suites.
