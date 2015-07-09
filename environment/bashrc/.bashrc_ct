@@ -36,11 +36,14 @@ module unload papi perftools trilinos
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
 module unload xt-libsci xt-totalview intel
+
+# Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
+# module load gcc
 module load intel/14.0.4.211
 
 # draco modules start here.
 module load gsl/1.15 lapack/3.5.0
-module load emacs
+module load emacs hsi
 module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac/v6.2.4
 module load svn cmake/3.2.2 numdiff

@@ -27,9 +27,12 @@ fi
 
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
-#module use /usr/projects/packages/user_contrib/modulefiles/trinitite
-# module use /usr/projects/packages/user_contrib/modulefiles/cielito
-module use /users/kellyt/modulefiles/trinitite
+if test -d $HOME/modulefiles/trinitite; then
+  module use $HOME/modulefiles/trinitite
+fi
+if test -d /usr/projects/packages/user_contrib/modulefiles/trinitite; then
+  module use /usr/projects/packages/user_contrib/modulefiles/trinitite
+fi
 # module load friendly-testing user_contrib
 
 # Move some environment out of the way.
@@ -38,28 +41,25 @@ module unload cmake numdiff svn
 module unload papi perftools trilinos
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
-module unload xt-totalview
-#module unload xt-libsci xt-totalview
+module unload xt-libsci xt-totalview
 
 # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
-module load gcc
-module load intel
+# module load gcc
+# module load intel
 
 # draco modules start here.
-module load gsl eospac/6.2.4
-# lapack/3.5.0 <-- Use libsci instead?
+module load gsl eospac/6.2.4 lapack
 # module load emacs svn
 # module load trilinos SuperLU_DIST ParMetis
 module load random123
 module load cmake/3.2.2 numdiff ndi
 
-
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=32
 
 # Avoid run time messages of the form:
 # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
 # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
-export KMP_AFFINITY=none
+# export KMP_AFFINITY=none
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_tt

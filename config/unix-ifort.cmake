@@ -47,7 +47,9 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 
 # Optional compiler flags
 toggle_compiler_flag( HAVE_MIC    "-mmic"           "Fortran" "")
-toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") # sse3, ssse3
+if( NOT ${SITENAME} STREQUAL "tt" )
+  toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") #sse3, ssse3
+endif()
 # Use OpenMP_C_FLAGS here because cmake/3.1.1 fails to set
 # CMAKE_Fortran_COMPILER_VERSION for FC=mpiifort and FindOpenMP
 # chooses the deprecated '-openmp' instead of '-qopenmp'
