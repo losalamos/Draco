@@ -30,7 +30,10 @@ query_openmp_availability()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS                "-w2 -vec-report0 -diag-disable remark -shared-intel -ftz" )
+  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -ftz" )
+  # [KT 2015-07-10] I would like to turn on -w2, but this generates
+  # many warnings from Trilinos headers that I can't suppress easily
+  # (warning 191: type qualifier is meaningless on cast type)
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
   if( HAVE_MIC )
     # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
