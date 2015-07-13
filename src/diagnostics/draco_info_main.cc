@@ -15,21 +15,30 @@
 #include "ds++/Assert.hh"
 #include <iostream>
 
-// #include "diagnostics/config.h"
-// #include "c4/config.h"
-// #include "ds++/Release.hh"
-// #include "ds++/UnitTest.hh"
-// #include <stdexcept>
-// #include <algorithm> // tolower
-
-int main( int /*argc*/, char *argv[] )
+int main( int argc, char *argv[] )
 {
     using std::cout;
     using std::endl;
     try
     {
+        bool version(false);
+        bool brief(false);
+
         rtt_diagnostics::DracoInfo di;
-        cout << di.fullReport();
+        for( int iargc=1; iargc<argc; ++iargc )
+        {
+            if( std::string(argv[iargc]) == std::string("--version") )
+                version = true;
+            if( std::string(argv[iargc]) == std::string("--brief") )
+                brief = true;
+        }
+
+        if( version )
+            cout << di.versionReport();
+        else if( brief )
+            cout << di.briefReport();
+        else
+            cout << di.fullReport();
     }
     catch( rtt_dsxx::assertion &err )
     {
@@ -46,13 +55,13 @@ int main( int /*argc*/, char *argv[] )
     }
     catch( ... )
     {
-        std::cout << "ERROR: While running " << argv[0] << ", " 
+        std::cout << "ERROR: While running " << argv[0] << ", "
              << "An unknown C++ exception was thrown" << std::endl;;
         return 1;
     }
 
     return 0;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of draco_info_main.cc

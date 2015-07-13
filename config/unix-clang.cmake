@@ -1,6 +1,6 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/apple-clang.cmake
-# brief  Establish flags for Apple OSX
+# file   config/unix-clang.cmake
+# brief  Establish flags for Unix clang
 # note   Copyright (C) 2010-2013 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
@@ -29,7 +29,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -Wextra -funroll-loops" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) #  -std=c++11" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -74,5 +74,5 @@ endif()
 # - make -j 8 [install]
 
 #------------------------------------------------------------------------------#
-# End config/apple-clang.cmake
+# End config/unix-clang.cmake
 #------------------------------------------------------------------------------#

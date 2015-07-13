@@ -43,16 +43,19 @@ if test "${modcmd}x" = "x"; then
 else
 
     module use $VENDOR_DIR/Modules/hpc
-    module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing user_contrib
+
     # compiler, mpi
     module unload intel cmake
+    # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
+    # export IGNOREMODULECONFLICTS=1
+    # module load gcc/4.8.2 intel/14.0.4 openmpi
     module load intel/14.0.4 openmpi
     # other vendor libraries
-    module load lapack/3.4.1 trilinos SuperLU_DIST
+    module load lapack/3.5.0 trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
     # support tools
-    module load svn/1.8.10 cmake/3.2.2 numdiff git totalview emacs
+    module load svn/1.8.10 cmake/3.2.2 numdiff git totalview emacs hsi
 
 fi
 

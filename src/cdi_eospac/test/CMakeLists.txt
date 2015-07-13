@@ -23,7 +23,7 @@ set( test_sources
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # c4/config.h
@@ -34,44 +34,26 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
-   SOURCES "${test_sources}" 
-   DEPS    "Lib_cdi_eospac" 
+   SOURCES "${test_sources}"
+   DEPS    "Lib_cdi_eospac"
    )
 
-add_test( 
-   NAME cdi_eospac_tQueryEospac
-   COMMAND ${CMAKE_COMMAND} 
-   -DAPP=$<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
-   -DSTDINFILE=${PROJECT_SOURCE_DIR}/QueryEospacInput.dat
-   -DGOLDFILE=${PROJECT_SOURCE_DIR}/QueryEospac.gold
-   -P ${PROJECT_SOURCE_DIR}/tQueryEospac.cmake
-)
-set_tests_properties( cdi_eospac_tQueryEospac  
-   PROPERTIES	
-      PASS_REGULAR_EXPRESSION "Passes"
-      FAIL_REGULAR_EXPRESSION "Fails"
-      LABELS "nomemcheck"  # valgrind gets confused when
-                           # parsing a 32-bit program (e.g.: cmake)
+include( ApplicationUnitTest )
+
+# Run the QueryEospac executable reading interactive commands directly
+# from the file QueryEospacInput.dat.  Save the output to
+# QueryEospacInput.out and compare this to the gold file.
+add_app_unit_test(
+  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tQueryEospac.cmake
+  APP    $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
+  STDINFILE ${PROJECT_SOURCE_DIR}/QueryEospacInput.dat
+  GOLDFILE  ${PROJECT_SOURCE_DIR}/QueryEospac.gold
 )
 
-# Test QueryEospac '--version' option
-add_test( 
-   NAME cdi_eospac_tQueryEospac_version
-   COMMAND $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac> --version
-)
-set_tests_properties( cdi_eospac_tQueryEospac_version
-   PROPERTIES	
-      PASS_REGULAR_EXPRESSION "version"
-      FAIL_REGULAR_EXPRESSION "Fails"
-)
-
-# Test QueryEospac '--help' option
-add_test( 
-   NAME cdi_eospac_tQueryEospac_help
-   COMMAND $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac> --help
-)
-set_tests_properties( cdi_eospac_tQueryEospac_help
-   PROPERTIES	
-      PASS_REGULAR_EXPRESSION "Follow the prompts"
-      FAIL_REGULAR_EXPRESSION "Fails"
+# Run the QueryEospac executable with options '--version' and '--help'
+# to ensure these options print the expected output.
+add_app_unit_test(
+  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tQueryEospac.cmake
+  APP    $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
+  TEST_ARGS "--version;--help"
 )

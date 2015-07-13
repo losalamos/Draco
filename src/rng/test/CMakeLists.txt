@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for rng/test.
-# note   Copyright (C) 2010-2013, Los Alamos National Security
+# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -31,7 +31,7 @@ set( random123_unit_tests
 )
 
 if( R123_USE_CXX11 )
-   list( APPEND random123_unit_tests 
+   list( APPEND random123_unit_tests
       ${PROJECT_SOURCE_DIR}/ut_Engine.cpp )
 endif()
 
@@ -45,7 +45,7 @@ set( random123_known_answer_tests
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
@@ -54,28 +54,15 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_scalar_tests( 
+add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    "Lib_rng" )
-   
-# Random123 unit tests almost all use assert to check for failures,
-# and CTest seems to identify the subsequent abort as a failure
-# regardless of the pass or fail regex.  ut_ars deviates from
-# this pattern by writing "error" plus an informative message to
-# stderr.
-#
-# Because assert is removed at compile time when NDEBUG is defined,
-# these tests should be run only with Debug and RelWithDebInfo
-# builds.
-string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER )
-if( "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "DEBUG" OR
-    "${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELWITHDEBINFO" )
-  add_scalar_tests(
-    SOURCES    "${random123_unit_tests}" 
-    DEPS       "Lib_rng"
-    PASS_REGEX "OK|SUCCESS"
-    FAIL_REGEX "failed;error;Failure" )
-endif()
+
+add_scalar_tests(
+   SOURCES    "${random123_unit_tests}"
+   DEPS       "Lib_rng"
+   PASS_REGEX "OK|SUCCESS"
+   FAIL_REGEX "failed;error;Failure" )
 
 add_scalar_tests(
   SOURCES    "${random123_known_answer_tests}"
@@ -99,8 +86,7 @@ endif()
 add_executable(time_serial
   ${PROJECT_SOURCE_DIR}/time_serial.c )
 set_target_properties( time_serial
-  PROPERTIES 
-  #OUTPUT_NAME time_serial
+  PROPERTIES
   PROJECT_LABEL time_serial
   FOLDER rng_test )
 

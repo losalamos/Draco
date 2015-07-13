@@ -1,10 +1,10 @@
 ##-*- Mode: sh -*-
 ##---------------------------------------------------------------------------##
-## .bashrc_ct - my bash configuration file upon bash login
+## .bashrc_tt - my bash configuration file upon bash login
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
-   echo "In .bashrc_ct"
+   echo "In .bashrc_tt"
 fi
 
 ##---------------------------------------------------------------------------##
@@ -27,34 +27,40 @@ fi
 
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
-module load friendly-testing user_contrib
+if test -d $HOME/modulefiles/trinitite; then
+  module use $HOME/modulefiles/trinitite
+fi
+if test -d /usr/projects/packages/user_contrib/modulefiles/trinitite; then
+  module use /usr/projects/packages/user_contrib/modulefiles/trinitite
+fi
+# module load friendly-testing user_contrib
 
 # Move some environment out of the way.
-module unload PrgEnv-intel PrgEnv-pgi
+module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray
 module unload cmake numdiff svn
 module unload papi perftools trilinos
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
-module unload xt-libsci xt-totalview intel
+module unload xt-libsci xt-totalview
 
 # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
 # module load gcc
-module load intel/14.0.4.211
+# module load intel
 
 # draco modules start here.
-module load gsl/1.15 lapack/3.5.0
-module load emacs hsi
-module load trilinos SuperLU_DIST
-module load ParMetis ndi random123 eospac/v6.2.4
-module load svn cmake/3.2.2 numdiff
+module load gsl eospac/6.2.4 lapack
+# module load emacs svn
+# module load trilinos SuperLU_DIST ParMetis
+module load random123
+module load cmake/3.2.2 numdiff ndi
 
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=16
 
 # Avoid run time messages of the form:
 # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
 # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
-export KMP_AFFINITY=none
+# export KMP_AFFINITY=none
 
 ##---------------------------------------------------------------------------##
-## end of .bashrc_ct
+## end of .bashrc_tt
 ##---------------------------------------------------------------------------##

@@ -13,13 +13,11 @@ project( diagnostics_test CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB test_sources *.cc )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
-
 include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
@@ -29,25 +27,16 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
-
 add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    Lib_diagnostics )
 
-# Application Unit Test
-add_test(
-   NAME    diagnostics_draco_info
-   COMMAND ${CMAKE_COMMAND}
-   -DAPP=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
-   -DWORKDIR=$<TARGET_FILE_DIR:Ut_diagnostics_tstDiagnostics_exe>
-   -DHAVE_MIC=${HAVE_MIC}
-   -DDraco_BINARY_DIR=${Draco_BINARY_DIR}
-   -P ${Draco_SOURCE_DIR}/src/diagnostics/test/tDracoInfo.cmake
-   )
-set_tests_properties( diagnostics_draco_info
-   PROPERTIES
-     PASS_REGULAR_EXPRESSION "Passes"
-     FAIL_REGULAR_EXPRESSION "Fails"
-     LABELS "nomemcheck" # valgrind gets confused when
-                         # parsing a 32-bit program (e.g.: cmake)
-   )
+include( ApplicationUnitTest )
+
+# Consider using the label "nomemcheck" to prevent this from running under valgrind.
+add_app_unit_test(
+  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.cmake
+  APP    $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+  TEST_ARGS "none;--version;--brief"
+#  LABELS nomemcheck
+)

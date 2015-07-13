@@ -67,7 +67,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) #  -std=c++11" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -124,38 +124,6 @@ toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 if( ${SITE} MATCHES "seq" )
    toggle_compiler_flag( OFF "-pedantic" "CXX" "")
 endif()
-
-#========================================
-# Notes for building gcc-4.7.1
-#========================================
-# ../gcc-4.7.1/configure \
-# --prefix=/ccs/codes/radtran/vendors/gcc-4.7.1 \
-# --enable-language=c++,fortran,lto \
-# --with-gmp=/ccs/codes/radtran/vendors/Linux64/gmp-4.3.2 \
-# --with-mpfr=/ccs/codes/radtran/vendors/Linux64/mpfr-3.0.0 \
-# --with-mpc=/ccs/codes/radtran/vendors/Linux64/mpc-0.8.2 \
-# --disable-multilib [--enable-static --disable-shared]
-
-# gmp-5.0.5
-# ./configure --prefix=/usr/projects/draco/vendors/gmp-5.0.5 \
-# [--enable-static --disable-shared]
-# make; make check; make install
-
-# mpfr-3.1.1
-# ./configure --prefix=/usr/projects/draco/vendors/mpfr-3.1.1 \
-# --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5  [--enable-static \
-# --disable-shared]
-# make; make check; make install
-
-# mpc-0.8.2
-# ./configure --prefix=/usr/projects/draco/vendors/mpc-0.8.2 \
-# --with-gmp=/usr/projects/draco/vendors/gmp-5.0.5 \
-# --with-mpfr=/usr/projects/draco/vendors/mpfr-3.1.1  [--enable-static \
-# --disable-shared]
-# make; make check; make install
-
-# Note: On some redhat systems you may need to hide (move) all shared
-# libraries for gmp, mpfr and mpc before configuring/making gcc.
 
 #------------------------------------------------------------------------------#
 # End config/unix-g++.cmake

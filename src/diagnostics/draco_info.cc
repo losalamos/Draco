@@ -162,16 +162,22 @@ std::string DracoInfo::fullReport(void)
 //---------------------------------------------------------------------------//
 std::string DracoInfo::briefReport(void)
 {
-    using std::cout;
-    using std::endl;
-
     std::ostringstream infoMessage;
 
     // Print version and copyright information to the screen:
     infoMessage << "\n"
                 << release << "\n\n" << copyright << "\n"
-                << contact << "\n"   << endl;
+                << contact << "\n"   << std::endl;
 
+    return infoMessage.str();
+}
+
+//---------------------------------------------------------------------------//
+//! extract the single-line version info from release and return it
+std::string DracoInfo::versionReport(void)
+{
+    std::ostringstream infoMessage;
+    infoMessage << release << "\n" << std::endl;
     return infoMessage.str();
 }
 

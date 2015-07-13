@@ -22,6 +22,13 @@
 # MPIEXEC_PREFLAGS           Flags to pass to MPIEXEC directly before the
 #                            executable to run.
 # MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
+#
+# DRACO_C4                   MPI|SCALAR
+# C4_SCALAR                  BOOL
+# C4_MPI                     BOOL
+# C4_MPICMD                  command prefix for mpi jobs ('mpirun -n',
+#                            'aprun -n', 'srun -n ', etc.)
+#
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -51,6 +58,38 @@ macro( setupDracoMPIVars )
   else()
     message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
   endif()
+
+  if( "${DRACO_C4}" MATCHES "MPI" )
+    set( C4_SCALAR 0 )
+    set( C4_MPI 1 )
+  else()
+    set( C4_SCALAR 1 )
+    set( C4_MPI 0 )
+  endif()
+  set( C4_SCALAR ${C4_SCALAR} CACHE STRING
+    "Are we building a scalar-only version (no mpi in c4/config.h)?"
+    FORCE )
+  set( C4_MPI ${C4_MPI} CACHE STRING
+    "Are we building an MPI aware version? (c4/config.h)" FORCE )
+  mark_as_advanced( C4_MPI C4_SCALAR )
+
+  if( UNIX )
+    set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS} -np " )
+  elseif( WIN32 )
+    set( C4_MPICMD "mpiexec -np " )
+  elseif( OSF1 )
+    set( C4_MPICMD "prun -n " )
+  elseif( APPLE )
+    set( C4_MPICMD "mpiexec -np " )
+  else() # AIX
+    set( C4_MPICMD "poe -procs " )
+  endif()
+  if( "${SITE}" MATCHES "c[it]" OR  "${SITE}" MATCHES "tt-" )
+    if( NOT "${MPI_FLAVOR}" MATCHES "openmpi" )
+      set( C4_MPICMD "aprun -n " )
+    endif()
+  endif()
+  set( C4_MPICMD ${C4_MPICMD} CACHE STRING "Command prefix for MPI jobs.")
 
 endmacro()
 
@@ -288,7 +327,8 @@ macro( setupMPILibrariesUnix )
       # forces FindMPI to skip it's bad logic and just rely on the MPI
       # compiler wrapper to do the right thing. see Bug #467.
       foreach( lang C CXX Fortran )
-        if( "${CMAKE_${lang}_COMPILER}" MATCHES "mpi[A-z+]+" )
+        get_filename_component( CMAKE_${lang}_COMPILER_NOPATH "${CMAKE_${lang}_COMPILER}" NAME )
+        if( "${CMAKE_${lang}_COMPILER_NOPATH}" MATCHES "^mpi[A-z+]+" )
           get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}" NAME )
           set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
           set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
@@ -398,14 +438,14 @@ macro( setupMPILibrariesWindows )
         ERROR_STRIP_TRAILING_WHITESPACE
         )
       if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
-          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")          
+          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
           string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1" DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
           string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2" DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
           set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
       else()
          set(DBS_MPI_VER "5.0")
       endif()
-    
+
       set_package_properties( MPI PROPERTIES
         URL "https://msdn.microsoft.com/en-us/library/bb524831%28v=vs.85%29.aspx"
         DESCRIPTION "Microsoft MPI"

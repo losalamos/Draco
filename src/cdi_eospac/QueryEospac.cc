@@ -29,26 +29,30 @@ void query_eospac()
 {
     using std::endl;
     using std::cout;
-    
+
     cout << "Starting QueryEospac...\n\n"
          << "Material tables are published at "
          << "http://xweb.lanl.gov/projects/data.\n" << endl;
-    
+
     bool keepGoing(true);
     while( keepGoing )
     {
-        
+
         // Table ID
         std::string entry;
         cout << "What material/table id (0 or q to quit)? ";
         std::cin >> entry;
-        if( entry == "q" || entry == "0" ) break;
+        if( entry == "q" || entry == "0" )
+        {
+            std::cout << std::endl;
+            break;
+        }
         // Convert 'string entry' to 'int tableID'
         int tableID = atoi(entry.c_str());
 
         // Create a SesameTable
         rtt_cdi_eospac::SesameTables SesameTab;
-        
+
         // Query user for table(s) to query.
         std::string eosprop("");
         cout << "What property (h for help)? ";
@@ -73,11 +77,11 @@ void query_eospac()
             SesameTab.printEosTableList();
             continue;
         }
-        
+
         // Generate EOS Table
         rtt_dsxx::SP< rtt_cdi_eospac::Eospac const >
             spEospac(new rtt_cdi_eospac::Eospac( SesameTab ));
-                
+
         // Parameters
         double temp(0.0);
         double dens(0.0);
@@ -88,7 +92,7 @@ void query_eospac()
         std::cin >> dens;
 
         // Result
-        cout << "For table " << tableID 
+        cout << "For table " << tableID
             // << " (" << SesameTab.tableName[ SesameTab.returnTypes(tableID) ] << ")"
              << endl;
         if( eosprop == std::string("Uic_DT") )
@@ -115,14 +119,14 @@ void query_eospac()
 
 int main(int argc, char *argv[])
 {
-    
+
     std::string filename;
     // Parse the arguments
     for (int arg = 1; arg < argc; arg++)
     {
 	if (std::string(argv[arg]) == "--version")
 	{
-            std::cout << argv[0] << ": version " << rtt_dsxx::release() 
+            std::cout << argv[0] << ": version " << rtt_dsxx::release()
                       << std::endl;
 	    return 0;
 	}
@@ -130,7 +134,7 @@ int main(int argc, char *argv[])
                  std::string(argv[arg]) == "-h")
 	{
             std::cout << argv[0] << ": version " << rtt_dsxx::release()
-                 << "\nUsage: QueryEospac\n" 
+                 << "\nUsage: QueryEospac\n"
                  << "Follow the prompts to print equation-of-state data to the "
                  << "screen." << std::endl;
 	    return 0;
@@ -160,13 +164,13 @@ int main(int argc, char *argv[])
     }
     catch( ... )
     {
-        std::cout << "ERROR: While running " << argv[0] << ", " 
+        std::cout << "ERROR: While running " << argv[0] << ", "
                   << "An unknown exception was thrown on processor "
                   << std::endl;
         return 1;
     }
     return 0;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of QueryEospac.cc

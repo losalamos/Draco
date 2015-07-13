@@ -50,7 +50,9 @@ char *convert_string_to_char_ptr( std::string const & s )
 void tstOne( UnitTest &unitTest )
 {
     unitTest.passes("Looks like the passes member function is working.");
+    unitTest.check(true, "Also for check version.");
     PASSMSG("Looks like the PASSMSG macro is working as a member function.");
+    UT_CHECK(unitTest, true);
     return;
 }
 
@@ -58,9 +60,11 @@ void tstOne( UnitTest &unitTest )
 void tstTwo( UnitTest &unitTest )
 {
     unitTest.failure("Looks like the failure member function is working.");
+    unitTest.check(false, "Also for check version.");
     FAILMSG("Looks like the FAILMSG macro is working.");
     ITFAILS;
     FAILURE;
+    UT_CHECK(unitTest, false);
 
     // Kill report of failures
     unitTest.reset();
@@ -78,13 +82,13 @@ void tstTwoCheck( UnitTest &unitTest, ostringstream & msg )
         UnitTest::get_word_count( msg, verbose ) );
 
     // Check the list of occurrences against the expected values
-    if( word_list[ string("Test") ] == 6 )
-        unitTest.passes("Found 6 occurrences of \"Test\"");
+    if( word_list[ string("Test") ] == 8 )
+        unitTest.passes("Found 7 occurrences of \"Test\"");
     else
         unitTest.failure("Did not find expected number of occurrences of \"Test\"");
 
-    if( word_list[ string("failed") ] != 4 )
-        unitTest.failure("Did not find 4 occurrences of failure.");
+    if( word_list[ string("failed") ] != 6 )
+        unitTest.failure("Did not find 5 occurrences of failure.");
     if( word_list[ string("FAILMSG") ] != 1 )
         unitTest.failure("Found 1 occurrence of \"FAILMSG\"");
     if( word_list[ string("failure") ] != 1 )

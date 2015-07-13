@@ -78,14 +78,12 @@ else
 fi
 
 # Use modules found in the draco directory
-run "module use $VENDOR_DIR/Modules/tu-fe"
 run "module use $VENDOR_DIR/Modules/hpc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
-run "module load user_contrib"
+run "module load user_contrib friendly-testing"
 run "module load cmake/3.2.2"
-run "module load friendly-testing"
 run "module load intel/14.0.4 openmpi/1.6.5"
 run "module load lapack trilinos SuperLU_DIST"
 run "module load ParMetis ndi"
@@ -117,7 +115,6 @@ perfbench)
 pgi)
     run "module unload eospac ParMetis trilinos SuperLU_DIST gsl"
     run "module unload lapack cudatoolkit openmpi intel"
-    run "module load friendly-testing"
     run "module load pgi/15.4 openmpi lapack"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
     export OMP_NUM_THREADS=8

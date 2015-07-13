@@ -58,16 +58,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE} -Munroll=c:10 -Mautoinline=levels:10 -Mvect=sse -Mflushz -Mlre")
-
-  # -Mipa=fast,inline
-  # -tp x64      Create a PGI Unified Binary which functions correctly
-  #              on and is optimized for both Intel and AMD processors.
-  # -Mprefetch   Control generation of prefetch instructions to improve
-  #              memory performance in compute-intensive loops.
-
-  # -Mnoframe (we use this to debug crashed programs).
-  # -Mcache_align (breaks some tests in wedgehog)
-  # -Msafeptr (breaks some array operations in MatRA).
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -gopt" )
 

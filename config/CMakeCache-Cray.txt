@@ -1,13 +1,10 @@
-# ------------------------------------------------------------
-# You must set these values for your build:
-# ------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Cray systems (Cielo, Cielito, Trinitite, Trinity)
+#
+# - Copy this file as 'CMakeCache.txt' to your build directory before
+#   running cmake for the first time.
+# ----------------------------------------------------------------------
 
-# Location where 'make install' will copy files to.
-CMAKE_INSTALL_PREFIX:PATH=/scratch/moniker/ct/pgi-mpid/t
-
-#---------------------------------------------------------------------------#
-# CT/CI settings
-#---------------------------------------------------------------------------#
 # Don't assume Linux to avoid -rdynamic flag when linking...
 CMAKE_SYSTEM_NAME:STRING=Catamount
 
@@ -16,11 +13,11 @@ DRACO_LIBRARY_TYPE:STRING=STATIC
 
 # Use Cray provided compiler wrappers
 CMAKE_C_COMPILER:FILEPATH=cc
-CMAKE_CXX_COMPILER:FILEPATH=CC 
+CMAKE_CXX_COMPILER:FILEPATH=CC
 CMAKE_Fortran_COMPILER:FILEPATH=ftn
 
 # Help find vendor software
-MPIEXEC:FILEPATH=/usr/bin/aprun
+MPIEXEC:FILEPATH=aprun
 MPIEXEC_NUMPROC_FLAG:STRING=-n
 
 MPI_C_LIBRARIES:FILEPATH=

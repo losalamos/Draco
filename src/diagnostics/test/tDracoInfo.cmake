@@ -3,17 +3,45 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Monday, Nov 19, 2012, 17:02 pm
 # brief  This is a CTest script that is used to test bin/draco_info.
-# note   Copyright (C) 2012, Los Alamos National Security
+# note   Copyright (C) 2012-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
 #------------------------------------------------------------------------------#
-#
 
-# Some useful macros
-get_filename_component( draco_config_dir
-   ${CMAKE_CURRENT_LIST_DIR}/../../../config ABSOLUTE )
-set( CMAKE_MODULE_PATH ${draco_config_dir} )
+# Use config/ApplicationUnitTest.cmake test registration:
+#
+# include( ApplicationUnitTest )
+# add_app_unit_test(
+#   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.cmake
+#   APP    $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+#   LABELS nomemcheck )
+
+# The above will generate a test with data similar to this:
+#
+# add_test(
+#    NAME diagnostics_tDracoInfo
+#    COMMAND /yellow/usr/projects/draco/vendors/cmake-3.2.2-Linux-x86_64/bin/cmake
+#      -D APP              = $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+#      -D WORKDIR          = /users/kellyt/build/ml/intel-mpid/d/src/diagnostics/test
+#      -D TESTNAME         = diagnostics_tDracoInfo
+#      -D DRACO_CONFIG_DIR = /users/kellyt/draco/config
+#      -D DRACO_INFO       = /users/kellyt/build/ml/intel-mpid/d/src/diagnostics/draco_info
+#      -D RUN_CMD          =
+#      -P /users/kellyt/draco/src/diagnostics/test/tDracoInfo.cmake
+#    )
+# set_tests_properties( diagnostics_draco_info
+#    PROPERTIES
+#      PASS_REGULAR_EXPRESSION Passes
+#      FAIL_REGULAR_EXPRESSION Fails
+#      LABELS nomemcheck
+#    )
+
+# Variables defined above can be used in this script.
+
+#------------------------------------------------------------------------------#
+# Setup the CMake based ApplicationUnitTest environment
+set( CMAKE_MODULE_PATH ${DRACO_CONFIG_DIR} )
 include( ApplicationUnitTest )
 
 # Setup and Sanity check provides:
@@ -23,52 +51,20 @@ aut_setup()
 
 ##---------------------------------------------------------------------------##
 # Run the application and capture the output.
-message("Running tests...")
-
-if( HAVE_MIC )
-  set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
-  message("${RUN_CMD} ${WORKDIR} ${APP} > ${OUTFILE}")
-  execute_process(
-    COMMAND ${RUN_CMD} ${WORKDIR} ${APP}
-    WORKING_DIRECTORY ${WORKDIR}
-    #   INPUT_FILE ${STDINFILE}
-    RESULT_VARIABLE testres
-    OUTPUT_VARIABLE testout
-    ERROR_VARIABLE  testerror
-  )
-else()
-  message("${APP} > ${OUTFILE}")
-  execute_process(
-    COMMAND ${APP}
-    WORKING_DIRECTORY ${WORKDIR}
-    #   INPUT_FILE ${STDINFILE}
-    RESULT_VARIABLE testres
-    OUTPUT_VARIABLE testout
-    ERROR_VARIABLE  testerror
-  )
-endif()
+# Variables available for inspection:
+#   ${testres} contains the return code
+#   ${testout} contains stdout
+#   ${testerror} contains stderr
+aut_runTests()
 
 ##---------------------------------------------------------------------------##
-# Ensure there are no errors
-if( NOT "${testres}" STREQUAL "0" )
-   message( FATAL_ERROR "Test FAILED:
-     error message = ${testerror}")
-endif()
-
-##---------------------------------------------------------------------------##
-## Echo the output to stdout and to an output file for parsing.
-if( VERBOSE )
-   message("${testout}")
-endif()
-file( WRITE ${OUTFILE} ${testout} )
-
-##---------------------------------------------------------------------------##
-## Analyize the output directly.
+## Examine the output to determine if the test passed
 ##---------------------------------------------------------------------------##
 
 string( REGEX REPLACE "\n" ";" testout ${testout} )
 set( foundcopyright FALSE )
 set( foundsystemtype FALSE )
+set( foundbuilddate FALSE )
 foreach( line ${testout} )
    if( ${line} MATCHES "Copyright [(]C[)]" )
       set( foundcopyright TRUE )
@@ -76,27 +72,66 @@ foreach( line ${testout} )
    if( ${line} MATCHES "System type" )
       set( foundsystemtype TRUE )
    endif()
+   if( ${line} MATCHES "build date" )
+      set( foundbuilddate TRUE )
+   endif()
 
-   #    string( REGEX REPLACE ".*= ([0-9.]+).*" "\\1" value ${line} )
-   #    set( refvalue "6411.71" )
-   #    if( ${refvalue} EQUAL ${value} )
-   #       PASSMSG( "Specific Ion Internal Energy matches expected value.")
-   #    else()
-   #       FAILMSG( "Specific Ion Internal Energy does not match expected value.")
-   #    endif()
-   # endif()
 endforeach()
 
-if( foundcopyright )
-   PASSMSG( "Found copyright date")
-else()
-   FAILMSG( "Did not find copyright date")
+# There are 3 versions of this test
+
+if( ARGVALUE )
+
+  if( ${ARGVALUE} STREQUAL "--version" )
+    if( foundbuilddate )
+      PASSMSG( "Found build date")
+    else()
+      FAILMSG( "Did not find build date")
+    endif()
+    if( foundcopyright )
+      FAILMSG( "Found copyright date")
+    else()
+      PASSMSG( "Did not find copyright date")
+    endif()
+
+  elseif( ${ARGVALUE} STREQUAL "--brief" )
+    if( foundbuilddate )
+      PASSMSG( "Found build date")
+    else()
+      FAILMSG( "Did not find build date")
+    endif()
+    if( foundcopyright )
+      PASSMSG( "Found copyright date")
+    else()
+      FAILMSG( "Did not find copyright date")
+    endif()
+    if( foundsystemtype )
+      FAILMSG( "Found system type id")
+    else()
+      PASSMSG( "Did not find system type id")
+    endif()
+
+  endif()
+
+else ()  # no arguments
+
+  if( foundcopyright )
+    PASSMSG( "Found copyright date")
+  else()
+    FAILMSG( "Did not find copyright date")
+  endif()
+  if( foundsystemtype )
+    PASSMSG( "Found system type id")
+  else()
+    FAILMSG( "Did not find system type id")
+  endif()
 endif()
-if( foundsystemtype )
-   PASSMSG( "Found system type id")
-else()
-   FAILMSG( "Did not find system type id")
-endif()
+
+
+##---------------------------------------------------------------------------##
+## Final report
+##---------------------------------------------------------------------------##
+aut_report()
 
 ##---------------------------------------------------------------------------##
 ## End

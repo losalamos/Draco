@@ -15,30 +15,25 @@ include( FeatureSummary )
 if( EXISTS $ENV{PAPI_HOME} )
 
   set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH
-    "PAPI headers at this location" )
-  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
-    "PAPI library." )
+  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
+  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
 endif()
+
 # PAPI 4.2 on CT uses a different setup.
 if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
   set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE
-    $ENV{PAPI_INCLUDE_OPTS} )
-  string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR
-    $ENV{PAPI_POST_LINK_OPTS} )
+  string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE $ENV{PAPI_INCLUDE_OPTS} )
+  string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR $ENV{PAPI_POST_LINK_OPTS} )
 endif()
+
 if( HAVE_PAPI )
-  set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH
-    "PAPI headers at this location" )
-  set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH
-    "PAPI library." )
+  set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
+  set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
   if( NOT EXISTS ${PAPI_LIBRARY} )
     message( FATAL_ERROR "PAPI requested, but library not found.  Set PAPI_LIBDIR to correct path." )
   endif()
   mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
-  add_feature_info( HAVE_PAPI HAVE_PAPI
-    "Provide PAPI hardware counters if available." )
+  add_feature_info( HAVE_PAPI HAVE_PAPI "Provide PAPI hardware counters if available." )
 endif()
 
 # ----------------------------------------
@@ -184,12 +179,13 @@ macro(dbsSetupCxx)
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
       OUTPUT_VARIABLE my_cxx_compiler )
-  elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" )
+  elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" OR
+          ${CMAKE_CXX_COMPILER} MATCHES "craype" )
     # Ceilo (catamount) uses a wrapper script
-    # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
-    # compiler.  Use the following command to determine the actual
-    # compiler flavor before setting compiler flags (end of this
-    # macro).
+    # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual compiler.
+    # Use the following command to determine the actual compiler
+    # flavor before setting compiler flags (end of this macro).
+    # Trinitite uses a similar wrapper script (/opt/cray/craype/2.4.0/bin/CC).
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} --version
       OUTPUT_VARIABLE my_cxx_compiler
@@ -219,6 +215,10 @@ macro(dbsSetupCxx)
 
   # C++11 support:
   set( CMAKE_CXX_STANDARD 11 )
+
+  # Do not enable extensions (e.g.: --std=gnu++11)
+  set( CMAKE_CXX_EXTENSIONS OFF )
+  set( CMAKE_C_EXTENSIONS   OFF )
 
   get_filename_component( my_cxx_compiler ${my_cxx_compiler} NAME )
   if( ${my_cxx_compiler} MATCHES "mpicxx" )
@@ -335,12 +335,14 @@ macro(dbsSetupFortran)
     set( HAVE_Fortran ON )
 
     # Deal with comiler wrappers
-    if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" )
+    if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" OR
+        ${CMAKE_Fortran_COMPILER} MATCHES "craype" )
       # Ceilo (catamount) uses a wrapper script
       # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
       # compiler.  Use the following command to determine the actual
       # compiler flavor before setting compiler flags (end of this
       # macro).
+      # Trinitite uses a similar wrapper script (/opt/cray/craype/2.4.0/bin/ftn).
       execute_process(
         COMMAND ${CMAKE_Fortran_COMPILER} --version
         OUTPUT_VARIABLE my_fc_compiler
@@ -390,8 +392,8 @@ macro(dbsSetupFortran)
     find_program( CAFS_Fortran_COMPILER
       NAMES ${CAFS_Fortran_COMPILER} $ENV{CAFS_Fortran_COMPILER} gfortran
       PATHS
-         c:/MinGW/bin
-         "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
+      c:/MinGW/bin
+      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
 
     if( EXISTS ${CAFS_Fortran_COMPILER} )
       set( HAVE_Fortran ON )

@@ -31,17 +31,21 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -ftz" )
+  # [KT 2015-07-10] I would like to turn on -w2, but this generates
+  # many warnings from Trilinos headers that I can't suppress easily
+  # (warning 191: type qualifier is meaningless on cast type)
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
   if( HAVE_MIC )
-    # For floating point consistency with Xeon when using Intel
-    # 15.0.090 + Intel MPI 5.0.2
+    # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
     set( CMAKE_C_FLAGS_DEBUG        "${CMAKE_C_FLAGS_DEBUG} -fp-model precise -fp-speculation safe" )
   endif()
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
+  # -diag-disable 11060 -- disable warning that is issued when '-ip' is turned on and a library has no
+  # symbols (this occurs when capsaicin links some trilinos libraries.)
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation fast -fp-model fast -pthread -DNDEBUG -diag-disable 11060" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp  -pthread -fp-model precise -fp-speculation safe" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp  -pthread -fp-model precise -fp-speculation safe -diag-disable 11060" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++0x" )
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -78,9 +82,24 @@ toggle_compiler_flag( HAVE_MIC                 "-mmic"        "C;CXX;EXE_LINKER"
 # xhost will report that it is not available.
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-xHost HAS_XHOST)
+# If this is trinitite/trinity, do not use -xHost because front and back ends are different
+# architectures. Instead use -xCORE-AVX2 (the default).
+if( NOT ${SITENAME} STREQUAL "tt" )
+  toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX"  "")
+endif()
+#toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 
-toggle_compiler_flag( HAS_XHOST                "-xHost"       "C;CXX"  "")
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+#
+# Sanity checks
+#
+
+# On Moonlight, Intel-16 requires MKL-11.3
+if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 15.1 AND DEFINED ENV{MKLROOT} )
+  if( NOT $ENV{MKLROOT} MATCHES "2016" )
+    message( FATAL_ERROR "Intel-16 requires MKL-11.3+.")
+  endif()
+endif()
 
 #------------------------------------------------------------------------------#
 # End config/unix-intel.cmake
