@@ -37,40 +37,54 @@ namespace rtt_c4
  *
  * \par Code Sample:
  * \code
- int main(int argc, char *argv[])
- {
- using namespace rtt_c4;
- try
- {
- ApplicationUnitTest ut( argc, argv, release,
- std::string("../bin/serrano") );
- tstOne(ut);
- ut.status();
- }
- catch( rtt_dsxx::assertion &err )
- {
- std::string msg = err.what();
- if( msg != std::string( "Success" ) )
- { cout << "ERROR: While testing " << argv[0] << ", "
- << err.what() << endl;
- return 1;
- }
- return 0;
- }
- catch (exception &err)
- {
- cout << "ERROR: While testing " << argv[0] << ", "
- << err.what() << endl;
- return 1;
- }
- catch( ... )
- {
- cout << "ERROR: While testing " << argv[0] << ", "
- << "An unknown exception was thrown" << endl;
- return 1;
- }
- return 0;
- }
+void tstOne( ApplicationUnitTest &unitTest )
+{
+    unitTest.runTests();
+
+    string const logFilename( unitTest.logFileName() );
+    std::ostringstream msg;
+    msg << appPath << "phw_hello-" << unitTest.nodes() <<".out";
+    string const expLogFilename( msg.str() );
+    if( expLogFilename == logFilename )
+        unitTest.passes( "Found expected log filename." );
+
+    return;
+}
+
+int main(int argc, char *argv[])
+{
+    using namespace rtt_c4;
+    try
+    {
+        ApplicationUnitTest ut( argc, argv, release,
+                                std::string("../bin/serrano") );
+        tstOne(ut);
+        ut.status();
+    }
+    catch( rtt_dsxx::assertion &err )
+    {
+        std::string msg = err.what();
+        if( msg != std::string( "Success" ) )
+        { cout << "ERROR: While testing " << argv[0] << ", "
+               << err.what() << endl;
+            return 1;
+        }
+        return 0;
+    }
+    catch (exception &err)
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << err.what() << endl;
+        return 1;
+    }
+    catch( ... )
+    {
+        cout << "ERROR: While testing " << argv[0] << ", "
+             << "An unknown exception was thrown" << endl;
+        return 1;
+    }
+    return 0;
+}
  * \endcode
  *
  * \test All of the member functions of this class are tested by
@@ -80,7 +94,6 @@ namespace rtt_c4
  * \warning The output from this class is closely tied to the CTest
  * Pass/Fail regular expressions listed in \c config/component_macros.cmake
  * and in the local \c CMakeLists.txt.
- *
  */
 /*!
  * \example c4/test/tstApplicationUnitTest.cc
