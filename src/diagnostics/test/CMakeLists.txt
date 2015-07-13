@@ -37,5 +37,6 @@ include( ApplicationUnitTest )
 add_app_unit_test(
   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.cmake
   APP    $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+  TEST_ARGS "none;--version;--brief"
 #  LABELS nomemcheck
 )
