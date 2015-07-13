@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4
-# note   Copyright (C) 2010-2013, Los Alamos National Security
+# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -13,45 +13,13 @@ project( c4 CXX )
 
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
+# many c4 and mpi values are set in config/setupMPI.cmake.
 # ---------------------------------------------------------------------------- #
-
-if( "${DRACO_C4}" MATCHES "MPI" )
-  set( C4_SCALAR 0 )
-  set( C4_MPI 1 )
-else()
-  set( C4_SCALAR 1 )
-  set( C4_MPI 0 )
-endif()
-set( C4_SCALAR ${C4_SCALAR} CACHE STRING
-   "Are we building a scalar-only version (no mpi in c4/config.h)?"
-   FORCE )
-set( C4_MPI ${C4_MPI} CACHE STRING
-   "Are we building an MPI aware version? (c4/config.h)" FORCE )
-mark_as_advanced( C4_MPI C4_SCALAR )
-
-if( UNIX )
-   set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS} -np " )
-elseif( WIN32 )
-   set( C4_MPICMD "mpiexec -np " )
-elseif( OSF1 )
-   set( C4_MPICMD "prun -n " )
-elseif( APPLE )
-   set( C4_MPICMD "mpiexec -np " )
-else() # AIX
-   set( C4_MPICMD "poe -procs " )
-endif()
-if( "${SITE}" MATCHES "c[it]" OR  "${SITE}" MATCHES "tt-" )
-   if( NOT "${MPI_FLAVOR}" MATCHES "openmpi" )
-      set( C4_MPICMD "aprun -n " )
-   endif()
-endif()
-
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-
 file( GLOB template_implementations *.t.hh )
 file( GLOB sources *.cc )
 file( GLOB explicit_instantiations *_pt.cc )
@@ -67,7 +35,6 @@ endif()
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
-
 include_directories( ${PROJECT_SOURCE_DIR}       # sources
                      ${PROJECT_BINARY_DIR}       # c4/config.h
                      ${draco_src_dir_SOURCE_DIR} # ds++ header files
@@ -77,7 +44,6 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
-
 set( c4_VENDOR_LIBS "${MPI_CXX_LIBRARIES}")
 if( PAPI_LIBRARY )
    list( APPEND c4_VENDOR_LIBS ${PAPI_LIBRARY} )
@@ -96,14 +62,12 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-
 install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
-
 if( BUILD_TESTING )
  add_subdirectory( test )
 endif()

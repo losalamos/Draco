@@ -22,6 +22,13 @@
 # MPIEXEC_PREFLAGS           Flags to pass to MPIEXEC directly before the
 #                            executable to run.
 # MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
+#
+# DRACO_C4                   MPI|SCALAR
+# C4_SCALAR                  BOOL
+# C4_MPI                     BOOL
+# C4_MPICMD                  command prefix for mpi jobs ('mpirun -n',
+#                            'aprun -n', 'srun -n ', etc.)
+#
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -51,6 +58,38 @@ macro( setupDracoMPIVars )
   else()
     message( FATAL_ERROR "DRACO_C4 must be either MPI or SCALAR" )
   endif()
+
+  if( "${DRACO_C4}" MATCHES "MPI" )
+    set( C4_SCALAR 0 )
+    set( C4_MPI 1 )
+  else()
+    set( C4_SCALAR 1 )
+    set( C4_MPI 0 )
+  endif()
+  set( C4_SCALAR ${C4_SCALAR} CACHE STRING
+    "Are we building a scalar-only version (no mpi in c4/config.h)?"
+    FORCE )
+  set( C4_MPI ${C4_MPI} CACHE STRING
+    "Are we building an MPI aware version? (c4/config.h)" FORCE )
+  mark_as_advanced( C4_MPI C4_SCALAR )
+
+  if( UNIX )
+    set( C4_MPICMD "mpirun ${MPIEXEC_POSTFLAGS} -np " )
+  elseif( WIN32 )
+    set( C4_MPICMD "mpiexec -np " )
+  elseif( OSF1 )
+    set( C4_MPICMD "prun -n " )
+  elseif( APPLE )
+    set( C4_MPICMD "mpiexec -np " )
+  else() # AIX
+    set( C4_MPICMD "poe -procs " )
+  endif()
+  if( "${SITE}" MATCHES "c[it]" OR  "${SITE}" MATCHES "tt-" )
+    if( NOT "${MPI_FLAVOR}" MATCHES "openmpi" )
+      set( C4_MPICMD "aprun -n " )
+    endif()
+  endif()
+  set( C4_MPICMD ${C4_MPICMD} CACHE STRING "Command prefix for MPI jobs.")
 
 endmacro()
 
