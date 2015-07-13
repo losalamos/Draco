@@ -78,6 +78,9 @@ class DLL_PUBLIC_diagnostics DracoInfo
     //! Version and Copyright only
     std::string briefReport(void);
 
+    //! Version only
+    std::string versionReport(void);
+
   private:
 
     //! Convert the string to all lowercase except the first character.
