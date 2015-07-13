@@ -33,21 +33,3 @@ add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    Lib_memory
    )
-
-# Application Unit Test
-add_test(
-   NAME    memory_draco_info
-   COMMAND ${CMAKE_COMMAND}
-   -DAPP=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
-   -DWORKDIR=$<TARGET_FILE_DIR:Ut_memory_tstmemory_exe>
-   -DHAVE_MIC=${HAVE_MIC}
-   -DDraco_BINARY_DIR=${Draco_BINARY_DIR}
-   -P ${Draco_SOURCE_DIR}/src/diagnostics/test/tDracoInfo.cmake
-   )
-set_tests_properties( memory_draco_info
-   PROPERTIES
-     PASS_REGULAR_EXPRESSION "Passes"
-     FAIL_REGULAR_EXPRESSION "Fails"
-     LABELS "nomemcheck" # valgrind gets confused when
-                         # parsing a 32-bit program (e.g.: cmake)
-   )

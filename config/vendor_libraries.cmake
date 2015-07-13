@@ -159,6 +159,7 @@ macro( setupCudaEnv )
       CUDA_TOOLKIT_ROOT_DIR
       CUDA_BUILD_CUBIN
       CUDA_BUILD_EMULATION
+      CUDA_HOST_COMPILER
       )
   endif()
 

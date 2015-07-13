@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   Monday, Nov 19, 2012, 17:02 pm
 # brief  This is a CTest script that is used to test bin/draco_info.
-# note   Copyright (C) 2012, Los Alamos National Security
+# note   Copyright (C) 2012-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
@@ -25,28 +25,23 @@ aut_setup()
 # Run the application and capture the output.
 message("Running tests...")
 
-if( HAVE_MIC )
-  set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
-  message("${RUN_CMD} ${WORKDIR} ${APP} > ${OUTFILE}")
-  execute_process(
-    COMMAND ${RUN_CMD} ${WORKDIR} ${APP}
-    WORKING_DIRECTORY ${WORKDIR}
-    #   INPUT_FILE ${STDINFILE}
-    RESULT_VARIABLE testres
-    OUTPUT_VARIABLE testout
-    ERROR_VARIABLE  testerror
-  )
-else()
-  message("${APP} > ${OUTFILE}")
-  execute_process(
-    COMMAND ${APP}
-    WORKING_DIRECTORY ${WORKDIR}
-    #   INPUT_FILE ${STDINFILE}
-    RESULT_VARIABLE testres
-    OUTPUT_VARIABLE testout
-    ERROR_VARIABLE  testerror
-  )
+unset( RUN_CMD )
+file( STRINGS ${Draco_BINARY_DIR}/src/c4/c4/config.h C4_MPICMD REGEX C4_MPICMD )
+if( "${C4_MPICMD}" MATCHES "aprun" )
+  set( RUN_CMD "aprun -n 1" )
+elseif( HAVE_MIC )
+  set( RUN_CMD "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${WORKDIR}" )
 endif()
+
+message("${RUN_CMD} ${APP} > ${OUTFILE}")
+separate_arguments(RUN_CMD)
+execute_process(
+  COMMAND ${RUN_CMD} ${APP}
+  WORKING_DIRECTORY ${WORKDIR}
+  RESULT_VARIABLE testres
+  OUTPUT_VARIABLE testout
+  ERROR_VARIABLE  testerror
+  )
 
 ##---------------------------------------------------------------------------##
 # Ensure there are no errors

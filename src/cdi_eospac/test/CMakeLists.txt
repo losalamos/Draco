@@ -23,7 +23,7 @@ set( test_sources
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # c4/config.h
@@ -34,20 +34,21 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
-   SOURCES "${test_sources}" 
-   DEPS    "Lib_cdi_eospac" 
+   SOURCES "${test_sources}"
+   DEPS    "Lib_cdi_eospac"
    )
 
-add_test( 
+add_test(
    NAME cdi_eospac_tQueryEospac
-   COMMAND ${CMAKE_COMMAND} 
+   COMMAND ${CMAKE_COMMAND}
    -DAPP=$<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
    -DSTDINFILE=${PROJECT_SOURCE_DIR}/QueryEospacInput.dat
    -DGOLDFILE=${PROJECT_SOURCE_DIR}/QueryEospac.gold
+   -DDraco_BINARY_DIR=${Draco_BINARY_DIR}
    -P ${PROJECT_SOURCE_DIR}/tQueryEospac.cmake
 )
-set_tests_properties( cdi_eospac_tQueryEospac  
-   PROPERTIES	
+set_tests_properties( cdi_eospac_tQueryEospac
+   PROPERTIES
       PASS_REGULAR_EXPRESSION "Passes"
       FAIL_REGULAR_EXPRESSION "Fails"
       LABELS "nomemcheck"  # valgrind gets confused when
@@ -55,23 +56,31 @@ set_tests_properties( cdi_eospac_tQueryEospac
 )
 
 # Test QueryEospac '--version' option
-add_test( 
+add_test(
    NAME cdi_eospac_tQueryEospac_version
-   COMMAND $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac> --version
+   COMMAND ${CMAKE_COMMAND}
+   -DAPP=$<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
+   -DCMDARGS=--version
+   -DDraco_BINARY_DIR=${Draco_BINARY_DIR}
+   -P ${PROJECT_SOURCE_DIR}/tQueryEospac.cmake
 )
 set_tests_properties( cdi_eospac_tQueryEospac_version
-   PROPERTIES	
-      PASS_REGULAR_EXPRESSION "version"
+   PROPERTIES
+      PASS_REGULAR_EXPRESSION "Passes"
       FAIL_REGULAR_EXPRESSION "Fails"
 )
 
 # Test QueryEospac '--help' option
-add_test( 
+add_test(
    NAME cdi_eospac_tQueryEospac_help
-   COMMAND $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac> --help
+   COMMAND ${CMAKE_COMMAND}
+   -DAPP=$<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
+   -DCMDARGS=--help
+   -DDraco_BINARY_DIR=${Draco_BINARY_DIR}
+   -P ${PROJECT_SOURCE_DIR}/tQueryEospac.cmake
 )
 set_tests_properties( cdi_eospac_tQueryEospac_help
-   PROPERTIES	
-      PASS_REGULAR_EXPRESSION "Follow the prompts"
+   PROPERTIES
+      PASS_REGULAR_EXPRESSION "Passes"
       FAIL_REGULAR_EXPRESSION "Fails"
 )
