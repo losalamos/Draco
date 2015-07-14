@@ -27,7 +27,7 @@ rtt_units::UnitSystem internal_unit_system;  // SI-K initially
 
 } // namespace anonymous
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 using namespace std;
 
@@ -115,7 +115,7 @@ bool unit_expressions_are_required()
 
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  *
@@ -145,7 +145,7 @@ unsigned parse_unsigned_integer(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  *
@@ -166,7 +166,7 @@ unsigned parse_positive_integer(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  *
@@ -207,9 +207,9 @@ int parse_integer(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * This function does not move the cursor in the token stream.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the quantity.
  * \return \c true if the next token is REAL or INTEGER; \c false otherwise.
@@ -226,11 +226,11 @@ bool at_real(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * We permit an integer token to appear where a real is expected, consistent
  * with the integers being a subset of reals, and with about five decades of
  * common practice in the computer language community.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the quantity.
  * \return The parsed quantity.
@@ -277,7 +277,7 @@ double parse_real(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  *
@@ -298,7 +298,7 @@ double parse_positive_real(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  *
@@ -319,7 +319,7 @@ double parse_nonnegative_real(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  * \param x
@@ -355,7 +355,7 @@ void parse_vector(Token_Stream &tokens, double x[])
 
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  * \param x
@@ -386,12 +386,12 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Are we at a unit term?
- * 
+ *
  * We are at a unit term if the next token on the Token_Stream is a valid
- * unit name. 
- * 
+ * unit name.
+ *
  * \param tokens
  * Token_Stream from which to parse.
  * \param pos
@@ -453,7 +453,7 @@ bool at_unit_term(Token_Stream &tokens, unsigned position)
 	    return (token.text()=="dyne");
 
 	case 'e':
-	    return (token.text()=="erg");
+	    return (token.text()=="erg" || token.text()=="eV");
 
 	case 'f':
 	    return (token.text()=="foot");
@@ -502,9 +502,9 @@ bool at_unit_term(Token_Stream &tokens, unsigned position)
 Unit parse_unit(Token_Stream &tokens);
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Parse a unit name.
- * 
+ *
  * A unit name can either be a literal unit name, like "kg", or a
  * parenthesized unit expression.
  *
@@ -614,6 +614,8 @@ static Unit parse_unit_name(Token_Stream &tokens)
 	case 'e':
 	    if (token.text()=="erg")
 		return erg;
+            else if (token.text()=="eV")
+                return eV;
 	    else
 		tokens.report_syntax_error("expected a unit");
 
@@ -706,9 +708,9 @@ static Unit parse_unit_name(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Parse a unit term.
- * 
+ *
  * A unit term is a unit name optionally raised to some power.
  *
  * \param tokens
@@ -730,14 +732,14 @@ static Unit parse_unit_term(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * A unit expression is a sequence of tokens with a form such as "kg-m/sec" or
  * "erg/cm^2/sec/Hz" that gives the dimensions of a physical quantity.  This
  * function parses such an expression from its Token_Stream, returning the
  * result as a Unit whose conversion factor is relative to SI.  An empty unit
  * expression is permitted and returns rtt_parser::dimensionless, the
  * identity Unit representing the pure number 1.
- * 
+ *
  * \param tokens
  * Token_Stream from which to parse.
  * \return The unit expression.
@@ -777,13 +779,13 @@ Unit parse_unit(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * This function parses a quantity having dimensions. It is assumed that the
  * client expects certain dimensions for the quantity, and an exception is
  * thrown if the dimensions are not what the client expected. The quantity
  * will be converted to the desired unit system, as indicated by the \c .conv
  * member of the \c target_unit argument.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the quantity.
  * \param target_unit
@@ -792,7 +794,7 @@ Unit parse_unit(Token_Stream &tokens)
  * Name of the units expected for the quantity parsed, such as "length" or
  * "ergs/cm/sec/Hz". Used to generate diagnostic messages.
  *
- * \return The parsed value, converted to the desired unit system. 
+ * \return The parsed value, converted to the desired unit system.
  */
 
 double parse_quantity(Token_Stream &tokens,
@@ -818,13 +820,13 @@ double parse_quantity(Token_Stream &tokens,
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
- * \brief Parse a temperature specification 
+/*!
+ * \brief Parse a temperature specification
  *
  * It is very common for transport researchers to specify a temperature in
  * units of energy, using Boltzmann's constant as the conversion factor.
  * This function is useful for parsers that accomodate this convention.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the specification.
  *
@@ -836,7 +838,7 @@ double parse_quantity(Token_Stream &tokens,
 double parse_temperature(Token_Stream &tokens)
 {
     double T = parse_real(tokens);
-    
+
     if (T<0.0)
     {
         tokens.report_semantic_error("temperature must be nonnegative");
@@ -872,8 +874,8 @@ double parse_temperature(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
- * \brief Parse a temperature specification 
+/*!
+ * \brief Parse a temperature specification
  *
  * It is very common for transport researchers to specify a temperature in
  * units of energy, using Boltzmann's constant as the conversion factor.
@@ -881,7 +883,7 @@ double parse_temperature(Token_Stream &tokens)
  *
  * This version of the function parses a temperature expression containing
  * user-defined variables.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the specification.
  *
@@ -903,7 +905,7 @@ parse_temperature(Token_Stream &tokens,
     SP<Expression> T = Expression::parse(number_of_variables,
                                          variable_map,
                                          tokens);
-    
+
     if (!unit_expressions_are_required() && !at_unit_term(tokens))
     {
         return T;
@@ -922,7 +924,7 @@ parse_temperature(Token_Stream &tokens,
         {
             double const boltzmann =
                 rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
-            
+
             T->set_units( conv*u / boltzmann );
         }
         else
@@ -935,7 +937,7 @@ parse_temperature(Token_Stream &tokens,
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * Parses a STRING token and strips the delimiting quotation marks.
  *
  * \param tokens
@@ -948,7 +950,7 @@ std::string parse_manifest_string(Token_Stream &tokens)
     Token const token = tokens.shift();
     if (token.type() != STRING)
     {
-	tokens.report_syntax_error("expected a string, but saw " + 
+	tokens.report_syntax_error("expected a string, but saw " +
 				   token.text());
     }
     string Result = token.text();
@@ -959,9 +961,9 @@ std::string parse_manifest_string(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Parse a geometry specification.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the geometry.
  * \param parsed_geometry On entry, if the value is not \c END_GEOMETRY, a
@@ -999,7 +1001,7 @@ void parse_geometry(Token_Stream &tokens,
     else
     {
         tokens.report_syntax_error(token,
-                                   "expected a geometry option, but saw " + 
+                                   "expected a geometry option, but saw " +
                                    token.text());
     }
     Ensure(parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
@@ -1009,7 +1011,7 @@ void parse_geometry(Token_Stream &tokens,
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * \param tokens
  * Token stream from which to parse the quantity.
  *
@@ -1031,13 +1033,13 @@ bool parse_bool(Token_Stream &tokens)
 }
 
 //---------------------------------------------------------------------------------------//
-/*! 
+/*!
  * This function parses an expression having dimensions. It is assumed that the
  * client expects certain dimensions for the quantity, and an exception is
  * thrown if the dimensions are not what the client expected. The quantity
  * will be converted to the desired unit system, as indicated by the \c .conv
  * member of the \c target_unit argument.
- * 
+ *
  * \param tokens
  * Token stream from which to parse the quantity.
  * \param target_unit
@@ -1051,7 +1053,7 @@ bool parse_bool(Token_Stream &tokens)
  *
  * \param variable_map Map of variable names to variables indices.
  *
- * \return The parsed value, converted to the desired unit system. 
+ * \return The parsed value, converted to the desired unit system.
  */
 
 SP<Expression> parse_quantity(Token_Stream &tokens,

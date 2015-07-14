@@ -332,6 +332,8 @@ Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
 
 // Miscellaneous units
 
+Unit const eV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  rtt_units::electronChargeSI};
+//!< Electron volts
 Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1e3*rtt_units::electronChargeSI};
 //!< Thousands of electron volts
 
