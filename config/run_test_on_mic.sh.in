@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # use:
-# ssh $HOSTNAME-mic0 /path/config/run_test_on_mic <workdir> <testname>
+# ssh $HOSTNAME-mic0 /path/config/run_test_on_mic <workdir> <testname> <args>
 
 workdir=$1
 testname=$2
@@ -12,10 +12,10 @@ export LD_LIBRARY_PATH=@LD_LIBRARY_PATH@:@GSL_ROOT_DIR@/lib
 
 source @MPIVARS_SCRIPT@
 
-echo "cd $workdir"
+echo "run_test_on_mic.sh: cd $workdir"
 cd $workdir
 
-echo ${testname} ${testargs}
+echo "run_test_on_mic.sh: ${testname} ${testargs}"
 eval ${testname} ${testargs}
 
 if test $? -eq 0; then

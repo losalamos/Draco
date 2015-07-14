@@ -250,7 +250,7 @@ macro( add_app_unit_test )
   if( "${C4_MPICMD}" MATCHES "aprun" )
     set( RUN_CMD "aprun -n 1" )
   elseif( HAVE_MIC )
-    set( RUN_CMD "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${WORKDIR}" )
+    set( RUN_CMD "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${aut_WORKDIR}" )
   endif()
 
   # Create a name for the test
@@ -311,13 +311,12 @@ macro( aut_runTests )
   if( EXISTS ${DRACO_INFO} )
     execute_process(
       COMMAND ${RUN_CMD} ${DRACO_INFO} --version
-      WORKING_DIRECTORY ${WORKDIR}
       RESULT_VARIABLE testres
       OUTPUT_VARIABLE testout
       ERROR_VARIABLE  testerror
       )
     if( NOT ${testres} STREQUAL "0" )
-      FAILMSG("Unable to run 'draco_info --version'")
+      FAILMSG("Unable to run '${RUN_CMD} ${DRACO_INFO} --version'")
     else()
       message("${testout}")
     endif()
