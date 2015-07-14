@@ -35,16 +35,16 @@ macro( find_num_procs_avail_for_running_tests )
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
 
-    # If this is not a known batch system, the attempt to set values
-    # according to machine name:
-    include(ProcessorCount)
-    ProcessorCount(num_test_procs)
-    math( EXPR num_test_procs "${num_test_procs} / 2" )
+  # If this is not a known batch system, the attempt to set values
+  # according to machine name:
+  include(ProcessorCount)
+  ProcessorCount(num_test_procs)
+  math( EXPR num_test_procs "${num_test_procs} / 2" )
 
   endif()
 
   # Machine/job specific override:
-  if( "${sitename}" STREQUAL "Cielito" )
+  if( "${sitename}" STREQUAL "Cielito" OR "${sitename}" STREQUAL "Trinitite" )
     set( num_test_procs 1 )
   elseif( "$ENV{SLURM_JOB_NAME}" MATCHES "darwin-knc-regress" )
     # The mic I/O processors get overloaded if use the default
@@ -97,12 +97,14 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # message( "sitename = ${sitename}")
   if( ${sitename} MATCHES "ct" )
      set( sitename "Cielito" )
+  elseif( ${sitename} MATCHES "tt" )
+     set( sitename "Trinitite" )
   elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
      set( sitename "Moonlight" )
   elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-login")
      set( sitename "Darwin" )
   endif()
-#  message( "sitename = ${sitename}")
+  # message( "sitename = ${sitename}")
   set( CTEST_SITE ${sitename} )
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
   set( CTEST_BINARY_DIRECTORY "${work_dir}/build"  )
@@ -171,7 +173,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
    if( NOT WIN32 )
        if(NOT num_compile_procs EQUAL 0)
          set(CTEST_BUILD_FLAGS "-j${num_compile_procs} -l${num_compile_procs}")
-         if( "${sitename}" STREQUAL "Cielito" )
+         if( "${sitename}" STREQUAL "Cielito" OR "${sitename}" STREQUAL "Trinitite")
            # We compile on the front end for this machine. Since we don't
            # know the actual load apriori, we use the -l option to limit
            # the total load on the machine.  For CT, my experience shows
@@ -646,7 +648,7 @@ endmacro(process_cc_or_da)
 #
 # ------------------------------------------------------------
 macro(platform_customization)
-   if( "${sitename}" MATCHES "Cielito" )
+   if( "${sitename}" MATCHES "Cielito" OR "${sitename}" MATCHES "Trinitite" )
 #      set( TOOLCHAIN_SETUP
 #         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake"
 # )
@@ -656,7 +658,7 @@ CMAKE_SYSTEM_NAME:STRING=Catamount
 CMAKE_C_COMPILER:FILEPATH=cc
 CMAKE_CXX_COMPILER:FILEPATH=CC
 CMAKE_Fortran_COMPILER:FILEPATH=ftn
-MPIEXEC:FILEPATH=/usr/bin/aprun
+MPIEXEC:FILEPATH=aprun
 MPIEXEC_NUMPROC_FLAG:STRING=-n
 MPI_C_LIBRARIES:FILEPATH=
 MPI_CXX_LIBRARIES:FILEPATH=

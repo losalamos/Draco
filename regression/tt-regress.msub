@@ -1,0 +1,256 @@
+#!/bin/bash -l
+
+#MSUB -l walltime=08:00:00
+#MSUB -l nodes=1:ppn=32
+
+#----------------------------------------------------------------------#
+# The script starts here
+#----------------------------------------------------------------------#
+
+# Sanity Check
+# ----------------------------------------
+if test "${subproj}x" == "x"; then
+   echo "Fatal Error, subproj not found in environment."
+   exit 1
+fi
+if test "${regdir}x" == "x"; then
+   echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${build_type}x" == "x"; then
+   echo "Fatal Error, build_type not found in environment."
+   exit 1
+fi
+if test "${logdir}x" == "x"; then
+   echo "Fatal Error, logdir not found in environment."
+   exit 1
+fi
+
+# Environment setup
+# ----------------------------------------
+umask 0002
+ulimit -a
+
+unset http_proxy
+unset HTTP_PROXY
+export VENDOR_DIR=/usr/projects/draco/vendors
+moniker=`whoami`
+
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then eval $1; fi
+}
+
+machine=`uname -n`
+case $machine in
+tt-login[0-9].localdomain)
+    ctestparts=Test
+    # Force create of a new log file (don't append)
+    echo "Purging ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-t.log"
+    echo "    " > ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-t.log
+    ;;
+tt-fe*)
+    if test "${mode}" = "cb"; then
+       ctestparts=Configure,Build
+    elif test "${mode}" = "s"; then
+       ctestparts=Submit
+    else
+       echo "Fatal Error, mode = \"${mode}\" does not match \"cb\" or \"s\"."
+       exit 1
+    fi
+    ;;
+esac
+
+echo "==========================================================================="
+echo "Trinitite regression: ${ctestparts} from ${machine}."
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
+echo "==========================================================================="
+
+# Modules
+# ----------------------------------------
+result=`fn_exists module`
+#echo "result = $result"
+if test $result -eq 0; then
+    echo 'module function is defined'
+else
+    echo 'module function does not exist. defining a local function ...'
+    module ()
+    {
+        eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
+    }
+fi
+
+moddirs="${VENDOR_DIR}/Modules/hpc /usr/projects/packages/user_contrib/modulefiles/trinitite"
+for dir in $moddirs; do
+  if test -z `echo $MODULEPATH | grep $dir`; then
+    run "module use $dir"
+  fi
+done
+
+run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
+run "module unload cmake numdiff gsl papi perftools trilinos"
+#run "module load user_contrib"
+run "module load cmake/3.2.2 svn"
+run "module load PrgEnv-intel"
+run "module load gsl lapack"
+run "module load numdiff"
+#run "module load trilinos SuperLU_DIST"
+run "module load random123"
+run "module load eospac"
+#run "module load ParMetis ndi"
+export CC=`which cc`
+export CXX=`which CC`
+export FC=`which ftn`
+comp=CC
+export OMP_NUM_THREADS=16
+
+# Extra parameers
+case $extra_params in
+"")
+    # revert to intel/14 as the default setup.
+    ;;
+# intel13)
+#     # use older intel/13
+#     run "module unload intel"
+#     run "module load intel/13.0.1.117"
+#     comp="intel-13.0.1"
+#     ;;
+*)
+    echo "FATAL ERROR"
+    echo "Extra parameter = ${extra_param} requested but is unknown to"
+    echo "the regression system (edit tt-regress.msub)."
+    exit 1
+    ;;
+esac
+run "module unload xt-totalview xt-libsci "
+run "module list"
+
+# ----------------------------------------
+# Run the CTest script:
+# ----------------------------------------
+# This script will take the following build steps:
+# 1. cvs update
+# 2. run cmake to build Makefiles
+# 3. run make to build libraries and tests
+# 4. Run the unit tests
+# 5. Post the results to rtt.lanl.gov/cdash
+#
+# Options are:
+# Regression type: Experimental (default), Nightly, Continuous
+# Build type     : Release, Debug
+
+if test "${dashboard_type}x" = "x"; then
+   dashboard_type=Experimental
+fi
+if test "${base_dir}x" = "x"; then
+    # base_dir=${regdir}/cdash/tt
+
+    # There is a bug with how CI/CT mount NFS files spaces (Gabe
+    # R. has an open ticket for this).  Basically, recursively
+    # deleting a directory with data and imediately recreating that
+    # structure will not work correctly (meta data issue?)  Thus,
+    # build and target directories will be in the scratch directory.
+    scratch_dir=/scratch1/${USER}/cdash/tt
+    mkdir -p $scratch_dir
+    if ! test -d ${scratch_dir}; then
+      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+      exit 1
+    fi
+    if test "${regress_mode}" = "off"; then
+      base_dir=${scratch_dir}
+    else
+      base_dir=/usr/projects/jayenne/regress/cdash/tt
+    fi
+fi
+
+echo " "
+echo "tt-regress.msub: dashboard_type = $dashboard_type"
+echo "tt-regress.msub: base_dir       = $base_dir"
+echo "tt-regress.msub: build_type     = $build_type"
+echo "tt-regress.msub: comp           = $comp"
+echo "tt-regress.msub: machine        = $machine"
+echo "tt-regress.msub: subproj        = $subproj"
+echo "tt-regress.msub: regdir         = $regdir"
+
+#----------------------------------------------------------------------#
+# CTest
+#----------------------------------------------------------------------#
+
+if test "${subproj}" == draco; then
+    script_dir=${regdir}/draco/regression
+    script_name=Draco_Linux64.cmake
+elif test "${subproj}" == jayenne; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Jayenne_Linux64.cmake
+elif test "${subproj}" == capsaicin; then
+    script_dir=${regdir}/capsaicin/scripts
+    script_name=Capsaicin_Linux64.cmake
+elif test "${subproj}" == asterisk; then
+    script_dir=${regdir}/asterisk/regression
+    script_name=Asterisk_Linux64.cmake
+fi
+
+if test "${regress_mode}" = "off"; then
+    export buildname_append="-${USER}"
+fi
+
+export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+
+echo "tt-regress.msub: work_dir       = ${work_dir}"
+echo "tt-regress.msub: scratch_dir    = ${scratch_dir}"
+echo " "
+if test "${ctestparts}" = "Configure,Build"; then
+   if ! test -d ${work_dir}/source; then
+      run "/usr/bin/install -d ${work_dir}/source"
+   fi
+   # See notes above where scratch_dir is set concerning why these
+   # are soft links.
+   if ! test -d ${scratch_dir}/build; then
+      run "/usr/bin/install -d ${scratch_dir}/build"
+   fi
+   if ! test -d ${work_dir}/build; then
+      run "ln -s ${scratch_dir}/build ${work_dir}/build"
+   fi
+   if ! test -d ${scratch_dir}/target; then
+      run "/usr/bin/install -d ${scratch_dir}/target"
+   fi
+   if ! test -d ${work_dir}/target; then
+      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+   fi
+
+   # clean the installation directory to remove any files that might
+   # no longer be generated.
+   if test -d ${work_dir}/target/lib; then
+       run "rm -rf ${work_dir}/target/*"
+   fi
+   if test -f ${work_dir}/build/CMakeCache.txt; then
+       run "rm -rf ${work_dir}/build/*"
+   fi
+
+fi
+
+# Environment
+echo " "
+echo "--------------------(environment)------------------------------"
+set
+echo "--------------------(end environment)--------------------------"
+
+date
+echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+echo " "
+ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+echo "All done."
+
+##---------------------------------------------------------------------------##
+## End of script
+##---------------------------------------------------------------------------##

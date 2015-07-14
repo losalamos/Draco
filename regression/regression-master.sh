@@ -177,6 +177,21 @@ ml-*)
         esac
     fi
     ;;
+tt-*)
+    machine_name_long=Trinitite
+    machine_name_short=tt
+    export regdir=/usr/projects/jayenne/regress
+    # Argument checks
+    if ! test "${extra_params}x" = "x"; then
+        case $extra_params in
+        none) extra_params=""; epdash="" ;;
+        fulldiagnostics | nr | perfbench ) # known, continue
+        ;;
+        *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+            print_use; exit 1 ;;
+        esac
+    fi
+    ;;
 ccscs[0-9])
     machine_name_long="Linux64 on CCS LAN"
     machine_name_short=ccscs
