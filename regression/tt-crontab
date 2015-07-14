@@ -1,8 +1,8 @@
 # crontab for tt-fey
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco" &> /usr/projects/jayenne/regress/logs/tt-Debug-master.log
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne" &> /usr/projects/jayenne/regress/logs/tt-Debug-master.log
 
-01 02 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco" &> /usr/projects/jayenne/regress/logs/tt-Release-master.log
+01 02 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" &> /usr/projects/jayenne/regress/logs/tt-Release-master.log
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command
