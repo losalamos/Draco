@@ -297,6 +297,22 @@ void type_T_test( rtt_dsxx::UnitTest & ut )
             if (rspbar != spbar) ITFAILS;
             if (rspbaz != spbaz) ITFAILS;
 
+            // verify that SPs that shouldn't be equal, aren't
+            if (rspfoo == spbar) ITFAILS;
+            if (rspfoo == spbaz) ITFAILS;
+            if (rspbar == spfoo) ITFAILS;
+            if (rspbar == spbaz) ITFAILS;
+            if (rspbaz == spfoo) ITFAILS;
+            if (rspbaz == spbar) ITFAILS;
+
+            // verify inequality again, using operator!=
+            if (!(rspfoo != spbar)) ITFAILS;
+            if (!(rspfoo != spbaz)) ITFAILS;
+            if (!(rspbar != spfoo)) ITFAILS;
+            if (!(rspbar != spbaz)) ITFAILS;
+            if (!(rspbaz != spfoo)) ITFAILS;
+            if (!(rspbaz != spbar)) ITFAILS;
+
             if (spfoo != f)      ITFAILS;
             if (spbar != b)      ITFAILS;
             if (spbaz != bz)     ITFAILS;
@@ -433,6 +449,22 @@ void type_T_test_shared_ptr( rtt_dsxx::UnitTest & ut )
 
             if (rspbar != spbar)   ITFAILS;
             if (rspbaz != spbaz)   ITFAILS;
+
+            // verify that SPs that shouldn't be equal, aren't
+            if (rspfoo == spbar) ITFAILS;
+            if (rspfoo == spbaz) ITFAILS;
+            if (rspbar == spfoo) ITFAILS;
+            if (rspbar == spbaz) ITFAILS;
+            if (rspbaz == spfoo) ITFAILS;
+            if (rspbaz == spbar) ITFAILS;
+
+            // verify inequality again, using operator!=
+            if (!(rspfoo != spbar)) ITFAILS;
+            if (!(rspfoo != spbaz)) ITFAILS;
+            if (!(rspbar != spfoo)) ITFAILS;
+            if (!(rspbar != spbaz)) ITFAILS;
+            if (!(rspbaz != spfoo)) ITFAILS;
+            if (!(rspbaz != spbar)) ITFAILS;
 
             if (spfoo.get() != f)  ITFAILS;
             if (spbar.get() != b)  ITFAILS;
@@ -884,6 +916,7 @@ void equality_test( rtt_dsxx::UnitTest & ut )
     f2.reset(ff);
 
     if (f2 == f1) ITFAILS;
+    if (!(f2 != f1)) ITFAILS;
 
     CHECK_N_OBJECTS(2, 0, 0, 0);
 

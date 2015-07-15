@@ -209,6 +209,16 @@ bool operator==(const SP<T> &lhs, const SP<U> &rhs)
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Do inequality check between smart pointers.
+ */
+template<typename T, typename U>
+bool operator!=(const SP<T> &lhs, const SP<U> &rhs)
+{
+    return lhs.get() != rhs.get();
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Do equality check with a free pointer.
  *
  * This is not part of the C++11 shared_ptr library, but we include it because
