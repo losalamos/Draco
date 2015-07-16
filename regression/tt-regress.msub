@@ -102,10 +102,10 @@ run "module load cmake/3.2.2 svn"
 run "module load PrgEnv-intel"
 run "module load gsl lapack"
 run "module load numdiff"
-#run "module load trilinos SuperLU_DIST"
+run "module load trilinos SuperLU_DIST"
 run "module load random123"
 run "module load eospac"
-#run "module load ParMetis ndi"
+run "module load ParMetis ndi"
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
