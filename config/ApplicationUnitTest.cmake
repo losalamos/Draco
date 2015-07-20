@@ -175,8 +175,6 @@ macro( aut_register_test )
 ")
   endif()
 
-  separate_arguments(argvalue)
-  message("argvalue = ${argvalue}")
   add_test(
     NAME ${ctestname_base}${argname}
     COMMAND ${CMAKE_COMMAND}
@@ -261,6 +259,8 @@ macro( add_app_unit_test )
   get_filename_component( package_name ${package_name} PATH )
   get_filename_component( package_name ${package_name} NAME )
   set( ctestname_base ${package_name}_${drivername} )
+  # Make the test name safe for regex
+  string( REGEX REPLACE "[+]" "x" ctestname_base ${ctestname_base} )
 
   unset( argvalue )
   unset( argname  )
@@ -339,6 +339,7 @@ macro( aut_runTests )
 
   # Run the application capturing all output.
   separate_arguments(INPUT_FILE)
+  separate_arguments(ARGVALUE)
   execute_process(
     COMMAND ${RUN_CMD} ${APP} ${ARGVALUE}
     WORKING_DIRECTORY ${WORKDIR}
@@ -347,6 +348,11 @@ macro( aut_runTests )
     OUTPUT_VARIABLE testout
     ERROR_VARIABLE  testerror
     )
+
+  # Convert the ARGVALUE from a list back into a space separated string.
+  if( ARGVALUE )
+    string( REGEX REPLACE ";" " " ARGVALUE ${ARGVALUE} )
+  endif()
 
   # Capture all the output to log files:
   file( WRITE ${OUTFILE} ${testout} )

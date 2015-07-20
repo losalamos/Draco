@@ -65,6 +65,7 @@ string( REGEX REPLACE "\n" ";" testout ${testout} )
 set( founda FALSE )
 set( foundb FALSE )
 set( foundc FALSE )
+set( foundinvalid FALSE )
 foreach( line ${testout} )
 
    if( ${line} MATCHES "aflag = 1" )
@@ -76,6 +77,13 @@ foreach( line ${testout} )
    if( ${line} MATCHES "cvalue = fish" )
       set( foundcfish TRUE )
    endif()
+   if( ${line} MATCHES "invalid option" )
+      # foo: invalid option -- 'X'
+      # Usage: make [options] [target] ...
+      # Options:
+      #   -b, -m
+      set( foundinvalid TRUE )
+   endif()
 
 endforeach()
 
@@ -83,9 +91,7 @@ endforeach()
 
 if( ARGVALUE )
 
-#   message("ARGVALUE = ${ARGVALUE}")
-
-  if( ${ARGVALUE} STREQUAL "-a" OR ${ARGVALUE} STREQUAL "--add" )
+  if( "${ARGVALUE}" STREQUAL "-a" OR "${ARGVALUE}" STREQUAL "--add" )
     if( founda )
       PASSMSG( "Found a")
     else()
@@ -99,15 +105,25 @@ if( ARGVALUE )
       FAILMSG( "Did not find b")
     endif()
   endif()
+  # This compact form is not yet supported.
+  # if( ${ARGVALUE} STREQUAL "-ab" )
+  #   if( foundb AND founda )
+  #     PASSMSG( "Found a and b")
+  #   else()
+  #     FAILMSG( "Did not find a or b")
+  #   endif()
+  # endif()
+
   # KT this fails right now (need to update add_app_unit_test to allow
-  # expected error return code.)
-  if( ${ARGVALUE} STREQUAL "-ab" )
-    if( foundb AND founda )
-      PASSMSG( "Found a and b")
-    else()
-      FAILMSG( "Did not find a or b")
-    endif()
-  endif()
+  # expected error return code.)  Should this print the help message?
+  # if( ${ARGVALUE} STREQUAL "--badarg" )
+  #   if( foundinvalid )
+  #     PASSMSG( "Invalid option reported.")
+  #   else()
+  #     FAILMSG( "Failed to report --badarg as an invalid option.")
+  #   endif()
+  # endif()
+
   if( ${ARGVALUE} MATCHES "-c" )
     if( foundcfish )
       PASSMSG( "Found c=fish")

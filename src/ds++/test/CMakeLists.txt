@@ -86,7 +86,10 @@ include( ApplicationUnitTest )
     )
     target_link_libraries( Ut_dsxx_tstXGetopt_exe Lib_dsxx )
 
-# Consider using the label "nomemcheck" to prevent this from running under valgrind.
+# 1. Consider using the label "nomemcheck" to prevent this from running
+#    under valgrind.
+# 2. Add tests for '--badarg' and combined arguments: '-ab' after
+#    adding this capability.  See #556 and #557.
 add_app_unit_test(
   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstXGetopt.cmake
   APP    $<TARGET_FILE_DIR:Ut_dsxx_tstXGetopt_exe>/$<TARGET_FILE_NAME:Ut_dsxx_tstXGetopt_exe>
