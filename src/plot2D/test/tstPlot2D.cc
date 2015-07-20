@@ -11,6 +11,7 @@
 
 #include "plot2D/Plot2D.hh"
 #include "ds++/Release.hh"
+#include "ds++/XGetopt.hh"
 
 #include <iostream>
 #include <fstream>
@@ -257,18 +258,29 @@ main(int argc, char *argv[])
     bool batch = true;
 
     // version tag
-    for (int arg = 1; arg < argc; arg++)
-    {
-        if (string(argv[arg]) == "--version")
-        {
-            cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
-            return 0;
-        }
-        else if (string(argv[arg]) == "--gui")
-        {
-	    batch = false;
-	}
-    }
+    int c;
+
+    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_options;
+    long_options["Version"] = 'V';
+    long_options["gui"]     = 'g';       
+
+    for( int arg = 1; arg < argc; arg++ )
+	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"Vg:", long_options)) != -1)
+          switch (c)
+          {
+            case 'V': // --Version
+              cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
+              break;
+
+	    case 'g': // --gui
+              batch = false;
+              break;
+
+            default:
+              return 0; // nothing to do.
+      }
 
     cout << "\n**********************************************\n";
 

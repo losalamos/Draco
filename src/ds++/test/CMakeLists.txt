@@ -17,7 +17,7 @@ project( dsxx_test CXX )
 file( GLOB test_sources *.cc )
 
 list( REMOVE_ITEM test_sources
-   ${PROJECT_SOURCE_DIR}/do_exception.cc 
+   ${PROJECT_SOURCE_DIR}/do_exception.cc
    ${PROJECT_SOURCE_DIR}/tstXGetopt.cc )
 
 # ---------------------------------------------------------------------------- #
@@ -90,7 +90,7 @@ include( ApplicationUnitTest )
 add_app_unit_test(
   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstXGetopt.cmake
   APP    $<TARGET_FILE_DIR:Ut_dsxx_tstXGetopt_exe>/$<TARGET_FILE_NAME:Ut_dsxx_tstXGetopt_exe>
-  TEST_ARGS "none;-a;-b;-c fish;-ab"
+  TEST_ARGS "none;-a;-b;-c fish;--add"
 #  LABELS nomemcheck
 )
 

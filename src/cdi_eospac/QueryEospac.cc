@@ -24,6 +24,9 @@
 #include <sstream>
 #include <cstdlib> // defines atoi
 
+#include <string.h>
+#include "ds++/XGetopt.hh"
+
 //---------------------------------------------------------------------------//
 void query_eospac()
 {
@@ -119,30 +122,39 @@ void query_eospac()
 
 int main(int argc, char *argv[])
 {
+    int c;
+
+    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_options;
+    long_options["version"] = 'v';
+    long_options["help"]    = 'h';
 
     std::string filename;
     // Parse the arguments
     for (int arg = 1; arg < argc; arg++)
     {
-	if (std::string(argv[arg]) == "--version")
-	{
-            std::cout << argv[0] << ": version " << rtt_dsxx::release()
-                      << std::endl;
-	    return 0;
-	}
-	else if (std::string(argv[arg]) == "--help" ||
-                 std::string(argv[arg]) == "-h")
-	{
-            std::cout << argv[0] << ": version " << rtt_dsxx::release()
-                 << "\nUsage: QueryEospac\n"
-                 << "Follow the prompts to print equation-of-state data to the "
-                 << "screen." << std::endl;
-	    return 0;
-	}
-        // else
-        // {
-        //     filename = string(argv[arg]);
-        // }
+        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vh:", long_options)) != -1)
+        {
+            switch (c)
+            {
+                case 'v': // --version
+                    std::cout << argv[0] << ": version " << rtt_dsxx::release()
+                              << std::endl;
+                    return 0;
+
+                case 'h': // --help
+                    std::cout << argv[0] << ": version " << rtt_dsxx::release()
+                              << "\nUsage: QueryEospac\n"
+                              << "Follow the prompts to print equation-of-state data to the "
+                              << "screen." << std::endl;
+                    return 0;
+
+                default:
+                    break; // nothing to do.
+            }
+        }
+
     }
 
     try

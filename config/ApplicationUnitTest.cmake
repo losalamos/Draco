@@ -175,6 +175,8 @@ macro( aut_register_test )
 ")
   endif()
 
+  separate_arguments(argvalue)
+  message("argvalue = ${argvalue}")
   add_test(
     NAME ${ctestname_base}${argname}
     COMMAND ${CMAKE_COMMAND}

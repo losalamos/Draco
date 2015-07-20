@@ -1,77 +1,121 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   ds++/XGetopt.cc
+ * \author Katherine Wang
+ * \date   Wed Nov 10 09:35:09 2010
+ * \brief  Test functions defined in ds++/XGetopt.cc
+ * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------//
+// $Id$
+//---------------------------------------------------------------------------//
+
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
+#include <iterator>
+#include <vector>
+#include <map>
+#include "XGetopt.hh"
 
-//#define UNICODE
-//#include "tool.h"
-
-#include "XGetopt.h"
-
-using std::string;
-//using std::compare;
-
-char	*optarg;		// global argument pointer
-int	 optind = 0; 		// global argv index
-
-int getopt( int argc, char *argv[], char *optstring )
+namespace rtt_dsxx
 {
-	static char *next = NULL;
-	if ( optind == 0 )
-		next = NULL;
 
-	optarg = NULL;
+//---------------------------------------------------------------------------//
+//  getopt
+//
+//  Return code >0 if argv contains known shortopts.
+//---------------------------------------------------------------------------//
 
-	if ( next == NULL || *next == ('\0') )
-	{
-		if ( optind == 0 )
-			optind++;
+char    *optarg;                // global argument pointer
+int      optind = 1;            // global argv index (set to 1, to skip exe name)
 
-		if ( optind >= argc || argv[optind][0] != ('-') || argv[optind][1] == ('\0') )
-		{
-			optarg = NULL;
-			if ( optind < argc )
-				optarg = argv[optind];
-			return EOF;
-		}
+int getopt( int argc, char **& argv, std::string const & shortopts,
+            longopt_map map )
+{
+    // convert argv into a vector<string>...
+    std::vector< std::string > options(argv, argv+argc);
 
-		if ( strcmp (argv[optind], "--") == 0 )
-		{
-			optind++;
-			optarg = NULL;
-			if ( optind < argc )
-				optarg = argv[optind];
-			return EOF;
-		}
+    // convert shortopts into vector<char> + vector<int>...
+    std::vector< char> vshortopts;
+    std::vector< int > vshortopts_hasarg; // map<char,bool>
+    for( size_t i=0; i<shortopts.size(); ++i )
+    {
+        vshortopts.push_back(shortopts[i]);
+        vshortopts_hasarg.push_back(0); // assume no required argument.
+        if( i+1 < shortopts.size() && shortopts[i+1] == std::string(":")[0] )
+        {
+           vshortopts_hasarg[i] = 1;
+           ++i;
+        }
+    }
 
-		next = argv[optind];
-		next++;		// skip past -
-		optind++;
-	}
+    // Look for command line arguments that match provided list:
+    for( ; optind<static_cast<int>(options.size()); ++optind )
+    {
+        //std::cout << optind << " :: " << options[optind];
+        // stop processing command line arguments
+	if( options[optind] == std::string("--") )
+        {
+            return -1;
+        }
 
-	char c = *next++;
-	char *cp = strchr ( optstring, c );
+        // consider single letter options here.
+        for( size_t j=0; j<vshortopts.size(); ++j )
+        {
+            if( options[optind] ==
+                std::string("-")+std::string(1,vshortopts[j]) )
+            {
+                
+                if( vshortopts_hasarg[j] == 1 )
+                {
+                   ++optind;
+                   optarg = argv[optind];
+                 }
+                 ++optind;
+                 std::cout << std::endl;
+                 return vshortopts[j];
+            }
+         }
 
-	if ( cp == NULL || c == (':') )
-		return ('?');
+         // consider string-based optons here.
+	 if( options[optind].substr(0,2) == std::string("--") )
+	 {
+	    for( longopt_map::iterator it=map.begin(); it!=map.end(); ++it )
+       	    {
+               //std::cout << it->first << " :: " << it->second << std::endl; //?
+	   
+	       if( options[optind] == std::string("--")+(it->first))
+	       {
+                  // what is the short arg equivalent.
+	          size_t j(0);
+                  for( ; j<vshortopts.size(); ++j )
+		     if( std::string(1,vshortopts[j]) == std::string(1,it->second) ) 
+                        break;
 
-	cp++;
-	if ( *cp == (':') )
-	{
-		if ( *next != ('\0') )
-		{
-			optarg = next;
-			next = NULL;
-		}
-		else if (optind < argc)
-		{
-			optarg = argv[optind];
-			optind++;
-		}
-		else
-		{
-			return ('?');
-		}
-	}
+                  if( vshortopts_hasarg[j] == 1 )
+                  {
+                     ++optind;
+                     optarg = argv[optind];
+                   }
+                   ++optind;
+                   std::cout << std::endl;
+                   return vshortopts[j];
+                }    	
+      	       
+            }
 
-	return c;
+        }
+        //std::cout << std::endl;
+    }    
+
+    return -1;
 }
+
+} // end namespace rtt_dsxx
+
+//---------------------------------------------------------------------------//
+// end of XGetopt.cc
+//---------------------------------------------------------------------------//
