@@ -260,17 +260,17 @@ main(int argc, char *argv[])
     // version tag
     int c;
 
-    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
     std::map< std::string, char> long_options;
-    long_options["Version"] = 'V';
+    long_options["version"] = 'v';
     long_options["gui"]     = 'g';       
 
-    for( int arg = 1; arg < argc; arg++ )
-	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"Vg:", long_options)) != -1)
+    //for( int arg = 1; arg < argc; arg++ )
+	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vg", long_options)) != -1)
           switch (c)
           {
-            case 'V': // --Version
+            case 'v': // --version
               cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
               break;
 
@@ -279,8 +279,8 @@ main(int argc, char *argv[])
               break;
 
             default:
-              return 0; // nothing to do.
-      }
+               break; // nothing to do.
+           }
 
     cout << "\n**********************************************\n";
 

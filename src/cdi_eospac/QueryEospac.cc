@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 {
     int c;
 
-    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
     std::map< std::string, char> long_options;
     long_options["version"] = 'v';
@@ -132,8 +132,8 @@ int main(int argc, char *argv[])
 
     std::string filename;
     // Parse the arguments
-    for (int arg = 1; arg < argc; arg++)
-    {
+    //for (int arg = 1; arg < argc; arg++)
+    //{
         while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vh:", long_options)) != -1)
         {
             switch (c)
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
             }
         }
 
-    }
+    //}
 
     try
     {

@@ -53,21 +53,21 @@ int main(int argc, char *argv[])
 
     int c;
 
-    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
     std::map< std::string, char> long_options;
-    long_options["Version"] = 'V';
+    long_options["version"] = 'v';
     long_options["timings"] = 't';
     long_options["runtest"} = 'r';
 
     // rtt_diagnostics::DracoInfo di;
-    for( int iargc=1; iargc<argc; ++iargc )
-    {
-        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"Vt:", long_options)) != -1)
+    //for( int iargc=1; iargc<argc; ++iargc )
+    //{
+        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vt:", long_options)) != -1)
         {
             switch (c)
             {
-                case 'V': // --Version
+                case 'v': // --version
                     throw rtt_dsxx::assertion( string( "Success" ) );
                     break;
 
@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
                     break;
             }
         }
-    }
+    //}
 
     // runtest command option tag
     bool runtest = false;
 
-    for (int arg = 1; arg < argc; arg++)
+    //for (int arg = 1; arg < argc; arg++)
        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"r:", long_options)) != -1)
            switch (c)
              {

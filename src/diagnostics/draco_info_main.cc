@@ -14,7 +14,6 @@
 #include "draco_info.hh"
 #include "ds++/Assert.hh"
 #include <iostream>
-
 #include "ds++/XGetopt.hh"
 
 int main( int argc, char *argv[] )
@@ -25,19 +24,18 @@ int main( int argc, char *argv[] )
     {
         bool version(false);
         bool brief(false);
+        rtt_diagnostics::DracoInfo di;
 
+        // Preparing to parse command line arguments.
 	int c;
-
-	rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
+	// rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
         std::map< std::string, char> long_options;
         long_options["version"] = 'v';
         long_options["brief"]   = 'b';
 
-        rtt_diagnostics::DracoInfo di;
-        for( int iargc=1; iargc<argc; ++iargc )
-        {
-            while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vb:", long_options)) != -1)
+        // for( int iargc=1; iargc<argc; ++iargc )
+        // {
+            while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vb", long_options)) != -1)
             {
                 switch (c)
                 {
@@ -53,7 +51,7 @@ int main( int argc, char *argv[] )
                         break;
                 }
             }
-        }
+            //}
 
         if( version )
             cout << di.versionReport();

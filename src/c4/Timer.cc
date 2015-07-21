@@ -223,11 +223,11 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
     std::map< std::string, char> long_option;
     long_option["cache"] = 'c';
 
-    for (int i=0; i<argc; ++i)
-    {
+    //for (int i=0; i<argc; ++i)
+    //{
     while ((c = rtt_dsxx::getopt (argc, argv, (char*)"c:", long_option)) != -1)
     switch (c)
-      {
+    {
       case 'c': // --cache
          char *endptr;
          selected_cache = strtol(argv[i+1], &endptr, 10);
@@ -253,7 +253,8 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
                      papi_events_[0] = PAPI_L3_DCM;
                      papi_events_[1] = PAPI_L3_DCH;
                      break;
-            }
+             }
+	  }
           else
           {
             if (j!=i)
@@ -262,9 +263,10 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
             }
             j++;
 	  break;  
-     
+          }
       default:
-        return; // nothing to do.
+        break; // nothing to do.
+      }
 
     int orig_argc = argc;
     argc = j;

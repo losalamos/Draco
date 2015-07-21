@@ -97,17 +97,16 @@ ApplicationUnitTest::ApplicationUnitTest(
     rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
     std::map< std::string, char> long_options;
-    long_options["Version"] = 'V';
+    long_options["version"] = 'v';
     long_options["timings"]   = 't';
 
-    // rtt_diagnostics::DracoInfo di;
-    for( int iargc=1; iargc<argc; ++iargc )
-    {
-        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"Vt:", long_options)) != -1)
+    //for( int iargc=1; iargc<argc; ++iargc )
+    //{
+        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vt:", long_options)) != -1)
         {
            switch (c)
            {
-                case 'V': // --Version
+                case 'v': // --Version
                   throw rtt_dsxx::assertion( string( "Success" ) );
         	  break;
 
@@ -119,7 +118,7 @@ ApplicationUnitTest::ApplicationUnitTest(
                   break;
            }
         }
-    }
+    //}
 
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );
@@ -157,9 +156,6 @@ std::string ApplicationUnitTest::getNumProcs( int & argc, char **&argv )
    std::map< std::string, char> long_option;
    long_option["np"] = 'n';
 
-   //rtt_diagnostics::DracoInfo di;
-   //for( int arg = 1; arg < argc; arg++ )
-   //{
    while ((c = rtt_dsxx::getopt (argc, argv, (char*)"n:", long_option)) != -1)
    {
        switch (c)
@@ -172,9 +168,6 @@ std::string ApplicationUnitTest::getNumProcs( int & argc, char **&argv )
                break;
        }
    }
-// }
-   // Reset the getopt global counter.
-   rtt_dsxx::optind = 1;
 
    Ensure( np == std::string("scalar") ||
            np == std::string("serial") ||
