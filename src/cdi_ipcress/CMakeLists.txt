@@ -52,22 +52,18 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library(
-   TARGET       Lib_cdi_ipcress
-   TARGET_DEPS  "Lib_cdi"
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${sources}" )
+  TARGET       Lib_cdi_ipcress
+  TARGET_DEPS  "Lib_cdi"
+  LIBRARY_NAME ${PROJECT_NAME}
+  SOURCES      "${sources}" )
 
-add_executable( Exe_Ipcress_Interpreter IpcressInterpreter.cc )
-target_link_libraries(
-   Exe_Ipcress_Interpreter
-   Lib_cdi_ipcress Lib_cdi Lib_dsxx
-   ${IPCRESS_LIBRARY} ${IPCRESS_GFORTRAN_LIBRARY} )
-set_target_properties(
-   Exe_Ipcress_Interpreter
-   PROPERTIES OUTPUT_NAME Ipcress_Interpreter
-   PROJECT_LABEL          Ipcress_Interpreter
-   FOLDER                 cdi_ipcress)
-copy_dll_link_libraries_to_build_dir( Exe_Ipcress_Interpreter )
+add_component_executable(
+  TARGET      Exe_Ipcress_Interpreter
+  TARGET_DEPS "Lib_cdi_ipcress"
+  VENDOR_LIBS "${IPCRESS_LIBRARY};${IPCRESS_GFORTRAN_LIBRARY}"
+  SOURCES     ${PROJECT_SOURCE_DIR}/IpcressInterpreter.cc
+  PREFIX       Draco
+  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
@@ -75,7 +71,7 @@ copy_dll_link_libraries_to_build_dir( Exe_Ipcress_Interpreter )
 set( CMAKE_INSTALL_DO_STRIP NO )
 install( TARGETS Lib_cdi_ipcress EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ipcress )
-install( TARGETS Exe_Ipcress_Interpreter DESTINATION ${DBSCFGDIR}bin )
+install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

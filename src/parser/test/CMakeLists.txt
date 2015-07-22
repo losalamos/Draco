@@ -33,22 +33,12 @@ include_directories(
 # Special Case:
 # tstConsole_Token_Stream is used by driver4tstConsole_Token_Stream, we do not run it alone.
 
-add_executable( Ut_parser_tstConsole_Token_Stream
-   ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc )
-set_target_properties( Ut_parser_tstConsole_Token_Stream
-   PROPERTIES
-     OUTPUT_NAME tstConsole_Token_Stream
-     VS_KEYWORD  tstConsole_Token_Stream
-     PROJECT_LABEL Ut_parser_tstConsole_Token_Stream
-     FOLDER      parser_test
-   )
-target_link_libraries( Ut_parser_tstConsole_Token_Stream
-   Lib_parser
-   Lib_c4
-   Lib_dsxx
-   ${MPI_CXX_LIBRARIES}
-   ${PAPI_LIBRARY}
-   )
+add_component_executable(
+  TARGET      Exe_tstConsole_Token_Stream
+  SOURCES     ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc
+  TARGET_DEPS Lib_parser
+  NOEXPORT
+  )
 list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc )
 
@@ -73,10 +63,10 @@ add_scalar_tests(
 list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc )
 if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
-add_scalar_tests(
-   SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
-   DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}"
-   RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
+  add_scalar_tests(
+    SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
+    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}"
+    RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
 endif()
 
 # The remaining tests are Parallel.

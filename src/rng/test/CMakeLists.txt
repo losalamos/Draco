@@ -83,12 +83,11 @@ if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
     FAIL_REGULAR_EXPRESSION "FAILED" )
 endif()
 
-add_executable(time_serial
-  ${PROJECT_SOURCE_DIR}/time_serial.c )
-set_target_properties( time_serial
-  PROPERTIES
-  PROJECT_LABEL time_serial
-  FOLDER rng_test )
+add_component_executable(
+  TARGET  Exe_time_serial
+  SOURCES ${PROJECT_SOURCE_DIR}/time_serial.c
+  NOEXPORT
+  )
 
 configure_file( ${PROJECT_SOURCE_DIR}/kat_vectors
   ${PROJECT_BINARY_DIR}/kat_vectors COPYONLY )

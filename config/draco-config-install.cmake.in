@@ -73,6 +73,9 @@ set(Draco_TPL_INCLUDE_DIRS "@Draco_TPL_INCLUDE_DIRS@" )
 ## The project tpl libraries
 set(Draco_TPL_LIBRARIES "@Draco_TPL_LIBRARIES@" )
 
+## The project's exported executables
+set( Draco_EXECUTABLES "@Draco_EXECUTABLES@" )
+
 ## ---------------------------------------------------------------------------
 ## MPI specific variables
 ##   These variables are provided to make it easier to get the mpi libraries
@@ -145,4 +148,3 @@ set(Draco_TPL_LIST "@Draco_TPL_LIST@")
 ## ---------------------------------------------------------------------------
 
 @Draco_EXPORT_TARGET_PROPERTIES@
-

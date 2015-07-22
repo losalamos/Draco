@@ -410,7 +410,7 @@ endmacro()
 ## Toggle a compiler flag based on a bool
 ##
 ## Examples:
-##   toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" "")
+##   toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG" )
 ##---------------------------------------------------------------------------##
 macro( toggle_compiler_flag switch compiler_flag
     compiler_flag_var_names build_modes )
