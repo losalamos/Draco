@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file   ds++/SP.hh
  * \author Geoffrey Furnish, Thomas Evans
@@ -7,9 +7,9 @@
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
@@ -20,13 +20,13 @@
 namespace rtt_dsxx
 {
 
-//===========================================================================//
+//=======================================================================================//
 /*!
  * \struct SPref
  *
  * \brief Reference holder struct for SP class.
  */
-//===========================================================================//
+//=======================================================================================//
 
 struct SPref
 {
@@ -51,70 +51,19 @@ struct SPref
 #endif
 };
 
-//===========================================================================//
+//=======================================================================================//
 /*!
  * \class SP
  *
  * \brief Smart pointer implementation that does reference counting.
  *
- * The smart pointer provides a "safe" encapsulation for a standard C++
- * pointer.  Consider: A function new's an object and return the pointer to
- * that object as its return value.  Now it is the caller's responsibility to
- * free the object.  What if the caller passes the pointer to other objects
- * or functions?  What if it is not known which will be deleted first or
- * last?
- *
- * Instead the function can return a "smart pointer".  This SP class uses
- * reference counting to determine the number of current users of a pointer.
- * Each time an SP goes out of scope, the reference count is decremented.
- * When the last user of a pointer is done, the pointer is freed.
- *
- * Note: I am calling this a "smart pointer", not a "safe pointer".  There
- * are clearly ways you can hose this.  In particular, when you bind an SP<T>
- * to a T*, you yield all rights to the T*.  You'd better not squirrel the
- * bare pointer away somewhere and expect to clandestinely use it in other
- * ways or places--death will be sure to follow.  Consequently then, the
- * safest way to use this smart pointer, is to bind it to the contained
- * pointer and then always use the smart pointer.  Immediately returning the
- * smart pointer as a return value, allowing the original bare pointer to go
- * out of scope never to be seen again, is one good example of how to use
- * this.
- *
- * One good example of bad usage is assigning the same dumb pointer to
- * multiple SPs.  Consider:
- * \code
- *     SP<Foo> f1;
- *     SP<Foo> f2;
- *     // ...
- *     Foo *f = new Foo;
- *     f1 = f;
- *     // ...
- *     f2 = f; // bad, now f1 and f2 assume they "own" f!
- * \endcode
- * Unfortunately, there is no way to check if another SP owns the dumb
- * pointer that you give to a SP.  This is simply something that needs to be
- * watched by the programmer.
- *
- * \note
- * Having an std::vector or other array-based container of SPs can have
- * non-obvious implications for object lifetime. Since operations like
- * pop_back() or clear() do not call the destructor of the SP, SP's that are
- * in the "slop" between the vector size and the capacity are still holding
- * references.  It is only once those slots are re-assigned, or the whole
- * vector is deleted, or a resize operation leads to a reallocation, that
- * those SPs are killed.
+ * When this class was originally developed for Draco, C++ did not yet have a standard smart
+ * pointer class. Such a class (std::shared_ptr) is part of C++11, but until we have a full
+ * implementation of C++11 on all supported platforms, we are continuing to use SP. However,
+ * we have adjusted this class to be as similar to std::smart_pointer as possible without
+ * using C++11 features.
  */
-/*!
- * \example ds++/test/tstSP.cc
- *
- * rtt_dsxx::SP (smart pointer) usage example.
- */
-// revision history:
-// -----------------
-// 0) original
-// 1) 020403 : updated with doxygen comments; minor refactoring
-//
-//===========================================================================//
+//=======================================================================================//
 
 template<typename T>
 class SP
@@ -195,9 +144,9 @@ class SP
 
 DLL_PUBLIC_dsxx  void incompatible(std::type_info const &X, std::type_info const &T);
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Do equality check between smart pointers.
  */
@@ -207,7 +156,7 @@ bool operator==(const SP<T> &lhs, const SP<U> &rhs)
     return lhs.get() == rhs.get();
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check between smart pointers.
  */
@@ -217,7 +166,7 @@ bool operator!=(const SP<T> &lhs, const SP<U> &rhs)
     return lhs.get() != rhs.get();
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Do equality check with a free pointer.
  *
@@ -230,7 +179,7 @@ bool operator==(const T *pt, const SP<T> &sp)
     return sp.get() == pt;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check with a free pointer.
  *
@@ -243,7 +192,7 @@ bool operator!=(const T *pt, const SP<T> &sp)
     return sp.get() != pt;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Do equality check with a free pointer.
  *
@@ -256,7 +205,7 @@ bool operator==(const SP<T> &sp, const T *pt)
     return sp.get() == pt;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check with a free pointer.
  *
@@ -269,9 +218,9 @@ bool operator!=(const SP<T> &sp, const T *pt)
     return sp.get() != pt;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief  Default constructor
  *
@@ -284,7 +233,7 @@ SP<T>::SP()
     Ensure(get()==NULL);
     Ensure(use_count()==0);
 }
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief  Explicit constructor for type U *.
  *
@@ -304,7 +253,7 @@ SP<T>::SP(U *p)
     Ensure (unique());
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor for SP<T>.
  *
@@ -319,7 +268,7 @@ SP<T>::SP(const SP<T> &sp_in)
     if (r_) r_->refs++;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor for SP<U>.
  *
@@ -337,7 +286,7 @@ SP<T>::SP(const SP<U> &x)
     if (r_) r_->refs++;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator for type SP<T>.
  *
@@ -350,7 +299,7 @@ SP<T>& SP<T>::operator=(const SP<T> &x)
     return *this;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator for type SP<U>.
  *
@@ -367,7 +316,7 @@ SP<T>& SP<T>::operator=(const SP<U> &x)
     return *this;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 template <class T, class U>
 SP<T> dynamic_pointer_cast (const SP<U>& sp)
 {
@@ -382,7 +331,7 @@ SP<T> dynamic_pointer_cast (const SP<U>& sp)
     return Result;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 template <class T>
 template <typename U>
 void SP<T>::reset(U* p)
@@ -392,7 +341,7 @@ void SP<T>::reset(U* p)
     r_ = new SPref;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 template<class T>
 void SP<T>::swap(SP<T> &r)
 {
@@ -404,9 +353,9 @@ void SP<T>::swap(SP<T> &r)
     r.r_ = rp;
 }
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // PRIVATE IMPLEMENTATION
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 /*!
  * \brief Decrement the count and free the pointer if count is zero.
  *
@@ -427,6 +376,6 @@ void SP<T>::free()
 
 #endif // RTT_ds_SP_HH
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // end of ds++/SP.hh
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
