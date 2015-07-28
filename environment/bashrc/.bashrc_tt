@@ -27,9 +27,9 @@ fi
 
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
-if test -d $HOME/modulefiles/trinitite; then
-  module use $HOME/modulefiles/trinitite
-fi
+#if test -d $HOME/modulefiles/trinitite; then
+#  module use $HOME/modulefiles/trinitite
+#fi
 if test -d /usr/projects/packages/user_contrib/modulefiles/trinitite; then
   module use /usr/projects/packages/user_contrib/modulefiles/trinitite
 fi
@@ -49,10 +49,10 @@ module unload xt-libsci xt-totalview
 
 # draco modules start here.
 module load gsl eospac/6.2.4 lapack
-# module load emacs svn
-# module load trilinos SuperLU_DIST ParMetis
+# module load emacs
+module load trilinos SuperLU_DIST ParMetis
 module load random123
-module load cmake/3.2.2 numdiff ndi
+module load cmake/3.2.2 numdiff ndi svn
 
 export OMP_NUM_THREADS=16
 
