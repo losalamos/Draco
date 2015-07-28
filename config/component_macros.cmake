@@ -134,7 +134,7 @@ or the target must be labeled NOEXPORT.")
     get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
     get_filename_component( comp_target ${comp_target} NAME )
   else()
-    get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} NAME )  
+    get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} NAME )
   endif()
   # Make the name safe: replace + with x
   string( REGEX REPLACE "[+]" "x" comp_target ${comp_target} )
@@ -252,7 +252,7 @@ or the target must be labeled NOEXPORT.")
 
   # If Win32, copy dll files into binary directory.
   copy_dll_link_libraries_to_build_dir( ${ace_TARGET} )
-  
+
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -584,7 +584,7 @@ endmacro()
 function( copy_dll_link_libraries_to_build_dir target )
 
   if( NOT WIN32 )
-    # Win32 platforms require all dll libraries to be in the local directory 
+    # Win32 platforms require all dll libraries to be in the local directory
     # (or $PATH)
     return()
   endif()
@@ -601,14 +601,14 @@ function( copy_dll_link_libraries_to_build_dir target )
   # Discover all library dependencies for this unit test.
   get_target_property( link_libs ${target} LINK_LIBRARIES )
   if( lverbose )
-    message("Debugging dependencies for target ${target}") 
+    message("Debugging dependencies for target ${target}")
     # "${compname}_${testname}")
     message("  link_libs = ${link_libs}")
   endif()
-  if( "${link_libs}" MATCHES NOTFOUND )     
+  if( "${link_libs}" MATCHES NOTFOUND )
      return() # nothing to do
   endif()
-  
+
   set( old_link_libs "" )
   # Walk through the library dependencies to build a list of all .dll dependencies.
   while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
@@ -657,7 +657,7 @@ function( copy_dll_link_libraries_to_build_dir target )
         list( REMOVE_ITEM link_libs ${lib} )
       elseif( "${lib}" MATCHES "[$]<")
         # We have a generator expression.  This routine does not support this, so drop it.
-        list( REMOVE_ITEM link_libs ${lib} )        
+        list( REMOVE_ITEM link_libs ${lib} )
       elseif( "${lib}" MATCHES ".[lL]ib$" )
         # We have a path to a static library. Static libraries do not
         # need to be copied.
@@ -1008,7 +1008,7 @@ macro( add_parallel_tests )
   # 3. Register the unit test
   # 4. Register the pass/fail criteria.
   if( ${DRACO_C4} MATCHES "MPI" )
-      foreach( file ${addparalleltest_SOURCES} )
+    foreach( file ${addparalleltest_SOURCES} )
       get_filename_component( testname ${file} NAME_WE )
       foreach( numPE ${addparalleltest_PE_LIST} )
         set( iarg 0 )
