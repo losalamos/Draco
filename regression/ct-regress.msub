@@ -94,7 +94,7 @@ else
     }
 fi
 
-moddirs="Modules/hpc Modules/ct-fe"
+moddirs="Modules/hpc"
 for dir in $moddirs; do
   if test -z `echo $MODULEPATH | grep $dir`; then
     run "module use ${VENDOR_DIR}/$dir"
