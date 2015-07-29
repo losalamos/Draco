@@ -397,7 +397,10 @@ The Draco build system doesn't know how to configure the build for
          message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU is not set!")
       endif()
 
-   endif()
+    else()
+      # Set DRACO_C4 and other variables
+      setupDracoMPIVars()
+    endif()
 
    mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
 
@@ -495,6 +498,9 @@ macro( setupMPILibrariesWindows )
             CACHE STRING "extra mpirun flags (list)." FORCE )
       endif()
 
+    else()
+      # Set DRACO_C4 and other variables
+      setupDracoMPIVars()
    endif() # NOT "${DRACO_C4}" STREQUAL "SCALAR"
 
 #   set( MPI_SETUP_DONE ON CACHE INTERNAL "Have we completed the MPI setup call?" )

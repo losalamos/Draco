@@ -11,7 +11,7 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <c4/config.h>
+#include "c4/config.h"
 
 #ifdef C4_SCALAR
 
@@ -33,25 +33,26 @@ const int proc_null = -1;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void initialize(int &/* argc */, char **&/*argv */, int /*required*/)
+DLL_PUBLIC_c4 int initialize(int &/* argc */, char **&/*argv */, int /*required*/)
+{
+    return 0;
+}
+
+//---------------------------------------------------------------------------//
+
+DLL_PUBLIC_c4 void finalize()
 {
 }
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC void finalize()
-{
-}
-
-//---------------------------------------------------------------------------//
-
-DLL_PUBLIC void free_inherited_comm()
+DLL_PUBLIC_c4 void free_inherited_comm()
 {
 }
 
 //---------------------------------------------------------------------------------------//
 
-DLL_PUBLIC void type_free(C4_Datatype &old_type)
+DLL_PUBLIC_c4 void type_free(C4_Datatype & /*old_type*/)
 {
 }
 
@@ -82,7 +83,7 @@ void global_barrier() { /* empty */ }
 //---------------------------------------------------------------------------//
 
 #if defined( WIN32 )
-DLL_PUBLIC double wall_clock_time()
+DLL_PUBLIC_c4 double wall_clock_time()
 {
     __timeb64 now;
     return _ftime64_s( &now );
@@ -92,7 +93,7 @@ double wall_clock_time( __timeb64 & now )
     return _ftime64_s( &now );
 }
 #else
-DLL_PUBLIC double wall_clock_time()
+DLL_PUBLIC_c4 double wall_clock_time()
 {
     tms now;
     return times( &now ) / wall_clock_resolution();
@@ -105,7 +106,7 @@ double wall_clock_time( tms & now )
 
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC double wall_clock_resolution()
+DLL_PUBLIC_c4 double wall_clock_resolution()
 {
     return static_cast<double>(DRACO_CLOCKS_PER_SEC);
 }
@@ -114,28 +115,28 @@ DLL_PUBLIC double wall_clock_resolution()
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-DLL_PUBLIC bool probe(int  /* source */, 
+DLL_PUBLIC_c4 bool probe(int  /* source */,
                       int  /* tag */,
                       int &/* message_size */)
-{    
+{
     return false;
 }
 
-DLL_PUBLIC void blocking_probe(int  /* source */, 
+DLL_PUBLIC_c4 void blocking_probe(int  /* source */,
                                int  /* tag */,
                                int &/* message_size */)
-{    
+{
     Insist(false, "no messages expected in serial programs!");
 }
 
-DLL_PUBLIC void wait_all(int      /*count*/,
+DLL_PUBLIC_c4 void wait_all(int      /*count*/,
                          C4_Req * /*requests*/)
 {
     // Insist(false, "no messages expected in serial programs!");
     return;
 }
 
-DLL_PUBLIC unsigned wait_any(int      /*count*/,
+DLL_PUBLIC_c4 unsigned wait_any(int      /*count*/,
                              C4_Req * /*requests*/)
 {
     Insist(false, "no messages expected in serial programs!");
@@ -150,7 +151,7 @@ int abort(int error)
     // This test is not recorded as tested by BullseyeCoverage because abort
     // terminates the execution and BullseyeCoverage only reports coverage for
     // function that return control to main().
-    
+
     // call system exit
     std::abort();
     return error;
@@ -159,7 +160,7 @@ int abort(int error)
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-DLL_PUBLIC bool isScalar()
+DLL_PUBLIC_c4 bool isScalar()
 {
     return true;
 }
@@ -169,7 +170,7 @@ DLL_PUBLIC bool isScalar()
 //---------------------------------------------------------------------------//
 std::string get_processor_name()
 {
-    return rtt_dsxx::draco_gethostname();;    
+    return rtt_dsxx::draco_gethostname();;
 }
 
 } // end namespace rtt_c4
@@ -177,5 +178,5 @@ std::string get_processor_name()
 #endif // C4_SCALAR
 
 //---------------------------------------------------------------------------//
-//                              end of C4_Serial.cc
+// end of C4_Serial.cc
 //---------------------------------------------------------------------------//

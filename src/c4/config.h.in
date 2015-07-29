@@ -52,12 +52,18 @@
 #endif
 
 /* Special settings for DRACO_C4 == SCALAR */
-/* When C4_MPI, set DRACO_MAX_PROCESSOR_NAME in c4_mpi.h */
+/* When C4_MPI,
+   - set DRACO_MAX_PROCESSOR_NAME in c4_mpi.h
+   - define MPI_THREAD_SINGLE=0 (placeholder value)
+*/
 #ifdef C4_SCALAR
 #ifdef HAVE_HOST_NAME_MAX
 #define DRACO_MAX_PROCESSOR_NAME HOST_NAME_MAX
 #else
 #define DRACO_MAX_PROCESSOR_NAME 64
+#endif
+#ifndef MPI_THREAD_SINGLE
+#define MPI_THREAD_SINGLE 0
 #endif
 #endif
 

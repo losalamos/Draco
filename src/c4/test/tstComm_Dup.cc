@@ -25,7 +25,7 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
 {
     // we only run this particular test when mpi is on
 #ifdef C4_MPI
-    
+
     Require (rtt_c4::nodes() == 4);
 
     int node  = rtt_c4::node();
@@ -34,7 +34,7 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
     // split up nodes (two communicators) 0 -> 0, 2 -> 1 and
     // 1 -> 0, 3 -> 1
     MPI_Comm new_comm;
-	
+
     if (node == 1)
     {
         MPI_Comm_split(MPI_COMM_WORLD, 0, 0, &new_comm);
@@ -50,13 +50,13 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
         MPI_Comm_split(MPI_COMM_WORLD, 1, 0, &new_comm);
         MPI_Comm_rank(new_comm, &snode);
     }
-    
+
     // we haven't set the communicator yet so we should still have 4 nodes
     if (rtt_c4::nodes() != 4) ITFAILS;
 
     // now dup the communicator on each processor
     rtt_c4::inherit(new_comm);
-    
+
     // each processor should see two nodes
     if (rtt_c4::nodes() != 2) ITFAILS;
 
@@ -88,7 +88,7 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
         rtt_c4::receive(&data, 1, 0, 100);
         if (data != 10) ITFAILS;
     }
-    else if (node == 3) 
+    else if (node == 3)
     {
         if (rtt_c4::node() != 1) ITFAILS;
 
@@ -114,7 +114,12 @@ void test_mpi_comm_dup( rtt_dsxx::UnitTest &ut )
     rtt_c4::global_barrier();
     MPI_Comm_free(&new_comm);
 
+#else
+    /* DRACO_C4 = SCALAR */
+    PASSMSG( "Nothing to do since DRACO_C4 = SCALAR" );
+
 #endif
+
     return;
 }
 
@@ -168,8 +173,8 @@ void test_comm_dup(rtt_dsxx::UnitTest &ut)
     if (y != 20 * nodes) ITFAILS;
 
     if (ut.numFails==0)
-        PASSMSG("MPI_COMM_WORLD Comm duplication/free works ok."); 
-    
+        PASSMSG("MPI_COMM_WORLD Comm duplication/free works ok.");
+
 #endif
     return;
 }
@@ -187,7 +192,7 @@ int main(int argc, char *argv[])
         test_comm_dup(ut);
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstComm_Dup.cc
