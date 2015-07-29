@@ -196,12 +196,19 @@ macro( aut_register_test )
     -DnumPE=${numPE}
     -P ${aut_DRIVER}
     )
+  if( "${numPE}x" STREQUAL "x" )
+    set(num_procs 1)
+  else()
+    set(num_procs ${numPE} )
+  endif()
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION "${aut_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${aut_FAIL_REGEX}"
+    PROCESSORS              "${num_procs}"
     ${LABELS}
     )
+  unset(num_procs)
 endmacro()
 
 ##---------------------------------------------------------------------------------------##
