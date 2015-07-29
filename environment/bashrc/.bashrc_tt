@@ -52,7 +52,7 @@ module load gsl eospac/6.2.4 lapack
 # module load emacs
 module load trilinos SuperLU_DIST ParMetis
 module load random123
-module load cmake/3.2.2 numdiff ndi svn
+module load cmake/3.3.0 numdiff ndi svn
 
 export OMP_NUM_THREADS=16
 
