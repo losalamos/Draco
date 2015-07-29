@@ -104,7 +104,7 @@ done
 run "module unload PrgEnv-intel PrgEnv-pgi"
 run "module unload cmake numdiff svn gsl"
 run "module load user_contrib"
-run "module load cmake/3.2.2"
+run "module load cmake/3.3.0"
 run "module load PrgEnv-intel"
 run "module load gsl/1.15 lapack"
 run "module load numdiff svn"

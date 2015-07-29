@@ -15,7 +15,6 @@ project( c4 CXX )
 # Generate config.h (only occurs when cmake is run)
 # many c4 and mpi values are set in config/setupMPI.cmake.
 # ---------------------------------------------------------------------------- #
-message("C4_SCALAR = ${C4_SCALAR}" )
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/c4/config.h )
 
 # ---------------------------------------------------------------------------- #
