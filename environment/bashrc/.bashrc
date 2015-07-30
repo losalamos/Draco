@@ -20,6 +20,8 @@
 ## ENVIRONMENTS for all sessions
 ##---------------------------------------------------------------------------##
 
+#export verbose=true
+
 # Clean up the default path to remove duplicates
 tmpifs=$IFS
 oldpath=$PATH
@@ -78,7 +80,6 @@ CDPATH=
 case ${-} in
 *i*)
    export INTERACTIVE=true
-   export verbose=
    if test -n "${verbose}"; then
       echo "in .bashrc"
    fi

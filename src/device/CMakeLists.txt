@@ -11,7 +11,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project( device CXX )
 
-if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
+if( USE_CUDA AND NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
    find_package( CUDA QUIET )
    # find_package will return CUDA_FOUND=TRUE if libcuda is
    # available.  We also need the nvcc executable

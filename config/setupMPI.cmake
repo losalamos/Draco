@@ -319,7 +319,7 @@ macro( setupMPILibrariesUnix )
 
       # Preserve data that may already be set.
       if( DEFINED ENV{MPIEXEC} )
-        set( MPIEXEC $ENV{MPIEXEC} )
+        set( MPIEXEC $ENV{MPIEXEC} CACHE STRING "Program to execute MPI prallel programs." )
       endif()
 
       # Temporary work around until FindMPI.cmake is fixed:
