@@ -3,7 +3,7 @@
  * \file   ds++/XGetopt.hh
  * \author Katherine Wang
  * \date   Wed Nov 10 09:35:09 2010
- * \brief  Test functions defined in ds++/XGetopt.cc
+ * \brief  Command line argument handling similar to getopt.
  * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -14,6 +14,7 @@
 #ifndef rtt_dsxx_XGetopt_hh
 #define rtt_dsxx_XGetopt_hh
 
+#include "ds++/config.h"
 #include <string>
 #include <map>
 
@@ -118,11 +119,12 @@ namespace rtt_dsxx
  */
 //===========================================================================//
  
-extern int   optind;
-extern char *optarg;
+DLL_PUBLIC_dsxx extern int   optind;
+DLL_PUBLIC_dsxx extern char *optarg;
 
 typedef std::map< std::string, char> longopt_map;
 
+DLL_PUBLIC_dsxx 
 int getopt( int argc, char **& argv, std::string const & shortopts,
             longopt_map map = std::map<std::string, char>() );
 

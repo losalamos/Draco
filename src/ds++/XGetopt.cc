@@ -3,7 +3,7 @@
  * \file   ds++/XGetopt.cc
  * \author Katherine Wang
  * \date   Wed Nov 10 09:35:09 2010
- * \brief  Test functions defined in ds++/XGetopt.cc
+ * \brief  Command line argument handling similar to getopt.
  * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -36,80 +36,76 @@ int getopt( int argc, char **& argv, std::string const & shortopts,
             longopt_map map )
 {
     // convert argv into a vector<string>...
-    std::vector< std::string > options(argv, argv+argc);
+    std::vector< std::string > options( argv, argv + argc );
 
     // convert shortopts into vector<char> + vector<int>...
     std::vector< char> vshortopts;
     std::vector< int > vshortopts_hasarg; // map<char,bool>
-    for( size_t i=0; i<shortopts.size(); ++i )
+    for( size_t i = 0; i < shortopts.size(); ++i )
     {
-        vshortopts.push_back(shortopts[i]);
-        vshortopts_hasarg.push_back(0); // assume no required argument.
-        if( i+1 < shortopts.size() && shortopts[i+1] == std::string(":")[0] )
+        vshortopts.push_back( shortopts[ i ] );
+        vshortopts_hasarg.push_back( 0 ); // assume no required argument.
+        if( i + 1 < shortopts.size() && shortopts[ i + 1 ] == std::string( ":" )[ 0 ] )
         {
-           vshortopts_hasarg[i] = 1;
-           ++i;
+            vshortopts_hasarg[ i ] = 1;
+            ++i;
         }
     }
 
     // Look for command line arguments that match provided list:
-    for( ; optind<static_cast<int>(options.size()); ++optind )
+    for( ; optind < static_cast<int>( options.size() ); ++optind )
     {
-        //std::cout << optind << " :: " << options[optind];
         // stop processing command line arguments
-	if( options[optind] == std::string("--") )
+        if( options[ optind ] == std::string( "--" ) )
         {
             return -1;
         }
 
         // consider single letter options here.
-        for( size_t j=0; j<vshortopts.size(); ++j )
+        for( size_t j = 0; j < vshortopts.size(); ++j )
         {
-            if( options[optind] ==
-                std::string("-")+std::string(1,vshortopts[j]) )
+            if( options[ optind ] ==
+                std::string( "-" ) + std::string( 1, vshortopts[ j ] ) )
             {
-                
-                if( vshortopts_hasarg[j] == 1 )
+
+                if( vshortopts_hasarg[ j ] == 1 )
                 {
-                   ++optind;
-                   optarg = argv[optind];
-                 }
-                 ++optind;
-                 std::cout << std::endl;
-                 return vshortopts[j];
+                    ++optind;
+                    optarg = argv[ optind ];
+                }
+                ++optind;
+                std::cout << std::endl;
+                return vshortopts[ j ];
             }
-         }
+        }
 
-         // consider string-based optons here.
-	 if( options[optind].substr(0,2) == std::string("--") )
-	 {
-	    for( longopt_map::iterator it=map.begin(); it!=map.end(); ++it )
-       	    {
-               //std::cout << it->first << " :: " << it->second << std::endl; //?
-	   
-	       if( options[optind] == std::string("--")+(it->first))
-	       {
-                  // what is the short arg equivalent.
-	          size_t j(0);
-                  for( ; j<vshortopts.size(); ++j )
-		     if( std::string(1,vshortopts[j]) == std::string(1,it->second) ) 
-                        break;
+        // consider string-based optons here.
+        if( options[ optind ].substr( 0, 2 ) == std::string( "--" ) )
+        {
+            for( longopt_map::iterator it = map.begin(); it != map.end(); ++it )
+            {
+                if( options[ optind ] == std::string( "--" ) + ( it->first ) )
+                {
+                    // what is the short arg equivalent.
+                    size_t j( 0 );
+                    for( ; j < vshortopts.size(); ++j )
+                        if( std::string( 1, vshortopts[ j ] ) == std::string( 1, it->second ) )
+                            break;
 
-                  if( vshortopts_hasarg[j] == 1 )
-                  {
-                     ++optind;
-                     optarg = argv[optind];
-                   }
-                   ++optind;
-                   std::cout << std::endl;
-                   return vshortopts[j];
-                }    	
-      	       
+                    if( vshortopts_hasarg[ j ] == 1 )
+                    {
+                        ++optind;
+                        optarg = argv[ optind ];
+                    }
+                    ++optind;
+                    std::cout << std::endl;
+                    return vshortopts[ j ];
+                }
+
             }
 
         }
-        //std::cout << std::endl;
-    }    
+    }
 
     return -1;
 }
