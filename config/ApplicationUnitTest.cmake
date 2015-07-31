@@ -52,7 +52,7 @@
 
 include( parse_arguments )
 
-set( VERBOSE_DEBUG OFF )
+# set( VERBOSE_DEBUG OFF )
 
 ##---------------------------------------------------------------------------##
 ## Check values for $APP
@@ -155,6 +155,12 @@ macro( aut_register_test )
     set( DRACO_CONFIG_DIR ${Draco_SOURCE_DIR}/config )
   endif()
 
+  if( "${numPE}x" STREQUAL "x" )
+    set(num_procs 1)
+  else()
+    set(num_procs ${numPE} )
+  endif()
+
   if( VERBOSE_DEBUG )
     message("
   add_test(
@@ -170,12 +176,14 @@ macro( aut_register_test )
     -D GOLDFILE=${aut_GOLDFILE}
     -D RUN_CMD=${RUN_CMD}
     -D numPE=${numPE}
+    ${BUILDENV}
     -P ${aut_DRIVER}
     )
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION \"${aut_PASS_REGEX}\"
     FAIL_REGULAR_EXPRESSION \"${aut_FAIL_REGEX}\"
+    PROCESSORS              \"${num_procs}\"
     ${LABELS}
     )
 ")
@@ -194,13 +202,9 @@ macro( aut_register_test )
     -DGOLDFILE=${aut_GOLDFILE}
     -DRUN_CMD=${RUN_CMD}
     -DnumPE=${numPE}
+    ${BUILDENV}
     -P ${aut_DRIVER}
     )
-  if( "${numPE}x" STREQUAL "x" )
-    set(num_procs 1)
-  else()
-    set(num_procs ${numPE} )
-  endif()
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION "${aut_PASS_REGEX}"
@@ -220,7 +224,7 @@ macro( add_app_unit_test )
     # prefix
     aut
     # list names
-    "APP;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;STDINFILE;TEST_ARGS;WORKDIR"
+    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;STDINFILE;TEST_ARGS;WORKDIR"
     # RESOURCE_LOCK;RUN_AFTER"
     # option names
     "NONE"
@@ -283,6 +287,17 @@ macro( add_app_unit_test )
     endif()
   endif()
 
+  # Prove extra build environment to the cmake-scripted unit test
+  unset( BUILDENV )
+  if( DEFINED aut_BUILDENV )
+    # expect a semicolon delimited list of parameters.
+    # FOO=myvalue1;BAR=myvalue2
+    # translate this to -DF00=myvalue1 -DBAR=myvalue2
+    foreach(item ${aut_BUILDENV} )
+      list(APPEND BUILDENV "-D${item}" )
+    endforeach()
+  endif()
+
   # Create a name for the test
   get_filename_component( drivername   ${aut_DRIVER} NAME_WE )
   get_filename_component( package_name ${aut_DRIVER} PATH )
@@ -310,6 +325,9 @@ macro( add_app_unit_test )
             set( argname "_${numPE}_${safe_argvalue}" )
           endif()
           # Register the test...
+          if( VERBOSE_DEBUG )
+            message("aut_register_test(${ctestname_base}${argname})")
+          endif()
           aut_register_test()
         endforeach()
       endforeach()
@@ -326,6 +344,9 @@ macro( add_app_unit_test )
           set( argname "_${safe_argvalue}" )
         endif()
         # Register the test...
+        if( VERBOSE_DEBUG )
+          message("aut_register_test(${ctestname_base}${argname})")
+        endif()
         aut_register_test()
       endforeach()
     endif()
@@ -336,6 +357,9 @@ macro( add_app_unit_test )
     if( ${DRACO_C4} MATCHES "MPI" AND DEFINED aut_PE_LIST )
       foreach( numPE ${aut_PE_LIST} )
         set( argname "_${numPE}" )
+        if( VERBOSE_DEBUG )
+          message("aut_register_test(${ctestname_base}${argname})")
+        endif()
         aut_register_test()
       endforeach()
     endif()
@@ -468,6 +492,62 @@ ${exenumdiff} \\
   else()
     FAILMSG("gold does not match out.
 numdiff output = ${numdiffout}" )
+  endif()
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Run gdiff (Capsaicin)
+##
+## Usage:
+##    aut_gdiff(input_file)
+##---------------------------------------------------------------------------##
+macro( aut_gdiff infile )
+
+  # Sanity checks
+  # 1. Must be able to find gdiff.  Location is specified via
+  #    BUILDENV  "GDIFF=$<TARGET_FILE_DIR:Exe_gdiff>/$<TARGET_FILE_NAME:Exe_gdiff>"
+  # 2. Input file ($1) must exist
+
+  if( NOT EXISTS ${GDIFF} )
+    FAILMSG( "Could not find gdiff!  Did you list it when registering this test?" )
+  endif()
+  if( NOT EXISTS ${infile} )
+    FAILMSG( "Could not find gdiff!  Did you list it when registering this test?" )
+  endif()
+  if( numPE )
+    if( "${numPE}" GREATER "1" )
+      FAILMSG( "You can only run gdiff for scalar or ! PE tests!")
+    endif()
+  endif()
+
+  #----------------------------------------
+  message("
+Comparing output to goldfile via gdiff:
+   ${GDIFF} guajillo.ndi.2D.gdiff
+")
+  execute_process(
+    COMMAND ${GDIFF} ${infile}
+    RESULT_VARIABLE gdiffres
+    OUTPUT_VARIABLE gdiffout
+    ERROR_VARIABLE  gdifferror
+    )
+  if( ${gdiffres} STREQUAL 0 )
+    PASSMSG("gdiff returned 0.")
+  else()
+    FAILMSG("gdiff returned non-zero.")
+  endif()
+
+  # should be no occurance of "FAILED"
+  string(FIND "${gdiffout}" "FAILED" POS1)
+  # should be  at least one occurance of "passed"
+  string(FIND "${gdiffout}" "passed" POS2)
+
+  if( ${POS1} GREATER 0 OR ${POS2} EQUAL 0 )
+    # found failures or no passes.
+    FAILMSG( "Failed identical file check ( ${POS1}, ${POS2} )." )
+  else()
+    PASSMSG( "Passed identical file check ( ${POS1}, ${POS2} )." )
   endif()
 
 endmacro()
