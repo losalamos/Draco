@@ -106,7 +106,7 @@ macro( aut_setup )
   set( numfails  0 )
 
   if( VERBOSE_DEBUG )
-    message("Running tQueryEospac.cmake with the following parameters:")
+    message("Running with the following parameters:")
     message("   APP       = ${APP}
    BINDIR    = ${BINDIR}
    PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}
@@ -185,8 +185,11 @@ macro( aut_register_test )
     FAIL_REGULAR_EXPRESSION \"${aut_FAIL_REGEX}\"
     PROCESSORS              \"${num_procs}\"
     ${LABELS}
-    )
-")
+    )")
+    if( DEFINED aut_RESOURCE_LOCK )
+message("  set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES RESOURCE_LOCK \"${aut_RESOURCE_LOCK}\" )" )
+    endif()
   endif()
 
   add_test(
@@ -212,6 +215,12 @@ macro( aut_register_test )
     PROCESSORS              "${num_procs}"
     ${LABELS}
     )
+  if( DEFINED aut_RESOURCE_LOCK )
+    set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES
+      RESOURCE_LOCK "${aut_RESOURCE_LOCK}" )
+  endif()
+
   unset(num_procs)
 endmacro()
 
@@ -224,8 +233,8 @@ macro( add_app_unit_test )
     # prefix
     aut
     # list names
-    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;STDINFILE;TEST_ARGS;WORKDIR"
-    # RESOURCE_LOCK;RUN_AFTER"
+    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;STDINFILE;TEST_ARGS;WORKDIR"
+    # RUN_AFTER"
     # option names
     "NONE"
     ${ARGV}
@@ -373,6 +382,7 @@ macro( add_app_unit_test )
   unset( GOLDFILE  )
   unset( TEST_ARGS )
   unset( numPE )
+  unset( LABEL )
 
 endmacro()
 
@@ -390,6 +400,7 @@ macro( aut_runTests )
 # === CMake driven ApplicationUnitTest: ${TESTNAME}
 
   # Print version information
+  set( runcmd ${RUN_CMD} ) # plain string with spaces.
   separate_arguments(RUN_CMD)
   if( numPE )
     # Use 1 proc to run draco_info
@@ -422,7 +433,8 @@ macro( aut_runTests )
 
   if( DEFINED RUN_CMD )
     string( REPLACE ";" " " run_cmd_string "${RUN_CMD}" )
-    message(">>> Running: ${run_cmd_string} ${numPE} ${APP} ${ARGVALUE}")
+    message(">>> Running: ${run_cmd_string} ${numPE} ${APP}
+             ${ARGVALUE}")
   else()
     message(">>> Running: ${APP} ${ARGVALUE}" )
   endif()
