@@ -24,7 +24,13 @@ host=`uname -n`
 # fi
 
 export MOABHOMEDIR=/opt/MOAB
-export SHOWQ=/opt/MOAB/bin/showq
+extradirs="/opt/MOAB/bin /opt/MOAB/default/bin"
+for mydir in ${extradirs}; do
+   if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
+      export PATH=${PATH}:${mydir}
+   fi
+done
+export SHOWQ=`which showq`
 
 # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -51,13 +57,14 @@ if test "${logdir}x" = "x"; then
 fi
 
 # What queue should we use
-access_queue=""
-if test -x /opt/MOAB/bin/drmgroups; then
-   avail_queues=`/opt/MOAB/bin/drmgroups`
-   case $avail_queues in
-   *access*) access_queue="-A access" ;;
-   esac
-fi
+#access_queue=""
+#if test -x /opt/MOAB/bin/drmgroups; then
+#   avail_queues=`/opt/MOAB/bin/drmgroups`
+avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
+case $avail_queues in
+*access*) access_queue="-A access" ;;
+esac
+#fi
 
 # Banner
 echo "==========================================================================="
@@ -121,4 +128,3 @@ echo "All done."
 ##---------------------------------------------------------------------------##
 ## End of ml-job-launch.sh
 ##---------------------------------------------------------------------------##
-

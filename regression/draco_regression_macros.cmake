@@ -294,19 +294,12 @@ macro( parse_args )
      else()
         set( compiler_short_name "intel-${compiler_version}" )
      endif()
-  elseif($ENV{CXX} MATCHES "xt-asyncpe" )
-     # Ceilo (catamount) uses a wrapper script
-     # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
-     # compiler.  Use the following command to determine the actual
-     # compiler flavor before setting compiler flags (end of this
-     # macro).
-     execute_process(
-        COMMAND $ENV{CXX} --version
-        OUTPUT_VARIABLE my_cxx_compiler
-        ERROR_QUIET )
-     if( ${my_cxx_compiler} MATCHES "icpc")
+  elseif( DEFINED ENV{PE_ENV} )
+     # Ceilo and Trinity (catamount) define this variable to define
+     # the flavor of the PrgEnv module currently laoded.
+     if( $ENV{PE_ENV} MATCHES "INTEL")
         set( compiler_short_name "intel" )
-     elseif( ${my_cxx_compiler} MATCHES "pgCC")
+     elseif( $ENV{PE_ENV} MATCHES "PGI")
         set( compiler_short_name "pgi" )
      endif()
      if( ${work_dir} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
