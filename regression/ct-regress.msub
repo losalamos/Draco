@@ -101,17 +101,17 @@ for dir in $moddirs; do
   fi
 done
 
+# Clean up old environment
+run "module unload cmake numdiff svn"
+run "module unload gsl lapack random123 eospac"
+run "module unload trilinos SuperLU_DIST ParMetis ndi"
 run "module unload PrgEnv-intel PrgEnv-pgi"
-run "module unload cmake numdiff svn gsl"
-run "module load user_contrib"
-run "module load cmake/3.3.0"
+# Load new environment
 run "module load PrgEnv-intel"
-run "module load gsl/1.15 lapack"
-run "module load numdiff svn"
-run "module load trilinos SuperLU_DIST"
-run "module load random123"
-run "module load eospac"
-run "module load ParMetis ndi"
+run "module load user_contrib"
+run "module load cmake/3.3.0 numdiff svn"
+run "module load gsl/1.15 lapack random123 eospac"
+run "module load trilinos SuperLU_DIST ParMetis ndi"
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
