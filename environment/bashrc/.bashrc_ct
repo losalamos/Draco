@@ -39,7 +39,8 @@ module unload xt-libsci xt-totalview intel
 
 # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
 # module load gcc
-module load intel/14.0.4.211
+#module load intel/14.0.4.211
+module load intel/15.0.3
 
 # draco modules start here.
 module load gsl/1.15 lapack/3.5.0

@@ -50,7 +50,8 @@ else
     # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
     # export IGNOREMODULECONFLICTS=1
     # module load gcc/4.8.2 intel/14.0.4 openmpi
-    module load intel/14.0.4 openmpi
+    #module load intel/14.0.4 openmpi
+    module load intel/15.0.3 openmpi
     # other vendor libraries
     module load lapack/3.5.0 trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
