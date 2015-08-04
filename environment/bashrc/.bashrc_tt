@@ -25,15 +25,21 @@ fi
 # MODULES
 #
 
+# Work-around to add hpssoft modulefile directories to the avail command:
+dirs="compiler debugger libraries misc tools"
+for dir in $dirs; do
+  if test -d /usr/projects/hpcsoft/cle5.2/modulefiles/trinitite/$dir; then
+      module use /usr/projects/hpcsoft/cle5.2/modulefiles/trinitite/$dir
+  fi
+done
+
+module load friendly-testing user_contrib
+module load python-epd totalview
+# broken as of 2015-08-04:
+# module load hsi emacs
+
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
-#if test -d $HOME/modulefiles/trinitite; then
-#  module use $HOME/modulefiles/trinitite
-#fi
-if test -d /usr/projects/packages/user_contrib/modulefiles/trinitite; then
-  module use /usr/projects/packages/user_contrib/modulefiles/trinitite
-fi
-# module load friendly-testing user_contrib
 
 # Move some environment out of the way.
 module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray
@@ -49,7 +55,6 @@ module unload xt-libsci xt-totalview
 
 # draco modules start here.
 module load gsl eospac/6.2.4 lapack
-# module load emacs
 module load trilinos SuperLU_DIST ParMetis
 module load random123
 module load cmake/3.3.0 numdiff ndi svn
