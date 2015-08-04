@@ -41,11 +41,15 @@ endif()
 # ----------------------------------------
 if( "${HAVE_MIC}x" STREQUAL "x" )
 
+  # default to OFF
+  set( HAVE_MIC OFF)
+
   # This was the old mechanism.  It fails to work because we might be
   # targeting a haswell node that also has MIC processors. Still, we
   # might want to use this in the future to determine if MICs are on
   # the local node.
   message( STATUS "Looking for availability of MIC hardware")
+  set( mic_found FALSE )
   if( EXISTS /usr/sbin/micctrl )
     exec_program(
       /usr/sbin/micctrl
@@ -59,32 +63,31 @@ if( "${HAVE_MIC}x" STREQUAL "x" )
       # If we areusing MIC, then disable CUDA.
       # set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
       set( mic_found TRUE )
-      message( STATUS "Looking for availability of MIC hardware - found")
-    else()
-      set( mic_found FALSE )
-      message( STATUS "Looking for availability of MIC hardware - not found")
     endif()
   endif()
+  if( mic_found )
+    message( STATUS "Looking for availability of MIC hardware - found")
+  else()
+    message( STATUS "Looking for availability of MIC hardware - not found")
+  endif()
 
-  # Should we cross compile for the MIC?
-  # Look at the environment variable SLURM_JOB_PARTITION to determine
-  # if we should cross compile for the MIC processor.
-  message(STATUS "Enable cross compiling for MIC ...")
-  # default to OFF
-  set( HAVE_MIC OFF)
   if( ${mic_found} )
+    # Should we cross compile for the MIC?
+    # Look at the environment variable SLURM_JOB_PARTITION to determine
+    # if we should cross compile for the MIC processor.
+    message(STATUS "Enable cross compiling for MIC (HAVE_MIC) ...")
     # See https://darwin.lanl.gov/darwin_hw/report.html for a list
     # of string designators used as partition names:
     if( NOT "$ENV{SLURM_JOB_PARTITION}x" STREQUAL "x" AND "$ENV{SLURM_JOB_PARTITION}" STREQUAL "knc-mic")
       set( HAVE_MIC ON )
       set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
     endif()
-  endif()
 
-  # Store the result in the cache.
-  set( HAVE_MIC ${HAVE_MIC} CACHE BOOL "Should we cross compile for the MIC processor?" )
-  message(STATUS "Enable cross compiling for MIC ... ${HAVE_MIC}")
-  unset( mic_found)
+    # Store the result in the cache.
+    set( HAVE_MIC ${HAVE_MIC} CACHE BOOL "Should we cross compile for the MIC processor?" )
+    message(STATUS "Enable cross compiling for MIC (HAVE_MIC) ... ${HAVE_MIC}")
+    unset( mic_found)
+  endif()
 
 endif()
 
