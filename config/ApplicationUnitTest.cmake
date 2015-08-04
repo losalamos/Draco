@@ -522,10 +522,12 @@ macro( aut_gdiff infile )
   # 2. Input file ($1) must exist
 
   if( NOT EXISTS ${GDIFF} )
-    FAILMSG( "Could not find gdiff!  Did you list it when registering this test?" )
+    FAILMSG( "Could not find gdiff!  Did you list it when registering this test?
+GDIFF = ${GDIFF}" )
   endif()
   if( NOT EXISTS ${infile} )
-    FAILMSG( "Could not find gdiff!  Did you list it when registering this test?" )
+    FAILMSG( "Could not find specified intput file (${infile})!
+Did you list it when registering this test?" )
   endif()
   if( numPE )
     if( "${numPE}" GREATER "1" )
