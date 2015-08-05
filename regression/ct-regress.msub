@@ -101,6 +101,8 @@ for dir in $moddirs; do
   fi
 done
 
+run "module load friendly-testing user_contrib"
+
 # Clean up old environment
 run "module unload cmake numdiff svn"
 run "module unload gsl lapack random123 eospac"
@@ -109,7 +111,6 @@ run "module unload PrgEnv-intel PrgEnv-pgi"
 # Load new environment
 run "module load PrgEnv-intel"
 run "module swap intel intel/15.0.3"
-run "module load user_contrib"
 run "module load cmake/3.3.0 numdiff svn"
 run "module load gsl/1.15 lapack random123 eospac"
 run "module load trilinos SuperLU_DIST ParMetis ndi"
