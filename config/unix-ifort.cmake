@@ -18,6 +18,8 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 #
 if( NOT Fortran_FLAGS_INITIALIZED )
   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+  set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
+    STRING "Fortran compiler version string" FORCE )
 
   # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is
   #    issued when '-ip' is turned on and a library has no symbols (this
