@@ -35,7 +35,7 @@ using rtt_c4::blocking_probe;
 void blocking_ping_pong( rtt_dsxx::UnitTest & ut )
 {
     if (rtt_c4::nodes() != 2) return;
-    
+
     char   c = 0;
     int    i = 0;
     long   l = 0;
@@ -52,9 +52,9 @@ void blocking_ping_pong( rtt_dsxx::UnitTest & ut )
         d = 2.5;
 
         // send out data
-        // Test both active and depricated forms of the send command. 
+        // Test both active and depricated forms of the send command.
         send(&c, 1, 1);
-        send(&i, 1, 1);  
+        send(&i, 1, 1);
         send(&l, 1, 1);
         send(&f, 1, 1);
         send(&d, 1, 1);
@@ -62,7 +62,7 @@ void blocking_ping_pong( rtt_dsxx::UnitTest & ut )
         // receive back
         // Test both active and depricated forms of the receive command.
         receive(&c, 1, 1);
-        receive(&i, 1, 1); 
+        receive(&i, 1, 1);
         receive(&l, 1, 1);
         receive(&f, 1, 1);
         receive(&d, 1, 1);
@@ -166,7 +166,7 @@ void non_blocking_ping_pong( rtt_dsxx::UnitTest & ut )
        l = 1000;
        f = 1.5;
        d = 2.5;
-      
+
        // send out data
        // Test two forms of the send_async command plus one deprecated
        // form (namespace C4::)
@@ -191,7 +191,7 @@ void non_blocking_ping_pong( rtt_dsxx::UnitTest & ut )
        drr.wait();
 
 
-       // check values       
+       // check values
        if (cr != 'B')             ITFAILS;
        if (ir != 2)               ITFAILS;
        if (lr != 2000)            ITFAILS;
@@ -203,7 +203,7 @@ void non_blocking_ping_pong( rtt_dsxx::UnitTest & ut )
        if (lrr.count() != sizeof(long))   ITFAILS;
        if (frr.count() != sizeof(float))  ITFAILS;
        if (drr.count() != sizeof(double)) ITFAILS;
-      
+
    }
 
    // receive and send on node 1
@@ -304,7 +304,7 @@ void tstC4_Req_free()
    // receive requests
    C4_Req crr;
    char cr = 0;
-   
+
    // assign on node 0
    if (rtt_c4::node() == 0)
    {
@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
     try
     {
-        std::cout << "This is " << rtt_c4::get_processor_name() << std::endl;        
+        std::cout << "This is " << rtt_c4::get_processor_name() << std::endl;
 
         Insist(rtt_c4::nodes() == 2, "This designed is designed for exactly 2 Processors.");
 
@@ -410,7 +410,7 @@ int main(int argc, char *argv[])
         tstC4_Req_free();
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstPingPong.cc

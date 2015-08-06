@@ -17,22 +17,27 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 # Compiler flags:
 #
 if( NOT Fortran_FLAGS_INITIALIZED )
-   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+  set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+  set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
+    STRING "Fortran compiler version string" FORCE )
 
-   set( CMAKE_Fortran_FLAGS                "-warn  -fpp -implicitnone" )
-   set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -traceback -ftrapuv -check -DDEBUG" )
-   set( CMAKE_Fortran_FLAGS_RELEASE        "-O2 -inline-level=2 -fp-speculation fast -fp-model fast -align array32byte -openmp-report0 -funroll-loops -DNDEBUG" )
-   set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
-   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O2 -inline-level=2 -openmp-report0 -inline-level=2 -funroll-loops -DDEBUG" )
+  # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is
+  #    issued when '-ip' is turned on and a library has no symbols (this
+  #    occurs when capsaicin links some trilinos libraries.)
+  set( CMAKE_Fortran_FLAGS                "-warn  -fpp -implicitnone -diag-disable 11060" )
+  set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -traceback -ftrapuv -check -DDEBUG" )
+  set( CMAKE_Fortran_FLAGS_RELEASE        "-O2 -inline-level=2 -fp-speculation fast -fp-model fast -align array32byte -openmp-report0 -funroll-loops -DNDEBUG" )
+  set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
+  set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O2 -inline-level=2 -openmp-report0 -inline-level=2 -funroll-loops -DDEBUG" )
 
-   # For older versions of ifort, suppress remarks about vectorization.
-   # Note: CMAKE_Fortran_COMPILER_VERSION is not available as of CMake/3.0.0.  We will assume that
-   # we are using a Fortran compiler that is from the same flavor and version as the selected C++
-   # compiler.
-   if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 15 )
-     set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE} -vec-report0 -par-report0")
-     set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} -vec-report0 -par-report0")
-   endif()
+  # For older versions of ifort, suppress remarks about vectorization.
+  # Note: CMAKE_Fortran_COMPILER_VERSION is not available as of CMake/3.0.0.  We will assume that
+  # we are using a Fortran compile1r that is from the same flavor and version as the selected C++
+  # compiler.
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 15 )
+    set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE} -vec-report0 -par-report0")
+    set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO} -vec-report0 -par-report0")
+  endif()
 
 endif()
 

@@ -26,20 +26,17 @@ include_directories(
 # Build binaries
 # ---------------------------------------------------------------------------- #
 
-add_executable( Exe_testCrashHandler ${PROJECT_SOURCE_DIR}/testCrashHandler.cc )
-target_link_libraries( Exe_testCrashHandler Lib_dsxx  )
-set_target_properties( Exe_testCrashHandler
-   PROPERTIES
-      OUTPUT_NAME testCrashHandler
-      VS_KEYWORD  testCrashHandler
-      FOLDER      dsxx_test
-)
-copy_dll_link_libraries_to_build_dir( Exe_testCrashHandler )
+add_component_executable(
+  TARGET      Exe_testCrashHandler
+  TARGET_DEPS Lib_dsxx
+  SOURCES     ${PROJECT_SOURCE_DIR}/testCrashHandler.cc
+  PREFIX       Draco
+  )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Exe_testCrashHandler DESTINATION ${DBSCFGDIR}bin )
+install( TARGETS Exe_testCrashHandler EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 
 endif() # WIN32

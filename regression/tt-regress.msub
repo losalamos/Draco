@@ -1,7 +1,7 @@
 #!/bin/bash -l
 
 #MSUB -l walltime=08:00:00
-#MSUB -l nodes=1:ppn=16
+#MSUB -l nodes=1:ppn=32
 
 #----------------------------------------------------------------------#
 # The script starts here
@@ -49,21 +49,15 @@ run () {
     if ! [ $dry_run ]; then eval $1; fi
 }
 
-# work around: the CT batch system is appending $regdir with the
-# string "NACCESSPOLICY=singlejob" (change.lanl.gov ticket #72119).
-# Strip this string to allow the job to run:
-# regdir=`echo $regdir | sed -e 's/NACCESS.*//'`
-# subproj=`echo $subproj | sed -e 's/NACCESS.*//'`
-
 machine=`uname -n`
 case $machine in
-ct-login[0-9].localdomain)
+tt-login[0-9].localdomain)
     ctestparts=Test
     # Force create of a new log file (don't append)
-    echo "Purging ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log"
-    echo "    " > ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log
+    echo "Purging ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-t.log"
+    echo "    " > ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-t.log
     ;;
-ct-fe1*)
+tt-fe*)
     if test "${mode}" = "cb"; then
        ctestparts=Configure,Build
     elif test "${mode}" = "s"; then
@@ -76,8 +70,8 @@ ct-fe1*)
 esac
 
 echo "==========================================================================="
-echo "Cielito regression: ${ctestparts} from ${machine}."
-echo "                    ${subproj}-${build_type}${epdash}${extra_params}"
+echo "Trinitite regression: ${ctestparts} from ${machine}."
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
 
 # Modules
@@ -94,31 +88,29 @@ else
     }
 fi
 
-moddirs="Modules/hpc"
+moddirs="${VENDOR_DIR}/Modules/hpc /usr/projects/packages/user_contrib/modulefiles/trinitite"
 for dir in $moddirs; do
   if test -z `echo $MODULEPATH | grep $dir`; then
-    run "module use ${VENDOR_DIR}/$dir"
+    run "module use $dir"
   fi
 done
 
-run "module load friendly-testing user_contrib"
-
-# Clean up old environment
-run "module unload cmake numdiff svn"
-run "module unload gsl lapack random123 eospac"
-run "module unload trilinos SuperLU_DIST ParMetis ndi"
-run "module unload PrgEnv-intel PrgEnv-pgi"
-# Load new environment
+run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
+run "module unload cmake numdiff gsl papi perftools trilinos"
+#run "module load user_contrib"
+run "module load cmake/3.3.0 svn"
 run "module load PrgEnv-intel"
-run "module swap intel intel/15.0.3"
-run "module load cmake/3.3.0 numdiff svn"
-run "module load gsl/1.15 lapack random123 eospac"
-run "module load trilinos SuperLU_DIST ParMetis ndi"
+run "module load gsl lapack"
+run "module load numdiff"
+run "module load trilinos SuperLU_DIST"
+run "module load random123"
+run "module load eospac"
+run "module load ParMetis ndi"
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
 comp=CC
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=16
 
 # Extra parameers
 case $extra_params in
@@ -134,7 +126,7 @@ case $extra_params in
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
-    echo "the regression system (edit ct-regress.msub)."
+    echo "the regression system (edit tt-regress.msub)."
     exit 1
     ;;
 esac
@@ -159,14 +151,14 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Experimental
 fi
 if test "${base_dir}x" = "x"; then
-    # base_dir=${regdir}/cdash/ct
+    # base_dir=${regdir}/cdash/tt
 
     # There is a bug with how CI/CT mount NFS files spaces (Gabe
     # R. has an open ticket for this).  Basically, recursively
     # deleting a directory with data and imediately recreating that
     # structure will not work correctly (meta data issue?)  Thus,
     # build and target directories will be in the scratch directory.
-    scratch_dir=/lscratch1/${USER}/cdash/ct
+    scratch_dir=/scratch1/${USER}/cdash/tt
     mkdir -p $scratch_dir
     if ! test -d ${scratch_dir}; then
       echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
@@ -175,18 +167,18 @@ if test "${base_dir}x" = "x"; then
     if test "${regress_mode}" = "off"; then
       base_dir=${scratch_dir}
     else
-      base_dir=/usr/projects/jayenne/regress/cdash/ct
+      base_dir=/usr/projects/jayenne/regress/cdash/tt
     fi
 fi
 
 echo " "
-echo "ct-regress.msub: dashboard_type = $dashboard_type"
-echo "ct-regress.msub: base_dir       = $base_dir"
-echo "ct-regress.msub: build_type     = $build_type"
-echo "ct-regress.msub: comp           = $comp"
-echo "ct-regress.msub: machine        = $machine"
-echo "ct-regress.msub: subproj        = $subproj"
-echo "ct-regress.msub: regdir         = $regdir"
+echo "tt-regress.msub: dashboard_type = $dashboard_type"
+echo "tt-regress.msub: base_dir       = $base_dir"
+echo "tt-regress.msub: build_type     = $build_type"
+echo "tt-regress.msub: comp           = $comp"
+echo "tt-regress.msub: machine        = $machine"
+echo "tt-regress.msub: subproj        = $subproj"
+echo "tt-regress.msub: regdir         = $regdir"
 
 #----------------------------------------------------------------------#
 # CTest
@@ -213,8 +205,8 @@ fi
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 
-echo "ct-regress.msub: work_dir       = ${work_dir}"
-echo "ct-regress.msub: scratch_dir    = ${scratch_dir}"
+echo "tt-regress.msub: work_dir       = ${work_dir}"
+echo "tt-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
 if test "${ctestparts}" = "Configure,Build"; then
    if ! test -d ${work_dir}/source; then

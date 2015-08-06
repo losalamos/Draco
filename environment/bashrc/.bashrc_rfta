@@ -44,7 +44,7 @@ else
 
     module use $VENDOR_DIR/Modules/hpc
     module use $VENDOR_DIR/Modules/tu-fe
-    module load svn numdiff git hsi-htar psi
+    module load svn numdiff git hsi psi
 
 fi
 

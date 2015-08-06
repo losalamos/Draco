@@ -41,7 +41,15 @@ endif()
 # ----------------------------------------
 if( "${HAVE_MIC}x" STREQUAL "x" )
 
-  message( STATUS "Looking for micctrl")
+  # default to OFF
+  set( HAVE_MIC OFF)
+
+  # This was the old mechanism.  It fails to work because we might be
+  # targeting a haswell node that also has MIC processors. Still, we
+  # might want to use this in the future to determine if MICs are on
+  # the local node.
+  message( STATUS "Looking for availability of MIC hardware")
+  set( mic_found FALSE )
   if( EXISTS /usr/sbin/micctrl )
     exec_program(
       /usr/sbin/micctrl
@@ -51,16 +59,34 @@ if( "${HAVE_MIC}x" STREQUAL "x" )
       OUTPUT_QUIET
       )
     if( mic_status MATCHES online )
-      set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
+      # set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
       # If we areusing MIC, then disable CUDA.
-      set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
-      message( STATUS "Looking for micctrl - knights corner found")
+      # set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
+      set( mic_found TRUE )
     endif()
   endif()
+  if( mic_found )
+    message( STATUS "Looking for availability of MIC hardware - found")
+  else()
+    message( STATUS "Looking for availability of MIC hardware - not found")
+  endif()
 
-  if( NOT HAVE_MIC )
-    set( HAVE_MIC OFF CACHE BOOL "Does the local machine have MIC chips?" )
-    message( STATUS "Looking for micctrl - knights corner not found")
+  if( ${mic_found} )
+    # Should we cross compile for the MIC?
+    # Look at the environment variable SLURM_JOB_PARTITION to determine
+    # if we should cross compile for the MIC processor.
+    message(STATUS "Enable cross compiling for MIC (HAVE_MIC) ...")
+    # See https://darwin.lanl.gov/darwin_hw/report.html for a list
+    # of string designators used as partition names:
+    if( NOT "$ENV{SLURM_JOB_PARTITION}x" STREQUAL "x" AND "$ENV{SLURM_JOB_PARTITION}" STREQUAL "knc-mic")
+      set( HAVE_MIC ON )
+      set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
+    endif()
+
+    # Store the result in the cache.
+    set( HAVE_MIC ${HAVE_MIC} CACHE BOOL "Should we cross compile for the MIC processor?" )
+    message(STATUS "Enable cross compiling for MIC (HAVE_MIC) ... ${HAVE_MIC}")
+    unset( mic_found)
   endif()
 
 endif()
@@ -410,7 +436,7 @@ endmacro()
 ## Toggle a compiler flag based on a bool
 ##
 ## Examples:
-##   toggle_compiler_flag( USE_OPENMP         "-fopenmp"   "C;CXX;EXE_LINKER" "")
+##   toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG" )
 ##---------------------------------------------------------------------------##
 macro( toggle_compiler_flag switch compiler_flag
     compiler_flag_var_names build_modes )

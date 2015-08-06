@@ -50,6 +50,212 @@ if( HAVE_MIC )
 endif()
 
 #------------------------------------------------------------------------------
+# replacement for built in command 'add_executable'
+#
+# Purpose 1: In addition to adding an executable built from $sources, set
+# Draco-specific properties for the library.  This macro reduces ~20
+# lines of code repeated code down to 1-2.
+#
+# Purpose 2: Encapsulate library and vendor library dependencies per
+# package.
+#
+# Purpose 3: Use information from 1 and 2 above to generate exported
+# targets.
+#
+# Usage:
+#
+# add_component_executable(
+#   TARGET       "target name"
+#   EXE_NAME     "output executable name"
+#   TARGET_DEPS  "dep1;dep2;..."
+#   PREFIX       "ClubIMC"
+#   SOURCES      "file1.cc;file2.cc;..."
+#   VENDOR_LIST  "MPI;GSL"
+#   VENDOR_LIBS  "${MPI_CXX_LIBRARIES};${GSL_LIBRARIES}"
+#   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_DIR};${GSL_INCLUDE_DIR}"
+#   FOLDER       "myfolder"
+#   PROJECT_LABEL "myproject42"
+#   NOEXPORT        - do not export target or dependencies to draco-config.cmake
+#   NOCOMMANDWINDOW - On win32, do not create a command window (qt)
+#   )
+#
+# Example:
+#
+# add_component_executable(
+#   TARGET       Exe_draco_info
+#   EXE_NAME     draco_info
+#   TARGET_DEPS  Lib_diagnostics
+#   PREFIX       Draco
+#   SOURCES      "${PROJECT_SOURCE_DIR}/draco_info_main.cc"
+#   FOLDER       diagnostics
+#   )
+#------------------------------------------------------------------------------
+macro( add_component_executable )
+
+  # These become variables of the form ${ace_NAME}, etc.
+  parse_arguments(
+    # prefix
+    ace
+    # list names
+    "PREFIX;TARGET;EXE_NAME;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
+    # option names
+    "NOEXPORT;NOCOMMANDWINDOW"
+    ${ARGV}
+    )
+
+  # Prefix for export
+  if( NOT DEFINED ace_PREFIX AND NOT DEFINED ace_NOEXPORT)
+    message( FATAL_ERROR
+      "add_component_executable requires a PREFIX value to allow EXPORT of this target
+or the target must be labeled NOEXPORT.")
+  endif()
+
+  # Default link language is C++
+  if( "${ace_LINK_LANGUAGE}x" STREQUAL "x" )
+    set( ace_LINK_LANGUAGE CXX )
+  endif()
+
+  if( NOT DEFINED ace_EXE_NAME )
+    string( REPLACE "Exe_" "" ace_EXE_NAME ${ace_TARGET} )
+  endif()
+
+  #
+  # Create the library and set the properties
+  #
+
+  # Set the component name: If registered from a test directory, extract
+  # the parent's name.
+  get_filename_component( ldir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
+  if( ${ldir} STREQUAL "test")
+    get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
+    get_filename_component( comp_target ${comp_target} NAME )
+    set( comp_target ${comp_target}_test )
+  elseif( ${ldir} STREQUAL "bin" )
+    get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
+    get_filename_component( comp_target ${comp_target} NAME )
+  else()
+    get_filename_component( comp_target ${CMAKE_CURRENT_SOURCE_DIR} NAME )
+  endif()
+  # Make the name safe: replace + with x
+  string( REGEX REPLACE "[+]" "x" comp_target ${comp_target} )
+  # Set the folder name:
+  if( NOT DEFINED ace_FOLDER )
+    set( ace_FOLDER ${comp_target} )
+  endif()
+
+  if( WIN32 AND ace_NOCOMMANDWINDOW )
+    # The Win32 option prevents the command console from activating while the GUI is running.
+    add_executable( ${ace_TARGET} WIN32 ${ace_SOURCES} )
+  else()
+    add_executable( ${ace_TARGET} ${ace_SOURCES} )
+  endif()
+
+  set_target_properties( ${ace_TARGET} PROPERTIES
+    OUTPUT_NAME ${ace_EXE_NAME}
+    FOLDER      ${ace_FOLDER}
+    )
+  if( DEFINED ace_PROJECT_LABEL )
+    set_target_properties( ${ace_TARGET} PROPERTIES PROJECT_LABEL ${ace_PROJECT_LABEL} )
+  endif()
+
+  #
+  # Generate properties related to library dependencies
+  #
+  if( DEFINED ace_TARGET_DEPS )
+    target_link_libraries( ${ace_TARGET} ${ace_TARGET_DEPS} )
+  endif()
+  if( DEFINED ace_VENDOR_LIBS )
+    target_link_libraries( ${ace_TARGET} ${ace_VENDOR_LIBS} )
+  endif()
+  if( DEFINED ace_VENDOR_INCLUDE_DIRS )
+    include_directories( ${ace_VENDOR_INCLUDE_DIRS} )
+  endif()
+
+  #
+  # Register the library for exported library support
+  #
+
+  # Find target file name and location
+  get_target_property( impname ${ace_TARGET} OUTPUT_NAME )
+
+  # the above command returns the location in the build tree.  We
+  # need to convert this to the install location.
+  # get_filename_component( imploc ${imploc} NAME )
+  if( ${DRACO_SHARED_LIBS} )
+    set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${impname}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
+  else()
+    set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${impname}${CMAKE_STATIC_LIBRARY_SUFFIX}" )
+  endif()
+
+  set( ilil "")
+  if( "${ace_TARGET_DEPS}x" STREQUAL "x" AND  "${ace_VENDOR_LIBS}x" STREQUAL "x")
+    # do nothing
+  elseif( "${ace_TARGET_DEPS}x" STREQUAL "x" )
+    set( ilil "${ace_VENDOR_LIBS}" )
+  elseif( "${ace_VENDOR_LIBS}x" STREQUAL "x")
+    set( ilil "${ace_TARGET_DEPS}" )
+  else()
+    set( ilil "${ace_TARGET_DEPS};${ace_VENDOR_LIBS}" )
+  endif()
+
+  # For non-test libraries, save properties to the project-config.cmake file
+  if( "${ilil}x" STREQUAL "x" )
+    set( ${ace_PREFIX}_EXPORT_TARGET_PROPERTIES
+      "${${ace_PREFIX}_EXPORT_TARGET_PROPERTIES}
+    set_target_properties(${ace_TARGET} PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES \"${ace_LINK_LANGUAGE}\"
+      INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/${DBSCFGDIR}include\" )
+    ")
+  else()
+    set( ${ace_PREFIX}_EXPORT_TARGET_PROPERTIES
+      "${${ace_PREFIX}_EXPORT_TARGET_PROPERTIES}
+    set_target_properties(${ace_TARGET} PROPERTIES
+      IMPORTED_LINK_INTERFACE_LANGUAGES \"${ace_LINK_LANGUAGE}\"
+      INTERFACE_INCLUDE_DIRECTORIES     \"${CMAKE_INSTALL_PREFIX}/${DBSCFGDIR}include\" )
+  ")
+  endif()
+
+  # Only publish information to draco-config.cmake for non-test
+  # libraries.  Also, omit any libraries that are marked as NOEXPORT
+  if( NOT ${ace_NOEXPORT} AND
+      NOT "${CMAKE_CURRENT_SOURCE_DIR}" MATCHES "test" )
+
+    list( APPEND ${ace_PREFIX}_EXECUTABLES ${ace_TARGET} )
+    list( APPEND ${ace_PREFIX}_TPL_LIST ${ace_VENDOR_LIST} )
+    list( APPEND ${ace_PREFIX}_TPL_INCLUDE_DIRS ${ace_VENDOR_INCLUDE_DIRS} )
+    list( APPEND ${ace_PREFIX}_TPL_LIBRARIES ${ace_VENDOR_LIBS} )
+    if( ${ace_PREFIX}_TPL_INCLUDE_DIRS )
+      list( REMOVE_DUPLICATES ${ace_PREFIX}_TPL_INCLUDE_DIRS )
+    endif()
+    if( ${ace_PREFIX}_TPL_LIBRARIES )
+      list( REMOVE_DUPLICATES ${ace_PREFIX}_TPL_LIBRARIES )
+    endif()
+    if( ${ace_PREFIX}_TPL_LIST )
+      list( REMOVE_DUPLICATES ${ace_PREFIX}_TPL_LIST )
+    endif()
+    if( ${ace_PREFIX}_EXECUTABLES )
+      list( REMOVE_DUPLICATES ${ace_PREFIX}_EXECUTABLES )
+    endif()
+
+    set( ${ace_PREFIX}_EXECUTABLES "${${ace_PREFIX}_EXECUTABLES}"  CACHE INTERNAL "List of component targets" FORCE)
+    set( ${ace_PREFIX}_TPL_LIST "${${ace_PREFIX}_TPL_LIST}"  CACHE INTERNAL
+      "List of third party libraries known by ${ace_PREFIX}" FORCE)
+    set( ${ace_PREFIX}_TPL_INCLUDE_DIRS "${${ace_PREFIX}_TPL_INCLUDE_DIRS}"  CACHE
+      INTERNAL "List of include paths used by ${ace_PREFIX} to find thrid party vendor header files."
+      FORCE)
+    set( ${ace_PREFIX}_TPL_LIBRARIES "${${ace_PREFIX}_TPL_LIBRARIES}"  CACHE INTERNAL
+      "List of third party libraries used by ${ace_PREFIX}." FORCE)
+    set( ${ace_PREFIX}_EXPORT_TARGET_PROPERTIES
+      "${${ace_PREFIX}_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
+
+  endif()
+
+  # If Win32, copy dll files into binary directory.
+  copy_dll_link_libraries_to_build_dir( ${ace_TARGET} )
+
+endmacro()
+
+#------------------------------------------------------------------------------
 # replacement for built in command 'add_library'
 #
 # Purpose 1: In addition to adding a library built from $sources, set
@@ -74,6 +280,7 @@ endif()
 #   VENDOR_LIST  "MPI;GSL"
 #   VENDOR_LIBS  "${MPI_CXX_LIBRARIES};${GSL_LIBRARIES}"
 #   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_DIR};${GSL_INCLUDE_DIR}"
+#   NOEXPORT
 #   )
 #
 # Example:
@@ -110,12 +317,13 @@ macro( add_component_library )
   if( "${acl_LIBRARY_NAME_PREFIX}x" STREQUAL "x" )
     set( acl_LIBRARY_NAME_PREFIX "rtt_" )
   endif()
+  # Default link language is C++
   if( "${acl_LINK_LANGUAGE}x" STREQUAL "x" )
     set( acl_LINK_LANGUAGE CXX )
   endif()
 
   #
-  # Create the Library and set the Properties
+  # Create the library and set the properties
   #
 
   # This is a test library.  Find the component name
@@ -125,7 +333,7 @@ macro( add_component_library )
 
   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
   set_target_properties( ${acl_TARGET} PROPERTIES
-    ${compdefs}
+    # ${compdefs}
     # Use custom library naming
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}
@@ -194,42 +402,42 @@ macro( add_component_library )
   ")
   endif()
 
-# Only publish information to draco-config.cmake for non-test
-# libraries.  Also, omit any libraries that are marked as NOEXPORT
-if( NOT ${acl_NOEXPORT} AND
-    NOT "${acl_TARGET}" MATCHES "test" )
+  # Only publish information to draco-config.cmake for non-test
+  # libraries.  Also, omit any libraries that are marked as NOEXPORT
+  if( NOT ${acl_NOEXPORT} AND
+      NOT "${acl_TARGET}" MATCHES "test" )
 
-  list( APPEND ${acl_PREFIX}_LIBRARIES ${acl_TARGET} )
-  string( REPLACE "Lib_" "" compname ${acl_TARGET} )
-  list( APPEND ${acl_PREFIX}_PACKAGE_LIST ${compname} )
+    list( APPEND ${acl_PREFIX}_LIBRARIES ${acl_TARGET} )
+    string( REPLACE "Lib_" "" compname ${acl_TARGET} )
+    list( APPEND ${acl_PREFIX}_PACKAGE_LIST ${compname} )
 
-  list( APPEND ${acl_PREFIX}_TPL_LIST ${acl_VENDOR_LIST} )
-  list( APPEND ${acl_PREFIX}_TPL_INCLUDE_DIRS ${acl_VENDOR_INCLUDE_DIRS} )
-  list( APPEND ${acl_PREFIX}_TPL_LIBRARIES ${acl_VENDOR_LIBS} )
-  if( ${acl_PREFIX}_TPL_INCLUDE_DIRS )
-    list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_INCLUDE_DIRS )
+    list( APPEND ${acl_PREFIX}_TPL_LIST ${acl_VENDOR_LIST} )
+    list( APPEND ${acl_PREFIX}_TPL_INCLUDE_DIRS ${acl_VENDOR_INCLUDE_DIRS} )
+    list( APPEND ${acl_PREFIX}_TPL_LIBRARIES ${acl_VENDOR_LIBS} )
+    if( ${acl_PREFIX}_TPL_INCLUDE_DIRS )
+      list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_INCLUDE_DIRS )
+    endif()
+    if( ${acl_PREFIX}_TPL_LIBRARIES )
+      list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIBRARIES )
+    endif()
+    if( ${acl_PREFIX}_TPL_LIST )
+      list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIST )
+    endif()
+
+    set( ${acl_PREFIX}_LIBRARIES "${${acl_PREFIX}_LIBRARIES}"  CACHE INTERNAL "List of component targets" FORCE)
+    set( ${acl_PREFIX}_PACKAGE_LIST "${${acl_PREFIX}_PACKAGE_LIST}"  CACHE INTERNAL
+      "List of known ${acl_PREFIX} targets" FORCE)
+    set( ${acl_PREFIX}_TPL_LIST "${${acl_PREFIX}_TPL_LIST}"  CACHE INTERNAL
+      "List of third party libraries known by ${acl_PREFIX}" FORCE)
+    set( ${acl_PREFIX}_TPL_INCLUDE_DIRS "${${acl_PREFIX}_TPL_INCLUDE_DIRS}"  CACHE
+      INTERNAL "List of include paths used by ${acl_PREFIX} to find thrid party vendor header files."
+      FORCE)
+    set( ${acl_PREFIX}_TPL_LIBRARIES "${${acl_PREFIX}_TPL_LIBRARIES}"  CACHE INTERNAL
+      "List of third party libraries used by ${acl_PREFIX}." FORCE)
+    set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
+      "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
+
   endif()
-  if( ${acl_PREFIX}_TPL_LIBRARIES )
-    list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIBRARIES )
-  endif()
-  if( ${acl_PREFIX}_TPL_LIST )
-    list( REMOVE_DUPLICATES ${acl_PREFIX}_TPL_LIST )
-  endif()
-
-  set( ${acl_PREFIX}_LIBRARIES "${${acl_PREFIX}_LIBRARIES}"  CACHE INTERNAL "List of component targets" FORCE)
-  set( ${acl_PREFIX}_PACKAGE_LIST "${${acl_PREFIX}_PACKAGE_LIST}"  CACHE INTERNAL
-    "List of known ${acl_PREFIX} targets" FORCE)
-  set( ${acl_PREFIX}_TPL_LIST "${${acl_PREFIX}_TPL_LIST}"  CACHE INTERNAL
-    "List of third party libraries known by ${acl_PREFIX}" FORCE)
-  set( ${acl_PREFIX}_TPL_INCLUDE_DIRS "${${acl_PREFIX}_TPL_INCLUDE_DIRS}"  CACHE
-    INTERNAL "List of include paths used by ${acl_PREFIX} to find thrid party vendor header files."
-    FORCE)
-  set( ${acl_PREFIX}_TPL_LIBRARIES "${${acl_PREFIX}_TPL_LIBRARIES}"  CACHE INTERNAL
-    "List of third party libraries used by ${acl_PREFIX}." FORCE)
-  set( ${acl_PREFIX}_EXPORT_TARGET_PROPERTIES
-    "${${acl_PREFIX}_EXPORT_TARGET_PROPERTIES}" PARENT_SCOPE)
-
-endif()
 
 endmacro()
 
@@ -376,31 +584,42 @@ endmacro()
 function( copy_dll_link_libraries_to_build_dir target )
 
   if( NOT WIN32 )
-    # Win32 platforms require all dll libraries to be in the local
-    # directory (or $PATH)
+    # Win32 platforms require all dll libraries to be in the local directory
+    # (or $PATH)
     return()
   endif()
 
-  # Debug dependencies for a particular target (uncomment the next line and provide the targetname):
-  # set( target_for_debugging_deps "Ut_rng_kat_c_exe" )
+  # Debug dependencies for a particular target (uncomment the next line and provide
+  # the targetname):
+  if( "Exe_draco_info_gui_foo" STREQUAL ${target} ) # "Ut_${compname}_${testname}_exe"
+     set(lverbose ON)
+  endif()
 
-  # For Win32 with shared libraries, the package dll must be
-  # located in the test directory.
+  # For Win32 with shared libraries, the package dll must be located in the test
+  # directory.
 
   # Discover all library dependencies for this unit test.
   get_target_property( link_libs ${target} LINK_LIBRARIES )
-  set( old_link_libs "" )
-  if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-    message("Debugging dependencies for target ${compname}_${testname}")
+  if( lverbose )
+    message("Debugging dependencies for target ${target}")
+    # "${compname}_${testname}")
     message("  link_libs = ${link_libs}")
   endif()
+  if( "${link_libs}" MATCHES NOTFOUND )
+     return() # nothing to do
+  endif()
+
+  set( old_link_libs "" )
   # Walk through the library dependencies to build a list of all .dll dependencies.
   while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
-
+    if(lverbose)
+       message("
+  Found new libraries (old_link_libs != link_libs).  Restarting search loop...")
+    endif()
     set( old_link_libs ${link_libs} )
     foreach( lib ${link_libs} )
-      if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-        message("  (re)examine dependencies for lib       = ${lib}")
+      if( lverbose )
+        message("  examine dependencies for lib           = ${lib}")
       endif()
       # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual path
       # to a library (c:\lib\gsl.lib).
@@ -411,7 +630,7 @@ function( copy_dll_link_libraries_to_build_dir target )
         # 2. an 'imported' targets like GSL::gsl.
         get_target_property( isimp ${lib} IMPORTED )
         if(isimp)
-          if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
+          if( lverbose )
             message("  This target is IMPORTED")
           endif()
           get_target_property( link_libs2 ${lib} IMPORTED_LINK_INTERFACE_LIBRARIES )
@@ -423,8 +642,9 @@ function( copy_dll_link_libraries_to_build_dir target )
         endif()
         list( APPEND link_libs ${link_libs2} )
         list( APPEND link_libs ${link_libs3} )
-        if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-          message("    link_libs[23]                        = ${link_libs2};${link_libs3}")
+        if( lverbose )
+          message("    link_libs2                           = ${link_libs2}")
+          message("    link_libs3                           = ${link_libs3}")
         endif()
       endif()
     endforeach()
@@ -434,6 +654,9 @@ function( copy_dll_link_libraries_to_build_dir target )
     foreach( lib ${link_libs} )
       if( "${lib}" MATCHES "NOTFOUND" )
         # nothing to add so remove from list
+        list( REMOVE_ITEM link_libs ${lib} )
+      elseif( "${lib}" MATCHES "[$]<")
+        # We have a generator expression.  This routine does not support this, so drop it.
         list( REMOVE_ITEM link_libs ${lib} )
       elseif( "${lib}" MATCHES ".[lL]ib$" )
         # We have a path to a static library. Static libraries do not
@@ -447,8 +670,8 @@ function( copy_dll_link_libraries_to_build_dir target )
         endif()
       endif()
     endforeach()
-    if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-      message("    updated dependencies list: link_libs = ${link_libs}")
+    if( lverbose )
+      message("  Updated dependencies list: link_libs = ${link_libs}")
     endif()
 
   endwhile()
@@ -458,8 +681,8 @@ function( copy_dll_link_libraries_to_build_dir target )
   # message("   ${compname}_${testname} --> ${link_libs}")
   # endif()
 
-  if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-    message("  Create post build commande for target Ut_${compname}_${testname}_exe")
+  if( lverbose )
+    message("  Create post build commande for target ${target}")
   endif()
 
   # Add a post-build command to copy each dll into the test directory.
@@ -481,8 +704,8 @@ function( copy_dll_link_libraries_to_build_dir target )
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${target_loc}
 	${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR} )
 
-      if( "${target_for_debugging_deps}" STREQUAL "Ut_${compname}_${testname}_exe" )
-	message("    CMAKE_COMMAND -E copy_if_different ${target_loc} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}")
+      if( lverbose )
+	    message("    CMAKE_COMMAND -E copy_if_different ${target_loc} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}")
       endif()
 
     endif()
@@ -785,7 +1008,7 @@ macro( add_parallel_tests )
   # 3. Register the unit test
   # 4. Register the pass/fail criteria.
   if( ${DRACO_C4} MATCHES "MPI" )
-      foreach( file ${addparalleltest_SOURCES} )
+    foreach( file ${addparalleltest_SOURCES} )
       get_filename_component( testname ${file} NAME_WE )
       foreach( numPE ${addparalleltest_PE_LIST} )
         set( iarg 0 )

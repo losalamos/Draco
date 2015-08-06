@@ -50,12 +50,20 @@ else
     # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
     # export IGNOREMODULECONFLICTS=1
     # module load gcc/4.8.2 intel/14.0.4 openmpi
-    module load intel/14.0.4 openmpi
+    #module load intel/14.0.4 openmpi
+    module load intel/15.0.3 openmpi
     # other vendor libraries
     module load lapack/3.5.0 trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
     # support tools
-    module load svn/1.8.10 cmake/3.2.2 numdiff git totalview emacs hsi
+    module load svn/1.8.10 cmake/3.3.0 numdiff git totalview emacs
+
+    # module hsi only available on yellow toss22 and rfta
+    target="`uname -n | sed -e s/[.].*//`"
+    case ${target} in
+    mp* | ml* | mu* | pi* | wf* )
+        module load hsi ;;
+    esac
 
 fi
 

@@ -52,7 +52,7 @@
 
 include( parse_arguments )
 
-set( VERBOSE_DEBUG OFF )
+# set( VERBOSE_DEBUG OFF )
 
 ##---------------------------------------------------------------------------##
 ## Check values for $APP
@@ -106,7 +106,7 @@ macro( aut_setup )
   set( numfails  0 )
 
   if( VERBOSE_DEBUG )
-    message("Running tQueryEospac.cmake with the following parameters:")
+    message("Running with the following parameters:")
     message("   APP       = ${APP}
    BINDIR    = ${BINDIR}
    PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}
@@ -150,6 +150,17 @@ endmacro()
 macro( aut_register_test )
   # Register the test...
 
+  if( EXISTS ${Draco_SOURCE_DIR}/config/ApplicationUnitTest.cmake )
+    # this is draco
+    set( DRACO_CONFIG_DIR ${Draco_SOURCE_DIR}/config )
+  endif()
+
+  if( "${numPE}x" STREQUAL "x" )
+    set(num_procs 1)
+  else()
+    set(num_procs ${numPE} )
+  endif()
+
   if( VERBOSE_DEBUG )
     message("
   add_test(
@@ -158,43 +169,59 @@ macro( aut_register_test )
     -D APP=${aut_APP}
     -D ARGVALUE=${argvalue}
     -D WORKDIR=${aut_WORKDIR}
-    -D TESTNAME=${ctestname_base}
-    -D DRACO_CONFIG_DIR=${Draco_SOURCE_DIR}/config
+    -D TESTNAME=${ctestname_base}${argname}
+    -D DRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
     -D DRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
     -D STDINFILE=${aut_STDINFILE}
     -D GOLDFILE=${aut_GOLDFILE}
     -D RUN_CMD=${RUN_CMD}
+    -D numPE=${numPE}
+    ${BUILDENV}
     -P ${aut_DRIVER}
     )
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION \"${aut_PASS_REGEX}\"
     FAIL_REGULAR_EXPRESSION \"${aut_FAIL_REGEX}\"
+    PROCESSORS              \"${num_procs}\"
     ${LABELS}
-    )
-")
+    )")
+    if( DEFINED aut_RESOURCE_LOCK )
+message("  set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES RESOURCE_LOCK \"${aut_RESOURCE_LOCK}\" )" )
+    endif()
   endif()
 
   add_test(
     NAME ${ctestname_base}${argname}
     COMMAND ${CMAKE_COMMAND}
-    -D APP=${aut_APP}
-    -D ARGVALUE=${argvalue}
-    -D WORKDIR=${aut_WORKDIR}
-    -D TESTNAME=${ctestname_base}
-    -D DRACO_CONFIG_DIR=${Draco_SOURCE_DIR}/config
-    -D DRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
-    -D STDINFILE=${aut_STDINFILE}
-    -D GOLDFILE=${aut_GOLDFILE}
-    -D RUN_CMD=${RUN_CMD}
+    -DAPP=${aut_APP}
+    -DARGVALUE=${argvalue}
+    -DWORKDIR=${aut_WORKDIR}
+    -DTESTNAME=${ctestname_base}${argname}
+    -DDRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
+    -DDRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+    -DSTDINFILE=${aut_STDINFILE}
+    -DGOLDFILE=${aut_GOLDFILE}
+    -DRUN_CMD=${RUN_CMD}
+    -DnumPE=${numPE}
+    ${BUILDENV}
     -P ${aut_DRIVER}
     )
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
     PASS_REGULAR_EXPRESSION "${aut_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${aut_FAIL_REGEX}"
+    PROCESSORS              "${num_procs}"
     ${LABELS}
     )
+  if( DEFINED aut_RESOURCE_LOCK )
+    set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES
+      RESOURCE_LOCK "${aut_RESOURCE_LOCK}" )
+  endif()
+
+  unset(num_procs)
 endmacro()
 
 ##---------------------------------------------------------------------------------------##
@@ -206,8 +233,8 @@ macro( add_app_unit_test )
     # prefix
     aut
     # list names
-    "DRIVER;APP;WORKDIR;PASS_REGEX;FAIL_REGEX;LABELS;STDINFILE;GOLDFILE;TEST_ARGS"
-    # RESOURCE_LOCK;RUN_AFTER"
+    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;STDINFILE;TEST_ARGS;WORKDIR"
+    # RUN_AFTER"
     # option names
     "NONE"
     ${ARGV}
@@ -247,14 +274,41 @@ macro( add_app_unit_test )
 
   # Load some information from the build environment:
   unset( RUN_CMD )
-  if( "${C4_MPICMD}" MATCHES "aprun" )
-    set( RUN_CMD "aprun -n 1" )
-  elseif( HAVE_MIC )
-    set( RUN_CMD "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${WORKDIR}" )
+  set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${aut_WORKDIR}" )
+  if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
+
+    # Parallel tests
+    if( "${C4_MPICMD}" MATCHES "aprun" )
+      set( RUN_CMD "aprun -n" )
+    elseif( HAVE_MIC )
+      set( RUN_CMD "${MIC_RUN_CMD} ${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}" )
+    else()
+      set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}")
+    endif()
+
+  else()
+
+    # Scalar tests
+    if( "${C4_MPICMD}" MATCHES "aprun" )
+      set( RUN_CMD "aprun -n 1" )
+    elseif( HAVE_MIC )
+      set( RUN_CMD "${MIC_RUN_CMD}" )
+    endif()
+  endif()
+
+  # Prove extra build environment to the cmake-scripted unit test
+  unset( BUILDENV )
+  if( DEFINED aut_BUILDENV )
+    # expect a semicolon delimited list of parameters.
+    # FOO=myvalue1;BAR=myvalue2
+    # translate this to -DF00=myvalue1 -DBAR=myvalue2
+    foreach(item ${aut_BUILDENV} )
+      list(APPEND BUILDENV "-D${item}" )
+    endforeach()
   endif()
 
   # Create a name for the test
-  get_filename_component( drivername ${aut_DRIVER} NAME_WE )
+  get_filename_component( drivername   ${aut_DRIVER} NAME_WE )
   get_filename_component( package_name ${aut_DRIVER} PATH )
   get_filename_component( package_name ${package_name} PATH )
   get_filename_component( package_name ${package_name} NAME )
@@ -266,23 +320,60 @@ macro( add_app_unit_test )
   unset( argname  )
   if( DEFINED aut_TEST_ARGS )
 
-    # Create a suffix for the testname and generate a string that can be provided to the runTests
-    # macro.
-    set( iarg "0" )
-    foreach( argvalue ${aut_TEST_ARGS} )
-      math( EXPR iarg "${iarg} + 1" )
-      if( ${argvalue} STREQUAL "none" )
-        set( argvalue "" )
-      endif()
-      set( argname "_arg${iarg}" )
-      # Register the test...
-      aut_register_test()
-    endforeach()
+    # Create a suffix for the testname and generate a string that can
+    # be provided to the runTests macro.
+    if( ${DRACO_C4} MATCHES "MPI" AND DEFINED aut_PE_LIST )
+      foreach( numPE ${aut_PE_LIST} )
+        set( iarg "0" )
+        foreach( argvalue ${aut_TEST_ARGS} )
+          math( EXPR iarg "${iarg} + 1" )
+          if( ${argvalue} STREQUAL "none" )
+            set( argvalue "_${numPE}" )
+          else()
+            # set( argname "_${numPE}_arg${iarg}" )
+            string( REGEX REPLACE "[-]" "" safe_argvalue ${argvalue} )
+            string( REGEX REPLACE "[.]" "_" safe_argvalue ${safe_argvalue} )
+            set( argname "_${numPE}_${safe_argvalue}" )
+          endif()
+          # Register the test...
+          if( VERBOSE_DEBUG )
+            message("aut_register_test(${ctestname_base}${argname})")
+          endif()
+          aut_register_test()
+        endforeach()
+      endforeach()
+    else()
+      set( iarg "0" )
+      foreach( argvalue ${aut_TEST_ARGS} )
+        math( EXPR iarg "${iarg} + 1" )
+        if( ${argvalue} STREQUAL "none" )
+          set( argvalue "" )
+        else()
+          #set( argname "_arg${iarg}" )
+          string( REGEX REPLACE "[-]" "" safe_argvalue ${argvalue} )
+          string( REGEX REPLACE "[.]" "_" safe_argvalue ${safe_argvalue} )
+          set( argname "_${safe_argvalue}" )
+        endif()
+        # Register the test...
+        if( VERBOSE_DEBUG )
+          message("aut_register_test(${ctestname_base}${argname})")
+        endif()
+        aut_register_test()
+      endforeach()
+    endif()
 
   else()
 
     # Register the test...
-    aut_register_test()
+    if( ${DRACO_C4} MATCHES "MPI" AND DEFINED aut_PE_LIST )
+      foreach( numPE ${aut_PE_LIST} )
+        set( argname "_${numPE}" )
+        if( VERBOSE_DEBUG )
+          message("aut_register_test(${ctestname_base}${argname})")
+        endif()
+        aut_register_test()
+      endforeach()
+    endif()
 
   endif()
 
@@ -292,6 +383,8 @@ macro( add_app_unit_test )
   unset( STDINFILE )
   unset( GOLDFILE  )
   unset( TEST_ARGS )
+  unset( numPE )
+  unset( LABEL )
 
 endmacro()
 
@@ -309,39 +402,56 @@ macro( aut_runTests )
 # === CMake driven ApplicationUnitTest: ${TESTNAME}
 
   # Print version information
+  set( runcmd ${RUN_CMD} ) # plain string with spaces.
   separate_arguments(RUN_CMD)
+  if( numPE )
+    # Use 1 proc to run draco_info
+    set( draco_info_numPE 1 )
+  endif()
   if( EXISTS ${DRACO_INFO} )
     execute_process(
-      COMMAND ${RUN_CMD} ${DRACO_INFO} --version
-      WORKING_DIRECTORY ${WORKDIR}
+      COMMAND ${RUN_CMD} ${draco_info_numPE} ${DRACO_INFO} --version
       RESULT_VARIABLE testres
       OUTPUT_VARIABLE testout
       ERROR_VARIABLE  testerror
       )
     if( NOT ${testres} STREQUAL "0" )
-      FAILMSG("Unable to run 'draco_info --version'")
+      FAILMSG("Unable to run '${RUN_CMD} ${DRACO_INFO} --version'")
     else()
       message("${testout}")
     endif()
   endif()
+  unset( draco_info_numPE )
+
+  if( numPE )
+    string( REPLACE ".out" "-${numPE}.out" OUTFILE ${OUTFILE} )
+    string( REPLACE ".err" "-${numPE}.err" ERRFILE ${ERRFILE} )
+  endif()
+  if( ARGVALUE )
+    string( REGEX REPLACE "[-]" "" safe_argvalue ${ARGVALUE} )
+    string( REPLACE ".out" "-${safe_argvalue}.out" OUTFILE ${OUTFILE} )
+    string( REPLACE ".err" "-${safe_argvalue}.err" ERRFILE ${ERRFILE} )
+  endif()
 
   if( DEFINED RUN_CMD )
-    message(">>> Running: ${RUN_CMD} ${APP} ${ARGVALUE}")
+    string( REPLACE ";" " " run_cmd_string "${RUN_CMD}" )
+    message(">>> Running: ${run_cmd_string} ${numPE} ${APP}
+             ${ARGVALUE}")
   else()
     message(">>> Running: ${APP} ${ARGVALUE}" )
   endif()
   if( EXISTS ${STDINFILE} )
     set( INPUT_FILE "INPUT_FILE ${STDINFILE}")
-    message(">>>      < ${STDINFILE}")
+    message(">>>          < ${STDINFILE}")
   endif()
-  message(">>>      > ${OUTFILE}
+  message(">>>          > ${OUTFILE}
 ")
 
   # Run the application capturing all output.
   separate_arguments(INPUT_FILE)
   separate_arguments(ARGVALUE)
   execute_process(
-    COMMAND ${RUN_CMD} ${APP} ${ARGVALUE}
+    COMMAND ${RUN_CMD} ${numPE} ${APP} ${ARGVALUE}
     WORKING_DIRECTORY ${WORKDIR}
     ${INPUT_FILE}
     RESULT_VARIABLE testres
@@ -356,7 +466,8 @@ macro( aut_runTests )
 
   # Capture all the output to log files:
   file( WRITE ${OUTFILE} ${testout} )
-  file( WRITE ${ERRFILE} ${testerr} )
+  # [2015-07-28 KT] not sure we need to dump stderr values right now
+  # file( WRITE ${ERRFILE} ${testerr} )
 
   # Ensure there are no errors
   if( NOT "${testres}" STREQUAL "0" )
@@ -401,6 +512,64 @@ ${exenumdiff} \\
   else()
     FAILMSG("gold does not match out.
 numdiff output = ${numdiffout}" )
+  endif()
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Run gdiff (Capsaicin)
+##
+## Usage:
+##    aut_gdiff(input_file)
+##---------------------------------------------------------------------------##
+macro( aut_gdiff infile )
+
+  # Sanity checks
+  # 1. Must be able to find gdiff.  Location is specified via
+  #    BUILDENV  "GDIFF=$<TARGET_FILE_DIR:Exe_gdiff>/$<TARGET_FILE_NAME:Exe_gdiff>"
+  # 2. Input file ($1) must exist
+
+  if( NOT EXISTS ${GDIFF} )
+    FAILMSG( "Could not find gdiff!  Did you list it when registering this test?
+GDIFF = ${GDIFF}" )
+  endif()
+  if( NOT EXISTS ${infile} )
+    FAILMSG( "Could not find specified intput file (${infile})!
+Did you list it when registering this test?" )
+  endif()
+  if( numPE )
+    if( "${numPE}" GREATER "1" )
+      FAILMSG( "You can only run gdiff for scalar or ! PE tests!")
+    endif()
+  endif()
+
+  #----------------------------------------
+  message("
+Comparing output to goldfile via gdiff:
+   ${GDIFF} guajillo.ndi.2D.gdiff
+")
+  execute_process(
+    COMMAND ${GDIFF} ${infile}
+    RESULT_VARIABLE gdiffres
+    OUTPUT_VARIABLE gdiffout
+    ERROR_VARIABLE  gdifferror
+    )
+  if( ${gdiffres} STREQUAL 0 )
+    PASSMSG("gdiff returned 0.")
+  else()
+    FAILMSG("gdiff returned non-zero.")
+  endif()
+
+  # should be no occurance of "FAILED"
+  string(FIND "${gdiffout}" "FAILED" POS1)
+  # should be  at least one occurance of "passed"
+  string(FIND "${gdiffout}" "passed" POS2)
+
+  if( ${POS1} GREATER 0 OR ${POS2} EQUAL 0 )
+    # found failures or no passes.
+    FAILMSG( "Failed identical file check ( ${POS1}, ${POS2} )." )
+  else()
+    PASSMSG( "Passed identical file check ( ${POS1}, ${POS2} )." )
   endif()
 
 endmacro()

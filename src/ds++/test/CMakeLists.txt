@@ -93,7 +93,8 @@ include( ApplicationUnitTest )
 add_app_unit_test(
   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstXGetopt.cmake
   APP    $<TARGET_FILE_DIR:Ut_dsxx_tstXGetopt_exe>/$<TARGET_FILE_NAME:Ut_dsxx_tstXGetopt_exe>
-  TEST_ARGS "none;-a;-b;-c fish;--add"
+  TEST_ARGS "none;-a;-b;--add"
+#  TEST_ARGS "none;-a;-b;-c fish;--add"
 #  LABELS nomemcheck
 )
 
@@ -103,44 +104,23 @@ add_app_unit_test(
 # ---------------------------------------------------------------------------- #
 if( PYTHONINTERP_FOUND AND NOT HAVE_MIC )
 
-   set( do_exception_sources ${PROJECT_SOURCE_DIR}/do_exception.cc )
-
-    # Build the test executable
-    add_executable( Ut_dsxx_do_exception_exe ${do_exception_sources} )
-    set_target_properties(
-       Ut_dsxx_do_exception_exe
-       PROPERTIES
-           OUTPUT_NAME do_exception
-           VS_KEYWORD do_exception
-           PROJECT_LABEL do_exception
-           FOLDER dsxx_test
+  add_component_executable(
+    TARGET      Exe_do_exception
+    TARGET_DEPS Lib_dsxx
+    SOURCES     ${PROJECT_SOURCE_DIR}/do_exception.cc
+    NOEXPORT
     )
-    target_link_libraries( Ut_dsxx_do_exception_exe Lib_dsxx )
-    add_test(
-        NAME dsxx_fpe_trap_test
-        COMMAND ${PYTHON_EXECUTABLE}
-                ${PROJECT_SOURCE_DIR}/python/test_fpe_trap.py
-                $<TARGET_FILE:Ut_dsxx_do_exception_exe>
+  add_test(
+    NAME    dsxx_fpe_trap_test
+    COMMAND ${PYTHON_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/python/test_fpe_trap.py
+            $<TARGET_FILE:Exe_do_exception>
     )
-    set_tests_properties( dsxx_fpe_trap_test
-       PROPERTIES
-         PASS_REGULAR_EXPRESSION ".*PASSED"
-         FAIL_REGULAR_EXPRESSION ".*FAILED"
-         LABELS                  "nomemcheck"
+  set_tests_properties( dsxx_fpe_trap_test
+    PROPERTIES
+      PASS_REGULAR_EXPRESSION ".*PASSED"
+      FAIL_REGULAR_EXPRESSION ".*FAILED"
+      LABELS                  "nomemcheck"
     )
-
-   if( WIN32 )
-      # For Win32 with shared libraries, the package dll must be
-      # located in the test directory.
-      unset( copy_lib_command )
-      foreach( lib Lib_dsxx )
-         set( lib_loc $<TARGET_FILE:${lib}> )
-         add_custom_command( TARGET Ut_dsxx_do_exception_exe
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${lib_loc}
-                    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}
-                    )
-      endforeach()
-   endif()
 
 endif() # PYTHONINTERP_FOUND

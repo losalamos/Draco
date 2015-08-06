@@ -60,35 +60,21 @@ include_directories(
    ${MPI_CXX_INCLUDE_PATH}
    )
 
-# ---------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------- #
 # Build package library
-# ---------------------------------------------------------------------------- #
-if( WIN32 )
-   # The Win32 option prevents the command console from activating while the GUI is running.
-   add_executable(        Exe_draco_info_gui WIN32 ${sources} )
-else()
-   add_executable(        Exe_draco_info_gui ${sources} )
-endif()
-target_link_libraries( Exe_draco_info_gui
-  Lib_diagnostics
-  Qt5::Widgets )
-set_target_properties( Exe_draco_info_gui
-  PROPERTIES OUTPUT_NAME draco_info-gui
-  PROJECT_LABEL draco_info-gui
-  FOLDER        diagnostics )
+# ----------------------------------------------------------------------------- #
 
-# add_component_library(
-#    TARGET       Lib_diagnostics
-#    TARGET_DEPS  "Lib_c4"
-#    LIBRARY_NAME ${PROJECT_NAME}
-#    SOURCES      "${sources}" )
-
-# add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info.cc )
-# target_link_libraries( Exe_draco_info Lib_dsxx  )
-# set_target_properties( Exe_draco_info
-#    PROPERTIES OUTPUT_NAME draco_info
-#    PROJECT_LABEL draco_info
-#    FOLDER        diagnostics )
+# List Qt5::Widgets as a dependencies but not a VENDOR_LIB to prevent
+# DBS from listing this library as a DRACO_TPL_LIBRARY.  It is not
+# intended for export into other projects.
+add_component_executable(
+  TARGET      Exe_draco_info_gui
+  TARGET_DEPS "Lib_diagnostics;Qt5::Widgets"
+  SOURCES     "${sources}"
+  PREFIX       Draco
+  FOLDER       diagnostics
+  NOCOMMANDWINDOW
+  )
 
 # Copy Qt dll files to build directory
 # copy_dll_link_libraries_to_build_dir( Exe_draco_info_gui )
@@ -105,30 +91,3 @@ if (WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info_gui>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_diagnostics> $<TARGET_FILE_DIR:Exe_draco_info_gui> )
 endif()
-
-# ---------------------------------------------------------------------------- #
-# Installation instructions
-# ---------------------------------------------------------------------------- #
-
-# install( TARGETS Lib_diagnostics
-#    EXPORT draco-targets
-#    DESTINATION ${DBSCFGDIR}lib )
-
-# # ??? Do I need to put draco_info into a bin/ directory for RPATH to
-# # work correctly after install?
-# install( TARGETS Exe_draco_info DESTINATION ${DBSCFGDIR}bin )
-# install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
-
-# ---------------------------------------------------------------------------- #
-# Unit tests
-# ---------------------------------------------------------------------------- #
-
-# if( BUILD_TESTING )
-#    add_subdirectory( test )
-# endif()
-
-# ---------------------------------------------------------------------------- #
-# Autodoc
-# ---------------------------------------------------------------------------- #
-
-# process_autodoc_pages()

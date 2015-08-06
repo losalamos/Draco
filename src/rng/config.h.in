@@ -20,6 +20,12 @@
 #endif
 #endif
 
+#ifdef NDEBUG
+#define Remember(c)
+#else
+#define Remember(c) c
+#endif
+
 #endif /* rtt_rng_config_h */
 
 /*---------------------------------------------------------------------------*/

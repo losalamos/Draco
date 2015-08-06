@@ -79,20 +79,20 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 add_component_library(
-   TARGET       Lib_diagnostics
-   TARGET_DEPS  "Lib_c4"
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${sources}" )
-   
-add_executable( Exe_draco_info ${PROJECT_SOURCE_DIR}/draco_info_main.cc )
-target_link_libraries( Exe_draco_info Lib_diagnostics  )
-set_target_properties( Exe_draco_info
-   PROPERTIES OUTPUT_NAME draco_info
-   PROJECT_LABEL draco_info
-   FOLDER        diagnostics
-)
-# Copy required dlls to the executable directory
-copy_dll_link_libraries_to_build_dir( Exe_draco_info )
+  TARGET       Lib_diagnostics
+  TARGET_DEPS  "Lib_c4"
+  LIBRARY_NAME ${PROJECT_NAME}
+  SOURCES      "${sources}"
+  PREFIX       Draco
+  )
+
+add_component_executable(
+  TARGET      Exe_draco_info
+  TARGET_DEPS Lib_diagnostics
+  EXE_NAME    draco_info
+  SOURCES     ${PROJECT_SOURCE_DIR}/draco_info_main.cc
+  PREFIX       Draco
+  )
 
 if( QT_FOUND )
   add_subdirectory( qt )
@@ -102,10 +102,8 @@ endif()
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_diagnostics
-   EXPORT draco-targets
-   DESTINATION ${DBSCFGDIR}lib )
-install( TARGETS Exe_draco_info DESTINATION ${DBSCFGDIR}bin )
+install( TARGETS Lib_diagnostics EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
 install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
 
 # ---------------------------------------------------------------------------- #

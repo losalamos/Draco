@@ -117,29 +117,29 @@ int main(int, char **){
     // in llvm.  However, if it shows up in other contexts, some
     // kind of #ifndef might be appropriate.  N.B.  There's a similar
     // exception test in ut_carray.cpp
-    bool caught;
-    caught = false;
+    Remember(bool caught);
+    Remember(caught = false);
     try{
         One < AnotherOne;
-    }catch(std::runtime_error& ){ caught = true; }
+    }catch(std::runtime_error& ){ Remember(caught = true); }
     assert(caught);
 
-    caught = false;
+    Remember(caught = false);
     try{
         One <= AnotherOne;
-    }catch(std::runtime_error& ){ caught = true; }
+    }catch(std::runtime_error& ){ Remember(caught = true); }
     assert(caught);
 
-    caught = false;
+    Remember(caught = false);
     try{
         One > AnotherOne;
-    }catch(std::runtime_error& ){ caught = true; }
+    }catch(std::runtime_error& ){ Remember(caught = true); }
     assert(caught);
 
-    caught = false;
+    Remember(caught = false);
     try{
         One >= AnotherOne;
-    }catch(std::runtime_error& ){ caught = true; }
+    }catch(std::runtime_error& ){ Remember(caught = true); }
     assert(caught);
 
     // assemble_from_u32<r123m128i>

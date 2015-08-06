@@ -96,14 +96,16 @@ else()
       )
 endif()
 
-# Tests that expect exactly 2 PE
+# Tests that expect exactly 2 PE (omit for DRACO_C4=SCALAR builds):
 set( two_pe_tests ${PROJECT_SOURCE_DIR}/tstPingPong.cc )
 list( REMOVE_ITEM test_sources ${two_pe_tests} )
-add_parallel_tests(
-   SOURCES   "${two_pe_tests}"
-   DEPS      Lib_c4
-   PE_LIST   "2"
-   )
+if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
+  add_parallel_tests(
+    SOURCES   "${two_pe_tests}"
+    DEPS      Lib_c4
+    PE_LIST   "2"
+    )
+endif()
 
 # The rest of the tests
 
