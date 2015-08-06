@@ -25,6 +25,9 @@
 #include <cmath>
 #include <sstream>
 
+#include <string.h>
+#include "ds++/XGetopt.hh"
+
 using rtt_dsxx::SP;
 using rtt_cdi_ipcress::IpcressFile;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
@@ -55,12 +58,12 @@ using std::ios;
  * Modification of this executable to make it more useful is encouraged.
  */
 //---------------------------------------------------------------------------//
-void ipcress_file_read(std::string const & op_data_file) 
+void ipcress_file_read(std::string const & op_data_file)
 {
     // Ipcress data filename (IPCRESS format required)
-	    
+
     cout << "Creating a Ipcress File object from " << op_data_file << endl;
-	    
+
     SP<IpcressFile> spGF;
     try
     {
@@ -114,17 +117,17 @@ void ipcress_file_read(std::string const & op_data_file)
     cout   << "Temperature grid" << endl;
     for (size_t tIndex=0; tIndex < temps.size(); ++tIndex)
         cout << tIndex+1 << "\t" << temps[tIndex] << endl;
-    
+
     // Print the frequency grid
     std::vector<double> groups = spMgOp->getGroupBoundaries();
     cout   << "Frequency grid" << endl;
     for (size_t gIndex=0; gIndex < groups.size(); ++gIndex)
         cout << gIndex + 1<< "\t" << groups[gIndex] << endl;
- 
-     
+
+
     cout << endl;
- 
-   
+
+
     int keepGoing = 1;
     size_t matID(1);
     size_t selID(1);
@@ -135,19 +138,19 @@ void ipcress_file_read(std::string const & op_data_file)
         std::cin  >> keepGoing;
         if (keepGoing == 0) break;
         matID = keepGoing-1;
-        Insist( (  matID <numMaterials), "Invalid material index"); 
+        Insist( (  matID <numMaterials), "Invalid material index");
 
         double density(0.0);
         cout << "Please enter a density from " << dens[0] << " to "
              << dens[dens.size()-1] << endl;
         std::cin  >> density;
         if (density <= 0.0) { keepGoing=0; break;}
-        
+
         double temperature(0.0);
         cout << "Please select a temperature from " << temps[0] << " to "
              << temps[temps.size()-1] << endl;
         std::cin  >> temperature;
-        if (temperature <= 0.0) { keepGoing=0; break;} 
+        if (temperature <= 0.0) { keepGoing=0; break;}
 
         cout << "Choose your opacity type:\n"
              << "1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)\n"
@@ -156,7 +159,7 @@ void ipcress_file_read(std::string const & op_data_file)
         std::cin  >> keepGoing;
         if (keepGoing == 0) break;
         selID = keepGoing;
-        Insist( ( selID < 6)  ,"Invalid choice."); 
+        Insist( ( selID < 6)  ,"Invalid choice.");
 
         if (selID == 1)
         {
@@ -167,7 +170,7 @@ void ipcress_file_read(std::string const & op_data_file)
             cout << "The Gray Rosseland Absorption Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
-                 << temperature << " is " 
+                 << temperature << " is "
                  << spGOp->getOpacity(temperature, density) << endl;
         }
         else if (selID == 2)
@@ -179,9 +182,9 @@ void ipcress_file_read(std::string const & op_data_file)
             cout << "The Gray Planck Absorption Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
-                 << temperature << " is " 
+                 << temperature << " is "
                  << spGOp->getOpacity(temperature, density) << endl;
-          
+
         }
         else if (selID == 3)
         {
@@ -198,7 +201,7 @@ void ipcress_file_read(std::string const & op_data_file)
             cout << "Index \t Group Center \t\t Opacity" << endl;
             for (size_t g=0; g < opData.size(); ++g)
                 cout << g+1 << "\t " << 0.5*(groups[g]+groups[g+1])
-                     << "   \t " << opData[g] << endl; 
+                     << "   \t " << opData[g] << endl;
         }
         else if (selID == 4)
         {
@@ -215,7 +218,7 @@ void ipcress_file_read(std::string const & op_data_file)
             cout << "Index \t Group Center  \t\t Opacity" << endl;
             for (size_t g=0; g < opData.size(); ++g)
                 cout << g+1 << "\t " << 0.5*(groups[g]+groups[g+1])
-                     << "   \t " << opData[g] << endl; 
+                     << "   \t " << opData[g] << endl;
         }
         if (selID == 5)
         {
@@ -226,39 +229,55 @@ void ipcress_file_read(std::string const & op_data_file)
             cout << "The Gray Rosseland Total Opacity for " << endl;
             cout << "material " << matID << " Id(" << matIDs[matID]
                  << ") at density " << density << ", temperature "
-                 << temperature << " is " 
+                 << temperature << " is "
                  << spGOp->getOpacity(temperature, density) << endl;
         }
     }
-    
-    cout << "Ending session." << endl; 
+
+    cout << "Ending session." << endl;
 }
 
 //---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[])
 {
+
+    int c;
+
+    // rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_options;
+    long_options["version"] = 'v';
+    long_options["help"]    = 'h';
+
     string filename;
     // Parse the arguments
-    for (int arg = 1; arg < argc; arg++)
-    {
-	if (string(argv[arg]) == "--version")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release() 
-		 << endl;
-	    return 0;
-	}
-	else if (string(argv[arg]) == "--help" || string(argv[arg]) == "-h")
-	{
-	    cout << argv[0] << ": version " << rtt_dsxx::release()
-                 << "\nUsage: IpcressInterpreter <ipcress file>\n" 
-                 << "Follow the prompts to print opacity data to the screen."
-                 << endl;
-	    return 0;
-	}
-        else
-            filename = string(argv[arg]);
-    }
+    // for (int arg = 1; arg < argc; arg++)
+    // {
+        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vh", long_options)) != -1)
+        {
+            switch (c)
+            {
+                case 'v': // --version
+                    cout << argv[0] << ": version " << rtt_dsxx::release()
+                         << endl;
+                    return 0;
+
+                case 'h': // --help
+                    cout << argv[0] << ": version " << rtt_dsxx::release()
+                         << "\nUsage: IpcressInterpreter <ipcress file>\n"
+                         << "Follow the prompts to print opacity data to the screen."
+                         << endl;
+                    return 0;
+
+                default:
+                    break;
+            }
+        }
+// }
+        // Assume last command line argument is the name of the
+        // ipcress file.
+        filename = string(argv[argc-1]);
 
     try
     {
@@ -273,7 +292,7 @@ int main(int argc, char *argv[])
     }
 
     return 0;
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of IpcressInterpreter.cc

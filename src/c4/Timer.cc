@@ -16,6 +16,11 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <string.h>
+
+#include "ds++/Release.hh"
+#include "ds++/XGetopt.hh"
+
 namespace rtt_c4
 {
 
@@ -211,46 +216,58 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
     // At present, there are no non-PAPI options controlled by initialize.
 #ifdef HAVE_PAPI
     int j = 0;
-    for (int i=0; i<argc; ++i)
+    int c;
+
+    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_option;
+    long_option["cache"] = 'c';
+
+    //for (int i=0; i<argc; ++i)
+    //{
+    while ((c = rtt_dsxx::getopt (argc, argv, (char*)"c:", long_option)) != -1)
+    switch (c)
     {
-        if (strcmp(argv[i], "--cache")==0)
-        {
-            char *endptr;
-            selected_cache = strtol(argv[i+1], &endptr, 10);
-            if (*endptr!='\0' || selected_cache<1 || selected_cache>3)
-            {
-                throw std::invalid_argument(" --cache selection is not 1, 2, or 3");
-            }
-            else
-            {
-                i++;
-                switch (selected_cache)
-                {
-                    case 1:
-                        papi_events_[0] = PAPI_L1_DCM;
-                        papi_events_[1] = PAPI_L1_DCH;
-                        break;
+      case 'c': // --cache
+         char *endptr;
+         selected_cache = strtol(argv[i+1], &endptr, 10);
+         if (*endptr!='\0' || selected_cache<1 || selected_cache>3)
+         {
+             throw std::invalid_argument(" --cache selection is not 1, 2, or 3");
+         }
+         else
+         {
+             i++;
+             switch (selected_cache)
+             {
+                 case 1:
+                     papi_events_[0] = PAPI_L1_DCM;
+                     papi_events_[1] = PAPI_L1_DCH;
+                     break;
                         
-                    case 2:
-                        /* default; no action needed */
-                        break;
+                 case 2:
+                     /* default; no action needed */
+                     break;
                         
-                    case 3:
-                        papi_events_[0] = PAPI_L3_DCM;
-                        papi_events_[1] = PAPI_L3_DCH;
-                        break;
-                }       
-            }
-        }
-        else
-        {
+                 case 3:
+                     papi_events_[0] = PAPI_L3_DCM;
+                     papi_events_[1] = PAPI_L3_DCH;
+                     break;
+             }
+	  }
+          else
+          {
             if (j!=i)
             {
                 argv[j] = argv[i];
             }
             j++;
-        }
-    }
+	  break;  
+          }
+      default:
+        break; // nothing to do.
+      }
+
     int orig_argc = argc;
     argc = j;
     for (; j<orig_argc; ++j)

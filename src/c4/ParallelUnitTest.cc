@@ -14,6 +14,12 @@
 #include "ParallelUnitTest.hh"
 #include <sstream>
 
+#include <iostream>
+#include <string.h>
+
+#include "ds++/Release.hh"
+#include "ds++/XGetopt.hh"
+
 namespace rtt_c4
 {
 //---------------------------------------------------------------------------//
@@ -58,13 +64,26 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
         out << testName << ": version " << release() << "\n" << std::endl;
     
     // exit if command line contains "--version"
-    
-    for( int arg = 1; arg < argc; arg++ )
-        if( string( argv[arg] ) == "--version" )
-        {
-            finalize();
-            throw rtt_dsxx::assertion( string( "Success" ) );
-        }
+    int c;
+        
+    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_option;
+    long_option["version"] = 'v';
+
+    //for( int arg = 1; arg < argc; arg++ )
+	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"v:", long_option)) != -1)
+          switch (c)
+          {
+            case 'v': // --version
+              finalize();
+              throw rtt_dsxx::assertion( string( "Success" ) );
+              break;
+
+            default:
+              return; // nothing to do.
+           }
+
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );
     Ensure( testName.length() > 0 );

@@ -18,6 +18,8 @@
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
 
+#include "ds++/XGetopt.hh"
+
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressFile;
 using rtt_dsxx::SP;
@@ -59,6 +61,24 @@ int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     bool is_unittest(false);
+
+    int c;
+
+    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_options;
+    long_options["help"]       = 'h';
+    long_options["unittest"]   = 'u';
+
+    long_options["model"]      = 'm';
+    long_options["reaction"]   = 'r';
+    long_options["mg"]         = 'g';
+    long_options["bands"]      = 'b';
+    long_options["analyze"]    = 'a';
+    long_options["printc"]     = 'p';
+    long_options["collapse"]   = 'c';
+    long_options["printtable"] = 'i';
+
     if (argc <= 1)
     {
         cerr << "Must have at least one input argument (the ipcress file)." << endl;
@@ -67,17 +87,30 @@ int main(int argc, char *argv[])
     }
     else if (argc == 2)
     {
-        // test to see if it's just "--help"
-        string currentArg = argv[1];
-        if (currentArg == "--help")
-        {
-            printSyntax();
-            return 0;
-        }
-        else if( currentArg == "--unittest" )
-        {
-            is_unittest = true;
-        }
+       rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+       while ((c = rtt_dsxx::getopt (argc, argv, (char*)"hu", long_options)) != -1)
+       {
+          switch (c)
+          {
+	    // test to see if it's just "--help"
+            case 'h': // --help
+	      {
+              printSyntax();
+              return 0;
+	      break;
+	      }
+
+	    case 'u': // --unittest
+	      {
+              is_unittest = true;
+	      break;
+	      }
+
+            default:
+              return 0; // nothing to do.
+	}
+      }
+
     }
 
     // get the ipcress file name, and create the ipcress file
@@ -112,109 +145,133 @@ int main(int argc, char *argv[])
 
     double temperature = 0;
     double density = 0;
-
+    
     // loop on all arguments except the first (program name) and last (input file name)
     for (int arg = 1; arg < argc - 1; arg++)
     {
-        string currentArg = argv[arg];
 
-        if (currentArg == "--help")
-        {
-            printSyntax();
-            return 0;
-        }
-        else if (currentArg == "-d")
-        {
-            arg++; // start looking at next argument
+       string currentArg = argv[rtt_dsxx::optind];
+       rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
-            istringstream inString(argv[arg]);
-            inString >> density;
-            cerr << "Using density of " << density << endl;
-        }
-        else if (currentArg == "-t")
-        {
-            arg++; // start looking at next argument
+       while ((c = rtt_dsxx::getopt (argc, argv, (char*)"hdtmrgbapci", long_options)) != -1)
+       {
+          switch (c)
+          {
+            case 'h': // --help
+	      {
+              printSyntax();
+              return 0;
+              break;
+	      }
 
-            istringstream inString(argv[arg]);
-            inString >> temperature;
-            cerr << "Using temperature of " << temperature << endl;
-        }
-        else if (currentArg == "--model")
-        {
-            arg++; // start looking at next argument
+ 	    case 'd': // -d
+	      {
+              //arg++; // start looking at next argument
+              istringstream inString(argv[rtt_dsxx::optind]);
+              inString >> density;
+              cerr << "Using density of " << density << endl;
+              break;
+	      }
 
-            if (argv[arg][0] == 'r')
-            {
-                model = rtt_cdi::ROSSELAND;
-            }
-            else if (argv[arg][0] == 'p')
-            {
-                model = rtt_cdi::PLANCK;
-            }
-            else
-            {
-                cerr << "Unrecognized model option '"
-                     << argv[arg] << "'" << endl;
-                cerr << "Defaulting to rosseland" << endl;
-            }
-        }
-        else if (currentArg == "--reaction")
-        {
-            arg++; // start looking at next argument
+	    case 't': // -t
+	      {
+              //arg++; // start looking at next argument
+              istringstream inString(argv[rtt_dsxx::optind]);
+              inString >> temperature;
+              cerr << "Using temperature of " << temperature << endl;
+              break;
+	      }
 
-            if (argv[arg][0] == 'a')
-            {
-                reaction = rtt_cdi::ABSORPTION;
-            }
-            else if (argv[arg][0] == 's')
-            {
-                reaction = rtt_cdi::SCATTERING;
-            }
-            else if (argv[arg][0] == 't')
-            {
-                reaction = rtt_cdi::TOTAL;
-            }
-            else
-            {
-                cerr << "Unrecognized model option '"
-                     << argv[arg] << "'" << endl;
-                cerr << "Defaulting to rosseland" << endl;
-            }
+	    case 'm': // --model
+		{
+		//arg++; // start looking at next argument
+            	if (argv[rtt_dsxx::optind][0] == 'r')
+            	{
+                    model = rtt_cdi::ROSSELAND;
+            	}
+            	else if (argv[rtt_dsxx::optind][0] == 'p')
+            	{
+                    model = rtt_cdi::PLANCK;
+            	}
+            	else
+            	{
+                    cerr << "Unrecognized model option '"
+                         << argv[rtt_dsxx::optind] << "'" << endl;
+                    cerr << "Defaulting to rosseland" << endl;
+            	}
+		break;
+		}
 
-        }
-        else if (currentArg == "--mg")
-        {
-            numBands = 1;
-            cerr << "Using " << numBands << " bands (multigroup file)" << endl;
-        }
-        else if (currentArg == "--bands")
-        {
-            arg++; // start looking at next argument
+	    case 'r': // --reaction
+		{
+		//arg++; // start looking at next argument
+            	if (argv[rtt_dsxx::optind][0] == 'a')
+            	{
+                    reaction = rtt_cdi::ABSORPTION;
+            	}
+            	else if (argv[rtt_dsxx::optind][0] == 's')
+            	{
+                    reaction = rtt_cdi::SCATTERING;
+            	}
+            	else if (argv[rtt_dsxx::optind][0] == 't')
+            	{
+                    reaction = rtt_cdi::TOTAL;
+            	}
+            	else
+            	{
+                    cerr << "Unrecognized model option '"
+                         << argv[rtt_dsxx::optind] << "'" << endl;
+                    cerr << "Defaulting to rosseland" << endl;
+            	}
+		break;
+		}
 
-            istringstream inString(argv[arg]);
-            inString >> numBands;
-            cerr << "Using " << numBands << " bands" << endl;
-        }
-        else if  (currentArg == "--analyze")
-        {
-            actionToTake = 1;
-        }
-        else if  (currentArg == "--printc")
-        {
-            actionToTake = 2;
-        }
-        else if  (currentArg == "--collapse")
-        {
-            actionToTake = 3;
-        }
-        else if  (currentArg == "--printtable")
-        {
-            actionToTake = 4;
-        }
-        else
-        {
-            cerr << "Unrecognized option \"" << currentArg << "\"." << endl;
-        }
+	    case 'g': // --mg
+		{
+		numBands = 1;
+            	cerr << "Using " << numBands << " bands (multigroup file)" << endl;
+		break;
+		}
+            
+	    case 'b': // --bands
+		{
+		//arg++; // start looking at next argument
+            	istringstream inString(argv[rtt_dsxx::optind]);
+            	inString >> numBands;
+            	cerr << "Using " << numBands << " bands" << endl;
+		break;
+		}
+
+	    case 'a': // --analyze
+		{
+		actionToTake = 1;
+		break;
+		}
+
+	    case 'p': // --printc
+		{
+		actionToTake = 2;
+		break;
+		}
+
+	    case 'c': // --collapse
+		{
+		actionToTake = 3;
+		break;
+		}
+
+	    case 'i': // --printtable
+		{
+		actionToTake = 4;
+		break;
+		}
+
+	    default:
+		{
+		cerr << "Unrecognized option \"" << currentArg << "\"." << endl;
+		break;
+		}
+      }    }
     }
 
     //print the model that we're using

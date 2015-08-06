@@ -72,7 +72,7 @@ namespace rtt_dsxx
  * \endcode
  *
  * \note Assertion should always be thrown as objects on the stack and caught
- *       as references. 
+ *       as references.
  */
 /*!
  * \example ds++/test/tstAssert.cc

@@ -15,6 +15,16 @@
 #include "ds++/path.hh"
 #include <sstream>
 #include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
+// #include "diagnostics/draco_info.hh"
+#include "ds++/config.h"
+
+#include <iostream>
+#include <string.h>
+
+#include "ds++/Release.hh"
+#include "ds++/XGetopt.hh"
 
 namespace rtt_c4
 {
@@ -30,7 +40,7 @@ namespace rtt_c4
  * execution of the application.  (This might be an input deck name.)
  * \arg out_ A user specified iostream that defaults to std::cout.
  * \exception rtt_dsxx::assertion An exception with the message "Success" will
- * be thrown if \c --version is found in the argument list.  
+ * be thrown if \c --version is found in the argument list.
  *
  * The constructor initializes the base class UnitTest by setting numPasses
  * and numFails to zero.  It also prints a message that declares this to be a
@@ -38,7 +48,7 @@ namespace rtt_c4
  */
 ApplicationUnitTest::ApplicationUnitTest(
     int    & argc,
-    char **& argv,
+    char  **& argv,
     string_fp_void                   release_,
     std::string              const   applicationName_,
     std::list< std::string > const & listOfArgs_,
@@ -67,38 +77,57 @@ ApplicationUnitTest::ApplicationUnitTest(
     Require( mpiCommand.length() > 0 );
     Require( logExtension.length() > 0 );
     Require( testName.length() > 0 );
-    
+
     // header
-    
+
     out << "\n============================================="
         << "\n=== Application Unit Test: " << testName
         << "\n=== Number of Processors: "  << numProcs
         << "\n=============================================\n"
         << std::endl;
-    
-    // version tag
-    
-    out << testName << ": version " << release() << "\n" << std::endl;
-    
-    // exit if command line contains "--version"
-    
-    for( int arg = 1; arg < argc; arg++ )
-    {
-        if( string( argv[arg] ) == "--version" )
-            throw rtt_dsxx::assertion( string( "Success" ) );
 
-        if (string(argv[arg]) == "--timings")
-            reportTimings = true;
-    }
+    // version tag
+
+    out << testName << ": version " << release() << "\n" << std::endl;
+
+    // exit if command line contains "--version"
+
+    int c;
+
+    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+
+    std::map< std::string, char> long_options;
+    long_options["version"] = 'v';
+    long_options["timings"]   = 't';
+
+    //for( int iargc=1; iargc<argc; ++iargc )
+    //{
+        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vt:", long_options)) != -1)
+        {
+           switch (c)
+           {
+                case 'v': // --Version
+                  throw rtt_dsxx::assertion( string( "Success" ) );
+        	  break;
+
+	        case 't': // --timings
+                  reportTimings = true;
+                  break;
+
+                default:
+                  break;
+           }
+        }
+    //}
 
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );
-     
+
     return;
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Print a summary of the pass/fail status of ApplicationUnitTest.
  */
 void ApplicationUnitTest::status()
@@ -118,15 +147,32 @@ std::string ApplicationUnitTest::getNumProcs( int & argc, char **&argv )
 {
    Require(argc > 2);
    std::string np;
-   // command line arguments
-   for( int arg = 1; arg < argc; arg++ )
-      if( std::string( argv[arg] ) == "--np" &&
-          arg + 1 < argc )
-          np = argv[++arg];
+
+   // Setup to use getopt:
+   // Parse options:
+   //    -n [--np] N   Use 'N' number or processors for this test.
+   int c(0);
+   rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+   std::map< std::string, char> long_option;
+   long_option["np"] = 'n';
+
+   while ((c = rtt_dsxx::getopt (argc, argv, (char*)"n:", long_option)) != -1)
+   {
+       switch (c)
+       {
+           case 'n': // --np
+               np = rtt_dsxx::optarg; // argv[++arg];
+               break;
+
+           default:
+               break;
+       }
+   }
+
    Ensure( np == std::string("scalar") ||
            np == std::string("serial") ||
            std::atoi( np.c_str() ) > 0 );
-    return np;
+   return np;
 }
 
 //---------------------------------------------------------------------------//
@@ -163,7 +209,7 @@ std::string ApplicationUnitTest::buildLogExtension( std::string const & numProcs
     }
     le << ".out";
     Ensure( le.str().length() > 1 );
-    return le.str(); 
+    return le.str();
 }
 
 //---------------------------------------------------------------------------//
@@ -181,13 +227,13 @@ std::string ApplicationUnitTest::constructMpiCommand(
              std::atoi( numProcs.c_str() ) > 0 );
 
 #ifdef MSVC
-    { // The binary should exist.  Windows does not provide an execute bit.  
+    { // The binary should exist.  Windows does not provide an execute bit.
          std::string exeExists( applicationPath + applicationName + ".exe" );
          Require( std::ifstream( exeExists.c_str() ) );
     }
-#else             
-    { // The binary should exist and marked by the filesystem as executable.  
-        
+#else
+    { // The binary should exist and marked by the filesystem as executable.
+
         std::string exeExistsAndExecutable("test -x " + applicationPath
                                            + applicationName );
         Require( std::system( exeExistsAndExecutable.c_str() ) == 0 );
@@ -205,12 +251,12 @@ std::string ApplicationUnitTest::constructMpiCommand(
     else
     {
         std::ostringstream testUname;
-        
+
         // Determine system type:
         // On Linux use mpirun. On OSF1 use prun.
         // This information is set in config.h and in ApplicationUnitTest.hh.
         cmd << C4_MPICMD ;
-            
+
         // relative path to the binary.
         cmd << numProcs << " " << applicationPath + applicationName
             + rtt_dsxx::exeExtension;
@@ -233,11 +279,11 @@ void ApplicationUnitTest::addCommandLineArgument( std::string const & appArg )
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Run the application test using the arguments provided
- * 
+ *
  */
-bool ApplicationUnitTest::runTest( std::string const & appArg ) 
+bool ApplicationUnitTest::runTest( std::string const & appArg )
 {
     std::ostringstream msg;
     int errorLevel(0);
@@ -246,7 +292,7 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
     if( appArg.length() > 0 ) seperator = std::string("_");
     logFile = testPath + applicationName + seperator
               + appArg + logExtension;
-    
+
     std::ostringstream unixCommand;
     unixCommand << mpiCommand << " " << appArg << " > " << logFile;
     std::cout << "\nExecuting command from the shell: \n\t\""
@@ -256,7 +302,7 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
         problemTimer.reset();
         problemTimer.start();
     }
-    errorLevel = std::system( unixCommand.str().c_str() );
+    errorLevel = system( unixCommand.str().c_str() );
     if (reportTimings)
         problemTimer.stop();
 
@@ -277,22 +323,22 @@ bool ApplicationUnitTest::runTest( std::string const & appArg )
         << "\n\tArguments           : " << appArg
         << "\n\tOutput Logfile      : " << logFile << std::endl;
     if (reportTimings)
-        msg << "\tWall time           : " << problemTimer.sum_wall_clock()
+        msg << "\tWall time         : " << problemTimer.sum_wall_clock()
             << std::endl;
     out << msg.str() << std::endl;
     return result;
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Run all of the tests using all of the provided argument lists.
  * \bug Need to remove spaces and other invalid characters from log filename.
  */
-void ApplicationUnitTest::runTests() 
+void ApplicationUnitTest::runTests()
 {
     // Loop over list of input files.  Run specified binary with each, saving
     // the output to a log file.
-    
+
     for( std::list< std::string >::const_iterator it_arg=listOfArgs.begin();
          it_arg != listOfArgs.end();
          ++it_arg )
@@ -312,9 +358,9 @@ void ApplicationUnitTest::setNodes(std::string const &nodes)
     numProcs = nodes;
     mpiCommand = constructMpiCommand( nodes );
     logExtension = buildLogExtension( nodes );
-    
+
     // header
-    
+
     out << "\n=== Number of Processors reset to: "  << numProcs
         << std::endl;
 }
