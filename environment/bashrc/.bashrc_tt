@@ -25,16 +25,8 @@ fi
 # MODULES
 #
 
-# Work-around to add hpssoft modulefile directories to the avail command:
-dirs="compiler debugger libraries misc tools"
-for dir in $dirs; do
-  if test -d /usr/projects/hpcsoft/cle5.2/modulefiles/trinitite/$dir; then
-      module use /usr/projects/hpcsoft/cle5.2/modulefiles/trinitite/$dir
-  fi
-done
-
 module load friendly-testing user_contrib
-module load python-epd totalview
+module load python/2.7-anaconda-2.1.0 totalview
 # broken as of 2015-08-04:
 # module load hsi emacs
 
