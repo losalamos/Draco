@@ -324,15 +324,12 @@ macro( add_app_unit_test )
     # be provided to the runTests macro.
     if( ${DRACO_C4} MATCHES "MPI" AND DEFINED aut_PE_LIST )
       foreach( numPE ${aut_PE_LIST} )
-        set( iarg "0" )
         foreach( argvalue ${aut_TEST_ARGS} )
-          math( EXPR iarg "${iarg} + 1" )
           if( ${argvalue} STREQUAL "none" )
             set( argvalue "_${numPE}" )
           else()
-            # set( argname "_${numPE}_arg${iarg}" )
             string( REGEX REPLACE "[-]" "" safe_argvalue ${argvalue} )
-            string( REGEX REPLACE "[.]" "_" safe_argvalue ${safe_argvalue} )
+            string( REGEX REPLACE "[ +.]" "_" safe_argvalue ${safe_argvalue} )
             set( argname "_${numPE}_${safe_argvalue}" )
           endif()
           # Register the test...
@@ -343,15 +340,12 @@ macro( add_app_unit_test )
         endforeach()
       endforeach()
     else()
-      set( iarg "0" )
       foreach( argvalue ${aut_TEST_ARGS} )
-        math( EXPR iarg "${iarg} + 1" )
         if( ${argvalue} STREQUAL "none" )
           set( argvalue "" )
         else()
-          #set( argname "_arg${iarg}" )
           string( REGEX REPLACE "[-]" "" safe_argvalue ${argvalue} )
-          string( REGEX REPLACE "[.]" "_" safe_argvalue ${safe_argvalue} )
+          string( REGEX REPLACE "[ +.]" "_" safe_argvalue ${safe_argvalue} )
           set( argname "_${safe_argvalue}" )
         endif()
         # Register the test...
@@ -521,6 +515,15 @@ endmacro()
 ##
 ## Usage:
 ##    aut_gdiff(input_file)
+##
+## GDIFF and possibly PGDIFF must be provided when registering the
+## test:
+##
+## add_app_unit_test(
+##  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstAnaheim.cmake
+##  APP       $<TARGET_FILE_DIR:Exe_anaheim>/$<TARGET_FILE_NAME:Exe_anaheim>
+##  BUILDENV  "GDIFF=$<TARGET_FILE_DIR:Exe_gdiff>/$<TARGET_FILE_NAME:Exe_gdiff>;PGDIFF=$<TARGET_FILE_DIR:Exe_pgdiff>/$<TARGET_FILE_NAME:Exe_pgdiff>"
+##
 ##---------------------------------------------------------------------------##
 macro( aut_gdiff infile )
 
@@ -538,18 +541,35 @@ GDIFF = ${GDIFF}" )
 Did you list it when registering this test?" )
   endif()
   if( numPE )
-    if( "${numPE}" GREATER "1" )
-      FAILMSG( "You can only run gdiff for scalar or ! PE tests!")
+    if( "${numPE}" GREATER "1" AND NOT EXISTS ${PGDIFF})
+      FAILMSG( "If numPE > 1, you must provide the path to PGDIFF!")
     endif()
   endif()
 
   #----------------------------------------
-  message("
-Comparing output to goldfile via gdiff:
-   ${GDIFF} guajillo.ndi.2D.gdiff
+  # Choose pgdiff or gdiff
+
+  if( numPE AND "${numPE}" GREATER "1" )
+    set( pgdiff_gdiff  ${RUN_CMD} ${numPE} ${PGDIFF} )
+    # pretty print string
+    string( REPLACE ";" " " pgdiff_gdiff_string "${pgdiff_gdiff}" )
+    message("
+Comparing output to goldfile via pgdiff:
+   ${pgdiff_gdiff_string} ${infile}
 ")
+  else()
+    set( pgdiff_gdiff ${GDIFF} )
+    message("
+Comparing output to goldfile via gdiff:
+   ${pgdiff_gdiff} ${infile}
+")
+  endif()
+
+  #----------------------------------------
+  # Run GDIFF or PGDIFF
+
   execute_process(
-    COMMAND ${GDIFF} ${infile}
+    COMMAND ${pgdiff_gdiff} ${infile}
     RESULT_VARIABLE gdiffres
     OUTPUT_VARIABLE gdiffout
     ERROR_VARIABLE  gdifferror

@@ -11,7 +11,7 @@
 
 # Build notes: http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
 
-cmake_minimum_required(VERSION 3.2.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
 project( Draco CXX C )
 
  # Do not look for Fortran for
@@ -131,21 +131,21 @@ add_custom_target( update_rpaths
   )
 
 # Export targets
-install( EXPORT draco-targets 
-         DESTINATION cmake/draco 
-         EXPORT_LINK_INTERFACE_LIBRARIES )     
+install( EXPORT draco-targets
+         DESTINATION cmake/draco
+         EXPORT_LINK_INTERFACE_LIBRARIES )
 
-# The draco_config and draco-targets may have the string ${BUILD_TYPE} in them.  
-# Replaced this string with the correct value. The "ALL" option ensures that 
+# The draco_config and draco-targets may have the string ${BUILD_TYPE} in them.
+# Replaced this string with the correct value. The "ALL" option ensures that
 # this command is run before 'install'
 if( CMAKE_CONFIGURATION_TYPES )
    add_custom_target( update_draco_config ALL
-      COMMAND "${CMAKE_COMMAND}" 
+      COMMAND "${CMAKE_COMMAND}"
               -D Draco_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
               -D CMAKE_CFG_INTDIR=${CMAKE_CFG_INTDIR}
               -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
               -D PACKAGE_PATH=src/c4/
-              -P "${CMAKE_CURRENT_SOURCE_DIR}/config/update_draco_config.cmake" ) 
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/config/update_draco_config.cmake" )
 endif()
 
 ##---------------------------------------------------------------------------##
