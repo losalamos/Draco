@@ -11,14 +11,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
-#include <sstream>
-#include <iterator>
-#include <vector>
-#include <map>
 #include "XGetopt.hh"
+#include <vector>
 
 namespace rtt_dsxx
 {
@@ -32,8 +26,8 @@ namespace rtt_dsxx
 char    *optarg;                // global argument pointer
 int      optind = 1;            // global argv index (set to 1, to skip exe name)
 
-int getopt( int argc, char **& argv, std::string const & shortopts,
-            longopt_map map )
+int xgetopt( int argc, char **& argv, std::string const & shortopts,
+             longopt_map map )
 {
     // convert argv into a vector<string>...
     std::vector< std::string > options( argv, argv + argc );
@@ -74,7 +68,6 @@ int getopt( int argc, char **& argv, std::string const & shortopts,
                     optarg = argv[ optind ];
                 }
                 ++optind;
-                std::cout << std::endl;
                 return vshortopts[ j ];
             }
         }
@@ -98,7 +91,6 @@ int getopt( int argc, char **& argv, std::string const & shortopts,
                         optarg = argv[ optind ];
                     }
                     ++optind;
-                    std::cout << std::endl;
                     return vshortopts[ j ];
                 }
 

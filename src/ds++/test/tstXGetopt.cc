@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     long_options["append"] = 'b';
     long_options["create"] = 'c';
 
-    while ((c = rtt_dsxx::getopt (argc, argv, "abc:", long_options)) != -1)
+    while ((c = rtt_dsxx::xgetopt (argc, argv, "abc:", long_options)) != -1)
     {
         switch (c)
         {

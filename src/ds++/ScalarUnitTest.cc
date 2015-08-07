@@ -66,7 +66,7 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
 
     for( int arg = 1; arg < argc; arg++ )
     {
-	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"v:", long_option)) != -1)
+	while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"v:", long_option)) != -1)
         {
             switch (c)
             {

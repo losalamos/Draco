@@ -264,10 +264,10 @@ main(int argc, char *argv[])
 
     std::map< std::string, char> long_options;
     long_options["version"] = 'v';
-    long_options["gui"]     = 'g';       
+    long_options["gui"]     = 'g';
 
     //for( int arg = 1; arg < argc; arg++ )
-	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vg", long_options)) != -1)
+	while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vg", long_options)) != -1)
           switch (c)
           {
             case 'v': // --version

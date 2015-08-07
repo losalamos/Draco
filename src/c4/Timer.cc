@@ -63,12 +63,12 @@ Timer::Timer()
       num_intervals( 0   )
 {
 #ifdef HAVE_PAPI
-    
+
     // Initialize the PAPI library on construction of first timer if it has
     // not already be initialized through a call to Timer::initialize.
-    
+
     papi_init_();
-    
+
     // sum of papi wall clock cycles
     sum_papi_wc_cycle = 0;
     // sum of papi wall clock time (microseconds)
@@ -91,11 +91,11 @@ void Timer::print( std::ostream &out, int p ) const
 {
     using std::setw;
     using std::ios;
-    
+
     out.setf(ios::fixed, ios::floatfield);
     out.precision(p);
     out << '\n';
-    
+
     if ( num_intervals > 1 )
 	out << "LAST INTERVAL: " << '\n';
 
@@ -103,7 +103,7 @@ void Timer::print( std::ostream &out, int p ) const
     out << setw(20) << "  USER CPU TIME: " << user_cpu()   << " sec." << '\n';
     out << setw(20) << "SYSTEM CPU TIME: " << system_cpu() << " sec." << '\n';
     out << '\n';
-    
+
     if ( num_intervals > 1 )
     {
 	out << "OVER " << num_intervals << " INTERVALS: " << '\n';
@@ -119,34 +119,34 @@ void Timer::print( std::ostream &out, int p ) const
     double const miss = sum_cache_misses();
     double const hit  = sum_cache_hits();
     out << "PAPI Events:\n"
-        
+
         << setw(26) << 'L' << selected_cache << " cache misses  : "
         << sum_cache_misses()     << "\n"
-        
+
         << setw(26) << 'L' << selected_cache << " cache hits    : "
         << sum_cache_hits()       << "\n"
-        
+
         << setw(26) << "Percent hit      : "
         << 100.0 * hit / (miss+hit)  << "\n"
-        
+
         << setw(26) << "FP operations    : "
         << sum_floating_operations() << "\n"
-        
+
         << setw(26) << "Wall Clock cycles: "
         << sum_papi_wc_cycles() << "\n"
-        
+
         << setw(26) << "Wall Clock time (us): "
         << sum_papi_wc_usecs() << "\n"
-        
+
         << setw(26) << "Virtual cycles: "
         << sum_papi_virt_cycles() << "\n"
-        
+
         << setw(26) << "Virtual time (us): "
         << sum_papi_virt_usecs() << "\n"
-        
+
         << std::endl;
 #endif
-    
+
     out.flush();
 }
 
@@ -158,7 +158,7 @@ void Timer::printline( std::ostream &out,
 {
     using std::setw;
     using std::ios;
-    
+
     out.setf(ios::fixed, ios::floatfield);
     out.precision(p);
 
@@ -172,7 +172,7 @@ void Timer::printline( std::ostream &out,
 #ifdef HAVE_PAPI
     double const miss = sum_cache_misses();
     double const hit  = sum_cache_hits();
-    out << setw(w) 
+    out << setw(w)
 	<< 100.0 * hit / (miss+hit);
     if (papi_num_counters_>2)
     {
@@ -225,7 +225,7 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
 
     //for (int i=0; i<argc; ++i)
     //{
-    while ((c = rtt_dsxx::getopt (argc, argv, (char*)"c:", long_option)) != -1)
+    while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"c:", long_option)) != -1)
     switch (c)
     {
       case 'c': // --cache
@@ -244,11 +244,11 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
                      papi_events_[0] = PAPI_L1_DCM;
                      papi_events_[1] = PAPI_L1_DCH;
                      break;
-                        
+
                  case 2:
                      /* default; no action needed */
                      break;
-                        
+
                  case 3:
                      papi_events_[0] = PAPI_L3_DCM;
                      papi_events_[1] = PAPI_L3_DCH;
@@ -262,7 +262,7 @@ void Timer::initialize( int &/*argc*/, char * /*argv*/ [] )
                 argv[j] = argv[i];
             }
             j++;
-	  break;  
+	  break;
           }
       default:
         break; // nothing to do.
@@ -300,26 +300,26 @@ void Timer::papi_init_()
         {
             std::cout << "Failed to stop hardware counters with error "
                       << result << std::endl;
-            
+
             exit(EXIT_FAILURE);
         }
     }
-    
+
     if (PAPI_query_event(PAPI_FP_OPS) != PAPI_OK)
     {
         std::cout << "PAPI: No floating operations counter" << std::endl;
     }
-    
+
     if (PAPI_query_event(papi_events_[0]) != PAPI_OK)
     {
         std::cout << "PAPI: No cache miss counter" << std::endl;
     }
-    
+
     if (PAPI_query_event(papi_events_[1]) != PAPI_OK)
     {
         std::cout << "PAPI: No cache hit counter" << std::endl;
     }
-    
+
     papi_num_counters_ = PAPI_num_counters();
     if (papi_num_counters_<sizeof(papi_events_)/sizeof(int))
     {
@@ -328,14 +328,14 @@ void Timer::papi_init_()
         std::cout << "Some performance statistics will not be available."
                   << std::endl;
     }
-    
+
     // At present, some platforms *lie* about how many counters they have
     // available, reporting they have three then returning an out of
     // counters error when you actually try to assign the three counter
     // types listed above. Until we have a fix, hardwire to leave out the
     // flops count, which is the least essential of the three counts.
     papi_num_counters_ = 2;
-    
+
     if (papi_num_counters_ > sizeof(papi_events_)/sizeof(int))
         papi_num_counters_ = sizeof(papi_events_)/sizeof(int);
 
@@ -355,7 +355,7 @@ void Timer::papi_init_()
 void Timer::pause( double const pauseSeconds )
 {
     Require( pauseSeconds > 0.0 );
-    
+
     //! POSIX tms structure for beginning time.
     DRACO_TIME_TYPE tms_begin;
     //! POSIX tms structure for ending time.
@@ -370,7 +370,7 @@ void Timer::pause( double const pauseSeconds )
     }
     Ensure( elapsed >= pauseSeconds);
     return;
-}       
+}
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//

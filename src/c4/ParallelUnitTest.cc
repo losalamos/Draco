@@ -30,7 +30,7 @@ namespace rtt_c4
  * \arg release_ A function pointer to this package's release function.
  * \arg out_ A user specified iostream that defaults to std::cout.
  * \exception rtt_dsxx::assertion An exception with the message "Success" will
- * be thrown if \c --version is found in the argument list.  
+ * be thrown if \c --version is found in the argument list.
  *
  * The constructor initializes the prallel communicator (MPI) and then
  * initializes the base class UnitTest by setting numPasses and numFails to
@@ -45,34 +45,34 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
     using std::string;
 
     initialize( argc, argv );
-    
+
     Require( argc > 0 );
     Require( release != NULL );
-    
+
     // header
-    
+
     if( node() == 0 )
         out << "\n============================================="
             << "\n=== Parallel Unit Test: " << testName
             << "\n=== Number of Processors: " << nodes()
             << "\n=============================================\n"
             << std::endl;
-    
+
     // version tag
-    
+
     if( node() == 0 )
         out << testName << ": version " << release() << "\n" << std::endl;
-    
+
     // exit if command line contains "--version"
     int c;
-        
+
     //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
     std::map< std::string, char> long_option;
     long_option["version"] = 'v';
 
     //for( int arg = 1; arg < argc; arg++ )
-	while ((c = rtt_dsxx::getopt (argc, argv, (char*)"v:", long_option)) != -1)
+	while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"v:", long_option)) != -1)
           switch (c)
           {
             case 'v': // --version
@@ -87,18 +87,18 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );
     Ensure( testName.length() > 0 );
-     
+
     return;
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Destructor.
  * The destructor provides a final status report before it calls MPI_Finalize
  * and exits.
  *
  * Use global_sum to ensure that we print FAIL if any tests on any processor
- * fail. 
+ * fail.
  */
 ParallelUnitTest::~ParallelUnitTest()
 {

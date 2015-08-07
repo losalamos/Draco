@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     else if (argc == 2)
     {
        rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-       while ((c = rtt_dsxx::getopt (argc, argv, (char*)"hu", long_options)) != -1)
+       while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"hu", long_options)) != -1)
        {
           switch (c)
           {
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 
     double temperature = 0;
     double density = 0;
-    
+
     // loop on all arguments except the first (program name) and last (input file name)
     for (int arg = 1; arg < argc - 1; arg++)
     {
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
        string currentArg = argv[rtt_dsxx::optind];
        rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
-       while ((c = rtt_dsxx::getopt (argc, argv, (char*)"hdtmrgbapci", long_options)) != -1)
+       while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"hdtmrgbapci", long_options)) != -1)
        {
           switch (c)
           {
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
             	cerr << "Using " << numBands << " bands (multigroup file)" << endl;
 		break;
 		}
-            
+
 	    case 'b': // --bands
 		{
 		//arg++; // start looking at next argument

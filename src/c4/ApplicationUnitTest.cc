@@ -102,7 +102,7 @@ ApplicationUnitTest::ApplicationUnitTest(
 
     //for( int iargc=1; iargc<argc; ++iargc )
     //{
-        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vt:", long_options)) != -1)
+        while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vt:", long_options)) != -1)
         {
            switch (c)
            {
@@ -156,7 +156,7 @@ std::string ApplicationUnitTest::getNumProcs( int & argc, char **&argv )
    std::map< std::string, char> long_option;
    long_option["np"] = 'n';
 
-   while ((c = rtt_dsxx::getopt (argc, argv, (char*)"n:", long_option)) != -1)
+   while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"n:", long_option)) != -1)
    {
        switch (c)
        {

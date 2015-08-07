@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     // Parse the arguments
     //for (int arg = 1; arg < argc; arg++)
     //{
-        while ((c = rtt_dsxx::getopt (argc, argv, (char*)"vh:", long_options)) != -1)
+        while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vh:", long_options)) != -1)
         {
             switch (c)
             {
