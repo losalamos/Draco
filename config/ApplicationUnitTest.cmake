@@ -187,9 +187,14 @@ macro( aut_register_test )
     ${LABELS}
     )")
     if( DEFINED aut_RESOURCE_LOCK )
-message("  set_tests_properties( ${ctestname_base}${argname}
+      message("  set_tests_properties( ${ctestname_base}${argname}
       PROPERTIES RESOURCE_LOCK \"${aut_RESOURCE_LOCK}\" )" )
     endif()
+    if( DEFINED aut_RUN_AFTER )
+      message("  set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES DEPENDS \"${aut_RUN_AFTER}\" )" )
+    endif()
+
   endif()
 
   add_test(
@@ -217,8 +222,11 @@ message("  set_tests_properties( ${ctestname_base}${argname}
     )
   if( DEFINED aut_RESOURCE_LOCK )
     set_tests_properties( ${ctestname_base}${argname}
-      PROPERTIES
-      RESOURCE_LOCK "${aut_RESOURCE_LOCK}" )
+      PROPERTIES RESOURCE_LOCK "${aut_RESOURCE_LOCK}" )
+  endif()
+  if( DEFINED aut_RUN_AFTER )
+    set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES DEPENDS "${aut_RUN_AFTER}" )
   endif()
 
   unset(num_procs)
@@ -233,8 +241,7 @@ macro( add_app_unit_test )
     # prefix
     aut
     # list names
-    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;STDINFILE;TEST_ARGS;WORKDIR"
-    # RUN_AFTER"
+    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;STDINFILE;TEST_ARGS;WORKDIR"
     # option names
     "NONE"
     ${ARGV}
@@ -505,6 +512,48 @@ ${exenumdiff} \\
 ")
   else()
     FAILMSG("gold does not match out.
+numdiff output = ${numdiffout}" )
+  endif()
+
+endmacro()
+
+##---------------------------------------------------------------------------##
+## Run numdiff given 2 files
+##---------------------------------------------------------------------------##
+macro( aut_numdiff_2files file1 file2 )
+
+  if( NOT EXISTS ${file1} )
+    message( FATAL_ERROR "Specified file1 = ${file1} does not exisit." )
+  endif()
+  if( NOT EXISTS ${file2} )
+    message( FATAL_ERROR "Specified file2 = ${file2} does not exisit." )
+  endif()
+
+  # Assume additional arguments are to be passed to numdiff
+
+  find_program( exenumdiff numdiff )
+  if( NOT EXISTS ${exenumdiff} )
+    message( FATAL_ERROR "Numdiff not found in PATH")
+  endif()
+  if( VERBOSE_DEBUG )
+    message("   exenumdiff = ${exenumdiff}" )
+  endif()
+
+  message("Comparing files:
+${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6}
+   ${file1} \\
+   ${file2}")
+  execute_process(
+    COMMAND ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${file1} ${file2}
+    RESULT_VARIABLE numdiffres
+    OUTPUT_VARIABLE numdiffout
+    ERROR_VARIABLE  numdifferror
+    )
+  if( ${numdiffres} STREQUAL 0 )
+    PASSMSG("files match!
+")
+  else()
+    FAILMSG("files do not match.
 numdiff output = ${numdiffout}" )
   endif()
 
