@@ -285,7 +285,7 @@ macro( add_app_unit_test )
   if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
 
     # Parallel tests
-    if( "${C4_MPICMD}" MATCHES "aprun" )
+    if( "${MPIEXEC}" MATCHES "aprun" )
       set( RUN_CMD "aprun -n" )
     elseif( HAVE_MIC )
       set( RUN_CMD "${MIC_RUN_CMD} ${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}" )
@@ -296,7 +296,7 @@ macro( add_app_unit_test )
   else()
 
     # Scalar tests
-    if( "${C4_MPICMD}" MATCHES "aprun" )
+    if( "${MPIEXEC}" MATCHES "aprun" )
       set( RUN_CMD "aprun -n 1" )
     elseif( HAVE_MIC )
       set( RUN_CMD "${MIC_RUN_CMD}" )
@@ -600,23 +600,20 @@ Did you list it when registering this test?" )
 
   if( numPE AND "${numPE}" GREATER "1" )
     set( pgdiff_gdiff  ${RUN_CMD} ${numPE} ${PGDIFF} )
-    # pretty print string
-    string( REPLACE ";" " " pgdiff_gdiff_string "${pgdiff_gdiff}" )
-    message("
-Comparing output to goldfile via pgdiff:
-   ${pgdiff_gdiff_string} ${infile}
-")
   else()
-    set( pgdiff_gdiff ${GDIFF} )
-    message("
-Comparing output to goldfile via gdiff:
-   ${pgdiff_gdiff} ${infile}
-")
+    set( pgdiff_gdiff ${RUN_CMD} 1 ${GDIFF} )
   endif()
 
   #----------------------------------------
   # Run GDIFF or PGDIFF
 
+  separate_arguments(pgdiff_gdiff)
+  # pretty print string
+  string( REPLACE ";" " " pgdiff_gdiff_string "${pgdiff_gdiff}" )
+  message("
+Comparing output to goldfile via gdiff:
+   ${pgdiff_gdiff_string} ${infile}
+")
   execute_process(
     COMMAND ${pgdiff_gdiff} ${infile}
     RESULT_VARIABLE gdiffres
@@ -627,6 +624,8 @@ Comparing output to goldfile via gdiff:
     PASSMSG("gdiff returned 0.")
   else()
     FAILMSG("gdiff returned non-zero.")
+    message( "gdiff messages =
+${gdiffout}" )
   endif()
 
   # should be no occurance of "FAILED"
@@ -640,6 +639,8 @@ Comparing output to goldfile via gdiff:
   else()
     PASSMSG( "Passed identical file check ( ${POS1}, ${POS2} )." )
   endif()
+
+  unset( pgdiff_gdiff )
 
 endmacro()
 
