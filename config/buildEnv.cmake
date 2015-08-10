@@ -77,7 +77,7 @@ macro( dbsSetDefaults )
   set( DRACO_DBC_LEVEL "7" )
   if( NOT CMAKE_CONFIGURATION_TYPES AND "${CMAKE_BUILD_TYPE}" MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" )
      set( DRACO_DBC_LEVEL "0" )
-  endif()  
+  endif()
   set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING "Design-by-Contract (0-15)?" )
   # provide a constrained drop down menu in cmake-gui
   set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
@@ -87,6 +87,23 @@ macro( dbsSetDefaults )
      # BUILD_TYPE is a macro defined by the builtin 'install' target.
      set(DBSCFGDIR "\${BUILD_TYPE}/" CACHE STRING "Install subdirectory for multiconfig build tools.")
    endif()
+
+# ----------------------------------------
+# STATIC or SHARED libraries?
+# ----------------------------------------
+
+# Library type to build
+# Linux: STATIC is a lib<XXX>.a
+#        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
+# MSVC : STATIC is <XXX>.lib
+#        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
+if( NOT DEFINED DRACO_LIBRARY_TYPE )
+  set( DRACO_LIBRARY_TYPE "SHARED" )
+endif()
+set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING
+  "Keyword for creating new libraries (STATIC or SHARED).")
+# Provide a constrained drop down list in cmake-gui.
+set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
@@ -108,7 +125,9 @@ macro( dbsSetDefaults )
 
      # For libraries created within the build tree, replace the RPATH
      # in the installed files with the install location.
-     set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
+     set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH
+       "RPATH to embed in dynamic libraries and executables when
+targets are installed." FORCE )
 
      # add the automatically determined parts of the RPATH
      # which point to directories outside the build tree to the install RPATH
