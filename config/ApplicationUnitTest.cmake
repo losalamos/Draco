@@ -184,7 +184,6 @@ macro( aut_register_test )
     PASS_REGULAR_EXPRESSION \"${aut_PASS_REGEX}\"
     FAIL_REGULAR_EXPRESSION \"${aut_FAIL_REGEX}\"
     PROCESSORS              \"${num_procs}\"
-    ${LABELS}
     )")
     if( DEFINED aut_RESOURCE_LOCK )
       message("  set_tests_properties( ${ctestname_base}${argname}
@@ -194,6 +193,10 @@ macro( aut_register_test )
       message("  set_tests_properties( ${ctestname_base}${argname}
       PROPERTIES DEPENDS \"${aut_RUN_AFTER}\" )" )
     endif()
+    if( DEFINED aut_LABELS )
+      message("  set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES LABELS \"${aut_LABELS}\" )" )
+  endif()
 
   endif()
 
@@ -218,7 +221,6 @@ macro( aut_register_test )
     PASS_REGULAR_EXPRESSION "${aut_PASS_REGEX}"
     FAIL_REGULAR_EXPRESSION "${aut_FAIL_REGEX}"
     PROCESSORS              "${num_procs}"
-    ${LABELS}
     )
   if( DEFINED aut_RESOURCE_LOCK )
     set_tests_properties( ${ctestname_base}${argname}
@@ -227,6 +229,10 @@ macro( aut_register_test )
   if( DEFINED aut_RUN_AFTER )
     set_tests_properties( ${ctestname_base}${argname}
       PROPERTIES DEPENDS "${aut_RUN_AFTER}" )
+  endif()
+  if( DEFINED aut_LABELS )
+    set_tests_properties( ${ctestname_base}${argname}
+      PROPERTIES LABELS "${aut_LABELS}" )
   endif()
 
   unset(num_procs)
@@ -264,9 +270,6 @@ macro( add_app_unit_test )
   endif()
   if( NOT DEFINED aut_FAIL_REGEX )
     set( aut_FAIL_REGEX "FAILED;fails" )
-  endif()
-  if( DEFINED aut_LABELS )
-    set( LABEL "LABELS ${aut_LABELS}" )
   endif()
   if( DEFINED aut_GOLDFILE )
     if( NOT EXISTS ${aut_GOLDFILE} )
@@ -385,7 +388,6 @@ macro( add_app_unit_test )
   unset( GOLDFILE  )
   unset( TEST_ARGS )
   unset( numPE )
-  unset( LABEL )
 
 endmacro()
 
