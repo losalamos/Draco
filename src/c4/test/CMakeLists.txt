@@ -47,16 +47,6 @@ add_parallel_tests(
    )
 list( REMOVE_ITEM test_sources ${special_test} )
 
-# This test also has special arguments and spawns mpirun indirectly so
-# we register it as a scalar test.
-set( special_test ${PROJECT_SOURCE_DIR}/tstApplicationUnitTest.cc )
-add_scalar_tests(
-   SOURCES   "${special_test}"
-   DEPS      Lib_c4
-   TEST_ARGS "--np 1;--np 2;--np 4"
-   APPLICATION_UNIT_TEST  )
-list( REMOVE_ITEM test_sources ${special_test} )
-
 # This tests runs with extra arguments
 set( special_test ${PROJECT_SOURCE_DIR}/tstParallelUnitTest.cc )
 add_parallel_tests(

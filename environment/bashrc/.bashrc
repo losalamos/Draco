@@ -45,9 +45,12 @@ if test -z "$DRACO_SRC_DIR"; then
   _BINDIR=`dirname "$BASH_ARGV"`
   export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
 fi
+if test -z "$DRACO_ENV_DIR"; then
+  export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
+fi
 
 # Append PATHS (not linux specific, not ccs2 specific).
-extradirs="${DRACO_SRC_DIR}/environment/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin"
+extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin"
 for mydir in ${extradirs}; do
    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
       export PATH=${PATH}:${mydir}
@@ -155,7 +158,7 @@ case ${-} in
        alias ls='ls --color -F'
    fi
 
-   source ${DRACO_SRC_DIR}/environment/bin/bash_functions.sh
+   source ${DRACO_ENV_DIR}/bin/bash_functions.sh
 
    # Aliases for machines
 
@@ -177,7 +180,10 @@ case ${-} in
        export PS1="\h:\w [\!] % "
        export LS_COLORS=''
    else
-       export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
+       found=`declare -f npwd | wc -l`
+       if test ${found} != 0; then
+           export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
+       fi
    fi
    ;;
 
@@ -205,26 +211,26 @@ case ${target} in
 # machine with GPUs
 # backend nodes with GPUs are cn[1-4].
 darwin* | cn[0-9]*)
-   source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_darwin
+   source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin
    ;;
 
 # Cielito | Cielo
 c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_ct
+    source ${DRACO_ENV_DIR}/bashrc/.bashrc_ct
     ;;
 
 # Moonlight | Mustang | Luna | Typhoon
 mp* | ml* | mu* | pi* | wf* | lu* | ty* )
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_toss22
+    source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
     ;;
 
 # wtrw and rfta
 red-wtrw* | rfta*)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_rfta
+    source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
     ;;
 # trinitite (tt-fey)
 tt-fey* | tt-login*)
-    source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_tt
+    source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
     ;;
 # Assume CCS machine (ccscs[0-9] or personal workstation)
 *)
@@ -232,11 +238,11 @@ tt-fey* | tt-login*)
         # assume this is a CCS LAN machine (64-bit)
         if test `uname -m` = 'x86_64'; then
           # draco environment only supports 64-bit linux...
-          source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux64
+          source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux64
         else
           echo "Draco's environment is not fully supported on 32-bit Linux."
           echo "Module support may not be available. Email kgt@lanl.gov for more information."
-          source ${DRACO_SRC_DIR}/environment/bashrc/.bashrc_linux32
+          source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
         fi
     fi
     export NoModules=1

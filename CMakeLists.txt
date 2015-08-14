@@ -14,11 +14,11 @@
 cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
 project( Draco CXX C )
 
- # Do not look for Fortran for
- # 1. XCode based Generators, or
- # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
+# Do not look for Fortran for
+# 1. XCode based Generators, or
+# 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
 #    look for Fortran).
- # 3. Ninja, Codeblocks or Eclipse CDT4 generators.
+# 3. Ninja, Codeblocks or Eclipse CDT4 generators.
 # 4. Unix Makefile generators when $ENV{FC} is not set (clang on Linux)
 if( ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
     ( NOT "$ENV{FC}x" STREQUAL "x" OR CMAKE_Fortran_COMPILER ))
