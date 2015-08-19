@@ -50,9 +50,9 @@ case ty*.localdomain:
     module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing user_contrib
     module unload intel openmpi
-    module load intel/14.0.4 openmpi
+    module load intel/15.0.3 openmpi
     module load git svn emacs
-    module load cmake/3.3.0 numdiff lapack/3.5.0 random123 eospac
+    module load cmake/3.3.1 numdiff lapack/3.5.0 random123 eospac
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
@@ -112,7 +112,7 @@ case seqlac*:
     use random123
 
     # LLNL dotkits
-    use cmake321
+    use cmake331
     use erase=del
     use alia1++
 

@@ -61,7 +61,7 @@ and add turn-on-auto-fill to the mppl-mode-hook."
 auto-mode-alist."
   (interactive)
   (progn
-    (autoload 'tcl-mode   "tcl-mode" nil t)
+    (autoload 'tcl "tcl" nil t)
     (setq auto-mode-alist
 	  (append '(("\\.tcl$" . tcl-mode)
 		    ("\\.itk$" . tcl-mode)
@@ -71,7 +71,8 @@ auto-mode-alist."
     (defun draco-tcl-mode-hook ()
       "draco-mode hooks added to TCL mode."
       (turn-on-draco-mode)
-      (turn-on-auto-fill))
+      (turn-on-auto-fill)
+      (setq tcl-indent-level 2)
     (add-hook 'tcl-mode-hook 'draco-tcl-mode-hook)))
 
 ;; ========================================
