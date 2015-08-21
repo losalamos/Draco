@@ -114,12 +114,25 @@ Prefix dir  : ${CMAKE_INSTALL_PREFIX}
 Source dir  : ${Draco_SOURCE_DIR}
 Build dir   : ${Draco_BINARY_DIR}
 
-CXX Compiler: ${CMAKE_CXX_COMPILER}
-CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}
-C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
-if( _LANGUAGES_ MATCHES Fortran)
-   message("Fortran     : ${CMAKE_Fortran_COMPILER}")
-   message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
+CXX Compiler: ${CMAKE_CXX_COMPILER}")
+if( CMAKE_CONFIGURATION_TYPES )
+    message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ")
+    message("CXX Debug FL: ${CMAKE_CXX_FLAGS_DEBUG}")
+    message("CXX Release : ${CMAKE_CXX_FLAGS_RELEASE}")
+    if( _LANGUAGES_ MATCHES Fortran)
+      message("Fortran     : ${CMAKE_Fortran_COMPILER}")
+      message("FC FLAGS    : ${CMAKE_Fortran_FLAGS}")
+      message("FC Debug FLA: ${CMAKE_Fortran_FLAGS_DEBUG}")
+      message("FC Release F: ${CMAKE_Fortran_FLAGS_RELEASE}")
+    endif()
+else()
+    string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_CAPS )
+    message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
+    message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
+    if( _LANGUAGES_ MATCHES Fortran)
+      message("Fortran     : ${CMAKE_Fortran_COMPILER}")
+      message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
+    endif()
 endif()
 if( CAFS_Fortran_COMPILER )
    message("CAFS Fortran: ${CAFS_Fortran_COMPILER}")
