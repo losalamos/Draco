@@ -278,6 +278,9 @@ endmacro()
 # Setup GSL (any)
 #------------------------------------------------------------------------------
 macro( setupGSL )
+  if( TARGET GSL::gsl )
+    return()
+  endif()
   message( STATUS "Looking for GSL..." )
 
   # If gsl-config is in the PATH, query the value for GSL_ROOT_DIR

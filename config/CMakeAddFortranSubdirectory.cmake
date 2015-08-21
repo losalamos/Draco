@@ -248,13 +248,35 @@ function(cmake_add_fortran_subdirectory subdir)
   # create imported targets for all libraries
   set(idx 0)
   foreach(lib ${libraries})
-    list(GET target_names idx tgt)
+    if( ARGS_VERBOSE )
+      message("    add_library(${tgt} SHARED IMPORTED GLOBAL)")
+    endif()
     add_library(${tgt} SHARED IMPORTED GLOBAL)
-    set_target_properties(${tgt} PROPERTIES
-      IMPORTED_LOCATION "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-      IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran"
-      IMPORTED_LINK_INTERFACE_LIBRARIES "${ARGS_DEPENDS}"
-      )
+    if( CMAKE_RUNTIME_OUTPUT_DIRECTORY )
+      if( ARGS_VERBOSE )
+        message("    set_target_properties(${tgt} PROPERTIES
+        IMPORTED_LOCATION \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}\"
+        IMPORTED_LINK_INTERFACE_LIBRARIES \"${ARGS_DEPENDS}\"
+        )    ")
+      endif()
+      set_target_properties(${tgt} PROPERTIES
+        IMPORTED_LOCATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran"
+        IMPORTED_LINK_INTERFACE_LIBRARIES "${ARGS_DEPENDS}"
+        )
+    else()
+      if( ARGS_VERBOSE )
+        message("    set_target_properties(${tgt} PROPERTIES
+        IMPORTED_LOCATION \"${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}\"
+        IMPORTED_LINK_INTERFACE_LIBRARIES \"${ARGS_DEPENDS}\"
+        )")
+      endif()
+      set_target_properties(${tgt} PROPERTIES
+        IMPORTED_LOCATION "${binary_dir}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran"
+        IMPORTED_LINK_INTERFACE_LIBRARIES "${ARGS_DEPENDS}"
+        )
+    endif()
     if( WIN32 )
       set_target_properties(${tgt} PROPERTIES
         IMPORTED_IMPLIB "${library_dir}/lib${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}" )
@@ -305,6 +327,8 @@ cmake_add_fortran_subdirectory
    Target deps: ${project_name}_build --> ${ARGS_DEPENDS}
    Extra args : ${ARGS_CMAKE_COMMAND_LINE}
       ")
+      include(print_target_properties)
+      echo_targets(${tgt})
   endif()
   endforeach()
 

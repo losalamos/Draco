@@ -104,11 +104,20 @@ feature_summary(
    INCLUDE_QUIET_PACKAGES
    DESCRIPTION "Disabled features:")
 
-string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
+if( CMAKE_CONFIGURATION_TYPES )
+    set( Draco_BUILD_TYPE "Multi-config")
+else()
+  set( Draco_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+  string( TOUPPER ${CMAKE_BUILD_TYPE} Draco_BUILD_TYPE )
+endif()
+
 message("Draco build summary:
 
 Version     : Draco ${DRACO_VERSION_FULL}
-Build type  : ${CMAKE_BUILD_TYPE}
+Build type  : ${Draco_BUILD_TYPE}
+            : DRACO_DBC_LEVEL   = ${DRACO_DBC_LEVEL}
+            : DRACO_DIAGNOSTICS = ${DRACO_DIAGNOSTICS}
+            : DRACO_TIMING      = ${DRACO_TIMING}
 C4 Model    : ${DRACO_C4}
 Prefix dir  : ${CMAKE_INSTALL_PREFIX}
 Source dir  : ${Draco_SOURCE_DIR}
@@ -126,12 +135,11 @@ if( CMAKE_CONFIGURATION_TYPES )
       message("FC Release F: ${CMAKE_Fortran_FLAGS_RELEASE}")
     endif()
 else()
-    string( TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_CAPS )
-    message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
-    message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
+    message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${Draco_BUILD_TYPE}}")
+    message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${Draco_BUILD_TYPE}}")
     if( _LANGUAGES_ MATCHES Fortran)
       message("Fortran     : ${CMAKE_Fortran_COMPILER}")
-      message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}")
+      message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${Draco_BUILD_TYPE}}")
     endif()
 endif()
 if( CAFS_Fortran_COMPILER )
@@ -140,10 +148,7 @@ endif()
 message(
 "mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
 message("Library Type: ${DRACO_LIBRARY_TYPE}
-
-DRACO_DBC_LEVEL  : ${DRACO_DBC_LEVEL}")
-message("DRACO_DIAGNOSTICS: ${DRACO_DIAGNOSTICS}
-DRACO_TIMING     : ${DRACO_TIMING}")
+")
 
 # Push some variables up one level
 set( Draco_EXPORT_TARGET_PROPERTIES
