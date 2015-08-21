@@ -235,7 +235,7 @@ function(cmake_add_fortran_subdirectory subdir)
     BINARY_DIR        ${build_dir}
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=${ep_build_type} -P ${build_dir}/config_cafs_proj.cmake
     BUILD_COMMAND     ${CMAKE_COMMAND} -P ${build_dir}/build_cafs_proj.cmake
-    INSTALL_COMMAND   ""
+    #INSTALL_COMMAND   ""
     )
   # make the external project always run make with each build
   externalproject_add_step(${project_name}_build forcebuild

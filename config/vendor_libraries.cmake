@@ -27,7 +27,7 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
 
-  message( STATUS "Looking for lapack...")
+message( STATUS "Looking for lapack...")
   set( lapack_FOUND FALSE )
   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
   foreach( version 3.4.1 3.4.2 3.5.0 )
@@ -278,46 +278,47 @@ endmacro()
 # Setup GSL (any)
 #------------------------------------------------------------------------------
 macro( setupGSL )
-  if( TARGET GSL::gsl )
-    return()
-  endif()
-  message( STATUS "Looking for GSL..." )
+  if( NOT TARGET GSL::gsl )
 
-  # If gsl-config is in the PATH, query the value for GSL_ROOT_DIR
-  # This bit of logic is needed on Cielo/Cielito because gsl is not in
-  # a system location (it is provided by a module)
-  if( "$ENV{GSL_ROOT_DIR}x" STREQUAL "x" AND "${GSL_ROOT_DIR}x" STREQUAL "x")
-    find_program( GSL_CONFIG gsl-config )
-    if( EXISTS "${GSL_CONFIG}" )
-      exec_program( "${GSL_CONFIG}"
-        ARGS --prefix
-        OUTPUT_VARIABLE GSL_ROOT_DIR )
+    message( STATUS "Looking for GSL..." )
+
+    # If gsl-config is in the PATH, query the value for GSL_ROOT_DIR
+    # This bit of logic is needed on Cielo/Cielito because gsl is not in
+    # a system location (it is provided by a module)
+    if( "$ENV{GSL_ROOT_DIR}x" STREQUAL "x" AND "${GSL_ROOT_DIR}x" STREQUAL "x")
+      find_program( GSL_CONFIG gsl-config )
+      if( EXISTS "${GSL_CONFIG}" )
+        exec_program( "${GSL_CONFIG}"
+          ARGS --prefix
+          OUTPUT_VARIABLE GSL_ROOT_DIR )
+      endif()
     endif()
+
+    find_package( GSL QUIET REQUIRED )
+    if( GSL_FOUND )
+      message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
+
+      # Export GSL target information to draco-config.cmake
+      # Choose items for props list via:
+      # include(print_target_properties)
+      # echo_targets("GSL::gsl;GSL::gslcblas")
+      set( props "BUILD_WITH_INSTALL_RPATH;GNUtoMS;IMPORTED_CONFIGURATIONS;IMPORTED_IMPLIB;IMPORTED_IMPLIB_DEBUG;IMPORTED_LINK_INTERFACE_LANGUAGES;INTERFACE_LINK_LIBRARIES;IMPORTED_LOCATION_DEBUG;IMPORTED_LOCATION_RELEASE;IMPORTED;INSTALL_RPATH;INSTALL_RPATH_USE_LINK_PATH;INTERFACE_INCLUDE_DIRECTORIES;POSITION_INDEPENDENT_CODE;SKIP_BUILD_RPATH;IMPORTED_LOCATION" )
+
+      save_vendor_imported_library_to_draco_config(
+        "GSL::gsl;GSL::gslcblas" "${props}" )
+    else()
+      message( STATUS "Looking for GSL.......not found" )
+    endif()
+
+    #=============================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( GSL PROPERTIES
+      DESCRIPTION "Gnu Scientific Library"
+      URL "www.gnu.org/software/gsl"
+      PURPOSE "The GNU Scientific Library (GSL) is a numerical library for C and C++ programmers."
+      )
+
   endif()
-
-  find_package( GSL QUIET REQUIRED )
-  if( GSL_FOUND )
-    message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
-
-    # Export GSL target information to draco-config.cmake
-    # Choose items for props list via:
-    # include(print_target_properties)
-    # echo_targets("GSL::gsl;GSL::gslcblas")
-    set( props "BUILD_WITH_INSTALL_RPATH;GNUtoMS;IMPORTED_CONFIGURATIONS;IMPORTED_IMPLIB;IMPORTED_IMPLIB_DEBUG;IMPORTED_LINK_INTERFACE_LANGUAGES;INTERFACE_LINK_LIBRARIES;IMPORTED_LOCATION_DEBUG;IMPORTED_LOCATION_RELEASE;IMPORTED;INSTALL_RPATH;INSTALL_RPATH_USE_LINK_PATH;INTERFACE_INCLUDE_DIRECTORIES;POSITION_INDEPENDENT_CODE;SKIP_BUILD_RPATH;IMPORTED_LOCATION" )
-
-    save_vendor_imported_library_to_draco_config(
-      "GSL::gsl;GSL::gslcblas" "${props}" )
-else()
-  message( STATUS "Looking for GSL.......not found" )
-endif()
-
-#=============================================================================
-# Include some information that can be printed by the build system.
-set_package_properties( GSL PROPERTIES
-  DESCRIPTION "Gnu Scientific Library"
-  URL "www.gnu.org/software/gsl"
-  PURPOSE "The GNU Scientific Library (GSL) is a numerical library for C and C++ programmers."
-  )
 
 endmacro()
 
