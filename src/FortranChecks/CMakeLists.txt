@@ -42,6 +42,30 @@ set_target_properties( Lib_FC_Derived_Type PROPERTIES FOLDER FortranChecks )
 # to generate the library external to the main project.
 include(CMakeAddFortranSubdirectory)
 
+# CMake does not support storing a list of lists when sending data to a macro.
+# Because Draco_TPL_INCLUDE_DIRS is a list and we want to stuff it into
+# the list build_system_state, recode Draco_TPL_INCLUDE_DIRS by replacing
+# semicolons with triple underscores.  The list will be reconstructed in
+# the subdirectory's CMakeLists.txt.
+string( REGEX REPLACE ";" "___" tmp "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
+
+# The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja)
+# will need some of the current build system parameters:
+set( draco_DIR ${Draco_SOURCE_DIR}/config )
+set( build_system_state
+  "-Ddraco_DIR=${draco_DIR}"
+  "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
+  "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
+  "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
+  )
+if( WIN32 )
+  # For Win32 builds, DLL and applications are built in the directory
+  # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
+  set( build_system_state "${build_system_state};-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${Draco_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
+else()
+  set( build_system_state "${build_system_state};-DUSE_CUDA=${USE_CUDA}" )
+endif()
+
 # CMake will put some run scripts in $build_dir/f90sub Another directory for
 # the build is generated at $build_dir/FortranChecks_f90sub_build-prefix
 cmake_add_fortran_subdirectory(
@@ -54,8 +78,8 @@ cmake_add_fortran_subdirectory(
                                # --> librtt_FC_f90.dll.
   TARGET_NAMES Lib_FC_f90sub
   DEPENDS      "Lib_FC_Derived_Type;Lib_dsxx"
-  CMAKE_COMMAND_LINE "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
   NO_EXTERNAL_INSTALL
+  CMAKE_COMMAND_LINE "${build_system_state}"
   # VERBOSE
 )
 

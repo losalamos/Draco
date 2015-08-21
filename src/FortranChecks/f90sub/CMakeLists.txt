@@ -16,19 +16,14 @@ project( FortranChecks_f90sub Fortran )
 # parsed independent of parent folders, so we need  some basic setup.
 # ---------------------------------------------------------------------------- #
 # Build system configuration files are located here.
-if( NOT EXISTS ${PROJECT_SOURCE_DIR}/../../../config )
-   message( FATAL_ERROR "can't find ${PROJECT_SOURCE_DIR}/../../../config" )
+if( NOT EXISTS ${draco_DIR} )
+  message( FATAL_ERROR "can't find draco/config directory at ${draco_DIR}" )
 else()
-   set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../../config )
+  set( CMAKE_MODULE_PATH ${draco_DIR} )
 endif()
 
 # Provide helper functions used by component CMakeLists.txt files.
 include( component_macros )
-
-# ---------------------------------------------------------------------------- #
-# Source files
-# ---------------------------------------------------------------------------- #
-file( GLOB f90sources *.f90 )
 
 # ---------------------------------------------------------------------------- #
 # Build package libraries
@@ -38,20 +33,27 @@ file( GLOB f90sources *.f90 )
 # library targets Lib_dsxx and Lib_FC_derived_typ will not be defined.
 # We must manually find these libraries.
 #
-# Note: A more complex example of CMakeAddFortranSubdirectory can be found in jayenne/src/wedgehog/ftest.
+# Note: A more complex example of CMakeAddFortranSubdirectory can be
+# found in jayenne/src/wedgehog/ftest.
 
 if(NOT TARGET Lib_dsxx)
-   include(CMakeAddFortranSubdirectory)
-   get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
-   cafs_create_imported_targets( Lib_dsxx "rtt_ds++" "${draco_BINARY_DIR}/src/ds++" CXX )
-   cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type" "${draco_BINARY_DIR}/src/FortranChecks" CXX )
-   
+  # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see wedgehog/CMakeLists.txt)
+  # by replacing triple underscores with a semicolon.  This must be done before calling
+  # find_package(draco)
+  string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS "${Draco_TPL_INCLUDE_DIRS}" )
+
+  include(CMakeAddFortranSubdirectory)
+  get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
+  cafs_create_imported_targets( Lib_dsxx "rtt_ds++" "${draco_BINARY_DIR}/src/ds++" CXX )
+  cafs_create_imported_targets( Lib_FC_Derived_Type "rtt_FC_Derived_Type" "${draco_BINARY_DIR}/src/FortranChecks" CXX )
+
   # If we get here, we also need to use the Draco scripts to setup compiler flags and MPI options
   include( buildEnv )
   dbsSetDefaults()
   # On Win32, set the default top level output directory:
   if(WIN32)
-     set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE} CACHE PATH "Build runtime objects at this location.")
+    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${draco_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+      CACHE PATH "Build runtime objects at this location.")
   endif()
   include( platform_checks )
   query_openmp_availability()
@@ -61,14 +63,19 @@ if(NOT TARGET Lib_dsxx)
   #setupVendorLibraries()
 endif()
 
+# ---------------------------------------------------------------------------- #
+# Source files
+# ---------------------------------------------------------------------------- #
+file( GLOB f90sources *.f90 )
+
 add_component_library(
-   TARGET       Lib_FC_f90sub
-   LIBRARY_NAME FC_f90sub
-   SOURCES      "${f90sources}"
-   LINK_LANGUAGE "Fortran"
-   TARGET_DEPS   "Lib_FC_Derived_Type;Lib_dsxx"
-   NOEXPORT )
-  
+  TARGET       Lib_FC_f90sub
+  LIBRARY_NAME FC_f90sub
+  SOURCES      "${f90sources}"
+  LINK_LANGUAGE "Fortran"
+  TARGET_DEPS   "Lib_FC_Derived_Type;Lib_dsxx"
+  NOEXPORT )
+
 # Debug target properties:
 #include(print_target_properties)
 #echo_targets("Lib_FC_f90sub;Lib_FC_Derived_Type")
