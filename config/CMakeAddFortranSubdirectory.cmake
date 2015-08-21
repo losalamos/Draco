@@ -247,6 +247,7 @@ function(cmake_add_fortran_subdirectory subdir)
     )
   # create imported targets for all libraries
   set(idx 0)
+  list(GET target_names idx tgt)
   foreach(lib ${libraries})
     if( ARGS_VERBOSE )
       message("    add_library(${tgt} SHARED IMPORTED GLOBAL)")
