@@ -217,11 +217,11 @@ void doit(size_t N, size_t W){
     // kind of #ifndef might be appropriate.  N.B.  There's another
     // exception test below and one in ut_M128.cpp
     // check that at throws
-    Remember(bool caught = false);
+    rngRemember(bool caught = false);
     try{
         iota.at(N);
     }catch(std::out_of_range&){
-        Remember(caught = true);
+        rngRemember(caught = true);
     }
     assert(caught);
 
@@ -252,7 +252,7 @@ void doit(size_t N, size_t W){
         mask >>= (32-W);
     for(size_t i=0; i<N; ++i){
         for(size_t j=0; j<W; j+=32){
-            Remember(uint32_t aj = get32(aone[i], j/32));
+            rngRemember(uint32_t aj = get32(aone[i], j/32));
             assert( aj == (mask&v32.at(jj)) );
             jj++;
         }

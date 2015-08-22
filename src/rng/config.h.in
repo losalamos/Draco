@@ -20,10 +20,11 @@
 #endif
 #endif
 
+/* Use a unique name for this Remember macro */
 #ifdef NDEBUG
-#define Remember(c)
+#define rngRemember(c)
 #else
-#define Remember(c) c
+#define rngRemember(c) c
 #endif
 
 #endif /* rtt_rng_config_h */

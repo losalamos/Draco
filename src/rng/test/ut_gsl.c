@@ -46,8 +46,8 @@ int main(int argc, char **argv){
     gsl_rng *r;
     gsl_rng *rcopy;
     unsigned long x;
-    Remember(unsigned long save);
-    Remember(unsigned long saved[5]);
+    rngRemember(unsigned long save);
+    rngRemember(unsigned long saved[5]);
     double sum = 0.;
     (void)argc; (void)argv; /* unused */
 
@@ -62,7 +62,7 @@ int main(int argc, char **argv){
     printf("%s\nulongs from %s in initial state\n", argv[0], gsl_rng_name(r));
     for (i = 0; i < 5; i++) {
 	x = gsl_rng_get(r);
-        Remember(saved[i] = x);
+        rngRemember(saved[i] = x);
 	printf("%d: 0x%lx\n", i, x);
 	assert(x != 0);
     }
@@ -73,7 +73,7 @@ int main(int argc, char **argv){
         printf("%d: %.4g\n", i, z);
     }
     assert( sum < 0.9*5 && sum > 0.1*5 && (long)"sum must be reasonably close  to 0.5*number of trials");
-    Remember(save =) gsl_rng_get(r);
+    rngRemember(save =) gsl_rng_get(r);
 
     gsl_rng_set(r, 0xdeadbeef); /* set a non-zero seed */
     printf("ulongs from %s after seed\n", gsl_rng_name(r));
@@ -89,7 +89,7 @@ int main(int argc, char **argv){
     sum = 0.;
     for (i = 0; i < 5; i++) {
         double x = gsl_rng_uniform(r);
-        Remember(double y = gsl_rng_uniform(rcopy));
+        rngRemember(double y = gsl_rng_uniform(rcopy));
 	printf("%d: %.4g\n", i, x);
         sum += x;
         assert(x == y);
