@@ -5,7 +5,7 @@
 #MSUB -q pdebug
 #MSUB -l walltime=02:00:00
 #MSUB -oe
-#MSUB -o /usr/gapps/jayenne/draco-6_12_1/logs/release_sq_xl.log
+#MSUB -o /usr/gapps/jayenne/draco-6_17_0/logs/release_sq_xl.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -65,7 +65,7 @@ export OMP_NUM_THREADS=4
 # Define your source and build information here.
 
 PATCH_VER=0
-ddir="draco-6_14_${PATCH_VER}"
+ddir="draco-6_17_${PATCH_VER}"
 platform=sq
 dmpi=mpich215
 df90=xl141
@@ -126,7 +126,7 @@ for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
         echo "#    Package: $package"
         echo "#    -------"
         echo
-        
+
         source_dir="$source_prefix/source/$package"
         build_dir="$build_prefix/$version/${package:0:1}"
         if test -d ${build_dir}; then
@@ -156,4 +156,3 @@ done
 # Set access to top level install dir.
 run "chmod $install_permissions $install_prefix"
 run "chgrp -R $install_group $install_prefix"
-

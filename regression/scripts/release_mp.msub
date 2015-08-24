@@ -14,6 +14,16 @@
 ##  - $dcpp
 ## Update CONFIG_BASE
 
+# Helpful functions:
+die () { echo "ERROR: $1"; exit 1;}
+
+run () {
+    if [ $dry_run ]
+    then echo $1
+    else eval $1
+    fi
+}
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -30,20 +40,19 @@ fi
 build_permissions="g+rwX"
 
 # environment (use draco modules)
-module use /usr/projects/draco/vendors/Modules/hpc
-module use /usr/projects/draco/vendors/Modules/tu-fe
-module purge
-module load friendly-testing user_contrib
-module load cmake/3.2.2 svn numdiff
-module load intel/14.0.4 openmpi/1.6.5
-module load random123 eospac/v6.2.4
-module list
+run "module use /usr/projects/draco/vendors/Modules/hpc"
+run "module purge"
+run "module load friendly-testing user_contrib"
+run "module load cmake/3.2.2 svn numdiff"
+run "module load intel/14.0.4 openmpi/1.6.5"
+run "module load random123 eospac/v6.2.4"
+run "module list"
 
 CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # Define your source and build information here.
 
-ddir=draco-6_16_0
+ddir=draco-6_17_0
 platform=mp
 dmpi=openmpi165
 df90=intel1404
@@ -79,16 +88,6 @@ install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 # debug_nodbc, opt, and opt_log.
 #
 # =============================================================================
-
-# Helpful functions:
-die () { echo "ERROR: $1"; exit 1;}
-
-run () {
-    if [ $dry_run ]
-    then echo $1
-    else eval $1
-    fi
-}
 
 # Define the meanings of various configure features:
 

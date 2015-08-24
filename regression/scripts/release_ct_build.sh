@@ -3,13 +3,23 @@
 #MSUB -l walltime=01:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_16_0/logs/release_ct_build.log
+#MSUB -o /usr/projects/draco/draco-6_17_0/logs/release_ct_build.log
 
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
 
-echo "Here we go..." > /usr/projects/draco/draco-6_16_0/logs/release_ct_build.log
+echo "Here we go..." > /usr/projects/draco/draco-6_17_0/logs/release_ct_build.log
+
+# Helpful functions:
+die () { echo "ERROR: $1"; exit 1;}
+
+run () {
+    echo $1
+    if ! test $dry_run; then
+    eval $1
+    fi
+}
 
 # Permissions - new files should be marked u+rwx,g+rwx,o+rx
 umask 0002
@@ -23,29 +33,29 @@ fi
 build_permissions="g+rwX"
 
 # environment (use draco modules)
-module use /usr/projects/draco/vendors/Modules/ct-fe
-module use /usr/projects/draco/vendors/Modules/hpc
+run "module use /usr/projects/draco/vendors/Modules/hpc"
 
-module load user_contrib
-module unload PrgEnv-intel PrgEnv-pgi
-module unload cmake numdiff svn gsl
-module unload papi perftools trilinos
-module load PrgEnv-intel
-module unload xt-libsci xt-totalview
-module swap intel intel/14.0.4.211
-module load gsl/1.15
-module load cmake/3.2.2 numdiff svn
-module load trilinos SuperLU_DIST
-module load ParMetis ndi random123 eospac/v6.2.4
-module list
+run "module load friendly-testing user_contrib"
+run "module unload PrgEnv-intel PrgEnv-pgi"
+run "module unload cmake numdiff svn"
+run "module unload papi perftools trilinos gsl"
+run "module load PrgEnv-intel"
+run "module unload xt-libsci xt-totalview intel"
+run "module swap intel intel/14.0.4.211"
+# run "module swap intel intel/15.0.3"
+run "module load gsl/1.15"
+run "module load cmake/3.3.1 numdiff svn"
+run "module load trilinos SuperLU_DIST"
+run "module load ParMetis ndi random123 eospac/v6.2.4"
+run "module list"
 
 export OMP_NUM_THREADS=8
 
 # Define your source and build information here.
 
-ddir="draco-6_16_0"
+ddir="draco-6_17_0"
 platform="ct"
-dmpi=craympich2
+dmpi=craympich2 # mpt string?
 df90=intel1404
 dcpp=intel1404
 
@@ -86,16 +96,6 @@ printenv
 # debug_nodbc, opt, and opt_log.
 #
 # =============================================================================
-
-# Helpful functions:
-die () { echo "ERROR: $1"; exit 1;}
-
-run () {
-    echo $1
-    if ! test $dry_run; then
-    eval $1
-    fi
-}
 
 # Define the meanings of various configure features:
 # DBC_OFF="-DDRACO_DBC_LEVEL=0"

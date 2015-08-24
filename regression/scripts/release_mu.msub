@@ -3,7 +3,7 @@
 #MSUB -l walltime=04:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_mu_intel14.log
+#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_mu.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -13,6 +13,16 @@
 ##  - $df90
 ##  - $dcpp
 ## Update CONFIG_BASE
+
+# Helpful functions:
+die () { echo "ERROR: $1"; exit 1;}
+
+run () {
+    if [ $dry_run ]
+    then echo $1
+    else eval $1
+    fi
+}
 
 #----------------------------------------------------------------------#
 # The script starts here
@@ -26,28 +36,22 @@ install_permissions="g+rwX,o-rwX"
 
 # environment (use draco modules)
 # Loading modules
-ddir=draco-6_13_0
-dirs="/usr/projects/draco/$ddir/source/draco/environment/Modules/hpc /usr/projects/draco/$ddir/source/draco/environment/Modules/tu-fe"
-for dir in $dirs; do 
-  if test -z `echo $MODULEPATH | grep $dir`; then 
-    echo "module use $dir"
-    module use $dir
-  fi
-done
-module purge
-module load friendly-testing cmake/3.0.0 svn numdiff
-module load intel/14.0.2 openmpi/1.6.5
-module load gsl/1.14 lapack/3.4.1 random123 eospac/v6.2.4beta.3
-module list
+run "module use /usr/projects/draco/vendors/Modules/hpc"
+run "module purge"
+run "module load friendly-testing cmake/3.0.0 svn numdiff"
+run "module load intel/14.0.4 openmpi/1.6.5"
+run "module load random123 eospac/v6.2.4"
+run "module list"
 
 CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # Define your source and build information here.
 
+ddir=draco-6_17_0
 platform=mu
 dmpi=openmpi165
-df90=intel1402
-dcpp=intel1402
+df90=intel1404
+dcpp=intel1404
 
 source_prefix="/usr/projects/draco/$ddir"
 build_prefix="/scratch/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
@@ -67,10 +71,10 @@ install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 # | build_prefix   | build       | Destination directory of the build trees.  |
 # | MAKE           | platform    | Make command.                              |
 # |----------------+-------------+--------------------------------------------|
-# 
+#
 # Optionally, if "dry_run" is defined, all commands are output to
 # stdio, but not executed. This can be useful to create a "rebuild"
-# script which repeats the configure and build process. 
+# script which repeats the configure and build process.
 #
 #
 # Results:
@@ -79,16 +83,6 @@ install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 # debug_nodbc, opt, and opt_log.
 #
 # =============================================================================
-
-# Helpful functions:
-die () { echo "ERROR: $1"; exit 1;}
-
-run () {
-    if [ $dry_run ]
-    then echo $1
-    else eval $1
-    fi
-}
 
 # Define the meanings of various configure features:
 
@@ -138,7 +132,7 @@ do
         echo "#    Package: $package"
         echo "#    -------"
         echo
-        
+
         source_dir="$source_prefix/source/$package"
         build_dir="$build_prefix/$version/${package:0:1}"
         if test -d ${build_dir}; then
@@ -167,4 +161,3 @@ done
 # Set access to top level install dir.
 run "chmod $install_permissions $install_prefix"
 run "chgrp -R othello $install_prefix"
-
