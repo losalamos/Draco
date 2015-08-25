@@ -73,42 +73,43 @@ const std::string release()
  */
 const std::string author_list()
 {
-// 74023: kellyt
-// 46190: kgbudge
-// 10051: tme
-// 5898: bta
-// 4806: lowrie
+// 75332: kellyt
+// 45641: kgbudge
+// 9800: tme
+// 5897: bta
+// 4764: lowrie
 // 3954: mcghee
-// 3635: mwbuksas
-// 3403: gaber
-// 2358: warsa
-// 942: rsqrd
-// 875: wollaber
+// 3632: mwbuksas
+// 3446: gaber
+// 2204: warsa
 // 832: sethrj
-// 579: jhchang
+// 796: wollaber
+// 744: kwang
+// 629: rsqrd
+// 565: jhchang
 // 434: talbotp
-// 191: furnish
+// 184: furnish
 // 169: clevelam
 // 130: bergen
-// 114: phenning
+// 104: phenning
 // --- 100 lines ---
-// 103: regress
+// 102: regress
 // 92: pahrens
 // 47: batcho
 // 44: jdd
-// 31: tmonster
+// 30: tmonster
 // 24: swmosher
-// 10: tkelley
+// 8: tkelley
 // 2: wawiesel
 
     std::stringstream alist;
 //            0         1         2         3         4         5         6         7
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
     alist << "    Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,\n"
-          << "    Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller, \n"
-          << "    James S. Warsa, Randy M. Roberts, Allan B. Wollaber, Seth R. Johnson,\n"
-          << "    Jae H. Chang, Paul W. Talbot, Jeff Furnish, Matthew A. Cleveland, \n"
-          << "    Benjamin K. Bergen, Paul J. Henning.";
+          << "    Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller,\n"
+          << "    James S. Warsa, Seth R. Johnson, Allan B. Wollaber, Katherine J. Wang,\n"
+          << "    Randy M. Roberts, Jae H. Chang, Paul W. Talbot, Jeff Furnish,\n"
+          << "    Matthew A. Cleveland, Benjamin K. Bergen, Paul J. Henning.";
     return alist.str();
 }
 
