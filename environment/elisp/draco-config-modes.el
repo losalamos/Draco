@@ -72,7 +72,7 @@ auto-mode-alist."
       "draco-mode hooks added to TCL mode."
       (turn-on-draco-mode)
       (turn-on-auto-fill)
-      (setq tcl-indent-level 2)
+      (defvar tcl-indent-level 2))
     (add-hook 'tcl-mode-hook 'draco-tcl-mode-hook)))
 
 ;; ========================================
@@ -705,6 +705,7 @@ auto-mode-alist and set up some customizations for DRACO."
 ;; Doxymacs Mode
 ;; ========================================
 
+(require 'doxymacs)
 (defun draco-setup-doxymacs-mode ()
   "Autoload doxymacs-mode and set up some customizations for DRACO."
   (interactive)
