@@ -3,13 +3,13 @@
 #MSUB -l walltime=01:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_17_0/logs/release_ct_build.log
+#MSUB -o /usr/projects/draco/draco-6_17_0/logs/release_ct_build_i14.log
 
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
 
-echo "Here we go..." > /usr/projects/draco/draco-6_17_0/logs/release_ct_build.log
+echo "Here we go..." > /usr/projects/draco/draco-6_17_0/logs/release_ct_build_i14.log
 
 # Helpful functions:
 die () { echo "ERROR: $1"; exit 1;}
@@ -34,13 +34,14 @@ build_permissions="g+rwX"
 
 # environment (use draco modules)
 run "module use /usr/projects/draco/vendors/Modules/hpc"
-
 run "module load friendly-testing user_contrib"
-run "module unload PrgEnv-intel PrgEnv-pgi"
+run "module unload ndi ParMetis SuperLU_DIST trilinos"
+run "module unload lapack gsl intel"
 run "module unload cmake numdiff svn"
-run "module unload papi perftools trilinos gsl"
+run "module unload PrgEnv-intel PrgEnv-pgi"
+run "module unload papi perftools"
 run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview intel"
+run "module unload xt-libsci xt-totalview"
 run "module swap intel intel/14.0.4.211"
 # run "module swap intel intel/15.0.3"
 run "module load gsl/1.15"

@@ -142,8 +142,8 @@ for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
         run "make -j32 install"  || die "Could not build code/tests in $build_dir"
         run "ctest -j128" # Allow some tests to fail.
         # 2nd install command may fix rpath issues for installed binaries
-        run "make rebuild_cache"
-        run "make -j32 install"  || die "Could not build code/tests in $build_dir"
+        #run "make rebuild_cache"
+        #run "make -j32 install"  || die "Could not build code/tests in $build_dir"
         run "chmod -R $build_permissions $build_dir"
 
     done

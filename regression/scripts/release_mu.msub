@@ -3,7 +3,7 @@
 #MSUB -l walltime=04:00:00
 #MSUB -l nodes=1:ppn=16
 #MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_13_0/logs/release_mu.log
+#MSUB -o /usr/projects/draco/draco-6_17_0/logs/release_mu_i15.log
 
 ## Check modules...
 ## Update logfile (above)
@@ -38,8 +38,8 @@ install_permissions="g+rwX,o-rwX"
 # Loading modules
 run "module use /usr/projects/draco/vendors/Modules/hpc"
 run "module purge"
-run "module load friendly-testing cmake/3.0.0 svn numdiff"
-run "module load intel/14.0.4 openmpi/1.6.5"
+run "module load friendly-testing user_contrib cmake/3.3.1 svn numdiff"
+run "module load intel/15.0.3 openmpi/1.6.5"
 run "module load random123 eospac/v6.2.4"
 run "module list"
 
@@ -50,8 +50,8 @@ CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 ddir=draco-6_17_0
 platform=mu
 dmpi=openmpi165
-df90=intel1404
-dcpp=intel1404
+df90=intel1503
+dcpp=intel1503
 
 source_prefix="/usr/projects/draco/$ddir"
 build_prefix="/scratch/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
@@ -147,8 +147,8 @@ do
         run "make -j24 install"  || die "Could not build code/tests in $build_dir"
         run "ctest -j14" # Allow some tests to fail.
         # 2nd install command may fix rpath issues for installed binaries
-        run "make rebuild_cache"
-        run "make -j24 install"  || die "Could not build code/tests in $build_dir"
+        #run "make rebuild_cache"
+        #run "make -j24 install"  || die "Could not build code/tests in $build_dir"
         run "chmod -R $build_permissions $build_dir"
 
     done
