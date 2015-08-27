@@ -1,3 +1,234 @@
+2015-08-24  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_17_0.  This is a minor Draco release.
+	https://rtt.lanl.gov/redmine/versions/39.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_9_0,   http://rtt.lanl.gov/redmine/versions/38
+	  - Capsaicin-4_6_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 14.0.4    OpenMPI-1.6.5
+	                     Intel 15.0.3    OpenMPI-1.6.5
+	  CT/CI              Intel 14.0.4    Cray_MPICH2-7.0.1
+	  CT/CI/TT           Intel 15.0.3    Cray_MPICH2-7.0.1
+	  SQ                 XLC   12.1      MPICH2-1.4
+
+	* Summary of changes:
+	- 209 files changed, added or removed in 98 commits.
+	- Begin supporting Intel 15.0.3
+	- Begin supporting trinitite.
+	- c4's ApplicationUnitTest replaced with a CMake-based scripting system.
+	- For MSVS, build all executable objects at
+	  CMAKE_RUNTIME_OUTPUT_DIRECTORY.
+
+	* Details per package:
+
+	Developer Environment:
+	- Modify draco developer environment and the regression environment so
+	  that modulefiles for ParMetis, SuperLU_DIST and trilinos are expected
+	  to be found in user_contrib instead of $VENDOR_DIR/Modules/<machine>.
+	- Provide developer environment for trinitite.
+
+	Build System:
+	- Rework build system to support build tools that use multi-configuration
+	  selection (Xcode, MSVS). For multi-config-installs, a post-build script
+	  is run to update the contents of draco-config.cmake. (#536)
+	- Rework Win32/MSVS builds so that all runtime objects are built at
+	  CMAKE_RUNTIME_OUTPUT_DIRECTORY. The eliminates the need to copy all dll
+	  to the current test directory (reducing build times and build directory
+	  footprint). (#537)
+	- Begin supporting trinitite (#549)
+	- Move querying and setting of many MPI and C4 variables from
+	  c4/CMakeLists.txt to config/setupMPI.cmake.  This consolidates most of
+	  the cmake code that sets MPI values into one file and makes these
+	  values more readily accessible from config/ApplicationUnitTest.cmake
+	  (#551).
+	- Provide a new build system macro: add_component_executable. This macro
+	  is an analog to add_component_library, but it creates an executable
+	  binary instead of library.  The macro standardizes properties across
+	  the project including executable names and project folder names (IDE
+	  only). The macro also automates the process of export the executable
+	  and all of its dependencies to draco-config.cmake.  This allows
+	  dependent projects to access this information easily (#559).
+	- Ensure that CMAKE_INSTALL_RPATH is set and saved to the CACHE.  This
+	  should fix an issue that prevented the correct RPATH from being saved
+	  in installed executables (#574).
+	- Removed deprecated file config/rerun_failed.cmake.  ctest now provides
+	  equivalent functionality via the --rerun-failed option.
+	- Disable calling find_package(GSL) if the target GSL::gsl is already
+	  defined.
+
+	c4:
+	- Added guard code for empty vector special case in broadcast call.
+	- ApplicationUnitTest removed from Draco.  Replace with a CMake-script
+	  based capability. This change was required to allow ApplicationUnitTest
+	  like tests to run on BGQ and Trinitite.
+	- Implement updates to re-enable building with DRACO_C4=SCALAR (#542).
+
+	cdi_ipcress:
+	- Use new draco functions to simplify tests and eliminate the
+	  cdi_ipcress_test library.
+
+	ds++:
+	- Added specialized forms for Soft_Equiv: vector<double>,
+	  vector<vector<double>>, and vector<vector<vector<double>>>.
+	- Updated UnitTest to provide member function getTestSourcePath().
+	- Make path handling more consistent.  Alwasy convert paths to native
+	  format using forward slashes as directory separators for Unix and
+	  backward slashes for Windows platforms.  Functions that return
+	  directory paths always end with a directory separator.  This
+	  standardization included the removal of tests in tstPath.cc where we
+	  tried to use Windows sytle paths on Unix.
+	- Added SP::operator!= for two-SP comparisons. Before this addition, (p
+	  != p2) with two SPs would evaluate operator bool for each one, then
+	  compare the two bools, so the comparison became "is one SP NULL and the
+	  other non-NULL?" rather than "do these SPs hold different pointers?"
+	  (#555).
+	- Provide XGetopt feature and unit test in ds++. Update stand-alone
+	  applications that take command line arguments to use XGetOpt (#533).
+
+	parser:
+	- Add an open(string const &filename) function to
+	  Parallel_File_Token_Stream to allow it to be switched to a different
+	  input file than the one it was constructed with.
+	- Add 'eV' as a unit recognized by the parser.
+
+	quadrature:
+	- Updated to compile under MSVC.
+
+	viz:
+	- Minor cleanup of filenames and removal of dead code.
+
+	* Details for defects and features can be found at https://rtt.lanl.gov/redmine/isues/#.
+
+	* Corrected defects:
+	  Bug #578 Regression failures on ML, SQ, Sunergos
+	  Bug #574 Moonlight: make install does not set correct rpath in
+	           executables
+	  Bug #562 Darwin regressions not posting to CDash
+	  Bug #561 Unable to compile Capsaicin in Debug mode against
+	           Trilinos/12.0.1
+	  Bug #542 Builds are broken for -DDRACO_C4=SCALAR
+	  Bug #555 Using operator!= to test inequality of two SPs doesn't compare
+	           the two underlying pointers
+	  Bug #554 trinitite: cannot ssh or https (443) to rtt.lanl.gov from
+	           tt-fey
+	  Bug #422 CMake: FindMPI.cmake doesn't find Intel MPI on Moonlight
+	  Bug #530 Win32: Get parser and quadrature packages working under MSC
+	  Bug #524 Can cdi_ipcress_test be eliminated
+
+	* New features:
+	  Feature #551 Consider replacing ApplicationUnitTest with a script-language
+	  Feature #519 CMake 3.3 - CMake_Fortran_VERSION
+	  Feature #549 Trinitite: Setup environments, vendors, codes and
+	  Feature #537 Win32: Attempt to reduce the number of file
+	  Feature #536 The build system should support multi-config-install build
+	  Feature #558 Move builds to Intel/15.0.3 on Toss 2.2
+
+	* Known Defects:
+	  Bug  # 59 cdi_eospac design flaw
+ 	  Task #370 Provide CMakeAddFortranSubdirectory modifications to CMake
+	  Bug  #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	  Bug  #469 FindMPI.cmake can choose wrong libraries
+	  Task #488 Re-establish a nightly Mac build.
+	  Bug  #552 trinitite: mkdir has issues
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+
+75332: kellyt
+45641: kgbudge
+9800: tme
+5897: bta
+4764: lowrie
+3954: mcghee
+3632: mwbuksas
+3446: gaber
+2204: warsa
+832: sethrj
+796: wollaber
+744: kwang
+629: rsqrd
+565: jhchang
+434: talbotp
+184: furnish
+169: clevelam
+130: bergen
+104: phenning
+102: regress
+92: pahrens
+47: batcho
+44: jdd
+30: tmonster
+24: swmosher
+8: tkelley
+2: wawiesel
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             409          11815          21300          62842
+C/C++ Header                    330           7079          21170          19013
+Lisp                             15           1878           2672          12367
+CMake                           108           1932           4882           7936
+Bourne Again Shell               19            418            747           1746
+Bourne Shell                     15            265            677           1221
+Python                            7            279            361            848
+CSS                               1            113             37            395
+C                                 4             46            113            238
+Fortran 90                        3             45             80            172
+C Shell                           2             31             29            169
+DOS Batch                         3             47             37            100
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            923          23995          52195         107174
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    45 /    45 = 100%      60 /    72 =  83%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     188 /   247 =  76%
+../source/src/viz/                    32 /    32 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/ds++/                  329 /   332 =  99%     398 /   463 =  85%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/parser/                280 /   285 =  98%    1113 /  1429 =  77%
+../source/src/cdi_eospac/             51 /    52 =  98%      53 /   127 =  41%
+../source/src/quadrature/            203 /   208 =  97%     525 /   673 =  78%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/c4/                    163 /   172 =  94%     525 /   576 =  91%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/diagnostics/            15 /    20 =  75%      34 /    49 =  69%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+../source/src/diagnostics/qt/          0 /     5 =   0%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2060 /  2125 =  96%    4989 /  6303 =  79%
+
 2015-05-04  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_16_0.  This is a minor Draco release.

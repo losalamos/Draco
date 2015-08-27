@@ -1,32 +1,18 @@
 #!/bin/bash -l
 
-#MSUB -l walltime=04:00:00
-#MSUB -l nodes=1:ppn=16
-#MSUB -j oe
-#MSUB -o /usr/projects/draco/draco-6_17_0/logs/release_ml_i15.log
-
-## Check modules...
-## Update logfile (above)
-## Update var:
-##  - $ddir
-##  - $dmpi
-##  - $df90
-##  - $dcpp
-## Update CONFIG_BASE
+#----------------------------------------------------------------------#
+# The script starts here
+#----------------------------------------------------------------------#
 
 # Helpful functions:
 die () { echo "ERROR: $1"; exit 1;}
 
 run () {
-    if [ $dry_run ]
-    then echo $1
-    else eval $1
+    echo $1
+    if ! test $dry_run; then
+    eval $1
     fi
 }
-
-#----------------------------------------------------------------------#
-# The script starts here
-#----------------------------------------------------------------------#
 
 # Permissions - new files should be marked u+rwx,g+rwx,o+rx
 umask 0002
@@ -41,27 +27,43 @@ build_permissions="g+rwX"
 
 # environment (use draco modules)
 run "module use /usr/projects/draco/vendors/Modules/hpc"
-run "module purge"
 run "module load friendly-testing user_contrib"
-run "module load cmake/3.3.1 svn numdiff"
-run "module load intel/15.0.3 openmpi/1.6.5"
-run "module load random123 eospac/v6.2.4"
+run "module unload ndi ParMetis SuperLU_DIST trilinos eospac"
+run "module unload lapack gsl intel"
+run "module unload cmake numdiff svn"
+run "module unload PrgEnv-intel PrgEnv-pgi"
+run "module unload papi perftools"
+run "module load PrgEnv-intel"
+run "module unload xt-libsci xt-totalview"
+run "module swap intel intel/15.0.3.187"
+run "module load gsl/1.16"
+run "module load cmake/3.3.1 numdiff svn"
+run "module load trilinos SuperLU_DIST"
+run "module load ParMetis ndi random123 eospac/6.2.4"
 run "module list"
 
-CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
+export OMP_NUM_THREADS=8
+export MAKEOPTS="-j 16 -l 16"
+export CTEST="ctest -j 16"
+export SCRATCH="/scratch1"
 
 # Define your source and build information here.
 
-ddir=draco-6_17_0
-platform=ml
-dmpi=openmpi165
+ddir="draco-6_17_0"
+platform="tt"
+dmpi=craympich2 # mpt string?
 df90=intel1503
 dcpp=intel1503
 
 source_prefix="/usr/projects/draco/$ddir"
-build_prefix="/scratch/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
+build_prefix="$SCRATCH/$USER/$ddir/$platform-${dmpi}-${df90}-${dcpp}"
 install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 
+CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
+CC=`which cc`
+CXX=`which CC`
+FC=`which ftn`
+printenv
 
 # =============================================================================
 # checkit_core
@@ -91,6 +93,8 @@ install_prefix="$source_prefix/$platform-${dmpi}-${df90}-${dcpp}"
 # =============================================================================
 
 # Define the meanings of various configure features:
+# DBC_OFF="-DDRACO_DBC_LEVEL=0"
+# DBC_ON="-DDRACO_DBC_LEVEL=7"
 
 OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release"
 OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug"
@@ -115,8 +119,7 @@ PACKAGES=("draco")
 
 # Loop over the code versions:
 
-for (( i=0 ; i < ${#VERSIONS[@]} ; ++i ))
-do
+for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
 
     version=${VERSIONS[$i]}
     options=${OPTIONS[$i]}
@@ -132,8 +135,7 @@ do
     run "mkdir -p $install_dir" || die "Could not create $install_dir"
 
     # Loop over the packages.
-    for package in ${PACKAGES[@]}
-    do
+    for package in ${PACKAGES[@]};  do
         echo
         echo "#    Package: $package"
         echo "#    -------"
@@ -147,14 +149,32 @@ do
 
         run "mkdir -p $build_dir" || die "Could not create directory $build_dir."
         run "cd $build_dir"
-        run "cmake -DCMAKE_INSTALL_PREFIX=$install_dir \
+        echo "CMAKE_SYSTEM_NAME:STRING=Catamount" > $build_dir/CMakeCache.txt
+        echo "DRACO_LIBRARY_TYPE:STRING=STATIC" >> $build_dir/CMakeCache.txt
+        echo "CMAKE_C_COMPILER:FILEPATH=cc" >> $build_dir/CMakeCache.txt
+        echo "CMAKE_CXX_COMPILER:FILEPATH=CC " >> $build_dir/CMakeCache.txt
+        echo "CMAKE_Fortran_COMPILER:FILEPATH=ftn" >> $build_dir/CMakeCache.txt
+        echo "MPIEXEC:FILEPATH=aprun" >> $build_dir/CMakeCache.txt
+        echo "MPIEXEC_NUMPROC_FLAG:STRING=-n" >> $build_dir/CMakeCache.txt
+        echo "MPI_C_LIBRARIES:FILEPATH=" >> $build_dir/CMakeCache.txt
+        echo "MPI_CXX_LIBRARIES:FILEPATH=" >> $build_dir/CMakeCache.txt
+        echo "MPI_Fortran_LIBRARIES:FILEPATH=" >> $build_dir/CMakeCache.txt
+        echo "MPI_C_INCLUDE_PATH:PATH=" >> $build_dir/CMakeCache.txt
+        echo "MPI_CXX_INCLUDE_PATH:PATH=" >> $build_dir/CMakeCache.txt
+        echo "MPI_Fortran_INCLUDE_PATH:PATH=" >> $build_dir/CMakeCache.txt
+        echo "CMAKE_INSTALL_PREFIX:PATH=$install_dir" >> $build_dir/CMakeCache.txt
+        sleep 2
+        run "cat $build_dir/CMakeCache.txt"
+        run "cmake \
             $options $CONFIG_BASE $source_dir" \
             || die "Could not configure in $build_dir from source at $source_dir"
-        run "make -j24 install"  || die "Could not build code/tests in $build_dir"
-        run "ctest -j14" # Allow some tests to fail.
-        # 2nd install command may fix rpath issues for installed binaries
-        #run "make rebuild_cache"
-        #run "make -j24 install"  || die "Could not build code/tests in $build_dir"
+        run "make $MAKEOPTS all"  || die "Could not build code/tests in $build_dir"
+        # only run tests for non-nr versions
+#        case $version in
+#        *_nr) ;;
+#        *)    run "ctest" ;;
+#        esac
+        run "make $MAKEOPTS install"  || die "Could not build code/tests in $build_dir"
         run "chmod -R $build_permissions $build_dir"
 
     done
@@ -167,6 +187,3 @@ done
 # Set access to top level install dir.
 run "chmod $install_permissions $install_prefix"
 run "chgrp -R ${install_group} $install_prefix"
-
-run "chgrp draco $source_prefix $source_prefix/source $source_prefix/logs"
-run "chmod $install_permissions $source_prefix $source_prefix/source $source_prefix/logs"
