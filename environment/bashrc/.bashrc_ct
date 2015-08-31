@@ -4,7 +4,7 @@
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
-   echo "In .bashrc_ct"
+   echo "In draco/environment/bashrc/.bashrc_ct"
 fi
 
 ##---------------------------------------------------------------------------##
@@ -25,26 +25,37 @@ fi
 # MODULES
 #
 
+target="`uname -n | sed -e s/[.].*//`"
+arch=`uname -m`
+
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
 module load friendly-testing user_contrib
 
 # Move some environment out of the way.
-module unload PrgEnv-intel PrgEnv-pgi
 module unload cmake numdiff svn
 module unload papi perftools trilinos
+module unload PrgEnv-intel PrgEnv-pgi
+
 # load the Intel programming env, but then unloda libsci and totalview
 module load PrgEnv-intel
-module unload xt-libsci xt-totalview intel
+module unload xt-libsci xt-totalview
 
 # Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
 # module load gcc
-#module load intel/14.0.4.211
-module load intel/15.0.3
+case ${target} in
+  ci-fe* | ci-login* | ci-vizlogin*)
+    module swap intel/14.0.4.211
+    ;;
+  *)
+    module swap intel/15.0.3
+    module load hsi
+    ;;
+esac
 
 # draco modules start here.
 module load gsl/1.15 lapack/3.5.0
-module load emacs hsi
+module load emacs
 module load trilinos SuperLU_DIST
 module load ParMetis ndi random123 eospac/v6.2.4
 module load svn cmake/3.3.0 numdiff

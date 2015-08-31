@@ -84,7 +84,7 @@ case ${-} in
 *i*)
    export INTERACTIVE=true
    if test -n "${verbose}"; then
-      echo "in .bashrc"
+      echo "in draco/environment/bashrc/.bashrc"
    fi
 
    # Turn on checkwinsize
