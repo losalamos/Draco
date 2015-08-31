@@ -34,7 +34,12 @@ umask 0002
 ulimit -a
 
 unset http_proxy
+unset https_proxy
 unset HTTP_PROXY
+unset HTTPS_PROXY
+unset http_no_proxy
+unset no_proxy
+unset NO_PROXY
 export VENDOR_DIR=/projects/opt/draco/vendors
 moniker=`whoami`
 
