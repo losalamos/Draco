@@ -242,81 +242,84 @@ void ensight_dump_test( rtt_dsxx::UnitTest & ut, bool const binary )
 }
 
 //---------------------------------------------------------------------------//
-//
+// This is now processed by tstEnsight_Translator.cmake
 //---------------------------------------------------------------------------//
-void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
-{
-    // Build path for the input file "scanner_test.inp"
-    string const testBinaryDir = ut.getTestInputPath();
-    string const testBenchDir  = ut.getTestSourcePath() + std::string( "bench" ) + rtt_dsxx::dirSep;
+// void checkOutputFiles( rtt_dsxx::UnitTest & ut, bool const binary )
+// {
+//     // Build path for the input file "scanner_test.inp"
+//     string const testBinaryDir = ut.getTestInputPath();
+//     string const testBenchDir  = ut.getTestSourcePath() + std::string( "bench" ) + rtt_dsxx::dirSep;
 
-    string desc;
-    vector<string> prefixes;
-    if( binary )
-    {
-        desc = string("binary");
-        prefixes.push_back( string("testproblem_binary_ensight") );
-        prefixes.push_back( string("part_testproblem_binary_ensight") );
-    }
-    else
-    {
-        desc = string("ascii");
-        prefixes.push_back( string("testproblem_ensight") );
-        prefixes.push_back( string("part_testproblem_ensight") );
-    }
+//     string desc;
+//     vector<string> prefixes;
+//     if( binary )
+//     {
+//         desc = string("binary");
+//         prefixes.push_back( string("testproblem_binary_ensight") );
+//         prefixes.push_back( string("part_testproblem_binary_ensight") );
+//     }
+//     else
+//     {
+//         desc = string("ascii");
+//         prefixes.push_back( string("testproblem_ensight") );
+//         prefixes.push_back( string("part_testproblem_ensight") );
+//     }
 
-    string postfix(".0001");
-    vector<string> dirs;
-    dirs.push_back( string( "geo" ));
-    dirs.push_back( string( "Temperatures" ));
-    dirs.push_back( string( "Pressure" ));
-    dirs.push_back( string( "Velocity" ));
-    dirs.push_back( string( "Densities" ));
+//     string postfix(".0001");
+//     vector<string> dirs;
+//     dirs.push_back( string( "geo" ));
+//     dirs.push_back( string( "Temperatures" ));
+//     dirs.push_back( string( "Pressure" ));
+//     dirs.push_back( string( "Velocity" ));
+//     dirs.push_back( string( "Densities" ));
 
-    cout << "\nChecking contents of generated " << desc << " files...\n" << endl;
+//     cout << "\nChecking contents of generated " << desc << " files...\n" << endl;
 
-    for( vector<string>::const_iterator itp=prefixes.begin();
-         itp != prefixes.end(); ++itp )
-    {
-        for( vector<string>::const_iterator itd=dirs.begin();
-             itd != dirs.end(); ++itd )
-        {
-            // file string
-            string output   = testBinaryDir + *itp + rtt_dsxx::dirSep + *itd
-                              + rtt_dsxx::dirSep + string("data") + postfix;
-            string ref_out, diff_out, diff_line;
-            // Diff the output and reference
-            if( binary )
-            {
-#if ! defined(WIN32)
-// [2015-02-09 KT]: Newer versions of numdiff (5.8+) refuse to compare binary files.  In r7860, this check was changed to use 'diff'
-// instead of 'numdiff.'  However, 'diff' is not available on Win32 unless MinGW is installed, so just skip this test.  Optionally,
-// the test/CMakeLists.txt could be modified to find a valid 'diff' program and if found, turn this check back on.
-                ref_out  = testBenchDir  + *itd + string(".bin") + postfix;
-                diff_out = testBinaryDir + *itd + string(".bin.diff");
-                diff_line = string("diff ");
-                diff_line += output + string(" ") + ref_out + string(" > ") + diff_out;
-                cout << diff_line << endl;
-                int ret = system(diff_line.c_str());
-                if (ret != 0)                                             ITFAILS;
-#endif
-            }
-            else
-            {
-                ref_out  = testBenchDir  + *itd + postfix;
-                diff_out = testBinaryDir + *itd + string(".diff");
-                diff_line = string("numdiff ");
-                diff_line += output + string(" ") + ref_out + string(" > ") + diff_out;
-                cout << diff_line << endl;
-                int ret = system(diff_line.c_str());
-                if (ret != 0)                                             ITFAILS;
-            }
-        }
-        cout << endl;
-    }
+//     for( vector<string>::const_iterator itp=prefixes.begin();
+//          itp != prefixes.end(); ++itp )
+//     {
+//         for( vector<string>::const_iterator itd=dirs.begin();
+//              itd != dirs.end(); ++itd )
+//         {
+//             // file string
+//             string output   = testBinaryDir + *itp + rtt_dsxx::dirSep + *itd
+//                               + rtt_dsxx::dirSep + string("data") + postfix;
+//             string ref_out, diff_out, diff_line;
+//             // Diff the output and reference
+//             if( binary )
+//             {
+// #if ! defined(WIN32)
+// // [2015-02-09 KT]: Newer versions of numdiff (5.8+) refuse to compare binary
+// //     files.  In r7860, this check was changed to use 'diff' instead of
+// //     'numdiff.'  However, 'diff' is not available on Win32 unless MinGW is
+// //     installed, so just skip this test.  Optionally, the test/CMakeLists.txt
+// //     could be modified to find a valid 'diff' program and if found, turn this
+// //     check back on.
+//                 ref_out  = testBenchDir  + *itd + string(".bin") + postfix;
+//                 diff_out = testBinaryDir + *itd + string(".bin.diff");
+//                 diff_line = string("diff ");
+//                 diff_line += output + string(" ") + ref_out + string(" > ") + diff_out;
+//                 cout << diff_line << endl;
+//                 int ret = system(diff_line.c_str());
+//                 if (ret != 0)                                             ITFAILS;
+// #endif
+//             }
+//             else
+//             {
+//                 ref_out  = testBenchDir  + *itd + postfix;
+//                 diff_out = testBinaryDir + *itd + string(".diff");
+//                 diff_line = string("numdiff ");
+//                 diff_line += output + string(" ") + ref_out + string(" > ") + diff_out;
+//                 cout << diff_line << endl;
+//                 int ret = system(diff_line.c_str());
+//                 if (ret != 0)                                             ITFAILS;
+//             }
+//         }
+//         cout << endl;
+//     }
 
-    return;
-}
+//     return;
+// }
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[])
@@ -326,11 +329,11 @@ int main(int argc, char *argv[])
     {
         { // ASCII dumps
             ensight_dump_test(ut, false);
-            checkOutputFiles( ut, false );
+            // checkOutputFiles( ut, false ); // moved to tstEnsight_Translator.cmake
         }
         { // Binary dumps
             ensight_dump_test(ut, true);
-            checkOutputFiles( ut, true );
+            // checkOutputFiles( ut, true ); // moved to tstEnsight_Translator.cmake
         }
     }
     UT_EPILOG(ut);

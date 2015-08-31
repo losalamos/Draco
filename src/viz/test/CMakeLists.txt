@@ -14,7 +14,10 @@ project( viz_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB test_sources *.cc )
+file( GLOB test_sources
+  ${PROJECT_SOURCE_DIR}/tstEnsight_Stream.cc
+  ${PROJECT_SOURCE_DIR}/tstViz_Traits.cc
+  )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -30,12 +33,29 @@ include_directories(
 # ---------------------------------------------------------------------------- #
 
 if( NOT APPLE )
-   # numdiff/ndselect crashes when run on OS/X so don't try to run the
-   # tests.
-   add_scalar_tests(
-      SOURCES "${test_sources}"
-      DEPS    "Lib_viz;Lib_dsxx"
-      )
+  # numdiff/ndselect crashes when run on OS/X so don't try to run the tests.
+
+  add_scalar_tests(
+    SOURCES "${test_sources}"
+    DEPS    "Lib_viz" )
+
+  # for Ut_viz_tstEnsight_Translator_exe, check the generated viz files using
+  # numdiff from a cmake script instead of trying to use the system()
+  # command.  Using system fails for BG/Q systems.
+
+  add_component_executable(
+    TARGET      Ut_viz_tstEnsight_Translator_exe
+    TARGET_DEPS Lib_viz
+    EXE_NAME    tstEnsight_Translator
+    SOURCES     ${PROJECT_SOURCE_DIR}/tstEnsight_Translator.cc
+    PREFIX      Draco )
+  # set( VERBOSE_DEBUG ON )
+  include( ApplicationUnitTest )
+  add_app_unit_test(
+    DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator.cmake
+    APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_exe>
+    )
+
 endif()
 
 ##---------------------------------------------------------------------------##

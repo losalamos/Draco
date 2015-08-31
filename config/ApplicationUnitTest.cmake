@@ -29,15 +29,23 @@
 # The above will generate a test with data similar to this:
 #
 # add_test(
-#    NAME diagnostics_tDracoInfo
-#    COMMAND /yellow/usr/projects/draco/vendors/cmake-3.2.2-Linux-x86_64/bin/cmake
-#      -D APP              = $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
-#      -D WORKDIR          = /users/kellyt/build/ml/intel-mpid/d/src/diagnostics/test
-#      -D TESTNAME         = diagnostics_tDracoInfo
-#      -D DRACO_CONFIG_DIR = /users/kellyt/draco/config
-#      -D DRACO_INFO       = /users/kellyt/build/ml/intel-mpid/d/src/diagnostics/draco_info
-#      -D RUN_CMD          =
-#      -P /users/kellyt/draco/src/diagnostics/test/tDracoInfo.cmake
+#   NAME ${ctestname_base}${argname}
+#   COMMAND ${CMAKE_COMMAND}
+#   -D APP=${aut_APP}
+#   -D ARGVALUE=${argvalue}
+#   -D WORKDIR=${aut_WORKDIR}
+#   -D TESTNAME=${ctestname_base}${argname}
+#   -D DRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
+#   -D DRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+#   -D STDINFILE=${aut_STDINFILE}
+#   -D GOLDFILE=${aut_GOLDFILE}
+#   -D RUN_CMD=${RUN_CMD}
+#   -D numPE=${numPE}
+#   -D PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+#   -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+#   ${BUILDENV}
+#   -P ${aut_DRIVER}
+#   )
 #    )
 # set_tests_properties( diagnostics_draco_info
 #    PROPERTIES
@@ -87,7 +95,7 @@ macro( aut_setup )
     get_filename_component( STDINFILE ${STDINFILE} ABSOLUTE )
   endif()
   get_filename_component( BINDIR ${APP} PATH )
-  get_filename_component( PROJECT_BINARY_DIR ${BINDIR} PATH )
+  # get_filename_component( PROJECT_BINARY_DIR ${BINDIR} PATH )
   if( GOLDFILE )
     get_filename_component( OUTFILE ${GOLDFILE} NAME_WE )
   else()
@@ -176,6 +184,8 @@ macro( aut_register_test )
     -D GOLDFILE=${aut_GOLDFILE}
     -D RUN_CMD=${RUN_CMD}
     -D numPE=${numPE}
+    -D PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+    -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
     ${BUILDENV}
     -P ${aut_DRIVER}
     )
@@ -213,6 +223,8 @@ macro( aut_register_test )
     -DGOLDFILE=${aut_GOLDFILE}
     -DRUN_CMD=${RUN_CMD}
     -DnumPE=${numPE}
+    -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+    -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
     ${BUILDENV}
     -P ${aut_DRIVER}
     )
@@ -377,6 +389,11 @@ macro( add_app_unit_test )
         endif()
         aut_register_test()
       endforeach()
+    else()
+      if( VERBOSE_DEBUG )
+        message("aut_register_test(${ctestname_base})")
+      endif()
+      aut_register_test()
     endif()
 
   endif()
@@ -525,10 +542,10 @@ endmacro()
 macro( aut_numdiff_2files file1 file2 )
 
   if( NOT EXISTS ${file1} )
-    message( FATAL_ERROR "Specified file1 = ${file1} does not exisit." )
+    message( FATAL_ERROR "Specified file1 = ${file1} does not exist." )
   endif()
   if( NOT EXISTS ${file2} )
-    message( FATAL_ERROR "Specified file2 = ${file2} does not exisit." )
+    message( FATAL_ERROR "Specified file2 = ${file2} does not exist." )
   endif()
 
   # Assume additional arguments are to be passed to numdiff
