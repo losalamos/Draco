@@ -12,10 +12,10 @@ export LD_LIBRARY_PATH=@LD_LIBRARY_PATH@:@GSL_ROOT_DIR@/lib
 
 source @MPIVARS_SCRIPT@
 
-echo "run_test_on_mic.sh: cd $workdir"
+#echo "run_test_on_mic.sh: cd $workdir"
 cd $workdir
 
-echo "run_test_on_mic.sh: ${testname} ${testargs}"
+#echo "run_test_on_mic.sh: ${testname} ${testargs}"
 eval ${testname} ${testargs}
 
 if test $? -eq 0; then

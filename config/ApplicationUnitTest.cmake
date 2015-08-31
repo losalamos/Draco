@@ -296,7 +296,11 @@ macro( add_app_unit_test )
 
   # Load some information from the build environment:
   unset( RUN_CMD )
-  set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${aut_WORKDIR}" )
+  if( EXISTS ${DRACO_CONFIG_DIR}/run_test_on_mic.sh )
+    set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_CONFIG_DIR}/run_test_on_mic.sh ${aut_WORKDIR}" )
+  else()
+    set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${aut_WORKDIR}" )
+  endif()
   if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
 
     # Parallel tests
@@ -422,7 +426,7 @@ macro( aut_runTests )
 # === CMake driven ApplicationUnitTest: ${TESTNAME}
 
   # Print version information
-  set( runcmd ${RUN_CMD} ) # plain string with spaces.
+  # set( runcmd ${RUN_CMD} ) # plain string with spaces.
   separate_arguments(RUN_CMD)
   if( numPE )
     # Use 1 proc to run draco_info
@@ -455,13 +459,17 @@ macro( aut_runTests )
 
   if( DEFINED RUN_CMD )
     string( REPLACE ";" " " run_cmd_string "${RUN_CMD}" )
-    message(">>> Running: ${run_cmd_string} ${numPE} ${APP}
-             ${ARGVALUE}")
+    message(">>> Running: ${run_cmd_string} ${numPE}
+             ${APP} ${ARGVALUE}")
   else()
     message(">>> Running: ${APP} ${ARGVALUE}" )
   endif()
   if( EXISTS ${STDINFILE} )
-    set( INPUT_FILE "INPUT_FILE ${STDINFILE}")
+    if( RUN_CMD MATCHES "run_test_on_mic" )
+      list( APPEND ARGVALUE "< ${STDINFILE}" )
+    else()
+      set( INPUT_FILE "INPUT_FILE ${STDINFILE}")
+    endif()
     message(">>>          < ${STDINFILE}")
   endif()
   message(">>>          > ${OUTFILE}
@@ -495,7 +503,7 @@ macro( aut_runTests )
      error message = ${testerror}")
   else()
     message("${testout}")
-    PASSMSG("Application ran tp completion.")
+    PASSMSG("Application ran to completion.")
   endif()
 
 endmacro()
@@ -510,19 +518,25 @@ macro( aut_numdiff )
     ## Use numdiff to compare output
     find_program( exenumdiff numdiff )
     if( NOT EXISTS ${exenumdiff} )
-      message( FATAL_ERROR "Numdiff not found in PATH")
+      FAILMSG( "Numdiff not found in PATH")
     endif()
     if( VERBOSE_DEBUG )
       message("   exenumdiff = ${exenumdiff}" )
     endif()
   endif()
 
+  separate_arguments(RUN_CMD)
+  if( numPE )
+    # Use 1 proc to run draco_info
+    set( draco_info_numPE 1 )
+  endif()
+
   message("Comparing output to goldfile:
-${exenumdiff} \\
+${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} \\
    ${OUTFILE} \\
    ${GOLDFILE}")
   execute_process(
-    COMMAND ${exenumdiff} ${OUTFILE} ${GOLDFILE}
+    COMMAND ${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${OUTFILE} ${GOLDFILE}
     RESULT_VARIABLE numdiffres
     OUTPUT_VARIABLE numdiffout
     ERROR_VARIABLE numdifferror
@@ -542,11 +556,16 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( aut_numdiff_2files file1 file2 )
 
+  # Sometimes we are looking at a shared filesystem from different
+  # nodes.  If a file doesn't exist, touch the file.  If the touch
+  # creates the file, then running numdiff should fail.
   if( NOT EXISTS ${file1} )
-    message( FATAL_ERROR "Specified file1 = ${file1} does not exist." )
+    execute_process( COMMAND "${CMAKE_COMMAND}" -E touch ${file1} )
+    #FAILMSG( "Specified file1 = ${file1} does not exist." )
   endif()
   if( NOT EXISTS ${file2} )
-    message( FATAL_ERROR "Specified file2 = ${file2} does not exist." )
+    execute_process( COMMAND "${CMAKE_COMMAND}" -E touch ${file2} )
+    # FAILMSG( "Specified file2 = ${file2} does not exist." )
   endif()
 
   # Assume additional arguments are to be passed to numdiff
@@ -559,12 +578,19 @@ macro( aut_numdiff_2files file1 file2 )
     message("   exenumdiff = ${exenumdiff}" )
   endif()
 
+  separate_arguments(RUN_CMD)
+  if( numPE )
+    # Use 1 proc to run draco_info
+    set( draco_info_numPE 1 )
+  endif()
+
   message("Comparing files:
-${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6}
+${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6}
    ${file1} \\
    ${file2}")
+
   execute_process(
-    COMMAND ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${file1} ${file2}
+    COMMAND ${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${file1} ${file2}
     RESULT_VARIABLE numdiffres
     OUTPUT_VARIABLE numdiffout
     ERROR_VARIABLE  numdifferror
