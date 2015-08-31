@@ -18,7 +18,6 @@ set( test_sources
    tIpcressFile.cc
    tIpcressOpacity.cc
    tIpcressWithCDI.cc
-   tIpcress_Interpreter.cc
 #   ReadOdfIpcressFile.cc # needs argument '--unittest'
    tIpcressOdfmgOpacity.cc
 )
@@ -56,9 +55,12 @@ add_scalar_tests(
    SOURCES "ReadOdfIpcressFile.cc"
    DEPS    "Lib_cdi_ipcress"
    TEST_ARGS "--unittest" )
-   
-# tIpcress_Interpreter needs to know where the binary Ipcress_Interpreter is located.  
-# Since the build system knows this location and it may be difficult to find from the
-# unit test, simply provide the location via CPP define.
-set_target_properties( Ut_cdi_ipcress_tIpcress_Interpreter_exe
-   PROPERTIES COMPILE_DEFINITIONS "IILOC=\"$<TARGET_FILE:Exe_Ipcress_Interpreter>\"" )
+
+include( ApplicationUnitTest )
+add_app_unit_test(
+  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.cmake
+  APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
+  TEST_ARGS "Al_BeCu.ipcress"
+  STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"
+  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-Al_BeCu.ipcress.gold"
+  )

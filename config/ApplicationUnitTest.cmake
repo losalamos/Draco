@@ -495,6 +495,7 @@ macro( aut_runTests )
      error message = ${testerror}")
   else()
     message("${testout}")
+    PASSMSG("Application ran tp completion.")
   endif()
 
 endmacro()
@@ -669,13 +670,13 @@ endmacro()
 macro( aut_report )
 
   message("
-*********************************************")
+*****************************************************************")
   if( ${numpasses} GREATER 0 AND ${numfails} STREQUAL 0 )
     message("**** ${TESTNAME}: PASSED.")
   else()
     message("**** ${TESTNAME}: FAILED.")
   endif()
-  message("*********************************************
+  message("*****************************************************************
 ")
 # message("numpasses = ${numpasses}, numfails = ${numfails}")
 

@@ -30,9 +30,6 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-# Special Case:
-# tstConsole_Token_Stream is used by driver4tstConsole_Token_Stream, we do not run it alone.
-
 add_component_executable(
   TARGET      Exe_tstConsole_Token_Stream
   SOURCES     ${PROJECT_SOURCE_DIR}/tstConsole_Token_Stream.cc
@@ -60,13 +57,12 @@ add_scalar_tests(
 # 2. This test must have unique access to tstConsole_Token_Stream and
 #    we will use a RESOURCE_LOCK to prevent multiple simultaneous
 #    instances during parallel ctest.
-list( REMOVE_ITEM test_sources
-   ${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc )
 if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
-  add_scalar_tests(
-    SOURCES "${PROJECT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cc"
-    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}"
-    RESOURCE_LOCK "lock_tstConsole_Token_Stream" )
+  include( ApplicationUnitTest )
+  add_app_unit_test(
+    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cmake
+    APP       $<TARGET_FILE_DIR:Exe_tstConsole_Token_Stream>/$<TARGET_FILE_NAME:Exe_tstConsole_Token_Stream>
+    STDINFILE "${CMAKE_CURRENT_SOURCE_DIR}/console_test.inp" )
 endif()
 
 # The remaining tests are Parallel.
