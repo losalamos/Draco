@@ -432,7 +432,7 @@ macro( aut_runTests )
 # === CMake driven ApplicationUnitTest: ${TESTNAME}
 
   # Print version information
-  # set( runcmd ${RUN_CMD} ) # plain string with spaces.
+  set( runcmd ${RUN_CMD} ) # plain string with spaces (used in Capsaicin)
   separate_arguments(RUN_CMD)
   if( numPE )
     # Use 1 proc to run draco_info
