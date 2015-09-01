@@ -62,6 +62,12 @@ include( parse_arguments )
 
 # set( VERBOSE_DEBUG OFF )
 
+function(JOIN VALUES GLUE OUTPUT)
+  string (REGEX REPLACE "([^\\]|^);" "\\1${GLUE}" _TMP_STR "${VALUES}")
+  string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}") #fixes escaping
+  set (${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
+
 ##---------------------------------------------------------------------------##
 ## Check values for $APP
 ##
@@ -493,7 +499,32 @@ macro( aut_runTests )
   endif()
 
   # Capture all the output to log files:
-  file( WRITE ${OUTFILE} ${testout} )
+  # - before we create the file, extract some lines that we want to
+  #   exclude:
+  #   1. Aprun inserts this line:
+  #      "Application 12227386 resources: utime ~0s, stime ~0s, ..."
+
+  # Preserve blank lines by settting the variable "Esc" to the ASCII
+  # value 27 - basically something which is unlikely to conflict with
+  # anything in the file contents.
+  string(ASCII 27 Esc)
+  string( REGEX REPLACE "\n" "${Esc};" testout ${testout} )
+  # string( REGEX REPLACE "\n" ";" testout ${testout} )
+  unset( newout )
+  foreach( line ${testout} )
+    if( NOT line MATCHES "Application [0-9]* resources: utime" )
+      # list( APPEND newout ${line} )
+      string( REGEX REPLACE "${Esc}" "\n" line ${line} )
+      set( newout "${newout}${line}" )
+    endif()
+  endforeach()
+  # unset(testout)
+  set( testout ${newout} )
+  # join( "${newout}" "\n" testout )
+  # string( REGEX REPLACE "${Esc};" "\n" testout ${testout} )
+
+  # now write the cleaned up file
+  file( WRITE ${OUTFILE} "${testout}" )
   # [2015-07-28 KT] not sure we need to dump stderr values right now
   # file( WRITE ${ERRFILE} ${testerr} )
 

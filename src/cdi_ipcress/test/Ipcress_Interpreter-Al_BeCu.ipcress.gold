@@ -66,8 +66,8 @@ Choose your opacity type:
 1: Rosseland Absorption (Gray), 2: Planck Absorption (Gray)
 3: Rosseland Absorption (MG),   4: Planck Absorption (MG)
 5: Rosseland Total (Gray)
-The Multigroup Rosseland Absorption Opacity for 
-material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is: 
+The Multigroup Rosseland Absorption Opacity for
+material 0 Id(10001) at density 1.0000000e-01, temperature 1.0000000e+00 is:
 Index 	 Group Center 		 Opacity
 1	 8.9050000e-03   	 1.0000000e+10
 2	 2.4700000e-02   	 2.4443954e+03

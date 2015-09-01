@@ -44,7 +44,7 @@ void tstConsole_Token_Stream( rtt_dsxx::UnitTest &ut )
 	    PASSMSG("whitespace characters are correct defaults");
 
 	Token token = tokens.lookahead(3);
-	if (token.type()!=KEYWORD || token.text()!="COLOR") 
+	if (token.type()!=KEYWORD || token.text()!="COLOR")
 	    FAILMSG("lookahead(3) does NOT have correct value");
 	else
 	    PASSMSG("lookahead(3) has correct value");
@@ -80,7 +80,7 @@ void tstConsole_Token_Stream( rtt_dsxx::UnitTest &ut )
 	    PASSMSG("Second shift has correct value");
 
 	token = tokens.shift();
-	if (token.type()!=KEYWORD || 
+	if (token.type()!=KEYWORD ||
 	    token.text()!="GENERATE ANOTHER ERROR")
 	    FAILMSG("Third shift does NOT have correct value");
 	else
@@ -91,17 +91,13 @@ void tstConsole_Token_Stream( rtt_dsxx::UnitTest &ut )
 
 	token = tokens.shift();
 	if (token.type()!=OTHER || token.text()!="$")
-	{
 	    FAILMSG("Shift after pushback does NOT have correct value");
-	}
 	else
-	{
 	    PASSMSG("Shift after pushback has correct value");
-	}
 
-	try 
+	try
 	{
-	    tokens.report_syntax_error(token, "dummy syntax error");  
+	    tokens.report_syntax_error(token, "dummy syntax error");
 	    FAILMSG("Syntax error NOT correctly thrown");
 	}
 	catch (const Syntax_Error &msg)
@@ -111,7 +107,7 @@ void tstConsole_Token_Stream( rtt_dsxx::UnitTest &ut )
 
 	token = tokens.shift();
 	if (token.type()!=KEYWORD || token.text()!="COLOR") ITFAILS;
-	
+
 	token = tokens.shift();
 	if (token.type()!=KEYWORD || token.text()!="BLACK") ITFAILS;
 
@@ -174,7 +170,7 @@ void tstConsole_Token_Stream( rtt_dsxx::UnitTest &ut )
 	    ITFAILS;
 
 	token = tokens.shift();
-	if (token.type()!=STRING || 
+	if (token.type()!=STRING ||
 	    token.text()!="\"manifest \\\"string\\\"\"")
 	    ITFAILS;
 
@@ -198,10 +194,18 @@ void tstConsole_Token_Stream( rtt_dsxx::UnitTest &ut )
 	token = tokens.shift();
 	if (token.type()!=EXIT) ITFAILS;
 
-	tokens.rewind();
-	token = tokens.lookahead();
-	token = tokens.shift();
-	if (token.type()!=KEYWORD || token.text()!="BLUE") ITFAILS;
+        // [2015-09-01 KT] After talking to Kent about this implementation, we
+        // decided that it does not make sense to rewind an interactive standard
+        // input buffer.  In fact, if this is done under an MPI environment
+        // (e.g. mpirun -np 1, aprun -n 1, etc. ), the seekg() will return an
+        // error condition.
+
+        // {
+        //     tokens.rewind();
+        //     token = tokens.lookahead();
+        //     token = tokens.shift();
+        //     if (token.type()!=KEYWORD || token.text()!="BLUE") ITFAILS;
+        // }
     }
     return;
 }
@@ -213,7 +217,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { tstConsole_Token_Stream(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstConsole_Token_Stream.cc

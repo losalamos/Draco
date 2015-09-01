@@ -1,9 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
- * \file Console_Token_Stream.cc
+/*!
+ * \file   Console_Token_Stream.cc
  * \author Kent G. Budge
- * \brief Definitions of Console_Token_Stream methods.
- * \note   Copyright © 2006-2015 Los Alamos National Security, LLC
+ * \brief  Definitions of Console_Token_Stream methods.
+ * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -13,12 +14,12 @@
 #include <sstream>
 #include "Console_Token_Stream.hh"
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 using namespace std;
+
 //-------------------------------------------------------------------------//
 /*!
- * 
  * Use the default Text_Token_Stream user-defined whitespace characters.
  */
 
@@ -43,7 +44,6 @@ Console_Token_Stream::Console_Token_Stream(set<char> const &ws)
 
 //-------------------------------------------------------------------------//
 /*!
- *
  * For a Console_Token_Stream, location is not a terribly  meaningful
  * concept.  So we return "input" as the location, which is true enough.
  *
@@ -54,7 +54,7 @@ std::string Console_Token_Stream::location_() const
 {
     return "input";
 }
-  
+
 //-------------------------------------------------------------------------//
 /*!
  * This function moves the next character from cin into the character buffer.
@@ -75,7 +75,7 @@ void Console_Token_Stream::fill_character_buffer_()
         }
 	character_push_back_(c);
     }
-    
+
     Ensure(check_class_invariants());
 }
 
@@ -125,7 +125,7 @@ void Console_Token_Stream::report(string const &message)
 
     Ensure(check_class_invariants());
 }
-  
+
 //-------------------------------------------------------------------------//
 /*!
  * \author Kent G. Budge
@@ -137,8 +137,15 @@ void Console_Token_Stream::report(string const &message)
 
 void Console_Token_Stream::rewind()
 {
-    cin.clear();    // Must clear the error/end flag bits.
-    cin.seekg(0);
+    cin.clear();     // Must clear the error/end flag bits.
+
+    // [2015-09-01 KT] After talking to Kent about this implementation, we
+    // decided that it does not make sense to rewind an interactive standard
+    // input buffer.  In fact, if this is done under an MPI environment
+    // (e.g. mpirun -np 1, aprun -n 1, etc. ), the seekg() will return an error
+    // condition.
+
+    // cin.seekg(0);
 
     Text_Token_Stream::rewind();
 
@@ -150,5 +157,5 @@ void Console_Token_Stream::rewind()
 } // namespace rtt_parser
 
 //---------------------------------------------------------------------------//
-//                      end of Console_Token_Stream.cc
+// end of Console_Token_Stream.cc
 //---------------------------------------------------------------------------//
