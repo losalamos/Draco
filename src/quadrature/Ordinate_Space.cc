@@ -58,7 +58,7 @@ double Ordinate_Space::compute_azimuthalAngle( double const mu,
 
     if (this->geometry() == rtt_mesh_element::AXISYMMETRIC && azimuthalAngle < 0.0)
         azimuthalAngle += 2*PI;
-    
+
     return azimuthalAngle;
 }
 
@@ -76,7 +76,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
     rtt_mesh_element::Geometry const geometry = this->geometry();
 
     // Compute the ordinate derivative coefficients.
-    
+
     // Default values are for the trivial case (Cartesian geometry).
     is_dependent_.resize(number_of_ordinates, false);
     alpha_.resize(number_of_ordinates, 0.0);
@@ -122,7 +122,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
 
                 if (mu < 0.0)
                 {
-                    // Save the normalization sum for the previous level, if any. 
+                    // Save the normalization sum for the previous level, if any.
                     if (level>=0)
                     {
                         Check(static_cast<int>(C.size())==level);
@@ -130,11 +130,11 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
                     }
                     level++;
                     Csum = 0.0;
-                    
+
                     levels_[a] = level;
                     is_dependent_[a] = false;
 
-                    if (level> 0) 
+                    if (level> 0)
                         first_angles_.push_back(a-1);
                 }
             }
@@ -149,7 +149,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
         unsigned const dimension = this->dimension();
         if (dimension == 2)
             // Check that the level normalizations have the expected
-            // properties. 
+            // properties.
         {
             for (unsigned n=0; n<number_of_levels_/2; n++)
             {
@@ -197,7 +197,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
 
                 Check(tau_[a] >= 0.0 && tau_[a]<1.0);
             }
-                        
+
         }
     }
     else if (geometry == rtt_mesh_element::SPHERICAL)
@@ -222,7 +222,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
                 is_dependent_[a] = true;
                 alpha_[a] = alpha_[a-1] + 2*wt*mu;
             }
-            else 
+            else
             {
                 alpha_[a] = 0;
 
@@ -235,7 +235,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
                 {
                     is_dependent_[a] = true;
                 }
-                        
+
             }
         }
 
@@ -249,7 +249,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
 
             if (wt !=0)
                 mup = mum + 2*wt*rnorm;
-            else 
+            else
                 mup = mu;
 
             if (wt !=0)
@@ -269,14 +269,14 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
             // For our purposes here, the use of the first_angles_ vector is
             // different from the use for axisymmetric coordinates; it is used to
             // record find the index into the first ordinate on each level
-            
+
             int level = 0;
-            double etap; 
-            double eta; 
+            double etap;
+            double eta;
             for (unsigned a=0; a<number_of_ordinates; a++)
             {
                 levels_[a] = level;
-                
+
                 if (a > 0)
                 {
                     if (!soft_equiv(eta,etap))
@@ -298,19 +298,19 @@ void Ordinate_Space::compute_angle_operator_coefficients_()
                 etap = eta;
             }
             }
-            
+
             first_angles_.push_back(number_of_ordinates);
             number_of_levels_ = level+1;
-            
+
         }
         else
             number_of_levels_ = 0;
     }
     else
     {
-        Insist(false, "unexpected geometry when creating an Ordinate_Space."); 
+        Insist(false, "unexpected geometry when creating an Ordinate_Space.");
     }
-    
+
     Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
 }
 
@@ -320,7 +320,7 @@ vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_c
 {
     unsigned const dim = dimension();
     Geometry const geometry = this->geometry();
-    
+
     if( dim == 3 )
     {
         return compute_n2lk_3D_(quadrature_class,
@@ -356,29 +356,38 @@ vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_c
  */
 
 void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
-                                      unsigned const sn_order)
+                                      int const sn_order)
 {
-    unsigned Lmax = expansion_order_;
-    
-    moments_ = compute_n2lk_(quadrature_class,
-                             sn_order);
-            
-    moments_per_order_.resize(Lmax+1, 0U);
-    number_of_moments_ = 0;
-    for(unsigned n=0; n<moments_.size(); ++n)
+    int Lmax = expansion_order_;
+    if (Lmax>=0)
     {
-        unsigned const l = moments_[n].L();
-        if (l<=Lmax || !prune())
+        moments_ = compute_n2lk_(quadrature_class,
+                                 sn_order);
+
+        moments_per_order_.resize(Lmax+1, 0U);
+        number_of_moments_ = 0;
+        for(unsigned n=0; n<moments_.size(); ++n)
         {
-            if (l>Lmax)
+            int const l = moments_[n].L();
+            if (l<=Lmax || !prune())
             {
-                Lmax = l;
-                moments_per_order_.resize(Lmax+1, 0U);
+                if (l>Lmax)
+                {
+                    Lmax = l;
+                    moments_per_order_.resize(Lmax+1, 0U);
+                }
+                Check(l<moments_per_order_.size());
+                moments_per_order_[l] += 1;
+                number_of_moments_++;
             }
-            Check(l<moments_per_order_.size());
-            moments_per_order_[l] += 1;
-            number_of_moments_++;
         }
+    }
+    else
+    {
+        // moment space not needed
+        moments_.clear();
+        moments_per_order_.clear();
+        number_of_moments_ = 0;
     }
 }
 
@@ -393,7 +402,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
  * \param ordinates Set of ordinate directions
  *
  * \param expansion_order Expansion order of the desired scattering moment
- * space.
+ * space. If negative, the moment space is not needed.
  *
  * \param extra_starting_directions Add extra directions to each level set. In most
  * geometries, an additional ordinate is added that is opposite in direction
@@ -408,7 +417,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
 Ordinate_Space::Ordinate_Space( unsigned const  dimension,
                                 Geometry const  geometry,
                                 vector<Ordinate> const &ordinates,
-                                unsigned const  expansion_order,
+                                int const  expansion_order,
                                 bool const  extra_starting_directions,
                                 Ordering const ordering)
     : Ordinate_Set(dimension,
@@ -436,7 +445,7 @@ Ordinate_Space::Ordinate_Space( unsigned const  dimension,
     Require(geometry!=rtt_mesh_element::END_GEOMETRY);
 
     compute_angle_operator_coefficients_();
-    
+
     compute_reflection_maps_();
 
     Ensure(check_class_invariants());
@@ -497,7 +506,7 @@ bool Ordinate_Space::check_class_invariants() const
     if (geometry() == rtt_mesh_element::CARTESIAN)
     {
         return ((this->dimension() != 2 || this->ordering() != LEVEL_ORDERED) ||
-                (first_angles_.size()  == number_of_levels_)); 
+                (first_angles_.size()  == number_of_levels_));
     }
     else
     {
@@ -530,7 +539,7 @@ void Ordinate_Space::compute_reflection_maps_()
 {
     vector<Ordinate> const &ordinates = this->ordinates();
     unsigned const number_of_ordinates = ordinates.size();
-    
+
     reflect_mu_.resize(number_of_ordinates);
     reflect_eta_.resize(number_of_ordinates);
     reflect_xi_.resize(number_of_ordinates);

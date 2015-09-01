@@ -248,7 +248,7 @@ Sn_Ordinate_Space::compute_D()
  * \param ordinates Set of ordinate directions
  *
  * \param expansion_order Expansion order of the desired scattering moment
- * space.
+ * space. If negative, the moment space is not needed.
  *
  * \param extra_starting_directions Add extra directions to each level set. In most
  * geometries, an additional ordinate is added that is opposite in direction
@@ -263,7 +263,7 @@ Sn_Ordinate_Space::compute_D()
 Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
                                 Geometry const  geometry,
                                 vector<Ordinate> const &ordinates,
-                                unsigned const  expansion_order,
+                                int const  expansion_order,
                                 bool const  extra_starting_directions,
                                 Ordering const ordering)
     : Ordinate_Space(dimension,
@@ -281,9 +281,12 @@ Sn_Ordinate_Space::Sn_Ordinate_Space( unsigned const  dimension,
     compute_moments_(END_QUADRATURE,   // not used by Sn
                      expansion_order); // also not actually used
 
-    // compute the operators; MUST be called in this order
-    compute_M();
-    compute_D();
+    if (expansion_order>=0)
+    {
+        // compute the operators; MUST be called in this order
+        compute_M();
+        compute_D();
+    }
 
     Ensure(check_class_invariants());
 }

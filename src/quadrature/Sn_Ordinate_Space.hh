@@ -43,7 +43,7 @@ class Sn_Ordinate_Space : public Ordinate_Space
     Sn_Ordinate_Space(unsigned dimension,
                    Geometry geometry,
                    vector<Ordinate> const &,
-                   unsigned expansion_order,
+                   int expansion_order,
                    bool extra_starting_directions=false,
                    Ordering ordering=LEVEL_ORDERED);
 
@@ -54,7 +54,7 @@ class Sn_Ordinate_Space : public Ordinate_Space
     bool check_class_invariants() const;
 
     // SERVICES
-    
+
     virtual QIM quadrature_interpolation_model() const;
 
     //! Return the discrete to moment transform matrix
@@ -73,16 +73,16 @@ class Sn_Ordinate_Space : public Ordinate_Space
 
     virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
                                             unsigned sn_order);
-    
+
     virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
                                              unsigned sn_order);
-    
+
     virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
                                             unsigned sn_order);
-    
+
     virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
                                              unsigned sn_order);
-    
+
     virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
                                             unsigned sn_order);
 
@@ -94,7 +94,7 @@ class Sn_Ordinate_Space : public Ordinate_Space
 
     void compute_M();
     void compute_D();
-    
+
     // DATA
 
     vector<double> D_;

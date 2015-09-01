@@ -56,7 +56,7 @@ Quadrature::create_ordinates(unsigned const dimension,
     Require(dimension>1 || mu_axis==0);
     Require(dimension==1 || mu_axis!=eta_axis);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
-    
+
     vector<Ordinate> Result = create_ordinates_(dimension,
                                                 geometry,
                                                 norm,
@@ -95,7 +95,7 @@ Quadrature::create_ordinates(unsigned const dimension,
     Require(dimension>0 && dimension<4);
     Require(norm>0.0);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
-    
+
     vector<Ordinate> Result = create_ordinates_(dimension,
                                                 geometry,
                                                 norm,
@@ -141,7 +141,7 @@ Quadrature::create_ordinate_set(unsigned const dimension,
                                                    norm,
                                                    include_starting_directions,
                                                    include_extra_directions);
-    
+
     SP<Ordinate_Set> Result(new Ordinate_Set(dimension,
                                              geometry,
                                              ordinates,
@@ -171,8 +171,8 @@ void Quadrature::add_1D_starting_directions_(Geometry const geometry,
                                              0.0,
                                              0.0,
                                              0.0));
-            
-            // insert mu=1 starting direction 
+
+            // insert mu=1 starting direction
             if (add_extra_starting_directions)
                 ordinates.push_back(Ordinate(1.0,
                                              0.0,
@@ -205,7 +205,7 @@ void Quadrature::add_2D_starting_directions_(Geometry const geometry,
             // this to simplify the logic of determining when we are at
             // the head of a new level set.
 
-            double const SENTINEL_COSINE = 2.0; 
+            double const SENTINEL_COSINE = 2.0;
 
             // Insert the supplemental ordinates.
 
@@ -246,7 +246,7 @@ void Quadrature::add_2D_starting_directions_(Geometry const geometry,
                                              eta,
                                              0.0,
                                              0.0));
-            
+
         }
     }
 }
@@ -329,7 +329,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     Require(dimension>1 || mu_axis==0);
     Require(dimension==1 || mu_axis!=eta_axis);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
-    
+
     vector<Ordinate> ordinates = create_ordinates(dimension,
                                                   geometry,
                                                   1.0,  // hardwired norm
@@ -337,7 +337,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                                   eta_axis,
                                                   true, // include starting directions
                                                   include_extra_directions);
-    
+
     SP<Ordinate_Space> Result;
     switch (qim)
     {
@@ -349,7 +349,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
                                            include_extra_directions,
                                            ordering));
             break;
-            
+
         case GQ1:
             Result.reset(new Galerkin_Ordinate_Space(dimension,
                                                  geometry,
@@ -389,7 +389,8 @@ Quadrature::create_ordinate_space(unsigned const dimension,
 
  * \param geometry Geometry of the problem.
  *
- * \param moment_expansion_order Expansion order in moment space
+ * \param moment_expansion_order Expansion order in moment space. If negative, the moment
+ * space is not needed.
  *
  * \param include_extra_starting_directions Should extra starting directions
  * be included in the ordinate set for each level?
@@ -401,7 +402,7 @@ Quadrature::create_ordinate_space(unsigned const dimension,
 SP<Ordinate_Space>
 Quadrature::create_ordinate_space(unsigned const dimension,
                                   Geometry const geometry,
-                                  unsigned const moment_expansion_order,
+                                  int const moment_expansion_order,
                                   bool const include_extra_directions,
                                   Ordering const ordering,
                                   QIM const qim) const
@@ -409,13 +410,14 @@ Quadrature::create_ordinate_space(unsigned const dimension,
     Require(dimension>0 && dimension<4);
     Require(dimension==1 || quadrature_class()!=INTERVAL_QUADRATURE);
     Require(qim == SN || qim == GQ1 || qim == GQ2 || qim == GQF);
-    
+    Require(qim==SN || moment_expansion_order>=0);
+
     vector<Ordinate> ordinates = create_ordinates(dimension,
                                                   geometry,
                                                   1.0,  // hardwired norm
                                                   true, // include starting directions
                                                   include_extra_directions);
-    
+
     SP<Ordinate_Space> Result;
     if (qim == SN)
         Result.reset(new Sn_Ordinate_Space(dimension,

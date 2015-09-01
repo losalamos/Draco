@@ -143,7 +143,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     Ordinate_Space(unsigned dimension,
                    Geometry geometry,
                    vector<Ordinate> const &,
-                   unsigned expansion_order,
+                   int expansion_order,
                    bool extra_starting_directions=false,
                    Ordering ordering=LEVEL_ORDERED);
 
@@ -151,7 +151,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     // ACCESSORS
 
-    unsigned expansion_order() const
+    int expansion_order() const
     {
         return expansion_order_;
     }
@@ -279,7 +279,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
     // IMPLEMENTATION
 
     void compute_moments_(Quadrature_Class,
-                          unsigned sn_order);
+                          int sn_order);
 
     vector<Moment> compute_n2lk_(Quadrature_Class,
                                  unsigned sn_order);
@@ -311,7 +311,7 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
 
     // DATA
 
-    unsigned const expansion_order_;
+    int expansion_order_;
     bool has_extra_starting_directions_;
     unsigned number_of_levels_;
     vector<unsigned> levels_;

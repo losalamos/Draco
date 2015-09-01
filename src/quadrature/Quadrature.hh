@@ -127,7 +127,7 @@ class DLL_PUBLIC_quadrature Quadrature
 
     SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
                                              Geometry,
-                                             unsigned moment_expansion_order,
+                                             int moment_expansion_order,
                                              bool include_extra_directions,
                                              Ordinate_Set::Ordering ordering,
                                              QIM qim) const;
