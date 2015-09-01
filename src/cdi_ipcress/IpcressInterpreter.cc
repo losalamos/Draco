@@ -106,6 +106,14 @@ void ipcress_file_read(std::string const & op_data_file)
     cout.precision(7);
     cout.setf(ios::scientific);
 
+#if defined(MSVC) && MSVC_VERSION < 1900
+    // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
+    // because numeric_limits<double>::max() has a 3-digit exponent.)
+    // Enable two-digit exponent format to stay consistent with GNU and
+    // Intel on Linux.(requires <stdio.h>).
+    unsigned old_exponent_format = _set_output_format( _TWO_DIGIT_EXPONENT );
+#endif
+
     // Print the density grid
     std::vector<double> dens = spMgOp->getDensityGrid();
     cout   << "Density grid" << endl;
@@ -123,10 +131,7 @@ void ipcress_file_read(std::string const & op_data_file)
     cout   << "Frequency grid" << endl;
     for (size_t gIndex=0; gIndex < groups.size(); ++gIndex)
         cout << gIndex + 1<< "\t" << groups[gIndex] << endl;
-
-
     cout << endl;
-
 
     int keepGoing = 1;
     size_t matID(1);
@@ -233,6 +238,11 @@ void ipcress_file_read(std::string const & op_data_file)
                  << spGOp->getOpacity(temperature, density) << endl;
         }
     }
+
+#if defined(MSVC) && MSVC_VERSION < 1900
+    // Disable two-digit exponent format
+    _set_output_format( old_exponent_format );
+#endif
 
     cout << "Ending session." << endl;
 }

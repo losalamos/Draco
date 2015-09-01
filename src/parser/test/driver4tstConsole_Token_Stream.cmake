@@ -33,10 +33,13 @@ aut_runTests()
 
 message("Checking the generated output file...
 ")
+if(WIN32)
+  set( exe_suffix ".exe")
+endif()
 
 # This string should be found:
 
-string(FIND "${testout}" "tstConsole_Token_Stream Test: PASSED." string_pos)
+string(FIND "${testout}" "tstConsole_Token_Stream${exe_suffix} Test: PASSED." string_pos)
 if( ${string_pos} GREATER 0 )
   PASSMSG( "tstConsole_Token_Stream ran successfully." )
 else()
