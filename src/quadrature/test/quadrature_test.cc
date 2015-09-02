@@ -63,7 +63,7 @@ void test_either(UnitTest &ut,
         ut.failure("tau size is NOT correct");
     }
 
-    if (ordinate_space->expansion_order()==expansion_order)
+    if (ordinate_space->expansion_order()==static_cast<int>(expansion_order))
     {
         ut.passes("expansion order is correct");
     }

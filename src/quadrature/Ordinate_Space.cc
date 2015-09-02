@@ -376,7 +376,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
                     Lmax = l;
                     moments_per_order_.resize(Lmax+1, 0U);
                 }
-                Check(l<moments_per_order_.size());
+                Check(l<static_cast<int>(moments_per_order_.size()));
                 moments_per_order_[l] += 1;
                 number_of_moments_++;
             }
