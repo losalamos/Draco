@@ -68,8 +68,15 @@ if re_trinitite_nodename1.match( nodename ) or \
        re_cielito_nodename1.match( nodename ):
     craysys = 1
 
+bgqsys = 0
+re_seqlac_nodename1 = re.compile('seqlac*', re.IGNORECASE)
+if re_seqlac_nodename1.match( nodename ):
+    bgqsys = 1
+
 if craysys:
     c = ["aprun", "-n", "1", exe, "0" ]
+elif bgqsys:
+    c = ["srun", "-n", "1", exe, "0" ]
 else:
     c = [ exe, "0" ]
 
@@ -134,6 +141,8 @@ for i in [1,2,3]:
         os.remove(file)
     if craysys:
         c = ["aprun", "-n", "1", exe, str(i) ]
+    elif bgqsys:
+        c = ["srun", "-n", "1", exe, str(i) ]
     else:
         c = [ exe, str(i) ]
     # c = '%s %s %d' % (aprun, exe, i)

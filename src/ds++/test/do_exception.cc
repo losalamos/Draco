@@ -18,6 +18,7 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -116,20 +117,17 @@ void run_test(int /*argc*/, char *argv[])
             break;
         case 3:
         {
-            fout << "- Trying to cause an overflow condition" << endl;
+            fcout( "- Trying to cause an overflow condition", fout );
             result = 2.0;
+            std::vector<double> data;
             for ( size_t i = 0; i < 100; i++ )
             {
-                // exp() should work, but on 64-bit linux, it's not raising the
-                // overflow flag:
-                // result = exp(result); // should fail at some i
-
-                // ... so instead:
-                result = result * result * result * result
-                         * result; // should fail at some i
-
+                // should fail at some i
+                result = result * result * result * result * result;
+                data.push_back(result); // force optimizer to evaluate the above line.
             }
-            fout << "  result = " << result << endl;
+            msg << "  result = " << result << endl;
+            fcout( msg.str(), fout );
             break;
         }
     }

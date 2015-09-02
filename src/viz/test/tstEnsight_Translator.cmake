@@ -95,19 +95,28 @@ diff output = ${diffout}" )
   endif()
 endmacro()
 
-# testproblem_binary_ensight directory
-foreach( var ${vars} )
-  aut_diff_2files(
-    ${PROJECT_BINARY_DIR}/testproblem_binary_ensight/${var}/data.0001
-    ${PROJECT_SOURCE_DIR}/bench/${var}.bin.0001 )
-endforeach()
+# Comparing binary files is expected to fail on powerpc architectures
+# because the Endianess of the machine is different than for the
+# machine where the gold file was created.  So, for powerpc, skip
+# these comparisons.
 
-# part_testproblem_binary_ensight directory
-foreach( var ${vars} )
-  aut_diff_2files(
-    ${PROJECT_BINARY_DIR}/part_testproblem_binary_ensight/${var}/data.0001
-    ${PROJECT_SOURCE_DIR}/bench/${var}.bin.0001 )
-endforeach()
+if( NOT "$ENV{CMAKE_HOST_SYSTEM_PROCESSOR}" STREQUAL "powerpc64" )
+
+  # testproblem_binary_ensight directory
+  foreach( var ${vars} )
+    aut_diff_2files(
+      ${PROJECT_BINARY_DIR}/testproblem_binary_ensight/${var}/data.0001
+      ${PROJECT_SOURCE_DIR}/bench/${var}.bin.0001 )
+  endforeach()
+
+  # part_testproblem_binary_ensight directory
+  foreach( var ${vars} )
+    aut_diff_2files(
+      ${PROJECT_BINARY_DIR}/part_testproblem_binary_ensight/${var}/data.0001
+      ${PROJECT_SOURCE_DIR}/bench/${var}.bin.0001 )
+  endforeach()
+
+endif()
 
 ##---------------------------------------------------------------------------##
 ## Final report

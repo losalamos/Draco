@@ -307,11 +307,14 @@ macro( add_app_unit_test )
   else()
     set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${aut_WORKDIR}" )
   endif()
+
   if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
 
     # Parallel tests
     if( "${MPIEXEC}" MATCHES "aprun" )
       set( RUN_CMD "aprun -n" )
+    elseif( "${MPIEXEC}" MATCHES "srun" )
+      set( RUN_CMD "srun -n" )
     elseif( HAVE_MIC )
       set( RUN_CMD "${MIC_RUN_CMD} ${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}" )
     else()
@@ -323,6 +326,8 @@ macro( add_app_unit_test )
     # Scalar tests
     if( "${MPIEXEC}" MATCHES "aprun" )
       set( RUN_CMD "aprun -n 1" )
+    elseif( "${MPIEXEC}" MATCHES "srun" )
+      set( RUN_CMD "srun -n 1" )
     elseif( HAVE_MIC )
       set( RUN_CMD "${MIC_RUN_CMD}" )
     endif()
