@@ -88,24 +88,23 @@ else
     }
 fi
 
-moddirs="${VENDOR_DIR}/Modules/hpc /usr/projects/packages/user_contrib/modulefiles/trinitite"
+moddirs="${VENDOR_DIR}/Modules/hpc"
 for dir in $moddirs; do
   if test -z `echo $MODULEPATH | grep $dir`; then
     run "module use $dir"
   fi
 done
-
+run "module load friendly-testing user_contrib"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 run "module unload cmake numdiff gsl papi perftools trilinos"
-#run "module load user_contrib"
-run "module load cmake/3.3.0 svn"
+run "module load cmake/3.3.1 svn"
 run "module load PrgEnv-intel"
+run "module unload xt-libsci xt-totalview"
 run "module load gsl lapack"
 run "module load numdiff"
-run "module load trilinos SuperLU_DIST"
+run "module load trilinos SuperLU_DIST ParMetis ndi"
 run "module load random123"
 run "module load eospac"
-run "module load ParMetis ndi"
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
