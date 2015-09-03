@@ -57,8 +57,22 @@ esac
 module load gsl/1.15 lapack/3.5.0
 module load emacs
 module load trilinos SuperLU_DIST
-module load ParMetis ndi random123 eospac/v6.2.4
-module load svn cmake/3.3.0 numdiff
+module load ParMetis ndi random123 eospac/6.2.4
+module load svn cmake/3.3.1 numdiff
+
+function unload_draco_module_env()
+{
+  module unload svn cmake numdiff
+  module unload ParMetis ndi random123 eospac
+  module unload trilinos SuperLU_DIST
+  module unload emacs
+  module unload gsl lapack
+
+  module unload hsi
+  module unload PrgEnv-intel
+  module load PrgEnv-pgi
+  module list
+}
 
 export OMP_NUM_THREADS=8
 
