@@ -104,7 +104,7 @@ run "module load gsl lapack"
 run "module load numdiff"
 run "module load trilinos SuperLU_DIST ParMetis ndi"
 run "module load random123"
-run "module load eospac"
+run "module load eospac/6.2.4"
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
