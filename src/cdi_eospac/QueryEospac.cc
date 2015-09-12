@@ -17,15 +17,13 @@
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
 #include "ds++/Assert.hh"
+#include "ds++/XGetopt.hh"
 
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <sstream>
 #include <cstdlib> // defines atoi
-
-#include <string.h>
-#include "ds++/XGetopt.hh"
 
 //---------------------------------------------------------------------------//
 void query_eospac()
@@ -122,40 +120,32 @@ void query_eospac()
 
 int main(int argc, char *argv[])
 {
-    int c;
-
-    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
+    // Known command line arguments:
     std::map< std::string, char> long_options;
     long_options["version"] = 'v';
     long_options["help"]    = 'h';
 
-    std::string filename;
-    // Parse the arguments
-    //for (int arg = 1; arg < argc; arg++)
-    //{
-        while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vh:", long_options)) != -1)
+    int c(0);
+    while(( c = rtt_dsxx::xgetopt(argc, argv, (char*)"vh:", long_options)) != -1)
+    {
+        switch (c)
         {
-            switch (c)
-            {
-                case 'v': // --version
-                    std::cout << argv[0] << ": version " << rtt_dsxx::release()
-                              << std::endl;
-                    return 0;
+            case 'v': // --version
+                std::cout << argv[0] << ": version " << rtt_dsxx::release()
+                          << std::endl;
+                return 0;
 
-                case 'h': // --help
-                    std::cout << argv[0] << ": version " << rtt_dsxx::release()
-                              << "\nUsage: QueryEospac\n"
-                              << "Follow the prompts to print equation-of-state data to the "
-                              << "screen." << std::endl;
-                    return 0;
+            case 'h': // --help
+                std::cout << argv[0] << ": version " << rtt_dsxx::release()
+                          << "\nUsage: QueryEospac\n"
+                          << "Follow the prompts to print equation-of-state data to the "
+                          << "screen." << std::endl;
+                return 0;
 
-                default:
-                    break; // nothing to do.
-            }
+            default:
+                break; // nothing to do.
         }
-
-    //}
+    }
 
     try
     {

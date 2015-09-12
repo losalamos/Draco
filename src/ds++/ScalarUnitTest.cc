@@ -15,7 +15,6 @@
 #include "Assert.hh"
 #include <iostream>
 #include <sstream>
-
 #include "XGetopt.hh"
 
 namespace rtt_dsxx
@@ -46,41 +45,35 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
     Require( release != NULL );
 
     // header
-
     out << "\n============================================="
         << "\n=== Scalar Unit Test: " << testName
         << "\n=============================================\n" << endl;
 
     // version tag
-
     out << testName << ": version " << release() << "\n" << endl;
 
     // exit if command line contains "--version"
-
-    int c;
-
     rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
     std::map< std::string, char> long_option;
     long_option["version"] = 'v';
 
-    for( int arg = 1; arg < argc; arg++ )
+    int c(0);
+    while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"v:", long_option)) != -1)
     {
-	while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"v:", long_option)) != -1)
+        switch (c)
         {
-            switch (c)
+            case 'v': // --version
             {
-                case 'v': // --version
-                {
-                    throw rtt_dsxx::assertion( string( "Success" ) );
-                    return;
-                }
-
-                default:
-                    break; // nothing to do.
+                throw rtt_dsxx::assertion( string( "Success" ) );
+                return;
             }
+
+            default:
+                break; // nothing to do.
         }
     }
+
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );
     Ensure( testName.length() > 0 );

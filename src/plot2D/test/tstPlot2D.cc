@@ -257,30 +257,28 @@ main(int argc, char *argv[])
 {
     bool batch = true;
 
-    // version tag
-    int c;
-
-    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
+    // Process known command line arguments:
     std::map< std::string, char> long_options;
     long_options["version"] = 'v';
     long_options["gui"]     = 'g';
 
-    //for( int arg = 1; arg < argc; arg++ )
-	while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vg", long_options)) != -1)
-          switch (c)
-          {
+    int c(0);
+    while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"vg", long_options)) != -1)
+    {
+        switch (c)
+        {
             case 'v': // --version
-              cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
-              break;
+                cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
+                break;
 
 	    case 'g': // --gui
-              batch = false;
-              break;
+                batch = false;
+                break;
 
             default:
-               break; // nothing to do.
-           }
+                break; // nothing to do.
+        }
+    }
 
     cout << "\n**********************************************\n";
 

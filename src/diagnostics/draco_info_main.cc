@@ -27,31 +27,27 @@ int main( int argc, char *argv[] )
         rtt_diagnostics::DracoInfo di;
 
         // Preparing to parse command line arguments.
-	int c;
-	// rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
         std::map< std::string, char> long_options;
         long_options["version"] = 'v';
         long_options["brief"]   = 'b';
 
-        // for( int iargc=1; iargc<argc; ++iargc )
-        // {
-            while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vb", long_options)) != -1)
+        int c(0);
+        while(( c = rtt_dsxx::xgetopt(argc, argv, (char*)"vb", long_options)) != -1)
+        {
+            switch (c)
             {
-                switch (c)
-                {
-                    case 'v': // --version
-                        version = true;
-                        break;
+                case 'v': // --version
+                    version = true;
+                    break;
 
-                    case 'b': // --brief
-                        brief = true;
-                        break;
+                case 'b': // --brief
+                    brief = true;
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
-            //}
+        }
 
         if( version )
             cout << di.versionReport();

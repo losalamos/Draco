@@ -13,10 +13,7 @@
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
-
 #include <iostream>
-#include <string.h>
-
 #include "ds++/XGetopt.hh"
 
 //---------------------------------------------------------------------------//
@@ -51,19 +48,15 @@ int main(int argc, char *argv[])
 {
     rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
 
-    int c;
-
-    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
+    // Known arguments
     std::map< std::string, char> long_options;
     long_options["version"] = 'v';
     long_options["timings"] = 't';
     long_options["runtest"} = 'r';
 
-    // rtt_diagnostics::DracoInfo di;
-    //for( int iargc=1; iargc<argc; ++iargc )
-    //{
-        while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vt:", long_options)) != -1)
+    int c(0);
+    while(( c = rtt_dsxx::xgetopt(argc, argv, (char*)"vt:", long_options)) != -1 )
+    {
         {
             switch (c)
             {
@@ -79,22 +72,24 @@ int main(int argc, char *argv[])
                     break;
             }
         }
-    //}
+    }
 
     // runtest command option tag
     bool runtest = false;
 
-    //for (int arg = 1; arg < argc; arg++)
-       while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"r:", long_options)) != -1)
-           switch (c)
-             {
-             case 'r': // --runtest
-               truntest = true;
-               break;
+    c=0;
+    while (( c = rtt_dsxx::xgetopt (argc, argv, (char*)"r:", long_options)) != -1 )
+    {
+        switch (c)
+        {
+            case 'r': // --runtest
+                truntest = true;
+                break;
 
-             default:
-               return; // nothing to do.
-             }
+            default:
+                return; // nothing to do.
+        }
+    }
 
     try
     {

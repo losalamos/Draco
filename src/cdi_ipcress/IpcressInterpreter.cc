@@ -18,15 +18,13 @@
 #include "ds++/Release.hh"
 #include "ds++/Assert.hh"
 #include "ds++/SP.hh"
+#include "ds++/XGetopt.hh"
 
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <cmath>
 #include <sstream>
-
-#include <string.h>
-#include "ds++/XGetopt.hh"
 
 using rtt_dsxx::SP;
 using rtt_cdi_ipcress::IpcressFile;
@@ -251,43 +249,35 @@ void ipcress_file_read(std::string const & op_data_file)
 
 int main(int argc, char *argv[])
 {
-
-    int c;
-
-    // rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
+    // Known command line arguments:
     std::map< std::string, char> long_options;
     long_options["version"] = 'v';
     long_options["help"]    = 'h';
 
-    string filename;
-    // Parse the arguments
-    // for (int arg = 1; arg < argc; arg++)
-    // {
-        while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"vh", long_options)) != -1)
+    int c(0);
+    while(( c=rtt_dsxx::xgetopt (argc, argv, (char*)"vh", long_options)) != -1)
+    {
+        switch (c)
         {
-            switch (c)
-            {
-                case 'v': // --version
-                    cout << argv[0] << ": version " << rtt_dsxx::release()
-                         << endl;
-                    return 0;
+            case 'v': // --version
+                cout << argv[0] << ": version " << rtt_dsxx::release()
+                     << endl;
+                return 0;
 
-                case 'h': // --help
-                    cout << argv[0] << ": version " << rtt_dsxx::release()
-                         << "\nUsage: IpcressInterpreter <ipcress file>\n"
-                         << "Follow the prompts to print opacity data to the screen."
-                         << endl;
-                    return 0;
+            case 'h': // --help
+                cout << argv[0] << ": version " << rtt_dsxx::release()
+                     << "\nUsage: IpcressInterpreter <ipcress file>\n"
+                     << "Follow the prompts to print opacity data to the screen."
+                     << endl;
+                return 0;
 
-                default:
-                    break;
-            }
+            default:
+                break;
         }
-// }
-        // Assume last command line argument is the name of the
-        // ipcress file.
-        filename = string(argv[argc-1]);
+    }
+
+    // Assume last command line argument is the name of the ipcress file.
+    std::string const filename = string(argv[argc-1]);
 
     try
     {

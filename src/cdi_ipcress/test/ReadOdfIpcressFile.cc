@@ -17,7 +17,6 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
-
 #include "ds++/XGetopt.hh"
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
@@ -62,14 +61,10 @@ int main(int argc, char *argv[])
     rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
     bool is_unittest(false);
 
-    int c;
-
-    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
+    // Known command line arguments:
     std::map< std::string, char> long_options;
     long_options["help"]       = 'h';
     long_options["unittest"]   = 'u';
-
     long_options["model"]      = 'm';
     long_options["reaction"]   = 'r';
     long_options["mg"]         = 'g';
@@ -87,29 +82,30 @@ int main(int argc, char *argv[])
     }
     else if (argc == 2)
     {
-       rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-       while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"hu", long_options)) != -1)
-       {
-          switch (c)
-          {
-	    // test to see if it's just "--help"
-            case 'h': // --help
-	      {
-              printSyntax();
-              return 0;
-	      break;
-	      }
+        rtt_dsxx::optind=1; // reset global counter (see XGetopt.cc)
+        int c(0);
+        while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"hu", long_options)) != -1)
+        {
+            switch (c)
+            {
+                // test to see if it's just "--help"
+                case 'h': // --help
+                {
+                    printSyntax();
+                    return 0;
+                    break;
+                }
 
-	    case 'u': // --unittest
-	      {
-              is_unittest = true;
-	      break;
-	      }
+                case 'u': // --unittest
+                {
+                    is_unittest = true;
+                    break;
+                }
 
-            default:
-              return 0; // nothing to do.
-	}
-      }
+                default:
+                    return 0; // nothing to do.
+            }
+        }
 
     }
 
@@ -129,7 +125,7 @@ int main(int argc, char *argv[])
     {
         ostringstream message;
         message << "Failed to create SP to new IpcressFile object for "
-                << "file \"" << ipcressFileName << "\":"
+                << "file \"" << ipcressFileName << "\": "
                 << excpt.what();
         FAILMSG(message.str());
         cerr << "Aborting program.";
@@ -153,125 +149,127 @@ int main(int argc, char *argv[])
        string currentArg = argv[rtt_dsxx::optind];
        rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
 
-       while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"hdtmrgbapci", long_options)) != -1)
+       int c(0);
+       while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"hdtmrgbapci", long_options)) != -1)
        {
-          switch (c)
-          {
-            case 'h': // --help
-	      {
-              printSyntax();
-              return 0;
-              break;
-	      }
+           switch (c)
+           {
+               case 'h': // --help
+               {
+                   printSyntax();
+                   return 0;
+                   break;
+               }
 
- 	    case 'd': // -d
-	      {
-              //arg++; // start looking at next argument
-              istringstream inString(argv[rtt_dsxx::optind]);
-              inString >> density;
-              cerr << "Using density of " << density << endl;
-              break;
-	      }
+               case 'd': // -d
+               {
+                   //arg++; // start looking at next argument
+                   istringstream inString(argv[rtt_dsxx::optind]);
+                   inString >> density;
+                   cerr << "Using density of " << density << endl;
+                   break;
+               }
 
-	    case 't': // -t
-	      {
-              //arg++; // start looking at next argument
-              istringstream inString(argv[rtt_dsxx::optind]);
-              inString >> temperature;
-              cerr << "Using temperature of " << temperature << endl;
-              break;
-	      }
+               case 't': // -t
+               {
+                   //arg++; // start looking at next argument
+                   istringstream inString(argv[rtt_dsxx::optind]);
+                   inString >> temperature;
+                   cerr << "Using temperature of " << temperature << endl;
+                   break;
+               }
 
-	    case 'm': // --model
-		{
-		//arg++; // start looking at next argument
-            	if (argv[rtt_dsxx::optind][0] == 'r')
-            	{
-                    model = rtt_cdi::ROSSELAND;
-            	}
-            	else if (argv[rtt_dsxx::optind][0] == 'p')
-            	{
-                    model = rtt_cdi::PLANCK;
-            	}
-            	else
-            	{
-                    cerr << "Unrecognized model option '"
-                         << argv[rtt_dsxx::optind] << "'" << endl;
-                    cerr << "Defaulting to rosseland" << endl;
-            	}
-		break;
-		}
+               case 'm': // --model
+               {
+                   //arg++; // start looking at next argument
+                   if (argv[rtt_dsxx::optind][0] == 'r')
+                   {
+                       model = rtt_cdi::ROSSELAND;
+                   }
+                   else if (argv[rtt_dsxx::optind][0] == 'p')
+                   {
+                       model = rtt_cdi::PLANCK;
+                   }
+                   else
+                   {
+                       cerr << "Unrecognized model option '"
+                            << argv[rtt_dsxx::optind] << "'" << endl;
+                       cerr << "Defaulting to rosseland" << endl;
+                   }
+                   break;
+               }
 
-	    case 'r': // --reaction
-		{
-		//arg++; // start looking at next argument
-            	if (argv[rtt_dsxx::optind][0] == 'a')
-            	{
-                    reaction = rtt_cdi::ABSORPTION;
-            	}
-            	else if (argv[rtt_dsxx::optind][0] == 's')
-            	{
-                    reaction = rtt_cdi::SCATTERING;
-            	}
-            	else if (argv[rtt_dsxx::optind][0] == 't')
-            	{
-                    reaction = rtt_cdi::TOTAL;
-            	}
-            	else
-            	{
-                    cerr << "Unrecognized model option '"
-                         << argv[rtt_dsxx::optind] << "'" << endl;
-                    cerr << "Defaulting to rosseland" << endl;
-            	}
-		break;
-		}
+               case 'r': // --reaction
+               {
+                   //arg++; // start looking at next argument
+                   if (argv[rtt_dsxx::optind][0] == 'a')
+                   {
+                       reaction = rtt_cdi::ABSORPTION;
+                   }
+                   else if (argv[rtt_dsxx::optind][0] == 's')
+                   {
+                       reaction = rtt_cdi::SCATTERING;
+                   }
+                   else if (argv[rtt_dsxx::optind][0] == 't')
+                   {
+                       reaction = rtt_cdi::TOTAL;
+                   }
+                   else
+                   {
+                       cerr << "Unrecognized model option '"
+                            << argv[rtt_dsxx::optind] << "'" << endl;
+                       cerr << "Defaulting to rosseland" << endl;
+                   }
+                   break;
+               }
 
-	    case 'g': // --mg
-		{
-		numBands = 1;
-            	cerr << "Using " << numBands << " bands (multigroup file)" << endl;
-		break;
-		}
+               case 'g': // --mg
+               {
+                   numBands = 1;
+                   cerr << "Using " << numBands << " bands (multigroup file)" << endl;
+                   break;
+               }
 
-	    case 'b': // --bands
-		{
-		//arg++; // start looking at next argument
-            	istringstream inString(argv[rtt_dsxx::optind]);
-            	inString >> numBands;
-            	cerr << "Using " << numBands << " bands" << endl;
-		break;
-		}
+               case 'b': // --bands
+               {
+                   //arg++; // start looking at next argument
+                   istringstream inString(argv[rtt_dsxx::optind]);
+                   inString >> numBands;
+                   cerr << "Using " << numBands << " bands" << endl;
+                   break;
+               }
 
-	    case 'a': // --analyze
-		{
-		actionToTake = 1;
-		break;
-		}
+               case 'a': // --analyze
+               {
+                   actionToTake = 1;
+                   break;
+               }
 
-	    case 'p': // --printc
-		{
-		actionToTake = 2;
-		break;
-		}
+               case 'p': // --printc
+               {
+                   actionToTake = 2;
+                   break;
+               }
 
-	    case 'c': // --collapse
-		{
-		actionToTake = 3;
-		break;
-		}
+               case 'c': // --collapse
+               {
+                   actionToTake = 3;
+                   break;
+               }
 
-	    case 'i': // --printtable
-		{
-		actionToTake = 4;
-		break;
-		}
+               case 'i': // --printtable
+               {
+                   actionToTake = 4;
+                   break;
+               }
 
-	    default:
-		{
-		cerr << "Unrecognized option \"" << currentArg << "\"." << endl;
-		break;
-		}
-      }    }
+               default:
+               {
+                   cerr << "Unrecognized option \"" << currentArg << "\"." << endl;
+                   break;
+               }
+           }
+       }
     }
 
     //print the model that we're using

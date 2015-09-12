@@ -13,10 +13,8 @@
 
 #include "ParallelUnitTest.hh"
 #include <sstream>
-
 #include <iostream>
-#include <string.h>
-
+#include <string>
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
 
@@ -64,25 +62,22 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
         out << testName << ": version " << release() << "\n" << std::endl;
 
     // exit if command line contains "--version"
-    int c;
-
-    //rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
     std::map< std::string, char> long_option;
     long_option["version"] = 'v';
 
-    //for( int arg = 1; arg < argc; arg++ )
-	while ((c = rtt_dsxx::xgetopt (argc, argv, (char*)"v:", long_option)) != -1)
-          switch (c)
-          {
+    int c(0);
+    while ((c = rtt_dsxx::xgetopt(argc, argv, (char*)"v:", long_option)) != -1)
+    {
+        switch (c)
+        {
             case 'v': // --version
-              finalize();
-              throw rtt_dsxx::assertion( string( "Success" ) );
-              break;
-
+                finalize();
+                throw rtt_dsxx::assertion( string( "Success" ) );
+                break;
             default:
-              return; // nothing to do.
-           }
+                return; // nothing to do.
+        }
+    }
 
     Ensure( numPasses == 0 );
     Ensure( numFails  == 0 );

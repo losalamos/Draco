@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
     int bflag = 0;
     char *cvalue = NULL;
     int index;
-    int c;
 
     printf ("aflag = %d, bflag = %d, cvalue = %s\n",
             aflag, bflag, cvalue);
@@ -39,6 +38,7 @@ int main(int argc, char *argv[])
     long_options["append"] = 'b';
     long_options["create"] = 'c';
 
+    int c(0);
     while ((c = rtt_dsxx::xgetopt (argc, argv, "abc:", long_options)) != -1)
     {
         switch (c)
