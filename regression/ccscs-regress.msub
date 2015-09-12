@@ -72,8 +72,8 @@ run "module purge"
 run "module load gcc openmpi cmake"
 run "module load valgrind numdiff svn random123"
 run "module load eospac grace lapack valgrind"
-run "module load SuperLU_DIST"
-run "module load ndi ParMetis trilinos"
+run "module load SuperLU_DIST/4.1"
+run "module load ndi ParMetis trilinos/12.0.1"
 run "module load doxygen graphviz qt"
 comp=gcc
 
@@ -99,7 +99,7 @@ bounds_checking)
        exit 1
     fi
     bounds_checking=on
-    run "module swap SuperLU_DIST/4.0 SuperLU_DIST/4.0-bc"
+    run "module swap SuperLU_DIST SuperLU_DIST/4.1-bc"
     run "module swap trilinos/12.0.1 trilinos/12.0.1-bc"
     run "module swap ParMetis/4.0.3 ParMetis/4.0.3-bc"
     ;;
