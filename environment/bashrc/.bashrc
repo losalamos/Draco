@@ -111,7 +111,7 @@ case ${-} in
    alias ls='ls -F'
    alias l.='ls -h -d .*'
 
-   alias a2ps='a2ps --sides=duplex --medium=letter'
+   # alias a2ps='a2ps --sides=duplex --medium=letter'
    alias btar='tar --use-compress-program /usr/bin/bzip2'
    alias cd..='cd ..'
    alias cpuinfo='cat /proc/cpuinfo'
@@ -131,21 +131,7 @@ case ${-} in
    nodename=`uname -n | sed -e 's/[.].*//g'`
    alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
    alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
-   # alias watchioblocks='ps -eo stat,pid,user,command | egrep "^STAT|^D|^R"'
-   # alias whatsmyip='wget -O - -q myip.dk | grep Box | grep div | egrep -o [0-9.]+'
-   # alias wmdstat='watch -n 2 "cat /proc/mdstat"'
    alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
-
-   if test -x /usr/bin/kghostview; then
-       alias gv='/usr/bin/kghostview'
-       alias ghostview='/usr/bin/kghostview'
-   fi
-   if test -x /opt/bin/gstat; then
-       alias wgstat='watch /opt/bin/gstat -1a'
-       alias linkstat='gsh dmesg | grep "Link is up at" | sort -u'
-       alias interactive_qsub='xterm -e qsub -I -l nodes=1:ppn=4 &'
-       alias cqs='echo -e "\nCurrent Queuing System: $PREFERED_QUEUE_SYSTEM \n"'
-   fi
 
    # Provide special ls commands if this is a color-xterm or compatible terminal.
    if test "${TERM}" != emacs &&
@@ -160,32 +146,12 @@ case ${-} in
 
    source ${DRACO_ENV_DIR}/bin/bash_functions.sh
 
-   # Aliases for machines
-
-   # No need to use ssh to pop a terminal from the current machine
-   # alias ${target}='${term} ${term_opts}'
-
    # Turquoise network
    alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
    alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
    alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
 
-##---------------------------------------------------------------------------##
-## prompt - see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
-##---------------------------------------------------------------------------##
-
-   if test "$TERM" = emacs || \
-       test "$TERM" = dumb  || \
-       test -z "`declare -f npwd | grep npwd`"; then
-       export PS1="\h:\w [\!] % "
-       export LS_COLORS=''
-   else
-       found=`declare -f npwd | wc -l`
-       if test ${found} != 0; then
-           export PS1="\[\033[34m\]\h:\$(npwd) [\!] % \[\033[0m\]"
-       fi
-   fi
-   ;;
+   ;; # end case 'interactive'
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS for non interactive sessions
