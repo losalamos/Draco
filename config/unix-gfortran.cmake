@@ -24,6 +24,7 @@ if( NOT Fortran_FLAGS_INITIALIZED )
 gfortran < 4.7 will not compile this code.  New versions of gfortran might work but they haven't been tested.  You are trying to use gfortran ${CMAKE_Fortran_COMPILER_VERSION}.
 " )
   endif()
+  mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
 endif()
 
 #

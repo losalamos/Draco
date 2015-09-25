@@ -15,8 +15,9 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "XL" )
 
 if( NOT Fortran_FLAGS_INITIALIZED )
    set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
-  set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
-    STRING "Fortran compiler version string" FORCE )
+   set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
+        STRING "Fortran compiler version string" FORCE )
+   mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
 
    set( CMAKE_Fortran_FLAGS                "-qlanglvl=2003std -qinfo=all -qflag=i:w -qarch=auto" )
    set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -qnosmp -qcheck" )

@@ -20,6 +20,7 @@ if( NOT Fortran_FLAGS_INITIALIZED )
   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
   set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
     STRING "Fortran compiler version string" FORCE )
+  mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
 
   # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is
   #    issued when '-ip' is turned on and a library has no symbols (this
@@ -52,7 +53,7 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 
 # Optional compiler flags
 toggle_compiler_flag( HAVE_MIC    "-mmic"           "Fortran" "")
-if( NOT ${SITENAME} STREQUAL "tt" )
+if( NOT ${SITENAME} STREQUAL "Trinitite" )
   toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") #sse3, ssse3
 endif()
 # Use OpenMP_C_FLAGS here because cmake/3.1.1 fails to set

@@ -17,14 +17,15 @@ set( CMAKE_Fortran_COMPILER_FLAVOR "PGI" )
 # Compiler Flags
 #
 if( NOT Fortran_FLAGS_INITIALIZED )
-   set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
-        STRING "Fortran compiler version string" FORCE )
-   set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
-   set( CMAKE_Fortran_FLAGS                "-Mpreprocess" )
-   set( CMAKE_Fortran_FLAGS_DEBUG          "-g -Mbounds -Mchkptr")
-   set( CMAKE_Fortran_FLAGS_RELEASE        "-O3")
-   set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
-   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_DEBUG} -O3")
+  set( CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION} CACHE
+       STRING "Fortran compiler version string" FORCE )
+  mark_as_advanced( CMAKE_Fortran_COMPILER_VERSION )
+  set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+  set( CMAKE_Fortran_FLAGS                "-Mpreprocess" )
+  set( CMAKE_Fortran_FLAGS_DEBUG          "-g -Mbounds -Mchkptr")
+  set( CMAKE_Fortran_FLAGS_RELEASE        "-O3")
+  set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
+  set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_DEBUG} -O3")
 endif()
 
 ##---------------------------------------------------------------------------##
