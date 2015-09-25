@@ -157,6 +157,10 @@ or the target must be labeled NOEXPORT.")
   if( DEFINED ace_PROJECT_LABEL )
     set_target_properties( ${ace_TARGET} PROPERTIES PROJECT_LABEL ${ace_PROJECT_LABEL} )
   endif()
+  # Extra dependencies for profiling tools
+  if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
+    target_link_libraries( ${ace_TARGET} ${map-sampler-pmpi} ${map-sampler} )
+  endif()
 
   #
   # Generate properties related to library dependencies
@@ -851,6 +855,10 @@ macro( add_scalar_tests test_sources )
       ${test_lib_target_name}
       ${addscalartest_DEPS}
       )
+    # Extra dependencies for profiling tools
+    if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
+      target_link_libraries( Ut_${compname}_${testname}_exe ${map-sampler-pmpi} ${map-sampler} )
+    endif()
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
@@ -998,6 +1006,10 @@ macro( add_parallel_tests )
       ${test_lib_target_name}
       ${addparalleltest_DEPS}
       )
+    # Extra dependencies for profiling tools
+    if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
+      target_link_libraries( Ut_${compname}_${testname}_exe ${map-sampler-pmpi} ${map-sampler} )
+    endif()
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------

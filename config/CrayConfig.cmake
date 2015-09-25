@@ -4,37 +4,38 @@
 # cmake -C ~/draco/config/CrayConfig.cmake [configure options] source_dir
 # ----------------------------------------------------------------------
 
-# Don't assume Linux to avoid -rdynamic flag when linking...
-#set( CMAKE_SYSTEM_NAME Catamount CACHE STRING "description")
+#
+# Compiler settings
+#
+# Option: Add -craype-verbose to see actual intel compiler invocation
+# with all flags.
 
-# Keyword for creating new libraries (STATIC or SHARED).
-#set( DRACO_LIBRARY_TYPE STATIC CACHE STRING "description")
+foreach( lang C CXX Fortran )
+  # forcing -dynamic allows cmake's intitial compiler check to pass.
+  set( CMAKE_${lang}_FLAGS "-dynamic" CACHE STRING
+    "On Cray, use -dynamic when checking if the compiler works." )
+endforeach()
+set( CMAKE_EXE_LINKER_FLAGS "-dynamic" CACHE STRING
+  "Extra flags for linking executables")
 
-# Remove '-rdynamic' from link_flags
-#foreach( lang CXX CC Fortran )
-#  set(CMAKE_SHARED_LIBRARY_LINK_${lang}_FLAGS "" CACHE STRING "description" )
-#endforeach()
+set( CMAKE_C_COMPILER       cc  CACHE STRING "C compiler" )
+set( CMAKE_CXX_COMPILER     CC  CACHE STRING "C++ compiler" )
+set( CMAKE_Fortran_COMPILER ftn CACHE STRING "Fortran compiler" )
 
-# Use Cray provided compiler wrappers
-set( CMAKE_C_COMPILER cc CACHE STRING "description" )
-set( CMAKE_CXX_COMPILER CC CACHE STRING "description" )
-set( CMAKE_Fortran_COMPILER ftn CACHE STRING "description" )
+#
+# MPI settings
+#
 
-# Help find vendor software
-set( MPIEXEC "aprun" CACHE STRING "description")
-set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING "description")
+# Setup MPI for Cray MPT.
+set( MPIEXEC "aprun" CACHE STRING "Application Level Placement Scheduler (mpirun)")
+set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
+  "mpirun flag used to specify the number of processors to use")
 
-set( MPI_C_LIBRARIES "" CACHE STRING "description")
-set( MPI_CXX_LIBRARIES "" CACHE STRING "description")
-set( MPI_Fortran_LIBRARIES "" CACHE STRING "description")
-
-set( MPI_C_INCLUDE_PATH "" CACHE STRING "description")
-set( MPI_CXX_INCLUDE_PATH "" CACHE STRING "description")
-set( MPI_Fortran_INCLUDE_PATH "" CACHE STRING "description")
-
-set( MPI_CXX_COMPILER "" CACHE STRING "description")
-set( MPI_C_COMPILER "" CACHE STRING "description")
-set( MPI_Fortran_COMPILER "" CACHE STRING "description")
-
-# Allinea MAP
-# set( CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "description" )
+# Setting these prevents FindMPI from autodetecting the mpi compiler
+# wrappers and compile flags.  These are taken care of by the cray
+# compiler wrappers set above.
+foreach( lang C CXX Fortran )
+  set( MPI_${lang}_LIBRARIES    "" CACHE STRING "Let the compile wrapper choose.")
+  set( MPI_${lang}_INCLUDE_PATH "" CACHE STRING "Let the compile wrapper choose.")
+  set( MPI_${lang}_COMPILER     "" CACHE STRING "Use compile wrapper.")
+endforeach()

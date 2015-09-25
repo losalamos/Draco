@@ -121,7 +121,7 @@ toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 # requested. The core issue is that fabs is defined with two different
 # exception signatures in math.h and in ppu_intrinsics.h.  On this
 # platform, we choose not use -pedantic.
-if( ${SITE} MATCHES "seq" )
+if( ${SITENAME} MATCHES "seq" )
    toggle_compiler_flag( OFF "-pedantic" "CXX" "")
 endif()
 

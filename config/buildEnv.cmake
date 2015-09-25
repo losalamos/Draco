@@ -49,12 +49,6 @@ macro( dbsSetDefaults )
      endif()
   endif()
 
-  # Establish the sitename
-  site_name( current_site )
-  set( SITE ${current_site} CACHE INTERNAL
-     "Name of the computer/site where compile is being run." FORCE )
-  mark_as_advanced( current_site )
-
   # Option for solution folders for GUI-based development environments
   if( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
      option( BUILD_USE_SOLUTION_FOLDERS "Enable grouping of projects in VS" ON )

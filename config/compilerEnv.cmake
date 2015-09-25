@@ -101,42 +101,12 @@ if( ${SITENAME} MATCHES "c[it]" )
 elseif( ${SITENAME} MATCHES "ml[0-9]+" OR ${SITENAME} MATCHES "ml-fey" OR
     ${SITENAME} MATCHES "lu[0-9]+" OR ${SITENAME} MATCHES "lu-fey" )
   set( SITENAME "Moonlight" )
+elseif( ${SITENAME} MATCHES "tt") #" -login[0-9]+" OR ${SITENAME} MATCHES "tt-fey[0-9]+" )
+  set( SITENAME "Trinitite" )
 elseif( ${SITENAME} MATCHES "ccscs[0-9]+" )
   # do nothing (keep the fullname)
 endif()
 set( SITENAME ${SITENAME} CACHE "STRING" "Name of the current machine" FORCE)
-
-#----------------------------------------------------------------------#
-# Macro to establish which runtime libraries to link against
-#
-# Control link behavior for Run-Time Library.
-# /MT - Causes your application to use the multithread, static
-#       version of the run-time library. Defines _MT and causes
-#       the compiler to place the library name LIBCMT.lib into the
-#       .obj file so that the linker will use LIBCMT.lib to
-#       resolve external symbols.
-# /MTd - Defines _DEBUG and _MT. This option also causes the
-#       compiler to place the library name LIBCMTD.lib into the
-#       .obj file so that the linker will use LIBCMTD.lib to
-#       resolve external symbols.
-# /MD - Causes appliation to use the multithread and DLL specific
-#       version of the run-time library.  Places MSVCRT.lib into
-#       the .obj file.
-#       Applications compiled with this option are statically
-#       linked to MSVCRT.lib. This library provides a layer of
-#       code that allows the linker to resolve external
-#       references. The actual working code is contained in
-#       MSVCR90.DLL, which must be available at run time to
-#       applications linked with MSVCRT.lib.
-# /MD /D_STATIC_CPPLIB - applications link with the static
-#       multithread Standard C++ Library (libcpmt.lib) instead of
-#       the dynamic version (msvcprt.lib), but still links
-#       dynamically to the main CRT via msvcrt.lib.
-# /MDd - Defines _DEBUG, _MT, and _DLL and causes your application
-#       to use the debug multithread- and DLL-specific version of
-#       the run-time library. It also causes the compiler to place
-#       the library name MSVCRTD.lib into the .obj file.
-#----------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
 # Setup compilers
@@ -411,6 +381,81 @@ macro(dbsSetupFortran)
       message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler... not found")
     endif()
 
+  endif()
+
+  set( HAVE_Fortran ${HAVE_Fortran} CACHE BOOL
+    "Should we build Fortran portions of this project?" FORCE )
+
+endmacro()
+
+##---------------------------------------------------------------------------------------##
+## Setup profile tools: MAP, PAPI, HPCToolkit, TAU, etc.
+##---------------------------------------------------------------------------------------##
+macro( dbsSetupProfilerTools )
+
+  # Note 1: Allinea MAP should work on regular Linux without this setup.
+  # Note 2: I have demonstrated that MAP works under Cray environments only when
+  #    (a) compiling with the compiler option '-dynamic',
+  #    (b) the Allinea sampler libraries are generated on the same filesystem as
+  #        the build, and
+  #    (c) These libraries are linked when generated executables.
+  # Note 3: Linking the allinea sampler libraries into generated executables
+  #        shows up in component_macros near 'add_executable' commands via the
+  #        target_link_libraries command.
+
+  option( USE_ALLINEA_MAP
+    "If Allinea MAP is available, should we link against those libraries?" OFF )
+
+  #
+  # Allinea MAP
+  #
+
+  if( USE_ALLINEA_MAP )
+    # Ref: www.nersc.gov/users/software/performance-and-debugging-tools/MAP
+    if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Cielito" )
+      set( platform_cray "--platform=cray")
+    endif()
+    if( NOT EXISTS $ENV{ALLINEA_LICENSE_DIR} )
+      message( FATAL_ERROR "You must load the Allinea module first!")
+    endif()
+    if( "${DRACO_LIBRARY_TYPE}" STREQUAL "STATIC")
+      if( NOT EXISTS ${PROJECT_BINARY_DIR}/allinea-profiler.ld )
+        message( STATUS "Generating allinea-profiler.ld...")
+        # message( "make-profiler-libraries ${platform_cray} --lib-type=static")
+        execute_process(
+          COMMAND make-profiler-libraries ${platform_cray} --lib-type=static
+          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+          OUTPUT_QUIET
+          )
+        message( STATUS "Generating allinea-profiler.ld...done")
+      endif()
+      set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,@${PROJECT_BINARY_DIR}/allinea-profiler.ld")
+
+    elseif( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
+
+      if( NOT EXISTS ${PROJECT_BINARY_DIR}/libmap-sampler.so )
+        message( STATUS "Generating allinea-sampler.so...")
+        # message( "make-profiler-libraries ${platform_cray}")
+        execute_process(
+          COMMAND make-profiler-libraries ${platform_cray}
+          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+          OUTPUT_QUIET
+          )
+        message( STATUS "Generating allinea-sampler.so...done")
+      endif()
+      find_library( map-sampler-pmpi
+        NAMES map-sampler-pmpi
+        PATHS ${PROJECT_BINARY_DIR}
+        NO_DEFAULT_PATH
+        )
+      find_library( map-sampler
+        NAMES map-sampler
+        PATHS ${PROJECT_BINARY_DIR}
+        NO_DEFAULT_PATH
+        )
+      set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--eh-frame-hdr")
+      # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${PROJECT_BINARY_DIR} -lmap-sampler-pmpi -lmap-sampler -Wl,--eh-frame-hdr -Wl,-rpath=${PROJECT_BINARY_DIR}")
+    endif()
   endif()
 
 endmacro()

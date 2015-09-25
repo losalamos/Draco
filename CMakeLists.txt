@@ -11,31 +11,8 @@
 
 # Build notes: http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
 
-# Allinea MAP
-# Trinitite:
-#   cd $build_dir
-#   module load allinea-MAP/5.1
-#   make-profiler-libraries --lib-type=static
-#   Add -Wl,@${Draco_BINARY_DIRECTORY}/allinea-profiler.ld to link lines
-
-# cmake -C ~/draco/config/CrayConfig.cmake -DCMAKE_BUILD_TYPE=RELWITHDEBINFO ~/draco
-
 cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
 project( Draco CXX C )
-
-if( ENABLE_MAP )
-  if( NOT EXISTS $ENV{ALLINEA_LICENSE_DIR} )
-    message( FATAL_ERROR "You must load the Allinea module first!")
-  endif()
-  if( NOT EXISTS ${Draco_BINARY_DIR}/allinea-profiler.ld )
-    message( STATUS "Generating allinea-profiler.ld...")
-    execute_process(
-      COMMAND make-profiler-libraries --lib-type=static
-      WORKING_DIRECTORY ${Draco_BINARY_DIR}
-      )
-  endif()
-  set( ALLINEA_LINK_FLAGS "-Wl,@${Draco_BINARY_DIR}/allinea-profiler.ld" )
-endif()
 
 # Do not look for Fortran for
 # 1. XCode based Generators, or
@@ -105,6 +82,7 @@ include( compilerEnv )
 dbsSetupCompilers()
 dbsSetupCxx()
 dbsSetupFortran()
+dbsSetupProfilerTools()
 
 # Find any globally required libraries
 include( FeatureSummary )
