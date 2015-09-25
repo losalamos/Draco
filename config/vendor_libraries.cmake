@@ -297,6 +297,7 @@ macro( setupGSL )
     find_package( GSL QUIET REQUIRED )
     if( GSL_FOUND )
       message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
+      mark_as_advanced( GSL_CONFIG_EXECUTABLE )
 
       # Export GSL target information to draco-config.cmake
       # Choose items for props list via:
@@ -418,8 +419,7 @@ macro( setVendorVersionDefaults )
 
   # See if VENDOR_DIR is set.  Try some defaults if it is not set.
   if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
-    set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
-      "Root directory where CCS-2 3rd party libraries are located." )
+    set( VENDOR_DIR $ENV{VENDOR_DIR} )
   endif()
   # If needed, try some obvious places.
   if( NOT EXISTS "${VENDOR_DIR}" )
@@ -431,15 +431,14 @@ macro( setVendorVersionDefaults )
     endif()
     if( IS_DIRECTORY c:/vendors )
       set( VENDOR_DIR c:/vendors )
-    elseif( IS_DIRECTORY c:/a/vendors )
-      set( VENDOR_DIR c:/a/vendors )
     endif()
   endif()
   # Cache the result
   if( IS_DIRECTORY "${VENDOR_DIR}")
-    set( VENDOR_DIR $ENV{VENDOR_DIR} CACHE PATH
-      "Root directory where CCS-2 3rd party libraries are located." )
-  else( IS_DIRECTORY "${VENDOR_DIR}")
+    set( VENDOR_DIR ${VENDOR_DIR} CACHE PATH
+      "Root directory where CCS-2 3rd party libraries are located."
+      FORCE )
+  else()
     message( "
 WARNING: VENDOR_DIR not defined locally or in user environment,
 individual vendor directories should be defined." )

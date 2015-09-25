@@ -27,7 +27,7 @@
 /* Is this OpenMPI */
 #cmakedefine MPIEXEC           "@MPIEXEC@"
 #cmakedefine MPIEXEC_POSTFLAGS "@MPIEXEC_POSTFLAGS@"
-#cmakedefine C4_MPICMD         "@C4_MPICMD@"
+#cmakedefine MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@"
 
 /* ---------------------------------------- */
 /* All build systems                        */

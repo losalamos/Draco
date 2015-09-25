@@ -62,7 +62,11 @@ DracoInfo::DracoInfo(void)
 #endif
 #ifdef C4_MPI
     mpi = true;
-    mpirun_cmd = C4_MPICMD;
+    mpirun_cmd = std::string( MPIEXEC ) + std::string(" ")
+                 + std::string( MPIEXEC_NUMPROC_FLAG ) + std::string(" <N> ");
+#ifdef MPIEXEC_POSTFLAGS
+   mpirun_cmd += std::string( MPIEXEC_POSTFLAGS );
+#endif
 #endif
 #ifdef OPENMP_FOUND
     openmp = true;
