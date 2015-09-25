@@ -36,7 +36,12 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is
   #    issued when '-ip' is turned on and a library has no symbols (this
   #    occurs when capsaicin links some trilinos libraries.)
-  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -ftz -diag-disable 11060" )
+  if( "$ENV{CRAY_PRGENVINTEL}" STREQUAL "loaded" AND
+      "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED" )
+    # set( cray_link_shared_flag "-craype-verbose -dynamic" )
+    set( cray_link_shared_flag "-dynamic" )
+  endif()
+  set( CMAKE_C_FLAGS                "${cray_link_shared_flag} -w1 -vec-report0 -diag-disable remark -shared-intel -ftz -diag-disable 11060" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
   if( HAVE_MIC )
     # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
