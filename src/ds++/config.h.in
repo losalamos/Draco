@@ -215,7 +215,10 @@
 #cmakedefine CMAKE_Fortran_FLAGS_MINSIZEREL     "@CMAKE_Fortran_FLAGS_MINSIZEREL@"
 #cmakedefine CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
 
-#cmakedefine CMAKE_COMPILER_IS_GNUCXX @CMAKE_COMPILER_IS_GNUCXX@
+#cmakedefine CMAKE_COMPILER_IS_GNUCXX         @CMAKE_COMPILER_IS_GNUCXX@
+#cmakedefine CMAKE_CXX_COMPILER_ID            @CMAKE_CXX_COMPILER_ID@
+#cmakedefine CMAKE_CXX_COMPILER_VERSION      "@CMAKE_CXX_COMPILER_VERSION@"
+#cmakedefine CMAKE_CXX_COMPILER_VERSION_ENUM  @CMAKE_CXX_COMPILER_VERSION_ENUM@
 
 /* Help for GSL on Windows ---------------------------------- */
 #if defined _WIN32 || defined __CYGWIN__
@@ -224,9 +227,8 @@
   #endif
 #endif
 
-
 /* ----------------------------------------------------------------
- * Define declaration specifiers for MSVC and GCC.  This defines 
+ * Define declaration specifiers for MSVC and GCC.  This defines
  * CPP definitions like DLL_PUBLIC_<pkg>
  * ---------------------------------------------------------------- */
 #include "ds++/dll_declspec.h"

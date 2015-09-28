@@ -53,6 +53,10 @@ set( DRACO_DIAGNOSTICS "0"
 # provide a constrained drop down menu for cmake-gui
 set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
 
+# Provide an enum from CMAKE_CXX_COMPILER_VERSION
+string( REPLACE "." "" CMAKE_CXX_COMPILER_VERSION_ENUM
+  ${CMAKE_CXX_COMPILER_VERSION} )
+
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 
