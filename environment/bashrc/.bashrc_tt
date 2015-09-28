@@ -27,8 +27,7 @@ fi
 
 module load friendly-testing user_contrib
 module load python/2.7-anaconda-2.1.0 totalview
-# broken as of 2015-08-04:
-# module load hsi emacs
+module load hsi emacs
 
 # Use modules found in the draco directory
 module use $VENDOR_DIR/Modules/hpc
@@ -49,7 +48,7 @@ module unload xt-libsci xt-totalview
 module load gsl eospac/6.2.4 lapack
 module load trilinos SuperLU_DIST ParMetis
 module load random123
-module load cmake/3.3.0 numdiff ndi svn
+module load cmake/3.3.2 numdiff ndi svn
 
 export OMP_NUM_THREADS=16
 
