@@ -393,6 +393,9 @@ endmacro()
 ##---------------------------------------------------------------------------------------##
 macro( dbsSetupProfilerTools )
 
+  # ------------------------------------------------------------
+  # Allinea MAP
+  # ------------------------------------------------------------
   # Note 1: Allinea MAP should work on regular Linux without this setup.
   # Note 2: I have demonstrated that MAP works under Cray environments only when
   #    (a) compiling with the compiler option '-dynamic',
@@ -405,10 +408,6 @@ macro( dbsSetupProfilerTools )
 
   option( USE_ALLINEA_MAP
     "If Allinea MAP is available, should we link against those libraries?" OFF )
-
-  #
-  # Allinea MAP
-  #
 
   if( USE_ALLINEA_MAP )
     # Ref: www.nersc.gov/users/software/performance-and-debugging-tools/MAP
@@ -455,6 +454,31 @@ macro( dbsSetupProfilerTools )
         )
       set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--eh-frame-hdr")
       # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${PROJECT_BINARY_DIR} -lmap-sampler-pmpi -lmap-sampler -Wl,--eh-frame-hdr -Wl,-rpath=${PROJECT_BINARY_DIR}")
+    endif()
+  endif()
+
+  # ------------------------------------------------------------
+  # DMALLOC with Allinea DDT (Memory debugging)
+  # ------------------------------------------------------------
+  option( USE_ALLINEA_DMALLOC
+    "If Allinea DDT is available, should we link against their dmalloc libraries?" OFF )
+
+  if( USE_ALLINEA_DMALLOC )
+    if( NOT EXISTS $ENV{DDTROOT} )
+      message( FATAL_ERROR "You must load the Allinea module first!")
+    endif()
+    if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Cielito" )
+      #set( OLD_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} )
+      #set( CMAKE_FIND_LIBRARY_SUFFIXES .a )
+      find_library( ddt-dmalloc
+        NAMES dmallocthcxx
+        PATHS $ENV{DDTROOT}/lib/64
+        NO_DEFAULT_PATH
+        )
+      #set( CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_CMAKE_FIND_LIBRARY_SUFFIXES} )
+      #message("ddt-malloc = ${ddt-malloc}")
+      set( CMAKE_EXE_LINKER_FLAGS
+        "${CMAKE_EXE_LINKER_FLAGS} -Wl,--undefined=malloc" )
     endif()
   endif()
 

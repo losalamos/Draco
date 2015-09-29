@@ -161,6 +161,9 @@ or the target must be labeled NOEXPORT.")
   if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
     target_link_libraries( ${ace_TARGET} ${map-sampler-pmpi} ${map-sampler} )
   endif()
+  if( USE_ALLINEA_DMALLOC )
+    target_link_libraries( ${ace_TARGET} ${ddt-dmalloc} )
+  endif()
 
   #
   # Generate properties related to library dependencies
@@ -859,6 +862,9 @@ macro( add_scalar_tests test_sources )
     if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
       target_link_libraries( Ut_${compname}_${testname}_exe ${map-sampler-pmpi} ${map-sampler} )
     endif()
+    if( USE_ALLINEA_DMALLOC )
+      target_link_libraries( Ut_${compname}_${testname}_exe ${ddt-dmalloc} )
+    endif()
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
@@ -1009,6 +1015,9 @@ macro( add_parallel_tests )
     # Extra dependencies for profiling tools
     if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
       target_link_libraries( Ut_${compname}_${testname}_exe ${map-sampler-pmpi} ${map-sampler} )
+    endif()
+    if( USE_ALLINEA_DMALLOC )
+      target_link_libraries( Ut_${compname}_${testname}_exe ${ddt-dmalloc} )
     endif()
 
     # Special post-build options for Win32 platforms
