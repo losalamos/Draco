@@ -19,6 +19,13 @@
 include(platform_checks)
 query_openmp_availability()
 
+if( CMAKE_CXX_COMPILER_VERSION LESS "8.4" )
+  message( FATAL_ERROR "Cray C++ prior to 8.4 does not support C++11.
+Try: module use --append ~mrberry/modulefiles
+     module swap cce cce/8.4.0.233.
+")
+endif()
+
 #
 # Compiler Flags
 #
@@ -26,7 +33,7 @@ query_openmp_availability()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  set( CMAKE_C_FLAGS                "" )
+  set( CMAKE_C_FLAGS                "-DR123_USE_GNU_UINT128=0" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -DDEBUG")
   #if( HAVE_MIC )
     # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
