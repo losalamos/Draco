@@ -158,28 +158,6 @@ macro(dbsSetupCxx)
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
       OUTPUT_VARIABLE my_cxx_compiler )
-  elseif( ${CMAKE_CXX_COMPILER} MATCHES "xt-asyncpe" OR
-          ${CMAKE_CXX_COMPILER} MATCHES "craype" )
-    # Ceilo (catamount) uses a wrapper script
-    # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual compiler.
-    # Use the following command to determine the actual compiler
-    # flavor before setting compiler flags (end of this macro).
-    # Trinitite uses a similar wrapper script (/opt/cray/craype/2.4.0/bin/CC).
-    execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} --version
-      OUTPUT_VARIABLE my_cxx_compiler
-      ERROR_QUIET )
-    string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
-      my_cxx_compiler ${my_cxx_compiler})
-    # If a wrapper script is used, CMake will not have found the
-    # compiler version...
-    # icpc (ICC) 12.1.2 20111128
-    # pgCC 11.10-0 64-bit target
-    # g++ (GCC) 4.6.2 20111026 (Cray Inc.)
-    if( "x${CMAKE_CXX_COMPILER_VERSION}" STREQUAL "x" )
-      string( REGEX REPLACE ".* ([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-        CMAKE_CXX_COMPILER_VERSION ${my_cxx_compiler} )
-    endif()
   else()
     set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
   endif()
@@ -217,6 +195,14 @@ macro(dbsSetupCxx)
       include( apple-clang )
     else()
       include( unix-clang )
+    endif()
+  elseif( ${my_cxx_compiler} MATCHES "CC" )
+    if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" )
+      include( unix-intel )
+    elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
+      include( unix-crayCC )
+    else()
+      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler wrapper, but I don't know what compiler is wrapped." )
     endif()
   elseif( ${my_cxx_compiler} MATCHES "cl" )
     include( windows-cl )
@@ -312,25 +298,7 @@ macro(dbsSetupFortran)
   if( _LANGUAGES_ MATCHES Fortran )
 
     set( HAVE_Fortran ON )
-
-    # Deal with comiler wrappers
-    if( ${CMAKE_Fortran_COMPILER} MATCHES "xt-asyncpe" OR
-        ${CMAKE_Fortran_COMPILER} MATCHES "craype" )
-      # Ceilo (catamount) uses a wrapper script
-      # /opt/cray/xt-asyncpe/5.06/bin/CC that masks the actual
-      # compiler.  Use the following command to determine the actual
-      # compiler flavor before setting compiler flags (end of this
-      # macro).
-      # Trinitite uses a similar wrapper script (/opt/cray/craype/2.4.0/bin/ftn).
-      execute_process(
-        COMMAND ${CMAKE_Fortran_COMPILER} --version
-        OUTPUT_VARIABLE my_fc_compiler
-        ERROR_QUIET )
-      string( REGEX REPLACE "^(.*).Copyright.*" "\\1"
-        my_fc_compiler ${my_fc_compiler})
-    else()
-      set( my_fc_compiler ${CMAKE_Fortran_COMPILER} )
-    endif()
+    set( my_fc_compiler ${CMAKE_Fortran_COMPILER} )
 
     # MPI wrapper
     if( ${my_fc_compiler} MATCHES "mpif90" )
@@ -347,6 +315,14 @@ macro(dbsSetupFortran)
     if( ${my_fc_compiler} MATCHES "pgf9[05]" OR
         ${my_fc_compiler} MATCHES "pgfortran" )
       include( unix-pgf90 )
+    elseif( ${my_fc_compiler} MATCHES "ftn" )
+    if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+      include( unix-ifort )
+    elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
+      include( unix-crayftn )
+    else()
+      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler wrapper, but I don't know what compiler is wrapped." )
+    endif()
     elseif( ${my_fc_compiler} MATCHES "ifort" )
       include( unix-ifort )
     elseif( ${my_fc_compiler} MATCHES "xl" )

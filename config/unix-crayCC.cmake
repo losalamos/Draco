@@ -1,0 +1,83 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/unix-crayCC.cmake
+# author Kelly Thompson
+# date   2010 Nov 1
+# brief  Establish flags for Linux64 - Cray C/C++
+# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+# $Id$
+#------------------------------------------------------------------------------#
+
+# History
+# ----------------------------------------
+# 2015/09/28 - First cut.
+
+#
+# Compiler flag checks
+#
+include(platform_checks)
+query_openmp_availability()
+
+#
+# Compiler Flags
+#
+
+if( NOT CXX_FLAGS_INITIALIZED )
+   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+
+  set( CMAKE_C_FLAGS                "" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -DDEBUG")
+  #if( HAVE_MIC )
+    # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
+    #set( CMAKE_C_FLAGS_DEBUG        "${CMAKE_C_FLAGS_DEBUG} -fp-model precise -fp-speculation safe" )
+  #endif()
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG" )
+  set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -DNDEBUG" )
+
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -hstd=c++11" )
+  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}")
+  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+
+   # Use C99 standard.
+   # set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
+endif()
+
+##---------------------------------------------------------------------------##
+# Ensure cache values always match current selection
+##---------------------------------------------------------------------------##
+set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+
+# Optional compiler flags
+# toggle_compiler_flag( HAVE_MIC                 "-mmic"        "C;CXX;EXE_LINKER" "")
+
+# Options -mmic and -xHost are not compatible.  This check needs to
+# appear after "-mmic" has been added to the compiler flags so that
+# xhost will report that it is not available.
+#include(CheckCCompilerFlag)
+#check_c_compiler_flag(-xHost HAS_XHOST)
+# If this is trinitite/trinity, do not use -xHost because front and back ends are different
+# architectures. Instead use -xCORE-AVX2 (the default).
+#if( NOT ${SITENAME} STREQUAL "Trinitite" )
+#  toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX"  "")
+#endif()
+#toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
+
+#------------------------------------------------------------------------------#
+# End config/unix-crayCC.cmake
+#------------------------------------------------------------------------------#
