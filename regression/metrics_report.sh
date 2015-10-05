@@ -6,7 +6,7 @@
 
 # Typical use:
 # ./metrics_report.sh -e kgt@lanl.gov -p "draco jayenne capsaicin"
-# ./metrics_report.sh -e "jsbrock@lanl.gov barcher@lanl.gov jomc@lanl.gov sriram@lanl.gov draco@lanl.gov" -p "draco jayenne capsaicin"
+# ./metrics_report.sh -e "jsbrock@lanl.gov jomc@lanl.gov sriram@lanl.gov draco@lanl.gov" -p "draco jayenne capsaicin"
 
 ##---------------------------------------------------------------------------##
 ## Support functions
