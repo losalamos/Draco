@@ -145,15 +145,15 @@ macro( setupOpenMPI )
 
   # Find the version of OpenMPI
 
-  if( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9][.][0-9]" )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\1"
+  if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
       DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]).*" "\\2"
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\2"
       DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-  elseif( "${DBS_MPI_VER}" MATCHES "[0-9][.][0-9]" )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\1"
+  elseif( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+" )
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\1"
       DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-    string( REGEX REPLACE ".*([0-9])[.]([0-9]).*" "\\2"
+    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\2"
       DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
   endif()
 
