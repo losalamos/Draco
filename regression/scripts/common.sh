@@ -25,20 +25,23 @@ function establish_permissions
     install_permissions="g+rwX,o-rwX"
   else
     install_group="draco"
-    install_permissions="g+rwX,o=g-w"g
+    install_permissions="g+rwX,o=g-w"
   fi
-  build_permissions="g+rwX"
+  build_group="$USER"
+  build_permissions="g+rwX,o-rwX"
 }
 
 # Logic taken from /usr/projects/hpcsoft/templates/header
 function machineName
 {
-  sysName="unknown"
+  sysName=${sysName="unknown"}
   if test -f /usr/projects/hpcsoft/sys_name; then
     sysName=`/usr/projects/hpcsoft/sys_name`
+  elif test -d /projects/darwin; then
+    sysName=darwin
   fi
   if test "$sysName" = "unknown"; then
-    echo "Unable to determine system OS, please edit scripts/common.sh."
+    echo "Unable to determine machine name, please edit scripts/common.sh."
     exit 1
   fi
   echo $sysName
@@ -47,9 +50,11 @@ function machineName
 # Logic taken from /usr/projects/hpcsoft/templates/header
 function osName
 {
-  osName="unknown"
+  osName=${osName="unknown"}
   if test -f /usr/projects/hpcsoft/sys_os; then
     osName=`/usr/projects/hpcsoft/sys_os`
+  elif test -d /projects/darwin; then
+    osName=darwin
   fi
   if test "$osName" = "unknown"; then
     echo "Unable to determine system OS, please edit scripts/common.sh."
@@ -102,14 +107,32 @@ function flavor
       # pick the first compiler in the list
       compilerflavor=`echo $compilermodules | sed -e 's/ *//'`
       ;;
+    darwin*)
+      if test -z $MPIARCH; then
+        mpiflavor="unknown"
+      else
+        if test -z $MPI_ROOT; then
+          LMPIVER=''
+        else
+          LMPIVER=`echo $MPI_ROOT | sed -r 's%.*/([0-9]+)[.]([0-9]+)[.]([0-9]+).*%\1.\2.\3%'`
+        fi
+        mpiflavor=$MPIARCH-$LMPIVER
+      fi
+      if test -z $LCOMPILER; then
+        compilerflavor="unknown"
+      else
+        compilerflavor=$LCOMPILER-$LCOMPILERVER
+      fi
+      ;;
   esac
   echo $platform-$mpiflavor-$compilerflavor
 }
 
 function selectscratchdir
 {
-  scratchdirs="scratch scratch1 scratch3 lscratch1"
+  scratchdirs="scratch scratch1 scratch3 lscratch1 usr/projects/draco/devs/releases"
   for dir in $scratchdirs; do
+    mkdir /$dir/$USER &> /dev/null
     if test -x /$dir/$USER; then
       echo "$dir"
       return
@@ -142,6 +165,8 @@ function npes_build
     np=${SLURM_NPROCS}
   elif ! test "${SLURM_CPUS_ON_NODE}x" = "x"; then
     np=${SLURM_CPUS_ON_NODE}
+  elif ! test "${SLURM_TASKS_PER_NODE}x" = "x"; then
+    np=${SLURM_CPUS_ON_NODE}
   elif test -f /proc/cpuinfo; then
     np=`cat /proc/cpuinfo | grep processor | wc -l`
   fi
@@ -157,13 +182,15 @@ function npes_test
     np=${SLURM_NPROCS}
   elif ! test "${SLURM_CPUS_ON_NODE}x" = "x"; then
     np=${SLURM_CPUS_ON_NODE}
+  elif ! test "${SLURM_TASKS_PER_NODE}x" = "x"; then
+    np=${SLURM_CPUS_ON_NODE}
   elif test -f /proc/cpuinfo; then
     np=`cat /proc/cpuinfo | grep processor | wc -l`
   fi
-  # For Cray systems limit the test count to 8.
+  # For Cray systems limit the test count to 4.
   local os=`osName`
   case $os in
-    cle*) np=8 ;;
+    cle*) np=4 ;;
   esac
   echo $np
 }
