@@ -7,7 +7,7 @@
 ##    /usr/projects/draco/draco-NN_NN_NN/
 ##                  scripts/release_darwin.sh # this script
 ##                  logs/                     # build/test logs
-##                  source/draco-NN_NN_NN     # svn checkout of release branch
+##                  source/                   # svn checkout of release branch
 ##                  flavor/opt|debug          # released libraries/headers
 ## 2. Assumes that this script lives at the location above when
 ##    executed.
@@ -164,7 +164,7 @@ for env in $environments; do
 $script_dir/release_darwin.msub"
     echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
-    jobid=`eval ${cmd}`
+    jobid=`eval ${cmd} &`
     sleep 1m
     # trim extra whitespace from number
     jobid=`echo ${jobid//[^0-9]/}`

@@ -161,7 +161,7 @@ for env in $environments; do
 -o $source_prefix/logs/release-$buildflavor-$version.log $script_dir/release_toss2.msub"
     echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
-    jobid=`eval ${cmd}`
+    jobid=`eval ${cmd} &`
     sleep 1m
     # trim extra whitespace from number
     jobid=`echo ${jobid//[^0-9]/}`

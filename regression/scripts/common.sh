@@ -132,7 +132,7 @@ function selectscratchdir
 {
   scratchdirs="scratch scratch1 scratch3 lscratch1 usr/projects/draco/devs/releases"
   for dir in $scratchdirs; do
-    mkdir /$dir/$USER &> /dev/null
+    mkdir -p /$dir/$USER &> /dev/null
     if test -x /$dir/$USER; then
       echo "$dir"
       return
@@ -325,7 +325,14 @@ function install_versions
       || die "Could not build code/tests in $build_dir"
   fi
   if test $test_step == 1; then
-    run "ctest -j $test_pe" # Allow some tests to fail.
+    case $version in
+      *_nr)
+        # only run tests that are safe in non-reproducible mode.
+        run "ctest -L nr -j $test_pe" ;;
+      *)
+        # run all tests
+        run "ctest -j $test_pe" ;;
+    esac
   fi
   if ! test -z $build_permissions; then
     run "chmod -R $build_permissions $build_dir"
@@ -340,10 +347,17 @@ function publish_release()
 {
   echo "waiting batch jobs to finish ..."
 
+  establish_permissions
+
+  case $osname in
+    toss* | cle*) SHOWQ=showq ;;
+    darwin) SHOWQ=squeue ;;
+  esac
+
   # wait for jobs to finish
   for jobid in $jobids; do
-    while test "`showq | grep $jobid`" != ""; do
-      showq | grep $jobid
+    while test "`${SHOWQ} | grep $jobid`" != ""; do
+      ${SHOWQ} | grep $jobid
       sleep 5m
     done
   done
