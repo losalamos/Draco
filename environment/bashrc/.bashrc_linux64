@@ -42,14 +42,15 @@ case ${target} in
    # Is the module function available?
    found=`declare -f module | wc -l`
    # Module is provided by the system:
-   # if test ${found} == 0; then
-   #   if test -f /usr/share/Modules/init/bash; then
-   #      source /usr/share/Modules/init/bash
-   #   elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
-   #      # CCS workstations (e.g.: gondolin)
-   #      source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
-   #   fi
-   # fi
+   if test ${found} == 0; then
+     if test -f /usr/share/Modules/init/bash; then
+        source /usr/share/Modules/init/bash
+     elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
+       # CCS workstations (e.g.: gondolin)
+       # 2015-10-09 Kent's workstation still requires this!
+       source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
+     fi
+   fi
    module use /ccs/codes/radtran/vendors/Modules
    module load gcc/4.8.1 openmpi
    module load emacs/24.4
