@@ -130,7 +130,7 @@ macro( setupCudaEnv )
     set_package_properties( CUDA PROPERTIES
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
       TYPE OPTIONAL
-      PURPOSE "Required for bulding a GPU enabled application." )
+      PURPOSE "Required for building a GPU enabled application." )
     if( NOT EXISTS ${CUDA_NVCC_EXECUTABLE} )
       set( CUDA_FOUND 0 )
     endif()
@@ -345,7 +345,7 @@ macro( SetupVendorLibrariesUnix )
   set_package_properties( Grace PROPERTIES
     DESCRIPTION "A WYSIWYG 2D plotting tool."
     TYPE OPTIONAL
-    PURPOSE "Required for bulding the plot2D component."
+    PURPOSE "Required for building the plot2D component."
     )
 
   # CUDA ------------------------------------------------------------------
@@ -483,18 +483,18 @@ individual vendor directories should be defined." )
   set_package_properties( BLAS PROPERTIES
     DESCRIPTION "Basic Linear Algebra Subprograms"
     TYPE OPTIONAL
-    PURPOSE "Required for bulding the lapack_wrap component."
+    PURPOSE "Required for building the lapack_wrap component."
     )
   set_package_properties( lapack PROPERTIES
     DESCRIPTION "Linear Algebra PACKage"
     TYPE OPTIONAL
-    PURPOSE "Required for bulding the lapack_wrap component."
+    PURPOSE "Required for building the lapack_wrap component."
     )
   # set_package_properties( GSL PROPERTIES
   #    URL "http://www.gnu.org/s/gsl/"
   #    DESCRIPTION "GNU Scientific Library"
   #    TYPE REQUIRED
-  #    PURPOSE "Required for bulding quadrature and rng components."
+  #    PURPOSE "Required for building quadrature and rng components."
   #    )
   set_package_properties( Random123 PROPERTIES
     URL "http://www.deshawresearch.com/resources_random123.html"

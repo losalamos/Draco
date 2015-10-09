@@ -15,11 +15,11 @@ fi
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
 
-export VENDOR_DIR=/projects/opt/draco/vendors
+export VENDOR_DIR=/usr/projects/draco/vendors
 
 # modules
 if test -n "$MODULESHOME"; then
-    module use ${VENDOR_DIR}/Modules
+    module use --append ${VENDOR_DIR}/Modules
 
     # Nodes that have MIC capability use different modules...
     if test "$SLURM_JOB_PARTITION" = "knc-mic"; then
@@ -34,7 +34,7 @@ if test -n "$MODULESHOME"; then
         module purge
         module load other/emacs-24.3 subversion python/2.7.3 random123
         # setup for draco
-        module load compilers/intel/15.0.0 cmake/3.3.0
+        module load compilers/intel/15.0.0 cmake/3.3.2
         module load mpi/intelmpi-5.0.1.035-mic
         module load numdiff/5.6.1-mic mkl/11.2-mic gsl/1.16-mic
         # additional setup for capsaicin
@@ -43,11 +43,11 @@ if test -n "$MODULESHOME"; then
         # setup for draco
         module unload compilers mpi cmake
         module load other/emacs-24.3 subversion python/2.7.3 random123
-        module load compilers/intel/15.0.3 cmake/3.3.0
+        module load compilers/intel/15.0.3 cmake/3.3.2
         module load mpi/intelmpi-5.0.2.044
-        module load numdiff/5.2.1 eospac lapack/3.4.1
+        module load numdiff/5.2.1 eospac/6.2.4 lapack/3.4.1 ndi
         # additional setup for capsaicin
-        module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
+        module load ParMetis/4.0.3 SuperLU_DIST/4.1 trilinos/12.0.1
     fi
     export CXX=`which mpiicpc`
     export CC=`which mpiicc`

@@ -298,7 +298,9 @@ macro( setupMPILibrariesUnix )
       message(STATUS "Looking for MPI...")
 
       # Preserve data that may already be set.
-      if( DEFINED ENV{MPIEXEC} )
+      if( DEFINED ENV{MPIRUN} )
+        set( MPIEXEC $ENV{MPIRUN} CACHE STRING "Program to execute MPI prallel programs." )
+      elseif( DEFINED ENV{MPIEXEC} )
         set( MPIEXEC $ENV{MPIEXEC} CACHE STRING "Program to execute MPI prallel programs." )
       endif()
 
