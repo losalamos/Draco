@@ -21,7 +21,7 @@
 ##                     current directory for symbol <sym>.
 ##
 ## pkgdepends        - Print a list of dependencies for the current
-##                     directory. 
+##                     directory.
 ##
 ## npwd              - function used to set the prompt under bash.
 ##
@@ -33,11 +33,11 @@
 
 function whichall ()
 {
-    for dir in ${PATH//:/ }; do
-        if [ -x $dir/$1 ]; then
-            echo $dir/$1;
-        fi;
-    done
+  for dir in ${PATH//:/ }; do
+    if [ -x $dir/$1 ]; then
+      echo $dir/$1;
+    fi;
+  done
 }
 
 ##---------------------------------------------------------------------------##
@@ -56,8 +56,8 @@ function cleanemacs
   find . -name '*.rel' -exec echo rm -rf {} \;
   find . -name '*.rel' -exec rm -rf {} \;
   if test -d "${HOME}/.emacs-flc"; then
-     echo "rm -r ${HOME}/.emacs-flc";
-     rm -r ${HOME}/.emacs-flc;
+    echo "rm -r ${HOME}/.emacs-flc";
+    rm -r ${HOME}/.emacs-flc;
   fi;
   echo "done."
 }
@@ -66,41 +66,41 @@ function cleanemacs
 ## Used for formatting PROMPT.
 ##---------------------------------------------------------------------------##
 
-function npwd() 
+function npwd()
 {
-   local regHome=$(echo ${HOME} | sed -e 's/.*\///')
-   #   How many characters of the $PWD should be kept
-   local pwdmaxlen=40
-   #   Indicator that there has been directory truncation:
-   local trunc_symbol="..."
-   # substitute ~ for $HOME to shorten the full path
-   newPWD=$(echo ${PWD} | sed -e "s/.*${regHome}/~/")
-   if [ ${#newPWD} -gt $pwdmaxlen ]
-   then
-   	local pwdoffset=$(( ${#newPWD} - $pwdmaxlen ))
-	newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
-   fi
-   echo ${newPWD}
+  local regHome=$(echo ${HOME} | sed -e 's/.*\///')
+  #   How many characters of the $PWD should be kept
+  local pwdmaxlen=40
+  #   Indicator that there has been directory truncation:
+  local trunc_symbol="..."
+  # substitute ~ for $HOME to shorten the full path
+  newPWD=$(echo ${PWD} | sed -e "s/.*${regHome}/~/")
+  if [ ${#newPWD} -gt $pwdmaxlen ]
+  then
+    local pwdoffset=$(( ${#newPWD} - $pwdmaxlen ))
+    newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
+  fi
+  echo ${newPWD}
 }
 
 # Alternate
-function npwd_alt() 
+function npwd_alt()
 {
-   # Home directory
-   local regHome=${HOME}
-   # Home directory might be prepended with NFS mount location.
-   local netHome=/net/machname.lanl.gov
-   #   How many characters of the $PWD should be kept
-   local pwdmaxlen=40
-   #   Indicator that there has been directory truncation:
-   local trunc_symbol="..."
-   # substitute ~ for $HOME to shorten the full path
-   newPWD=`echo ${PWD} | sed -e "s%${netHome}%%" | sed -e "s%${regHome}%~%"`
-   if test ${#newPWD} -gt $pwdmaxlen ; then
-   	local pwdoffset=$(( ${#newPWD} - $pwdmaxlen ))
-	newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
-   fi
-   echo ${newPWD}
+  # Home directory
+  local regHome=${HOME}
+  # Home directory might be prepended with NFS mount location.
+  local netHome=/net/machname.lanl.gov
+  #   How many characters of the $PWD should be kept
+  local pwdmaxlen=40
+  #   Indicator that there has been directory truncation:
+  local trunc_symbol="..."
+  # substitute ~ for $HOME to shorten the full path
+  newPWD=`echo ${PWD} | sed -e "s%${netHome}%%" | sed -e "s%${regHome}%~%"`
+  if test ${#newPWD} -gt $pwdmaxlen ; then
+    local pwdoffset=$(( ${#newPWD} - $pwdmaxlen ))
+    newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
+  fi
+  echo ${newPWD}
 }
 # Another alternate
 # PROMPT_COMMAND='DIR=`pwd|sed -e "s!$HOME!~!"`; if [ ${#DIR} -gt 30 ]; then CurDir=${DIR:0:12}...${DIR:${#DIR}-15}; else CurDir=$DIR; fi'
@@ -117,27 +117,27 @@ function npwd_alt()
 
 function findsymbol()
 {
-    local nm_opt='-a'
-    if test `uname` = OSF1; then
-       nm_opt=''
+  local nm_opt='-a'
+  if test `uname` = OSF1; then
+    nm_opt=''
+  fi
+  local a_libs=`\ls -1 *.a`
+  if test -z "$a_libs"; then a_libs=""; fi
+  local so_libs=`\ls -1 *.so`
+  if test -z "$so_libs"; then so_libs=""; fi
+  local libs="$a_libs $so_libs"
+  echo " "
+  echo "Searching..."
+  local symbol=" T "
+  for lib in $libs; do
+    local gres=`nm $nm_opt $lib | grep $1 | grep "$symbol"`
+    if ! test "$gres" = ""; then
+      echo " "
+      echo "Found \"$symbol\" in $lib:"
+      echo "     $gres"
     fi
-    local a_libs=`\ls -1 *.a`
-    if test -z "$a_libs"; then a_libs=""; fi
-    local so_libs=`\ls -1 *.so`
-    if test -z "$so_libs"; then so_libs=""; fi
-    local libs="$a_libs $so_libs"
-    echo " "
-    echo "Searching..."
-    local symbol=" T "
-    for lib in $libs; do 
-       local gres=`nm $nm_opt $lib | grep $1 | grep "$symbol"`
-       if ! test "$gres" = ""; then
-           echo " "
-           echo "Found \"$symbol\" in $lib:"
-           echo "     $gres"
-       fi
-    done
-    echo " "
+  done
+  echo " "
 }
 
 ##---------------------------------------------------------------------------##
@@ -151,15 +151,15 @@ function findsymbol()
 
 function pkgdepends()
 {
-   echo "This package depends on:"
-   echo " "
-   echo "Packages:"
-   grep 'include [<"].*[/]' *.cc *.hh | sed -e 's/.*[#]include [<"]/   /' | sed -e 's/\/.*//' | sort -u
-   echo " "
-   if test -f configure.ac; then
-      echo "Vendors:"
-      grep "SETUP[(]pkg" configure.ac | sed -e 's/AC_/   /' | sed -e 's/_.*//'
-   fi
+  echo "This package depends on:"
+  echo " "
+  echo "Packages:"
+  grep 'include [<"].*[/]' *.cc *.hh | sed -e 's/.*[#]include [<"]/   /' | sed -e 's/\/.*//' | sort -u
+  echo " "
+  if test -f configure.ac; then
+    echo "Vendors:"
+    grep "SETUP[(]pkg" configure.ac | sed -e 's/AC_/   /' | sed -e 's/_.*//'
+  fi
 }
 
 ##---------------------------------------------------------------------------##
@@ -172,16 +172,16 @@ function pkgdepends()
 ##---------------------------------------------------------------------------##
 function findgrep()
 {
-    # Exclude .svn directories: (-path '*/.svn' -prune)
-    # Or (-o)
-    files=`find . -path '*/.svn' -prune -o -type f -exec grep -q $1 {} /dev/null \; -print`
-    for file in $files; do
-      echo " "
-      echo "--> Found \"$1\" in file \"$file\" :"
-      echo " "
-      grep $1 $file
-    done
+  # Exclude .svn directories: (-path '*/.svn' -prune)
+  # Or (-o)
+  files=`find . -path '*/.svn' -prune -o -type f -exec grep -q $1 {} /dev/null \; -print`
+  for file in $files; do
     echo " "
+    echo "--> Found \"$1\" in file \"$file\" :"
+    echo " "
+    grep $1 $file
+  done
+  echo " "
 }
 
 ##---------------------------------------------------------------------------##
@@ -201,14 +201,14 @@ function archive()
     dt=$1
   fi
   local year=`date +%Y`
-#  local year=`stat {} | grep Change | sed -e 's/Change: //' -e 's/[-].*//'
-#  if ! test -d $year; then
-#    mkdir $year
-#  fi
-#  echo "Moving files to ${year}/..."
-#  cmd="find . -maxdepth 1 -mtime +${dt} -type f -exec mv {} ${year}/. \;"
+  #  local year=`stat {} | grep Change | sed -e 's/Change: //' -e 's/[-].*//'
+  #  if ! test -d $year; then
+  #    mkdir $year
+  #  fi
+  #  echo "Moving files to ${year}/..."
+  #  cmd="find . -maxdepth 1 -mtime +${dt} -type f -exec mv {} ${year}/. \;"
   # echo $cmd
-#  eval $cmd
+  #  eval $cmd
   files=`find . -maxdepth 1 -mtime +${dt} -type f`
   for file in $files; do
     year=`stat ${file} | grep Modify | sed -e 's/Modify: //' -e 's/[-].*//'`
@@ -232,5 +232,66 @@ function archive()
 
 function xfstatus()
 {
-    ssh red@transfer.lanl.gov myfiles
+  ssh red@transfer.lanl.gov myfiles
+}
+
+##---------------------------------------------------------------------------##
+## If string is found in PATH, remove it.
+##---------------------------------------------------------------------------##
+function rm_from_path ()
+{
+  badpath=$1
+  newpath=""
+  for dir in ${PATH//:/ }; do
+    if ! test "${badpath}" = "${dir}"; then
+      newpath="${newpath}:${dir}"
+    fi;
+  done
+  newpath=`echo $newpath | sed -e s/^[:]//`
+  export PATH=$newpath
+}
+
+##---------------------------------------------------------------------------##
+## Toggle LANL proxies on/off
+##---------------------------------------------------------------------------##
+function proxy()
+{
+  if test "${http_proxy}x" = "x"; then
+    # proxies not set, set them
+    export http_proxy=http://proxyout.lanl.gov:8080
+    export https_proxy=$http_proxy
+    export HTTP_PROXY=$http_proxy
+    export HTTPS_PROXY=$http_proxy
+    export http_no_proxy="*.lanl.gov"
+    export no_proxy=lanl.gov
+    export NO_PROXY=$no_proxy
+  else
+    # proxies are set, kill them
+    unset http_proxy
+    unset https_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    unset http_no_proxy
+    unset no_proxy
+    unset NO_PROXY
+  fi
+}
+
+##---------------------------------------------------------------------------##
+## Test to determine if named bash function exists in the current environment.
+##---------------------------------------------------------------------------##
+function fn_exists()
+{
+  type $1 2>/dev/null | grep -q 'is a function'
+  res=$?
+  echo $res
+  return $res
+}
+
+##---------------------------------------------------------------------------##
+## Echo commands before execution (used in scripts)
+##---------------------------------------------------------------------------##
+function run () {
+  echo $1
+  if ! [ $dry_run ]; then eval $1; fi
 }

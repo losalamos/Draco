@@ -100,8 +100,11 @@ case ${-} in
        fi
    fi
 
+   # Common bash functions and alias definitions
+   source ${DRACO_ENV_DIR}/bin/bash_functions.sh
+
    ##------------------------------------------------------------------------##
-   ## aliases
+   ## Common aliases
    ##------------------------------------------------------------------------##
 
    # Generic Settings
@@ -136,15 +139,13 @@ case ${-} in
    # Provide special ls commands if this is a color-xterm or compatible terminal.
    if test "${TERM}" != emacs &&
        test "${TERM}" != dumb; then
-   # replace list aliases with ones that include colorized output.
-       alias ll='ls --color -Flh'
-       alias l.='ls --color -hd .*'
-       alias lt='ls --color -Flth'
-       alias lt.='ls --color -Flth .*'
-       alias ls='ls --color -F'
+     # replace list aliases with ones that include colorized output.
+     alias ll='ls --color -Flh'
+     alias l.='ls --color -hd .*'
+     alias lt='ls --color -Flth'
+     alias lt.='ls --color -Flth .*'
+     alias ls='ls --color -F'
    fi
-
-   source ${DRACO_ENV_DIR}/bin/bash_functions.sh
 
    # Turquoise network
    alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'

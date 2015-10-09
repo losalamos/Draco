@@ -42,9 +42,8 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-    module use $VENDOR_DIR/Modules/hpc
-    module use $VENDOR_DIR/Modules/tu-fe
-    module load svn numdiff git hsi psi
+  module use --append /usr/projects/packages/user_contrib/modulefiles/fta
+  module load svn numdiff hsi psi
 
 fi
 

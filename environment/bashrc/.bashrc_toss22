@@ -42,7 +42,7 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-    module use $VENDOR_DIR/Modules/hpc
+    module use --append $VENDOR_DIR/Modules/hpc
     module load friendly-testing user_contrib
 
     # compiler, mpi

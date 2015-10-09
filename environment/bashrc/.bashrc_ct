@@ -29,7 +29,7 @@ target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
 # Use modules found in the draco directory
-module use $VENDOR_DIR/Modules/hpc
+module use --append $VENDOR_DIR/Modules/hpc
 module load friendly-testing user_contrib
 
 # Move some environment out of the way.

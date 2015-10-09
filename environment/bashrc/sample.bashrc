@@ -20,22 +20,39 @@ case ${-} in
    if test -z "${DRACO_ENV_DIR}" && test -f ${HOME}/.bash_profile; then
        source $HOME/.bash_profile
    fi
-   # Ensure Draco's bash_functions are declared in the non-login subshell.
-   if test -f ${DRACO_ENV_DIR}/bin/bash_functions.sh; then
-       source ${DRACO_ENV_DIR}/bin/bash_functions.sh
-   fi
    ;;
 *) # Not an interactive shell
-    export INTERACTIVE=false
-   ;;
+  export INTERACTIVE=false ;;
 esac
+
+#------------------------------------------------------------------------------#
+# Draco developer environment
+#------------------------------------------------------------------------------#
+if test -f ${DRACO_ENV_DIR}/bashrc/.bashrc; then
+  source ${DRACO_ENV_DIR}/bashrc/.bashrc
+fi
 
 #------------------------------------------------------------------------------#
 # User customizations
 #------------------------------------------------------------------------------#
 if test "$INTERACTIVE" = true; then
 
-    # Set terminal title
-    # echo -ne "\033]0;${nodename}\007"
+  # Set terminal title
+  # echo -ne "\033]0;${nodename}\007"
 
+  # Aliases ---------------------------------------------------------------------#
+  # alias xpdf='evince'
+  # alias xload='xload -fg brown -fn 6x13 -geometry 180x100+1500+0'
+
+  # drive your friends crazy...
+  # alias vi='emacs -nw'
+
+  # common cmake commands
+  # alias cmakerel='cmake -DCMAKE_BUILD_TYPE=Release'
+  # alias cmakerelfast='cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF'
+  # alias cmakerwdi='cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo'
+  # Use gcc's STL bounds checking
+  # alias cmakebc='cmake -DGCC_ENABLE_GLIBCXX_DEBUG=ON'
+  # Turn on extra debug info and floating point exception checking.
+  # alias cmakefd='cmake -DDRACO_DIAGNOSTICS=7'
 fi
