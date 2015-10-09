@@ -177,8 +177,11 @@ case ${target} in
 
 # machine with GPUs
 # backend nodes with GPUs are cn[1-4].
-darwin* | cn[0-9]*)
+darwin-login* | cn[0-9]*)
    source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin
+   ;;
+darwin-fe* )
+   source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
    ;;
 
 # Cielito | Cielo
