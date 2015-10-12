@@ -37,7 +37,7 @@ unset http_proxy
 unset HTTP_PROXY
 unset https_proxy
 unset HTTPS_PROXY
-export VENDOR_DIR=/projects/opt/draco/vendors
+export VENDOR_DIR=/usr/projects/draco/vendors
 moniker=`whoami`
 
 fn_exists()
@@ -77,25 +77,25 @@ run "ulimit -a"
 
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
+#result=`fn_exists module`
 #echo "result = $result"
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
-    echo 'module function does not exist. defining a local function ...'
-    run "source /usr/share/Modules/init/bash"
-fi
+#if test $result -eq 0; then
+#    echo 'module function is defined'
+#else
+#    echo 'module function does not exist. defining a local function ...'
+#    run "source /usr/share/Modules/init/bash"
+#fi
 
 # Use modules found in the draco directory
-run "module use /projects/opt/draco/vendors/Modules"
+run "module use /usr/projects/draco/vendors/Modules"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
-run "module load compilers/intel/15.0.3 mpi/intelmpi-5.0.2.044"
-run "module load lapack"
+run "module load intel/15.0.3 impi/5.1.1.109"
+#run "module load lapack"
 run "module load cmake/3.3.2 numdiff/5.2.1 subversion random123 eospac/6.2.4"
 run "module load python/2.7.3"
-run "module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2"
+run "module load ParMetis/4.0.3 SuperLU_DIST/4.1 trilinos/12.0.1"
 #run "module load ndi"
 
 # For Intel MPI, we must set these 4 variables:
