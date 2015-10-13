@@ -101,7 +101,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
      set( sitename "Trinitite" )
   elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
      set( sitename "Moonlight" )
-  elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-login")
+  elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES
+  "darwin-login" OR ${sitename} MATCHES "darwin-fe")
      set( sitename "Darwin" )
   endif()
   # message( "sitename = ${sitename}")
@@ -136,7 +137,11 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # This should be set in each projects CTestConfig.cmake file.
   #set( CTEST_NIGHTLY_START_TIME "00:00:01 MST")
 
-  set( CTEST_DROP_METHOD "https")
+  if( "${CTEST_SITE}" MATCHES "Darwin" )
+    set( CTEST_DROP_METHOD "http")
+  else()
+    set( CTEST_DROP_METHOD "https")
+  endif()
   set( CTEST_DROP_SITE "rtt.lanl.gov")
   set( CTEST_DROP_LOCATION
      "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" )

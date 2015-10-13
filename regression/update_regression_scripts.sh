@@ -14,12 +14,17 @@ run () {
 
 # Ensure that the permissions are correct
 case ${target} in
-darwin* | cn[0-9]*)
-   /projects/opt/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+darwin-login*)
+    echo "Please run regressions from darwin-fe instead of darwin-login."
+    exit 1
+    ;;
+darwin-fe* | cn[0-9]*)
+   /usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
    if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
       source $HOME/.keychain/$MYHOSTNAME-sh
    fi
-   SVN=/projects/opt/subversion/1.8.10/bin/svn
+   SVN=`which svn`
+   # SVN=/projects/opt/subversion/1.8.10/bin/svn
    REGDIR=/projects/opt/draco/regress
 
    svnroot=/projects/opt/draco/regress/svn
@@ -65,4 +70,3 @@ run "cd ${REGDIR}/draco/environment; ${SVN} update"
 run "cd ${REGDIR}/jayenne/regression; ${SVN} update"
 run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
 run "cd ${REGDIR}/asterisk/regression; ${SVN} update"
-

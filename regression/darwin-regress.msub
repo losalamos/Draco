@@ -87,16 +87,15 @@ run "ulimit -a"
 #fi
 
 # Use modules found in the draco directory
-run "module use /usr/projects/draco/vendors/Modules"
+run "module use --append /usr/projects/draco/vendors/Modules"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
 run "module load intel/15.0.3 impi/5.1.1.109"
 #run "module load lapack"
-run "module load cmake/3.3.2 numdiff/5.2.1 subversion random123 eospac/6.2.4"
-run "module load python/2.7.3"
-run "module load ParMetis/4.0.3 SuperLU_DIST/4.1 trilinos/12.0.1"
-#run "module load ndi"
+run "module load cmake/3.3.2-draco numdiff/5.8.1 subversion random123 eospac/6.2.4"
+run "module load ndi ParMetis/4.0.3 SuperLU_DIST/4.1 trilinos/12.0.1"
+run "module list"
 
 # For Intel MPI, we must set these 4 variables:
 export CXX=`which mpiicpc`
@@ -146,19 +145,21 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   if test "${regress_mode}" = "off"; then
-      scratch_dir=/panfs/scratch1/${moniker}/cdash/darwin
-      base_dir=${scratch_dir}
-   else
-      scratch_dir=/projects/opt/draco/cdash/darwin
-      base_dir=/projects/opt/draco/cdash/darwin
-   fi
-   mkdir -p $scratch_dir
-   mkdir -p $base_dir
-   if ! test -d ${scratch_dir}; then
-      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
-      exit 1
-   fi
+  if test "${regress_mode}" = "off"; then
+    scratch_dir=/mnt/local/hdd1/${moniker}/cdash/darwin
+    base_dir=${scratch_dir}
+  else
+    #scratch_dir=/projects/opt/draco/cdash/darwin
+    #base_dir=/projects/opt/draco/cdash/darwin
+    scratch_dir=/mnt/local/hdd1/draco-regress/cdash/darwin
+    base_dir=${scratch_dir}
+  fi
+  mkdir -p $scratch_dir
+  mkdir -p $base_dir
+  if ! test -d ${scratch_dir}; then
+    echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+    exit 1
+  fi
 fi
 
 echo " "
