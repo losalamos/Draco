@@ -25,9 +25,9 @@ darwin-fe* | cn[0-9]*)
    fi
    SVN=`which svn`
    # SVN=/projects/opt/subversion/1.8.10/bin/svn
-   REGDIR=/projects/opt/draco/regress
+   REGDIR=/usr/projects/draco/regress
 
-   svnroot=/projects/opt/draco/regress/svn
+   svnroot=/usr/projects/draco/regress/svn
    if ! test -d; then
       echo "*** SVN repository not found ***"
       exit 1

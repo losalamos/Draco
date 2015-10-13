@@ -212,7 +212,7 @@ ccscs[0-9])
 darwin*)
     machine_name_long="Linux64 on CCS Darwin cluster"
     machine_name_short=darwin
-    export regdir=/projects/opt/draco/regress
+    export regdir=/usr/projects/draco/regress
     # Argument checks
     if ! test "${extra_params}x" = "x"; then
         case $extra_params in
@@ -257,7 +257,6 @@ echo "   regdir         = ${regdir}"
 echo "   dashboard_type = ${dashboard_type}"
 #echo "   base_dir       = ${base_dir}"
 #echo "   rscriptdir     = ${rscriptdir}"
-echo "   regdir         = ${regdir}"
 echo "   logdir         = ${logdir}"
 echo "   projects       = \"${projects}\""
 echo "   regress_mode   = ${regress_mode}"

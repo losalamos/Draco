@@ -149,10 +149,10 @@ if test "${base_dir}x" = "x"; then
     scratch_dir=/mnt/local/hdd1/${moniker}/cdash/darwin
     base_dir=${scratch_dir}
   else
-    #scratch_dir=/projects/opt/draco/cdash/darwin
-    #base_dir=/projects/opt/draco/cdash/darwin
-    scratch_dir=/mnt/local/hdd1/draco-regress/cdash/darwin
-    base_dir=${scratch_dir}
+    scratch_dir=/usr/projects/draco/regress/cdash/darwin
+    base_dir=/usr/projects/draco/regress/cdash/darwin
+    #scratch_dir=/mnt/local/hdd1/draco-regress/cdash/darwin
+    #base_dir=/projects/opt/draco/regress/cdash/darwin
   fi
   mkdir -p $scratch_dir
   mkdir -p $base_dir

@@ -40,7 +40,7 @@ unset HTTPS_PROXY
 unset http_no_proxy
 unset no_proxy
 unset NO_PROXY
-export VENDOR_DIR=/projects/opt/draco/vendors
+export VENDOR_DIR=/usr/projects/draco/vendors
 moniker=`whoami`
 
 fn_exists()
@@ -56,7 +56,7 @@ run () {
     if ! [ $dry_run ]; then eval $1; fi
 }
 
-#/projects/opt/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+#/usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
 #if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
 #    source $HOME/.keychain/$MYHOSTNAME-sh
 #fi
@@ -90,7 +90,7 @@ else
 fi
 
 # Use modules found in the draco directory
-run "module use /projects/opt/draco/vendors/Modules"
+run "module use /usr/projects/draco/vendors/Modules"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module list"
@@ -154,8 +154,8 @@ if test "${base_dir}x" = "x"; then
       scratch_dir=/panfs/scratch1/${moniker}/cdash/darwin
       base_dir=${scratch_dir}
    else
-      scratch_dir=/projects/opt/draco/cdash/darwin
-      base_dir=/projects/opt/draco/cdash/darwin
+      scratch_dir=/usr/projects/draco/regress/cdash/darwin
+      base_dir=/usr/projects/draco/regress/cdash/darwin
    fi
    mkdir -p $scratch_dir
    mkdir -p $base_dir

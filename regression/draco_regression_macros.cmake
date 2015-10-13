@@ -482,9 +482,9 @@ macro( set_svn_command svnpath )
       set( CTEST_CVS_CHECKOUT
         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
       message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
-    elseif( EXISTS /projects/opt/draco/regress/svn ) # CCS-7's Darwin
+    elseif( EXISTS /usr/projects/draco/regress/svn ) # CCS-7's Darwin
       set( CTEST_CVS_CHECKOUT
-        "${CTEST_CVS_COMMAND} checkout file:///projects/opt/draco/regress/svn/${svnpath} source" )
+        "${CTEST_CVS_COMMAND} checkout file:///usr/projects/draco/regress/svn/${svnpath} source" )
     elseif( EXISTS /usr/projects/jayenne/regress/svn ) # HPC machines (ML, CT)
       set( CTEST_CVS_CHECKOUT
         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
