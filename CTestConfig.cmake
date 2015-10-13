@@ -7,7 +7,7 @@
 set( CTEST_PROJECT_NAME "Draco" )
 set( CTEST_NIGHTLY_START_TIME "21:00:00 MDT" )
 
-set( CTEST_DROP_METHOD "http")
+set( CTEST_DROP_METHOD "https")
 set( CTEST_DROP_SITE "rtt.lanl.gov" )
 set( CTEST_DROP_LOCATION  "/CDash/submit.php?project=${CTEST_PROJECT_NAME}" )
 set( CTEST_DROP_SITE_CDASH TRUE )
