@@ -23,8 +23,10 @@ darwin-fe* | cn[0-9]*)
    if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
       source $HOME/.keychain/$MYHOSTNAME-sh
    fi
+   module unload subversion
+   module load subversion
    SVN=`which svn`
-   # SVN=/projects/opt/subversion/1.8.10/bin/svn
+   # SVN=/projects/opt/centos7/subversion/1.9.2/bin/svnsync
    REGDIR=/usr/projects/draco/regress
 
    svnroot=/usr/projects/draco/regress/svn
@@ -69,4 +71,4 @@ run "cd ${REGDIR}/draco/regression; ${SVN} update"
 run "cd ${REGDIR}/draco/environment; ${SVN} update"
 run "cd ${REGDIR}/jayenne/regression; ${SVN} update"
 run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
-run "cd ${REGDIR}/asterisk/regression; ${SVN} update"
+#run "cd ${REGDIR}/asterisk/regression; ${SVN} update"
