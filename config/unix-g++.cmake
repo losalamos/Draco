@@ -11,6 +11,8 @@
 # http://gcc.gnu.org/wiki/Atomic/GCCMM
 # http://gcc.gnu.org/wiki/TransactionalMemory
 # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+# https://gcc.gnu.org/gcc-5/changes.html
+# http://stackoverflow.com/questions/3375697/useful-gcc-flags-for-c
 
 # Require GCC-4.7 or later
 if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
@@ -55,6 +57,13 @@ endif()
 #
 # Compiler Flags
 #
+# Consider using these:
+# -Wundef     - warn about CPP macros read but not defined.
+# -Wcast-qual - warn about casts that remove qualifiers like const.
+# -Wfloat-equal
+# -Wstrict-overflow=4
+# -Wwrite-strings
+# -Wunreachable-code
 
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
@@ -91,6 +100,37 @@ if( NOT CXX_FLAGS_INITIALIZED )
       set( CMAKE_CXX_FLAGS       "${CMAKE_CXX_FLAGS} -march=native" )
    endif()
 
+   # Features for GCC-5.0 or later
+   # See https://gcc.gnu.org/gcc-5/changes.html
+   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
+      # UndefinedBehaviorSanitizer gained a few new sanitization options:
+      #    -fsanitize=float-divide-by-zero: detect floating-point division
+      #                     by zero;
+      #    -fsanitize=float-cast-overflow: check that the result of
+      #                     floating-point type to integer conversions do
+      #                     not overflow;
+      #    -fsanitize=bounds: enable instrumentation of array bounds and
+      #                     detect out-of-bounds accesses;
+      #    -fsanitize=alignment: enable alignment checking, detect various
+      #                     misaligned objects;
+      #    -fsanitize=object-size: enable object size checking, detect
+      #                     various out-of-bounds accesses.
+      #    -fsanitize=vptr: enable checking of C++ member function calls,
+      #                     member accesses and some conversions between
+      #                     pointers to base and derived classes, detect if
+      #                     the referenced object does not have the correct
+      #                     dynamic type.
+      # Pointer Bounds Checker, a bounds violation detector, has been added
+      # and can be enabled via -fcheck-pointer-bounds. Memory accesses are
+      # instrumented with run-time checks of used pointers against their
+      # bounds to detect pointer bounds violations (overflows). The Pointer
+      # Bounds Checker is available on x86/x86-64 GNU/Linux targets with a
+      # new ISA extension Intel MPX support. See the Pointer Bounds Checker
+      # Wiki page for more details
+      # (https://gcc.gnu.org/wiki/Intel%20MPX%20support%20in%20the%20GCC%20compiler)
+
+      # set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=float-divide-by-zero -fcheck-ponter-bounds")
+   endif()
 endif()
 
 ##---------------------------------------------------------------------------##
