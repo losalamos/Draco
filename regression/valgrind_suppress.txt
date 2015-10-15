@@ -5,14 +5,27 @@
 # For help, use '--gen-suppressions=[yes|all]'
 
 # Example valgrind use:
-# valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes 
-#   --trace-children=yes --num-callers=50 --gen-suppressions=yes 
+# valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes
+#   --trace-children=yes --num-callers=50 --gen-suppressions=yes
 #   --suppressions="$HOME/draco/regression/valgrind_suppress.txt"
-#   /ccs/codes/mpi/openmpi/Linux64/1.6/bin/mpiexec -np 1 phw hello 
+#   /ccs/codes/mpi/openmpi/Linux64/1.6/bin/mpiexec -np 1 phw hello
 
 # OR --------
 
 # mpirun -np 1 valgrind --leak-check=full --suppressions=/home/kellyt/draco/regression/valgrind_suppress.txt ./phw
+
+## -------------------------------------------------------------------------- ##
+## OpenMPI-1.10
+## -------------------------------------------------------------------------- ##
+{
+   libpthread/memcheck/param/01
+   Memcheck:Param
+   write(buf)
+   obj:/lib64/libpthread-2.12.so
+   ...
+   fun:orterun
+   fun:main
+}
 
 ## -------------------------------------------------------------------------- ##
 ## OpenMPI-1.6
@@ -448,7 +461,7 @@
 {
    numdiff/text1
    Memcheck:Cond
-   ... 
+   ...
    fun:cmp_fields
    fun:cmp_lines
    fun:cmp_files

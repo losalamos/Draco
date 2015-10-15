@@ -44,27 +44,27 @@ class Test_Field
 template<typename VVF>
 void test_vector(rtt_dsxx::UnitTest & ut)
 {
+    typedef typename Viz_Traits<VVF>::elementType VVFet;
+
     VVF field(3);
 
     for( size_t i = 0; i < field.size(); i++ )
     {
         field[i].resize(i+2);
         for( size_t j = 0; j < field[i].size(); j++ )
-            field[i][j] = static_cast<
-                          typename Viz_Traits<VVF>::elementType>(
-                              2 * i + 4 * j);
+            field[i][j] = static_cast<VVFet>(2 * i + 4 * j);
     }
 
     Viz_Traits<VVF> vdf(field);
 
-    if( vdf.nrows() != field.size() )         ITFAILS; 
+    if( vdf.nrows() != field.size() )                                 ITFAILS;
     for( size_t i = 0; i < vdf.nrows(); i++ )
     {
-        if( vdf.ncols(i) != field[i].size() ) ITFAILS;
+        if( vdf.ncols(i) != field[i].size() )                         ITFAILS;
         for( size_t j = 0; j < vdf.ncols(i); j++ )
         {
-            if( static_cast<int>(vdf(i, j)) != field[i][j] )       ITFAILS;
-            if( vdf(i, j) != 2*i + 4*j )                           ITFAILS;
+            if( static_cast<int>(vdf(i, j)) != field[i][j] )          ITFAILS;
+            if( vdf(i, j) != static_cast<VVFet>(2*i + 4*j) )          ITFAILS;
         }
     }
     if( ut.numFails == 0 )
@@ -103,7 +103,6 @@ void test_FT(rtt_dsxx::UnitTest & ut)
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
     rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );

@@ -71,7 +71,7 @@ fi
 run "module purge"
 run "module load gcc openmpi cmake"
 run "module load valgrind numdiff svn random123"
-run "module load eospac grace lapack valgrind"
+run "module load eospac grace lapack"
 run "module load SuperLU_DIST/4.1"
 run "module load ndi ParMetis trilinos/12.0.1"
 run "module load doxygen graphviz qt"
@@ -109,10 +109,26 @@ fulldiagnostics)
 gcc520)
   run "module purge"
   run "module load gcc/5.2.0 openmpi/1.10.0 cmake"
-  run "module load valgrind numdiff svn random123"
+  run "module load numdiff svn random123"
   run "module load eospac grace lapack valgrind"
   run "module load SuperLU_DIST/4.1"
   run "module load ndi ParMetis trilinos/12.0.1"
+  run "module load doxygen graphviz qt"
+  comp=gcc-5.2.0
+  ;;
+gcc520bc)
+  echo "Bounds checking option selected."
+  if ! test "${build_type}" == "Debug"; then
+    echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+    exit 1
+  fi
+  bounds_checking=on
+  run "module purge"
+  run "module load gcc/5.2.0 openmpi/1.10.0 cmake"
+  run "module load numdiff svn random123"
+  run "module load eospac grace lapack valgrind"
+  run "module load SuperLU_DIST-bc/4.1"
+  run "module load ndi ParMetis-bc trilinos-bc/12.0.1"
   run "module load doxygen graphviz qt"
   comp=gcc-5.2.0
   ;;
