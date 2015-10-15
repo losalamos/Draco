@@ -60,7 +60,7 @@ darwin-fe* | cn[0-9]*)
    # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
    ;;
 *)
-   SVN=/ccs/codes/radtran/vendors/subversion-1.8.5/bin/svn
+   SVN=/ccs/codes/radtran/vendors/subversion-1.8.13/bin/svn
    REGDIR=/home/regress
    ;;
 esac
@@ -69,6 +69,7 @@ esac
 run "cd ${REGDIR}/draco/config; ${SVN} update"
 run "cd ${REGDIR}/draco/regression; ${SVN} update"
 run "cd ${REGDIR}/draco/environment; ${SVN} update"
+run "cd ${REGDIR}/draco/tools; ${SVN} update"
 run "cd ${REGDIR}/jayenne/regression; ${SVN} update"
 run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
 #run "cd ${REGDIR}/asterisk/regression; ${SVN} update"
