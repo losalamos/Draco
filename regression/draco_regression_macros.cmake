@@ -325,6 +325,8 @@ macro( parse_args )
     endif()
   elseif( APPLE ) # OS/X
     set( CTEST_BUILD_NAME "OSX_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
+  elseif( ${work_dir} MATCHES ".*gcc-5.2.0*" )
+    set( CTEST_BUILD_NAME "Linux64_gcc-5.2.0_${CTEST_BUILD_CONFIGURATION}" )
   else() # Unix
     set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   endif()

@@ -139,7 +139,8 @@ endif()
 if( "${CTEST_BUILD}" STREQUAL "ON" )
    # Autodoc
    if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
-         "${CTEST_SITE}" MATCHES "ccscs7" )
+       "${CTEST_SITE}" MATCHES "ccscs7" AND
+       NOT ${CMAKE_INSTALL_PREFIX} MATCHES "gcc-5.2.0" )
       message( "ctest_build( TARGET autodoc RETURN_VALUE res )" )
       ctest_build(
          TARGET autodoc
