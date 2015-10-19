@@ -250,6 +250,20 @@
     #define M_PI     3.14159265358979323846264338327950288
 #endif
 
+/* ----------------------------------------------------------------
+ * Clean code:
+ * ---------------------------------------------------------------- */
+
+/* When using GCC, provide a CPP macro that tells the compiler to
+   expect (and not warn) if a variable is defined but not used.
+   This warning can be suppressed by marking the variable with a
+   speciall attribute.  See jayenne/src/mc/Constants.hh. */
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+
 #endif /* __dsxx_config_h__ */
 
 /*---------------------------------------------------------------------------*/
