@@ -52,7 +52,7 @@ case ${target} in
      fi
    fi
    module use /ccs/codes/radtran/vendors/Modules
-   module load gcc/4.8.1 openmpi
+   module load gcc openmpi
    module load emacs/24.4
    module load totalview
    module load cmake grace lapack random123 eospac numdiff git svn
