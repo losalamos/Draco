@@ -43,7 +43,7 @@ if test -n "$MODULESHOME"; then
         # setup for draco
         module load emacs subversion
         module load intel/15.0.3 impi/5.1.1.109
-        module load random123 cmake/3.3.2 numdiff/5.2.1 eospac/6.2.4
+        module load random123 cmake/3.3.2 numdiff/5.8.1 eospac/6.2.4
         # additional setup for capsaicin
         module load ndi ParMetis/4.0.3 SuperLU_DIST/4.1 trilinos/12.0.1
     fi
