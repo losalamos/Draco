@@ -17,64 +17,6 @@
 ##           set the optional parameters.
 
 ##---------------------------------------------------------------------------##
-## ENVIRONMENTS for all sessions
-##---------------------------------------------------------------------------##
-
-#export verbose=true
-
-# Clean up the default path to remove duplicates
-tmpifs=$IFS
-oldpath=$PATH
-export PATH=/bin
-IFS=:
-for dir in $oldpath; do
-  if test -z "`echo $PATH | grep $dir`" && test -d $dir; then
-    export PATH=$PATH:$dir
-  fi
-done
-IFS=$tmpifs
-unset tmpifs
-unset oldpath
-
-# Avoid double colon in PATH
-export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
-export LD_LIBRARY_PATH=`echo ${LD_LIBRARY_PATH} | sed -e 's/[:]$//'`
-
-# Attempt to find DRACO
-if test -z "$DRACO_SRC_DIR"; then
-  _BINDIR=`dirname "$BASH_ARGV"`
-  export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
-fi
-if test -z "$DRACO_ENV_DIR"; then
-  export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
-fi
-
-# Append PATHS (not linux specific, not ccs2 specific).
-extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin"
-for mydir in ${extradirs}; do
-   if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-      export PATH=${PATH}:${mydir}
-   fi
-done
-
-# Tell wget to use LANL's www proxy (see
-# trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
-# export http_proxy=http://wpad.lanl.gov/wpad.dat
-found=`nslookup proxyout.lanl.gov | grep Name | wc -l`
-if test ${found} == 1; then
-   export http_proxy=http://proxyout.lanl.gov:8080
-   export https_proxy=$http_proxy
-   export HTTP_PROXY=$http_proxy
-   export HTTPS_PROXY=$http_proxy
-   export http_no_proxy="*.lanl.gov"
-   export no_proxy=lanl.gov
-   export NO_PROXY=$no_proxy
-fi
-
-# cd paths - disable here, let user choose in ~/.bashrc
-CDPATH=
-
-##---------------------------------------------------------------------------##
 ## ENVIRONMENTS for interactive sessions
 ##---------------------------------------------------------------------------##
 
@@ -163,48 +105,104 @@ case ${-} in
    # return
    ;;
 esac
+#export verbose=true
 
 ##---------------------------------------------------------------------------##
-##---------------------------------------------------------------------------##
-## Machine specific settings
-##---------------------------------------------------------------------------##
+## ENVIRONMENTS - once per login
 ##---------------------------------------------------------------------------##
 
-target="`uname -n | sed -e s/[.].*//`"
-arch=`uname -m`
+if test -z "$DRACO_BASHRC_DONE"; then
 
-case ${target} in
+  # Clean up the default path to remove duplicates
+  tmpifs=$IFS
+  oldpath=$PATH
+  export PATH=/bin
+  IFS=:
+  for dir in $oldpath; do
+    if test -z "`echo $PATH | grep $dir`" && test -d $dir; then
+      export PATH=$PATH:$dir
+    fi
+  done
+  IFS=$tmpifs
+  unset tmpifs
+  unset oldpath
 
-# machine with GPUs
-# backend nodes with GPUs are cn[1-4].
-darwin-login* )
-   source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin
-   ;;
-darwin-fe* | cn[0-9]*)
-   source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
-   ;;
+  # Avoid double colon in PATH
+  export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
+  export LD_LIBRARY_PATH=`echo ${LD_LIBRARY_PATH} | sed -e 's/[:]$//'`
 
-# Cielito | Cielo
-c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-    source ${DRACO_ENV_DIR}/bashrc/.bashrc_ct
-    ;;
+  # Attempt to find DRACO
+  if test -z "$DRACO_SRC_DIR"; then
+    _BINDIR=`dirname "$BASH_ARGV"`
+    export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
+  fi
+  if test -z "$DRACO_ENV_DIR"; then
+    export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
+  fi
 
-# Moonlight | Mustang | Luna | Typhoon
-mp* | ml* | mu* | pi* | wf* | lu* | ty* )
-    source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
-    ;;
+  # Append PATHS (not linux specific, not ccs2 specific).
+  extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin"
+  for mydir in ${extradirs}; do
+    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
+      export PATH=${PATH}:${mydir}
+    fi
+  done
 
-# wtrw and rfta
-red-wtrw* | rfta*)
-    source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
-    ;;
-# trinitite (tt-fey)
-tt-fey* | tt-login*)
-    source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
-    ;;
-# Assume CCS machine (ccscs[0-9] or personal workstation)
-*)
-    if test -d /ccs/codes/radtran; then
+  # Tell wget to use LANL's www proxy (see
+  # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
+  # export http_proxy=http://wpad.lanl.gov/wpad.dat
+  found=`nslookup proxyout.lanl.gov | grep Name | wc -l`
+  if test ${found} == 1; then
+    export http_proxy=http://proxyout.lanl.gov:8080
+    export https_proxy=$http_proxy
+    export HTTP_PROXY=$http_proxy
+    export HTTPS_PROXY=$http_proxy
+    export http_no_proxy="*.lanl.gov"
+    export no_proxy=lanl.gov
+    export NO_PROXY=$no_proxy
+  fi
+
+  # cd paths - disable here, let user choose in ~/.bashrc
+  CDPATH=
+
+  ##---------------------------------------------------------------------------##
+  ## ENVIRONMENTS - machine specific settings
+  ##---------------------------------------------------------------------------##
+  target="`uname -n | sed -e s/[.].*//`"
+  arch=`uname -m`
+
+  case ${target} in
+
+    # machine with GPUs
+    # backend nodes with GPUs are cn[1-4].
+    darwin-login* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin
+      ;;
+    darwin-fe* | cn[0-9]*)
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
+      ;;
+
+    # Cielito | Cielo
+    c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_ct
+      ;;
+
+    # Moonlight | Mustang | Luna | Typhoon
+    mp* | ml* | mu* | pi* | wf* | lu* | ty* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
+      ;;
+
+    # wtrw and rfta
+    red-wtrw* | rfta*)
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
+      ;;
+    # trinitite (tt-fey)
+    tt-fey* | tt-login*)
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
+      ;;
+    # Assume CCS machine (ccscs[0-9] or personal workstation)
+    *)
+      if test -d /ccs/codes/radtran; then
         # assume this is a CCS LAN machine (64-bit)
         if test `uname -m` = 'x86_64'; then
           # draco environment only supports 64-bit linux...
@@ -214,11 +212,16 @@ tt-fey* | tt-login*)
           echo "Module support may not be available. Email kgt@lanl.gov for more information."
           source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
         fi
-    fi
-    export NoModules=1
-    ;;
+      fi
+      export NoModules=1
+      ;;
 
-esac
+  esac
+
+  # Mark that we have already done this setup
+  export DRACO_BASHRC_DONE=yes
+
+fi
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
