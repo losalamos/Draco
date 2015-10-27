@@ -130,7 +130,7 @@ function flavor
 
 function selectscratchdir
 {
-  scratchdirs="scratch scratch1 scratch3 lscratch1 usr/projects/draco/devs/releases"
+  scratchdirs="scratch scratch1 scratch3 scratch6 scratch8 scratch9 lscratch1 usr/projects/draco/devs/releases"
   for dir in $scratchdirs; do
     mkdir -p /$dir/$USER &> /dev/null
     if test -x /$dir/$USER; then

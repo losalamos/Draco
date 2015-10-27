@@ -78,7 +78,7 @@ establish_permissions
 
 export source_prefix="/usr/projects/$package/$pdir"
 scratchdir=`selectscratchdir`
-ppn=`showstats -n | grep 001 | awk '{print $3}'`
+ppn=`showstats -n | grep 10 | head -n 1 | awk '{print $3}'`
 #build_pe=`npes_build`
 #test_pe=`npes_test`
 
@@ -119,6 +119,7 @@ if test $verbose == 1; then
   echo "script_dir     = $script_dir"
   echo "source_prefix  = $source_prefix"
   echo "log_dir        = $source_prefix/logs"
+  echo "scratchdir     = /$scratchdir/$USER"
   echo
   echo "package     = $package"
   echo "versions:"
@@ -157,7 +158,7 @@ for env in $environments; do
 
     # export dry_run=1
     export steps="config build test"
-    cmd="msub -V $access_queue -l walltime=04:00:00 -l nodes=1:ppn=${ppn} -j oe \
+    cmd="msub -V $access_queue -l walltime=01:00:00 -l nodes=1:ppn=${ppn} -j oe \
 -o $source_prefix/logs/release-$buildflavor-$version.log $script_dir/release_toss2.msub"
     echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
