@@ -37,36 +37,33 @@ module unload cmake numdiff svn
 module unload papi perftools trilinos
 module unload PrgEnv-intel PrgEnv-pgi
 
-# load the Intel programming env, but then unloda libsci and totalview
+# load the Intel programming env, but then unload libsci and totalview
 module load PrgEnv-intel
 module unload xt-libsci xt-totalview
 
-# Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
-# module load gcc
+# Cielo doesn't have module hsi yet (2015 Oct).
 case ${target} in
   ci-fe* | ci-login* | ci-vizlogin*)
-    module swap intel/14.0.4.211
     ;;
   *)
-    module swap intel/15.0.3
     module load hsi
     ;;
 esac
 
 # draco modules start here.
-module load gsl/1.15 lapack/3.5.0
-module load emacs
-module load trilinos SuperLU_DIST
-module load ParMetis ndi random123 eospac/6.2.4
-module load svn cmake/3.3.1 numdiff
+module swap intel intel/15.0.3
+module load lapack/3.5.0 ParMetis trilinos SuperLU_DIST
+module load gsl/1.15 cmake/3.3.1 numdiff
+module load ndi random123 eospac/6.2.4
+module load emacs svn
 
 function unload_draco_module_env()
 {
-  module unload svn cmake numdiff
-  module unload ParMetis ndi random123 eospac
-  module unload trilinos SuperLU_DIST
-  module unload emacs
-  module unload gsl lapack
+  module unload emacs svn
+  module unload ndi random123 eospac/6.2.4
+  module unload gsl/1.15 cmake/3.3.1 numdiff
+  module unload lapack/3.5.0 ParMetis trilinos SuperLU_DIST
+  module unload intel
 
   module unload hsi
   module unload PrgEnv-intel
