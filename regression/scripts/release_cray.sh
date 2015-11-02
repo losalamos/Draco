@@ -44,7 +44,6 @@ case $target in
 esac
 function intel15env()
 {
-run "module use /usr/projects/draco/vendors/Modules/hpc"
 run "module load friendly-testing user_contrib"
 run "module unload ndi ParMetis SuperLU_DIST trilinos"
 run "module unload lapack gsl intel"
@@ -63,7 +62,7 @@ case $target in
     run "module load gsl/1.16"
     ;;
 esac
-run "module load cmake/3.3.1 numdiff svn"
+run "module load cmake/3.3.2 numdiff svn"
 run "module load trilinos SuperLU_DIST"
 run "module load ParMetis ndi random123 eospac/6.2.4"
 run "module list"
@@ -75,7 +74,6 @@ export OMP_NUM_THREADS=8
 
 function intel14env()
 {
-run "module use /usr/projects/draco/vendors/Modules/hpc"
 run "module load friendly-testing user_contrib"
 run "module unload ndi ParMetis SuperLU_DIST trilinos"
 run "module unload lapack gsl intel"
@@ -86,7 +84,7 @@ run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
 run "module swap intel intel/14.0.4.211"
 run "module load gsl/1.15"
-run "module load cmake/3.3.1 numdiff svn"
+run "module load cmake/3.3.2 numdiff svn"
 run "module load trilinos SuperLU_DIST"
 run "module load ParMetis ndi random123 eospac/6.2.4"
 run "module list"
