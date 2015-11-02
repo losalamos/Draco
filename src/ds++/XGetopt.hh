@@ -1,8 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/XGetopt.hh
- * \author Katherine Wang
- * \date   Wed Nov 10 09:35:09 2010
+ * \author Kelly Thompson, Katherine Wang
+ * \date   Tuesday, Oct 27, 2015, 15:17 pm
  * \brief  Command line argument handling similar to getopt.
  * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
  *         All rights reserved.
@@ -15,6 +15,8 @@
 #define rtt_dsxx_XGetopt_hh
 
 #include "ds++/config.h"
+#include "Assert.hh"
+#include <vector>
 #include <string>
 #include <map>
 
@@ -25,110 +27,245 @@ namespace rtt_dsxx
 /*!
  * \class XGetopt
  *
- * Function for parsing command line options
+ * This class provides features related to parsing command line options.
  *
- * Arguments argc and argv are the argument count and array as
- * passed into the application on program invocation.  In the case
- * of Visual C++ programs, argc and argv are available via the
- * variables __argc and __argv (double underscores), respectively.
- * getopt returns the next option letter in argv that matches a
- * letter in optstring.
+ * In 'main', the variables argc and argv are the argument count and array of
+ * strings, respectively, as passed into the application on program invocation.
+ * XGetopt provides tools to store the command line, registered options,
+ * processing of options that read a user provided value, and provides tools
+ * for presenting a help string and information about unprocessed data.
  *
- * optstring is a string of recognized option letters;  if a letter
- * is followed by a colon, the option is expected to have an argument
- * that may or may not be separated from it by white space.  optarg
- * is set to point to the start of the option argument on return from
- * getopt.
+ * On construction, XGetopt records registered options and help strings.  These
+ * are matched against provided command line arguments and accessor functions
+ * are provided for retrieving this information.
  *
- * Option letters may be combined, e.g., "-ab" is equivalent to
- * "-a -b".  Option letters are case sensitive.
+ * \todo Option letters may be combined, e.g., "-ab" is equivalent to "-a -b".
+ * Option letters are case sensitive. (This features is not yet available as of
+ * 2015 October).
  *
- * getopt places in the external variable optind the argv index
- * of the next argument to be processed.  optind is initialized
- * to 0 before the first call to getopt.
+ * If the special option "--" is encountered, all futher processing of command
+ * line arguments ceases.
  *
- * When all options have been processed (i.e., up to the first
- * non-option argument), getopt returns EOF, optarg will point
- * to the argument, and optind will be set to the argv index of
- * the argument.  If there are no non-option arguments, optarg
- * will be set to NULL.
- *
- * The special option "--" may be used to call longopts (string
- * commands, more than one character long) if defined as a mapped
- * value combined with a key value (single character command line
- * option).  "--" may be used to call the end of the options (skip
- * remaining options) when argv does not have a corresponding mapped
- * value or when it is followed by shortopts, defined or undefined.
- *
- * For option letters contained in the string optstring, getopt
- * will return the option letter.  getopt returns a question mark (?)
- * when it encounters an option letter not included in optstring.
- * EOF is returned when processing is finished.
- *
- * Bugs
- * 1) The GNU double-colon extension is not supported.
- * 2) TThe environment variable POSIXLY_CORRECT is not supported.
- * 3) The + syntax is not supported.
- * 4) The automatic permutation of arguments is not supported.
- * 5) This implementation of getopt() returns EOF if an error is
- *    encountered, instead of -1 as the latest standard requires.
- *
+ * Sample use:
  * \code
- *	 std::map< std::string, char> long_options;
- *       long_options["add"]    = 'a';
- *       long_options["append"] = 'b';
- *   	 long_options["create"] = 'c';
+ *       rtt_dsxx::XGetopt::csmap long_options;
+ *       long_options['b'] = "append";
+ *       long_options['c'] = "create:";      // expects value.
+ *       long_options['h'] = "help";
  *
- *       BOOL CMyApp::ProcessCommandLine(int argc, TCHAR *argv[])
+ *       std::map<char,std::string> help_strings;
+ *       help_strings['b'] = "perform action 'append'.";
+ *       help_strings['c'] = "create a new file with provided\nfilename.";
+ *       help_strings['h'] = "print this message.";
+ *
+ *       rtt_dsxx::XGetopt program_options( argc, argv, long_options,
+ *                                          help_strings );
+ *
+ *       int c(0);
+ *       while( (c = program_options()) != -1 )
  *       {
- *           int c;
+ *          switch (c)
+ *          {
+ *            case 'b':
+ *               //
+ *               // set some flag here
+ *               //
+ *               break;
  *
- *           while ((c = rtt_dsxx::getopt (argc, argv, "abc:", long_options)) != -1)
- *   	     {
- *       	switch (c)
- *       	{
- *          	  case 'a':
- *                   //
- *                   // set some flag here
- *                   //
- *                   break;
+ *            case 'c':
+ *               cvalue = program_options.get_option_value();
+ *               break;
  *
- *           	  case 'b':
- *                   //
- *                   // set some flag here
- *                   //
- *                   break;
+ *            case 'h':
+ *               std::cout << program_options.display_help( "myApplication" )
+ *                         << std::endl;
+ *               return 0;
+ *               break;
  *
- *	          case 'c':
- *                   cvalue = rtt_dsxx::optarg;
- *                   break;
- *
- *           	  default:
- *                   return 0; // nothin to do.
- *       	 }
- *            }
- *
- *	    return 0;
- *
+ *            default:
+ *               return 0; // nothing to do.
+ *          }
  *       }
  * \endcode
  *
- */
- /*!
+ * \todo Future: Consider replacing this class with Boost::program_options.
+ * \todo Future: Consider using a constructor that takes a
+ *       map<char,pair<string,string>> in place of longopts+helpstrings.
+ *
  * \example ds++/test/tstXGetopt.cc
  */
 //===========================================================================//
+class XGetopt
+{
+  public:
+    // typedefs
+    typedef std::map< char, std::string > csmap;
 
-DLL_PUBLIC_dsxx extern int   optind;
-DLL_PUBLIC_dsxx extern char *optarg;
+    /*!
+     *\brief Xgetopt constructor that only supports single character command
+     *       line arguments.
+     *
+     * \param[in] argc The number of command line arguments
+     * \param[in] argv An array of C-style strings that represent the command
+     *            line.
+     * \param[in] shortopts A string of letters that represent known command
+     *            line arguments.  Any letter followed by a colon represents an
+     *            option that requires that an argument be provided.
+     * \param[in] helpstrings_ A map of strings whose keys must match values
+     *            proivded in shortopts and whose values are messages related to
+     *            each option that will be printed by the member function
+     *            display_help.
+     */
+    XGetopt( int const argc, char **& argv, std::string const & shortopts,
+             csmap const & helpstrings_ = csmap() )
+        : optind(0),
+          optarg(), // empty string
+          cmd_line_args( argv+1, argv+argc ),
+          longopts( csmap() ), // empty
+          vshortopts_hasarg( std::map<char,bool>() ),
+          vshortopts( decompose_shortopts( shortopts ) ),
+          helpstrings( helpstrings_ )
+    { match_args_to_options(); }
 
-typedef std::map< std::string, char> longopt_map;
+    // const argv version used by the unit test.
+    XGetopt( int const argc, char const * const argv[],
+             std::string const & shortopts,
+             csmap const & helpstrings_ = csmap() )
+        : optind(0),
+          optarg(), // empty string
+          cmd_line_args( argv+1, argv+argc ),
+          longopts( csmap() ), // empty
+          vshortopts_hasarg( std::map<char,bool>() ),
+          vshortopts( decompose_shortopts( shortopts ) ),
+          helpstrings( helpstrings_ )
+    { match_args_to_options(); }
 
-DLL_PUBLIC_dsxx
-int xgetopt( int argc, char **& argv, std::string const & shortopts,
-             longopt_map map = std::map<std::string, char>() );
+    /*!
+     * \brief Xgetopt constructor that requires a map that includes
+     * char-to-string names of options that are to be recognized.
+     *
+     * \param[in] argc The number of command line arguments
+     * \param[in] argv An array of C-style strings that represent the command
+     *            line.
+     * \param[in] longopts_ A map whose keys are letters that represent known
+     *            command line arguments.  Associated values are strings that
+     *            provide identical functionality.  These string values may be
+     *            followed by a colon represents an option that requires that an
+     *            additional argument be provided.
+     * \param[in] helpstrings_ A map of strings whose keys must match values
+     *            proivded in shortopts and whose values are messages related to
+     *            each option that will be printed by the member function
+     *            display_help.
+     */
+    XGetopt( int const argc, char **& argv, csmap const & longopts_,
+             csmap const & helpstrings_ = csmap() )
+        : optind(0),
+          optarg(), // empty string
+          cmd_line_args( argv+1, argv+argc ),
+          longopts( store_longopts( longopts_ ) ),
+          vshortopts_hasarg( std::map<char,bool>() ),
+          vshortopts( decompose_longopts( longopts_ ) ),
+          helpstrings( helpstrings_ )
+    { match_args_to_options(); }
 
-}
+    // const argv version used by the unit test
+    XGetopt( int const argc, char const * const argv[], csmap const & longopts_,
+             csmap const & helpstrings_ = csmap() )
+        : optind(0),
+          optarg(), // empty string
+          cmd_line_args( argv+1, argv+argc ),
+          longopts( store_longopts( longopts_ ) ),
+          vshortopts_hasarg( std::map<char,bool>() ),
+          vshortopts( decompose_longopts( longopts_ ) ),
+          helpstrings( helpstrings_ )
+    { match_args_to_options(); }
+
+    /*! \brief This operator should be called from within a loop that iterates
+     * through command line arguments (see class documentation).  It will return
+     * the char value that matches registered options. */
+    int operator()(void)
+    {
+        if( optind >= matched_arguments.size() ) return -1;
+        if( matched_arguments_values.count( matched_arguments[optind] ) > 0 )
+            optarg = matched_arguments_values.at(matched_arguments[optind]);
+        else
+            optarg.clear();
+        return matched_arguments[++optind-1];
+    }
+
+    /*! \brief fetch the value associated with current option. E.g.: for the
+     * option '-v foobar', return string 'foobar' associated with option 'v'. */
+    std::string get_option_value() const { return optarg; }
+
+    /*! \brief Return a vector of strings that were provided on the command line
+     * but do not match any registered arguments. */
+    std::vector< std::string > get_unmatched_arguments() const {
+        return unmatched_arguments; }
+
+    //! reset the global counters
+    // void reset(void) { optind=0; optarg=std::string(""); return; }
+
+    //! Print a help/usage message.
+    DLL_PUBLIC_dsxx
+    std::string display_help(std::string const & appName ) const;
+
+  private:
+
+    // >>> DATA
+
+    //! Index to the currently processed command line argument.
+    size_t optind;
+
+    /*! \brief String provided as value for option. E.g.: for the option '-v
+      foobar', return string 'foobar' associated with option 'v'. */
+    std::string optarg;
+
+    //! storage for command line arguments (copy of argv)
+    std::vector< std::string > const cmd_line_args;
+
+    //! A list chars that have equivalent string names ( -v | --version ).
+    csmap const longopts;
+
+    /*! \brief Vector of flags that specify if the current option requires that
+     * an value be provided on the command line. */
+    std::map< char, bool > vshortopts_hasarg;
+
+    //! A vector of characters that represent known options.
+    std::vector< char > const vshortopts;
+
+    //! A list of matched command line arguments.
+    std::vector<char> matched_arguments;
+
+    //! A list of values associated with matched command line arguments
+    std::map<char,std::string> matched_arguments_values;
+
+    //! A list of unmatched command line arguments
+    std::vector<std::string> unmatched_arguments;
+
+    //! help strings used by display_help.
+    csmap const helpstrings;
+
+    // >>> IMPLEMENTATION
+
+    //! Convert a string into easy-to-parse vectors and strip colons.
+    DLL_PUBLIC_dsxx
+    std::vector<char> decompose_shortopts( std::string const & shortopts );
+
+    //! Convert a map<char,string> into easy-to-parse vectors and strip colons.
+    DLL_PUBLIC_dsxx
+    std::vector<char> decompose_longopts( csmap const & longopts );
+
+    //! Cleanup and save the user-provided longoptions map. Colons are stripped.
+    DLL_PUBLIC_dsxx
+    csmap store_longopts( csmap const & longopts_ );
+
+    /*! \brief Match provided command line arguments to registered options and
+     *         record the results to class data. */
+    DLL_PUBLIC_dsxx
+    void match_args_to_options(void);
+};
+
+} // end namespace rtt_dsxx
 
 #endif // rtt_dsxx_XGetopt_hh
 

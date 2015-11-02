@@ -52,22 +52,28 @@ ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
     // version tag
     out << testName << ": version " << release() << "\n" << endl;
 
-    // exit if command line contains "--version"
-    rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
-
-    std::map< std::string, char> long_option;
-    long_option["version"] = 'v';
+    // Handle arguments:
+    rtt_dsxx::XGetopt::csmap long_options;
+    long_options['h'] = "help";
+    long_options['v'] = "version";
+    std::map<char,std::string> help_strings;
+    help_strings['h'] = "print this message.";
+    help_strings['v'] = "print version information and exit.";
+    rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
 
     int c(0);
-    while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"v:", long_option)) != -1)
+    while( ( c = program_options()) != -1 )
     {
         switch (c)
         {
             case 'v': // --version
-            {
                 throw rtt_dsxx::assertion( string( "Success" ) );
                 return;
-            }
+
+            case 'h': // --help
+                std::cout << program_options.display_help( "tstXGetopt" ) << std::endl;
+                return;
+                break;
 
             default:
                 break; // nothing to do.

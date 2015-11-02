@@ -252,23 +252,32 @@ void checkOutputFiles( std::string const &filename )
 }
 
 //---------------------------------------------------------------------------//
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     bool batch = true;
 
     // Process known command line arguments:
-    std::map< std::string, char> long_options;
-    long_options["version"] = 'v';
-    long_options["gui"]     = 'g';
+    rtt_dsxx::XGetopt::csmap long_options;
+    long_options['v'] = "version";
+    long_options['g'] = "gui";
+    long_options['h'] = "help";
+    std::map<char,std::string> help_strings;
+    help_strings['h'] = "print this message.";
+    help_strings['v'] = "print version information and exit.";
+    rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
 
     int c(0);
-    while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"vg", long_options)) != -1)
+    while( (c = program_options()) != -1 )
     {
         switch (c)
         {
             case 'v': // --version
                 cout << argv[0] << ": version " << rtt_dsxx::release() << endl;
+                break;
+
+            case 'h':
+                std::cout << program_options.display_help( "tstPlot2D" ) << std::endl;
+                return 0;
                 break;
 
 	    case 'g': // --gui

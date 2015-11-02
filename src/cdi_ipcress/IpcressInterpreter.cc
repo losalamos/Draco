@@ -249,13 +249,17 @@ void ipcress_file_read(std::string const & op_data_file)
 
 int main(int argc, char *argv[])
 {
-    // Known command line arguments:
-    std::map< std::string, char> long_options;
-    long_options["version"] = 'v';
-    long_options["help"]    = 'h';
+    // Process known command line arguments:
+    rtt_dsxx::XGetopt::csmap long_options;
+    long_options['h'] = "help";
+    long_options['v'] = "version";
+    std::map<char,std::string> help_strings;
+    help_strings['h'] = "print this message.";
+    help_strings['v'] = "print version information and exit.";
+    rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
 
     int c(0);
-    while(( c=rtt_dsxx::xgetopt (argc, argv, (char*)"vh", long_options)) != -1)
+    while( (c = program_options()) != -1 )
     {
         switch (c)
         {

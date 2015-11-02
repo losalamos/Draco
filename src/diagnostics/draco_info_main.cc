@@ -27,12 +27,18 @@ int main( int argc, char *argv[] )
         rtt_diagnostics::DracoInfo di;
 
         // Preparing to parse command line arguments.
-        std::map< std::string, char> long_options;
-        long_options["version"] = 'v';
-        long_options["brief"]   = 'b';
+        rtt_dsxx::XGetopt::csmap long_options;
+        long_options['b'] = "brief";
+        long_options['h'] = "help";
+        long_options['v'] = "version";
+        std::map<char,std::string> help_strings;
+        help_strings['b'] = "print a brief message.";
+        help_strings['v'] = "print version information and exit.";
+        help_strings['h'] = "print this message.";
+        rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
 
         int c(0);
-        while(( c = rtt_dsxx::xgetopt(argc, argv, (char*)"vb", long_options)) != -1)
+        while( (c = program_options()) != -1 )
         {
             switch (c)
             {
@@ -42,6 +48,11 @@ int main( int argc, char *argv[] )
 
                 case 'b': // --brief
                     brief = true;
+                    break;
+
+                case 'h':
+                    std::cout << program_options.display_help( "draco_info" ) << std::endl;
+                    return 0;
                     break;
 
                 default:

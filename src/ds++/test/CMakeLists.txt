@@ -17,8 +17,7 @@ project( dsxx_test CXX )
 file( GLOB test_sources *.cc )
 
 list( REMOVE_ITEM test_sources
-   ${PROJECT_SOURCE_DIR}/do_exception.cc
-   ${PROJECT_SOURCE_DIR}/tstXGetopt.cc )
+   ${PROJECT_SOURCE_DIR}/do_exception.cc )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -68,33 +67,6 @@ if( draco_isPGI )
         COMPILE_FLAGS --no_warnings
    )
 endif()
-
-# ---------------------------------------------------------------------------- #
-# Test XGetopt features.
-# ---------------------------------------------------------------------------- #
-
-# Build the test executable
-add_executable( Ut_dsxx_tstXGetopt_exe ${PROJECT_SOURCE_DIR}/tstXGetopt.cc )
-set_target_properties( Ut_dsxx_tstXGetopt_exe
-  PROPERTIES
-    OUTPUT_NAME tstXGetopt
-    VS_KEYWORD tstXGetopt
-    PROJECT_LABEL tstXGetopt
-    FOLDER dsxx_test
-)
-target_link_libraries( Ut_dsxx_tstXGetopt_exe Lib_dsxx )
-
-# Register a test
-include( ApplicationUnitTest )
-
-# - Add tests for '--badarg' and combined arguments: '-ab' after
-#   adding this capability.  See #556 and #557.
-add_app_unit_test(
-  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstXGetopt.cmake
-  APP    $<TARGET_FILE_DIR:Ut_dsxx_tstXGetopt_exe>/$<TARGET_FILE_NAME:Ut_dsxx_tstXGetopt_exe>
-  TEST_ARGS "none;-a;-b;-c fish;--add"
-  LABELS "nomemcheck"
-)
 
 # ---------------------------------------------------------------------------- #
 # This tests requries python.

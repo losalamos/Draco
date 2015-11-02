@@ -15,12 +15,12 @@ project( cdi_ipcress_test CXX )
 # ---------------------------------------------------------------------------- #
 
 set( test_sources
-   tIpcressFile.cc
-   tIpcressOpacity.cc
-   tIpcressWithCDI.cc
-#   ReadOdfIpcressFile.cc # needs argument '--unittest'
-   tIpcressOdfmgOpacity.cc
-)
+  tIpcressFile.cc
+  tIpcressOpacity.cc
+  tIpcressWithCDI.cc
+  #   ReadOdfIpcressFile.cc # needs argument '--unittest'
+  tIpcressOdfmgOpacity.cc
+  )
 file( GLOB ipcress_data *.ipcress )
 
 ##---------------------------------------------------------------------------##
@@ -28,9 +28,9 @@ file( GLOB ipcress_data *.ipcress )
 ##---------------------------------------------------------------------------##
 
 foreach( file ${ipcress_data} )
-   get_filename_component( shortname ${file} NAME )
-   configure_file( ${file}
-      ${PROJECT_BINARY_DIR}/${shortname} COPYONLY )
+  get_filename_component( shortname ${file} NAME )
+  configure_file( ${file}
+    ${PROJECT_BINARY_DIR}/${shortname} COPYONLY )
 endforeach()
 
 # ---------------------------------------------------------------------------- #
@@ -38,23 +38,23 @@ endforeach()
 # ---------------------------------------------------------------------------- #
 
 include_directories(
-   ${PROJECT_SOURCE_DIR}      # headers for tests
-   ${PROJECT_BINARY_DIR}      # test/config.h
-   ${PROJECT_SOURCE_DIR}/..   # headers for package
-)
+  ${PROJECT_SOURCE_DIR}      # headers for tests
+  ${PROJECT_BINARY_DIR}      # test/config.h
+  ${PROJECT_SOURCE_DIR}/..   # headers for package
+  )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_scalar_tests(
-   SOURCES "${test_sources}"
-   DEPS    "Lib_cdi_ipcress" )
+  SOURCES "${test_sources}"
+  DEPS    "Lib_cdi_ipcress" )
 
 add_scalar_tests(
-   SOURCES "ReadOdfIpcressFile.cc"
-   DEPS    "Lib_cdi_ipcress"
-   TEST_ARGS "--unittest" )
+  SOURCES "ReadOdfIpcressFile.cc"
+  DEPS    "Lib_cdi_ipcress"
+  TEST_ARGS "-u" )
 
 include( ApplicationUnitTest )
 add_app_unit_test(

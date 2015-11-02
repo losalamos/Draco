@@ -18,6 +18,8 @@
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
 #include "ds++/XGetopt.hh"
+// #include <cstring> // stod
+#include <cstdlib> // atof
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressFile;
@@ -62,17 +64,35 @@ int main(int argc, char *argv[])
     bool is_unittest(false);
 
     // Known command line arguments:
-    std::map< std::string, char> long_options;
-    long_options["help"]       = 'h';
-    long_options["unittest"]   = 'u';
-    long_options["model"]      = 'm';
-    long_options["reaction"]   = 'r';
-    long_options["mg"]         = 'g';
-    long_options["bands"]      = 'b';
-    long_options["analyze"]    = 'a';
-    long_options["printc"]     = 'p';
-    long_options["collapse"]   = 'c';
-    long_options["printtable"] = 'i';
+    // rtt_dsxx::XGetopt::csmap long_options;
+    // long_options['h'] = "help";
+    // long_options['v'] = "version";
+    // long_options['u'] = "unittest";
+    // long_options['m'] = "model:";
+    // long_options['r'] = "reaction:";
+    // long_options['g'] = "mg";
+    // long_options['b'] = "bands";
+    // long_options['a'] = "analyze";
+    // long_options['p'] = "printc";
+    // long_options['c'] = "collapse";
+    // long_options['i'] = "printtable";
+    // long_options['c'] = "density:";
+    // long_options['t'] = "temperature:";
+    // std::map<char,std::string> help_strings;
+    // help_strings['h'] = "print this message.";
+    // help_strings['v'] = "print version information and exit.";
+    // help_strings['u'] = "unittest mode";
+    // help_strings['m'] = "model value = r[osseland] | p[lanck]";
+    // help_strings['r'] = "reaction value = t[otal] | a[bsorption] | s[cattering]";
+    // help_strings['g'] = "This option cannot be combined with --bands";
+    // help_strings['b'] = "This options cannot be combined with --mg";
+    // help_strings['a'] = "This option cannot be combined with printc, printtable or collapse";
+    // help_strings['p'] = "This option cannot be combined with analyze, printtable or collapse";
+    // help_strings['c'] = "This option cannot be combined with analyze, printc or collapse";
+    // help_strings['i'] = "This option cannot be combined with analyze, printc, printtable or collapse";
+    // help_strings['c'] = "density";
+    // help_strings['t'] = "temperature";
+    // rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
 
     if (argc <= 1)
     {
@@ -82,25 +102,20 @@ int main(int argc, char *argv[])
     }
     else if (argc == 2)
     {
-        rtt_dsxx::optind=1; // reset global counter (see XGetopt.cc)
+        rtt_dsxx::XGetopt program_options( argc, argv, "hu" );
         int c(0);
-        while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"hu", long_options)) != -1)
+        while( (c = program_options()) != -1 )
         {
             switch (c)
             {
-                // test to see if it's just "--help"
                 case 'h': // --help
-                {
                     printSyntax();
                     return 0;
                     break;
-                }
 
                 case 'u': // --unittest
-                {
                     is_unittest = true;
                     break;
-                }
 
                 default:
                     return 0; // nothing to do.
@@ -145,156 +160,100 @@ int main(int argc, char *argv[])
     // loop on all arguments except the first (program name) and last (input file name)
     for (int arg = 1; arg < argc - 1; arg++)
     {
+        rtt_dsxx::XGetopt program_options( argc, argv, "hdtmrgbapci" );
 
-       string currentArg = argv[rtt_dsxx::optind];
-       rtt_dsxx::optind=1; // resets global counter (see XGetopt.cc)
+        int c(0);
+        while( (c = program_options()) != -1 )
+        {
+            switch (c)
+            {
+                case 'h':
+                    printSyntax();
+                    return 0;
+                    break;
 
-       int c(0);
-       while(( c = rtt_dsxx::xgetopt (argc, argv, (char*)"hdtmrgbapci", long_options)) != -1)
-       {
-           switch (c)
-           {
-               case 'h': // --help
-               {
-                   printSyntax();
-                   return 0;
-                   break;
-               }
+                case 'd':
+                    // density = std::stod(program_options.get_option_value()); // C++11
+                    density = atof( program_options.get_option_value().c_str() );
+                    cerr << "Using density of " << density << endl;
 
-               case 'd': // -d
-               {
-                   //arg++; // start looking at next argument
-                   istringstream inString(argv[rtt_dsxx::optind]);
-                   inString >> density;
-                   cerr << "Using density of " << density << endl;
-                   break;
-               }
+                case 't':
+                    temperature = atof(program_options.get_option_value().c_str() );
+                    cerr << "Using temperature of " << temperature << endl;
+                    break;
 
-               case 't': // -t
-               {
-                   //arg++; // start looking at next argument
-                   istringstream inString(argv[rtt_dsxx::optind]);
-                   inString >> temperature;
-                   cerr << "Using temperature of " << temperature << endl;
-                   break;
-               }
+                case 'm': // --model
+                {
+                    std::string const parsed_model = program_options.get_option_value();
+                    if      (parsed_model[0] == 'r') model = rtt_cdi::ROSSELAND;
+                    else if (parsed_model[0] == 'p') model = rtt_cdi::PLANCK;
+                    else
+                        cerr << "Unrecognized model option '" << parsed_model << "'\n"
+                             << "Defaulting to rosseland" << endl;
+                    break;
+                }
 
-               case 'm': // --model
-               {
-                   //arg++; // start looking at next argument
-                   if (argv[rtt_dsxx::optind][0] == 'r')
-                   {
-                       model = rtt_cdi::ROSSELAND;
-                   }
-                   else if (argv[rtt_dsxx::optind][0] == 'p')
-                   {
-                       model = rtt_cdi::PLANCK;
-                   }
-                   else
-                   {
-                       cerr << "Unrecognized model option '"
-                            << argv[rtt_dsxx::optind] << "'" << endl;
-                       cerr << "Defaulting to rosseland" << endl;
-                   }
-                   break;
-               }
+                case 'r': // --reaction
+                {
+                    std::string const parsed_reaction = program_options.get_option_value();
+                    if      (parsed_reaction[0] == 'a')  reaction = rtt_cdi::ABSORPTION;
+                    else if (parsed_reaction[0] == 's')  reaction = rtt_cdi::SCATTERING;
+                    else if (parsed_reaction[0] == 't')  reaction = rtt_cdi::TOTAL;
+                    else
+                        cerr << "Unrecognized model option '"  << parsed_reaction << "'\n"
+                             << "Defaulting to rosseland" << endl;
+                    break;
+                }
+                case 'g': // --mg
+                    numBands = 1;
+                    cerr << "Using " << numBands << " bands (multigroup file)" << endl;
+                    break;
 
-               case 'r': // --reaction
-               {
-                   //arg++; // start looking at next argument
-                   if (argv[rtt_dsxx::optind][0] == 'a')
-                   {
-                       reaction = rtt_cdi::ABSORPTION;
-                   }
-                   else if (argv[rtt_dsxx::optind][0] == 's')
-                   {
-                       reaction = rtt_cdi::SCATTERING;
-                   }
-                   else if (argv[rtt_dsxx::optind][0] == 't')
-                   {
-                       reaction = rtt_cdi::TOTAL;
-                   }
-                   else
-                   {
-                       cerr << "Unrecognized model option '"
-                            << argv[rtt_dsxx::optind] << "'" << endl;
-                       cerr << "Defaulting to rosseland" << endl;
-                   }
-                   break;
-               }
+                case 'b': // --bands
+                    numBands = atoi( program_options.get_option_value().c_str() );
+                    cerr << "Using " << numBands << " bands" << endl;
+                    break;
 
-               case 'g': // --mg
-               {
-                   numBands = 1;
-                   cerr << "Using " << numBands << " bands (multigroup file)" << endl;
-                   break;
-               }
+                case 'a': // --analyze
+                    actionToTake = 1;
+                    break;
 
-               case 'b': // --bands
-               {
-                   //arg++; // start looking at next argument
-                   istringstream inString(argv[rtt_dsxx::optind]);
-                   inString >> numBands;
-                   cerr << "Using " << numBands << " bands" << endl;
-                   break;
-               }
+                case 'p': // --printc
+                    actionToTake = 2;
+                    break;
 
-               case 'a': // --analyze
-               {
-                   actionToTake = 1;
-                   break;
-               }
+                case 'c': // --collapse
+                    actionToTake = 3;
+                    break;
 
-               case 'p': // --printc
-               {
-                   actionToTake = 2;
-                   break;
-               }
+                case 'i': // --printtable
+                    actionToTake = 4;
+                    break;
 
-               case 'c': // --collapse
-               {
-                   actionToTake = 3;
-                   break;
-               }
-
-               case 'i': // --printtable
-               {
-                   actionToTake = 4;
-                   break;
-               }
-
-               default:
-               {
-                   cerr << "Unrecognized option \"" << currentArg << "\"." << endl;
-                   break;
-               }
-           }
-       }
+                default:
+                    std::vector<std::string> const & ua = program_options.get_unmatched_arguments();
+                    cerr << "Error: " << ua.size() << " unrecognized options:\n";
+                    for( size_t index=0; index<ua.size(); ++index )
+                        std::cout << "\n\t" << ua[index];
+                    return 0;
+                    break;
+            }
+        }
     }
 
     //print the model that we're using
     if (model == rtt_cdi::ROSSELAND)
-    {
         cerr << "Using ROSSELAND weighting" << endl;
-    }
     else
-    {
         cerr << "Using PLANCK weighting" << endl;
-    }
 
     //print the cross section that we're using
     if (reaction == rtt_cdi::TOTAL)
-    {
         cerr << "Using TOTAL reaction" << endl;
-    }
     else if (reaction == rtt_cdi::ABSORPTION)
-    {
         cerr << "Using ABSORPTION reaction" << endl;
-    }
     else
-    {
         cerr << "Using SCATTERING reaction" << endl;
-    }
 
     //ask the user for the number of bands
     if( is_unittest ) numBands = 1;

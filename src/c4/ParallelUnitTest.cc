@@ -61,12 +61,15 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
     if( node() == 0 )
         out << testName << ": version " << release() << "\n" << std::endl;
 
-    // exit if command line contains "--version"
-    std::map< std::string, char> long_option;
-    long_option["version"] = 'v';
+    // Register and process command line arguments:
+    rtt_dsxx::XGetopt::csmap long_options;
+    long_options['v'] = "version";
+    std::map<char,std::string> help_strings;
+    help_strings['v'] = "print version information and exit.";
+    rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
 
     int c(0);
-    while ((c = rtt_dsxx::xgetopt(argc, argv, (char*)"v:", long_option)) != -1)
+    while( (c = program_options()) != -1 )
     {
         switch (c)
         {
@@ -74,6 +77,7 @@ ParallelUnitTest::ParallelUnitTest( int &argc, char **&argv,
                 finalize();
                 throw rtt_dsxx::assertion( string( "Success" ) );
                 break;
+
             default:
                 return; // nothing to do.
         }
