@@ -207,34 +207,21 @@ void XGetopt::match_args_to_options()
 
 // Comparator object that helps me find the longest string in a vector<string>
 // structure.
-struct strlenComparator
-{
-    strlenComparator( std::map< char, bool > const & vshortopts_hasarg_ )
-        : vshortopts_hasarg( vshortopts_hasarg_ )
-    { /* empty */ }
-    std::map< char, bool > const vshortopts_hasarg;
-    bool operator() (std::pair<char,std::string> const & a,
-                     std::pair<char,std::string> const & b )
-    {
-        if( vshortopts_hasarg.at(b.first) )
-            return false;
-        else
-            return (a.second).size() < (b.second).size();
-    }
-};
-
-//---------------------------------------------------------------------------//
-// File scope helper function.
-// size_t get_max_len( XGetopt::csmap const & mymap, std::map<char,bool> include_mask; )
+// struct strlenComparator
 // {
-//     size_t max_len=0;
-//     for( auto it=mymap.begin(); it!=mymap.end();++it )
+//     strlenComparator( std::map< char, bool > const & vshortopts_hasarg_ )
+//         : vshortopts_hasarg( vshortopts_hasarg_ )
+//     { /* empty */ }
+//     std::map< char, bool > const vshortopts_hasarg;
+//     bool operator() (std::pair<char,std::string> const & a,
+//                      std::pair<char,std::string> const & b )
 //     {
-//         bool hasarg = vshortopts_hasarg.at(it->first);
-//         if( hasarg && it->second.length() > max_len)
-//             max_len = it->second.length();
-//         }
-// }
+//         if( vshortopts_hasarg.at(b.first) )
+//             return false;
+//         else
+//             return (a.second).size() < (b.second).size();
+//     }
+// };
 
 //---------------------------------------------------------------------------//
 /*!
@@ -242,6 +229,9 @@ struct strlenComparator
  *
  * \param[in] appName A string that will be printed as the name of the program.
  * \return A string that prings the program name and all registered options.
+ *
+ * \todo When we move to C++11, occurances of map.find(it->first)->seconds
+ * should be replaced with map.at(it->first).
  */
 std::string XGetopt::display_help( std::string const & appName ) const
 {
@@ -264,7 +254,7 @@ std::string XGetopt::display_help( std::string const & appName ) const
         size_t max_len(0);
         for( auto it=longopts.begin(); it!=longopts.end();++it )
         {
-            bool hasarg = vshortopts_hasarg.at(it->first);
+            bool hasarg = vshortopts_hasarg.find(it->first)->second;
             if( ! hasarg && it->second.length() > max_len)
                 max_len = it->second.length();
         }
@@ -274,11 +264,11 @@ std::string XGetopt::display_help( std::string const & appName ) const
         {
             char        shortopt = it->first;
             std::string longopt  = it->second;
-            bool        hasarg   = vshortopts_hasarg.at(shortopt);
+            bool        hasarg   = vshortopts_hasarg.find(shortopt)->second;
             std::string helpmsg("");
 
             if( helpstrings.count(shortopt) > 0 )
-                helpmsg = helpstrings.at(shortopt);
+                helpmsg = helpstrings.find(shortopt)->second;
 
             // pad longopt so that they are all of the same length.
             if( longopt.length() < max_len )
@@ -293,7 +283,7 @@ std::string XGetopt::display_help( std::string const & appName ) const
         max_len=0;
         for( auto it=longopts.begin(); it!=longopts.end();++it )
         {
-            bool hasarg = vshortopts_hasarg.at(it->first);
+            bool hasarg = vshortopts_hasarg.find(it->first)->second;
             if( hasarg && it->second.length() > max_len)
                 max_len = it->second.length();
         }
@@ -304,11 +294,11 @@ std::string XGetopt::display_help( std::string const & appName ) const
         {
             char        shortopt = it->first;
             std::string longopt  = it->second;
-            bool        hasarg   = vshortopts_hasarg.at(shortopt);
+            bool        hasarg   = vshortopts_hasarg.find(shortopt)->second;
             std::string helpmsg("");
 
             if( helpstrings.count(shortopt) > 0 )
-                helpmsg = helpstrings.at(shortopt);
+                helpmsg = helpstrings.find(shortopt)->second;
 
             if( hasarg )
             {
@@ -342,10 +332,10 @@ std::string XGetopt::display_help( std::string const & appName ) const
         for( size_t i=0; i<vshortopts.size(); ++i )
         {
             if( vshortopts[i] == ':' ) continue;
-            bool        hasarg   = vshortopts_hasarg.at(vshortopts[i]);
+            bool hasarg   = vshortopts_hasarg.find( vshortopts[i] )->second;
             std::string helpmsg("");
             if( helpstrings.count(vshortopts[i]) > 0 )
-                helpmsg = helpstrings.at(vshortopts[i]);
+                helpmsg = helpstrings.find( vshortopts[i] )->second;
 
             if( ! hasarg )
                 msg << "   -" << vshortopts[i] << " : " << helpmsg << "\n";
@@ -357,10 +347,10 @@ std::string XGetopt::display_help( std::string const & appName ) const
         for( size_t i=0; i<vshortopts.size(); ++i )
         {
             char        shortopt = vshortopts[i];
-            bool        hasarg   = vshortopts_hasarg.at(shortopt);
+            bool        hasarg   = vshortopts_hasarg.find(shortopt)->second;
             std::string helpmsg("");
             if( helpstrings.count(shortopt) > 0 )
-                helpmsg = helpstrings.at(shortopt);
+                helpmsg = helpstrings.find(shortopt)->second;
 
             if( hasarg )
             {

@@ -187,7 +187,7 @@ class XGetopt
     {
         if( optind >= matched_arguments.size() ) return -1;
         if( matched_arguments_values.count( matched_arguments[optind] ) > 0 )
-            optarg = matched_arguments_values.at(matched_arguments[optind]);
+            optarg = matched_arguments_values[ matched_arguments[optind] ];
         else
             optarg.clear();
         return matched_arguments[++optind-1];
