@@ -42,9 +42,6 @@ case ${-} in
        fi
    fi
 
-   # Common bash functions and alias definitions
-   source ${DRACO_ENV_DIR}/bin/bash_functions.sh
-
    ##------------------------------------------------------------------------##
    ## Common aliases
    ##------------------------------------------------------------------------##
@@ -222,6 +219,9 @@ if test -z "$DRACO_BASHRC_DONE"; then
   export DRACO_BASHRC_DONE=yes
 
 fi
+
+# Common bash functions and alias definitions
+source ${DRACO_ENV_DIR}/bin/bash_functions.sh
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
