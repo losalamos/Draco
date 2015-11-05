@@ -6,7 +6,7 @@
 # note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
+# $Id: CMakeLists.txt 8183 2015-11-05 20:32:54Z kellyt $
 #------------------------------------------------------------------------------#
 project( viz_test CXX )
 
@@ -54,6 +54,7 @@ if( NOT APPLE )
   add_app_unit_test(
     DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator.cmake
     APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_exe>
+    BUILDENV "CMAKE_HOST_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}"
     )
 
 endif()

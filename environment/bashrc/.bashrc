@@ -108,7 +108,7 @@ esac
 ## ENVIRONMENTS - once per login
 ##---------------------------------------------------------------------------##
 
-if test -z "$DRACO_BASHRC_DONE"; then
+if test ${DRACO_BASHRC_DONE:-no} = no; then
 
   # Clean up the default path to remove duplicates
   tmpifs=$IFS

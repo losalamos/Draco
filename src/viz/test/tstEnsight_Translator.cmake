@@ -100,7 +100,13 @@ endmacro()
 # machine where the gold file was created.  So, for powerpc, skip
 # these comparisons.
 
-if( NOT "$ENV{CMAKE_HOST_SYSTEM_PROCESSOR}" STREQUAL "powerpc64" )
+set( little-endian TRUE )
+if( "${CMAKE_HOST_SYSTEM_PROCESSOR}" STREQUAL "powerpc64" OR
+    "${CMAKE_HOST_SYSTEM_PROCESSOR}" STREQUAL "ppc64" )
+  set( little-endian FALSE )
+endif()
+
+if( little-endian )
 
   # testproblem_binary_ensight directory
   foreach( var ${vars} )
