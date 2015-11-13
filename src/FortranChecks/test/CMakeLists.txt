@@ -13,12 +13,14 @@ project( FortranChecks_test CXX )
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
-file( GLOB test_sources
+set( test_sources
   ${PROJECT_SOURCE_DIR}/cppmain.cc
   ${PROJECT_SOURCE_DIR}/tstDerivedTypes.cc
   ${PROJECT_SOURCE_DIR}/tstDrel.cc
-  ${PROJECT_SOURCE_DIR}/mpi_hw.cc
   )
+set( ptest_sources
+  ${PROJECT_SOURCE_DIR}/mpi_hw.cc
+)
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -62,6 +64,11 @@ endif()
 add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS    "${test_deps}" )
+
+add_parallel_tests(
+  SOURCES "${ptest_sources}"
+  DEPS    "${test_deps}"
+  PE_LIST "1;2" )
 
 # ---------------------------------------------------------------------------- #
 # end of FortranChecks/test/CMakeLists.txt
