@@ -14,7 +14,7 @@
 ! http://software.intel.com/sites/products/documentation/hpc/compilerpro/en-us/fortran/lin/compiler_f/bldaps_for/common/bldaps_interopc.htm
 
 ! use iso_c_binding
-  
+
 subroutine sub1(alpha,np,nf) bind(c)
   use iso_c_binding, only: c_double, c_size_t
   implicit none
@@ -39,5 +39,5 @@ subroutine sub1(alpha,np,nf) bind(c)
      print '(a)',"     alpha != 1.0"
      nf = nf+1
   endif
-  
+
 end subroutine sub1
