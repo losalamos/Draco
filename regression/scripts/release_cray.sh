@@ -123,18 +123,20 @@ ppn=`lookupppn`
 #   be passed to the subshell (bash bug)
 # =============================================================================
 
-OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release"
-OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  "
+OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=STATIC"
+OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=STATIC"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DDRACO_LIBRARY_TYPE=SHARED"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-VERSIONS=( "debug" "opt" )
+VERSIONS=( "debug" "opt" "rwdi" )
 OPTIONS=(\
-    "$OPTIMIZE_OFF $LOGGING_OFF" \
-    "$OPTIMIZE_ON $LOGGING_OFF" \
+    "$OPTIMIZE_OFF  $LOGGING_OFF" \
+    "$OPTIMIZE_ON   $LOGGING_OFF" \
+    "$OPTIMIZE_RWDI $LOGGING_OFF" \
 )
 
 ##---------------------------------------------------------------------------##

@@ -387,10 +387,12 @@ macro( dbsSetupProfilerTools )
 
   if( USE_ALLINEA_MAP )
     # Ref: www.nersc.gov/users/software/performance-and-debugging-tools/MAP
-    if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Cielito" )
+    if( "${SITENAME}" STREQUAL "Trinitite" OR
+        "${SITENAME}" STREQUAL "Cielito"   OR
+        "${SITENAME}" STREQUAL "Cielo" )
       set( platform_cray "--platform=cray")
     endif()
-    if( NOT EXISTS $ENV{ALLINEA_LICENSE_DIR} )
+    if( NOT DEFINED ENV{ALLINEA_LICENSE_DIR} AND NOT DEFINED ENV{DDT_LICENSE_FILE} )
       message( FATAL_ERROR "You must load the Allinea module first!")
     endif()
     if( "${DRACO_LIBRARY_TYPE}" STREQUAL "STATIC")

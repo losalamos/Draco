@@ -303,7 +303,7 @@ function install_versions
         echo "Could not find CrayConfig.cmake!"
         exit 1
       fi
-      CONFIG_EXTRA="-DDRACO_LIBRARY_TYPE=STATIC $CONFIG_EXTRA"
+      # CONFIG_EXTRA="-DDRACO_LIBRARY_TYPE=STATIC $CONFIG_EXTRA"
       ;;
   esac
 
