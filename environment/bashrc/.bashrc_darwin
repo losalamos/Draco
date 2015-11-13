@@ -34,7 +34,7 @@ if test -n "$MODULESHOME"; then
         module purge
         module load other/emacs-24.3 subversion python/2.7.3 random123
         # setup for draco
-        module load compilers/intel/15.0.0 cmake/3.3.2
+        module load compilers/intel/15.0.0 cmake/3.4.0
         module load mpi/intelmpi-5.0.1.035-mic
         module load numdiff/5.6.1-mic mkl/11.2-mic gsl/1.16-mic
         # additional setup for capsaicin
@@ -43,7 +43,7 @@ if test -n "$MODULESHOME"; then
         # setup for draco
         module unload compilers mpi cmake
         module load other/emacs-24.3 subversion python/2.7.3 random123
-        module load compilers/intel/15.0.3 cmake/3.3.2
+        module load compilers/intel/15.0.3 cmake/3.4.0
         module load mpi/intelmpi-5.0.2.044
         module load numdiff/5.2.1 eospac/6.2.4 lapack/3.4.1 ndi
         # additional setup for capsaicin

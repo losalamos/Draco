@@ -56,7 +56,7 @@ else
     module load lapack/3.5.0 trilinos SuperLU_DIST
     module load ParMetis ndi random123 eospac
     # support tools
-    module load svn/1.8.10 cmake/3.3.2 numdiff git totalview emacs
+    module load svn/1.8.10 cmake/3.4.0 numdiff git totalview emacs
 
     # module hsi only available on yellow toss22 and rfta
     target="`uname -n | sed -e s/[.].*//`"

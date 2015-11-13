@@ -53,7 +53,7 @@ esac
 # draco modules start here.
 module swap intel intel/15.0.3
 module load lapack/3.5.0 ParMetis trilinos SuperLU_DIST
-module load gsl/1.15 cmake/3.3.1 numdiff
+module load gsl/1.15 cmake/3.4.0 numdiff
 module load ndi random123 eospac/6.2.4
 module load emacs svn
 
@@ -61,7 +61,7 @@ function unload_draco_module_env()
 {
   module unload emacs svn
   module unload ndi random123 eospac/6.2.4
-  module unload gsl/1.15 cmake/3.3.1 numdiff
+  module unload gsl/1.15 cmake/3.4.0 numdiff
   module unload lapack/3.5.0 ParMetis trilinos SuperLU_DIST
   module unload intel
 
