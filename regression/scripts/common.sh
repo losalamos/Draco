@@ -23,6 +23,9 @@ function establish_permissions
   if test `groups | grep othello | wc -l` = 1; then
     install_group="othello"
     install_permissions="g+rwX,o-rwX"
+  elif test `groups | grep dacodes | wc -l` = 1; then
+    install_group="dacodes"
+    install_permissions="g+rwX,o-rwX"
   else
     install_group="draco"
     install_permissions="g+rwX,o=g-w"
@@ -39,6 +42,8 @@ function machineName
     sysName=`/usr/projects/hpcsoft/sys_name`
   elif test -d /projects/darwin; then
     sysName=darwin
+  elif test -d /usr/gapps/jayenne; then
+    sysName=sq
   fi
   if test "$sysName" = "unknown"; then
     echo "Unable to determine machine name, please edit scripts/common.sh."
@@ -55,6 +60,8 @@ function osName
     osName=`/usr/projects/hpcsoft/sys_os`
   elif test -d /projects/darwin; then
     osName=darwin
+  elif test -d /usr/gapps/jayenne; then
+    osName=`uname -p`
   fi
   if test "$osName" = "unknown"; then
     echo "Unable to determine system OS, please edit scripts/common.sh."
@@ -124,14 +131,39 @@ function flavor
         compilerflavor=$LCOMPILER-$LCOMPILERVER
       fi
       ;;
+    ppc64)
+      # more /bgsys/drivers/V1R2M3/ppc64/comm/include/mpi.h
+      # | grep MPI_VERSION    ==> 2 ==> (mpich2)
+      # | grep MPICH2_VERSION ==> 1.5
+      mpiflavor="mpich2-1.5"
+
+      case $CC in
+      *gcc*)
+          LCOMPILER=gnu
+          LCOMPILERVER=`$CC --version | head -n 1 | sed -e 's/.*\([0-9][.][0-9][.][0-9]\)/\1/'`
+          compilerflavor=$LCOMPILER-$LCOMPILERVER
+          ;;
+      *xlc*)
+          LCOMPILER=ibm
+          LCOMPILERVER=`$CC -V | head -n 1 | sed -e 's/.*[/]\([0-9]\+\.[0-9]\).*/\1/'`
+          compilerflavor=$LCOMPILER-$LCOMPILERVER
+          ;;
+      *)
+          compiler_flavor=unknown-unknown ;;
+      esac
+      ;;
   esac
   echo $platform-$mpiflavor-$compilerflavor
 }
 
 function selectscratchdir
 {
-  scratchdirs
-  ="scratch scratch1 scratch3 scratch6 scratch8 scratch9 lscratch1 lscratch2 lscratch3 lscratch4 usr/projects/draco/devs/releases"
+  # TOSS, CLE, BGQ, Darwin:
+  scratchdirs="\
+scratch scratch1 scratch3 scratch6 scratch8 scratch9 \
+lscratch1 lscratch2 lscratch3 lscratch4 \
+nfs/tmp2 \
+usr/projects/draco/devs/releases"
   for dir in $scratchdirs; do
     mkdir -p /$dir/$USER &> /dev/null
     if test -x /$dir/$USER; then
@@ -185,6 +217,9 @@ function npes_test
     np=${SLURM_CPUS_ON_NODE}
   elif ! test "${SLURM_TASKS_PER_NODE}x" = "x"; then
     np=${SLURM_CPUS_ON_NODE}
+  elif test `uname -p` = "ppc"; then
+    # sinfo --long --partition=pdebug (show limits)
+    np=64
   elif test -f /proc/cpuinfo; then
     np=`cat /proc/cpuinfo | grep processor | wc -l`
   fi
@@ -351,8 +386,8 @@ function publish_release()
   establish_permissions
 
   case $osname in
-    toss* | cle*) SHOWQ=showq ;;
-    darwin) SHOWQ=squeue ;;
+    toss* | cle* ) SHOWQ=showq ;;
+    darwin| ppc64) SHOWQ=squeue ;;
   esac
 
   # wait for jobs to finish

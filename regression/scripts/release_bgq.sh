@@ -5,10 +5,10 @@
 ##---------------------------------------------------------------------------##
 ## 1. Directory layout:
 ##    /usr/projects/draco/draco-NN_NN_NN/
-##                  scripts/release_darwin.sh # this script
-##                  logs/                     # build/test logs
-##                  source/                   # svn checkout of release branch
-##                  flavor/opt|debug          # released libraries/headers
+##                  scripts/release_toss2.sh # this script
+##                  logs/                    # build/test logs
+##                  source/draco-NN_NN_NN    # svn checkout of release branch
+##                  flavor/opt|debug         # released libraries/headers
 ## 2. Assumes that this script lives at the location above when
 ##    executed.
 
@@ -31,30 +31,26 @@ ddir=draco-6_17_0
 pdir=$ddir
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=0 -DUSE_CUDA=OFF"
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=0 -DDRACO_LIBRARY_TYPE=STATIC"
 
 # environment (use draco modules)
 # release for each module set
-environments="intel14env intel15env"
-function intel14env()
+environments="gcc484"
+function gcc484()
 {
-  run "module purge"
-  run "module use --append /usr/projects/draco/vendors/Modules"
-  run "module load cmake/3.3.2 numdiff/5.2.1 python/2.7.3"
-  run "module load compilers/intel/14.0.2 mpi/openmpi-1.6.5-intel_14.0.2"
-  run "module load random123 eospac/6.2.4"
-  run "module list"
-  export MPIEXEC=${MPIRUN}
+  export VENDOR_DIR=/usr/gapps/jayenne/vendors
+  export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
+  use gcc484
+  use cmake340 gsl numdiff random123
+  use
 }
-function intel15env()
+function xlc12()
 {
-  run "module purge"
-  run "module use --append /usr/projects/draco/vendors/Modules"
-  run "module load cmake/3.3.2 numdiff/5.2.1 python/2.7.3"
-  run "module load compilers/intel/15.0.3 mpi/openmpi-1.8.4-intel_15.0.3"
-  run "module load random123 eospac/6.2.4"
-  run "module list"
-  export MPIEXEC=${MPIRUN}
+  export VENDOR_DIR=/usr/gapps/jayenne/vendors
+  export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
+  use xlc12
+  use cmake340 gsl numdiff random123
+  use
 }
 
 # ============================================================================
@@ -76,8 +72,10 @@ source $draco_script_dir/common.sh
 # sets $install_group, $install_permissions, $build_permissions
 establish_permissions
 
-export source_prefix="/usr/projects/$package/$pdir"
+export source_prefix="/usr/gapps/jayenne/$pdir"
 scratchdir=`selectscratchdir`
+build_pe=`npes_build`
+test_pe=`npes_test`
 
 # =============================================================================
 # Build types:
@@ -111,6 +109,7 @@ if test $verbose == 1; then
   echo "script_dir     = $script_dir"
   echo "source_prefix  = $source_prefix"
   echo "log_dir        = $source_prefix/logs"
+  echo "scratchdir     = /$scratchdir/$USER"
   echo
   echo "package     = $package"
   echo "versions:"
@@ -138,7 +137,7 @@ for env in $environments; do
 
   export install_prefix="$source_prefix/$buildflavor"
   export build_prefix="/$scratchdir/$USER/$pdir/$buildflavor"
-  export draco_prefix="/usr/projects/draco/$ddir/$buildflavor"
+  export draco_prefix="/usr/gapps/jayenne/$ddir/$buildflavor"
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
 
@@ -148,13 +147,19 @@ for env in $environments; do
     export CONFIG_EXTRA="$CONFIG_BASE"
 
     # export dry_run=1
-    # https://darwin.lanl.gov/darwin_hw/report.html
-    export steps="config build test"
-    cmd="/usr/bin/sbatch -v -N 1 -p sl230s -t 360 \
--o $source_prefix/logs/release-$buildflavor-$version.log \
--e $source_prefix/logs/release-$buildflavor-$version.log \
-$script_dir/release_darwin.msub"
-    echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
+
+    # Config and build on the front end
+    echo -e "\nConfigure and Build $buildflavor-$version version of $package."
+    export steps="config build"
+    run "$draco_script_dir/release_bgq.msub &> $source_prefix/logs/release-$buildflavor-$version-cb.log"
+
+    # Run the tests on the back-end.
+    echo -e "\nTest $buildflavor-$version version of $package."
+    export steps="test"
+    cmd="sbatch -v -N 64 -p pdebug -t 6:00:00 \
+-o $source_prefix/logs/release-$buildflavor-$version-t.log \
+-e $source_prefix/logs/release-$buildflavor-$version-t.log \
+$script_dir/release_bgq.msub"
     echo "$cmd"
     jobid=`eval ${cmd} &`
     sleep 1m
