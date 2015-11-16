@@ -97,7 +97,7 @@ done
 run "module load friendly-testing user_contrib"
 run "module unload cmake numdiff gsl papi perftools trilinos"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
-run "module load cmake/3.3.1 svn"
+run "module load cmake/3.4.0 svn"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
 run "module load gsl lapack"
