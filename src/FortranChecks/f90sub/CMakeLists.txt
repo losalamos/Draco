@@ -114,9 +114,12 @@ file( GLOB f90sources *.f90 *.F90 )
 # ---------------------------------------------------------------------------- #
 if( DEFINED cafs_Draco_TPL_INCLUDE_DIRS )
   include_directories( "${cafs_Draco_TPL_INCLUDE_DIRS}" )
-elseif( DEFINED MPI_Fortran_INCLUDE_PATH AND EXISTS "${MPI_Fortran_INCLUDE_PATH}" )
-  # Might not be defined (or be empty) if we are using a compile
-  # wrapper (e.g.: Cray's CC)
+elseif( DEFINED MPI_C_INCLUDE_PATH AND EXISTS "${MPI_C_INCLUDE_PATH}/mpif.h" )
+  # 1. Might not be defined (or be empty) if we are using a compile
+  #    wrapper (e.g.: Cray's CC)
+  # 2. This list of paths may also include the lib or bin directory to
+  #    provide access to .mod files.  Thus, we look at the 'C' path
+  #    above, but include the 'Fortran' path here.
   include_directories( "${MPI_Fortran_INCLUDE_PATH}" )
 endif()
 if( "${DRACO_C4}" STREQUAL "MPI" )
