@@ -215,6 +215,30 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
 
   esac
 
+  # Generic functions for loading/unloaded the default set of modules.
+  fn_exists=`type dracoenv 2>/dev/null | head -n 1 | grep 'is a function' | wc -l`
+  if test $fn_exists = 0; then
+    # only define if they do not already exist...
+    function dracoenv ()
+    {
+      for m in $dracomodules; do
+        module load $m
+      done
+    }
+    function rmdracoenv ()
+    {
+      # unload in reverse order.
+      mods=( ${dracomodules} )
+      for ((i=${#mods[@]}-1; i>=0; i--)); do
+        loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+        if test $loaded = 1; then
+          module unload ${mods[$i]}
+        fi
+      done
+    }
+    dracoenv
+  fi
+
   # Mark that we have already done this setup
   export DRACO_BASHRC_DONE=yes
 

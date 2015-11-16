@@ -295,3 +295,12 @@ function run () {
   echo $1
   if ! [ $dry_run ]; then eval $1; fi
 }
+
+##---------------------------------------------------------------------------##
+## Reset the draco developer environment
+##---------------------------------------------------------------------------##
+function rdde ()
+{
+  unset DRACO_BASHRC_DONE
+  source ${DRACO_ENV_DIR}/bashrc/.bashrc
+}

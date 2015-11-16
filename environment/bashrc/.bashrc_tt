@@ -25,30 +25,41 @@ fi
 # MODULES
 #
 
-module load friendly-testing user_contrib
-module load python/2.7-anaconda-2.1.0 totalview
-module load hsi emacs
-
 # Use modules found in the draco directory
 module use --append $VENDOR_DIR/Modules/hpc
+module load friendly-testing user_contrib
 
-# Move some environment out of the way.
-module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray
-module unload cmake numdiff svn
-module unload papi perftools trilinos
-# load the Intel programming env, but then unloda libsci and totalview
-module load PrgEnv-intel
-module unload xt-libsci xt-totalview
+export dracomodules="python/2.7-anaconda-2.1.0 totalview hsi emacs gsl \
+eospac/6.2.4 lapack trilinos SuperLU_DIST ParMetis random123 \
+cmake/3.4.0 numdiff ndi svn"
 
-# Intel needs to know to use gcc/4.8.2 under the hood to get C++11 right...
-# module load gcc
-# module load intel
+function dracoenv ()
+{
+  module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu
+  module load PrgEnv-intel
+  # module swap intel intel/15.0.3
+  for m in $dracomodules; do
+    module load $m
+  done
+  module unload xt-libsci
+}
 
-# draco modules start here.
-module load gsl eospac/6.2.4 lapack
-module load trilinos SuperLU_DIST ParMetis
-module load random123
-module load cmake/3.4.0 numdiff ndi svn
+function rmdracoenv ()
+{
+  # unload in reverse order.
+  mods=( ${dracomodules} )
+  for ((i=${#mods[@]}-1; i>=0; i--)); do
+    loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+    if test $loaded = 1; then
+      module unload ${mods[$i]}
+    fi
+  done
+  module unload PrgEnv-intel
+  module load PrgEnv-pgi
+}
+dracoenv
+
+type dracoenv 2>/dev/null | head -n 1
 
 export OMP_NUM_THREADS=16
 

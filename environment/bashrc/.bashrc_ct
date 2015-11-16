@@ -32,44 +32,43 @@ arch=`uname -m`
 module use --append $VENDOR_DIR/Modules/hpc
 module load friendly-testing user_contrib
 
-# Move some environment out of the way.
-module unload cmake numdiff svn
-module unload papi perftools trilinos
-module unload PrgEnv-intel PrgEnv-pgi
-
-# load the Intel programming env, but then unload libsci and totalview
-module load PrgEnv-intel
-module unload xt-libsci xt-totalview
+export dracomodules="lapack/3.5.0 ParMetis trilinos SuperLU_DIST \
+gsl/1.15 cmake/3.4.0 numdiff ndi random123 eospac/6.2.4 emacs svn"
 
 # Cielo doesn't have module hsi yet (2015 Oct).
 case ${target} in
   ci-fe* | ci-login* | ci-vizlogin*)
     ;;
   *)
-    module load hsi
+    export dracomodules="$dracomodules hsi"
     ;;
 esac
 
-# draco modules start here.
-module swap intel intel/15.0.3
-module load lapack/3.5.0 ParMetis trilinos SuperLU_DIST
-module load gsl/1.15 cmake/3.4.0 numdiff
-module load ndi random123 eospac/6.2.4
-module load emacs svn
-
-function unload_draco_module_env()
+function dracoenv ()
 {
-  module unload emacs svn
-  module unload ndi random123 eospac/6.2.4
-  module unload gsl/1.15 cmake/3.4.0 numdiff
-  module unload lapack/3.5.0 ParMetis trilinos SuperLU_DIST
-  module unload intel
+  module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu
+  module load PrgEnv-intel
+  module swap intel intel/15.0.3
+  for m in $dracomodules; do
+    module load $m
+  done
+  module unload xt-libsci
+}
 
-  module unload hsi
+function rmdracoenv ()
+{
+  # unload in reverse order.
+  mods=( ${dracomodules} )
+  for ((i=${#mods[@]}-1; i>=0; i--)); do
+    loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+    if test $loaded = 1; then
+      module unload ${mods[$i]}
+    fi
+  done
   module unload PrgEnv-intel
   module load PrgEnv-pgi
-  module list
 }
+dracoenv
 
 export OMP_NUM_THREADS=8
 

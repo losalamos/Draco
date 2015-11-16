@@ -22,46 +22,23 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
-if test -f /etc/redhat-release; then
-  rh6=`cat /etc/redhat-release | grep "release 6" | wc -l`
-  rh5=`cat /etc/redhat-release | grep "release 5" | wc -l`
+# Is the module function available?
+found=`declare -f module | wc -l`
+# Module is provided by the system:
+if test ${found} == 0; then
+  if test -f /usr/share/Modules/init/bash; then
+    source /usr/share/Modules/init/bash
+  elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
+    # CCS workstations (e.g.: gondolin)
+    # 2015-10-09 Kent's workstation still requires this!
+    source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
+  fi
 fi
+module use /ccs/codes/radtran/vendors/Modules
 
-target="`uname -n | sed -e s/[.].*//`"
-arch=`uname -m`
-
-case ${target} in
-*)
-
-   if test $rh5 == 1; then
-     echo "WARNING: draco/.bashrc_linux64 is not configured correctly"
-     echo "         for Redhat version 5.  Please talk to KT if you"
-     echo "         encounter this warning."
-   fi
-
-   # Is the module function available?
-   found=`declare -f module | wc -l`
-   # Module is provided by the system:
-   if test ${found} == 0; then
-     if test -f /usr/share/Modules/init/bash; then
-        source /usr/share/Modules/init/bash
-     elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
-       # CCS workstations (e.g.: gondolin)
-       # 2015-10-09 Kent's workstation still requires this!
-       source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
-     fi
-   fi
-   module use /ccs/codes/radtran/vendors/Modules
-   module load gcc openmpi
-   module load emacs/24.4
-   module load totalview
-   module load cmake grace lapack random123 eospac numdiff git svn
-   module load dia graphviz doxygen git valgrind
-   # module load BLACS SCALAPACK hypre
-   module load ParMetis SuperLU_DIST trilinos ndi
-
-;;
-esac
+export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
+grace lapack random123 eospac numdiff git svn dia graphviz doxygen \
+ git valgrind ParMetis SuperLU_DIST trilinos ndi"
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
@@ -83,6 +60,7 @@ for mydir in ${extradirs}; do
   fi
 done
 unset extradirs
+
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_linux64
