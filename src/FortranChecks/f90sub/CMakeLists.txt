@@ -114,7 +114,9 @@ file( GLOB f90sources *.f90 *.F90 )
 # ---------------------------------------------------------------------------- #
 if( DEFINED cafs_Draco_TPL_INCLUDE_DIRS )
   include_directories( "${cafs_Draco_TPL_INCLUDE_DIRS}" )
-else()
+elseif( DEFINED MPI_Fortran_INCLUDE_PATH AND EXISTS "${MPI_Fortran_INCLUDE_PATH}" )
+  # Might not be defined (or be empty) if we are using a compile
+  # wrapper (e.g.: Cray's CC)
   include_directories( "${MPI_Fortran_INCLUDE_PATH}" )
 endif()
 if( "${DRACO_C4}" STREQUAL "MPI" )
