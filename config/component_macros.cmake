@@ -153,6 +153,7 @@ or the target must be labeled NOEXPORT.")
   set_target_properties( ${ace_TARGET} PROPERTIES
     OUTPUT_NAME ${ace_EXE_NAME}
     FOLDER      ${ace_FOLDER}
+    COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
     )
   if( DEFINED ace_PROJECT_LABEL )
     set_target_properties( ${ace_TARGET} PROPERTIES PROJECT_LABEL ${ace_PROJECT_LABEL} )
@@ -845,9 +846,8 @@ macro( add_scalar_tests test_sources )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
-      # COMPILE_DEFINITIONS PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+      COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
       )
-    add_definitions( -DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
     # Do we need to use the Fortran compiler as the linker?
     if( addscalartest_LINK_WITH_FORTRAN )
       set_target_properties( Ut_${compname}_${testname}_exe
@@ -992,9 +992,8 @@ macro( add_parallel_tests )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
-      # COMPILE_DEFINITIONS PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+      COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
       )
-    add_definitions( -DPROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
     if( addparalleltest_MPI_PLUS_OMP )
       if( ${CMAKE_GENERATOR} MATCHES Xcode )
         set_target_properties( Ut_${compname}_${testname}_exe
