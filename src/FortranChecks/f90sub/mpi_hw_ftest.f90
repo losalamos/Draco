@@ -20,7 +20,7 @@ subroutine tst_mpi_hw_f(nf) bind(C, name="tst_mpi_hw")
 
   implicit none
 
-  integer(c_int), intent(out) :: nf
+  integer(c_int), intent(inout) :: nf
   integer :: ierr
 
   ! ------------------------------------
@@ -51,5 +51,7 @@ subroutine tst_mpi_hw_f(nf) bind(C, name="tst_mpi_hw")
 
   ! Print the overall test result
   ! call test_report(f90_rank,nf)
+
+  nf = nf + f90_num_failures
 
 end subroutine tst_mpi_hw_f
