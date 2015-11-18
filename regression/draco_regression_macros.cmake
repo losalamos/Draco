@@ -39,7 +39,7 @@ macro( find_num_procs_avail_for_running_tests )
   # according to machine name:
   include(ProcessorCount)
   ProcessorCount(num_test_procs)
-  math( EXPR num_test_procs "${num_test_procs} / 2" )
+  # math( EXPR num_test_procs "${num_test_procs} / 2" )
 
   endif()
 
