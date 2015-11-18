@@ -178,6 +178,7 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
      ctest_test( PARALLEL_LEVEL ${num_test_procs}
                  SCHEDULE_RANDOM ON
                  # INCLUDE_LABEL <LABEL>
+                 TEST_LOAD ${num_test_procs}
                  )
 #   endif()
 

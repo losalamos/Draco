@@ -85,15 +85,15 @@ include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 
 
 set_defaults()
-parse_args() 
+parse_args()
 find_tools()
 set_svn_command("draco/trunk")
 # Add username and fully qualified machine name.
-string( REPLACE "//ccscs7/" "//kellyt@ccscs7.lanl.gov/" 
+string( REPLACE "//ccscs7/" "//kellyt@ccscs7.lanl.gov/"
    CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
-# Make machine name lower case   
+# Make machine name lower case
 string( TOLOWER "${CTEST_SITE}" CTEST_SITE )
-   
+
 # Platform customization:
 # 1. Ceilito - set TOOCHAIN_SETUP
 platform_customization()
@@ -125,7 +125,7 @@ ${CT_CUSTOM_VARS}
 ${FULLDIAGNOSTICS}
 ")
 
-message("CTEST_INITIAL_CACHE =  
+message("CTEST_INITIAL_CACHE =
 ----------------------------------------------------------------------
 ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
@@ -167,20 +167,20 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
    message(  "ctest_configure()" )
    ctest_configure(
       BUILD        "${CTEST_BINARY_DIRECTORY}"
-      RETURN_VALUE res) # LABELS label1 [label2] 
+      RETURN_VALUE res) # LABELS label1 [label2]
 endif()
 
 # Build
 if( "${CTEST_BUILD}" STREQUAL "ON" )
    # Main build
    message( "ctest_build( TARGET install RETURN_VALUE res )" )
-   ctest_build( 
+   ctest_build(
       TARGET install
       RETURN_VALUE res
       NUMBER_ERRORS num_errors
       NUMBER_WARNINGS num_warnings
       )
-   message( "build result: 
+   message( "build result:
    ${res}
    Build errors  : ${num_errors}
    Build warnings: ${num_warnings}" )
@@ -193,7 +193,10 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
       # set( CMAKE_CTEST_COMMAND "ctest -C ${CTEST_CONFIGURATION_TYPE}" )
    # endif()
    message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-   ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON ) 
+   ctest_test(
+     PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS}
+     SCHEDULE_RANDOM ON
+     TEST_LOAD       ${MPIEXEC_MAX_NUMPROCS} )
 
    # Process code coverage (bullseye) or dynamic analysis (valgrind)
    # message("Processing code coverage or dynamic analysis")
@@ -207,4 +210,3 @@ if( "${CTEST_SUBMIT}" STREQUAL "ON" )
 endif()
 
 message("end of ${CTEST_SCRIPT_NAME}.")
-
