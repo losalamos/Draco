@@ -197,6 +197,11 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
     tt-fey* | tt-login*)
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
       ;;
+    # trinitite (tt-fey)
+    rzuseq*)
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_bgq
+      ;;
+
     # Assume CCS machine (ccscs[0-9] or personal workstation)
     *)
       if test -d /ccs/codes/radtran; then
