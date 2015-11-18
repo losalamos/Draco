@@ -15,38 +15,46 @@ set( drm_verbose ON )
 
 # Call this script from regress/Draco_*.cmake
 
-##---------------------------------------------------------------------------------------##
+##----------------------------------------------------------------------------##
 ## Testing parallelism:
 ## Use the result of this command in the main ctest script like this:
 ##     find_num_procs_avail_for_running_tests( num_test_procs )
 ##     set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${num_test_procs})
 ## Find the number of processors that can be used for testing.
-##---------------------------------------------------------------------------------------##
+##----------------------------------------------------------------------------##
 macro( find_num_procs_avail_for_running_tests )
 
   # Default value is 1
   unset( num_test_procs )
+  unset( max_system_load )
 
-  # If this job is running under Torque (msub script), use the
-  # environment variable PBS_NP or SLURM_NPROCS
+  # If this job is running under Torque (msub script), use the environment
+  # variable PBS_NP or SLURM_NPROCS
   if( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
     set( num_test_procs $ENV{PBS_NP} )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
-
-  # If this is not a known batch system, the attempt to set values
-  # according to machine name:
-  include(ProcessorCount)
-  ProcessorCount(num_test_procs)
-  # math( EXPR num_test_procs "${num_test_procs} / 2" )
-
+    # If this is not a known batch system, the attempt to set values according
+    # to machine name:
+    include(ProcessorCount)
+    ProcessorCount(num_test_procs)
   endif()
+
+  # CMake 3.4+ allows us to limit the number of concurrent tests running by
+  # looking at the system load:
+  set( max_system_load ${num_test_procs} )
 
   # Machine/job specific override:
   if( "${sitename}" STREQUAL "Cielito" OR "${sitename}" STREQUAL "Trinitite" )
+    set( max_system_load 256 )
+    # aprun on current Cray systems does not allow running multiple simultaneous
+    # jobs on the some node. If this is > 1, then all concurrent jobs will run
+    # on the same core.  This makes the jobs run slower and occassionaly
+    # confuses aprun.
     set( num_test_procs 1 )
   elseif( "$ENV{SLURM_JOB_NAME}" MATCHES "darwin-knc-regress" )
+    set( max_system_load ${num_test_procs} )
     # The mic I/O processors get overloaded if use the default
     # logic of 32 simultaneous tests.
     set( num_test_procs 8 )
@@ -185,8 +193,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
            # that 'make -l N' actually produces a machine load ~ 1.5*N, so
            # we will specify the max load to be half of the total number
            # of procs.
-           math(EXPR num_compile_procs "${num_compile_procs} / 2" )
-           set(CTEST_BUILD_FLAGS "-j ${num_compile_procs} -l ${num_compile_procs}")
+           math(EXPR half_num_compile_procs "${num_compile_procs} / 2" )
+           set(CTEST_BUILD_FLAGS "-j ${half_num_compile_procs} -l ${num_compile_procs}")
          endif()
        endif()
    endif()
@@ -653,20 +661,32 @@ macro(platform_customization)
 #      set( TOOLCHAIN_SETUP
 #         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake"
 # )
+# These values are from draco/config/CrayConfig.cmake
       set(CT_CUSTOM_VARS
-"DRACO_LIBRARY_TYPE:STRING=STATIC
-CMAKE_SYSTEM_NAME:STRING=Catamount
-CMAKE_C_COMPILER:FILEPATH=cc
+"CMAKE_C_COMPILER:FILEPATH=cc
 CMAKE_CXX_COMPILER:FILEPATH=CC
 CMAKE_Fortran_COMPILER:FILEPATH=ftn
+CMAKE_C_FLAGS:STRING=-dynamic
+CMAKE_CXX_FLAGS:STRING=-dynamic
+CMAKE_Fortran_FLAGS:STRING=-dynamic
+CMAKE_EXE_LINKER_FLAGS:STRING=-dynamic
+
+DRACO_LIBRARY_TYPE:STRING=STATIC
 MPIEXEC:FILEPATH=aprun
 MPIEXEC_NUMPROC_FLAG:STRING=-n
+
 MPI_C_LIBRARIES:FILEPATH=
 MPI_CXX_LIBRARIES:FILEPATH=
 MPI_Fortran_LIBRARIES:FILEPATH=
 MPI_C_INCLUDE_PATH:PATH=
 MPI_CXX_INCLUDE_PATH:PATH=
-MPI_Fortran_INCLUDE_PATH:PATH=")
+MPI_Fortran_INCLUDE_PATH:PATH=
+MPI_C_COMPILER:FILEPATH=
+MPI_CXX_COMPILER:FILEPATH=
+MPI_Fortran_COMPILER:FILEPATH=")
+# OLD settings
+# CMAKE_SYSTEM_NAME:STRING=Catamount
+
    endif()
 endmacro(platform_customization)
 

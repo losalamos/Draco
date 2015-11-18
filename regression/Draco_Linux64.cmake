@@ -141,7 +141,11 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
    if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
        "${CTEST_SITE}" MATCHES "ccscs7" AND
        NOT ${CMAKE_INSTALL_PREFIX} MATCHES "gcc-5.2.0" )
-      message( "ctest_build( TARGET autodoc RETURN_VALUE res )" )
+      message( "ctest_build(
+   TARGET autodoc
+   NUMBER_ERRORS num_errors
+   NUMBER_WARNINGS num_warnings
+   RETURN_VALUE res )" )
       ctest_build(
          TARGET autodoc
          RETURN_VALUE res
@@ -154,7 +158,11 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
    Build warnings: ${num_warnings}" )
    endif()
    # Main build
-   message( "ctest_build( TARGET install RETURN_VALUE res )" )
+   message( "ctest_build(
+   TARGET install
+   NUMBER_ERRORS num_errors
+   NUMBER_WARNINGS num_warnings
+   RETURN_VALUE res )" )
    ctest_build(
       TARGET install
       RETURN_VALUE res
@@ -174,11 +182,14 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
 #     ctest_test( SCHEDULE_RANDOM ON )
 #   else()
      find_num_procs_avail_for_running_tests() # returns num_test_procs
-     message( "ctest_test( PARALLEL_LEVEL ${num_test_procs} SCHEDULE_RANDOM ON )" )
+     message( "ctest_test(
+   PARALLEL_LEVEL  ${num_test_procs}
+   TEST_LOAD       ${max_system_load}
+   SCHEDULE_RANDOM ON )" )
      ctest_test( PARALLEL_LEVEL ${num_test_procs}
                  SCHEDULE_RANDOM ON
                  # INCLUDE_LABEL <LABEL>
-                 TEST_LOAD ${num_test_procs}
+                 TEST_LOAD ${max_system_load}
                  )
 #   endif()
 
