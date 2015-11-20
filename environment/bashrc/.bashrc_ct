@@ -68,7 +68,6 @@ function rmdracoenv ()
   module unload PrgEnv-intel
   module load PrgEnv-pgi
 }
-dracoenv
 
 export OMP_NUM_THREADS=8
 

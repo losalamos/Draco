@@ -57,9 +57,6 @@ function rmdracoenv ()
   module unload PrgEnv-intel
   module load PrgEnv-pgi
 }
-dracoenv
-
-type dracoenv 2>/dev/null | head -n 1
 
 export OMP_NUM_THREADS=16
 
