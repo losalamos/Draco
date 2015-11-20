@@ -52,7 +52,7 @@
 ;; ================================================================================
 ;; Actions on the buffer
 (c-set-style "draco")
-(set-fill-column 132)
+(set-fill-column 80)
 (untabify (point-min) (point-max))
 (indent-region (point-min) (point-max))
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
