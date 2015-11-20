@@ -115,7 +115,7 @@ perfbench)
 pgi)
     run "module unload eospac ParMetis trilinos SuperLU_DIST gsl"
     run "module unload lapack cudatoolkit openmpi intel"
-    run "module load pgi/15.4 openmpi"
+    run "module load pgi/15.10 openmpi"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
     export OMP_NUM_THREADS=8
     comp=`basename $CXX`
