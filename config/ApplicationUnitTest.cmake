@@ -535,8 +535,9 @@ macro( aut_runTests )
 
   # Ensure there are no errors
   if( NOT "${testres}" STREQUAL "0" )
-    message( FATAL_ERROR "Test FAILED:
-     error message = ${testerror}")
+    message( FATAL_ERROR "Test FAILED:"
+      "last message written to stderr: '${testerror}"
+      "See ${testout} for full details.")
   else()
     message("${testout}")
     PASSMSG("Application ran to completion.")
