@@ -241,8 +241,8 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
         fi
       done
     }
-    dracoenv
   fi
+  dracoenv
 
   # Mark that we have already done this setup
   export DRACO_BASHRC_DONE=yes

@@ -45,7 +45,7 @@ else
     module use --append $VENDOR_DIR/Modules/hpc
     module load friendly-testing user_contrib
 
-    export dracomodules="intel/15.0.3 openmpi lapack/3.5.0 trilinos \
+    export dracomodules="intel/15.0.5 openmpi lapack/3.5.0 trilinos \
 SuperLU_DIST ParMetis ndi random123 eospac  svn/1.8.10 cmake/3.4.0 \
 numdiff git totalview emacs"
 
