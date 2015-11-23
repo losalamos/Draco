@@ -2,7 +2,6 @@
 Language:        Cpp
 AccessModifierOffset: -2
 AlignAfterOpenBracket: true
-AlignConsecutiveAssignments: true
 AlignEscapedNewlinesLeft: false
 AlignOperands:   true
 AlignTrailingComments: true
@@ -12,7 +11,7 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterDefinitionReturnType: false
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
 BinPackArguments: false
@@ -35,8 +34,6 @@ IndentCaseLabels: false
 IndentWidth:     4
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: true
-MacroBlockBegin: ''
-MacroBlockEnd:   'UT_EPILOG'
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: Inner
 ObjCBlockIndentWidth: 2
