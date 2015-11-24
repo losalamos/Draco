@@ -8,29 +8,39 @@ arch=`uname -m`
 
 # Helper function
 run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
+  echo $1
+  if ! [ $dry_run ]; then eval $1; fi
 }
 
 # Ensure that the permissions are correct
 case ${target} in
-darwin-login*)
+  darwin-login*)
     echo "Please run regressions from darwin-fe instead of darwin-login."
     exit 1
     ;;
-darwin-fe* | cn[0-9]*)
-   /usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
-   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-      source $HOME/.keychain/$MYHOSTNAME-sh
-   fi
-   module unload subversion
-   module load subversion
-   SVN=`which svn`
-   # SVN=/projects/opt/centos7/subversion/1.9.2/bin/svnsync
-   REGDIR=/usr/projects/draco/regress
+  darwin-fe* | cn[0-9]*)
+    #/usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+    #if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+    #   source $HOME/.keychain/$MYHOSTNAME-sh
+    #fi
 
-   svnroot=/usr/projects/draco/regress/svn
-   if ! test -d; then
+    # Load keytab: (see notes at draco/regression/push_repositories_xf.sh)
+
+    # Use a different cache location to avoid destroying any active user's
+    # kerberos.
+    export KRB5CCNAME=/tmp/regress_kerb_cache
+
+    # Obtain kerberos authentication via keytab
+    run "kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
+
+    module unload subversion
+    module load subversion
+    SVN=`which svn`
+    # SVN=/projects/opt/centos7/subversion/1.9.2/bin/svnsync
+    REGDIR=/usr/projects/draco/regress
+
+    svnroot=/usr/projects/draco/regress/svn
+    if ! test -d; then
       echo "*** SVN repository not found ***"
       exit 1
       # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
@@ -52,17 +62,17 @@ darwin-fe* | cn[0-9]*)
       # cd $svnroot
       # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs7/ccs/codes/radtran/svn/jayenne
       # svnsync sync file:///${svnroot}/jayenne
-   fi
+    fi
 
-   run "${SVN}sync --non-interactive sync file://${svnroot}/draco"
-   run "${SVN}sync --non-interactive sync file://${svnroot}/jayenne"
-   run "${SVN}sync --non-interactive sync file://${svnroot}/capsaicin"
-   # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
-   ;;
-*)
-   SVN=/ccs/codes/radtran/vendors/subversion-1.8.13/bin/svn
-   REGDIR=/home/regress
-   ;;
+    run "${SVN}sync --non-interactive sync file://${svnroot}/draco"
+    run "${SVN}sync --non-interactive sync file://${svnroot}/jayenne"
+    run "${SVN}sync --non-interactive sync file://${svnroot}/capsaicin"
+    # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
+    ;;
+  *)
+    SVN=/ccs/codes/radtran/vendors/subversion-1.8.13/bin/svn
+    REGDIR=/home/regress
+    ;;
 esac
 
 # Update main regression scripts
