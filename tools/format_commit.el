@@ -55,5 +55,6 @@
 (set-fill-column 80)
 (untabify (point-min) (point-max))
 (indent-region (point-min) (point-max))
+;;(fill-region (point-min) (point-max))
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (set-buffer-file-coding-system 'iso-latin-1-unix t)

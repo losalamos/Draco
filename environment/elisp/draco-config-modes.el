@@ -121,7 +121,10 @@ auto-mode-alist."
       (local-set-key [(f5)] 'draco-makefile-divider)
       (local-set-key [(f6)] 'draco-makefile-comment-divider)
       (turn-on-draco-mode)
-      (turn-on-auto-fill))
+      (turn-on-auto-fill)
+      (set-fill-column draco-code-comment-width)
+      (require 'fill-column-indicator)
+      (fci-mode))
     (add-hook 'cmake-mode-hook 'draco-cmake-mode-hook)))
 
 ;; ========================================
@@ -366,6 +369,8 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(c-set-style "draco")
 	(local-set-key "\C-m" 'newline-and-indent)
 	(set-fill-column draco-code-comment-width)
+        (require 'fill-column-indicator)
+        (fci-mode)
 	(local-set-key [(f5)] 'draco-cc-divider)
 	(local-set-key [(f6)] 'draco-insert-comment-divider)
 	(local-set-key [(meta f5)] 'draco-insert-function-doc)

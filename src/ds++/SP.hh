@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   ds++/SP.hh
  * \author Geoffrey Furnish, Thomas Evans
@@ -7,9 +7,9 @@
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
@@ -20,14 +20,13 @@
 namespace rtt_dsxx
 {
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \struct SPref
  *
  * \brief Reference holder struct for SP class.
  */
-//=======================================================================================//
-
+//===========================================================================//
 struct SPref
 {
     //! Number of references.
@@ -37,9 +36,9 @@ struct SPref
     SPref(int r = 1) : refs(r) { }
 
 #if DRACO_DIAGNOSTICS & 2
-    // To prevent refcounts from being included in memory debugging.
-    // These are problematic because we allocate reference counters even
-    // for null smart pointers.
+    // To prevent refcounts from being included in memory debugging.  These are
+    // problematic because we allocate reference counters even for null smart
+    // pointers.
     void *operator new(size_t const n)
     {
         return malloc(n);
@@ -51,19 +50,20 @@ struct SPref
 #endif
 };
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \class SP
  *
  * \brief Smart pointer implementation that does reference counting.
  *
- * When this class was originally developed for Draco, C++ did not yet have a standard smart
- * pointer class. Such a class (std::shared_ptr) is part of C++11, but until we have a full
- * implementation of C++11 on all supported platforms, we are continuing to use SP. However,
- * we have adjusted this class to be as similar to std::smart_pointer as possible without
- * using C++11 features.
+ * When this class was originally developed for Draco, C++ did not yet have a
+ * standard smart pointer class. Such a class (std::shared_ptr) is part of
+ * C++11, but until we have a full implementation of C++11 on all supported
+ * platforms, we are continuing to use SP. However, we have adjusted this class
+ * to be as similar to std::smart_pointer as possible without using C++11
+ * features.
  */
-//=======================================================================================//
+//===========================================================================//
 
 template<typename T>
 class SP
@@ -142,11 +142,12 @@ class SP
     operator bool() const { return p_ != NULL; }
 };
 
-DLL_PUBLIC_dsxx  void incompatible(std::type_info const &X, std::type_info const &T);
+DLL_PUBLIC_dsxx void incompatible(std::type_info const &X,
+                                  std::type_info const &T);
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // OVERLOADED OPERATORS
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do equality check between smart pointers.
  */
@@ -156,7 +157,7 @@ bool operator==(const SP<T> &lhs, const SP<U> &rhs)
     return lhs.get() == rhs.get();
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check between smart pointers.
  */
@@ -166,7 +167,7 @@ bool operator!=(const SP<T> &lhs, const SP<U> &rhs)
     return lhs.get() != rhs.get();
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do equality check with a free pointer.
  *
@@ -179,7 +180,7 @@ bool operator==(const T *pt, const SP<T> &sp)
     return sp.get() == pt;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check with a free pointer.
  *
@@ -192,7 +193,7 @@ bool operator!=(const T *pt, const SP<T> &sp)
     return sp.get() != pt;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do equality check with a free pointer.
  *
@@ -205,7 +206,7 @@ bool operator==(const SP<T> &sp, const T *pt)
     return sp.get() == pt;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check with a free pointer.
  *
@@ -218,9 +219,9 @@ bool operator!=(const SP<T> &sp, const T *pt)
     return sp.get() != pt;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief  Default constructor
  *
@@ -233,13 +234,13 @@ SP<T>::SP()
     Ensure(get()==NULL);
     Ensure(use_count()==0);
 }
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief  Explicit constructor for type U *.
  *
- * This constructor is used to initialize a smart pointer of type
- * T with a smart pointer of type U, where U must be implicitly convertible to
- * T. This generally means U is either T or a child class of T.
+ * This constructor is used to initialize a smart pointer of type T with a smart
+ * pointer of type U, where U must be implicitly convertible to T. This
+ * generally means U is either T or a child class of T.
  *
  * \param p pointer to type U that is convertible to T *
  */
@@ -253,7 +254,7 @@ SP<T>::SP(U *p)
     Ensure (unique());
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor for SP<T>.
  *
@@ -268,7 +269,7 @@ SP<T>::SP(const SP<T> &sp_in)
     if (r_) r_->refs++;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Copy constructor for SP<U>.
  *
@@ -286,7 +287,7 @@ SP<T>::SP(const SP<U> &x)
     if (r_) r_->refs++;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator for type SP<T>.
  *
@@ -299,7 +300,7 @@ SP<T>& SP<T>::operator=(const SP<T> &x)
     return *this;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Assignment operator for type SP<U>.
  *
@@ -316,7 +317,7 @@ SP<T>& SP<T>::operator=(const SP<U> &x)
     return *this;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template <class T, class U>
 SP<T> dynamic_pointer_cast (const SP<U>& sp)
 {
@@ -331,7 +332,7 @@ SP<T> dynamic_pointer_cast (const SP<U>& sp)
     return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template <class T>
 template <typename U>
 void SP<T>::reset(U* p)
@@ -341,7 +342,7 @@ void SP<T>::reset(U* p)
     r_ = new SPref;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template<class T>
 void SP<T>::swap(SP<T> &r)
 {
@@ -353,9 +354,9 @@ void SP<T>::swap(SP<T> &r)
     r.r_ = rp;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // PRIVATE IMPLEMENTATION
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Decrement the count and free the pointer if count is zero.
  *
@@ -376,6 +377,6 @@ void SP<T>::free()
 
 #endif // RTT_ds_SP_HH
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of ds++/SP.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
