@@ -172,9 +172,6 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
 
     # machine with GPUs
     # backend nodes with GPUs are cn[1-4].
-    darwin-login* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin
-      ;;
     darwin-fe* | cn[0-9]*)
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
       ;;
