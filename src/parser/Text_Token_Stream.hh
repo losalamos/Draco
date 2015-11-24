@@ -40,6 +40,8 @@ class DLL_PUBLIC_parser Text_Token_Stream : public Token_Stream
     //! Return the current line in the text stream.
     unsigned line() const { Ensure(line_>0); return line_; }
 
+    bool no_nonbreaking_ws() const { return no_nonbreaking_ws_; }
+
     //! Return the current set of whitespace characters.
     std::set<char> const &whitespace() const { return whitespace_; }
 
@@ -71,7 +73,7 @@ class DLL_PUBLIC_parser Text_Token_Stream : public Token_Stream
     Text_Token_Stream();
 
     //! Construct a Text_Token_Stream.
-    Text_Token_Stream(std::set<char> const &);
+    Text_Token_Stream(std::set<char> const &, bool no_nonbreaking_ws = false);
 
     //! Scan the next token.
     virtual Token fill_();
@@ -123,6 +125,9 @@ class DLL_PUBLIC_parser Text_Token_Stream : public Token_Stream
 
     unsigned line_;
     //!< Current line in input file.
+
+    bool no_nonbreaking_ws_;
+    //!< Treat all whitespace as breaking whitespace.
 };
 
 }  // namespace rtt_parser

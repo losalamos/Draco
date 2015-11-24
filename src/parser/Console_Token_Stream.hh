@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   parser/Console_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Console_Token_Stream.
@@ -16,13 +16,13 @@
 #include <fstream>
 #include "Text_Token_Stream.hh"
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 using std::set;
 using std::string;
 
 //-------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Console-based token stream
  *
  * Console_Token_Stream represents a text token stream that derives its text
@@ -45,20 +45,21 @@ class DLL_PUBLIC_parser Console_Token_Stream : public Text_Token_Stream
   public:
 
     // CREATORS
-    
+
     //! Construct a Console_Token_Stream.
     Console_Token_Stream();
 
     //! Construct a Console_Token_Stream.
-    explicit Console_Token_Stream(set<char> const &whitespace);
+    explicit Console_Token_Stream(set<char> const &whitespace,
+                                  bool no_nonbreaking_ws = false);
 
     // MANIPULATORS
-    
+
     void rewind();
-        
+
     virtual void report(const Token & token,
                         const string &message);
-    
+
     virtual void report(const string &message);
 
   protected:
@@ -67,7 +68,7 @@ class DLL_PUBLIC_parser Console_Token_Stream : public Text_Token_Stream
 
     //! Return a locator string.
     virtual string location_() const;
-    
+
     virtual void fill_character_buffer_();
     virtual bool error_() const;
     virtual bool end_() const;

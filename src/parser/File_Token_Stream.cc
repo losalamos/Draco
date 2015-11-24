@@ -1,5 +1,5 @@
-//----------------------------------*-C++-*----------------------------------//
-/*! 
+//----------------------------------*-C++-*----------------------------------------------//
+/*!
  * \file   File_Token_Stream.cc
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
@@ -7,27 +7,27 @@
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 
 #include "File_Token_Stream.hh"
 #include <iostream>
 #include <sstream>
 
-namespace rtt_parser 
+namespace rtt_parser
 {
 using namespace std;
 
-//-------------------------------------------------------------------------//
-/*! 
+//-------------------------------------------------------------------------------------//
+/*!
  * Construct a File_Token_Stream that is not yet associated with a file. Use
  * the default Text_Token_Stream user-defined whitespace characters.
  *
  * This function exists primarily to support construction of arrays of
  * File_Token_Streams.  An example of where this might be useful is in serial
  * code that combines output files produced by each processor in a parallel
- * run. 
+ * run.
  */
 
 File_Token_Stream::File_Token_Stream(void)
@@ -38,7 +38,7 @@ File_Token_Stream::File_Token_Stream(void)
     Ensure(location_() == "<uninitialized>");
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
  * Construct a File_Token_Stream that derives its text from the specified
  * file. If the file cannot be opened, then \c error() will test true. Use the
@@ -62,7 +62,7 @@ File_Token_Stream::File_Token_Stream(string const &file_name)
         ostringstream errmsg;
         errmsg << "Cannot construct File_Token_Stream.\n"
 	            << "The file specified could not be found.\n"
-	            << "The file requested was: \"" << file_name 
+	            << "The file requested was: \"" << file_name
 	            << "\"" << endl;
         throw invalid_argument( errmsg.str().c_str() );
     }
@@ -71,22 +71,26 @@ File_Token_Stream::File_Token_Stream(string const &file_name)
     Ensure(location_() == file_name + ", line 1");
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
- * Construct a File_Token_Stream that derives its text from the specified
- * file. If the file cannot be opened, then \c error() will test true.
+ * Construct a File_Token_Stream that derives its text from the specified file. If the file
+ * cannot be opened, then \c error() will test true.
  *
  * \param file_name Name of the file from which to extract tokens.
  *
  * \param ws User-defined whitespace characters.
  *
+ * \param no_nonbreaking_ws If true, treat spaces and tabs as breaking whitespace. This has
+ * the effect of forcing all keywords to consist of a single identifier.
+ *
  * \throw invalid_argument If the input stream cannot be opened.
  */
 
 File_Token_Stream::File_Token_Stream(string const &file_name,
-				     set<char> const &ws)
+				     set<char> const &ws,
+                                     bool const no_nonbreaking_ws)
     :
-    Text_Token_Stream(ws),
+    Text_Token_Stream(ws, no_nonbreaking_ws),
     filename_(file_name),
     infile_(file_name.c_str())
 {
@@ -95,7 +99,7 @@ File_Token_Stream::File_Token_Stream(string const &file_name,
 	ostringstream errmsg;
 	errmsg << "Cannot construct File_Token_Stream.\n"
 	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << file_name 
+	       << "The file requested was: \"" << file_name
 	       << "\"" << endl;
 	throw invalid_argument( errmsg.str().c_str() );
     }
@@ -103,12 +107,13 @@ File_Token_Stream::File_Token_Stream(string const &file_name,
     Ensure(check_class_invariants());
     Ensure(location_() == file_name + ", line 1");
     Ensure(whitespace() == ws);
+    Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }
 
-//---------------------------------------------------------------------------//
-/*! 
+//---------------------------------------------------------------------------------------//
+/*!
  * \brief Attach the File_Token_Stream to a different file.
- * 
+ *
  * \param file_name
  * Name of the file to which to attach the token stream.
  *
@@ -121,13 +126,13 @@ void File_Token_Stream::open(string const &file_name)
     infile_.clear();
     infile_.open(file_name.c_str());
     filename_ = file_name;
-    
+
     if( ! infile_ )
     {
 	ostringstream errmsg;
 	errmsg << "Cannot open File_Token_Stream.\n"
 	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << file_name 
+	       << "The file requested was: \"" << file_name
 	       << "\"" << endl;
 	throw invalid_argument( errmsg.str().c_str() );
     }
@@ -138,7 +143,7 @@ void File_Token_Stream::open(string const &file_name)
     Ensure(location_() == file_name + ", line 1");
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
  * This function constructs and returns a string of the form
  * "filename, line #" indicating the location at which the last
@@ -160,8 +165,8 @@ string File_Token_Stream::location_() const
     }
     return Result.str();
 }
-  
-//-------------------------------------------------------------------------//
+
+//-------------------------------------------------------------------------------------//
 /*!
  * This function moves the next character in the file stream into the
  * character buffer.
@@ -178,11 +183,11 @@ void File_Token_Stream::fill_character_buffer_()
     {
 	character_push_back_(c);
     }
-    
+
     Ensure(check_class_invariants());
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
  * This function may be used to check whether an I/O error has occured, such
  * as failure to open the text file.
@@ -195,7 +200,7 @@ bool File_Token_Stream::error_() const
     return infile_.fail();
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
  * This function may be used to check whether the end of the text file has
  * been reached.
@@ -209,7 +214,7 @@ bool File_Token_Stream::end_() const
     return infile_.eof();
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  */
@@ -221,7 +226,7 @@ void File_Token_Stream::report(Token const &token,
     Ensure(check_class_invariants());
 }
 
-//-------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  * This version assumes that the cursor gives the correct error location.
@@ -234,8 +239,8 @@ void File_Token_Stream::report(string const &message)
 
     Ensure(check_class_invariants());
 }
-  
-//-------------------------------------------------------------------------//
+
+//-------------------------------------------------------------------------------------//
 /*!
  * This function rewinds the file stream associated with the file token
  * stream and flushes its internal buffers, so that scanning resumes at
@@ -248,13 +253,13 @@ void File_Token_Stream::rewind()
     infile_.seekg(0);
 
     Text_Token_Stream::rewind();
-    
+
     Ensure(check_class_invariants());
     Ensure(location_() == filename_ + ", line 1");
 }
 
 } // namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//
 // end of File_Token_Stream.cc
-//---------------------------------------------------------------------------//
+//---------------------------------------------------------------------------------------//

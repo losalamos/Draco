@@ -45,7 +45,8 @@ class DLL_PUBLIC_parser File_Token_Stream : public Text_Token_Stream
 
     //! Construct a File_Token_Stream from a file.
     File_Token_Stream(string const &filename,
-                      set<char> const &whitespace);
+                      set<char> const &whitespace,
+                      bool no_nonbreaking_ws = false);
 
     // MANIPULATORS
 
