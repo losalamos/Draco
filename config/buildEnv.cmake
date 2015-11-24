@@ -78,8 +78,15 @@ macro( dbsSetDefaults )
      0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
 
    if( CMAKE_CONFIGURATION_TYPES )
-     # BUILD_TYPE is a macro defined by the builtin 'install' target.
-     set(DBSCFGDIR "\${BUILD_TYPE}/" CACHE STRING "Install subdirectory for multiconfig build tools.")
+     # This generator expression will be expanded when the project is
+     # installed (CMake-3.4.0+)
+     set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
+     # Generate a complete installation directory structure to avoid
+     # errors of the form "imported target includes non-existent path"
+     # when configuring Jayenne.
+     foreach( config ${CMAKE_CONFIGURATION_TYPES} )
+        file( MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${config}/include )
+     endforeach()
    endif()
 
 # ----------------------------------------

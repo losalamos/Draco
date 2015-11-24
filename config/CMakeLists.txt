@@ -62,7 +62,7 @@ if( CMAKE_CONFIGURATION_TYPES )
    endforeach()
    set( DRACO_CONFIGURATION_TYPES "${DRACO_CONFIGURATION_TYPES}"
       CACHE STRING "Available multiconfig builds." )
-endif()   
+endif()
 
 # Process the config file
 configure_file( draco-config-install.cmake.in
@@ -75,11 +75,7 @@ if( HAVE_MIC AND  EXISTS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
 endif()
 
 # Install scripts and macros to make them available by other projects.
-if( CMAKE_CONFIGURATION_TYPES )
-   set( file_list ${CMake_src} ${CMake_in} )
-else()
-   set( file_list ${CMake_src} ${CMake_in} ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
-endif()
+set( file_list ${CMake_src} ${CMake_in} ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
 
 install( FILES ${file_list}  DESTINATION cmake/draco )
 install( FILES ${CMake_AFSD} DESTINATION cmake/draco/CMakeAddFortranSubdirectory )

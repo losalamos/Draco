@@ -11,7 +11,7 @@
 
 # Build notes: http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
 
-cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.4.0 FATAL_ERROR)
 project( Draco CXX C )
 
 # Do not look for Fortran for
@@ -64,8 +64,8 @@ dbsInitExportTargets( "Draco" )
 # Save config info
 dbsConfigInfo()
 
-# Platform Checks
-# Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is gethostname() available?
+# Platform Checks: Is HOST_NAME_MAX defined?  Is WinSock2.h available?  Is
+# gethostname() available?
 message("
 Platform Checks...
 ")
@@ -108,21 +108,17 @@ configure_file(
 
 # install top level documents
 install(
-   FILES
-      ChangeLog
-      Copyright
-      README.draco
-      ToDo
-   DESTINATION ${CMAKE_INSTALL_PREFIX}
-)
+  FILES ChangeLog Copyright README.draco ToDo
+  DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 # Add support for the 'uninstall' target
 configure_file(
-   "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-   @ONLY )
+  "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  @ONLY )
 add_custom_target( uninstall
-   COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
+  COMMAND "${CMAKE_COMMAND}" -P
+          "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
 # Sometimes CMake does not install the correct RPATH.  This target
 # usually fixes the issue
 add_custom_target( update_rpaths
@@ -132,22 +128,10 @@ add_custom_target( update_rpaths
   )
 
 # Export targets
-install( EXPORT draco-targets
-         DESTINATION cmake/draco
-         EXPORT_LINK_INTERFACE_LIBRARIES )
-
-# The draco_config and draco-targets may have the string ${BUILD_TYPE} in them.
-# Replaced this string with the correct value. The "ALL" option ensures that
-# this command is run before 'install'
-if( CMAKE_CONFIGURATION_TYPES )
-   add_custom_target( update_draco_config ALL
-      COMMAND "${CMAKE_COMMAND}"
-              -D Draco_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
-              -D CMAKE_CFG_INTDIR=${CMAKE_CFG_INTDIR}
-              -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-              -D PACKAGE_PATH=src/c4/
-              -P "${CMAKE_CURRENT_SOURCE_DIR}/config/update_draco_config.cmake" )
-endif()
+install(
+  EXPORT draco-targets
+  DESTINATION cmake/draco
+  EXPORT_LINK_INTERFACE_LIBRARIES )
 
 ##---------------------------------------------------------------------------##
 ## End of CMakeLists.txt
