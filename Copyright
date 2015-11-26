@@ -71,16 +71,18 @@ Additional Copyrights:
 - The Draco software suite links against external libraries.
 Copyrights to this associated software may be listed below:
 
-GSL
-More information about GSL can be found at the project homepage, http://www.gnu.org/software/gsl/.
+1. Various MPI implementations (OpenMPI, MPICH, Microsoft MPI, Intel
+   MPI, etc.); https://www.open-mpi.org/community/license.php
 
-Copyright © 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 The GSL Team.
+2. Gnu Scientific Library - GSL is distributed under the terms of the
+   GNU General Public License (GPL) - http://www.gnu.org/software/gsl/
 
-Permission is granted to copy, distribute and/or modify this document under the
-terms of the GNU Free Documentation License, Version 1.3 or any later version
-published by the Free Software Foundation; with the Invariant Sections being
-"GNU General Public License" and "Free Software Needs Free
-Documentation", the Front-Cover text being "A GNU Manual," and with
-the Back-Cover Text being (a) (see below). A copy of the license is included in
-the section entitled "GNU Free Documentation License".
-(a) The Back-Cover Text is: "You have the freedom to copy and modify this GNU Manual."
+3. LAPACK - http://www.netlib.org/lapack/LICENSE.txt
+
+4. Random123 -
+   https://www.deshawresearch.com/downloads/download_random123.cgi/Random123_License.txt
+
+5. CUDA - http://docs.nvidia.com/cuda/eula/index.html#nvidia-cuda-toolkit-license-agreement
+
+6. Qt - GNU Lesser General Public License (LGPL) version 3,
+   http://doc.qt.io/qt-5/opensourcelicense.html
