@@ -33,8 +33,11 @@ case ${target} in
     # Obtain kerberos authentication via keytab
     run "kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
 
-    module unload subversion
-    module load subversion
+    #module unload subversion
+    #module load subversion
+    if test -d /projects/opt/centos7/subversion/1.9.2/bin; then
+      export PATH=/projects/opt/centos7/subversion/1.9.2/bin:$PATH
+    fi
     SVN=`which svn`
     # SVN=/projects/opt/centos7/subversion/1.9.2/bin/svnsync
     REGDIR=/usr/projects/draco/regress
