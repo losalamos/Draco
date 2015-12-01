@@ -52,7 +52,7 @@ case ty*.localdomain:
     module unload intel openmpi
     module load intel/15.0.3 openmpi
     module load git svn emacs
-    module load cmake/3.3.1 numdiff lapack/3.5.0 random123 eospac/6.2.4
+    module load cmake/3.4.0 numdiff lapack/3.5.0 random123 eospac/6.2.4
     module load trilinos SuperLU_DIST
     module load ParMetis ndi
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
