@@ -38,7 +38,7 @@ export CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
   c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-    environments="intel14env intel15env" ;;
+    environments="intel15env" ;;
   tt-fey* | tt-login*)
     environments="intel15env" ;;
 esac
@@ -52,17 +52,16 @@ run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
+run "module swap intel intel/15.0.5.223"
 case $target in
   c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-    run "module swap intel intel/15.0.3"
     run "module load gsl/1.15"
     ;;
   tt-fey* | tt-login*)
-    run "module swap intel intel/15.0.3.187"
     run "module load gsl/1.16"
     ;;
 esac
-run "module load cmake/3.3.2 numdiff svn"
+run "module load cmake/3.4.0 numdiff svn"
 run "module load trilinos SuperLU_DIST"
 run "module load ParMetis ndi random123 eospac/6.2.4"
 run "module list"
