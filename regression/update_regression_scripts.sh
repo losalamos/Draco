@@ -19,17 +19,15 @@ case ${target} in
     exit 1
     ;;
   darwin-fe* | cn[0-9]*)
-    #/usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
-    #if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-    #   source $HOME/.keychain/$MYHOSTNAME-sh
-    #fi
+    /usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+    if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+       source $HOME/.keychain/$MYHOSTNAME-sh
+    fi
 
     # Load keytab: (see notes at draco/regression/push_repositories_xf.sh)
-
     # Use a different cache location to avoid destroying any active user's
     # kerberos.
     export KRB5CCNAME=/tmp/regress_kerb_cache
-
     # Obtain kerberos authentication via keytab
     run "kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
 
