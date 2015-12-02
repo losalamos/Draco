@@ -1,3 +1,224 @@
+2015-12-01  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+ 	* Release draco-6_18_0.  This is a minor Draco release.
+	https://rtt.lanl.gov/redmine/versions/41.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_10_0,   http://rtt.lanl.gov/redmine/versions/40
+	  - Capsaicin-4_7_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU/TY  Intel 15.0.5    OpenMPI-1.6.5
+	  CT/CI              Intel 15.0.5    Cray_MPICH2-7.0.1
+	  CT/CI/TT           Intel 15.0.5    Cray_MPICH2-7.0.1
+	  SQ                 XLC   12.1      MPICH2-1.4
+	                     GCC   4.8       MPICH2-1.4
+
+	* Summary of changes:
+	- 132 files changed, added or removed in 108 commits.
+	- Begin supporting Intel 15.0.5
+	- Begin supporting shared-library builds on Cray machines.
+	- Move to newer compilers and vendor versions (see details below).
+	- Provide initial support for Allinea MAP.
+
+	* Details per package:
+
+	Developer Environment:
+	- Begin supporting Intel 15.0.5.  Vendors built and installed with
+	  this compiler.
+	- Begin supporting shared-library builds on Cray
+	  machines. Starting with this release, the recommended configure
+	  command on the Cray machines should include
+	  '-C /path/to/draco/config/CrayConfig.cmake'.  This addresses
+	  issues where CMake complains about the C compiler not working.
+	- Change the default developer environment to use cmake/3.4,
+	  SuperLU_DIST/4.1, trilinos/12.0.1 and eospac/6.2.4 (#600).
+	- On CCS machines, change default environment to gcc/5.2 and
+	  openmpi/1.10.0. (#601)
+	- Begin support for rzuseq.
+	- Update config files for code beautifiers.  These (clang-format,
+	  emacs-batch-script) won't make your code 100% conformant to the
+	  Draco code standard, but they move code in the right direction.
+	  These tools are being evaluated by the Jayenne team to help
+	  improve standardization of code style.
+
+	Build System:
+	- Update the cmake-based ApplicationUnitTest framework so that the
+	  build system strings PROJECT_BINARY_DIR and PROJECT_SOURCE_DIR
+	  are available from the unit test script.
+	- Provide build system updates to support Allinea MAP (#586).
+	  See build variables USE_ALLINEA_MAP and USE_ALLIENA_DMALLOC.
+	- Provide build system support and demonstrate configure and build
+	  with CrayCC 8.4.  Many tests still produce SEGV. Cray is working
+	  on this issue. Earlier versions of the Cray compiler do not
+	  support C++11.
+	- When registering tests, define CPP defines for each build target
+	  instead of adding compile flags for all targets in the directory
+	  (and subdirectories).  This addresses a weakness in the build
+	  system design that Matt Cleveland stumbled upon where deep test
+	  directories had conflicting definitions for PROJECT_SOURCE_DIR.
+	- Assign a maximum machine load to limit the number of concurrent
+	  tests. (#603)
+	- For Multi-config build tools, change the way the environment
+	  variable DBSCFGDIR works in the build system.  Now that
+	  CMake-3.4.0 supports generator expressions for installation
+	  commands, replace the manually manipulated \${BUILD_TYPE} with
+	  the generator expression \$<CONFIG>. This also eliminates the
+	  need to update draco-config.cmake after installation. Eliminate
+	  the build target 'update_draco_config' that ran for every build
+	  (when using a multi-config tool like MSVC or XCode). (#603)
+
+	cdi_ipcress:
+	- Clean up unit tests so that they work on IBM BGQ.
+
+	ds++:
+	- Clean up XGetopt features (#573)
+
+	FortranCheck:
+	- Rework FortranChecks so that it tests complex
+	  CMakeAddFortranSubdirectory modes (#560).
+
+	parser:
+	- Clean up unit tests so that they work on IBM BGQ.
+	- Add an option to the token streams to force all keywords to
+	  consist of a single identifier, disallowing keywords consisting
+	  of a sequence of identifiers separated by whitespace.
+
+	quadrature:
+	- Change moment expansion order argument for construction of
+	  Ordinate_Space to int; a negative value flags that the moment
+	  space is not actually needed and should not be calculated.
+
+	viz:
+	- Clean up unit tests so that they work on IBM BGQ.
+
+	* Details for defects and features can be found at
+	  https://rtt.lanl.gov/redmine/isues/#.
+
+	* Corrected defects:
+	Bug #469 CMake: FindMPI.cmake can choose wrong libraries
+	Bug #552 trinitite: mkdir has issues
+	Bug #585 Replace SuperLU_DIST with version 4.1
+	Bug #615 Cassio regression is failing on Darwin: cannot find Wedgehog_Interfaces.f90
+	Bug #616 Regressions on Darwin are broken
+
+	* New features:
+	Feature #518 CMake 3.3
+	Feature #545 Investigate gcc/4.8.4 on Vulcan
+	Feature #553 Support trinitite
+	Feature #558 Move builds to Intel/15.0.3 on Toss 2.2 machines
+	Feature #560 Rework FortranChecks so that it tests complex CMakeAddFortranSubdirectory modes
+	Feature #565 Trinitite: track recommendations given to consult.
+	Feature #566 SQ: Test current code base on SQ before release cycle starts
+	Feature #571 Trinitite: Support PrgEnv-Cray toolset
+	Feature #581 Change install directory name to match modulefiles pattern
+	Feature #598 Detect/support double-digit version numbers in OpenMPI
+	Feature #601 Provide vendor stack for gcc/5.2 on CCS machines
+	Feature #612 Provide vendor stack built with Intel-15.0.5
+	Feature #573 XGetopt: Review K. Wang's work and update as needed
+	Feature #586 Revisit how builds work under the Cray Environments
+	Feature #600 Release current codes on Darwin
+	Feature #603 Update build system to take advantage of new features in cmake-3.4
+
+	* Known Defects:
+	Bug #602 Darwin knc-mic builds are broken
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+76554: kellyt
+45591: kgbudge
+9798: tme
+5897: bta
+4760: lowrie
+3954: mcghee
+3632: mwbuksas
+3448: gaber
+2188: warsa
+832: sethrj
+799: wollaber
+672: kgt
+629: rsqrd
+565: jhchang
+434: talbotp
+311: 107638
+208: kwang
+183: furnish
+169: clevelam
+130: bergen
+104: phenning
+102: regress
+92: pahrens
+47: batcho
+41: jdd
+30: tmonster
+24: swmosher
+8: tkelley
+2: wawiesel
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             408          11911          21477          63472
+C/C++ Header                    330           7104          21218          19101
+Lisp                             17           2031           2939          13034
+Perl                              2           1351           1072           9265
+CMake                           112           1998           5048           8224
+Bourne Shell                     19            398            935           1922
+Bourne Again Shell               17            263            525           1446
+Python                            7            280            361            856
+CSS                               1            113             37            395
+Fortran 90                        6             88            158            290
+C                                 4             46            113            238
+C Shell                           2             30             29            168
+DOS Batch                         3             47             37            100
+HTML                              2              8             15             48
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            935          25707          54039         118638
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/cdi/                    45 /    45 = 100%      60 /    72 =  83%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi_ipcress/           106 /   106 = 100%     188 /   247 =  76%
+../source/src/viz/                    32 /    32 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/diagnostics/            15 /    15 = 100%      34 /    50 =  68%
+../source/src/cdi_eospac/             52 /    52 = 100%      65 /   127 =  51%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/ds++/                  339 /   343 =  98%     460 /   532 =  86%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/parser/                280 /   286 =  97%    1145 /  1489 =  76%
+../source/src/quadrature/            203 /   208 =  97%     527 /   677 =  77%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/plot2D/                 22 /    23 =  95%      46 /    74 =  62%
+../source/src/c4/                    163 /   172 =  94%     517 /   562 =  91%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2071 /  2124 =  97%    5089 /  6407 =  79%
+
 2015-08-24  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_17_0.  This is a minor Draco release.
