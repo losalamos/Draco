@@ -80,27 +80,23 @@ run "ulimit -a"
 
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-#echo "result = $result"
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
-    echo 'module function does not exist. defining a local function ...'
-    run "source /usr/share/Modules/init/bash"
-fi
+# result=`fn_exists module`
+# #echo "result = $result"
+# if test $result -eq 0; then
+#     echo 'module function is defined'
+# else
+#     echo 'module function does not exist. defining a local function ...'
+#     run "source /usr/share/Modules/init/bash"
+# fi
 
 # Use modules found in the draco directory
-run "module use /usr/projects/draco/vendors/Modules"
+run "module use --append /usr/projects/draco/vendors/environment/Modules/darwin-knc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
-run "module list"
 run "module purge &> /dev/null"
-run "module list"
-run "module load compilers/intel/15.0.0 mpi/intelmpi-5.0.1.035-mic"
+run "module load intel/15.0.3 impi/5.1.1.109-mic"
 run "module load mkl/11.2-mic gsl/1.16-mic"
-run "module load cmake/3.3.0 numdiff/5.6.1-mic subversion random123"
-run "module load python/2.7.3"
-# run "module unload ParMetis SuperLU_DIST trilinos"
+run "module load cmake/3.3.2-draco numdiff/5.8.1-mic subversion random123"
 run "module load ParMetis/4.0.3-mic SuperLU_DIST/3.3-mic trilinos/11.10.2-mic"
 #run "module load ndi"
 
