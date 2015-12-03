@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_17_0
+ddir=draco-6_18_0
 pdir=$ddir
 
 # CMake options that will be included in the configuration step
@@ -35,7 +35,7 @@ export CONFIG_BASE="-DDRACO_VERSION_PATCH=0 -DDRACO_LIBRARY_TYPE=STATIC"
 
 # environment (use draco modules)
 # release for each module set
-environments="gcc484"
+environments="gcc484 xlc12"
 function gcc484()
 {
   export VENDOR_DIR=/usr/gapps/jayenne/vendors
