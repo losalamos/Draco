@@ -35,13 +35,13 @@ export CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # environment (use draco modules)
 # release for each module set
-environments="intel14env intel15env"
+environments="intel15env"
 function intel14env()
 {
   run "module use /usr/projects/draco/vendors/Modules/hpc"
   run "module purge"
   run "module load friendly-testing user_contrib"
-  run "module load cmake/3.3.2 svn numdiff"
+  run "module load cmake/3.4.0 svn numdiff"
   run "module load intel/14.0.4 openmpi/1.6.5"
   run "module load random123 eospac/6.2.4"
   run "module list"
@@ -51,8 +51,8 @@ function intel15env()
   run "module use /usr/projects/draco/vendors/Modules/hpc"
   run "module purge"
   run "module load friendly-testing user_contrib"
-  run "module load cmake/3.3.2 svn numdiff"
-  run "module load intel/15.0.3 openmpi/1.6.5"
+  run "module load cmake/3.4.0 svn numdiff"
+  run "module load intel/15.0.5 openmpi/1.6.5"
   run "module load random123 eospac/6.2.4"
   run "module list"
 }

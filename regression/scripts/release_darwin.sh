@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_17_0
+ddir=draco-6_18_0
 pdir=$ddir
 
 # CMake options that will be included in the configuration step
@@ -35,7 +35,7 @@ export CONFIG_BASE="-DDRACO_VERSION_PATCH=0 -DUSE_CUDA=OFF"
 
 # environment (use draco modules)
 # release for each module set
-environments="intel14env intel15env"
+environments="intel15env"
 function intel14env()
 {
   run "module purge"
@@ -50,8 +50,8 @@ function intel15env()
 {
   run "module purge"
   run "module use --append /usr/projects/draco/vendors/Modules"
-  run "module load cmake/3.3.2 numdiff/5.2.1 python/2.7.3"
-  run "module load compilers/intel/15.0.3 mpi/openmpi-1.8.4-intel_15.0.3"
+  run "module load cmake/3.4.0 numdiff/5.8.1"
+  run "module load intel/15.0.3 openmpi/1.6.5-intel_15.0.3"
   run "module load random123 eospac/6.2.4"
   run "module list"
   export MPIEXEC=${MPIRUN}
