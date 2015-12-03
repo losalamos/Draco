@@ -8,7 +8,7 @@ function die () { echo "ERROR: $1"; exit 1;}
 
 function run () {
   echo $1
-  if ! test $dry_run; then eval $1; fi
+  if test ${dry_run:-no} = "no"; then eval $1; fi
 }
 
 #----------------------------------------------------------------------#
@@ -192,13 +192,13 @@ function lookupppn()
 function npes_build
 {
   local np=1
-  if ! test "${PBS_NP}x" = "x"; then
+  if ! test "${PBS_NP:-notset}" = "notset"; then
     np=${PBS_NP}
-  elif ! test "${SLURM_NPROCS}x" = "x"; then
+  elif ! test "${SLURM_NPROCS:-notset}" = "notset"; then
     np=${SLURM_NPROCS}
-  elif ! test "${SLURM_CPUS_ON_NODE}x" = "x"; then
+  elif ! test "${SLURM_CPUS_ON_NODE:-notset}" = "notset"; then
     np=${SLURM_CPUS_ON_NODE}
-  elif ! test "${SLURM_TASKS_PER_NODE}x" = "x"; then
+  elif ! test "${SLURM_TASKS_PER_NODE:-notset}" = "notset"; then
     np=${SLURM_CPUS_ON_NODE}
   elif test -f /proc/cpuinfo; then
     np=`cat /proc/cpuinfo | grep processor | wc -l`
@@ -209,13 +209,13 @@ function npes_build
 function npes_test
 {
   local np=1
-  if ! test "${PBS_NP}x" = "x"; then
+  if ! test "${PBS_NP:-notset}" = "notset"; then
     np=${PBS_NP}
-  elif ! test "${SLURM_NPROCS}x" = "x"; then
+  elif ! test "${SLURM_NPROCS:-notset}" = "notset"; then
     np=${SLURM_NPROCS}
-  elif ! test "${SLURM_CPUS_ON_NODE}x" = "x"; then
+  elif ! test "${SLURM_CPUS_ON_NODE:-notset}" = "notset"; then
     np=${SLURM_CPUS_ON_NODE}
-  elif ! test "${SLURM_TASKS_PER_NODE}x" = "x"; then
+  elif ! test "${SLURM_TASKS_PER_NODE:-notset}" = "notset"; then
     np=${SLURM_CPUS_ON_NODE}
   elif test `uname -p` = "ppc"; then
     # sinfo --long --partition=pdebug (show limits)
@@ -370,7 +370,7 @@ function install_versions
         run "ctest -j $test_pe" ;;
     esac
   fi
-  if ! test -z $build_permissions; then
+  if ! test ${build_permissions:-notset} = "notset"; then
     run "chmod -R $build_permissions $build_dir"
   fi
 
