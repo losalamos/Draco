@@ -66,6 +66,9 @@ echo "Moonlight regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
 echo "==========================================================================="
 
+run "printenv"
+run "module list"
+
 # Modules
 # ----------------------------------------
 result=`fn_exists module`
@@ -82,6 +85,7 @@ run "module use $VENDOR_DIR/Modules/hpc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
+run "module list"
 run "module load user_contrib friendly-testing"
 run "module load cmake/3.4.0"
 run "module load intel/15.0.5 openmpi/1.6.5"
@@ -89,6 +93,7 @@ run "module load lapack trilinos SuperLU_DIST"
 run "module load ParMetis ndi"
 run "module load numdiff svn random123 eospac/6.2.4"
 comp=`basename $CXX`
+export OMP_NUM_THREADS=7
 
 case $extra_params in
 "")
@@ -117,7 +122,7 @@ pgi)
     run "module unload lapack cudatoolkit openmpi intel"
     run "module load pgi/15.10 openmpi"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
-    export OMP_NUM_THREADS=8
+    export OMP_NUM_THREADS=7
     comp=`basename $CXX`
     ;;
 *)
@@ -149,7 +154,8 @@ fi
 if test "${base_dir}x" = "x"; then
    # Keep build and target dirs out of /usr/projects locations to
    # prevent the .snapshots directory from filling up.
-   scratch_dir=/scratch/${moniker}/cdash/ml
+   # scratch_dir=/scratch/${moniker}/cdash/ml
+   scratch_dir=/lustre/scratch1/yellow/kellyt/cdash/ml
    mkdir -p $scratch_dir
    if ! test -d ${scratch_dir}; then
       echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
