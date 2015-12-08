@@ -37,6 +37,7 @@ String_Token_Stream::String_Token_Stream(string const &text)
 {
     Ensure(check_class_invariants());
     Ensure(whitespace()==Text_Token_Stream::default_whitespace);
+    Ensure(this->text()==text);
     Ensure(messages()=="");
 }
 
@@ -64,6 +65,7 @@ String_Token_Stream::String_Token_Stream(string const &text,
 {
     Ensure(check_class_invariants());
     Ensure(whitespace() == ws);
+    Ensure(this->text()==text);
     Ensure(messages()=="");
 }
 

@@ -58,6 +58,9 @@ class DLL_PUBLIC_parser String_Token_Stream : public Text_Token_Stream
 
     // ACCESSORS
 
+    //! Return the text to be tokenized.
+    string const &text() const { return text_; }
+
     //! Return the accumulated set of messages.
     string messages() const { return messages_; }
 
