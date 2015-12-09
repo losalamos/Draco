@@ -33,7 +33,7 @@ module use --append $VENDOR_DIR/Modules/hpc
 module load friendly-testing user_contrib
 
 export dracomodules="lapack/3.5.0 ParMetis trilinos SuperLU_DIST \
-gsl/1.15 cmake/3.4.0 numdiff ndi random123 eospac/6.2.4 emacs svn"
+gsl/1.15 cmake/3.4.0 numdiff ndi random123 eospac/6.2.4 emacs svn gcc"
 
 # Cielo doesn't have module hsi yet (2015 Oct).
 case ${target} in

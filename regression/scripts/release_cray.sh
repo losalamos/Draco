@@ -61,7 +61,7 @@ case $target in
     run "module load gsl/1.16"
     ;;
 esac
-run "module load cmake/3.4.0 numdiff svn"
+run "module load gcc cmake/3.4.0 numdiff svn"
 run "module load trilinos SuperLU_DIST"
 run "module load ParMetis ndi random123 eospac/6.2.4"
 run "module list"
