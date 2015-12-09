@@ -29,7 +29,7 @@ if( NOT Fortran_FLAGS_INITIALIZED )
   # The cmake configuration for FortanCInterface will only work on
   # Cray CLE if the '-dynamic' option is passed to the linker:
   if( "${CMAKE_Fortran_COMPILER}" MATCHES "ftn" )
-    set( CMAKE_Fortran_FLAGS "-dyanamic ${CMAKE_Fortran_FLAGS}" )
+    set( CMAKE_Fortran_FLAGS "-dynamic ${CMAKE_Fortran_FLAGS}" )
   endif()
   set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -traceback -ftrapuv -check -DDEBUG" )
   set( CMAKE_Fortran_FLAGS_RELEASE        "-O2 -inline-level=2 -fp-speculation fast -fp-model fast -align array32byte -openmp-report0 -funroll-loops -DNDEBUG" )
