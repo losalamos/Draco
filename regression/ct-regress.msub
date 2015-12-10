@@ -111,10 +111,11 @@ run "module unload PrgEnv-intel PrgEnv-pgi"
 # Load new environment
 run "module load PrgEnv-intel"
 run "module swap intel intel/15.0.5.223"
-run "module load gcc"
 run "module load cmake/3.4.0 numdiff svn"
 run "module load gsl/1.15 lapack random123 eospac/6.2.4"
 run "module load trilinos SuperLU_DIST ParMetis ndi"
+run "module load gcc"
+
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
