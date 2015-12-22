@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_18_0
+ddir=draco-6_19_0
 pdir=$ddir
 
 # CMake options that will be included in the configuration step
@@ -47,12 +47,15 @@ function intel15env()
 run "module load friendly-testing user_contrib"
 run "module unload ndi ParMetis SuperLU_DIST trilinos"
 run "module unload lapack gsl intel"
-run "module unload cmake numdiff svn"
+run "module unload cmake numdiff"
+run "module unload intel gcc"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
-run "module swap intel intel/15.0.5.223"
+run "module unload intel"
+run "module load gcc/4.8.1 intel/15.0.5.223"
+# run "module swap intel intel/15.0.5.223"
 case $target in
   c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     run "module load gsl/1.15"
@@ -61,7 +64,7 @@ case $target in
     run "module load gsl/1.16"
     ;;
 esac
-run "module load gcc cmake/3.4.0 numdiff svn"
+run "module load cmake/3.4.0 numdiff"
 run "module load trilinos SuperLU_DIST"
 run "module load ParMetis ndi random123 eospac/6.2.4"
 run "module list"

@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_18_0
+ddir=draco-6_19_0
 pdir=$ddir
 
 # CMake options that will be included in the configuration step

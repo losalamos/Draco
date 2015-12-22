@@ -160,7 +160,7 @@ function selectscratchdir
 {
   # TOSS, CLE, BGQ, Darwin:
   toss2_scratchdirs="net/scratch1 net/scratch cratch6 scratch8 scratch9"
-  cray_scratchdirs="lscratch1 lscratch2 lscratch3 lscratch4"
+  cray_scratchdirs="scratch1 lscratch1 lscratch2 lscratch3 lscratch4"
   bgq_scratchdirs="nfs/tmp2"
   scratchdirs="$toss2_scratchdirs $cray_scratchdirs $bgq_scratchdirs \
 usr/projects/draco/devs/releases"
@@ -412,13 +412,13 @@ function publish_release()
       run "chmod $install_permissions $source_prefix"
     fi
 
-    dirs="$script_dir $source_prefix/source $source_prefix/logs"
-    for dir in $dirs; do
-      if test -d $dir; then
-        run "chgrp -R draco $dir"
-        run "chmod $build_permissions $dir"
-      fi
-    done
+    # dirs="$script_dir $source_prefix/source $source_prefix/logs"
+    # for dir in $dirs; do
+    #   if test -d $dir; then
+    #     run "chgrp -R draco $dir"
+    #     run "chmod $build_permissions $dir"
+    #   fi
+    # done
 
   fi
 }
