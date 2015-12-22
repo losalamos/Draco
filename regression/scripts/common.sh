@@ -159,10 +159,10 @@ function flavor
 function selectscratchdir
 {
   # TOSS, CLE, BGQ, Darwin:
-  scratchdirs="\
-scratch scratch1 scratch3 scratch6 scratch8 scratch9 \
-lscratch1 lscratch2 lscratch3 lscratch4 \
-nfs/tmp2 \
+  toss2_scratchdirs="net/scratch1 net/scratch cratch6 scratch8 scratch9"
+  cray_scratchdirs="lscratch1 lscratch2 lscratch3 lscratch4"
+  bgq_scratchdirs="nfs/tmp2"
+  scratchdirs="$toss2_scratchdirs $cray_scratchdirs $bgq_scratchdirs \
 usr/projects/draco/devs/releases"
   for dir in $scratchdirs; do
     mkdir -p /$dir/$USER &> /dev/null
@@ -376,46 +376,54 @@ function install_versions
 
 }
 
-##---------------------------------------------------------------------------------------##
+##----------------------------------------------------------------------------##
 ## If $jobids is set, wait for those jobs to finish before setting
 ## groups and permissions.
 function publish_release()
 {
-  echo "waiting batch jobs to finish ..."
+  echo " "
+  echo "Waiting batch jobs to finish ..."
+  echo "   Running jobs = $jobids"
 
   establish_permissions
 
-  case $osname in
+  case `osName` in
     toss* | cle* ) SHOWQ=showq ;;
     darwin| ppc64) SHOWQ=squeue ;;
   esac
 
   # wait for jobs to finish
   for jobid in $jobids; do
-    while test "`${SHOWQ} | grep $jobid`" != ""; do
+    while test `${SHOWQ} | grep $jobid | wc -l` -gt 0; do
       ${SHOWQ} | grep $jobid
       sleep 5m
     done
+    echo "   Job $jobid is complete."
   done
+
+  echo " "
+  echo "Updating file permissions ..."
+  echo " "
 
   if ! test -z $install_permissions; then
     # Set access to top level install dir.
     if test -d $install_prefix; then
-      run "chmod $install_permissions $install_prefix"
-      run "chgrp -R ${install_group} $install_prefix"
+      run "chgrp -R ${install_group} $source_prefix"
+      run "chmod $install_permissions $source_prefix"
     fi
 
-    dirs="$source_prefix $source_prefix/source  $source_prefix/logs"
+    dirs="$script_dir $source_prefix/source $source_prefix/logs"
     for dir in $dirs; do
       if test -d $dir; then
-        run "chgrp draco $dir"
-        run "chmod $install_permissions $dir"
+        run "chgrp -R draco $dir"
+        run "chmod $build_permissions $dir"
       fi
     done
+
   fi
 }
 
-##---------------------------------------------------------------------------------------##
+##----------------------------------------------------------------------------##
 export die
 export run
 export establish_permissions
