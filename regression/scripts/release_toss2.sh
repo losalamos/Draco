@@ -179,6 +179,13 @@ done
 
 publish_release
 
+# The Pack_Build_gnu EAP target needs this symlink on moonlight
+if test `machineName` == moonlight; then
+  run "cd $source_prefix"
+  gccflavor=`echo $flavor | sed -e s%$LMPI-$LMPIVER%gcc-4.9.2%`
+  run "ln -s $flavor $gccflavor"
+fi
+
 ##---------------------------------------------------------------------------##
 ## End
 ##---------------------------------------------------------------------------##
