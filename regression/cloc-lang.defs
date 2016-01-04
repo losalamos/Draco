@@ -168,7 +168,7 @@ CVS
     filename Root
     filename Repository
     filename Entries
-    extension cvsignore    
+    extension cvsignore
     3rd_gen_scale 0.10
 CMake
     filter remove_matches ^\s*#
@@ -220,6 +220,7 @@ CUDA
     filter call_regexp_common C
     filter remove_inline //.*$
     extension cu
+    extension cuh
     3rd_gen_scale 1.0
 Crystal Reports
     filter remove_matches ^\s*//
@@ -704,6 +705,7 @@ Text
     extension dot
     extension fig
     extension log
+    extension mesh
     extension pdf
     extension sty
     extension tex
@@ -826,7 +828,7 @@ lex
     3rd_gen_scale 1.00
     end_of_line_continuation \\$
 m4
-    filter remove_matches ^dnl 
+    filter remove_matches ^dnl
     extension ac
     extension m4
     3rd_gen_scale 1.00
