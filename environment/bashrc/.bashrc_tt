@@ -21,6 +21,14 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
+# If LESS is set, is should include '-R' so that git diff's color
+# displays correctly.
+if test -n "${LESS}"; then
+  if test `echo $LESS | grep R | wc -l` = 0; then
+    export LESS="${LESS} -R"
+  fi
+fi
+
 #
 # MODULES
 #
