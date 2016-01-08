@@ -43,18 +43,10 @@ macro( find_num_procs_avail_for_running_tests )
 
   # CMake 3.4+ allows us to limit the number of concurrent tests running by
   # looking at the system load:
-  set( max_system_load ${num_test_procs} )
+  math( EXPR max_system_load "${num_test_procs} + 1" )
 
   # Machine/job specific override:
-  if( "${sitename}" STREQUAL "Cielito" OR "${sitename}" STREQUAL "Trinitite" )
-    set( max_system_load 256 )
-    # aprun on current Cray systems does not allow running multiple simultaneous
-    # jobs on the some node. If this is > 1, then all concurrent jobs will run
-    # on the same core.  This makes the jobs run slower and occassionaly
-    # confuses aprun.
-    set( num_test_procs 1 )
-  elseif( "$ENV{SLURM_JOB_NAME}" MATCHES "darwin-knc-regress" )
-    set( max_system_load ${num_test_procs} )
+  if( "$ENV{SLURM_JOB_NAME}" MATCHES "darwin-knc-regress" )
     # The mic I/O processors get overloaded if use the default
     # logic of 32 simultaneous tests.
     set( num_test_procs 8 )

@@ -89,12 +89,15 @@ set(Draco_MPIEXEC "@MPIEXEC@")
 set(Draco_MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
 set(Draco_MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
 set(MPI_Fortran_INCLUDE_PATH "@MPI_Fortran_INCLUDE_PATH@")
-set(MPI_Fortran_LIBRARIES "@MPI_Fortran_LIBRARIES@")
+set(MPI_Fortran_LIBRARIES    "@MPI_Fortran_LIBRARIES@")
 # These are needed for registering tests
 set(MPIEXEC "@MPIEXEC@")
 set(MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
 set(MPIEXEC_NUMPROC_FLAG "@MPIEXEC_NUMPROC_FLAG@")
-set(MPIEXEC_POSTFLAGS "@MPIEXEC_POSTFLAGS@")
+set(MPIEXEC_POSTFLAGS    "@MPIEXEC_POSTFLAGS@")
+set(MPI_CORES_PER_CPU    "@MPI_CORES_PER_CPU@")
+set(MPI_PHYSICAL_CORES   "@MPI_PHYSICAL_CORES@")
+set(MPIEXEC_MAX_NUMPROCS "@MPIEXEC_MAX_NUMPROCS@")
 
 ## CUDA
 set( USE_CUDA "@USE_CUDA@" )
@@ -138,6 +141,9 @@ set( PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@" )
 ## ---------------------------------------------------------------------------
 ## Set useful general variables
 ## ---------------------------------------------------------------------------
+
+## Draco vendor's for this machine
+set(VENDOR_DIR "@VENDOR_DIR@")
 
 ## The packages enabled for this project
 set(Draco_PACKAGE_LIST "@Draco_PACKAGE_LIST@" )

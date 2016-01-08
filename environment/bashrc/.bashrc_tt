@@ -45,7 +45,9 @@ function dracoenv ()
 {
   module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu
   module load PrgEnv-intel
-  module swap intel intel/15.0.5.223
+  module unload intel
+  module load gcc/4.8.1
+  module load intel/15.0.5.223
   for m in $dracomodules; do
     module load $m
   done
@@ -62,6 +64,7 @@ function rmdracoenv ()
       module unload ${mods[$i]}
     fi
   done
+  module unload gcc
   module unload PrgEnv-intel
   module load PrgEnv-pgi
 }

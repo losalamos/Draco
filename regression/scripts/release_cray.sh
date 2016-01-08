@@ -198,7 +198,7 @@ for env in $environments; do
 
     # Run the tests on the back-end.
     export steps="test"
-    cmd="msub -V $access_queue -l walltime=08:00:00 -l nodes=1:ppn=${ppn} -j oe \
+    cmd="msub -V $access_queue -l walltime=08:00:00 -l nodes=8:ppn=${ppn} -j oe \
 -o $source_prefix/logs/release-$buildflavor-$version-t.log $draco_script_dir/release_cray.msub"
     echo -e "\nTest $package for $buildflavor-$version."
     echo "$cmd"

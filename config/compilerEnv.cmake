@@ -103,6 +103,8 @@ elseif( ${SITENAME} MATCHES "ml[0-9]+" OR ${SITENAME} MATCHES "ml-fey" OR
   set( SITENAME "Moonlight" )
 elseif( ${SITENAME} MATCHES "tt") #" -login[0-9]+" OR ${SITENAME} MATCHES "tt-fey[0-9]+" )
   set( SITENAME "Trinitite" )
+elseif( ${SITENAME} MATCHES "tr") #" -login[0-9]+" OR ${SITENAME} MATCHES "tr-fe[0-9]+" )
+  set( SITENAME "Trinity" )
 elseif( ${SITENAME} MATCHES "ccscs[0-9]+" )
   # do nothing (keep the fullname)
 endif()

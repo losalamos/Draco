@@ -60,12 +60,28 @@
 
 include( parse_arguments )
 
-# set( VERBOSE_DEBUG OFF )
+set( VERBOSE_DEBUG OFF )
 
 function(JOIN VALUES GLUE OUTPUT)
   string (REGEX REPLACE "([^\\]|^);" "\\1${GLUE}" _TMP_STR "${VALUES}")
   string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}") #fixes escaping
   set (${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
+
+# Helper for setting the depth (-d) option for aprun.  We want
+# n*d==mpi_cores_per_cpu. For example:
+# Cielo: 16 = 4 x 4
+#           = 2 x 8, etc.
+# Trinity: 32 = 4 x 8
+#             = 2 x 16, etc.
+function(set_aprun_depth_flags numPE aprun_depth_options)
+  math( EXPR depth     "${MPI_CORES_PER_CPU} / ${numPE}")
+  math( EXPR remainder "${MPI_CORES_PER_CPU} % ${numPE}" )
+  if( ${remainder} GREATER "0" )
+    message(FATAL_ERROR
+      "Expecting the requested number of ranks (${numPE}) to be a factor of the ranks/node (${MPI_CORES_PER_CPU})" )
+  endif()
+  set( aprun_depth_options "-d ${depth}" PARENT_SCOPE )
 endfunction()
 
 ##---------------------------------------------------------------------------##
@@ -132,9 +148,16 @@ macro( aut_setup )
     if( GOLDFILE )
       message("   GOLDFILE = ${GOLDFILE}" )
     endif()
-# This will cause REGEX PASS/FAIL to fail!
-#  message("   numpasses   = ${numpasses}
-#   numfails  = ${numfails}")
+  endif()
+
+  # Look for auxillary applications that are often used by
+  # ApplicationUnitTest.cmake.
+  find_program( exenumdiff numdiff )
+  if( NOT EXISTS ${exenumdiff} )
+    message( FATAL_ERROR "Numdiff not found in PATH")
+  endif()
+  if( VERBOSE_DEBUG )
+    message("   exenumdiff = ${exenumdiff}" )
   endif()
 
 endmacro()
@@ -144,17 +167,17 @@ endmacro()
 ##---------------------------------------------------------------------------##
 
 macro(PASSMSG msg)
-    math( EXPR numpasses "${numpasses} + 1" )
-    message( "Test Passes: ${msg}")
+  math( EXPR numpasses "${numpasses} + 1" )
+  message( "Test Passes: ${msg}")
 endmacro()
 
 macro(FAILMSG msg)
-    math( EXPR numfails "${numfails} + 1" )
-    message( "Test Fails: ${msg}")
+  math( EXPR numfails "${numfails} + 1" )
+  message( "Test Fails: ${msg}")
 endmacro()
 
 macro(ITFAILS)
-    math( EXPR numfails "${numfails} + 1" )
+  math( EXPR numfails "${numfails} + 1" )
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -169,11 +192,17 @@ macro( aut_register_test )
     set( DRACO_CONFIG_DIR ${Draco_SOURCE_DIR}/config )
   endif()
 
-  if( "${numPE}x" STREQUAL "x" )
-    set(num_procs 1)
-  else()
+  set(num_procs 1)
+  if( numPE )
     set(num_procs ${numPE} )
   endif()
+  if( "${MPIEXEC}" MATCHES "aprun" )
+    # On Cray machines, multiple independent processes cannot share cores on a
+    # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
+    # be exactly the number of cores per node.
+    set( num_procs ${MPI_CORES_PER_CPU} )
+  endif()
+  string(REPLACE ";" " " RUN_CMD "${RUN_CMD}")
 
   if( VERBOSE_DEBUG )
     message("
@@ -190,6 +219,9 @@ macro( aut_register_test )
     -D GOLDFILE=${aut_GOLDFILE}
     -D RUN_CMD=${RUN_CMD}
     -D numPE=${numPE}
+    -D MPIEXEC=${MPIEXEC}
+    -D MPI_CORES_PER_CPU=${MPI_CORES_PER_CPU}
+    -D SITENAME=${SITENAME}
     -D PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
     -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
     ${BUILDENV}
@@ -197,9 +229,9 @@ macro( aut_register_test )
     )
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
-    PASS_REGULAR_EXPRESSION \"${aut_PASS_REGEX}\"
-    FAIL_REGULAR_EXPRESSION \"${aut_FAIL_REGEX}\"
-    PROCESSORS              \"${num_procs}\"
+      PASS_REGULAR_EXPRESSION \"${aut_PASS_REGEX}\"
+      FAIL_REGULAR_EXPRESSION \"${aut_FAIL_REGEX}\"
+      PROCESSORS              \"${num_procs}\"
     )")
     if( DEFINED aut_RESOURCE_LOCK )
       message("  set_tests_properties( ${ctestname_base}${argname}
@@ -212,9 +244,8 @@ macro( aut_register_test )
     if( DEFINED aut_LABELS )
       message("  set_tests_properties( ${ctestname_base}${argname}
       PROPERTIES LABELS \"${aut_LABELS}\" )" )
-  endif()
-
-  endif()
+    endif()
+  endif(VERBOSE_DEBUG)
 
   add_test(
     NAME ${ctestname_base}${argname}
@@ -229,16 +260,20 @@ macro( aut_register_test )
     -DGOLDFILE=${aut_GOLDFILE}
     -DRUN_CMD=${RUN_CMD}
     -DnumPE=${numPE}
+    -D MPIEXEC=${MPIEXEC}
+    -DMPI_CORES_PER_CPU=${MPI_CORES_PER_CPU}
+    -DSITENAME=${SITENAME}
     -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
     -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
     ${BUILDENV}
     -P ${aut_DRIVER}
     )
+
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES
-    PASS_REGULAR_EXPRESSION "${aut_PASS_REGEX}"
-    FAIL_REGULAR_EXPRESSION "${aut_FAIL_REGEX}"
-    PROCESSORS              "${num_procs}"
+      PASS_REGULAR_EXPRESSION "${aut_PASS_REGEX}"
+      FAIL_REGULAR_EXPRESSION "${aut_FAIL_REGEX}"
+      PROCESSORS              "${num_procs}"
     )
   if( DEFINED aut_RESOURCE_LOCK )
     set_tests_properties( ${ctestname_base}${argname}
@@ -311,9 +346,7 @@ macro( add_app_unit_test )
   if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
 
     # Parallel tests
-    if( "${MPIEXEC}" MATCHES "aprun" )
-      set( RUN_CMD "aprun -n" )
-    elseif( "${MPIEXEC}" MATCHES "srun" )
+    if( "${MPIEXEC}" MATCHES "srun" )
       set( RUN_CMD "srun -n" )
     elseif( HAVE_MIC )
       set( RUN_CMD "${MIC_RUN_CMD} ${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}" )
@@ -325,7 +358,7 @@ macro( add_app_unit_test )
 
     # Scalar tests
     if( "${MPIEXEC}" MATCHES "aprun" )
-      set( RUN_CMD "aprun -n 1" )
+      set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1 -d ${MPI_CORES_PER_CPU}" )
     elseif( "${MPIEXEC}" MATCHES "srun" )
       set( RUN_CMD "srun -n 1" )
     elseif( HAVE_MIC )
@@ -393,7 +426,7 @@ macro( add_app_unit_test )
       endforeach()
     endif()
 
-  else()
+  else( DEFINED aut_TEST_ARGS )
 
     # Register the test...
     if( ${DRACO_C4} MATCHES "MPI" AND DEFINED aut_PE_LIST )
@@ -411,7 +444,7 @@ macro( add_app_unit_test )
       aut_register_test()
     endif()
 
-  endif()
+  endif( DEFINED aut_TEST_ARGS )
 
   # cleanup
   unset( DRIVER )
@@ -434,24 +467,28 @@ macro( aut_runTests )
 === ${TESTNAME}
 =============================================
 ")
-# === CMake driven ApplicationUnitTest: ${TESTNAME}
 
   # Print version information
-  set( runcmd ${RUN_CMD} ) # plain string with spaces (used in Capsaicin)
   separate_arguments(RUN_CMD)
+  set( runcmd ${RUN_CMD} ) # plain string with spaces (used in Capsaicin)
+
   if( numPE )
     # Use 1 proc to run draco_info
     set( draco_info_numPE 1 )
+    if( "${MPIEXEC}" MATCHES "aprun" )
+      # Run with 1 proc, but tell aprun that we need the whole node.
+      set_aprun_depth_flags( 1 aprun_depth_options)
+    endif()
   endif()
   if( EXISTS ${DRACO_INFO} )
     execute_process(
-      COMMAND ${RUN_CMD} ${draco_info_numPE} ${DRACO_INFO} --version
+      COMMAND ${RUN_CMD} ${draco_info_numPE} ${aprun_depth_options} ${DRACO_INFO} --version
       RESULT_VARIABLE testres
       OUTPUT_VARIABLE testout
       ERROR_VARIABLE  testerror
       )
     if( NOT ${testres} STREQUAL "0" )
-      FAILMSG("Unable to run '${RUN_CMD} ${DRACO_INFO} --version'")
+      FAILMSG("Unable to run '${runcmd} ${draco_info_numPE} ${aprun_depth_options} ${DRACO_INFO} --version'")
     else()
       message("${testout}")
     endif()
@@ -468,10 +505,21 @@ macro( aut_runTests )
     string( REPLACE ".err" "-${safe_argvalue}.err" ERRFILE ${ERRFILE} )
   endif()
 
+  if( "${MPIEXEC}" MATCHES "aprun" )
+    # Run with requested number of processors, but tell aprun that we need the
+    # whole node.
+    if( numPE )
+      set_aprun_depth_flags( ${numPE} aprun_depth_options)
+    endif()
+  endif()
+
   if( DEFINED RUN_CMD )
     string( REPLACE ";" " " run_cmd_string "${RUN_CMD}" )
-    message(">>> Running: ${run_cmd_string} ${numPE}
-             ${APP} ${ARGVALUE}")
+    message(">>> Running: ${run_cmd_string} ${numPE} ${aprun_depth_options}")
+    message(">>>          ${APP}")
+    if( DEFINED ARGVALUE)
+      message(">>>          ${ARGVALUE}")
+    endif()
   else()
     message(">>> Running: ${APP} ${ARGVALUE}" )
   endif()
@@ -487,16 +535,19 @@ macro( aut_runTests )
 ")
 
   # Run the application capturing all output.
+
   separate_arguments(INPUT_FILE)
   separate_arguments(ARGVALUE)
+
   execute_process(
-    COMMAND ${RUN_CMD} ${numPE} ${APP} ${ARGVALUE}
+    COMMAND ${RUN_CMD} ${numPE} ${aprun_depth_options} ${APP} ${ARGVALUE}
     WORKING_DIRECTORY ${WORKDIR}
     ${INPUT_FILE}
     RESULT_VARIABLE testres
     OUTPUT_VARIABLE testout
     ERROR_VARIABLE  testerror
     )
+  unset(aprun_depth_options)
 
   # Convert the ARGVALUE from a list back into a space separated string.
   if( ARGVALUE )
@@ -513,7 +564,7 @@ macro( aut_runTests )
   # value 27 - basically something which is unlikely to conflict with
   # anything in the file contents.
   string(ASCII 27 Esc)
-  string( REGEX REPLACE "\n" "${Esc};" testout ${testout} )
+  string( REGEX REPLACE "\n" "${Esc};" testout "${testout}" )
   # string( REGEX REPLACE "\n" ";" testout ${testout} )
   unset( newout )
   foreach( line ${testout} )
@@ -545,35 +596,38 @@ macro( aut_runTests )
 
 endmacro()
 
+##---------------------------------------------------------------------------##
+## Set numdiff run command
+##---------------------------------------------------------------------------##
+function(set_numdiff_run_cmd RUN_CMD numdiff_run_cmd)
+  if( DEFINED RUN_CMD )
+    set(numdiff_run_cmd ${RUN_CMD})
+    separate_arguments(numdiff_run_cmd)
+    if( "${MPIEXEC}" MATCHES "aprun" OR
+        "${MPIEXEC}" MATCHES "mpiexec" )
+      # For Cray environments, let numdiff run on the login node.
+      set(numdiff_run_cmd "")
+    elseif( numPE )
+      # Use 1 processor for srun, ssh, etc.
+      set( numdiff_run_cmd "${numdiff_run_cmd} 1" )
+    endif()
+  endif()
+  set( numdiff_run_cmd "${numdiff_run_cmd}" PARENT_SCOPE )
+endfunction()
 
 ##---------------------------------------------------------------------------##
 ## Run numdiff
 ##---------------------------------------------------------------------------##
 macro( aut_numdiff )
 
-  if( DEFINED GOLDFILE )
-    ## Use numdiff to compare output
-    find_program( exenumdiff numdiff )
-    if( NOT EXISTS ${exenumdiff} )
-      FAILMSG( "Numdiff not found in PATH")
-    endif()
-    if( VERBOSE_DEBUG )
-      message("   exenumdiff = ${exenumdiff}" )
-    endif()
-  endif()
-
-  separate_arguments(RUN_CMD)
-  if( numPE )
-    # Use 1 proc to run draco_info
-    set( draco_info_numPE 1 )
-  endif()
-
+  set_numdiff_run_cmd("${RUN_CMD}" numdiff_run_cmd)
+  string( REPLACE ";" " " pretty_run_cmd "${numdiff_run_cmd}" )
   message("Comparing output to goldfile:
-${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} \\
+${pretty_run_cmd} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} \\
    ${OUTFILE} \\
    ${GOLDFILE}")
   execute_process(
-    COMMAND ${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${OUTFILE} ${GOLDFILE}
+    COMMAND ${numdiff_run_cmd} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${OUTFILE} ${GOLDFILE}
     RESULT_VARIABLE numdiffres
     OUTPUT_VARIABLE numdiffout
     ERROR_VARIABLE numdifferror
@@ -585,6 +639,7 @@ ${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5}
     FAILMSG("gold does not match out.
 numdiff output = ${numdiffout}" )
   endif()
+  unset( numdiff_run_cmd )
 
 endmacro()
 
@@ -593,9 +648,9 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( aut_numdiff_2files file1 file2 )
 
-  # Sometimes we are looking at a shared filesystem from different
-  # nodes.  If a file doesn't exist, touch the file.  If the touch
-  # creates the file, then running numdiff should fail.
+  # Sometimes we are looking at a shared filesystem from different nodes.  If a
+  # file doesn't exist, touch the file.  If the touch creates the file, then
+  # running numdiff should fail.
   if( NOT EXISTS ${file1} )
     execute_process( COMMAND "${CMAKE_COMMAND}" -E touch ${file1} )
     #FAILMSG( "Specified file1 = ${file1} does not exist." )
@@ -605,29 +660,15 @@ macro( aut_numdiff_2files file1 file2 )
     # FAILMSG( "Specified file2 = ${file2} does not exist." )
   endif()
 
-  # Assume additional arguments are to be passed to numdiff
-
-  find_program( exenumdiff numdiff )
-  if( NOT EXISTS ${exenumdiff} )
-    message( FATAL_ERROR "Numdiff not found in PATH")
-  endif()
-  if( VERBOSE_DEBUG )
-    message("   exenumdiff = ${exenumdiff}" )
-  endif()
-
-  separate_arguments(RUN_CMD)
-  if( numPE )
-    # Use 1 proc to run draco_info
-    set( draco_info_numPE 1 )
-  endif()
-
+  set_numdiff_run_cmd("${RUN_CMD}" numdiff_run_cmd)
+  string( REPLACE ";" " " pretty_run_cmd "${numdiff_run_cmd}" )
   message("Comparing files:
-${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6}
+${pretty_run_cmd} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6}
    ${file1} \\
    ${file2}")
 
   execute_process(
-    COMMAND ${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${file1} ${file2}
+    COMMAND ${numdiff_run_cmd} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} ${file1} ${file2}
     RESULT_VARIABLE numdiffres
     OUTPUT_VARIABLE numdiffout
     ERROR_VARIABLE  numdifferror
@@ -639,6 +680,7 @@ ${RUN_CMD} ${draco_info_numPE} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5}
     FAILMSG("files do not match.
 numdiff output = ${numdiffout}" )
   endif()
+  unset( numdiff_run_cmd )
 
 endmacro()
 
@@ -648,8 +690,7 @@ endmacro()
 ## Usage:
 ##    aut_gdiff(input_file)
 ##
-## GDIFF and possibly PGDIFF must be provided when registering the
-## test:
+## GDIFF and possibly PGDIFF must be provided when registering the test:
 ##
 ## add_app_unit_test(
 ##  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstAnaheim.cmake
@@ -682,9 +723,21 @@ Did you list it when registering this test?" )
   # Choose pgdiff or gdiff
 
   if( numPE AND "${numPE}" GREATER "1" )
-    set( pgdiff_gdiff  ${RUN_CMD} ${numPE} ${PGDIFF} )
+
+    if( "${MPIEXEC}" MATCHES "aprun")
+      # For Cray environments, fill up the node by setting the depth (-d) flag.
+      set_aprun_depth_flags( ${numPE} aprun_depth_options)
+    endif()
+    set( pgdiff_gdiff  ${RUN_CMD} ${numPE} ${aprun_depth_options} ${PGDIFF} )
+
   else()
-    set( pgdiff_gdiff ${RUN_CMD} 1 ${GDIFF} )
+
+    # Use 1 proc to run gdiff
+    if( "${MPIEXEC}" MATCHES "aprun")
+      set_aprun_depth_flags( 1 aprun_depth_options)
+    endif()
+    set( pgdiff_gdiff ${RUN_CMD} 1 ${aprun_depth_options} ${GDIFF} )
+
   endif()
 
   #----------------------------------------
@@ -741,7 +794,6 @@ macro( aut_report )
   endif()
   message("*****************************************************************
 ")
-# message("numpasses = ${numpasses}, numfails = ${numfails}")
 
 endmacro()
 

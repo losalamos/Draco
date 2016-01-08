@@ -96,10 +96,23 @@ macro( query_topology )
 
   # start with default values
   set( MPI_CORES_PER_CPU 4 )
-  set( MPI_PHYSICAL_CORES 0 )
+  set( MPI_PHYSICAL_CORES 1 )
 
-  # read the system's cpuinfo...
-  if( EXISTS "/proc/cpuinfo" )
+  if( "${SITENAME}" STREQUAL "Trinitite" OR
+      "${SITENAME}" STREQUAL "Trinity" )
+    # Backend is different than build-node
+    set( MPI_CORES_PER_CPU 32 )
+    set( MPI_PHYSICAL_CORES 1 )
+    set( MPIEXEC_MAX_NUMPROCS 32 CACHE STRING "Max procs on node." FORCE )
+  elseif( "${SITENAME}" STREQUAL "Cielito" OR
+          "${SITENAME}" STREQUAL "Cielo")
+    # Backend is different than build-node
+    set( MPI_CORES_PER_CPU 16 )
+    set( MPI_PHYSICAL_CORES 1 )
+    set( MPIEXEC_MAX_NUMPROCS 16 CACHE STRING "Max procs on node." FORCE )
+
+  elseif( EXISTS "/proc/cpuinfo" )
+    # read the system's cpuinfo...
     file( READ "/proc/cpuinfo" cpuinfo_data )
     string( REGEX REPLACE "\n" ";" cpuinfo_data "${cpuinfo_data}" )
     foreach( line ${cpuinfo_data} )
@@ -113,6 +126,8 @@ macro( query_topology )
         endif()
       endif()
     endforeach()
+    # correct 0-based indexing
+    math( EXPR MPI_PHYSICAL_CORES "${MPI_PHYSICAL_CORES} + 1" )
   endif()
 
   math( EXPR MPI_CPUS_PER_NODE
@@ -123,10 +138,9 @@ macro( query_topology )
     "Number of cores per cpu" FORCE )
 
   #
-  # Check for hyperthreading - This is important for reserving threads for OpenMP tests...
+  # Check for hyperthreading - This is important for reserving threads for
+  # OpenMP tests...
   #
-  # correct base-zero indexing
-  math( EXPR MPI_PHYSICAL_CORES        "${MPI_PHYSICAL_CORES} + 1" )
   math( EXPR MPI_MAX_NUMPROCS_PHYSICAL "${MPI_PHYSICAL_CORES} * ${MPI_CORES_PER_CPU}" )
   if( "${MPI_MAX_NUMPROCS_PHYSICAL}" STREQUAL "${MPIEXEC_MAX_NUMPROCS}" )
     set( MPI_HYPERTHREADING "OFF" CACHE BOOL "Are we using hyperthreading?" FORCE )
@@ -233,12 +247,6 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( setupCrayMPI )
 
-  # According to email from Mike McKay (2013/04/18), we might
-  # need to set the the mpirun command to something like:
-  #
-  #   setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}; aprun ... -d ${MPI_CORES_PER_CPU}
-  #
-  # consider '-cc none'
   if( "${DBS_MPI_VER}x" STREQUAL "x" AND
       NOT "$ENV{CRAY_MPICH2_VER}x" STREQUAL "x" )
     set( DBS_MPI_VER $ENV{CRAY_MPICH2_VER} )
@@ -249,18 +257,30 @@ macro( setupCrayMPI )
         DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
     endif()
   endif()
-  if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
-    set( MPI_CPUS_PER_NODE 1 CACHE STRING
-      "Number of multi-core CPUs per node" FORCE )
-    set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
-      "Number of cores per cpu" FORCE )
-    set( MPIEXEC_OMP_POSTFLAGS "-d ${MPI_CORES_PER_CPU}" CACHE
+
+  # According to email from Mike McKay (2013/04/18), we might
+  # need to set the the mpirun command to something like:
+  #
+  # setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}
+  # aprun ... -d ${MPI_CORES_PER_CPU} -n [0-9]+
+
+  query_topology()
+
+  # Extra flags for OpenMP + MPI
+  if( DEFINED ENV{OMP_NUM_THREADS} )
+    set( MPIEXEC_OMP_POSTFLAGS "-b -d $ENV{OMP_NUM_THREADS}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
     message( STATUS "
 WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          all OMP tests will be disabled." )
   endif()
+
+  # -b        Bypass transfer of application executable to the compute node.
+  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
+  # -q        Quiet
+  set( MPIEXEC_POSTFLAGS "-q -b -cc none" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
 endmacro()
 
