@@ -609,7 +609,7 @@ function(set_numdiff_run_cmd RUN_CMD numdiff_run_cmd)
       set(numdiff_run_cmd "")
     elseif( numPE )
       # Use 1 processor for srun, ssh, etc.
-      set( numdiff_run_cmd "${numdiff_run_cmd} 1" )
+      set( numdiff_run_cmd "${numdiff_run_cmd};1" )
     endif()
   endif()
   set( numdiff_run_cmd "${numdiff_run_cmd}" PARENT_SCOPE )
@@ -662,8 +662,9 @@ macro( aut_numdiff_2files file1 file2 )
 
   set_numdiff_run_cmd("${RUN_CMD}" numdiff_run_cmd)
   string( REPLACE ";" " " pretty_run_cmd "${numdiff_run_cmd}" )
-  message("Comparing files:
-${pretty_run_cmd} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6}
+  message("
+Comparing files:
+${pretty_run_cmd} ${exenumdiff} ${ARGV2} ${ARGV3} ${ARGV4} ${ARGV5} ${ARGV6} \\
    ${file1} \\
    ${file2}")
 
