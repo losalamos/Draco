@@ -156,6 +156,12 @@ class DLL_PUBLIC_mesh_element Element_Definition
 	HEXAGON_6,  /*!< The basic two-D, six-node "hexagon"
                      *   element. Elements with this topology are quite common
                      *   in an AMR mesh. */
+	HEPTAGON_7,  /*!< The basic two-D, seven-node "heptagon"
+                     *   element. Elements with this topology can occur
+                     *   in an AMR mesh. */
+	OCTAGON_8,  /*!< The basic two-D, eight-node "octagon"
+                     *   element. Elements with this topology can occur
+                     *   in an AMR mesh. */
 	TETRA_4,    /*!< The basic three-D, four-node "tetrahedral" element. */
 	TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the
 		     *   middle  of each edge. This is the
