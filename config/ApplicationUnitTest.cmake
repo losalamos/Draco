@@ -554,6 +554,9 @@ macro( aut_runTests )
     string( REGEX REPLACE ";" " " ARGVALUE ${ARGVALUE} )
   endif()
 
+  if (FALSE)
+  # This block was too slow for some Capsaicin tests
+
   # Capture all the output to log files:
   # - before we create the file, extract some lines that we want to
   #   exclude:
@@ -578,6 +581,8 @@ macro( aut_runTests )
   set( testout ${newout} )
   # join( "${newout}" "\n" testout )
   # string( REGEX REPLACE "${Esc};" "\n" testout ${testout} )
+  endif()
+
 
   # now write the cleaned up file
   file( WRITE ${OUTFILE} "${testout}" )
