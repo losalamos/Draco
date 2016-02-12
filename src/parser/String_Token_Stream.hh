@@ -39,7 +39,7 @@ class DLL_PUBLIC_parser String_Token_Stream : public Text_Token_Stream
     //! Construct a String_Token_Stream from a string.
     String_Token_Stream(string const &text);
 
-    //! Construct a String_Token_Stream from a file.
+    //! Construct a String_Token_Stream from a string.
     String_Token_Stream(string const &text,
                         set<char> const &whitespace,
                         bool no_nonbreaking_ws=false);
