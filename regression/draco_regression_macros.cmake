@@ -632,7 +632,8 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
               )
             list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
             execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
-         else()
+          else()
+            set( CTEST_TEST_TIMEOUT 7200 )
             message( "ctest_memcheck( SCHEDULE_RANDOM ON
                 EXCLUDE_LABEL nomemcheck )")
             ctest_memcheck(
