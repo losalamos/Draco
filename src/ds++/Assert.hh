@@ -17,11 +17,11 @@
 #include <stdexcept>
 #include <string>
 
-// This warning is issued because we chose to derive from std::logic_error
+// This warning is issued because we chose to derive from std::logic_error 
 // (IS-A) instead of creating a class that 'HAS-A' std::logic_error.object.
 #if defined(MSVC)
 #pragma warning (push)
-// non dll-interface class 'std::logic_error' used as base for
+// non dll-interface class 'std::logic_error' used as base for 
 // dll-interface class 'rtt_dsxx::assertion'
 #pragma warning (disable:4275)
 #endif
@@ -38,11 +38,11 @@ namespace rtt_dsxx
  * This class is derived from std::runtime_error.  In fact, this class
  * provides no significant change in functionality from std::runtime_error.
  * This class provides the following features in addition to those found in
- * std::runtime_error:
+ * std::runtime_error: 
  *
  * 1. rtt_dsxx::assertion does provide an alternate constructor that allows
  *    us to automatically insert file name and line location into error
- *    messages.
+ *    messages.  
  *
  * 2. It provides a specialized form of std::runtime_error.  This allows
  *    Draco code to handle Draco specific assertions differently from generic
@@ -52,15 +52,15 @@ namespace rtt_dsxx
  *    try
  *    {
  *       throw rtt_dsxx::assertion( "My error message." );
- *    }
- *    catch ( rtt_dsxx::assertion &a )
+ *    } 
+ *    catch ( rtt_dsxx::assertion &a ) 
  *    {
  *       // Catch Draco exceptions first.
  *       cout << a.what() << endl;
  *       exit(1);
  *    }
  *    catch ( std::runtime_error &e )
- *    {
+ *    { 
  *       // Catch general runtime_errors next
  *       cout << e.what() << endl;
  *    }
@@ -76,13 +76,13 @@ namespace rtt_dsxx
  */
 /*!
  * \example ds++/test/tstAssert.cc
- *
+ * 
  * Assertion and DBC examples.
  */
 /*!
  * \section assertRevisionHistory Revision history:
  * \subsection date11March2003 11 March 2003 (Kelly Thompson)
- *
+ * 
  * Major changes for class rtt_dsxx::assertion:
  *
  * Let rtt_dsxx::assertion derive from std::runtime_error.  G. Furnish
@@ -156,8 +156,8 @@ class DLL_PUBLIC_dsxx  assertion : public std::logic_error
      *
      * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, Insist
      */
-    assertion( std::string const & cond,
-	       std::string const & file,
+    assertion( std::string const & cond, 
+	       std::string const & file, 
 	       int const line )
 	: std::logic_error( build_message( cond, file, line ) )
     { /* empty */ }
@@ -168,8 +168,8 @@ class DLL_PUBLIC_dsxx  assertion : public std::logic_error
 
     /*! Helper function to build error message that includes source file name
      *  and line number. */
-    static std::string build_message( std::string const & cond,
-                                      std::string const & file,
+    static std::string build_message( std::string const & cond, 
+                                      std::string const & file, 
                                       int         const   line );
 };
 
@@ -178,47 +178,27 @@ class DLL_PUBLIC_dsxx  assertion : public std::logic_error
 //---------------------------------------------------------------------------//
 
 //! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-DLL_PUBLIC_dsxx  void toss_cookies( std::string const & cond,
-                              std::string const & file,
+DLL_PUBLIC_dsxx  void toss_cookies( std::string const & cond, 
+                              std::string const & file, 
                               int         const   line );
 
-//! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-DLL_PUBLIC_dsxx  void check_toss_cookies( bool not_c,
-                                          std::string const & cond,
-                                          std::string const & file,
-                                          int         const   line );
-
 DLL_PUBLIC_dsxx  void toss_cookies_ptr(char const * const cond,
-                                       char const * const file,
-                                       int          const line );
+                                 char const * const file, 
+                                 int          const line );
 //! Print error w/o throw
-DLL_PUBLIC_dsxx  void check_show_cookies( bool not_c,
-                                          std::string const & cond,
-                                          std::string const & file,
-                                          int         const   line );
-DLL_PUBLIC_dsxx  void show_cookies( std::string const & cond,
-                                    std::string const & file,
-                                    int         const   line );
+DLL_PUBLIC_dsxx  void show_cookies( std::string const & cond, 
+                              std::string const & file, 
+                              int         const   line );
 //! Throw a rtt_dsxx::assertion for Insist.
-DLL_PUBLIC_dsxx  void check_insist( bool not_c,
-                                    std::string const & cond,
-                                    std::string const & msg,
-                                    std::string const & file,
-                                    int         const line);
-DLL_PUBLIC_dsxx  void insist( std::string const & cond,
-                        std::string const & msg,
-                        std::string const & file,
+DLL_PUBLIC_dsxx  void insist( std::string const & cond, 
+                        std::string const & msg, 
+                        std::string const & file, 
                         int         const line);
 
 //! Pointer version of insist
-DLL_PUBLIC_dsxx  void check_insist_ptr(bool not_c,
-                                       char const * const cond,
-                                       char const * const msg,
-                                       char const * const file,
-                                       int          const line);
-DLL_PUBLIC_dsxx  void insist_ptr(char const * const cond,
-                           char const * const msg,
-                           char const * const file,
+DLL_PUBLIC_dsxx  void insist_ptr(char const * const cond, 
+                           char const * const msg, 
+                           char const * const file, 
                            int          const line);
 
 //! Add hostname and pid to error messages.
@@ -235,20 +215,20 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
  *
  * The assertion macros are intended to be used for validating preconditions
  * which must be true in order for following code to be correct, etc.  For
- * example,
- *
- * \code
- * Assert( x > 0. );
- * y = sqrt(x);
+ * example, 
+ * 
+ * \code 
+ * Assert( x > 0. ); 
+ * y = sqrt(x); 
  * \endcode
- *
+ * 
  * If the assertion fails, the code should just bomb.  Philosophically, it
  * should be used to feret out bugs in preceding code, making sure that prior
  * results are within reasonable bounds before proceeding to use those
  * results in further computation, etc.
- *
+ * 
  * These macros are provided to support the Design By Contract formalism.
- * The activation of each macro is keyed off a bit in the DBC macro which can
+ * The activation of each macro is keyed off a bit in the DBC macro which can 
  * be specified on the command line:
 \verbatim
      Bit     DBC macro affected
@@ -258,19 +238,19 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
       2      Ensure, Remember
       3      (nothrow option)
 \endverbatim
- *
+ * 
  * So for instance, \c -DDBC=7 turns them all on, \c -DDBC=0 turns them all
  * off, and \c -DDBC=1 turns on \c Require but turns off \c Check and \c
  * Ensure.  The default is to have them all enabled.  The fourth bit (3) can
  * be toggled on to disable the C++ thrown exception while keeping all of the
- * DBC checks and messages active.
+ * DBC checks and messages active. 
  *
  * The \c Insist macro is akin to the \c Assert macro, but it provides the
  * opportunity to specify an instructive message.  The idea here is that you
  * should use Insist for checking things which are more or less under user
  * control.  If the user makes a poor choice, we "insist" that it be
  * corrected, providing a corrective hint.
- *
+ * 
  * \note We provide a way to eliminate assertions, but not insistings.  The
  * idea is that \c Assert is used to perform sanity checks during program
  * development, which you might want to eliminate during production runs for
@@ -282,22 +262,22 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
  */
 /*!
  * \def Require(condition)
- *
+ * 
  * Pre-condition checking macro.  On when DBC & 1 is true.
  */
 /*!
  * \def Check(condition)
- *
+ * 
  * Intra-scope checking macro.  On when DBC & 2 is true.
  */
 /*!
  * \def Ensure(condition)
- *
+ * 
  * Post-condition checking macro.  On when DBC & 4 is true.
  */
 /*!
  * \def Remember(code)
- *
+ * 
  * Add code to compilable code.  Used in the following manner:
  * \code
  *     Remember (int old = x;)
@@ -308,12 +288,12 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
  */
 /*!
  * \def Insist(condition, message)
- *
+ * 
  * Inviolate check macro.  Insist is always on.
  */
 /*!
  * \def Insist_ptr(condition, message)
- *
+ * 
  * Same as Insist, except that it uses char pointers, rather than strings.
  * This is more efficient when inlined.
  */
@@ -331,25 +311,25 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
 
 #if DBC & 1
 #define REQUIRE_ON
-#define Require(c) rtt_dsxx::check_show_cookies(!(c), #c, __FILE__, __LINE__ );
+#define Require(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
-#define Require(c)
+#define Require(c) 
 #endif
 
 #if DBC & 2
 #define CHECK_ON
-#define Check(c) rtt_dsxx::check_show_cookies(!(c), #c, __FILE__, __LINE__ );
-#define Assert(c) rtt_dsxx::check_show_cookies(!(c), #c, __FILE__, __LINE__ );
+#define Check(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
-#define Check(c)
-#define Assert(c)
+#define Check(c) 
+#define Assert(c) 
 #endif
 
 #if DBC & 4
 #define ENSURE_ON
-#define Ensure(c) rtt_dsxx::check_show_cookies(!(c), #c, __FILE__, __LINE__ );
+#define Ensure(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
-#define Ensure(c)
+#define Ensure(c) 
 #endif
 
 #else // DBC & 8
@@ -359,27 +339,27 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
 //---------------------------------------------------------------------------//
 #if DBC & 1
 #define REQUIRE_ON
-#define Require(c) rtt_dsxx::check_toss_cookies(!(c), #c, __FILE__, __LINE__ );
+#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
-#define Require(c)
+#define Require(c) 
 #endif
 
 #if DBC & 2
 #define CHECK_ON
-#define Check(c) rtt_dsxx::check_toss_cookies(!(c), #c, __FILE__, __LINE__ );
-#define Assert(c) rtt_dsxx::check_toss_cookies(!(c), #c, __FILE__, __LINE__ );
-#define Bad_Case(m) rtt_dsxx::check_toss_cookies(!(m), #m, __FILE__, __LINE__ );
+#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Bad_Case(m) default: rtt_dsxx::toss_cookies( m, __FILE__, __LINE__ )
 #else
-#define Check(c)
+#define Check(c) 
 #define Assert(c)
 #define Bad_Case(m)
 #endif
 
 #if DBC & 4
 #define ENSURE_ON
-#define Ensure(c) rtt_dsxx::check_toss_cookies(!(c), #c, __FILE__, __LINE__ );
+#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
-#define Ensure(c)
+#define Ensure(c) 
 #endif
 
 #endif // DBC & 8
@@ -397,8 +377,8 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
 //---------------------------------------------------------------------------//
 // Always on
 //---------------------------------------------------------------------------//
-#define Insist(c,m) rtt_dsxx::check_insist(!(c), #c, m, __FILE__, __LINE__ );
-#define Insist_ptr(c,m) rtt_dsxx::check_insist_ptr(!(c), #c, m, __FILE__, __LINE__ )
+#define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
+#define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
 #if defined(MSVC)
 #   pragma warning (pop)
