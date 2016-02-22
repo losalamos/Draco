@@ -61,33 +61,37 @@ macro( dbsSetDefaults )
   endif()
 
   # Design-by-Contract
+  if( NOT DEFINED DRACO_DBC_LEVEL )
 
-  # Default is on (7), except for Makefile based Release builds .
-  #   Insist() assertions    : always on
-  #   Require() preconditions: add +1 to DBC_LEVEL
-  #   Check() assertions     : add +2 to DBC_LEVEL
-  #   Ensure() postconditions: add +4 to DBC_LEVEL
-  #   Do not throw on error  : add +8 to DBC_LEVEL
-  set( DRACO_DBC_LEVEL "7" )
-  if( NOT CMAKE_CONFIGURATION_TYPES AND "${CMAKE_BUILD_TYPE}" MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" )
-     set( DRACO_DBC_LEVEL "0" )
-  endif()
-  set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING "Design-by-Contract (0-15)?" )
-  # provide a constrained drop down menu in cmake-gui
-  set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
-     0 1 2 3 4 5 6 7 9 10 11 12 13 14 15)
+    # Default is on (7), except for Makefile based Release builds .
+    #   Insist() assertions    : always on
+    #   Require() preconditions: add +1 to DBC_LEVEL
+    #   Check() assertions     : add +2 to DBC_LEVEL
+    #   Ensure() postconditions: add +4 to DBC_LEVEL
+    #   Do not throw on error  : add +8 to DBC_LEVEL
+    set( DRACO_DBC_LEVEL "7" )
+    if( NOT CMAKE_CONFIGURATION_TYPES AND "${CMAKE_BUILD_TYPE}" MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" )
+      set( DRACO_DBC_LEVEL "0" )
+    endif()
+    set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING "Design-by-Contract (0-31)?" )
+    # provide a constrained drop down menu in cmake-gui
+    set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
+      0 1 2 3 4 5 6 7 9 10 11 12 13 14 15
+      16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 )
 
-   if( CMAKE_CONFIGURATION_TYPES )
-     # This generator expression will be expanded when the project is
-     # installed (CMake-3.4.0+)
-     set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
-     # Generate a complete installation directory structure to avoid
-     # errors of the form "imported target includes non-existent path"
-     # when configuring Jayenne.
-     foreach( config ${CMAKE_CONFIGURATION_TYPES} )
+    if( CMAKE_CONFIGURATION_TYPES )
+      # This generator expression will be expanded when the project is
+      # installed (CMake-3.4.0+)
+      set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
+      # Generate a complete installation directory structure to avoid
+      # errors of the form "imported target includes non-existent path"
+      # when configuring Jayenne.
+      foreach( config ${CMAKE_CONFIGURATION_TYPES} )
         file( MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${config}/include )
-     endforeach()
-   endif()
+      endforeach()
+    endif()
+
+  endif()
 
 # ----------------------------------------
 # STATIC or SHARED libraries?
