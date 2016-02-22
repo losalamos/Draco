@@ -159,6 +159,47 @@ static void ttoss_cookies( rtt_dsxx::UnitTest & ut )
 }
 
 //---------------------------------------------------------------------------//
+// Check the check_cookies function.
+// This function builds an error message and throws an exception.
+//---------------------------------------------------------------------------//
+static void tcheck_cookies( rtt_dsxx::UnitTest & ut )
+{
+    {
+        std::cout << "tcheck_cookies test: ";
+        try
+        {
+            rtt_dsxx::check_cookies( false, "testing check_cookies()", "DummyFile.ext", 55 );
+            throw "Bogus!";
+        }
+        catch( rtt_dsxx::assertion const & /* error */ )
+        {
+            PASSMSG("Caught assertion thrown by check_cookies with false condition.");
+        }
+        catch( ... )
+        {
+            ITFAILS;
+        }
+    }
+    {
+        std::cout << "tcheck_cookies test: ";
+        try
+        {
+            rtt_dsxx::check_cookies( true, "testing check_cookies()", "DummyFile.ext", 55 );
+            PASSMSG("Passed check_cookies with true condition.");
+        }
+        catch( rtt_dsxx::assertion const & /* error */ )
+        {
+            PASSMSG("Bogus!");
+        }
+        catch( ... )
+        {
+            ITFAILS;
+        }
+    }
+    return;
+}
+
+//---------------------------------------------------------------------------//
 // Check the show_cookies function.
 // This function builds an error message and throws an exception.
 //---------------------------------------------------------------------------//
@@ -498,6 +539,7 @@ int main( int argc, char *argv[] )
         // Test mechanics of Assert funtions.
         ttoss_cookies(ut);
         tshow_cookies(ut);
+        tcheck_cookies(ut);
 
         // Test Design-by-Constract macros.
         trequire(ut);
