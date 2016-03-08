@@ -78,37 +78,36 @@ macro( dbsSetDefaults )
     set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
       0 1 2 3 4 5 6 7 9 10 11 12 13 14 15
       16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 )
-
-    if( CMAKE_CONFIGURATION_TYPES )
-      # This generator expression will be expanded when the project is
-      # installed (CMake-3.4.0+)
-      set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
-      # Generate a complete installation directory structure to avoid
-      # errors of the form "imported target includes non-existent path"
-      # when configuring Jayenne.
-      foreach( config ${CMAKE_CONFIGURATION_TYPES} )
-        file( MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${config}/include )
-      endforeach()
-    endif()
-
   endif()
 
-# ----------------------------------------
-# STATIC or SHARED libraries?
-# ----------------------------------------
+  if( CMAKE_CONFIGURATION_TYPES )
+    # This generator expression will be expanded when the project is
+    # installed (CMake-3.4.0+)
+    set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
+    # Generate a complete installation directory structure to avoid
+    # errors of the form "imported target includes non-existent path"
+    # when configuring Jayenne.
+    foreach( config ${CMAKE_CONFIGURATION_TYPES} )
+      file( MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${config}/include )
+    endforeach()
+  endif()
 
-# Library type to build
-# Linux: STATIC is a lib<XXX>.a
-#        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
-# MSVC : STATIC is <XXX>.lib
-#        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
-if( NOT DEFINED DRACO_LIBRARY_TYPE )
-  set( DRACO_LIBRARY_TYPE "SHARED" )
-endif()
-set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING
-  "Keyword for creating new libraries (STATIC or SHARED).")
-# Provide a constrained drop down list in cmake-gui.
-set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
+  # ----------------------------------------
+  # STATIC or SHARED libraries?
+  # ----------------------------------------
+
+  # Library type to build
+  # Linux: STATIC is a lib<XXX>.a
+  #        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
+  # MSVC : STATIC is <XXX>.lib
+  #        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
+  if( NOT DEFINED DRACO_LIBRARY_TYPE )
+    set( DRACO_LIBRARY_TYPE "SHARED" )
+  endif()
+  set( DRACO_LIBRARY_TYPE "${DRACO_LIBRARY_TYPE}" CACHE STRING
+    "Keyword for creating new libraries (STATIC or SHARED).")
+  # Provide a constrained drop down list in cmake-gui.
+  set_property( CACHE DRACO_LIBRARY_TYPE PROPERTY STRINGS SHARED STATIC)
 
   # Enable parallel build for Eclipse:
   set( CMAKE_ECLIPSE_MAKE_ARGUMENTS "-j ${MPIEXEC_MAX_NUMPROCS}" )
