@@ -201,8 +201,11 @@ macro( setupOpenMPI )
     set( MPIEXEC_OMP_POSTFLAGS
       "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings" )
   elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
-    set( MPIEXEC_OMP_POSTFLAGS
-      "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
+    if( NOT APPLE )
+      # -bind-to fails on OSX, See #691
+      set( MPIEXEC_OMP_POSTFLAGS
+        "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
+    endif()
   else()  # Version 1.7.4
     set( MPIEXEC_OMP_POSTFLAGS
       "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}" )
