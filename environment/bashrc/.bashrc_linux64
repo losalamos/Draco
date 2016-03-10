@@ -45,7 +45,7 @@ for mydir in ${extradirs}; do
 done
 
 export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
-grace lapack random123 eospac numdiff git svn dia graphviz doxygen \
+grace lapack random123 eospac dracoscripts git svn dia graphviz doxygen \
  git valgrind ParMetis SuperLU_DIST trilinos ndi"
 
 #LaTeX

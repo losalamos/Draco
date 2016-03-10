@@ -502,6 +502,26 @@
    ...
 }
 
+{
+   numdiff/lost/1
+   Memcheck:Leak
+   fun:calloc
+   fun:process_substring
+   fun:get_separating_string
+   fun:setargs
+   fun:main
+}
+{
+   numdiff/lost/1
+   Memcheck:Leak
+   fun:calloc
+   fun:process_substring
+   fun:get_separating_string
+   fun:setargs
+   fun:main
+}
+
+
 #==================== F90 open/read/write errors ====================#
 {
    fortran/open
