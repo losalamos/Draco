@@ -160,10 +160,18 @@ bool UnitTest::passes(const std::string &passmsg)
  * No branch is visible in the calling code that will be left uncovered during coverage
  * analysis.
  *
+ * To further reduce visible branches, a failed test optionally throws an exception, so that
+ * a series of tests will be terminated if it is impossible to recover. For example, if an
+ * object needed for subsequent tests is not successfully created, the test for successful
+ * creation should set the fatal argument so that the sequence of tests is aborted.
+ *
  * \param good True if the test passed, false otherwise.
  * \param passmsg The message to be printed to the iostream \c UnitTest::out.
+ * \param fatal True if the test is to throw a std::assert on failure.
  */
-bool UnitTest::check(bool const good, const std::string &passmsg)
+bool UnitTest::check(bool const good,
+                     std::string const &passmsg,
+                     bool const fatal)
 {
     if (good)
     {
@@ -172,6 +180,8 @@ bool UnitTest::check(bool const good, const std::string &passmsg)
     else
     {
         failure(passmsg);
+        if (fatal)
+            throw assertion("assertion thrown on critical check failure");
     }
     return true;
 }
