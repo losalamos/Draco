@@ -323,6 +323,66 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double>  const & bounds,
 
 //---------------------------------------------------------------------------//
 /*!
+ * \brief Integrate the Rosseland Specrum over an entire a set
+ * of frequency groups, returning a vector of the integrals
+ *
+ * \param bounds    The vector of group boundaries. Size n+1
+ * \param T         The temperature
+ * \param rosseland Return argumant containing the Rosseland integrals. Size n
+ */
+void CDI::integrate_Rosseland_Spectrum(
+    std::vector<double> const & bounds,
+    double              const   T,
+    std::vector<double>       & rosseland)
+{
+    Require( T >= 0.0 );
+    
+    size_t const groups( bounds.size() - 1 );
+    Check(groups >= 1);
+
+    rosseland.resize(groups, 0.0);
+
+    if (T == 0.0) return;
+
+    double scaled_frequency;
+    double exp_scaled_frequency;
+
+    Remember(double last_scaled_frequency;);
+
+    double planck_value;
+    double last_rosseland, rosseland_value;
+    
+    // Initialize the loop:
+    scaled_frequency = bounds[0] / T;
+    exp_scaled_frequency = std::exp(-scaled_frequency);
+
+    integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
+                               planck_value, rosseland_value); 
+
+    for (size_t group = 0; group < groups; ++group)
+    {
+
+        // Shift the data down:
+        Remember(last_scaled_frequency  = scaled_frequency;);
+        last_rosseland  = rosseland_value;
+
+        // New values:
+        scaled_frequency = bounds[group+1] / T;
+        Check (scaled_frequency > last_scaled_frequency);
+        exp_scaled_frequency = std::exp(-scaled_frequency);
+        integrate_planck_rosseland(scaled_frequency, exp_scaled_frequency,
+                                   planck_value, rosseland_value);
+
+        // Record the definite integral between frequencies.
+        rosseland[group] = rosseland_value - last_rosseland;
+
+        Ensure(rosseland[group] >= 0.0);  Ensure(rosseland[group] <= 1.0);
+    }
+    return;    
+}
+
+//---------------------------------------------------------------------------//
+/*!
  * \brief Integrate the Planckian and Rosseland Specrum over an entire a set
  * of frequency groups, returning a vector of the integrals
  *

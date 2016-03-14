@@ -692,6 +692,12 @@ class DLL_PUBLIC_cdi CDI
         double              const   T,
         std::vector<double>       & planck);
 
+    //! Integrate the Rosseland over all frequency groups
+    static void integrate_Rosseland_Spectrum(
+        std::vector<double> const & bounds,
+        double              const   T,
+        std::vector<double>       & rosseland);
+
     //! Integrate the Planckian and Rosseland over all frequency groups
     static void integrate_Rosseland_Planckian_Spectrum(
         std::vector<double> const & bounds,
@@ -747,7 +753,7 @@ double CDI::integrate_planck(double const scaled_freq,
 }
 
 //---------------------------------------------------------------------------//
-/*! \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
+/*! \brief Integrate the normalized Planckian and Rosseland spectrums from 0 to \f$ x
  * (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq frequency upper integration limit scaled by temperature
