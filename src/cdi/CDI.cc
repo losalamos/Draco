@@ -323,12 +323,12 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double>  const & bounds,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Integrate the Rosseland Specrum over an entire a set
+ * \brief Integrate the Rosseland Spectrum over an entire a set
  * of frequency groups, returning a vector of the integrals
  *
- * \param bounds    The vector of group boundaries. Size n+1
+ * \param bounds    The vector of group boundaries (size n+1)
  * \param T         The temperature
- * \param rosseland Return argumant containing the Rosseland integrals. Size n
+ * \param rosseland Return argument containing the Rosseland integrals (size n)
  */
 void CDI::integrate_Rosseland_Spectrum(
     std::vector<double> const & bounds,
