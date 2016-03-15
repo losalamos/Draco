@@ -886,6 +886,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
         if (!caught)
             FAILMSG( string("Did not catch an exception for calculating ")
                      + "Rosseland and Planckian integral.");
+
     }
 
     // check some planck integrals
@@ -1073,10 +1074,16 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     std::vector<double> group_bounds ( CDI::getFrequencyGroupBoundaries() );
     if (group_bounds.size() != 4) ITFAILS;
 
+    // Vectors for testing the combined planck/rosseland integration
     std::vector<double> planck;
     std::vector<double> rosseland;
+    // Vector for testing the rosseland-only integration
+    std::vector<double> rosseland_only;
 
+    // Test using both combined Rosseland/Planckian integration and 
+    // stand-alone Rosseland integration
     CDI::integrate_Rosseland_Planckian_Spectrum(group_bounds, 1.0, planck, rosseland);
+    CDI::integrate_Rosseland_Spectrum(group_bounds, 1.0, rosseland_only);
 
     for (int group_index = 1; group_index <= 3; ++group_index)
     {
@@ -1084,6 +1091,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
 
         if (!soft_equiv(planck   [group_index-1], PL )) ITFAILS;
         if (!soft_equiv(rosseland[group_index-1], ROS)) ITFAILS;
+        if (!soft_equiv(rosseland_only[group_index-1], ROS)) ITFAILS;
     }
 
     // Special case of zero temperature
@@ -1134,6 +1142,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
     // Vectors to hold the plankian and rosseland integrals for each cell.
     std::vector<double> planck_spectrum   (bounds.size()-1);
     std::vector<double> rosseland_spectrum(bounds.size()-1);
+    std::vector<double> rosseland_only_spectrum(bounds.size()-1);
     std::vector<double> emission_group_cdf(bounds.size()-1);
 
     // Simple test:
@@ -1189,6 +1198,11 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         CDI::integrate_Rosseland_Planckian_Spectrum(
             bounds, matTemp,                      // <- input
             planck_spectrum, rosseland_spectrum); // <- output
+        // We also generate the stand-alone Rosseland spectrum for comparison
+        // (the rosseland and rosseland_only vectors should be the same).
+        CDI::integrate_Rosseland_Spectrum(
+            bounds, matTemp,          // <- input
+            rosseland_only_spectrum); // <- output
 
         // Collapse the opacities:
         double const opacity_pl = CDI::collapseMultigroupOpacitiesPlanck(
@@ -1197,6 +1211,8 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
             bounds, mgOpacities, planck_spectrum);
         double const opacity_ross = CDI::collapseMultigroupOpacitiesRosseland(
             bounds, mgOpacities, rosseland_spectrum );
+        double const opacity_ross_only = CDI::collapseMultigroupOpacitiesRosseland(
+            bounds, mgOpacities, rosseland_only_spectrum );
 
         std::vector<double> emission_group_cdf_ref(bounds.size()-1);
         emission_group_cdf_ref[0] = 0.0192441804600152;
@@ -1209,6 +1225,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest & ut)
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )             ITFAILS;
         if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) ) ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) )         ITFAILS;
+        if( ! soft_equiv( opacity_ross_only, opacity_ross_ref ) )    ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
                           emission_group_cdf_ref.begin(),
@@ -1325,6 +1342,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
     // Vectors to hold the plankian and rosseland integrals for each cell.
     std::vector<double> planck_spectrum   (bounds.size()-1);
     std::vector<double> rosseland_spectrum(bounds.size()-1);
+    std::vector<double> rosseland_only_spectrum(bounds.size()-1);
     size_t const numBands( bandWidths.size() );
     std::vector<double> emission_group_cdf((bounds.size()-1)*numBands);
 
@@ -1385,6 +1403,11 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         CDI::integrate_Rosseland_Planckian_Spectrum(
             bounds, matTemp,                      // <- input
             planck_spectrum, rosseland_spectrum); // <- output
+        // Repeat the integration with the Rosseland-only function, and store
+        // the result in a separate vector for comparison
+        CDI::integrate_Rosseland_Spectrum(
+            bounds, matTemp,                      // <- input
+            rosseland_only_spectrum);                  // <- output
 
         // Band widths = { 0.125, 0.125, 0.25, 0.5 }
         for( size_t ib=1; ib<=bandWidths.size(); ++ib )
@@ -1398,6 +1421,8 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
             bounds, odfmgOpacities, planck_spectrum, bandWidths);
         double const opacity_ross = CDI::collapseOdfmgOpacitiesRosseland(
             bounds, odfmgOpacities, rosseland_spectrum, bandWidths );
+        double const opacity_ross_only = CDI::collapseOdfmgOpacitiesRosseland(
+            bounds, odfmgOpacities, rosseland_only_spectrum, bandWidths );
 
         std::vector<double> emission_group_cdf_ref( emission_group_cdf.size() );
         emission_group_cdf_ref[0] = 2.4055225575019e-05;
@@ -1419,6 +1444,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )             ITFAILS;
         if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) ) ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) )         ITFAILS;
+        if( ! soft_equiv( opacity_ross_only, opacity_ross_ref ) )    ITFAILS;
         if( ! soft_equiv( emission_group_cdf.begin(),
                           emission_group_cdf.end(),
                           emission_group_cdf_ref.begin(),
