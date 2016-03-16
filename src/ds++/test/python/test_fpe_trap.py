@@ -60,10 +60,12 @@ if os.path.exists(file):
 
 # Construct the command line
 re_trinitite_nodename1 = re.compile('tt-login*', re.IGNORECASE)
+re_trinity_nodename1 = re.compile('tr-login*', re.IGNORECASE)
 re_cielo_nodename1 = re.compile('ci-login*', re.IGNORECASE)
 re_cielito_nodename1 = re.compile('ct-login*', re.IGNORECASE)
 craysys = 0
 if re_trinitite_nodename1.match( nodename ) or \
+       re_trinity_nodename1.match( nodename ) or \
        re_cielo_nodename1.match( nodename ) or \
        re_cielito_nodename1.match( nodename ):
     craysys = 1
