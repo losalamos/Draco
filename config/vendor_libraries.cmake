@@ -234,9 +234,9 @@ macro( save_vendor_imported_library_to_draco_config targets target_properties )
     get_target_property( fplibr ${tgt} IMPORTED_LOCATION_RELEASE )
     get_target_property( fplibd ${tgt} IMPORTED_LOCATION_DEBUG )
     set( fplib "${fplib} ${fplibr} ${fplibd}" )
-    if( "${fplib}" MATCHES "[.]so$"  OR
-        "${fplib}" MATCHES "[.]dll$" OR
-        "${fplib}" MATCHES "[.]dylib$" )
+    if( "${fplib}" MATCHES "[.]so"  OR
+        "${fplib}" MATCHES "[.]dll" OR
+        "${fplib}" MATCHES "[.]dylib" )
       set( library_type SHARED )
     else()
       set( library_type STATIC )
