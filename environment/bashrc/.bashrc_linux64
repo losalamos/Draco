@@ -14,13 +14,6 @@ fi
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
 
-# Locate the vendor directory
-if test "${VENDOR_DIR}x" == "x"; then
-   export VENDOR_DIR=/ccs/codes/radtran/vendors
-   if test -d /var/tmp/vendors; then
-      export VENDOR_DIR=/var/tmp/vendors
-   fi
-fi
 
 # Is the module function available?
 found=`declare -f module | wc -l`
@@ -34,7 +27,31 @@ if test ${found} == 0; then
     source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
   fi
 fi
-module use /ccs/codes/radtran/vendors/Modules
+
+case $HOSTNAME in
+ccscs[45679]*)
+    # Locate the vendor directory
+    if test "${VENDOR_DIR}x" == "x"; then
+      export VENDOR_DIR=/scratch/vendors
+    fi
+    module use $VENDOR_DIR/Modules
+    export dracomodules="gcc/4.8.5 openmpi cmake \
+lapack random123 eospac gsl dracoscripts subversion ndi"
+    ;;
+*)
+    # Locate the vendor directory
+    if test "${VENDOR_DIR}x" == "x"; then
+      export VENDOR_DIR=/ccs/codes/radtran/vendors
+      if test -d /var/tmp/vendors; then
+      export VENDOR_DIR=/var/tmp/vendors
+      fi
+    fi
+    module use /ccs/codes/radtran/vendors/Modules
+  export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
+lapack random123 eospac dracoscripts git svn dia graphviz doxygen \
+valgrind ParMetis SuperLU_DIST trilinos ndi"
+    ;;
+esac
 
 # extra paths
 extradirs="$VENDOR_DIR/bin"
@@ -43,10 +60,6 @@ for mydir in ${extradirs}; do
     export PATH=$mydir:$PATH
   fi
 done
-
-export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
-grace lapack random123 eospac dracoscripts git svn dia graphviz doxygen \
- git valgrind ParMetis SuperLU_DIST trilinos ndi"
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
