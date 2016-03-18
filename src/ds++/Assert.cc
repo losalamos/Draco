@@ -138,54 +138,12 @@ void insist( std::string const & cond,
  * called frequently.
  */
 void insist_ptr( char const * const cond,
-		 std::string const & msg,
+		 char const * const msg,
 		 char const * const file,
 		 int          const line)
 {
     // Call the other insist for consistency
     insist(cond, msg, file, line);
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Conditionally throw a rtt_dsxx::assertion for Insist macros.
- */
-void check_insist( bool const cond,
-                   char const * const condstr,
-                   std::string const & msg,
-                   char const * const file,
-                   int         const   line)
-{
-    if (!cond)
-    {
-        std::ostringstream myMessage;
-        myMessage <<  "Insist: " << condstr << ", failed in "
-                  << file << ", line " << line << "." << std::endl
-                  << "The following message was provided:" << std::endl
-                  << "\"" << msg << "\"" << std::endl;
-        throw assertion( myMessage.str() );
-    }
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Conditionally throw a rtt_dsxx::assertion for Insist_ptr macros.
- *
- * Having a (non-inlined) version that takes pointers prevents the compiler
- * from having to construct std::strings from the pointers each time.  This
- * is particularly important for things like rtt_dsxx::SP::operator->, that
- * (a) have an insist in them, (b) don't need complicated strings and (c) are
- * called frequently.
- */
-void check_insist_ptr( bool const cond,
-                       char const * const condstr,
-                       char const * const msg,
-                       char const * const file,
-                       int          const line)
-{
-    // Call the other insist for consistency
-    if (!cond)
-        check_insist(cond, condstr, msg, file, line);
 }
 
 //---------------------------------------------------------------------------//
