@@ -45,6 +45,20 @@ macro( setupLAPACKLibrariesUnix )
     endforeach()
     message( STATUS "Looking for lapack....found ${LAPACK_LIB_DIR}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
+
+    # The above might define blas, or it might not.  Double check:
+    if( NOT TARGET blas )
+      find_package( BLAS )
+      if( BLAS_FOUND )
+        add_library( blas STATIC IMPORTED)
+        set_target_properties( blas PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_LIBRARIES}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran")
+      else()
+        message( FATAL_ERROR "Looking for lapack....blas not found")
+      endif()
+    endif()
+
   else()
     message( STATUS "Looking for lapack....not found")
   endif()
