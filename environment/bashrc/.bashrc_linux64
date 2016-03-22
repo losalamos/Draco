@@ -36,7 +36,8 @@ ccscs[45679]*)
     fi
     module use $VENDOR_DIR/Modules
     export dracomodules="gcc/4.8.5 openmpi cmake \
-lapack random123 eospac gsl dracoscripts subversion ndi"
+lapack random123 eospac gsl dracoscripts subversion ndi python/2.7.11
+parmetis metis SuperLU_DIST trilinos"
     ;;
 *)
     # Locate the vendor directory
