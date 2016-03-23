@@ -1,4 +1,9 @@
-<hr class="footer"/>
+<!-- HTML footer for doxygen 1.8.10-->
+<!-- start footer part -->
+<!--BEGIN GENERATE_TREEVIEW-->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+
+<!--
 <table cols=3 width=100% padding=2>
   <tr>
     <td valign="center" width="181" align="left">
@@ -8,21 +13,37 @@
     <td align=left>
     <small>
         <a
-href="http://int.lanl.gov/orgs/ccs/ccs2.shtml">Computational Physics (CCS-2)</a><br>
-        <a href="http://int.lanl.gov/orgs/ccs/">Computer, Computational and
-Staatistical Sciences Division</a><br>
+        href="http://int.lanl.gov/orgs/ccs/ccs2.shtml">Computational
+        Physics and Methods (CCS-2)</a><br>
+        <a href="http://int.lanl.gov/orgs/ccs/">Computer, Computational
+        and Statistical Sciences Division</a><br>
         <a href="http://www.lanl.gov">Los Alamos National Laboratory</a><br>
         <a href="http://www.losalamos.com/">Los Alamos, New Mexico 87545 USA</a>
     </small>
   </td>
   <td align=right><address style="text-align: right;"><small>
     Generated on $datetime for $projectname by&nbsp;<a
-href="http://www.doxygen.org/index.html"><img class="footer"
-src="doxygen.png" alt="doxygen" border="0" /></a> $doxygenversion
+href="http://www.doxygen.org/index.html"><img class="footer" src="$relpath^doxygen.png" alt="doxygen"/></a> $doxygenversion
   </small></address></td>
 </tr>
 </table>
+-->
 
+  <ul>
+    $navpath
+    <li class="footer">$generatedby
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="$relpath^doxygen.png" alt="doxygen"/></a> $doxygenversion </li>
+  </ul>
+
+</div>
+<!--END GENERATE_TREEVIEW-->
+<!--BEGIN !GENERATE_TREEVIEW-->
+<hr class="footer"/><address class="footer"><small>
+$generatedby &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="$relpath^doxygen.png" alt="doxygen"/>
+</a> $doxygenversion
+</small></address>
+<!--END !GENERATE_TREEVIEW-->
 </body>
 </html>
-

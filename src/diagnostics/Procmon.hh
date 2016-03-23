@@ -21,7 +21,7 @@
  * review his coding when extending the feature set of this package or when
  * porting these capabilities to new architectures (i.e.: IBM BlueGene ).  His
  * files are: \c procmon_info.h, \c procmon_info.c, \c procmon_iface.h and
- * \c resources.f90. 
+ * \c resources.f90.
  */
 //---------------------------------------------------------------------------//
 // $Id: Procmon.hh 5523 2010-11-30 01:12:12Z kellyt $
@@ -47,7 +47,7 @@ namespace rtt_diagnostics
  * \param[in] mynode
  * \return    void
  *
- * Examine /proc/<pid>/status and /proc/meminfo and report results.
+ * Examine /proc/pid/status and /proc/meminfo and report results.
  *
  * Sample meminfo content:
  *
@@ -82,7 +82,7 @@ namespace rtt_diagnostics
  *     HugePages_Rsvd:      0
  *     Hugepagesize:     2048 kB
  *
- * Sample /proc/<pid>/status content:
+ * Sample /proc/pid/status content:
  *
  *     Name:   tstProcmon
  *     State:  R (running)
@@ -94,7 +94,7 @@ namespace rtt_diagnostics
  *     Uid:    2017    2017    2017    2017
  *     Gid:    2017    2017    2017    2017
  *     FDSize: 64
- *     Groups: 217 1462 2017 5016 8357 17872 18662 19038 21356 22019 22071 
+ *     Groups: 217 1462 2017 5016 8357 17872 18662 19038 21356 22019 22071
  *     VmPeak:   106392 kB
  *     VmSize:   102084 kB
  *     VmLck:         0 kB
@@ -121,7 +121,7 @@ namespace rtt_diagnostics
  *     Cpus_allowed:   00000000,00000000,00000000,00000000,00000000,00000000,00000000,ffffffff
  *     Mems_allowed:   00000000,00000003
  *
- * \example diagnostics/test/tstProcmon.cc 
+ * \example diagnostics/test/tstProcmon.cc
  */
 //===========================================================================//
 DLL_PUBLIC_diagnostics void procmon_resource_print(std::string const & identifier,
@@ -133,7 +133,7 @@ DLL_PUBLIC_diagnostics void procmon_resource_print(std::string const & identifie
 #ifdef USE_PROCMON
 #  define PROCMON_REPORT(string) rtt_diagnostics::procmon_resource_print(string)
 #else
-#  define PROCMON_REPORT(string) 
+#  define PROCMON_REPORT(string)
 #endif
 
 #endif // diagnostics_Procmon_hh

@@ -3,7 +3,7 @@
  * \file   ds++/DracoMath.hh
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
- * \brief  New or overloaded <cmath> or cmath-like functions.
+ * \brief  New or overloaded cmath or cmath-like functions.
  * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
