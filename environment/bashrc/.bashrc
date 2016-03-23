@@ -194,7 +194,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
     tt-fey* | tt-login*)
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
       ;;
-    # trinitite (tt-fey)
+    # rzuseq
     rzuseq*)
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_bgq
       ;;

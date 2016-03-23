@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Instructions for building Doxygen documentation
-# note   Copyright (C) 2010-2012 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -68,6 +68,8 @@ if( DOXYGEN_FOUND )
 
   set( htmlfooter "${DOXYGEN_HTML_OUTPUT}/footer.html")
   set( htmlheader "${DOXYGEN_HTML_OUTPUT}/header.html")
+  set( project_brief "Object-oriented components for numerically intensive, parallel, radiation transport applications.")
+  string( REPLACE " " "___" project_brief ${project_brief} )
 
 # doxygen_config.in needs the following symbols:
 
@@ -90,6 +92,7 @@ if( DOXYGEN_FOUND )
             -Ddoxygen_html_output=${DOXYGEN_HTML_OUTPUT}
             -DDOTFILE_DIRS=${DOXYGEN_DOTFILE_DIRS}
             -Ddotpath=${DOXYGEN_DOTFILE_DIRS}
+            -Dproject_brief=\"${project_brief}\"
             -Dlatex_yes_no=NO
             -Ddoxygen_latex_output=${DOXYGEN_HTML_OUTPUT}/../latex
             -Dhtmlheader=${htmlheader}

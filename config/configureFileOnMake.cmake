@@ -23,7 +23,7 @@
 # example,
 #   add_custom_command(
 #    OUTPUT  "${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
-#    COMMAND "${CMAKE_COMMAND}" 
+#    COMMAND "${CMAKE_COMMAND}"
 #            -DINFILE="${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
 #            -DOUTFILE="${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
 #            -DCOMP_LINKS=${COMP_LINKS}
@@ -32,7 +32,7 @@
 #    DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
 #  )
 #
-# add_custom_target( mytarget 
+# add_custom_target( mytarget
 #   DEPENDS "${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
 #    COMMENT "Building Doxygen mainpage.dcc (HTML)..."
 #    )
@@ -40,7 +40,7 @@
 if( NOT EXISTS ${INFILE} )
   message( FATAL_ERROR "
 INFILE and OUTFILE must be set on command line.  For example,
-${CMAKE_COMMAND} 
+${CMAKE_COMMAND}
   -P ${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake
   -DINFILE=${INFILE}
   -DOUTFILE=${OUTFILE}
@@ -54,6 +54,9 @@ ${CMAKE_COMMAND}
   -DDOTFILE_DIRS=${DOTFILE_DIRS}
 " )
 endif()
+
+# Decode "---" as " " for variables passed to this function
+string( REPLACE "___" " " project_brief "${project_brief}" )
 
 # Ensure we use native path styles
 file( TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}" PROJECT_SOURCE_DIR )
@@ -91,5 +94,3 @@ if( TAGFILES )
    set( TAGFILES ${tmp_tagfiles} )
 endif()
 configure_file( ${INFILE} ${OUTFILE} @ONLY )
-
-

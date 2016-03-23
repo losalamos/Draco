@@ -51,7 +51,7 @@ metis parmetis SuperLU_DIST trilinos"
     module use /ccs/codes/radtran/vendors/Modules
   export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
 lapack random123 eospac dracoscripts git svn dia graphviz doxygen \
-valgrind ParMetis SuperLU_DIST trilinos ndi"
+ParMetis SuperLU_DIST trilinos ndi"
     ;;
 esac
 
