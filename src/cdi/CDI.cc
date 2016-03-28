@@ -474,6 +474,7 @@ double CDI::collapseMultigroupOpacitiesPlanck(
     Require( groupBounds.size() > 0 );
     Require( opacity.size()        == groupBounds.size() -1 );
     Require( planckSpectrum.size() == groupBounds.size() -1 );
+    Require( emission_group_cdf.size() == groupBounds.size() -1 );
 
     // Integrate the unnormalized Planckian over the group spectrum
     // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
@@ -699,6 +700,8 @@ double CDI::collapseOdfmgOpacitiesPlanck(
     Require( opacity.size()        == groupBounds.size() -1 );
     Require( opacity[0].size()     == bandWidths.size() );
     Require( planckSpectrum.size() == groupBounds.size() -1 );
+    Require( emission_group_cdf.size() == (groupBounds.size() - 1)*
+             bandWidths.size() );
 
     // Integrate the unnormalized Planckian over the group spectrum
     // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
