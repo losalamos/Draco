@@ -28,7 +28,8 @@ fi
 umask 0002
 unset http_proxy
 unset HTTP_PROXY
-export VENDOR_DIR=/ccs/codes/radtran/vendors
+export VENDOR_DIR=/scratch/vendors
+export AUTODOCDIR=/ccs/codes/radtran/autodoc
 
 run () {
     echo $1
@@ -37,18 +38,26 @@ run () {
     fi
 }
 
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
 # Header
 # ----------------------------------------
 # epdash="-"
 # if test "${extra_params}x" = "x"; then
 #    epdash=""
 # fi
-machine=`uname -n`
+machine=`uname -n | sed -e 's/[.].*//g'`
 case $machine in
-ccscs[0-9].*)
+ccscs[0-9])
     ctestparts=Configure,Build,Test,Submit
     # Force new log file (vs appending)
-    echo "     " > ${logdir}/ccscs-${build_type}${epdash}${extra_params}-${subproj}-cbts.log
+    echo "     " > ${logdir}/$machine-${build_type}${epdash}${extra_params}-${subproj}-cbts.log
     echo "==========================================================================="
     echo "CCSC Regression: ${ctestparts} from ${machine}."
     echo "                 ${subproj}-${build_type}${epdash}${extra_params}"
@@ -63,18 +72,29 @@ esac
 
 # Modules
 # ----------------------------------------
-if test -z "$MODULESHOME"; then
- if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
-    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
- fi
+#if test -z "$MODULESHOME"; then
+# if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
+#    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
+# fi
+#fi
+
+result=`fn_exists module`
+if test $result -eq 0; then
+  echo 'module function is defined'
+else
+  echo 'module function does not exist. defining a local function ...'
+  source /usr/share/Modules/init/bash
 fi
+
+source /usr/share/Modules/init/bash
 run "module purge"
+run "module load user_contrib"
 run "module load gcc openmpi cmake"
-run "module load valgrind numdiff svn random123"
-run "module load eospac grace lapack"
-run "module load SuperLU_DIST/4.1"
-run "module load ndi ParMetis trilinos/12.0.1"
-run "module load doxygen graphviz qt"
+run "module load dracoscripts subversion random123 valgrind"
+run "module load eospac blas lapack gsl" # grace
+run "module load SuperLU_DIST/4.3"
+run "module load ndi metis parmetis trilinos"
+run "module load doxygen graphviz" # qt
 comp=gcc
 
 case $extra_params in
@@ -83,13 +103,14 @@ case $extra_params in
   ;;
 coverage)
   run "module purge"
-  run "module load gcc/5.2.0 openmpi/1.10.0 cmake"
-  run "module load numdiff svn random123"
-  run "module load eospac grace lapack valgrind"
-  run "module load SuperLU_DIST/4.1"
-  run "module load ndi ParMetis trilinos/12.0.1"
-  run "module load doxygen graphviz qt"
-  comp=gcc-5.2.0
+  run "module load user_contrib"
+  run "module load gcc openmpi cmake"
+  run "module load dracoscripts subversion random123"
+  run "module load eospac blas lapack gsl valgrind"
+  run "module load SuperLU_DIST/4.3"
+  run "module load ndi metis parmetis trilinos"
+  run "module load doxygen graphviz"
+  # comp=gcc-5.2.0
   echo "Coverage option selected."
   if ! test "${build_type}" == "Debug"; then
     echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
@@ -107,9 +128,9 @@ bounds_checking)
     exit 1
   fi
   bounds_checking=on
-  run "module swap SuperLU_DIST SuperLU_DIST/4.1-bc"
-  run "module swap trilinos/12.0.1 trilinos/12.0.1-bc"
-  run "module swap ParMetis/4.0.3 ParMetis/4.0.3-bc"
+  #run "module swap SuperLU_DIST SuperLU_DIST/4.1-bc"
+  #run "module swap trilinos/12.0.1 trilinos/12.0.1-bc"
+  #run "module swap ParMetis/4.0.3 ParMetis/4.0.3-bc"
   ;;
 fulldiagnostics)
   comp="intel-fulldiagnostics"
@@ -140,21 +161,6 @@ gcc520bc)
   run "module load doxygen graphviz qt"
   comp=gcc-5.2.0
   ;;
-# intel13)
-#     echo "Regression system incomplete for option 'intel13'"
-#     exit 1
-#     module unload openmpi/1.4.5 cudatoolkit intel/12.1.5
-#     module load intel/13.0.1 openmpi
-#     comp="intel-13.0.1"
-#     ;;
-# pgi)
-#     echo "Regression system incomplete for option 'pgi'"
-#     exit 1
-#     module unload eospac ParMetis trilinos SuperLU_DIST gsl
-#     module unload lapack cudatoolkit openmpi intel
-#     module load pgi openmpi gsl/1.14-pgi
-#     comp=`basename $CXX`
-#     ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
@@ -179,11 +185,11 @@ run "module list"
 # Build type     : Release, Debug, Coverage
 
 if test "${dashboard_type}x" = "x"; then
-   dashboard_type=Experimental
+   dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
    moniker=`whoami`
-   base_dir=/var/tmp/${moniker}
+   base_dir=/scratch/${moniker}
    mkdir -p $base_dir
    if ! test -d ${base_dir}; then
       echo "Fatal Error, base_dir=${base_dir} not found in environment."

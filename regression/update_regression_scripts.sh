@@ -71,8 +71,9 @@ case ${target} in
     # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
     ;;
   *)
-    SVN=/ccs/codes/radtran/vendors/subversion-1.8.13/bin/svn
-    REGDIR=/home/regress
+    # module load user_contrib subversion
+    SVN=/scratch/vendors/subversion-1.9.3/bin/svn
+    REGDIR=/scratch/regress
     ;;
 esac
 

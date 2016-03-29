@@ -56,7 +56,7 @@ fn_exists()
 ## Default values
 ##---------------------------------------------------------------------------##
 build_type=Debug
-dashboard_type=Experimental
+dashboard_type=Nightly
 projects="draco"
 extra_params=""
 regress_mode="off"
@@ -196,7 +196,7 @@ ccscs[0-9])
     machine_name_long="Linux64 on CCS LAN"
     machine_name_short=ccscs
     if ! test -d "${regdir}/draco/regression"; then
-       export regdir=/home/regress
+       export regdir=/scratch/regress
     fi
     # Argument checks
     if ! test "${extra_params}x" = "x"; then

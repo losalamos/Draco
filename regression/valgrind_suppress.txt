@@ -26,6 +26,15 @@
    fun:orterun
    fun:main
 }
+{
+   libpthread/memcheck/param/02
+   Memcheck:Param
+   write(buf)
+   obj:/usr/lib64/libpthread-2.17.so
+   ...
+   fun:orterun
+   fun:main
+}
 
 ## -------------------------------------------------------------------------- ##
 ## OpenMPI-1.6
@@ -503,7 +512,7 @@
 }
 
 {
-   numdiff/lost/1
+   numdiff/lost/01
    Memcheck:Leak
    fun:calloc
    fun:process_substring
@@ -512,7 +521,7 @@
    fun:main
 }
 {
-   numdiff/lost/1
+   numdiff/lost/02
    Memcheck:Leak
    fun:calloc
    fun:process_substring
@@ -520,7 +529,17 @@
    fun:setargs
    fun:main
 }
-
+{
+   numdiff/lost/03
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:bc_new_num
+   fun:bc_init_numbers
+   fun:init_mpa
+   fun:init_mpa_support
+   fun:main
+}
 
 #==================== F90 open/read/write errors ====================#
 {
