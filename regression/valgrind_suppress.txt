@@ -39,131 +39,131 @@
 ## -------------------------------------------------------------------------- ##
 ## OpenMPI-1.6
 ## -------------------------------------------------------------------------- ##
-{
-   <libmpi-syscall>
-   Memcheck:Param
-   sched_setaffinity(mask)
-   fun:syscall
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   <libopen-rte-syscall>
-   Memcheck:Param
-   sched_setaffinity(mask)
-   fun:syscall
-   ...
-   obj:/*/libopen-rte.so*
-}
-{
-   <libmpi-writev>
-   Memcheck:Param
-   writev(vector[...])
-   ...
-   obj:/*/libmpi.so*
-}
-{
-  <libopen-rte>
-  Memcheck:Leak
-  ...
-  obj:/*/libopen-rte*
-}
-{
-  <libopen-pal>
-  Memcheck:Leak
-  ...
-  obj:/*/libopen-pal*
-}
-{
-  <libmpi memory leaks should be ignored>
-  Memcheck:Leak
-  ...
-  obj:/*/libmpi.so*
-}
-{
-  <orterun memory leaks should be ignored>
-  Memcheck:Leak
-  ...
-  fun:orterun
-}
-{
-  <yellowrail: syscall munmap>
-  Memcheck:Addr1
-  ...
-  obj:/*/libmpi.so*
-}
-{
-  <yellowrail: syscall munmap>
-  Memcheck:Addr1
-  ...
-  obj:/*/libopen-rte.so*
-}
-{
-  <yellowrail: syscall mempolicy>
-  Memcheck:Value1
-  ...
-  obj:/*/libmpi.so*
-}
-{
-  <yellowrail: syscall munmap>
-  Memcheck:Value1
-  ...
-  obj:/*/libopen-rte.so*
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:/*/libmthca-rdmav2.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Param
-   close(fd)
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Param
-   write(buf)
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Param
-   mbind(nodemask)
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   openmpi/memcheck/cond
-   Memcheck:Cond
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   openmpi/memcheck/param
-   Memcheck:Param
-   set_mempolicy(nodemask)
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   openmpi/memcheck/value8
-   Memcheck:Value8
-   ...
-   obj:/*/libmpi.so*
-}
-{
-   openmpi/memcheck/dirpath
-   Memcheck:Addr4
-   fun:opal_os_dirpath_create
-   ...
-   fun:main
-}
+# {
+#    <libmpi-syscall>
+#    Memcheck:Param
+#    sched_setaffinity(mask)
+#    fun:syscall
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    <libopen-rte-syscall>
+#    Memcheck:Param
+#    sched_setaffinity(mask)
+#    fun:syscall
+#    ...
+#    obj:/*/libopen-rte.so*
+# }
+# {
+#    <libmpi-writev>
+#    Memcheck:Param
+#    writev(vector[...])
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#   <libopen-rte>
+#   Memcheck:Leak
+#   ...
+#   obj:/*/libopen-rte*
+# }
+# {
+#   <libopen-pal>
+#   Memcheck:Leak
+#   ...
+#   obj:/*/libopen-pal*
+# }
+# {
+#   <libmpi memory leaks should be ignored>
+#   Memcheck:Leak
+#   ...
+#   obj:/*/libmpi.so*
+# }
+# {
+#   <orterun memory leaks should be ignored>
+#   Memcheck:Leak
+#   ...
+#   fun:orterun
+# }
+# {
+#   <yellowrail: syscall munmap>
+#   Memcheck:Addr1
+#   ...
+#   obj:/*/libmpi.so*
+# }
+# {
+#   <yellowrail: syscall munmap>
+#   Memcheck:Addr1
+#   ...
+#   obj:/*/libopen-rte.so*
+# }
+# {
+#   <yellowrail: syscall mempolicy>
+#   Memcheck:Value1
+#   ...
+#   obj:/*/libmpi.so*
+# }
+# {
+#   <yellowrail: syscall munmap>
+#   Memcheck:Value1
+#   ...
+#   obj:/*/libopen-rte.so*
+# }
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Leak
+#    fun:malloc
+#    ...
+#    obj:/*/libmthca-rdmav2.so
+# }
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Param
+#    close(fd)
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Param
+#    write(buf)
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Param
+#    mbind(nodemask)
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    openmpi/memcheck/cond
+#    Memcheck:Cond
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    openmpi/memcheck/param
+#    Memcheck:Param
+#    set_mempolicy(nodemask)
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    openmpi/memcheck/value8
+#    Memcheck:Value8
+#    ...
+#    obj:/*/libmpi.so*
+# }
+# {
+#    openmpi/memcheck/dirpath
+#    Memcheck:Addr4
+#    fun:opal_os_dirpath_create
+#    ...
+#    fun:main
+# }
 
 # {
 #    <insert_a_suppression_name_here>
@@ -455,6 +455,46 @@
    ...
 }
 
+{
+   numdiff/lost/04
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:bc_new_num
+   fun:bc_a2num
+   fun:str2C
+   fun:field2cx
+   fun:cmp_fields
+   fun:cmp_lines
+   fun:cmp_files
+   fun:main
+}
+{
+   numdiff/lost/05
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:bc_new_num
+   fun:bc_sub
+   fun:Csub
+   fun:cmp_fields
+   fun:cmp_lines
+   fun:cmp_files
+   fun:main
+}
+{
+   numdiff/lost/06
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:bc_new_num
+   fun:bc_divide
+   fun:divide
+   fun:cmp_fields
+   fun:cmp_lines
+   fun:cmp_files
+   fun:main
+}
 
 
 
