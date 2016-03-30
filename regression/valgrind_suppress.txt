@@ -35,6 +35,12 @@
    fun:orterun
    fun:main
 }
+{
+  <orterun memory leaks should be ignored>
+  Memcheck:Leak
+  ...
+  fun:orterun
+}
 
 ## -------------------------------------------------------------------------- ##
 ## OpenMPI-1.6
