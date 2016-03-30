@@ -158,33 +158,25 @@ Ordinate_Set_Mapper::map_angle_into_ordinates(const Ordinate& ord_in,
             // This block selects a single ordinate in the ordinate
             // set if one of the dot products is very near to 1.0
             // (to within ord_tol)
-            if ( w1 > ord_tol )
+            if ( w1 > ord_tol && w2 > ord_tol && w3 > ord_tol)
             {
-                w1 = 1.0/w1;
+               w1 = 1.0/w1;
+               w2 = 1.0/w2;
+               w3 = 1.0/w3;
             }
-            else
+            else if ( w1 < ord_tol )
             {
                 w1 = 1.0;
                 w2 = 0.0;
                 w3 = 0.0;
             }
-            
-            if ( w2 > ord_tol )
-            {
-                w2 = 1.0/w2;
-            }
-            else
+            else if ( w2 < ord_tol )
             {
                 w1 = 0.0;
                 w2 = 1.0;
                 w3 = 0.0;
             }
-            
-            if ( w3 > ord_tol )
-            {
-                w3 = 1.0/w3;
-            }
-            else
+            else if (w3 < ord_tol )
             {
                 w1 = 0.0;
                 w2 = 0.0;
