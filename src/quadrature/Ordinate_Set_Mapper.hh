@@ -22,7 +22,6 @@ namespace rtt_quadrature
 {
 using std::vector;
 using rtt_mesh_element::Geometry;
-using rtt_quadrature::Ordinate_Set;
 
 //===========================================================================//
 /*!

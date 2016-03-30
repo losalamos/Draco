@@ -107,7 +107,7 @@ void nearest_neighbor_test( rtt_dsxx::UnitTest &ut,
                             const vector<double>& wts,
                             const size_t index)
 {
-    Require( 0<= index && index < wts.size() );
+    Require( index < wts.size() );
     Require( wts.size() == os.ordinates().size() );
     
     const vector<Ordinate>& ordinates( os.ordinates() );
