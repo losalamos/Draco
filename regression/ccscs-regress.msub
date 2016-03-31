@@ -102,14 +102,6 @@ case $extra_params in
   # no-op
   ;;
 coverage)
-  run "module purge"
-  run "module load user_contrib"
-  run "module load gcc openmpi cmake"
-  run "module load dracoscripts subversion random123"
-  run "module load eospac blas lapack gsl valgrind"
-  run "module load SuperLU_DIST/4.3"
-  run "module load ndi metis parmetis trilinos"
-  run "module load doxygen graphviz"
   # comp=gcc-5.2.0
   echo "Coverage option selected."
   if ! test "${build_type}" == "Debug"; then

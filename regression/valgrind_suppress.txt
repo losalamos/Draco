@@ -42,141 +42,216 @@
   fun:orterun
 }
 
-## -------------------------------------------------------------------------- ##
-## OpenMPI-1.6
-## -------------------------------------------------------------------------- ##
-# {
-#    <libmpi-syscall>
-#    Memcheck:Param
-#    sched_setaffinity(mask)
-#    fun:syscall
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    <libopen-rte-syscall>
-#    Memcheck:Param
-#    sched_setaffinity(mask)
-#    fun:syscall
-#    ...
-#    obj:/*/libopen-rte.so*
-# }
-# {
-#    <libmpi-writev>
-#    Memcheck:Param
-#    writev(vector[...])
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#   <libopen-rte>
-#   Memcheck:Leak
-#   ...
-#   obj:/*/libopen-rte*
-# }
-# {
-#   <libopen-pal>
-#   Memcheck:Leak
-#   ...
-#   obj:/*/libopen-pal*
-# }
-# {
-#   <libmpi memory leaks should be ignored>
-#   Memcheck:Leak
-#   ...
-#   obj:/*/libmpi.so*
-# }
-# {
-#   <orterun memory leaks should be ignored>
-#   Memcheck:Leak
-#   ...
-#   fun:orterun
-# }
-# {
-#   <yellowrail: syscall munmap>
-#   Memcheck:Addr1
-#   ...
-#   obj:/*/libmpi.so*
-# }
-# {
-#   <yellowrail: syscall munmap>
-#   Memcheck:Addr1
-#   ...
-#   obj:/*/libopen-rte.so*
-# }
-# {
-#   <yellowrail: syscall mempolicy>
-#   Memcheck:Value1
-#   ...
-#   obj:/*/libmpi.so*
-# }
-# {
-#   <yellowrail: syscall munmap>
-#   Memcheck:Value1
-#   ...
-#   obj:/*/libopen-rte.so*
-# }
-# {
-#    <insert_a_suppression_name_here>
-#    Memcheck:Leak
-#    fun:malloc
-#    ...
-#    obj:/*/libmthca-rdmav2.so
-# }
-# {
-#    <insert_a_suppression_name_here>
-#    Memcheck:Param
-#    close(fd)
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    <insert_a_suppression_name_here>
-#    Memcheck:Param
-#    write(buf)
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    <insert_a_suppression_name_here>
-#    Memcheck:Param
-#    mbind(nodemask)
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    openmpi/memcheck/cond
-#    Memcheck:Cond
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    openmpi/memcheck/param
-#    Memcheck:Param
-#    set_mempolicy(nodemask)
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    openmpi/memcheck/value8
-#    Memcheck:Value8
-#    ...
-#    obj:/*/libmpi.so*
-# }
-# {
-#    openmpi/memcheck/dirpath
-#    Memcheck:Addr4
-#    fun:opal_os_dirpath_create
-#    ...
-#    fun:main
-# }
+{
+  <pmpi_init_thread>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:store
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
 
-# {
-#    <insert_a_suppression_name_here>
-#    Memcheck:Leak
-#    ...
-#    obj:/lib64/ld-2.5.so
-# }
+{
+  <pmpi_init_thread-2>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+  <pmpi_init_thread-3>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:fetch
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+  <pmpi_init_thread-4>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:store
+   ...
+   fun:PMPI_Init_thread
+}
+
+{
+   <ompi_mpi_init>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:store
+   ...
+   fun:ompi_mpi_init
+}
+{
+  <clone>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:opal_dss_copy_value
+   ...
+   fun:start_thread
+   fun:clone
+}
+
+{
+  <pmpi_init_thread-5>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:df_search
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+  <clone-2>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:opal_dss_unpack_value
+   ...
+   fun:start_thread
+   fun:clone
+}
+{
+  <pmpi_init_thread-6>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_bml_r2_add_procs
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+
+{
+  <pmpi_init_thread-7>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   ...
+}
+
+{
+  <pmpi_init>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:PMPI_Init
+   ...
+}
+{
+  <pmpi_init>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_bml_r2_add_procs
+   ...
+   fun:PMPI_Init
+   ...
+}
+
+{
+  <fortran>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:mpi_init
+   ...
+}
+
+{
+  <fortran-2>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_bml_r2_add_procs
+   ...
+   fun:mpi_init
+   ...
+}
+{
+
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:fetch
+   fun:opal_db_base_fetch
+   fun:ompi_rte_db_fetch
+   fun:ompi_modex_recv
+   fun:vader_add_procs
+   fun:mca_bml_r2_add_procs
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   fun:mpi_init
+   fun:__draco_mpi_MOD_f90_mpi_init
+}
+{
+
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:fetch
+   fun:opal_db_base_fetch
+   fun:ompi_rte_db_fetch
+   fun:ompi_modex_recv
+   fun:mca_btl_tcp_proc_create
+   fun:mca_btl_tcp_del_procs
+   fun:mca_bml_r2_add_procs
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   fun:mpi_init
+}
+{
+
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:fetch
+   fun:opal_db_base_fetch
+   fun:ompi_rte_db_fetch
+   fun:ompi_modex_recv
+   fun:mca_btl_tcp_proc_create
+   fun:mca_btl_tcp_add_procs
+   fun:mca_bml_r2_add_procs
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   fun:mpi_init
+}
+{
+  <fortran-mpi>
+   Memcheck:Leak
+   ...
+   fun:mpi_init
+   ...
+}
+{
+  <fortran-mpi>
+   Memcheck:Leak
+   ...
+   fun:mpi_init
+}
+
 #--------------------------------------------------------
 ## Python suppressions
 {
