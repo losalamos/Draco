@@ -37,8 +37,8 @@ ccscs[456789]*)
     #module use $VENDOR_DIR/Modules
     module load user_contrib
     export dracomodules="gcc/4.8.5 openmpi cmake \
-blas lapack random123 eospac gsl dracoscripts subversion ndi python/2.7.11
-metis parmetis SuperLU_DIST trilinos"
+lapack random123 eospac gsl dracoscripts subversion ndi python/2.7.11
+metis parmetis SuperLU_DIST trilinos git"
     ;;
 *)
     # Locate the vendor directory

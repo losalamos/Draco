@@ -45,17 +45,17 @@ if test "${USER}x" == "x"; then
 fi
 
 # Ensure the work directory exists
-if ! test -d /var/tmp/${USER}; then
-   mkdir -p /var/tmp/${USER}
+if ! test -d /scratch/${USER}; then
+   mkdir -p /scratch/${USER}
 fi
 
 # Remove any exising log file.
-logfile=/var/tmp/${USER}/metrics.log
+logfile=/scratch/${USER}/metrics.log
 if test -f $logfile; then
    rm $logfile
 fi
-if ! test -d /var/tmp/${USER}; then
-    mkdir /var/tmp/${USER}
+if ! test -d /scratch/${USER}; then
+    mkdir /scratch/${USER}
 fi
 touch $logfile
 
@@ -72,7 +72,9 @@ fi
 module load bullseyecoverage
 
 CLOC=/home/regress/draco/regression/cloc
-work_dir=/var/tmp/regress
+
+#work_dir=/scratch/regress
+work_dir=/scratch/kellyt
 
 ##---------------------------------------------------------------------------##
 # Process arguments
@@ -144,7 +146,7 @@ echo "Lines of code"
 echo "-------------"
 cmd="${CLOC} --sum-reports --force-lang-def=/home/regress/draco/regression/cloc-lang.defs"
 for proj in $projects; do
-   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-5.2.0/Coverage/build/lines-of-code.log "
+   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log "
 done
 # Use grep and head to clean up the output:
 cmd="$cmd | grep -v sourceforge | head -n 24"
@@ -167,7 +169,7 @@ if test -f $COVFILE; then
 fi
 cmd="covmerge -q --mp --no-banner -c -f $COVFILE "
 for proj in $projects; do
-   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-5.2.0/Coverage/build/CMake.cov "
+   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
 done
 # create the new coverage file via covmerge
 eval $cmd
