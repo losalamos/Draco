@@ -34,11 +34,18 @@ ccscs[456789]*)
     if test "${VENDOR_DIR}x" == "x"; then
       export VENDOR_DIR=/scratch/vendors
     fi
-    #module use $VENDOR_DIR/Modules
     module load user_contrib
     export dracomodules="gcc/4.8.5 openmpi cmake \
 lapack random123 eospac gsl dracoscripts subversion ndi python/2.7.11
 metis parmetis SuperLU_DIST trilinos git"
+    ;;
+ccsnet3*)
+    # Locate the vendor directory
+    if test "${VENDOR_DIR}x" == "x"; then
+      export VENDOR_DIR=/scratch/vendors
+    fi
+    module load user_contrib
+    export dracomodules="dracoscripts subversion python/2.7.11 git"
     ;;
 *)
     # Locate the vendor directory
