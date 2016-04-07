@@ -34,6 +34,7 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
     int geometry = 0;
     double *mu  = new double[30];
     double *eta = new double[30];
+    double *xi  = new double[30];
     double *weights = new double[30];
 
     quadrature_data quad;
@@ -111,6 +112,7 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
     quad.geometry = 1;
     quad.mu = mu;
     quad.eta = eta;
+    quad.xi  = xi;
     quad.weights = weights;
 
     get_quadrature(quad);
@@ -147,6 +149,7 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
     quad.geometry = 0;
     quad.mu = mu;
     quad.eta = eta;
+    quad.xi  = xi;
     quad.weights = weights;
 
     get_quadrature(quad);
@@ -185,6 +188,8 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
     quad.geometry = 0;
     quad.mu = mu;
     quad.eta = eta;
+    quad.xi  = xi;
+
     quad.weights = weights;
 
     get_quadrature(quad);
@@ -223,6 +228,7 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
     quad.geometry = 0;
     quad.mu = mu;
     quad.eta = eta;
+    quad.xi  = xi;
     quad.weights = weights;
 
     get_quadrature(quad);
@@ -259,6 +265,7 @@ void quadrature_interface_test( rtt_dsxx::UnitTest &ut)
 
     delete [] mu;
     delete [] eta;
+    delete [] xi;
     delete [] weights;
 
     return;

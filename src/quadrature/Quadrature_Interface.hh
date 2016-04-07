@@ -44,6 +44,10 @@ void init_quadrature(quadrature_data&);
 DLL_PUBLIC_quadrature
 void get_quadrature(quadrature_data&);
 
+//! Ensure quadrature data is meaningful
+DLL_PUBLIC_quadrature
+void check_quadrature_validity(const quadrature_data&);
+    
 }
 
 #endif // quadrature_Quadrature_Interface_hh

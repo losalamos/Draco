@@ -15,13 +15,8 @@
 #include <iostream>
 
 #include "Quadrature_Interface.hh"
-#include "Quadrature.hh"
-#include "Gauss_Legendre.hh"
-#include "Level_Symmetric.hh"
-#include "Lobatto.hh"
-#include "Square_Chebyshev_Legendre.hh"
-#include "Tri_Chebyshev_Legendre.hh"
-#include "Product_Chebyshev_Legendre.hh"
+#include "Ordinate_Set_Factory.hh"
+
 
 quadrature_data::quadrature_data()
     : dimension(0),
@@ -43,148 +38,79 @@ void init_quadrature(quadrature_data& quad)
 }
 
 
+// Function to check basic validity of quadrature_data
+void check_quadrature_validity(const quadrature_data& quad)
+{
+    // We only support 1, 2, and 3D problems
+    Insist(quad.dimension > 0 && quad.dimension <=3,
+           "Quadrature dimension must be 1, 2, or 3");
+    
+    if (quad.dimension == 1)
+    {
+        Insist(0 <= quad.type && quad.type <= 2,
+               "Quadrature type must be 1 or 2 in 1-D");
+    }
+    else if (quad.dimension == 2)
+        Insist( 0 <= quad.type && quad.type <= 3,
+               "Quadrature type must be in [0,3] in 2-D");
+    
+    // Check for valid order
+    Insist(quad.order > 0, "Quadrature order must be positive");
+    
+    // There are no checks on azimuthal order since it's not required.
+    
+    // There are 3 geometry types (0,1,2) supported
+    Insist(0 <= quad.geometry && quad.geometry <= 2,
+           "Invalid geometry in quadrature_data");
+    
+    // The "mu" and "weights" entries must not be NULL; others can be
+    Insist( quad.mu != NULL,
+           "Null pointer to mu angle data found in quadrature_data");
+    Insist( quad.weights!= NULL,
+           "Null pointer to weight data found in quadrature_data");
+    
+    // For 2 and 3-D quadratures, the ordinates have all angles
+    if (quad.dimension > 1)
+    {
+        Insist( quad.eta != NULL,
+               "Null pointer to eta angle data found in quadrature_data");
+        Insist( quad.xi != NULL,
+               "Null pointer to xi angle data found in quadrature_data");
+    }
+    
+}
+
+
 void get_quadrature(quadrature_data& quad)
 {
-
-    using rtt_mesh_element::Geometry;
     using rtt_dsxx::SP;
     using namespace::rtt_quadrature;
 
-
-    bool add_starting_directions = false;
-    bool add_extra_directions = false;
-
-
-    Geometry geometry;
-
-    // Find the geometry
-    switch ( quad.geometry )
+    check_quadrature_validity(quad);
+    
+    Ordinate_Set_Factory osf(quad);
+    SP<Ordinate_Set> ordinate_set = osf.get_Ordinate_Set();
+    
+    vector<Ordinate> const ordinates(ordinate_set->ordinates());
+    size_t i(0);
+    if (quad.dimension == 1)
     {
-        case 0 :
-            geometry = rtt_mesh_element::CARTESIAN;
-            break;
-
-        case 1 :
-            geometry = rtt_mesh_element::AXISYMMETRIC;
-            add_starting_directions = true;
-            break;
-
-        case 2:
-            geometry = rtt_mesh_element::SPHERICAL;
-            add_starting_directions = true;
-            break;
-
-        default :
-            Insist(false,"Unrecongnized Geometry");
-            geometry = rtt_mesh_element::CARTESIAN;
-
+        for (auto ord=ordinates.begin(); ord != ordinates.end(); ++ord, ++i)
+        {
+            quad.weights[i] = ord->wt();
+            quad.mu[i]      = ord->mu();
+        }
     }
-
-    SP<Ordinate_Set> ordinate_set;
-    unsigned size;
-    vector<Ordinate> ordinates;
-
-    if(quad.dimension==1)
-    {  // 1D quadratures
-
-        if (quad.type == 0)
+    else // dimension == 2 or 3
+    {
+        for (auto ord=ordinates.begin(); ord != ordinates.end(); ++ord, ++i)
         {
-            Gauss_Legendre quadrature(quad.order);
-            ordinate_set =
-                quadrature.create_ordinate_set(1,
-                                               geometry,
-                                               1.0, // norm,
-                                               add_starting_directions,
-                                               add_extra_directions,
-                                               Ordinate_Set::LEVEL_ORDERED);
+            quad.weights[i] = ord->wt();
+            quad.mu[i]      = ord->mu();
+            quad.eta[i]     = ord->eta();
+            quad.xi[i]      = ord->xi();
         }
-        else if (quad.type == 1)
-        {
-            Lobatto quadrature(quad.order);
-            ordinate_set =
-                quadrature.create_ordinate_set(1,
-                                               geometry,
-                                               1.0, // norm,
-                                               add_starting_directions,
-                                               add_extra_directions,
-                                               Ordinate_Set::LEVEL_ORDERED);
-        }
-
-        ordinates = ordinate_set->ordinates();
-
-        size = ordinates.size();
-
-        // Copy wts and mu
-        for (unsigned i = 0; i < size; i++)
-        {
-            Ordinate const &ordinate = ordinates[i];
-            quad.weights[i] = ordinate.wt();
-            quad.mu[i]      = ordinate.mu();
-        }
-
     }
-    else if( quad.dimension == 2)
-    {  // 2D quadratures
-        if (quad.type == 0)
-        {
-            Level_Symmetric quadrature(quad.order);
-            ordinate_set =
-                quadrature.create_ordinate_set(2,
-                                               geometry,
-                                               1.0, // norm,
-                                               add_starting_directions,
-                                               add_extra_directions,
-                                               Ordinate_Set::LEVEL_ORDERED);
-        }
-        else if (quad.type == 1)
-        {
-            Tri_Chebyshev_Legendre quadrature(quad.order);
-            ordinate_set =
-                quadrature.create_ordinate_set(2,
-                                               geometry,
-                                               1.0, // norm,
-                                               add_starting_directions,
-                                               add_extra_directions,
-                                               Ordinate_Set::LEVEL_ORDERED);
-        }
-        else if (quad.type == 2)
-        {
-            Square_Chebyshev_Legendre quadrature(quad.order);
-            ordinate_set =
-                quadrature.create_ordinate_set(2,
-                                               geometry,
-                                               1.0, // norm,
-                                               add_starting_directions,
-                                               add_extra_directions,
-                                               Ordinate_Set::LEVEL_ORDERED);
-        }
-        else if (quad.type == 3)
-        {
-            Product_Chebyshev_Legendre quadrature(quad.order,
-                                                  quad.azimuthal_order);
-            ordinate_set =
-                quadrature.create_ordinate_set(2,
-                                               geometry,
-                                               1.0, // norm,
-                                               add_starting_directions,
-                                               add_extra_directions,
-                                               Ordinate_Set::LEVEL_ORDERED);
-        }
-
-        ordinates = ordinate_set->ordinates();
-
-        size = ordinates.size();
-
-        // Copy wts, mu and eta
-        for (unsigned i = 0; i < size; i++)
-        {
-            Ordinate const &ordinate = ordinates[i];
-            quad.weights[i] = ordinate.wt();
-            quad.mu[i]      = ordinate.mu();
-            quad.eta[i]     = ordinate.eta();
-        }
-
-    }
-
+ 
     return;
 }
