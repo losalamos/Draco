@@ -140,7 +140,7 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
    # Autodoc
    if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
        "${CTEST_SITE}" MATCHES "ccscs7" AND
-       NOT ${CMAKE_INSTALL_PREFIX} MATCHES "gcc-5.2.0" )
+       "$ENV{CPATH}" MATCHES "gcc-4.8.5" )
       message( "ctest_build(
    TARGET autodoc
    NUMBER_ERRORS num_errors

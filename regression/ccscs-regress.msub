@@ -57,7 +57,7 @@ case $machine in
 ccscs[0-9])
     ctestparts=Configure,Build,Test,Submit
     # Force new log file (vs appending)
-    echo "     " > ${logdir}/$machine-${build_type}${epdash}${extra_params}-${subproj}-cbts.log
+    echo "     " > ${logdir}/ccscs-${build_type}${epdash}${extra_params}-${subproj}-cbts.log
     echo "==========================================================================="
     echo "CCSC Regression: ${ctestparts} from ${machine}."
     echo "                 ${subproj}-${build_type}${epdash}${extra_params}"
@@ -91,7 +91,7 @@ run "module purge"
 run "module load user_contrib"
 run "module load gcc openmpi cmake"
 run "module load dracoscripts subversion random123 valgrind"
-run "module load eospac blas lapack gsl" # grace
+run "module load eospac lapack gsl" # grace
 run "module load SuperLU_DIST/4.3"
 run "module load ndi metis parmetis trilinos"
 run "module load doxygen graphviz" # qt
@@ -120,24 +120,35 @@ bounds_checking)
     exit 1
   fi
   bounds_checking=on
-  #run "module swap SuperLU_DIST SuperLU_DIST/4.1-bc"
-  #run "module swap trilinos/12.0.1 trilinos/12.0.1-bc"
-  #run "module swap ParMetis/4.0.3 ParMetis/4.0.3-bc"
+  run "module swap SuperLU_DIST SuperLU_DIST/4.3-bc"
+  run "module swap trilinos trilinos/12.6.1-bc"
+  run "module swap parmetis parmetis/4.0.3-bc"
+  ;;
+clang)
+  run "module purge"
+  run "module load user_contrib"
+  run "module load llvm openmpi cmake"
+  run "module load dracoscripts subversion random123"
+  run "module load lapack gsl" # eospac
+  run "module load SuperLU_DIST"
+  run "module load ndi metis parmetis trilinos"
+  run "module load graphviz"
+  comp=clang
   ;;
 fulldiagnostics)
   comp="intel-fulldiagnostics"
   ;;
-gcc520)
+gcc530)
   run "module purge"
-  run "module load gcc/5.2.0 openmpi/1.10.0 cmake"
-  run "module load numdiff svn random123"
-  run "module load eospac grace lapack valgrind"
-  run "module load SuperLU_DIST/4.1"
-  run "module load ndi ParMetis trilinos/12.0.1"
-  run "module load doxygen graphviz qt"
-  comp=gcc-5.2.0
+  run "module load user_contrib"
+  run "module load gcc/5.3.0 openmpi cmake"
+  run "module load dracoscripts subversion random123"
+  run "module load lapack gsl eospac"
+  run "module load SuperLU_DIST"
+  run "module load ndi metis parmetis trilinos"
+  comp=gcc-5.3.0
   ;;
-gcc520bc)
+gcc530bc)
   echo "Bounds checking option selected."
   if ! test "${build_type}" == "Debug"; then
     echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
@@ -145,13 +156,13 @@ gcc520bc)
   fi
   bounds_checking=on
   run "module purge"
-  run "module load gcc/5.2.0 openmpi/1.10.0 cmake"
-  run "module load numdiff svn random123"
-  run "module load eospac grace lapack valgrind"
-  run "module load SuperLU_DIST/4.1-bc"
-  run "module load ndi ParMetis/4.0.3-bc trilinos/12.0.1-bc"
-  run "module load doxygen graphviz qt"
-  comp=gcc-5.2.0
+  run "module load user_contrib"
+  run "module load gcc/5.3.0 openmpi cmake"
+  run "module load dracoscripts subversion random123"
+  run "module load lapack gsl"
+  run "module load SuperLU_DIST/4.3-bc"
+  run "module load ndi metis/5.1.0-bc parmetis/4.0.3-bc trilinos/12.6.2-bc"
+  comp=gcc-5.3.0
   ;;
 *)
     echo "FATAL ERROR"

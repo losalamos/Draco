@@ -19,7 +19,7 @@ print_use()
     echo " "
     echo "Usage: `basename $0` -b [Release|Debug] -d [Experimental|Nightly]"
     echo "       -h -p [\"draco jayenne capsaicin asterisk\"] -r"
-    echo "       -e [none|gcc520|coverage|cuda|fulldiagnostics|nr|perfbench|pgi]"
+    echo "       -e [none|clang|coverage|cudea|fulldiagnostics|gcc530|nr|perfbench|pgi]"
     echo " "
     echo "All arguments are optional,  The first value listed is the default value."
     echo "   -h    help           prints this message and exits."
@@ -117,7 +117,7 @@ if ! test "${extra_params}x" = "x"; then
       extra_params=""; epdash="" ;;
    coverage | cuda | fulldiagnostics | nr | perfbench | pgi )
       ;;
-   knightscorner | bounds_checking | gcc520 | gcc520bc )
+   knightscorner | bounds_checking | gcc530 | clang)
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -204,7 +204,7 @@ ccscs[0-9])
         none)  extra_params=""; epdash="" ;;
         coverage | fulldiagnostics | nr | perfbench | bounds_checking ) # known, continue
         ;;
-        gcc520 | gcc520bc ) # known, continue
+        gcc530 | clang ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
