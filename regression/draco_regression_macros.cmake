@@ -328,15 +328,15 @@ macro( parse_args )
     if( NOT "${compiler_version}x" STREQUAL "x" )
       set( compiler_short_name "${compiler_short_name}-${compiler_version}" )
     endif()
-  elseif( $ENV{CC} MATCHES "gcc" )
-    if( $ENV{CC} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
-      string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-        compiler_version $ENV{CC} )
-      set( compiler_short_name "gcc-${compiler_version}" )
-    else()
-      set( compiler_short_name "gcc" )
-    endif()
-
+  elseif( $ENV{CC} MATCHES ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+    # /scratch/vendors/gcc-5.3.0/bin/gcc
+    string( REGEX REPLACE ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
+      compiler_version $ENV{CC} )
+    set( compiler_short_name "gcc-${compiler_version}" )
+  else( $ENV{CC} MATCHES "gcc" )
+    # /usr/bin/gcc
+    # /ccs/codes/radtran/vendors/bullseyecoverage-8.9.75/bin/gcc
+    set( compiler_short_name "gcc" )
   endif()
 
   # Set the build name: (<platform>-<compiler>-<configuration>)
@@ -637,7 +637,9 @@ endmacro( setup_for_code_coverage )
 # dyanmic analysis excludes tests with label "nomemcheck"
 # ------------------------------------------------------------
 macro(process_cc_or_da)
-   if( "${sitename}" MATCHES "ccscs[1-9]" AND "$ENV{CXX}" MATCHES "g[+][+]" )
+   if( "${sitename}" MATCHES "ccscs[1-9]" AND
+       "$ENV{CXX}" MATCHES "g[+][+]" AND
+       "${CTEST_BUILD_NAME}" MATCHES "Linux64_gcc_Debug" )
       if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
          if(ENABLE_C_CODECOVERAGE)
             message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")

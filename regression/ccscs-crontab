@@ -19,7 +19,7 @@
 
 00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e clang &> /scratch/regress/logs/ccscs-Debug-clang-master.log
 
-00 04 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e gcc530 &> /scratch/regress/logs/ccscs-Debug-clang-master.log
+00 04 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e gcc530 &> /scratch/regress/logs/ccscs-Debug-gcc530-master.log
 
 #------------------------------------------------------------------------------#
 # No longer using these
