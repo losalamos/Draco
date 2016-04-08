@@ -338,12 +338,165 @@ macro( setupGSL )
 endmacro()
 
 #------------------------------------------------------------------------------
+# Setup ParMETIS (any)
+#------------------------------------------------------------------------------
+macro( setupParMETIS )
+
+  if( NOT TARGET METIS::metis )
+    message( STATUS "Looking for METIS..." )
+
+    find_package( METIS QUIET )
+    if( METIS_FOUND )
+      message( STATUS "Looking for METIS.....found ${METIS_LIBRARY}" )
+
+      # Export METIS target information to draco-config.cmake
+      # Choose items for props list via:
+      # include(print_target_properties)
+      # echo_targets("METIS::metis")
+      set( props
+        BUILD_WITH_INSTALL_RPATH
+        GNUtoMS
+        IMPORTED_CONFIGURATIONS
+        IMPORTED_IMPLIB
+        IMPORTED_IMPLIB_DEBUG
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LOCATION_DEBUG
+        IMPORTED_LOCATION_RELEASE
+        IMPORTED
+        INSTALL_RPATH
+        INSTALL_RPATH_USE_LINK_PATH
+        INTERFACE_INCLUDE_DIRECTORIES
+        POSITION_INDEPENDENT_CODE
+        SKIP_BUILD_RPATH
+        IMPORTED_LOCATION )
+
+      save_vendor_imported_library_to_draco_config( "METIS::metis" "${props}" )
+    else()
+      message( STATUS "Looking for METIS.....not found" )
+    endif()
+
+    #=============================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( METIS PROPERTIES
+      DESCRIPTION "METIS"
+      URL "http://glaros.dtc.umn.edu/gkhome/metis/metis/overview"
+      PURPOSE "METIS is a set of serial programs for partitioning graphs, partitioning finite
+   element meshes, and producing fill reducing orderings for sparse matrices."
+      )
+
+  endif()
+
+  if( NOT TARGET ParMETIS::parmetis )
+
+    message( STATUS "Looking for ParMETIS..." )
+
+    find_package( ParMETIS QUIET )
+    if( ParMETIS_FOUND )
+      message( STATUS "Looking for ParMETIS..found ${ParMETIS_LIBRARY}" )
+
+      # Export ParMETIS target information to draco-config.cmake
+      # Choose items for props list via:
+      # include(print_target_properties)
+      # echo_targets("ParMETIS::parmetis")
+      set( props
+        BUILD_WITH_INSTALL_RPATH
+        GNUtoMS
+        IMPORTED_CONFIGURATIONS
+        IMPORTED_IMPLIB
+        IMPORTED_IMPLIB_DEBUG
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LOCATION_DEBUG
+        IMPORTED_LOCATION_RELEASE
+        IMPORTED
+        INSTALL_RPATH
+        INSTALL_RPATH_USE_LINK_PATH
+        INTERFACE_INCLUDE_DIRECTORIES
+        POSITION_INDEPENDENT_CODE
+        SKIP_BUILD_RPATH
+        IMPORTED_LOCATION )
+
+      save_vendor_imported_library_to_draco_config(
+        "ParMETIS::parmetis" "${props}" )
+    else()
+      message( STATUS "Looking for ParMETIS..not found" )
+    endif()
+
+    #=============================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( ParMETIS PROPERTIES
+      DESCRIPTION "MPI Parallel METIS"
+      URL "http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview"
+      PURPOSE "ParMETIS is an MPI-based parallel library that implements a variety of algorithms for partitioning
+   unstructured graphs, meshes, and for computing fill-reducing orderings of sparse matrices."
+      )
+
+  endif()
+
+endmacro()
+
+#------------------------------------------------------------------------------
+# Setup SuperLU_DIST (any)
+#------------------------------------------------------------------------------
+macro( setupSuperLU_DIST )
+
+  if( NOT TARGET SuperLU_DIST::superludist )
+    message( STATUS "Looking for SuperLU_DIST..." )
+
+    find_package( SuperLU_DIST QUIET )
+    if( SuperLU_DIST_FOUND )
+      message( STATUS "Looking for SuperLU_DIST.....found ${SuperLU_DIST_LIBRARY}" )
+
+      # Export SuperLU_DIST target information to draco-config.cmake
+      # Choose items for props list via:
+      # include(print_target_properties)
+      # echo_targets("SuperLU_DIST::superludist")
+      set( props
+        BUILD_WITH_INSTALL_RPATH
+        GNUtoMS
+        IMPORTED_CONFIGURATIONS
+        IMPORTED_IMPLIB
+        IMPORTED_IMPLIB_DEBUG
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LOCATION_DEBUG
+        IMPORTED_LOCATION_RELEASE
+        IMPORTED
+        INSTALL_RPATH
+        INSTALL_RPATH_USE_LINK_PATH
+        INTERFACE_INCLUDE_DIRECTORIES
+        POSITION_INDEPENDENT_CODE
+        SKIP_BUILD_RPATH
+        IMPORTED_LOCATION )
+
+      save_vendor_imported_library_to_draco_config( "SuperLU_DIST::superludist" "${props}" )
+    else()
+      message( STATUS "Looking for SuperLU_DIST.....not found" )
+    endif()
+
+    #=============================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( SuperLU_DIST PROPERTIES
+      DESCRIPTION "SuperLU_DIST"
+      URL " http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+      PURPOSE "SuperLU is a general purpose library for the direct solution of large, sparse,
+   nonsymmetric systems of linear equations on high performance machines."
+      )
+
+  endif()
+
+endmacro()
+
+#------------------------------------------------------------------------------
 # Helper macros for setup_global_libraries()
 #------------------------------------------------------------------------------
 macro( SetupVendorLibrariesUnix )
 
-  # GSL ----------------------------------------------------------------------
+  # GSL, METIS, ParMETIS and SuperLU_DIST ------------------------------------
   setupGSL()
+  setupParMETIS()
+  setupSuperLU_DIST()
 
   # Random123 ----------------------------------------------------------------
   message( STATUS "Looking for Random123...")
@@ -400,6 +553,7 @@ macro( SetupVendorLibrariesWindows )
 
   # GSL ---------------------------------------------------------------------
   setupGSL()
+  setupParMETIS()
 
   # Random123 ---------------------------------------------------------------
   message( STATUS "Looking for Random123...")
@@ -492,6 +646,12 @@ individual vendor directories should be defined." )
     endif()
   endif()
 
+  if( NOT ParMETIS_ROOT_DIR )
+    if( IS_DIRECTORY $ENV{ParMETIS_ROOT_DIR}  )
+      set( ParMETIS_ROOT_DIR $ENV{ParMETIS_ROOT_DIR} )
+    endif()
+  endif()
+
   if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
     set( RANDOM123_INC_DIR $ENV{RANDOM123_INC_DIR} )
   endif()
@@ -509,12 +669,6 @@ individual vendor directories should be defined." )
     TYPE OPTIONAL
     PURPOSE "Required for building the lapack_wrap component."
     )
-  # set_package_properties( GSL PROPERTIES
-  #    URL "http://www.gnu.org/s/gsl/"
-  #    DESCRIPTION "GNU Scientific Library"
-  #    TYPE REQUIRED
-  #    PURPOSE "Required for building quadrature and rng components."
-  #    )
   set_package_properties( Random123 PROPERTIES
     URL "http://www.deshawresearch.com/resources_random123.html"
     DESCRIPTION "a library of counter-based random number generators

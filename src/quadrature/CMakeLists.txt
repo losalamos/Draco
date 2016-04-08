@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/quadrature/CMakeLists.txt
 # brief  Instructions for building quadrature Makefiles.
-# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -36,12 +36,9 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 
 add_component_library(
    TARGET       Lib_quadrature
-   TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element"
+   TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element;GSL::gsl"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}"
-   VENDOR_LIST         "GSL"
-   VENDOR_LIBS         "GSL::gsl"
-   VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR}"
 )
 
 # ---------------------------------------------------------------------------- #

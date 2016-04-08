@@ -153,6 +153,7 @@ or the target must be labeled NOEXPORT.")
   set_target_properties( ${ace_TARGET} PROPERTIES
     OUTPUT_NAME ${ace_EXE_NAME}
     FOLDER      ${ace_FOLDER}
+#    ENABLE_EXPORTS TRUE # See cmake policy cmp0065
     COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
     )
   if( DEFINED ace_PROJECT_LABEL )

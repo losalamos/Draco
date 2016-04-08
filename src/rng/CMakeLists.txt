@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for rng.
-# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -39,25 +39,24 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # sources
    ${PROJECT_BINARY_DIR}      # rng/config.h
    ${PROJECT_SOURCE_DIR}/..   # ds++ header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
-) 
+)
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_rng
-   TARGET_DEPS  "Lib_dsxx"
+   TARGET_DEPS  "Lib_dsxx;GSL::gsl"
    LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${sources}"  
-   VENDOR_LIST  "GSL"
-   VENDOR_LIBS  "GSL::gsl"
-   VENDOR_INCLUDE_DIRS "${GSL_INCLUDE_DIR};${RANDOM123_INCLUDE_DIR}"
+   SOURCES      "${sources}"
+   VENDOR_LIST  "Random123"
+   VENDOR_INCLUDE_DIRS "${RANDOM123_INCLUDE_DIR}"
 )
 
 # ---------------------------------------------------------------------------- #
@@ -73,7 +72,7 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/rng )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
