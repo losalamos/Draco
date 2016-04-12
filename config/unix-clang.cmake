@@ -27,7 +27,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -Wextra -funroll-loops" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" ) #  -std=c++11" )
+# Suppress warnings about typeid() called with function as an argument. In this
+# case, the function might not be called if the type can be deduced.
+   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -Wno-potentially-evaluated-expression" ) #  -std=c++11" )
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")

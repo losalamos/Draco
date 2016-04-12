@@ -119,32 +119,33 @@ int main(int, char **){
     // exception test in ut_carray.cpp
     rngRemember(bool caught);
     rngRemember(caught = false);
+    bool b;
     try{
-        One < AnotherOne;
+        b = One < AnotherOne;
     }catch(std::runtime_error& ){ rngRemember(caught = true); }
     assert(caught);
 
     rngRemember(caught = false);
     try{
-        One <= AnotherOne;
+        b = One <= AnotherOne;
     }catch(std::runtime_error& ){ rngRemember(caught = true); }
     assert(caught);
 
     rngRemember(caught = false);
     try{
-        One > AnotherOne;
+        b = One > AnotherOne;
     }catch(std::runtime_error& ){ rngRemember(caught = true); }
     assert(caught);
 
     rngRemember(caught = false);
     try{
-        One >= AnotherOne;
+        b = One >= AnotherOne;
     }catch(std::runtime_error& ){ rngRemember(caught = true); }
     assert(caught);
 
     // assemble_from_u32<r123m128i>
 
-    std::cout << "ut_M128: OK\n";
+    std::cout << "ut_M128: OK (b=" << b << ")\n";
     return 0;
 }
 
