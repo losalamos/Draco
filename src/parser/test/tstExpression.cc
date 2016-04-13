@@ -38,7 +38,7 @@ void tstExpression(UnitTest &ut)
 
     string const expression_text =
         "(((+1 && 1.3)||!(y<-m))/5+(2>1)*(r/m)*(2.7-1.1*(z/m))^2)*(t/s)";
-    
+
     String_Token_Stream tokens(expression_text);
 
     typedef pair<unsigned, Unit> vd;
@@ -54,7 +54,7 @@ void tstExpression(UnitTest &ut)
     vars[1] = "y";
     vars[2] = "z";
     vars[3] = "t";
-    
+
     SP<Expression const> expression = Expression::parse(4,
                                                         variable_map,
                                                         tokens);
@@ -89,7 +89,7 @@ void tstExpression(UnitTest &ut)
 
 #if 0
     // Test calculus
-    
+
     SP<Expression const> deriv = expression->pd(3);
 
     ostringstream deriv_text;
@@ -111,7 +111,7 @@ void tstExpression(UnitTest &ut)
 #endif
 
     vector<double> xs;
-    
+
     double x = 1.2;
     double r = x;
     double y = 3.1;
@@ -129,6 +129,10 @@ void tstExpression(UnitTest &ut)
     // warning C4804: '/' : unsafe use of type 'bool' in operation
 #pragma warning (disable:4804)
 #endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wliteral-conversion"
+#endif
 
     if (soft_equiv((*expression)(xs),
                    (((1 && 1.3) || !(y<-1))/5.
@@ -141,6 +145,9 @@ void tstExpression(UnitTest &ut)
         FAILMSG("expression NOT successfully evaluated");
     }
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #if defined(MSVC)
 #   pragma warning (pop)
 #endif
@@ -167,7 +174,7 @@ void tstExpression(UnitTest &ut)
     {
         ostringstream expression_text_copy;
         expression->write(vars, expression_text_copy);
-        
+
         char const * expression_text_raw =
             "20*(r>=1.1*m&&z<=1.5*m||r>=2*m)";
         // changes slightly due to stripping of extraneous whitespace,
@@ -186,7 +193,7 @@ void tstExpression(UnitTest &ut)
 
     tokens = String_Token_Stream("(1 && (4>=6 || 4>6 || 6<4 || 6<=4 || !0))"
                                  "* ( (r/m)^(t/s) + -3 - z/m)");
-    
+
     expression = Expression::parse(4,
                                    variable_map,
                                    tokens);
@@ -199,7 +206,7 @@ void tstExpression(UnitTest &ut)
     {
         FAILMSG("expression NOT successfully parsed");
         cerr << tokens.messages() << endl;
-    }        
+    }
 
     if (soft_equiv((*expression)(xs),
                     pow(r, t) + -3 - z))
@@ -236,7 +243,7 @@ void tstExpression(UnitTest &ut)
     {
         ostringstream expression_text_copy;
         expression->write(vars, expression_text_copy);
-        
+
         char const * expression_text_raw =
             "exp(-0.5*r/m)*(3*cos(2*y/m)+5*sin(3*y/m))";
         // changes slightly due to stripping of extraneous whitespace,
@@ -270,7 +277,7 @@ void tstExpression(UnitTest &ut)
     {
         ostringstream expression_text_copy;
         expression->write(vars, expression_text_copy);
-        
+
         char const * expression_text_raw = "log(1)";
         // changes slightly due to stripping of extraneous whitespace,
         // parentheses, and positive prefix
@@ -288,9 +295,9 @@ void tstExpression(UnitTest &ut)
 
     {
         tokens = String_Token_Stream("log(1.0) + cos(2.0) + exp(3.0) + sin(4.0)");
-        
+
         SP<Expression> expression = Expression::parse(4, variable_map, tokens);
-        
+
         if (expression->is_constant(0))
             PASSMSG("expression successfully const tested");
         else
@@ -305,19 +312,19 @@ void tstExpression(UnitTest &ut)
 
     {
         tokens = String_Token_Stream("(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(m*s)");
-        
+
         SP<Expression> expression = Expression::parse(4, variable_map, tokens);
-        
+
         if (expression->is_constant(0))
             PASSMSG("expression successfully const tested");
         else
             FAILMSG("expression NOT successfully const tested");
-        
+
         ostringstream expression_text_copy;
         expression->write(vars, expression_text_copy);
 
         cout << expression_text_copy.str() << endl;
-            
+
         char const * expression_text_raw =
             "(log(1)+cos(2)+exp(3)+sin(4))/(m*s)";
         // changes slightly due to stripping of extraneous whitespace,
@@ -347,7 +354,7 @@ int main(int argc, char *argv[])
     ScalarUnitTest ut(argc, argv, release);
     try { tstExpression(ut); }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of tstExpression.cc
