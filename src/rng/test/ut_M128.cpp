@@ -119,7 +119,7 @@ int main(int, char **){
     // exception test in ut_carray.cpp
     rngRemember(bool caught);
     rngRemember(caught = false);
-    bool b;
+    bool b(false);
     try{
         b = One < AnotherOne;
     }catch(std::runtime_error& ){ rngRemember(caught = true); }
