@@ -93,7 +93,7 @@ run "module use --append /usr/projects/draco/vendors/Modules"
 run "module purge &> /dev/null"
 run "module load intel/15.0.3 impi/5.1.1.109"
 #run "module load lapack"
-run "module load cmake/3.4.0 numdiff/5.8.1 subversion random123 eospac/6.2.4"
+run "module load cmake/3.5.1 numdiff/5.8.1 subversion random123 eospac/6.2.4"
 run "module load ndi ParMetis/4.0.3 SuperLU_DIST/4.1 trilinos/12.0.1"
 run "module list"
 

@@ -19,6 +19,8 @@ case ${target} in
     exit 1
     ;;
   darwin-fe* | cn[0-9]*)
+    # personal copy of ssh-agent.
+    export PATH=$HOME/bin:$PATH
     /usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
     if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
        source $HOME/.keychain/$MYHOSTNAME-sh
@@ -27,9 +29,9 @@ case ${target} in
     # Load keytab: (see notes at draco/regression/push_repositories_xf.sh)
     # Use a different cache location to avoid destroying any active user's
     # kerberos.
-    export KRB5CCNAME=/tmp/regress_kerb_cache
+    # export KRB5CCNAME=/tmp/regress_kerb_cache
     # Obtain kerberos authentication via keytab
-    run "kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
+    # run "kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
 
     #module unload subversion
     #module load subversion
