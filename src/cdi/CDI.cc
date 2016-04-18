@@ -694,14 +694,14 @@ double CDI::collapseOdfmgOpacitiesPlanck(
     std::vector<std::vector<double> > const & opacity,
     std::vector<double> const & planckSpectrum,
     std::vector<double> const & bandWidths,
-    std::vector<double>       & emission_group_cdf )
+    std::vector<std::vector<double> > & emission_group_cdf )
 {
     Require( groupBounds.size() > 0 );
-    Require( opacity.size()        == groupBounds.size() -1 );
-    Require( opacity[0].size()     == bandWidths.size() );
-    Require( planckSpectrum.size() == groupBounds.size() -1 );
-    Require( emission_group_cdf.size() == (groupBounds.size() - 1)*
-             bandWidths.size() );
+    Require( opacity.size()               == groupBounds.size() -1 );
+    Require( opacity[0].size()            == bandWidths.size() );
+    Require( planckSpectrum.size()        == groupBounds.size() -1 );
+    Require( emission_group_cdf.size()    == groupBounds.size() -1 );
+    Require( emission_group_cdf[0].size() == bandWidths.size() );
 
     // Integrate the unnormalized Planckian over the group spectrum
     // int_{\nu_0}^{\nu_G}{d\nu B(\nu,T)}
@@ -725,12 +725,11 @@ double CDI::collapseOdfmgOpacitiesPlanck(
         {
             Check( planckSpectrum[g-1] >= 0.0 );
             Check( opacity[g-1][ib-1]  >= 0.0 );
-            Check((g-1)*numBands + ib-1 < numBands*numGroups);
 
             sig_planck_sum += planckSpectrum[g-1]
                               * bandWidths[ib-1] * opacity[g-1][ib-1];
             // Also collect some CDF data.
-            emission_group_cdf[ (g-1)*numBands + ib - 1 ] = sig_planck_sum;
+            emission_group_cdf[g-1][ib-1] = sig_planck_sum;
         }
     }
 

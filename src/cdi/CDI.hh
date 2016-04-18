@@ -599,7 +599,7 @@ class DLL_PUBLIC_cdi CDI
         std::vector<std::vector<double> > const & opacity,
         std::vector<double> const & planckSpectrum,
         std::vector<double> const & bandWidths,
-        std::vector<double>       & emission_group_cdf );
+        std::vector<std::vector<double> > & emission_group_cdf );
 
     //! Collapse Multigroup+Multiband data to single-interval reciprocal data with Planck weighting.
     static double collapseOdfmgReciprocalOpacitiesPlanck(

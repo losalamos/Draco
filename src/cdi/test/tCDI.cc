@@ -953,7 +953,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     {
         ostringstream message;
         message.precision(10);
-        message << "Calculated a  normalized Planck integral for RosselandSpectrum"
+        message << "Calculated a normalized Planck integral for RosselandSpectrum "
                 << setw(12) << setiosflags(ios::fixed) << int_2;
         PASSMSG(message.str());
     }
@@ -961,7 +961,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     {
         ostringstream message;
         message.precision(10);
-        message << "Calculated a  normalized Planck integral for RosselandSpectrum"
+        message << "Calculated a normalized Planck integral for RosselandSpectrum "
                 << setw(12) << setiosflags(ios::fixed) << int_2
                 << " instead of .0345683.";
         FAILMSG(message.str());
@@ -971,7 +971,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     {
         ostringstream message;
         message.precision(10);
-        message << "Calculated a  normalized Rosseland integral for RosselandSpectrum"
+        message << "Calculated a normalized Rosseland integral for RosselandSpectrum "
                 << setw(12) << setiosflags(ios::fixed) << int_2;
         PASSMSG(message.str());
     }
@@ -979,7 +979,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     {
         ostringstream message;
         message.precision(10);
-        message << "Calculated a  normalized Rosseland integral for RosselandSpectrum"
+        message << "Calculated a normalized Rosseland integral for RosselandSpectrum "
                 << setw(12) << setiosflags(ios::fixed) << int_2
                 << " instead of 0.01220025.";
         FAILMSG(message.str());
@@ -990,7 +990,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     {
         ostringstream message;
         message.precision(10);
-        message << "Calculated a  normalized Planck integral for RosselandPlanckianSpectrum"
+        message << "Calculated a normalized Planck integral for RosselandPlanckianSpectrum "
                 << setw(12) << setiosflags(ios::fixed) << int_2;
         PASSMSG(message.str());
     }
@@ -998,7 +998,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest & ut)
     {
         ostringstream message;
         message.precision(10);
-        message << "Calculated a normalized Planck integral for RosselandPlanckianSpectrum"
+        message << "Calculated a normalized Planck integral for RosselandPlanckianSpectrum "
                 << setw(12) << setiosflags(ios::fixed) << int_2
                 << " instead of .0345683.";
         FAILMSG(message.str());
@@ -1344,7 +1344,8 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
     std::vector<double> rosseland_spectrum(bounds.size()-1);
     std::vector<double> rosseland_only_spectrum(bounds.size()-1);
     size_t const numBands( bandWidths.size() );
-    std::vector<double> emission_group_cdf((bounds.size()-1)*numBands);
+    std::vector<std::vector<double> > emission_group_cdf((bounds.size()-1), 
+        vector<double>(numBands, 0.0));
 
     // Simple test:
     {
@@ -1357,7 +1358,9 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         rosseland_spectrum[2] = 1.0/3.0;
 
         // Generate reference solutions
-        std::vector<double> emission_group_cdf_ref( emission_group_cdf.size() );
+        std::vector<std::vector<double> >emission_group_cdf_ref(
+            emission_group_cdf.size(), std::vector<double>(
+                emission_group_cdf[0].size()) );
         double opacity_pl_ref(0.0);
         double opacity_ross_ref(0.0);
         double opacity_pl_recip_ref(0.0);
@@ -1366,7 +1369,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
             for( size_t ib=0; ib<numBands; ++ib )
             {
                 opacity_pl_ref += planck_spectrum[ig]*bandWidths[ib]*odfmgOpacities[ig][ib];
-                emission_group_cdf_ref[ig*numBands+ib] = opacity_pl_ref;
+                emission_group_cdf_ref[ig][ib] = opacity_pl_ref;
                 opacity_ross_ref += rosseland_spectrum[ig]/odfmgOpacities[ig][ib];
                 opacity_pl_recip_ref += planck_spectrum[ig]*bandWidths[ib]/odfmgOpacities[ig][ib];
             }
@@ -1385,10 +1388,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         if( ! soft_equiv( opacity_pl, opacity_pl_ref ) )             ITFAILS;
         if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) ) ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) )         ITFAILS;
-        if( ! soft_equiv( emission_group_cdf.begin(),
-                          emission_group_cdf.end(),
-                          emission_group_cdf_ref.begin(),
-                          emission_group_cdf_ref.end() ) )           ITFAILS;
+        if( ! soft_equiv( emission_group_cdf, emission_group_cdf_ref ) )ITFAILS;
     }
 
     // Standard use:
@@ -1407,7 +1407,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         // the result in a separate vector for comparison
         CDI::integrate_Rosseland_Spectrum(
             bounds, matTemp,                      // <- input
-            rosseland_only_spectrum);                  // <- output
+            rosseland_only_spectrum);             // <- output
 
         // Band widths = { 0.125, 0.125, 0.25, 0.5 }
         for( size_t ib=1; ib<=bandWidths.size(); ++ib )
@@ -1424,19 +1424,22 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         double const opacity_ross_only = CDI::collapseOdfmgOpacitiesRosseland(
             bounds, odfmgOpacities, rosseland_only_spectrum, bandWidths );
 
-        std::vector<double> emission_group_cdf_ref( emission_group_cdf.size() );
-        emission_group_cdf_ref[0] = 2.4055225575019e-05;
-        emission_group_cdf_ref[1] = 0.00026460748132521;
-        emission_group_cdf_ref[2] = 0.00507565259632902;
-        emission_group_cdf_ref[3] = 0.101296554896405;
-        emission_group_cdf_ref[4] = 0.101637459064423;
-        emission_group_cdf_ref[5] = 0.1050465007446;
-        emission_group_cdf_ref[6] = 0.173227334348133;
-        emission_group_cdf_ref[7] = 1.53684400641879;
-        emission_group_cdf_ref[8] = 1.53685517516323;
-        emission_group_cdf_ref[9] = 1.53696686260764;
-        emission_group_cdf_ref[10] = 1.53920061149584;
-        emission_group_cdf_ref[11] = 1.58387558925974;
+        vector<vector<double> >emission_group_cdf_ref(
+            emission_group_cdf.size(), vector<double>(
+                emission_group_cdf[0].size()) );
+
+        emission_group_cdf_ref[0][0] = 2.4055225575019e-05;
+        emission_group_cdf_ref[0][1] = 0.00026460748132521;
+        emission_group_cdf_ref[0][2] = 0.00507565259632902;
+        emission_group_cdf_ref[0][3] = 0.101296554896405;
+        emission_group_cdf_ref[1][0] = 0.101637459064423;
+        emission_group_cdf_ref[1][1] = 0.1050465007446;
+        emission_group_cdf_ref[1][2] = 0.173227334348133;
+        emission_group_cdf_ref[1][3] = 1.53684400641879;
+        emission_group_cdf_ref[2][0] = 1.53685517516323;
+        emission_group_cdf_ref[2][1] = 1.53696686260764;
+        emission_group_cdf_ref[2][2] = 1.53920061149584;
+        emission_group_cdf_ref[2][3] = 1.58387558925974;
         double const opacity_pl_ref(1.58388556256967);
         double const opacity_ross_ref(0.00553960686776675);
         double const opacity_pl_recip_ref(123.688553616326);
@@ -1445,10 +1448,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest & ut)
         if( ! soft_equiv( opacity_pl_recip, opacity_pl_recip_ref ) ) ITFAILS;
         if( ! soft_equiv( opacity_ross, opacity_ross_ref ) )         ITFAILS;
         if( ! soft_equiv( opacity_ross_only, opacity_ross_ref ) )    ITFAILS;
-        if( ! soft_equiv( emission_group_cdf.begin(),
-                          emission_group_cdf.end(),
-                          emission_group_cdf_ref.begin(),
-                          emission_group_cdf_ref.end() ) )           ITFAILS;
+        if( ! soft_equiv( emission_group_cdf, emission_group_cdf_ref ) )ITFAILS;
     }
 
     return;
