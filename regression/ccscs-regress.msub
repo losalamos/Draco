@@ -191,8 +191,9 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   moniker=`whoami`
-   base_dir=/scratch/${moniker}
+   # moniker=`whoami`
+   # base_dir=/scratch/${moniker}
+   base_dir=/scratch/regress/cdash
    mkdir -p $base_dir
    if ! test -d ${base_dir}; then
       echo "Fatal Error, base_dir=${base_dir} not found in environment."
