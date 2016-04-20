@@ -29,11 +29,15 @@ target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
 # Use modules found in the draco directory
-module use --append $VENDOR_DIR/Modules/hpc
-module load friendly-testing user_contrib
+# module use --append $VENDOR_DIR/Modules/hpc
+module load friendly-testing
 
-export dracomodules="lapack/3.5.0 ParMetis trilinos SuperLU_DIST \
-gsl/1.15 cmake/3.4.0 numdiff ndi random123 eospac/6.2.4 emacs svn gcc"
+#export ucmf=$HOME/modulefiles
+#module use --append $ucmf/cielito
+module load user_contrib
+
+export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
+gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 emacs svn gcc"
 
 # Cielo doesn't have module hsi yet (2015 Oct).
 case ${target} in

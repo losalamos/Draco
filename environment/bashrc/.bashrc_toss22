@@ -42,12 +42,16 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-    module use --append $VENDOR_DIR/Modules/hpc
-    module load friendly-testing user_contrib
+#    module use --append $VENDOR_DIR/Modules/hpc
+    module load friendly-testing
 
-    export dracomodules="intel/15.0.5 openmpi lapack/3.5.0 trilinos \
-SuperLU_DIST ParMetis ndi random123 eospac  svn/1.8.10 cmake/3.4.0 \
-numdiff git totalview emacs"
+#    export ucmf=$HOME/modulefiles
+#    module use --append $ucmf/`/usr/projects/hpcsoft/sys_name`
+    module load user_contrib
+
+    export dracomodules="intel/15.0.5 openmpi mkl trilinos/12.6.1 \
+superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4 \
+svn/1.8.10 cmake/3.5.2 numdiff git totalview emacs"
 
     # module hsi only available on yellow toss22 and rfta
     target="`uname -n | sed -e s/[.].*//`"
