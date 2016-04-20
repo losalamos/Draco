@@ -159,7 +159,7 @@ function flavor
 function selectscratchdir
 {
   # TOSS, CLE, BGQ, Darwin:
-  toss2_scratchdirs="net/scratch1 net/scratch lustre/scratch3 lustre/scratch4"
+  toss2_scratchdirs="net/scratch net/scratch1 net/scratch2 net/scratch3 net/scratch4 scratch6 scratch8 scratch9"
   cray_scratchdirs="scratch1 lscratch1 lscratch2 lscratch3 lscratch4"
   bgq_scratchdirs="nfs/tmp2"
   scratchdirs="$toss2_scratchdirs $cray_scratchdirs $bgq_scratchdirs \

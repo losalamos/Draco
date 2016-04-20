@@ -152,7 +152,7 @@ if test "${base_dir}x" = "x"; then
    # Keep build and target dirs out of /usr/projects locations to
    # prevent the .snapshots directory from filling up.
    # scratch_dir=/scratch/${moniker}/cdash/ml
-   scratch_dir=/lustre/scratch1/yellow/kellyt/cdash/ml
+   scratch_dir=/lustre/scratch3/yellow/kellyt/cdash/ml
    mkdir -p $scratch_dir
    if ! test -d ${scratch_dir}; then
       echo "Fatal Error, scratch_dir=${scratch_dir} not found.."

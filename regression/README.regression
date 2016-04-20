@@ -4,7 +4,7 @@ Regression system for Draco, Capsaicin and Jayenne
 
 The regression system uses a combination of crontab, shell scripts and
 CTest scripts to checkout, configure, build, test and submit results
-to the Draco's CDash web server (http://rtt.lanl.gov/cdsah).  
+to the Draco's CDash web server (http://rtt.lanl.gov/cdsah).
 
 Two type of scripts are run by the crontab:
 1. A script to update the regression system.  This script runs around
@@ -17,11 +17,11 @@ Two type of scripts are run by the crontab:
 2. 'Master' regression scripts will be started around 1 am.  Crontab
    will start a 'master' script for each build flavor to be tested.
    Flavor examples include 'Debug,' 'Release-intel13' and
-   'Debug-coverage.' 
+   'Debug-coverage.'
 
 The primary regression scripts are located at draco/regression.  This
 location provides 5 types of files per targeted platform:
-1. xx-crontab file that contains the current scheduled regression jobs. 
+1. xx-crontab file that contains the current scheduled regression jobs.
 2. xx-master.csh.  This shell script coordinates the regression script
    order for projects per platform.  That is, it ensures that the
    Draco regression is complete before starting the ClubIMC or
@@ -43,7 +43,7 @@ location provides 5 types of files per targeted platform:
    ctest command.
 5. Draco-Linux64 (or similar name). Each project also provides a CTest
    script that is executed
-   (http://www.cmake.org/Wiki/CMake_Scripting_Of_CTest). 
+   (http://www.cmake.org/Wiki/CMake_Scripting_Of_CTest).
 
 Other regression scripts are provided by each software project.
 Capsaicin provides its ctest script, Capsaicin_Linux64.cmake, in
@@ -51,7 +51,7 @@ capsaicin/scripts and Jayenne provides similar files at
 jayenne-project/regression.
 
 The regression scripts are located in standardized directories
-relative to the regression directory ($regdir). 
+relative to the regression directory ($regdir).
 
 |Machine    | Regression Directory |
 |ccscs[0-9] | /home/regress/ |
@@ -73,7 +73,7 @@ that follow these rules:  <mach>-<bt>-<proj>-<extra>-<cbts>.log
 <proj> is the project name = {draco, capsaicin, clubimc, wedgehog,
                               milagro}
 <extra> is a string that defines extra build data
-                           = {intel13,pgi,coverage} 
+                           = {intel13,pgi,coverage}
 <cbts> is the regression part = {(c)onfigure, (b)uild, (t)est,
                                  (s)ubmit, joblaunch, master}.
 
@@ -86,13 +86,12 @@ Regression setup: HPC
 ----------------------------------------------------------------------
 
 Currently, the regressions run under Kelly Thompson's (kellyt)
-credentials. 
+credentials.
 
 Locations:
 --------------------
-regression directory | /usr/projects/jayenne/regress 
-work directories     | /lscratch1/kellyt/cdash/<machine> - Sandbox location for actual regression operations.
-                     | /scratch/kellyt/cdash/<machine>   - Sandbox location for actual regression operations.
+regression directory | /usr/projects/jayenne/regress
+work directories     | /net/scratch3/kellyt/cdash/<machine> - Sandbox location for actual regression operations.
 
 Regression flavors:
 --------------------
@@ -110,7 +109,7 @@ Chang).
 
 Locations:
 --------------------
-regression directory | /home/regress 
+regression directory | /home/regress
 work directories     | /var/tmp/regress/ - Sandbox location for actual regression operations.
 
 
@@ -129,7 +128,7 @@ Regression setup: Windows
 ----------------------------------------------------------------------
 
 Currently, the regressions run under Kelly Thompson's (WIN/107638)
-credentials and on his desktop machine (KTHOMPSON). 
+credentials and on his desktop machine (KTHOMPSON).
 
 Locations:
 --------------------
@@ -139,9 +138,8 @@ work directories     | d:/cdash/draco/Nightly_cl/
 Scripts:
 --------------------
 - A scheduled task runs at 11 pm to update the regression script
-  directory from svn.  
+  directory from svn.
   cd /d d:/cdash/draco/regression
   svn update
 - A scheduled task runs at 1 am to start the draco regression
   %comspec% ""D:\cdash\draco\regression\win32_draco_regression.bat"" x86
-
