@@ -14,7 +14,6 @@ fi
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
 
-
 # Is the module function available?
 found=`declare -f module | wc -l`
 # Module is provided by the system:
@@ -63,12 +62,12 @@ ParMetis SuperLU_DIST trilinos ndi"
 esac
 
 # extra paths
-extradirs="$VENDOR_DIR/bin"
-for mydir in ${extradirs}; do
-  if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-    export PATH=$mydir:$PATH
-  fi
-done
+# extradirs="$VENDOR_DIR/bin"
+# for mydir in ${extradirs}; do
+#   if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
+#     export PATH=$mydir:$PATH
+#   fi
+# done
 
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"

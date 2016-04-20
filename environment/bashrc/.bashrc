@@ -34,13 +34,13 @@ case ${-} in
    #shopt -s cdspell # autocorrect spelling errors on cd command line.
 
    # X server resources
-   if test -f ${HOME}/.Xdefaults; then
-       if test -x /usr/X11R6/bin/xrdb; then
-           if test ! "${DISPLAY}x" = "x"; then
-               /usr/X11R6/bin/xrdb ${HOME}/.Xdefaults
-           fi
-       fi
-   fi
+   # if test -f ${HOME}/.Xdefaults; then
+   #     if test -x /usr/X11R6/bin/xrdb; then
+   #         if test ! "${DISPLAY}x" = "x"; then
+   #             /usr/X11R6/bin/xrdb ${HOME}/.Xdefaults
+   #         fi
+   #     fi
+   # fi
 
    ##------------------------------------------------------------------------##
    ## Common aliases
@@ -87,9 +87,9 @@ case ${-} in
    fi
 
    # Turquoise network
-   alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
-   alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
-   alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
+   #alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
+   #alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
+   #alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
 
    ;; # end case 'interactive'
 
@@ -138,7 +138,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
   fi
 
   # Append PATHS (not linux specific, not ccs2 specific).
-  extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools /usr/X11R6/bin /usr/bin"
+  extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools"
   for mydir in ${extradirs}; do
     if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
       export PATH=${PATH}:${mydir}
@@ -181,8 +181,8 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_ct
       ;;
 
-    # Moonlight | Mustang | Luna | Typhoon
-    mp* | ml* | mu* | pi* | wf* | lu* | ty* )
+    # Mapache | Moonlight | Mustang | Pinto | Wolf | Luna
+    mp* | ml* | mu* | pi* | wf* | lu* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
       ;;
 
@@ -190,8 +190,8 @@ if test ${DRACO_BASHRC_DONE:-no} = no; then
     red-wtrw* | rfta*)
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
       ;;
-    # trinitite (tt-fey)
-    tt-fey* | tt-login*)
+    # trinitite (tt-fey) | trinity (tr-fe)
+    tt-fey* | tt-login* | tr-fe* | tr-login*)
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
       ;;
     # rzuseq
