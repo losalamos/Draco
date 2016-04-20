@@ -41,6 +41,18 @@ case mp*.lanl.gov:
 case mp*.localdomain:
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
+    setenv VENDOR_DIR /usr/projects/draco/vendors
+    module use $VENDOR_DIR/Modules/hpc
+    module load friendly-testing user_contrib
+###    module unload intel openmpi
+    module load intel/15.0.5 openmpi
+    module load git svn/1.8.10 emacs
+    module load cmake/3.5.2 numdiff lapack/3.5.0 random123 eospac/6.2.4
+    module load trilinos/12.6.1 superlu-dist/4.3
+    module load parmetis/4.0.3 metis/5.1.0 ndi fstools totalview
+    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
+    breaksw
+
 case lu*.lanl.gov:
 case lu*.localdomain:
 case ty*.lanl.gov:
@@ -52,9 +64,9 @@ case ty*.localdomain:
     module unload intel openmpi
     module load intel/15.0.3 openmpi
     module load git svn emacs
-    module load cmake/3.4.0 numdiff lapack/3.5.0 random123 eospac/6.2.4
-    module load trilinos SuperLU_DIST
-    module load ParMetis ndi
+    module load cmake/3.5.2 numdiff lapack/3.5.0 random123 eospac/6.2.4
+    module load trilinos/12.6.1 superlu-dist/4.3
+    module load parmetis/4.0.3 ndi metis/5.1.0
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
     breaksw
 
@@ -106,7 +118,6 @@ case seqlac*:
     # Draco dotkits
     use xlc12 # use gcc472
     use numdiff
-    use gsl
     use random123
 
     # LLNL dotkits
