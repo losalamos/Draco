@@ -440,6 +440,29 @@ void test_either(UnitTest &ut,
             }
         }
     }
+
+    // Test flux maps
+
+    {
+        unsigned MtF_map[3];
+        double MtF_fact[3];
+        ordinate_space->moment_to_flux(MtF_map,
+                                       MtF_fact);
+
+        unsigned FtM_map[3];
+        double FtM_fact[3];
+        ordinate_space->flux_to_moment(FtM_map,
+                                       FtM_fact);
+
+        // See that these are inverses
+        for (unsigned d=0; d<dimension; ++d)
+        {
+            ut.check(MtF_map[d]<3, "flux map in range", true);
+            ut.check(FtM_map[MtF_map[d]]==d, "inversion index of flux map");
+            ut.check(soft_equiv(FtM_fact[MtF_map[d]]*MtF_fact[d], 1.0),
+                     "inversion factor of flux map");
+        }
+    }
 }
 
 //---------------------------------------------------------------------------------------//

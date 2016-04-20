@@ -268,6 +268,14 @@ class Ordinate_Space : public rtt_quadrature::Ordinate_Set
         // moment space unless the GQF interpolation model has been specified.
     }
 
+    //! Return the scattering moment to flux map.
+    virtual void moment_to_flux(unsigned flux_map[3],
+                                double flux_fact[3]) const;
+
+    //! Return the flux to scattering moment map.
+    virtual void flux_to_moment(unsigned flux_map[3],
+                                double flux_fact[3]) const;
+
     // STATICS
 
     double compute_azimuthalAngle( double mu, double eta );

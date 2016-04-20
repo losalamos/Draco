@@ -577,6 +577,131 @@ void Ordinate_Space::compute_reflection_maps_()
     }
 }
 
+//---------------------------------------------------------------------------------------//
+/*!
+ * Return a mapping from the moments to the components of the astrophysical flux. The
+ * astrophysical flux is defined consistently with the mean intensity as \f$ F_i =
+ * \frac{1}{4 \pi}\int_{4 \pi}\Omega_i \psi d\omega\f$, that is, it is the physical flux
+ * divided by \f$4 \pi\f$.
+ *
+ * The zeroth moment is presently always assumed to be equal to the mean intensity, but the
+ * first order moments need not be in a basis in which they are equal to the astrophysical
+ * flux components. This function returns the mapping from flux moments to astrophysical
+ * flux components.
+ *
+ * \param flux_map On return, contains the indices of the first moments
+ * corresponding to each astrophysical flux component. That is, flux_map[i] is
+ * the index (starting at zero) of the moment which corresponds to the ith
+ * astrophysical flux component.
+ *
+ * \param flux_fact On return, contains the normalization factors for
+ * converting the the first moments to astrophysical flux components.
+ *
+ * Thus, if you are in 2-D Cartesian geometry, and phi contains the moments at a particular
+ * point for a particular group, then the x-component of the astrophysical flux is equal to
+ * flux_fact[0]*phi[1+flux_map[0]] and the y-component of the astrophysical flux is equal to
+ * flux_fact[1]*phi[1+flux_map[1]].
+ */
+
+void Ordinate_Space::moment_to_flux(unsigned flux_map[3],
+                                    double flux_fact[3]) const
+{
+    static double const RROOT3 = 1.0/sqrt(3.0);
+
+    if (dimension()==1)
+    {
+        flux_map[0] = 0;
+        if (geometry() != rtt_mesh_element::AXISYMMETRIC)
+            flux_fact[0] = RROOT3;
+        else
+            flux_fact[0] = -RROOT3;
+    }
+    else if (dimension()==2)
+    {
+        flux_map[0] = 1;
+        flux_fact[0] = RROOT3;
+        flux_map[1] = 0;
+        flux_fact[1] = -RROOT3;
+    }
+    else
+    {
+        Check(dimension()==3);
+        flux_map[0] = 2;
+        flux_fact[0] = -RROOT3;
+        flux_map[1] = 1;
+        flux_fact[1] = RROOT3;
+        flux_map[2] = 0;
+        flux_fact[2] = -RROOT3;
+    }
+}
+
+//---------------------------------------------------------------------------------------//
+/*!
+ * Return a mapping from the astrophysical flux to the moments. This is the inverse of the
+ * mapping returned by moment_to_flux.
+ *
+ * The zeroth moment is presently always assumed to be equal to the mean intensity, but the
+ * first order moments need not be in a basis in which they are equal to the astrophysical
+ * flux components. This function returns the mapping from flux moments to astrophysical
+ * flux components.
+ *
+ * \param flux_map On return, contains the indices of the astrophysical flux
+ * components corresponding to each first moment. That is, flux_map[i] is the
+ * index (starting at zero) of the astrophysical flux component which
+ * corresponds to the ith first moment.
+ *
+ * \param flux_fact On return, contains the normalization factors for
+ * converting the the astrophysical flux components to first moments.
+ *
+ * Thus, if you are in 2-D Cartesian geometry, and F contains the astrophysical flux at a
+ * particular point for a particular group, then the ith moment is equal to
+ * flux_fact[i-1]*F[flux_map[i-1]].
+ */
+void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
+                                    double flux_fact[3]) const
+{
+    static double const ROOT3 = sqrt(3.0);
+
+    // We hardwire these on the optimistic assumption that the moment basis
+    // used by rtt_quadrature::Ordinate_Space will not often change.
+    if (dimension()==1)
+    {
+        // In 1D nonaxisymmetric, the polar axis of the spherical harmonics is
+        // aligned along the coordinate axis and only the k=0 harmonics are
+        // nonzero. The flux is then the Y(1,0) harmonic (times the
+        // normalization factor sqrt(3)). In 1D axisymmetric, the mu axis of
+        // the spherical harmonics is aligned along the coordinate axis for
+        // consistency with 2-D axisymmetric, and so the flux is the -Y(1,1)
+        // harmonic (times the normalization).
+        flux_map[0] = 0;
+        if (geometry() != rtt_mesh_element::AXISYMMETRIC)
+            flux_fact[0] = ROOT3;
+        else
+            flux_fact[0] = -ROOT3;
+    }
+    // In 2-D and 3-D the polar axis is aligned with the second coordinate
+    // axis and the mu axis is aligned with the first coordinate. Thus the x
+    // flux corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0)
+    // harmonic, and the z flux to the -Y(1,-1) harmonic.
+    else if (dimension()==2)
+    {
+        flux_map[0] = 1;
+        flux_fact[0] = -ROOT3;
+        flux_map[1] = 0;
+        flux_fact[1] = ROOT3;
+    }
+    else
+    {
+        Check(dimension()==3);
+        flux_map[0] = 2;
+        flux_fact[0] = -ROOT3;
+        flux_map[1] = 1;
+        flux_fact[1] = ROOT3;
+        flux_map[2] = 0;
+        flux_fact[2] = -ROOT3;
+    }
+}
+
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------------------//
