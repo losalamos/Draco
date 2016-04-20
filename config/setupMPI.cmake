@@ -347,11 +347,12 @@ macro( setupMPILibrariesUnix )
       setupDracoMPIVars()
 
       # Find the version
-      execute_process( COMMAND ${MPIEXEC} --version
-        OUTPUT_VARIABLE DBS_MPI_VER_OUT
-        ERROR_VARIABLE DBS_MPI_VER_ERR)
-
-      set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+      if( NOT "${MPIEXEC}" MATCHES "aprun" )
+        execute_process( COMMAND ${MPIEXEC} --version
+          OUTPUT_VARIABLE DBS_MPI_VER_OUT
+          ERROR_VARIABLE DBS_MPI_VER_ERR)
+        set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+      endif()
 
       set_package_properties( MPI PROPERTIES
         URL "http://www.open-mpi.org/"
@@ -364,12 +365,13 @@ macro( setupMPILibrariesUnix )
       # Check flavor and add optional flags
       #
       # Notes:
-      # 1. For Intel MPI when cross compiling for MIC, the variable DBS_MPI_VER will be
-      #    bad because this configuration is done on x86 but mpiexec is a mic executable
-      #    and cannot be run on the x86.  To correctly match the MPI flavor to Intel (on
-      #    darwin), we rely on the path MPIEXEC to match the string "impi/[0-9.]+/mic".
+      # 1. For Intel MPI when cross compiling for MIC, the variable DBS_MPI_VER
+      #    will be bad because this configuration is done on x86 but mpiexec is
+      #    a mic executable and cannot be run on the x86.  To correctly match
+      #    the MPI flavor to Intel (on darwin), we rely on the path MPIEXEC to
+      #    match the string "impi/[0-9.]+/mic".
 
-      if( "${MPIEXEC}" MATCHES openmpi   OR "${DBS_MPI_VER}" MATCHES open-mpi )
+      if( "${MPIEXEC}" MATCHES openmpi OR "${DBS_MPI_VER}" MATCHES open-mpi )
         setupOpenMPI()
 
       elseif( "${MPIEXEC}" MATCHES intel-mpi OR
