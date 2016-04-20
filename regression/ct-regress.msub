@@ -105,16 +105,17 @@ run "module load friendly-testing user_contrib"
 
 # Clean up old environment
 run "module unload cmake numdiff svn"
-run "module unload gsl lapack random123 eospac"
+run "module unload gsl random123 eospac"
 run "module unload trilinos SuperLU_DIST ParMetis ndi"
+run "module unload superlu-dist metis parmetis"
 run "module unload PrgEnv-intel PrgEnv-pgi"
 # Load new environment
 run "module load PrgEnv-intel"
 run "module unload intel"
 run "module load gcc/4.8.2 intel/15.0.5.223"
 run "module load cmake/3.5.2 numdiff svn"
-run "module load gsl/1.15 lapack random123 eospac/6.2.4"
-run "module load trilinos SuperLU_DIST ParMetis ndi"
+run "module load gsl/2.1  random123 eospac/6.2.4 ndi"
+run "module load trilinos/12.6.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 
 export CC=`which cc`
 export CXX=`which CC`
@@ -127,12 +128,6 @@ case $extra_params in
 "")
     # revert to intel/14 as the default setup.
     ;;
-# intel13)
-#     # use older intel/13
-#     run "module unload intel"
-#     run "module load intel/13.0.1.117"
-#     comp="intel-13.0.1"
-#     ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
