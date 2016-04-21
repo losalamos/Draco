@@ -3,7 +3,7 @@
  * \file   memory/memory.hh
  * \author Kent G. Budge
  * \brief  memory utilities for diagnostic purposes
- * \note   Copyright (C) 2013-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

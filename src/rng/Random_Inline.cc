@@ -2,8 +2,7 @@
   \file    rng/Random.cc
   \author  Paul Henning
   \brief   Specializations of Random
-  \note    Copyright 2007 Los Alamos National Security, LLC.
-  \version $Id$
+  \note    Copyright (C) 2016 Los Alamos National Security, LLC. All rights reserved.
 */
 
 #include "Random_Inline.hh"

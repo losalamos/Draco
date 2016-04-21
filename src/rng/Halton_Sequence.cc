@@ -3,7 +3,7 @@
  * \file   rng/Halton_Sequence.cc
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
- * \note   Copyright (C) 2006-2015 Los Alamos National Laboratory,
+ * \note   Copyright (C) 2016 Los Alamos National Laboratory,
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

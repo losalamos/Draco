@@ -3,7 +3,7 @@
  * \file   rng/test/ut_carray.hh
  * \author Gabriel M. Rockefeller
  * \brief  ut_carray header file.
- * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

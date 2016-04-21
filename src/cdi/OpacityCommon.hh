@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 19 13:41:01 2001
  * \brief  Datatypes needed in GrayOpacity and MultigroupOpacity
- * \note   Copyright (C) 2001-2015 Los Alamos National Securty, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Securty, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

@@ -3,10 +3,11 @@
 # author Kelly Thompson
 # date   2011 July 22
 # brief  Provide extra macros to simplify CMakeLists.txt for latex doc
-#        directories. 
-# note   Copyright © 2011 LANS, LLC  
+#        directories.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$ 
+# $Id$
 #------------------------------------------------------------------------------#
 
 # requires parse_arguments()
@@ -24,8 +25,8 @@ find_package(LATEX)
 #
 # Usage:
 #
-# add_latex_doc( 
-#    SOURCES   "${list_of_latex_files}" 
+# add_latex_doc(
+#    SOURCES   "${list_of_latex_files}"
 #    TEXINPUTS "${PROJECT_SOURCE_DIR}:${PROJECT_SOURCE_DIR}/../../environment/latex"
 #    BIBINPUTS "${PROJECT_SOURCE_DIR}/../../environment/bibfiles"
 # )
@@ -34,7 +35,7 @@ find_package(LATEX)
 macro( add_latex_doc )
 
    # These become variables of the form ${addscalartests_SOURCES}, etc.
-   parse_arguments( 
+   parse_arguments(
       # prefix
       ald
       # list names
@@ -55,7 +56,7 @@ macro( add_latex_doc )
 
       foreach( fpdoc ${ald_SOURCES} )
          get_filename_component( doc ${fpdoc} NAME_WE )
-         add_custom_command( 
+         add_custom_command(
             OUTPUT    ${PROJECT_BINARY_DIR}/${doc}.dvi
             COMMAND   TEXINPUTS=${ald_TEXINPUTS}
                       ${LATEX_COMPILER}  ${PROJECT_SOURCE_DIR}/${doc}.tex
@@ -68,8 +69,8 @@ macro( add_latex_doc )
             DEPENDS   ${PROJECT_SOURCE_DIR}/${doc}.tex
             COMMENT   "Tex2dvi (${doc}.tex --> ${doc}.dvi)"
             )
-         
-         add_custom_command( 
+
+         add_custom_command(
             OUTPUT    ${PROJECT_BINARY_DIR}/${doc}.ps
             COMMAND   ${DVIPS_CONVERTER}
             ${PROJECT_BINARY_DIR}/${doc}.dvi
@@ -77,48 +78,48 @@ macro( add_latex_doc )
             DEPENDS   ${PROJECT_BINARY_DIR}/${doc}.dvi
             COMMENT   "dvi2ps (${doc}.dvi --> ${doc}.ps)"
             )
-         
-         
-         add_custom_command( 
+
+
+         add_custom_command(
             OUTPUT    ${PROJECT_BINARY_DIR}/${doc}.pdf
             COMMAND   ${PS2PDF_CONVERTER}
             ${PROJECT_BINARY_DIR}/${doc}.ps
             DEPENDS   ${PROJECT_BINARY_DIR}/${doc}.ps
             COMMENT   "ps2pdf (${doc}.ps --> ${doc}.pdf)"
             )
-         
+
          # register target for each individual pdf file (eg: make draco-3_0_0.pdf)
-         add_custom_target(${doc}.pdf # ALL 
+         add_custom_target(${doc}.pdf # ALL
             DEPENDS   ${PROJECT_BINARY_DIR}/${doc}.pdf
             )
-         
+
          # target to build all pdf files
          list( APPEND dirpdfs ${PROJECT_BINARY_DIR}/${doc}.pdf )
          list( APPEND dirpdfs_tgt ${doc}.pdf )
-         
+
          # generate a list of extra files to remove during 'make clean'
-         list( APPEND extra_files 
+         list( APPEND extra_files
             ${PROJECT_BINARY_DIR}/${doc}.log
             ${PROJECT_BINARY_DIR}/${doc}.bbl
             ${PROJECT_BINARY_DIR}/${doc}.blg
             ${PROJECT_BINARY_DIR}/${doc}.aux )
-         
+
       endforeach()
 
       # Provide extra instructions for 'make clean'
       set_directory_properties(
          PROPERTIES
          ADDITIONAL_MAKE_CLEAN_FILES "${extra_files}" )
-      
+
       # Create a target to generate all pdfs for this directory.
-      add_custom_target(${PROJECT_NAME}_pdf # ALL 
+      add_custom_target(${PROJECT_NAME}_pdf # ALL
          DEPENDS ${dirpdfs} )
-      
+
       get_directory_property( pdir PARENT_DIRECTORY )
       if( EXISTS "${pdir}" )
          set( allpdfs ${allpdfs};${dirpdfs_tgt} PARENT_SCOPE )
       endif()
-      
+
       # Install instructions
       install( FILES ${dirpdfs} DESTINATION doc OPTIONAL)
 
@@ -136,8 +137,8 @@ endmacro()
 #
 # Usage:
 #
-# add_latex_doc( 
-#    SOURCES   "${list_of_latex_files}" 
+# add_latex_doc(
+#    SOURCES   "${list_of_latex_files}"
 #    TEXINPUTS "${PROJECT_SOURCE_DIR}:${PROJECT_SOURCE_DIR}/../../environment/latex"
 #    BIBINPUTS "${PROJECT_SOURCE_DIR}/../../environment/bibfiles"
 # )
@@ -146,7 +147,7 @@ endmacro()
 macro( add_pdflatex_doc )
 
    # These become variables of the form ${addscalartests_SOURCES}, etc.
-   parse_arguments( 
+   parse_arguments(
       # prefix
       ald
       # list names
@@ -164,7 +165,7 @@ macro( add_pdflatex_doc )
 
       foreach( fpdoc ${ald_SOURCES} )
          get_filename_component( doc ${fpdoc} NAME_WE )
-         add_custom_command( 
+         add_custom_command(
             OUTPUT    ${PROJECT_BINARY_DIR}/${doc}.pdf
             COMMAND   TEXINPUTS=${ald_TEXINPUTS}
                       ${PDFLATEX_COMPILER} ${PROJECT_SOURCE_DIR}/${doc}.tex
@@ -177,39 +178,39 @@ macro( add_pdflatex_doc )
             DEPENDS   ${PROJECT_SOURCE_DIR}/${doc}.tex
             COMMENT   "pdflatex (${doc}.tex --> ${doc}.pdf)"
             )
-         
+
          # register target for each individual pdf file (eg: make draco-3_0_0.pdf)
-         add_custom_target(${doc}.pdf # ALL 
+         add_custom_target(${doc}.pdf # ALL
             DEPENDS   ${PROJECT_BINARY_DIR}/${doc}.pdf
             )
-         
+
          # target to build all pdf files
          list( APPEND dirpdfs ${PROJECT_BINARY_DIR}/${doc}.pdf )
          list( APPEND dirpdfs_tgt ${doc}.pdf )
-         
+
          # generate a list of extra files to remove during 'make clean'
-         list( APPEND extra_files 
+         list( APPEND extra_files
             ${PROJECT_BINARY_DIR}/${doc}.log
             ${PROJECT_BINARY_DIR}/${doc}.bbl
             ${PROJECT_BINARY_DIR}/${doc}.blg
             ${PROJECT_BINARY_DIR}/${doc}.aux )
-         
+
       endforeach()
 
       # Provide extra instructions for 'make clean'
       set_directory_properties(
          PROPERTIES
          ADDITIONAL_MAKE_CLEAN_FILES "${extra_files}" )
-      
+
       # Create a target to generate all pdfs for this directory.
-      add_custom_target(${PROJECT_NAME}_pdflatex # ALL 
+      add_custom_target(${PROJECT_NAME}_pdflatex # ALL
          DEPENDS ${dirpdfs} )
-      
+
       get_directory_property( pdir PARENT_DIRECTORY )
       if( EXISTS "${pdir}" )
          set( allpdfs ${allpdfs};${dirpdfs_tgt} PARENT_SCOPE )
       endif()
-      
+
       # Install instructions
       install( FILES ${dirpdfs} DESTINATION doc OPTIONAL )
 

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Aug 1
 # brief  Generate build project files for special_functions/test
-# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -20,7 +20,7 @@ file( GLOB test_sources *.cc )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${ode_BINARY_DIR}          # ode/config.h
@@ -31,9 +31,9 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_scalar_tests( 
+add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_special_functions;Lib_diagnostics" ) 
+   DEPS    "Lib_special_functions;Lib_diagnostics" )
 
 # ---------------------------------------------------------------------------- #
 # Copy vendor dll files to test directory (binary_dir)
@@ -42,4 +42,3 @@ add_scalar_tests(
 if( WIN32 )
    provide_aux_files( FILES "${GSL_DLL_LIBRARIES}" )
 endif()
-

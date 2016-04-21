@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for lapack_wrap.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2016, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

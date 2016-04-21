@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2013 Nov 6
 # brief  Provide.
-# note   Copyright (C) 2010-2015, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 7273 2013-10-23 18:43:16Z kellyt $

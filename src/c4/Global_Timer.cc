@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define methods of class Global_Timer, a POSIX standard timer.
- * \note   Copyright (C) 2002-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

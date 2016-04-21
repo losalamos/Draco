@@ -5,7 +5,7 @@
  * \date   Mon Jan 22 13:56:01 2001
  * \brief  IpcressOdfmgOpacity class header file (derived from
  *         cdi/OdfmgOpacity)
- * \note   Copyright (C) 2001-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

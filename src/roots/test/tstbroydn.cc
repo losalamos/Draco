@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:06:56 2004
  * \brief  Test the broydn nonlinear equation solver.
- * \note   Copyright 2006-2015 Los Alamos National Security, LLC.
+ * \note   Copyright 2016 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

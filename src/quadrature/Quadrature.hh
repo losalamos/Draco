@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Quadrature class header file.
- * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC. All rights
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC. All rights
  *         reserved.
  */
 //---------------------------------------------------------------------------------------//

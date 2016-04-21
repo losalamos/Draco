@@ -3,7 +3,7 @@
  * \file   sf/test/tstFM12.cc
  * \author Kent Budge
  * \date   Tue Sep 21 11:57:47 2004
- * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

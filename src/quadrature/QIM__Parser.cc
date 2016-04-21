@@ -3,7 +3,7 @@
  * \file   quadrature/QIM_parser.cc
  * \author Kent Budge
  * \brief  Define a parse routine for quadrature interpolation model specifications.
- * \note   © Copyright 2006-2015 LANSLLC All rights reserved.
+ * \note   © Copyright 2016 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: QIM.hh 6718 2012-08-30 20:03:01Z warsa $

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Parser for various quadrature classes.
- * \note   Copyright © 2000-2015 Los Alamos National Security, LLC. All rights
+ * \note   Copyright © 2016 Los Alamos National Security, LLC. All rights
  *         reserved.
  */
 //---------------------------------------------------------------------------------------//

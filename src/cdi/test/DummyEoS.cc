@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 16:25:09 2001
  * \brief  DummyEoS class header file (derived from ../EoS)
- * \note   Copyright (C) 2001-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

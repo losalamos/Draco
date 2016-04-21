@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr  2 14:14:29 2001
  * \brief
- * \note   Copyright (C) 2001-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

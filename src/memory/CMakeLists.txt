@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for memory.
-# note   Copyright (C) 2010-2013, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 7239 2013-10-07 20:29:39Z kellyt $
@@ -40,7 +40,7 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_memory
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME ${PROJECT_NAME}
@@ -59,7 +59,7 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/memory )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

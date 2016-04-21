@@ -3,7 +3,7 @@
   \file    ds++/ArrayWrap.hh
   \author  Paul Henning
   \brief   Declaration of class ArrayWrap
-  \note    Copyright 2007-2015 Los Alamos National Security, LLC.
+  \note    Copyright 2016 Los Alamos National Security, LLC.
   \version $Id$
 */
 //---------------------------------------------------------------------------//

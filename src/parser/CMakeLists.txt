@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for parser.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -38,10 +38,10 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_parser
    TARGET_DEPS  "Lib_c4;Lib_units"
-   LIBRARY_NAME ${PROJECT_NAME} 
+   LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
@@ -57,14 +57,10 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/parser )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-
-
-

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for ode.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -29,19 +29,19 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # sources
    ${PROJECT_BINARY_DIR}      # ode/config.h
    ${PROJECT_SOURCE_DIR}/..   # c4/ds++ header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
-) 
+)
 
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
 
 # add_component_library(
-   # TARGET       Lib_ode 
+   # TARGET       Lib_ode
    # TARGET_DEPS  Lib_dsxx
    # LIBRARY_NAME ${PROJECT_NAME}
    # SOURCES      "${sources}" )
@@ -60,11 +60,10 @@ install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}in
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-

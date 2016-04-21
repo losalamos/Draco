@@ -4,7 +4,7 @@
  * \author Geoffrey Furnish, Thomas Evans
  * \date   Tue Feb  4 11:27:53 2003
  * \brief  Smart Point class file.
- * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

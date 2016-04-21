@@ -5,9 +5,9 @@
 ;; Created: 30 Nov 2004
 ;; Version: 0.0.1
 ;;
-;; Copyright (C) 2004 Los Alamos National Security, LLC
+;; Copyright (C) 2016 Los Alamos National Security, LLC.
+;; All rights reserved.
 ;;
-;; $Id$
 ;;============================================================
 ;; Commentary:
 ;;

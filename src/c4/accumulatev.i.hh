@@ -4,7 +4,7 @@
  * \author Kelly Thompson, Thomas M. Evans, Bob Webster
  * \date   Monday, Nov 05, 2012, 13:41 pm
  * \brief  C4 accumulatev template implementation.
- * \note   Copyright (C) 2002-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

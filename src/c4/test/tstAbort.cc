@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Thu Jun  2 09:28:02 2005
  * \brief  C4 Abort test.
- * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -1,10 +1,11 @@
 /*-----------------------------------*-C-*-----------------------------------*/
 /*!
  * \file   shared_lib/config.h
- * \author Thomas M. Evans 
+ * \author Thomas M. Evans
  * \date   Wed Apr 21 14:16:24 2004
  * \brief  shared_lib package config.
- * \note   Copyright © 2004 The Regents of the University of California.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
@@ -19,5 +20,5 @@
 #endif /* shared_lib_config_h */
 
 /*---------------------------------------------------------------------------*/
-/*           end of shared_lib/config.h */
+/* end of shared_lib/config.h */
 /*---------------------------------------------------------------------------*/

@@ -5,7 +5,7 @@
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity class header file (derived from
  *         cdi/MultigroupOpacity)
- * \note   Copyright (C) 2011-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

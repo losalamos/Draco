@@ -1,7 +1,7 @@
 ##---------------------------------------------------------------------------##
 # file   : platform_checks.cmake
 # brief  : Platform Checks for Draco Build System
-# note   : Copyright (C) 2011-2015 Los Alamos National Security, LLC.
+# note   : Copyright (C) 2016 Los Alamos National Security, LLC.
 #          All rights reserved
 ##---------------------------------------------------------------------------##
 

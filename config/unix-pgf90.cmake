@@ -3,7 +3,7 @@
 # author Kelly Thompson
 # date   2011 June 7
 # brief  Establish flags for Unix - PGI Fortran
-# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

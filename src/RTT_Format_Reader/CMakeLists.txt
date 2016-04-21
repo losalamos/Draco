@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for RTT_Format_Reader.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -36,11 +36,11 @@ include_directories( ${PROJECT_SOURCE_DIR}       # sources
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
-   TARGET       Lib_RTT_Format_Reader 
+add_component_library(
+   TARGET       Lib_RTT_Format_Reader
    TARGET_DEPS  Lib_meshReaders
-   LIBRARY_NAME RTT_Format_Reader 
-   SOURCES      "${sources}" 
+   LIBRARY_NAME RTT_Format_Reader
+   SOURCES      "${sources}"
    LIBRARY_NAME_PREFIX "rtt_" )
 
 # ---------------------------------------------------------------------------- #

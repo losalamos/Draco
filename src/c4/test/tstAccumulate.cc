@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thursday, Nov 01, 2012, 09:14 am
  * \brief  Test c4::accumulatev function
- * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

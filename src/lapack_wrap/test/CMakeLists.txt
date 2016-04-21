@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------------------- #
 # Draco - Support libraries for transport solvers.
-# Copyright 2010 LANS, LLC.
+# Copyright (C) 2016 Los Alamos National Security, LLC.
+# All rights reserved.
 # ---------------------------------------------------------------------------- #
 # $Id$
 # ---------------------------------------------------------------------------- #
@@ -17,7 +18,7 @@ file( GLOB test_sources *.cc )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
@@ -35,4 +36,3 @@ set( test_dependencies
 add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    "${test_dependencies}" )
-

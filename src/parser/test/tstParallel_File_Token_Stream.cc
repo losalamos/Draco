@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Fri Apr  4 09:34:28 2003
  * \brief  Unit tests for class Parallel_File_Token_Stream
- * \note   Copyright (C) 2007-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

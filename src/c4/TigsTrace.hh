@@ -4,7 +4,7 @@
  * \author Kelly Thompson, Bob Webster, Thomas M. Evans
  * \date   Fri Sep 30 12:53:25 2005
  * \brief  TigsTrace class definitions.
- * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * These comm classes are used to perform gather/scatter operations.  They

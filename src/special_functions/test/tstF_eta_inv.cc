@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Sep 20 14:55:09 2004
  * \brief  Test the F_eta_inv function
- * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -3,7 +3,7 @@
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \brief  Parse routines for parsing a General_Octant_Quadrature specification.
- * \note   © Copyright 2006-2015 LANSLLC All rights reserved.
+ * \note   © Copyright 2016 LANSLLC All rights reserved.
 
  */
 //---------------------------------------------------------------------------------------//

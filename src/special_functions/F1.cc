@@ -3,7 +3,7 @@
  * \file   sf/F1.cc
  * \author Kent Budge
  * \brief  Implementation of F1
- * \note   © Copyright 2006-2015 LANSLLC All rights reserved.
+ * \note   © Copyright 2016 LANSLLC All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

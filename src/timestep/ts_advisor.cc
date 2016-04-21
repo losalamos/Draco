@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Defines the base class time-step advisor.
- * \note   Copyright (C) 1998-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

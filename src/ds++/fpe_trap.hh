@@ -4,7 +4,7 @@
  * \author Rob Lowrie, Kelly Thompson
  * \date   Thu Oct 13 16:36:09 2005
  * \brief  Contains functions in the fpe_trap namespace.
- * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * Copyright (C) 1994-2001  K. Scott Hunziker.

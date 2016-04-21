@@ -4,7 +4,7 @@
  * \author B.T. Adams
  * \date   Mon Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellFlags clas
- * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.s.
  */
 //---------------------------------------------------------------------------//

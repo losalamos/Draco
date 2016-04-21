@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   
  * \brief  Small kernel code for testing GPU Device framework.
- * \note   Copyright (C) 2011-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -1,5 +1,5 @@
 ;;; psvn.el --- Subversion interface for emacs
-;; Copyright (C) 2002-2015 by Stefan Reichoer
+;; Copyright (C) 2016 by Stefan Reichoer
 
 ;; Author: Stefan Reichoer <stefan@xsteve.at>
 ;; Note: This version is currently not under svn control

@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed Jan  4 16:51:37 2012
  * \brief  Explicit template instatiations for class SP.
- * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

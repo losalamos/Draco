@@ -3,7 +3,7 @@
  * \file   quadrature/quadrature_test.hh
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
- * \note   Copyright (C) 2007-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

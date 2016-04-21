@@ -3,7 +3,7 @@
  * \file   parser/String_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class String_Token_Stream.
- * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

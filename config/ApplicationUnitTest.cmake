@@ -5,7 +5,7 @@
 # brief  Provide macros that aid in creating unit tests that run
 #        interactive user codes (i.e.: run a binary that reads an
 #        input file and diff the resulting output file).
-# note   Copyright (C) 2012-2015, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $

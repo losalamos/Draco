@@ -4,7 +4,7 @@
  * \author Randy M. Roberts
  * \date   Wed Feb 16 09:27:40 2000
  * \brief  Functions that checks to see if a container is sorted.
- * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id$

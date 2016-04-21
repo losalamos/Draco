@@ -5,7 +5,7 @@
 # author Rob Lowrie, Kelly Thompson
 # date
 # brief  Test harnes for checking fpe_trap features.
-# note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

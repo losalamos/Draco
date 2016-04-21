@@ -3,7 +3,7 @@
 # author Kelly Thompson
 # date   2010 Nov 1
 # brief  Establish flags for Linux64 - Cray C/C++
-# note   Copyright (C) 2010-2015 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

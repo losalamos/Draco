@@ -4,7 +4,7 @@
  * \author John M. McGhee
  * \date   Sun Jan 30 14:57:09 2000
  * \brief  Test code for the Check_Strings utility functions.
- * \note   Copyright (C) 2000-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

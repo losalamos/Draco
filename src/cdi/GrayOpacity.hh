@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Jan 8 15:02:21 2001
  * \brief  GrayOpacity class header file (an abstract class)
- * \note   Copyright (C) 2003-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

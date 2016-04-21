@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for mesh_element/test.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -14,8 +14,8 @@ project( mesh_element_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-   ${PROJECT_SOURCE_DIR}/mesh_element_test.cc 
+set( test_lib_sources
+   ${PROJECT_SOURCE_DIR}/mesh_element_test.cc
    ${PROJECT_SOURCE_DIR}/mesh_element_test.hh
 )
 file( GLOB test_sources *.cc )
@@ -25,7 +25,7 @@ list( REMOVE_ITEM test_sources ${test_lib_sources} )
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
 )
@@ -37,7 +37,3 @@ include_directories(
 add_scalar_tests(
    SOURCES "${test_sources}"
    DEPS    "Lib_mesh_element;Lib_dsxx" )
-
-
-
-

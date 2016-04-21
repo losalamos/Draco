@@ -4,7 +4,7 @@
  * \author T.M. Kelly, Thomas M. Evans
  * \date   Tue Dec 13 10:44:29 2005
  * \brief  Timing class and macros definition.
- * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

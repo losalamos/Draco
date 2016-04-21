@@ -4,7 +4,7 @@
  * \author Gabriel M. Rockefeller
  * \date   Mon Nov 19 10:35:04 2012
  * \brief  time_serial header file.
- * \note   Copyright (C) 2012-2015 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */

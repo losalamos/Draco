@@ -1,7 +1,7 @@
 ;; ======================================================================
 ;; draco-config-modes.el
 ;;
-;; Copyright (C) 2004-2015 Los Alamos National Security, LLC
+;; Copyright (C) 2016 Los Alamos National Security, LLC
 ;;
 ;; $Id$
 ;;

@@ -3,7 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Configure a file during the 'make' process instead of during 'cmake'
-# note   Copyright © 2010 Los Alamos National Security, All rights reserved.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+#        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#

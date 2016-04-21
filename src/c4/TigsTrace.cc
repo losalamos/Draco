@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Sep 30 12:53:25 2005
  * \brief  TigsTrace function definitions.
- * \note   Copyright (C) 2005-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

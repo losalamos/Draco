@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for norms.
-# note   Copyright (C) 2010-2012, Los Alamos National Security
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -28,7 +28,7 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # sources
    ${PROJECT_SOURCE_DIR}/..   # c4/ds++ header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
@@ -40,7 +40,7 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_norms
    TARGET_DEPS  Lib_c4
    LIBRARY_NAME ${PROJECT_NAME}
@@ -59,12 +59,10 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/norms )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
-
-

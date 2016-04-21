@@ -5,7 +5,7 @@
  * \date   Wed Nov 06 2013
  * \brief  Windows/x86 crash handler tests
  *
- * Copyright (C) 2013 Los Alamos National Security, LLC.
+ * Copyright (C) 2016 Los Alamos National Security, LLC.
  *               All rights reserved.
  *
  * See ds++/COPYING file for more copyright information.  This code is based
@@ -28,7 +28,7 @@ void sigfpe_test()
     // Code taken from http://www.devx.com/cplus/Article/34993/1954
 
     //Set the x86 floating-point control word according to what
-    //exceptions you want to trap. 
+    //exceptions you want to trap.
     _clearfp(); //Always call _clearfp before setting the control
     //word
     //Because the second parameter in the following call is 0, it
@@ -41,9 +41,9 @@ void sigfpe_test()
     //exception is //blocked from being generating.
     cw &= ~(EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE |
         EM_DENORMAL | EM_INVALID);
-    //For any bit in the second parameter (mask) that is 1, the 
+    //For any bit in the second parameter (mask) that is 1, the
     //corresponding bit in the first parameter is used to update
-    //the control word.  
+    //the control word.
     unsigned int cwOriginal;
     _controlfp_s(&cwOriginal, cw, MCW_EM); //Set it.
     //MCW_EM is defined in float.h.
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     rtt_dsxx::CCrashHandler ch;
     ch.SetProcessExceptionHandlers();
     ch.SetThreadExceptionHandlers();
-    
+
     int ExceptionType = 0;
     if (argc == 2)
     {
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
         std::cin >> ExceptionType; // scanf_s("%d", &ExceptionType);
     }
 
-    std::cout << "Attempting to force ExceptionType = " << ExceptionType; 
+    std::cout << "Attempting to force ExceptionType = " << ExceptionType;
 
     switch( ExceptionType )
     {
@@ -138,31 +138,31 @@ int main(int argc, char *argv[])
         int *p = 0;
 #pragma warning(disable : 6011)   // warning C6011: Dereferencing NULL pointer 'p'
         *p = 0;
-#pragma warning(default : 6011)   
+#pragma warning(default : 6011)
         break;
     }
-    case 1: 
+    case 1:
     {
         // Call terminate
         std::cout << " (terminate)" << std::endl;
         terminate();
         break;
     }
-    case 2: 
+    case 2:
     {
         // Call unexpected
         std::cout << " (unexpected)" << std::endl;
         unexpected();
         break;
     }
-    case 3: 
+    case 3:
     {
         // pure virtual method call
         std::cout << " (pure virtual method call)" << std::endl;
         CDerived derived;
         break;
     }
-    case 4: 
+    case 4:
     {
         // invalid parameter
         std::cout << " (invalid parameter)" << std::endl;
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
         formatString = NULL;
 #pragma warning(disable : 6387)   // warning C6387: 'argument 1' might be '0': this does not adhere to the specification for the function 'printf'
         printf(formatString);
-#pragma warning(default : 6387)   
+#pragma warning(default : 6387)
         break;
     }
     case 5:
@@ -219,14 +219,14 @@ int main(int argc, char *argv[])
         raise(SIGTERM);
         break;
     }
-    case 12:  
+    case 12:
     {
         // Raise noncontinuable software exception
         std::cout << " (Raise noncontinuable software exception)" << std::endl;
         RaiseException(123, EXCEPTION_NONCONTINUABLE, 0, NULL);
         break;
     }
-    case 13: // throw 
+    case 13: // throw
     {
         // Throw typed C++ exception.
         std::cout << " (Throw typed C++ exception)" << std::endl;
@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
         std::cout << " (Unknown exception type specified)" << std::endl;
         break;
     }
-    } 
+    }
     return 0;
 }
 //---------------------------------------------------------------------------//

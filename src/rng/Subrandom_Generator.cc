@@ -3,8 +3,9 @@
  * \file   rng/Subrandom_Generator.cc
  * \author Kent Budge
  * \date   Thu Dec 22 13:38:35 2005
- * \brief  
- * \note   © Copyright 2006 LANSLLC All rights reserved.
+ * \brief
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$

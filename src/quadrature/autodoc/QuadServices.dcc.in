@@ -4,8 +4,8 @@
  * \author Kelly Thompson
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide doxygen documentation for QuadServices class
- * \note   Copyright 2004 The Regents of the University of California.
- *
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -40,13 +40,13 @@
  * fission sources.  Now, approximate the integral over angles (the
  * scattering term) using a \ref sf_sph "spherical harmonics treatment" (see
  * the doxygen web page for rtt_sf, special_functions).
- * 
+ *
  * \f[
  * \mathbf\Omega\cdot\mathbf\nabla\psi(\mathbf{r},\mathbf{\Omega},E)
- * + (\sigma_a + \sigma_{s0}) \psi - Q(\mathbf{r},\mathbf{\Omega},E) 
+ * + (\sigma_a + \sigma_{s0}) \psi - Q(\mathbf{r},\mathbf{\Omega},E)
  * = \int\limits^\infty_0{dE' \sum\limits_{\ell=0}^\infty{
  * \sum\limits_{k=-\ell}^\ell{\frac{2\ell+1}{4\pi} c_{\ell,k}
- * Y_{\ell,k}(\mathbf\Omega) 
+ * Y_{\ell,k}(\mathbf\Omega)
  * \phi_{\ell,k}(\mathbf{r},E')\sigma_{sk}(\mathbf{r},E'\rightarrow E)}}}.
  * \f]
  *
@@ -76,7 +76,7 @@
  * \int\limits_0^\infty{dE'\sum\limits_{\ell=0}^L{\sum\limits_{k=-\ell}^{\ell}{
  * \frac{2\ell+1}{4\pi} c_{\ell,k} Y_{\ell,k}(\mathbf\Omega)
  * \sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) \int\limits_{4\pi}{d\mathbf\Omega'
- * c_{\ell,k} Y_{\ell,k}^*(\mathbf\Omega')\psi(\mathbf{r},\mathbf\Omega',E')}}}} 
+ * c_{\ell,k} Y_{\ell,k}^*(\mathbf\Omega')\psi(\mathbf{r},\mathbf\Omega',E')}}}}
  * \f]
  *
  * In this equation, we have also truncated the \ref sf_sph "spherical
@@ -85,29 +85,29 @@
  * approximation,
  *
  * \f[
- * \mathbf{S}(\mathbf{r},E) = \int\limits_0^\infty{dE' \sum\limits_{\ell=0}^L{ 
+ * \mathbf{S}(\mathbf{r},E) = \int\limits_0^\infty{dE' \sum\limits_{\ell=0}^L{
  * \sum\limits_{k=-\ell}^{\ell}{
  * \frac{2\ell+1}{4\pi} c_{\ell,k} Y_{\ell,k}(\mathbf\Omega_m)
- * \sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) 
+ * \sigma_{s,\ell}(\mathbf{r},E'\rightarrow E)
  * \sum\limits_{m'=1}^M{w_{m'} c_{\ell,k} Y_{\ell,k}^*(\mathbf\Omega'_m)
- * \psi_m(\mathbf{r},E')}}}} 
+ * \psi_m(\mathbf{r},E')}}}}
  * \f]
  * or
  * \f[
- * \mathbf{S}(\mathbf{r},E) = 
- * \int\limits_0^\infty { dE' 
- * \left[ 
+ * \mathbf{S}(\mathbf{r},E) =
+ * \int\limits_0^\infty { dE'
+ * \left[
  * \mathbf{M}_{m,(\ell, k)} \cdot \mathbf\Sigma_{(\ell,k)}(E' \rightarrow E)
  * \cdot \mathbf{D}_{m,(\ell,k)} \cdot \psi_m(\mathbf{r},E')
  * \right]} \,\,\,\,\, \forall \,\,\,\,\, m = 1, \ldots, M, \,\,\,\,\, \ell = 0,
  * \ldots, L,\,\,\,\,\, and \,\,\,\,\, k = -\ell, \ldots, \ell.
  * \f]
- * 
+ *
  * \f$ \mathbf{M} \f$ is the moments-to-discrete operator, \f$ \mathbf{D} \f$
  * is the discrete-to-moments operator and \f$ \mathbf\Sigma \f$ is a matrix
  * containing the scattering cross section moments for \f$ L^{th} \f$ order
  * anisotropic scattering.  In this representation, M is the total number of
- * discrete angles.  
+ * discrete angles.
  *
  * Now, we define the moments-to-discrete operator to be
  *
@@ -125,7 +125,7 @@
  * \psi_m = \sum\limits_{\ell=0}^L
  * \sum\limits_{k=-\ell}^\ell\mathbf{M}_{m,(\ell,k)}\Phi_\ell^k.
  * \f]
- * 
+ *
  * \section galerkin_formulation Galerkin Formulation
  *
  * For this class, we compute the moment-to-discrete operator according to
@@ -142,9 +142,9 @@
  * eventually cancel.  However, to strictly preserve all of the properties of
  * \ref sf_sph "spherical harmonics" we have chosen to put this factor inside
  * of the square root.
- * 
+ *
  * In Morel's Galerkin treatment, specific \f$ (\ell, k) \f$ moments are
- * chosen to produce a square matrix, \f$ \mathbf{M} \f$.  
+ * chosen to produce a square matrix, \f$ \mathbf{M} \f$.
  *
  * For 3D quadrature sets, the following rules are used:
  *
@@ -171,10 +171,10 @@
  * k=0 \,\,\,\,\,\forall\,\,\,\,\,\ell=0,\ldots,N-1. \f$
  *
  * In all of these algorithms, \f$ N \f$ is the order of the \f$ S_N \f$
- * quadrature set. 
+ * quadrature set.
  *
  * \section quad_notes Other Quadrature Notes
- * 
+ *
  * For 2D quadrature sets, \f$ \xi \f$ can be computed from the other two
  * ordinates as
  * \f[
@@ -188,24 +188,24 @@
  * \\ Create an 3D S4 Level Symmetric Quadrature Set.
  * SP<const Quadrature> spQuad = QuadCreator().quadCreate( QuadCreator::LevelSym, 4 );
  *
- * \\ Create a QuadServices object that is attached to this specific quadrature set. 
+ * \\ Create a QuadServices object that is attached to this specific quadrature set.
  * QuadServices myQS( spQuad );
  *
  * \\ Transform from moment-space to discrete-angle space.
  * std::vector< double > phi( 100, 0.0 );
  * std::vector< double > psi = myQS.applyM( phi );
- * 
+ *
  * \\ Obtain entries from the Mmatrix:
  * std::vector< double > Mmatrix( myQS.getM() );
- * 
+ *
  * \\ Access elements as Mmatrix[ n + m*numMoments ] where n is the moment
  * \\ index, m is the discrete angle index and numMoments are the number
  * \\ moments used by myQS.
  * \endcode
  */
-/*! 
- * \example quadrature/test/tQuadServices.cc 
- * 
+/*!
+ * \example quadrature/test/tQuadServices.cc
+ *
  * description of example
  */
 //===========================================================================//

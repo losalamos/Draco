@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Thu Jul  8 08:02:51 2004
  * \brief  Test the Slice subset container class.
- * \note   Copyright (C) 2004-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved
  */
 //---------------------------------------------------------------------------//

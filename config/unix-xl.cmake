@@ -3,7 +3,7 @@
 # author Gabriel Rockefeller
 # date   2012 Nov 1
 # brief  Establish flags for Linux64 - IBM XL C++
-# note   Copyright (C) 2012-2015 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$

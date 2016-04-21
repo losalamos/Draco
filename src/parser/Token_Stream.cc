@@ -3,7 +3,7 @@
  * \file   Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token_Stream member functions.
- * \note   Copyright (C) 2006-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

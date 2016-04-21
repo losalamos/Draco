@@ -1,9 +1,7 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> ELISP RELEASE elisp-3_0_0       
->>> CCS-4 Transport Methods Group      
->>> Copyright University of California 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> $Id$
+>>> ELISP RELEASE elisp-3_0_0
+>>> Copyright (C) Los Alamos National Security, LLC.
+>>> All rights reserved.
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 The XEmacs elisp files associated with this package make up a
@@ -38,22 +36,22 @@ Useful Keybindings
 
 C-x C-f  Open new file or directory.  For example I type C-x C-f cap
          [tab] [enter] to open a directory listing of my capsaicin
-         directory.  
+         directory.
 
 C-x 5 f  Open new file in a new frame.
 C-x 2    Split the current frame into two buffers.
 C-x 1    Force the current buffer to occupy the entire frame
-         (unsplit). 
+         (unsplit).
 C-x 0    Remove the current buffer from being displayed in the current
-         frame. 
+         frame.
 
 f1       Compile.  The compile command can be modified in the command
          window before execution.  You can middle-click on compile
-         errors to visit the source. 
+         errors to visit the source.
 
 M-x shell Open a command window running $SHELL.
 C-h k <key sequence> Provides a description of the XEmacs command
-         bound to <key sequence> 
+         bound to <key sequence>
 
 C-mouse1 Popup a buffer menu.
 C-mouse2 Popup a mode menu.
@@ -69,7 +67,7 @@ C-S-f8   find companion file (.cc <-> .hh)
 f8       previous buffer
 
 f5       Insert function documentation block
-S-C-f5   Insert class documentation block    
+S-C-f5   Insert class documentation block
 C-Sh-f5  add-change-log-entry
 f6       Insert comment divider
 
@@ -88,9 +86,8 @@ f11      grep find
 C-f11    speedbar
 
 See Config-key.el for more.
-  
+
 Legend:
- 
+
 "C-x h" should be typed as Control-x followed by h.
 "M-x C-h" should by typed Meta-x followed by Control-h.
-

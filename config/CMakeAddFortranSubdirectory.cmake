@@ -57,8 +57,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the License for more
 # information.
 #
-# Copyright (C) 2013-2014 Los Alamos National Laboratory, LLC.
-# All rights reserved.
 # =============================================================================
 # (To distribute this file outside of CMake, substitute the full License text for the
 #  above reference.)

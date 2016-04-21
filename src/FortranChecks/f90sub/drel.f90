@@ -4,7 +4,7 @@
 ! author Kelly Thompson
 ! date   Tuesday, Jun 12, 2012, 16:03 pm
 ! brief  Test F90 main linking against C++ library and calling a C++ function.
-! note   Copyright (c) 2012-2015 Los Alamos National Security, LLC.
+! note   Copyright (c) 2016 Los Alamos National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
 ! $Id$

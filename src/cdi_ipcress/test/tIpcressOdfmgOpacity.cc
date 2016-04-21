@@ -5,7 +5,7 @@
  * \date   Thu July 10 2008
  * \brief  Regression test based on odfregression10.ipcress, also checks
  *         packing and unpacking.
- * \note   Copyright (C) 2011-2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
