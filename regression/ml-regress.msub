@@ -89,7 +89,7 @@ run "module list"
 run "module load user_contrib friendly-testing"
 run "module load cmake/3.5.2"
 run "module load intel/15.0.5 openmpi/1.6.5 mkl"
-run "module load trilinos superlu_dist"
+run "module load trilinos/12.6.1 superlu_dist"
 run "module load metis parmetis ndi"
 run "module load numdiff svn random123 eospac/6.2.4"
 comp=`basename $CXX`
