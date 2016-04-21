@@ -108,7 +108,7 @@ configure_file(
 
 # install top level documents
 install(
-  FILES ChangeLog Copyright README.draco ToDo
+  FILES ChangeLog Copyright README.draco
   DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 # Add support for the 'uninstall' target
