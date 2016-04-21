@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/generate_dll_declspec.cmake
 # author Kelly Thompson <kgt@lanl.gov>
-# date   2015 Feb 13
+# date   2016 Feb 13
 # brief  Generate dll_declspec.h used to define DLL_PUBLIC_<pkg> definitions.
-# note   Copyright (C) 2015, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id$
@@ -19,7 +19,7 @@ set( dll_declspec_content
  * file   dll_declspec.h
  * brief  Defined macros that are used as declarators to control dllexport
  *        or dllimport linkage for dll files.
- * note   Copyright (C) 2015 Los Alamos National Security, LLC.
+ * note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *        All rights reserved.
  *
  * Provide toolset for hiding symbols from shared libraries.  By default MSVC
@@ -129,7 +129,7 @@ MSVC requires the explicit instantiation to be exported from the test
 library but GCC ignores these attributes (with a warning) because
 declaration does not have the same attributes.  Because of this
 distiction, I am disabling setting attributes when GCC is used.
-(KT 2015-03-04) */
+(KT 2016-03-04) */
 ")
 
 foreach(pkg ${components} )

@@ -3,11 +3,11 @@
  * \file   <pkg>/<class>__parser.hh
  * \author <user>
  * \brief  Define parse table for <class>
- * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //--------------------------------------------------------------------------------------//
-// $Id: template.hh 7862 2015-02-03 16:03:54Z kellyt $
+// $Id: template.hh 7862 2016-02-03 16:03:54Z kellyt $
 //--------------------------------------------------------------------------------------//
 
 #ifndef <spkg>_<class>__parser_hh

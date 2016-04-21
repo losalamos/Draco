@@ -2,9 +2,9 @@
 /*!
  * \file   ds++/XGetopt.hh
  * \author Kelly Thompson, Katherine Wang
- * \date   Tuesday, Oct 27, 2015, 15:17 pm
+ * \date   Tuesday, Oct 27, 2016, 15:17 pm
  * \brief  Command line argument handling similar to getopt.
- * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -41,7 +41,7 @@ namespace rtt_dsxx
  *
  * \todo Option letters may be combined, e.g., "-ab" is equivalent to "-a -b".
  * Option letters are case sensitive. (This features is not yet available as of
- * 2015 October).
+ * 2016 October).
  *
  * If the special option "--" is encountered, all futher processing of command
  * line arguments ceases.

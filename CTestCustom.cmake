@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   CTestCustom.cmake
 # brief  Custom configuration for CTest/CDash.
-# note   Copyright (C) 2010-2012 LANS, LLC
+# note   Copyright (C) 2016 LANS, LLC
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
@@ -35,28 +35,28 @@
 # SET(CTEST_CUSTOM_WARNING_EXCEPTION
 #   ${CTEST_CUSTOM_WARNING_EXCEPTION}
 
-#   # Common warning when linking ATLAS built with GNU Fortran 4.1 and building 
+#   # Common warning when linking ATLAS built with GNU Fortran 4.1 and building
 #   # with GNU Fortran 4.4.  It can be safely ignored.
 #   "libgfortran.*may conflict with libgfortran"
 
 #   # Harmless warning often seen on IRIX
 #   "WARNING 84 : .*libm.* is not used for resolving any symbol"
 
-#   # Warnings caused by sun compilers when building code to only run on your 
+#   # Warnings caused by sun compilers when building code to only run on your
 #   # native platform
 #   "xarch=native on this architecture implies -xarch=.*which generates code that does not run"
-  
+
 #   # Harmless warnings from the Intel compiler on Windows
 #   "ipo: warning #11010: file format not recognized for .*\\.exe\\.embed\\.manifest\\.res"
 #   "LINK : warning LNK4224: /INCREMENTAL:YES is no longer supported;  ignored"
 
-#   # Warnings caused by string truncation in the test code.  The truncation is 
+#   # Warnings caused by string truncation in the test code.  The truncation is
 #   # intentional
 #   "Character string truncated to length 1 on assignment"
 # )
 
 
-# Exceptions 
+# Exceptions
 # set( CTEST_CUSTOM_WARNING_EXCEPTION
 #   ${CTEST_CUSTOM_WARNING_EXCEPTION}
 #   "tcl8.4.5/[^/]+/../[^/]+/[^.]+.c[:\"]"
@@ -125,7 +125,7 @@ endif()
 # PURIFYCOMMAND:FILEPATH=c:/Progra~1/Rational/common/purify.exe
 
 # Add extra options by specifying MEMORYCHECK_COMMAND_OPTIONS and
-# MEMORYCHECK_SUPPRESSIONS_FILE.  
+# MEMORYCHECK_SUPPRESSIONS_FILE.
 set( MEMORYCHECK_SUPPRESSIONS_FILE
    "${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt"
    CACHE FILEPATH
@@ -135,13 +135,13 @@ set( MEMORYCHECK_SUPPRESSIONS_FILE
 set( CTEST_CUSTOM_MEMCHECK_IGNORE
   ${CTEST_CUSTOM_MEMCHECK_IGNORE}
 #     test1
-#     tstbubbagump 
+#     tstbubbagump
 )
 
 # CTEST_CUSTOM_COVERAGE_EXCLUDE is a list of regular expressions. Any
 # file name that matches any of the regular expressions in the list is
 # excluded from the reported coverage data.
-set( CTEST_CUSTOM_COVERAGE_EXCLUDE 
+set( CTEST_CUSTOM_COVERAGE_EXCLUDE
   ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
 
   # don't report on actual unit tests

@@ -5,7 +5,7 @@
 ## Thu Oct 30 09:07:41 2003
 ## $Id$
 ###############################################################################
-## Copyright 2003 The Regents of the Los Alamos National Security, LLC.
+## Copyright (C) 2016 Los Alamos National Security, LLC.
 ###############################################################################
 ##---------------------------------------------------------------------------##
 ## Collect profile information from multiple runs of an executable.
@@ -29,7 +29,7 @@ import signal
 
 
 ##---------------------------------------------------------------------------##
-## Global variables 
+## Global variables
 ##---------------------------------------------------------------------------##
 
 temporary_files = []
@@ -70,7 +70,7 @@ def run_target(executable):
         return file_name
     else:
         return None
-        
+
 
 
 ##---------------------------------------------------------------------------##
@@ -87,10 +87,10 @@ def make_profile(file_list, executable, output_file):
         # Create a string containing the gprof -b command
         gprof = 'gprof -b ' + string.join(executable) + ' ' \
                 + string.join(file_list)
-        
+
         # Open a pipe attached to this command
         profile_result = os.popen(gprof)
-        
+
         # Pipe the output in one big chunk
         output.write(profile_result.read())
 
@@ -125,12 +125,12 @@ def parse_arguments(arguments):
             output_name = option[1]
         if option[0] == '-v' or option[0] == '--verbose':
             verbose = 1
-                
+
     if (not executable):
         sys.exit('ERROR: No executable given')
 
     return trials, output_name, executable
-            
+
 
 ##---------------------------------------------------------------------------##
 ## Function: Main profiler loop
@@ -139,7 +139,7 @@ def profiler(arguments):
 
     """ NAME
     profiler - Generates program execution information using GNU gprof.
-    
+
  SYNOPSIS:
     profiler [OPTIONS] executable [ARGUMENTS...]
 
@@ -179,23 +179,23 @@ def profiler(arguments):
     signal.signal(signal.SIGINT,  clean_up)
     signal.signal(signal.SIGQUIT, clean_up)
     signal.signal(signal.SIGTERM, clean_up)
-    
+
     # Parse the command line arguments
     trials, output_name, executable = parse_arguments(arguments)
-    
+
     # Execute loop:
     for i in range(trials):
-        
+
         if verbose: print "Executing target code trial",i+1,"...",
         file_name = run_target(executable)
         if verbose: print "done!"
-        
+
         if file_name:
             temporary_files.append(file_name)
             total_file_size += os.path.getsize(file_name)
             if verbose:
                 print "Status:",len(temporary_files),"temporary files",\
-                      "of total size",total_file_size 
+                      "of total size",total_file_size
         else:
             remove_files(temporary_files)
             sys.exit("ERROR: Unable to generate profile data")
@@ -218,9 +218,6 @@ def profiler(arguments):
 
 if __name__ == '__main__': profiler(sys.argv)
 
-
-
 ###############################################################################
-##                            end of profiler.py
+## end of profiler.py
 ###############################################################################
-

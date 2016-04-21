@@ -2,9 +2,9 @@
 /*!
  * \file   diagnostics/qt/main.cc
  * \author Kelly Thompson
- * \date   Monday, Aug 11, 2015, 17:05 pm
+ * \date   Monday, Aug 11, 2016, 17:05 pm
  * \brief  Main program for Gui version of draco info.
- * \note   Copyright (C) 2015 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

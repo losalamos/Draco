@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/setupMPI.cmake
 # author Kelly Thompson <kgt@lanl.gov>
-# date   2015 Sep 22
+# date   2016 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2015 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)

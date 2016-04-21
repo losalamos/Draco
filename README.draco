@@ -1,110 +1,92 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> DRACO Component Libraries for Radiation Transport Codes
->>> CCS-2 Computational Physics Group      
->>> Copyright (C) Los Alamos National Security, LLC.
+>>> CCS-2 Computational Physics Group
+>>> Copyright (C) 2016, Los Alamos National Security, LLC.
+>>> All rights reserved.
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> $Id$
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-Draco is an object-oriented component library geared towards
-numerically intensive, radiation (particle) transport applications
-built for parallel computing hardware.  It consists of
-semi-independent packages and a robust build system.  The packages in
-draco provide a set of components that can be used by multiple clients
-to build transport codes.  The build system can also be extracted for
-use in clients.
+Draco is an object-oriented component library geared towards numerically
+intensive, radiation (particle) transport applications built for parallel
+computing hardware. It consists of semi-independent packages and a robust build
+system. The packages in Draco provide a set of components that can be used by
+multiple clients to build transport codes. The build system can also be
+extracted for use in clients. Software includes smart pointers,
+Design-by-Contract assertions, unit test framework, wrapped MPI functions, a
+file parser, unstructured mesh data structures, a random number generator, root
+finders and an angular quadrature component.
 
-Draco contains two sets of components.  Active components are
-currently used and maintained.  Retired packages are no longer in use
-by any clients.  Retired packages can be recovered from subversion by
-checking out a tagged version of a component or repository.
-
-Draco development is performed by project teams within CCS-2.  The
-following code projects use/supply code to draco:
-
-	1) JAYENNE   Rob Lowrie    <lowrie@lanl.gov>
-	2) CAPSAICIN Jae Chang     <jhchang@lanl.gov>
-	3) MACH      Rob Lowrie    <lowrie@lanl.gov>
-	4) ZATHRAS   Scott Turner  <turners@lanl.gov>
-        5) MARMOT    Rob Lowrie    <lowrie@lanl.gov>
-
-Draco is governed by a board consisting of:
-
-      Jim Warsa           <warsa@lanl.gov>
-      Jon Dahl            <dahl@lanl.gov>
-      Rob Lowrie          <lowrie@lanl.gov>
-      Kelly (KT) Thompson <kgt@lanl.gov>
-
-Resources
-=============================
-
-Project Management http://rtt/redmine/projects/draco
-SVN Repository 	   svn+ssh://ccscs8.lanl.gov/ccs/codes/radtran/svn/draco
-Dashboard 	   http://rtt.lanl.gov/cdash/index.php?project=Draco
-Autodoc 	   http://rtt.lanl.gov/autodoc/draco
+This code is unclassified and has been assigned LA-CC-16-016. Los Alamos
+National Laboratory’s Export Control Team made an in-house determination that
+this software is controlled under Department of Commerce regulations and the
+Export Control Classification Number (ECCN) EAR99.
 
 Configuring and Building
 =============================
 
-Please review the notes at the top of CMakeLists.txt or the Redmine
-wiki page:
-http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
+Please review the notes at the top of CMakeLists.txt or the wiki page:
 
 Active Draco Component Synopsis
 =============================
 
-RTT_Format_Reader:
+RTT_Format_Reader:{mesh container and services}
+no description
 
-c4:
+c4: {Communications library that wrapps MPI}
 
-cdi [draco/src/cdi]: {Get access to material data} The Common Data
-Interface specifies an common abstraction for objects and libraries
-that return material data (opacities, atomic cross sections,
+cdi: {Get access to material data}
+The Common Data Interface specifies an common abstraction for objects and
+libraries that return material data (opacities, atomic cross sections,
 equation-of-state data, etc.)
 
-cdi_analytic:
+cdi_analytic: {Analytic models for physical data}
 
-cdi_eospac [draco/src/cdi_eospac]: {Equation-of-State data} This class
-wraps the EOSPAC6 libraries (local copy at
-/ccs/codes/radtran/vendors/eospac).  The interface inherits from
-CDI/EOS.hh and can be used as a stand alone component or as a plun-in
-to CDI.  To make the component available you must set in your
-environment or in the CMakeCache.txt the variable EOSPAC_LIB_DIR to
-the path to libeospac.a
+cdi_eospac: {Equation-of-State data}
+This class wraps the EOSPAC6 libraries (local copy at
+/ccs/codes/radtran/vendors/eospac).  The interface inherits from CDI/EOS.hh and
+can be used as a stand alone component or as a plun-in to CDI.  To make the
+component available you must set in your environment or in the CMakeCache.txt
+the variable EOSPAC_LIB_DIR to the path to libeospac.a
 
-cdi_ipcress [draco/src/cdi_ipcress]: {Gray and M.G. Opacities} The
-classes in this component will read and parse opacity values from an
-IPCRESS file produced by TOPS.  The component presents this data
-through various accessors.  The interface inherits from CDI/Opacity.hh
-and can be used as a stand alone component or as a plug-in to CDI.
+cdi_ipcress: {Gray and multigroup opacities}
+The classes in this component will read and parse opacity values from an IPCRESS
+file produced by TOPS.  The component presents this data through various
+accessors.  The interface inherits from CDI/Opacity.hh and can be used as a
+stand alone component or as a plug-in to CDI.
 
-device: {Wrapper for heterogeneous device communication} The classes
-in this component provide access to DaCS and CUDA calls for use on
+device: {Wrapper for heterogeneous device communication}
+The classes in this component provide access to DaCS and CUDA calls for use on
 heterogeneous architecture platforms (Roadrunner or GPU machines).
 
-diagnostics: CPP macros that are activated at compile time that can
-provide additional diagnostic verbosity during calculations.
+diagnostics:
+CPP macros that are activated at compile time that can provide additional
+diagnostic verbosity during calculations.
 
-ds++: {Basic services} Smart pointers, Array containers, Assertion and
-Design-by-Contract, etc.
+ds++: {Basic services}
+Smart pointers, Array containers, Assertion and Design-by-Contract, etc.
 
 fit: {Least squares fit}
 
 fpe_trap: {Catch IEEE floating point exceptions}
 
-FortranCheck [draco/src/FortranCheck]: {Test Fortran compatibility} The
-examples in this component will demonstrate if the Fortran compiler is working;
-if Fortran/C interlanguage linking/running is working and sample ISO_C_BINDING
-calls.
+FortranCheck: {Test Fortran compatibility and interoperability}
+The examples in this component will demonstrate if the Fortran compiler is
+working; if Fortran/C interlanguage linking/running is working and sample
+ISO_C_BINDING calls.
 
-lapack_wrap: BLAS and LAPACK functionality for C++.
+lapack_wrap:
+BLAS and LAPACK functionality for C++.
 
-linear: Routines to solve small systems of linear equations.
+linear: {linear equations}
+Routines to solve small systems of linear equations.
 
-meshReaders: Read RTT format mesh files.
+meshReaders:
+Read RTT format mesh files.
 
-mesh_element: Provide a description of unstructured mesh.  Used by
-meshReaders and RTT_Format_Reader.
+mesh_element:
+Provide a description of unstructured mesh. Used by meshReaders and
+RTT_Format_Reader.
 
 min: Optimizaiton routines. Find the minimum of a function.
 
@@ -116,15 +98,16 @@ parser: Lexical file parser.
 
 plot2d: Generate GNU plot 2-dimensional plots.
 
-quadrature [draco/src/quadrature]: {Get access to quadrature data}
-Provides a creator class to generate quadrature objects.  Quadrature
-objects encapsulate discrete ordinates angular differencing methods
-and data. Also provide service functions that are commonly used with
+quadrature: {Get access to quadrature data}
+Provides a creator class to generate quadrature objects.  Quadrature objects
+encapsulate discrete ordinates angular differencing methods and data. Also
+provide service functions that are commonly used with
 
-rng [draco/src/rng]: A random number generator component.  The primary
-set of functions provided by this component were derived from SPRNG
-(http://www.ncsa.uiuc.edu/Apps/SPRNG/) random number library.  A few
-additional random number generators are also provided.
+rng: {A random number generator component}
+The primary set of functions provided by this component were derived from
+Random123 (https://www.deshawresearch.com/downloads/download_random123.cgi)
+random number library.  A few additional random number generators are also
+provided.
 
 roots: Root solvers
 
@@ -136,83 +119,9 @@ timestep: An object oriented class that encapsulates a time step controller.
 
 traits: A traits class used by viz.
 
-units [draco/src/units]: Provides units standardization for
-Draco. Contains Units class for representing arbitrary systems and
-converting quantities to SI units.
+units:
+Provides units standardization for Draco. Contains Units class for representing
+arbitrary systems and converting quantities to SI units.
 
-viz: Generate Ensight files for data vizualization.
-
-
-Retired Draco Component Synopsis
-==============================
-
-radphys [draco/src/radphys]: Calculates parameters needed for
-radiation physics in arbitrary units. Uses the units component to
-represent units system.
-
-cdi_gandolf [draco/src/cdi_gandolf]: {Gray and M.G. Opacities} This
-class wraps the FORTRAN gandolf libraries (local copy at
-/radtran/vendors/gandolf).  The interface inherits from CDI/Opacity.hh
-and can be used as a stand alone component or as a plug-in to CDI.  To
-make this component available you must specify
---with-gandolf-lib=${path_to_libgandolf.a} when configuring.
-
-meshReaders_Services [meshReaders_Services-retired] : A post-process mesh
-component that built connectivity from mesh data read by meshReaders.
-
-stdheaders [stdheaders-retired] : Standard headers for compilers that
-didn't support std:: namespace.
-
-mc [mc-4_0_0]: A low-level Monte Carlo support component.  This component
-contains meshes and service classes that can be used for linear and
-non-linear Monte Carlo transport. Moved to CLUBIMC component library.
-
-imc [imc-4_0_0]: A Implicit Monte Carlo (imc) component library.  This
-component contains a set of components including particles, sources, and
-tallies that can be used to build IMC codes. Moved to CLUBIMC
-component library.
-
-stopwatch [stopwatch-retired] : Overly complicated timer component.
-
-radphys [radphys-retired]: Radiation physics models for coefficients.
-
-UnitTestFrame [UnitTestFrame-retired]: Testing framework.
-
-ConjGrad [ConjGrad-retired]: A conjugate gradient solver.
-
-amr_mesh [amr_mesh-retired]: An amr mesh implementation.
-
-amr_mesh_fort [amr_mesh_fort-retired]: Fortran shadows to amr_mesh.
-
-meshReaders_fort [meshReaders_fort-retired]: Fortran shadow to
-meshReaders.
-
-meshTest [meshTest-retired]: A test mesh that can be used to test
-other draco components that require a Mesh Type.
-
-LAMG [LAMG-retired]: An initial interface attempt for an Algebraic
-Multigrid solver.
-
-LAMGDiffusionSolver [LAMGDiffusionSolver-retired]:
-
-fourier [fourier-retired]:
-
-POOMA_MT [POOMA_MT-retired]:
-
-P1Diffusion [P1Diffusion-retired]:
-
-ConjGradDiffusionSolver [ConjGradDiffusionSolver-retired]:
-
-mesh [mesh-retired]:
-
-meshTest [meshTest-retired]:
-
-PCGDiffusionSolver [PCGDiffusionSolver-retired]:
-
-diffusion [diffusion-retired]:
-
-matprops [matprops-retired]:
-
-sn [sn-retired]:
-
-======================================================================
+viz:
+Generate Ensight files for data vizualization.

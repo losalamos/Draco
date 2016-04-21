@@ -71,7 +71,7 @@ if test -z "$MODULESHOME"; then
 fi
 module load bullseyecoverage
 
-CLOC=/home/regress/draco/regression/cloc
+CLOC=/scratch/vendors/bin/cloc
 
 #work_dir=/scratch/regress
 work_dir=/scratch/kellyt
