@@ -101,7 +101,7 @@ for dir in $moddirs; do
   fi
 done
 
-run "module load friendly-testing user_contrib"
+run "module load user_contrib friendly-testing"
 
 # Clean up old environment
 run "module unload cmake numdiff svn"
