@@ -81,7 +81,7 @@ else
 fi
 
 # Use modules found in the draco directory
-run "module use $VENDOR_DIR/Modules/hpc"
+# run "module use $VENDOR_DIR/Modules/hpc"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
@@ -89,7 +89,7 @@ run "module list"
 run "module load user_contrib friendly-testing"
 run "module load cmake/3.5.2"
 run "module load intel/15.0.5 openmpi/1.6.5 mkl"
-run "module load trilinos/12.6.1 superlu_dist"
+run "module load trilinos/12.6.1 superlu-dist"
 run "module load metis parmetis ndi"
 run "module load numdiff svn random123 eospac/6.2.4"
 comp=`basename $CXX`
@@ -113,12 +113,15 @@ perfbench)
     comp="intel-perfbench"
     ;;
 pgi)
-    run "module purge &> /dev/null"
     run "module list"
-    run "module load user_contrib friendly-testing"
-    run "module load cmake/3.5.2"
+    run "module unload eospac ndi parmetis metis"
+    run "module unload superlu-dist trilinos"
+    run "module unload mkl openmpi intel"
+    run "module list"
+    # run "module load user_contrib friendly-testing"
+    # run "module load cmake/3.5.2"
     run "module load pgi/15.10 openmpi"
-    run "module load numdiff svn random123"
+    #run "module load numdiff svn random123"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
     comp=`basename $CXX`
     ;;
