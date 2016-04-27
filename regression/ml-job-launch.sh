@@ -89,7 +89,8 @@ echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
 
 echo "module purge &> /dev/null"
-ehco "module list"
+module purge &> /dev/null
+echo "module list"
 module list
 
 # epdash="-"
