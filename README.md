@@ -54,11 +54,11 @@ Many thanks go to Draco's [contributors](https://github.com/losalamos/Draco/grap
 
 Draco was originally written by staff from Los Alamos's [CCS-2 Computational Physics and Methods Group](http://www.lanl.gov/org/padste/adtsc/computer-computational-statistical-sciences/computational-physics-methods/index.php):
 
- Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,
- Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller,
- James S. Warsa, Seth R. Johnson, Allan B. Wollaber, Randy M. Roberts,
- Jae H. Chang, Paul W. Talbot, Katherine J. Wang, Jeff Furnish,
- Matthew A. Cleveland, Benjamin K. Bergen, Paul J. Henning.
+> Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,
+> Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller,
+> James S. Warsa, Seth R. Johnson, Allan B. Wollaber, Randy M. Roberts,
+> Jae H. Chang, Paul W. Talbot, Katherine J. Wang, Jeff Furnish,
+> Matthew A. Cleveland, Benjamin K. Bergen, Paul J. Henning.
 
 Release
 ----------------
@@ -66,4 +66,4 @@ Release
 Draco is released under the BSD 3-Clause License. For more details see the
 LICENSE file.
 
-```LA-CC-16-016```
+LANL code designation: `LA-CC-16-016`
