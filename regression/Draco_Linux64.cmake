@@ -177,31 +177,33 @@ endif()
 
 # Test
 if( "${CTEST_TEST}" STREQUAL "ON" )
-#   if(ENABLE_C_CODECOVERAGE)
-#     message( "ctest_test( SCHEDULE_RANDOM ON )" )
-#     ctest_test( SCHEDULE_RANDOM ON )
-#   else()
-     find_num_procs_avail_for_running_tests() # returns num_test_procs
-     message( "ctest_test(
-   PARALLEL_LEVEL  ${num_test_procs}
-   TEST_LOAD       ${max_system_load}
-   SCHEDULE_RANDOM ON )" )
-     ctest_test( PARALLEL_LEVEL ${num_test_procs}
-                 SCHEDULE_RANDOM ON
-                 # INCLUDE_LABEL <LABEL>
-                 TEST_LOAD ${max_system_load}
-                 )
-#   endif()
 
-   # Process code coverage (bullseye) or dynamic analysis (valgrind)
-   message("Processing code coverage or dynamic analysis")
-   process_cc_or_da()
+  find_num_procs_avail_for_running_tests() # returns num_test_procs
+  set( ctest_test_options "SCHEDULE_RANDOM ON" )
+  string( APPEND ctest_test_options " PARALLEL_LEVEL ${num_test_procs}" )
+
+  # if we are running on a machine that openly shares resources, use the
+  # TEST_LOAD feature to limit the number of cores used while testing. For
+  # machines that run schedulers, the whole allocation is available so there is
+  # no need to limit the load.
+  if( "${CTEST_SITE}" MATCHES "ccscs" )
+    string( APPEND ctest_test_options " TEST_LOAD ${max_system_load}" )
+  endif()
+
+  message( "ctest_test( ${ctest_test_options} )" )
+  # convert string to a cmake list
+  string( REPLACE " " ";" ctest_test_options "${ctest_test_options}" )
+  ctest_test( ${ctest_test_options} )
+
+  # Process code coverage (bullseye) or dynamic analysis (valgrind)
+  message("Processing code coverage or dynamic analysis")
+  process_cc_or_da()
 endif()
 
 # Submit results
 if( "${CTEST_SUBMIT}" STREQUAL "ON" )
-   message( "ctest_submit()")
-   ctest_submit()
+  message( "ctest_submit()")
+  ctest_submit()
 endif()
 
 message("end of ${CTEST_SCRIPT_NAME}.")
