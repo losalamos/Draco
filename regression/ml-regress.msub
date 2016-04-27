@@ -80,18 +80,25 @@ else
     run "source /usr/share/Modules/init/bash"
 fi
 
-# Use modules found in the draco directory
-# run "module use $VENDOR_DIR/Modules/hpc"
-
-# Clear any tcsh loaded modules as these are invalid when staring a new shell.
-run "module purge &> /dev/null"
+# Clear any loaded modules as these are invalid when staring a new shell.
+#run "module purge &> /dev/null"
 run "module list"
-run "module load user_contrib friendly-testing"
+unset _LMFILES_
+run "module load user_contrib"
+run "module load friendly-testing"
 run "module load cmake/3.5.2"
-run "module load intel/15.0.5 openmpi/1.6.5 mkl"
-run "module load trilinos/12.6.1 superlu-dist"
-run "module load metis parmetis ndi"
-run "module load numdiff svn random123 eospac/6.2.4"
+run "module load intel/15.0.5"
+run "module load openmpi/1.6.5"
+run "module load mkl"
+run "module load trilinos/12.6.1"
+run "module load superlu-dist"
+run "module load metis"
+run "module load parmetis"
+run "module load ndi"
+run "module load numdiff"
+run "module load svn"
+run "module load random123"
+run "module load eospac/6.2.4"
 comp=`basename $CXX`
 export OMP_NUM_THREADS=7
 
@@ -114,16 +121,18 @@ perfbench)
     ;;
 pgi)
     run "module list"
+    # echo "LOADEDMODULES = $LOADEDMODULES"
+    # echo "_LMFILES_ = ${_LMFILES_}"
     run "module unload eospac ndi parmetis metis"
     run "module unload superlu-dist trilinos"
     run "module unload mkl openmpi intel"
     run "module list"
-    # run "module load user_contrib friendly-testing"
-    # run "module load cmake/3.5.2"
     run "module load pgi/15.10 openmpi"
-    #run "module load numdiff svn random123"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
-    comp=`basename $CXX`
+    comp="pgCC"
+    CXX=`which pgCC`
+    CC=`which pgcc`
+    FC=`which pgf90`
     ;;
 *)
     echo "FATAL ERROR"

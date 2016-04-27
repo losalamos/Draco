@@ -88,6 +88,10 @@ echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
 
+echo "module purge &> /dev/null"
+ehco "module list"
+module list
+
 # epdash="-"
 # if test "${extra_params}x" = "x"; then
 #    epdash=""
