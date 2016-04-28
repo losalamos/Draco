@@ -1,7 +1,232 @@
+2016-04-28  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_19_0.  This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/43.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_11_0,  http://rtt.lanl.gov/redmine/versions/42
+	  - Capsaicin-4_8_0, http://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/MP/MU/LU     Intel 15.0.5    OpenMPI-1.6.5
+	  CT/CI              Intel 15.0.5    Cray_MPICH2-7.0.1
+	  TT/TR              Intel 15.0.5    Cray_MPICH2-7.2.5
+	  SQ                 XLC   12.1      MPICH2-1.4
+	                     GCC   4.8       MPICH2-1.4
+
+	* Summary of changes:
+	- 887 files changed, added or removed in 89 commits.
+	- Various maintenance related changes (scratch space location,
+	  updated vendors and vendor locations, etc.)
+	- Begin using [[spack]] for vendor maintenance.
+	- New interfaces in quadrature provided to support Jayenne-7_11_0.
+	- Draco open source license approved, LA-CC-16-016,
+	  https://github.com/losalamos/Draco
+	- Added preliminary support for Trinity (completed during the open
+	  science campaign).
+	- Stand up nightly regressions with clang-3.8.
+	- Update Copyright, README and LICENSE files to allow release
+	  of Draco under open source BSD license. refs #617.
+
+	* Details per package:
+
+	Developer Environment:
+	- For Cray systems load the gcc compiler under the PrgEnv-intel
+	  environment. This allows Intel to use gcc headers that support
+	  C++11. refs #621
+	- For the standard Draco developer environment, add
+	  /var/tmp/vendors/bin to the PATH.
+	- Begin supporting doxygen 1.8 (better autodoc at
+	  http://rtt.lanl.gov/autodoc/draco).
+
+	Build System:
+	- Changing the build system to correctly distribute tests on Cray
+	  machines w/o oversubscribing core 0 on each node. refs #597
+	  - When registering tests, ensure that the the whole node is
+	    registered as 'in use' by ctest. This means that even scalar
+	    tests will register 32 cores on trinitite. Cover various cases
+	    (user provided label, etc.)
+	  - For aprun, use the options
+	    '-cc none -b -d ${MPI_CORES_PER_CPU} -n <N>'.
+	    o Use the variable MPIEXEC_POSTFLAGS to capture "-cc none -b -q".
+	  - Cray machines: Trinitite, Cielo and Cielito.
+	  - In ApplicationUnitTest.cmake, make a REGEX REPLACE operation
+	    safer by appropriate use of quotes.
+	  - Add the following variables to the published
+	    draco-config.cmake so they are available from the Capsaicin
+	    build system w/o calling Draco's setupMPI.cmake:
+	    SITENAME
+	    MPIEXEC
+	    MPI_CORES_PER_CPU
+	    MPI_PHYSICAL_CORES
+	    MPIEXEC_MAX_NUMPROCS
+	  - On Cray machines, always run numdiff from the login node
+	    instead of the backend.
+	  - Consolidate setting aprun's depth (-d) option into a
+	    cmake-function that can be used by ApplicationUnitTest.cmake.
+	  - When on Cray machines, ensure that gdiff and pgdiff are called
+	    with the appropriate aprun options.
+	  - Instruct regressions and release script systems to use 8 nodes
+	    for Cray machines (8 concurrent tests will be allowed to run).
+	- Do not include '-bind-to socket --may-by ppr:N:socket' options
+	  to mpirun when the OS is APPLE. fixes #691
+
+	cdi:
+	- Added a function to integrate and return the rosseland spectrum
+	  over all energy groups (without returning the plance)
+
+	ds++:
+	- Assert.hh/cc: Modify various assertion macros to make a call to
+	  a check function rather than performing the check
+	  themselves. This greatly reduces the number of untaken branches
+	  that are detected by BullseyeCoverage when doing coverage
+	  analysis of the test suite.
+
+	mesh_element:
+	- Add heptagon and octagon to types, to fill out the AMR element zoo.
+
+	parser:
+	- Add an access function to retrieve the text of the
+	  String_Token_Stream.
+
+	quadrature:
+	- Adding a capability to map a delta-function angular direction and
+	  associated weight into an Ordinate Set Refs #607.
+	- Adding a factory class to build an Ordinate_Set from quadrature_data
+	- Adding a check function to ensure quadrature_data entries are
+	  valid before using them.
+	- Adding a requirement that all the pointers in quadrature_data
+	  not be NULL in 2D and 3D
+
+	* Details for defects and features can be found at
+	  https://rtt.lanl.gov/redmine/isues/#.
+
+	Corrected defects:
+	* Bug #712 Vendor or regression bug wrt suite-sparse linked into trilinos
+	* Bug #710 Provide updated Capsaicin vendor stack on HPC
+	* Bug #701 Update valgrind suppression filter
+	* Bug #700 autodoc is not being published nightly
+	* Bug #698 Restore nightly regressions on ccscs7
+	* Bug #697 Install all vendor code at /scratch/vendors
+	* Bug #691 OSX: flags given to openmpi/1.10 result in fatal error
+	* Bug #690 Possible performance issue related to Boost and OpenMPI/1.10
+	* Bug #686 Turn DbC off for the nightly regression that tests code coverage
+	* Bug #674 Debug testing is much slower after Feb 11
+	* Bug #627 Release scripts attempt to set permissions before install is done
+	* Bug #621 Intel/15.0.5 on Cray does not provide full C++11 support
+	* Bug #602 Darwin knc-mic builds are broken
+
+	New features:
+	* Feature #703 Provide '-bc' versions of metis, parmetis, superlu-dist and trilinos
+	* Feature #696 Stand up new vendors directory for RHEL72 machines
+	* Task #699 new cmake install is missing cmake-gui and https support (curl)
+	* Task #675 Package Management: learn about spack for managing vendors
+	* Task #668 Demonstrate build and test on RHEL72 (ccscs4)
+	* Task #619 Change Yellow HPC regressions so they use /net/scratch1
+	* Task #617 Obtain LACC for Draco-6-X
+
+	Known Defects:
+	* Bug #684 Intel1602: tstBlock_Vector_Operator segmentation fault
+	* Bug #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	* Bug #59  cdi_eospac design flaw
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+79650: kellyt
+46033: kgbudge
+9778: tme
+5899: bta
+4760: lowrie
+3954: mcghee
+3622: mwbuksas
+3448: gaber
+2306: wollaber
+2188: warsa
+832: sethrj
+629: rsqrd
+545: jhchang
+434: talbotp
+206: kwang
+179: furnish
+169: clevelam
+132: keadyk
+130: bergen
+94: regress
+92: pahrens
+90: phenning
+47: batcho
+41: jdd
+30: tmonster
+24: swmosher
+8: tkelley
+2: wawiesel
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             411          12182          21838          64476
+C/C++ Header                    332           7169          21333          19230
+Lisp                             17           2031           2939          13034
+CMake                           117           2089           5452           8777
+Bourne Shell                     19            400            945           1934
+Bourne Again Shell               17            268            538           1480
+Python                            6            286            376            921
+CSS                               1            113             37            395
+Fortran 90                        6             88            158            290
+C                                 4             46            113            238
+C Shell                           2             31             30            177
+DOS Batch                         3             47             37            100
+HTML                              2              6             47             65
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            942          24795          53918         111196
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+../source/src/units/                  80 /    80 = 100%      58 /    58 = 100%
+../source/src/lapack_wrap/            12 /    12 = 100%       0 /     0
+../source/src/rng/                    57 /    57 = 100%      23 /    24 =  95%
+../source/src/fit/                     1 /     1 = 100%      15 /    16 =  93%
+../source/src/ode/                     5 /     5 = 100%      29 /    32 =  90%
+../source/src/min/                     9 /     9 = 100%     137 /   154 =  88%
+../source/src/linear/                 16 /    16 = 100%     334 /   392 =  85%
+../source/src/roots/                   8 /     8 = 100%     259 /   312 =  83%
+../source/src/cdi/                    46 /    46 = 100%      63 /    76 =  82%
+../source/src/cdi_ipcress/           106 /   106 = 100%     188 /   247 =  76%
+../source/src/viz/                    32 /    32 = 100%     131 /   174 =  75%
+../source/src/meshReaders/            15 /    15 = 100%     127 /   172 =  73%
+../source/src/diagnostics/            15 /    15 = 100%      34 /    50 =  68%
+../source/src/cdi_eospac/             52 /    52 = 100%      65 /   127 =  51%
+../source/src/FortranChecks/           1 /     1 = 100%       7 /    14 =  50%
+../source/src/RTT_Format_Reader/     319 /   321 =  99%     273 /   356 =  76%
+../source/src/timestep/               62 /    63 =  98%     104 /   178 =  58%
+../source/src/ds++/                  340 /   346 =  98%     458 /   530 =  86%
+../source/src/parser/                281 /   287 =  97%    1114 /  1431 =  77%
+../source/src/quadrature/            219 /   225 =  97%     569 /   728 =  78%
+../source/src/norms/                  25 /    26 =  96%      21 /    34 =  61%
+../source/src/mesh_element/           24 /    25 =  96%     165 /   219 =  75%
+../source/src/c4/                    163 /   172 =  94%     523 /   576 =  90%
+../source/src/special_functions/      30 /    32 =  93%     192 /   216 =  88%
+../source/src/cdi_analytic/          146 /   165 =  88%     172 /   224 =  76%
+../source/src/memory/                  4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2068 /  2123 =  97%    5061 /  6342 =  79%
+
 2015-12-01  Kelly (KT) Thompson  <kgt@lanl.gov>
 
  	* Release draco-6_18_0.  This is a minor Draco release.
-	https://rtt.lanl.gov/redmine/versions/41.
+	  https://rtt.lanl.gov/redmine/versions/41.
 
 	* This release was required by Jayenne and Capsaicin.  It is
 	  linked to:
