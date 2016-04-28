@@ -122,6 +122,7 @@ bounds_checking)
   bounds_checking=on
   run "module swap SuperLU_DIST SuperLU_DIST/4.3-bc"
   run "module swap trilinos trilinos/12.6.1-bc"
+  run "module swap metis metis/5.1.0-bc"
   run "module swap parmetis parmetis/4.0.3-bc"
   ;;
 clang)
@@ -161,7 +162,7 @@ gcc530bc)
   run "module load dracoscripts subversion random123"
   run "module load lapack gsl"
   run "module load SuperLU_DIST/4.3-bc"
-  run "module load ndi metis/5.1.0-bc parmetis/4.0.3-bc trilinos/12.6.2-bc"
+  run "module load ndi metis/5.1.0-bc parmetis/4.0.3-bc trilinos/12.6.1-bc"
   comp=gcc-5.3.0
   ;;
 *)

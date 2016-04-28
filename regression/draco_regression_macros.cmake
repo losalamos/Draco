@@ -550,7 +550,7 @@ macro( setup_for_code_coverage )
 
             # Process and save lines of code
             message( "Generating lines of code statistics...
- /home/regress/draco/regression/cloc
+/scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy
                --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
@@ -563,16 +563,16 @@ macro( setup_for_code_coverage )
                ${CTEST_SOURCE_DIRECTORY}
             ")
             execute_process(
-               COMMAND /home/regress/draco/regression/cloc
+               COMMAND /scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy
-               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=/scratch/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log
                --counted=cloc-counted.log
                --ignored=cloc-ignored.log
                --progress-rate=0
                --report-file=lines-of-code.log
-               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3
                #  --diff
@@ -580,29 +580,29 @@ macro( setup_for_code_coverage )
                )
             message( "Lines of code data at ${CTEST_BINARY_DIRECTORY}/lines-of-code.log")
             message( "Generating lines of code statistics (omitting test directories)
- /home/regress/draco/regression/cloc
+/scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy,test
-               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=/scratch/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize-notest.log
                --counted=cloc-counted-notest.log
                --ignored=cloc-ignored-notest.log
                --progress-rate=0
                --report-file=lines-of-code-notest.log
-               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
             ")
             execute_process(
-               COMMAND /home/regress/draco/regression/cloc
+               COMMAND /scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy,test
-               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=/scratch/regress/draco/regression/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log
                --counted=cloc-counted.log
                --ignored=cloc-ignored.log
                --progress-rate=0
                --report-file=lines-of-code-notest.log
-               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3
                #  --diff
