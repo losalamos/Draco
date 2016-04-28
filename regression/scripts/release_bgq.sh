@@ -25,6 +25,13 @@
 # Per release settings go here (edits go here)
 #----------------------------------------------------------------------#
 
+# Avoid 'unbound variable' errors on Sequoia
+set +u
+
+# CAUTION: Cannot have too many environment variables set!  When
+# running this script use a bare-bones environment and unset things
+# like LS_COLORS and MANPATH.
+
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
 ddir=draco-6_18_0
@@ -40,6 +47,7 @@ function gcc484()
 {
   export VENDOR_DIR=/usr/gapps/jayenne/vendors
   export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
+  export OMP_NUM_THREADS=4
   use gcc484
   use cmake340 gsl numdiff random123
   use
@@ -48,6 +56,7 @@ function xlc12()
 {
   export VENDOR_DIR=/usr/gapps/jayenne/vendors
   export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
+  export OMP_NUM_THREADS=4
   use xlc12
   use cmake340 gsl numdiff random123
   use
