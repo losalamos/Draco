@@ -34,6 +34,18 @@ Configure:
     $ mkdir build
     $ cmake ../Draco.git
 ```
+* For Cray PrgEnv, you need to prime the CMakeCache.txt
+```
+    $ cmake -C ../Draco.git/config/CracyConfig.cmake ../Draco.git
+```
+
+Optional components:
+
+* Additional libraries will be built if certain features are available in the build environment:
+  * `lapack_wrap` will be built if [LAPACK](http://www.netlib.org/lapack) or equivalent is available.
+  * `cdi_eospac` will be built if [LANL's libeospac](http://www.lanl.gov/org/padste/adtsc/theoretical/physics-chemistry-materials/sesame-database.php) is available.
+  * `device` will be built if the CUDA toolkit is available and the build machine has a GPU.
+  * `plot2D` will be built if the Grace headers and library are found.
 
 Build:
 ```
