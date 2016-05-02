@@ -73,27 +73,29 @@ const std::string release()
  */
 const std::string author_list()
 {
-// 77639: kellyt
-// 45591: kgbudge
-// 9798: tme
-// 5897: bta
+// 79650: kellyt
+// 46033: kgbudge
+// 9778: tme
+// 5899: bta
 // 4760: lowrie
 // 3954: mcghee
-// 3632: mwbuksas
+// 3622: mwbuksas
 // 3448: gaber
+// 2306: wollaber
 // 2188: warsa
 // 832: sethrj
-// 799: wollaber
 // 629: rsqrd
-// 565: jhchang
+// 545: jhchang
 // 434: talbotp
-// 208: kwang
-// 183: furnish
+// 206: kwang
+// 179: furnish
 // 169: clevelam
+// 132: keadyk
 // 130: bergen
-// 104: phenning
 // --- 100 lines ---
+// 94: regress
 // 92: pahrens
+// 90: phenning
 // 47: batcho
 // 41: jdd
 // 30: tmonster
@@ -106,9 +108,9 @@ const std::string author_list()
 //            01234567890123456789012345678901234567890123456789012345678901234567890123456789
     alist << "    Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,\n"
           << "    Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller,\n"
-          << "    James S. Warsa, Seth R. Johnson, Allan B. Wollaber, Randy M. Roberts,\n"
+          << "    Allan B. Wollaber, James S. Warsa, Seth R. Johnson, Randy M. Roberts,\n"
           << "    Jae H. Chang, Paul W. Talbot, Katherine J. Wang, Jeff Furnish,\n"
-          << "    Matthew A. Cleveland, Benjamin K. Bergen, Paul J. Henning.";
+          << "    Matthew A. Cleveland, Kendra P. Keady and Benjamin K. Bergen.";
     return alist.str();
 }
 
@@ -121,7 +123,7 @@ const std::string copyright()
 
     msg << "Draco Contributers: \n"
         << author_list() << "\n\n"
-        << "Copyright (C) 2016 Los Alamos National Security, LLC."
+        << "Copyright (C) 2016 Los Alamos National Security, LLC. (LA-CC-16-016)"
         << std::endl;
 
     return msg.str();

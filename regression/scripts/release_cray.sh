@@ -39,13 +39,13 @@ target="`uname -n | sed -e s/[.].*//`"
 case $target in
   c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     environments="intel15env" ;;
-  tt-fey* | tt-login*)
+  tt-fey* | tt-login* | tr-fey* | tr-login* )
     environments="intel15env" ;;
 esac
 function intel15env()
 {
 run "module load friendly-testing user_contrib"
-run "module unload ndi ParMetis SuperLU_DIST trilinos"
+run "module unload ndi parmetis superlu-dist trilinos"
 run "module unload lapack gsl intel"
 run "module unload cmake numdiff"
 run "module unload intel gcc"
@@ -54,19 +54,11 @@ run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
 run "module unload intel"
-run "module load gcc/4.8.1 intel/15.0.5.223"
-# run "module swap intel intel/15.0.5.223"
-case $target in
-  c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-    run "module load gsl/1.15"
-    ;;
-  tt-fey* | tt-login*)
-    run "module load gsl/1.16"
-    ;;
-esac
-run "module load cmake/3.4.0 numdiff"
-run "module load trilinos SuperLU_DIST"
-run "module load ParMetis ndi random123 eospac/6.2.4"
+run "module load gcc/4.8.2 intel/15.0.5.223"
+run "module load gsl/2.1"
+run "module load cmake/3.5.2 numdiff"
+#run "module load trilinos superlu-dist metis parmetis"
+run "module load ndi random123 eospac/6.2.4"
 run "module list"
 CC=`which cc`
 CXX=`which CC`
@@ -74,27 +66,27 @@ FC=`which ftn`
 export OMP_NUM_THREADS=8
 }
 
-function intel14env()
-{
-run "module load friendly-testing user_contrib"
-run "module unload ndi ParMetis SuperLU_DIST trilinos"
-run "module unload lapack gsl intel"
-run "module unload cmake numdiff svn"
-run "module unload PrgEnv-intel PrgEnv-pgi"
-run "module unload papi perftools"
-run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview"
-run "module swap intel intel/14.0.4.211"
-run "module load gsl/1.15"
-run "module load cmake/3.3.2 numdiff svn"
-run "module load trilinos SuperLU_DIST"
-run "module load ParMetis ndi random123 eospac/6.2.4"
-run "module list"
-CC=`which cc`
-CXX=`which CC`
-FC=`which ftn`
-export OMP_NUM_THREADS=8
-}
+# function intel14env()
+# {
+# run "module load friendly-testing user_contrib"
+# run "module unload ndi ParMetis SuperLU_DIST trilinos"
+# run "module unload lapack gsl intel"
+# run "module unload cmake numdiff svn"
+# run "module unload PrgEnv-intel PrgEnv-pgi"
+# run "module unload papi perftools"
+# run "module load PrgEnv-intel"
+# run "module unload xt-libsci xt-totalview"
+# run "module swap intel intel/14.0.4.211"
+# run "module load gsl/1.15"
+# run "module load cmake/3.3.2 numdiff svn"
+# run "module load trilinos SuperLU_DIST"
+# run "module load ParMetis ndi random123 eospac/6.2.4"
+# run "module list"
+# CC=`which cc`
+# CXX=`which CC`
+# FC=`which ftn`
+# export OMP_NUM_THREADS=8
+# }
 
 # ============================================================================
 # ====== Normally, you do not edit anything below this line ==================
