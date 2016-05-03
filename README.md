@@ -18,15 +18,20 @@ Compiling
 
 Prerequisites:
 
-* [cmake-3.5 or later](https://cmake.org/download/)
+* [cmake-3.5 or later](https://cmake.org/download/) 
+  * cmake must be in your PATH
 * A modern C++ compiler (g++, icpc, pgCC, clang++, cl)
-* MPI (openMPI, mpich)
+* MPI (openMPI, mpich) 
+  * mpiexec must be in your PATH
 * [Random123](https://www.deshawresearch.com/downloads/download_random123.cgi)
+  * export RANDOM123_INC_DIR=/some/path/Random123-1.08/include
 * [Gnu Scientific Library](http://www.gnu.org/software/gsl/)
+  * gsl-config must be in your PATH
 * python 2X
 
 Only needed for testing:
 * [numdiff](https://www.nongnu.org/numdiff)
+  * numdiff must be in your PATH
 
 Configure:
 * Use a separate build directory
