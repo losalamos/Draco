@@ -71,6 +71,8 @@ if( BUILD_TESTING )
       "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
       "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
       "-DDRACO_C4=${DRACO_C4}"
+      "-DRANDOM123_INCLUDE_DIR=${RANDOM123_INCLUDE_DIR}"
+      "-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}"
       )
     if( WIN32 )
       # For Win32 builds, DLL and applications are built in the directory
