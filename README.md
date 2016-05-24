@@ -1,6 +1,8 @@
 Draco
 ----------------
 
+[![Build Status](https://travis-ci.org/losalamos/Draco.svg?branch=develop)](https://travis-ci.org/losalamos/Draco)
+
 Draco is an object-oriented component library geared towards
 numerically intensive, radiation (particle) transport applications
 built for parallel computing hardware.  It consists of
