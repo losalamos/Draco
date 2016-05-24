@@ -1,0 +1,53 @@
+language: cpp
+
+sudo: false
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - ccache
+      - libgsl0-dev
+      - libopenmpi-dev
+      - openmpi-bin
+      - gcc-5
+      - g++-5
+      - gfortran-5
+      - liblapack-dev
+
+before_install:
+ - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
+ - cd $HOME && wget -qO- https://www.deshawresearch.com/downloads/download_random123.cgi/Random123-${RANDOM123_VER}.tar.gz | tar -xz && cd -
+ - cd $HOME && wget --no-check-certificate -qO- http://www.cmake.org/files/v${CMAKE_VERSION:0:3}/cmake-${CMAKE_VERSION}.tar.gz | tar -xz && cd -
+ - if [[ ${COVERAGE}  ]]; then pip install --user codecov; for i in CC CXX FC; do eval export ${i}=\"${!i} --coverage\"; done; fi 
+ - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
+
+env:
+  global:
+    - CCACHE_CPP2=yes
+    - GVER=5
+    - CMAKE_VERSION=3.4.3-Linux-x86_64
+    - RANDOM123_VER=1.09
+    - J=2
+  matrix:
+    - 
+    - COVERAGE=ON
+    - WERROR=ON
+
+script:
+    # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284
+  - mkdir build && cd build &&
+    ${HOME}/cmake-${CMAKE_VERSION}/bin/cmake -DRANDOM123_INCLUDE_DIR=${HOME}/Random123-${RANDOM123_VER}/include -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
+    make -j${J} VERBOSE=1 &&
+    make test ARGS="-E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\)" &&
+    make install DESTDIR="${HOME}" && cd -
+
+after_success:
+  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
+
+cache:
+  - ccache
+
+compiler:
+  - gcc
