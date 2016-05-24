@@ -2,6 +2,7 @@ Draco
 ----------------
 
 [![Build Status](https://travis-ci.org/losalamos/Draco.svg?branch=develop)](https://travis-ci.org/losalamos/Draco)
+[![codecov.io](https://codecov.io/github/losalamos/Draco/coverage.svg?branch=develop)](https://codecov.io/github/losalamos/Draco/branch/develop)
 
 Draco is an object-oriented component library geared towards
 numerically intensive, radiation (particle) transport applications
