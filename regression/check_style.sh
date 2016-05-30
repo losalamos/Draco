@@ -74,10 +74,14 @@ done
 
 if test "${pct_mode}" = "1"; then
 
-  # don't actually modify the files:
-  cmd='git-clang-format -f --diff --extensions hh,cc'
+  # don't actually modify the files (compare to branch 'develop')
+  cmd='git-clang-format -f --diff --extensions hh,cc develop'
   result=`eval $cmd`
   allok=`echo $result | grep "did not modify" | wc -l`
+  # 2nd chance (maybe there are no files to check)
+  if test $allok = 0; then
+    allok=`echo $result | grep "no modified files" | wc -l`
+  fi
 
   if test $allok = 1; then
     echo "PASS: Changes conform to draco style requirements."
@@ -98,7 +102,7 @@ if test "${pct_mode}" = "1"; then
 else
 
   if test ${diff_mode} = 1; then
-    cmd='git-clang-format -f --diff --extensions hh,cc'
+    cmd='git-clang-format -f --diff --extensions hh,cc develop'
     result=`eval $cmd`
     echo "The following non-conformances were discovered. Rerun without -d|-n to"
     echo "automatically apply these changes:"
@@ -106,7 +110,7 @@ else
     # rerun command to capture color output.
     eval $cmd
   else
-    result=`git-clang-format -f --extensions hh,cc`
+    result=`git-clang-format -f --extensions hh,cc develop`
     nonconformantfilesfound=`echo $result | grep "changed files" | wc -l`
     echo "The following files in your working directory were modified to meet the draco"
     echo "style requirement:"
