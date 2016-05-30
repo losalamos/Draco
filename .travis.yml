@@ -45,7 +45,7 @@ script:
   - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir build && cd build &&
     ${HOME}/cmake-${CMAKE_VERSION}/bin/cmake -DRANDOM123_INCLUDE_DIR=${HOME}/Random123-${RANDOM123_VER}/include -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
     make -j${J} VERBOSE=1 &&
-    ${HOME}/cmake-${CMAKE_VERSION}/bin/ctest -j ${J} ARGS="-E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\)" &&
+    ${HOME}/cmake-${CMAKE_VERSION}/bin/ctest -j ${J} -E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\) &&
     make install DESTDIR="${HOME}" && cd - ; fi
 
 after_success:

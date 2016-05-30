@@ -35,6 +35,14 @@ print_use()
 gcf=`which git-clang-format`
 if test "${gcf}notset" = "notset"; then
    echo "ERROR: git-clang-format was not found in your PATH."
+   echo "pwd="
+   pwd
+   echo "which clang-format"
+   which clang-format
+   echo "which git"
+   which git
+   echo "find clang-format"
+   find . -name clang-format
    exit 1
 fi
 
