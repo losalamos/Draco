@@ -40,8 +40,7 @@ namespace rtt_dsxx
 // ---------------------------------------------------------------------------//
 #if defined _WIN32 || defined __CYGWIN__
 
-template< typename T >
-bool isNan(T a) { return _isnan(a); }
+template< typename T > bool isNan(T a) { return _isnan(a); }
 template< typename T >
 bool isInf(T a) { return !_finite(a); }
 template< typename T >
