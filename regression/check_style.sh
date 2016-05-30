@@ -49,6 +49,8 @@ if test "${gcf}notset" = "notset"; then
    echo "find clang-format${cfver}"
    find . -name clang-format${cfver}
    exit 1
+else
+  echo "Using $gcf"
 fi
 
 ver=`clang-format${cfver} --version`
@@ -90,6 +92,7 @@ if test "${pct_mode}" = "1"; then
 
   # don't actually modify the files (compare to branch 'develop')
   cmd='git-clang-format${cfver} -f --diff --extensions hh,cc develop'
+  echo $cmd
   result=`eval $cmd`
   allok=`echo $result | grep "did not modify" | wc -l`
   # 2nd chance (maybe there are no files to check)
