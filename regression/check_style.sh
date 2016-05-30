@@ -38,29 +38,29 @@ else
   cfver=""
 fi
 gcf=`which git-clang-format${cfver}`
+cf=`which clang-format${cfver}`
 if test "${gcf}notset" = "notset"; then
    echo "ERROR: git-clang-format${cfver} was not found in your PATH."
    echo "pwd="
    pwd
+   echo "which git-clang-format${cfver}"
+   echo $gcf
    echo "which clang-format${cfver}"
-   which clang-format${cfver}
+   echo $cf
    echo "which git"
    which git
-   echo "find clang-format${cfver}"
-   find . -name clang-format${cfver}
    exit 1
 else
-  echo "Using $gcf"
+  echo "Using $gcf --binary $cf"
 fi
 
-ver=`clang-format${cfver} --version`
+ver=`${cf} --version`
 echo " "
 echo "--------------------------------------------------------------------------------"
 echo "Checking modified code for style conformance..."
 echo "  - using clang-format version $ver"
 echo "  - using settings from Draco's .clang_format configuration file."
 echo " "
-
 
 ##---------------------------------------------------------------------------##
 ## Default values
@@ -91,7 +91,7 @@ done
 if test "${pct_mode}" = "1"; then
 
   # don't actually modify the files (compare to branch 'develop')
-  cmd='git-clang-format${cfver} -f --diff --extensions hh,cc develop'
+  cmd='${gcf} --binary ${cf} -f --diff --extensions hh,cc develop'
   echo $cmd
   result=`eval $cmd`
   allok=`echo $result | grep "did not modify" | wc -l`
@@ -119,7 +119,7 @@ if test "${pct_mode}" = "1"; then
 else
 
   if test ${diff_mode} = 1; then
-    cmd='git-clang-format${cfver} -f --diff --extensions hh,cc develop'
+    cmd='${gcf} --binary ${gf} -f --diff --extensions hh,cc develop'
     result=`eval $cmd`
     echo "The following non-conformances were discovered. Rerun without -d|-n to"
     echo "automatically apply these changes:"
@@ -127,7 +127,7 @@ else
     # rerun command to capture color output.
     eval $cmd
   else
-    result=`git-clang-format${cfver} -f --extensions hh,cc develop`
+    result=`${gcf} --binary ${cf} -f --extensions hh,cc develop`
     nonconformantfilesfound=`echo $result | grep "changed files" | wc -l`
     echo "The following files in your working directory were modified to meet the draco"
     echo "style requirement:"
