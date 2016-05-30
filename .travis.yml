@@ -35,6 +35,7 @@ env:
     - RANDOM123_VER=1.09
     - J=2
     - OMP_NUM_THREADS=4
+    - CLANG_FORMAT_VER=3.8
   matrix:
     -
     - STYLE=ON

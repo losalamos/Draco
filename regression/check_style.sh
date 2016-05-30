@@ -32,21 +32,26 @@ print_use()
 ##---------------------------------------------------------------------------##
 
 # clang-format must be in the PATH
-gcf=`which git-clang-format`
+if ! test "${CLANG_FORMAT_VER}x" = "x"; then
+  cfver="-${CLANG_FORMAT_VER}"
+else
+  cfver=""
+fi
+gcf=`which git-clang-format${cfver}`
 if test "${gcf}notset" = "notset"; then
-   echo "ERROR: git-clang-format was not found in your PATH."
+   echo "ERROR: git-clang-format${cfver} was not found in your PATH."
    echo "pwd="
    pwd
-   echo "which clang-format"
-   which clang-format
+   echo "which clang-format${cfver}"
+   which clang-format${cfver}
    echo "which git"
    which git
-   echo "find clang-format"
-   find . -name clang-format
+   echo "find clang-format${cfver}"
+   find . -name clang-format${cfver}
    exit 1
 fi
 
-ver=`clang-format --version`
+ver=`clang-format${cfver} --version`
 echo " "
 echo "--------------------------------------------------------------------------------"
 echo "Checking modified code for style conformance..."
@@ -84,7 +89,7 @@ done
 if test "${pct_mode}" = "1"; then
 
   # don't actually modify the files (compare to branch 'develop')
-  cmd='git-clang-format -f --diff --extensions hh,cc develop'
+  cmd='git-clang-format${cfver} -f --diff --extensions hh,cc develop'
   result=`eval $cmd`
   allok=`echo $result | grep "did not modify" | wc -l`
   # 2nd chance (maybe there are no files to check)
@@ -111,7 +116,7 @@ if test "${pct_mode}" = "1"; then
 else
 
   if test ${diff_mode} = 1; then
-    cmd='git-clang-format -f --diff --extensions hh,cc develop'
+    cmd='git-clang-format${cfver} -f --diff --extensions hh,cc develop'
     result=`eval $cmd`
     echo "The following non-conformances were discovered. Rerun without -d|-n to"
     echo "automatically apply these changes:"
@@ -119,7 +124,7 @@ else
     # rerun command to capture color output.
     eval $cmd
   else
-    result=`git-clang-format -f --extensions hh,cc develop`
+    result=`git-clang-format${cfver} -f --extensions hh,cc develop`
     nonconformantfilesfound=`echo $result | grep "changed files" | wc -l`
     echo "The following files in your working directory were modified to meet the draco"
     echo "style requirement:"
