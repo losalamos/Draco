@@ -33,23 +33,23 @@ env:
     - CMAKE_VERSION=3.4.3-Linux-x86_64
     - RANDOM123_VER=1.09
     - J=2
+    - OMP_NUM_THREADS=4
   matrix:
     -
+    - STYLE=ON
     - COVERAGE=ON
     - WERROR=ON
-    - STYLE=ON
 
 script:
     # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284
-  - mkdir build && cd build &&
+  - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir build && cd build &&
     ${HOME}/cmake-${CMAKE_VERSION}/bin/cmake -DRANDOM123_INCLUDE_DIR=${HOME}/Random123-${RANDOM123_VER}/include -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
     make -j${J} VERBOSE=1 &&
-    make test ARGS="-E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\)" &&
-    make install DESTDIR="${HOME}" && cd -
+    ${HOME}/cmake-${CMAKE_VERSION}/bin/ctest -j ${J} ARGS="-E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\)" &&
+    make install DESTDIR="${HOME}" && cd - ; fi
 
 after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
-  - if [[ ${STYLE} ]]; then regression/check_style.sh -t; fi
 
 cache:
   - ccache
