@@ -1,11 +1,13 @@
 language: cpp
 
-sudo: false
+sudo: required
+dist: precise
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
     packages:
       - ccache
       - libgsl0-dev
