@@ -46,6 +46,15 @@ if test "${gcf}notset" = "notset"; then
    exit 1
 fi
 
+ver=`clang-format --version`
+echo " "
+echo "--------------------------------------------------------------------------------"
+echo "Checking modified code for style conformance..."
+echo "  - using clang-format version $ver"
+echo "  - using settings from Draco's .clang_format configuration file."
+echo " "
+
+
 ##---------------------------------------------------------------------------##
 ## Default values
 ##---------------------------------------------------------------------------##

@@ -6,12 +6,7 @@
  * \brief  New or overloaded cmath or cmath-like functions.
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
- *
- * History:
- * 2013-10-17 Many small header files were combined to create DracoMath.hh.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoMath_hh
@@ -40,7 +35,11 @@ namespace rtt_dsxx
 // ---------------------------------------------------------------------------//
 #if defined _WIN32 || defined __CYGWIN__
 
-template< typename T > bool isNan(T a) { return _isnan(a); }
+template <typename T>
+bool isNan(T a)
+{
+    return _isnan(a);
+}
 template< typename T >
 bool isInf(T a) { return !_finite(a); }
 template< typename T >
