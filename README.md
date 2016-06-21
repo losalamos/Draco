@@ -16,7 +16,7 @@ To clone draco:
 
     $ git clone https://github.com/losalamos/Draco.git
 
-To get started, please see [Development - Quick Start Guide](https://github.com/losalamos/Draco/wiki/Development---Quick-Start) in the wiki.
+To get started, please see [Development - Quick Start Guide](https://github.com/losalamos/Draco/wiki/Development---Quick-Start) in the wiki.  Pull requestes must satisfy the requirements listed in the [Style Guide](https://github.com/losalamos/Draco/wiki/Style-Guide)
 
 Authors
 ----------------
