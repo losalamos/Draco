@@ -2,6 +2,18 @@
 
 	* Test change
 
+2016-06-16 Jae Chang <jhchang@lanl.gov>
+	
+	*Github exercise.
+	Second attempt to merge changes to Changelog
+	I'm a good test dummy since I make many mistakes.
+
+2016-05-20  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Working on github.
+	Merge master (draco-6_19_0) -> develop.
+	Create a feature branch for PR and regression testing.
+
 2016-04-28  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_19_0.  This is a minor Draco release.

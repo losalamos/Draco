@@ -16,57 +16,7 @@ To clone draco:
 
     $ git clone https://github.com/losalamos/Draco.git
 
-Compiling
-----------------
-
-Prerequisites:
-
-* [cmake-3.5 or later](https://cmake.org/download/) 
-  * cmake must be in your PATH
-* A modern C++ compiler (g++, icpc, pgCC, clang++, cl)
-* MPI (openMPI, mpich) 
-  * mpiexec must be in your PATH
-* [Random123](https://www.deshawresearch.com/downloads/download_random123.cgi)
-  * export RANDOM123_INC_DIR=/some/path/Random123-1.08/include
-* [Gnu Scientific Library](http://www.gnu.org/software/gsl/)
-  * gsl-config must be in your PATH
-* python 2X
-
-Only needed for testing:
-* [numdiff](https://www.nongnu.org/numdiff)
-  * numdiff must be in your PATH
-
-Configure:
-* Use a separate build directory
-```
-    $ mkdir build
-    $ cmake ../Draco.git
-```
-* For Cray PrgEnv, you need to prime the CMakeCache.txt
-```
-    $ cmake -C ../Draco.git/config/CracyConfig.cmake ../Draco.git
-```
-
-Optional components:
-
-* Additional libraries will be built if certain features are available in the build environment:
-  * `lapack_wrap` will be built if [LAPACK](http://www.netlib.org/lapack) or equivalent is available.
-  * `cdi_eospac` will be built if [LANL's libeospac](http://www.lanl.gov/org/padste/adtsc/theoretical/physics-chemistry-materials/sesame-database.php) is available.
-  * `device` will be built if the CUDA toolkit is available and the build machine has a GPU.
-  * `plot2D` will be built if the Grace headers and library are found.
-
-Build:
-```
-   $ make
-```
-Test:
-```
-   $ ctest
-```
-Install:
-```
-   $ make install
-```
+To get started, please see [Development - Quick Start Guide](https://github.com/losalamos/Draco/wiki/Development---Quick-Start) in the wiki.  Pull requestes must satisfy the requirements listed in the [Style Guide](https://github.com/losalamos/Draco/wiki/Style-Guide)
 
 Authors
 ----------------
