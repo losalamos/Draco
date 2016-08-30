@@ -8,7 +8,7 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+// $Id: Element_Definition.hh 8318 2016-04-21 03:04:14Z kellyt $
 //---------------------------------------------------------------------------//
 
 #ifndef __mesh_element_Element_Definition_hh__
@@ -184,6 +184,9 @@ class DLL_PUBLIC_mesh_element Element_Definition
 	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added
 		     *   in the center of each face, and at the center of
                      *   the element. */
+        POLYH0_8,    /*!< Same as "HEXA_8" except that a node will be added at
+                      *   the center of the element. This is the
+                      *   polyhedron_0 3D amr box element*/ // MR: add
         POLYGON,     /*!< A polygon element with straight sides. */
 
         NUMBER_OF_ELEMENT_TYPES
