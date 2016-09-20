@@ -35,11 +35,11 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
-   if test -f /usr/share/Modules/init/bash; then
-      source /usr/share/Modules/init/bash
-   else
-      echo "ERROR: The module command was not found. No modules will be loaded."
-   fi
+  if test -f /usr/share/Modules/init/bash; then
+    source /usr/share/Modules/init/bash
+  else
+    echo "ERROR: The module command was not found. No modules will be loaded."
+  fi
 fi
 modcmd=`declare -f module`
 
@@ -64,7 +64,7 @@ case ${target} in
     ;;
   darwin-fe* | cn[0-9]*)
     regdir=/usr/projects/draco/regress
-    gitroot=/usr/projects/draco/regress/git
+    gitroot=$regdir/git
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -72,6 +72,7 @@ case ${target} in
     # HPC - Moonlight.
     run "module load user_contrib svn git"
     regdir=/usr/projects/jayenne/regress
+    gitroot=$regdir/git
     svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
@@ -87,9 +88,9 @@ fi
 MYHOSTNAME="`uname -n`"
 $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+  run "source $HOME/.keychain/$MYHOSTNAME-sh"
 else
-    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+  echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
 fi
 
 # ---------------------------------------------------------------------------- #
@@ -97,7 +98,7 @@ fi
 # ---------------------------------------------------------------------------- #
 
 case ${target} in
-ccscs*)
+  ccscs*)
     # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
     # repositories. This location can be parsed by redmine.
 
@@ -106,6 +107,7 @@ ccscs*)
     if test -d $gitroot/Draco.git; then
       run "cd $gitroot/Draco.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/pull/*:refs/pull/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot"
@@ -118,13 +120,14 @@ ccscs*)
     if test -d $gitroot/jayenne.git; then
       run "cd $gitroot/jayenne.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot; cd $gitroot"
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-darwin-fe*)
+  darwin-fe* | ml-fey*)
     # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
     # repositories. This location can be parsed by redmine. For darwin, the
     # backend can't see gitlab, so keep a copy of the repository local.
@@ -147,14 +150,14 @@ darwin-fe*)
     if test -d $gitroot/jayenne/jayenne.git; then
       run "cd $gitroot/jayenne/jayenne.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requets/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-*)
+  *)
     #
     # HPC: Mirror the capsaicin svn repository
     #

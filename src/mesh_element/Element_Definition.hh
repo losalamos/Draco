@@ -8,17 +8,17 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id: Element_Definition.hh 8318 2016-04-21 03:04:14Z kellyt $
+// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __mesh_element_Element_Definition_hh__
 #define __mesh_element_Element_Definition_hh__
 
 #include "ds++/Assert.hh"
-#include <vector>
-#include <string>
-#include <stdexcept>
 #include <ostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace rtt_mesh_element
 {
@@ -99,7 +99,6 @@ class DLL_PUBLIC_mesh_element Element_Definition
     // NESTED CLASSES AND TYPEDEFS
 
   public:
-
     /*!
      * \brief Describes the location of a node within an element.
      *
@@ -119,11 +118,12 @@ class DLL_PUBLIC_mesh_element Element_Definition
      * form the edges of the quadrilateral.
      *
      */
-    enum Node_Location {
-	CORNER, /*!< Terminates one or more edges of an element. */
-	EDGE,   /*!< Located in the interior of a 1D element. */
-	FACE,   /*!< Located in the interior of a 2D element. */
-	CELL    /*!< Located in the interior of a 3D element. */
+    enum Node_Location
+    {
+        CORNER, /*!< Terminates one or more edges of an element. */
+        EDGE,   /*!< Located in the interior of a 1D element. */
+        FACE,   /*!< Located in the interior of a 2D element. */
+        CELL    /*!< Located in the interior of a 3D element. */
     };
 
     /*!
@@ -135,86 +135,87 @@ class DLL_PUBLIC_mesh_element Element_Definition
      * Element-Descriptions </a> (Adobe PDF format) are are available at the
      * CGNS www site.
      */
-    enum Element_Type {
-	NODE,       /*!< A dimensionless point in space. */
-	BAR_2,      /*!< The basic one-D, two-node "line" element. */
-	BAR_3,      /*!< Same as "BAR_2" except that a node is added in the
+    enum Element_Type
+    {
+        NODE,   /*!< A dimensionless point in space. */
+        BAR_2,  /*!< The basic one-D, two-node "line" element. */
+        BAR_3,  /*!< Same as "BAR_2" except that a node is added in the
                      *   center. */
-	TRI_3,      /*!< The basic two-D, three-node, "triangle" element. */
-	TRI_6,      /*!< Same as "TRI_3" except that nodes are added in the *
+        TRI_3,  /*!< The basic two-D, three-node, "triangle" element. */
+        TRI_6,  /*!< Same as "TRI_3" except that nodes are added in the *
                      *   middle of each edge. This is the standard
                      *   quadratic-serendipity finite element triangle.*/
-	QUAD_4,     /*!< The basic two-D, four-node "quadrilateral" element. */
-	QUAD_8,     /*!< Same as "QUAD_4" except a node is added in the
-		     *   middle of each edge. This is the
-                     *   standard quadratic-serendipity finite element quad.*/
-	QUAD_9,     /*!< Same as "QUAD_8" except a node is added in the
-                     *   center of the quad. */
-	PENTAGON_5, /*!< The basic two-D, five-node "pentagon"
-                     *   element. Elements with this topology are quite common
-                     *   in an AMR mesh. */
-	HEXAGON_6,  /*!< The basic two-D, six-node "hexagon"
-                     *   element. Elements with this topology are quite common
-                     *   in an AMR mesh. */
-	HEPTAGON_7,  /*!< The basic two-D, seven-node "heptagon"
-                     *   element. Elements with this topology can occur
-                     *   in an AMR mesh. */
-	OCTAGON_8,  /*!< The basic two-D, eight-node "octagon"
-                     *   element. Elements with this topology can occur
-                     *   in an AMR mesh. */
-	TETRA_4,    /*!< The basic three-D, four-node "tetrahedral" element. */
-	TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the
-		     *   middle  of each edge. This is the
-                     *   standard quadratic-serendipity finite element tet.*/
-	PYRA_5,     /*!< The basic three-D, five-node, "pyramid" element.
-		    *    This is a hex with one face collapsed to a point.*/
-	PYRA_14,    /*!< Same as "PYRA_5" except that a node is added on
-                     *   each edge, and one at the center. */
-	PENTA_6,    /*!< The basic three-D, six-node "pentahedron". Also
-                     *   known as a "triangular-prism", or "wedge". */
-	PENTA_15,   /*!< Same as "PENTA-6" except that nodes are added in
-                     *   the center of each edge. This is the
-                     *   standard quadratic-serendipity finite element wedge.*/
-	PENTA_18,   /*!< Same as "PENTA-15" except that nodes are added in
-                     *   the center of each quadrilateral face. */
-	HEXA_8,     /*!< The basic three-D, eight-node "hexahedron". */
-	HEXA_20,    /*!< Same as "HEXA_8" except that a node is added in
-                     *   the center of each edge. This is the
-                     *   standard quadratic-serendipity finite element hex.*/
-	HEXA_27,    /*!< Same as "HEXA_20" except that a node is added
-		     *   in the center of each face, and at the center of
-                     *   the element. */
-        POLYH0_8,    /*!< Same as "HEXA_8" except that a node will be added at
-                      *   the center of the element. This is the
-                      *   polyhedron_0 3D amr box element*/ // MR: add
-        POLYGON,     /*!< A polygon element with straight sides. */
+        QUAD_4, /*!< The basic two-D, four-node "quadrilateral" element. */
+        QUAD_5, /*!< A quad with a node in the center of one face. */
+        QUAD_6, /*!< A quad with nodes in the center of two faces. */
+        QUAD_7, /*!< A quad with nodes in the center of three faces. */
+        QUAD_8, /*!< A quad with nodes in the center of all four faces.
+                     *   This is standard quadratic-serendipity finite element
+                 * quad.*/
+        QUAD_9, /*!< Same as "QUAD_8" except a node is added in the center of
+                   the quad. */
+        PENTAGON_5, /*!< The basic two-D, five-node "pentagon" element.
+                             Elements with this topology are quite common in an
+                       AMR mesh. */
+        HEXAGON_6,  /*!< The basic two-D, six-node "hexagon" element.
+                             Elements with this topology are quite common in an
+                       AMR mesh. */
+        HEPTAGON_7, /*!< The basic two-D, seven-node "heptagon" element.
+                             Elements with this topology can occur in an AMR
+                       mesh. */
+        OCTAGON_8,  /*!< The basic two-D, eight-node "octagon" element.
+                             Elements with this topology can occur in an AMR
+                       mesh. */
+        TETRA_4,    /*!< The basic three-D, four-node "tetrahedral" element. */
+        TETRA_10,   /*!< Same as "TETRA_4" except that a node is added in the
+                 *   middle  of each edge. This is the
+                         *   standard quadratic-serendipity finite element tet.*/
+        PYRA_5,     /*!< The basic three-D, five-node, "pyramid" element.
+                *    This is a hex with one face collapsed to a point.*/
+        PYRA_14,    /*!< Same as "PYRA_5" except that a node is added on
+                         *   each edge, and one at the center. */
+        PENTA_6,    /*!< The basic three-D, six-node "pentahedron". Also
+                         *   known as a "triangular-prism", or "wedge". */
+        PENTA_15,   /*!< Same as "PENTA-6" except that nodes are added in
+                         *   the center of each edge. This is the
+                         *   standard quadratic-serendipity finite element
+                     * wedge.*/
+        PENTA_18,   /*!< Same as "PENTA-15" except that nodes are added in
+                         *   the center of each quadrilateral face. */
+        HEXA_8,     /*!< The basic three-D, eight-node "hexahedron". */
+        HEXA_20,    /*!< Same as "HEXA_8" except that a node is added in
+                         *   the center of each edge. This is the
+                         *   standard quadratic-serendipity finite element hex.*/
+        HEXA_27,    /*!< Same as "HEXA_20" except that a node is added
+                 *   in the center of each face, and at the center of
+                         *   the element. */
+        POLYHEDRON, /*!< A hexahedron with, possibly, subdivided hexadedral
+                       neighbors. */
+        POLYGON,    /*!< A polygon element with straight sides. */
 
         NUMBER_OF_ELEMENT_TYPES
     };
 
   private:
-
     // DATA
 
-    std::string  name;
+    std::string name;
     Element_Type type;
-    size_t       dimension;
-    size_t       number_of_nodes;
-    size_t       number_of_sides;
-    std::vector< Element_Definition > elem_defs;
-    std::vector< int >                side_type;
-    std::vector< std::vector< size_t > > side_nodes;
-    std::vector< Node_Location >      node_loc;
+    size_t dimension;
+    size_t number_of_nodes;
+    size_t number_of_sides;
+    std::vector<Element_Definition> elem_defs;
+    std::vector<int> side_type;
+    std::vector<std::vector<size_t>> side_nodes;
 
   public:
-
     // CREATORS
 
     /*!
      * \brief Constructor for the Element_Definition class.
      * \param type_ The element type to be constructed.
      */
-    explicit Element_Definition( Element_Type const & type_ );
+    explicit Element_Definition(Element_Type const & type_);
 
     /*!
      * \brief Constructor for the Element_Definition class.
@@ -246,11 +247,6 @@ class DLL_PUBLIC_mesh_element Element_Definition
      *        vector specifying the nodes associated with the third side of
      *        the element.  Note that the node numbering is 0 based.
      *
-     * \param node_loc_ The location of each node. See the
-     *        <code>Element_Definition::Node_Location</code> enumeration for
-     *        additional discussion on node locations.
-     *
-     *
      * \pre <code>dimension_>=0</code>
      *
      * \pre <code>number_of_nodes_>0</code>
@@ -274,13 +270,6 @@ class DLL_PUBLIC_mesh_element Element_Definition
      * \pre All elements of \c side_nodes_ must satisfy
      * <code>static_cast<unsigned>(side_nodes_[i][j])<number_of_nodes_ </code>
      *
-     * \pre <code>node_loc_.size()==number_of_nodes_</code>
-     *
-     * \pre The element locations in \c node_loc_ must be consistent with the
-     * element locations implied by \c side_nodes_, \c side_type_, and \c
-     * elem_defs_
-     *
-     *
      * \post <code> get_type()==Element_Definition::POLYGON </code>
      *
      * \post <code> get_name()==name_  </code>
@@ -291,20 +280,17 @@ class DLL_PUBLIC_mesh_element Element_Definition
      *
      * \post <code> get_number_of_sides()==number_of_sides_  </code>
      *
-     * \post <code> get_node_location(i)==node_loc_[i]  </code>
-     *
      * \post <code> get_side_type(i)==elem_defs_[side_type_[i]]  </code>
      *
      * \post <code> get_side_nodes(i)==side_nodes_[i]  </code>
      */
-    Element_Definition( std::string  name_,
-                        size_t       dimension_,
-                        size_t       number_of_nodes_,
-                        size_t       number_of_sides_,
-                        std::vector< Element_Definition >  const &elem_defs_,
-                        std::vector< int >                 const &side_type_,
-                        std::vector< std::vector<size_t> > const &side_nodes_,
-                        std::vector< Node_Location >       const &node_loc_ );
+    Element_Definition(std::string name_,
+                       size_t dimension_,
+                       size_t number_of_nodes_,
+                       size_t number_of_sides_,
+                       std::vector<Element_Definition> const & elem_defs_,
+                       std::vector<int> const & side_type_,
+                       std::vector<std::vector<size_t>> const & side_nodes_);
 
     // MANIPULATORS
 
@@ -314,7 +300,7 @@ class DLL_PUBLIC_mesh_element Element_Definition
      * This destructor is virtual, implying that Element_Definition is
      * extensible by inheritance.
      */
-    virtual ~Element_Definition(void){/*empty*/}
+    virtual ~Element_Definition(void) { /*empty*/}
 
     // ACCESSORS
 
@@ -322,38 +308,26 @@ class DLL_PUBLIC_mesh_element Element_Definition
      * \brief Returns the name of an element.
      * \return Returns the element name as a string.
      */
-    std::string get_name(void) const
-    {
-	return name;
-    }
+    std::string get_name(void) const { return name; }
 
     /*!
      * \brief Returns the type of an element.
      * \return Returns the element type.
      */
-    Element_Type get_type(void) const
-    {
-	return type;
-    }
+    Element_Type get_type(void) const { return type; }
 
     /*!
      * \brief Returns the total number of nodes in an element.
      * \return Total number of nodes in an element.
      */
-    unsigned get_number_of_nodes(void) const
-    {
-	return number_of_nodes;
-    }
+    unsigned get_number_of_nodes(void) const { return number_of_nodes; }
     /*!
      * \brief Returns the dimension of an element. i.e. nodes return 0, lines
      *        return 1, quads return 2, hexahedra return 3.
      *
      * \return The element dimension (0, 1, 2, or 3).
      */
-    unsigned get_dimension(void) const
-    {
-	return dimension;
-    }
+    unsigned get_dimension(void) const { return dimension; }
     /*!
      * \brief Returns the number of sides on an element.
      *
@@ -361,27 +335,7 @@ class DLL_PUBLIC_mesh_element Element_Definition
      *        dimensional element. i.e. nodes return 0, lines return 2, quads
      *        return 4, hexahedra return 6.
      */
-    unsigned get_number_of_sides(void) const
-    {
-	return number_of_sides;
-    }
-
-    /*!
-     * \brief Returns the location of a node within the element.
-     *
-     * \param node_number the node number for which a location is
-     *        desired. Node numbers must be in the range [0:number_of_nodes).
-     *
-     * \return The location of the node. See the
-     *        Element_Definition::Node_Location enumeration for additional
-     *        discussion on node locations.
-     *
-     */
-    Node_Location get_node_location( size_t const node_number ) const
-    {
-        Insist( node_number < number_of_nodes, "Node index out of range!");
-        return node_loc[node_number];
-    }
+    unsigned get_number_of_sides(void) const { return number_of_sides; }
 
     /*!
      * \brief Returns the type (i.e. quad, tri, etc.) of a specified element
@@ -399,13 +353,11 @@ class DLL_PUBLIC_mesh_element Element_Definition
      * (n-1) dimensional element that composes a n dimensional
      * element.
      */
-    Element_Definition get_side_type( unsigned const side_number ) const
+    Element_Definition get_side_type(unsigned const side_number) const
     {
-        Insist(side_number < side_type.size(),
-               "Side index out of range!");
-	return elem_defs[side_type[side_number] ];
+        Insist(side_number < side_type.size(), "Side index out of range!");
+        return elem_defs[side_type[side_number]];
     }
-
 
     /*!
      * \brief Returns a vector of node numbers that are associated with a
@@ -440,33 +392,32 @@ class DLL_PUBLIC_mesh_element Element_Definition
      *
      * Note that there is no valid side number for a "NODE" element.
      */
-    std::vector<size_t> get_side_nodes( unsigned const side_number ) const
+    std::vector<size_t> get_side_nodes(unsigned const side_number) const
     {
-        Insist( side_number < side_nodes.size(),
-                "Side index out of range!");
-	return side_nodes[side_number];
+        Insist(side_number < side_nodes.size(), "Side index out of range!");
+        return side_nodes[side_number];
     }
 
     std::vector<unsigned> get_number_of_face_nodes() const
     {
         std::vector<unsigned> number_of_face_nodes(side_type.size());
 
-        for (unsigned s=0; s < side_type.size(); ++s)
+        for (unsigned s = 0; s < side_type.size(); ++s)
             number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
 
         return number_of_face_nodes;
     }
 
-    std::vector<std::vector<unsigned> > get_face_nodes() const
+    std::vector<std::vector<unsigned>> get_face_nodes() const
     {
-        std::vector<std::vector<unsigned> > face_nodes(side_nodes.size());
+        std::vector<std::vector<unsigned>> face_nodes(side_nodes.size());
 
-        for (unsigned s=0; s < face_nodes.size(); ++s)
+        for (unsigned s = 0; s < face_nodes.size(); ++s)
         {
             std::vector<size_t> nodes(get_side_nodes(s));
             face_nodes[s].resize(nodes.size());
 
-            for (unsigned n=0; n < nodes.size(); ++n)
+            for (unsigned n = 0; n < nodes.size(); ++n)
                 face_nodes[s][n] = nodes[n];
         }
         return face_nodes;
@@ -482,20 +433,19 @@ class DLL_PUBLIC_mesh_element Element_Definition
     /*!
      * \brief Prints the element description.
      */
-    std::ostream &print( std::ostream &os_out ) const;
+    std::ostream & print(std::ostream & os_out) const;
 
     /*!
      * \brief Define convenience ostream inserter.
      *
      */
-    friend std::ostream &operator<<( std::ostream &os,
-				     Element_Definition const & rhs )
+    friend std::ostream & operator<<(std::ostream & os,
+                                     Element_Definition const & rhs)
     {
-	return rhs.print( os );
+        return rhs.print(os);
     }
 
   private:
-
     // IMPLEMENTATION
 
     void construct_node();
@@ -507,8 +457,6 @@ class DLL_PUBLIC_mesh_element Element_Definition
     void construct_pyra();
     void construct_penta();
     void construct_hexa();
-    void construct_poly_2d();
-
 };
 
 } // end namespace rtt_mesh_element

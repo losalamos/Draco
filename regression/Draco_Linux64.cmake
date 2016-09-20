@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.0.0)
 #   [export work_dir=/full/path/to/working/dir]
 #   ctest [-V] [-VV] -S /path/to/this/script.cmake,\
 #     [Experimental|Nightly|Continuous],\
-#     [Debug[,Coverage]|Release|RelWithDebInfo]
+#     [Debug[,Coverage|,DynamicAnalysis]|Release|RelWithDebInfo]
 
 set( CTEST_PROJECT_NAME "Draco" )
 message("source ${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )

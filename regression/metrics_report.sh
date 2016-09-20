@@ -27,7 +27,7 @@ print_use()
 ## Sanity Checks and Setup
 ##---------------------------------------------------------------------------##
 
-if test "${4}x" = "x"; then
+if [[ ! ${4} ]]; then
    echo "ERROR: You must provide at least 4 arguments."
    print_use
    exit 1

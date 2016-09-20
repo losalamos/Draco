@@ -10,6 +10,11 @@
 ;; Usage: (require 'draco-global-keys)
 ;; ======================================================================
 
+;; Clang-format
+(require 'clang-format)
+(global-set-key [(f12)] 'clang-format-region) ;; Windows/Linux
+(global-set-key [(C-M-tab)] 'clang-format-region) ;; Mac/Linux
+
 ;; Kill default XEmacs key binding annoyances:
 
 (define-key global-map "\C-x\C-k" 'kill-buffer)

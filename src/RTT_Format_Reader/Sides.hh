@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/Sides.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
@@ -14,19 +14,19 @@
 #ifndef __RTT_Format_Reader_Sides_hh__
 #define __RTT_Format_Reader_Sides_hh__
 
+#include "CellDefs.hh"
+#include "Dims.hh"
+#include "Nodes.hh"
+#include "SideFlags.hh"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Dims.hh"
-#include "SideFlags.hh"
-#include "CellDefs.hh"
-#include "Nodes.hh"
 
 namespace rtt_RTT_Format_Reader
 {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        sides block of the mesh file.
  */
 class Sides
@@ -35,7 +35,7 @@ class Sides
     typedef std::ifstream ifstream;
     typedef std::string string;
     typedef std::vector<int> vector_int;
-    typedef std::vector<std::vector<int> > vector_vector_int;
+    typedef std::vector<std::vector<int>> vector_vector_int;
 
     const SideFlags & sideFlags;
     const Dims & dims;
@@ -45,12 +45,19 @@ class Sides
     vector_vector_int flags;
 
   public:
-    Sides(const SideFlags & sideFlags_, const Dims & dims_,
-	  const CellDefs & cellDefs_) : 
-        sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_), 
-	sideType(dims.get_nsides()), nodes(dims.get_nsides()),
-	flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types())) {}
-    ~Sides() {}
+    Sides(const SideFlags & sideFlags_,
+          const Dims & dims_,
+          const CellDefs & cellDefs_)
+        : sideFlags(sideFlags_),
+          dims(dims_),
+          cellDefs(cellDefs_),
+          sideType(dims.get_nsides()),
+          nodes(dims.get_nsides()),
+          flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types()))
+    { /* empty */
+    }
+
+    ~Sides() { /* empty */}
 
     void readSides(ifstream & meshfile);
     void redefineSides();
@@ -61,47 +68,52 @@ class Sides
     void readEndKeyword(ifstream & meshfile);
 
   public:
-/*!
- * \brief Returns the side type associated with the specified side.
- * \param side_numb Side number.
- * \return The side type.
- */
+    /*!
+     * \brief Returns the side type associated with the specified side.
+     * \param side_numb Side number.
+     * \return The side type.
+     */
     int get_type(int side_numb) const { return sideType[side_numb]; }
-/*!
- * \brief Returns the node numbers associated with each side.
- * \return The node numbers for all of the sides.
- */
+    /*!
+     * \brief Returns the node numbers associated with each side.
+     * \return The node numbers for all of the sides.
+     */
     vector_vector_int get_nodes() const { return nodes; }
-/*!
- * \brief Returns the node numbers associated with the specified side.
- * \param side_numb Side number.
- * \return The side node numbers.
- */
+    /*!
+     * \brief Returns the node numbers associated with the specified side.
+     * \param side_numb Side number.
+     * \return The side node numbers.
+     */
     vector_int get_nodes(int side_numb) const { return nodes[side_numb]; }
-/*!
- * \brief Returns the node number associated with the specified side and 
- *        side-node index.
- * \param side_numb Side number.
- * \param node_numb Side-node index number.
- * \return The side node number.
- */
-    int get_nodes(int side_numb, int node_numb) const 
-    { return nodes[side_numb][node_numb]; }
-/*!
- * \brief Returns the side flag for the specified side and flag index
- * \param side_numb Side number.
- * \param flag_numb Side flag index.
- * \return The side flag.
- */
-    int get_flags(int side_numb, int flag_numb) const 
-    { return flags[side_numb][flag_numb]; }
-/*!
- * \brief Returns the index to the side flag type that contains the specified
- *        string.
- * \param desired_flag_type Flag type.
- * \return The side flag type index.
- */
-    // int get_flag_type_index(string & desired_flag_type) const 
+    /*!
+     * \brief Returns the node number associated with the specified side and
+     *        side-node index.
+     * \param side_numb Side number.
+     * \param node_numb Side-node index number.
+     * \return The side node number.
+     */
+    int get_nodes(int side_numb, int node_numb) const
+    {
+        return nodes[side_numb][node_numb];
+    }
+    /*!
+     * \brief Returns the side flag for the specified side and flag index
+     * \param side_numb Side number.
+     * \param flag_numb Side flag index.
+     * \return The side flag.
+     */
+    int get_flags(int side_numb, int flag_numb) const
+    {
+        return flags[side_numb][flag_numb];
+    }
+    /*!
+     * \brief Returns the index to the side flag type that contains the
+     * specified
+     *        string.
+     * \param desired_flag_type Flag type.
+     * \return The side flag type index.
+     */
+    // int get_flag_type_index(string & desired_flag_type) const
     // { return sideFlags.get_flag_type_index(desired_flag_type); }
 };
 

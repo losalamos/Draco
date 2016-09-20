@@ -178,6 +178,14 @@ gcc530bc)
     run "module load ndi metis parmetis trilinos"
     comp=gcc-6.1.0
   ;;
+valgrind)
+  echo "Dynamic Analysis (valgrind) option selected."
+  if ! test "${build_type}" == "Debug"; then
+    echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+    exit 1
+  fi
+  build_type=DynamicAnalysis
+  ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
@@ -220,7 +228,7 @@ fi
 # Build type     : Release, Debug, Coverage
 
 if [[ ! ${dashboard_type} ]]; then
-   dashboard_type=Nightly
+   dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
    if test "${regress_mode}" = "off"; then
@@ -300,6 +308,10 @@ if test "${build_type}" = "Coverage"; then
       run "rm -f ${COVFILE}"
       cov01 --on
    fi
+fi
+if test "${build_type}" = "DynamicAnalysis"; then
+   # DynamicAnalysis builds imply Debug builds.
+   build_type="Debug,${build_type}"
 fi
 if test "${bounds_checking:-off}" = "on"; then
     build_type="${build_type},bounds_checking"

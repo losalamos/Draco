@@ -24,10 +24,10 @@ set -m
 print_use()
 {
     echo " "
-    echo "Usage: ${0##*/} -b [Release|Debug] -d [Experimental|Nightly]"
+    echo "Usage: ${0##*/} -b [Release|Debug] -d [Experimental|Nightly|Continuous]"
     echo "       -h -p [\"draco jayenne capsaicin\"] -r"
     echo "       -f <git branch name> -a"
-    echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi]"
+    echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi|valgrind]"
     echo " "
     echo "All arguments are optional,  The first value listed is the default value."
     echo "   -h    help           prints this message and exits."
@@ -35,14 +35,14 @@ print_use()
     echo " "
     echo "   -a    build autodoc"
     echo "   -b    build-type     = { Debug, Release }"
-    echo "   -d    dashboard type = { Experimental, Nightly }"
+    echo "   -d    dashboard type = { Experimental, Nightly, Continuous }"
     echo "   -f    git feature branch, default=\"develop develop\""
     echo "         common: 'develop pr42'"
     echo "         requires one string per project listed in option -p"
     echo "   -p    project names  = { draco, jayenne, capsaicin }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
-    echo "                            knl, gcc530, gcc610, nr, perfbench, pgi}"
+    echo "                            knl, gcc530, gcc610, nr, perfbench, pgi, valgrind}"
     echo " "
     echo "Example:"
     echo "./regression-master.sh -b Release -d Nightly -p \"draco jayenne capsaicin\""
@@ -65,7 +65,7 @@ fn_exists()
 ##---------------------------------------------------------------------------##
 build_autodoc="off"
 build_type=Debug
-dashboard_type=Nightly
+dashboard_type=Experimental
 projects="draco"
 extra_params=""
 regress_mode="off"
@@ -127,7 +127,7 @@ case ${build_type} in
 esac
 
 case ${dashboard_type} in
-Nightly | Experimental) # known dashboard_type, continue
+Nightly | Experimental | Continuous) # known dashboard_type, continue
     ;;
 *)  echo "" ;echo "FATAL ERROR: unknown dashboard_type (-d) = ${dashboard_type}"
     print_use; exit 1 ;;
@@ -149,7 +149,7 @@ if [[ ${extra_params} ]]; then
       extra_params=""; epdash="" ;;
    bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
       ;;
-   gcc610 | nr | perfbench | pgi )
+   gcc610 | nr | perfbench | pgi | valgrind )
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -187,7 +187,7 @@ ml-*)
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        cuda | fulldiagnostics | nr | perfbench | pgi ) # known, continue
+        cuda | fulldiagnostics | nr | perfbench | pgi | valgrind ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
@@ -219,7 +219,7 @@ ccscs[0-9])
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        coverage | fulldiagnostics | nr | perfbench | bounds_checking ) # known, continue
+        bounds_checking | coverage | fulldiagnostics | nr | perfbench | valgrind ) # known, continue
         ;;
         gcc530 | clang | gcc610 ) # known, continue
         ;;
@@ -236,7 +236,7 @@ darwin*)
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        cuda | fulldiagnostics | nr | perfbench ) # known, continue
+        cuda | fulldiagnostics | nr | perfbench | valgrind ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;

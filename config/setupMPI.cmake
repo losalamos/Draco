@@ -177,15 +177,18 @@ macro( setupOpenMPI )
   # Setting mpi_paffinity_alone to 0 allows parallel ctest to
   # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
   # tests (and not MPI+OpenMP tests).
+  if( "$ENV{GITLAB_CI}" STREQUAL "true" )
+    set(runasroot "--allow-run-as-root")
+  endif()
 
   # This flag also shows up in
   # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
   if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-    set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0" CACHE
+    set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0 ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
     # Flag provided by Sam Gutierrez (2015-04-08),
-    set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none" CACHE
+    set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   endif()
 
@@ -202,7 +205,7 @@ macro( setupOpenMPI )
     if( NOT APPLE )
       # -bind-to fails on OSX, See #691
       set( MPIEXEC_OMP_POSTFLAGS
-        "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings" )
+        "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
     endif()
   else()  # Version 1.7.4
     set( MPIEXEC_OMP_POSTFLAGS

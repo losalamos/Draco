@@ -367,9 +367,12 @@ macro( parse_args )
     endif()
     set( ENABLE_C_CODECOVERAGE ON )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_Cov" )
-    # Also reset the build parallelism to scalar.
-    #set( num_compile_procs 1 )
-    #set(CTEST_BUILD_FLAGS "-j${num_compile_procs}")
+  endif()
+
+  # DynamicAnalysis (valgrind)
+  if( ${CTEST_SCRIPT_ARG} MATCHES DynamicAnalysis )
+    set( ENABLE_DYNAMICANALYSIS ON )
+    set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_DA" )
   endif()
 
   # Bounds Checking
@@ -393,9 +396,9 @@ compiler_short_name         = ${compiler_short_name}
 compiler_version            = ${compiler_version}
 CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
+ENABLE_DYNAMICANALYSIS      = ${ENABLE_DYNAMICANALYSIS}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
 ")
-# CTEST_BUILD_FLAGS           = ${CTEST_BUILD_FLAGS}
   endif()
 endmacro( parse_args )
 
@@ -541,18 +544,18 @@ macro( set_git_command gitpath )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
     if( ${gitpath} MATCHES "Draco" )
       set( CTEST_CHECKOUT_COMMAND
-        "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+        "${CTEST_GIT_COMMAND} clone --depth 1 https://github.com/losalamos/${gitpath} source" )
     else()
       # This assumes that a valid ssh-key exists in the current environment and
       # works with gitlab.lanl.gov.
       if( IS_DIRECTORY "$ENV{gitroot}" )
         set( gitroot "$ENV{gitroot}/" )
         set( CTEST_CHECKOUT_COMMAND
-          "${CTEST_GIT_COMMAND} clone ${gitroot}${gitpath} source" )
+          "${CTEST_GIT_COMMAND} clone --depth 1 ${gitroot}${gitpath} source" )
       else()
         set( gitroot "git@gitlab.lanl.gov:" )
         set( CTEST_CHECKOUT_COMMAND
-          "${CTEST_GIT_COMMAND} clone ${gitroot}${gitpath} source" )
+          "${CTEST_GIT_COMMAND} clone --depth 1 ${gitroot}${gitpath} source" )
       endif()
     endif()
   endif()
@@ -706,34 +709,30 @@ endmacro( setup_for_code_coverage )
 # dyanmic analysis excludes tests with label "nomemcheck"
 # ------------------------------------------------------------
 macro(process_cc_or_da)
-   if( "${sitename}" MATCHES "ccscs[1-9]" AND
-       "$ENV{CXX}" MATCHES "g[+][+]" AND
-       "${CTEST_BUILD_NAME}" MATCHES "Linux64_gcc-4.8.5_Debug" )
-      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-         if(ENABLE_C_CODECOVERAGE)
-            message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
-            ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )
-            message( "Generating code coverage log file: ${CTEST_BINARY_DIRECTORY}/covdir.log
+  if(ENABLE_C_CODECOVERAGE)
+    message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
+    ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )
+    message( "Generating code coverage log file: ${CTEST_BINARY_DIRECTORY}/covdir.log
 
 cd ${CTEST_BINARY_DIRECTORY}
 covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
-            execute_process(
-              COMMAND
-              covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log
-              WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-              )
-            list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
-            execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
-          else()
-            set( CTEST_TEST_TIMEOUT 7200 )
-            message( "ctest_memcheck( SCHEDULE_RANDOM ON
+    execute_process(
+      COMMAND
+      covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log
+      WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+      )
+    list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
+    execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
+  endif()
+
+  if( ${ENABLE_DYNAMICANALYSIS} )
+    set( CTEST_TEST_TIMEOUT 7200 )
+    message( "ctest_memcheck( SCHEDULE_RANDOM ON
                 EXCLUDE_LABEL nomemcheck )")
-            ctest_memcheck(
-               SCHEDULE_RANDOM ON
-               EXCLUDE_LABEL "nomemcheck")
-         endif()
-      endif()
-   endif()
+    ctest_memcheck(
+      SCHEDULE_RANDOM ON
+      EXCLUDE_LABEL "nomemcheck")
+  endif()
 endmacro(process_cc_or_da)
 
 # ------------------------------------------------------------

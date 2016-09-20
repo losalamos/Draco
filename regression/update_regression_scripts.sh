@@ -8,6 +8,7 @@
 ##---------------------------------------------------------------------------##
 
 umask 0002
+
 target="`uname -n | sed -e s/[.].*//`"
 
 # Locate the directory that this script is located in:
@@ -37,6 +38,7 @@ case ${target} in
     ;;
   ccscs*)
     REGDIR=/scratch/regress
+    keychain=keychain-2.8.2
     SVN=/scratch/vendors/subversion-1.9.3/bin/svn
     ;;
   ml-*)
@@ -76,7 +78,6 @@ if test -d ${REGDIR}/draco; then
 else
   run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
 fi
-
 # Deal with proxy stuff on darwin
 case ${target} in
   darwin-fe* | cn[0-9]*)
@@ -97,12 +98,11 @@ if test -d ${REGDIR}/jayenne; then
 else
   run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
 fi
-
 # Capsaicin
 echo " "
 echo "Updating $REGDIR/capsaicin..."
 if test -d ${REGDIR}/capsaicin/scripts; then
-  run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
+run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
 else
   run "mkdir -p ${REGDIR}/capsaicin; cd ${REGDIR}/capsaicin"
   run "${SVN} co svn+ssh://ccscs7.lanl.gov/ccs/codes/radtran/svn/capsaicin/trunk/scripts"

@@ -197,16 +197,17 @@ fi
 # Build type     : Release, Debug
 
 if [[ ! ${dashboard_type} ]]; then
-   dashboard_type=Nightly
+   dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
    # Keep build and target dirs out of /usr/projects locations to
    # prevent the .snapshots directory from filling up.
    # scratch_dir=/scratch/${moniker}/cdash/ml
-   scratch_dir=/lustre/scratch3/yellow/${USER}/cdash/ml
+   scratch_dir=/lustre/scratch1/yellow/${USER}/cdash/ml
    mkdir -p $scratch_dir
    if ! test -d ${scratch_dir}; then
-      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+      echo "Fatal Error, scratch_dir=${scratch_dir} not found."
+      echo "  Have the names/locations of scratch space changed?"
       exit 1
    fi
    if test "${regress_mode}" = "off"; then

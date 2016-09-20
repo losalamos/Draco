@@ -1,0 +1,156 @@
+rtt_ascii                                              ! magic cookie
+
+header	                                               ! header keyword
+
+  version   v1.0.0                                     ! version number
+  title     RTT_format mesh file definition, version 7.! mesh title 
+  date      24 Jul 97                                  ! Date written
+  cycle     1                                          ! Cycle number
+  time      0.0                                        ! problem time
+  ncomments 3                                          ! Number of comment lines
+    One tet mesh in an RTT mesh file format.           ! comment line#1
+    Date     : 24 Jul 97                               ! comment line#2
+    Author(s): H. Trease, J.McGhee                     ! comment line#3
+
+end_header                                             ! end header keyword
+
+dims                           ! dimensions block keyword
+
+  coor_units       cm          ! Units for node coordinates
+  prob_time_units   s          ! Units for problem time
+
+  ncell_defs        7          ! number of cell types defined in "cell_defs" block
+  nnodes_max       13          ! max # of nodes for cells in the "cell_defs" block
+  nsides_max        6          ! max # of sides for cells in the "cell_defs" block
+  nnodes_side_max   9          ! max # of nodes on an cell side in "cell_defs" block
+
+  ndim              3          ! number of spatial dimensions (#coor to locate a node)
+  ndim_topo         3          ! number of topological dimensions
+
+  nnodes            13         ! total number of nodes in the mesh
+  nnode_flag_types  0          ! number of node_flag_types
+  nnode_flags       0          ! number of flags for each of the node_flag_types
+  nnode_data        0          ! number of node data fields
+
+  nsides            6          ! number of sides
+  nside_types       3          ! #side types actually present in "side" block (quad4, quad5 and quad9)
+  side_types        4 5 6      ! list of side type indexes used in "side" block (quad4, element #4, quad5, element #5, and quad9, element #6 in cell_defs)
+  nside_flag_types  1          ! number of side_flag_types
+  nside_flags       1          ! number of flags for each of the side_flag_types
+  nside_data        0          ! number of side data fields
+
+  ncells            1          ! total number of cells in the mesh
+  ncell_types       1          ! #cell types actually present in "cells" block  ("polyhedron1")
+  cell_types        7          ! list of cell type indexes used in "cells" block (polyhedron1, element #7 in cell_defs)
+  ncell_flag_types  1          ! number of cell_flag_types
+  ncell_flags       1          ! number of flags for each of the cell_flag_types
+  ncell_data        0          ! number of cell data fields
+
+end_dims                       ! end dimensions block keyword
+
+node_flags                     ! node flags keyword
+end_node_flags                 ! end node flags keyword
+
+side_flags                     ! side flags keyword
+  1 boundary                   ! 1st side flag type name
+    1 bc1
+end_side_flags
+
+cell_flags                     ! cell flags keyword
+  1 material                   ! 1st cell flag type name
+    1 material1                ! cell flag index, name
+end_cell_flags                 ! end cell flags keyword
+
+node_data_ids                  ! node_data_ids keyword
+end_node_data_ids              ! end node_data_ids keyword
+
+side_data_ids                  ! side_data_ids keyword
+end_side_data_ids              ! end side_data_ids keyword
+
+cell_data_ids                  ! cell_data_ids keyword
+end_cell_data_ids              ! end cell_data_ids keyword
+
+cell_defs                      ! cell_def block keyword
+  1 point                      ! cell index, cell name
+    1 0                        ! #nodes, #sides
+  2 bar2                       ! cell index, cell name
+    2 2                          ! #nodes, #sides
+    1 1                            ! side type index
+    1                                ! side #1 nodes
+    2                                ! side #2 nodes
+  3 bar3                       ! cell index, cell name
+    3 2                          ! #nodes, #sides
+    1 1                            ! side type index
+    1                                ! side #1 nodes
+    2                                ! side #2 nodes
+  4 quad4                      ! cell index, cell name
+    4 4                          ! #nodes, #sides
+    2 2 2 2                        ! side type index
+    1 2                              ! side #1 nodes
+    2 3                              ! side #2 nodes
+    3 4                              ! side #3 nodes
+    4 1                              ! side #4 nodes
+  5 quad5                      ! cell index, cell name
+    5 4                          ! #nodes, #sides
+    2 2 2 3                        ! side type index
+    1 2                              ! side #1 nodes
+    2 3                              ! side #2 nodes
+    3 4                              ! side #3 nodes
+    4 1 5                            ! side #4 nodes
+  6 quad9                      ! cell index, cell name
+    9 4                          ! #nodes, #sides
+    3 3 3 3                        ! side type index
+    1 2 5                            ! side #1 nodes
+    2 3 6                            ! side #2 nodes
+    3 4 7                            ! side #3 nodes
+    4 1 8                            ! side #4 nodes
+  7 polyhedron1                ! cell index, cell name
+    13 6                         ! #nodes, #sides
+    4  5  5  5  5  6               ! side type index
+    1  4  6  5                       ! side #1 nodes
+    1  2  3  4 12                    ! side #2 nodes
+    3  7  6  4 11                    ! side #3 nodes
+    8  5  6  7 10                    ! side #4 nodes
+    5  8  2  1  9                    ! side #4 nodes
+    2  8  7  3  9 10 11 12  13       ! side #4 nodes
+end_cell_defs                  ! end cell_def block keyword
+
+nodes                          ! nodes block keyword
+  1  0.0   0.0   2.0   1  
+  2  2.0   0.0   2.0   2  
+  3  2.0   2.0   2.0   3  
+  4  0.0   2.0   2.0   4  
+  5  0.0   0.0   0.0   5  
+  6  2.0   0.0   0.0   6  
+  7  2.0   2.0   0.0   7  
+  8  0.0   2.0   0.0   8  
+  9  2.0   0.0   1.0   5  
+ 10  2.0   1.0   0.0   6  
+ 11  2.0   2.0   1.0   7  
+ 12  2.0   1.0   2.0   8  
+ 13  2.0   1.0   1.0   8  
+end_nodes                      ! end_nodes block keyword
+
+sides                          ! sides block keyword
+  1  4  1 4 6 5                   1           
+  2  5  1 2 3 4 12                1             
+  3  5  3 7 6 4 11                1           
+  4  5  8 5 6 7 10                1           
+  5  5  5 8 2 1  9                1           
+  6  6  2 8 7 3 9 10 11 12 13     1
+end_sides                      ! end_sides block keyword
+
+cells                          ! cells block keyword
+  1  7   1  2  3  4  5  6  7  8  9  10   11   12  13   1     ! cell#, cell type index, global node #'s, cell flags
+end_cells                      ! end cell block keyword
+
+nodedat                        ! node data keyword
+end_nodedat                    ! end node data keyword
+
+sidedat                        ! side data keyword
+end_sidedat                    ! end side data keyword
+
+celldat                        ! cell data keyword
+end_celldat                    ! end cell data keyword
+
+end_rtt_mesh                   ! end of file keyword

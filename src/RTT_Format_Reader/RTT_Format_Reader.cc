@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <sstream>
 #include "RTT_Format_Reader.hh"
 #include "ds++/Assert.hh"
+#include <sstream>
 
 namespace rtt_RTT_Format_Reader
 {
@@ -79,7 +79,6 @@ void RTT_Format_Reader::readMesh(const string & RTT_File)
         std::cout << "Assertion thrown: " << as.what() << std::endl;
         Insist(false, as.what());
     }
-
 }
 /*!
  * \brief Reads and validates the magic cookie at the beginning of the mesh
@@ -92,7 +91,7 @@ void RTT_Format_Reader::readKeyword(ifstream & meshfile)
 
     meshfile >> dummyString;
     Insist(dummyString == "rtt_ascii", "Invalid mesh file: Not an RTT file");
-    std::getline(meshfile, dummyString);       // read and discard blank line.
+    std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
 /*!
@@ -108,9 +107,9 @@ void RTT_Format_Reader::createMembers()
     spSideDataIds.reset(new SideDataIDs(dims));
     spCellDataIds.reset(new CellDataIDs(dims));
     spCellDefs.reset(new CellDefs(dims));
-    spNodes.reset(new Nodes(* spNodeFlags, dims));
-    spSides.reset(new Sides(* spSideFlags, dims, * spCellDefs));
-    spCells.reset(new Cells(* spCellFlags, dims, * spCellDefs));
+    spNodes.reset(new Nodes(*spNodeFlags, dims));
+    spSides.reset(new Sides(*spSideFlags, dims, *spCellDefs));
+    spCells.reset(new Cells(*spCellFlags, dims, *spCellDefs));
     spNodeData.reset(new NodeData(dims));
     spSideData.reset(new SideData(dims));
     spCellData.reset(new CellData(dims));
@@ -147,7 +146,7 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
 
     meshfile >> dummyString;
     Insist(dummyString == "end_rtt_mesh",
-	   "Invalid mesh file: RTT file missing end");
+           "Invalid mesh file: RTT file missing end");
     std::getline(meshfile, dummyString);
 }
 /*!
@@ -160,8 +159,7 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
  */
 void RTT_Format_Reader::reformatData(
     vector_vector_int const & cell_side_types,
-    std::vector< std::vector< std::vector< size_t > > >
-    const & cell_ordered_sides)
+    std::vector<std::vector<std::vector<size_t>>> const & cell_ordered_sides)
 {
     spCellDefs->redefineCellDefs(cell_side_types, cell_ordered_sides);
     spSides->redefineSides();
