@@ -50,7 +50,7 @@ thisbranch=`git rev-parse --abbrev-ref HEAD`
 log "thisbranch = $thisbranch"
 
 if test "$thisbranch" = "pr${featurebranch}"; then
-  run "${GIT} pull origin pull/${featurebranch}/head"
+  run "${GIT} pull origin $prdir/${featurebranch}/head"
 else
   run "${GIT} fetch origin ${prdir}/${featurebranch}/head:pr${featurebranch}"
   run "${GIT} checkout pr${featurebranch}"
