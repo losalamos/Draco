@@ -29,6 +29,10 @@ if( -d ~/bin )then
     setenv PATH ~/bin:$PATH
 endif
 
+# Hooks for clang-format as git commit hook:
+# Possible values: ON, TRUE, OFF, FALSE, DIFF (the default value is ON).
+setenv DRACO_AUTO_CLANG_FORMAT ON
+
 # Extra module stuff
 switch ("`uname -n`")
 case pi-fey*.lanl.gov:
@@ -43,11 +47,11 @@ case ml-fey*.lanl.gov:
 case ml*.localdomain:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     module load friendly-testing user_contrib
-    module load intel/15.0.5 openmpi
-    module load git svn/1.8.10 emacs
-    module load cmake/3.5.2 numdiff lapack/3.5.0 random123 eospac/6.2.4
-    module load trilinos/12.6.1 superlu-dist/4.3
-    module load parmetis/4.0.3 metis/5.1.0 ndi fstools totalview
+    module load intel/16.0.3 openmpi/1.10.3 mkl
+    module load git subversion emacs grace
+    module load cmake/3.6.0 numdiff random123 eospac/6.2.4
+    module load trilinos/12.8.1 superlu-dist/4.3
+    module load parmetis/4.0.3 metis/5.1.0 ndi totalview
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
     breaksw
 
