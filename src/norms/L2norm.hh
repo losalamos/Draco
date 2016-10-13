@@ -14,12 +14,9 @@
 #ifndef norms_L2norm_hh
 #define norms_L2norm_hh
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 //! Compute the L2-norm of a vector.
-template<class In>
-double L2norm(In const &x);
-
+template <class In> double L2norm(In const &x);
 
 } // end namespace rtt_norms
 

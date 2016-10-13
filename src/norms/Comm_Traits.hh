@@ -18,8 +18,7 @@
 #include "Index_Proc.hh"
 #include "c4/C4_Functions.hh"
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //===========================================================================//
 /*!
@@ -37,23 +36,14 @@ namespace rtt_norms
  */
 //===========================================================================//
 
-template <class Index_t>
-class Comm_Traits
-{
-    // The default implementation of Comm_Traits assumes that Index_t is
-    // supported as an argument type to c4's send/receive.
-    
-  public:
-    
-    static void send(const Index_t x, const size_t n)
-    {
-	rtt_c4::send(&x, 1, n);
-    }
+template <class Index_t> class Comm_Traits {
+  // The default implementation of Comm_Traits assumes that Index_t is
+  // supported as an argument type to c4's send/receive.
 
-    static void receive(Index_t &x, const size_t n)
-    {
-	rtt_c4::receive(&x, 1, n);
-    }
+public:
+  static void send(const Index_t x, const size_t n) { rtt_c4::send(&x, 1, n); }
+
+  static void receive(Index_t &x, const size_t n) { rtt_c4::receive(&x, 1, n); }
 };
 
 //---------------------------------------------------------------------------//
@@ -61,21 +51,17 @@ class Comm_Traits
 //---------------------------------------------------------------------------//
 
 // For Index_Labeled
-template <>
-class Comm_Traits<Index_Labeled>
-{
-  public:
-    static void send(const Index_Labeled &x, const size_t n);
-    static void receive(Index_Labeled &x, const size_t n);
+template <> class Comm_Traits<Index_Labeled> {
+public:
+  static void send(const Index_Labeled &x, const size_t n);
+  static void receive(Index_Labeled &x, const size_t n);
 };
 
 // For Index_Proc
-template <>
-class Comm_Traits<Index_Proc>
-{
-  public:
-    static void send(const Index_Proc &x, const size_t n);
-    static void receive(Index_Proc &x, const size_t n);
+template <> class Comm_Traits<Index_Proc> {
+public:
+  static void send(const Index_Proc &x, const size_t n);
+  static void receive(Index_Proc &x, const size_t n);
 };
 
 } // end namespace rtt_norms

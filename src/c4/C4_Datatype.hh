@@ -20,8 +20,7 @@
 #include "c4_mpi.h"
 #endif
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 #ifdef C4_MPI
 

@@ -15,18 +15,17 @@
 #define rtt_viz_Ensight_Stream_hh
 
 #include "ds++/config.h"
-#include <string>
 #include <fstream>
+#include <string>
 
-namespace rtt_viz
-{
+namespace rtt_viz {
 
 // Foward declarations
 
 class Ensight_Stream;
 
 //! A specific "endl" manipulator for Ensight_Stream.
-DLL_PUBLIC_viz Ensight_Stream& endl(Ensight_Stream &s);
+DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
 
 //===========================================================================//
 /*!
@@ -47,63 +46,58 @@ DLL_PUBLIC_viz Ensight_Stream& endl(Ensight_Stream &s);
  */
 //===========================================================================//
 
-class DLL_PUBLIC_viz Ensight_Stream
-{
-  private:
+class DLL_PUBLIC_viz Ensight_Stream {
+private:
+  // TYPEDEFS
 
-    // TYPEDEFS
+  // FP is a function pointer.  This is usd for stream manipulators, such
+  // as rtt_viz::endl.
+  typedef Ensight_Stream &(*FP)(Ensight_Stream &);
 
-    // FP is a function pointer.  This is usd for stream manipulators, such
-    // as rtt_viz::endl.
-    typedef Ensight_Stream& (* FP)(Ensight_Stream &);
+  // DATA
 
-    // DATA
+  // The actual file stream.
+  std::ofstream d_stream;
 
-    // The actual file stream.
-    std::ofstream d_stream;
+  // If true, in binary mode.  Otherwise, ascii mode.
+  bool d_binary;
 
-    // If true, in binary mode.  Otherwise, ascii mode.
-    bool d_binary;
+public:
+  // CREATORS
 
-  public:
+  //! Constructor.
+  explicit Ensight_Stream(const std::string &file_name = "",
+                          const bool binary = false,
+                          const bool geom_file = false);
 
-    // CREATORS
+  //! Destructor.
+  ~Ensight_Stream();
 
-    //! Constructor.
-    explicit Ensight_Stream(const std::string &file_name = "",
-                            const bool binary = false,
-                            const bool geom_file = false);
+  // MANIPULATORS
 
-    //! Destructor.
-    ~Ensight_Stream();
+  //! Opens the stream.
+  void open(const std::string &file_name, const bool binary = false,
+            const bool geom_file = false);
 
-    // MANIPULATORS
+  //! Closes the stream.
+  void close();
 
-    //! Opens the stream.
-    void open(const std::string &file_name,
-              const bool binary = false,
-              const bool geom_file = false);
+  //! Expose is_open().
+  bool is_open() { return d_stream.is_open(); }
 
-    //! Closes the stream.
-    void close();
+  // The supported output stream functions.
 
-    //! Expose is_open().
-    bool is_open() { return d_stream.is_open(); }
+  Ensight_Stream &operator<<(const int i);
+  Ensight_Stream &operator<<(const std::size_t i);
+  Ensight_Stream &operator<<(const double d);
+  Ensight_Stream &operator<<(const std::string &s);
+  Ensight_Stream &operator<<(FP f);
 
-    // The supported output stream functions.
+  friend DLL_PUBLIC_viz Ensight_Stream &endl(Ensight_Stream &s);
 
-    Ensight_Stream& operator<<(const int i);
-    Ensight_Stream& operator<<(const std::size_t i);
-    Ensight_Stream& operator<<(const double d);
-    Ensight_Stream& operator<<(const std::string &s);
-    Ensight_Stream& operator<<(FP f);
-
-    friend DLL_PUBLIC_viz Ensight_Stream& endl(Ensight_Stream &s);
-
-  private:
-
-    // Does binary write of v.
-    template <typename T> void binary_write(const T v);
+private:
+  // Does binary write of v.
+  template <typename T> void binary_write(const T v);
 };
 
 } // end namespace rtt_viz

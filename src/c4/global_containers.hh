@@ -13,11 +13,10 @@
 #ifndef c4_global_containers_hh
 #define c4_global_containers_hh
 
-#include <set>
 #include <map>
+#include <set>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 using std::set;
 using std::map;
 
@@ -30,8 +29,7 @@ using std::map;
  *
  * /param local_set Local set to be globally merged.
  */
-template<class ElementType>
-void global_merge(set<ElementType> &local_set);
+template <class ElementType> void global_merge(set<ElementType> &local_set);
 
 //---------------------------------------------------------------------------//
 /*! Merge local maps into a global map
@@ -42,13 +40,12 @@ void global_merge(set<ElementType> &local_set);
  *
  * /param local_set Local set to be globally merged.
  */
-template<class IndexType, class ElementType>
+template <class IndexType, class ElementType>
 void global_merge(map<IndexType, ElementType> &local_map);
 
 //---------------------------------------------------------------------------//
 //! Specialization for bool
-template<class IndexType>
-void global_merge(map<IndexType, bool> &local_map);
+template <class IndexType> void global_merge(map<IndexType, bool> &local_map);
 
 } // end namespace rtt_c4
 

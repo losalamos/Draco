@@ -11,11 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <cmath>
-#include <sstream>
-#include "parser/Parallel_File_Token_Stream.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
+#include "parser/Parallel_File_Token_Stream.hh"
+#include <cmath>
+#include <sstream>
 
 using namespace std;
 
@@ -23,306 +23,321 @@ using namespace std;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstParallel_File_Token_Stream( rtt_dsxx::UnitTest &ut )
-{
-    using namespace rtt_parser;
+void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
+  using namespace rtt_parser;
 
+  // Build path for the input file "scanner_test.inp"
+  string const inputFile(ut.getTestSourcePath() +
+                         std::string("scanner_test.inp"));
+
+  {
+    Parallel_File_Token_Stream tokens(inputFile);
+    if (tokens.whitespace() != Text_Token_Stream::default_whitespace)
+      FAILMSG("Whitespace not set correctly");
+    else
+      PASSMSG("Whitespace set correctly.");
+
+    Token token = tokens.lookahead(4);
+    if (token.type() != KEYWORD || token.text() != "BLACK")
+      FAILMSG("Keyword not read correctly");
+    else
+      PASSMSG("Keyword read correctly.");
+
+    tokens.report_semantic_error(token, "dummy error");
+    if (tokens.error_count() != 1)
+      FAILMSG("Semantic error not handled correctly.");
+    else
+      PASSMSG("Semantic error handled correctly.");
+
+    tokens.report_semantic_error("dummy error");
+    if (tokens.error_count() != 2)
+      FAILMSG("Second semantic error not handled correctly.");
+    else
+      PASSMSG("Second semantic error handled correctly.");
+  }
+
+  {
+    set<char> ws;
+    ws.insert(':');
+    Parallel_File_Token_Stream tokens(inputFile, ws);
+    if (tokens.whitespace() != ws)
+      FAILMSG("Whitespace not set correctly");
+    else
+      PASSMSG("Whitespace set correctly.");
+
+    Token token = tokens.lookahead(4);
+    if (token.type() != OTHER || token.text() != "=")
+      FAILMSG("'=' token not read correctly");
+    else
+      PASSMSG("'=' token read correctly.");
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "BLUE")
+      FAILMSG("Keyword BLUE not read correctly");
+    else
+      PASSMSG("Keyword BLUE read correctly.");
+
+    token = tokens.lookahead();
+    if (token.type() != KEYWORD || token.text() != "GENERATE ERROR")
+      FAILMSG("Keyword GENERATE ERROR not read correctly");
+    else
+      PASSMSG("Keyword GENERATE ERROR read correctly.");
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "GENERATE ERROR")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "GENERATE ANOTHER ERROR")
+      ITFAILS;
+
+    token = Token('$', "test_parser");
+    tokens.pushback(token);
+
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != "$")
+      ITFAILS;
+
+    try {
+      tokens.report_syntax_error(token, "dummy syntax error");
+      {
+        ostringstream msg;
+        msg << "Parallel_File_Token_Stream did not throw an exception when\n"
+            << "\ta syntax error was reported by Token_Stream." << endl;
+        FAILMSG(msg.str());
+      }
+    } catch (const Syntax_Error &) {
+      {
+        ostringstream msg;
+        msg << "Parallel_File_Token_Stream threw an expected exception when\n"
+            << "\ta syntax error was reported by Token_Stream." << endl;
+        PASSMSG(msg.str());
+      }
+    }
+    if (tokens.error_count() != 1)
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "COLOR")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != "=")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "BLACK")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != END)
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != "-")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1.563e+3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1.563e+3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != ".563e+3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != ".")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != "-")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1.")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1.563")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1.e+3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1.e3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1e+3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != REAL || token.text() != "1e3")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "19090")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "01723")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "0x1111a")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "0")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "8123")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != STRING || token.text() != "\"manifest string\"")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != "@")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "1")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "e")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != INTEGER || token.text() != "0")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "x")
+      ITFAILS;
+
+    token = tokens.shift();
+    if (token.type() != EXIT)
+      ITFAILS;
+    token = tokens.shift();
+    if (token.type() != EXIT)
+      ITFAILS;
+
+    tokens.rewind();
+    token = tokens.lookahead();
+    token = tokens.shift();
+    if (token.type() != KEYWORD || token.text() != "BLUE")
+      ITFAILS;
+
+    // Check invariance even when --with-dbc=0.
+    if (!tokens.check_class_invariants())
+      ITFAILS;
+  }
+
+  {
+    try {
+      Parallel_File_Token_Stream tokens("no such file");
+      // The preceeding file does not exist.
+      ostringstream errmsg;
+      errmsg
+          << "Parallel_File_Token_Stream did not throw an expected exception.\n"
+          << "\tThe constructor should throw an exception if the requested\n"
+          << "\tfile can not be opened." << endl;
+      FAILMSG(errmsg.str());
+      // Token token = tokens.shift();
+      // if (token.type()!=ERROR) ITFAILS;
+    } catch (std::invalid_argument const &a) {
+      std::ostringstream errmsg;
+      errmsg << "Parallel_File_Token_Stream threw an expected exception.\n"
+             << "\tThe constructor should throw an exception if the requested\n"
+             << "\tfile can not be opened." << endl;
+      PASSMSG(errmsg.str());
+    } catch (...) {
+      ostringstream errmsg;
+      errmsg << "Parallel_File_Token_Stream threw an unknown exception "
+             << "during contruction." << endl;
+      FAILMSG(errmsg.str());
+    }
+  }
+
+  {
     // Build path for the input file "scanner_test.inp"
-    string const inputFile( ut.getTestSourcePath()
-			    + std::string("scanner_test.inp") );
+    string const inputFile2(ut.getTestSourcePath() +
+                            std::string("scanner_recovery.inp"));
 
-    {
-        Parallel_File_Token_Stream tokens( inputFile );
-        if (tokens.whitespace()!=Text_Token_Stream::default_whitespace)
-            FAILMSG("Whitespace not set correctly");
-        else
-            PASSMSG("Whitespace set correctly.");
-
-        Token token = tokens.lookahead(4);
-        if (token.type()!=KEYWORD || token.text()!="BLACK")
-            FAILMSG("Keyword not read correctly");
-        else
-            PASSMSG("Keyword read correctly.");
-
-        tokens.report_semantic_error(token, "dummy error");
-        if (tokens.error_count()!=1)
-            FAILMSG("Semantic error not handled correctly.");
-        else
-            PASSMSG("Semantic error handled correctly.");
-
-        tokens.report_semantic_error("dummy error");
-        if (tokens.error_count()!=2)
-            FAILMSG("Second semantic error not handled correctly.");
-        else
-            PASSMSG("Second semantic error handled correctly.");
+    Parallel_File_Token_Stream tokens(inputFile2);
+    bool exception = false;
+    try {
+      tokens.shift();
+    } catch (const Syntax_Error &msg) {
+      cout << msg.what() << endl;
+      exception = true;
     }
+    if (!exception)
+      ITFAILS;
 
-    {
-        set<char> ws;
-        ws.insert(':');
-        Parallel_File_Token_Stream tokens( inputFile, ws );
-        if (tokens.whitespace()!=ws)
-            FAILMSG("Whitespace not set correctly");
-        else
-            PASSMSG("Whitespace set correctly.");
-
-        Token token = tokens.lookahead(4);
-        if (token.type()!=OTHER || token.text()!="=")
-            FAILMSG("'=' token not read correctly");
-        else
-            PASSMSG("'=' token read correctly.");
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="BLUE")
-            FAILMSG("Keyword BLUE not read correctly");
-        else
-            PASSMSG("Keyword BLUE read correctly.");
-
-        token = tokens.lookahead();
-        if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR")
-            FAILMSG("Keyword GENERATE ERROR not read correctly");
-        else
-            PASSMSG("Keyword GENERATE ERROR read correctly.");
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="GENERATE ERROR") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD ||
-            token.text()!="GENERATE ANOTHER ERROR") ITFAILS;
-
-        token = Token('$', "test_parser");
-        tokens.pushback(token);
-
-        token = tokens.shift();
-        if (token.type()!=OTHER || token.text()!="$") ITFAILS;
-
-        try
-        {
-            tokens.report_syntax_error(token, "dummy syntax error");
-            {
-                ostringstream msg;
-                msg << "Parallel_File_Token_Stream did not throw an exception when\n"
-                    << "\ta syntax error was reported by Token_Stream." << endl;
-                FAILMSG( msg.str() );
-            }
-        }
-        catch (const Syntax_Error &)
-        {
-            {
-                ostringstream msg;
-                msg << "Parallel_File_Token_Stream threw an expected exception when\n"
-                    << "\ta syntax error was reported by Token_Stream." << endl;
-                PASSMSG( msg.str() );
-            }
-        }
-        if (tokens.error_count()!=1) ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="COLOR") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=OTHER || token.text()!="=") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="BLACK") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=END) ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=OTHER || token.text()!="-") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1.563e+3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1.563e+3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!=".563e+3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=OTHER || token.text()!=".") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=OTHER || token.text()!="-") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1.") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1.563") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1.e+3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1.e3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1e+3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=REAL || token.text()!="1e3") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="19090") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="01723") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="0x1111a") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="0") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="8123") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=STRING || token.text()!="\"manifest string\"")
-            ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=STRING ||
-            token.text()!="\"manifest \\\"string\\\"\"")
-            ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=OTHER || token.text()!="@") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="1") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="e") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=INTEGER || token.text()!="0") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="x") ITFAILS;
-
-        token = tokens.shift();
-        if (token.type()!=EXIT) ITFAILS;
-        token = tokens.shift();
-        if (token.type()!=EXIT) ITFAILS;
-
-        tokens.rewind();
-        token = tokens.lookahead();
-        token = tokens.shift();
-        if (token.type()!=KEYWORD || token.text()!="BLUE") ITFAILS;
-
-        // Check invariance even when --with-dbc=0.
-        if( ! tokens.check_class_invariants() ) ITFAILS;
+    exception = false;
+    try {
+      tokens.shift();
+    } catch (const Syntax_Error &msg) {
+      cout << msg.what() << endl;
+      exception = true;
     }
+    if (!exception)
+      ITFAILS;
 
-    {
-        try
-        {
-            Parallel_File_Token_Stream tokens("no such file");
-            // The preceeding file does not exist.
-            ostringstream errmsg;
-            errmsg << "Parallel_File_Token_Stream did not throw an expected exception.\n"
-		   << "\tThe constructor should throw an exception if the requested\n"
-		   << "\tfile can not be opened." << endl;
-            FAILMSG( errmsg.str() );
-            // Token token = tokens.shift();
-            // if (token.type()!=ERROR) ITFAILS;
-        }
-        catch( std::invalid_argument const &a )
-        {
-            std::ostringstream errmsg;
-            errmsg << "Parallel_File_Token_Stream threw an expected exception.\n"
-		   << "\tThe constructor should throw an exception if the requested\n"
-		   << "\tfile can not be opened." << endl;
-            PASSMSG( errmsg.str() );
-        }
-        catch ( ... )
-        {
-            ostringstream errmsg;
-            errmsg << "Parallel_File_Token_Stream threw an unknown exception "
-		   << "during contruction." << endl;
-            FAILMSG( errmsg.str() );
-        }
+    // Try reopening
+    string const inputFile3(ut.getTestSourcePath() +
+                            std::string("scanner_test.inp"));
+
+    tokens.open(inputFile3);
+
+    Token token = tokens.lookahead(4);
+    if (token.type() != KEYWORD || token.text() != "BLACK") {
+      FAILMSG("Keyword not read correctly");
+    } else {
+      PASSMSG("Keyword read correctly.");
     }
+  }
 
-    {
-        // Build path for the input file "scanner_test.inp"
-        string const inputFile2( ut.getTestSourcePath()
-				 + std::string("scanner_recovery.inp") );
+  {
+    // Test default constructor
+    string const inputFile3(ut.getTestSourcePath() +
+                            std::string("scanner_test.inp"));
 
-        Parallel_File_Token_Stream tokens( inputFile2 );
-        bool exception = false;
-        try
-        {
-            tokens.shift();
-        }
-        catch (const Syntax_Error &msg)
-        {
-            cout << msg.what() << endl;
-            exception = true;
-        }
-        if (!exception) ITFAILS;
+    Parallel_File_Token_Stream tokens;
+    tokens.open(inputFile3);
 
-        exception = false;
-        try
-        {
-            tokens.shift();
-        }
-        catch (const Syntax_Error &msg)
-        {
-            cout << msg.what() << endl;
-            exception = true;
-        }
-        if (!exception) ITFAILS;
-
-        // Try reopening
-        string const inputFile3( ut.getTestSourcePath()
-				 + std::string("scanner_test.inp") );
-
-        tokens.open(inputFile3);
-
-        Token token = tokens.lookahead(4);
-        if (token.type()!=KEYWORD || token.text()!="BLACK")
-        {
-            FAILMSG("Keyword not read correctly");
-        }
-        else
-        {
-            PASSMSG("Keyword read correctly.");
-        }
+    Token token = tokens.lookahead(4);
+    if (token.type() != KEYWORD || token.text() != "BLACK") {
+      FAILMSG("Keyword not read correctly");
+    } else {
+      PASSMSG("Keyword read correctly.");
     }
-
-    {
-        // Test default constructor
-        string const inputFile3( ut.getTestSourcePath()
-				 + std::string("scanner_test.inp") );
-
-        Parallel_File_Token_Stream tokens;
-        tokens.open(inputFile3);
-
-        Token token = tokens.lookahead(4);
-        if (token.type()!=KEYWORD || token.text()!="BLACK")
-        {
-            FAILMSG("Keyword not read correctly");
-        }
-        else
-        {
-            PASSMSG("Keyword read correctly.");
-        }
-    }
+  }
 }
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    rtt_c4::ParallelUnitTest ut( argc, argv, rtt_dsxx::release );
-    try { tstParallel_File_Token_Stream(ut); }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
+  try {
+    tstParallel_File_Token_Stream(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

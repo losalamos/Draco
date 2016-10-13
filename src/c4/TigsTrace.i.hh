@@ -16,12 +16,11 @@
 
 #include "C4_Functions.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 // COMM::TRACE PUBLIC TEMPLATE MEMBER FUNCTIONS
-//---------------------------------------------------------------------------// 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Copy data defined on the domain (I) to the range (J).
  *
@@ -53,110 +52,92 @@ namespace rtt_c4
  * \param Bfirst    beginning of the destination data
  * \param Blast     end of the destination data
  */
-template < typename iterA , typename iterC, typename iterB > 
-void TigsTrace::scatterList(iterA Afirst,   iterA Remember(Alast), 
-                            iterC Cntfirst, iterC Remember(Cntlast), 
-                            iterB Bfirst,   iterB Remember(Blast) ) const
-{
-    Require (JsideIndirect.size() == JsideConnects.size());
-    Require (IsideIndirect.size() == IsideConnects.size());
-    
-    Require (std::distance(Afirst, Alast)     == onProcDomain);
-    Require (std::distance(Cntfirst, Cntlast) == onProcRange);
-    Require (std::distance(Bfirst, Blast)     == JsideBufferSize);
-    
-    if( rtt_c4::nodes() == 1 )
-    {
-        for( size_t j=0, k=0; j<onProcRange; j++ )
-        {
-            *(Cntfirst+j) = counts[j];
-            for (size_t l=0; l<counts[j]; l++, k++)
-                *(Bfirst+k) =*(Afirst+IMV[k]);
-        }
+template <typename iterA, typename iterC, typename iterB>
+void TigsTrace::scatterList(iterA Afirst, iterA Remember(Alast), iterC Cntfirst,
+                            iterC Remember(Cntlast), iterB Bfirst,
+                            iterB Remember(Blast)) const {
+  Require(JsideIndirect.size() == JsideConnects.size());
+  Require(IsideIndirect.size() == IsideConnects.size());
+
+  Require(std::distance(Afirst, Alast) == onProcDomain);
+  Require(std::distance(Cntfirst, Cntlast) == onProcRange);
+  Require(std::distance(Bfirst, Blast) == JsideBufferSize);
+
+  if (rtt_c4::nodes() == 1) {
+    for (size_t j = 0, k = 0; j < onProcRange; j++) {
+      *(Cntfirst + j) = counts[j];
+      for (size_t l = 0; l < counts[j]; l++, k++)
+        *(Bfirst + k) = *(Afirst + IMV[k]);
     }
-    else
-    {
+  } else {
 #ifdef C4_MPI
-        // Scatter always moves data from the I side to the Jside
-        // The traditional scatter involves a reduction
-        // Scatter_list form a CSR like packed representation
-        // of the moved data. 
-        typedef typename std::iterator_traits< iterB >::value_type T;
-        size_t const numSend(IsideIndirect.size());
-        size_t const numRecv(JsideIndirect.size());
-        std::vector< T > sbuffer(IsideBufferSize);
-        std::vector< T > rbuffer(JsideBufferSize);
-        std::vector< rtt_c4::C4_Req > reqs_recv;
-        	    
-        // fill the send buffer on the Iside
-        size_t k=0;
-        for (size_t s=0; s<IsideConnects.size(); s++)
-        {
-            for (size_t l=0; l<IsideIndirect[s].size(); l++)
-            {
-                sbuffer[k++]=*(Afirst+IsideIndirect[s][l]);
-            }
-        }
+    // Scatter always moves data from the I side to the Jside
+    // The traditional scatter involves a reduction
+    // Scatter_list form a CSR like packed representation
+    // of the moved data.
+    typedef typename std::iterator_traits<iterB>::value_type T;
+    size_t const numSend(IsideIndirect.size());
+    size_t const numRecv(JsideIndirect.size());
+    std::vector<T> sbuffer(IsideBufferSize);
+    std::vector<T> rbuffer(JsideBufferSize);
+    std::vector<rtt_c4::C4_Req> reqs_recv;
 
-        size_t krcv=0;
-        int recv_from_self_index=-1;
-        for( size_t r=0; r<numRecv; r++ )
-        {
-            // do not post receives-from-self
-            if( JsideConnects[r] != rtt_c4::node() )
-            {
-                reqs_recv.push_back( rtt_c4::receive_async(
-                                         &rbuffer[krcv],
-                                         JsideIndirect[r].size(),
-                                         JsideConnects[r] ) );
-            }
-            // store the receive buffer index for use later
-            else
-            {
-                Check (JsideConnects[r] == rtt_c4::node());
-                recv_from_self_index = krcv;
-            }
-            krcv+=JsideIndirect[r].size();
-        }
-        size_t ksend=0;
-        for( size_t s=0; s<numSend; s++)
-        {
-            // do not send-to-self
-            if( IsideConnects[s] != rtt_c4::node() )
-            {
-                rtt_c4::C4_Req c4req_send = rtt_c4::send_async(
-                    &sbuffer[ksend],
-                    IsideIndirect[s].size(),
-                    IsideConnects[s] );
-                c4req_send.wait();
-            }
-            // otherwise put directly into receive buffer
-            else
-            {
-                Check( recv_from_self_index >= 0 );
-                Check( recv_from_self_index < static_cast<int>(JsideBufferSize) );
-                std::copy(&sbuffer[ksend],
-                          &sbuffer[ksend] + IsideIndirect[s].size(),
-                          &rbuffer[recv_from_self_index]);
-            }
-            ksend+=IsideIndirect[s].size();
-        }
-
-        for( size_t s=0; s<reqs_recv.size(); ++s )
-            reqs_recv[s].wait();
-        
-        rtt_c4::global_barrier();
-            
-        // unload the receive buffer Here is where we form the
-        // CSR packing...
-        for( size_t j=0; j<onProcRange; j++ )
-            *(Cntfirst+j)=countsList[j];
-        for( size_t k=0; k<JsideBufferSize; k++ )
-            *(Bfirst+k)=rbuffer[BmapList[k]];
-            
-#endif // C4_MPI
+    // fill the send buffer on the Iside
+    size_t k = 0;
+    for (size_t s = 0; s < IsideConnects.size(); s++) {
+      for (size_t l = 0; l < IsideIndirect[s].size(); l++) {
+        sbuffer[k++] = *(Afirst + IsideIndirect[s][l]);
+      }
     }
-    return;
+
+    size_t krcv = 0;
+    int recv_from_self_index = -1;
+    for (size_t r = 0; r < numRecv; r++) {
+      // do not post receives-from-self
+      if (JsideConnects[r] != rtt_c4::node()) {
+        reqs_recv.push_back(rtt_c4::receive_async(
+            &rbuffer[krcv], JsideIndirect[r].size(), JsideConnects[r]));
+      }
+      // store the receive buffer index for use later
+      else {
+        Check(JsideConnects[r] == rtt_c4::node());
+        recv_from_self_index = krcv;
+      }
+      krcv += JsideIndirect[r].size();
+    }
+    size_t ksend = 0;
+    for (size_t s = 0; s < numSend; s++) {
+      // do not send-to-self
+      if (IsideConnects[s] != rtt_c4::node()) {
+        rtt_c4::C4_Req c4req_send = rtt_c4::send_async(
+            &sbuffer[ksend], IsideIndirect[s].size(), IsideConnects[s]);
+        c4req_send.wait();
+      }
+      // otherwise put directly into receive buffer
+      else {
+        Check(recv_from_self_index >= 0);
+        Check(recv_from_self_index < static_cast<int>(JsideBufferSize));
+        std::copy(&sbuffer[ksend], &sbuffer[ksend] + IsideIndirect[s].size(),
+                  &rbuffer[recv_from_self_index]);
+      }
+      ksend += IsideIndirect[s].size();
+    }
+
+    for (size_t s = 0; s < reqs_recv.size(); ++s)
+      reqs_recv[s].wait();
+
+    rtt_c4::global_barrier();
+
+    // unload the receive buffer Here is where we form the
+    // CSR packing...
+    for (size_t j = 0; j < onProcRange; j++)
+      *(Cntfirst + j) = countsList[j];
+    for (size_t k = 0; k < JsideBufferSize; k++)
+      *(Bfirst + k) = rbuffer[BmapList[k]];
+
+#endif // C4_MPI
+  }
+  return;
 }
 
 //---------------------------------------------------------------------------//
@@ -178,105 +159,87 @@ void TigsTrace::scatterList(iterA Afirst,   iterA Remember(Alast),
  * \param Afirst    beginning of the destination data
  * \param Alast     end of the destination data
  */
-template < typename iterA, typename iterB > 
-void TigsTrace::gather( iterB Bfirst, iterB Remember(Blast),
-                        iterA Afirst, iterA Remember(Alast) )
-{
-    Require( JsideIndirect.size() == JsideConnects.size() );
-    Require( IsideIndirect.size() == IsideConnects.size() );
-    
-    Require( std::distance(Afirst, Alast) == onProcDomain );
-    Require( std::distance(Bfirst, Blast) == onProcRange  );
-    if( rtt_c4::nodes() == 1 )
-    {
-        for( size_t j=0, k=0; j<onProcRange; j++ )
-            for( size_t l=0; l<counts[j]; l++ )
-                *(Afirst+IMV[k++]) = *(Bfirst+j);
-    }
-    else
-    {
+template <typename iterA, typename iterB>
+void TigsTrace::gather(iterB Bfirst, iterB Remember(Blast), iterA Afirst,
+                       iterA Remember(Alast)) {
+  Require(JsideIndirect.size() == JsideConnects.size());
+  Require(IsideIndirect.size() == IsideConnects.size());
+
+  Require(std::distance(Afirst, Alast) == onProcDomain);
+  Require(std::distance(Bfirst, Blast) == onProcRange);
+  if (rtt_c4::nodes() == 1) {
+    for (size_t j = 0, k = 0; j < onProcRange; j++)
+      for (size_t l = 0; l < counts[j]; l++)
+        *(Afirst + IMV[k++]) = *(Bfirst + j);
+  } else {
 #ifdef C4_MPI
-        typedef typename std::iterator_traits< iterB >::value_type T;
-        size_t const numSend=JsideIndirect.size();
-        size_t const numRecv=IsideIndirect.size();
-        std::vector< T > sbuffer(JsideBufferSize);
-        std::vector< T > rbuffer(IsideBufferSize);
-        std::vector< rtt_c4::C4_Req > reqs_recv;
-        	    
-        // fill the send buffer on the Jside
-        size_t k=0;
-        for( size_t s=0; s<numSend; s++ )
-        {
-            for( size_t l=0; l<JsideIndirect[s].size(); l++ )
-            {
-                sbuffer[k++]=*(Bfirst+JsideIndirect[s][l]);
-            }
-        }
+    typedef typename std::iterator_traits<iterB>::value_type T;
+    size_t const numSend = JsideIndirect.size();
+    size_t const numRecv = IsideIndirect.size();
+    std::vector<T> sbuffer(JsideBufferSize);
+    std::vector<T> rbuffer(IsideBufferSize);
+    std::vector<rtt_c4::C4_Req> reqs_recv;
 
-        size_t krcv=0;
-        int recv_from_self_index=-1;
-        for( size_t r=0; r<numRecv; r++ )
-        {
-            // do not post receives-from-self
-            if( IsideConnects[r] != rtt_c4::node() )
-            {
-                reqs_recv.push_back( rtt_c4::receive_async(
-                                         &rbuffer[krcv],
-                                         IsideIndirect[r].size(),
-                                         IsideConnects[r] ) );
-
-            }
-            // store the receive buffer index for use later
-            else
-            {
-                Check( IsideConnects[r] == rtt_c4::node() );
-                recv_from_self_index = krcv;
-            }
-            krcv+=IsideIndirect[r].size();
-        }
-        size_t ksend=0;
-        for( size_t s=0; s<numSend ; s++ )
-        {
-            // do not send-to-self
-            if( JsideConnects[s] != rtt_c4::node() )
-            {
-                rtt_c4::C4_Req c4req_send = rtt_c4::send_async(
-                    &sbuffer[ksend], JsideIndirect[s].size(),
-                    JsideConnects[s] );
-                c4req_send.wait();
-            }
-            // otherwise put directly into receive buffer
-            else
-            {
-                Check( recv_from_self_index >= 0 );
-                Check( recv_from_self_index < static_cast<int>(IsideBufferSize) );
-                std::copy(&sbuffer[ksend],
-                          &sbuffer[ksend] + JsideIndirect[s].size(),
-                          &rbuffer[recv_from_self_index]);
-            }
-            ksend+=JsideIndirect[s].size();
-        }
-
-        for( size_t s=0; s<reqs_recv.size(); ++s )
-            reqs_recv[s].wait();
-        rtt_c4::global_barrier();
-          
-        // unload the receive buffer
-        k=0;
-        for( size_t r=0; r<numRecv; r++ )
-        {
-            for( size_t l=0, numBuf=IsideIndirect[r].size(); l<numBuf; l++ )
-            {
-                *(Afirst+IsideIndirect[r][l])=rbuffer[k++];
-            }
-        }
-          
-#endif // C4_MPI
+    // fill the send buffer on the Jside
+    size_t k = 0;
+    for (size_t s = 0; s < numSend; s++) {
+      for (size_t l = 0; l < JsideIndirect[s].size(); l++) {
+        sbuffer[k++] = *(Bfirst + JsideIndirect[s][l]);
+      }
     }
-    return;
+
+    size_t krcv = 0;
+    int recv_from_self_index = -1;
+    for (size_t r = 0; r < numRecv; r++) {
+      // do not post receives-from-self
+      if (IsideConnects[r] != rtt_c4::node()) {
+        reqs_recv.push_back(rtt_c4::receive_async(
+            &rbuffer[krcv], IsideIndirect[r].size(), IsideConnects[r]));
+
+      }
+      // store the receive buffer index for use later
+      else {
+        Check(IsideConnects[r] == rtt_c4::node());
+        recv_from_self_index = krcv;
+      }
+      krcv += IsideIndirect[r].size();
+    }
+    size_t ksend = 0;
+    for (size_t s = 0; s < numSend; s++) {
+      // do not send-to-self
+      if (JsideConnects[s] != rtt_c4::node()) {
+        rtt_c4::C4_Req c4req_send = rtt_c4::send_async(
+            &sbuffer[ksend], JsideIndirect[s].size(), JsideConnects[s]);
+        c4req_send.wait();
+      }
+      // otherwise put directly into receive buffer
+      else {
+        Check(recv_from_self_index >= 0);
+        Check(recv_from_self_index < static_cast<int>(IsideBufferSize));
+        std::copy(&sbuffer[ksend], &sbuffer[ksend] + JsideIndirect[s].size(),
+                  &rbuffer[recv_from_self_index]);
+      }
+      ksend += JsideIndirect[s].size();
+    }
+
+    for (size_t s = 0; s < reqs_recv.size(); ++s)
+      reqs_recv[s].wait();
+    rtt_c4::global_barrier();
+
+    // unload the receive buffer
+    k = 0;
+    for (size_t r = 0; r < numRecv; r++) {
+      for (size_t l = 0, numBuf = IsideIndirect[r].size(); l < numBuf; l++) {
+        *(Afirst + IsideIndirect[r][l]) = rbuffer[k++];
+      }
+    }
+
+#endif // C4_MPI
+  }
+  return;
 }
 
-//---------------------------------------------------------------------------// 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Copy with reduction of data from the domain to the range.
  *
@@ -304,32 +267,26 @@ void TigsTrace::gather( iterB Bfirst, iterB Remember(Blast),
  * \param Blast     end of the reduced data
  * \param op        the binary reduction operation
  */
-template < typename iterA , typename iterB , typename BinaryOp > 
-void TigsTrace::scatter(iterA    Afirst, iterA Alast,
-                        iterB    Bfirst, iterB Remember(Blast),
-                        BinaryOp op)
-{
-    Check( std::distance(Afirst, Alast) == onProcDomain );
-    Check( std::distance(Bfirst, Blast) == onProcRange );
-    if( rtt_c4::nodes() == 1 )
-    {
-        for( size_t j=0, k=0; j<onProcRange; j++ )
-            for( size_t l=0; l<counts[j]; l++, k++ ) 
-                *(Bfirst+j) = op( *(Bfirst+j) , *(Afirst + IMV[k]) );
-    }
-    else
-    {
-        typedef typename std::iterator_traits< iterB >::value_type T;
-        std::vector< unsigned > counts_ret( onProcRange );
-        std::vector< T        > Btmp(       JsideBufferSize );
-        scatterList(Afirst, Alast,
-                    counts_ret.begin(), counts_ret.end(), 
-                    Btmp.begin(), Btmp.end());
-        for( size_t j=0, k=0; j<onProcRange; j++ )
-            for( size_t l=0; l<counts_ret[j]; l++, k++ )
-                *(Bfirst+j) = op( *(Bfirst+j) , Btmp[k] );
-    }
-    return;
+template <typename iterA, typename iterB, typename BinaryOp>
+void TigsTrace::scatter(iterA Afirst, iterA Alast, iterB Bfirst,
+                        iterB Remember(Blast), BinaryOp op) {
+  Check(std::distance(Afirst, Alast) == onProcDomain);
+  Check(std::distance(Bfirst, Blast) == onProcRange);
+  if (rtt_c4::nodes() == 1) {
+    for (size_t j = 0, k = 0; j < onProcRange; j++)
+      for (size_t l = 0; l < counts[j]; l++, k++)
+        *(Bfirst + j) = op(*(Bfirst + j), *(Afirst + IMV[k]));
+  } else {
+    typedef typename std::iterator_traits<iterB>::value_type T;
+    std::vector<unsigned> counts_ret(onProcRange);
+    std::vector<T> Btmp(JsideBufferSize);
+    scatterList(Afirst, Alast, counts_ret.begin(), counts_ret.end(),
+                Btmp.begin(), Btmp.end());
+    for (size_t j = 0, k = 0; j < onProcRange; j++)
+      for (size_t l = 0; l < counts_ret[j]; l++, k++)
+        *(Bfirst + j) = op(*(Bfirst + j), Btmp[k]);
+  }
+  return;
 }
 
 } // end namespace rtt_c4

@@ -18,15 +18,14 @@
 #define rtt_dsxx_DracoMath_hh
 
 #include "Assert.hh"
-#include <cmath>
-#include <cstdlib>
-#include <complex>
 #include <algorithm>
-#include <iterator>
+#include <cmath>
+#include <complex>
+#include <cstdlib>
 #include <functional>
+#include <iterator>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 // isFinite.hh
@@ -40,31 +39,21 @@ namespace rtt_dsxx
 // ---------------------------------------------------------------------------//
 #if defined _WIN32 || defined __CYGWIN__
 
-template< typename T >
-bool isNan(T a) { return _isnan(a); }
-template< typename T >
-bool isInf(T a) { return !_finite(a); }
-template< typename T >
-bool isFinite(T a) { return _finite(a); }
+template <typename T> bool isNan(T a) { return _isnan(a); }
+template <typename T> bool isInf(T a) { return !_finite(a); }
+template <typename T> bool isFinite(T a) { return _finite(a); }
 
 #elif defined draco_isPGI
 
-
-template< typename T >
-bool isNan(T a) { return isnan(a); }
-template< typename T >
-bool isInf(T a) { return isinf(a); }
-template< typename T >
-bool isFinite(T a) { return isfinite(a); }
+template <typename T> bool isNan(T a) { return isnan(a); }
+template <typename T> bool isInf(T a) { return isinf(a); }
+template <typename T> bool isFinite(T a) { return isfinite(a); }
 
 #else
 
-template< typename T >
-bool isNan(T a) { return std::isnan(a); }
-template< typename T >
-bool isInf(T a) { return std::isinf(a); }
-template< typename T >
-bool isFinite(T a) { return std::isfinite(a); }
+template <typename T> bool isNan(T a) { return std::isnan(a); }
+template <typename T> bool isInf(T a) { return std::isinf(a); }
+template <typename T> bool isFinite(T a) { return std::isfinite(a); }
 
 #endif
 
@@ -84,30 +73,18 @@ bool isFinite(T a) { return std::isfinite(a); }
  * \param a Argument whose absolute value is to be calculated.
  * \return \f$|a|\f$
  */
-template <typename Ordered_Group>
-inline Ordered_Group abs(Ordered_Group a)
-{
-    if (a<0) return -a;
-    else     return  a;
+template <typename Ordered_Group> inline Ordered_Group abs(Ordered_Group a) {
+  if (a < 0)
+    return -a;
+  else
+    return a;
 }
 
 // Specialization for standard types - There is no standard abs function for
 // float -- one reason why we define this template!
-template <>
-inline double abs(double a)
-{
-    return std::fabs(a);
-}
-template<>
-inline int abs(int a)
-{
-    return std::abs(a);
-}
-template<>
-inline long abs(long a)
-{
-    return std::labs(a);
-}
+template <> inline double abs(double a) { return std::fabs(a); }
+template <> inline int abs(int a) { return std::abs(a); }
+template <> inline long abs(long a) { return std::labs(a); }
 
 //---------------------------------------------------------------------------//
 // conj.hh
@@ -121,17 +98,11 @@ inline long abs(long a)
  *
  * \arg \a Field type
  */
-template<typename Field>
-inline Field conj(const Field &x)
-{
-    return x;
-}
+template <typename Field> inline Field conj(const Field &x) { return x; }
 
 // Specializations for non-self-conjugate types
-template<>
-inline std::complex<double> conj(const std::complex<double> &x)
-{
-    return std::conj(x);
+template <> inline std::complex<double> conj(const std::complex<double> &x) {
+  return std::conj(x);
 }
 
 //---------------------------------------------------------------------------//
@@ -146,10 +117,8 @@ inline std::complex<double> conj(const std::complex<double> &x)
  * \param x Value to be cubed.
  * \return \f$x^3\f$
  */
-template <typename Semigroup>
-inline Semigroup cube(Semigroup const &x)
-{
-    return x*x*x;
+template <typename Semigroup> inline Semigroup cube(Semigroup const &x) {
+  return x * x * x;
 }
 
 //---------------------------------------------------------------------------//
@@ -175,12 +144,11 @@ inline Semigroup cube(Semigroup const &x)
  */
 template <typename Ordered_Group_Element>
 inline Ordered_Group_Element dim(Ordered_Group_Element a,
-				 Ordered_Group_Element b)
-{
-    if (a<b)
-        return Ordered_Group_Element(0);
-    else
-        return a-b;
+                                 Ordered_Group_Element b) {
+  if (a < b)
+    return Ordered_Group_Element(0);
+  else
+    return a - b;
 }
 
 //---------------------------------------------------------------------------//
@@ -195,10 +163,8 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
  * \param x Value to be squared.
  * \return \f$x^2\f$
  */
-template <typename Semigroup>
-inline Semigroup square(const Semigroup &x)
-{
-    return x*x;
+template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
+  return x * x;
 }
 
 //---------------------------------------------------------------------------//
@@ -216,21 +182,16 @@ inline Semigroup square(const Semigroup &x)
  * \return Hypotenuse, \f$\sqrt{a^2+b^2}\f$
  */
 
-template<typename Real>
-inline double pythag(Real a, Real b)
-{
-    Real absa = abs(a), absb = abs(b);
-    if (absa>absb)
-    {
-	return absa*std::sqrt(1.0+square(absb/absa));
-    }
+template <typename Real> inline double pythag(Real a, Real b) {
+  Real absa = abs(a), absb = abs(b);
+  if (absa > absb) {
+    return absa * std::sqrt(1.0 + square(absb / absa));
+  } else {
+    if (absb == 0.0)
+      return 0.0;
     else
-    {
-	if (absb==0.0)
-	    return 0.0;
-	else
-	    return absb*std::sqrt(1.0+square(absa/absb));
-    }
+      return absb * std::sqrt(1.0 + square(absa / absb));
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -257,15 +218,13 @@ inline double pythag(Real a, Real b)
  */
 
 template <typename Ordered_Group>
-inline Ordered_Group sign(Ordered_Group a,
-			  Ordered_Group b)
-{
-    using rtt_dsxx::abs; // just to be clear
+inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
+  using rtt_dsxx::abs; // just to be clear
 
-    if (b<0)
-	return -abs(a);
-    else
-	return abs(a);
+  if (b < 0)
+    return -abs(a);
+  else
+    return abs(a);
 }
 
 //---------------------------------------------------------------------------//
@@ -290,20 +249,17 @@ inline Ordered_Group sign(Ordered_Group a,
  * \pre  x in (x1,x2), extrapolation is not allowed.
  * \post y in (y1,y2), extrapolation is not allowed.
  */
-inline double linear_interpolate( double const x1, double const x2,
-                                  double const y1, double const y2,
-                                  double const x )
-{
-    Require (x2 - x1 != 0.0);
-    Require ( ( (x >= x1) && (x <= x2) ) ||
-            ( (x >= x2) && (x <= x1) ) );
+inline double linear_interpolate(double const x1, double const x2,
+                                 double const y1, double const y2,
+                                 double const x) {
+  Require(x2 - x1 != 0.0);
+  Require(((x >= x1) && (x <= x2)) || ((x >= x2) && (x <= x1)));
 
-    // return value
-    double const value = (y2 - y1) / (x2 - x1) * (x - x1) + y1;
+  // return value
+  double const value = (y2 - y1) / (x2 - x1) * (x - x1) + y1;
 
-    Ensure ( ( (value >= y1) && (value <= y2) ) ||
-             ( (value >= y2) && (value <= y1) ) );
-    return value;
+  Ensure(((value >= y1) && (value <= y2)) || ((value >= y2) && (value <= y1)));
+  return value;
 }
 
 } // namespace rtt_dsxx

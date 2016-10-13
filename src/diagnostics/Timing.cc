@@ -14,11 +14,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Assert.hh"
 #include "Timing.hh"
+#include "ds++/Assert.hh"
 
-namespace rtt_diagnostics
-{
+namespace rtt_diagnostics {
 
 //---------------------------------------------------------------------------//
 // STATIC PUBLIC FUNCTIONAL INTERFACE
@@ -33,37 +32,33 @@ namespace rtt_diagnostics
  *
  * Calling this function adds the timer with name key to the map of timers.
  */
-void Timing_Diagnostics::update_timer(const std::string &key,
-                                      double             value)
-{
-    timers[key] += value;
+void Timing_Diagnostics::update_timer(const std::string &key, double value) {
+  timers[key] += value;
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return a vector of timer keys.
  */
-Timing_Diagnostics::Vec_Keys Timing_Diagnostics::timer_keys()
-{
-    using std::string;
-    using std::map;
+Timing_Diagnostics::Vec_Keys Timing_Diagnostics::timer_keys() {
+  using std::string;
+  using std::map;
 
-    // keys
-    Vec_Keys keys(timers.size());
+  // keys
+  Vec_Keys keys(timers.size());
 
-    // iterators
-    Vec_Keys::iterator v            = keys.begin();
-    map<string, double>::iterator m = timers.begin();
+  // iterators
+  Vec_Keys::iterator v = keys.begin();
+  map<string, double>::iterator m = timers.begin();
 
-    // add keys to the vector
-    for (; m != timers.end(); m++, v++)
-    {
-        Check (v != keys.end());
-        *v = m->first;
-    }
+  // add keys to the vector
+  for (; m != timers.end(); m++, v++) {
+    Check(v != keys.end());
+    *v = m->first;
+  }
 
-    // return the vector
-    return keys;
+  // return the vector
+  return keys;
 }
 
 //---------------------------------------------------------------------------//
@@ -72,48 +67,44 @@ Timing_Diagnostics::Vec_Keys Timing_Diagnostics::timer_keys()
  *
  * Calling this function adds the timer with name key to the map of timers.
  */
-void Timing_Diagnostics::reset_timer(const std::string &key)
-{
-    timers[key] = 0.0;
-    Ensure (timers[key] == 0.0);
+void Timing_Diagnostics::reset_timer(const std::string &key) {
+  timers[key] = 0.0;
+  Ensure(timers[key] == 0.0);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Reset all timers in the map of timers to zero.
  */
-void Timing_Diagnostics::reset_timers()
-{
-    // iterator to timers
-    std::map<std::string, double>::iterator m = timers.begin();
-    
-    // reset each timer
-    for (; m != timers.end(); m++)
-        m->second = 0.0;
+void Timing_Diagnostics::reset_timers() {
+  // iterator to timers
+  std::map<std::string, double>::iterator m = timers.begin();
+
+  // reset each timer
+  for (; m != timers.end(); m++)
+    m->second = 0.0;
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Removes a timer with name key from the map of timers.
  */
-void Timing_Diagnostics::delete_timer(const std::string &key)
-{
-    timers.erase(key);
-    Ensure (timers.count(key) == 0);
+void Timing_Diagnostics::delete_timer(const std::string &key) {
+  timers.erase(key);
+  Ensure(timers.count(key) == 0);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Delete all timers from the map.
  */
-void Timing_Diagnostics::delete_timers()
-{
-    // null map
-    std::map<std::string, double> null;
+void Timing_Diagnostics::delete_timers() {
+  // null map
+  std::map<std::string, double> null;
 
-    // swap it with timers
-    timers.swap(null);
-    Ensure (timers.empty());
+  // swap it with timers
+  timers.swap(null);
+  Ensure(timers.empty());
 }
 
 //---------------------------------------------------------------------------//

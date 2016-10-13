@@ -108,8 +108,8 @@ done
 # Select haswell or knl partition
 # option '-e knl' will select KNL, default is haswell.
 case $extra_params in
-knl) partition_options="-lnodes=8:knl:ppn=68,walltime=8:00:00" ;;
-*)   partition_options="-lnodes=8:haswell:ppn=32,walltime=8:00:00" ;;
+knl) partition_options="-lnodes=2:knl:ppn=68,walltime=8:00:00" ;;
+*)   partition_options="-lnodes=4:haswell:ppn=32,walltime=8:00:00" ;;
 esac
 
 # Configure, Build on front end

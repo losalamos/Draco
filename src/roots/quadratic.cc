@@ -13,15 +13,11 @@
 
 #include "quadratic.hh"
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 using namespace std;
 
-template void quadratic(double const &a,
-			double const &b,
-			double const &c,
-			double &r1,
-			double &r2);
+template void quadratic(double const &a, double const &b, double const &c,
+                        double &r1, double &r2);
 
 } // end namespace rtt_roots
 

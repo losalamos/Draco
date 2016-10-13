@@ -17,9 +17,8 @@
 #include <stdexcept>
 #include <string>
 
-namespace rtt_cdi_eospac
-{
- 
+namespace rtt_cdi_eospac {
+
 //=======================================================================
 /*!
  * \class EospacException
@@ -46,24 +45,22 @@ namespace rtt_cdi_eospac
 //    might want to catch (i.e. one for each integer error return
 //    code that EOSPAC can throw.
 // 2. Review Alan Griffiths, "Here be Dragons,"
-//    http://www.cuj.com, March 2001. 
+//    http://www.cuj.com, March 2001.
 //    http://www.octopull.demon.co.uk/c++/dragons/
 // 3. Review Sutter, "Exceptional C++"
 
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //=======================================================================
-    
-class EospacException : public std::logic_error
-{
 
-  public:
-	
-    // CREATORS
-	
-    /*!
+class EospacException : public std::logic_error {
+
+public:
+  // CREATORS
+
+  /*!
      * \brief The standard EospacException constuctor.
      *
      * When an error is thrown, the data member "message" is set
@@ -82,11 +79,11 @@ class EospacException : public std::logic_error
      *        This string is used in the construction of
      *        std::exception.
      */
-    explicit EospacException( std::string const & msg ) throw()
-        : std::logic_error( msg )
-    { /* empty */ }
+  explicit EospacException(std::string const &msg) throw()
+      : std::logic_error(msg) { /* empty */
+  }
 
-    /*!
+  /*!
      * \brief The standard EospacException destructor.
      *
      * \sa what()
@@ -98,38 +95,33 @@ class EospacException : public std::logic_error
      *
      * Do not allow destructor to throw.
      */
-    virtual ~EospacException() throw() { /* empty */ };
-	
-    // ACCESSORS
-	
-    /*!
+  virtual ~EospacException() throw(){/* empty */};
+
+  // ACCESSORS
+
+  /*!
      * \brief EospacException overrides the default
      *        std::exception.what() function so that a more
      *        detailed message may be returned. 
      */
-    // virtual const char* what() const throw();
+  // virtual const char* what() const throw();
 
   // private:
 
   //   // Prevent copies
   //   EospacException( EospacException const & );
-  //   EospacException& operator=( EospacException const & );       
-    
-        
-};
-    
-//---------------------------------------------------------------------------//
-// 
-//---------------------------------------------------------------------------//
-class EospacUnknownDataType : public EospacException
-{
-  public:
-    EospacUnknownDataType( std::string const & msg ) throw()
-        : EospacException( msg )
-    { /* empty */ };
-    virtual ~EospacUnknownDataType() throw() { /* empty */ };
+  //   EospacException& operator=( EospacException const & );
 };
 
+//---------------------------------------------------------------------------//
+//
+//---------------------------------------------------------------------------//
+class EospacUnknownDataType : public EospacException {
+public:
+  EospacUnknownDataType(std::string const &msg) throw()
+      : EospacException(msg){/* empty */};
+  virtual ~EospacUnknownDataType() throw(){/* empty */};
+};
 
 } // end namespace rtt_cdi_eospac
 

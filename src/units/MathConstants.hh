@@ -15,13 +15,12 @@
 #define __units_MathConstants_hh__
 
 //! \namespace rtt_units Namespace for units and physical constants
-namespace rtt_units
-{
+namespace rtt_units {
 // Mathematical constants
 
 // N.B. M_PI and M_E, though widely implemented as part of <cmath>, are not
 // standard C++.
-    
+
 //! pi the ratio of a circle's circumference to its diameter (dimensionless)
 static double const PI = 3.141592653589793238462643383279;
 
@@ -30,7 +29,7 @@ static double const N_EULER = 2.7182818284590452353602874;
 
 } // end namespace rtt_units
 
-#endif  // __units_MathConstants_hh__
+#endif // __units_MathConstants_hh__
 
 //---------------------------------------------------------------------------//
 // end of units/MathConstants.hh

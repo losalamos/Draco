@@ -13,8 +13,7 @@
 
 #include "CDI.hh"
 
-namespace rtt_cdi
-{
+namespace rtt_cdi {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Integrate the Planckian spectrum over a frequency range.
@@ -32,29 +31,25 @@ namespace rtt_cdi
  * \return integrated normalized Plankian from low to high
  *
  */
-double CDI::integratePlanckSpectrum(double low, 
-				    double high, 
-				    const double T) 
-{
-    Require (low  >= 0.0);
-    Require (high >= low);
-    Require (T        >= 0.0);
+double CDI::integratePlanckSpectrum(double low, double high, const double T) {
+  Require(low >= 0.0);
+  Require(high >= low);
+  Require(T >= 0.0);
 
-    // return 0 if temperature is a hard zero
-    if (T == 0.0) return 0.0;
+  // return 0 if temperature is a hard zero
+  if (T == 0.0)
+    return 0.0;
 
-    // Sale the frequencies by temperature
-    low /= T;
-    high /= T;
+  // Sale the frequencies by temperature
+  low /= T;
+  high /= T;
 
-    double integral =
-        integrate_planck(high) - integrate_planck(low);
-    
+  double integral = integrate_planck(high) - integrate_planck(low);
 
-    Ensure ( integral >= 0.0 );
-    Ensure ( integral <= 1.0 );
+  Ensure(integral >= 0.0);
+  Ensure(integral <= 1.0);
 
-    return integral;
+  return integral;
 }
 
 } // end namespace rtt_cdi

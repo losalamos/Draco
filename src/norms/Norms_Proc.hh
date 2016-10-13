@@ -14,8 +14,8 @@
 #ifndef rtt_norms_Norms_Proc_hh
 #define rtt_norms_Norms_Proc_hh
 
-#include "Norms_Index.hh"
 #include "Index_Proc.hh"
+#include "Norms_Index.hh"
 
 namespace rtt_norms {
 

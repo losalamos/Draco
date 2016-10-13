@@ -16,11 +16,10 @@
 
 #include <vector>
 
-#include "ds++/Assert.hh"
 #include "svbksb.hh"
+#include "ds++/Assert.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //---------------------------------------------------------------------------//
 /*! 
  * Solve a linear system given its singular value decomposition.
@@ -57,57 +56,46 @@ namespace rtt_linear
  * \post \c x satisfies \f$UWVx=b\f$
  */
 
-template<class RandomContainer>
-void svbksb(const RandomContainer &u,
-	    const RandomContainer &w,
-	    const RandomContainer &v,
-	    const unsigned m,
-	    const unsigned n,
-	    const RandomContainer &b,
-	    RandomContainer &x)
-{
-    Require(u.size()==m*n);
-    Require(w.size()==n);
-    Require(b.size()==m);
-    Require(v.size()==n*n);
+template <class RandomContainer>
+void svbksb(const RandomContainer &u, const RandomContainer &w,
+            const RandomContainer &v, const unsigned m, const unsigned n,
+            const RandomContainer &b, RandomContainer &x) {
+  Require(u.size() == m * n);
+  Require(w.size() == n);
+  Require(b.size() == m);
+  Require(v.size() == n * n);
 
-    typedef typename RandomContainer::value_type value_type;
+  typedef typename RandomContainer::value_type value_type;
 
-    std::vector<value_type> tmp(n); 
-  
-    for (unsigned i=0; i<n; i++)
+  std::vector<value_type> tmp(n);
+
+  for (unsigned i = 0; i < n; i++) {
+    if (w[i] != 0.0)
+    // Exclude singular values.  This is most of the "magic"
+    // of singular value decomposition.
     {
-	if (w[i]!=0.0)
-	    // Exclude singular values.  This is most of the "magic"
-	    // of singular value decomposition.
-	{ 
-	    // Multiply the RHS by transpose of U == inverse of U.
-	    value_type sum = 0.0;
-	    for (unsigned j=0; j<m; j++)
-	    {
-		sum += u[j+m*i]*b[j];
-	    }
-	    // Divide by w.
-	    tmp[i] = sum/w[i];
-	}
-	else
-	{
-	    tmp[i] = 0.0;
-	}
+      // Multiply the RHS by transpose of U == inverse of U.
+      value_type sum = 0.0;
+      for (unsigned j = 0; j < m; j++) {
+        sum += u[j + m * i] * b[j];
+      }
+      // Divide by w.
+      tmp[i] = sum / w[i];
+    } else {
+      tmp[i] = 0.0;
     }
-    // Now multiply by V == inverse of transpose of V
-    x.resize(n);
-    for (unsigned i=0; i<n; i++)
-    {
-	value_type sum = 0.0;
-	for (unsigned j=0; j<n; j++)
-	{
-	    sum += v[i+n*j]*tmp[j];
-	}
-	x[i] = sum;
+  }
+  // Now multiply by V == inverse of transpose of V
+  x.resize(n);
+  for (unsigned i = 0; i < n; i++) {
+    value_type sum = 0.0;
+    for (unsigned j = 0; j < n; j++) {
+      sum += v[i + n * j] * tmp[j];
     }
+    x[i] = sum;
+  }
 
-    Ensure(x.size()==n);
+  Ensure(x.size() == n);
 }
 
 } // end namespace rtt_linear

@@ -15,8 +15,7 @@
 //#include "rkqs.hh"
 //#include "quad.i.hh"
 
-namespace rtt_ode
-{
+namespace rtt_ode {
 
 //using std::vector;
 
@@ -25,7 +24,7 @@ namespace rtt_ode
 //---------------------------------------------------------------------------//
 //
 //typedef void (*FPderivs)(double x,
-//                         vector<double> const &y, 
+//                         vector<double> const &y,
 //                         vector<double> &yderiv);
 
 //template DLL_PUBLIC_ode
@@ -34,18 +33,18 @@ namespace rtt_ode
 //		   double x,
 //		   double h,
 //		   std::vector<double> &yout,
-//		   std::vector<double> &yerr, 
+//		   std::vector<double> &yerr,
 //		   FPderivs);
 //
 //template DLL_PUBLIC_ode
 //void rkqs( vector<double> &y,
 //		   vector<double> const &dydx,
-//		   double &x, 
+//		   double &x,
 //		   double htry,
 //		   double eps,
 //		   vector<double> const &yscal,
 //		   double &hdid,
-//		   double &hnext, 
+//		   double &hnext,
 //		   FPderivs);
 
 //---------------------------------------------------------------------------//
@@ -57,20 +56,20 @@ namespace rtt_ode
 // 		   double x,
 // 		   double h,
 // 		   std::vector<double> &yout,
-// 		   std::vector<double> &yerr, 
+// 		   std::vector<double> &yerr,
 // 		   );
 //
 //template DLL_PUBLIC_ode
 //void rkqs( vector<double> &y,
 //		   vector<double> const &dydx,
-//		   double &x, 
+//		   double &x,
 //		   double htry,
 //		   double eps,
 //		   vector<double> const &yscal,
 //		   double &hdid,
-//		   double &hnext, 
+//		   double &hnext,
 //           Quad_To_ODE<double (*)(double)>);
-                   
+
 } // end namespace rtt_ode
 
 //---------------------------------------------------------------------------//

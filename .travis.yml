@@ -1,10 +1,10 @@
 language: cpp
+sudo: required
 
-sudo: false
-
-# might need to replace above with these commands to allow clang-3.8.
-# sudo: required
-# dist: precise
+# Notes:
+# $HOME -> /home/travis
+# code checked out to (this is $PWD for the script) -> /home/travis/build/losalamos/Draco
+# travis will not install numdiff -> use ./.travis-install-dependencies.sh.
 
 addons:
   apt:
@@ -22,34 +22,44 @@ addons:
       - liblapack-dev
       - clang-format-3.8
 
-before_install:
- - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
- - cd $HOME && wget -qO- https://www.deshawresearch.com/downloads/download_random123.cgi/Random123-${RANDOM123_VER}.tar.gz | tar -xz && cd -
- - cd $HOME && wget --no-check-certificate -qO- http://www.cmake.org/files/v${CMAKE_VERSION:0:3}/cmake-${CMAKE_VERSION}.tar.gz | tar -xz && cd -
- - if [[ ${COVERAGE}  ]]; then pip install --user codecov; for i in CC CXX FC; do eval export ${i}=\"${!i} --coverage\"; done; fi
- - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
-
 env:
   global:
+    - topdir=/home/travis/build/losalamos/Draco
     - CCACHE_CPP2=yes
     - GVER=5
-    - CMAKE_VERSION=3.5.2-Linux-x86_64
+    - CMAKE_VERSION=3.6.2-Linux-x86_64
+    - CMAKE=$HOME/cmake-${CMAKE_VERSION}/bin/cmake
+    - CTEST=$HOME/cmake-${CMAKE_VERSION}/bin/ctest
     - RANDOM123_VER=1.09
+    - RANDOM123_INC_DIR=$HOME/Random123-${RANDOM123_VER}/include
+    - LAPACK_LIB_DIR=/usr/lib
+    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
     - J=2
     - OMP_NUM_THREADS=4
     - CLANG_FORMAT_VER=3.8
+    - VENDOR_DIR=${HOME}
   matrix:
-    -
     - STYLE=ON
-    - COVERAGE=ON
     - WERROR=ON
+    - COVERAGE=ON
+
+before_install:
+ - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
+ - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
+
+install: ./.travis-install-dependencies.sh
+
+before_script:
+ - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
+ - if [[ ${COVERAGE}  ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} --coverage\"; done; fi
+# - cd $topdir && echo $CMAKE && $CMAKE --version && which numdiff && printenv
 
 script:
-    # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284
-  - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir build && cd build &&
-    ${HOME}/cmake-${CMAKE_VERSION}/bin/cmake -DRANDOM123_INCLUDE_DIR=${HOME}/Random123-${RANDOM123_VER}/include -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
+    # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
+  - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir -p build && cd build &&
+    ${CMAKE} -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
     make -j${J} VERBOSE=1 &&
-    ${HOME}/cmake-${CMAKE_VERSION}/bin/ctest -j ${J} -E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\) &&
+    ${CTEST} -j ${J} -E \(c4_tstOMP_2\) &&
     make install DESTDIR="${HOME}" && cd - ; fi
 
 after_success:
@@ -60,3 +70,106 @@ cache:
 
 compiler:
   - gcc
+
+git:
+  depth: 3
+
+
+# output from printenv
+#
+# CASHER_DIR=/home/travis/.casher
+# CC=gcc-5
+# CCACHE_CPP2=yes
+# CI=true
+# CLANG_FORMAT_VER=3.8
+# CMAKE=/home/travis/cmake-3.5.2-Linux-x86_64/bin/cmake
+# CMAKE_VERSION=3.5.2-Linux-x86_64
+# COMPOSER_NO_INTERACTION=1
+# CONTINUOUS_INTEGRATION=true
+# CTEST=/home/travis/cmake-3.5.2-Linux-x86_64/bin/ctest
+# CXX=g++-5
+# DEBIAN_FRONTEND=noninteractive
+# FC=gfortran-5
+# GEM_HOME=/home/travis/.rvm/gems/ruby-2.2.5
+# GEM_PATH=/home/travis/.rvm/gems/ruby-2.2.5:/home/travis/.rvm/gems/ruby-2.2.5@global
+# GIT_ASKPASS=echo
+# GOROOT=/home/travis/.gimme/versions/go1.4.2.linux.amd64
+# GVER=5
+# HAS_ANTARES_THREE_LITTLE_FRONZIES_BADGE=true
+# HAS_JOSH_K_SEAL_OF_APPROVAL=true
+# HOME=/home/travis
+# IRBRC=/home/travis/.rvm/rubies/ruby-2.2.5/.irbrc
+# J=2
+# JAVA_HOME=/usr/lib/jvm/java-7-oracle
+# JRUBY_OPTS=--client -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -Xcext.enabled=false -J-Xss2m -Xcompile.invokedynamic=false
+# LANG=en_US.UTF-8
+# LAPACK_LIB_DIR=/usr/lib
+# LC_ALL=en_US.UTF-8
+# LC_CTYPE=en_US.UTF-8
+# LOGNAME=travis
+# MAIL=/var/mail/travis
+# MANPATH=/home/travis/.nvm/v0.10.36/share/man:/usr/local/clang-3.4/share/man:/usr/local/man:/usr/local/share/man:/usr/share/man
+# MERB_ENV=test
+# MY_RUBY_HOME=/home/travis/.rvm/rubies/ruby-2.2.5
+# NVM_BIN=/home/travis/.nvm/v0.10.36/bin
+# NVM_DIR=/home/travis/.nvm
+# NVM_IOJS_ORG_MIRROR=https://iojs.org/dist
+# NVM_IOJS_ORG_VERSION_LISTING=https://iojs.org/dist/index.tab
+# NVM_NODEJS_ORG_MIRROR=https://nodejs.org/dist
+# NVM_PATH=/home/travis/.nvm/v0.10.36/lib/node
+# OLDPWD=/home/travis/build/losalamos/Draco
+# OMP_NUM_THREADS=4
+# PATH=/home/travis/.rvm/gems/ruby-2.2.5/bin:/home/travis/.rvm/gems/ruby-2.2.5@global/bin:/home/travis/.rvm/rubies/ruby-2.2.5/bin:/home/travis/.rvm/bin:/usr/lib/ccache:/home/travis/bin:/home/travis/.local/bin:/home/travis/.gimme/versions/go1.4.2.linux.amd64/bin:/usr/local/phantomjs/bin:/home/travis/.nvm/v0.10.36/bin:./node_modules/.bin:/usr/local/maven-3.2.5/bin:/usr/local/clang-3.4/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# PS4=+
+# PWD=/home/travis/build/losalamos/Draco
+# PYTHON_CFLAGS=-g -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security
+# PYTHON_CONFIGURE_OPTS=--enable-unicode=ucs4 --with-wide-unicode --enable-shared --enable-ipv6 --enable-loadable-sqlite-extensions --with-computed-gotos
+# RACK_ENV=test
+# RAILS_ENV=test
+# RANDOM123_INC_DIR=/home/travis/Random123-1.09/include
+# RANDOM123_VER=1.09
+# RUBY_VERSION=ruby-2.2.5
+# SHELL=/bin/bash
+# SHLVL=2
+# SSH_CLIENT=104.198.36.26 46179 22
+# SSH_CONNECTION=104.198.36.26 46179 10.128.0.56 22
+# SSH_TTY=/dev/pts/1
+# TERM=xterm
+# TRAVIS=true
+# TRAVIS_BRANCH=develop
+# TRAVIS_BUILD_DIR=/home/travis/build/losalamos/Draco
+# TRAVIS_BUILD_ID=161471760
+# TRAVIS_BUILD_NUMBER=154
+# TRAVIS_COMMIT=be95a2cb7957d73c9a2ce5a83d6f055ad24773f3
+# TRAVIS_COMMIT_RANGE=6eb8ff3595a23ee612ec5a7ddd9594a6c42d9fb4...a8706e3225ff6df6bfb40790f265e4df35bf51a9
+# TRAVIS_EVENT_TYPE=pull_request
+# TRAVIS_JOB_ID=161471761
+# TRAVIS_JOB_NUMBER=154.1
+# TRAVIS_LANGUAGE=cpp
+# TRAVIS_OS_NAME=linux
+# TRAVIS_PULL_REQUEST=59
+# TRAVIS_REPO_SLUG=losalamos/Draco
+# TRAVIS_SECURE_ENV_VARS=false
+# TRAVIS_STACK_FEATURES=basic chromium firefox google-chrome memcached mongodb nodejs_interpreter perl_interpreter phantomjs postgresql python_interpreter rabbitmq redis ruby_interpreter sphinxsearch sqlite xserver
+# TRAVIS_STACK_JOB_BOARD_REGISTER=/.job-board-register.yml
+# TRAVIS_STACK_LANGUAGES=bash c c++ cplusplus cpp crystal csharp d dart default generic haxe julia r ruby rust sh shell
+# TRAVIS_STACK_NAME=ruby
+# TRAVIS_STACK_NODE_ATTRIBUTES=/.node-attributes.yml
+# TRAVIS_STACK_TIMESTAMP=2016-08-21 21:18:20 UTC
+# TRAVIS_TAG=
+# USER=travis
+# VENDOR_DIR=/home/travis
+# VIRTUAL_ENV_DISABLE_PROMPT=true
+# XDG_SESSION_COOKIE=f62ae60da534a49f76263b7700000110-1474409448.494370-360463264
+# _=/usr/bin/printenv
+# _system_arch=x86_64
+# _system_name=Ubuntu
+# _system_type=Linux
+# _system_version=12.04
+# rvm_autoupdate_flag=0
+# rvm_bin_path=/home/travis/.rvm/bin
+# rvm_path=/home/travis/.rvm
+# rvm_prefix=/home/travis
+# rvm_silence_path_mismatch_check_flag=1
+# rvm_version=1.26.10 (1.26.10)
+# topdir=/home/travis/build/losalamos/Draco

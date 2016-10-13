@@ -8,18 +8,15 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef fit_svdfit_i_hh
 #define fit_svdfit_i_hh
 
-#include "linear/svdcmp.i.hh"
-#include "linear/svbksb.i.hh"
 #include "svdfit.hh"
+#include "linear/svbksb.i.hh"
+#include "linear/svdcmp.i.hh"
 
-namespace rtt_fit
-{
+namespace rtt_fit {
 using std::vector;
 
 //---------------------------------------------------------------------------//
@@ -62,73 +59,57 @@ using std::vector;
  * \param funcs Functor to calculate the basis functions for a given argument.
  */
 
-template<typename RandomContainer,
-         typename Functor>
-void svdfit(RandomContainer const &x,
-            RandomContainer const &y,
-            RandomContainer const &sig,
-            RandomContainer &a,
-            RandomContainer &u,
-            RandomContainer &v,
-            RandomContainer &w,
-            double &chisq,
-            Functor &funcs,
-            double TOL)
-{
-    Require(x.size()==y.size());
-    Require(x.size()==sig.size());
-    Require(a.size()>0);
+template <typename RandomContainer, typename Functor>
+void svdfit(RandomContainer const &x, RandomContainer const &y,
+            RandomContainer const &sig, RandomContainer &a, RandomContainer &u,
+            RandomContainer &v, RandomContainer &w, double &chisq,
+            Functor &funcs, double TOL) {
+  Require(x.size() == y.size());
+  Require(x.size() == sig.size());
+  Require(a.size() > 0);
 
-    using rtt_linear::svdcmp;
-    using rtt_linear::svbksb;
-    using rtt_dsxx::square;
+  using rtt_linear::svdcmp;
+  using rtt_linear::svbksb;
+  using rtt_dsxx::square;
 
-    unsigned const ndata = x.size();
-    unsigned const ma = a.size();
+  unsigned const ndata = x.size();
+  unsigned const ma = a.size();
 
-    vector<double> b(ndata), afunc(ma);
+  vector<double> b(ndata), afunc(ma);
 
-    u.resize(ndata*ma);
+  u.resize(ndata * ma);
 
-    for (unsigned i=0; i<ndata; ++i)
-    {
-        funcs(x[i], afunc);
-        double const tmp = 1.0/sig[i];
-        for (unsigned j=0; j<ma; ++j)
-        {
-            u[i+ndata*j] = afunc[j]*tmp;
-        }
-        b[i] = y[i]*tmp;
+  for (unsigned i = 0; i < ndata; ++i) {
+    funcs(x[i], afunc);
+    double const tmp = 1.0 / sig[i];
+    for (unsigned j = 0; j < ma; ++j) {
+      u[i + ndata * j] = afunc[j] * tmp;
     }
-    svdcmp(u,ndata,ma,w,v);
-    double wmax = 0.0;
-    for (unsigned j=0; j<ma; ++j)
-    {
-        if (w[j]>wmax)
-        {
-            wmax=w[j];
-        }
+    b[i] = y[i] * tmp;
+  }
+  svdcmp(u, ndata, ma, w, v);
+  double wmax = 0.0;
+  for (unsigned j = 0; j < ma; ++j) {
+    if (w[j] > wmax) {
+      wmax = w[j];
     }
-    double const thresh = TOL*wmax;
-    for (unsigned j=0; j<ma; ++j)
-    {
-        if (w[j]<thresh)
-        {
-            w[j] = 0.0;
-        }
+  }
+  double const thresh = TOL * wmax;
+  for (unsigned j = 0; j < ma; ++j) {
+    if (w[j] < thresh) {
+      w[j] = 0.0;
     }
-    svbksb(u,w,v,ndata,ma,b,a);
-    chisq = 0.0;
-    for (unsigned i=0; i<ndata; ++i)
-    {
-        funcs(x[i], afunc);
-        double sum = 0.0;
-        for (unsigned j=0; j<ma; ++j)
-        {
-            sum += a[j]*afunc[j];
-        }
-        chisq += square((y[i]-sum)/sig[i]);
+  }
+  svbksb(u, w, v, ndata, ma, b, a);
+  chisq = 0.0;
+  for (unsigned i = 0; i < ndata; ++i) {
+    funcs(x[i], afunc);
+    double sum = 0.0;
+    for (unsigned j = 0; j < ma; ++j) {
+      sum += a[j] * afunc[j];
     }
+    chisq += square((y[i] - sum) / sig[i]);
+  }
 }
 
 } // end namespace rtt_fit

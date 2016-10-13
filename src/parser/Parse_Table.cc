@@ -17,8 +17,7 @@
 #include <cctype>
 #include <sstream>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using namespace std;
 
 //---------------------------------------------------------------------------------------//
@@ -35,20 +34,17 @@ using namespace std;
  * \note See documentation for \c Parse_Table::add for an explanation of the
  * low-level argument list.
  */
-Parse_Table::Parse_Table(Keyword  const *const table,
-                         size_t   const count,
+Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
                          unsigned const flags)
-    : vec(), flags_(flags)
-{
-    Require(count == 0 || table != NULL);
-    Require(count == 0 || std::find_if(table,
-                                       table+count,
-                                       Is_Well_Formed_Keyword));
+    : vec(), flags_(flags) {
+  Require(count == 0 || table != NULL);
+  Require(count == 0 ||
+          std::find_if(table, table + count, Is_Well_Formed_Keyword));
 
-    add(table, count);
+  add(table, count);
 
-    Ensure(check_class_invariants());
-    Ensure(get_flags()==flags);
+  Ensure(check_class_invariants());
+  Ensure(get_flags() == flags);
 }
 
 //-------------------------------------------------------------------------------------//
@@ -64,23 +60,21 @@ Parse_Table::Parse_Table(Keyword  const *const table,
  * tables as static C arrays.  This justifies a low-level interface in place
  * of, say, vector<Keyword>.
  */
-void Parse_Table::add(Keyword const *const table, size_t const count)
-{
-    Require(count == 0  ||  table != NULL);
-    // Additional precondition checked in loop below
+void Parse_Table::add(Keyword const *const table, size_t const count) {
+  Require(count == 0 || table != NULL);
+  // Additional precondition checked in loop below
 
-    // Add the new keywords.
+  // Add the new keywords.
 
-    for (unsigned i=0; i<count; i++)
-    {
-	Require(Is_Well_Formed_Keyword(table[i]));
+  for (unsigned i = 0; i < count; i++) {
+    Require(Is_Well_Formed_Keyword(table[i]));
 
-	vec.push_back(table[i]);
-    }
+    vec.push_back(table[i]);
+  }
 
-    sort_table_();
+  sort_table_();
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
@@ -89,20 +83,17 @@ void Parse_Table::add(Keyword const *const table, size_t const count)
  *
  * \throw invalid_argument If the keyword is not in the table.
  */
-void Parse_Table::remove(char const *moniker)
-{
-    // Yes, this is an order N operation as presently coded. N is never very large.
-    for (auto i=vec.begin(); i!=vec.end(); ++i)
-    {
-        if (!strcmp(i->moniker, moniker))
-        {
-            vec.erase(i);
-            Ensure(check_class_invariants());
-            return;
-        }
+void Parse_Table::remove(char const *moniker) {
+  // Yes, this is an order N operation as presently coded. N is never very large.
+  for (auto i = vec.begin(); i != vec.end(); ++i) {
+    if (!strcmp(i->moniker, moniker)) {
+      vec.erase(i);
+      Ensure(check_class_invariants());
+      return;
     }
+  }
 
-    throw invalid_argument("keyword not found in Parse_Table::remove");
+  throw invalid_argument("keyword not found in Parse_Table::remove");
 }
 
 //-------------------------------------------------------------------------------------//
@@ -113,78 +104,75 @@ void Parse_Table::remove(char const *moniker)
  * \throw invalid_argument If the keyword table is ill-formed or
  * ambiguous.
  */
-void Parse_Table::add(Parse_Table const &source)
-{
-    // Add the new keywords.
+void Parse_Table::add(Parse_Table const &source) {
+  // Add the new keywords.
 
-    for (auto i=source.vec.begin(); i!=source.vec.end(); ++i)
-    {
-	vec.push_back(*i);
-    }
+  for (auto i = source.vec.begin(); i != source.vec.end(); ++i) {
+    vec.push_back(*i);
+  }
 
-    sort_table_();
+  sort_table_();
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //---------------------------------------------------------------------------------------//
 /* private */
-void Parse_Table::sort_table_()
-{
-    if (vec.size()==0) return;
+void Parse_Table::sort_table_() {
+  if (vec.size() == 0)
+    return;
 
-    // Sort the parse table, using a comparator predicate appropriate for the
-    // selected parser flags.
+  // Sort the parse table, using a comparator predicate appropriate for the
+  // selected parser flags.
 
-    Keyword_Compare_ const comp(flags_);
-    std::sort(vec.begin(), vec.end(), comp);
+  Keyword_Compare_ const comp(flags_);
+  std::sort(vec.begin(), vec.end(), comp);
 
-    // Look for ambiguous keywords, and resolve the ambiguity, if possible.
+  // Look for ambiguous keywords, and resolve the ambiguity, if possible.
 
-    std::vector<Keyword>::iterator i = vec.begin();
-    while (i+1 != vec.end())
+  std::vector<Keyword>::iterator i = vec.begin();
+  while (i + 1 != vec.end()) {
+    Check(i->moniker != NULL && (i + 1)->moniker != NULL);
+    if (!comp(i[0], i[1]))
+    // kptr[i] and kptr[i+1] have the same moniker.
     {
-	Check(i->moniker != NULL  &&  (i+1)->moniker != NULL);
-	if (!comp(i[0], i[1]))
-	    // kptr[i] and kptr[i+1] have the same moniker.
-	{
-	    if (i->func == (i+1)->func  &&  i->index == (i+1)->index)
-	    {
-		// They have the same parse function and index.  No
-		// real ambiguity.  Delete the duplicate.
+      if (i->func == (i + 1)->func && i->index == (i + 1)->index) {
+        // They have the same parse function and index.  No
+        // real ambiguity.  Delete the duplicate.
 
-		// This can occur when there is diamond inheritance
-		// in a parse table hierarchy, e.g., this parse table
-		// copies keywords from two other parse tables, which
-		// in turn copy keywords from a fourth parse table.
+        // This can occur when there is diamond inheritance
+        // in a parse table hierarchy, e.g., this parse table
+        // copies keywords from two other parse tables, which
+        // in turn copy keywords from a fourth parse table.
 
-		vec.erase(i+1);
-	    }
-	    else
-	    {
-		// The keywords are genuinely ambiguous. Throw an exception
-		// identifying the duplicate keyword.
-		using std::ostringstream;
-		using std::endl;
-		ostringstream err;
-		err << "An ambiguous keyword was detected in a "
-		    << "Parse_Table:  " << i->moniker << endl
-		    << "Modules: ";
-		if (i->module) err << i->module;
-		else err << "<null>";
-		err << ' ';
-		if ((i+1)->module) err << (i+1)->module;
-		else err << "<null>";
-		err << endl;
-		throw invalid_argument(err.str().c_str());
-	    }
-	}
-	else
-            // kptr[i] and kptr[i+1] have different monikers. No ambiguity.
-	{
-	    i++;
-	}
+        vec.erase(i + 1);
+      } else {
+        // The keywords are genuinely ambiguous. Throw an exception
+        // identifying the duplicate keyword.
+        using std::ostringstream;
+        using std::endl;
+        ostringstream err;
+        err << "An ambiguous keyword was detected in a "
+            << "Parse_Table:  " << i->moniker << endl
+            << "Modules: ";
+        if (i->module)
+          err << i->module;
+        else
+          err << "<null>";
+        err << ' ';
+        if ((i + 1)->module)
+          err << (i + 1)->module;
+        else
+          err << "<null>";
+        err << endl;
+        throw invalid_argument(err.str().c_str());
+      }
+    } else
+    // kptr[i] and kptr[i+1] have different monikers. No ambiguity.
+    {
+      i++;
     }
+  }
 }
 //-------------------------------------------------------------------------------------//
 /*!
@@ -198,182 +186,159 @@ void Parse_Table::sort_table_()
  *
  * \throw rtt_dsxx::assertion If the keyword table is ambiguous.
  */
-Token Parse_Table::parse(Token_Stream &tokens) const
-{
-    // The is_recovering flag is used during error recovery to suppress
-    // additional error messages.  This reduces the likelihood that a single
-    // error in a token stream will generate a large number of error
-    // messages.
+Token Parse_Table::parse(Token_Stream &tokens) const {
+  // The is_recovering flag is used during error recovery to suppress
+  // additional error messages.  This reduces the likelihood that a single
+  // error in a token stream will generate a large number of error
+  // messages.
 
-    bool is_recovering = false;
+  bool is_recovering = false;
 
-    // Create a comparator object that will be used to attempt to match
-    // keywords in the Token_Stream to keywords in the Parse_Table.  This
-    // comparator object incorporates the current settings of the
-    // Parse_Table, such as case sensitivity and partial matching options.
+  // Create a comparator object that will be used to attempt to match
+  // keywords in the Token_Stream to keywords in the Parse_Table.  This
+  // comparator object incorporates the current settings of the
+  // Parse_Table, such as case sensitivity and partial matching options.
 
-    Keyword_Compare_ const comp(flags_);
+  Keyword_Compare_ const comp(flags_);
 
-    // Now begin the process of pulling keywords off the input token stream,
-    // and attempting to match these to the keyword table.
+  // Now begin the process of pulling keywords off the input token stream,
+  // and attempting to match these to the keyword table.
 
-    for (;;)
-    {
-	Token const token = tokens.shift();
+  for (;;) {
+    Token const token = tokens.shift();
 
-	// The END, EXIT, and ERROR tokens are terminating tokens.  EXIT
-	// means the end of the token stream has been reached.  END is used
-	// to flag the end of a nested parse, where the result of matching a
-	// keyword in one parse table is to begin parsing keywords in a
-	// second parse table.  An END indicates that the second parse table
-	// should return control to the first parse table.  ERROR means that
-	// something went very wrong and we're probably hosed, but it allows
-	// some error recovery from within a nested parse table.
+    // The END, EXIT, and ERROR tokens are terminating tokens.  EXIT
+    // means the end of the token stream has been reached.  END is used
+    // to flag the end of a nested parse, where the result of matching a
+    // keyword in one parse table is to begin parsing keywords in a
+    // second parse table.  An END indicates that the second parse table
+    // should return control to the first parse table.  ERROR means that
+    // something went very wrong and we're probably hosed, but it allows
+    // some error recovery from within a nested parse table.
 
-	if (token.type()==END  ||
-            token.type()==EXIT ||
-            token.type()==rtt_parser::ERROR)
-	{
-	    return token;
-	}
-
-	// A Parse_Table assumes that every construct begins with a keyword.
-	// This keyword is matched to the keyword table, and if a match is
-	// found, control is directed to the associated parse function, which
-	// can be written to accept just about any construct you wish.
-	// However, by the time return controls from a parse function, the
-	// token stream should be pointing either at a terminating token or
-	// the next keyword.
-
-	if (token.type()==KEYWORD)
-	{
-	    // Attempt to match the keyword to the keyword table.  The
-	    // following call returns an iterator pointing to the first
-	    // keyword in the table whose lexical ordering is greater than or
-	    // equal to the keyword token.  The lexical ordering is supplied
-	    // by the comp object.
-
-	    vector<Keyword>::const_iterator const match =
-		lower_bound(vec.begin(), vec.end(), token, comp);
-
-	    if (match == vec.end() ||
-		comp.kt_comparison(match->moniker, token.text().c_str()) != 0)
-	    {
-		// The token was not lexically equal to anything in the
-		// keyword table.  In other words, the keyword is
-		// unrecognized by the Parse_Table.  The error recovery
-		// procedure is to generate a diagnostic, then pull
-		// additional tokens off the token stream (without generating
-		// further diagnostics) until one is recognized as either a
-		// keyword or a terminating token.  We implement this
-		// behavior by setting the is_recovering flag when the first
-		// invalid token is encountered, and resetting this flag as
-		// soon as a valid token is encountered.
-
-		if (!is_recovering)
-		{
-		    // We are not recovering from a previous error.  Generate
-		    // a diagnostic, and flag that we are now in error
-		    // recovery mode.
-
-		    tokens.report_semantic_error(token,
-						  ": unrecognized keyword: " +
-						  token.text());
-		    is_recovering = true;
-		}
-		// else we are in recovery mode, and additional diagnostics
-		// are disabled until we see a valid construct.
-	    }
-	    else
-	    {
-		// We have a valid match.  However, depending on Parse_Table
-		// options, the match might be ambiguous.  For example if the
-		// Parse_Table option to allow partial matches is active, the
-		// keyword token may partially match more than one keyword in
-		// the keyword table.  Check for an ambiguous match:
-
-		if (match+1 != vec.end() &&
-		    comp.kt_comparison(match[1].moniker,
-				       token.text().c_str()) == 0)
-		{
-		    // The match is ambiguous.  This is diagnosed whether or
-		    // not we are already in recovery mode, but it does put
-		    // us into recovery mode.
-
-		    tokens.report_semantic_error(token,
-						  "ambiguous keyword: " +
-						  token.text());
-		    is_recovering = true;
-		}
-		else
-		{
-		    is_recovering = false;
-		    // We successfully processed something, so we are no
-		    // longer in recovery mode.
-
-		    try
-		    {
-			// Call the parse function associated with the
-			// keyword.
-			match->func(tokens, match->index);
-
-                        if (flags_ & ONCE)
-                            // Quit after parsing a single keyword. This is
-                            // useful for parse tables for selecting one of a
-                            // set of short options.
-                        {
-                            return Token(END, "");
-                        }
-		    }
-		    catch (const Syntax_Error &)
-		    {
-			// If the parse function detects a syntax error, and
-			// if it does not have its own error recovery policy
-			// (or is unable to recover), it should call
-			// tokens.Report_Syntax_Error which generates a
-			// diagnostic and throws a Syntax_Error
-			// exception. This puts the main parser into recovery
-			// mode.
-
-			is_recovering = true;
-		    }
-		}
-	    }
-	}
-	else if (token.type() == OTHER && token.text() == ";")
-	{
-	    // Treat a semicolon token as an empty keyword.  We are no longer
-	    // in recovery mode, but we don't actually do anything.
-
-	    is_recovering = false;
-	}
-	else
-	{
-	    // The next token in the token stream is not a keyword,
-	    // indicating a syntax error. Error recovery consists of
-	    // generating a diagnostic message, then continuing to pull
-	    // tokens off the token stream (without generating any further
-	    // diagnostics) until one is recognized as either a keyword or a
-	    // terminating token.  We implement this behavior by setting the
-	    // is_recovering flag when the first invalid token is
-	    // encountered, and resetting this flag as soon as a valid token
-	    // is encountered.
-
-	    if (!is_recovering)
-	    {
-		// We are not recovering from a previous error.  Generate a
-		// diagnostic, and flag that we are now in error recovery
-		// mode.
-
-		std::ostringstream msg;
-		msg << "expected a keyword, but saw " << token.text();
-		tokens.report_semantic_error(token, msg.str());
-		is_recovering = true;
-	    }
-	    // else we are in recovery mode, and additional diagnostics are
-	    // disabled until we see a valid construct.
-	}
+    if (token.type() == END || token.type() == EXIT ||
+        token.type() == rtt_parser::ERROR) {
+      return token;
     }
+
+    // A Parse_Table assumes that every construct begins with a keyword.
+    // This keyword is matched to the keyword table, and if a match is
+    // found, control is directed to the associated parse function, which
+    // can be written to accept just about any construct you wish.
+    // However, by the time return controls from a parse function, the
+    // token stream should be pointing either at a terminating token or
+    // the next keyword.
+
+    if (token.type() == KEYWORD) {
+      // Attempt to match the keyword to the keyword table.  The
+      // following call returns an iterator pointing to the first
+      // keyword in the table whose lexical ordering is greater than or
+      // equal to the keyword token.  The lexical ordering is supplied
+      // by the comp object.
+
+      vector<Keyword>::const_iterator const match =
+          lower_bound(vec.begin(), vec.end(), token, comp);
+
+      if (match == vec.end() ||
+          comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
+        // The token was not lexically equal to anything in the
+        // keyword table.  In other words, the keyword is
+        // unrecognized by the Parse_Table.  The error recovery
+        // procedure is to generate a diagnostic, then pull
+        // additional tokens off the token stream (without generating
+        // further diagnostics) until one is recognized as either a
+        // keyword or a terminating token.  We implement this
+        // behavior by setting the is_recovering flag when the first
+        // invalid token is encountered, and resetting this flag as
+        // soon as a valid token is encountered.
+
+        if (!is_recovering) {
+          // We are not recovering from a previous error.  Generate
+          // a diagnostic, and flag that we are now in error
+          // recovery mode.
+
+          tokens.report_semantic_error(token, ": unrecognized keyword: " +
+                                                  token.text());
+          is_recovering = true;
+        }
+        // else we are in recovery mode, and additional diagnostics
+        // are disabled until we see a valid construct.
+      } else {
+        // We have a valid match.  However, depending on Parse_Table
+        // options, the match might be ambiguous.  For example if the
+        // Parse_Table option to allow partial matches is active, the
+        // keyword token may partially match more than one keyword in
+        // the keyword table.  Check for an ambiguous match:
+
+        if (match + 1 != vec.end() &&
+            comp.kt_comparison(match[1].moniker, token.text().c_str()) == 0) {
+          // The match is ambiguous.  This is diagnosed whether or
+          // not we are already in recovery mode, but it does put
+          // us into recovery mode.
+
+          tokens.report_semantic_error(token,
+                                       "ambiguous keyword: " + token.text());
+          is_recovering = true;
+        } else {
+          is_recovering = false;
+          // We successfully processed something, so we are no
+          // longer in recovery mode.
+
+          try {
+            // Call the parse function associated with the
+            // keyword.
+            match->func(tokens, match->index);
+
+            if (flags_ & ONCE)
+            // Quit after parsing a single keyword. This is
+            // useful for parse tables for selecting one of a
+            // set of short options.
+            {
+              return Token(END, "");
+            }
+          } catch (const Syntax_Error &) {
+            // If the parse function detects a syntax error, and
+            // if it does not have its own error recovery policy
+            // (or is unable to recover), it should call
+            // tokens.Report_Syntax_Error which generates a
+            // diagnostic and throws a Syntax_Error
+            // exception. This puts the main parser into recovery
+            // mode.
+
+            is_recovering = true;
+          }
+        }
+      }
+    } else if (token.type() == OTHER && token.text() == ";") {
+      // Treat a semicolon token as an empty keyword.  We are no longer
+      // in recovery mode, but we don't actually do anything.
+
+      is_recovering = false;
+    } else {
+      // The next token in the token stream is not a keyword,
+      // indicating a syntax error. Error recovery consists of
+      // generating a diagnostic message, then continuing to pull
+      // tokens off the token stream (without generating any further
+      // diagnostics) until one is recognized as either a keyword or a
+      // terminating token.  We implement this behavior by setting the
+      // is_recovering flag when the first invalid token is
+      // encountered, and resetting this flag as soon as a valid token
+      // is encountered.
+
+      if (!is_recovering) {
+        // We are not recovering from a previous error.  Generate a
+        // diagnostic, and flag that we are now in error recovery
+        // mode.
+
+        std::ostringstream msg;
+        msg << "expected a keyword, but saw " << token.text();
+        tokens.report_semantic_error(token, msg.str());
+        is_recovering = true;
+      }
+      // else we are in recovery mode, and additional diagnostics are
+      // disabled until we see a valid construct.
+    }
+  }
 }
 
 //-------------------------------------------------------------------------------------//
@@ -388,128 +353,110 @@ Token Parse_Table::parse(Token_Stream &tokens) const
  *
  * \throw rtt_dsxx::assertion If the keyword table is ambiguous.
  */
-Token Parse_Table::parseforkeyword(Token_Stream &tokens) const
-{
-    // Create a comparator object that will be used to attempt to match
-    // keywords in the Token_Stream to keywords in the Parse_Table.  This
-    // comparator object incorporates the current settings of the
-    // Parse_Table, such as case sensitivity and partial matching options.
+Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
+  // Create a comparator object that will be used to attempt to match
+  // keywords in the Token_Stream to keywords in the Parse_Table.  This
+  // comparator object incorporates the current settings of the
+  // Parse_Table, such as case sensitivity and partial matching options.
 
-    Keyword_Compare_ const comp(flags_);
+  Keyword_Compare_ const comp(flags_);
 
-    // Now begin the process of pulling keywords off the input token stream,
-    // and attempting to match these to the keyword table.
+  // Now begin the process of pulling keywords off the input token stream,
+  // and attempting to match these to the keyword table.
 
-    for (;;)
-    {
-	Token const token = tokens.shift();
+  for (;;) {
+    Token const token = tokens.shift();
 
-	// The END, EXIT, and ERROR tokens are terminating tokens.  EXIT
-	// means the end of the token stream has been reached.  END is used
-	// to flag the end of a nested parse, where the result of matching a
-	// keyword in one parse table is to begin parsing keywords in a
-	// second parse table.  An END indicates that the second parse table
-	// should return control to the first parse table.  ERROR means that
-	// something went very wrong and we're probably hosed, but it allows
-	// some error recovery from within a nested parse table.
+    // The END, EXIT, and ERROR tokens are terminating tokens.  EXIT
+    // means the end of the token stream has been reached.  END is used
+    // to flag the end of a nested parse, where the result of matching a
+    // keyword in one parse table is to begin parsing keywords in a
+    // second parse table.  An END indicates that the second parse table
+    // should return control to the first parse table.  ERROR means that
+    // something went very wrong and we're probably hosed, but it allows
+    // some error recovery from within a nested parse table.
 
-	if (token.type()==END  ||
-            token.type()==EXIT ||
-            token.type()==rtt_parser::ERROR)
-	{
-	    return token;
-	}
-
-	// A Parse_Table assumes that every construct begins with a keyword.
-	// This keyword is matched to the keyword table, and if a match is
-	// found, control is directed to the associated parse function, which
-	// can be written to accept just about any construct you wish.
-	// However, by the time return controls from a parse function, the
-	// token stream should be pointing either at a terminating token or
-	// the next keyword.
-
-	if (token.type()==KEYWORD)
-	{
-	    // Attempt to match the keyword to the keyword table.  The
-	    // following call returns an iterator pointing to the first
-	    // keyword in the table whose lexical ordering is greater than or
-	    // equal to the keyword token.  The lexical ordering is supplied
-	    // by the comp object.
-
-	    vector<Keyword>::const_iterator const match =
-		lower_bound(vec.begin(), vec.end(), token, comp);
-
-	    if (match == vec.end() ||
-		comp.kt_comparison(match->moniker, token.text().c_str()) != 0)
-	    {
-		// The token was not lexically equal to anything in the
-		// keyword table.  In other words, the keyword is
-		// unrecognized by the Parse_Table.  The error recovery
-		// procedure is to generate a diagnostic, then pull
-		// additional tokens off the token stream (without generating
-		// further diagnostics) until one is recognized as either a
-		// keyword or a terminating token.  We implement this
-		// behavior by setting the is_recovering flag when the first
-		// invalid token is encountered, and resetting this flag as
-		// soon as a valid token is encountered.
-	    }
-	    else
-	    {
-		// We have a valid match.  However, depending on Parse_Table
-		// options, the match might be ambiguous.  For example if the
-		// Parse_Table option to allow partial matches is active, the
-		// keyword token may partially match more than one keyword in
-		// the keyword table.  Check for an ambiguous match:
-
-		if (match+1 != vec.end() &&
-		    comp.kt_comparison(match[1].moniker,
-				       token.text().c_str()) == 0)
-		{
-		    // The match is ambiguous.  This is diagnosed whether or
-		    // not we are already in recovery mode, but it does put
-		    // us into recovery mode.
-
-		    tokens.report_semantic_error(token,
-						  "ambiguous keyword: " +
-						  token.text());
-		}
-		else
-		{
-		    // We successfully processed something, so we are no
-		    // longer in recovery mode.
-
-		    try
-		    {
-			// Call the parse function associated with the
-			// keyword.
-			match->func(tokens, match->index);
-
-                        if (flags_ & ONCE)
-                            // Quit after parsing a single keyword. This is
-                            // useful for parse tables for selecting one of a
-                            // set of short options.
-                        {
-                            return Token(END, "");
-                        }
-		    }
-		    catch (const Syntax_Error &)
-		    {
-			// If the parse function detects a syntax error, and
-			// if it does not have its own error recovery policy
-			// (or is unable to recover), it should call
-			// tokens.Report_Syntax_Error which generates a
-			// diagnostic and throws a Syntax_Error
-			// exception. This puts the main parser into recovery
-			// mode.
-                        tokens.report_semantic_error(token,
-                                                     "syntax error: " +
-                                                     token.text());
-
-		    }
-		}
-	    }
-	}
+    if (token.type() == END || token.type() == EXIT ||
+        token.type() == rtt_parser::ERROR) {
+      return token;
     }
+
+    // A Parse_Table assumes that every construct begins with a keyword.
+    // This keyword is matched to the keyword table, and if a match is
+    // found, control is directed to the associated parse function, which
+    // can be written to accept just about any construct you wish.
+    // However, by the time return controls from a parse function, the
+    // token stream should be pointing either at a terminating token or
+    // the next keyword.
+
+    if (token.type() == KEYWORD) {
+      // Attempt to match the keyword to the keyword table.  The
+      // following call returns an iterator pointing to the first
+      // keyword in the table whose lexical ordering is greater than or
+      // equal to the keyword token.  The lexical ordering is supplied
+      // by the comp object.
+
+      vector<Keyword>::const_iterator const match =
+          lower_bound(vec.begin(), vec.end(), token, comp);
+
+      if (match == vec.end() ||
+          comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
+        // The token was not lexically equal to anything in the
+        // keyword table.  In other words, the keyword is
+        // unrecognized by the Parse_Table.  The error recovery
+        // procedure is to generate a diagnostic, then pull
+        // additional tokens off the token stream (without generating
+        // further diagnostics) until one is recognized as either a
+        // keyword or a terminating token.  We implement this
+        // behavior by setting the is_recovering flag when the first
+        // invalid token is encountered, and resetting this flag as
+        // soon as a valid token is encountered.
+      } else {
+        // We have a valid match.  However, depending on Parse_Table
+        // options, the match might be ambiguous.  For example if the
+        // Parse_Table option to allow partial matches is active, the
+        // keyword token may partially match more than one keyword in
+        // the keyword table.  Check for an ambiguous match:
+
+        if (match + 1 != vec.end() &&
+            comp.kt_comparison(match[1].moniker, token.text().c_str()) == 0) {
+          // The match is ambiguous.  This is diagnosed whether or
+          // not we are already in recovery mode, but it does put
+          // us into recovery mode.
+
+          tokens.report_semantic_error(token,
+                                       "ambiguous keyword: " + token.text());
+        } else {
+          // We successfully processed something, so we are no
+          // longer in recovery mode.
+
+          try {
+            // Call the parse function associated with the
+            // keyword.
+            match->func(tokens, match->index);
+
+            if (flags_ & ONCE)
+            // Quit after parsing a single keyword. This is
+            // useful for parse tables for selecting one of a
+            // set of short options.
+            {
+              return Token(END, "");
+            }
+          } catch (const Syntax_Error &) {
+            // If the parse function detects a syntax error, and
+            // if it does not have its own error recovery policy
+            // (or is unable to recover), it should call
+            // tokens.Report_Syntax_Error which generates a
+            // diagnostic and throws a Syntax_Error
+            // exception. This puts the main parser into recovery
+            // mode.
+            tokens.report_semantic_error(token,
+                                         "syntax error: " + token.text());
+          }
+        }
+      }
+    }
+  }
 }
 
 //-------------------------------------------------------------------------------------//
@@ -517,18 +464,17 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const
  * \param f
  * Flags to be set, ORed together.
  */
-void Parse_Table::set_flags(unsigned char const f)
-{
-    flags_ = f;
+void Parse_Table::set_flags(unsigned char const f) {
+  flags_ = f;
 
-    add(NULL, 0U);
-    // The keyword list needs to be sorted and checked.  For example, if the
-    // options are changed so that a previously case-sensitive Parse_Table is
-    // no longer case-sensitive, then the ordering changes, and previously
-    // unambiguous keywords may become ambiguous.
+  add(NULL, 0U);
+  // The keyword list needs to be sorted and checked.  For example, if the
+  // options are changed so that a previously case-sensitive Parse_Table is
+  // no longer case-sensitive, then the ordering changes, and previously
+  // unambiguous keywords may become ambiguous.
 
-    Ensure(check_class_invariants());
-    Ensure(get_flags() == f);
+  Ensure(check_class_invariants());
+  Ensure(get_flags() == f);
 }
 
 //-------------------------------------------------------------------------------------//
@@ -541,9 +487,7 @@ void Parse_Table::set_flags(unsigned char const f)
  * \param flags The flags controlling this comparator's operations.
  */
 Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
-    : flags_(flags)
-{
-}
+    : flags_(flags) {}
 
 //-------------------------------------------------------------------------------------//
 /*!
@@ -572,43 +516,43 @@ Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
  * \return <CODE>kk_comparison(k1.moniker, k2.moniker)<0 </CODE>
  */
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
-                                               Keyword const &k2) const
-{
-    Require(k1.moniker != NULL);
-    Require(k2.moniker != NULL);
+                                               Keyword const &k2) const {
+  Require(k1.moniker != NULL);
+  Require(k2.moniker != NULL);
 
-    return kk_comparison(k1.moniker, k2.moniker)<0;
+  return kk_comparison(k1.moniker, k2.moniker) < 0;
 }
 
 int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
-                                                 char const *m2) const
-{
-    using namespace std;
+                                                 char const *m2) const {
+  using namespace std;
 
-    Require(m1!=NULL);
-    Require(m2!=NULL);
+  Require(m1 != NULL);
+  Require(m2 != NULL);
 
-    if (flags_ & CASE_INSENSITIVE)
-    {
-	while (*m1 != '\0' && *m2 != '\0')
-	{
-	    char c1 = *m1++;
-	    char c2 = *m2++;
-	    if (islower(c1)) c1 = toupper(c1);
-	    if (islower(c2)) c2 = toupper(c2);
-	    if (c1<c2) return -1;
-	    if (c1>c2) return 1;
-	}
-	char c1 = *m1;
-	char c2 = *m2;
-	if (c1<c2) return -1;
-	if (c1>c2) return 1;
-	return 0;
+  if (flags_ & CASE_INSENSITIVE) {
+    while (*m1 != '\0' && *m2 != '\0') {
+      char c1 = *m1++;
+      char c2 = *m2++;
+      if (islower(c1))
+        c1 = toupper(c1);
+      if (islower(c2))
+        c2 = toupper(c2);
+      if (c1 < c2)
+        return -1;
+      if (c1 > c2)
+        return 1;
     }
-    else
-    {
-	return strcmp(m1, m2);
-    }
+    char c1 = *m1;
+    char c2 = *m2;
+    if (c1 < c2)
+      return -1;
+    if (c1 > c2)
+      return 1;
+    return 0;
+  } else {
+    return strcmp(m1, m2);
+  }
 }
 
 //-------------------------------------------------------------------------------------//
@@ -641,74 +585,81 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
  */
 
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
-					      Token const &k2) const
-{
-    Require(k1.moniker);
+                                               Token const &k2) const {
+  Require(k1.moniker);
 
-    return kt_comparison(k1.moniker, k2.text().c_str())<0;
+  return kt_comparison(k1.moniker, k2.text().c_str()) < 0;
 }
 
 int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
-                                                 char const *m2) const
-{
-    using namespace std;
+                                                 char const *m2) const {
+  using namespace std;
 
-    Require(m1!=NULL);
-    Require(m2!=NULL);
+  Require(m1 != NULL);
+  Require(m2 != NULL);
 
-    if (flags_ & PARTIAL_IDENTIFIER_MATCH)
-    {
-	while (*m1 != '\0' && *m2 != '\0')
-	{
-	    while (isalnum(*m1) && isalnum(*m2))
-	    {
-		char c1 = *m1++;
-		char c2 = *m2++;
-		if (flags_ & CASE_INSENSITIVE)
-		{
-		    if (islower(c1)) c1 = toupper(c1);
-		    if (islower(c2)) c2 = toupper(c2);
-		}
-		if (c1<c2) return -1;
-		if (c1>c2) return 1;
-	    }
-	    if (*m1 == ' ' && *m2 != ' ') return 1;
-	    while (isalnum(*m1)) m1++;
-	    while (isalnum(*m2)) m2++;
-            if (*m1==' ') ++m1;
-            if (*m2==' ') ++m2;
-	}
-	if (*m1 == '\0' && *m2 != '\0') return -1;
-	if (*m1 != '\0' && *m2 == '\0') return 1;
-	Check(*m1=='\0' && *m2=='\0');
-	return 0;
+  if (flags_ & PARTIAL_IDENTIFIER_MATCH) {
+    while (*m1 != '\0' && *m2 != '\0') {
+      while (isalnum(*m1) && isalnum(*m2)) {
+        char c1 = *m1++;
+        char c2 = *m2++;
+        if (flags_ & CASE_INSENSITIVE) {
+          if (islower(c1))
+            c1 = toupper(c1);
+          if (islower(c2))
+            c2 = toupper(c2);
+        }
+        if (c1 < c2)
+          return -1;
+        if (c1 > c2)
+          return 1;
+      }
+      if (*m1 == ' ' && *m2 != ' ')
+        return 1;
+      while (isalnum(*m1))
+        m1++;
+      while (isalnum(*m2))
+        m2++;
+      if (*m1 == ' ')
+        ++m1;
+      if (*m2 == ' ')
+        ++m2;
     }
-    else
-    {
-	if (flags_ & CASE_INSENSITIVE)
-	{
-	    while (*m1 != '\0' && *m2 != '\0')
-	    {
-		char c1 = *m1++;
-		char c2 = *m2++;
-		if (islower(c1)) c1 = toupper(c1);
-		if (islower(c2)) c2 = toupper(c2);
-		if (c1<c2) return -1;
-		if (c1>c2) return 1;
-	    }
-	    char c1 = *m1++;
-	    char c2 = *m2++;
-	    if (islower(c1)) c1 = toupper(c1);
-	    if (islower(c2)) c2 = toupper(c2);
-	    if (c1<c2) return -1;
-	    if (c1>c2) return 1;
-	    return 0;
-	}
-	else
-	{
-	    return strcmp(m1, m2);
-	}
+    if (*m1 == '\0' && *m2 != '\0')
+      return -1;
+    if (*m1 != '\0' && *m2 == '\0')
+      return 1;
+    Check(*m1 == '\0' && *m2 == '\0');
+    return 0;
+  } else {
+    if (flags_ & CASE_INSENSITIVE) {
+      while (*m1 != '\0' && *m2 != '\0') {
+        char c1 = *m1++;
+        char c2 = *m2++;
+        if (islower(c1))
+          c1 = toupper(c1);
+        if (islower(c2))
+          c2 = toupper(c2);
+        if (c1 < c2)
+          return -1;
+        if (c1 > c2)
+          return 1;
+      }
+      char c1 = *m1++;
+      char c2 = *m2++;
+      if (islower(c1))
+        c1 = toupper(c1);
+      if (islower(c2))
+        c2 = toupper(c2);
+      if (c1 < c2)
+        return -1;
+      if (c1 > c2)
+        return 1;
+      return 0;
+    } else {
+      return strcmp(m1, m2);
     }
+  }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -723,55 +674,57 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
  * of one or more valid C++ identifiers separated by single spaces.</li>
  * <li>\c key.func must point to a parsing function.</li></ul>
  */
-bool Is_Well_Formed_Keyword(Keyword const &key)
-{
-    using namespace std;
+bool Is_Well_Formed_Keyword(Keyword const &key) {
+  using namespace std;
 
-    if (key.moniker == NULL  ||  key.func == NULL) return false;
-    char const *cptr = key.moniker;
-    for (;;)
-    {
-	// Must be at the start of a C identifier, which begins with an
-	// alphabetic character or an underscore.
-	if (*cptr != '_' && !isalpha(*cptr)) return false;
+  if (key.moniker == NULL || key.func == NULL)
+    return false;
+  char const *cptr = key.moniker;
+  for (;;) {
+    // Must be at the start of a C identifier, which begins with an
+    // alphabetic character or an underscore.
+    if (*cptr != '_' && !isalpha(*cptr))
+      return false;
 
-	// The subsequent characters in a C identifier must be alphanumeric
-	// characters or underscores.
-	while (*cptr == '_' || isalnum(*cptr)) cptr++;
+    // The subsequent characters in a C identifier must be alphanumeric
+    // characters or underscores.
+    while (*cptr == '_' || isalnum(*cptr))
+      cptr++;
 
-	// If the identifier is followed by a null, we're finished scanning a
-	// valid keyword.
-	if (*cptr == '\0') return true;
+    // If the identifier is followed by a null, we're finished scanning a
+    // valid keyword.
+    if (*cptr == '\0')
+      return true;
 
-	// Otherwise, if the next character is not a space, it's not a valid
-	// keyword.
-	if (*cptr != ' ') return false;
+    // Otherwise, if the next character is not a space, it's not a valid
+    // keyword.
+    if (*cptr != ' ')
+      return false;
 
-	// Skip over the space. cptr should now point to the start of the
-	// next C identifier, if this is a valid keyword.
-	cptr++;
-    }
+    // Skip over the space. cptr should now point to the start of the
+    // next C identifier, if this is a valid keyword.
+    cptr++;
+  }
 }
 
 //---------------------------------------------------------------------------------------//
-bool Parse_Table::check_class_invariants() const
-{
-    // The keyword table must be well-formed, sorted, and unambiguous.
+bool Parse_Table::check_class_invariants() const {
+  // The keyword table must be well-formed, sorted, and unambiguous.
 
-    Keyword_Compare_ const comparator(flags_);
-    for (std::vector<Keyword>::const_iterator i=vec.begin(); i!=vec.end(); ++i)
-    {
-	if (!Is_Well_Formed_Keyword(i[0])) return false;
-	if (i+1!=vec.end())
-	{
-	    if (comparator.kk_comparison(i[0].moniker, i[1].moniker)>=0)
-		return false;
-	}
+  Keyword_Compare_ const comparator(flags_);
+  for (std::vector<Keyword>::const_iterator i = vec.begin(); i != vec.end();
+       ++i) {
+    if (!Is_Well_Formed_Keyword(i[0]))
+      return false;
+    if (i + 1 != vec.end()) {
+      if (comparator.kk_comparison(i[0].moniker, i[1].moniker) >= 0)
+        return false;
     }
-    return true;
+  }
+  return true;
 }
 
-}  // rtt_parser
+} // rtt_parser
 //---------------------------------------------------------------------------------------//
 // end of Parse_Table.cc
 //---------------------------------------------------------------------------------------//

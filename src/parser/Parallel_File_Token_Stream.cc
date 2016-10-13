@@ -13,13 +13,12 @@
 
 #include "Parallel_File_Token_Stream.hh"
 #include "c4/C4_Functions.hh"
-#include <sstream>
 #include <iostream>
-#include <vector>
 #include <limits>
+#include <sstream>
+#include <vector>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using namespace std;
 using namespace rtt_dsxx;
 
@@ -30,14 +29,11 @@ using namespace rtt_dsxx;
  */
 
 Parallel_File_Token_Stream::Parallel_File_Token_Stream()
-    :
-    is_io_processor_(rtt_c4::node()==0),
-    // The current implementation always designates processor 0 as the I/O
-    // processor.
-    at_eof_(   true ),
-    at_error_( false )
-{
-    Ensure(check_class_invariants());
+    : is_io_processor_(rtt_c4::node() == 0),
+      // The current implementation always designates processor 0 as the I/O
+      // processor.
+      at_eof_(true), at_error_(false) {
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------//
@@ -56,18 +52,14 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream()
  */
 
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
-    : filename_(file_name),
-      infile_(),
-      is_io_processor_(rtt_c4::node()==0),
+    : filename_(file_name), infile_(), is_io_processor_(rtt_c4::node() == 0),
       // The current implementation always designates processor 0 as the I/O
       // processor.
-      at_eof_(   false ),
-      at_error_( false )
-{
-    open_();
+      at_eof_(false), at_error_(false) {
+  open_();
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == file_name + ", line 1");
+  Ensure(check_class_invariants());
+  Ensure(location_() == file_name + ", line 1");
 }
 
 //-------------------------------------------------------------------------//
@@ -89,19 +81,14 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name)
  */
 
 Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
-						       set<char> const &ws)
-    : Text_Token_Stream(ws),
-      filename_(file_name),
-      infile_(),
-      is_io_processor_(rtt_c4::node()==0),
-      at_eof_(false),
-      at_error_(false)
-{
-    open_();
+                                                       set<char> const &ws)
+    : Text_Token_Stream(ws), filename_(file_name), infile_(),
+      is_io_processor_(rtt_c4::node() == 0), at_eof_(false), at_error_(false) {
+  open_();
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == file_name + ", line 1");
-    Ensure(whitespace() == ws);
+  Ensure(check_class_invariants());
+  Ensure(location_() == file_name + ", line 1");
+  Ensure(whitespace() == ws);
 }
 
 //-------------------------------------------------------------------------//
@@ -115,17 +102,16 @@ Parallel_File_Token_Stream::Parallel_File_Token_Stream(string const &file_name,
  * \todo Make this constructor more failsafe.
  */
 
-void Parallel_File_Token_Stream::open(string const &file_name)
-{
-    filename_ = file_name;
-    infile_.close();
-    at_eof_ = false;
-    Text_Token_Stream::rewind();
+void Parallel_File_Token_Stream::open(string const &file_name) {
+  filename_ = file_name;
+  infile_.close();
+  at_eof_ = false;
+  Text_Token_Stream::rewind();
 
-    open_();
+  open_();
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == file_name + ", line 1");
+  Ensure(check_class_invariants());
+  Ensure(location_() == file_name + ", line 1");
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -137,37 +123,32 @@ void Parallel_File_Token_Stream::open(string const &file_name)
  */
 
 /* private */
-void Parallel_File_Token_Stream::open_()
-{
-    // Create in input stream by opening the specified file on the IO proc.
-    at_error_ = false;
-    if( is_io_processor_ )
-    {
-	infile_.open(filename_.c_str());
-	if (!infile_)
-        {
-            at_error_ = true;
-        }
+void Parallel_File_Token_Stream::open_() {
+  // Create in input stream by opening the specified file on the IO proc.
+  at_error_ = false;
+  if (is_io_processor_) {
+    infile_.open(filename_.c_str());
+    if (!infile_) {
+      at_error_ = true;
     }
-    unsigned err_count = at_error_;
-    rtt_c4::global_sum( err_count );
-    if( err_count > 0 )
-    {
-	ostringstream errmsg;
-	errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
-	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << filename_
-	       << "\"" << " (PE " << rtt_c4::node() << ")\n"
-               << "Ensure that the filename includes the full path or "
-               << "a relative path from\n"
-               << "the binary to the input file (e.g. ../test/deck.inp)."
-               << "\n\n"
-               << "This error can also occur if you forgot to"
-               << "execute the code under\n"
-               << "mpirun or prun."
-               << endl;
-	throw std::invalid_argument( errmsg.str().c_str() );
-    }
+  }
+  unsigned err_count = at_error_;
+  rtt_c4::global_sum(err_count);
+  if (err_count > 0) {
+    ostringstream errmsg;
+    errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
+           << "The file specified could not be found.\n"
+           << "The file requested was: \"" << filename_ << "\""
+           << " (PE " << rtt_c4::node() << ")\n"
+           << "Ensure that the filename includes the full path or "
+           << "a relative path from\n"
+           << "the binary to the input file (e.g. ../test/deck.inp)."
+           << "\n\n"
+           << "This error can also occur if you forgot to"
+           << "execute the code under\n"
+           << "mpirun or prun." << endl;
+    throw std::invalid_argument(errmsg.str().c_str());
+  }
 }
 
 //-------------------------------------------------------------------------//
@@ -180,11 +161,10 @@ void Parallel_File_Token_Stream::open_()
  * \return A string of the form "filename, line #"
  */
 
-string Parallel_File_Token_Stream::location_() const
-{
-    ostringstream Result;
-    Result << filename_ << ", line " << line();
-    return Result.str();
+string Parallel_File_Token_Stream::location_() const {
+  ostringstream Result;
+  Result << filename_ << ", line " << line();
+  return Result.str();
 }
 
 //-------------------------------------------------------------------------//
@@ -205,97 +185,83 @@ string Parallel_File_Token_Stream::location_() const
  * the maximum expected.
  */
 
-void Parallel_File_Token_Stream::fill_character_buffer_()
-{
-    using rtt_c4::broadcast;
+void Parallel_File_Token_Stream::fill_character_buffer_() {
+  using rtt_c4::broadcast;
 
-    // The first value in the communications buffer will be a status code,
-    // which if positive is the number of valid characters ini the
-    // buffer. This dictates the maximum size needed for the buffer to be the
-    // maximum positive character value, plus one (for the status code
-    // itself).
-    vector<char> comm_buffer(numeric_limits<signed char>::max()+1);
+  // The first value in the communications buffer will be a status code,
+  // which if positive is the number of valid characters ini the
+  // buffer. This dictates the maximum size needed for the buffer to be the
+  // maximum positive character value, plus one (for the status code
+  // itself).
+  vector<char> comm_buffer(numeric_limits<signed char>::max() + 1);
 
-    // i points to the current position in the communications buffer. We
-    // initialize it to 1 to reserve the first character for the status
-    // code.
-    unsigned i = 1;
-    if (is_io_processor_)
-    {
-        // Read up to numeric_limits<signed char>::max() characters from the
-        // input file.
-	while (i < static_cast<unsigned>(numeric_limits<signed char>::max()+1))
-	{
-	    char const c = infile_.get();
-	    if (infile_.eof() || infile_.fail()) break;
-	    comm_buffer[i++] = c;
-	}
-
-	if (i>1)
-	{
-	    // If there is an end or error condition, but one or more
-	    // characters were successfully read prior to encountering the
-	    // end or error condition, wait to transmit the end or error until
-	    // the next call to fill_character_buffer.
-
-            // Set the status code to the number of valid characters read.
-	    comm_buffer[0] = static_cast<char>(i-1);
-        }
-        else if (infile_.eof() && !infile_.bad())
-	{
-	    // Normal end of file condition.
-	    comm_buffer[0] = '\0';
-	}
-	else
-	{
-	    // Something went seriously wrong.
-	    comm_buffer[0] = static_cast<char>(-1);
-	}
+  // i points to the current position in the communications buffer. We
+  // initialize it to 1 to reserve the first character for the status
+  // code.
+  unsigned i = 1;
+  if (is_io_processor_) {
+    // Read up to numeric_limits<signed char>::max() characters from the
+    // input file.
+    while (i < static_cast<unsigned>(numeric_limits<signed char>::max() + 1)) {
+      char const c = infile_.get();
+      if (infile_.eof() || infile_.fail())
+        break;
+      comm_buffer[i++] = c;
     }
 
-    vector<char>::iterator first=comm_buffer.begin();
-    vector<char>::iterator last=first+i;
+    if (i > 1) {
+      // If there is an end or error condition, but one or more
+      // characters were successfully read prior to encountering the
+      // end or error condition, wait to transmit the end or error until
+      // the next call to fill_character_buffer.
 
-    rtt_c4::broadcast(first, last, first);
-
-    if (comm_buffer[0]=='\0')
-    {
-	character_push_back_('\0');
-	at_eof_ = true;
+      // Set the status code to the number of valid characters read.
+      comm_buffer[0] = static_cast<char>(i - 1);
+    } else if (infile_.eof() && !infile_.bad()) {
+      // Normal end of file condition.
+      comm_buffer[0] = '\0';
+    } else {
+      // Something went seriously wrong.
+      comm_buffer[0] = static_cast<char>(-1);
     }
-    else if (comm_buffer[0]==static_cast<char>(-1))
-    {
-	character_push_back_('\0');
-	at_error_ = true;
-    }
-    else
-    {
-        // Set i to point to the end of the valid sequence of characters in
-        // the communications buffer.
-	i = 1 + comm_buffer[0];
+  }
 
-        // Make sure this is not past the end of the buffer. This should not
-        // be possible unless the data has somewhow become corrupted during
-        // transmission.
-	if (i>static_cast<unsigned>(numeric_limits<signed char>::max()+1))
-	{
-	    throw runtime_error("interprocessor communications corrupted");
-	}
+  vector<char>::iterator first = comm_buffer.begin();
+  vector<char>::iterator last = first + i;
 
-        // Copy the transmitted characters into the local character buffer.
+  rtt_c4::broadcast(first, last, first);
 
-        vector<char>::iterator first=comm_buffer.begin();
-        vector<char>::iterator last=first+i;
+  if (comm_buffer[0] == '\0') {
+    character_push_back_('\0');
+    at_eof_ = true;
+  } else if (comm_buffer[0] == static_cast<char>(-1)) {
+    character_push_back_('\0');
+    at_error_ = true;
+  } else {
+    // Set i to point to the end of the valid sequence of characters in
+    // the communications buffer.
+    i = 1 + comm_buffer[0];
 
-	for (vector<char>::iterator iter = first+1; iter != last; ++iter)
-	{
-	    character_push_back_(*iter);
-	}
+    // Make sure this is not past the end of the buffer. This should not
+    // be possible unless the data has somewhow become corrupted during
+    // transmission.
+    if (i > static_cast<unsigned>(numeric_limits<signed char>::max() + 1)) {
+      throw runtime_error("interprocessor communications corrupted");
     }
 
-    rtt_c4::global_barrier();
+    // Copy the transmitted characters into the local character buffer.
 
-    Ensure(check_class_invariants());
+    vector<char>::iterator first = comm_buffer.begin();
+    vector<char>::iterator last = first + i;
+
+    for (vector<char>::iterator iter = first + 1; iter != last; ++iter) {
+      character_push_back_(*iter);
+    }
+  }
+
+  rtt_c4::global_barrier();
+
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------//
@@ -307,10 +273,7 @@ void Parallel_File_Token_Stream::fill_character_buffer_()
  * \return \c true if an error has occured; \c false otherwise.
  */
 
-bool Parallel_File_Token_Stream::error_() const
-{
-    return at_error_;
-}
+bool Parallel_File_Token_Stream::error_() const { return at_error_; }
 
 //-------------------------------------------------------------------------//
 /*!
@@ -322,10 +285,7 @@ bool Parallel_File_Token_Stream::error_() const
  * otherwise.
  */
 
-bool Parallel_File_Token_Stream::end_() const
-{
-    return at_eof_;
-}
+bool Parallel_File_Token_Stream::end_() const { return at_eof_; }
 
 //-------------------------------------------------------------------------//
 /*!
@@ -335,14 +295,12 @@ bool Parallel_File_Token_Stream::end_() const
  */
 
 void Parallel_File_Token_Stream::report(Token const &token,
-                                        string const &message)
-{
-    if (rtt_c4::node()==0)
-    {
-	cerr << token.location() << ": " << message << endl;
-    }
+                                        string const &message) {
+  if (rtt_c4::node() == 0) {
+    cerr << token.location() << ": " << message << endl;
+  }
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------//
@@ -354,19 +312,17 @@ void Parallel_File_Token_Stream::report(Token const &token,
  * This version assumes that the cursor is the message location.
  */
 
-void Parallel_File_Token_Stream::report(string const &message)
-{
-    Require(check_class_invariants());
+void Parallel_File_Token_Stream::report(string const &message) {
+  Require(check_class_invariants());
 
-    Token token = lookahead();
-    // The lookahead must be done on all processors to avoid a potential
-    // lockup condition.
-    if (rtt_c4::node()==0)
-    {
-	cerr << token.location() << ": " << message << endl;
-    }
+  Token token = lookahead();
+  // The lookahead must be done on all processors to avoid a potential
+  // lockup condition.
+  if (rtt_c4::node() == 0) {
+    cerr << token.location() << ": " << message << endl;
+  }
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------//
@@ -377,31 +333,28 @@ void Parallel_File_Token_Stream::report(string const &message)
  * the beginning of the file stream.
  */
 
-void Parallel_File_Token_Stream::rewind()
-{
-    if (is_io_processor_)
-    {
-	infile_.clear();    // Must clear the error/end flag bits.
-	infile_.seekg(0);
-    }
+void Parallel_File_Token_Stream::rewind() {
+  if (is_io_processor_) {
+    infile_.clear(); // Must clear the error/end flag bits.
+    infile_.seekg(0);
+  }
 
-    at_eof_ = at_error_ = false;
+  at_eof_ = at_error_ = false;
 
-    Text_Token_Stream::rewind();
+  Text_Token_Stream::rewind();
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == filename_ + ", line 1");
+  Ensure(check_class_invariants());
+  Ensure(location_() == filename_ + ", line 1");
 }
 
 //---------------------------------------------------------------------------//
-bool Parallel_File_Token_Stream::check_class_invariants() const
-{
-    unsigned iocount = is_io_processor_;
-    rtt_c4::global_sum(iocount);
-    return iocount == 1;
+bool Parallel_File_Token_Stream::check_class_invariants() const {
+  unsigned iocount = is_io_processor_;
+  rtt_c4::global_sum(iocount);
+  return iocount == 1;
 }
 
-}  // namespace rtt_parser
+} // namespace rtt_parser
 
 //---------------------------------------------------------------------------//
 // end of Parallel_File_Token_Stream.cc

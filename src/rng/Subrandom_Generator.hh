@@ -7,17 +7,13 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_Subrandom_Generator_hh
 #define rng_Subrandom_Generator_hh
 
-//#include "Halton_Sequence.hh"
 #include "ds++/config.h"
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 //===========================================================================//
 /*!
@@ -39,40 +35,37 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng Subrandom_Generator 
-{
-  public:
+class DLL_PUBLIC_rng Subrandom_Generator {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
+  virtual ~Subrandom_Generator() {}
 
-    virtual ~Subrandom_Generator(){}
+  //! Advance sequence to the next vector.
+  virtual void shift_vector() = 0;
 
-    //! Advance sequence to the next vector.
-    virtual void shift_vector() = 0;
+  //! Get the next element in the current vector.
+  virtual double shift() = 0;
 
-    //! Get the next element in the current vector.
-    virtual double shift() = 0;
-    
-    // ACCESSORS
+  // ACCESSORS
 
-    unsigned count() const { return count_; }
+  unsigned count() const { return count_; }
 
-  protected:
+protected:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
-    
-    Subrandom_Generator(unsigned count);
+  Subrandom_Generator(unsigned count);
 
-    // MANIPULATORS
+  // MANIPULATORS
 
-    // DATA
+  // DATA
 
-    unsigned count_; // Current vector of the sequence
-    unsigned element_; // Current element of the current vector
+  unsigned count_;   // Current vector of the sequence
+  unsigned element_; // Current element of the current vector
 };
 
 } // end namespace rtt_rng

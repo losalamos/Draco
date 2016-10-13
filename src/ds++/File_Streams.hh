@@ -15,12 +15,11 @@
 #define rtt_dsxx_File_Streams_hh
 
 #include "Assert.hh"
+#include <cstring>
 #include <fstream>
 #include <sstream>
-#include <cstring>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -80,52 +79,46 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx  File_Output
-{
-  private:
+class DLL_PUBLIC_dsxx File_Output {
+private:
+  // DATA
 
-    // DATA
+  // The stream to which data is written.
+  std::ofstream d_stream;
 
-    // The stream to which data is written.
-    std::ofstream d_stream;
+  // If true, last datatype written was a char.  Used only in non-binary
+  // mode.
+  bool d_last_was_char;
 
-    // If true, last datatype written was a char.  Used only in non-binary
-    // mode.
-    bool d_last_was_char;
+  // If true, in binary mode.
+  bool d_binary;
 
-    // If true, in binary mode.
-    bool d_binary;
+public:
+  // Constructor.
+  explicit File_Output(const std::string &filename = "",
+                       const bool binary = false);
 
-  public:
+  // Destructor.
+  ~File_Output();
 
-    // Constructor.
-    explicit File_Output(const std::string &filename = "",
-			 const bool binary = false);
+  // Opens filename.
+  void open(const std::string &filename, const bool binary = false);
 
-    // Destructor.
-    ~File_Output();
+  // Closes the stream.
+  void close();
 
-    // Opens filename.
-    void open(const std::string &filename,
-	      const bool binary = false);
+  // General stream output.
+  template <class T> inline File_Output &operator<<(const T i);
 
-    // Closes the stream.
-    void close();
+  // Overloaded output for type char.
+  File_Output &operator<<(const char c);
 
-    // General stream output.
-    template <class T>
-    inline File_Output& operator<<(const T i);
+private:
+  // NOT IMPLEMENTED.
 
-    // Overloaded output for type char.
-    File_Output& operator<<(const char c);
-
-  private:
-
-    // NOT IMPLEMENTED.
-
-    // ofstream doesn't implemenet copy ctor and assignment, so we won't either.
-    File_Output(const File_Output &);
-    File_Output &operator=(const File_Output &);
+  // ofstream doesn't implemenet copy ctor and assignment, so we won't either.
+  File_Output(const File_Output &);
+  File_Output &operator=(const File_Output &);
 };
 
 //===========================================================================//
@@ -144,53 +137,48 @@ class DLL_PUBLIC_dsxx  File_Output
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx  File_Input
-{
-  private:
+class DLL_PUBLIC_dsxx File_Input {
+private:
+  // DATA
 
-    // DATA
+  // The stream from which data is read.
+  std::ifstream d_stream;
 
-    // The stream from which data is read.
-    std::ifstream d_stream;
+  // The last line read from d_stream.  Used only in non-binary mode.
+  std::string d_line;
 
-    // The last line read from d_stream.  Used only in non-binary mode.
-    std::string d_line;
+  // Location within d_line to read type char.  Used only in non-binary
+  // mode.
+  int d_char_line;
 
-    // Location within d_line to read type char.  Used only in non-binary
-    // mode.
-    int d_char_line;
+  // If true, in binary mode.
+  bool d_binary;
 
-    // If true, in binary mode.
-    bool d_binary;
+public:
+  // Constructor.
+  explicit File_Input(const std::string &filename = "");
 
-  public:
+  // Destructor.
+  ~File_Input();
 
-    // Constructor.
-    explicit File_Input(const std::string &filename = "");
+  // Opens filename.
+  void open(const std::string &filename);
 
-    // Destructor.
-    ~File_Input();
+  // Closes the stream.
+  void close();
 
-    // Opens filename.
-    void open(const std::string &filename);
+  // General stream input.
+  template <class T> inline File_Input &operator>>(T &i);
 
-    // Closes the stream.
-    void close();
+  // Overloaded input for type char.
+  File_Input &operator>>(char &c);
 
-    // General stream input.
-    template <class T>
-    inline File_Input& operator>>(T &i);
+private:
+  // NOT IMPLEMENTED
 
-    // Overloaded input for type char.
-    File_Input& operator>>(char &c);
-
-  private:
-
-    // NOT IMPLEMENTED
-
-    // ifstream doesn't implemenet copy ctor and assignment, so we won't either.
-    File_Input(const File_Input &);
-    File_Input &operator=(const File_Input &);
+  // ifstream doesn't implemenet copy ctor and assignment, so we won't either.
+  File_Input(const File_Input &);
+  File_Input &operator=(const File_Input &);
 };
 
 //---------------------------------------------------------------------------//
@@ -204,28 +192,25 @@ class DLL_PUBLIC_dsxx  File_Input
  * \param i The data to be written.
  * \param T The datatype.
  */
-template <class T>
-File_Output& File_Output::operator<<(const T i)
-{
-    Require(d_stream.is_open());
+template <class T> File_Output &File_Output::operator<<(const T i) {
+  Require(d_stream.is_open());
 
-    if ( d_binary )
-    {
-        char buffer[sizeof(T)];
-        std::memcpy(buffer, const_cast<T*>(&i), sizeof(T));
-        d_stream.write(buffer, sizeof(T));
-    }
-    else // ascii mode
-    {
-        if ( d_last_was_char ) d_stream << '\n';
+  if (d_binary) {
+    char buffer[sizeof(T)];
+    std::memcpy(buffer, const_cast<T *>(&i), sizeof(T));
+    d_stream.write(buffer, sizeof(T));
+  } else // ascii mode
+  {
+    if (d_last_was_char)
+      d_stream << '\n';
 
-        d_last_was_char = false;
-        d_stream << i << '\n';
-    }
+    d_last_was_char = false;
+    d_stream << i << '\n';
+  }
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -235,30 +220,26 @@ File_Output& File_Output::operator<<(const T i)
  * \param i The data to be read.
  * \param T The datatype.
  */
-template <class T>
-File_Input& File_Input::operator>>(T &i)
-{
-    Require(d_stream.is_open());
+template <class T> File_Input &File_Input::operator>>(T &i) {
+  Require(d_stream.is_open());
 
-    if ( d_binary )
-    {
-        char buffer[sizeof(T)];
-        d_stream.read(buffer, sizeof(T));
-        std::memcpy(&i, buffer, sizeof(T));
-    }
-    else // ascii mode
-    {
-        std::getline(d_stream, d_line);
-        Check(! d_line.empty());
-        std::istringstream s(d_line);
+  if (d_binary) {
+    char buffer[sizeof(T)];
+    d_stream.read(buffer, sizeof(T));
+    std::memcpy(&i, buffer, sizeof(T));
+  } else // ascii mode
+  {
+    std::getline(d_stream, d_line);
+    Check(!d_line.empty());
+    std::istringstream s(d_line);
 
-        s >> i;
-        d_char_line = -1;
-    }
+    s >> i;
+    d_char_line = -1;
+  }
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
-    return *this;
+  return *this;
 }
 
 } // end namespace rtt_dsxx

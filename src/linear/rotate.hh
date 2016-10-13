@@ -18,8 +18,7 @@
 
 #include "ds++/Assert.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 using std::sqrt;
 
@@ -49,60 +48,49 @@ using std::sqrt;
  * \post \c qt.size()==n*n
  */
 
-template<class RandomContainer>
-void rotate(RandomContainer &r,
-	    RandomContainer &qt,
-	    const unsigned n,
-	    unsigned i,
-	    double a, 
-	    double b)
-{
-    Require(r.size()==n*n);
-    Require(qt.size()==n*n);
-    Require(i+1<n);
+template <class RandomContainer>
+void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
+            unsigned i, double a, double b) {
+  Require(r.size() == n * n);
+  Require(qt.size() == n * n);
+  Require(i + 1 < n);
 
-    using std::fabs;
-    
-    double c, s; // cosine and sine of rotation
+  using std::fabs;
 
-    if (a==0.0)
-    {
-	c = 0.0;
-	s = (b>0.0? 1.0 : -1.0);
-    }
-    else if (fabs(a) > fabs(b)) 
-    {
-	double fact = b/a;
-	c = 1.0/sqrt(1.0+fact*fact);
-	if (a<0) c = -c;
-	s = fact*c;
-    } 
-    else
-    {
-	double fact = a/b;
-	s = 1.0/sqrt(1.0+fact*fact);
-	if (b<0) s = -s;
-	c = fact*s;
-    }
-    for (unsigned j=i;j<n;j++)
-    {
-	double y = r[i+n*j];
-	double w = r[i+1+n*j];
-	r[i+n*j] = c*y-s*w;
-	r[i+1+n*j] = s*y+c*w;
-    }
-    for (unsigned j=0; j<n; j++)
-    {
-	double y = qt[i+n*j];
-	double w = qt[i+1+n*j];
-	qt[i+n*j] = c*y-s*w;
-	qt[i+1+n*j] = s*y+c*w;
-    }
+  double c, s; // cosine and sine of rotation
 
-    Ensure(r.size()==n*n);
-    Ensure(qt.size()==n*n);
+  if (a == 0.0) {
+    c = 0.0;
+    s = (b > 0.0 ? 1.0 : -1.0);
+  } else if (fabs(a) > fabs(b)) {
+    double fact = b / a;
+    c = 1.0 / sqrt(1.0 + fact * fact);
+    if (a < 0)
+      c = -c;
+    s = fact * c;
+  } else {
+    double fact = a / b;
+    s = 1.0 / sqrt(1.0 + fact * fact);
+    if (b < 0)
+      s = -s;
+    c = fact * s;
+  }
+  for (unsigned j = i; j < n; j++) {
+    double y = r[i + n * j];
+    double w = r[i + 1 + n * j];
+    r[i + n * j] = c * y - s * w;
+    r[i + 1 + n * j] = s * y + c * w;
+  }
+  for (unsigned j = 0; j < n; j++) {
+    double y = qt[i + n * j];
+    double w = qt[i + 1 + n * j];
+    qt[i + n * j] = c * y - s * w;
+    qt[i + 1 + n * j] = s * y + c * w;
+  }
+
+  Ensure(r.size() == n * n);
+  Ensure(qt.size() == n * n);
 }
-
 
 } // end namespace rtt_linear
 

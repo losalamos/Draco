@@ -10,38 +10,43 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <limits>
 #include "UnitSystem.hh"
+#include <limits>
 
-namespace rtt_units
-{
+namespace rtt_units {
 
 /*!
  * \brief Ensure that all unit conversions are valid (larger than some
  *        minimum value.)
  */
-bool UnitSystem::validUnits() const
-{
-    double minConversion( std::numeric_limits< double >::min() );
-    
-    // Only perform check if the fundamental unit type has been defined.
-    if( d_ust.L().enumVal() != L_null && d_ust.L().cf() < minConversion ) return false;
-    if( d_ust.M().enumVal() != M_null && d_ust.M().cf() < minConversion ) return false;
-    if( d_ust.t().enumVal() != t_null && d_ust.t().cf() < minConversion ) return false;
-    if( d_ust.T().enumVal() != T_null && d_ust.T().cf() < minConversion ) return false;
-    if( d_ust.I().enumVal() != I_null && d_ust.I().cf() < minConversion ) return false;
-    if( d_ust.A().enumVal() != A_null && d_ust.A().cf() < minConversion ) return false;
-    if( d_ust.Q().enumVal() != Q_null && d_ust.Q().cf() < minConversion ) return false;
-    
-    // If we get here then the units are ok.
-    return true;
+bool UnitSystem::validUnits() const {
+  double minConversion(std::numeric_limits<double>::min());
+
+  // Only perform check if the fundamental unit type has been defined.
+  if (d_ust.L().enumVal() != L_null && d_ust.L().cf() < minConversion)
+    return false;
+  if (d_ust.M().enumVal() != M_null && d_ust.M().cf() < minConversion)
+    return false;
+  if (d_ust.t().enumVal() != t_null && d_ust.t().cf() < minConversion)
+    return false;
+  if (d_ust.T().enumVal() != T_null && d_ust.T().cf() < minConversion)
+    return false;
+  if (d_ust.I().enumVal() != I_null && d_ust.I().cf() < minConversion)
+    return false;
+  if (d_ust.A().enumVal() != A_null && d_ust.A().cf() < minConversion)
+    return false;
+  if (d_ust.Q().enumVal() != Q_null && d_ust.Q().cf() < minConversion)
+    return false;
+
+  // If we get here then the units are ok.
+  return true;
 } // end validUnits()
 
 //---------------------------------------------------------------------------//
 
 // /*!
 //  * \brief Return a new UnitSystem object whose data has the item-by-item ratio of
-//  *        two UnitSystem objects. 
+//  *        two UnitSystem objects.
 //  */
 // UnitSystem operator/( UnitSystem const & op1, UnitSystem const & op2 )
 // {
@@ -67,21 +72,14 @@ bool UnitSystem::validUnits() const
  * Ensure( NewUnits == UserUnits );
  * \endverbatim
  */
-bool operator==( UnitSystem const & op1, UnitSystem const & op2 )
-{
-    return 
-	op1.L() == op2.L() &&
-	op1.M() == op2.M() &&
-	op1.t() == op2.t() &&
-	op1.T() == op2.T() &&
-	op1.I() == op2.I() &&
-	op1.A() == op2.A() &&
-	op1.Q() == op2.Q();
+bool operator==(UnitSystem const &op1, UnitSystem const &op2) {
+  return op1.L() == op2.L() && op1.M() == op2.M() && op1.t() == op2.t() &&
+         op1.T() == op2.T() && op1.I() == op2.I() && op1.A() == op2.A() &&
+         op1.Q() == op2.Q();
 }
 
-bool operator!=( UnitSystem const & op1, UnitSystem const & op2 )
-{
-    return !( op1 == op2 );
+bool operator!=(UnitSystem const &op1, UnitSystem const &op2) {
+  return !(op1 == op2);
 }
 
 } // end namespace rtt_units

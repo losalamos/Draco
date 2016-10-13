@@ -14,8 +14,7 @@
 #ifndef c4_C4_Tags_hh
 #define c4_C4_Tags_hh
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 /*!

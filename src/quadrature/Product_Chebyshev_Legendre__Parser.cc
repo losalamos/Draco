@@ -13,46 +13,43 @@
 
 #include <iostream>
 
-#include "parser/utilities.hh"
 #include "Product_Chebyshev_Legendre.hh"
+#include "parser/utilities.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------------------//
 /*static*/
-SP<Quadrature> Product_Chebyshev_Legendre::parse(Token_Stream &tokens)
-{
-    // Takes two numbers, first the number of Gauss-Legendre points, which is the SN order
-    Token token = tokens.shift();
-    tokens.check_syntax(token.text()=="order", "expected an order");
+SP<Quadrature> Product_Chebyshev_Legendre::parse(Token_Stream &tokens) {
+  // Takes two numbers, first the number of Gauss-Legendre points, which is the SN order
+  Token token = tokens.shift();
+  tokens.check_syntax(token.text() == "order", "expected an order");
 
-    unsigned sn_order = parse_positive_integer(tokens);
-    tokens.check_semantics(sn_order%2==0, "order must be even");
+  unsigned sn_order = parse_positive_integer(tokens);
+  tokens.check_semantics(sn_order % 2 == 0, "order must be even");
 
-    // The second number is the number of azimuthal points on each level
-    // corresponding to the Gauss-Legendre points
+  // The second number is the number of azimuthal points on each level
+  // corresponding to the Gauss-Legendre points
 
-    //std::cout << " found sn order = " << sn_order << std::endl;
+  //std::cout << " found sn order = " << sn_order << std::endl;
 
-    unsigned azimuthal_order = parse_positive_integer(tokens);
-    tokens.check_semantics(azimuthal_order > 0, "order must be greater than zero");
+  unsigned azimuthal_order = parse_positive_integer(tokens);
+  tokens.check_semantics(azimuthal_order > 0,
+                         "order must be greater than zero");
 
-    //std::cout << " found azimuthal order = " << azimuthal_order << std::endl;
+  //std::cout << " found azimuthal order = " << azimuthal_order << std::endl;
 
-    bool has_axis_assignments;
-    unsigned mu_axis, eta_axis;
-    Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
+  bool has_axis_assignments;
+  unsigned mu_axis, eta_axis;
+  Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
 
-    if (has_axis_assignments)
-        return SP<Quadrature>(new Product_Chebyshev_Legendre(sn_order,
-                                                             azimuthal_order,
-                                                             mu_axis,
-                                                             eta_axis));
-    else
-        return SP<Quadrature>(new Product_Chebyshev_Legendre(sn_order,
-                                                             azimuthal_order));
+  if (has_axis_assignments)
+    return SP<Quadrature>(new Product_Chebyshev_Legendre(
+        sn_order, azimuthal_order, mu_axis, eta_axis));
+  else
+    return SP<Quadrature>(
+        new Product_Chebyshev_Legendre(sn_order, azimuthal_order));
 }
 
 } // end namespace rtt_quadrature

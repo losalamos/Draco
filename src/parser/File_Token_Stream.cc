@@ -15,8 +15,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using namespace std;
 
 //-------------------------------------------------------------------------------------//
@@ -31,11 +30,9 @@ using namespace std;
  */
 
 File_Token_Stream::File_Token_Stream(void)
-    : filename_( std::string() ),
-      infile_()
-{
-    Ensure(check_class_invariants());
-    Ensure(location_() == "<uninitialized>");
+    : filename_(std::string()), infile_() {
+  Ensure(check_class_invariants());
+  Ensure(location_() == "<uninitialized>");
 }
 
 //-------------------------------------------------------------------------------------//
@@ -53,22 +50,17 @@ File_Token_Stream::File_Token_Stream(void)
  */
 
 File_Token_Stream::File_Token_Stream(string const &file_name)
-    :
-    filename_( file_name         ),
-    infile_  ( file_name.c_str(), std::ios::in )
-{
-    if( ! infile_ )
-    {
-        ostringstream errmsg;
-        errmsg << "Cannot construct File_Token_Stream.\n"
-	            << "The file specified could not be found.\n"
-	            << "The file requested was: \"" << file_name
-	            << "\"" << endl;
-        throw invalid_argument( errmsg.str().c_str() );
-    }
+    : filename_(file_name), infile_(file_name.c_str(), std::ios::in) {
+  if (!infile_) {
+    ostringstream errmsg;
+    errmsg << "Cannot construct File_Token_Stream.\n"
+           << "The file specified could not be found.\n"
+           << "The file requested was: \"" << file_name << "\"" << endl;
+    throw invalid_argument(errmsg.str().c_str());
+  }
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == file_name + ", line 1");
+  Ensure(check_class_invariants());
+  Ensure(location_() == file_name + ", line 1");
 }
 
 //-------------------------------------------------------------------------------------//
@@ -87,27 +79,22 @@ File_Token_Stream::File_Token_Stream(string const &file_name)
  */
 
 File_Token_Stream::File_Token_Stream(string const &file_name,
-				     set<char> const &ws,
+                                     set<char> const &ws,
                                      bool const no_nonbreaking_ws)
-    :
-    Text_Token_Stream(ws, no_nonbreaking_ws),
-    filename_(file_name),
-    infile_(file_name.c_str())
-{
-    if( ! infile_ )
-    {
-	ostringstream errmsg;
-	errmsg << "Cannot construct File_Token_Stream.\n"
-	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << file_name
-	       << "\"" << endl;
-	throw invalid_argument( errmsg.str().c_str() );
-    }
+    : Text_Token_Stream(ws, no_nonbreaking_ws), filename_(file_name),
+      infile_(file_name.c_str()) {
+  if (!infile_) {
+    ostringstream errmsg;
+    errmsg << "Cannot construct File_Token_Stream.\n"
+           << "The file specified could not be found.\n"
+           << "The file requested was: \"" << file_name << "\"" << endl;
+    throw invalid_argument(errmsg.str().c_str());
+  }
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == file_name + ", line 1");
-    Ensure(whitespace() == ws);
-    Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
+  Ensure(check_class_invariants());
+  Ensure(location_() == file_name + ", line 1");
+  Ensure(whitespace() == ws);
+  Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }
 
 //---------------------------------------------------------------------------------------//
@@ -120,27 +107,24 @@ File_Token_Stream::File_Token_Stream(string const &file_name,
  * \throw invalid_argument If the input stream cannot be opened.
  */
 
-void File_Token_Stream::open(string const &file_name)
-{
-    infile_.close();
-    infile_.clear();
-    infile_.open(file_name.c_str());
-    filename_ = file_name;
+void File_Token_Stream::open(string const &file_name) {
+  infile_.close();
+  infile_.clear();
+  infile_.open(file_name.c_str());
+  filename_ = file_name;
 
-    if( ! infile_ )
-    {
-	ostringstream errmsg;
-	errmsg << "Cannot open File_Token_Stream.\n"
-	       << "The file specified could not be found.\n"
-	       << "The file requested was: \"" << file_name
-	       << "\"" << endl;
-	throw invalid_argument( errmsg.str().c_str() );
-    }
+  if (!infile_) {
+    ostringstream errmsg;
+    errmsg << "Cannot open File_Token_Stream.\n"
+           << "The file specified could not be found.\n"
+           << "The file requested was: \"" << file_name << "\"" << endl;
+    throw invalid_argument(errmsg.str().c_str());
+  }
 
-    rewind();
+  rewind();
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == file_name + ", line 1");
+  Ensure(check_class_invariants());
+  Ensure(location_() == file_name + ", line 1");
 }
 
 //-------------------------------------------------------------------------------------//
@@ -152,18 +136,14 @@ void File_Token_Stream::open(string const &file_name)
  * \return A string of the form "filename, line #"
  */
 
-string File_Token_Stream::location_() const
-{
-    ostringstream Result;
-    if (filename_ != "")
-    {
-        Result << filename_ << ", line " << line();
-    }
-    else
-    {
-        Result << "<uninitialized>";
-    }
-    return Result.str();
+string File_Token_Stream::location_() const {
+  ostringstream Result;
+  if (filename_ != "") {
+    Result << filename_ << ", line " << line();
+  } else {
+    Result << "<uninitialized>";
+  }
+  return Result.str();
 }
 
 //-------------------------------------------------------------------------------------//
@@ -172,19 +152,15 @@ string File_Token_Stream::location_() const
  * character buffer.
  */
 
-void File_Token_Stream::fill_character_buffer_()
-{
-    char const c = infile_.get();
-    if (infile_.fail())
-    {
-	character_push_back_('\0');
-    }
-    else
-    {
-	character_push_back_(c);
-    }
+void File_Token_Stream::fill_character_buffer_() {
+  char const c = infile_.get();
+  if (infile_.fail()) {
+    character_push_back_('\0');
+  } else {
+    character_push_back_(c);
+  }
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
@@ -195,10 +171,7 @@ void File_Token_Stream::fill_character_buffer_()
  * \return \c true if an error has occured; \c false otherwise.
  */
 
-bool File_Token_Stream::error_() const
-{
-    return infile_.fail();
-}
+bool File_Token_Stream::error_() const { return infile_.fail(); }
 
 //-------------------------------------------------------------------------------------//
 /*!
@@ -209,21 +182,16 @@ bool File_Token_Stream::error_() const
  * otherwise.
  */
 
-bool File_Token_Stream::end_() const
-{
-    return infile_.eof();
-}
+bool File_Token_Stream::end_() const { return infile_.eof(); }
 
 //-------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  */
-void File_Token_Stream::report(Token const &token,
-                               string const &message)
-{
-    cerr << token.location() << ": " << message << endl;
+void File_Token_Stream::report(Token const &token, string const &message) {
+  cerr << token.location() << ": " << message << endl;
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
@@ -232,12 +200,11 @@ void File_Token_Stream::report(Token const &token,
  * This version assumes that the cursor gives the correct error location.
  */
 
-void File_Token_Stream::report(string const &message)
-{
-    Token const token = lookahead();
-    cerr << token.location() << ": " << message << endl;
+void File_Token_Stream::report(string const &message) {
+  Token const token = lookahead();
+  cerr << token.location() << ": " << message << endl;
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
@@ -247,15 +214,14 @@ void File_Token_Stream::report(string const &message)
  * the beginning of the file stream. The error count is also reset.
  */
 
-void File_Token_Stream::rewind()
-{
-    infile_.clear();    // Must clear the error/end flag bits.
-    infile_.seekg(0);
+void File_Token_Stream::rewind() {
+  infile_.clear(); // Must clear the error/end flag bits.
+  infile_.seekg(0);
 
-    Text_Token_Stream::rewind();
+  Text_Token_Stream::rewind();
 
-    Ensure(check_class_invariants());
-    Ensure(location_() == filename_ + ", line 1");
+  Ensure(check_class_invariants());
+  Ensure(location_() == filename_ + ", line 1");
 }
 
 } // namespace rtt_parser

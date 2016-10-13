@@ -19,20 +19,18 @@
 #include "ds++/fpe_trap.hh"
 #include <sstream>
 
-namespace rtt_diagnostics
-{
+namespace rtt_diagnostics {
 
-namespace Diagnostics
-{
+namespace Diagnostics {
 
 //---------------------------------------------------------------------------//
 // DIAGNOSTICS NAMESPACE DEFINITIONS
 //---------------------------------------------------------------------------//
 
-std::map< std::string, int>                  integers;
-std::map< std::string, double>               doubles;
-std::map< std::string, std::vector<int> >    vec_integers;
-std::map< std::string, std::vector<double> > vec_doubles;
+std::map<std::string, int> integers;
+std::map<std::string, double> doubles;
+std::map<std::string, std::vector<int>> vec_integers;
+std::map<std::string, std::vector<double>> vec_doubles;
 
 } // end namespace Diagnostics
 

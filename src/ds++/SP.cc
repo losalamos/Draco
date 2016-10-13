@@ -13,16 +13,14 @@
 
 #include "SP.hh"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
-void incompatible(std::type_info const &X, std::type_info const &T)
-{
-    std::string msg =
-        std::string("Incompatible dumb pointer conversion between ")
-        + X.name() + " and SP<" + T.name() + ">.";
+void incompatible(std::type_info const &X, std::type_info const &T) {
+  std::string msg =
+      std::string("Incompatible dumb pointer conversion between ") + X.name() +
+      " and SP<" + T.name() + ">.";
 
-    Insist(false, msg.c_str());
+  Insist(false, msg.c_str());
 }
 
 // Explicit template instantiations go here.

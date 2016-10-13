@@ -17,12 +17,11 @@
 #ifndef c4_gatherv_hh
 #define c4_gatherv_hh
 
-#include "C4_sys_times.h"
 #include "C4_Traits.hh"
+#include "C4_sys_times.h"
 #include <vector>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Gather messages of known but processor-dependent size
@@ -36,10 +35,10 @@ namespace rtt_c4
  * the root processor, the size of each subarray must be set to the expected
  * size of the incoming message. On return, contains the gathered data.
  */
-template<class T>
-DLL_PUBLIC_c4 void determinate_gatherv(
-    std::vector<T> &outgoing_data,
-    std::vector<std::vector<T> > &incoming_data);
+template <class T>
+DLL_PUBLIC_c4 void
+determinate_gatherv(std::vector<T> &outgoing_data,
+                    std::vector<std::vector<T>> &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -53,14 +52,14 @@ DLL_PUBLIC_c4 void determinate_gatherv(
  * \param incoming_data Ignored on any processor but the root processor. On
  * the root processor, on return, contains the gathered data.
  */
-template<class T>
-DLL_PUBLIC_c4 void indeterminate_gatherv(
-    std::vector<T>               &outgoing_data,
-    std::vector<std::vector<T> > &incoming_data);
+template <class T>
+DLL_PUBLIC_c4 void
+indeterminate_gatherv(std::vector<T> &outgoing_data,
+                      std::vector<std::vector<T>> &incoming_data);
 
-DLL_PUBLIC_c4 void indeterminate_gatherv(
-    std::string              &outgoing_data,
-    std::vector<std::string> &incoming_data);
+DLL_PUBLIC_c4 void
+indeterminate_gatherv(std::string &outgoing_data,
+                      std::vector<std::string> &incoming_data);
 
 } // end namespace rtt_c4
 

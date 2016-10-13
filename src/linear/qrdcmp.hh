@@ -16,14 +16,11 @@
 #ifndef linear_qrdcmp_hh
 #define linear_qrdcmp_hh
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //! Compute the QR decomposition of a square matrix.
-template<class RandomContainer>
-bool qrdcmp(RandomContainer &a,
-	    unsigned n,
-	    RandomContainer &c,
-	    RandomContainer &d);
+template <class RandomContainer>
+bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
+            RandomContainer &d);
 
 } // end namespace rtt_linear
 

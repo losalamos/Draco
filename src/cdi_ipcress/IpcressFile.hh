@@ -15,13 +15,12 @@
 #define __cdi_ipcress_IpcressFile_hh__
 
 #include "IpcressMaterial.hh"
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
 
-namespace rtt_cdi_ipcress
-{
+namespace rtt_cdi_ipcress {
 
 //===========================================================================//
 /*!
@@ -73,25 +72,24 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressFile
-{
+class DLL_PUBLIC_cdi_ipcress IpcressFile {
 
-    // NESTED CLASSES AND TYPEDEFS
+  // NESTED CLASSES AND TYPEDEFS
 
-    // DATA
+  // DATA
 
-    /*!
+  /*!
      * \brief IPCRESS data filename
      */
-    std::string const dataFilename;
+  std::string const dataFilename;
 
-    //! Each value in the ipcress file uses 8-bytes.
-    size_t const ipcress_word_size;
+  //! Each value in the ipcress file uses 8-bytes.
+  size_t const ipcress_word_size;
 
-    //! File handle for the open ipcress file
-    std::ifstream mutable ipcressFileHandle;
+  //! File handle for the open ipcress file
+  std::ifstream mutable ipcressFileHandle;
 
-    /*!
+  /*!
      * A map (index) of table values
      * [0]  - disk address of 'number of words of data' array
      * [1]  - disk address of 'array of disk addresses for data' array
@@ -122,29 +120,28 @@ class DLL_PUBLIC_cdi_ipcress IpcressFile
      * mxrec = max num records on ipcress file == [1] - [0]
      * mxkey = max num of search keys == [16]
      */
-    std::vector<size_t> toc;
+  std::vector<size_t> toc;
 
-    //! A list of material IDs found in the data file.
-    std::vector<size_t> matIDs;
+  //! A list of material IDs found in the data file.
+  std::vector<size_t> matIDs;
 
-    //! An array that hold disk offset to field data (e.g.: tgrid)
-    std::vector<size_t> dfo;
+  //! An array that hold disk offset to field data (e.g.: tgrid)
+  std::vector<size_t> dfo;
 
-    /*! This array holds the length of each data set (how many entries in
+  /*! This array holds the length of each data set (how many entries in
      * tgrid). */
-    std::vector<size_t> ds;
+  std::vector<size_t> ds;
 
-    /*!
+  /*!
      * \brief A vector of containers.  Each contains all field data (tgrid,
      * ramg,...) for one material as loaded from the IPCRESS file.
      */
-    std::vector<IpcressMaterial> materialData;
+  std::vector<IpcressMaterial> materialData;
 
-  public:
+public:
+  // CREATORS
 
-    // CREATORS
-
-    /*!
+  /*!
      * \brief Standard IpcressFile constructor.
      *
      *    This is the standard IpcressFile constructor.  This object
@@ -156,84 +153,82 @@ class DLL_PUBLIC_cdi_ipcress IpcressFile
      *     If the filename is longer than 80 characters the library
      *     will not be able to open the file.
      */
-    explicit IpcressFile( std::string const & ipcressDataFilename );
+  explicit IpcressFile(std::string const &ipcressDataFilename);
 
-    // (defaulted) IpcressFile(const IpcressFile &rhs);
-    // (defaulted) ~IpcressFile();
+  // (defaulted) IpcressFile(const IpcressFile &rhs);
+  // (defaulted) ~IpcressFile();
 
-    // MANIPULATORS
+  // MANIPULATORS
 
-    // (defaulted) IpcressFile& operator=(const IpcressFile &rhs);
+  // (defaulted) IpcressFile& operator=(const IpcressFile &rhs);
 
-    // ACCESSORS
+  // ACCESSORS
 
-    //! Returns the IPCRESS data filename.
-    std::string const & getDataFilename() const { return dataFilename; }
+  //! Returns the IPCRESS data filename.
+  std::string const &getDataFilename() const { return dataFilename; }
 
-    //! Returns the number of materials found in the data file.
-    size_t getNumMaterials() const { return matIDs.size(); }
+  //! Returns the number of materials found in the data file.
+  size_t getNumMaterials() const { return matIDs.size(); }
 
-    //! Returns a list of material identifiers found in the data file.
-    std::vector<size_t> const & getMatIDs() const { return matIDs; }
+  //! Returns a list of material identifiers found in the data file.
+  std::vector<size_t> const &getMatIDs() const { return matIDs; }
 
-    /*!
+  /*!
      * \brief Indicate if the requested material id is available in
      *        the data file.
      */
-    bool materialFound( size_t matid ) const;
+  bool materialFound(size_t matid) const;
 
-    /*!
+  /*!
      * \brief Locate the index into the materialData array for provided
      * material identifier.
      */
-    size_t getMatIndex( size_t const matid ) const {
-        size_t pos = std::find( matIDs.begin(), matIDs.end(), matid )
-                     - matIDs.begin();
-        Ensure( pos < matIDs.size() );
-        return pos;
-    }
+  size_t getMatIndex(size_t const matid) const {
+    size_t pos =
+        std::find(matIDs.begin(), matIDs.end(), matid) - matIDs.begin();
+    Ensure(pos < matIDs.size());
+    return pos;
+  }
 
-    //! Provide a list of loaded data field names for matid.
-    std::vector< std::string > listDataFieldNames( size_t const matid ) const {
-        Require( materialFound( matid ) );
-        size_t matidx = getMatIndex( matid );
-        return materialData[matidx].listDataFieldNames();  }
+  //! Provide a list of loaded data field names for matid.
+  std::vector<std::string> listDataFieldNames(size_t const matid) const {
+    Require(materialFound(matid));
+    size_t matidx = getMatIndex(matid);
+    return materialData[matidx].listDataFieldNames();
+  }
 
-    //! Provide access to data arrays
-    std::vector< double > getData( size_t      const   matid,
-                                   std::string const & fieldName ) const
-    {
-        Require(  materialFound( matid ) );
-        size_t matidx = getMatIndex( matid );
-        return materialData[matidx].data( fieldName );
-    }
+  //! Provide access to data arrays
+  std::vector<double> getData(size_t const matid,
+                              std::string const &fieldName) const {
+    Require(materialFound(matid));
+    size_t matidx = getMatIndex(matid);
+    return materialData[matidx].data(fieldName);
+  }
 
-    //! Print a summary of the Ipcress file
-    void printSummary( std::ostream & out = std::cout ) const;
-    void printSummary( size_t const matid, std::ostream & out = std::cout ) const;
+  //! Print a summary of the Ipcress file
+  void printSummary(std::ostream &out = std::cout) const;
+  void printSummary(size_t const matid, std::ostream &out = std::cout) const;
 
-  private:
+private:
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
+  //! Attempt to locate the requested ipcress file.
+  static std::string locateIpcressFile(std::string const &ipcressFile);
 
-    //! Attempt to locate the requested ipcress file.
-    static std::string locateIpcressFile( std::string const & ipcressFile );
-
-    /*!
+  /*!
      * \brief Load the list of field data names and the associated data arrays
      * for the requested material from the Ipcress file and save them into the
      * IpcressMaterial container.
      */
-    void loadFieldData( void );
+  void loadFieldData(void);
 
-    //! Read an array of ints or doubles from the ipcress file.
-    template< typename T >
-    void read_v( size_t const offset_bytes, std::vector< T > & vdata ) const;
+  //! Read an array of ints or doubles from the ipcress file.
+  template <typename T>
+  void read_v(size_t const offset_bytes, std::vector<T> &vdata) const;
 
-    //! Read strings from the binary file
-    void read_strings( size_t const offset_bytes,
-                       std::vector< std::string > & vdata ) const;
-
+  //! Read strings from the binary file
+  void read_strings(size_t const offset_bytes,
+                    std::vector<std::string> &vdata) const;
 };
 
 } // end namespace rtt_cdi_ipcress

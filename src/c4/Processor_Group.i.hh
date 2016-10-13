@@ -20,42 +20,32 @@
 
 #ifdef C4_MPI
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 //---------------------------------------------------------------------------//
-template<typename T>
-void Processor_Group::sum(std::vector<T> &x)
-{
-    // copy data into send buffer
-    std::vector<T> y = x;
-    
-    // do global MPI reduction (result is on all processors) into x
-    int status = MPI_Allreduce(&y[0],
-                               &x[0],
-                               y.size(),
-                               rtt_c4::MPI_Traits<T>::element_type(),
-                               MPI_SUM,
-                               comm_);
+template <typename T> void Processor_Group::sum(std::vector<T> &x) {
+  // copy data into send buffer
+  std::vector<T> y = x;
 
-    Insist(status==0, "MPI_Allreduce failed");
+  // do global MPI reduction (result is on all processors) into x
+  int status =
+      MPI_Allreduce(&y[0], &x[0], y.size(),
+                    rtt_c4::MPI_Traits<T>::element_type(), MPI_SUM, comm_);
+
+  Insist(status == 0, "MPI_Allreduce failed");
 }
 
 //---------------------------------------------------------------------------//
-template<typename T>
+template <typename T>
 void Processor_Group::assemble_vector(std::vector<T> const &local,
-                                      std::vector<T>       &global) const
-{
-    global.resize(local.size()*size());
-    
-    int status = MPI_Allgather(const_cast<T*>(&local[0]),
-                               local.size(),
-                               rtt_c4::MPI_Traits<T>::element_type(),
-                               &global[0],
-                               local.size(),
-                               rtt_c4::MPI_Traits<T>::element_type(),
-                               comm_);
+                                      std::vector<T> &global) const {
+  global.resize(local.size() * size());
 
-    Insist(status==0, "MPI_Gather failed");
+  int status =
+      MPI_Allgather(const_cast<T *>(&local[0]), local.size(),
+                    rtt_c4::MPI_Traits<T>::element_type(), &global[0],
+                    local.size(), rtt_c4::MPI_Traits<T>::element_type(), comm_);
+
+  Insist(status == 0, "MPI_Gather failed");
 }
 
 //---------------------------------------------------------------------------//
@@ -65,25 +55,19 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
  * \param N Number of local quantities to assemble.
  */
 
-template<typename T>
-void Processor_Group::assemble_vector(T const *local,
-                                      T *global,
-                                      unsigned const N) const
-{
-    int status = MPI_Allgather(const_cast<T*>(local),
-                               N,
-                               rtt_c4::MPI_Traits<T>::element_type(),
-                               global,
-                               N,
-                               rtt_c4::MPI_Traits<T>::element_type(),
-                               comm_);
+template <typename T>
+void Processor_Group::assemble_vector(T const *local, T *global,
+                                      unsigned const N) const {
+  int status = MPI_Allgather(const_cast<T *>(local), N,
+                             rtt_c4::MPI_Traits<T>::element_type(), global, N,
+                             rtt_c4::MPI_Traits<T>::element_type(), comm_);
 
-    Insist(status==0, "MPI_Gather failed");
+  Insist(status == 0, "MPI_Gather failed");
 }
 
 } // end namespace rtt_c4
 
-#endif  // C4_MPI
+#endif // C4_MPI
 
 #endif // c4_Processor_Group_i_hh
 

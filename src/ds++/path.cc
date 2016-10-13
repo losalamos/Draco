@@ -9,16 +9,15 @@
 //---------------------------------------------------------------------------//
 
 #include "path.hh"
-#include <cerrno>       // errno
-#include <cstring>      // strerror
-#include <cstdlib>      // realpath
-#include <sys/stat.h>   // stat
+#include <cerrno>     // errno
+#include <cstdlib>    // realpath
+#include <cstring>    // strerror
+#include <sys/stat.h> // stat
 #ifdef UNIX
-#include <dirent.h>     // struct DIR
+#include <dirent.h> // struct DIR
 #endif
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 /*! \brief Does the file exist?
@@ -30,40 +29,36 @@ namespace rtt_dsxx
  *    file. If you need to do that level of checking, lookup the return
  *    values of stat which will give you more details on why stat failed.
  */
-bool fileExists( std::string const & strFilename )
-{
-    return draco_getstat( strFilename ).errorCode() == 0;
+bool fileExists(std::string const &strFilename) {
+  return draco_getstat(strFilename).errorCode() == 0;
 }
 
 //---------------------------------------------------------------------------//
 /*! \brief Does the 'path' represent a directory?
  */
-bool isDirectory( std::string const & path )
-{
-    // If the path does not exist, then it cannot be a directory.
-    if( ! fileExists(path) ) return false;
+bool isDirectory(std::string const &path) {
+  // If the path does not exist, then it cannot be a directory.
+  if (!fileExists(path))
+    return false;
 
-    bool retVal( false );
-    draco_getstat fileStatus( path.c_str() );
-    Check( fileStatus.valid() );
-    retVal = fileStatus.isdir();
-    return retVal;
+  bool retVal(false);
+  draco_getstat fileStatus(path.c_str());
+  Check(fileStatus.valid());
+  retVal = fileStatus.isdir();
+  return retVal;
 }
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-void draco_remove_dir( std::string const & path )
-{
-    draco_walk_directory_tree( path, wdtOpRemove() );
-    return;
+void draco_remove_dir(std::string const &path) {
+  draco_walk_directory_tree(path, wdtOpRemove());
+  return;
 }
 //! Recursively print a directory tree.
-void draco_dir_print( std::string const & path )
-{
-    draco_walk_directory_tree( path, wdtOpPrint() );
-    return;    
+void draco_dir_print(std::string const &path) {
+  draco_walk_directory_tree(path, wdtOpPrint());
+  return;
 }
-
 
 } // end namespace rtt_dsxx
 

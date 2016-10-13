@@ -13,13 +13,12 @@
 
 #include "DummyGrayOpacity.hh"
 
-namespace rtt_cdi_test
-{
-    
+namespace rtt_cdi_test {
+
 // ------------ //
 // Constructors //
 // ------------ //
-    
+
 /*!
  * \brief Constructor for DummyGrayOpacity object.
  * 
@@ -31,30 +30,24 @@ namespace rtt_cdi_test
  *     Densities    = { 0.1, 0.2 }
  */
 DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
-				   rtt_cdi::Model    model)
-    : dataFilename( "none"), 
-      dataDescriptor( "DummyGrayOpacity" ), 
-      energyPolicyDescriptor( "Gray" ), 
-      numTemperatures( 3 ), 
-      numDensities( 2 ),
-      temperatureGrid(),
-      densityGrid(),
-      reaction_type(reaction),
-      model_type(model)
-{
-    // Set up the temperature and density grid.
-    temperatureGrid.resize( numTemperatures );
-    densityGrid.resize( numDensities );
-    for ( size_t i=0; i<numTemperatures; ++i )
-	temperatureGrid[i] = 1.0 * (i+1);
-    for ( size_t i=0; i<numDensities; ++i )
-	densityGrid[i] = 0.1 * (i+1);
+                                   rtt_cdi::Model model)
+    : dataFilename("none"), dataDescriptor("DummyGrayOpacity"),
+      energyPolicyDescriptor("Gray"), numTemperatures(3), numDensities(2),
+      temperatureGrid(), densityGrid(), reaction_type(reaction),
+      model_type(model) {
+  // Set up the temperature and density grid.
+  temperatureGrid.resize(numTemperatures);
+  densityGrid.resize(numDensities);
+  for (size_t i = 0; i < numTemperatures; ++i)
+    temperatureGrid[i] = 1.0 * (i + 1);
+  for (size_t i = 0; i < numDensities; ++i)
+    densityGrid[i] = 0.1 * (i + 1);
 }
-    
+
 // --------- //
 // Accessors //
 // --------- //
-    
+
 /*!
  * \brief Opacity accessor that returns a single opacity (or a
  *     vector of opacities for the multigroup EnergyPolicy) that 
@@ -62,13 +55,11 @@ DummyGrayOpacity::DummyGrayOpacity(rtt_cdi::Reaction reaction,
  *
  *     Opacity = temperature + density/1000
  */
-double DummyGrayOpacity::getOpacity(
-    double targetTemperature,
-    double targetDensity ) const
-{ 
-    return targetTemperature + targetDensity/1000.0;
+double DummyGrayOpacity::getOpacity(double targetTemperature,
+                                    double targetDensity) const {
+  return targetTemperature + targetDensity / 1000.0;
 }
-    
+
 /*!
  * \brief Opacity accessor that returns a vector of opacities that
  *     correspond to the provided vector of temperatures and a
@@ -76,18 +67,15 @@ double DummyGrayOpacity::getOpacity(
  *
  *     Opacity[i] = temperature[i] + density/1000
  */
-std::vector< double > DummyGrayOpacity::getOpacity(
-    const std::vector< double >& targetTemperature,
-    double targetDensity ) const
-{
-    std::vector< double > grayOpacity(
-	targetTemperature.size() );
-    for ( size_t i=0; i<targetTemperature.size(); ++i )
-	grayOpacity[i] = targetTemperature[i] +
-	    targetDensity/1000.0;
-    return grayOpacity;
+std::vector<double>
+DummyGrayOpacity::getOpacity(const std::vector<double> &targetTemperature,
+                             double targetDensity) const {
+  std::vector<double> grayOpacity(targetTemperature.size());
+  for (size_t i = 0; i < targetTemperature.size(); ++i)
+    grayOpacity[i] = targetTemperature[i] + targetDensity / 1000.0;
+  return grayOpacity;
 }
-    
+
 /*!
  * \brief Opacity accessor that returns a vector of opacities
  *     that correspond to the provided vector of densities and a
@@ -95,18 +83,15 @@ std::vector< double > DummyGrayOpacity::getOpacity(
  *
  *     Opacity[i] = temperature[i] + density/1000
  */
-std::vector< double > DummyGrayOpacity::getOpacity( 
-    double targetTemperature,
-    const std::vector< double >& targetDensity ) const
-{
-    std::vector< double > grayOpacity(
-	targetDensity.size() );
-    for ( size_t i=0; i<targetDensity.size(); ++i )
-	grayOpacity[i] = targetTemperature +
-	    targetDensity[i]/1000.0;
-    return grayOpacity;
+std::vector<double>
+DummyGrayOpacity::getOpacity(double targetTemperature,
+                             const std::vector<double> &targetDensity) const {
+  std::vector<double> grayOpacity(targetDensity.size());
+  for (size_t i = 0; i < targetDensity.size(); ++i)
+    grayOpacity[i] = targetTemperature + targetDensity[i] / 1000.0;
+  return grayOpacity;
 }
-    
+
 } // end rtt_cdi_test
 
 //---------------------------------------------------------------------------//

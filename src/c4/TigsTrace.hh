@@ -23,8 +23,7 @@
 #include <map>
 #include <vector>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //===========================================================================//
 /*!
@@ -35,97 +34,86 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 TigsTrace
-{
-  public:
-    // Useful typedefs.
-    typedef std::map<int, std::vector<int> > TigsComm_map;
-    typedef std::vector<std::vector<int> >   VVec_int;
+class DLL_PUBLIC_c4 TigsTrace {
+public:
+  // Useful typedefs.
+  typedef std::map<int, std::vector<int>> TigsComm_map;
+  typedef std::vector<std::vector<int>> VVec_int;
 
-    // Enumerations.
-    enum GS_Tag
-    {
-        ANY_TAG    = 0,
-        OK         = 1,
-        FATAL      = 2,
-        WARN       = 3,
-        TRACE_INIT = 4
-    };
+  // Enumerations.
+  enum GS_Tag { ANY_TAG = 0, OK = 1, FATAL = 2, WARN = 3, TRACE_INIT = 4 };
 
-  private:
-    // >>> DATA
+private:
+  // >>> DATA
 
-    // These variables store the "local" sizes of the range and domain of
-    // the trace map.
-    unsigned const onProcDomain;
-    unsigned const onProcRange;
+  // These variables store the "local" sizes of the range and domain of
+  // the trace map.
+  unsigned const onProcDomain;
+  unsigned const onProcRange;
 
-    // These variables store the indirection information for the
-    // serial, or single processor case.
-    std::map<int, std::vector<int> > IM;
-    std::vector<int> IMV;
-    std::vector<unsigned> counts;
+  // These variables store the indirection information for the
+  // serial, or single processor case.
+  std::map<int, std::vector<int>> IM;
+  std::vector<int> IMV;
+  std::vector<unsigned> counts;
 
-    // These variables store the indirection information for the parallel,
-    // multiprocessor case. The Domain of the trace map is refered to as
-    // the Iside, and the Range of the map is the Jside. Where the map
-    // should be thought of as Jmap:I->J
-    //
-    // The connects vectors store the processor to which a message must be
-    // communicated to fill or send the data for the gather/scatter
-    //
-    // the Indirect vectors store the indirection vector to load/unload the
-    // communciation buffer with data from the arrays provided to the
-    // gather/scatter call.
-    //
-    // #####Connects[s]    is the s-th processor to communicate with
-    // (send/receive one buffer)
-    //
-    // #####Indirect[s] is a vector to [un]load the buffer to be
-    // communicated with the above processor
-    //
-    // BmapList is an indirection array to [un]pack the scatterList result
-    // following communicationint a CSR like structure. countsList is
-    // The count of items in the CSR like list for each range location
-    // (on the current processor)
-    //
-    unsigned          IsideBufferSize;
-    unsigned          JsideBufferSize;
-    std::vector<int>  IsideConnects;
-    VVec_int          IsideIndirect;
-    std::vector<int>  JsideConnects;
-    VVec_int          JsideIndirect;
-    std::vector<int>  BmapList;
-    std::vector<int>  countsList;
+  // These variables store the indirection information for the parallel,
+  // multiprocessor case. The Domain of the trace map is refered to as
+  // the Iside, and the Range of the map is the Jside. Where the map
+  // should be thought of as Jmap:I->J
+  //
+  // The connects vectors store the processor to which a message must be
+  // communicated to fill or send the data for the gather/scatter
+  //
+  // the Indirect vectors store the indirection vector to load/unload the
+  // communciation buffer with data from the arrays provided to the
+  // gather/scatter call.
+  //
+  // #####Connects[s]    is the s-th processor to communicate with
+  // (send/receive one buffer)
+  //
+  // #####Indirect[s] is a vector to [un]load the buffer to be
+  // communicated with the above processor
+  //
+  // BmapList is an indirection array to [un]pack the scatterList result
+  // following communicationint a CSR like structure. countsList is
+  // The count of items in the CSR like list for each range location
+  // (on the current processor)
+  //
+  unsigned IsideBufferSize;
+  unsigned JsideBufferSize;
+  std::vector<int> IsideConnects;
+  VVec_int IsideIndirect;
+  std::vector<int> JsideConnects;
+  VVec_int JsideIndirect;
+  std::vector<int> BmapList;
+  std::vector<int> countsList;
 
-  public:
-    // Constructor.
-    TigsTrace(std::vector<int> const & JMap, unsigned const J);
+public:
+  // Constructor.
+  TigsTrace(std::vector<int> const &JMap, unsigned const J);
 
-    // >>> GATHER OPERATIONS
+  // >>> GATHER OPERATIONS
 
-    // Copy data from the range to the domain.
-    template < typename iterA, typename iterB >
-    void gather( iterB Bfirst, iterB Blast,
-                 iterA Afirst, iterA Alast );
+  // Copy data from the range to the domain.
+  template <typename iterA, typename iterB>
+  void gather(iterB Bfirst, iterB Blast, iterA Afirst, iterA Alast);
 
-    // >>> SCATTER OPERATIONS
+  // >>> SCATTER OPERATIONS
 
-    // Copy data defined on the domain (I) to the range (J).
-    template < typename iterA , typename iterC, typename iterB >
-    void scatterList( iterA Afirst,   iterA Alast,
-                      iterC Cntfirst, iterC Cntlast,
-                      iterB Bfirst,   iterB Blast ) const;
+  // Copy data defined on the domain (I) to the range (J).
+  template <typename iterA, typename iterC, typename iterB>
+  void scatterList(iterA Afirst, iterA Alast, iterC Cntfirst, iterC Cntlast,
+                   iterB Bfirst, iterB Blast) const;
 
-    // Copy with reduction of data from the domain to the range.
-    template < typename iterA , typename iterB , typename BinaryOp >
-    void scatter( iterA Afirst, iterA Alast,
-                  iterB Bfirst, iterB Blast,
-                  BinaryOp op );
+  // Copy with reduction of data from the domain to the range.
+  template <typename iterA, typename iterB, typename BinaryOp>
+  void scatter(iterA Afirst, iterA Alast, iterB Bfirst, iterB Blast,
+               BinaryOp op);
 
-    // >>> QUERIES
+  // >>> QUERIES
 
-    /*!
+  /*!
      * \brief A routine to determine allocation size for the scatterList
      * output.
      *
@@ -135,7 +123,7 @@ class DLL_PUBLIC_c4 TigsTrace
      *
      * \return The size of the container that holds scatterList data
      */
-    int getListSize() const { return JsideBufferSize; }
+  int getListSize() const { return JsideBufferSize; }
 };
 
 } // end namespace rtt_c4

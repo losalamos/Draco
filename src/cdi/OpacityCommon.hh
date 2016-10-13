@@ -13,15 +13,13 @@
 #ifndef __cdi_OpacityCommon_hh__
 #define __cdi_OpacityCommon_hh__
 
-namespace rtt_cdi
-{
+namespace rtt_cdi {
 
 //===========================================================================//
 // NUMBER OF MODELS AND REACTIONS
 //===========================================================================//
 
-namespace constants
-{
+namespace constants {
 //! Number of models contained in rtt_cdi::Model.
 unsigned int const num_Models(7);
 
@@ -38,15 +36,14 @@ unsigned int const num_Reactions(3);
  * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The
  * number of models is given by rtt_cdi::constants::num_Models.
  */
-enum Model
-{
-    ROSSELAND, /*!< use Rosseland mean opacities. */
-    PLANCK,    /*!< use Plank mean opacities. */
-    ANALYTIC,  /*!< use Analytic model opacities. */
-    ISOTROPIC, /*!< use Isotropic scattering opacities. */
-    THOMSON,   /*!< use Thomson scattering opacities. */
-    COMPTON,   /*!< use Compton scattering opacities. */
-    NOMODEL    /*!< null model */
+enum Model {
+  ROSSELAND, /*!< use Rosseland mean opacities. */
+  PLANCK,    /*!< use Plank mean opacities. */
+  ANALYTIC,  /*!< use Analytic model opacities. */
+  ISOTROPIC, /*!< use Isotropic scattering opacities. */
+  THOMSON,   /*!< use Thomson scattering opacities. */
+  COMPTON,   /*!< use Compton scattering opacities. */
+  NOMODEL    /*!< null model */
 };
 
 //---------------------------------------------------------------------------//
@@ -56,12 +53,11 @@ enum Model
  * This enumeration \b must be unnumbered, ie it spans the set [0,N).  The
  * number of readtion types is given by rtt_cdi::constants::num_Reactions.
  */
-enum Reaction
-{
-    TOTAL,      /*!< Total opacity value (scattering plus absorption). */
-    ABSORPTION, /*!< Absorption cross sections only. */
-    SCATTERING, /*!< Scattering cross sections only. */
-    LAST_VALUE  /*!< dummy value */
+enum Reaction {
+  TOTAL,      /*!< Total opacity value (scattering plus absorption). */
+  ABSORPTION, /*!< Absorption cross sections only. */
+  SCATTERING, /*!< Scattering cross sections only. */
+  LAST_VALUE  /*!< dummy value */
 };
 
 /*!
@@ -76,13 +72,13 @@ enum Reaction
  * mapping to 2.
  * 
  */
-enum OpacityModelType
-{
-    UNASSIGNED_TYPE = 0,  /*!< unassigned type; used as a placeholder before deciding type */
-    ANALYTIC_TYPE   = 1,  /*!< an Analytic opacity model */
-    GANDOLF_TYPE    = 2,  /*!< a Gandolf opacity model */
-    IPCRESS_TYPE    = 3,  /*!< an Ipcress opacity model */
-    DUMMY_TYPE      = 99  /*!< a dummy opacity model */
+enum OpacityModelType {
+  UNASSIGNED_TYPE =
+      0, /*!< unassigned type; used as a placeholder before deciding type */
+  ANALYTIC_TYPE = 1, /*!< an Analytic opacity model */
+  GANDOLF_TYPE = 2,  /*!< a Gandolf opacity model */
+  IPCRESS_TYPE = 3,  /*!< an Ipcress opacity model */
+  DUMMY_TYPE = 99    /*!< a dummy opacity model */
 };
 } // end namespace rtt_cdi
 

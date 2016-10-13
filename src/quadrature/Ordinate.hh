@@ -16,8 +16,7 @@
 
 #include "ds++/Soft_Equivalence.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using rtt_dsxx::soft_equiv;
 
 //=======================================================================================//
@@ -34,75 +33,60 @@ using rtt_dsxx::soft_equiv;
  */
 //=======================================================================================//
 
-class Ordinate
-{
-  public:
+class Ordinate {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Create an uninitialized Ordinate.  This is required by the
+  //! constructor for vector<Ordinate>.
+  Ordinate() : mu_(0), eta_(0), xi_(0), wt_(0) {}
 
-    //! Create an uninitialized Ordinate.  This is required by the
-    //! constructor for vector<Ordinate>.
-    Ordinate() : mu_(0), eta_(0), xi_(0), wt_(0) {}
+  //! Construct an Ordinate from the specified vector and weight.
+  Ordinate(double const mu, double const eta, double const xi, double const wt)
+      : mu_(mu), eta_(eta), xi_(xi), wt_(wt) {
+    Require(soft_equiv(mu * mu + eta * eta + xi * xi, 1.0));
+  }
 
-    //! Construct an Ordinate from the specified vector and weight.
-    Ordinate(double const mu,
-             double const eta,
-             double const xi,
-             double const wt)
-        :
-        mu_(mu), eta_(eta), xi_(xi), wt_(wt)
-    {
-        Require(soft_equiv(mu*mu+eta*eta+xi*xi, 1.0));
-    }
+  //! Construct a 1D Ordinate from the specified angle and weight.
+  inline Ordinate(double const mu, double const wt)
+      : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt) {
+    Require(mu >= -1.0 && mu <= 1.0);
+  }
 
-    //! Construct a 1D Ordinate from the specified angle and weight.
-    inline
-    Ordinate(double const mu, double const wt)
-    : mu_(mu), eta_(0.0), xi_(0.0), wt_(wt)
-    {
-        Require(mu >=-1.0 && mu<=1.0);
-    }
-    
-    // Accessors
-    
-    double mu()  const { return mu_; };
-    double eta() const { return eta_; };
-    double xi()  const { return xi_; };
-    double wt()  const { return wt_; };
+  // Accessors
 
-    void set_wt(double const wt) { wt_ = wt; };
+  double mu() const { return mu_; };
+  double eta() const { return eta_; };
+  double xi() const { return xi_; };
+  double wt() const { return wt_; };
 
-    double const *cosines() const
-    {
-        // This is a little krufty, but guaranteed to work according to C++
-        // object layout rules.
-        return &mu_;
-    }
+  void set_wt(double const wt) { wt_ = wt; };
 
-  private:
+  double const *cosines() const {
+    // This is a little krufty, but guaranteed to work according to C++
+    // object layout rules.
+    return &mu_;
+  }
 
-    // DATA
+private:
+  // DATA
 
-    // The data must be kept private in order to protect the norm invariant.
-    
-    //! Angle cosines for the ordinate.
-    // Do not change the layout of these members! They must be declared in
-    // this sequence for cosines() to work as expected!
-    double mu_, eta_, xi_;
-    
-    //! Quadrature weight for the ordinate.
-    double wt_;
+  // The data must be kept private in order to protect the norm invariant.
+
+  //! Angle cosines for the ordinate.
+  // Do not change the layout of these members! They must be declared in
+  // this sequence for cosines() to work as expected!
+  double mu_, eta_, xi_;
+
+  //! Quadrature weight for the ordinate.
+  double wt_;
 };
 
 //---------------------------------------------------------------------------------------//
 //! Test ordinates for equality
-inline bool operator==(Ordinate const &a, Ordinate const &b)
-{
-    return
-        a.mu()==b.mu() &&
-        a.eta()==b.eta() &&
-        a.xi()==b.xi() &&
-        a.wt()==b.wt();
+inline bool operator==(Ordinate const &a, Ordinate const &b) {
+  return a.mu() == b.mu() && a.eta() == b.eta() && a.xi() == b.xi() &&
+         a.wt() == b.wt();
 }
 
 } // end namespace rtt_quadrature

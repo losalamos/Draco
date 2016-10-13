@@ -24,8 +24,7 @@
 //#include <limits>
 #include "Soft_Equivalence.hh"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //-------------------------------------------------------------------------//
 /*!
@@ -50,17 +49,15 @@ namespace rtt_dsxx
  * \c false otherwise.
  */
 template <typename Forward_Iterator>
-bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last)
-{
-    Forward_Iterator prev = first;
-    while( ++first != last)
-    {
-	if (*first < *prev)
-	    return false;
-	prev = first;
-    }
-    Ensure( prev != first );
-    return true;
+bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last) {
+  Forward_Iterator prev = first;
+  while (++first != last) {
+    if (*first < *prev)
+      return false;
+    prev = first;
+  }
+  Ensure(prev != first);
+  return true;
 }
 
 //-------------------------------------------------------------------------//
@@ -87,15 +84,14 @@ bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last)
  */
 template <typename Forward_Iterator>
 bool is_strict_monotonic_increasing(Forward_Iterator first,
-                                    Forward_Iterator last)
-{
-    Forward_Iterator prev = first;
-    while( ++first != last )
-    {
-	if (!(*prev < *first)) return false;
-	prev = first;
-    }
-    return true;
+                                    Forward_Iterator last) {
+  Forward_Iterator prev = first;
+  while (++first != last) {
+    if (!(*prev < *first))
+      return false;
+    prev = first;
+  }
+  return true;
 }
 
 //-------------------------------------------------------------------------//
@@ -122,17 +118,16 @@ bool is_strict_monotonic_increasing(Forward_Iterator first,
  * \c false otherwise.
  */
 template <typename Forward_Iterator>
-bool is_strict_monotonic_decreasing( Forward_Iterator first,
-				  Forward_Iterator last )
-{
-    Require( first < last );
-    Forward_Iterator prev = first;
-    while( ++first != last )
-    {
-	if ( *prev < *first ) return false;
-	prev = first;
-    }
-    return true;
+bool is_strict_monotonic_decreasing(Forward_Iterator first,
+                                    Forward_Iterator last) {
+  Require(first < last);
+  Forward_Iterator prev = first;
+  while (++first != last) {
+    if (*prev < *first)
+      return false;
+    prev = first;
+  }
+  return true;
 }
 
 //-------------------------------------------------------------------------//
@@ -155,27 +150,22 @@ bool is_strict_monotonic_decreasing( Forward_Iterator first,
  * otherwise.
  */
 template <typename Random_Access_Container>
-bool is_symmetric_matrix( Random_Access_Container const &A,
-                          unsigned const n,
-                          double const tolerance)
-{
-    Require( A.size()==n*n );
-    Require( tolerance>=0.0 );
+bool is_symmetric_matrix(Random_Access_Container const &A, unsigned const n,
+                         double const tolerance) {
+  Require(A.size() == n * n);
+  Require(tolerance >= 0.0);
 
-    for (unsigned i=1; i<n; ++i)
-    {
-        for (unsigned j=0; j<i; ++j)
-        {
-            if (!rtt_dsxx::soft_equiv(A[i+n*j], A[j+n*i], tolerance))
-            {
-                return false;
-            }
-        }
+  for (unsigned i = 1; i < n; ++i) {
+    for (unsigned j = 0; j < i; ++j) {
+      if (!rtt_dsxx::soft_equiv(A[i + n * j], A[j + n * i], tolerance)) {
+        return false;
+      }
     }
-    return true;
+  }
+  return true;
 }
 
-}  // rtt_dsxx
+} // rtt_dsxx
 
 #endif // rtt_dsxx_dbc_i_hh
 //---------------------------------------------------------------------------//

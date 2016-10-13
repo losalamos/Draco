@@ -16,8 +16,7 @@
 #include "device_cuda.h"
 #include <string>
 
-namespace rtt_device
-{
+namespace rtt_device {
 
 //===========================================================================//
 /*!
@@ -39,47 +38,43 @@ namespace rtt_device
  */
 //===========================================================================//
 
-class GPU_Module 
-{
-  public:
+class GPU_Module {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
-    
-    //! Default constructors.
-    GPU_Module( std::string const & myPtxFile );
+  //! Default constructors.
+  GPU_Module(std::string const &myPtxFile);
 
-    //! Copy constructor (the long doxygen description is in the .cc file).
-    // GPU_Module(const GPU_Module &rhs);
+  //! Copy constructor (the long doxygen description is in the .cc file).
+  // GPU_Module(const GPU_Module &rhs);
 
-    //! Destructor.
-    ~GPU_Module();
+  //! Destructor.
+  ~GPU_Module();
 
-    // MANIPULATORS
-    
-    //! Assignment operator for GPU_Module.
-    // GPU_Module& operator=(const GPU_Module &rhs);
+  // MANIPULATORS
 
-    // ACCESSORS
-    CUmodule handle(void) { return cuModule; }
+  //! Assignment operator for GPU_Module.
+  // GPU_Module& operator=(const GPU_Module &rhs);
 
-    // SERVICES
-    CUfunction getModuleFunction( std::string const & functionName ) const;
+  // ACCESSORS
+  CUmodule handle(void) { return cuModule; }
 
-    // IMPLEMENTATION
-    static std::string findPtxFile( std::string const & myPtxFile );
+  // SERVICES
+  CUfunction getModuleFunction(std::string const &functionName) const;
 
-  private:
+  // IMPLEMENTATION
+  static std::string findPtxFile(std::string const &myPtxFile);
 
-    // NESTED CLASSES AND TYPEDEFS
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // IMPLEMENTATION
+  // IMPLEMENTATION
 
-    // DATA
-    std::string const ptxFile;
-    CUmodule cuModule;
-
+  // DATA
+  std::string const ptxFile;
+  CUmodule cuModule;
 };
 
 } // end namespace rtt_device

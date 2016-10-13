@@ -14,17 +14,13 @@
 #ifndef linear_tred2_hh
 #define linear_tred2_hh
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 // Use explicit instantiation model.
 
 //! Householder-reduce a symmetric matrix
-template<class FieldVector1, class FieldVector2, class FieldVector3>
-void tred2(FieldVector1 &a,
-	   unsigned n,
-	   FieldVector2 &d,
-	   FieldVector3 &e);
+template <class FieldVector1, class FieldVector2, class FieldVector3>
+void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e);
 
 } // end namespace rtt_linear
 

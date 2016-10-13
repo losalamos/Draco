@@ -22,58 +22,55 @@
 #include <string>
 #include <vector>
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the 
  *        nodedata block of the mesh file.
  */
-class NodeData
-{
-    // typedefs
-    typedef std::ifstream ifstream;
-    typedef std::string string;
-    typedef std::vector<double> vector_dbl;
-    typedef std::vector<std::vector<double> > vector_vector_dbl;
+class NodeData {
+  // typedefs
+  typedef std::ifstream ifstream;
+  typedef std::string string;
+  typedef std::vector<double> vector_dbl;
+  typedef std::vector<std::vector<double>> vector_vector_dbl;
 
-    const Dims & dims;
-    vector_vector_dbl data;
+  const Dims &dims;
+  vector_vector_dbl data;
 
-  public:
-    NodeData(const Dims & dims_) 
-	: dims(dims_), 
-	  data(dims.get_nnodes(), 
-	       vector_dbl(dims.get_nnode_data()))
-    {}
-    ~NodeData() {}
+public:
+  NodeData(const Dims &dims_)
+      : dims(dims_),
+        data(dims.get_nnodes(), vector_dbl(dims.get_nnode_data())) {}
+  ~NodeData() {}
 
-    void readNodeData(ifstream & meshfile);
+  void readNodeData(ifstream &meshfile);
 
-  private:
-    void readKeyword(ifstream & meshfile);
-    void readData(ifstream & meshfile);
-    void readEndKeyword(ifstream & meshfile);
+private:
+  void readKeyword(ifstream &meshfile);
+  void readData(ifstream &meshfile);
+  void readEndKeyword(ifstream &meshfile);
 
-  public:
-/*!
+public:
+  /*!
  * \brief Returns all of the data field values for each of the nodes.
  * \return The data field values for each of the nodes.
  */
-    vector_vector_dbl  get_data() const { return data; }
-/*!
+  vector_vector_dbl get_data() const { return data; }
+  /*!
  * \brief Returns all of the data field values for the specified node.
  * \param node_numb Node number.
  * \return The node data field values.
  */
-    vector_dbl get_data(int node_numb) const { return data[node_numb]; }
-/*!
+  vector_dbl get_data(int node_numb) const { return data[node_numb]; }
+  /*!
  * \brief Returns the specified data field value for the specified node.
  * \param node_numb Node number.
  * \param data_index Data field.
  * \return The node data field value.
  */
-    double get_data(int node_numb,int data_index) const
-    { return data[node_numb][data_index]; }
+  double get_data(int node_numb, int data_index) const {
+    return data[node_numb][data_index];
+  }
 };
 
 } // end namespace rtt_RTT_Format_Reader

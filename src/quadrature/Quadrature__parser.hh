@@ -11,11 +11,10 @@
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
 //---------------------------------------------------------------------------------------//
 
-#include "parser/Class_Parse_Table.hh"
 #include "Quadrature.hh"
+#include "parser/Class_Parse_Table.hh"
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using rtt_dsxx::SP;
 using rtt_quadrature::Quadrature;
 
@@ -26,48 +25,42 @@ using rtt_quadrature::Quadrature;
  */
 //=======================================================================================//
 
-template<>
-class Class_Parse_Table<Quadrature>
-{
-  public:
+template <> class Class_Parse_Table<Quadrature> {
+public:
+  // TYPEDEFS
 
-    // TYPEDEFS
+  typedef Quadrature Return_Class;
 
-    typedef Quadrature Return_Class;
+  // MANAGEMENT
 
-    // MANAGEMENT
+  Class_Parse_Table();
 
-    Class_Parse_Table();
+  // SERVICES
 
-    // SERVICES
+  Parse_Table const &parse_table() const { return parse_table_; }
 
-    Parse_Table const &parse_table() const { return parse_table_; }
+  bool allow_exit() const { return true; }
 
-    bool allow_exit() const { return true; }
+  void check_completeness(Token_Stream &tokens);
 
-    void check_completeness(Token_Stream &tokens);
+  SP<Quadrature> create_object();
 
-    SP<Quadrature> create_object();
+  // STATICS
 
-    // STATICS
+  static void
+  register_quadrature(string const &keyword,
+                      SP<Quadrature> parse_function(Token_Stream &));
 
-    static void register_quadrature(string const &keyword,
-                                    SP<Quadrature> parse_function(Token_Stream&) );
+private:
+  // STATICS
 
-  private:
+  static Parse_Table &get_parse_table() { return parse_table_; }
 
-    // STATICS
+  static SP<Quadrature> &get_parsed_object();
 
-    static Parse_Table &get_parse_table()
-    {
-        return parse_table_;
-    }
-
-    static SP<Quadrature> &get_parsed_object();
-
-    static Class_Parse_Table *current_;
-    static Parse_Table parse_table_;
-    static SP<Quadrature> parsed_quadrature_;
+  static Class_Parse_Table *current_;
+  static Parse_Table parse_table_;
+  static SP<Quadrature> parsed_quadrature_;
 };
 
 } // end namespace rtt_quadrature

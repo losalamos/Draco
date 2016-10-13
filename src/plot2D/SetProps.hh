@@ -18,8 +18,7 @@
 #include "SymbolProps.hh"
 #include <string>
 
-namespace rtt_plot2D
-{
+namespace rtt_plot2D {
 
 //===========================================================================//
 /*!
@@ -30,20 +29,18 @@ namespace rtt_plot2D
   See Grace documentation for a detailed explanation of properties.
 */
 //===========================================================================//
-class SetProps
-{
-  public:
+class SetProps {
+public:
+  SetProps(void) : symbol(), line(), legend(){/*empty*/};
 
-    SetProps(void) : symbol(), line(), legend() {/*empty*/};
-    
-    //! The symbol properties
-    SymbolProps symbol;
+  //! The symbol properties
+  SymbolProps symbol;
 
-    //! The line properties
-    LineProps line;
+  //! The line properties
+  LineProps line;
 
-    //! Legend title
-    std::string legend;
+  //! Legend title
+  std::string legend;
 };
 
 } // namespace rtt_plot2D

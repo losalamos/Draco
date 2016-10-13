@@ -11,42 +11,6 @@
 # requires parse_arguments()
 include( parse_arguments )
 
-#------------------------------------------------------------------------------#
-# When on MIC Configure a script that helps run tests on the MIC node.
-#------------------------------------------------------------------------------#
-if( HAVE_MIC )
-  if( EXISTS ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in AND
-      NOT EXISTS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
-
-    # When configuring Draco, generate a script that will be used to
-    # start tests on the MIC processor.
-
-    # This script sets up Intel MPI to allow code execution on the backend
-    # (mic) portion of the node.
-    set( PATH $ENV{PATH} )
-    set( LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH} )
-    find_program( MPIVARS_SCRIPT mpivars.sh )
-    configure_file(
-      ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in
-      ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-      @ONLY )
-    set( DRACO_MIC_TEST_DRIVER
-      ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-      CACHE FILEPATH
-      "Shell script used to run unit tests on Knights Corner MIC processor.")
-
-  else()
-    # For Jayenne and Capsaicin, locate the run_test_on_mic.sh script
-    if( EXISTS ${DRACO_CONFIG_DIR}/run_test_on_mic.sh )
-      set( DRACO_MIC_TEST_DRIVER
-        ${DRACO_CONFIG_DIR}/run_test_on_mic.sh
-        CACHE FILEPATH
-        "Shell script used to run unit tests on Knights Corner MIC processor.")
-    endif()
-  endif()
-
-endif()
-
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_executable'
 #
@@ -411,8 +375,8 @@ macro( add_component_library )
   ")
   endif()
 
-  # Only publish information to draco-config.cmake for non-test
-  # libraries.  Also, omit any libraries that are marked as NOEXPORT
+  # Only publish information to draco-config.cmake for non-test libraries.
+  # Also, omit any libraries that are marked as NOEXPORT
   if( NOT ${acl_NOEXPORT} AND
       NOT "${acl_TARGET}" MATCHES "test" )
 
@@ -462,25 +426,17 @@ macro( register_scalar_test targetname runcmd command cmd_args )
   separate_arguments( cmdargs UNIX_COMMAND ${cmd_args} )
   add_test( NAME ${targetname} COMMAND ${RUN_CMD} ${command} ${cmdargs} )
 
-  # Reserve enough threads for application unit tests.  Normally we only need 1
+  # Reserve enough threads for application unit tests. Normally we only need 1
   # core for each scalar test.
   set( num_procs 1 )
 
-  # On Cray machines, multiple independent processes cannot share cores on a
-  # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
-  # be exactly the number of cores per node.
-  if( CRAY_PE )
-    set( num_procs ${MPI_CORES_PER_CPU} )
-  else()
-    # For application unit tests, a parallel job is forked that needs more
-    # cores.
-    if( addscalartest_APPLICATION_UNIT_TEST )
-      if( "${cmd_args}" MATCHES "--np" AND NOT "${cmd_args}" MATCHES "scalar")
-        string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs "${cmd_args}" )
-        # the forked processes needs $num_proc threads.  add one for the master
-        # thread, the original scalar process.
-        math( EXPR num_procs  "${num_procs} + 1" )
-      endif()
+  # For application unit tests, a parallel job is forked that needs more cores.
+  if( addscalartest_APPLICATION_UNIT_TEST )
+    if( "${cmd_args}" MATCHES "--np" AND NOT "${cmd_args}" MATCHES "scalar")
+      string( REGEX REPLACE "--np ([0-9]+)" "\\1" num_procs "${cmd_args}" )
+      # the forked processes needs $num_proc threads.  add one for the master
+      # thread, the original scalar process.
+      math( EXPR num_procs  "${num_procs} + 1" )
     endif()
   endif()
 
@@ -520,31 +476,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
   if( VERBOSE )
     message( "      Adding test: ${targetname}" )
   endif()
-
-  if( HAVE_MIC )
-    # For MIC nodes, ssh to the node and then run a script that
-    # setups the local environment (PATHS, LD_LIBRARY_PATH, etc.)
-    # and then run the test normally.
-    set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
-  else()
-    unset( RUN_CMD )
-  endif()
-
-  # For Cray Environments, we want each job to fill an entire node.  To do this
-  # we set the '-d' (depth) option so that n*d=MPI_CORES_PER_CPU
-  if( "${MPIEXEC}" MATCHES "aprun" )
-    math( EXPR rpt_aprun_depth "${MPI_CORES_PER_CPU} / ${numPE}")
-    #math( EXPR rpt_remainder "${MPI_CORES_PER_CPU} % ${numPE}" )
-    #if( ${rpt_remainder} GREATER "0" )
-    #  message(FATAL_ERROR
-    #    "Expecting the requested number of ranks (${numPE}) to be a factor of
-    #     the ranks/node (${MPI_CORES_PER_CPU}).
-    #     targetname = ${targetname}
-    #" )
-    #endif()
-    #unset(rpt_remainder)
-    set( rpt_aprun_depth "-d ${rpt_aprun_depth}" )
-  endif()
+  unset( RUN_CMD )
 
   if( addparalleltest_MPI_PLUS_OMP )
     string( REPLACE " " ";" mpiexec_omp_postflags_list "${MPIEXEC_OMP_POSTFLAGS}" )
@@ -556,19 +488,10 @@ macro( register_parallel_test targetname numPE command cmd_args )
               ${cmdarg}
               )
   else()
-# message("
-#     add_test(
-#       NAME    ${targetname}
-#       COMMAND ${RUN_CMD} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-#               ${rpt_aprun_depth} ${MPIRUN_POSTFLAGS}
-#               ${command}
-#               ${cmdarg}
-#               )
-# ")
     add_test(
       NAME    ${targetname}
       COMMAND ${RUN_CMD} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
-              ${rpt_aprun_depth} ${MPIRUN_POSTFLAGS}
+              ${MPIRUN_POSTFLAGS}
               ${command}
               ${cmdarg}
               )
@@ -596,18 +519,6 @@ macro( register_parallel_test targetname numPE command cmd_args )
       math( EXPR numthreads "${numPE} * ${MPI_CORES_PER_CPU}" )
     endif()
 
-    # On Cray machines, multiple independent processes cannot share cores on a
-    # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
-    # be exactly the number of cores per node.
-    if( "${MPIEXEC}" MATCHES "aprun" )
-      math( EXPR nnodes "${numthreads} / ${MPI_CORES_PER_CPU}" )
-      math( EXPR nnodes_remainder "${numthreads} % ${MPI_CORES_PER_CPU}" )
-      if( "${nnodes_remainder}" GREATER "0" )
-        math( EXPR nnodes "${nnodes} + 1" )
-      endif()
-      math( EXPR numthreads "${nnodes} * ${MPI_CORES_PER_CPU}" )
-    endif()
-
     if( MPI_HYPERTHREADING )
       math( EXPR numthreads "2 * ${numthreads}" )
     endif()
@@ -625,22 +536,10 @@ macro( register_parallel_test targetname numPE command cmd_args )
       set_tests_properties( ${targetname}
           PROPERTIES LABELS "${addparalleltest_LABEL}" )
     endif()
-
-    if( "${MPIEXEC}" MATCHES "aprun" )
-      #message("
-      #  set_tests_properties( ${targetname}
-      #    PROPERTIES PROCESSORS ${MPI_CORES_PER_CPU} )")
-      set_tests_properties( ${targetname}
-        PROPERTIES PROCESSORS "${MPI_CORES_PER_CPU}" )
-    else()
-      set_tests_properties( ${targetname}
-        PROPERTIES PROCESSORS "${numPE}" )
-    endif()
+    set_tests_properties( ${targetname} PROPERTIES PROCESSORS "${numPE}" )
 
   endif()
 
-  # cleanup
-  unset( rpt_aprun_depth )
 endmacro()
 
 #----------------------------------------------------------------------#
@@ -662,9 +561,9 @@ function( copy_dll_link_libraries_to_build_dir target )
     return()
   endif()
 
-  # Debug dependencies for a particular target (uncomment the next line and provide
-  # the targetname):
-  if( "Exe_draco_info_gui_foo" STREQUAL ${target} ) # "Ut_${compname}_${testname}_exe"
+  # Debug dependencies for a particular target (uncomment the next line and
+  # provide the targetname): "Ut_${compname}_${testname}_exe"
+  if( "Exe_draco_info_gui_foo" STREQUAL ${target} )
      set(lverbose ON)
   endif()
 
@@ -683,7 +582,8 @@ function( copy_dll_link_libraries_to_build_dir target )
   endif()
 
   set( old_link_libs "" )
-  # Walk through the library dependencies to build a list of all .dll dependencies.
+  # Walk through the library dependencies to build a list of all .dll
+  # dependencies.
   while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
     if(lverbose)
        message("
@@ -694,8 +594,8 @@ function( copy_dll_link_libraries_to_build_dir target )
       if( lverbose )
         message("  examine dependencies for lib           = ${lib}")
       endif()
-      # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual path
-      # to a library (c:\lib\gsl.lib).
+      # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual
+      # path to a library (c:\lib\gsl.lib).
       if( NOT EXISTS ${lib} )
         # Must be a CMake target... find it's dependencies...
         # The target may be
@@ -830,19 +730,14 @@ macro( add_scalar_tests test_sources )
 
   # Special Cases:
   # ------------------------------------------------------------
-  # On some platforms (Cielo, Cielito, RedStorm), even scalar tests
-  # must be run underneath MPIEXEC (yod, aprun):
+  # On some platforms (Trinity), even scalar tests must be run underneath
+  # MPIEXEC (aprun):
   separate_arguments(MPIEXEC_POSTFLAGS)
   if( "${MPIEXEC}" MATCHES "aprun" )
-    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1 )
+    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1)
     set( APT_TARGET_FILE_PREFIX "./" )
-  elseif(  "${MPIEXEC}" MATCHES "yod" )
-    set( RUN_CMD ${MPIEXEC} -np 1 )
   elseif( "${MPIEXEC}" MATCHES "srun" )
     set( RUN_CMD ${MPIEXEC} -n 1 )
-  elseif( HAVE_MIC )
-    # ssh mic-node <wrapper-script> <work_dir> <unit_test arg1 arg2 arg3...>
-    set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
@@ -850,17 +745,16 @@ macro( add_scalar_tests test_sources )
   # Special cases for tests that use the ApplicationUnitTest
   # framework (see c4/ApplicationUnitTest.hh).
   if( addscalartest_APPLICATION_UNIT_TEST )
-    # This is a special case for Cray environments.  For application unit tests,
+    # This is a special case for Cray environments. For application unit tests,
     # the main test runs on the 'login' node (1 rank only) and the real test is
     # run under 'aprun'.  So we do not prefix the test command with 'aprun'.
     if( "${MPIEXEC}" MATCHES "aprun" )
       unset( RUN_CMD )
     endif()
 
-    # If this is an ApplicationUnitTest based test then the
-    # TEST_ARGS will look like "--np 1;--np 2;--np 4".  For the case
-    # where DRACO_C4 = SCALAR, we will automatically demote these
-    # arguments to "--np scalar."
+    # If this is an ApplicationUnitTest based test then the TEST_ARGS will look
+    # like "--np 1;--np 2;--np 4".  For the case where DRACO_C4 = SCALAR, we
+    # will automatically demote these arguments to "--np scalar."
     if( "${DRACO_C4}" MATCHES "SCALAR" )
       set( addscalartest_TEST_ARGS "--np scalar" )
     endif()

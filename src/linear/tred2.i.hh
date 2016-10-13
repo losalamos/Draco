@@ -14,12 +14,11 @@
 #ifndef linear_tred2_i_hh
 #define linear_tred2_i_hh
 
+#include "tred2.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
-#include "tred2.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 // Use explicit instantiations.
 
@@ -51,110 +50,86 @@ namespace rtt_linear
  * \post \c d.size()==n
  * \post \c e.size()==n
  */
-template<class FieldVector1, class FieldVector2, class FieldVector3>
-void tred2(FieldVector1 &a,
-	   unsigned n,
-	   FieldVector2 &d,
-	   FieldVector3 &e)
-{
-    Require(a.size()==n*n);
-// O(N*N)    Require(is_symmetric_matrix(a,n));
-    Require(n>0);
+template <class FieldVector1, class FieldVector2, class FieldVector3>
+void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
+  Require(a.size() == n * n);
+  // O(N*N)    Require(is_symmetric_matrix(a,n));
+  Require(n > 0);
 
-    using namespace rtt_dsxx;
+  using namespace rtt_dsxx;
 
-    typedef typename FieldVector1::value_type Field;
+  typedef typename FieldVector1::value_type Field;
 
-    d.resize(n);
-    e.resize(n);
+  d.resize(n);
+  e.resize(n);
 
-    for (unsigned i=n-1;i>0;i--)
-    {
-	const unsigned l=i-1;
-	Field h = 0.0;
-	Field scale = 0.0;
-	if (l>0)
-	{
-	    for (unsigned k=0;k<=l;k++)
-	    {
-		scale += std::abs(a[i+n*k]);
-	    }
-	    if (scale == 0.0) 
-	    {
-		e[i] = a[i+n*l];
-	    }
-	    else 
-	    {
-		for (unsigned k=0;k<=l;k++)
-		{
-		    a[i+n*k] /= scale;
-		    h += a[i+n*k]*a[i+n*k];
-		}
-		Field f = a[i+n*l];
-		Field g = -sign(std::sqrt(h), f);
-		e[i] = scale*g;
-		h -= f*g;
-		a[i+n*l] = f-g;
-		f = 0.0;
-		for (unsigned j=0;j<=l;j++)
-		{
-		    a[j+n*i] = a[i+n*j]/h;
-		    g = 0.0;
-		    for (unsigned k=0;k<=j;k++)
-		    {
-			g += a[j+n*k]*a[i+n*k];
-		    }
-		    for (unsigned k=j+1;k<=l;k++)
-		    {
-			g += a[k+n*j]*a[i+n*k];
-		    }
-		    e[j] = g/h;
-		    f += e[j]*a[i+n*j];
-		}
-		const double hh = f/(h+h);
-		for (unsigned j=0;j<=l;j++)
-		{
-		    f=a[i+n*j];
-		    e[j] = g = e[j]-hh*f;
-		    for (unsigned k=0;k<=j;k++)
-		    {
-			a[j+n*k] -= f*e[k] + g*a[i+n*k];
-		    }
-		}
-	    }
-	}
-	else
-	{
-	    e[i] = a[i+n*l];
-	}
-	d[i] = h;
+  for (unsigned i = n - 1; i > 0; i--) {
+    const unsigned l = i - 1;
+    Field h = 0.0;
+    Field scale = 0.0;
+    if (l > 0) {
+      for (unsigned k = 0; k <= l; k++) {
+        scale += std::abs(a[i + n * k]);
+      }
+      if (scale == 0.0) {
+        e[i] = a[i + n * l];
+      } else {
+        for (unsigned k = 0; k <= l; k++) {
+          a[i + n * k] /= scale;
+          h += a[i + n * k] * a[i + n * k];
+        }
+        Field f = a[i + n * l];
+        Field g = -sign(std::sqrt(h), f);
+        e[i] = scale * g;
+        h -= f * g;
+        a[i + n * l] = f - g;
+        f = 0.0;
+        for (unsigned j = 0; j <= l; j++) {
+          a[j + n * i] = a[i + n * j] / h;
+          g = 0.0;
+          for (unsigned k = 0; k <= j; k++) {
+            g += a[j + n * k] * a[i + n * k];
+          }
+          for (unsigned k = j + 1; k <= l; k++) {
+            g += a[k + n * j] * a[i + n * k];
+          }
+          e[j] = g / h;
+          f += e[j] * a[i + n * j];
+        }
+        const double hh = f / (h + h);
+        for (unsigned j = 0; j <= l; j++) {
+          f = a[i + n * j];
+          e[j] = g = e[j] - hh * f;
+          for (unsigned k = 0; k <= j; k++) {
+            a[j + n * k] -= f * e[k] + g * a[i + n * k];
+          }
+        }
+      }
+    } else {
+      e[i] = a[i + n * l];
     }
-    d[0] = 0.0;
-    e[0] = 0.0;
-    for (unsigned i=0;i<n;i++)
-    {
-	if (d[i] != 0)
-	{
-	    for (unsigned j=0;j<i;j++)
-	    {
-		double g=0.0;
-		for (unsigned k=0;k<i;k++)
-		{
-		    g += a[i+n*k]*a[k+n*j];
-		}
-		for (unsigned k=0;k<i;k++)
-		{
-		    a[k+n*j] -= g*a[k+n*i];
-		}
-	    }
-	}
-	d[i] = a[i+n*i];
-	a[i+n*i] = 1.0;
-	for (unsigned j=0;j<i;j++)
-	{
-	    a[j+n*i] = a[i+n*j] = 0.0;
-	}
+    d[i] = h;
+  }
+  d[0] = 0.0;
+  e[0] = 0.0;
+  for (unsigned i = 0; i < n; i++) {
+    if (d[i] != 0) {
+      for (unsigned j = 0; j < i; j++) {
+        double g = 0.0;
+        for (unsigned k = 0; k < i; k++) {
+          g += a[i + n * k] * a[k + n * j];
+        }
+        for (unsigned k = 0; k < i; k++) {
+          a[k + n * j] -= g * a[k + n * i];
+        }
+      }
     }
+    d[i] = a[i + n * i];
+    a[i + n * i] = 1.0;
+    for (unsigned j = 0; j < i; j++) {
+      a[j + n * i] = a[i + n * j] = 0.0;
+    }
+  }
 }
 
 } // end namespace rtt_linear

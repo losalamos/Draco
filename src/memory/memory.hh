@@ -13,13 +13,12 @@
 #ifndef memory_memory_hh
 #define memory_memory_hh
 
-#include <cstdlib>
-#include <stdint.h> // cstdint not available on PGI
-#include <iostream>
 #include "ds++/config.h" // defines DRACO_DIAGNOSTICS
+#include <cstdlib>
+#include <iostream>
+#include <stdint.h> // cstdint not available on PGI
 
-namespace rtt_memory
-{
+namespace rtt_memory {
 
 bool set_memory_checking(bool new_status);
 
@@ -29,7 +28,7 @@ uint64_t largest_allocation();
 
 void report_leaks(std::ostream &);
 
-//! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc. 
+//! Register rtt_dsxx::print_stacktrace() as the respose to std::bad_alloc.
 void out_of_memory_handler(void);
 
 } // namespace rtt_memory

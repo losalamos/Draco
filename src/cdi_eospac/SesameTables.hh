@@ -16,13 +16,12 @@
 #define __cdi_eospac_SesameTables_hh__
 
 #include "eos_Interface.h"
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
-namespace rtt_cdi_eospac
-{
- 
+namespace rtt_cdi_eospac {
+
 //===========================================================================//
 /*!
  * \class SesameTables
@@ -46,77 +45,75 @@ namespace rtt_cdi_eospac
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //===========================================================================//
-    
-class SesameTables 
-{
-    // DATA
-	
-    //! There are 305 return types defined by EOSPAC (see eos_Interface.h)
-    unsigned const numReturnTypes; // should be 305 
 
-    /*!
+class SesameTables {
+  // DATA
+
+  //! There are 305 return types defined by EOSPAC (see eos_Interface.h)
+  unsigned const numReturnTypes; // should be 305
+
+  /*!
      * \brief Map from EOSPAC data type to material identifier.
      *
      * Each of the enumerated EOSPAC data types can have a different
      * SesameTable material identifier.  This vector contains a list of these
      * material IDs.
      */
-    std::map< EOS_INTEGER, unsigned > matMap;
-    // std::vector< unsigned > matMap;
+  std::map<EOS_INTEGER, unsigned> matMap;
+  // std::vector< unsigned > matMap;
 
-    //! Toggle list to identify which data types have been requested
-    // (materialID, data type)
-    std::map< unsigned, std::vector<EOS_INTEGER> > rtMap;
+  //! Toggle list to identify which data types have been requested
+  // (materialID, data type)
+  std::map<unsigned, std::vector<EOS_INTEGER>> rtMap;
 
-  public:
-    
-    // DATA
-    
-    //! Return the table name based on the enum.
-    std::vector< std::string > const tableName;
+public:
+  // DATA
 
-    //! Return a description of the table based on the enum
-    std::vector< std::string > const tableDescription;
+  //! Return the table name based on the enum.
+  std::vector<std::string> const tableName;
 
-    // CREATORS
+  //! Return a description of the table based on the enum
+  std::vector<std::string> const tableDescription;
 
-    //! Default constructor
-    SesameTables(void)
-        : numReturnTypes( EOS_M_DT+1 ), //  EOS_M_DT = 305 (see eos_Interface.h)
-          matMap(), rtMap(),
-          tableName(        initializeTableNames(numReturnTypes) ),
-          tableDescription( initializeTableDescriptions(numReturnTypes) )
-    { /* empty */ }
-    
-    //! Construct by unpacking a vector<char> stream.
-    explicit SesameTables( std::vector<char> const & packed );
-	
-    // ACCESSORS
+  // CREATORS
 
-    // set functions: Uncomment when these are needed and unit tests are added.
+  //! Default constructor
+  SesameTables(void)
+      : numReturnTypes(EOS_M_DT + 1), //  EOS_M_DT = 305 (see eos_Interface.h)
+        matMap(), rtMap(), tableName(initializeTableNames(numReturnTypes)),
+        tableDescription(
+            initializeTableDescriptions(numReturnTypes)) { /* empty */
+  }
 
-    SesameTables& addTable( EOS_INTEGER const tableID, unsigned const matID );
-    
-    //! Thermal Conductivity (1/cm/s)
-    SesameTables& Ktc_DT( unsigned matID );
-    //! Electron Specific-Internal-Energy (MJ/kg)
-    SesameTables& Ue_DT( unsigned matID ); 
-    //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
-    SesameTables& Uic_DT( unsigned matID );
-    //! Mean Ion Charge (Conductivity Model) (free electrons per atom)
-    SesameTables& Zfc_DT( unsigned matID );
-    //! Total Pressure (GPa)
-    SesameTables& Pt_DT( unsigned matID );
-    //! Vapor Density on coexistence line (Mg/m^3) from table 401
-    SesameTables& Dv_T( unsigned matID );
-    //! Calculated versus Interpolated Opacity Grid Boundary (from table 501)
-    SesameTables& Ogb( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DUe( unsigned matID );
-    //! Temperature (K)
-    SesameTables& T_DUic( unsigned matID ); 
+  //! Construct by unpacking a vector<char> stream.
+  explicit SesameTables(std::vector<char> const &packed);
+
+  // ACCESSORS
+
+  // set functions: Uncomment when these are needed and unit tests are added.
+
+  SesameTables &addTable(EOS_INTEGER const tableID, unsigned const matID);
+
+  //! Thermal Conductivity (1/cm/s)
+  SesameTables &Ktc_DT(unsigned matID);
+  //! Electron Specific-Internal-Energy (MJ/kg)
+  SesameTables &Ue_DT(unsigned matID);
+  //! Ion Specific-Internal-Energy plus Cold Curve Specific-Internal-Energy (MJ/kg)
+  SesameTables &Uic_DT(unsigned matID);
+  //! Mean Ion Charge (Conductivity Model) (free electrons per atom)
+  SesameTables &Zfc_DT(unsigned matID);
+  //! Total Pressure (GPa)
+  SesameTables &Pt_DT(unsigned matID);
+  //! Vapor Density on coexistence line (Mg/m^3) from table 401
+  SesameTables &Dv_T(unsigned matID);
+  //! Calculated versus Interpolated Opacity Grid Boundary (from table 501)
+  SesameTables &Ogb(unsigned matID);
+  //! Temperature (K)
+  SesameTables &T_DUe(unsigned matID);
+  //! Temperature (K)
+  SesameTables &T_DUic(unsigned matID);
 
 #if 0
     //! Temperature (K)
@@ -180,46 +177,45 @@ class SesameTables
     //! Mean Ion Charge (Opacity Modlel) (free electrons per atom)
     SesameTables& Zfo_DT( unsigned matID );
 #endif
-    
-    // Get functions
-	
-    //! Return the material identifier associated with a Sesame return type.
-    unsigned matID( EOS_INTEGER returnType ) const;
 
-    //! Return the enumerated data type associated with the integer index.
-    std::vector<EOS_INTEGER> returnTypes( unsigned const index ) const;
+  // Get functions
 
-    //! Return a list of table/material identifiers associated with this
-    //! SesameTables object.
-    std::vector<unsigned> matList(void) const
-    {
-        std::vector<unsigned> mlist;
-        for( std::map< unsigned, std::vector<EOS_INTEGER> >::const_iterator
-                 it=rtMap.begin(); it != rtMap.end(); ++it )
-            mlist.push_back((*it).first);
-        return mlist;
-    }
-    
-    //! Return the number of return types 
-    // unsigned getNumReturnTypes() const { return numReturnTypes; }
+  //! Return the material identifier associated with a Sesame return type.
+  unsigned matID(EOS_INTEGER returnType) const;
 
-    //! Pack a SesameTables object into a vector<char> stream.
-    std::vector<char> pack() const;
+  //! Return the enumerated data type associated with the integer index.
+  std::vector<EOS_INTEGER> returnTypes(unsigned const index) const;
 
-    //! Print a list of EOS tables that EOSPAC knows about
-    void printEosTableList() const;
-    
-    // implementation
-    static std::vector< std::string > initializeTableNames(
-        size_t const datasize );
-    static std::vector< std::string > initializeTableDescriptions(
-        size_t const datasize );
-    
+  //! Return a list of table/material identifiers associated with this
+  //! SesameTables object.
+  std::vector<unsigned> matList(void) const {
+    std::vector<unsigned> mlist;
+    for (std::map<unsigned, std::vector<EOS_INTEGER>>::const_iterator it =
+             rtMap.begin();
+         it != rtMap.end(); ++it)
+      mlist.push_back((*it).first);
+    return mlist;
+  }
+
+  //! Return the number of return types
+  // unsigned getNumReturnTypes() const { return numReturnTypes; }
+
+  //! Pack a SesameTables object into a vector<char> stream.
+  std::vector<char> pack() const;
+
+  //! Print a list of EOS tables that EOSPAC knows about
+  void printEosTableList() const;
+
+  // implementation
+  static std::vector<std::string> initializeTableNames(size_t const datasize);
+  static std::vector<std::string>
+  initializeTableDescriptions(size_t const datasize);
+
 }; // end class SesameTables
-    
+
 } // end namespace rtt_cdi_eospac
 
-#endif  // __cdi_eospac_SesameTables_hh__
+#endif // __cdi_eospac_SesameTables_hh__
 
 //---------------------------------------------------------------------------//
 // end of cdi_eospac/SesameTables.hh

@@ -8,16 +8,13 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef <spkg>_<class>_t_hh
 #define <spkg>_<class>_t_hh
 
 #include "<basename>.hh"
 
-namespace <namespace>
-{
+namespace <namespace> {
 
 } // end namespace <namespace>
 

@@ -3,8 +3,6 @@
 ;; Kelly (K.T.) Thompson
 ;; May 25, 2001
 ;;---------------------------------------------------------------------------;;
-;; $Id$
-;;---------------------------------------------------------------------------;;
 ;; DRACO MENU
 ;;---------------------------------------------------------------------------;;
 
@@ -46,8 +44,10 @@
 
 (defun draco-menu-insert-extras() "Submenu with extra stuff."
   (list "Extras..."
-	["Find companion file"          draco-find-companion-file t]
-	["Customize Draco-mode" (customize-group 'draco-mode) t]))
+	["Find companion file"  draco-find-companion-file t]
+	["Customize Draco-mode" (customize-group 'draco-mode) t]
+	["Clang-format region"  clang-format-region t]
+	["Clang-format buffer"  clang-format-buffer t]))
 
 (defvar draco-menu nil
   "The Draco menu for XEmacs.")

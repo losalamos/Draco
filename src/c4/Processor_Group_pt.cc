@@ -18,20 +18,18 @@
 #include "Processor_Group.hh"
 #include "Processor_Group.i.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 using namespace std;
 
 template DLL_PUBLIC_c4 void Processor_Group::sum(vector<double> &values);
 
-template DLL_PUBLIC_c4 void Processor_Group::assemble_vector(
-    vector<double> const &local,
-    vector<double> &global) const;
+template DLL_PUBLIC_c4 void
+Processor_Group::assemble_vector(vector<double> const &local,
+                                 vector<double> &global) const;
 
-template DLL_PUBLIC_c4 void Processor_Group::assemble_vector(
-    double const *local,
-    double *global,
-    unsigned count) const;
+template DLL_PUBLIC_c4 void
+Processor_Group::assemble_vector(double const *local, double *global,
+                                 unsigned count) const;
 
 } // end namespace rtt_c4
 

@@ -14,11 +14,10 @@
 #ifndef roots_quadratic_hh
 #define roots_quadratic_hh
 
-#include <cmath>
 #include "ds++/Assert.hh"
+#include <cmath>
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
 /*! Solve a quadratic equation.
@@ -40,20 +39,17 @@ namespace rtt_roots
  * decide which root to use for a particular application.
  */
 
-template<class Field>
-void quadratic(Field const &a,
-	       Field const &b,
-	       Field const &c,
-	       Field &r1,
-	       Field &r2)
-{
-    using namespace std;
-    
-    Field det = sqrt(b*b-4.*a*c);
-    if (b<0.0) det = -det;
-    Field const q = -0.5*(b+det);
-    r1 = q/a;
-    r2 = c/q;
+template <class Field>
+void quadratic(Field const &a, Field const &b, Field const &c, Field &r1,
+               Field &r2) {
+  using namespace std;
+
+  Field det = sqrt(b * b - 4. * a * c);
+  if (b < 0.0)
+    det = -det;
+  Field const q = -0.5 * (b + det);
+  r1 = q / a;
+  r2 = c / q;
 }
 
 } // end namespace rtt_roots

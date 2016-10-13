@@ -16,8 +16,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstantsSI.hh"
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 
 //===========================================================================//
 /*!
@@ -34,23 +33,22 @@ namespace rtt_parser
  */
 //===========================================================================//
 
-struct Unit
-{
-    // ----------------------------------------
-    // DATA
-    // ----------------------------------------
+struct Unit {
+  // ----------------------------------------
+  // DATA
+  // ----------------------------------------
 
-    double m;            //!< Length dimension
-    double kg;           //!< Mass dimension
-    double s;            //!< Time dimension
-    double A;            //!< Current dimension
-    double K;            //!< Temperature dimension
-    double mol;          //!< Quantity dimension
-    double cd;           //!< Luminous intensity dimension
-    double rad;          //!< Plane angle dimension
-    double sr;           //!< Solid angle dimension
+  double m;   //!< Length dimension
+  double kg;  //!< Mass dimension
+  double s;   //!< Time dimension
+  double A;   //!< Current dimension
+  double K;   //!< Temperature dimension
+  double mol; //!< Quantity dimension
+  double cd;  //!< Luminous intensity dimension
+  double rad; //!< Plane angle dimension
+  double sr;  //!< Solid angle dimension
 
-    double conv;         //!< Conversion factor
+  double conv; //!< Conversion factor
 };
 
 //---------------------------------------------------------------------------//
@@ -62,23 +60,22 @@ struct Unit
  * \return Product of the two factors
  */
 
-inline Unit operator*(Unit const &a, Unit const &b)
-{
-    Unit Result;
+inline Unit operator*(Unit const &a, Unit const &b) {
+  Unit Result;
 
-    Result.m   = a.m   + b.m;
-    Result.kg  = a.kg  + b.kg;
-    Result.s   = a.s   + b.s;
-    Result.A   = a.A   + b.A;
-    Result.K   = a.K   + b.K;
-    Result.mol = a.mol + b.mol;
-    Result.cd  = a.cd  + b.cd;
-    Result.rad = a.rad + b.rad;
-    Result.sr  = a.sr  + b.sr;
+  Result.m = a.m + b.m;
+  Result.kg = a.kg + b.kg;
+  Result.s = a.s + b.s;
+  Result.A = a.A + b.A;
+  Result.K = a.K + b.K;
+  Result.mol = a.mol + b.mol;
+  Result.cd = a.cd + b.cd;
+  Result.rad = a.rad + b.rad;
+  Result.sr = a.sr + b.sr;
 
-    Result.conv = a.conv*b.conv;
+  Result.conv = a.conv * b.conv;
 
-    return Result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -90,13 +87,12 @@ inline Unit operator*(Unit const &a, Unit const &b)
  * \return Product of the two factors
  */
 
-inline Unit operator*(double const a, Unit const &b)
-{
-    Unit Result = b;
+inline Unit operator*(double const a, Unit const &b) {
+  Unit Result = b;
 
-    Result.conv = a * b.conv;
+  Result.conv = a * b.conv;
 
-    return Result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -108,10 +104,7 @@ inline Unit operator*(double const a, Unit const &b)
  * \return Product of the two factors
  */
 
-inline Unit operator*(Unit const &b, double const a)
-{
-    return operator*(a, b);
-}
+inline Unit operator*(Unit const &b, double const a) { return operator*(a, b); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -122,23 +115,22 @@ inline Unit operator*(Unit const &b, double const a)
  * \return Ratio of the two factors
  */
 
-inline Unit operator/(Unit const &a, Unit const &b)
-{
-    Unit Result;
+inline Unit operator/(Unit const &a, Unit const &b) {
+  Unit Result;
 
-    Result.m   = a.m   - b.m;
-    Result.kg  = a.kg  - b.kg;
-    Result.s   = a.s   - b.s;
-    Result.A   = a.A   - b.A;
-    Result.K   = a.K   - b.K;
-    Result.mol = a.mol - b.mol;
-    Result.cd  = a.cd  - b.cd;
-    Result.rad = a.rad - b.rad;
-    Result.sr  = a.sr  - b.sr;
+  Result.m = a.m - b.m;
+  Result.kg = a.kg - b.kg;
+  Result.s = a.s - b.s;
+  Result.A = a.A - b.A;
+  Result.K = a.K - b.K;
+  Result.mol = a.mol - b.mol;
+  Result.cd = a.cd - b.cd;
+  Result.rad = a.rad - b.rad;
+  Result.sr = a.sr - b.sr;
 
-    Result.conv = a.conv/b.conv;
+  Result.conv = a.conv / b.conv;
 
-    return Result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -150,23 +142,22 @@ inline Unit operator/(Unit const &a, Unit const &b)
  * \return Reciprocal of the unit times the scalar
  */
 
-inline Unit operator/(double const a, Unit const &b)
-{
-    Unit Result;
+inline Unit operator/(double const a, Unit const &b) {
+  Unit Result;
 
-    Result.m   = -b.m;
-    Result.kg  = -b.kg;
-    Result.s   = -b.s;
-    Result.A   = -b.A;
-    Result.K   = -b.K;
-    Result.mol = -b.mol;
-    Result.cd  = -b.cd;
-    Result.rad = -b.rad;
-    Result.sr  = -b.sr;
+  Result.m = -b.m;
+  Result.kg = -b.kg;
+  Result.s = -b.s;
+  Result.A = -b.A;
+  Result.K = -b.K;
+  Result.mol = -b.mol;
+  Result.cd = -b.cd;
+  Result.rad = -b.rad;
+  Result.sr = -b.sr;
 
-    Result.conv = a/b.conv;
+  Result.conv = a / b.conv;
 
-    return Result;
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -178,10 +169,7 @@ inline Unit operator/(double const a, Unit const &b)
  * \return unit divided by the scalar
  */
 
-inline Unit operator/(Unit const &b, double const a)
-{
-    return b * (1/a);
-}
+inline Unit operator/(Unit const &b, double const a) { return b * (1 / a); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -192,21 +180,20 @@ inline Unit operator/(Unit const &b, double const a)
  * \return unit raised to power of the scalar
  */
 
-inline Unit pow(Unit const &b, double const a)
-{
-    Unit result = b;
-    result.m *= a;
-    result.kg *= a;
-    result.s *= a;
-    result.A *= a;
-    result.K *= a;
-    result.mol *= a;
-    result.cd *= a;
-    result.rad *= a;
-    result.sr *= a;
-    result.conv = std::pow(b.conv, a);
+inline Unit pow(Unit const &b, double const a) {
+  Unit result = b;
+  result.m *= a;
+  result.kg *= a;
+  result.s *= a;
+  result.A *= a;
+  result.K *= a;
+  result.mol *= a;
+  result.cd *= a;
+  result.rad *= a;
+  result.sr *= a;
+  result.conv = std::pow(b.conv, a);
 
-    return result;
+  return result;
 }
 
 //---------------------------------------------------------------------------//
@@ -222,19 +209,13 @@ inline Unit pow(Unit const &b, double const a)
  * \return \c true if the units are identical; \c false otherwise
  */
 
-inline bool operator==(Unit const &a, Unit const &b)
-{
-    using rtt_dsxx::soft_equiv;
-    return soft_equiv(a.m, b.m)  &&
-        soft_equiv(a.kg,b.kg)    &&
-        soft_equiv(a.s,b.s)      &&
-        soft_equiv(a.A,b.A)      &&
-	soft_equiv(a.K,b.K)      &&
-        soft_equiv(a.mol,b.mol)  &&
-        soft_equiv(a.cd,b.cd)    &&
-	soft_equiv(a.rad,b.rad)  &&
-        soft_equiv(a.sr,b.sr)    &&
-        soft_equiv(a.conv,b.conv);
+inline bool operator==(Unit const &a, Unit const &b) {
+  using rtt_dsxx::soft_equiv;
+  return soft_equiv(a.m, b.m) && soft_equiv(a.kg, b.kg) &&
+         soft_equiv(a.s, b.s) && soft_equiv(a.A, b.A) && soft_equiv(a.K, b.K) &&
+         soft_equiv(a.mol, b.mol) && soft_equiv(a.cd, b.cd) &&
+         soft_equiv(a.rad, b.rad) && soft_equiv(a.sr, b.sr) &&
+         soft_equiv(a.conv, b.conv);
 }
 
 //---------------------------------------------------------------------------//
@@ -248,10 +229,7 @@ inline bool operator==(Unit const &a, Unit const &b)
  * \return \c !(a==b)
  */
 
-inline bool operator!=(Unit const &a, Unit const &b)
-{
-    return !(a==b);
-}
+inline bool operator!=(Unit const &a, Unit const &b) { return !(a == b); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -265,11 +243,9 @@ inline bool operator!=(Unit const &a, Unit const &b)
  * \return \c true if the units are compatible; \c false otherwise
  */
 
-inline bool is_compatible(Unit const &a, Unit const &b)
-{
-    return a.m ==  b.m  &&  a.kg == b.kg  &&  a.s == b.s  &&  a.A == b.A  &&
-	a.K == b.K  &&  a.mol == b.mol  &&  a.cd == b.cd  &&
-	a.rad == b.rad  &&  a.sr == b.sr;
+inline bool is_compatible(Unit const &a, Unit const &b) {
+  return a.m == b.m && a.kg == b.kg && a.s == b.s && a.A == b.A && a.K == b.K &&
+         a.mol == b.mol && a.cd == b.cd && a.rad == b.rad && a.sr == b.sr;
 }
 
 //---------------------------------------------------------------------------//
@@ -277,69 +253,72 @@ inline bool is_compatible(Unit const &a, Unit const &b)
 
 DLL_PUBLIC_parser std::ostream &operator<<(std::ostream &, const Unit &);
 
-
 // Some useful examples
 
 // No units
 
 //! dimensionless quantity (pure number)
-Unit const dimensionless = { 0, 0, 0, 0, 0, 0, 0, 0, 0,  1};
+Unit const dimensionless = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
 
 // Fundamental SI units
 
-Unit const m   = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  1}; //!< meter
-Unit const kg  = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  1}; //!< kilogram
-Unit const s   = { 0, 0, 1, 0, 0, 0, 0, 0, 0,  1}; //!< second
-Unit const A   = { 0, 0, 0, 1, 0, 0, 0, 0, 0,  1}; //!< ampere
-Unit const K   = { 0, 0, 0, 0, 1, 0, 0, 0, 0,  1}; //!< Kelvin
-Unit const mol = { 0, 0, 0, 0, 0, 1, 0, 0, 0,  1}; //!< mole
-Unit const cd  = { 0, 0, 0, 0, 0, 0, 1, 0, 0,  1}; //!< candela
-Unit const rad = { 0, 0, 0, 0, 0, 0, 0, 1, 0,  1}; //!< radian
-Unit const sr  = { 0, 0, 0, 0, 0, 0, 0, 0, 1,  1}; //!< steradian
+Unit const m = {1, 0, 0, 0, 0, 0, 0, 0, 0, 1};   //!< meter
+Unit const kg = {0, 1, 0, 0, 0, 0, 0, 0, 0, 1};  //!< kilogram
+Unit const s = {0, 0, 1, 0, 0, 0, 0, 0, 0, 1};   //!< second
+Unit const A = {0, 0, 0, 1, 0, 0, 0, 0, 0, 1};   //!< ampere
+Unit const K = {0, 0, 0, 0, 1, 0, 0, 0, 0, 1};   //!< Kelvin
+Unit const mol = {0, 0, 0, 0, 0, 1, 0, 0, 0, 1}; //!< mole
+Unit const cd = {0, 0, 0, 0, 0, 0, 1, 0, 0, 1};  //!< candela
+Unit const rad = {0, 0, 0, 0, 0, 0, 0, 1, 0, 1}; //!< radian
+Unit const sr = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1};  //!< steradian
 
 // Derived SI units
 
-Unit const C  = { 0, 0, 1, 1, 0, 0, 0, 0, 0,  1}; //!< coulomb
-Unit const Hz = { 0, 0,-1, 0, 0, 0, 0, 0, 0,  1}; //!< hertz
-Unit const N  = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< newton
-Unit const J  = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< joule
-Unit const Pa = {-1, 1,-2, 0, 0, 0, 0, 0, 0,  1}; //!< pascal
-Unit const W  = { 2, 1,-3, 0, 0, 0, 0, 0, 0,  1}; //!< watt
-Unit const V  = { 2, 1,-3,-1, 0, 0, 0, 0, 0,  1}; //!< volt
-Unit const F  = {-2,-1, 4, 2, 0, 0, 0, 0, 0,  1}; //!< farad
-Unit const ohm ={ 2, 1,-3,-2, 0, 0, 0, 0, 0,  1}; //!< ohm
-Unit const S  = {-2,-1, 3, 2, 0, 0, 0, 0, 0,  1}; //!< siemens
-Unit const Wb = { 2, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< weber
-Unit const T  = { 0, 1,-2,-1, 0, 0, 0, 0, 0,  1}; //!< tesla
-Unit const H  = { 2, 1,-2,-2, 0, 0, 0, 0, 0,  1}; //!< henry
-Unit const lm = { 0, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lumen
-Unit const lx = {-2, 0, 0, 0, 0, 0, 1, 0, 1,  1}; //!< lux
+Unit const C = {0, 0, 1, 1, 0, 0, 0, 0, 0, 1};     //!< coulomb
+Unit const Hz = {0, 0, -1, 0, 0, 0, 0, 0, 0, 1};   //!< hertz
+Unit const N = {1, 1, -2, 0, 0, 0, 0, 0, 0, 1};    //!< newton
+Unit const J = {2, 1, -2, 0, 0, 0, 0, 0, 0, 1};    //!< joule
+Unit const Pa = {-1, 1, -2, 0, 0, 0, 0, 0, 0, 1};  //!< pascal
+Unit const W = {2, 1, -3, 0, 0, 0, 0, 0, 0, 1};    //!< watt
+Unit const V = {2, 1, -3, -1, 0, 0, 0, 0, 0, 1};   //!< volt
+Unit const F = {-2, -1, 4, 2, 0, 0, 0, 0, 0, 1};   //!< farad
+Unit const ohm = {2, 1, -3, -2, 0, 0, 0, 0, 0, 1}; //!< ohm
+Unit const S = {-2, -1, 3, 2, 0, 0, 0, 0, 0, 1};   //!< siemens
+Unit const Wb = {2, 1, -2, -1, 0, 0, 0, 0, 0, 1};  //!< weber
+Unit const T = {0, 1, -2, -1, 0, 0, 0, 0, 0, 1};   //!< tesla
+Unit const H = {2, 1, -2, -2, 0, 0, 0, 0, 0, 1};   //!< henry
+Unit const lm = {0, 0, 0, 0, 0, 0, 1, 0, 1, 1};    //!< lumen
+Unit const lx = {-2, 0, 0, 0, 0, 0, 1, 0, 1, 1};   //!< lux
 
 // CGS units
 
-Unit const cm   = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.01}; //!< centimeter
-Unit const g    = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  1e-3}; //!< gram
+Unit const cm = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0.01}; //!< centimeter
+Unit const g = {0, 1, 0, 0, 0, 0, 0, 0, 0, 1e-3};  //!< gram
 
-Unit const dyne = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  1e-5}; //!< dyne
-Unit const erg  = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1e-7}; //!< erg
+Unit const dyne = {1, 1, -2, 0, 0, 0, 0, 0, 0, 1e-5}; //!< dyne
+Unit const erg = {2, 1, -2, 0, 0, 0, 0, 0, 0, 1e-7};  //!< erg
 
 // English units
 
-Unit const inch  = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.0254};     //!< inch
-Unit const foot  = { 1, 0, 0, 0, 0, 0, 0, 0, 0,  0.3048};     //!< foot
-Unit const lbm   = { 0, 1, 0, 0, 0, 0, 0, 0, 0,  0.45359237}; //!< pound mass
-Unit const pound = { 1, 1,-2, 0, 0, 0, 0, 0, 0,  4.448221615};//!< pound force
+Unit const inch = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0.0254};        //!< inch
+Unit const foot = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0.3048};        //!< foot
+Unit const lbm = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0.45359237};     //!< pound mass
+Unit const pound = {1, 1, -2, 0, 0, 0, 0, 0, 0, 4.448221615}; //!< pound force
 
 // Miscellaneous units
 
-Unit const eV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  rtt_units::electronChargeSI};
+Unit const eV = {2, 1, -2, 0, 0, 0, 0, 0, 0, rtt_units::electronChargeSI};
 //!< Electron volts
-Unit const keV = { 2, 1,-2, 0, 0, 0, 0, 0, 0,  1e3*rtt_units::electronChargeSI};
+Unit const keV = {2, 1, -2, 0, 0,
+                  0, 0, 0,  0, 1e3 * rtt_units::electronChargeSI};
 //!< Thousands of electron volts
 
 // Numbers for which no conversion is requested
-Unit const constant = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< used for numbers with no units
-Unit const raw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< another name for numbers with no units, i.e.,
+Unit const constant = {0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 1.0}; //!< used for numbers with no units
+Unit const raw = {
+    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1.0}; //!< another name for numbers with no units, i.e.,
 
 //---------------------------------------------------------------------------//
 /*! Systems of units
@@ -359,25 +338,27 @@ Unit const raw = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0}; //!< another name for number
   double sr;           //!< Solid angle dimension
 */
 
-Unit const MKS = { 1.,   1.,    1., 1., 1., 1., 1., 1., 1.,  0.};
-Unit const CGS = { 0.01, 0.001, 1., 1., 1., 1., 1., 1., 1.,  0.};
-Unit const CGMU = { 0.01, 0.001, 1e-6, 1., 1., 1., 1., 1., 1.,  0.};
-Unit const CGSH = { 0.01, 0.001, 1e-8, 1., 1e3*rtt_units::EV2K, 1., 1., 1.,1.,  0.};
+Unit const MKS = {1., 1., 1., 1., 1., 1., 1., 1., 1., 0.};
+Unit const CGS = {0.01, 0.001, 1., 1., 1., 1., 1., 1., 1., 0.};
+Unit const CGMU = {0.01, 0.001, 1e-6, 1., 1., 1., 1., 1., 1., 0.};
+Unit const CGSH = {0.01, 0.001, 1e-8, 1., 1e3 * rtt_units::EV2K,
+                   1.,   1.,    1.,   1., 0.};
 
 //---------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are
 * initially MKS.
 */
 
-DLL_PUBLIC_parser double conversion_factor(Unit const &units, Unit const &unit_system);
+DLL_PUBLIC_parser double conversion_factor(Unit const &units,
+                                           Unit const &unit_system);
 
 //---------------------------------------------------------------------------//
 /*! Calculate conversion factor to a system of units. Assumes the units are
  * initially MKS.
  */
 
-DLL_PUBLIC_parser double conversion_factor(Unit const &units,
-                                    rtt_units::UnitSystem const &unit_system);
+DLL_PUBLIC_parser double
+conversion_factor(Unit const &units, rtt_units::UnitSystem const &unit_system);
 
 } // end namespace rtt_parser
 

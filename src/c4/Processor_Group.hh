@@ -20,8 +20,7 @@
 #include "c4_mpi.h"
 #include <vector>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //===========================================================================//
 /*!
@@ -35,62 +34,57 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Processor_Group 
-{
-  public:
+class DLL_PUBLIC_c4 Processor_Group {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
-    
-    //! Create a Process_Group based on a stride through the ranks.
-    explicit Processor_Group(unsigned const stride);
+  //! Create a Process_Group based on a stride through the ranks.
+  explicit Processor_Group(unsigned const stride);
 
-    //! Destructor.
-    ~Processor_Group();
+  //! Destructor.
+  ~Processor_Group();
 
-    // ACCESSORS
+  // ACCESSORS
 
-    //! Get the number of processors in the group.
-    unsigned size() const { return size_; }
+  //! Get the number of processors in the group.
+  unsigned size() const { return size_; }
 
-    bool check_class_invariants() const { return true; }
+  bool check_class_invariants() const { return true; }
 
-    // SERVICES
+  // SERVICES
 
-    //! Sum a set of values over the group, returning the sum to all
-    //! processors. 
-    template<typename T>
-    void sum(std::vector<T> &values);
+  //! Sum a set of values over the group, returning the sum to all
+  //! processors.
+  template <typename T> void sum(std::vector<T> &values);
 
-    //! Assemble a set of local vectors into global vectors.
-    template<typename T>
-    void assemble_vector(std::vector<T> const &local_vector,
-                         std::vector<T> &global_vector) const;
+  //! Assemble a set of local vectors into global vectors.
+  template <typename T>
+  void assemble_vector(std::vector<T> const &local_vector,
+                       std::vector<T> &global_vector) const;
 
-    //! Assemble a set of local vectors into global vectors.
-    template<typename T>
-    void assemble_vector(T const *local_vector,
-                         T *global_vector,
-                         unsigned count) const;
+  //! Assemble a set of local vectors into global vectors.
+  template <typename T>
+  void assemble_vector(T const *local_vector, T *global_vector,
+                       unsigned count) const;
 
-  private:
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
-    
-    //! Not implemented
-    Processor_Group(const Processor_Group &rhs);
-    
-    //! Not implemented
-    Processor_Group& operator=(const Processor_Group &rhs);
+  //! Not implemented
+  Processor_Group(const Processor_Group &rhs);
 
-    // DATA
+  //! Not implemented
+  Processor_Group &operator=(const Processor_Group &rhs);
 
-    unsigned size_;
-    MPI_Group group_;
-    MPI_Comm comm_;
+  // DATA
+
+  unsigned size_;
+  MPI_Group group_;
+  MPI_Comm comm_;
 };
 
 } // end namespace rtt_c4

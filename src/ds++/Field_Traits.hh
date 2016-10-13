@@ -15,8 +15,7 @@
 
 #include <complex>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -30,23 +29,20 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-template<typename Field>
-class Field_Traits 
-{
-  public:
+template <typename Field> class Field_Traits {
+public:
+  //! Field types can be "labeled." For example, a value-plus-derivatives
+  //! class has a field value that is labeled with its derivatives. The
+  //! following typedef specifies the unlabeled type, by default the field
+  //! type itself.
+  typedef Field unlabeled_type;
 
-    //! Field types can be "labeled." For example, a value-plus-derivatives
-    //! class has a field value that is labeled with its derivatives. The
-    //! following typedef specifies the unlabeled type, by default the field
-    //! type itself.
-    typedef Field unlabeled_type;
-
-    //! Return the unique zero element of the field. By default, this is
-    //! convertible from double 0.
-    static Field zero() { return 0.0; }
-    //! Return the unique unit element of the field. By default, this is
-    //! convertible from double 1.
-    static Field one() { return 1.0; }
+  //! Return the unique zero element of the field. By default, this is
+  //! convertible from double 0.
+  static Field zero() { return 0.0; }
+  //! Return the unique unit element of the field. By default, this is
+  //! convertible from double 1.
+  static Field one() { return 1.0; }
 };
 
 //---------------------------------------------------------------------------//
@@ -56,23 +52,20 @@ class Field_Traits
  * This specialization eliminates a gcc warning about discarding the const
  * qualifier on the return type of the two member functions.
  */
-template<>
-class Field_Traits <const double>
-{
-  public:
+template <> class Field_Traits<const double> {
+public:
+  //! Field types can be "labeled." For example, a value-plus-derivatives
+  //! class has a field value that is labeled with its derivatives. The
+  //! following typedef specifies the unlabeled type, by default the field
+  //! type itself.
+  typedef double unlabeled_type;
 
-    //! Field types can be "labeled." For example, a value-plus-derivatives
-    //! class has a field value that is labeled with its derivatives. The
-    //! following typedef specifies the unlabeled type, by default the field
-    //! type itself.
-    typedef double unlabeled_type;
-
-    //! Return the unique zero element of the field. By default, this is
-    //! convertible from double 0.
-    static double zero() { return 0.0; }
-    //! Return the unique unit element of the field. By default, this is
-    //! convertible from double 1.
-    static double one() { return 1.0; }
+  //! Return the unique zero element of the field. By default, this is
+  //! convertible from double 0.
+  static double zero() { return 0.0; }
+  //! Return the unique unit element of the field. By default, this is
+  //! convertible from double 1.
+  static double one() { return 1.0; }
 };
 
 //---------------------------------------------------------------------------//
@@ -90,22 +83,18 @@ class Field_Traits <const double>
  *
  * \arg \a Field A field type
  */
-template<class Field>
-inline
-typename Field_Traits<Field>::unlabeled_type &value(Field &x)
-{
-    return x;
+template <class Field>
+inline typename Field_Traits<Field>::unlabeled_type &value(Field &x) {
+  return x;
 }
 
 //---------------------------------------------------------------------------//
 //! A version of the value function template for const arguments.
-template<class Field>
-inline
-typename Field_Traits<Field>::unlabeled_type const &value(Field const &x)
-{
-    return x;
+template <class Field>
+inline typename Field_Traits<Field>::unlabeled_type const &
+value(Field const &x) {
+  return x;
 }
-
 
 } // end namespace rtt_dsxx
 

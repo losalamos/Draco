@@ -16,8 +16,7 @@
 
 #include "FundUnit.hh"
 
-namespace rtt_units
-{
+namespace rtt_units {
 
 //============================================================================//
 /*! 
@@ -47,90 +46,81 @@ namespace rtt_units
  */
 //============================================================================//
 
-class DLL_PUBLIC_units UnitSystemType
-{
-  public:
+class DLL_PUBLIC_units UnitSystemType {
+public:
+  // CONSTRUCTORS AND DESTRUCTOR
 
-    // CONSTRUCTORS AND DESTRUCTOR
-    
-    //! default constructor
-    UnitSystemType();
-    
-    //! fully qualified constructor
-    UnitSystemType( Ltype myL, Mtype myM, ttype myt, 
-		    Ttype myT, Itype myI, Atype myA, 
-		    Qtype myQ );
+  //! default constructor
+  UnitSystemType();
 
-    //! Copy constructor
-    UnitSystemType( UnitSystemType const & rhs );
-    
-    // MANIPULATORS
-    
-    //! Set SI defaults
-    UnitSystemType SI() 
-    { return UnitSystemType( L_m,   M_kg, t_s, T_K, I_amp, A_rad, Q_mol ); }
+  //! fully qualified constructor
+  UnitSystemType(Ltype myL, Mtype myM, ttype myt, Ttype myT, Itype myI,
+                 Atype myA, Qtype myQ);
 
-    //! Set X4 defaults
-    UnitSystemType X4() 
-    { return UnitSystemType( L_cm,  M_g, t_sh, T_keV, I_amp, A_rad, Q_mol ); }
+  //! Copy constructor
+  UnitSystemType(UnitSystemType const &rhs);
 
-    //! Set cgs defaults
-    UnitSystemType CGS()
-    { return UnitSystemType( L_cm, M_g, t_s, T_K, I_amp, A_rad, Q_mol ); }
+  // MANIPULATORS
 
-    //! Set a FundUnit type for this UnitSystem
+  //! Set SI defaults
+  UnitSystemType SI() {
+    return UnitSystemType(L_m, M_kg, t_s, T_K, I_amp, A_rad, Q_mol);
+  }
 
-    UnitSystemType& L( Ltype               myType, 
-		       double      const * cf     = L_cf, 
-		       std::string const & labels = L_labels );
-    UnitSystemType& M( Mtype               myType, 
-		       double      const * cf     = M_cf,
-		       std::string const & labels = M_labels );
-    UnitSystemType& t( ttype               myType, 
-		       double      const * cf     = t_cf,
-		       std::string const & labels = t_labels );
-    UnitSystemType& T( Ttype               myType, 
-		       double      const * cf     = T_cf,
-		       std::string const & labels = T_labels );
-    UnitSystemType& I( Itype               myType, 
-		       double      const * cf     = I_cf,
-		       std::string const & labels = I_labels );
-    UnitSystemType& A( Atype               myType, 
-		       double      const * cf     = A_cf,
-		       std::string const & labels = A_labels );
-    UnitSystemType& Q( Qtype               myType, 
-		       double      const * cf     = Q_cf,
-		       std::string const & labels = Q_labels );
+  //! Set X4 defaults
+  UnitSystemType X4() {
+    return UnitSystemType(L_cm, M_g, t_sh, T_keV, I_amp, A_rad, Q_mol);
+  }
 
-    // ACCESSORS
+  //! Set cgs defaults
+  UnitSystemType CGS() {
+    return UnitSystemType(L_cm, M_g, t_s, T_K, I_amp, A_rad, Q_mol);
+  }
 
-    //! Return a FundUnit type when requested.
+  //! Set a FundUnit type for this UnitSystem
 
-    FundUnit< Ltype > L() const { return d_L; }
-    FundUnit< Mtype > M() const { return d_M; }
-    FundUnit< ttype > t() const { return d_t; }
-    FundUnit< Ttype > T() const { return d_T; }
-    FundUnit< Itype > I() const { return d_I; }
-    FundUnit< Atype > A() const { return d_A; }
-    FundUnit< Qtype > Q() const { return d_Q; }
-    
-  private:
+  UnitSystemType &L(Ltype myType, double const *cf = L_cf,
+                    std::string const &labels = L_labels);
+  UnitSystemType &M(Mtype myType, double const *cf = M_cf,
+                    std::string const &labels = M_labels);
+  UnitSystemType &t(ttype myType, double const *cf = t_cf,
+                    std::string const &labels = t_labels);
+  UnitSystemType &T(Ttype myType, double const *cf = T_cf,
+                    std::string const &labels = T_labels);
+  UnitSystemType &I(Itype myType, double const *cf = I_cf,
+                    std::string const &labels = I_labels);
+  UnitSystemType &A(Atype myType, double const *cf = A_cf,
+                    std::string const &labels = A_labels);
+  UnitSystemType &Q(Qtype myType, double const *cf = Q_cf,
+                    std::string const &labels = Q_labels);
 
-    //! Fundamental unit types.
+  // ACCESSORS
 
-     FundUnit< Ltype > d_L;
-     FundUnit< Mtype > d_M;
-     FundUnit< ttype > d_t;
-     FundUnit< Ttype > d_T;
-     FundUnit< Itype > d_I;
-     FundUnit< Atype > d_A;
-     FundUnit< Qtype > d_Q;
+  //! Return a FundUnit type when requested.
 
+  FundUnit<Ltype> L() const { return d_L; }
+  FundUnit<Mtype> M() const { return d_M; }
+  FundUnit<ttype> t() const { return d_t; }
+  FundUnit<Ttype> T() const { return d_T; }
+  FundUnit<Itype> I() const { return d_I; }
+  FundUnit<Atype> A() const { return d_A; }
+  FundUnit<Qtype> Q() const { return d_Q; }
+
+private:
+  //! Fundamental unit types.
+
+  FundUnit<Ltype> d_L;
+  FundUnit<Mtype> d_M;
+  FundUnit<ttype> d_t;
+  FundUnit<Ttype> d_T;
+  FundUnit<Itype> d_I;
+  FundUnit<Atype> d_A;
+  FundUnit<Qtype> d_Q;
 };
 
 } // end namespace rtt_units
 
-#endif  // __units_UnitSystemType_hh__
+#endif // __units_UnitSystemType_hh__
 
 //---------------------------------------------------------------------------//
 // end of UnitSystemType.hh

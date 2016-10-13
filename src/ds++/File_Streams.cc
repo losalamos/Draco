@@ -13,17 +13,15 @@
 #include "File_Streams.hh"
 #include <iomanip>
 
-namespace
-{
+namespace {
 
 // Define a string to indicate that a file was written in binary mode.
 // This string should be one that is unlikely to be used by a client.
-static const std::string BINARY_FILE_HEADER = "bInArYfIlE_rtt_dsxx_File_Streams";
-
+static const std::string BINARY_FILE_HEADER =
+    "bInArYfIlE_rtt_dsxx_File_Streams";
 }
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 // File_Output functions.
@@ -37,25 +35,19 @@ namespace rtt_dsxx
  *                 be used later to open a file.
  * \param binary   If true, use binary mode for writing.
  */
-File_Output::
-File_Output(std::string const & filename,
-	    bool        const   binary)
-    : d_stream(),
-      d_last_was_char(false),
-      d_binary(binary)
-  
+File_Output::File_Output(std::string const &filename, bool const binary)
+    : d_stream(), d_last_was_char(false), d_binary(binary)
+
 {
-    if ( ! filename.empty() ) open(filename, binary);
+  if (!filename.empty())
+    open(filename, binary);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Destructor
  */
-File_Output::~File_Output()
-{
-    close();
-}
+File_Output::~File_Output() { close(); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -64,65 +56,57 @@ File_Output::~File_Output()
  * \param filename The file name to open for writing.
  * \param binary   If true, use binary mode for writing.
  */
-void File_Output::open(const std::string &filename,
-		       const bool binary)
-{
-    Require(! filename.empty());
+void File_Output::open(const std::string &filename, const bool binary) {
+  Require(!filename.empty());
 
-    if ( d_stream.is_open() ) close();
-    
-    d_last_was_char = false;
-    d_binary = binary;
+  if (d_stream.is_open())
+    close();
 
-    if ( d_binary )
-    {
-	d_stream.open(filename.c_str(), std::ios::binary);
-	d_stream << BINARY_FILE_HEADER;
-    }
-    else
-    {
-	d_stream.open(filename.c_str());
-    }
+  d_last_was_char = false;
+  d_binary = binary;
 
-    Ensure(d_stream);
+  if (d_binary) {
+    d_stream.open(filename.c_str(), std::ios::binary);
+    d_stream << BINARY_FILE_HEADER;
+  } else {
+    d_stream.open(filename.c_str());
+  }
+
+  Ensure(d_stream);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Closes the stream.
  */
-void File_Output::close()
-{
-    if ( d_stream.is_open() )
-    {
-	if ( d_last_was_char ) d_stream << std::endl;
-	d_stream.close();
-    }
+void File_Output::close() {
+  if (d_stream.is_open()) {
+    if (d_last_was_char)
+      d_stream << std::endl;
+    d_stream.close();
+  }
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Stream output for type char.
  */
-File_Output& File_Output::operator<<(const char c)
-{
-    Require(d_stream.is_open());
-    
-    if ( d_binary )
-    {
-	d_stream.write(&c, 1);
-    }
-    else // ascii mode
-    {
-	// For char, we don't add a newline, in case its part of a
-	// character string.
-	d_last_was_char = true;
-	d_stream << c;
-    }
+File_Output &File_Output::operator<<(const char c) {
+  Require(d_stream.is_open());
 
-    Ensure(d_stream.good());
-    
-    return *this;
+  if (d_binary) {
+    d_stream.write(&c, 1);
+  } else // ascii mode
+  {
+    // For char, we don't add a newline, in case its part of a
+    // character string.
+    d_last_was_char = true;
+    d_stream << c;
+  }
+
+  Ensure(d_stream.good());
+
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -136,24 +120,17 @@ File_Output& File_Output::operator<<(const char c)
  * \param filename The file name to open for reading.  If empty, open() must
  *                 be used later to open a file.
  */
-File_Input::
-File_Input(std::string const & filename)
-    : d_stream(),
-      d_line(   std::string()   ),
-      d_char_line(-1   ),
-      d_binary(   false)
-{
-    if ( ! filename.empty() ) open(filename);
+File_Input::File_Input(std::string const &filename)
+    : d_stream(), d_line(std::string()), d_char_line(-1), d_binary(false) {
+  if (!filename.empty())
+    open(filename);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Destructor
  */
-File_Input::~File_Input()
-{
-    close();
-}
+File_Input::~File_Input() { close(); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -161,87 +138,78 @@ File_Input::~File_Input()
  *
  * \param filename The file name to open for reading.
  */
-void File_Input::open(const std::string &filename)
-{
-    Require(! filename.empty());
+void File_Input::open(const std::string &filename) {
+  Require(!filename.empty());
 
-    using std::string;
+  using std::string;
 
-    d_char_line = -1;
+  d_char_line = -1;
 
-    if ( d_stream.is_open() ) close();
+  if (d_stream.is_open())
+    close();
 
-    // Start by opening the file in binary mode.
+  // Start by opening the file in binary mode.
 
-    d_stream.open(filename.c_str(), std::ios::binary);
-    d_binary = true;
+  d_stream.open(filename.c_str(), std::ios::binary);
+  d_binary = true;
 
-    // Check if the binary header is present.
+  // Check if the binary header is present.
 
-    for ( string::const_iterator s = BINARY_FILE_HEADER.begin();
-	  s != BINARY_FILE_HEADER.end(); ++s )
-    {
-	char c;
-	d_stream >> c;
-	if ( c != *s || (! d_stream.good()) )
-	{
-	    d_binary = false;
-	    break;
-	}
+  for (string::const_iterator s = BINARY_FILE_HEADER.begin();
+       s != BINARY_FILE_HEADER.end(); ++s) {
+    char c;
+    d_stream >> c;
+    if (c != *s || (!d_stream.good())) {
+      d_binary = false;
+      break;
     }
+  }
 
-    // If the file is not binary, re-open in ascii mode.
+  // If the file is not binary, re-open in ascii mode.
 
-    if ( ! d_binary )
-    {
-	d_stream.close();
-	d_stream.open(filename.c_str());
-    }
+  if (!d_binary) {
+    d_stream.close();
+    d_stream.open(filename.c_str());
+  }
 
-    Ensure(d_stream);
+  Ensure(d_stream);
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Closes the stream.
  */
-void File_Input::close()
-{
-    if ( d_stream.is_open() )
-    {
-	d_stream.close();
-    }
+void File_Input::close() {
+  if (d_stream.is_open()) {
+    d_stream.close();
+  }
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Stream input for type char.
  */
-File_Input& File_Input::operator>>(char &c)
-{
-    Require(d_stream.is_open());
-    
-    if ( d_binary )
-    {
-	d_stream.read(&c, 1);
-    }
-    else // ascii mode
-    {
-	if ( d_char_line < 0 )
-	{
-	    std::getline(d_stream, d_line);
-	    Check(! d_line.empty());
-	    d_char_line = 0;
-	}
+File_Input &File_Input::operator>>(char &c) {
+  Require(d_stream.is_open());
 
-	Check(static_cast<size_t>(d_char_line) < d_line.size());
-	c = d_line[d_char_line];
-	++d_char_line;
+  if (d_binary) {
+    d_stream.read(&c, 1);
+  } else // ascii mode
+  {
+    if (d_char_line < 0) {
+      std::getline(d_stream, d_line);
+      Check(!d_line.empty());
+      d_char_line = 0;
     }
 
-    Ensure(d_stream.good());
-    
-    return *this;
+    Check(static_cast<size_t>(d_char_line) < d_line.size());
+    c = d_line[d_char_line];
+    ++d_char_line;
+  }
+
+  Ensure(d_stream.good());
+
+  return *this;
 }
 
 } // end of rtt_dsxx

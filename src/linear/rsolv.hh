@@ -14,11 +14,10 @@
 #ifndef linear_rsolv_hh
 #define linear_rsolv_hh
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 //! Solve an upper triangular system of equations.
-template<typename RandomContainer>
+template <typename RandomContainer>
 void rsolv(const RandomContainer &R, const unsigned n, RandomContainer &b);
 
 } // end namespace rtt_linear

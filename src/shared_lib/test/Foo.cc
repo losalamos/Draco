@@ -13,18 +13,11 @@
 
 #include "Foo.hh"
 
-namespace rtt_shared_lib_test
-{
+namespace rtt_shared_lib_test {
 
-Foo::Foo(const double x)
-    : d_base(x)
-{
-}
+Foo::Foo(const double x) : d_base(x) {}
 
-double Foo::compute(const double x) const
-{
-    return x * x + d_base;
-}
+double Foo::compute(const double x) const { return x * x + d_base; }
 
 } // end namespace rtt_shared_lib_test
 

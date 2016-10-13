@@ -13,22 +13,19 @@
 
 #include "Flags.hh"
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Used by the NodeFlags, SideFlags, and CellFlags class objects to 
  *        parse the flag numbers and names.
  * \param meshfile Mesh file name.
  */
-void Flags::readFlags(ifstream & meshfile)
-{
-    string dummyString;
+void Flags::readFlags(ifstream &meshfile) {
+  string dummyString;
 
-    for (int i = 0; i < nflags; ++i)
-    {
-	meshfile >> flag_nums[i] >> flag_names[i];
-	std::getline(meshfile, dummyString);
-    }
+  for (int i = 0; i < nflags; ++i) {
+    meshfile >> flag_nums[i] >> flag_names[i];
+    std::getline(meshfile, dummyString);
+  }
 }
 
 } // end namespace rtt_RTT_Format_Reader

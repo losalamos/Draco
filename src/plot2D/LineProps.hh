@@ -27,36 +27,31 @@ namespace rtt_plot2D {
   See Grace documentation for a detailed explanation of properties.
 */
 //===========================================================================//
-struct LineProps
-{
-    /// Various line styles
-    enum Style {
-	STYLE_NONE,
-	STYLE_SOLID,
-	STYLE_DOT,
-	STYLE_DASH,
-	STYLE_LONGDASH,
-	STYLE_DASHDOT,
-	STYLE_LONGDASHDOT,
-	STYLE_DASHDOTDOT,
-	STYLE_DASHDASHDOT
-    };
+struct LineProps {
+  /// Various line styles
+  enum Style {
+    STYLE_NONE,
+    STYLE_SOLID,
+    STYLE_DOT,
+    STYLE_DASH,
+    STYLE_LONGDASH,
+    STYLE_DASHDOT,
+    STYLE_LONGDASHDOT,
+    STYLE_DASHDOTDOT,
+    STYLE_DASHDASHDOT
+  };
 
-    /// Line style
-    Style style;
+  /// Line style
+  Style style;
 
-    /// Line color
-    Colormap color;
+  /// Line color
+  Colormap color;
 
-    /// Width of line
-    double width;
+  /// Width of line
+  double width;
 
-    /// Constructor, uses Grace defaults for a set.
-    LineProps()
-	: style(STYLE_SOLID)
-	, color(COLOR_BLACK)
-	, width(1.0) {}
-    
+  /// Constructor, uses Grace defaults for a set.
+  LineProps() : style(STYLE_SOLID), color(COLOR_BLACK), width(1.0) {}
 };
 
 } // namespace rtt_plot2D

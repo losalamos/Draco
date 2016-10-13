@@ -13,13 +13,12 @@
 
 #include "PhysicalConstants.hh"
 
-#include "ds++/Soft_Equivalence.hh"
 #include "PhysicalConstantsSI.hh"
-#include <iostream>
+#include "ds++/Soft_Equivalence.hh"
 #include <iomanip>
+#include <iostream>
 
-namespace rtt_units
-{
+namespace rtt_units {
 
 /*!
  * \brief Default constructor provides physical constants with SI units (kg,
@@ -27,22 +26,16 @@ namespace rtt_units
  * \return A PhysicalConstants object.
  */
 PhysicalConstants::PhysicalConstants()
-    : d_avogadro( AVOGADRO ),
-      d_planck         ( planckSI ),
-      d_gasConstant    ( gasConstantSI ),
-      d_boltzmann      ( boltzmannSI ),
-      d_electronCharge ( electronChargeSI ),
-      d_cLight         ( cLightSI ),
-      d_stefanBoltzmann( stefanBoltzmannSI ),
-      d_gravitationalConstant( gravitationalConstantSI ),
-      d_accelerationFromGravity( accelerationFromGravitySI ),
-      d_faradayConstant( faradayConstantSI ),
-      d_permeabilityOfVacuum( permeabilityOfVacuumSI ),
-      d_permittivityOfFreeSpace( permittivityOfFreeSpaceSI ),
-      d_electronMass   ( electronMassSI ),
-      d_protonMass     ( protonMassSI )
-{
-    // empty
+    : d_avogadro(AVOGADRO), d_planck(planckSI), d_gasConstant(gasConstantSI),
+      d_boltzmann(boltzmannSI), d_electronCharge(electronChargeSI),
+      d_cLight(cLightSI), d_stefanBoltzmann(stefanBoltzmannSI),
+      d_gravitationalConstant(gravitationalConstantSI),
+      d_accelerationFromGravity(accelerationFromGravitySI),
+      d_faradayConstant(faradayConstantSI),
+      d_permeabilityOfVacuum(permeabilityOfVacuumSI),
+      d_permittivityOfFreeSpace(permittivityOfFreeSpaceSI),
+      d_electronMass(electronMassSI), d_protonMass(protonMassSI) {
+  // empty
 }
 
 /*!
@@ -52,37 +45,34 @@ PhysicalConstants::PhysicalConstants()
  *        returned using these units (CGS, SI, etc.)
  * \return A PhysicalConstants object.
  */
-PhysicalConstants::PhysicalConstants( UnitSystem const & u )
-    : d_avogadro        ( AVOGADRO * u.Q() ),
-      d_planck          ( planckSI  * u.e() * u.t() ),
-      d_gasConstant     ( gasConstantSI * u.e() / u.T() ),
-      d_boltzmann       ( boltzmannSI * u.e() / u.T() ),
-      d_electronCharge  ( electronChargeSI ),
-      d_cLight          ( cLightSI * u.v() ),
-      d_stefanBoltzmann ( 
-	  stefanBoltzmannSI * u.p() / std::pow(u.L(),2) / std::pow(u.T(),4) ),
-      d_gravitationalConstant( 
-	  gravitationalConstantSI * u.f() * std::pow(u.L(),2) / std::pow(u.M(),2) ),
-      d_accelerationFromGravity( accelerationFromGravitySI * u.a() ),
-      d_faradayConstant( AVOGADRO * d_electronCharge ),
-      d_permeabilityOfVacuum( permeabilityOfVacuumSI / u.L() ),
-      d_permittivityOfFreeSpace( 
-	  1.0 / d_permeabilityOfVacuum / std::pow(d_cLight,2) ),
-      d_electronMass    ( electronMassSI * u.M() ),
-      d_protonMass      ( protonMassSI   * u.M() )
-{
-    // empty
-    
-    // std::cout << std::setprecision(16) << std::scientific
-    //     << "\nu.e() = " << u.e()
-    //     << "\nu.t() = " << u.t()
-    //     << "\nu.T() = " << u.T()
-    //     << "\nu.v() = " << u.v()
-    //     << "\nu.p() = " << u.p()
-    //     << "\nu.L() = " << u.L()
-    //     << "\nu.M() = " << u.M()
-    //     << "\nu.a() = " << u.a()
-    //     << std::endl;
+PhysicalConstants::PhysicalConstants(UnitSystem const &u)
+    : d_avogadro(AVOGADRO * u.Q()), d_planck(planckSI * u.e() * u.t()),
+      d_gasConstant(gasConstantSI * u.e() / u.T()),
+      d_boltzmann(boltzmannSI * u.e() / u.T()),
+      d_electronCharge(electronChargeSI), d_cLight(cLightSI * u.v()),
+      d_stefanBoltzmann(stefanBoltzmannSI * u.p() / std::pow(u.L(), 2) /
+                        std::pow(u.T(), 4)),
+      d_gravitationalConstant(gravitationalConstantSI * u.f() *
+                              std::pow(u.L(), 2) / std::pow(u.M(), 2)),
+      d_accelerationFromGravity(accelerationFromGravitySI * u.a()),
+      d_faradayConstant(AVOGADRO * d_electronCharge),
+      d_permeabilityOfVacuum(permeabilityOfVacuumSI / u.L()),
+      d_permittivityOfFreeSpace(1.0 / d_permeabilityOfVacuum /
+                                std::pow(d_cLight, 2)),
+      d_electronMass(electronMassSI * u.M()),
+      d_protonMass(protonMassSI * u.M()) {
+  // empty
+
+  // std::cout << std::setprecision(16) << std::scientific
+  //     << "\nu.e() = " << u.e()
+  //     << "\nu.t() = " << u.t()
+  //     << "\nu.T() = " << u.T()
+  //     << "\nu.v() = " << u.v()
+  //     << "\nu.p() = " << u.p()
+  //     << "\nu.L() = " << u.L()
+  //     << "\nu.M() = " << u.M()
+  //     << "\nu.a() = " << u.a()
+  //     << std::endl;
 }
 
 } // end namespace rtt_units

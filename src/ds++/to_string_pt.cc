@@ -12,17 +12,13 @@
 
 #include "to_string.hh"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
-template
-string to_string(int num, unsigned precision );
+template string to_string(int num, unsigned precision);
 
-template
-string to_string(unsigned num, unsigned precision );
+template string to_string(unsigned num, unsigned precision);
 
-template
-string to_string(double num, unsigned precision );
+template string to_string(double num, unsigned precision);
 
 } // end namespace rtt_dsxx
 

@@ -18,8 +18,7 @@
 #include <map>
 #include <string>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 // Typedefs
 typedef std::multimap<size_t, std::string, std::greater<int>> mmdevs;
@@ -43,14 +42,13 @@ DLL_PUBLIC_dsxx const std::string copyright();
  * \return A formatted message.
  */
 DLL_PUBLIC_dsxx std::string print_devs(size_t const maxlinelen,
-                                       std::string const & line_name,
-                                       mmdevs const & devs);
+                                       std::string const &line_name,
+                                       mmdevs const &devs);
 
 } // end of rtt_ds++
 
 //! This version can be called by Fortran and wraps the C++ version.
-extern "C" DLL_PUBLIC_dsxx void ec_release(char * release_string,
-                                           size_t maxlen);
+extern "C" DLL_PUBLIC_dsxx void ec_release(char *release_string, size_t maxlen);
 
 #endif // rtt_ds_Release_hh
 

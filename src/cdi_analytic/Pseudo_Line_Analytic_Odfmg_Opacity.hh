@@ -17,8 +17,7 @@
 #include "Analytic_Odfmg_Opacity.hh"
 #include "Pseudo_Line_Base.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 using std::pair;
 
 //===========================================================================//
@@ -32,101 +31,64 @@ using std::pair;
 //
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_Odfmg_Opacity :
-        public Analytic_Odfmg_Opacity, public Pseudo_Line_Base
-{
-  private:
+class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_Odfmg_Opacity
+    : public Analytic_Odfmg_Opacity,
+      public Pseudo_Line_Base {
+private:
+  Averaging averaging_;
+  unsigned qpoints_;
+  vector<pair<double, pair<double, double>>> baseline_;
 
-    Averaging averaging_;
-    unsigned qpoints_;
-    vector<pair<double, pair<double, double> > > baseline_;
+  void precalculate(vector<double> const &groups, vector<double> const &bands,
+                    double Tref);
 
-    void precalculate(vector<double> const &groups,
-                      vector<double> const &bands,
-                      double Tref);
+public:
+  // Constructor.
+  Pseudo_Line_Analytic_Odfmg_Opacity(
+      const sf_double &groups, const sf_double &bands,
+      rtt_cdi::Reaction reaction_in, SP<Expression const> const &cont,
+      int number_of_lines, double line_peak, double line_width,
+      int number_of_edges, double edge_ratio, double Tref, double Tpow,
+      double emin, double emax, Averaging averaging, unsigned qpoints,
+      unsigned seed);
 
-  public:
-    // Constructor.
-    Pseudo_Line_Analytic_Odfmg_Opacity(
-        const sf_double         &groups,
-        const sf_double         &bands,
-        rtt_cdi::Reaction        reaction_in,
-        SP<Expression const> const &cont,
-        int number_of_lines,
-        double line_peak,
-        double line_width,
-        int number_of_edges,
-        double edge_ratio,
-        double Tref,
-        double Tpow,
-        double emin,
-        double emax,
-        Averaging averaging,
-        unsigned qpoints,
-        unsigned seed);
+  // Constructor.
+  Pseudo_Line_Analytic_Odfmg_Opacity(
+      const sf_double &groups, const sf_double &bands,
+      rtt_cdi::Reaction reaction_in, string const &cont_file,
+      int number_of_lines, double line_peak, double line_width,
+      int number_of_edges, double edge_ratio, double Tref, double Tpow,
+      double emin, double emax, Averaging averaging, unsigned qpoints,
+      unsigned seed);
 
-    // Constructor.
-    Pseudo_Line_Analytic_Odfmg_Opacity(
-        const sf_double         &groups,
-        const sf_double         &bands,
-        rtt_cdi::Reaction        reaction_in,
-        string const &cont_file,
-        int number_of_lines,
-        double line_peak,
-        double line_width,
-        int number_of_edges,
-        double edge_ratio,
-        double Tref,
-        double Tpow,
-        double emin,
-        double emax,
-        Averaging averaging,
-        unsigned qpoints,
-        unsigned seed);
+  // Constructor.
+  Pseudo_Line_Analytic_Odfmg_Opacity(
+      const sf_double &groups, const sf_double &bands,
+      rtt_cdi::Reaction reaction_in, double nu0, double C, double Bn, double Bd,
+      double R, int number_of_lines, double line_peak, double line_width,
+      int number_of_edges, double edge_ratio, double Tref, double Tpow,
+      double emin, double emax, Averaging averaging, unsigned qpoints,
+      unsigned seed);
 
-    // Constructor.
-    Pseudo_Line_Analytic_Odfmg_Opacity(
-        const sf_double         &groups,
-        const sf_double         &bands,
-        rtt_cdi::Reaction        reaction_in,
-        double nu0,
-        double C,
-        double Bn,
-        double Bd,
-        double R,
-        int number_of_lines,
-        double line_peak,
-        double line_width,
-        int number_of_edges,
-        double edge_ratio,
-        double Tref,
-        double Tpow,
-        double emin,
-        double emax,
-        Averaging averaging,
-        unsigned qpoints,
-        unsigned seed);
+  // Constructor for packed Pseudo_Line_Analytic_Odfmg_Opacities
+  explicit Pseudo_Line_Analytic_Odfmg_Opacity(const sf_char &);
 
-    // Constructor for packed Pseudo_Line_Analytic_Odfmg_Opacities
-    explicit Pseudo_Line_Analytic_Odfmg_Opacity(const sf_char &);
+  std::vector<std::vector<double>> getOpacity(double targetTemperature,
+                                              double targetDensity) const;
 
-    std::vector< std::vector<double> > getOpacity(
-        double targetTemperature,
-        double targetDensity ) const;
+  std::vector<std::vector<std::vector<double>>>
+  getOpacity(const std::vector<double> &targetTemperature,
+             double targetDensity) const;
 
-    std::vector< std::vector< std::vector<double> > > getOpacity(
-        const std::vector<double>& targetTemperature,
-        double targetDensity ) const;
+  std::vector<std::vector<std::vector<double>>>
+  getOpacity(double targetTemperature,
+             const std::vector<double> &targetDensity) const;
 
-    std::vector< std::vector< std::vector<double> > > getOpacity(
-        double targetTemperature,
-        const std::vector<double>& targetDensity ) const;
+  // Get the data description of the opacity.
+  std_string getDataDescriptor() const;
 
-    // Get the data description of the opacity.
-    std_string getDataDescriptor() const;
-
-    // Pack the Pseudo_Line_Analytic_Odfmg_Opacity into a character string.
-    sf_char pack() const;
+  // Pack the Pseudo_Line_Analytic_Odfmg_Opacity into a character string.
+  sf_char pack() const;
 };
 
 } // end namespace rtt_cdi_analytic

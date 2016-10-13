@@ -14,14 +14,13 @@
 #ifndef linear_qrdcmp_i_hh
 #define linear_qrdcmp_i_hh
 
-#include <cmath>
-#include <math.h>
+#include "qrdcmp.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
-#include "qrdcmp.hh"
+#include <cmath>
+#include <math.h>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -57,67 +56,65 @@ namespace rtt_linear
  * \todo templatize on container element type
  */
 
-template<class RandomContainer>
-bool qrdcmp(RandomContainer &a,
-	    unsigned n,
-	    RandomContainer &c,
-	    RandomContainer &d)
-{
-    Require(a.size()==n*n);
+template <class RandomContainer>
+bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
+            RandomContainer &d) {
+  Require(a.size() == n * n);
 
-    using std::sqrt;
-    using rtt_dsxx::square;
+  using std::sqrt;
+  using rtt_dsxx::square;
 
-    c.resize(n);
-    d.resize(n);
+  c.resize(n);
+  d.resize(n);
 
-    bool singular = false;
-    
-    for (unsigned i=0; i+1<n; ++i)
-    {
-	
-	// Compute scaling for the ith Householder vector (to prevent overflow)
-	double scale = fabs(a[i+n*i]);
-	for (unsigned j=i+1; j<n; j++) scale = std::max(scale, fabs(a[j+n*i]));
-	
-	if (scale == 0.0)
-	{
-	    
-	    // ith column is already zeroed from ith element down; the matrix is
-	    // singular, and the Householder vector is also zero.
-	    c[i] = d[i] = 0;
-	    singular = true;
-	}
-	else
-	{
+  bool singular = false;
 
-	    // Compute the Householder vector.
-	    double sigma = square(a[i+n*i]/=scale);
-	    for (unsigned j=i+1; j<n; j++) sigma += square(a[j+n*i]/=scale);
-	    sigma = sqrt(sigma);
-	    if (a[i+n*i]<0.0) sigma = -sigma;  
-	    // choose sign to minimize roundoff
-	    
-	    // Compute Q*A
-	    a[i+n*i] += sigma;
-	    c[i] = sigma*a[i+n*i];
-	    d[i] = -scale*sigma;
-	    for (unsigned j=i+1; j<n; j++)
-	    {
-		double sum = a[i+n*i]*a[i+n*j];
-		for (unsigned k=i+1; k<n; k++) sum += a[k+n*i]*a[k+n*j];
-		sum /= -c[i];
-		for (unsigned k=i; k<n; k++) a[k+n*j] += a[k+n*i]*sum;
-	    }
-	}
+  for (unsigned i = 0; i + 1 < n; ++i) {
+
+    // Compute scaling for the ith Householder vector (to prevent overflow)
+    double scale = fabs(a[i + n * i]);
+    for (unsigned j = i + 1; j < n; j++)
+      scale = std::max(scale, fabs(a[j + n * i]));
+
+    if (scale == 0.0) {
+
+      // ith column is already zeroed from ith element down; the matrix is
+      // singular, and the Householder vector is also zero.
+      c[i] = d[i] = 0;
+      singular = true;
+    } else {
+
+      // Compute the Householder vector.
+      double sigma = square(a[i + n * i] /= scale);
+      for (unsigned j = i + 1; j < n; j++)
+        sigma += square(a[j + n * i] /= scale);
+      sigma = sqrt(sigma);
+      if (a[i + n * i] < 0.0)
+        sigma = -sigma;
+      // choose sign to minimize roundoff
+
+      // Compute Q*A
+      a[i + n * i] += sigma;
+      c[i] = sigma * a[i + n * i];
+      d[i] = -scale * sigma;
+      for (unsigned j = i + 1; j < n; j++) {
+        double sum = a[i + n * i] * a[i + n * j];
+        for (unsigned k = i + 1; k < n; k++)
+          sum += a[k + n * i] * a[k + n * j];
+        sum /= -c[i];
+        for (unsigned k = i; k < n; k++)
+          a[k + n * j] += a[k + n * i] * sum;
+      }
     }
-    d[n-1] = a[n-1+n*(n-1)];
-    if (!d[n-1] || !rtt_dsxx::isFinite(d[n-1])) singular = true;
+  }
+  d[n - 1] = a[n - 1 + n * (n - 1)];
+  if (!d[n - 1] || !rtt_dsxx::isFinite(d[n - 1]))
+    singular = true;
 
-    Ensure(a.size()==n*n);
-    Ensure(c.size()==n);
-    Ensure(d.size()==n);
-    return singular;
+  Ensure(a.size() == n * n);
+  Ensure(c.size() == n);
+  Ensure(d.size() == n);
+  return singular;
 }
 
 } // end namespace rtt_linear

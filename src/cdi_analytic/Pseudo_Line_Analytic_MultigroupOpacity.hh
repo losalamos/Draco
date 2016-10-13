@@ -16,8 +16,7 @@
 #include "Analytic_MultigroupOpacity.hh"
 #include "Pseudo_Line_Base.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 using rtt_dsxx::SP;
 using rtt_parser::Expression;
 
@@ -36,57 +35,46 @@ using rtt_parser::Expression;
  * time saver.
  */
 class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_MultigroupOpacity
-    : public Analytic_MultigroupOpacity, public Pseudo_Line_Base
-{
-  private:
+    : public Analytic_MultigroupOpacity,
+      public Pseudo_Line_Base {
+private:
+  Averaging averaging_;
+  unsigned qpoints_;
+  // value of 0 indicates to use adaptive Romberg integration
 
-    Averaging averaging_;
-    unsigned qpoints_;
-    // value of 0 indicates to use adaptive Romberg integration
+  friend class PLR_Functor; // used in calculation of Rosseland averages
+  friend class PLP_Functor; // used in calculation of Planck averages
 
-    friend class PLR_Functor; // used in calculation of Rosseland averages
-    friend class PLP_Functor; // used in calculation of Planck averages
+public:
+  Pseudo_Line_Analytic_MultigroupOpacity(
+      sf_double const &group_bounds, rtt_cdi::Reaction reaction,
+      SP<Expression const> const &cont, unsigned number_of_lines,
+      double line_peak, double line_width, unsigned number_of_edges,
+      double edge_ratio, double Tref, double Tpow, double emin, double emax,
+      Averaging averaging, unsigned qpoints, unsigned seed);
 
-  public:
+  //! Constructor for packed state.
+  explicit Pseudo_Line_Analytic_MultigroupOpacity(const sf_char &packed);
 
-    Pseudo_Line_Analytic_MultigroupOpacity(sf_double const &group_bounds,
-                                           rtt_cdi::Reaction reaction,
-                                           SP<Expression const> const &cont,
-                                           unsigned number_of_lines,
-                                           double line_peak,
-                                           double line_width,
-                                           unsigned number_of_edges,
-                                           double edge_ratio,
-                                           double Tref,
-                                           double Tpow,
-                                           double emin,
-                                           double emax,
-                                           Averaging averaging,
-                                           unsigned qpoints,
-                                           unsigned seed);
+  // Get the group opacities.
+  virtual sf_double getOpacity(double, double) const;
 
-    //! Constructor for packed state.
-    explicit  Pseudo_Line_Analytic_MultigroupOpacity(const sf_char &packed);
+  // Get the group opacity fields given a field of temperatures.
+  virtual vf_double getOpacity(const sf_double &, double) const;
 
-    // Get the group opacities.
-    virtual sf_double getOpacity(double, double) const;
+  // Get the group opacity fields given a field of densities.
+  virtual vf_double getOpacity(double, const sf_double &) const;
 
-    // Get the group opacity fields given a field of temperatures.
-    virtual vf_double getOpacity(const sf_double &, double) const;
+  // Get the data description of the opacity.
+  virtual std_string getDataDescriptor() const;
 
-    // Get the group opacity fields given a field of densities.
-    virtual vf_double getOpacity(double, const sf_double &) const;
-
-    // Get the data description of the opacity.
-    virtual std_string getDataDescriptor() const;
-
-    //! Pack up the class for persistence.
-    sf_char pack() const;
+  //! Pack up the class for persistence.
+  sf_char pack() const;
 };
 
 } // end namespace rtt_cdi_analytic
 
-#endif  // __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
+#endif // __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
 
 //---------------------------------------------------------------------------//
 // end of cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh

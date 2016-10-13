@@ -14,16 +14,11 @@
 #ifndef norms_norm_hh
 #define norms_norm_hh
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //---------------------------------------------------------------------------//
 //! Compute the norm of a scalar.
-template<class Field>
-double norm(Field const &x)
-{
-    return x*x;
-}
+template <class Field> double norm(Field const &x) { return x * x; }
 
 } // end namespace rtt_norms
 

@@ -19,14 +19,12 @@
 
 // FORWARD REFERENCES
 
-namespace rtt_timestep
-{
+namespace rtt_timestep {
 class ts_manager;
 class field_ts_advisor;
 }
 
-namespace rtt_timestep_test
-{
+namespace rtt_timestep_test {
 
 //===========================================================================//
 /*! \class dummy_package - Exercizes the field time-step advisors.
@@ -37,41 +35,37 @@ namespace rtt_timestep_test
  */
 //===========================================================================//
 
-class DLL_PUBLIC_timestep_test dummy_package
-{
-  public:
+class DLL_PUBLIC_timestep_test dummy_package {
+public:
+  // CREATORS
 
-    // CREATORS
+  explicit dummy_package(rtt_timestep::ts_manager &tsm_);
+  ~dummy_package(void);
 
-    explicit dummy_package( rtt_timestep::ts_manager & tsm_ );
-    ~dummy_package(void);
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! \brief Method to advance the time-step
+  void advance_state(void);
 
-    //! \brief Method to advance the time-step
-    void advance_state(void);
+  //! \brief Provide recommended dt values (TE).
+  double get_dt_rec_te(void) const;
 
-    //! \brief Provide recommended dt values (TE).
-    double get_dt_rec_te(void) const;
+  //! \brief Provide recommended dt values (TI).
+  double get_dt_rec_ti(void) const;
 
-    //! \brief Provide recommended dt values (TI).
-    double get_dt_rec_ti(void) const;
+  //! \brief Provide recommended dt values (RI).
+  double get_dt_rec_ri(void) const;
 
-    //! \brief Provide recommended dt values (RI).
-    double get_dt_rec_ri(void) const;
+private:
+  std::vector<double> element_wise_multiply(double const a,
+                                            std::vector<double> const &v);
 
-  private:
+  // DATA
 
-    std::vector< double > element_wise_multiply(
-	double const a,
-	std::vector< double > const & v );
-
-    // DATA
-
-    rtt_timestep::ts_manager & tsm;
-    rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_te;
-    rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_ti;
-    rtt_dsxx::SP< rtt_timestep::field_ts_advisor > sp_ri;
+  rtt_timestep::ts_manager &tsm;
+  rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_te;
+  rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_ti;
+  rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_ri;
 };
 
 } // end namespace rtt_timestep_test

@@ -14,15 +14,11 @@
 #ifndef linear_qr_unpack_hh
 #define linear_qr_unpack_hh
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //! Compute an explicit representation of a packed QR decomposition.
-template<class RandomContainer>
-void qr_unpack(RandomContainer &r,
-	       const unsigned n,
-	       const RandomContainer &c,
-	       const RandomContainer &d,
-	       RandomContainer &qt);
+template <class RandomContainer>
+void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
+               const RandomContainer &d, RandomContainer &qt);
 
 } // end namespace rtt_linear
 

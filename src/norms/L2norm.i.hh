@@ -16,24 +16,22 @@
 #ifndef norms_L2norm_i_hh
 #define norms_L2norm_i_hh
 
-#include "c4/C4_Functions.hh"
 #include "norm.hh"
+#include "c4/C4_Functions.hh"
 #include <cmath>
-#include <numeric>
 #include <iostream>
+#include <numeric>
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //---------------------------------------------------------------------------//
 /*! Helper type for L2norm.
  *
  * \arg \a Field A real type such as float or double.
  */
-template<class Field>
-double accumulate_norm_(double const init, Field const &x)
-{
-    return init + norm<Field>(x);
+template <class Field>
+double accumulate_norm_(double const init, Field const &x) {
+  return init + norm<Field>(x);
 }
 
 //---------------------------------------------------------------------------//
@@ -44,28 +42,22 @@ double accumulate_norm_(double const init, Field const &x)
  *
  * \param x Container representing a real vector whose norm is desired.
  */
-template<class In>
-double L2norm(In const &x)
-{
-    double norm =
-        std::accumulate(x.begin(),
-                        x.end(),
-                        0.0,
-                        accumulate_norm_<typename In::value_type>);
-    
-    rtt_c4::global_sum(norm);
+template <class In> double L2norm(In const &x) {
+  double norm = std::accumulate(x.begin(), x.end(), 0.0,
+                                accumulate_norm_<typename In::value_type>);
 
-    unsigned xlength(x.size());
+  rtt_c4::global_sum(norm);
 
-    rtt_c4::global_sum(xlength);
-    Require(xlength>0);
+  unsigned xlength(x.size());
 
-    norm = sqrt(norm/xlength);
+  rtt_c4::global_sum(xlength);
+  Require(xlength > 0);
 
-    Ensure(norm>=0.0);
-    return norm;
+  norm = sqrt(norm / xlength);
+
+  Ensure(norm >= 0.0);
+  return norm;
 }
-
 
 } // end namespace rtt_norms
 

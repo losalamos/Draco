@@ -14,12 +14,11 @@
 #ifndef min_linmin_hh
 #define min_linmin_hh
 
-#include <vector>
-#include "mnbrak.hh"
 #include "brent.hh"
+#include "mnbrak.hh"
+#include <vector>
 
-namespace rtt_min
-{
+namespace rtt_min {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -30,33 +29,23 @@ namespace rtt_min
  * \arg \a Function A function type supporting <code>double
  * operator()(RandomContainer const &)</code>.
  */
-template<class RandomContainer, class Function>
-class f1dim
-{
-  public:
+template <class RandomContainer, class Function> class f1dim {
+public:
+  f1dim(Function func, RandomContainer &p, RandomContainer &xi)
+      : func(func), p(p), xi(xi) {}
 
-    f1dim(Function func,
-          RandomContainer &p,
-          RandomContainer &xi)
-        :
-        func(func), p(p), xi(xi)
-    {}
-
-    double operator()(double const x) const
-    {
-        unsigned const n = p.size();
-        std::vector<double> xt(n);
-        for (unsigned i=0; i<n; ++i)
-        {
-            xt[i] = p[i] + x*xi[i];
-        }
-        return func(xt);
+  double operator()(double const x) const {
+    unsigned const n = p.size();
+    std::vector<double> xt(n);
+    for (unsigned i = 0; i < n; ++i) {
+      xt[i] = p[i] + x * xi[i];
     }
+    return func(xt);
+  }
 
-  private:
-
-    Function func;
-    RandomContainer &p, &xi;
+private:
+  Function func;
+  RandomContainer &p, &xi;
 };
 
 //---------------------------------------------------------------------------//
@@ -76,37 +65,27 @@ class f1dim
  */
 
 template <class RandomContainer, class Function>
-void linmin(RandomContainer &p,
-            RandomContainer &xi,
-            double &fret,
-            Function func)
-{
-    using std::numeric_limits;
+void linmin(RandomContainer &p, RandomContainer &xi, double &fret,
+            Function func) {
+  using std::numeric_limits;
 
-    double const TOL = sqrt(numeric_limits<double>::epsilon());
+  double const TOL = sqrt(numeric_limits<double>::epsilon());
 
-    unsigned const n = p.size();
+  unsigned const n = p.size();
 
-    // Initial guess for brackets
-    double ax = 0.0;
-    double xx = 1.0;
+  // Initial guess for brackets
+  double ax = 0.0;
+  double xx = 1.0;
 
-    double bx, fa, fx, fb, xmin;
-    f1dim<RandomContainer, Function> f1(func, p, xi);
-    mnbrak<f1dim<RandomContainer, Function> >(ax,
-                                              xx,
-                                              bx,
-                                              fa,
-                                              fx,
-                                              fb,
-                                              f1);
+  double bx, fa, fx, fb, xmin;
+  f1dim<RandomContainer, Function> f1(func, p, xi);
+  mnbrak<f1dim<RandomContainer, Function>>(ax, xx, bx, fa, fx, fb, f1);
 
-    fret = brent(ax, xx, bx, f1, TOL, xmin);
-    for (unsigned j=0; j<n; ++j)
-    {
-        xi[j] *= xmin;
-        p[j] += xi[j];
-    }
+  fret = brent(ax, xx, bx, f1, TOL, xmin);
+  for (unsigned j = 0; j < n; ++j) {
+    xi[j] *= xmin;
+    p[j] += xi[j];
+  }
 }
 
 } // end namespace rtt_min

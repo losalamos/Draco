@@ -11,11 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Assert.hh"
 #include "Subrandom_Generator.hh"
+#include "ds++/Assert.hh"
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -23,11 +22,7 @@ namespace rtt_rng
  */
 
 Subrandom_Generator::Subrandom_Generator(unsigned const count)
-    :
-    count_(count),
-    element_(0)
-{
-}
+    : count_(count), element_(0) {}
 
 } // end namespace rtt_rng
 

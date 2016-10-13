@@ -14,8 +14,8 @@
 #ifndef rtt_norms_Norms_Labeled_hh
 #define rtt_norms_Norms_Labeled_hh
 
-#include "Norms_Index.hh"
 #include "Index_Labeled.hh"
+#include "Norms_Index.hh"
 
 namespace rtt_norms {
 

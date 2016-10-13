@@ -15,8 +15,7 @@
 #include "ds++/Safe_Divide.hh"
 #include <numeric>
 
-namespace rtt_cdi
-{
+namespace rtt_cdi {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -43,89 +42,81 @@ namespace rtt_cdi
  * evaluation. 
  */
 double CDI::collapseOdfmgOpacitiesRosseland(
-    std::vector<double> const & groupBounds,
-    std::vector<std::vector<double> > const & opacity,
-    std::vector<double> const & rosselandSpectrum,
-    std::vector<double> const & bandWidths )
-{
-    Require( groupBounds.size() > 0 );
-    Require( opacity.size()           == groupBounds.size() -1 );
-    Require( opacity[0].size()        == bandWidths.size() );
-    Require( rosselandSpectrum.size() == groupBounds.size() -1 );
+    std::vector<double> const &groupBounds,
+    std::vector<std::vector<double>> const &opacity,
+    std::vector<double> const &rosselandSpectrum,
+    std::vector<double> const &bandWidths) {
+  Require(groupBounds.size() > 0);
+  Require(opacity.size() == groupBounds.size() - 1);
+  Require(opacity[0].size() == bandWidths.size());
+  Require(rosselandSpectrum.size() == groupBounds.size() - 1);
 
-    // If all opacities are zero, then the Rosseland mean will also be zero. 
-    double const eps(1.0e-16);
-    double opacity_sum( 0.0 );
-    for( size_t g=1; g<groupBounds.size(); ++g )
-        opacity_sum += std::accumulate( opacity[g-1].begin(),
-                                        opacity[g-1].end(), 0.0 );
-    if( rtt_dsxx::soft_equiv( opacity_sum, 0.0, eps ) )
-    {
-        // std::cerr << "\nWARNING (CDI.cc::"
-        //           << "collapseMultigroupOpacitiesRosseland)::"
-        //           << "\n\tComputing Rosseland Opacity when all opacities"
-        //           << " are zero!" << std::endl;
-        return 0.0;
+  // If all opacities are zero, then the Rosseland mean will also be zero.
+  double const eps(1.0e-16);
+  double opacity_sum(0.0);
+  for (size_t g = 1; g < groupBounds.size(); ++g)
+    opacity_sum +=
+        std::accumulate(opacity[g - 1].begin(), opacity[g - 1].end(), 0.0);
+  if (rtt_dsxx::soft_equiv(opacity_sum, 0.0, eps)) {
+    // std::cerr << "\nWARNING (CDI.cc::"
+    //           << "collapseMultigroupOpacitiesRosseland)::"
+    //           << "\n\tComputing Rosseland Opacity when all opacities"
+    //           << " are zero!" << std::endl;
+    return 0.0;
+  }
+
+  // Integrate the unnormalized Rosseland over the group spectrum
+  // int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
+  double const rosseland_integral =
+      std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
+
+  // If the group bounds are well outside the Rosseland Spectrum at the
+  // current temperature, our algorithm may return a value that is within
+  // machine precision of zero.  In this case, we assume that this occurs
+  // when the temperature -> 0, so that limit(T->0) dB/dT = \delta(\nu).
+  // In this case we have:
+  //
+  // sigma_R = sigma(g=0)
+
+  // Initialize sum
+  double inv_sig_r_sum(0.0);
+
+  size_t const numGroups = groupBounds.size() - 1;
+  size_t const numBands = bandWidths.size();
+
+  if (rosseland_integral < eps) {
+    for (size_t ib = 1; ib <= numBands; ++ib) {
+      Check(opacity[0][ib - 1] >= 0.0);
+      inv_sig_r_sum +=
+          rtt_dsxx::safe_pos_divide(bandWidths[ib - 1], opacity[0][ib - 1]);
     }
+    return 1.0 / inv_sig_r_sum;
+  }
+  Check(rosseland_integral > 0.0);
 
-    // Integrate the unnormalized Rosseland over the group spectrum
-    // int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
-    double const rosseland_integral = 
-        std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(),
-                        0.0);
+  // Perform integration of (1/sigma) * d(b_g)/dT over all groups:
+  // int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
 
-    // If the group bounds are well outside the Rosseland Spectrum at the
-    // current temperature, our algorithm may return a value that is within
-    // machine precision of zero.  In this case, we assume that this occurs
-    // when the temperature -> 0, so that limit(T->0) dB/dT = \delta(\nu).
-    // In this case we have:
-    //
-    // sigma_R = sigma(g=0)
+  // Rosseland opacity:
 
-    // Initialize sum
-    double inv_sig_r_sum( 0.0 );
+  //    1      int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
+  // ------- = ----------------------------------------------------------
+  // sigma_R   int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
 
-    size_t const numGroups = groupBounds.size() - 1;
-    size_t const numBands  = bandWidths.size();
+  // Accumulated quantities for the Rosseland opacities:
+  for (size_t g = 1; g <= numGroups; ++g) {
+    Check(rosselandSpectrum[g - 1] >= 0.0);
+    for (size_t ib = 1; ib <= numBands; ++ib) {
+      Check(opacity[g - 1][ib - 1] >= 0.0);
+      Check((g - 1) * numBands + ib - 1 < numBands * numGroups);
 
-    if( rosseland_integral < eps )
-    {
-        for( size_t ib=1; ib<=numBands; ++ib )
-        {
-            Check( opacity[0][ib-1] >= 0.0 );
-            inv_sig_r_sum +=
-                rtt_dsxx::safe_pos_divide( bandWidths[ib-1],
-                                           opacity[0][ib-1] );
-        }
-        return 1.0 / inv_sig_r_sum;
+      inv_sig_r_sum += rtt_dsxx::safe_pos_divide(rosselandSpectrum[g - 1] *
+                                                     bandWidths[ib - 1],
+                                                 opacity[g - 1][ib - 1]);
     }
-    Check( rosseland_integral > 0.0 );
-
-    // Perform integration of (1/sigma) * d(b_g)/dT over all groups:
-    // int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
-
-    // Rosseland opacity:
-
-    //    1      int_{\nu_0}^{\nu_G}{d\nu (1/sigma(\nu,T)) * dB(\nu,T)/dT}
-    // ------- = ----------------------------------------------------------
-    // sigma_R   int_{\nu_0}^{\nu_G}{d\nu dB(\nu,T)/dT}
-
-    // Accumulated quantities for the Rosseland opacities:
-    for( size_t g=1; g<=numGroups; ++g )
-    {
-        Check( rosselandSpectrum[g-1] >= 0.0 );
-        for( size_t ib=1; ib<=numBands; ++ib )
-        {
-            Check( opacity[g-1][ib-1] >= 0.0 );
-            Check( (g-1)*numBands + ib-1 < numBands*numGroups );
-
-            inv_sig_r_sum += rtt_dsxx::safe_pos_divide(
-                rosselandSpectrum[g-1] * bandWidths[ib-1],
-                opacity[g-1][ib-1]);
-        }
-    }
-    Check( inv_sig_r_sum > 0.0 );
-    return rosseland_integral / inv_sig_r_sum;    
+  }
+  Check(inv_sig_r_sum > 0.0);
+  return rosseland_integral / inv_sig_r_sum;
 }
 
 } // end namespace rtt_cdi

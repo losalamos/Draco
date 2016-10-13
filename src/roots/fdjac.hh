@@ -14,13 +14,12 @@
 #ifndef roots_fdjac_hh
 #define roots_fdjac_hh
 
-#include <limits>
-#include <cmath>
-#include <vector>
 #include <algorithm>
+#include <cmath>
+#include <limits>
+#include <vector>
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -45,41 +44,37 @@ namespace rtt_roots
  * \post \c df.size()==square(x.size())
  */
 
-template<class Field, class Function_N_to_N>
-void fdjac(const std::vector<Field> &x,
-	   const std::vector<Field> &fvec,
-	   std::vector<Field> &df,
-	   const Function_N_to_N &vecfunc)
-{
-    Require(x.size()==fvec.size());
+template <class Field, class Function_N_to_N>
+void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec,
+           std::vector<Field> &df, const Function_N_to_N &vecfunc) {
+  Require(x.size() == fvec.size());
 
-    using std::numeric_limits;
-    using std::vector;
-    using std::abs;
+  using std::numeric_limits;
+  using std::vector;
+  using std::abs;
 
-    // Square root of the machine precision
-    static const double EPS = sqrt(numeric_limits<Field>::epsilon());
+  // Square root of the machine precision
+  static const double EPS = sqrt(numeric_limits<Field>::epsilon());
 
-    const unsigned n = x.size();
+  const unsigned n = x.size();
 
-    df.resize(n*n);
+  df.resize(n * n);
 
-    vector<Field> f(n);
-    vector<Field> xt = x;
-    for (unsigned j=0; j<n; j++)
-    {
-	Field temp = xt[j];
-	Field h = EPS*abs(temp);
-	if (h==0) h=EPS;
-	xt[j] = temp+h;
-	h = xt[j]-temp;
-	vecfunc(xt, f);
-	xt[j] = temp;
-	for (unsigned i=0; i<n; i++)
-	{
-	    df[i+n*j] = (f[i]-fvec[i])/h;
-	}
+  vector<Field> f(n);
+  vector<Field> xt = x;
+  for (unsigned j = 0; j < n; j++) {
+    Field temp = xt[j];
+    Field h = EPS * abs(temp);
+    if (h == 0)
+      h = EPS;
+    xt[j] = temp + h;
+    h = xt[j] - temp;
+    vecfunc(xt, f);
+    xt[j] = temp;
+    for (unsigned i = 0; i < n; i++) {
+      df[i + n * j] = (f[i] - fvec[i]) / h;
     }
+  }
 }
 
 } // end namespace rtt_roots

@@ -36,7 +36,7 @@ ccscs[1-9]*)
     fi
     module load user_contrib
     export dracomodules="gcc/4.8.5 openmpi cmake \
-lapack random123 eospac gsl dracoscripts subversion ndi python/2.7.11
+lapack random123 eospac gsl dracoscripts subversion ndi python
 metis parmetis superlu-dist trilinos git"
     ;;
 ccsnet3*)
@@ -45,7 +45,7 @@ ccsnet3*)
       export VENDOR_DIR=/scratch/vendors
     fi
     module load user_contrib
-    export dracomodules="dracoscripts subversion python/2.7.11 git"
+    export dracomodules="dracoscripts subversion python git"
     ;;
 *)
     # Locate the vendor directory

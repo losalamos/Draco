@@ -119,9 +119,9 @@ run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 # Load new environment
 run "module load PrgEnv-intel"
 run "module unload cray-libsci gcc/6.1.0"
-run "module load cmake/3.6.1 numdiff subversion git"
+run "module load cmake/3.6.2 numdiff subversion git"
 run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
-run "module load trilinos/12.6.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
+run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 
 export CC=`which cc`
 export CXX=`which CC`

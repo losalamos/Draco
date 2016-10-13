@@ -16,8 +16,7 @@
 
 #include "linmin.hh"
 
-namespace rtt_min
-{
+namespace rtt_min {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -41,76 +40,61 @@ namespace rtt_min
  */
 
 template <class RandomContainer, class Function>
-void powell(RandomContainer &p,
-            RandomContainer &xi,
-            double const ftol,
-            unsigned &iter,
-            double &fret,
-            Function func)
-{
-    using std::vector;
-    using rtt_dsxx::square;
+void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
+            unsigned &iter, double &fret, Function func) {
+  using std::vector;
+  using rtt_dsxx::square;
 
-    unsigned const ITMAX = iter;
-    double const TINY = 1.0e-25;
+  unsigned const ITMAX = iter;
+  double const TINY = 1.0e-25;
 
-    unsigned const n = p.size();
-    vector<double> pt(n), ptt(n), xit(n);
+  unsigned const n = p.size();
+  vector<double> pt(n), ptt(n), xit(n);
 
-    fret = func(p);
+  fret = func(p);
 
-    std::copy(p.begin(), p.end(), pt.begin());
+  std::copy(p.begin(), p.end(), pt.begin());
 
-    double fptt;
-    for (iter=0;;++iter)
-    {
-        double const fp = fret;
-        unsigned ibig=0;
-        double del = 0.0;
-        for (unsigned i=0; i<n; ++i)
-        {
-            for (unsigned j=0; j<n; ++j)
-            {
-                xit[j] = xi[j+n*i];
-            }
-            fptt = fret;
-            linmin(p,xit,fret,func);
-            if (fptt-fret > del)
-            {
-                del = fptt - fret;
-                ibig = i+1;
-            }
-        }
-        if (2*(fp-fret) <= ftol*(fabs(fp)+fabs(fret))+TINY)
-        {
-            return;
-        }
-        if (iter==ITMAX)
-        {
-            throw std::range_error("powell exceeding maximum iterations");
-        }
-        for (unsigned j=0; j<n; ++j)
-        {
-            ptt[j] = 2*p[j]-pt[j];
-            xit[j] = p[j]-pt[j];
-            pt[j]=p[j];
-        }
-        fptt = func(ptt);
-        if (fptt < fp)
-        {
-            double const t =
-                2*(fp-2*fret+fptt)*square(fp-fret-del)-del*square(fp-fptt);
-            if (t<0.0)
-            {
-                linmin(p,xit,fret,func);
-                for (unsigned j=0; j<n; ++j)
-                {
-                    xi[j+n*(ibig-1)] = xi[j+n*(n-1)];
-                    xi[j+n*(n-1)] = xit[j];
-                }
-            }
-        }
+  double fptt;
+  for (iter = 0;; ++iter) {
+    double const fp = fret;
+    unsigned ibig = 0;
+    double del = 0.0;
+    for (unsigned i = 0; i < n; ++i) {
+      for (unsigned j = 0; j < n; ++j) {
+        xit[j] = xi[j + n * i];
+      }
+      fptt = fret;
+      linmin(p, xit, fret, func);
+      if (fptt - fret > del) {
+        del = fptt - fret;
+        ibig = i + 1;
+      }
     }
+    if (2 * (fp - fret) <= ftol * (fabs(fp) + fabs(fret)) + TINY) {
+      return;
+    }
+    if (iter == ITMAX) {
+      throw std::range_error("powell exceeding maximum iterations");
+    }
+    for (unsigned j = 0; j < n; ++j) {
+      ptt[j] = 2 * p[j] - pt[j];
+      xit[j] = p[j] - pt[j];
+      pt[j] = p[j];
+    }
+    fptt = func(ptt);
+    if (fptt < fp) {
+      double const t = 2 * (fp - 2 * fret + fptt) * square(fp - fret - del) -
+                       del * square(fp - fptt);
+      if (t < 0.0) {
+        linmin(p, xit, fret, func);
+        for (unsigned j = 0; j < n; ++j) {
+          xi[j + n * (ibig - 1)] = xi[j + n * (n - 1)];
+          xi[j + n * (n - 1)] = xit[j];
+        }
+      }
+    }
+  }
 }
 
 } // end namespace rtt_min

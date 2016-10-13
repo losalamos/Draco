@@ -17,8 +17,7 @@
 #include <iostream>
 #include <string>
 
-namespace rtt_shared_lib_test
-{
+namespace rtt_shared_lib_test {
 
 //===========================================================================//
 // PASS/FAILURE LIMIT
@@ -28,7 +27,7 @@ namespace rtt_shared_lib_test
 // Returns false for fail
 // Failure functions also set rtt_shared_lib_test::passed to false
 
-// These can be used in any combination in a test to print output messages  
+// These can be used in any combination in a test to print output messages
 // if no fail functions are called then the test will pass
 // (rtt_shared_lib_test::passed will have its default value of true)
 
@@ -63,12 +62,12 @@ extern bool passed;
 // These are a convenience only
 //===========================================================================//
 
-#define ITFAILS      rtt_shared_lib_test::fail(__LINE__);
-#define FAILURE      rtt_shared_lib_test::fail(__LINE__, __FILE__);
-#define PASSMSG(a)   rtt_shared_lib_test::pass_msg(a);
-#define FAILMSG(a)   rtt_shared_lib_test::fail_msg(a);
+#define ITFAILS rtt_shared_lib_test::fail(__LINE__);
+#define FAILURE rtt_shared_lib_test::fail(__LINE__, __FILE__);
+#define PASSMSG(a) rtt_shared_lib_test::pass_msg(a);
+#define FAILMSG(a) rtt_shared_lib_test::fail_msg(a);
 #define UNIT_TEST(x) rtt_shared_lib_test::unit_test(x, __LINE__, __FILE__)
-    
+
 #endif // shared_lib_test_test_hh
 
 //---------------------------------------------------------------------------//

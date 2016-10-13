@@ -15,8 +15,7 @@
 
 #include "Index_Counter.hh"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -30,73 +29,73 @@ namespace rtt_dsxx
  * \example ds++/test/tstIndex_Converter.cc
  */
 //===========================================================================//
-template<unsigned D, int OFFSET>
-class Index_Converter : public Index_Set<D,OFFSET>
-{
-  public:
+template <unsigned D, int OFFSET>
+class Index_Converter : public Index_Set<D, OFFSET> {
+public:
+  typedef Index_Set<D, OFFSET> Base;
 
-    typedef Index_Set<D,OFFSET> Base;
+  typedef Index_Counter<D, OFFSET> Counter;
 
-    typedef Index_Counter<D,OFFSET> Counter;
+  //! Default constructor
+  Index_Converter() { /* ... */
+  }
 
-    //! Default constructor
-    Index_Converter() { /* ... */ }
+  //! Construct with just a pointer to the sizes
+  Index_Converter(const unsigned *dimensions) { set_size(dimensions); }
 
-    //! Construct with just a pointer to the sizes
-    Index_Converter(const unsigned* dimensions) { set_size(dimensions); }
+  //! Construct a with all dimensions equal
+  Index_Converter(const unsigned dimension) { set_size(dimension); }
 
-    //! Construct a with all dimensions equal
-    Index_Converter(const unsigned dimension)   { set_size(dimension); }
+  //! Destructor.
+  virtual ~Index_Converter() { /* ... */
+  }
 
-    //! Destructor.
-    virtual ~Index_Converter() {/* ... */}
+  //! Assignment operator for Index_Converter.
+  //    Index_Converter& operator=(const Index_Converter &rhs);
 
-    //! Assignment operator for Index_Converter.
-//    Index_Converter& operator=(const Index_Converter &rhs);
+  //! Re-assignment operator
+  void set_size(const unsigned *dimensions);
 
-    //! Re-assignment operator
-    void set_size(const unsigned* dimensions);
+  //! Uniform size re-assignment operator
+  void set_size(unsigned size);
 
-    //! Uniform size re-assignment operator
-    void set_size(unsigned size);
+  //! Re-implement base function.
+  int limit_of_index(unsigned d, bool pos) const {
+    return Base::limit_of_index(d, pos);
+  }
 
-    //! Re-implement base function.
-    int limit_of_index(unsigned d, bool pos) const { return Base::limit_of_index(d,pos); }
+  // ACCESSORS
 
-    // ACCESSORS
+  //! Convert N-index to 1-index
+  template <typename IT> int get_index(IT indices) const;
 
-    //! Convert N-index to 1-index
-    template <typename IT> int get_index(IT indices) const;
+  //! Convert 1-index to N-index
+  std::vector<int> get_indices(int index) const;
 
-    //! Convert 1-index to N-index
-    std::vector<int> get_indices(int index) const;
+  //! Convert 1-index to N-index and store in provided iterator.
+  template <typename IT> void get_indices(int index, IT begin) const;
 
-    //! Convert 1-index to N-index and store in provided iterator.
-    template <typename IT> void get_indices(int index, IT begin) const;
+  //! Extract a single N-index from the 1-index
+  int get_single_index(int index, unsigned dimension) const;
 
-    //! Extract a single N-index from the 1-index
-    int get_single_index(int index, unsigned dimension) const;
+  // Get the next index from a 1-index and direction
+  int get_next_index(int index, int direction) const;
 
-    // Get the next index from a 1-index and direction
-    int get_next_index(int index, int direction) const;
+  // Get the next index from an Index_Counter and direction
+  int get_next_index(const Counter &counter, int direction) const;
 
-    // Get the next index from an Index_Counter and direction
-    int get_next_index(const Counter& counter, int direction) const;
+  // Create an iterator over the index set
+  Counter counter() const { return Counter(*this); }
 
-    // Create an iterator over the index set
-    Counter counter() const { return Counter(*this); }
+private:
+  // DATA
 
-  private:
+  //! Sizes of sub-grids of increasing dimension.
+  unsigned sub_sizes[D];
 
-    // DATA
+  // IMPLEMENTATION
 
-    //! Sizes of sub-grids of increasing dimension.
-    unsigned sub_sizes[D];
-
-    // IMPLEMENTATION
-
-    void compute_sub_sizes();
-
+  void compute_sub_sizes();
 };
 
 //---------------------------------------------------------------------------//
@@ -109,10 +108,9 @@ class Index_Converter : public Index_Set<D,OFFSET>
  *
  */
 template <unsigned D, int OFFSET>
-inline void Index_Converter<D,OFFSET>::set_size(const unsigned* dimensions)
-{
-    Base::set_size(dimensions);
-    compute_sub_sizes();
+inline void Index_Converter<D, OFFSET>::set_size(const unsigned *dimensions) {
+  Base::set_size(dimensions);
+  compute_sub_sizes();
 }
 
 //---------------------------------------------------------------------------//
@@ -122,10 +120,9 @@ inline void Index_Converter<D,OFFSET>::set_size(const unsigned* dimensions)
  * \arg dimension The new size
  */
 template <unsigned D, int OFFSET>
-inline void Index_Converter<D,OFFSET>::set_size(unsigned dimension)
-{
-    Base::set_size(dimension);
-    compute_sub_sizes();
+inline void Index_Converter<D, OFFSET>::set_size(unsigned dimension) {
+  Base::set_size(dimension);
+  compute_sub_sizes();
 }
 
 //---------------------------------------------------------------------------//
@@ -135,23 +132,21 @@ inline void Index_Converter<D,OFFSET>::set_size(unsigned dimension)
  */
 template <unsigned D, int OFFSET>
 template <typename IT>
-int Index_Converter<D,OFFSET>::get_index(IT indices) const
-{
+int Index_Converter<D, OFFSET>::get_index(IT indices) const {
 
-    Check(Base::indices_in_range(indices));
+  Check(Base::indices_in_range(indices));
 
-    int one_index_value = 0;
-    int dimension = 0;
-    for (IT index = indices; index != indices + D; ++index, ++dimension)
-    {
-        one_index_value += (*index - OFFSET) * this->sub_sizes[dimension];
-    }
+  int one_index_value = 0;
+  int dimension = 0;
+  for (IT index = indices; index != indices + D; ++index, ++dimension) {
+    one_index_value += (*index - OFFSET) * this->sub_sizes[dimension];
+  }
 
-    one_index_value += OFFSET;
+  one_index_value += OFFSET;
 
-    Ensure(Base::index_in_range(one_index_value));
+  Ensure(Base::index_in_range(one_index_value));
 
-    return one_index_value;
+  return one_index_value;
 }
 
 //---------------------------------------------------------------------------//
@@ -164,19 +159,17 @@ int Index_Converter<D,OFFSET>::get_index(IT indices) const
  */
 template <unsigned D, int OFFSET>
 template <typename IT>
-void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
-{
-    Check(Base::index_in_range(index));
-    index -= OFFSET;
+void Index_Converter<D, OFFSET>::get_indices(int index, IT iter) const {
+  Check(Base::index_in_range(index));
+  index -= OFFSET;
 
-    for (size_t d = 0; d <= D-1; ++d)
-    {
-        const int dim_size = Base::get_size(d);
-        *(iter++) = index % dim_size + OFFSET;
-        index /= dim_size;
-    }
+  for (size_t d = 0; d <= D - 1; ++d) {
+    const int dim_size = Base::get_size(d);
+    *(iter++) = index % dim_size + OFFSET;
+    index /= dim_size;
+  }
 
-    Ensure (index == 0);
+  Ensure(index == 0);
 }
 
 //---------------------------------------------------------------------------//
@@ -193,16 +186,15 @@ void Index_Converter<D,OFFSET>::get_indices(int index, IT iter) const
  *
  */
 template <unsigned D, int OFFSET>
-std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
-{
-    Check(Base::index_in_range(index));
+std::vector<int> Index_Converter<D, OFFSET>::get_indices(int index) const {
+  Check(Base::index_in_range(index));
 
-    static int indices[D];
+  static int indices[D];
 
-    get_indices(index, indices);
+  get_indices(index, indices);
 
-    // Construct in return statement for RVO.
-    return std::vector<int>(indices, indices+D);
+  // Construct in return statement for RVO.
+  return std::vector<int>(indices, indices + D);
 }
 
 //---------------------------------------------------------------------------//
@@ -214,17 +206,16 @@ std::vector<int> Index_Converter<D,OFFSET>::get_indices(int index) const
  *
  */
 template <unsigned D, int OFFSET>
-int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) const
-{
+int Index_Converter<D, OFFSET>::get_single_index(int index,
+                                                 unsigned dimension) const {
 
-    Check(Base::index_in_range(index));
-    Check(Base::dimension_okay(dimension));
+  Check(Base::index_in_range(index));
+  Check(Base::dimension_okay(dimension));
 
-    index -= OFFSET;
-    index /= this->sub_sizes[dimension];
+  index -= OFFSET;
+  index /= this->sub_sizes[dimension];
 
-    return index % Base::get_size(dimension) + OFFSET;
-
+  return index % Base::get_size(dimension) + OFFSET;
 }
 
 //---------------------------------------------------------------------------//
@@ -238,21 +229,21 @@ int Index_Converter<D,OFFSET>::get_single_index(int index, unsigned dimension) c
  *
  */
 template <unsigned D, int OFFSET>
-int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
-{
-    Check(Base::index_in_range(index));
-    Check(Base::direction_okay(direction));
+int Index_Converter<D, OFFSET>::get_next_index(int index, int direction) const {
+  Check(Base::index_in_range(index));
+  Check(Base::direction_okay(direction));
 
-    --direction;
+  --direction;
 
-    unsigned dimension = direction / 2;
-    int      sign      = 2*(direction % 2) - 1;
+  unsigned dimension = direction / 2;
+  int sign = 2 * (direction % 2) - 1;
 
-    const int sub_index = get_single_index(index, dimension) + sign;
+  const int sub_index = get_single_index(index, dimension) + sign;
 
-    if (!Base::index_in_range(sub_index, dimension)) return -1;
+  if (!Base::index_in_range(sub_index, dimension))
+    return -1;
 
-    return index + sign*sub_sizes[dimension];
+  return index + sign * sub_sizes[dimension];
 }
 
 //---------------------------------------------------------------------------//
@@ -266,21 +257,21 @@ int Index_Converter<D,OFFSET>::get_next_index(int index, int direction) const
  *
  */
 template <unsigned D, int OFFSET>
-int Index_Converter<D,OFFSET>::get_next_index(
-    const typename Index_Converter<D,OFFSET>::Counter& counter,
-    int direction) const
-{
-    --direction;
+int Index_Converter<D, OFFSET>::get_next_index(
+    const typename Index_Converter<D, OFFSET>::Counter &counter,
+    int direction) const {
+  --direction;
 
-    unsigned dimension = direction / 2;
-    int      sign      = 2*(direction % 2) - 1;
+  unsigned dimension = direction / 2;
+  int sign = 2 * (direction % 2) - 1;
 
-    const int index     = counter.get_index();
-    const int sub_index = counter.get_index(dimension) + sign;
+  const int index = counter.get_index();
+  const int sub_index = counter.get_index(dimension) + sign;
 
-    if (!Base::index_in_range(sub_index, dimension)) return -1;
+  if (!Base::index_in_range(sub_index, dimension))
+    return -1;
 
-    return index + sign*sub_sizes[dimension];
+  return index + sign * sub_sizes[dimension];
 }
 
 //---------------------------------------------------------------------------//
@@ -295,23 +286,18 @@ int Index_Converter<D,OFFSET>::get_next_index(
  *
  */
 template <unsigned D, int OFFSET>
-void Index_Converter<D,OFFSET>::compute_sub_sizes()
-{
+void Index_Converter<D, OFFSET>::compute_sub_sizes() {
 
-    Require(Base::sizes_okay());
+  Require(Base::sizes_okay());
 
-    sub_sizes[0] = 1;
+  sub_sizes[0] = 1;
 
-    unsigned const * const dimensions = Base::get_dimensions();
-    Remember( unsigned* end = )
-        std::partial_sum(
-            dimensions,
-            dimensions+D-1,
-            sub_sizes+1,
-            std::multiplies<unsigned>() );
+  unsigned const *const dimensions = Base::get_dimensions();
+  Remember(unsigned *end =)
+      std::partial_sum(dimensions, dimensions + D - 1, sub_sizes + 1,
+                       std::multiplies<unsigned>());
 
-    Ensure(end == sub_sizes+D);
-
+  Ensure(end == sub_sizes + D);
 }
 
 } // end namespace rtt_dsxx

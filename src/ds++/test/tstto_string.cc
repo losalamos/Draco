@@ -10,13 +10,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/config.h"
-#include "ds++/to_string.hh"
+#include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/Release.hh"
-#include <cstdlib> // M_PI
+#include "ds++/config.h"
+#include "ds++/to_string.hh"
 #include <cmath>   // M_PI on other platforms.
+#include <cstdlib> // M_PI
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -25,35 +25,35 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstto_string( UnitTest &ut)
-{
-    string const pi = rtt_dsxx::to_string(M_PI, 20);
+void tstto_string(UnitTest &ut) {
+  string const pi = rtt_dsxx::to_string(M_PI, 20);
 
-    if( soft_equiv(M_PI, atof(pi.c_str())) )
-        ut.passes("pi correctly written/read");
-    else
-        ut.failure("pi NOT correctly written/read");
+  if (soft_equiv(M_PI, atof(pi.c_str())))
+    ut.passes("pi correctly written/read");
+  else
+    ut.failure("pi NOT correctly written/read");
 
-    double const foo(2.11111111);
-    unsigned int const p(23);
-    // Must be careful to use rtt_dsxx::to_string and avoid std::to_string --
-    // especially after 'using namespace std.'
-    string s1( rtt_dsxx::to_string(foo,p) );
-    string s2( rtt_dsxx::to_string(foo) );
-    if( s1 == s2 )
-        ut.passes("double printed using default formatting.");
-    else
-        ut.failure("double printed with wrong format!");
+  double const foo(2.11111111);
+  unsigned int const p(23);
+  // Must be careful to use rtt_dsxx::to_string and avoid std::to_string --
+  // especially after 'using namespace std.'
+  string s1(rtt_dsxx::to_string(foo, p));
+  string s2(rtt_dsxx::to_string(foo));
+  if (s1 == s2)
+    ut.passes("double printed using default formatting.");
+  else
+    ut.failure("double printed with wrong format!");
 
-    return;
+  return;
 }
 
 //---------------------------------------------------------------------------//
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut(argc, argv, release);
-    try { tstto_string(ut); }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    tstto_string(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

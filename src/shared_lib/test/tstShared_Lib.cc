@@ -11,17 +11,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include <vector>
 #include <cmath>
-#include <string>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "../Shared_Lib.hh"
+#include "shared_lib_test.hh"
 #include "ds++/Release.hh"
 #include <ds++/Assert.hh>
 #include <ds++/Soft_Equivalence.hh>
-#include "shared_lib_test.hh"
 
 #include "Foo_Base.hh"
 
@@ -35,207 +35,188 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
-bool test_supported()
-{
-    bool supported = Shared_Lib::is_supported();
+bool test_supported() {
+  bool supported = Shared_Lib::is_supported();
 
-    // Make sure we can't create a Shared_Lib on unsupported platforms.
+  // Make sure we can't create a Shared_Lib on unsupported platforms.
 
-    if ( not supported )
-    {
-	bool caught = false;
-	
-        try
-        {
-	    Shared_Lib s;
-        }
-        catch ( const rtt_dsxx::assertion &ass )
-        {
-            caught = true;
-            std::ostringstream m;
-            m << "Excellent! Caught assertion for unsupported platforms.";
-            PASSMSG(m.str());
-        }
+  if (not supported) {
+    bool caught = false;
 
-        if ( not caught ) ITFAILS;
+    try {
+      Shared_Lib s;
+    } catch (const rtt_dsxx::assertion &ass) {
+      caught = true;
+      std::ostringstream m;
+      m << "Excellent! Caught assertion for unsupported platforms.";
+      PASSMSG(m.str());
     }
 
-    // Done testing.
+    if (not caught)
+      ITFAILS;
+  }
 
-    if ( rtt_shared_lib_test::passed )
-    {
-	if ( supported )
-	{
-	    PASSMSG("test_supported() ok, platform supported.");
-	}
-	else
-	{
-	    PASSMSG("test_supported() ok, platform unsupported.");
-	}
+  // Done testing.
+
+  if (rtt_shared_lib_test::passed) {
+    if (supported) {
+      PASSMSG("test_supported() ok, platform supported.");
+    } else {
+      PASSMSG("test_supported() ok, platform unsupported.");
     }
+  }
 
-    return supported;
+  return supported;
 }
 
-void test_simple()
-{
-    string so_name("foo.so");
+void test_simple() {
+  string so_name("foo.so");
 
-    Shared_Lib so_lib(so_name);
-    
-    if ( so_lib.get_file_name() != so_name ) ITFAILS;
-    if ( ! so_lib.is_open() ) ITFAILS;
-    
-    // Creator function pointer for Foo objects.
-    typedef Foo_Base* (* Creator)(double);
-    
-    // Destroyer function pointer for Foo objects.
-    typedef void (* Destroyer)(Foo_Base *);
+  Shared_Lib so_lib(so_name);
 
-    // Grab the creator function.
-    Creator my_creator = so_lib.get_function<Creator>("my_creator");
+  if (so_lib.get_file_name() != so_name)
+    ITFAILS;
+  if (!so_lib.is_open())
+    ITFAILS;
 
-    // Grab the destroyer function.
-    Destroyer my_destroyer = so_lib.get_function<Destroyer>("my_destroyer");
+  // Creator function pointer for Foo objects.
+  typedef Foo_Base *(*Creator)(double);
 
-    const double base = 4.1;
-    const double x = 2.34342;
+  // Destroyer function pointer for Foo objects.
+  typedef void (*Destroyer)(Foo_Base *);
 
-    // Create the Foo object and check it.
-    Foo_Base *foo = my_creator(base);
-    if ( ! foo ) ITFAILS;
-    if ( ! soft_equiv(foo->compute(x), x * x + base) ) ITFAILS;
+  // Grab the creator function.
+  Creator my_creator = so_lib.get_function<Creator>("my_creator");
 
-    { // Test copy ctor
-	Shared_Lib sc(so_lib);
+  // Grab the destroyer function.
+  Destroyer my_destroyer = so_lib.get_function<Destroyer>("my_destroyer");
 
-	if ( sc.get_file_name() != so_name ) ITFAILS;
-	Creator c = sc.get_function<Creator>("my_creator");
-	Destroyer d = sc.get_function<Destroyer>("my_destroyer");
-	Foo_Base *foo2 = c(base);
-	if ( ! foo2 ) ITFAILS;
-	if ( ! soft_equiv(foo2->compute(x), x * x + base) ) ITFAILS;
-	d(foo2);
+  const double base = 4.1;
+  const double x = 2.34342;
+
+  // Create the Foo object and check it.
+  Foo_Base *foo = my_creator(base);
+  if (!foo)
+    ITFAILS;
+  if (!soft_equiv(foo->compute(x), x * x + base))
+    ITFAILS;
+
+  { // Test copy ctor
+    Shared_Lib sc(so_lib);
+
+    if (sc.get_file_name() != so_name)
+      ITFAILS;
+    Creator c = sc.get_function<Creator>("my_creator");
+    Destroyer d = sc.get_function<Destroyer>("my_destroyer");
+    Foo_Base *foo2 = c(base);
+    if (!foo2)
+      ITFAILS;
+    if (!soft_equiv(foo2->compute(x), x * x + base))
+      ITFAILS;
+    d(foo2);
+  }
+
+  { // Test assignment
+    Shared_Lib sc;
+
+    sc = so_lib;
+
+    if (sc.get_file_name() != so_name)
+      ITFAILS;
+    Creator c = sc.get_function<Creator>("my_creator");
+    Destroyer d = sc.get_function<Destroyer>("my_destroyer");
+    Foo_Base *foo2 = c(base);
+    if (!foo2)
+      ITFAILS;
+    if (!soft_equiv(foo2->compute(x), x * x + base))
+      ITFAILS;
+    d(foo2);
+  }
+
+  { // check get_function of a function not in the library
+    bool caught = false;
+    try {
+      /* Creator no = */ so_lib.get_function<Creator>("not_in_lib");
+    } catch (const rtt_dsxx::assertion &ass) {
+      caught = true;
+      std::ostringstream m;
+      m << "Excellent! Caught assertion for get_function().";
+      PASSMSG(m.str());
     }
 
-    { // Test assignment
-	Shared_Lib sc;
+    if (not caught)
+      ITFAILS;
+  }
 
-	sc = so_lib;
-
-	if ( sc.get_file_name() != so_name ) ITFAILS;
-	Creator c = sc.get_function<Creator>("my_creator");
-	Destroyer d = sc.get_function<Destroyer>("my_destroyer");
-	Foo_Base *foo2 = c(base);
-	if ( ! foo2 ) ITFAILS;
-	if ( ! soft_equiv(foo2->compute(x), x * x + base) ) ITFAILS;
-	d(foo2);
-    }
-
-    { // check get_function of a function not in the library
-        bool caught = false;
-        try
-        {
-	    /* Creator no = */ so_lib.get_function<Creator>("not_in_lib");
-        }
-        catch ( const rtt_dsxx::assertion &ass )
-        {
-            caught = true;
-            std::ostringstream m;
-            m << "Excellent! Caught assertion for get_function().";
-            PASSMSG(m.str());
-        }
-
-        if ( not caught ) ITFAILS;
-    }
-
-    // Done with so_lib, so let's destroy foo and close so_lib.
-    my_destroyer(foo);
-    so_lib.close();
-    if ( so_lib.is_open() ) ITFAILS;
+  // Done with so_lib, so let's destroy foo and close so_lib.
+  my_destroyer(foo);
+  so_lib.close();
+  if (so_lib.is_open())
+    ITFAILS;
 
 #ifdef REQUIRE_ON
-    { // check open() of an empty file name
-        bool caught = false;
-        try
-        {
-	    Shared_Lib t;
-	    t.open("");
-        }
-        catch ( const rtt_dsxx::assertion &ass )
-        {
-            caught = true;
-            std::ostringstream m;
-            m << "Excellent! Caught assertion for open().";
-            PASSMSG(m.str());
-        }
-
-        if ( not caught ) ITFAILS;
+  { // check open() of an empty file name
+    bool caught = false;
+    try {
+      Shared_Lib t;
+      t.open("");
+    } catch (const rtt_dsxx::assertion &ass) {
+      caught = true;
+      std::ostringstream m;
+      m << "Excellent! Caught assertion for open().";
+      PASSMSG(m.str());
     }
+
+    if (not caught)
+      ITFAILS;
+  }
 #endif
 
-    // Done testing
+  // Done testing
 
-    if ( rtt_shared_lib_test::passed )
-    {
-        PASSMSG("test_simple() ok.");
-    }
+  if (rtt_shared_lib_test::passed) {
+    PASSMSG("test_simple() ok.");
+  }
 }
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    // version tag
-    for (int arg = 1; arg < argc; arg++)
-	if (std::string(argv[arg]) == "--version")
-	{
-	    std::cout << argv[0] << ": version " 
-		      << rtt_dsxx::release() 
-		      << std::endl;
-	    return 0;
-	}
-
-    try
-    {
-	// >>> UNIT TESTS
-
-	if ( test_supported() )
-	{
-	    test_simple();
-	}
-    }
-    catch (std::exception &err)
-    {
-	std::cout << "ERROR: While testing tstShared_Lib, " 
-		  << err.what()
-		  << std::endl;
-	return 1;
-    }
-    catch( ... )
-    {
-	std::cout << "ERROR: While testing tstShared_Lib, " 
-		  << "An unknown exception was thrown."
-		  << std::endl;
-	return 1;
+int main(int argc, char *argv[]) {
+  // version tag
+  for (int arg = 1; arg < argc; arg++)
+    if (std::string(argv[arg]) == "--version") {
+      std::cout << argv[0] << ": version " << rtt_dsxx::release() << std::endl;
+      return 0;
     }
 
-    // status of test
-    std::cout << std::endl;
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    if (rtt_shared_lib_test::passed) 
-    {
-        std::cout << "**** tstShared_Lib Test: PASSED" 
-		  << std::endl;
+  try {
+    // >>> UNIT TESTS
+
+    if (test_supported()) {
+      test_simple();
     }
-    std::cout <<     "*********************************************" 
-	      << std::endl;
-    std::cout << std::endl;
-    
-    std::cout << "Done testing tstShared_Lib." << std::endl;
-    return 0;
-}   
+  } catch (std::exception &err) {
+    std::cout << "ERROR: While testing tstShared_Lib, " << err.what()
+              << std::endl;
+    return 1;
+  } catch (...) {
+    std::cout << "ERROR: While testing tstShared_Lib, "
+              << "An unknown exception was thrown." << std::endl;
+    return 1;
+  }
+
+  // status of test
+  std::cout << std::endl;
+  std::cout << "*********************************************" << std::endl;
+  if (rtt_shared_lib_test::passed) {
+    std::cout << "**** tstShared_Lib Test: PASSED" << std::endl;
+  }
+  std::cout << "*********************************************" << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "Done testing tstShared_Lib." << std::endl;
+  return 0;
+}
 
 //---------------------------------------------------------------------------//
 // end of tstShared_Lib.cc

@@ -16,8 +16,7 @@
 
 #include "ds++/DracoMath.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 //---------------------------------------------------------------------------//
 /*! Find the norm of a set of functions.
@@ -37,25 +36,23 @@ namespace rtt_linear
  * \pre \c fvec.size()==x.size()
  */
 
-template<class RandomContainer, class Function_N_to_N>
+template <class RandomContainer, class Function_N_to_N>
 typename RandomContainer::value_type fnorm(const RandomContainer &x,
-					   RandomContainer &fvec,
-					   const Function_N_to_N &vecfunc)
-{
-    const unsigned n = x.size();
+                                           RandomContainer &fvec,
+                                           const Function_N_to_N &vecfunc) {
+  const unsigned n = x.size();
 
-    using rtt_dsxx::conj;
+  using rtt_dsxx::conj;
 
-    fvec.resize(n);
-    vecfunc(x, fvec);
+  fvec.resize(n);
+  vecfunc(x, fvec);
 
-    typename RandomContainer::value_type sum = 0;
-    for (unsigned i=0; i<n; ++i)
-    {
-	sum += fvec[i]*conj(fvec[i]);
-    }
-    Ensure(fvec.size()==n);
-    return 0.5*sum;
+  typename RandomContainer::value_type sum = 0;
+  for (unsigned i = 0; i < n; ++i) {
+    sum += fvec[i] * conj(fvec[i]);
+  }
+  Ensure(fvec.size() == n);
+  return 0.5 * sum;
 }
 
 } // end namespace rtt_linear

@@ -16,8 +16,7 @@
 
 #include "Analytic_MultigroupOpacity.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 
 //===========================================================================//
 /*!
@@ -67,51 +66,51 @@ namespace rtt_cdi_analytic
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic nGray_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity
-{
-  public:
-    // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
-    typedef std::vector<SP_Analytic_Model>             sf_Analytic_Model;
-    typedef std::vector<double>                        sf_double;
-    typedef std::vector<sf_double>                     vf_double;
-    typedef std::string                                std_string;
-    typedef std::vector<char>                          sf_char;
+class DLL_PUBLIC_cdi_analytic nGray_Analytic_MultigroupOpacity
+    : public Analytic_MultigroupOpacity {
+public:
+  // Useful typedefs.
+  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
+  typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
+  typedef std::vector<double> sf_double;
+  typedef std::vector<sf_double> vf_double;
+  typedef std::string std_string;
+  typedef std::vector<char> sf_char;
 
-  private:
-    // Analytic models for each group.
-    sf_Analytic_Model group_models;
+private:
+  // Analytic models for each group.
+  sf_Analytic_Model group_models;
 
-  public:
-    // Constructor.
-    nGray_Analytic_MultigroupOpacity(const sf_double         & groups,
-                                     const sf_Analytic_Model & models,
-                                     rtt_cdi::Reaction         reaction_in,
-                                     rtt_cdi::Model            model_in = rtt_cdi::ANALYTIC);
+public:
+  // Constructor.
+  nGray_Analytic_MultigroupOpacity(const sf_double &groups,
+                                   const sf_Analytic_Model &models,
+                                   rtt_cdi::Reaction reaction_in,
+                                   rtt_cdi::Model model_in = rtt_cdi::ANALYTIC);
 
-    // Constructor for packed Analytic_Multigroup_Opacities
-    explicit nGray_Analytic_MultigroupOpacity(const sf_char & packed);
+  // Constructor for packed Analytic_Multigroup_Opacities
+  explicit nGray_Analytic_MultigroupOpacity(const sf_char &packed);
 
-    // >>> ACCESSORS
-    const_Model get_Analytic_Model(size_t g) const { return group_models[g-1]; }
+  // >>> ACCESSORS
+  const_Model get_Analytic_Model(size_t g) const { return group_models[g - 1]; }
 
-    // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
+  // >>> INTERFACE SPECIFIED BY rtt_cdi::MultigroupOpacity
 
-    // Get the group opacities.
-    sf_double getOpacity(double temperature, double density) const;
+  // Get the group opacities.
+  sf_double getOpacity(double temperature, double density) const;
 
-    // Get the group opacity fields given a field of temperatures.
-    vf_double getOpacity(const sf_double & temperature, double density) const;
+  // Get the group opacity fields given a field of temperatures.
+  vf_double getOpacity(const sf_double &temperature, double density) const;
 
-    // Get the group opacity fields given a field of densities.
-    vf_double getOpacity(double temperature, const sf_double & density) const;
+  // Get the group opacity fields given a field of densities.
+  vf_double getOpacity(double temperature, const sf_double &density) const;
 
-    // Get the data description of the opacity.
-    inline std_string getDataDescriptor(void) const;
+  // Get the data description of the opacity.
+  inline std_string getDataDescriptor(void) const;
 
-    // Pack the nGray_Analytic_MultigroupOpacity into a character string.
-    sf_char pack(void) const;
+  // Pack the nGray_Analytic_MultigroupOpacity into a character string.
+  sf_char pack(void) const;
 };
 
 //---------------------------------------------------------------------------//
@@ -121,27 +120,24 @@ class DLL_PUBLIC_cdi_analytic nGray_Analytic_MultigroupOpacity : public Analytic
  * \brief Return a string describing the opacity model.
  */
 nGray_Analytic_MultigroupOpacity::std_string
-nGray_Analytic_MultigroupOpacity::getDataDescriptor() const
-{
-    std_string descriptor;
+nGray_Analytic_MultigroupOpacity::getDataDescriptor() const {
+  std_string descriptor;
 
-    rtt_cdi::Reaction const reaction = getReactionType();
+  rtt_cdi::Reaction const reaction = getReactionType();
 
-    if (reaction == rtt_cdi::TOTAL)
-	descriptor = "nGray Multigroup Total";
-    else if (reaction == rtt_cdi::ABSORPTION)
-	descriptor = "nGray Multigroup Absorption";
-    else if (reaction == rtt_cdi::SCATTERING)
-	descriptor = "nGray Multigroup Scattering";
-    else
-    {
-	Insist( reaction == rtt_cdi::TOTAL      ||
-                reaction == rtt_cdi::ABSORPTION ||
-                reaction == rtt_cdi::SCATTERING,
-                "Invalid nGray multigroup model opacity!");
-    }
+  if (reaction == rtt_cdi::TOTAL)
+    descriptor = "nGray Multigroup Total";
+  else if (reaction == rtt_cdi::ABSORPTION)
+    descriptor = "nGray Multigroup Absorption";
+  else if (reaction == rtt_cdi::SCATTERING)
+    descriptor = "nGray Multigroup Scattering";
+  else {
+    Insist(reaction == rtt_cdi::TOTAL || reaction == rtt_cdi::ABSORPTION ||
+               reaction == rtt_cdi::SCATTERING,
+           "Invalid nGray multigroup model opacity!");
+  }
 
-    return descriptor;
+  return descriptor;
 }
 
 } // end namespace

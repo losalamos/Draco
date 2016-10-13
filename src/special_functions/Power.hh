@@ -36,8 +36,7 @@
 #ifndef special_functions_Power_hh
 #define special_functions_Power_hh
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 /* Protect the implementation detail of struct P from accidental usage
  * outside of this file.
@@ -50,28 +49,22 @@ namespace {
  * specialize for N=0 and this is not possible with a template function. 
  */
 
-template <int N, typename F>
-struct P
-{
-    static F compute(F x, F p)
-    {
-        x *= x;
-        if ((N/2)*2 == N) return P<N/2, F>::compute(x, p);
-        else              return P<N/2, F>::compute(x, x*p);
-    }
+template <int N, typename F> struct P {
+  static F compute(F x, F p) {
+    x *= x;
+    if ((N / 2) * 2 == N)
+      return P<N / 2, F>::compute(x, p);
+    else
+      return P<N / 2, F>::compute(x, x * p);
+  }
 };
-
 
 /* Specialize struct P on N=0 to terminate the recursion.
  */
-template <typename F>
-struct P<0,F>
-{
-    static F compute(F /*x*/, F p) { return p; }
+template <typename F> struct P<0, F> {
+  static F compute(F /*x*/, F p) { return p; }
 };
-
 }
-          
 
 /* Function Power recursively implements the first half of the Russian Pesant
  * algorithm, by repeatedly computing x=x^2, N=N/2, so long as the remaining
@@ -79,13 +72,14 @@ struct P<0,F>
  * P<N>::compute(x,x) which contiunues the calculation.
  */
 
-template <int N, typename F>
-F Power(F x) {
-    if (N==0) return static_cast<F>(1);
-    else if ((N/2)*2 == N) return Power<N/2>(x*x);
-    else                   return P<N/2,F>::compute(x,x);
+template <int N, typename F> F Power(F x) {
+  if (N == 0)
+    return static_cast<F>(1);
+  else if ((N / 2) * 2 == N)
+    return Power<N / 2>(x * x);
+  else
+    return P<N / 2, F>::compute(x, x);
 }
-
 
 } // end namespace rtt_sf
 

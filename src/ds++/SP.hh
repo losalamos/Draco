@@ -8,17 +8,14 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
 
-#include <typeinfo>
 #include "Assert.hh"
+#include <typeinfo>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -27,26 +24,19 @@ namespace rtt_dsxx
  * \brief Reference holder struct for SP class.
  */
 //===========================================================================//
-struct SPref
-{
-    //! Number of references.
-    int refs;
+struct SPref {
+  //! Number of references.
+  int refs;
 
-    //! Constructor
-    SPref(int r = 1) : refs(r) { }
+  //! Constructor
+  SPref(int r = 1) : refs(r) {}
 
 #if DRACO_DIAGNOSTICS & 2
-    // To prevent refcounts from being included in memory debugging.  These are
-    // problematic because we allocate reference counters even for null smart
-    // pointers.
-    void *operator new(size_t const n)
-    {
-        return malloc(n);
-    }
-    void  operator delete(void *const ptr)
-    {
-        free(ptr);
-    }
+  // To prevent refcounts from being included in memory debugging.  These are
+  // problematic because we allocate reference counters even for null smart
+  // pointers.
+  void *operator new(size_t const n) { return malloc(n); }
+  void operator delete(void *const ptr) { free(ptr); }
 #endif
 };
 
@@ -65,81 +55,81 @@ struct SPref
  */
 //===========================================================================//
 
-template<typename T>
-class SP
-{
-  private:
-    // >>> DATA
+template <typename T> class SP {
+private:
+  // >>> DATA
 
-    //! Raw pointer held by smart pointer.
-    T *p_;
+  //! Raw pointer held by smart pointer.
+  T *p_;
 
-    //! Pointer to reference counter.
-    SPref *r_;
+  //! Pointer to reference counter.
+  SPref *r_;
 
-  private:
-    // >>> IMPLEMENTATION
+private:
+  // >>> IMPLEMENTATION
 
-    // Free the pointer.
-    inline void free();
+  // Free the pointer.
+  inline void free();
 
-    //! All instantiations of SP are friends.
-    template<class U> friend class SP;
+  //! All instantiations of SP are friends.
+  template <class U> friend class SP;
 
-    template <class V, class U> friend
-    SP<V> dynamic_pointer_cast(const SP<U>& sp);
+  template <class V, class U>
+  friend SP<V> dynamic_pointer_cast(const SP<U> &sp);
 
-  public:
-    //! Default constructor.
-    inline /* constexpr */ SP();
+public:
+  //! Default constructor.
+  inline /* constexpr */ SP();
 
-    // Explicit constructor for type X *.
-    template<class U>
-    inline explicit SP(U *p);
+  // Explicit constructor for type X *.
+  template <class U> inline explicit SP(U *p);
 
-    // Copy constructor for SP<T>.
-    inline SP(const SP<T> &sp_in);
+  // Copy constructor for SP<T>.
+  inline SP(const SP<T> &sp_in);
 
-    // Copy constructor for SP<X>.
-    template<class X>
-    inline SP(const SP<X> &x);
+  // Copy constructor for SP<X>.
+  template <class X> inline SP(const SP<X> &x);
 
-    //! Destructor, memory is released when count goes to zero.
-    ~SP(void) { free(); }
+  //! Destructor, memory is released when count goes to zero.
+  ~SP(void) { free(); }
 
-    // Assignment operator for type SP<T>.
-    inline SP<T>& operator=(const SP<T> &x);
+  // Assignment operator for type SP<T>.
+  inline SP<T> &operator=(const SP<T> &x);
 
-    // Assignment operator for type SP<U>.
-    template<class U>
-    inline SP<T>& operator=(const SP<U> &x);
+  // Assignment operator for type SP<U>.
+  template <class U> inline SP<T> &operator=(const SP<U> &x);
 
-    //! CLear the pointer
-    void reset() { SP().swap(*this); }
+  //! CLear the pointer
+  void reset() { SP().swap(*this); }
 
-    //! Reset to a different pointer
-    template <class U>
-    inline void reset(U* p);
+  //! Reset to a different pointer
+  template <class U> inline void reset(U *p);
 
-    //! Swap pointers
-    void swap(SP &r);
+  //! Swap pointers
+  void swap(SP &r);
 
-    //! Access operator.
-    T* operator->() const { Require(p_); return p_; }
+  //! Access operator.
+  T *operator->() const {
+    Require(p_);
+    return p_;
+  }
 
-    //! Dereference operator.
-    T& operator*() const { Require(p_); return *p_; }
+  //! Dereference operator.
+  T &operator*() const {
+    Require(p_);
+    return *p_;
+  }
 
-    //! Get the base-class pointer; better know what you are doing.
-    T* get() const { return p_; }
+  //! Get the base-class pointer; better know what you are doing.
+  T *get() const { return p_; }
 
-    //! Get the use count.
-    long use_count() const { return r_? r_->refs : 0L; }
+  //! Get the use count.
+  long use_count() const { return r_ ? r_->refs : 0L; }
 
-    bool unique() const { return r_? r_->refs==1L : false; }
+  bool unique() const { return r_ ? r_->refs == 1L : false; }
 
-    //! Boolean conversion operator.
-    operator bool() const { return p_ != NULL; }
+  //! Boolean conversion operator.
+  operator bool() const { return p_ != NULL; }
 };
 
 DLL_PUBLIC_dsxx void incompatible(std::type_info const &X,
@@ -151,20 +141,18 @@ DLL_PUBLIC_dsxx void incompatible(std::type_info const &X,
 /*!
  * \brief Do equality check between smart pointers.
  */
-template<typename T, typename U>
-bool operator==(const SP<T> &lhs, const SP<U> &rhs)
-{
-    return lhs.get() == rhs.get();
+template <typename T, typename U>
+bool operator==(const SP<T> &lhs, const SP<U> &rhs) {
+  return lhs.get() == rhs.get();
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Do inequality check between smart pointers.
  */
-template<typename T, typename U>
-bool operator!=(const SP<T> &lhs, const SP<U> &rhs)
-{
-    return lhs.get() != rhs.get();
+template <typename T, typename U>
+bool operator!=(const SP<T> &lhs, const SP<U> &rhs) {
+  return lhs.get() != rhs.get();
 }
 
 //---------------------------------------------------------------------------//
@@ -174,10 +162,8 @@ bool operator!=(const SP<T> &lhs, const SP<U> &rhs)
  * This is not part of the C++11 shared_ptr library, but we include it because
  * we do not have the C++11 nullptr type.
  */
-template<typename T>
-bool operator==(const T *pt, const SP<T> &sp)
-{
-    return sp.get() == pt;
+template <typename T> bool operator==(const T *pt, const SP<T> &sp) {
+  return sp.get() == pt;
 }
 
 //---------------------------------------------------------------------------//
@@ -187,10 +173,8 @@ bool operator==(const T *pt, const SP<T> &sp)
  * This is not part of the C++11 shared_ptr library, but we include it because
  * we do not have the C++11 nullptr type.
  */
-template<typename T>
-bool operator!=(const T *pt, const SP<T> &sp)
-{
-    return sp.get() != pt;
+template <typename T> bool operator!=(const T *pt, const SP<T> &sp) {
+  return sp.get() != pt;
 }
 
 //---------------------------------------------------------------------------//
@@ -200,10 +184,8 @@ bool operator!=(const T *pt, const SP<T> &sp)
  * This is not part of the C++11 shared_ptr library, but we include it because
  * we do not have the C++11 nullptr type.
  */
-template<typename T>
-bool operator==(const SP<T> &sp, const T *pt)
-{
-    return sp.get() == pt;
+template <typename T> bool operator==(const SP<T> &sp, const T *pt) {
+  return sp.get() == pt;
 }
 
 //---------------------------------------------------------------------------//
@@ -213,10 +195,8 @@ bool operator==(const SP<T> &sp, const T *pt)
  * This is not part of the C++11 shared_ptr library, but we include it because
  * we do not have the C++11 nullptr type.
  */
-template<typename T>
-bool operator!=(const SP<T> &sp, const T *pt)
-{
-    return sp.get() != pt;
+template <typename T> bool operator!=(const SP<T> &sp, const T *pt) {
+  return sp.get() != pt;
 }
 
 //---------------------------------------------------------------------------//
@@ -227,12 +207,9 @@ bool operator!=(const SP<T> &sp, const T *pt)
  *
  * This constructs an empty smart pointer (owns no pointer, use_count()==0).
  */
-template<typename T>
-SP<T>::SP()
-    : p_(NULL), r_(NULL)
-{
-    Ensure(get()==NULL);
-    Ensure(use_count()==0);
+template <typename T> SP<T>::SP() : p_(NULL), r_(NULL) {
+  Ensure(get() == NULL);
+  Ensure(use_count() == 0);
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -244,14 +221,11 @@ SP<T>::SP()
  *
  * \param p pointer to type U that is convertible to T *
  */
-template<typename T>
-template<class U>
-SP<T>::SP(U *p)
-    : p_(p),
-      r_(new SPref)
-{
-    Ensure (get()==p);
-    Ensure (unique());
+template <typename T>
+template <class U>
+SP<T>::SP(U *p) : p_(p), r_(new SPref) {
+  Ensure(get() == p);
+  Ensure(unique());
 }
 
 //---------------------------------------------------------------------------//
@@ -260,13 +234,11 @@ SP<T>::SP(U *p)
  *
  * \param sp_in smart pointer of type SP<T>
  */
-template<typename T>
-SP<T>::SP(const SP<T> &sp_in)
-    : p_(sp_in.p_),
-      r_(sp_in.r_)
-{
-    // advance the reference to T if not empty
-    if (r_) r_->refs++;
+template <typename T>
+SP<T>::SP(const SP<T> &sp_in) : p_(sp_in.p_), r_(sp_in.r_) {
+  // advance the reference to T if not empty
+  if (r_)
+    r_->refs++;
 }
 
 //---------------------------------------------------------------------------//
@@ -277,14 +249,12 @@ SP<T>::SP(const SP<T> &sp_in)
  *
  * \param x smart pointer of type SP<U>
  */
-template<typename T>
-template<class U>
-SP<T>::SP(const SP<U> &x)
-    : p_(x.p_),
-      r_(x.r_)
-{
-    // advance the reference to T if not empty
-    if (r_) r_->refs++;
+template <typename T>
+template <class U>
+SP<T>::SP(const SP<U> &x) : p_(x.p_), r_(x.r_) {
+  // advance the reference to T if not empty
+  if (r_)
+    r_->refs++;
 }
 
 //---------------------------------------------------------------------------//
@@ -293,11 +263,9 @@ SP<T>::SP(const SP<U> &x)
  *
  * \param x smart pointer of type SP<T>
  */
-template<typename T>
-SP<T>& SP<T>::operator=(const SP<T> &x)
-{
-    SP<T>(x).swap(*this);
-    return *this;
+template <typename T> SP<T> &SP<T>::operator=(const SP<T> &x) {
+  SP<T>(x).swap(*this);
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -309,49 +277,40 @@ SP<T>& SP<T>::operator=(const SP<T> &x)
  *
  * \param x smart pointer of type SP<U>
  */
-template<typename T>
-template<class U>
-SP<T>& SP<T>::operator=(const SP<U> &x)
-{
-    SP<T>(x).swap(*this);
-    return *this;
+template <typename T>
+template <class U>
+SP<T> &SP<T>::operator=(const SP<U> &x) {
+  SP<T>(x).swap(*this);
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
-template <class T, class U>
-SP<T> dynamic_pointer_cast (const SP<U>& sp)
-{
-    SP<T> Result;
-    T *pt = dynamic_cast<T*>(sp.p_);
-    if (pt)
-    {
-        Result.p_ = pt;
-        Result.r_ = sp.r_;
-        sp.r_->refs++;
-    }
-    return Result;
+template <class T, class U> SP<T> dynamic_pointer_cast(const SP<U> &sp) {
+  SP<T> Result;
+  T *pt = dynamic_cast<T *>(sp.p_);
+  if (pt) {
+    Result.p_ = pt;
+    Result.r_ = sp.r_;
+    sp.r_->refs++;
+  }
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
-template <class T>
-template <typename U>
-void SP<T>::reset(U* p)
-{
-    free();
-    p_ = p;
-    r_ = new SPref;
+template <class T> template <typename U> void SP<T>::reset(U *p) {
+  free();
+  p_ = p;
+  r_ = new SPref;
 }
 
 //---------------------------------------------------------------------------//
-template<class T>
-void SP<T>::swap(SP<T> &r)
-{
-    T *tp = p_;
-    p_ = r.p_;
-    r.p_ = tp;
-    SPref *rp = r_;
-    r_ = r.r_;
-    r.r_ = rp;
+template <class T> void SP<T>::swap(SP<T> &r) {
+  T *tp = p_;
+  p_ = r.p_;
+  r.p_ = tp;
+  SPref *rp = r_;
+  r_ = r.r_;
+  r.r_ = rp;
 }
 
 //---------------------------------------------------------------------------//
@@ -362,15 +321,12 @@ void SP<T>::swap(SP<T> &r)
  *
  * Note that it is perfectly acceptable to call delete on a NULL pointer.
  */
-template<typename T>
-void SP<T>::free()
-{
-    // if the count goes to zero then we free the data
-    if (r_ && --r_->refs == 0)
-    {
-        delete p_;
-        delete r_;
-    }
+template <typename T> void SP<T>::free() {
+  // if the count goes to zero then we free the data
+  if (r_ && --r_->refs == 0) {
+    delete p_;
+    delete r_;
+  }
 }
 
 } // end namespace rtt_dsxx

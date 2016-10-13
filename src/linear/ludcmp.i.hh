@@ -11,16 +11,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
-#include <stdexcept>
-#include "ds++/Assert.hh"
 #include "ludcmp.hh"
+#include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
+#include <stdexcept>
+#include <vector>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 using std::vector;
- 
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief LU-decompose a nonsingular matrix.
@@ -36,86 +35,71 @@ using std::vector;
  */
 
 template <class FieldVector, class IntVector>
-void ludcmp(FieldVector &a,
-	    IntVector &indx,
-	    typename FieldVector::value_type &d)
-{
-    Require(a.size()==indx.size()*indx.size());
+void ludcmp(FieldVector &a, IntVector &indx,
+            typename FieldVector::value_type &d) {
+  Require(a.size() == indx.size() * indx.size());
 
-    typedef typename FieldVector::value_type Field;
+  typedef typename FieldVector::value_type Field;
 
-    unsigned const n = indx.size();
+  unsigned const n = indx.size();
 
-    vector<Field> vv(n);
-   
-    d = 1.0;
-    for (unsigned i=0; i<n; ++i)
-    {
-	Field big = 0.0;
-	for (unsigned j=0; j<n; ++j)
-	{
-	    Field const temp = rtt_dsxx::abs(a[i+n*j]);
-	    if (temp>big)
-	    {
-		big = temp;
-	    }
-	}
-	vv[i] = 1.0/big;
-	if (!rtt_dsxx::isFinite(vv[i]))
-	{
-	    throw std::domain_error("ludcmp:  singular matrix");
-	}
+  vector<Field> vv(n);
+
+  d = 1.0;
+  for (unsigned i = 0; i < n; ++i) {
+    Field big = 0.0;
+    for (unsigned j = 0; j < n; ++j) {
+      Field const temp = rtt_dsxx::abs(a[i + n * j]);
+      if (temp > big) {
+        big = temp;
+      }
     }
-    for (unsigned j=0; j<n; ++j)
-    {
-	for (unsigned i=0; i<j; ++i)
-	{
-	    Field sum = a[i+n*j];
-	    for (unsigned k=0; k<i; ++k)
-	    {
-		sum -= a[i+n*k]*a[k+n*j];
-	    }
-	    a[i+n*j] = sum;
-	}
-	Field big = 0.0;
-	unsigned imax(0);
-	for (unsigned i=j; i<n; ++i)
-	{
-	    Field sum = a[i+n*j];
-	    for (unsigned k=0;k<j;++k)
-	    {
-		sum -= a[i+n*k]*a[k+n*j];
-	    }
-	    a[i+n*j] = sum;
-	    Field const dum = vv[i]*rtt_dsxx::abs(sum);
-	    if (dum >= big)
-	    {
-		big = dum;
-		imax=i;
-	    }
-	}
-	if (j != imax)
-	{
-	    for (unsigned k=0; k<n; ++k)
-	    {
-		Field dum = a[imax+n*k];
-		a[imax+n*k] = a[j+n*k];
-		a[j+n*k] = dum;
-	    }
-	    d = -d;
-	    vv[imax] = vv[j];
-	}
-	indx[j] = imax;
-	if (j != n-1)
-	{
-	    Field dum = 1.0/a[j+n*j];
-	    if (!rtt_dsxx::isFinite(dum))
-	    {
-		throw std::domain_error("ludcmp:  singular matrix");
-	    }
-	    for (unsigned i=j+1; i<n; ++i) a[i+n*j] *= dum;
-	}
+    vv[i] = 1.0 / big;
+    if (!rtt_dsxx::isFinite(vv[i])) {
+      throw std::domain_error("ludcmp:  singular matrix");
     }
+  }
+  for (unsigned j = 0; j < n; ++j) {
+    for (unsigned i = 0; i < j; ++i) {
+      Field sum = a[i + n * j];
+      for (unsigned k = 0; k < i; ++k) {
+        sum -= a[i + n * k] * a[k + n * j];
+      }
+      a[i + n * j] = sum;
+    }
+    Field big = 0.0;
+    unsigned imax(0);
+    for (unsigned i = j; i < n; ++i) {
+      Field sum = a[i + n * j];
+      for (unsigned k = 0; k < j; ++k) {
+        sum -= a[i + n * k] * a[k + n * j];
+      }
+      a[i + n * j] = sum;
+      Field const dum = vv[i] * rtt_dsxx::abs(sum);
+      if (dum >= big) {
+        big = dum;
+        imax = i;
+      }
+    }
+    if (j != imax) {
+      for (unsigned k = 0; k < n; ++k) {
+        Field dum = a[imax + n * k];
+        a[imax + n * k] = a[j + n * k];
+        a[j + n * k] = dum;
+      }
+      d = -d;
+      vv[imax] = vv[j];
+    }
+    indx[j] = imax;
+    if (j != n - 1) {
+      Field dum = 1.0 / a[j + n * j];
+      if (!rtt_dsxx::isFinite(dum)) {
+        throw std::domain_error("ludcmp:  singular matrix");
+      }
+      for (unsigned i = j + 1; i < n; ++i)
+        a[i + n * j] *= dum;
+    }
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -135,40 +119,35 @@ void ludcmp(FieldVector &a,
  */
 
 template <class FieldVector1, class IntVector, class FieldVector2>
-void lubksb(FieldVector1 const &a,
-	    IntVector const &indx,
-	    FieldVector2 &b)
-{
-    Require(a.size()==indx.size()*indx.size());
-    Require(b.size()==indx.size());
+void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
+  Require(a.size() == indx.size() * indx.size());
+  Require(b.size() == indx.size());
 
-    typedef typename FieldVector2::value_type Field;
+  typedef typename FieldVector2::value_type Field;
 
-    unsigned const n = indx.size();
+  unsigned const n = indx.size();
 
-    unsigned ii=0;
-    
-    for (unsigned i=0; i<n; ++i)
-    {
-	unsigned ip = indx[i];
-	Field sum = b[ip];
-	b[ip] = b[i];
-	if (ii!=0)
-	{
-	    for (unsigned j=ii-1; j<i; ++j) sum -= a[i+n*j]*b[j];
-	}
-	else
-	{
-	    if (sum!=0.0) ii=i+1;
-	}
-	b[i] = sum;
+  unsigned ii = 0;
+
+  for (unsigned i = 0; i < n; ++i) {
+    unsigned ip = indx[i];
+    Field sum = b[ip];
+    b[ip] = b[i];
+    if (ii != 0) {
+      for (unsigned j = ii - 1; j < i; ++j)
+        sum -= a[i + n * j] * b[j];
+    } else {
+      if (sum != 0.0)
+        ii = i + 1;
     }
-    for (unsigned i=n-1; i<n; --i)
-    {
-	Field sum = b[i];
-	for (unsigned j=i+1; j<n; ++j) sum -= a[i+n*j]*b[j];
-	b[i] = sum/a[i+n*i];
-    }
+    b[i] = sum;
+  }
+  for (unsigned i = n - 1; i < n; --i) {
+    Field sum = b[i];
+    for (unsigned j = i + 1; j < n; ++j)
+      sum -= a[i + n * j] * b[j];
+    b[i] = sum / a[i + n * i];
+  }
 }
 
 } // end namespace rtt_linear

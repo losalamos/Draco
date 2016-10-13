@@ -18,8 +18,7 @@
 #include "cdi/EoS.hh"
 #include "ds++/SP.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 
 //===========================================================================//
 /*!
@@ -48,73 +47,68 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_EoS : public rtt_cdi::EoS
-{
-  public:
-    // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_EoS_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_EoS_Model> const_SP_Model;
-    typedef std::vector<double>                    sf_double;
-    typedef std::vector<char>                      sf_char;
+class DLL_PUBLIC_cdi_analytic Analytic_EoS : public rtt_cdi::EoS {
+public:
+  // Useful typedefs.
+  typedef rtt_dsxx::SP<Analytic_EoS_Model> SP_Analytic_Model;
+  typedef rtt_dsxx::SP<const Analytic_EoS_Model> const_SP_Model;
+  typedef std::vector<double> sf_double;
+  typedef std::vector<char> sf_char;
 
-  private:
-    // Analytic EoS model.
-    SP_Analytic_Model analytic_model;
+private:
+  // Analytic EoS model.
+  SP_Analytic_Model analytic_model;
 
-  public:
-    // Constructor.
-    explicit Analytic_EoS(SP_Analytic_Model);
+public:
+  // Constructor.
+  explicit Analytic_EoS(SP_Analytic_Model);
 
-    // Unpacking constructor.
-    explicit Analytic_EoS(const sf_char &);
+  // Unpacking constructor.
+  explicit Analytic_EoS(const sf_char &);
 
-    // >>> ACCESSORS
-    const_SP_Model get_Analytic_Model() const { return analytic_model; }
+  // >>> ACCESSORS
+  const_SP_Model get_Analytic_Model() const { return analytic_model; }
 
-    // >>> INTERFACE SPECIFIED BY rtt_cdi::EoS
+  // >>> INTERFACE SPECIFIED BY rtt_cdi::EoS
 
-    // Get electron internal energy.
-    double    getSpecificElectronInternalEnergy(double, double) const;
-    sf_double getSpecificElectronInternalEnergy(const sf_double &,
-						const sf_double &) const;
+  // Get electron internal energy.
+  double getSpecificElectronInternalEnergy(double, double) const;
+  sf_double getSpecificElectronInternalEnergy(const sf_double &,
+                                              const sf_double &) const;
 
-    // Get ion internal energy.
-    double    getSpecificIonInternalEnergy(double, double) const;
-    sf_double getSpecificIonInternalEnergy(const sf_double &,
-					   const sf_double &) const;
+  // Get ion internal energy.
+  double getSpecificIonInternalEnergy(double, double) const;
+  sf_double getSpecificIonInternalEnergy(const sf_double &,
+                                         const sf_double &) const;
 
-    // Get electron heat capacity.
-    double    getElectronHeatCapacity(double, double) const;
-    sf_double getElectronHeatCapacity(const sf_double &,
-				      const sf_double &) const;
+  // Get electron heat capacity.
+  double getElectronHeatCapacity(double, double) const;
+  sf_double getElectronHeatCapacity(const sf_double &, const sf_double &) const;
 
-    // Get ion heat capacity.
-    double    getIonHeatCapacity(double, double) const;
-    sf_double getIonHeatCapacity(const sf_double &,
-				 const sf_double &) const;
+  // Get ion heat capacity.
+  double getIonHeatCapacity(double, double) const;
+  sf_double getIonHeatCapacity(const sf_double &, const sf_double &) const;
 
-    // Get the number of free electrons per ion.
-    double    getNumFreeElectronsPerIon(double, double) const;
-    sf_double getNumFreeElectronsPerIon(const sf_double &,
-					const sf_double &) const;
+  // Get the number of free electrons per ion.
+  double getNumFreeElectronsPerIon(double, double) const;
+  sf_double getNumFreeElectronsPerIon(const sf_double &,
+                                      const sf_double &) const;
 
-    // Get the electron thermal conductivity.
-    double    getElectronThermalConductivity(double, double) const;
-    sf_double getElectronThermalConductivity(const sf_double &,
-					     const sf_double &) const;
+  // Get the electron thermal conductivity.
+  double getElectronThermalConductivity(double, double) const;
+  sf_double getElectronThermalConductivity(const sf_double &,
+                                           const sf_double &) const;
 
-    // Get the new Te, given delta Ue, Te0.
-    double getElectronTemperature( double /*rho*/,
-                                   double Ue,
-                                   double Tguess=1.0 ) const;
+  // Get the new Te, given delta Ue, Te0.
+  double getElectronTemperature(double /*rho*/, double Ue,
+                                double Tguess = 1.0) const;
 
-    // Get the new Ti, given delta Uic, Ti0.
-    double getIonTemperature( double /*rho*/,
-                              double Uic,
-                              double Tguess=1.0 ) const;
+  // Get the new Ti, given delta Uic, Ti0.
+  double getIonTemperature(double /*rho*/, double Uic,
+                           double Tguess = 1.0) const;
 
-    // Pack the Analytic_EoS into a character string.
-    sf_char pack() const;
+  // Pack the Analytic_EoS into a character string.
+  sf_char pack() const;
 };
 
 } // end namespace rtt_cdi_analytic

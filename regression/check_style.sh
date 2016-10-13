@@ -59,7 +59,7 @@ echo " "
 echo "--------------------------------------------------------------------------------"
 echo "Checking modified code for style conformance..."
 echo "  - using clang-format version $ver"
-echo "  - using settings from Draco's .clang_format configuration file."
+echo "  - using settings from this project's .clang_format configuration file."
 echo " "
 
 ##---------------------------------------------------------------------------##
@@ -103,9 +103,9 @@ if test "${pct_mode}" = "1"; then
   fi
 
   if test $allok = 1; then
-    echo "PASS: Changes conform to draco style requirements."
+    echo "PASS: Changes conform to this project's style requirements."
   else
-    echo "FAIL: some files do not conform to draco style requirements:"
+    echo "FAIL: some files do not conform to this project's style requirements:"
     echo " "
     # rerun the command to capture color output.
     eval $cmd
@@ -131,8 +131,8 @@ else
   else
     result=`${gcf} --binary ${cf} -f --extensions hh,cc develop`
     nonconformantfilesfound=`echo $result | grep -c "changed files"`
-    echo "The following files in your working directory were modified to meet the draco"
-    echo "style requirement:"
+    echo "The following files in your working directory were modified to meet the"
+    echo "this project's style requirement:"
     echo " "
     echo $result
   fi

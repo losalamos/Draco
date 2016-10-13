@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/Release.hh"
 #include "c4/ParallelUnitTest.hh"
+#include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "norms/L2norm.hh"
 
 using namespace std;
@@ -24,30 +24,30 @@ using namespace rtt_norms;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstL2norm( UnitTest &ut)
-{
-    unsigned const N = 2;
-    unsigned const n = rtt_c4::nodes();
-    
-    vector<double> x(N, rtt_c4::node()+1);
+void tstL2norm(UnitTest &ut) {
+  unsigned const N = 2;
+  unsigned const n = rtt_c4::nodes();
 
-    double const norm = L2norm(x);
+  vector<double> x(N, rtt_c4::node() + 1);
 
-    if (soft_equiv(norm, sqrt(1./6+n*(0.5+n/3.))))
-        ut.passes("L2norm is correct");
-    else
-        ut.failure("L2norm is NOT correct");
+  double const norm = L2norm(x);
 
-    return;
+  if (soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))))
+    ut.passes("L2norm is correct");
+  else
+    ut.failure("L2norm is NOT correct");
+
+  return;
 }
 
 //---------------------------------------------------------------------------//
-int main(int argc, char *argv[])
-{
-    rtt_c4::ParallelUnitTest ut(argc, argv, release);
-    try { tstL2norm(ut); }
-    UT_EPILOG(ut);
-}   
+int main(int argc, char *argv[]) {
+  rtt_c4::ParallelUnitTest ut(argc, argv, release);
+  try {
+    tstL2norm(ut);
+  }
+  UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstL2norm.cc

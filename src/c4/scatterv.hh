@@ -17,12 +17,11 @@
 #ifndef c4_scatterv_hh
 #define c4_scatterv_hh
 
-#include "C4_sys_times.h" // defines the struct DRACE_TIME_TYPE (tms for Linux).
 #include "C4_Traits.hh"
+#include "C4_sys_times.h" // defines the struct DRACE_TIME_TYPE (tms for Linux).
 #include <vector>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Scatter messages of known but processor-dependent size
@@ -37,10 +36,10 @@ namespace rtt_c4
  * expected size of the incoming message. On return, contains the scattered
  * data.
  */
-template<class T>
-DLL_PUBLIC_c4 void determinate_scatterv(
-    std::vector<std::vector<T> > &outgoing_data,
-    std::vector<T>               &incoming_data);
+template <class T>
+DLL_PUBLIC_c4 void
+determinate_scatterv(std::vector<std::vector<T>> &outgoing_data,
+                     std::vector<T> &incoming_data);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -54,10 +53,10 @@ DLL_PUBLIC_c4 void determinate_scatterv(
  *
  * \param incoming_data On return, contains the scattered data.
  */
-template<class T>
-DLL_PUBLIC_c4 void indeterminate_scatterv(
-    std::vector<std::vector<T> > &outgoing_data,
-    std::vector<T>               &incoming_data);
+template <class T>
+DLL_PUBLIC_c4 void
+indeterminate_scatterv(std::vector<std::vector<T>> &outgoing_data,
+                       std::vector<T> &incoming_data);
 
 } // end namespace rtt_c4
 

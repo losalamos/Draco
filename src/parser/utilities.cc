@@ -22,12 +22,11 @@ namespace // anonymous
 bool require_unit_expressions = true;
 // construct on first use (see
 // https://isocpp.org/wiki/faq/ctors#static-init-order)
-rtt_units::UnitSystem * internal_unit_system = nullptr;
+rtt_units::UnitSystem *internal_unit_system = nullptr;
 
 } // namespace anonymous
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using namespace std;
 
 //---------------------------------------------------------------------------//
@@ -59,10 +58,10 @@ using namespace std;
  * There is no delete associated with the new global static value. It remains in
  * scope until the program terminates.
  */
-void set_internal_unit_system( rtt_units::UnitSystem const & units )
-{
-    if ( internal_unit_system != nullptr ) delete internal_unit_system;
-    internal_unit_system = new rtt_units::UnitSystem( units );
+void set_internal_unit_system(rtt_units::UnitSystem const &units) {
+  if (internal_unit_system != nullptr)
+    delete internal_unit_system;
+  internal_unit_system = new rtt_units::UnitSystem(units);
 }
 
 //---------------------------------------------------------------------------//
@@ -97,9 +96,8 @@ void set_internal_unit_system( rtt_units::UnitSystem const & units )
  * consistency of Expressions. This is a powerful error checking capability that
  * should not be discarded lightly.
  */
-void set_unit_expressions_are_required( bool const b )
-{
-    require_unit_expressions = b;
+void set_unit_expressions_are_required(bool const b) {
+  require_unit_expressions = b;
 }
 
 //---------------------------------------------------------------------------//
@@ -108,11 +106,10 @@ void set_unit_expressions_are_required( bool const b )
  * There is no delete associated with the new global static value. It remains in
  * scope until the program terminates.
  */
-DLL_PUBLIC_parser rtt_units::UnitSystem const & get_internal_unit_system()
-{
-    if ( internal_unit_system == nullptr )
-        internal_unit_system = new rtt_units::UnitSystem();
-    return *internal_unit_system;
+DLL_PUBLIC_parser rtt_units::UnitSystem const &get_internal_unit_system() {
+  if (internal_unit_system == nullptr)
+    internal_unit_system = new rtt_units::UnitSystem();
+  return *internal_unit_system;
 }
 
 //---------------------------------------------------------------------------//
@@ -125,47 +122,21 @@ bool unit_expressions_are_required() { return require_unit_expressions; }
  *
  * \return The parsed quantity.
  */
-unsigned parse_unsigned_integer( Token_Stream & tokens )
-{
-    Token const token = tokens.shift();
-    if ( token.type() == INTEGER )
-    {
-        errno = 0;
-        char * endptr;
-        unsigned long const Result =
-            strtoul( token.text().c_str(), &endptr, 0 );
-        if ( Result != static_cast< unsigned >( Result ) || errno == ERANGE )
-        {
-            tokens.report_semantic_error( "integer value overflows" );
-        }
-        Check( endptr != NULL );
-        return Result;
+unsigned parse_unsigned_integer(Token_Stream &tokens) {
+  Token const token = tokens.shift();
+  if (token.type() == INTEGER) {
+    errno = 0;
+    char *endptr;
+    unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
+    if (Result != static_cast<unsigned>(Result) || errno == ERANGE) {
+      tokens.report_semantic_error("integer value overflows");
     }
-    else
-    {
-        tokens.report_syntax_error( token, "expected an unsigned integer" );
-        return 0;
-    }
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \param tokens
- * Token stream from which to parse the quantity.
- *
- * \return The parsed quantity.
- */
-unsigned parse_positive_integer( Token_Stream & tokens )
-{
-    unsigned Result = parse_unsigned_integer( tokens );
-    if ( Result == 0 )
-    {
-        tokens.report_semantic_error( "expected a positive integer" );
-        Result = 1;
-    }
-
-    Ensure( Result > 0 );
+    Check(endptr != NULL);
     return Result;
+  } else {
+    tokens.report_syntax_error(token, "expected an unsigned integer");
+    return 0;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -175,37 +146,47 @@ unsigned parse_positive_integer( Token_Stream & tokens )
  *
  * \return The parsed quantity.
  */
-int parse_integer( Token_Stream & tokens )
-{
-    Token token = tokens.shift();
-    string text;
-    if ( token.text() == "+" )
-    {
-        token = tokens.shift();
+unsigned parse_positive_integer(Token_Stream &tokens) {
+  unsigned Result = parse_unsigned_integer(tokens);
+  if (Result == 0) {
+    tokens.report_semantic_error("expected a positive integer");
+    Result = 1;
+  }
+
+  Ensure(Result > 0);
+  return Result;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \param tokens
+ * Token stream from which to parse the quantity.
+ *
+ * \return The parsed quantity.
+ */
+int parse_integer(Token_Stream &tokens) {
+  Token token = tokens.shift();
+  string text;
+  if (token.text() == "+") {
+    token = tokens.shift();
+  } else if (token.text() == "-") {
+    text = '-';
+    token = tokens.shift();
+  }
+  if (token.type() == INTEGER) {
+    text += token.text();
+    errno = 0;
+    char *endptr;
+    const long Result = strtol(text.c_str(), &endptr, 0);
+    if (Result != static_cast<int>(Result) || errno == ERANGE) {
+      tokens.report_semantic_error("integer value overflows");
     }
-    else if ( token.text() == "-" )
-    {
-        text = '-';
-        token = tokens.shift();
-    }
-    if ( token.type() == INTEGER )
-    {
-        text += token.text();
-        errno = 0;
-        char * endptr;
-        const long Result = strtol( text.c_str(), &endptr, 0 );
-        if ( Result != static_cast< int >( Result ) || errno == ERANGE )
-        {
-            tokens.report_semantic_error( "integer value overflows" );
-        }
-        Check( endptr != NULL && *endptr == '\0' );
-        return Result;
-    }
-    else
-    {
-        tokens.report_syntax_error( token, "expected an integer" );
-        return 0;
-    }
+    Check(endptr != NULL && *endptr == '\0');
+    return Result;
+  } else {
+    tokens.report_syntax_error(token, "expected an integer");
+    return 0;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -216,14 +197,12 @@ int parse_integer( Token_Stream & tokens )
  * Token stream from which to parse the quantity.
  * \return \c true if the next token is REAL or INTEGER; \c false otherwise.
  */
-bool at_real( Token_Stream & tokens )
-{
-    Token token = tokens.lookahead();
-    if ( token.text() == "-" || token.text() == "+" )
-    {
-        token = tokens.lookahead( 1 );
-    }
-    return ( token.type() == REAL || token.type() == INTEGER );
+bool at_real(Token_Stream &tokens) {
+  Token token = tokens.lookahead();
+  if (token.text() == "-" || token.text() == "+") {
+    token = tokens.lookahead(1);
+  }
+  return (token.type() == REAL || token.type() == INTEGER);
 }
 
 //---------------------------------------------------------------------------//
@@ -236,45 +215,33 @@ bool at_real( Token_Stream & tokens )
  * Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
-double parse_real( Token_Stream & tokens )
-{
-    Token token = tokens.shift();
-    string text;
-    if ( token.text() == "+" )
-    {
-        token = tokens.shift();
+double parse_real(Token_Stream &tokens) {
+  Token token = tokens.shift();
+  string text;
+  if (token.text() == "+") {
+    token = tokens.shift();
+  } else if (token.text() == "-") {
+    text = '-';
+    token = tokens.shift();
+  }
+  if (token.type() == REAL || token.type() == INTEGER) {
+    text += token.text();
+    errno = 0;
+    char *endptr;
+    const double Result = strtod(text.c_str(), &endptr);
+    if (errno == ERANGE) {
+      if (Result > 1.0 || Result < -1.0) {
+        tokens.report_semantic_error("real value overflows: " + text);
+      } else {
+        tokens.report("note: real value underflows: " + text);
+      }
     }
-    else if ( token.text() == "-" )
-    {
-        text = '-';
-        token = tokens.shift();
-    }
-    if ( token.type() == REAL || token.type() == INTEGER )
-    {
-        text += token.text();
-        errno = 0;
-        char * endptr;
-        const double Result = strtod( text.c_str(), &endptr );
-        if ( errno == ERANGE )
-        {
-            if ( Result > 1.0 || Result < -1.0 )
-            {
-                tokens.report_semantic_error( "real value overflows: "
-                                              + text );
-            }
-            else
-            {
-                tokens.report( "note: real value underflows: " + text );
-            }
-        }
-        Check( endptr != NULL && *endptr == '\0' );
-        return Result;
-    }
-    else
-    {
-        tokens.report_syntax_error( token, "expected a real number" );
-        return 0.0;
-    }
+    Check(endptr != NULL && *endptr == '\0');
+    return Result;
+  } else {
+    tokens.report_syntax_error(token, "expected a real number");
+    return 0.0;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -284,17 +251,15 @@ double parse_real( Token_Stream & tokens )
  *
  * \return The parsed quantity.
  */
-double parse_positive_real( Token_Stream & tokens )
-{
-    double Result = parse_real( tokens );
-    if ( Result <= 0.0 )
-    {
-        tokens.report_semantic_error( "expected a positive quantity" );
-        Result = 1;
-    }
+double parse_positive_real(Token_Stream &tokens) {
+  double Result = parse_real(tokens);
+  if (Result <= 0.0) {
+    tokens.report_semantic_error("expected a positive quantity");
+    Result = 1;
+  }
 
-    Ensure( Result > 0 );
-    return Result;
+  Ensure(Result > 0);
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -304,17 +269,15 @@ double parse_positive_real( Token_Stream & tokens )
  *
  * \return The parsed quantity.
  */
-double parse_nonnegative_real( Token_Stream & tokens )
-{
-    double Result = parse_real( tokens );
-    if ( Result < 0.0 )
-    {
-        tokens.report_semantic_error( "expected a nonnegative quantity" );
-        Result = 1;
-    }
+double parse_nonnegative_real(Token_Stream &tokens) {
+  double Result = parse_real(tokens);
+  if (Result < 0.0) {
+    tokens.report_semantic_error("expected a nonnegative quantity");
+    Result = 1;
+  }
 
-    Ensure( Result >= 0 );
-    return Result;
+  Ensure(Result >= 0);
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -325,30 +288,23 @@ double parse_nonnegative_real( Token_Stream & tokens )
  * On return, contains the parsed vector components.
  * \pre \c x!=NULL
  */
-void parse_vector( Token_Stream & tokens, double x[] )
-{
-    Require( x != NULL );
+void parse_vector(Token_Stream &tokens, double x[]) {
+  Require(x != NULL);
 
-    // At least one component must be present.
-    x[ 0 ] = parse_real( tokens );
+  // At least one component must be present.
+  x[0] = parse_real(tokens);
 
-    if ( at_real( tokens ) )
-    {
-        x[ 1 ] = parse_real( tokens );
-        if ( at_real( tokens ) )
-        {
-            x[ 2 ] = parse_real( tokens );
-        }
-        else
-        {
-            x[ 2 ] = 0.0;
-        }
+  if (at_real(tokens)) {
+    x[1] = parse_real(tokens);
+    if (at_real(tokens)) {
+      x[2] = parse_real(tokens);
+    } else {
+      x[2] = 0.0;
     }
-    else
-    {
-        x[ 1 ] = 0.0;
-        x[ 2 ] = 0.0;
-    }
+  } else {
+    x[1] = 0.0;
+    x[2] = 0.0;
+  }
 }
 //---------------------------------------------------------------------------//
 
@@ -361,26 +317,21 @@ void parse_vector( Token_Stream & tokens, double x[] )
  * \pre \c x!=NULL
  */
 
-void parse_unsigned_vector( Token_Stream & tokens, unsigned x[], unsigned size )
-{
-    Require( x != NULL );
+void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
+  Require(x != NULL);
 
-    for ( unsigned i = 0; i < size; ++i )
-    {
-        if ( at_real( tokens ) )
-        {
-            x[ i ] = parse_unsigned_integer( tokens );
-        }
-        else
-        {
-            ostringstream str;
-            str << "unsigned integer sequence too short; expected " << size
-                << " values.";
+  for (unsigned i = 0; i < size; ++i) {
+    if (at_real(tokens)) {
+      x[i] = parse_unsigned_integer(tokens);
+    } else {
+      ostringstream str;
+      str << "unsigned integer sequence too short; expected " << size
+          << " values.";
 
-            tokens.report_semantic_error( str.str().c_str() );
-            return;
-        }
+      tokens.report_semantic_error(str.str().c_str());
+      return;
     }
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -399,105 +350,98 @@ void parse_unsigned_vector( Token_Stream & tokens, unsigned x[], unsigned size )
  * \return \c true if we are at the start of a unit term; \c false otherwise
  */
 
-bool at_unit_term( Token_Stream & tokens, unsigned position )
-{
-    Token const token = tokens.lookahead( position );
-    if ( token.type() == KEYWORD )
-    {
-        string const u = token.text();
-        switch ( u[ 0 ] )
-        {
-        case 'A':
-            // return (u[1]=='\0');
-            return ( u.size() == 1 );
+bool at_unit_term(Token_Stream &tokens, unsigned position) {
+  Token const token = tokens.lookahead(position);
+  if (token.type() == KEYWORD) {
+    string const u = token.text();
+    switch (u[0]) {
+    case 'A':
+      // return (u[1]=='\0');
+      return (u.size() == 1);
 
-        case 'C':
-            return ( u.size() == 1 );
+    case 'C':
+      return (u.size() == 1);
 
-        case 'F':
-            return ( u.size() == 1 );
+    case 'F':
+      return (u.size() == 1);
 
-        case 'H':
-            return ( u.size() == 1 || token.text() == "Hz" );
+    case 'H':
+      return (u.size() == 1 || token.text() == "Hz");
 
-        case 'J':
-            return ( u.size() == 1 );
+    case 'J':
+      return (u.size() == 1);
 
-        case 'K':
-            return ( u.size() == 1 );
+    case 'K':
+      return (u.size() == 1);
 
-        case 'N':
-            return ( u.size() == 1 );
+    case 'N':
+      return (u.size() == 1);
 
-        case 'P':
-            return ( token.text() == "Pa" );
+    case 'P':
+      return (token.text() == "Pa");
 
-        case 'S':
-            return ( u.size() == 1 );
+    case 'S':
+      return (u.size() == 1);
 
-        case 'T':
-            return ( u.size() == 1 );
+    case 'T':
+      return (u.size() == 1);
 
-        case 'V':
-            return ( u.size() == 1 );
+    case 'V':
+      return (u.size() == 1);
 
-        case 'W':
-            return ( u.size() == 1 || token.text() == "Wb" );
+    case 'W':
+      return (u.size() == 1 || token.text() == "Wb");
 
-        case 'c':
-            return ( token.text() == "cd" || token.text() == "cm" );
+    case 'c':
+      return (token.text() == "cd" || token.text() == "cm");
 
-        case 'd':
-            return ( token.text() == "dyne" );
+    case 'd':
+      return (token.text() == "dyne");
 
-        case 'e':
-            return ( token.text() == "erg" || token.text() == "eV" );
+    case 'e':
+      return (token.text() == "erg" || token.text() == "eV");
 
-        case 'f':
-            return ( token.text() == "foot" );
+    case 'f':
+      return (token.text() == "foot");
 
-        case 'g':
-            return ( u.size() == 1 );
+    case 'g':
+      return (u.size() == 1);
 
-        case 'i':
-            return ( token.text() == "inch" );
+    case 'i':
+      return (token.text() == "inch");
 
-        case 'k':
-            return ( token.text() == "kg" || token.text() == "keV" );
+    case 'k':
+      return (token.text() == "kg" || token.text() == "keV");
 
-        case 'l':
-            return ( token.text() == "lm" || token.text() == "lx" );
+    case 'l':
+      return (token.text() == "lm" || token.text() == "lx");
 
-        case 'm':
-            return ( u.size() == 1 || token.text() == "mol" );
+    case 'm':
+      return (u.size() == 1 || token.text() == "mol");
 
-        case 'o':
-            return ( token.text() == "ohm" );
+    case 'o':
+      return (token.text() == "ohm");
 
-        case 'p':
-            return ( token.text() == "pound" );
+    case 'p':
+      return (token.text() == "pound");
 
-        case 'r':
-            return ( token.text() == "rad" );
+    case 'r':
+      return (token.text() == "rad");
 
-        case 's':
-            return ( u.size() == 1 || token.text() == "sr" );
+    case 's':
+      return (u.size() == 1 || token.text() == "sr");
 
-        default:
-            return false;
-        }
+    default:
+      return false;
     }
-    else if ( token.type() == OTHER && token.text() == "(" )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+  } else if (token.type() == OTHER && token.text() == "(") {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-Unit parse_unit( Token_Stream & tokens );
+Unit parse_unit(Token_Stream &tokens);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -511,198 +455,191 @@ Unit parse_unit( Token_Stream & tokens );
  * \return The unit.
  */
 
-static Unit parse_unit_name( Token_Stream & tokens )
-{
-    Token token = tokens.shift();
-    if ( token.type() == KEYWORD )
-    {
-        string const u = token.text();
-        switch ( u[ 0 ] )
-        {
-        case 'A':
-            if ( u.size() == 1 )
-                return A;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+static Unit parse_unit_name(Token_Stream &tokens) {
+  Token token = tokens.shift();
+  if (token.type() == KEYWORD) {
+    string const u = token.text();
+    switch (u[0]) {
+    case 'A':
+      if (u.size() == 1)
+        return A;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'C':
-            if ( u.size() == 1 )
-                return C;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'C':
+      if (u.size() == 1)
+        return C;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'F':
-            if ( u.size() == 1 )
-                return F;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'F':
+      if (u.size() == 1)
+        return F;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'H':
-            if ( u.size() == 1 )
-                return H;
-            else if ( u.size() == 2 )
-                return Hz;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'H':
+      if (u.size() == 1)
+        return H;
+      else if (u.size() == 2)
+        return Hz;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'J':
-            if ( u.size() == 1 )
-                return J;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'J':
+      if (u.size() == 1)
+        return J;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'K':
-            if ( u.size() == 1 )
-                return K;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'K':
+      if (u.size() == 1)
+        return K;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'N':
-            if ( u.size() == 1 )
-                return N;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'N':
+      if (u.size() == 1)
+        return N;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'P':
-            if ( u.size() == 2 )
-                return Pa;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'P':
+      if (u.size() == 2)
+        return Pa;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'S':
-            if ( u.size() == 1 )
-                return S;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'S':
+      if (u.size() == 1)
+        return S;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'T':
-            if ( u.size() == 1 )
-                return T;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'T':
+      if (u.size() == 1)
+        return T;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'V':
-            if ( u.size() == 1 )
-                return V;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'V':
+      if (u.size() == 1)
+        return V;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'W':
-            if ( u.size() == 1 )
-                return W;
-            else if ( token.text() == "Wb" )
-                return Wb;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'W':
+      if (u.size() == 1)
+        return W;
+      else if (token.text() == "Wb")
+        return Wb;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'c':
-            if ( token.text() == "cd" )
-                return cd;
-            else if ( token.text() == "cm" )
-                return cm;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'c':
+      if (token.text() == "cd")
+        return cd;
+      else if (token.text() == "cm")
+        return cm;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'd':
-            if ( token.text() == "dyne" )
-                return dyne;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'd':
+      if (token.text() == "dyne")
+        return dyne;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'e':
-            if ( token.text() == "erg" )
-                return erg;
-            else if ( token.text() == "eV" )
-                return eV;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'e':
+      if (token.text() == "erg")
+        return erg;
+      else if (token.text() == "eV")
+        return eV;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'f':
-            if ( token.text() == "foot" )
-                return foot;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'f':
+      if (token.text() == "foot")
+        return foot;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'g':
-            if ( u.size() == 1 )
-                return g;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'g':
+      if (u.size() == 1)
+        return g;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'i':
-            if ( token.text() == "inch" )
-                return inch;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'i':
+      if (token.text() == "inch")
+        return inch;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'k':
-            if ( token.text() == "kg" )
-                return kg;
-            else if ( token.text() == "keV" )
-                return keV;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'k':
+      if (token.text() == "kg")
+        return kg;
+      else if (token.text() == "keV")
+        return keV;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'l':
-            if ( token.text() == "lm" )
-                return lm;
-            else if ( token.text() == "lx" )
-                return lx;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'l':
+      if (token.text() == "lm")
+        return lm;
+      else if (token.text() == "lx")
+        return lx;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'm':
-            if ( u.size() == 1 )
-                return m;
-            else if ( token.text() == "mol" )
-                return mol;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'm':
+      if (u.size() == 1)
+        return m;
+      else if (token.text() == "mol")
+        return mol;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'o':
-            if ( token.text() == "ohm" )
-                return ohm;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'o':
+      if (token.text() == "ohm")
+        return ohm;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'p':
-            if ( token.text() == "pound" )
-                return pound;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'p':
+      if (token.text() == "pound")
+        return pound;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 'r':
-            if ( token.text() == "rad" )
-                return rad;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 'r':
+      if (token.text() == "rad")
+        return rad;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        case 's':
-            if ( u.size() == 1 )
-                return s;
-            else if ( token.text() == "sr" )
-                return sr;
-            else
-                tokens.report_syntax_error( "expected a unit" );
+    case 's':
+      if (u.size() == 1)
+        return s;
+      else if (token.text() == "sr")
+        return sr;
+      else
+        tokens.report_syntax_error("expected a unit");
 
-        default:
-            tokens.report_syntax_error( "expected a unit" );
-        }
+    default:
+      tokens.report_syntax_error("expected a unit");
     }
-    else if ( token.type() == OTHER && token.text() == "(" )
-    {
-        Unit Result = parse_unit( tokens );
-        token = tokens.shift();
-        if ( token.type() != OTHER || token.text() != ")" )
-            tokens.report_syntax_error( "missing ')'" );
-        return Result;
-    }
-    else
-    {
-        tokens.report_syntax_error( "expected a unit expression" );
-    }
-    // never reached but causes warnings
-    return dimensionless;
+  } else if (token.type() == OTHER && token.text() == "(") {
+    Unit Result = parse_unit(tokens);
+    token = tokens.shift();
+    if (token.type() != OTHER || token.text() != ")")
+      tokens.report_syntax_error("missing ')'");
+    return Result;
+  } else {
+    tokens.report_syntax_error("expected a unit expression");
+  }
+  // never reached but causes warnings
+  return dimensionless;
 }
 
 //---------------------------------------------------------------------------//
@@ -716,17 +653,15 @@ static Unit parse_unit_name( Token_Stream & tokens )
  * \return The unit term.
  */
 
-static Unit parse_unit_term( Token_Stream & tokens )
-{
-    Unit const Result = parse_unit_name( tokens );
-    Token const token = tokens.lookahead();
-    if ( token.text() == "^" )
-    {
-        tokens.shift();
-        double const exponent = parse_real( tokens );
-        return pow( Result, exponent );
-    }
-    return Result;
+static Unit parse_unit_term(Token_Stream &tokens) {
+  Unit const Result = parse_unit_name(tokens);
+  Token const token = tokens.lookahead();
+  if (token.text() == "^") {
+    tokens.shift();
+    double const exponent = parse_real(tokens);
+    return pow(Result, exponent);
+  }
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -743,37 +678,28 @@ static Unit parse_unit_term( Token_Stream & tokens )
  * \return The unit expression.
  */
 
-Unit parse_unit( Token_Stream & tokens )
-{
-    if ( !at_unit_term( tokens ) ) return dimensionless;
+Unit parse_unit(Token_Stream &tokens) {
+  if (!at_unit_term(tokens))
+    return dimensionless;
 
-    Unit Result = parse_unit_term( tokens );
+  Unit Result = parse_unit_term(tokens);
 
-    for ( ;; )
-    {
-        Token const token = tokens.lookahead();
-        if ( token.type() == OTHER )
-        {
-            if ( token.text() == "-" && at_unit_term( tokens, 1 ) )
-            {
-                tokens.shift();
-                Result = Result * parse_unit_term( tokens );
-            }
-            else if ( token.text() == "/" )
-            {
-                tokens.shift();
-                Result = Result / parse_unit_term( tokens );
-            }
-            else
-            {
-                return Result;
-            }
-        }
-        else
-        {
-            return Result;
-        }
+  for (;;) {
+    Token const token = tokens.lookahead();
+    if (token.type() == OTHER) {
+      if (token.text() == "-" && at_unit_term(tokens, 1)) {
+        tokens.shift();
+        Result = Result * parse_unit_term(tokens);
+      } else if (token.text() == "/") {
+        tokens.shift();
+        Result = Result / parse_unit_term(tokens);
+      } else {
+        return Result;
+      }
+    } else {
+      return Result;
     }
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -795,27 +721,21 @@ Unit parse_unit( Token_Stream & tokens )
  * \return The parsed value, converted to the desired unit system.
  */
 
-double parse_quantity( Token_Stream & tokens,
-                       Unit const & target_unit,
-                       char const * const name )
-{
-    double const value = parse_real( tokens );
-    if ( !unit_expressions_are_required() && !at_unit_term( tokens ) )
-    {
-        return value;
+double parse_quantity(Token_Stream &tokens, Unit const &target_unit,
+                      char const *const name) {
+  double const value = parse_real(tokens);
+  if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
+    return value;
+  } else {
+    Unit const unit = parse_unit(tokens);
+    if (!is_compatible(unit, target_unit)) {
+      ostringstream buffer;
+      buffer << "expected quantity with dimensions of " << name;
+      tokens.report_semantic_error(buffer.str().c_str());
     }
-    else
-    {
-        Unit const unit = parse_unit( tokens );
-        if ( !is_compatible( unit, target_unit ) )
-        {
-            ostringstream buffer;
-            buffer << "expected quantity with dimensions of " << name;
-            tokens.report_semantic_error( buffer.str().c_str() );
-        }
-        return value * unit.conv
-               * conversion_factor( unit, get_internal_unit_system() );
-    }
+    return value * unit.conv *
+           conversion_factor(unit, get_internal_unit_system());
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -834,42 +754,32 @@ double parse_quantity( Token_Stream & tokens,
  * \post \c Result>=0.0
  */
 
-double parse_temperature( Token_Stream & tokens )
-{
-    double T = parse_real( tokens );
+double parse_temperature(Token_Stream &tokens) {
+  double T = parse_real(tokens);
 
-    if ( T < 0.0 )
-    {
-        tokens.report_semantic_error( "temperature must be nonnegative" );
-        T = 0.0;
-    }
+  if (T < 0.0) {
+    tokens.report_semantic_error("temperature must be nonnegative");
+    T = 0.0;
+  }
 
-    if ( !unit_expressions_are_required() && !at_unit_term( tokens ) )
-    {
-        return T;
+  if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
+    return T;
+  } else {
+    Unit const u = parse_unit(tokens);
+    T *= u.conv * conversion_factor(u, get_internal_unit_system());
+    if (is_compatible(u, K)) {
+      // no action needed
+    } else if (is_compatible(u, J)) {
+      T *= get_internal_unit_system().T() /
+           (rtt_units::boltzmannSI *
+            conversion_factor(u, get_internal_unit_system()));
+    } else {
+      tokens.report_semantic_error("expected quantity with units of "
+                                   "temperature");
+      return 0.0;
     }
-    else
-    {
-        Unit const u = parse_unit( tokens );
-        T *= u.conv * conversion_factor( u, get_internal_unit_system() );
-        if ( is_compatible( u, K ) )
-        {
-            // no action needed
-        }
-        else if ( is_compatible( u, J ) )
-        {
-            T *= get_internal_unit_system().T()
-                 / ( rtt_units::boltzmannSI
-                     * conversion_factor( u, get_internal_unit_system() ) );
-        }
-        else
-        {
-            tokens.report_semantic_error( "expected quantity with units of "
-                                          "temperature" );
-            return 0.0;
-        }
-        return T;
-    }
+    return T;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -896,42 +806,32 @@ double parse_temperature( Token_Stream & tokens )
  * \post \c Result>=0.0
  */
 
-SP< Expression > parse_temperature(
-    Token_Stream & tokens,
-    unsigned const number_of_variables,
-    std::map< string, pair< unsigned, Unit > > const & variable_map )
-{
-    SP< Expression > T =
-        Expression::parse( number_of_variables, variable_map, tokens );
+SP<Expression>
+parse_temperature(Token_Stream &tokens, unsigned const number_of_variables,
+                  std::map<string, pair<unsigned, Unit>> const &variable_map) {
+  SP<Expression> T =
+      Expression::parse(number_of_variables, variable_map, tokens);
 
-    if ( !unit_expressions_are_required() && !at_unit_term( tokens ) )
-    {
-        return T;
-    }
-    else
-    {
-        rtt_units::UnitSystem const & unit_system = get_internal_unit_system();
-        Unit const u = parse_unit( tokens ) * T->units();
-        double const conv = conversion_factor( u, unit_system );
-        if ( is_compatible( u, K ) )
-        {
-            // no action needed
-            T->set_units( conv * u );
-        }
-        else if ( is_compatible( u, J ) )
-        {
-            double const boltzmann =
-                rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
+  if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
+    return T;
+  } else {
+    rtt_units::UnitSystem const &unit_system = get_internal_unit_system();
+    Unit const u = parse_unit(tokens) * T->units();
+    double const conv = conversion_factor(u, unit_system);
+    if (is_compatible(u, K)) {
+      // no action needed
+      T->set_units(conv * u);
+    } else if (is_compatible(u, J)) {
+      double const boltzmann =
+          rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
 
-            T->set_units( conv * u / boltzmann );
-        }
-        else
-        {
-            tokens.report_syntax_error( "expected quantity with units of "
-                                        "temperature" );
-        }
-        return T;
+      T->set_units(conv * u / boltzmann);
+    } else {
+      tokens.report_syntax_error("expected quantity with units of "
+                                 "temperature");
     }
+    return T;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -943,19 +843,16 @@ SP< Expression > parse_temperature(
  * \return The stripped string.
  */
 
-std::string parse_manifest_string( Token_Stream & tokens )
-{
-    Token const token = tokens.shift();
-    if ( token.type() != STRING )
-    {
-        tokens.report_syntax_error( "expected a string, but saw "
-                                    + token.text() );
-    }
-    string Result = token.text();
-    string::size_type const length = Result.size();
-    Check( length > 1 );
-    Result = Result.substr( 1, length - 2 );
-    return Result;
+std::string parse_manifest_string(Token_Stream &tokens) {
+  Token const token = tokens.shift();
+  if (token.type() != STRING) {
+    tokens.report_syntax_error("expected a string, but saw " + token.text());
+  }
+  string Result = token.text();
+  string::size_type const length = Result.size();
+  Check(length > 1);
+  Result = Result.substr(1, length - 2);
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -973,36 +870,27 @@ std::string parse_manifest_string( Token_Stream & tokens )
  *         parsed_geometry == rtt_mesh_element::SPHERICAL </code>
  */
 
-void parse_geometry( Token_Stream & tokens,
-                     rtt_mesh_element::Geometry & parsed_geometry )
-{
-    if ( parsed_geometry != rtt_mesh_element::END_GEOMETRY )
-    {
-        tokens.report_semantic_error( "geometry specified twice" );
-    }
-    Token const token = tokens.shift();
-    if ( token.text() == "axisymmetric" || token.text() == "cylindrical" )
-    {
-        parsed_geometry = rtt_mesh_element::AXISYMMETRIC;
-    }
-    else if ( token.text() == "cartesian" || token.text() == "xy"
-              || token.text() == "slab" )
-    {
-        parsed_geometry = rtt_mesh_element::CARTESIAN;
-    }
-    else if ( token.text() == "spherical" )
-    {
-        parsed_geometry = rtt_mesh_element::SPHERICAL;
-    }
-    else
-    {
-        tokens.report_syntax_error(
-            token, "expected a geometry option, but saw " + token.text() );
-    }
-    Ensure( parsed_geometry == rtt_mesh_element::AXISYMMETRIC
-            || parsed_geometry == rtt_mesh_element::CARTESIAN
-            || parsed_geometry == rtt_mesh_element::SPHERICAL );
-    return;
+void parse_geometry(Token_Stream &tokens,
+                    rtt_mesh_element::Geometry &parsed_geometry) {
+  if (parsed_geometry != rtt_mesh_element::END_GEOMETRY) {
+    tokens.report_semantic_error("geometry specified twice");
+  }
+  Token const token = tokens.shift();
+  if (token.text() == "axisymmetric" || token.text() == "cylindrical") {
+    parsed_geometry = rtt_mesh_element::AXISYMMETRIC;
+  } else if (token.text() == "cartesian" || token.text() == "xy" ||
+             token.text() == "slab") {
+    parsed_geometry = rtt_mesh_element::CARTESIAN;
+  } else if (token.text() == "spherical") {
+    parsed_geometry = rtt_mesh_element::SPHERICAL;
+  } else {
+    tokens.report_syntax_error(token, "expected a geometry option, but saw " +
+                                          token.text());
+  }
+  Ensure(parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
+         parsed_geometry == rtt_mesh_element::CARTESIAN ||
+         parsed_geometry == rtt_mesh_element::SPHERICAL);
+  return;
 }
 
 //---------------------------------------------------------------------------//
@@ -1013,19 +901,14 @@ void parse_geometry( Token_Stream & tokens,
  * \return The parsed quantity.
  */
 
-bool parse_bool( Token_Stream & tokens )
-{
-    Token const token = tokens.shift();
-    if ( token.text() == "true" )
-    {
-        return true;
-    }
-    else
-    {
-        tokens.check_syntax( token.text() == "false",
-                             "expected 'true' or 'false'" );
-        return false;
-    }
+bool parse_bool(Token_Stream &tokens) {
+  Token const token = tokens.shift();
+  if (token.text() == "true") {
+    return true;
+  } else {
+    tokens.check_syntax(token.text() == "false", "expected 'true' or 'false'");
+    return false;
+  }
 }
 
 //----------------------------------------------------------------------------//
@@ -1052,33 +935,26 @@ bool parse_bool( Token_Stream & tokens )
  * \return The parsed value, converted to the desired unit system.
  */
 
-SP< Expression > parse_quantity(
-    Token_Stream & tokens,
-    Unit const & target_unit,
-    char const * const name,
-    unsigned const number_of_variables,
-    std::map< string, pair< unsigned, Unit > > const & variable_map )
-{
-    SP< Expression > value =
-        Expression::parse( number_of_variables, variable_map, tokens );
+SP<Expression>
+parse_quantity(Token_Stream &tokens, Unit const &target_unit,
+               char const *const name, unsigned const number_of_variables,
+               std::map<string, pair<unsigned, Unit>> const &variable_map) {
+  SP<Expression> value =
+      Expression::parse(number_of_variables, variable_map, tokens);
 
-    if ( !unit_expressions_are_required() && !at_unit_term( tokens ) )
-    {
-        return value;
+  if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
+    return value;
+  } else {
+    Unit unit = parse_unit(tokens) * value->units();
+    if (!is_compatible(unit, target_unit)) {
+      ostringstream buffer;
+      buffer << "expected quantity with dimensions of " << name;
+      tokens.report_semantic_error(buffer.str().c_str());
     }
-    else
-    {
-        Unit unit = parse_unit( tokens ) * value->units();
-        if ( !is_compatible( unit, target_unit ) )
-        {
-            ostringstream buffer;
-            buffer << "expected quantity with dimensions of " << name;
-            tokens.report_semantic_error( buffer.str().c_str() );
-        }
-        unit.conv *= conversion_factor( unit, get_internal_unit_system() );
-        value->set_units( unit );
-        return value;
-    }
+    unit.conv *= conversion_factor(unit, get_internal_unit_system());
+    value->set_units(unit);
+    return value;
+  }
 }
 
 } // rtt_parser

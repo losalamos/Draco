@@ -11,13 +11,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "nGray_Analytic_MultigroupOpacity.hh"
 #include "nGray_Analytic_Odfmg_Opacity.hh"
+#include "nGray_Analytic_MultigroupOpacity.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/dbc.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 
 //---------------------------------------------------------------------------//
 // CONSTRUCTORS
@@ -44,18 +43,16 @@ namespace rtt_cdi_analytic
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  *
  */
-nGray_Analytic_Odfmg_Opacity::
-nGray_Analytic_Odfmg_Opacity(const sf_double         &groups,
-                             const sf_double         &bands,
-                             const sf_Analytic_Model &models,
-                             rtt_cdi::Reaction        reaction_in,
-                             rtt_cdi::Model           model_in)
+nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
+    const sf_double &groups, const sf_double &bands,
+    const sf_Analytic_Model &models, rtt_cdi::Reaction reaction_in,
+    rtt_cdi::Model model_in)
     : Analytic_Odfmg_Opacity(groups, bands, reaction_in, model_in),
-      group_models(models)
-{
-    Require( models.size() == groups.size() - 1 );
-    Require( rtt_dsxx::is_strict_monotonic_increasing( groups.begin(), groups.end() ) );
-    Require( rtt_dsxx::is_strict_monotonic_increasing( bands.begin(), bands.end() ) );
+      group_models(models) {
+  Require(models.size() == groups.size() - 1);
+  Require(
+      rtt_dsxx::is_strict_monotonic_increasing(groups.begin(), groups.end()));
+  Require(rtt_dsxx::is_strict_monotonic_increasing(bands.begin(), bands.end()));
 }
 
 //---------------------------------------------------------------------------//
@@ -67,80 +64,69 @@ nGray_Analytic_Odfmg_Opacity(const sf_double         &groups,
  * Analytic_Model types that have been registered in the
  * rtt_cdi_analytic::Opacity_Models enumeration.
  */
-nGray_Analytic_Odfmg_Opacity::
-nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
-    : Analytic_Odfmg_Opacity(packed),
-      group_models()
-{
-    // the packed size must be at least 5 integers (number of groups, number of 
-    // bands, reaction type, model type, analytic model indicator)
-    Require (packed.size() >= 5 * sizeof(int));
+nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
+    const sf_char &packed)
+    : Analytic_Odfmg_Opacity(packed), group_models() {
+  // the packed size must be at least 5 integers (number of groups, number of
+  // bands, reaction type, model type, analytic model indicator)
+  Require(packed.size() >= 5 * sizeof(int));
 
-    unsigned const base_size = Analytic_Odfmg_Opacity::packed_size();
+  unsigned const base_size = Analytic_Odfmg_Opacity::packed_size();
 
-    // make an unpacker
-    rtt_dsxx::Unpacker unpacker;
+  // make an unpacker
+  rtt_dsxx::Unpacker unpacker;
 
-    // register the unpacker
-    unpacker.set_buffer(packed.size()-base_size, &packed[base_size]);
+  // register the unpacker
+  unpacker.set_buffer(packed.size() - base_size, &packed[base_size]);
 
-    // unpack the number of group boundaries
-    sf_double const &group_boundaries = getGroupBoundaries();
-    int ngrp_bounds = group_boundaries.size();
-    int num_groups  = ngrp_bounds - 1;
+  // unpack the number of group boundaries
+  sf_double const &group_boundaries = getGroupBoundaries();
+  int ngrp_bounds = group_boundaries.size();
+  int num_groups = ngrp_bounds - 1;
 
-    // make the group boundaries and model vectors
-    group_models.resize(num_groups);
+  // make the group boundaries and model vectors
+  group_models.resize(num_groups);
 
-    // now unpack the models
-    std::vector<sf_char> models(num_groups);
-    int                  model_size = 0;
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        // unpack the size of the analytic model
-        unpacker >> model_size;
-        Check (static_cast<size_t>(model_size) >= sizeof(int));
+  // now unpack the models
+  std::vector<sf_char> models(num_groups);
+  int model_size = 0;
+  for (size_t i = 0; i < models.size(); i++) {
+    // unpack the size of the analytic model
+    unpacker >> model_size;
+    Check(static_cast<size_t>(model_size) >= sizeof(int));
 
-        models[i].resize(model_size);
+    models[i].resize(model_size);
 
-        // unpack the model
-        for (size_t j = 0; j < models[i].size(); j++)
-            unpacker >> models[i][j];
+    // unpack the model
+    for (size_t j = 0; j < models[i].size(); j++)
+      unpacker >> models[i][j];
+  }
+
+  // now rebuild the analytic models
+  int indicator = 0;
+  for (size_t i = 0; i < models.size(); i++) {
+    // reset the buffer
+    unpacker.set_buffer(models[i].size(), &models[i][0]);
+
+    // get the indicator for this model (first packed datum)
+    unpacker >> indicator;
+
+    // now determine which analytic model we need to build
+    if (indicator == rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL) {
+      group_models[i].reset(new Constant_Analytic_Opacity_Model(models[i]));
+    } else if (indicator ==
+               rtt_cdi_analytic::POLYNOMIAL_ANALYTIC_OPACITY_MODEL) {
+      group_models[i].reset(new Polynomial_Analytic_Opacity_Model(models[i]));
+    } else if (indicator ==
+               rtt_cdi_analytic::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL) {
+      group_models[i].reset(
+          new Stimulated_Emission_Analytic_Opacity_Model(models[i]));
+    } else {
+      Insist(false, "Unregistered analytic opacity model!");
     }
 
-    // now rebuild the analytic models
-    int indicator = 0;
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        // reset the buffer
-        unpacker.set_buffer(models[i].size(), &models[i][0]);
-
-        // get the indicator for this model (first packed datum)
-        unpacker >> indicator;
-
-        // now determine which analytic model we need to build
-        if (indicator ==  rtt_cdi_analytic::CONSTANT_ANALYTIC_OPACITY_MODEL)
-        {
-            group_models[i].reset(new Constant_Analytic_Opacity_Model(models[i]));
-        }
-        else if (indicator ==
-                 rtt_cdi_analytic::POLYNOMIAL_ANALYTIC_OPACITY_MODEL)
-        {
-            group_models[i].reset(new Polynomial_Analytic_Opacity_Model(models[i]));
-        }
-        else if (indicator ==
-                 rtt_cdi_analytic::STIMULATED_EMISSION_ANALYTIC_OPACITY_MODEL)
-        {
-            group_models[i].reset(
-                new Stimulated_Emission_Analytic_Opacity_Model(models[i]));
-        }
-        else
-        {
-            Insist (false, "Unregistered analytic opacity model!");
-        }
-
-        Ensure (group_models[i]);
-    }
+    Ensure(group_models[i]);
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -159,43 +145,40 @@ nGray_Analytic_Odfmg_Opacity(const sf_char &packed)
  * \return group opacities (coefficients) in cm^2/g
  *
  */
-std::vector< std::vector<double> >
+std::vector<std::vector<double>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
-                                         double targetDensity ) const 
-{
-    Require (targetTemperature >= 0.0);
-    Require (targetDensity >= 0.0);
+                                         double targetDensity) const {
+  Require(targetTemperature >= 0.0);
+  Require(targetDensity >= 0.0);
 
-    const size_t numBands = getNumBands();
-    const size_t numGroups = getNumGroups();
+  const size_t numBands = getNumBands();
+  const size_t numGroups = getNumGroups();
 
-    sf_double const &group_bounds = this->getGroupBoundaries();
+  sf_double const &group_bounds = this->getGroupBoundaries();
 
-    // return opacities
-    std::vector< std::vector<double> > opacity( numGroups );
+  // return opacities
+  std::vector<std::vector<double>> opacity(numGroups);
 
-    // loop through groups and get opacities
-    for (size_t group = 0; group < opacity.size(); group++)
-    {
-        Check (group_models[group]);
+  // loop through groups and get opacities
+  for (size_t group = 0; group < opacity.size(); group++) {
+    Check(group_models[group]);
 
-        opacity[group].resize(numBands);
+    opacity[group].resize(numBands);
 
-        // assign the opacity based on the group model to the first band
-        opacity[group][0] = group_models[group]->calculate_opacity(
-            targetTemperature, targetDensity,
-            group_bounds[group], group_bounds[group+1]);
+    // assign the opacity based on the group model to the first band
+    opacity[group][0] = group_models[group]->calculate_opacity(
+        targetTemperature, targetDensity, group_bounds[group],
+        group_bounds[group + 1]);
 
-        Check (opacity[group][0] >= 0.0);
+    Check(opacity[group][0] >= 0.0);
 
-        //copy the opacity to the rest of the bands
-        for (size_t band = 1; band < numBands; band++)
-        {
-            opacity[group][band] = opacity[group][0];
-        }
+    //copy the opacity to the rest of the bands
+    for (size_t band = 1; band < numBands; band++) {
+      opacity[group][band] = opacity[group][0];
     }
+  }
 
-    return opacity;
+  return opacity;
 }
 
 //---------------------------------------------------------------------------//
@@ -204,19 +187,16 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
  *     opacity 2-D vectors that correspond to the provided vector of
  *     temperatures and a single density value.
  */
-std::vector< std::vector< std::vector<double> > >
+std::vector<std::vector<std::vector<double>>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(
-    const std::vector<double>& targetTemperature,
-    double targetDensity ) const
-{ 
-    std::vector< std::vector< std::vector<double> > > opacity(
-        targetTemperature.size() );
+    const std::vector<double> &targetTemperature, double targetDensity) const {
+  std::vector<std::vector<std::vector<double>>> opacity(
+      targetTemperature.size());
 
-    for ( size_t i=0; i<targetTemperature.size(); ++i )
-    {
-        opacity[i] = getOpacity(targetTemperature[i], targetDensity);
-    }
-    return opacity;
+  for (size_t i = 0; i < targetTemperature.size(); ++i) {
+    opacity[i] = getOpacity(targetTemperature[i], targetDensity);
+  }
+  return opacity;
 }
 
 //---------------------------------------------------------------------------//
@@ -225,20 +205,16 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(
  *     opacity 2-D vectors that correspond to the provided
  *     temperature and a vector of density values.
  */
-std::vector< std::vector< std::vector<double> > >
+std::vector<std::vector<std::vector<double>>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(
-    double targetTemperature,
-    const std::vector<double>& targetDensity ) const
-{ 
-    std::vector< std::vector< std::vector<double> > >
-        opacity( targetDensity.size() );
+    double targetTemperature, const std::vector<double> &targetDensity) const {
+  std::vector<std::vector<std::vector<double>>> opacity(targetDensity.size());
 
-    //call our regular getOpacity function for every target density
-    for ( size_t i=0; i<targetDensity.size(); ++i )
-    {
-        opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
-    }
-    return opacity;
+  //call our regular getOpacity function for every target density
+  for (size_t i = 0; i < targetDensity.size(); ++i) {
+    opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
+  }
+  return opacity;
 }
 
 //---------------------------------------------------------------------------//
@@ -250,54 +226,51 @@ nGray_Analytic_Odfmg_Opacity::getOpacity(
  * derived class must have a pack function; this is enforced by the virtual
  * nGray_Analytic_Opacity_Model base class.
  */
-nGray_Analytic_Odfmg_Opacity::sf_char nGray_Analytic_Odfmg_Opacity::pack()
-    const
-{
-    // make a packer
-    rtt_dsxx::Packer packer;
+nGray_Analytic_Odfmg_Opacity::sf_char
+nGray_Analytic_Odfmg_Opacity::pack() const {
+  // make a packer
+  rtt_dsxx::Packer packer;
 
-    // make a char array
-    sf_char packed = Analytic_Odfmg_Opacity::pack();
+  // make a char array
+  sf_char packed = Analytic_Odfmg_Opacity::pack();
 
-    // first pack up models
-    std::vector<sf_char> models(group_models.size());
-    size_t num_bytes_models = 0;
+  // first pack up models
+  std::vector<sf_char> models(group_models.size());
+  size_t num_bytes_models = 0;
 
-    // loop through and pack up the models
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        Check (group_models[i]);
+  // loop through and pack up the models
+  for (size_t i = 0; i < models.size(); i++) {
+    Check(group_models[i]);
 
-        models[i]         = group_models[i]->pack();
-        num_bytes_models += models[i].size();
-    }
+    models[i] = group_models[i]->pack();
+    num_bytes_models += models[i].size();
+  }
 
-    // now add up the total size; number of groups + 1 size_t for number of
-    // groups, number of bands + 1 size_t for number of
-    // bands, number of models + size in each model + models, 1 size_t for
-    // reaction type, 1 size_t for model type
-    size_t base_size = packed.size();
-    size_t size = models.size() * sizeof(int) + num_bytes_models;
+  // now add up the total size; number of groups + 1 size_t for number of
+  // groups, number of bands + 1 size_t for number of
+  // bands, number of models + size in each model + models, 1 size_t for
+  // reaction type, 1 size_t for model type
+  size_t base_size = packed.size();
+  size_t size = models.size() * sizeof(int) + num_bytes_models;
 
-    // extend the char array
-    packed.resize(size+base_size);
+  // extend the char array
+  packed.resize(size + base_size);
 
-    // set the buffer
-    packer.set_buffer(size, &packed[base_size]);
+  // set the buffer
+  packer.set_buffer(size, &packed[base_size]);
 
-    // pack each models size and data
-    for (size_t i = 0; i < models.size(); i++)
-    {
-        // pack the size of this model
-        packer << static_cast<int>(models[i].size());
+  // pack each models size and data
+  for (size_t i = 0; i < models.size(); i++) {
+    // pack the size of this model
+    packer << static_cast<int>(models[i].size());
 
-        // now pack the model data
-        for (size_t j = 0; j < models[i].size(); j++)
-            packer << models[i][j];
-    }
+    // now pack the model data
+    for (size_t j = 0; j < models[i].size(); j++)
+      packer << models[i][j];
+  }
 
-    Ensure (packer.get_ptr() == &packed[0] + size + base_size);
-    return packed;
+  Ensure(packer.get_ptr() == &packed[0] + size + base_size);
+  return packed;
 }
 
 } // end namespace rtt_cdi_analytic

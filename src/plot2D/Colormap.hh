@@ -26,22 +26,22 @@ namespace rtt_plot2D {
 */
 //===========================================================================//
 enum Colormap {
-    COLOR_WHITE,
-    COLOR_BLACK,
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_BLUE,
-    COLOR_YELLOW,
-    COLOR_BROWN,
-    COLOR_GREY,
-    COLOR_VIOLET,
-    COLOR_CYAN,
-    COLOR_MAGENTA,
-    COLOR_ORANGE,
-    COLOR_INDIGO,
-    COLOR_MAROON,
-    COLOR_TURQUOISE,
-    COLOR_GREEN4    
+  COLOR_WHITE,
+  COLOR_BLACK,
+  COLOR_RED,
+  COLOR_GREEN,
+  COLOR_BLUE,
+  COLOR_YELLOW,
+  COLOR_BROWN,
+  COLOR_GREY,
+  COLOR_VIOLET,
+  COLOR_CYAN,
+  COLOR_MAGENTA,
+  COLOR_ORANGE,
+  COLOR_INDIGO,
+  COLOR_MAROON,
+  COLOR_TURQUOISE,
+  COLOR_GREEN4
 };
 
 } // namespace rtt_plot2D

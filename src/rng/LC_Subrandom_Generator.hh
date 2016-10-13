@@ -7,17 +7,14 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_LC_Subrandom_Generator_hh
 #define rng_LC_Subrandom_Generator_hh
 
-#include "gsl/gsl_rng.h"
 #include "Subrandom_Generator.hh"
+#include "gsl/gsl_rng.h"
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 //===========================================================================//
 /*!
@@ -33,45 +30,42 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng LC_Subrandom_Generator : public Subrandom_Generator
-{
-  public:
+class DLL_PUBLIC_rng LC_Subrandom_Generator : public Subrandom_Generator {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
+  //! Normal constructor.
+  explicit LC_Subrandom_Generator(unsigned const count = 1);
 
-    //! Normal constructor.
-    explicit LC_Subrandom_Generator(unsigned const count = 1);
-    
-    ~LC_Subrandom_Generator();
+  ~LC_Subrandom_Generator();
 
-    // MANIPULATORS
+  // MANIPULATORS
 
-    //! Advance sequence.
-    void shift_vector();
+  //! Advance sequence.
+  void shift_vector();
 
-    //! Get the next element in the current vector.
-    double shift();
-    
-    // ACCESSORS
+  //! Get the next element in the current vector.
+  double shift();
 
-    bool check_class_invariants() const;
+  // ACCESSORS
 
-  private:
+  bool check_class_invariants() const;
 
-    // NESTED CLASSES AND TYPEDEFS
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // IMPLEMENTATION
+  // IMPLEMENTATION
 
-    //! not implemented
-    LC_Subrandom_Generator(LC_Subrandom_Generator const &);
-    // not implemented
-    LC_Subrandom_Generator &operator=(LC_Subrandom_Generator const &);
+  //! not implemented
+  LC_Subrandom_Generator(LC_Subrandom_Generator const &);
+  // not implemented
+  LC_Subrandom_Generator &operator=(LC_Subrandom_Generator const &);
 
-    // DATA
+  // DATA
 
-    gsl_rng *generator_;
+  gsl_rng *generator_;
 };
 
 } // end namespace rtt_rng

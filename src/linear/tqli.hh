@@ -15,15 +15,11 @@
 #ifndef linear_tqli_hh
 #define linear_tqli_hh
 
-namespace rtt_linear
-{
-//! Find eigenvectors and eigenvalues of a symmetric matrix that has been reduced to tridiagonal form via a call to rtt_linear::tred2. 
+namespace rtt_linear {
+//! Find eigenvectors and eigenvalues of a symmetric matrix that has been reduced to tridiagonal form via a call to rtt_linear::tred2.
 
-template<class FieldVector1, class FieldVector2, class FieldVector3>
-void tqli(FieldVector1 &d,
-	  FieldVector2 &e,
-	  const unsigned n,
-	  FieldVector3 &z);
+template <class FieldVector1, class FieldVector2, class FieldVector3>
+void tqli(FieldVector1 &d, FieldVector2 &e, const unsigned n, FieldVector3 &z);
 
 } // end namespace rtt_linear
 

@@ -20,8 +20,7 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/SP.hh"
 
-namespace rtt_cdi_ipcress
-{
+namespace rtt_cdi_ipcress {
 
 //===========================================================================//
 /*!
@@ -38,84 +37,81 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressDataTable
-{
+class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
 
-    // NESTED CLASSES AND TYPEDEFS
+  // NESTED CLASSES AND TYPEDEFS
 
-    // Data Descriptors:
+  // Data Descriptors:
 
-    /*!
+  /*!
      * \brief A string that specifies the type of data being stored.  Possible
      *     values are rgray, ragray, rsgray, etc.  This key is provided to the
      *     Ipcress libraries as a data specifier.
      */
-    std::string mutable ipcressDataTypeKey;
+  std::string mutable ipcressDataTypeKey;
 
-    /*!
+  /*!
      * \brief A string that specifies the type of data being stored.  This
      *     variables holds an English version of ipcressDataTypeKey.
      */
-    std::string mutable dataDescriptor;
+  std::string mutable dataDescriptor;
 
-    /*!
+  /*!
      * \brief A string that specifies the energy model for the data being
      *     stored.  Possible values are "mg" or "gray".
      */
-    std::string const opacityEnergyDescriptor;
+  std::string const opacityEnergyDescriptor;
 
-    /*!
+  /*!
      * \brief An enumerated value defined in IpcressOpacity.hh that specifies
      *     the data model.  Possible values are "Rosseland" or "Plank".
      */
-    rtt_cdi::Model const opacityModel;
+  rtt_cdi::Model const opacityModel;
 
-    /*!
+  /*!
      * \brief An enumerated valued defined in IpcressOpacity.hh that specifies
      *     the reaction model.  Possible values are "Total", "Absorption" or
      *     "Scattering".
      */
-    rtt_cdi::Reaction const opacityReaction;
+  rtt_cdi::Reaction const opacityReaction;
 
-    //! A list of keys that are known by the IPCRESS file.
-    std::vector< std::string > const & fieldNames;
+  //! A list of keys that are known by the IPCRESS file.
+  std::vector<std::string> const &fieldNames;
 
-    /*!
+  /*!
      * \brief The IPCRESS material number assocated with the data contained in
      *     this object.
      */
-    size_t const matID;
+  size_t const matID;
 
-    // Data Sizes:
+  // Data Sizes:
 
-    /*
+  /*
      * \brief The number of entries in the opacity table.  This should be
      *     equal to numTemperatures * numDensities * (numGroupBoundaries - 1).
      */
-    //size_t mutable numOpacities;
+  //size_t mutable numOpacities;
 
+  // Data Tables:
 
-    // Data Tables:
+  //! The temperature grid for this data set.
+  std::vector<double> mutable logTemperatures;
+  std::vector<double> mutable temperatures;
 
-    //! The temperature grid for this data set.
-    std::vector<double> mutable logTemperatures;
-    std::vector<double> mutable temperatures;
+  //! The density grid for this data set.
+  std::vector<double> mutable logDensities;
+  std::vector<double> mutable densities;
 
-    //! The density grid for this data set.
-    std::vector<double> mutable logDensities;
-    std::vector<double> mutable densities;
+  //! The energy group boundary grid for this data set.
+  std::vector<double> mutable groupBoundaries;
 
-    //! The energy group boundary grid for this data set.
-    std::vector<double> mutable groupBoundaries;
+  //! The opacity data table.
+  std::vector<double> mutable logOpacities;
 
-    //! The opacity data table.
-    std::vector<double> mutable logOpacities;
+public:
+  // CREATORS
 
-  public:
-
-    // CREATORS
-
-    /*!
+  /*!
      * \brief Standard IpcressDataTable constructor.
      *
      * The constructor requires that the data state to be completely defined.
@@ -147,80 +143,74 @@ class DLL_PUBLIC_cdi_ipcress IpcressDataTable
      *     IpcressDataTable) objects may point to the same IpcressFile
      *     object.
      */
-    IpcressDataTable( std::string                const & opacityEnergyDescriptor,
-		      rtt_cdi::Model                     opacityModel,
-		      rtt_cdi::Reaction                  opacityReaction,
-		      std::vector< std::string > const & fieldNames,
-		      size_t                             matID,
-		      rtt_dsxx::SP< const IpcressFile > const & spIpcressFile );
+  IpcressDataTable(std::string const &opacityEnergyDescriptor,
+                   rtt_cdi::Model opacityModel,
+                   rtt_cdi::Reaction opacityReaction,
+                   std::vector<std::string> const &fieldNames, size_t matID,
+                   rtt_dsxx::SP<const IpcressFile> const &spIpcressFile);
 
-    // ACCESSORS
+  // ACCESSORS
 
-    //! Retrieve the size of the temperature grid.
-    size_t getNumTemperatures() const { return temperatures.size(); };
+  //! Retrieve the size of the temperature grid.
+  size_t getNumTemperatures() const { return temperatures.size(); };
 
-    //! Retrieve the size of the density grid.
-    size_t getNumDensities() const { return densities.size(); };
+  //! Retrieve the size of the density grid.
+  size_t getNumDensities() const { return densities.size(); };
 
-    //! Retrieve the size of the energy boundary grid.
-    size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
+  //! Retrieve the size of the energy boundary grid.
+  size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
 
-    //! Retrieve the size of the opacity grid.
-    // size_t getNumOpacities() const { return numOpacities; };
+  //! Retrieve the size of the opacity grid.
+  // size_t getNumOpacities() const { return numOpacities; };
 
-    //! Retrieve the logarithmic temperature grid.
-    // std::vector<double> const & getLogTemperatures() const {
-    //     return logTemperatures; };
-    std::vector<double> const & getTemperatures()    const {
-	return temperatures; };
+  //! Retrieve the logarithmic temperature grid.
+  // std::vector<double> const & getLogTemperatures() const {
+  //     return logTemperatures; };
+  std::vector<double> const &getTemperatures() const { return temperatures; };
 
-    //! Retrieve the logarithmic density grid.
-    // std::vector<double> const & getLogDensities() const {
-    //     return logDensities; };
-    std::vector<double> const & getDensities()    const {
-	return densities; };
+  //! Retrieve the logarithmic density grid.
+  // std::vector<double> const & getLogDensities() const {
+  //     return logDensities; };
+  std::vector<double> const &getDensities() const { return densities; };
 
-    //! Retrieve the logarithmic opacity grid.
-    // std::vector<double> const & getLogOpacities() const {
-    //     return logOpacities; };
+  //! Retrieve the logarithmic opacity grid.
+  // std::vector<double> const & getLogOpacities() const {
+  //     return logOpacities; };
 
-    //! Retrieve the energy boundary grid.
-    std::vector<double> const & getGroupBoundaries() const {
-	return groupBoundaries; };
+  //! Retrieve the energy boundary grid.
+  std::vector<double> const &getGroupBoundaries() const {
+    return groupBoundaries;
+  };
 
-    //! Return a "plain English" description of the data table.
-    std::string const & getDataDescriptor() const {
-	return dataDescriptor; };
+  //! Return a "plain English" description of the data table.
+  std::string const &getDataDescriptor() const { return dataDescriptor; };
 
-    //! Return a "plain English" description of the energy policy.
-    // std::string const & getEnergyPolicyDescriptor() const {
-    //     return opacityEnergyDescriptor; };
+  //! Return a "plain English" description of the energy policy.
+  // std::string const & getEnergyPolicyDescriptor() const {
+  //     return opacityEnergyDescriptor; };
 
-    //! Perform linear interploation of log(opacity) values.
-    double interpOpac( double const T,
-                       double const rho,
-                       size_t const group = 0 ) const;
+  //! Perform linear interploation of log(opacity) values.
+  double interpOpac(double const T, double const rho,
+                    size_t const group = 0) const;
 
-  private:
-
-    /*!
+private:
+  /*!
      * \brief This function sets both "ipcressDataTypeKey" and
      *     "dataDescriptor" based on the values given for
      *     opacityEnergyDescriptor, opacityModel and opacityReaction.
      */
-    void setIpcressDataTypeKey() const;
+  void setIpcressDataTypeKey() const;
 
-    /*!
+  /*!
      * \brief Load the temperature, density, energy boundary and opacity
      *     opacity tables from the IPCRESS file.  Convert all tables (except
      *     energy boundaries) to log values.
      */
-    void loadDataTable( rtt_dsxx::SP< const IpcressFile > const & spIpcressFile );
+  void loadDataTable(rtt_dsxx::SP<const IpcressFile> const &spIpcressFile);
 
-    //! Search "keys" for "key".  If found return true, otherwise return false.
-    template < typename T >
-    bool key_available( const T &key, const std::vector<T> &keys ) const;
-
+  //! Search "keys" for "key".  If found return true, otherwise return false.
+  template <typename T>
+  bool key_available(const T &key, const std::vector<T> &keys) const;
 };
 
 } // end namespace

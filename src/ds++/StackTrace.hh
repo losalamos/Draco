@@ -17,8 +17,7 @@
 #include "ds++/config.h"
 #include <string>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -60,10 +59,9 @@ namespace rtt_dsxx
  * - http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
  * - http://stackwalker.codeplex.com
  */
-DLL_PUBLIC_dsxx  std::string print_stacktrace( std::string const & error_name );
+DLL_PUBLIC_dsxx std::string print_stacktrace(std::string const &error_name);
 
 } // end namespace rtt_dsxx
-
 
 #endif // StackTrace_hh
 

@@ -17,8 +17,7 @@
 #include "Function_Traits.hh"
 #include <vector>
 
-namespace rtt_ode
-{
+namespace rtt_ode {
 //===========================================================================//
 /*! 
  * \class Quad_To_ODE
@@ -32,33 +31,24 @@ namespace rtt_ode
  */
 //===========================================================================//
 
-template<typename Function> 
-class Quad_To_ODE
-{
-  public:
+template <typename Function> class Quad_To_ODE {
+public:
+  Quad_To_ODE(Function &f) : func(f) {}
 
-    Quad_To_ODE(Function &f) : func(f) {}
+  void operator()(double x, std::vector<double> const &,
+                  std::vector<double> &dydx) {
+    dydx[0] = func(x);
+  }
 
-    void operator()(double x,
-                    std::vector<double> const &,
-                    std::vector<double> &dydx)
-    {
-        dydx[0] = func(x);
-    }
-
-  private:
-    Function &func;
+private:
+  Function &func;
 };
 
 //! Adaptive quadrature of a function over a specified interval.
-template<typename Function, typename Rule>
-//DLL_PUBLIC_ode 
-typename Function_Traits<Function>::return_type 
-quad(Function func, 
-     double x1, 
-     double x2,
-     double &eps,
-     Rule rule);
+template <typename Function, typename Rule>
+//DLL_PUBLIC_ode
+typename Function_Traits<Function>::return_type
+quad(Function func, double x1, double x2, double &eps, Rule rule);
 
 } // end namespace rtt_ode
 

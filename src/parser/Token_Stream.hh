@@ -16,8 +16,7 @@
 #include "Token.hh"
 #include <deque>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 //-------------------------------------------------------------------------//
 /*!
  * \brief Parser exception class
@@ -25,13 +24,11 @@ namespace rtt_parser
  * This is an exception class for reporting syntax errors in simple parsers.
  */
 
-class Syntax_Error : public std::runtime_error
-{
-  public:
+class Syntax_Error : public std::runtime_error {
+public:
+  // CREATORS
 
-    // CREATORS
-
-    Syntax_Error();
+  Syntax_Error();
 };
 
 //-------------------------------------------------------------------------//
@@ -100,53 +97,50 @@ class Syntax_Error : public std::runtime_error
 class DLL_PUBLIC_parser Token_Stream
 //    : private std::deque<Token>
 {
-  public:
+public:
+  // CREATORS
 
-    // CREATORS
+  virtual ~Token_Stream() {}
 
-    virtual ~Token_Stream(){}
+  // MANIPULATORS
 
+  //! Return the next token in the stream and advance the cursor.
+  Token shift();
 
-    // MANIPULATORS
+  //! Look ahead at tokens.
+  Token lookahead(unsigned pos = 0);
 
-    //! Return the next token in the stream and advance the cursor.
-    Token shift();
+  //! Insert a token into the stream at the cursor position.
+  void pushback(Token const &token);
 
-    //! Look ahead at tokens.
-    Token lookahead(unsigned pos=0);
-
-    //! Insert a token into the stream at the cursor position.
-    void pushback(Token const &token);
-
-    //-----------------------------------------------------------------------//
-    /*!
+  //-----------------------------------------------------------------------//
+  /*!
      * \brief Reset the stream
      *
      * This function resets the token stream to some initial state defined
      * by the child class.
      */
-    virtual void rewind() = 0;
+  virtual void rewind() = 0;
 
-    //! Report a syntax error to the user.
-    virtual void report_syntax_error(Token const &token,
-				     std::string const &message);
+  //! Report a syntax error to the user.
+  virtual void report_syntax_error(Token const &token,
+                                   std::string const &message);
 
-    //! Report a syntax error to the user.
-    virtual void report_syntax_error(std::string const &message);
+  //! Report a syntax error to the user.
+  virtual void report_syntax_error(std::string const &message);
 
-    //! Report a semantic error to the user.
-    virtual void report_semantic_error(Token const &token,
-				       std::string const &message);
+  //! Report a semantic error to the user.
+  virtual void report_semantic_error(Token const &token,
+                                     std::string const &message);
 
-    //! Report a semantic error to the user.
-    virtual void report_semantic_error(std::string const &message);
+  //! Report a semantic error to the user.
+  virtual void report_semantic_error(std::string const &message);
 
-    //! Report a semantic error to the user.
-    virtual void report_semantic_error(std::exception const &message);
+  //! Report a semantic error to the user.
+  virtual void report_semantic_error(std::exception const &message);
 
-
-    //-----------------------------------------------------------------------//
-    /*!
+  //-----------------------------------------------------------------------//
+  /*!
      * \brief Report an error to the user.
      *
      * This function sends a message to the user in a stream-specific manner.
@@ -157,11 +151,10 @@ class DLL_PUBLIC_parser Token_Stream
      * \param message
      * Message to be passed to the user.
      */
-    virtual void report(Token const &token,
-                        std::string const &message) = 0;
+  virtual void report(Token const &token, std::string const &message) = 0;
 
-    //-----------------------------------------------------------------------//
-    /*!
+  //-----------------------------------------------------------------------//
+  /*!
      * \brief Report an error to the user.
      *
      * This function sends a message to the user in a stream-specific
@@ -171,10 +164,10 @@ class DLL_PUBLIC_parser Token_Stream
      * \param message
      * Message to be passed to the user.
      */
-    virtual void report(std::string const &message) = 0;
+  virtual void report(std::string const &message) = 0;
 
-    //-----------------------------------------------------------------------//
-    /*! Check a syntax condition.
+  //-----------------------------------------------------------------------//
+  /*! Check a syntax condition.
      *
      * By putting the check branch here, we improve coverage statistics for
      * branch coverage. Making the function inline keeps the cost of doing so
@@ -187,15 +180,13 @@ class DLL_PUBLIC_parser Token_Stream
      * \param message Diagnostic message to be delivered if condition tests as
      * false.
      */
-    void check_syntax(bool const condition,
-                            char const *const message)
-    {
-        if (!condition)
-            report_syntax_error(message);
-    }
+  void check_syntax(bool const condition, char const *const message) {
+    if (!condition)
+      report_syntax_error(message);
+  }
 
-    //-----------------------------------------------------------------------//
-    /*! Check a semantic condition.
+  //-----------------------------------------------------------------------//
+  /*! Check a semantic condition.
      *
      * By putting the check branch here, we improve coverage statistics for
      * branch coverage. Making the function inline keeps the cost of doing so
@@ -207,34 +198,30 @@ class DLL_PUBLIC_parser Token_Stream
      * \param message Diagnostic message to be delivered if condition tests as
      * false.
      */
-    void check_semantics(bool const condition,
-                         char const *const message)
-    {
-        if (!condition)
-            report_semantic_error(message);
-    }
+  void check_semantics(bool const condition, char const *const message) {
+    if (!condition)
+      report_semantic_error(message);
+  }
 
+  // ACCESSORS
 
-    // ACCESSORS
+  //! Return the number of errors reported to the stream since it was last
+  //! constructed or rewound.
+  unsigned error_count() const { return error_count_; }
 
-    //! Return the number of errors reported to the stream since it was last
-    //! constructed or rewound.
-    unsigned error_count() const { return error_count_; }
+  //! Check that all class invariants are satisfied.
+  bool check_class_invariants() const { return true; }
 
-    //! Check that all class invariants are satisfied.
-    bool check_class_invariants() const { return true; }
+  // STATICS
 
-    // STATICS
+protected:
+  // IMPLEMENTATION
 
-  protected:
+  //! Construct a Token_Stream.
+  inline Token_Stream();
 
-    // IMPLEMENTATION
-
-    //! Construct a Token_Stream.
-    inline Token_Stream();
-
-    //-----------------------------------------------------------------------//
-    /*!
+  //-----------------------------------------------------------------------//
+  /*!
      * \brief Add one or more tokens to the end of the lookahead buffer.
      *
      * This function is used by \c shift and \c lookahead to keep the token
@@ -246,20 +233,18 @@ class DLL_PUBLIC_parser Token_Stream
      *
      * \return Next token to put on the token buffer.
      */
-    virtual Token fill_() = 0;
+  virtual Token fill_() = 0;
 
-  private:
+private:
+  // DATA
 
-    // DATA
+  //! Number of errors reported to the stream since it was constructed or
+  //! last rewound.
+  unsigned error_count_;
 
-    //! Number of errors reported to the stream since it was constructed or
-    //! last rewound.
-    unsigned error_count_;
-
-  private:
-
-    // DATA
-    std::deque<Token> deq;
+private:
+  // DATA
+  std::deque<Token> deq;
 };
 
 //-----------------------------------------------------------------------//
@@ -267,17 +252,14 @@ class DLL_PUBLIC_parser Token_Stream
  * Construct a Token_Stream and place the cursor at the start of the
  * stream.
  */
-inline Token_Stream::Token_Stream()
-    : error_count_(0),
-      deq()
-{
-    Ensure(check_class_invariants());
-    Ensure(error_count() == 0);
+inline Token_Stream::Token_Stream() : error_count_(0), deq() {
+  Ensure(check_class_invariants());
+  Ensure(error_count() == 0);
 }
 
-}  // namespace rtt_parser
+} // namespace rtt_parser
 
-#endif  // CCS4_Token_Stream_HH
+#endif // CCS4_Token_Stream_HH
 //---------------------------------------------------------------------------//
 // end of Token_Stream.hh
 //---------------------------------------------------------------------------//

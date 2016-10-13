@@ -11,12 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "Unit.hh"
 #include <iostream>
 #include <sstream>
-#include "Unit.hh"
 
-namespace
-{
+namespace {
 using namespace std;
 
 //---------------------------------------------------------------------------//
@@ -34,33 +33,23 @@ using namespace std;
  * \param unit Unit name
  */
 
-void dash_insert(ostream &str,
-		 bool &dash,
-		 double const value,
-		 char const *const name)
-{
-    if (value!=0.0)
-    {
-	if (dash)
-	{
-	    str << '-';
-	}
-	if (value!=1.0)
-	{
-	    str << name << '^' << value;
-	}
-	else
-	{
-	    str << name;
-	}
-	dash = true;
+void dash_insert(ostream &str, bool &dash, double const value,
+                 char const *const name) {
+  if (value != 0.0) {
+    if (dash) {
+      str << '-';
     }
+    if (value != 1.0) {
+      str << name << '^' << value;
+    } else {
+      str << name;
+    }
+    dash = true;
+  }
+}
 }
 
-}
-
-namespace rtt_parser 
-{
+namespace rtt_parser {
 using namespace std;
 
 //---------------------------------------------------------------------------//
@@ -70,57 +59,48 @@ using namespace std;
  * \return A reference to s.
  */
 
-std::ostream &operator<<(std::ostream &str, const Unit &u)
-{
-    str << u.conv << ' ';
-    bool dash = false;
+std::ostream &operator<<(std::ostream &str, const Unit &u) {
+  str << u.conv << ' ';
+  bool dash = false;
 
-    dash_insert(str, dash, u.m, "m");
-    dash_insert(str, dash, u.kg, "kg");
-    dash_insert(str, dash, u.s, "s");
-    dash_insert(str, dash, u.A, "A");
-    dash_insert(str, dash, u.K, "K");
-    dash_insert(str, dash, u.mol, "mol");
-    dash_insert(str, dash, u.cd, "cd");
-    dash_insert(str, dash, u.rad, "rad");
-    dash_insert(str, dash, u.sr, "sr");
-    return str;
+  dash_insert(str, dash, u.m, "m");
+  dash_insert(str, dash, u.kg, "kg");
+  dash_insert(str, dash, u.s, "s");
+  dash_insert(str, dash, u.A, "A");
+  dash_insert(str, dash, u.K, "K");
+  dash_insert(str, dash, u.mol, "mol");
+  dash_insert(str, dash, u.cd, "cd");
+  dash_insert(str, dash, u.rad, "rad");
+  dash_insert(str, dash, u.sr, "sr");
+  return str;
 }
 
 //---------------------------------------------------------------------------//
-double conversion_factor(Unit const &units, Unit const &unit_system)
-{
-    using std::pow;
-    
-    double const conv =
-        pow(unit_system.m, units.m) *
-        pow(unit_system.kg, units.kg) *
-        pow(unit_system.s, units.s) *
-        pow(unit_system.A, units.A) *
-        pow(unit_system.K, units.K) *
-        pow(unit_system.mol, units.mol) *
-        pow(unit_system.cd, units.cd) *
-        pow(unit_system.rad, units.rad) *
-        pow(unit_system.sr, units.sr);
-    
-    return conv;
+double conversion_factor(Unit const &units, Unit const &unit_system) {
+  using std::pow;
+
+  double const conv =
+      pow(unit_system.m, units.m) * pow(unit_system.kg, units.kg) *
+      pow(unit_system.s, units.s) * pow(unit_system.A, units.A) *
+      pow(unit_system.K, units.K) * pow(unit_system.mol, units.mol) *
+      pow(unit_system.cd, units.cd) * pow(unit_system.rad, units.rad) *
+      pow(unit_system.sr, units.sr);
+
+  return conv;
 }
 
 //---------------------------------------------------------------------------//
-double conversion_factor(Unit const &units, rtt_units::UnitSystem const &unit_system)
-{
-    using std::pow;
-    
-    double const conv =
-        pow(unit_system.L(), units.m) *
-        pow(unit_system.M(), units.kg) *
-        pow(unit_system.t(), units.s) *
-        pow(unit_system.T(), units.K) *
-        pow(unit_system.I(), units.A) *
-        pow(unit_system.A(), units.rad) *
-        pow(unit_system.Q(), units.mol);
+double conversion_factor(Unit const &units,
+                         rtt_units::UnitSystem const &unit_system) {
+  using std::pow;
 
-    return conv;
+  double const conv =
+      pow(unit_system.L(), units.m) * pow(unit_system.M(), units.kg) *
+      pow(unit_system.t(), units.s) * pow(unit_system.T(), units.K) *
+      pow(unit_system.I(), units.A) * pow(unit_system.A(), units.rad) *
+      pow(unit_system.Q(), units.mol);
+
+  return conv;
 }
 
 } // namespace rtt_parser

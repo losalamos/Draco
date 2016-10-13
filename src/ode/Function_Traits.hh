@@ -17,8 +17,7 @@
 #include "ds++/config.h"
 #include <complex>
 
-namespace rtt_ode
-{
+namespace rtt_ode {
 
 //===========================================================================//
 /*!
@@ -40,22 +39,19 @@ namespace rtt_ode
  */
 //===========================================================================//
 
-template<typename Function> class DLL_PUBLIC_ode Function_Traits
-{
-  public:
+template <typename Function> class DLL_PUBLIC_ode Function_Traits {
+public:
+  // The following traits must be defined for all Function types:
 
-    // The following traits must be defined for all Function types:
-
-    //! Type returned by Function::operator() 
-    typedef typename Function::return_type return_type;
+  //! Type returned by Function::operator()
+  typedef typename Function::return_type return_type;
 };
 
 //---------------------------------------------------------------------------//
 //! Traits for ordinary function mapping double to double
-template<> class Function_Traits<double(*)(double)>
-{
-  public:
-    typedef double return_type;
+template <> class Function_Traits<double (*)(double)> {
+public:
+  typedef double return_type;
 };
 
 #ifdef draco_isAIX
@@ -66,19 +62,17 @@ template<> class Function_Traits<double(*)(double)>
  * signatures. Everyone else, including the ISO standard, disregards top const
  * qualifiers.
  */
-template<> class Function_Traits<double(*)(double const)>
-{
-  public:
-    typedef double return_type;
+template <> class Function_Traits<double (*)(double const)> {
+public:
+  typedef double return_type;
 };
 #endif
 
 //---------------------------------------------------------------------------//
 //! Traits for ordinary function mapping double to complex
-template<> class Function_Traits<std::complex<double>(*)(double)>
-{
-  public:
-    typedef std::complex<double> return_type;
+template <> class Function_Traits<std::complex<double> (*)(double)> {
+public:
+  typedef std::complex<double> return_type;
 };
 
 } // end namespace rtt_ode

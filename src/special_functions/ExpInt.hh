@@ -8,23 +8,21 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$ 
+// $Id$
 //---------------------------------------------------------------------------//
-      
+
 #ifndef special_functions_ExpInt_hh
 #define special_functions_ExpInt_hh
 
 #include "ds++/config.h"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 //! Compute general exponential integral, order n, argument x \f$ E_n(x) \f$.
-DLL_PUBLIC_special_functions double En( unsigned const n, double const x);
+DLL_PUBLIC_special_functions double En(unsigned const n, double const x);
 
 //! Compute exponential integral, argument x \f$ Ei(x) \f$.
-DLL_PUBLIC_special_functions double Ei( double const x);
-
+DLL_PUBLIC_special_functions double Ei(double const x);
 }
 
 #endif //special_functions_ExpInt

@@ -18,8 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace rtt_diagnostics
-{
+namespace rtt_diagnostics {
 
 //===========================================================================//
 /*!
@@ -57,60 +56,56 @@ namespace rtt_diagnostics
  * \endverbatim
  */
 //===========================================================================//
-class DLL_PUBLIC_diagnostics DracoInfo
-{
-  public:
+class DLL_PUBLIC_diagnostics DracoInfo {
+public:
+  // IMPLELEMENTATION
+  // ================
 
-    // IMPLELEMENTATION
-    // ================
+  // Constructors
+  // ------------
+  DracoInfo(void);
 
-    // Constructors
-    // ------------
-    DracoInfo(void);
+  // Actions
+  // -------
 
-    // Actions
-    // -------
-
-    /*! \brief Construct an information message that includes Draco's version,
+  /*! \brief Construct an information message that includes Draco's version,
      * copyright and basic build parameters. */
-    std::string fullReport(void);
+  std::string fullReport(void);
 
-    //! Version and Copyright only
-    std::string briefReport(void);
+  //! Version and Copyright only
+  std::string briefReport(void);
 
-    //! Version only
-    std::string versionReport(void);
+  //! Version only
+  std::string versionReport(void);
 
-  private:
+private:
+  //! Convert the string to all lowercase except the first character.
+  std::string normalizeCapitalization(std::string in);
 
-    //! Convert the string to all lowercase except the first character.
-    std::string normalizeCapitalization( std::string in );
+  // DATA
+  // ----
 
-    // DATA
-    // ----
-
-    std::string const release;
-    std::string const copyright;
-    std::string const contact;
-    std::string const build_type;
-    std::string library_type;
-    std::string system_type;
-    std::string site_name;
-    bool cuda;
-    bool mpi;
-    std::string mpirun_cmd;
-    bool openmp;
-    std::string diagnostics_level;
-    bool diagnostics_timing;
-    bool cxx11;
-    std::vector<std::string> cxx11_features;
-    std::string cxx;
-    std::string cxx_flags;
-    std::string cc;
-    std::string cc_flags;
-    std::string fc;
-    std::string fc_flags;
-
+  std::string const release;
+  std::string const copyright;
+  std::string const contact;
+  std::string const build_type;
+  std::string library_type;
+  std::string system_type;
+  std::string site_name;
+  bool cuda;
+  bool mpi;
+  std::string mpirun_cmd;
+  bool openmp;
+  std::string diagnostics_level;
+  bool diagnostics_timing;
+  bool cxx11;
+  std::vector<std::string> cxx11_features;
+  std::string cxx;
+  std::string cxx_flags;
+  std::string cc;
+  std::string cc_flags;
+  std::string fc;
+  std::string fc_flags;
 };
 
 } // end namespace rtt_diagnostics

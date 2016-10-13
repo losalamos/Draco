@@ -11,23 +11,19 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
 #include "qrupdt.i.hh"
+#include <vector>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 using std::vector;
 
 //---------------------------------------------------------------------------//
 // T = RandomContainer = vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC_linear
-void qrupdt(vector<double> &r, 
-		     vector<double> &qt, 
-		     const unsigned n,
-		     vector<double> &u, 
-		     vector<double> &v);
+template DLL_PUBLIC_linear void qrupdt(vector<double> &r, vector<double> &qt,
+                                       const unsigned n, vector<double> &u,
+                                       vector<double> &v);
 
 } // end namespace rtt_linear
 

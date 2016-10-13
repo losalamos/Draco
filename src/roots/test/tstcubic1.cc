@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/Soft_Equivalence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "roots/cubic1.hh"
 
 using namespace std;
@@ -24,29 +24,26 @@ using namespace rtt_roots;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstcubic1(UnitTest &ut)
-{
-    // Solve (x*x+1)*(x-1) = x*x*x-x*x+x-1 = 0
+void tstcubic1(UnitTest &ut) {
+  // Solve (x*x+1)*(x-1) = x*x*x-x*x+x-1 = 0
 
-    double root = cubic1(-1., 1., -1.);
+  double root = cubic1(-1., 1., -1.);
 
-    if (soft_equiv(root, 1.0))
-    {
-        ut.passes("Correctly solved cubic equation");
-    }
-    else
-    {
-        ut.failure("Did NOT correctly solve cubic equation");
-    }
+  if (soft_equiv(root, 1.0)) {
+    ut.passes("Correctly solved cubic equation");
+  } else {
+    ut.failure("Did NOT correctly solve cubic equation");
+  }
 }
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
-    try { tstcubic1(ut); }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
+  try {
+    tstcubic1(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

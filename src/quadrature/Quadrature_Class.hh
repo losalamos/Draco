@@ -13,18 +13,16 @@
 #ifndef __quadrature_Quadrature_Class_hh__
 #define __quadrature_Quadrature_Class_hh__
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
-enum Quadrature_Class
-{
-    INTERVAL_QUADRATURE,  //!< 1-D quadratures
-    
-    TRIANGLE_QUADRATURE,  //!< 3-D triangular quadrature
-    SQUARE_QUADRATURE,    //!< 3-D square quadrature
-    OCTANT_QUADRATURE,    //!< 3-D octant quadrature, not triangular nor square
-    
-    END_QUADRATURE
+enum Quadrature_Class {
+  INTERVAL_QUADRATURE, //!< 1-D quadratures
+
+  TRIANGLE_QUADRATURE, //!< 3-D triangular quadrature
+  SQUARE_QUADRATURE,   //!< 3-D square quadrature
+  OCTANT_QUADRATURE,   //!< 3-D octant quadrature, not triangular nor square
+
+  END_QUADRATURE
 };
 
 } // end namespace rtt_quadrature

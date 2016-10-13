@@ -123,6 +123,16 @@
    ...
 }
 {
+  <pmpi_init_thread-6>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:df_search
+   ...
+   fun:PMPI_Init
+   ...
+}
+{
   <clone-2>
    Memcheck:Leak
    match-leak-kinds: definite

@@ -11,11 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
 #include "rsolv.hh"
+#include <vector>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 using std::vector;
 
@@ -23,10 +22,8 @@ using std::vector;
 // T=vector<double> const &
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC_linear
-void rsolv(const vector<double> &R,
- 		   const unsigned n,
- 		   vector<double> &b);
+template DLL_PUBLIC_linear void rsolv(const vector<double> &R, const unsigned n,
+                                      vector<double> &b);
 
 } // end namespace rtt_linear
 

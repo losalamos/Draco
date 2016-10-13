@@ -16,18 +16,16 @@
 #include "cdi/OpacityCommon.hh" // defines Model and Reaction
                                 // enumerated values.
 #include "ds++/Assert.hh"
-#include <cmath>                // we need to define log(double)
-
+#include <cmath> // we need to define log(double)
 
 // ------------------------- //
 // NAMESPACE RTT_CDI_IPCRESS //
 // ------------------------- //
 
-namespace rtt_cdi_ipcress
-{
+namespace rtt_cdi_ipcress {
 
 // helper functions: local to file scope
-double unary_log( double x ) { return std::log( x ); }
+double unary_log(double x) { return std::log(x); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -57,47 +55,36 @@ double unary_log( double x ) { return std::log( x ); }
  *     IpcressOpacity (and thus IpcressDataTable) objects may point to the
  *     same IpcressFile object.
  */
-IpcressDataTable::IpcressDataTable( 
-    std::string                       const & in_opacityEnergyDescriptor,
-    rtt_cdi::Model                            in_opacityModel, 
-    rtt_cdi::Reaction                         in_opacityReaction,
-    std::vector<std::string>          const & in_fieldNames,
-    size_t                                    in_matID,
-    rtt_dsxx::SP< const IpcressFile > const & spIpcressFile )
-    : ipcressDataTypeKey( "" ),
-      dataDescriptor( "" ),
-      opacityEnergyDescriptor ( in_opacityEnergyDescriptor ),
-      opacityModel( in_opacityModel ),
-      opacityReaction( in_opacityReaction ),
-      fieldNames ( in_fieldNames ),
-      matID ( in_matID ),
+IpcressDataTable::IpcressDataTable(
+    std::string const &in_opacityEnergyDescriptor,
+    rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction,
+    std::vector<std::string> const &in_fieldNames, size_t in_matID,
+    rtt_dsxx::SP<const IpcressFile> const &spIpcressFile)
+    : ipcressDataTypeKey(""), dataDescriptor(""),
+      opacityEnergyDescriptor(in_opacityEnergyDescriptor),
+      opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
+      fieldNames(in_fieldNames), matID(in_matID),
       // numOpacities( 0 ),
-      logTemperatures(),
-      temperatures(),
-      logDensities(),
-      densities(),
-      groupBoundaries(),
-      logOpacities()
-{
-    // Obtain the Ipcress keyword for the opacity data type specified by the
-    // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords
-    // are: { ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray } This
-    // function also ensures that the requested data type is available in the
-    // IPCRESS file.
-    setIpcressDataTypeKey();
-    
-    // Retrieve the data set and resize the vector containers.
-    temperatures    = spIpcressFile->getData( matID, "tgrid" );
-    densities       = spIpcressFile->getData( matID, "rgrid" );
-    groupBoundaries = spIpcressFile->getData( matID, "hnugrid" );
-    
-    // Retrieve table data (temperatures, densities, group boundaries and
-    // opacities.  These are stored as logorithmic values.
-    loadDataTable(spIpcressFile);
-    
+      logTemperatures(), temperatures(), logDensities(), densities(),
+      groupBoundaries(), logOpacities() {
+  // Obtain the Ipcress keyword for the opacity data type specified by the
+  // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords
+  // are: { ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray } This
+  // function also ensures that the requested data type is available in the
+  // IPCRESS file.
+  setIpcressDataTypeKey();
+
+  // Retrieve the data set and resize the vector containers.
+  temperatures = spIpcressFile->getData(matID, "tgrid");
+  densities = spIpcressFile->getData(matID, "rgrid");
+  groupBoundaries = spIpcressFile->getData(matID, "hnugrid");
+
+  // Retrieve table data (temperatures, densities, group boundaries and
+  // opacities.  These are stored as logorithmic values.
+  loadDataTable(spIpcressFile);
+
 } // end of IpcressDataTable constructor.
 
-    
 // ----------------- //
 // PRIVATE FUNCTIONS //
 // ----------------- //
@@ -108,129 +95,123 @@ IpcressDataTable::IpcressDataTable(
  *     "dataDescriptor" based on the values given for
  *     opacityEnergyDescriptor, opacityModel and opacityReaction.
  */
-void IpcressDataTable::setIpcressDataTypeKey( ) const
-{
-    // Build the Ipcress key for the requested data.  Valid keys are: { ramg,
-    // rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray }
+void IpcressDataTable::setIpcressDataTypeKey() const {
+  // Build the Ipcress key for the requested data.  Valid keys are: { ramg,
+  // rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray }
 
-    if ( opacityEnergyDescriptor == "gray" )
-    {
-        switch ( opacityModel )
-        {
-            case ( rtt_cdi::ROSSELAND ) :
+  if (opacityEnergyDescriptor == "gray") {
+    switch (opacityModel) {
+    case (rtt_cdi::ROSSELAND):
 
-                switch ( opacityReaction )
-                {
-                    case ( rtt_cdi::TOTAL ) :
-                        ipcressDataTypeKey = "rgray";
-                        dataDescriptor = "Gray Rosseland Total";
-                        break;
-                    case ( rtt_cdi::ABSORPTION ) :
-                        ipcressDataTypeKey = "ragray";
-                        dataDescriptor = "Gray Rosseland Absorption";
-                        break;
-                    case ( rtt_cdi::SCATTERING ) :
-                        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-                        // See LA-UR-01-5543
-                        ipcressDataTypeKey = "rsgray";
-                        dataDescriptor = "Gray Rosseland Scattering";
-                        break;
-                    default :
-                        Assert(false);
-                        break;
-                }
-                break;
+      switch (opacityReaction) {
+      case (rtt_cdi::TOTAL):
+        ipcressDataTypeKey = "rgray";
+        dataDescriptor = "Gray Rosseland Total";
+        break;
+      case (rtt_cdi::ABSORPTION):
+        ipcressDataTypeKey = "ragray";
+        dataDescriptor = "Gray Rosseland Absorption";
+        break;
+      case (rtt_cdi::SCATTERING):
+        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+        // See LA-UR-01-5543
+        ipcressDataTypeKey = "rsgray";
+        dataDescriptor = "Gray Rosseland Scattering";
+        break;
+      default:
+        Assert(false);
+        break;
+      }
+      break;
 
-            case ( rtt_cdi::PLANCK ) :
-			
-                switch ( opacityReaction )
-                {
-                    case ( rtt_cdi::TOTAL ) :
-                        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-                        // See LA-UR-01-5543
-                        ipcressDataTypeKey = "ptgray";
-                        dataDescriptor = "Gray Planck Total";
-                        break;
-                    case ( rtt_cdi::ABSORPTION ) :
-                        ipcressDataTypeKey = "pgray";
-                        dataDescriptor = "Gray Planck Absorption";
-                        break;
-                    case ( rtt_cdi::SCATTERING ) :
-                        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-                        // See LA-UR-01-5543
-                        ipcressDataTypeKey = "psgray";
-                        dataDescriptor = "Gray Planck Scattering";
-                        break;
-                    default :
-                        Assert(false);
-                        break;
-                }
-                break;
-			
-            default :
-                Assert(false);
-                break;
-        }
+    case (rtt_cdi::PLANCK):
+
+      switch (opacityReaction) {
+      case (rtt_cdi::TOTAL):
+        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+        // See LA-UR-01-5543
+        ipcressDataTypeKey = "ptgray";
+        dataDescriptor = "Gray Planck Total";
+        break;
+      case (rtt_cdi::ABSORPTION):
+        ipcressDataTypeKey = "pgray";
+        dataDescriptor = "Gray Planck Absorption";
+        break;
+      case (rtt_cdi::SCATTERING):
+        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+        // See LA-UR-01-5543
+        ipcressDataTypeKey = "psgray";
+        dataDescriptor = "Gray Planck Scattering";
+        break;
+      default:
+        Assert(false);
+        break;
+      }
+      break;
+
+    default:
+      Assert(false);
+      break;
     }
-    else // "mg"
-    {
-        switch ( opacityModel ) {
-            case ( rtt_cdi::ROSSELAND ) :
+  } else // "mg"
+  {
+    switch (opacityModel) {
+    case (rtt_cdi::ROSSELAND):
 
-                switch ( opacityReaction ) {
-                    case ( rtt_cdi::TOTAL ) :
-                        ipcressDataTypeKey = "rtmg";
-                        dataDescriptor = "Multigroup Rosseland Total";
-                        break;
-                    case ( rtt_cdi::ABSORPTION ) :
-                        ipcressDataTypeKey = "ramg";
-                        dataDescriptor = "Multigroup Rosseland Absorption";
-                        break;
-                    case ( rtt_cdi::SCATTERING ) :
-                        ipcressDataTypeKey = "rsmg";
-                        dataDescriptor = "Multigroup Rosseland Scattering";
-                        break;
-                    default :
-                        Assert(false);
-                        break;
-                }
-                break;
-			
-            case ( rtt_cdi::PLANCK ) :
-			
-                switch ( opacityReaction ) {
-                    case ( rtt_cdi::TOTAL ) :
-                        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-                        // See LA-UR-01-5543
-                        ipcressDataTypeKey = "ptmg";
-                        dataDescriptor = "Multigroup Planck Total";
-                        break;
-                    case ( rtt_cdi::ABSORPTION ) :
-                        ipcressDataTypeKey = "pmg";
-                        dataDescriptor = "Multigroup Planck Absorption";
-                        break;
-                    case ( rtt_cdi::SCATTERING ) :
-                        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-                        // See LA-UR-01-5543
-                        ipcressDataTypeKey = "psmg";
-                        dataDescriptor = "Multigroup Planck Scattering";
-                        break;
-                    default :
-                        Assert(false);
-                        break;
-                }
-                break;
-			
-            default :
-                Assert(false);
-                break;
-        }
+      switch (opacityReaction) {
+      case (rtt_cdi::TOTAL):
+        ipcressDataTypeKey = "rtmg";
+        dataDescriptor = "Multigroup Rosseland Total";
+        break;
+      case (rtt_cdi::ABSORPTION):
+        ipcressDataTypeKey = "ramg";
+        dataDescriptor = "Multigroup Rosseland Absorption";
+        break;
+      case (rtt_cdi::SCATTERING):
+        ipcressDataTypeKey = "rsmg";
+        dataDescriptor = "Multigroup Rosseland Scattering";
+        break;
+      default:
+        Assert(false);
+        break;
+      }
+      break;
+
+    case (rtt_cdi::PLANCK):
+
+      switch (opacityReaction) {
+      case (rtt_cdi::TOTAL):
+        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+        // See LA-UR-01-5543
+        ipcressDataTypeKey = "ptmg";
+        dataDescriptor = "Multigroup Planck Total";
+        break;
+      case (rtt_cdi::ABSORPTION):
+        ipcressDataTypeKey = "pmg";
+        dataDescriptor = "Multigroup Planck Absorption";
+        break;
+      case (rtt_cdi::SCATTERING):
+        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
+        // See LA-UR-01-5543
+        ipcressDataTypeKey = "psmg";
+        dataDescriptor = "Multigroup Planck Scattering";
+        break;
+      default:
+        Assert(false);
+        break;
+      }
+      break;
+
+    default:
+      Assert(false);
+      break;
     }
+  }
 
-    // Verify that the requested opacity type is available in
-    // the IPCRESS file.
-    Insist( key_available( ipcressDataTypeKey, fieldNames ),
-            "requested opacity type is not available in the IPCRESS file.");
+  // Verify that the requested opacity type is available in
+  // the IPCRESS file.
+  Insist(key_available(ipcressDataTypeKey, fieldNames),
+         "requested opacity type is not available in the IPCRESS file.");
 }
 
 //---------------------------------------------------------------------------//
@@ -240,22 +221,21 @@ void IpcressDataTable::setIpcressDataTypeKey( ) const
  *     tables (except energy boundaries) to log values.
  */
 void IpcressDataTable::loadDataTable(
-    rtt_dsxx::SP< const IpcressFile > const & spIpcressFile )
-{
-    // The interpolation routines expect everything to be in log form so we
-    // only store the logorithmic temperature, density and opacity data.
-    logTemperatures.resize( temperatures.size() );
-    std::transform( temperatures.begin(), temperatures.end(),
-                    logTemperatures.begin(), unary_log );
-    logDensities.resize( densities.size() );
-    std::transform( densities.begin(), densities.end(), 
-                    logDensities.begin(), unary_log );
+    rtt_dsxx::SP<const IpcressFile> const &spIpcressFile) {
+  // The interpolation routines expect everything to be in log form so we
+  // only store the logorithmic temperature, density and opacity data.
+  logTemperatures.resize(temperatures.size());
+  std::transform(temperatures.begin(), temperatures.end(),
+                 logTemperatures.begin(), unary_log);
+  logDensities.resize(densities.size());
+  std::transform(densities.begin(), densities.end(), logDensities.begin(),
+                 unary_log);
 
-    std::vector< double > opacities =
-        spIpcressFile->getData( matID, ipcressDataTypeKey );
-    logOpacities.resize( opacities.size() );
-    std::transform( opacities.begin(), opacities.end(),
-                    logOpacities.begin(), unary_log );
+  std::vector<double> opacities =
+      spIpcressFile->getData(matID, ipcressDataTypeKey);
+  logOpacities.resize(opacities.size());
+  std::transform(opacities.begin(), opacities.end(), logOpacities.begin(),
+                 unary_log);
 }
 
 //---------------------------------------------------------------------------//
@@ -263,18 +243,17 @@ void IpcressDataTable::loadDataTable(
  * \brief This function returns "true" if "key" is found in the list
  *        of "keys".  This is a static member function.
  */
-template < typename T >
-bool IpcressDataTable::key_available( T              const & key, 
-                                      std::vector<T> const & keys ) const
-{
-    // Loop over all available keys.  If the requested key matches one in the
-    // list return true.  If we reach the end of the list without a match
-    // return false.
-    for ( size_t i=0; i<keys.size(); ++i )
-        if ( key == keys[i] ) return true;
-    return false;	    
+template <typename T>
+bool IpcressDataTable::key_available(T const &key,
+                                     std::vector<T> const &keys) const {
+  // Loop over all available keys.  If the requested key matches one in the
+  // list return true.  If we reach the end of the list without a match
+  // return false.
+  for (size_t i = 0; i < keys.size(); ++i)
+    if (key == keys[i])
+      return true;
+  return false;
 } // end of IpcressDataTable::key_available( string, vector<string> )
-
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -286,33 +265,32 @@ bool IpcressDataTable::key_available( T              const & key,
  * Note: the opacity array is a 1D array.  group id is the fastest moving
  * index and temperatures are the slowest moving index.
  */
-double IpcressDataTable::interpOpac( double const targetTemperature,
-                                     double const targetDensity,
-                                     size_t const group ) const
-{
-    double logT   = std::log(targetTemperature);
-    double logrho = std::log(targetDensity);
+double IpcressDataTable::interpOpac(double const targetTemperature,
+                                    double const targetDensity,
+                                    size_t const group) const {
+  double logT = std::log(targetTemperature);
+  double logrho = std::log(targetDensity);
 
-    size_t const numrho = logDensities.size();
-    size_t const numT   = logTemperatures.size();
-    // size_t const numpergroup = numrho*numT;
-    size_t const ng = opacityEnergyDescriptor == std::string("gray") ?
-                      1 :
-                      groupBoundaries.size()-1;
-    
-    // Check if we are off the table boundaries.  We don't allow
-    // extrapolation, so move the target temperature or density to the table
-    // boundary.
-    if( targetTemperature < temperatures[0] )
-        logT = std::log(temperatures[0]);
-    if( targetTemperature > temperatures[numT-1] )
-        logT = std::log(temperatures[numT-1]);
-    if( targetDensity < densities[0] )
-        logrho = std::log(densities[0]);
-    if( targetDensity > densities[numrho-1] )
-        logrho = std::log(densities[numrho-1]);
+  size_t const numrho = logDensities.size();
+  size_t const numT = logTemperatures.size();
+  // size_t const numpergroup = numrho*numT;
+  size_t const ng = opacityEnergyDescriptor == std::string("gray")
+                        ? 1
+                        : groupBoundaries.size() - 1;
 
-    /*
+  // Check if we are off the table boundaries.  We don't allow
+  // extrapolation, so move the target temperature or density to the table
+  // boundary.
+  if (targetTemperature < temperatures[0])
+    logT = std::log(temperatures[0]);
+  if (targetTemperature > temperatures[numT - 1])
+    logT = std::log(temperatures[numT - 1]);
+  if (targetDensity < densities[0])
+    logrho = std::log(densities[0]);
+  if (targetDensity > densities[numrho - 1])
+    logrho = std::log(densities[numrho - 1]);
+
+  /*
      * The grid looks like this:
      *
      *      |   T1     |   T      |   T2
@@ -329,84 +307,75 @@ double IpcressDataTable::interpOpac( double const targetTemperature,
      * Use linear interploation wrt log(rho) to find sig21 and sig23, then use
      * linear interpolation wrt log(T) to find sig22.
      */
-    
-    // Find the bracketing table values (T1, T2) and (rho1, rho2) for rho and
-    // T.
-    size_t irho = logDensities.size()-1;
-    size_t iT   = logTemperatures.size()-1;
-    for( size_t i=0; i<numT-1; ++i )
-    {
-        if( logT >= logTemperatures[i] && logT < logTemperatures[i+1] )
-        {
-            iT = i;
-            break;
-        }
-    }
-    for( size_t i=0; i<numrho-1; ++i )
-    {
-        if( logrho >= logDensities[i] && logrho < logDensities[i+1] )
-        {
-            irho = i;
-            break;
-        }
-    }
 
-    // Perform the linear interpolation.
-
-    // index of cell with lower T and lower rho bound
-    size_t i = (iT*numrho+irho)*ng+group;
-    // size_t j = i + ng; // index for cell with higher rho value.
-    size_t k = i + ng*numrho; // index for cell with higher T value
-
-    // If we are on the edge of the opacity table, return the edge values.  So
-    // there are 4 cases:
-    double logOpacity(0.0);
-    
-    // 1. Normal path
-    if( irho+1 < numrho && iT+1 < numT )
-    {
-        double logsig12 = logOpacities[i]
-                          + ( logrho - logDensities[irho] )
-                          / ( logDensities[irho+1] - logDensities[irho] )
-                          * ( logOpacities[i+ng] - logOpacities[i] );
-        
-        double logsig32 = logOpacities[k]
-                          + ( logrho - logDensities[irho] )
-                          / ( logDensities[irho+1] - logDensities[irho] )
-                          * ( logOpacities[k+ng] - logOpacities[k] );
-
-        logOpacity = logsig12
-                     + (logT-logTemperatures[iT])
-                     / (logTemperatures[iT+1]-logTemperatures[iT])
-                     * (logsig32-logsig12);
+  // Find the bracketing table values (T1, T2) and (rho1, rho2) for rho and
+  // T.
+  size_t irho = logDensities.size() - 1;
+  size_t iT = logTemperatures.size() - 1;
+  for (size_t i = 0; i < numT - 1; ++i) {
+    if (logT >= logTemperatures[i] && logT < logTemperatures[i + 1]) {
+      iT = i;
+      break;
     }
+  }
+  for (size_t i = 0; i < numrho - 1; ++i) {
+    if (logrho >= logDensities[i] && logrho < logDensities[i + 1]) {
+      irho = i;
+      break;
+    }
+  }
 
-    // 2. rho is at high side of table, T is in the table
-    else if( irho+1 >= numrho && iT+1 < numT )
-    {
-        logOpacity = logOpacities[i]
-                     + (logT-logTemperatures[iT])
-                     / (logTemperatures[iT+1]-logTemperatures[iT])
-                     * (logOpacities[k]-logOpacities[i]);
-    }
+  // Perform the linear interpolation.
 
-    // 3. T is at high side of table, rho is in the table
-    else if( irho+1 < numrho && iT+1 >= numT )
-    {
-        logOpacity = logOpacities[i]
-                     + ( logrho - logDensities[irho] )
-                     / ( logDensities[irho+1] - logDensities[irho] )
-                     * ( logOpacities[i+ng] - logOpacities[i] );
-    }
-    
-    // 4. Both T and rho are on the high side of the table.
-    else if( irho+1 >= numrho && iT+1 >= numT )
-    {
-        logOpacity = logOpacities[i];
-    }
-    
-    
-    return std::exp(logOpacity);  
+  // index of cell with lower T and lower rho bound
+  size_t i = (iT * numrho + irho) * ng + group;
+  // size_t j = i + ng; // index for cell with higher rho value.
+  size_t k = i + ng * numrho; // index for cell with higher T value
+
+  // If we are on the edge of the opacity table, return the edge values.  So
+  // there are 4 cases:
+  double logOpacity(0.0);
+
+  // 1. Normal path
+  if (irho + 1 < numrho && iT + 1 < numT) {
+    double logsig12 = logOpacities[i] +
+                      (logrho - logDensities[irho]) /
+                          (logDensities[irho + 1] - logDensities[irho]) *
+                          (logOpacities[i + ng] - logOpacities[i]);
+
+    double logsig32 = logOpacities[k] +
+                      (logrho - logDensities[irho]) /
+                          (logDensities[irho + 1] - logDensities[irho]) *
+                          (logOpacities[k + ng] - logOpacities[k]);
+
+    logOpacity = logsig12 +
+                 (logT - logTemperatures[iT]) /
+                     (logTemperatures[iT + 1] - logTemperatures[iT]) *
+                     (logsig32 - logsig12);
+  }
+
+  // 2. rho is at high side of table, T is in the table
+  else if (irho + 1 >= numrho && iT + 1 < numT) {
+    logOpacity = logOpacities[i] +
+                 (logT - logTemperatures[iT]) /
+                     (logTemperatures[iT + 1] - logTemperatures[iT]) *
+                     (logOpacities[k] - logOpacities[i]);
+  }
+
+  // 3. T is at high side of table, rho is in the table
+  else if (irho + 1 < numrho && iT + 1 >= numT) {
+    logOpacity = logOpacities[i] +
+                 (logrho - logDensities[irho]) /
+                     (logDensities[irho + 1] - logDensities[irho]) *
+                     (logOpacities[i + ng] - logOpacities[i]);
+  }
+
+  // 4. Both T and rho are on the high side of the table.
+  else if (irho + 1 >= numrho && iT + 1 >= numT) {
+    logOpacity = logOpacities[i];
+  }
+
+  return std::exp(logOpacity);
 }
 
 } // end namespace rtt_cdi_ipcress

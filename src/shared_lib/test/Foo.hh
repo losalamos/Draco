@@ -15,8 +15,7 @@
 
 #include "Foo_Base.hh"
 
-namespace rtt_shared_lib_test
-{
+namespace rtt_shared_lib_test {
 
 //===========================================================================//
 /*!
@@ -30,24 +29,21 @@ namespace rtt_shared_lib_test
  */
 //===========================================================================//
 
-class Foo : public Foo_Base
-{
-  private:
+class Foo : public Foo_Base {
+private:
+  // DATA
 
-    // DATA
+  // A base value.
+  double d_base;
 
-    // A base value.
-    double d_base;
-    
-  public:
+public:
+  // CREATORS
 
-    // CREATORS
+  // Constructor.
+  Foo(const double x);
 
-    // Constructor.
-    Foo(const double x);
-
-    // Compute something.
-    double compute(const double x) const;
+  // Compute something.
+  double compute(const double x) const;
 };
 
 } // end namespace rtt_shared_lib_test

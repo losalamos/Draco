@@ -16,12 +16,11 @@
 
 #include "Ensight_Stream.hh"
 #include "Viz_Traits.hh"
-#include "ds++/SP.hh"
 #include "ds++/Check_Strings.hh"
+#include "ds++/SP.hh"
 #include <set>
 
-namespace rtt_viz
-{
+namespace rtt_viz {
 
 //===========================================================================//
 /*!
@@ -39,23 +38,22 @@ namespace rtt_viz
  */
 //===========================================================================//
 
-enum Ensight_Cell_Types
-{
-    point = 0,
-    two_node_bar,
-    three_node_bar,
-    three_node_triangle,
-    six_node_triangle,
-    four_node_quadrangle,
-    eight_node_quadrangle,
-    four_node_tetrahedron,
-    ten_node_tetrahedron,
-    five_node_pyramid,
-    thirteen_node_pyramid,
-    eight_node_hexahedron,
-    twenty_node_hexahedron,
-    six_node_wedge,
-    fifteen_node_wedge
+enum Ensight_Cell_Types {
+  point = 0,
+  two_node_bar,
+  three_node_bar,
+  three_node_triangle,
+  six_node_triangle,
+  four_node_quadrangle,
+  eight_node_quadrangle,
+  four_node_tetrahedron,
+  ten_node_tetrahedron,
+  five_node_pyramid,
+  thirteen_node_pyramid,
+  eight_node_hexahedron,
+  twenty_node_hexahedron,
+  six_node_wedge,
+  fifteen_node_wedge
 };
 
 //===========================================================================//
@@ -137,160 +135,142 @@ enum Ensight_Cell_Types
 //
 //===========================================================================//
 
-class DLL_PUBLIC_viz Ensight_Translator
-{
-  public:
-    // Ensight_Translator typedefs.
-    typedef std::vector<int>           sf_int;
-    typedef std::vector<double>        sf_double;
-    typedef std::vector<std::string>   sf_string;
-    typedef std::string                std_string;
+class DLL_PUBLIC_viz Ensight_Translator {
+public:
+  // Ensight_Translator typedefs.
+  typedef std::vector<int> sf_int;
+  typedef std::vector<double> sf_double;
+  typedef std::vector<std::string> sf_string;
+  typedef std::string std_string;
 
-    typedef std::vector<sf_int>        sf2_int;
-    typedef std::vector<sf2_int>       sf3_int;
-    typedef std::set<int>              set_int;
-    typedef std::vector<set_int>       vec_set_int;
+  typedef std::vector<sf_int> sf2_int;
+  typedef std::vector<sf2_int> sf3_int;
+  typedef std::set<int> set_int;
+  typedef std::vector<set_int> vec_set_int;
 
-    typedef set_int::const_iterator    set_const_iterator;
+  typedef set_int::const_iterator set_const_iterator;
 
-    typedef std::vector<rtt_dsxx::SP<Ensight_Stream> > vec_stream;
+  typedef std::vector<rtt_dsxx::SP<Ensight_Stream>> vec_stream;
 
-  private:
-    // >>> DATA
+private:
+  // >>> DATA
 
-    // if true, geometry is static
-    bool d_static_geom;
+  // if true, geometry is static
+  bool d_static_geom;
 
-    // if true, output geometry and varible data files in binary format.
-    bool d_binary;
+  // if true, output geometry and varible data files in binary format.
+  bool d_binary;
 
-    // Name of the directory where this will write files
-    std_string d_dump_dir;
+  // Name of the directory where this will write files
+  std_string d_dump_dir;
 
-    // Number of Ensight cell types.
-    int d_num_cell_types;
+  // Number of Ensight cell types.
+  int d_num_cell_types;
 
-    // Ensight cell names.
-    sf_string d_cell_names;
+  // Ensight cell names.
+  sf_string d_cell_names;
 
-    // Number of vertices for a given Ensight cell type.
-    sf_int d_vrtx_cnt;
+  // Number of vertices for a given Ensight cell type.
+  sf_int d_vrtx_cnt;
 
-    // Cell types.
-    sf_int d_cell_type_index;
+  // Cell types.
+  sf_int d_cell_type_index;
 
-    // Vector of dump_times.
-    sf_double d_dump_times;
+  // Vector of dump_times.
+  sf_double d_dump_times;
 
-    // Ensight file prefixes.
-    std_string d_prefix;
+  // Ensight file prefixes.
+  std_string d_prefix;
 
-    // Names of vertex data.
-    sf_string d_vdata_names;
+  // Names of vertex data.
+  sf_string d_vdata_names;
 
-    // Names of cell data.
-    sf_string d_cdata_names;
+  // Names of cell data.
+  sf_string d_cdata_names;
 
-    // Name of case file.
-    std_string d_case_filename;
+  // Name of case file.
+  std_string d_case_filename;
 
-    // Name of geometry directory.
-    std_string d_geo_dir;
+  // Name of geometry directory.
+  std_string d_geo_dir;
 
-    // Names of vdata directories.
-    sf_string d_vdata_dirs;
+  // Names of vdata directories.
+  sf_string d_vdata_dirs;
 
-    // Names of cdata directories.
-    sf_string d_cdata_dirs;
+  // Names of cdata directories.
+  sf_string d_cdata_dirs;
 
-    // Geometry file stream.
-    Ensight_Stream d_geom_out;
+  // Geometry file stream.
+  Ensight_Stream d_geom_out;
 
-    // Cell-data streams.
-    vec_stream d_cell_out;
+  // Cell-data streams.
+  vec_stream d_cell_out;
 
-    // Vertex-data streams.
-    vec_stream d_vertex_out;
+  // Vertex-data streams.
+  vec_stream d_vertex_out;
 
-  private:
-    // >>> PRIVATE IMPLEMENTATION
+private:
+  // >>> PRIVATE IMPLEMENTATION
 
-    // Creates some of the file prefixes and names.
-    void create_filenames(const std_string &prefix);
+  // Creates some of the file prefixes and names.
+  void create_filenames(const std_string &prefix);
 
-    // Write out case file.
-    void write_case();
+  // Write out case file.
+  void write_case();
 
-    // Write out geometry file.
-    template<typename IVF, typename FVF, typename ISF>
-    void write_geom(const int,
-                    const std_string &,
-                    const rtt_viz::Viz_Traits<IVF> &,
-                    const rtt_viz::Viz_Traits<FVF> &,
-                    const sf2_int &,
-                    const sf_int &,
-                    const ISF &,
-                    const ISF &);
+  // Write out geometry file.
+  template <typename IVF, typename FVF, typename ISF>
+  void write_geom(const int, const std_string &,
+                  const rtt_viz::Viz_Traits<IVF> &,
+                  const rtt_viz::Viz_Traits<FVF> &, const sf2_int &,
+                  const sf_int &, const ISF &, const ISF &);
 
-    // Write out vertex data.
-    template<typename FVF>
-    void write_vrtx_data(const int,
-                         const rtt_viz::Viz_Traits<FVF> &,
-                         const sf_int &);
+  // Write out vertex data.
+  template <typename FVF>
+  void write_vrtx_data(const int, const rtt_viz::Viz_Traits<FVF> &,
+                       const sf_int &);
 
-    // Write out cell data.
-    template<typename FVF>
-    void write_cell_data(const int,
-                         const rtt_viz::Viz_Traits<FVF> &,
-                         const sf2_int &);
+  // Write out cell data.
+  template <typename FVF>
+  void write_cell_data(const int, const rtt_viz::Viz_Traits<FVF> &,
+                       const sf2_int &);
 
-    // Initializer used by constructors
-    void initialize(const bool graphics_continue);
+  // Initializer used by constructors
+  void initialize(const bool graphics_continue);
 
+public:
+  // Constructor.
+  template <typename SSF>
+  Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
+                     const SSF &vdata_names, const SSF &cdata_names,
+                     const bool overwrite = false,
+                     const bool static_geom = false, const bool binary = false);
 
-  public:
-    // Constructor.
-    template<typename SSF>
-    Ensight_Translator(const std_string &prefix, const std_string &gd_wpath,
-                       const SSF &vdata_names,
-                       const SSF &cdata_names,
-                       const bool overwrite = false,
-                       const bool static_geom = false,
-                       const bool binary = false);
+  // Do an Ensight_Dump.
+  template <typename ISF, typename IVF, typename SSF, typename FVF>
+  void ensight_dump(int icycle, double time, double dt, const IVF &ipar,
+                    const ISF &iel_type, const ISF &cell_rgn_index,
+                    const FVF &pt_coor, const FVF &vrtx_data,
+                    const FVF &cell_data, const ISF &rgn_numbers,
+                    const SSF &rgn_name);
 
-    // Do an Ensight_Dump.
-    template<typename ISF, typename IVF, typename SSF, typename FVF>
-    void ensight_dump(int icycle, double time, double dt,
-                      const IVF &ipar, const ISF &iel_type,
-                      const ISF &cell_rgn_index, const FVF &pt_coor,
-                      const FVF &vrtx_data,
-                      const FVF &cell_data, const ISF &rgn_numbers,
-                      const SSF &rgn_name);
+  // Opens the geometry and variable files.
+  void open(const int icycle, const double time, const double dt);
 
-    // Opens the geometry and variable files.
-    void open(const int    icycle,
-              const double time,
-              const double dt);
+  // Closes any open file streams.
+  void close();
 
-    // Closes any open file streams.
-    void close();
+  // Write ensight data for a single part.
+  template <typename ISF, typename IVF, typename FVF>
+  void write_part(int part_num, const std_string &part_name, const IVF &ipar,
+                  const ISF &iel_type, const FVF &pt_coor, const FVF &vrtx_data,
+                  const FVF &cell_data, const ISF &g_vrtx_indices,
+                  const ISF &g_cell_indices);
 
-    // Write ensight data for a single part.
-    template<typename ISF, typename IVF, typename FVF>
-    void write_part(int               part_num,
-                    const std_string &part_name,
-                    const IVF        &ipar,
-                    const ISF        &iel_type,
-                    const FVF        &pt_coor,
-                    const FVF        &vrtx_data,
-                    const FVF        &cell_data,
-                    const ISF        &g_vrtx_indices,
-                    const ISF        &g_cell_indices);
+  // >>> ACCESSORS
 
-    // >>> ACCESSORS
-
-    //! Get the list of dump times.
-    const sf_double& get_dump_times() const { return d_dump_times; }
+  //! Get the list of dump times.
+  const sf_double &get_dump_times() const { return d_dump_times; }
 };
 
 } // end namespace rtt_viz

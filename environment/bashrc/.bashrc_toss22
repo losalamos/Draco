@@ -53,7 +53,7 @@ else
   fi
   module load friendly-testing
 
-  export dracomodules="intel/16.0.3 openmpi/1.10.1 mkl trilinos/12.6.1 \
+  export dracomodules="intel/16.0.3 openmpi/1.10.3 mkl trilinos/12.8.1 \
 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4 \
 subversion cmake/3.6.0 numdiff git totalview emacs grace"
 

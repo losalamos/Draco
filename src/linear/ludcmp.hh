@@ -14,9 +14,8 @@
 #ifndef linear_ludcmp_hh
 #define linear_ludcmp_hh
 
-namespace rtt_linear
-{
- 
+namespace rtt_linear {
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief LU-decompose a nonsingular matrix.
@@ -32,9 +31,8 @@ namespace rtt_linear
  */
 
 template <class FieldVector, class IntVector>
-void ludcmp(FieldVector &a,
-	    IntVector &indx,
-	    typename FieldVector::value_type &d);
+void ludcmp(FieldVector &a, IntVector &indx,
+            typename FieldVector::value_type &d);
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -53,9 +51,7 @@ void ludcmp(FieldVector &a,
  */
 
 template <class FieldVector1, class IntVector, class FieldVector2>
-void lubksb(FieldVector1 const &a,
-	    IntVector const &indx,
-	    FieldVector2 &b);
+void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b);
 
 } // end namespace astr_star1d
 

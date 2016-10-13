@@ -18,8 +18,7 @@
 #include <numeric>
 //#include <algorithm>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 /**
@@ -29,15 +28,13 @@ namespace rtt_dsxx
  *
  */
 template <unsigned D, int OFFSET>
-void Index_Set<D,OFFSET>::set_size(unsigned const* const dimensions_)
-{
+void Index_Set<D, OFFSET>::set_size(unsigned const *const dimensions_) {
 
-    std::copy(dimensions_, dimensions_+D, dimensions);
+  std::copy(dimensions_, dimensions_ + D, dimensions);
 
-    Require(sizes_okay());
+  Require(sizes_okay());
 
-    compute_size();
-
+  compute_size();
 }
 
 //---------------------------------------------------------------------------//
@@ -49,13 +46,12 @@ void Index_Set<D,OFFSET>::set_size(unsigned const* const dimensions_)
  *
  */
 template <unsigned D, int OFFSET>
-void Index_Set<D,OFFSET>::set_size(const unsigned dimension)
-{
+void Index_Set<D, OFFSET>::set_size(const unsigned dimension) {
 
-    for (unsigned* dim = dimensions; dim < dimensions + D; ++dim)
-        *dim = dimension;
+  for (unsigned *dim = dimensions; dim < dimensions + D; ++dim)
+    *dim = dimension;
 
-    compute_size();
+  compute_size();
 }
 
 //---------------------------------------------------------------------------//
@@ -66,15 +62,13 @@ void Index_Set<D,OFFSET>::set_size(const unsigned dimension)
  *
  */
 template <unsigned D, int OFFSET>
-inline bool Index_Set<D,OFFSET>::operator==(const Index_Set &rhs) const
-{
+inline bool Index_Set<D, OFFSET>::operator==(const Index_Set &rhs) const {
 
-    if (array_size != rhs.array_size) return false;
+  if (array_size != rhs.array_size)
+    return false;
 
-    return std::equal(dimensions, dimensions+D, rhs.dimensions);
-
+  return std::equal(dimensions, dimensions + D, rhs.dimensions);
 }
-
 
 //---------------------------------------------------------------------------//
 /**
@@ -85,16 +79,15 @@ inline bool Index_Set<D,OFFSET>::operator==(const Index_Set &rhs) const
  */
 template <unsigned D, int OFFSET>
 template <typename IT>
-bool Index_Set<D,OFFSET>::indices_in_range(IT indices) const
-{
+bool Index_Set<D, OFFSET>::indices_in_range(IT indices) const {
 
-    int dimension = 0;
-    for (IT index = indices; index != indices + D; ++index, ++dimension)
-        if (!index_in_range(*index, dimension)) return false;
+  int dimension = 0;
+  for (IT index = indices; index != indices + D; ++index, ++dimension)
+    if (!index_in_range(*index, dimension))
+      return false;
 
-    return true;
+  return true;
 }
-
 
 //---------------------------------------------------------------------------//
 /**
@@ -106,30 +99,24 @@ bool Index_Set<D,OFFSET>::indices_in_range(IT indices) const
  *
  */
 template <unsigned D, int OFFSET>
-inline bool Index_Set<D,OFFSET>::index_in_range( int      index,
-												 unsigned dimension) const
-{
-    Check(dimension_okay(dimension));
+inline bool Index_Set<D, OFFSET>::index_in_range(int index,
+                                                 unsigned dimension) const {
+  Check(dimension_okay(dimension));
 
-    return ((index >= OFFSET) &&
-		(index < static_cast<int>(dimensions[dimension]) + OFFSET));
+  return ((index >= OFFSET) &&
+          (index < static_cast<int>(dimensions[dimension]) + OFFSET));
 }
-
-
 
 //---------------------------------------------------------------------------//
 // IMPLEMENTAION
 //---------------------------------------------------------------------------//
 template <unsigned D, int OFFSET>
-inline void Index_Set<D,OFFSET>::compute_size()
-{
+inline void Index_Set<D, OFFSET>::compute_size() {
 
-    array_size =
-        std::accumulate<unsigned*>(dimensions,
-         dimensions+D, 1, std::multiplies<unsigned>());
+  array_size = std::accumulate<unsigned *>(dimensions, dimensions + D, 1,
+                                           std::multiplies<unsigned>());
 
-    Ensure(array_size > 0);
-
+  Ensure(array_size > 0);
 }
 
 } // end namespace rtt_dsxx

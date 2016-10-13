@@ -10,18 +10,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <string.h>
 #include "Token_Stream.hh"
+#include <string.h>
 
-namespace rtt_parser 
-{
+namespace rtt_parser {
 using namespace std;
 
 //---------------------------------------------------------------------------//
-Syntax_Error::Syntax_Error()
-    : runtime_error("syntax error")
-{
-    Ensure(!strcmp(what(), "syntax error"));
+Syntax_Error::Syntax_Error() : runtime_error("syntax error") {
+  Ensure(!strcmp(what(), "syntax error"));
 }
 
 //-----------------------------------------------------------------------//
@@ -32,15 +29,14 @@ Syntax_Error::Syntax_Error()
  *
  * \return <code>old lookahead()</code>
  */
-Token Token_Stream::shift()
-{    
-    Token const Result = lookahead();
-    deq.pop_front();
-    
-    Ensure(check_class_invariants());
-    // Ensure the cursor advances one place to the right, discarding the
-    // leftmost token.
-    return Result;
+Token Token_Stream::shift() {
+  Token const Result = lookahead();
+  deq.pop_front();
+
+  Ensure(check_class_invariants());
+  // Ensure the cursor advances one place to the right, discarding the
+  // leftmost token.
+  return Result;
 }
 
 //-----------------------------------------------------------------------//
@@ -57,15 +53,13 @@ Token Token_Stream::shift()
  * \return The token at the specified position relative to the
  * cursor.
  */
-Token Token_Stream::lookahead(unsigned const pos)
-{
-    while (deq.size()<=pos)
-    {
-	deq.push_back(fill_());
-    }
+Token Token_Stream::lookahead(unsigned const pos) {
+  while (deq.size() <= pos) {
+    deq.push_back(fill_());
+  }
 
-    Ensure(check_class_invariants());
-    return deq[pos];
+  Ensure(check_class_invariants());
+  return deq[pos];
 }
 
 //-----------------------------------------------------------------------//
@@ -74,12 +68,11 @@ Token Token_Stream::lookahead(unsigned const pos)
  * This function pushes the specified token onto the front of the token
  * stream, so that it is now the token in the lookahead(0) position.
  */
-void Token_Stream::pushback(Token const &token)
-{
-    deq.push_front(token);
+void Token_Stream::pushback(Token const &token) {
+  deq.push_front(token);
 
-    Ensure(check_class_invariants());
-    Ensure(lookahead()==token);
+  Ensure(check_class_invariants());
+  Ensure(lookahead() == token);
 }
 
 //-----------------------------------------------------------------------//
@@ -100,23 +93,19 @@ void Token_Stream::pushback(Token const &token)
  * Syntax_Error exception to be handled by the parsing software.
  */
 void Token_Stream::report_syntax_error(Token const &token,
-				       string const &message)
-{
-    try 
-    {
-	error_count_++;
-	report(token, message);
-    }
-    catch(...)
-    {
-	// An error at this point really hoses us.  It means something went
-	// sour with the reporting mechanism, and there probably isn't much
-	// we can do about it.
-	throw std::bad_exception();
-    }
-    
-    Ensure(check_class_invariants());
-    throw Syntax_Error();
+                                       string const &message) {
+  try {
+    error_count_++;
+    report(token, message);
+  } catch (...) {
+    // An error at this point really hoses us.  It means something went
+    // sour with the reporting mechanism, and there probably isn't much
+    // we can do about it.
+    throw std::bad_exception();
+  }
+
+  Ensure(check_class_invariants());
+  throw Syntax_Error();
 }
 
 //-----------------------------------------------------------------------//
@@ -136,22 +125,18 @@ void Token_Stream::report_syntax_error(Token const &token,
  * \throw Syntax_Error This function never returns.  It always throws a
  * Syntax_Error exception to be handled by the parsing software.
  */
-void Token_Stream::report_syntax_error(string const &message)
-{
-    try 
-    {
-	error_count_++;
-	report(message);
-    }
-    catch(...)
-    {
-	// An error at this point really hoses us.  It means something went
-	// sour with the reporting mechanism, and there probably isn't much
-	// we can do about it.
-	throw std::bad_exception();
-    }
-    
-    throw Syntax_Error();
+void Token_Stream::report_syntax_error(string const &message) {
+  try {
+    error_count_++;
+    report(message);
+  } catch (...) {
+    // An error at this point really hoses us.  It means something went
+    // sour with the reporting mechanism, and there probably isn't much
+    // we can do about it.
+    throw std::bad_exception();
+  }
+
+  throw Syntax_Error();
 }
 
 //--------------------------------------------------------------------------//
@@ -170,12 +155,11 @@ void Token_Stream::report_syntax_error(string const &message)
  * The message to be passed to the user.
  */
 void Token_Stream::report_semantic_error(Token const &token,
-					 string const &message)
-{
-    error_count_++;
-    report(token, message);
+                                         string const &message) {
+  error_count_++;
+  report(token, message);
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //---------------------------------------------------------------------------//
@@ -193,12 +177,11 @@ void Token_Stream::report_semantic_error(Token const &token,
  * \param message
  * The message to be passed to the user.
  */
-void Token_Stream::report_semantic_error(string const &message)
-{
-    error_count_++;
-    report(message);
+void Token_Stream::report_semantic_error(string const &message) {
+  error_count_++;
+  report(message);
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //---------------------------------------------------------------------------//
@@ -216,14 +199,13 @@ void Token_Stream::report_semantic_error(string const &message)
  * \param message
  * The exception whose message is to be passed to the user.
  */
-void Token_Stream::report_semantic_error(exception const &message)
-{
-    error_count_++;
-    report(message.what());
+void Token_Stream::report_semantic_error(exception const &message) {
+  error_count_++;
+  report(message.what());
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
-    
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Reset the token stream.
@@ -231,12 +213,11 @@ void Token_Stream::report_semantic_error(exception const &message)
  * This function is normally called by its overriding version in children of
  * Token_Stream. It flushes the queues and resets the error count.
  */
-void Token_Stream::rewind()
-{
-    error_count_ = 0;
-    deq.clear();
+void Token_Stream::rewind() {
+  error_count_ = 0;
+  deq.clear();
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 } // rtt_parser

@@ -20,8 +20,7 @@
 #include "svdcmp.hh"
 #include "ds++/DracoMath.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Compute the singular value decomposition of a matrix.
@@ -53,273 +52,257 @@ namespace rtt_linear
  * \todo Templatize on container element type
  */
 
-template<class RandomContainer>
-void svdcmp(RandomContainer &a,
-	    const unsigned m,
-	    const unsigned n,
-	    RandomContainer &w,
-	    RandomContainer &v)
-{
-    Require(a.size()==m*n);
+template <class RandomContainer>
+void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
+            RandomContainer &w, RandomContainer &v) {
+  Require(a.size() == m * n);
 
-    using namespace rtt_dsxx;
-    using std::fabs;
-    using std::max;
-    using std::sqrt;
+  using namespace rtt_dsxx;
+  using std::fabs;
+  using std::max;
+  using std::sqrt;
 
-    // More than 30 iterations says something is terribly wrong -- this
-    // shouldn't happen even for very large matrices.
-    const unsigned MAX_ITERATIONS = 30;
+  // More than 30 iterations says something is terribly wrong -- this
+  // shouldn't happen even for very large matrices.
+  const unsigned MAX_ITERATIONS = 30;
 
-    using std::min;
-    using std::max;
+  using std::min;
+  using std::max;
 
-    w.resize(n);
-    v.resize(n*n);
-    std::vector<double> rv1(n);
+  w.resize(n);
+  v.resize(n * n);
+  std::vector<double> rv1(n);
 
-    // Reduce to bidiagonal form.
-    double g = 0;
-    double scale = 0;
-    double norm = 0;
-    unsigned l = 0; // in case n==0
-    for (unsigned i=0; i<n; i++)
-    {
-	l = i+1;
-	rv1[i] = scale * g;
-	g = 0;
-	double s = 0.0;
-	scale = 0;
-	if (i<m)
-	{
-	    for (unsigned k=i; k<m; k++) scale += fabs(a[k+m*i]);
-	    if (scale != 0.0)
-	    {
-		double rscale = 1/scale;
-		for (unsigned k=i; k<m; k++)
-		{
-		    a[k+m*i] *= rscale;
-		    s += square(a[k+m*i]);
-		}
-		double f = a[i+m*i];
-		g = sqrt(s);
-		if (f>0.0) g = -g;
-		double h = f*g-s;
-		a[i+m*i] = f-g;
-		for (unsigned j=l; j<n; j++)
-		{
-		    s = 0;
-		    for (unsigned k=i; k<m; k++) s += a[k+m*i]*a[k+m*j];
-		    Check(h!=0.0);
-		    f = s/h;
-		    for (unsigned k=i; k<m; k++) a[k+m*j] += f*a[k+m*i];
-		}
-		for (unsigned k=i; k<m; k++) a[k+m*i] *= scale;
-	    }
-	}
-	w[i] = scale * g;
-	g = 0;
-	s = 0;
-	scale = 0;
-	if (i<m)
-	{
-	    for (unsigned k=l; k<n; k++) scale += fabs(a[i+m*k]);
-	    if (scale != 0.0)
-	    {
-		double rscale = 1/scale;
-		for (unsigned k=l; k<n; k++)
-		{
-		    a[i+m*k] *= rscale;
-		    s += square(a[i+m*k]);
-		}
-		double f = a[i+m*l];
-		g = sqrt(s);
-		if (f>0.0) g = -g;
-		double h = f*g-s;
-		a[i+m*l] = f-g;
-		double rh = 1/h;
-		for (unsigned k=l; k<n; k++) rv1[k] = a[i+m*k]*rh;
-		for (unsigned j=l; j<m; j++)
-		{
-		    s = 0;
-		    for (unsigned k=l; k<n; k++) s += a[j+m*k]*a[i+m*k];
-		    for (unsigned k=l; k<n; k++) a[j+m*k] += s*rv1[k];
-		}
-		for (unsigned k=l; k<n; k++) a[i+m*k] *= scale;
-	    }
-	}
-	norm = max(norm, fabs(w[i])+fabs(rv1[i]));
+  // Reduce to bidiagonal form.
+  double g = 0;
+  double scale = 0;
+  double norm = 0;
+  unsigned l = 0; // in case n==0
+  for (unsigned i = 0; i < n; i++) {
+    l = i + 1;
+    rv1[i] = scale * g;
+    g = 0;
+    double s = 0.0;
+    scale = 0;
+    if (i < m) {
+      for (unsigned k = i; k < m; k++)
+        scale += fabs(a[k + m * i]);
+      if (scale != 0.0) {
+        double rscale = 1 / scale;
+        for (unsigned k = i; k < m; k++) {
+          a[k + m * i] *= rscale;
+          s += square(a[k + m * i]);
+        }
+        double f = a[i + m * i];
+        g = sqrt(s);
+        if (f > 0.0)
+          g = -g;
+        double h = f * g - s;
+        a[i + m * i] = f - g;
+        for (unsigned j = l; j < n; j++) {
+          s = 0;
+          for (unsigned k = i; k < m; k++)
+            s += a[k + m * i] * a[k + m * j];
+          Check(h != 0.0);
+          f = s / h;
+          for (unsigned k = i; k < m; k++)
+            a[k + m * j] += f * a[k + m * i];
+        }
+        for (unsigned k = i; k < m; k++)
+          a[k + m * i] *= scale;
+      }
     }
-    // Accumulation of right-hand transformations
-    for (unsigned i=n-1; i<n; i--)
-    {
-	if (i!=n-1)
-	{
-	    if (g!=0.0)
-	    {
-		double rg = 1/g;
-		for (unsigned j=l; j<n; j++) v[j+n*i] = rg*(a[i+m*j]/a[i+m*l]);
-		// ordering of above expression important to prevent underflow
-		for (unsigned j=l; j<n; j++)
-		{
-		    double s = 0;
-		    for (unsigned k=l; k<n; k++) s += a[i+m*k]*v[k+n*j];
-		    for (unsigned k=l; k<n; k++) v[k+n*j] += s*v[k+n*i];
-		}
-	    }
-	    for (unsigned j=l; j<n; j++) v[i+n*j] = v[j+n*i] = 0;
-	}
-	v[i+n*i] = 1;
-	g = rv1[i];
-	l = i;
+    w[i] = scale * g;
+    g = 0;
+    s = 0;
+    scale = 0;
+    if (i < m) {
+      for (unsigned k = l; k < n; k++)
+        scale += fabs(a[i + m * k]);
+      if (scale != 0.0) {
+        double rscale = 1 / scale;
+        for (unsigned k = l; k < n; k++) {
+          a[i + m * k] *= rscale;
+          s += square(a[i + m * k]);
+        }
+        double f = a[i + m * l];
+        g = sqrt(s);
+        if (f > 0.0)
+          g = -g;
+        double h = f * g - s;
+        a[i + m * l] = f - g;
+        double rh = 1 / h;
+        for (unsigned k = l; k < n; k++)
+          rv1[k] = a[i + m * k] * rh;
+        for (unsigned j = l; j < m; j++) {
+          s = 0;
+          for (unsigned k = l; k < n; k++)
+            s += a[j + m * k] * a[i + m * k];
+          for (unsigned k = l; k < n; k++)
+            a[j + m * k] += s * rv1[k];
+        }
+        for (unsigned k = l; k < n; k++)
+          a[i + m * k] *= scale;
+      }
     }
-    // Accumulation of left-hand transformations
-    for (unsigned i=min(m,n)-1; i<min(m,n); i--)
-    {
-	l = i+1;
-	g = w[i];
-	for (unsigned j=l; j<n; j++) a[i+m*j] = 0.0;
-	if (g!=0.0)
-	{
-	    double rg = 1/g;
-	    for (unsigned j=l; j<n; j++)
-	    {
-		double s = 0;
-		for (unsigned k=l; k<m; k++) s += a[k+m*i]*a[k+m*j];
-		double f = rg*(s/a[i+m*i]);
-		// ordering of above expression important to prevent underflow
-		for (unsigned k=i; k<m; k++) a[k+m*j] += f*a[k+m*i];
-	    }
-	    for (unsigned j=i; j<m; j++) a[j+m*i] *= rg;
-	}
-	else
-	{
-	    for (unsigned j=i; j<m; j++) a[j+m*i] = 0;
-	}
-	a[i+m*i] += 1;
+    norm = max(norm, fabs(w[i]) + fabs(rv1[i]));
+  }
+  // Accumulation of right-hand transformations
+  for (unsigned i = n - 1; i < n; i--) {
+    if (i != n - 1) {
+      if (g != 0.0) {
+        double rg = 1 / g;
+        for (unsigned j = l; j < n; j++)
+          v[j + n * i] = rg * (a[i + m * j] / a[i + m * l]);
+        // ordering of above expression important to prevent underflow
+        for (unsigned j = l; j < n; j++) {
+          double s = 0;
+          for (unsigned k = l; k < n; k++)
+            s += a[i + m * k] * v[k + n * j];
+          for (unsigned k = l; k < n; k++)
+            v[k + n * j] += s * v[k + n * i];
+        }
+      }
+      for (unsigned j = l; j < n; j++)
+        v[i + n * j] = v[j + n * i] = 0;
     }
+    v[i + n * i] = 1;
+    g = rv1[i];
+    l = i;
+  }
+  // Accumulation of left-hand transformations
+  for (unsigned i = min(m, n) - 1; i < min(m, n); i--) {
+    l = i + 1;
+    g = w[i];
+    for (unsigned j = l; j < n; j++)
+      a[i + m * j] = 0.0;
+    if (g != 0.0) {
+      double rg = 1 / g;
+      for (unsigned j = l; j < n; j++) {
+        double s = 0;
+        for (unsigned k = l; k < m; k++)
+          s += a[k + m * i] * a[k + m * j];
+        double f = rg * (s / a[i + m * i]);
+        // ordering of above expression important to prevent underflow
+        for (unsigned k = i; k < m; k++)
+          a[k + m * j] += f * a[k + m * i];
+      }
+      for (unsigned j = i; j < m; j++)
+        a[j + m * i] *= rg;
+    } else {
+      for (unsigned j = i; j < m; j++)
+        a[j + m * i] = 0;
+    }
+    a[i + m * i] += 1;
+  }
 
-    // Reduce to diagonal form.
-    for (unsigned k=n-1; k<n; k--)
+  // Reduce to diagonal form.
+  for (unsigned k = n - 1; k < n; k--) {
+    unsigned k1 = k - 1;
+    unsigned its = 0;
+    for (; its < 30; its++) // Allow up to 30 iterations.
     {
-	unsigned k1 = k-1;
-	unsigned its=0;
-	for (; its<30; its++)  // Allow up to 30 iterations.
-	{
-	    bool flag = true;
-	    // Check for splitting.
-	    Check(rv1[0]+norm==norm);
-	    unsigned l=k;
-	    for (; l<=k; l--)
-	    {
-		unsigned l1 = l - 1;
-		if (fabs(rv1[l]) + norm == norm)
-		{
-		    flag = false;
-		    break;
-		}
-		if (fabs(w[l1]) + norm == norm) break;
-	    }
-	    if (flag)
-	    {
-		unsigned l1 = l-1;
-		double c = 0;
-		double s = 1;
-		for (unsigned i=l; i<=k; i++)
-		{
-		    double f = s * rv1[i];
-		    rv1[i] *= c;
-		    if (fabs(f) + norm != norm)
-		    {
-			g = w[i];
-			double h = pythag(f,g);
-			w[i] = h;
-			c = g/h;
-			s = -f/h;
-			for (unsigned j=0; j<m; j++)
-			{
-			    double y = a[j+m*l1];
-			    double z = a[j+m*i];
-			    a[j+m*l1] = y*c + z*s;
-			    a[j+m*i] = -y*s + z*c;
-			}
-		    }
-		}
-	    }
-	    double z = w[k];
-	    if (l == k)
-	    {
-		if (z<0.0)
-		{
-		    w[k] = -z;
-		    for (unsigned j=0; j<n; j++) v[j+n*k] = -v[j+n*k];
-		}
-		break;
-	    }
-	    else
-	    {
-		double x = w[l];
-		double y = w[k1];
-		g = rv1[k1];
-		double h = rv1[k];
-		double f = ((y-z)*(y+z) + (g-h)*(g+h))/(2*h*y);
-		g = pythag(f, 1.0);
-		if (f<0.0) g = -g;
-		f = ((x-z)*(x+z) + h*(y/(f+g)-h))/x;
-		double c = 1;
-		double s = 1;
-		for (unsigned j=l; j<k; j++)
-		{
-		    int i = j+1;
-		    g = rv1[i];
-		    y = w[i];
-		    h = s*g;
-		    g = c*g;
-		    z = pythag(f,h);
-		    rv1[j] = z;
-		    c = f/z;
-		    s = h/z;
-		    f = x*c + g*s;
-		    g = -x*s + g*c;
-		    h = y*s;
-		    y *= c;
-		    for (unsigned jj=0; jj<n; jj++)
-		    {
-			x = v[jj+n*j];
-			z = v[jj+n*i];
-			v[jj+n*j] = x*c + z*s;
-			v[jj+n*i] = -x*s + z*c;
-		    }
-		    z = pythag(f,h);
-		    w[j] = z;
-		    if (z != 0.0)
-		    {
-			c = f/z;
-			s = h/z;
-		    }
-		    f = c*g + s*y;
-		    x = -s*g + c*y;
-		    for (unsigned jj=0; jj<m; jj++)
-		    {
-			y = a[jj+m*j];
-			z = a[jj+m*i];
-			a[jj+m*j] = y*c + z*s;
-			a[jj+m*i] = -y*s + z*c;
-		    }
-		}
-		rv1[l] = 0;
-		rv1[k] = f;
-		w[k] = x;
-	    }
-	}
-	if (its==MAX_ITERATIONS)
-	{
-	    std::ostringstream message;
-	    message << "svdcmp: no convergence for singular value "
-		    << k;
-	    throw std::range_error(message.str());
-	}
+      bool flag = true;
+      // Check for splitting.
+      Check(rv1[0] + norm == norm);
+      unsigned l = k;
+      for (; l <= k; l--) {
+        unsigned l1 = l - 1;
+        if (fabs(rv1[l]) + norm == norm) {
+          flag = false;
+          break;
+        }
+        if (fabs(w[l1]) + norm == norm)
+          break;
+      }
+      if (flag) {
+        unsigned l1 = l - 1;
+        double c = 0;
+        double s = 1;
+        for (unsigned i = l; i <= k; i++) {
+          double f = s * rv1[i];
+          rv1[i] *= c;
+          if (fabs(f) + norm != norm) {
+            g = w[i];
+            double h = pythag(f, g);
+            w[i] = h;
+            c = g / h;
+            s = -f / h;
+            for (unsigned j = 0; j < m; j++) {
+              double y = a[j + m * l1];
+              double z = a[j + m * i];
+              a[j + m * l1] = y * c + z * s;
+              a[j + m * i] = -y * s + z * c;
+            }
+          }
+        }
+      }
+      double z = w[k];
+      if (l == k) {
+        if (z < 0.0) {
+          w[k] = -z;
+          for (unsigned j = 0; j < n; j++)
+            v[j + n * k] = -v[j + n * k];
+        }
+        break;
+      } else {
+        double x = w[l];
+        double y = w[k1];
+        g = rv1[k1];
+        double h = rv1[k];
+        double f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
+        g = pythag(f, 1.0);
+        if (f < 0.0)
+          g = -g;
+        f = ((x - z) * (x + z) + h * (y / (f + g) - h)) / x;
+        double c = 1;
+        double s = 1;
+        for (unsigned j = l; j < k; j++) {
+          int i = j + 1;
+          g = rv1[i];
+          y = w[i];
+          h = s * g;
+          g = c * g;
+          z = pythag(f, h);
+          rv1[j] = z;
+          c = f / z;
+          s = h / z;
+          f = x * c + g * s;
+          g = -x * s + g * c;
+          h = y * s;
+          y *= c;
+          for (unsigned jj = 0; jj < n; jj++) {
+            x = v[jj + n * j];
+            z = v[jj + n * i];
+            v[jj + n * j] = x * c + z * s;
+            v[jj + n * i] = -x * s + z * c;
+          }
+          z = pythag(f, h);
+          w[j] = z;
+          if (z != 0.0) {
+            c = f / z;
+            s = h / z;
+          }
+          f = c * g + s * y;
+          x = -s * g + c * y;
+          for (unsigned jj = 0; jj < m; jj++) {
+            y = a[jj + m * j];
+            z = a[jj + m * i];
+            a[jj + m * j] = y * c + z * s;
+            a[jj + m * i] = -y * s + z * c;
+          }
+        }
+        rv1[l] = 0;
+        rv1[k] = f;
+        w[k] = x;
+      }
     }
+    if (its == MAX_ITERATIONS) {
+      std::ostringstream message;
+      message << "svdcmp: no convergence for singular value " << k;
+      throw std::range_error(message.str());
+    }
+  }
 }
 
 } // end namespace rtt_linear

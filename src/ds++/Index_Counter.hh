@@ -15,12 +15,10 @@
 #include "Index_Set.hh"
 #include <vector>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 // forward declaration
-template <unsigned D, int OFFSET>
-class Index_Converter;
+template <unsigned D, int OFFSET> class Index_Converter;
 
 //===========================================================================//
 /*!
@@ -32,70 +30,77 @@ class Index_Converter;
  * \example ds++/test/tstIndex_Counter.cc
  */
 //===========================================================================//
-template <unsigned D, int OFFSET>
-class Index_Counter
-{
-  public:
+template <unsigned D, int OFFSET> class Index_Counter {
+public:
+  friend class Index_Converter<D, OFFSET>;
 
-    friend class Index_Converter<D,OFFSET>;
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
+  //! Default constructors.
+  Index_Counter(const Index_Set<D, OFFSET> &index_set);
 
-    //! Default constructors.
-    Index_Counter(const Index_Set<D,OFFSET>& index_set);
+  //! Destructor.
+  ~Index_Counter() { /* ... */
+  }
 
-    //! Destructor.
-    ~Index_Counter() { /* ... */ }
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Assignment operator for Index_Counter.
+  Index_Counter &operator=(const Index_Counter &rhs);
 
-    //! Assignment operator for Index_Counter.
-    Index_Counter& operator=(const Index_Counter &rhs);
+  // ACCESSORS
 
-    // ACCESSORS
+  Index_Counter &operator++() {
+    increment();
+    return *this;
+  }
+  Index_Counter &operator--() {
+    decrement();
+    return *this;
+  }
 
-    Index_Counter& operator++() { increment(); return *this; }
-    Index_Counter& operator--() { decrement(); return *this; }
+  // Accessors for the 1-index
+  int get_index() const { return index; }
+  //    operator int()  const { return index; }
 
-    // Accessors for the 1-index
-    int get_index() const { return index; }
-//    operator int()  const { return index; }
+  // Accessors for the N-indices
+  int get_index(unsigned d) const {
+    Check(dimension_okay(d));
+    return indices[d];
+  }
 
-    // Accessors for the N-indices
-    int get_index(unsigned d) const { Check(dimension_okay(d)); return indices[d]; }
+  std::vector<int> get_indices() const {
+    return std::vector<int>(indices, indices + D);
+  }
 
-    std::vector<int> get_indices() const { return std::vector<int>(indices,indices+D); }
+  template <typename IT> void get_indices(IT out) const {
+    std::copy(indices, indices + D, out);
+  }
 
-    template <typename IT>
-    void get_indices(IT out) const { std::copy(indices, indices+D, out); }
+  bool is_in_range() const { return in_range; }
 
-    bool is_in_range() const { return in_range; }
+private:
+  // DATA
 
-  private:
+  const Index_Set<D, OFFSET> &index_set;
 
-    // DATA
+  int indices[D];
+  int index;
+  bool in_range;
 
-    const Index_Set<D,OFFSET>& index_set;
+  // IMPLEMENTATION
 
-    int indices[D];
-    int index;
-    bool in_range;
+  void increment();
+  void decrement();
 
-    // IMPLEMENTATION
+  bool dimension_okay(size_t d) const { return d < D; }
 
-    void increment();
-    void decrement();
-
-    bool dimension_okay(size_t d) const { return d < D; }
-
-    // Private constructor for use by Index_Converter
-    // kgbudge (091201): Appears to be dead code
-//     Index_Counter(const Index_Set<D,OFFSET>& base,
-//                   const int index, int const * const indices);
-
-
+  // Private constructor for use by Index_Converter
+  // kgbudge (091201): Appears to be dead code
+  //     Index_Counter(const Index_Set<D,OFFSET>& base,
+  //                   const int index, int const * const indices);
 };
 
 //---------------------------------------------------------------------------//
@@ -104,12 +109,10 @@ class Index_Counter
  *
  */
 template <unsigned D, int OFFSET>
-Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& converter)
-    : index_set(converter),
-      index(OFFSET),
-      in_range(true)
-{
-    for (size_t d=0; d < D; ++d) indices[d] = OFFSET;
+Index_Counter<D, OFFSET>::Index_Counter(const Index_Set<D, OFFSET> &converter)
+    : index_set(converter), index(OFFSET), in_range(true) {
+  for (size_t d = 0; d < D; ++d)
+    indices[d] = OFFSET;
 }
 
 //---------------------------------------------------------------------------//
@@ -121,33 +124,25 @@ Index_Counter<D,OFFSET>::Index_Counter(const Index_Set<D,OFFSET>& converter)
  * \brief Increment the iterator
  *
  */
-template <unsigned D, int OFFSET>
-void Index_Counter<D,OFFSET>::increment()
-{
+template <unsigned D, int OFFSET> void Index_Counter<D, OFFSET>::increment() {
 
-    Require(in_range);
+  Require(in_range);
 
-    ++indices[0];
-    ++index;
+  ++indices[0];
+  ++index;
 
-    for (size_t d = 0; d < D-1; ++d)
-    {
-        if (indices[d] > index_set.max_of_index(d))
-        {
-            ++indices[d+1];
-            indices[d] = index_set.min_of_index(d);
-        }
-        else
-            break;
-    }
+  for (size_t d = 0; d < D - 1; ++d) {
+    if (indices[d] > index_set.max_of_index(d)) {
+      ++indices[d + 1];
+      indices[d] = index_set.min_of_index(d);
+    } else
+      break;
+  }
 
-    if (indices[D-1] > index_set.max_of_index(D-1))
-    {
-        indices[D-1] = index_set.min_of_index(D-1);
-        in_range = false;
-    }
-
-
+  if (indices[D - 1] > index_set.max_of_index(D - 1)) {
+    indices[D - 1] = index_set.min_of_index(D - 1);
+    in_range = false;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -155,34 +150,25 @@ void Index_Counter<D,OFFSET>::increment()
  * \brief Decrement the iterator
  *
  */
-template <unsigned D, int OFFSET>
-void Index_Counter<D,OFFSET>::decrement()
-{
+template <unsigned D, int OFFSET> void Index_Counter<D, OFFSET>::decrement() {
 
-    Require(in_range);
+  Require(in_range);
 
-    --indices[0];
-    --index;
+  --indices[0];
+  --index;
 
-    for (size_t d = 0; d < D-1; ++d)
-    {
-        if (indices[d] < index_set.min_of_index(d))
-        {
-            indices[d] = index_set.max_of_index(d);
-            --indices[d+1];
-        }
-        else
-            break;
+  for (size_t d = 0; d < D - 1; ++d) {
+    if (indices[d] < index_set.min_of_index(d)) {
+      indices[d] = index_set.max_of_index(d);
+      --indices[d + 1];
+    } else
+      break;
+  }
 
-    }
-
-    if (indices[D-1] < index_set.min_of_index(D-1))
-    {
-        indices[D-1] = index_set.max_of_index(D-1);
-        in_range = false;
-    }
-
-
+  if (indices[D - 1] < index_set.min_of_index(D - 1)) {
+    indices[D - 1] = index_set.max_of_index(D - 1);
+    in_range = false;
+  }
 }
 
 } // end namespace rtt_dsxx

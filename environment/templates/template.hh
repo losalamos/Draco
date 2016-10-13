@@ -7,14 +7,11 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef <spkg>_<class>_hh
 #define <spkg>_<class>_hh
 
-namespace <namespace>
-{
+namespace <namespace> {
 
 //===========================================================================//
 /*!
@@ -38,9 +35,8 @@ namespace <namespace>
  */
 //===========================================================================//
 
-class <class> 
-{
-  public:
+class <class> {
+public:
 
     // NESTED CLASSES AND TYPEDEFS
 
@@ -66,11 +62,11 @@ class <class>
 
     // STATICS
 
-  protected:
+protected:
 
     // IMPLEMENTATION
 
-  private:
+private:
 
     // NESTED CLASSES AND TYPEDEFS
 

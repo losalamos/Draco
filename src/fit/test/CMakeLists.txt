@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 project( fit_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -39,4 +37,4 @@ include_directories(
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_fit;Lib_linear" )
+   DEPS    "Lib_linear" )

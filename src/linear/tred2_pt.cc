@@ -11,12 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
-#include <cmath>
 #include "tred2.i.hh"
+#include <cmath>
+#include <vector>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 using std::vector;
 
@@ -24,11 +23,8 @@ using std::vector;
 // T1=T2=T3=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC_linear
-void tred2(vector<double> &a,
-		    unsigned n,
-		    vector<double> &d,
-		    vector<double> &e);
+template DLL_PUBLIC_linear void tred2(vector<double> &a, unsigned n,
+                                      vector<double> &d, vector<double> &e);
 
 } // end namespace rtt_linear
 

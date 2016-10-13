@@ -16,8 +16,7 @@
 
 #include "Octant_Quadrature.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 //=======================================================================================//
 /*!
@@ -26,77 +25,59 @@ namespace rtt_quadrature
  */
 //=======================================================================================//
 
-class Product_Chebyshev_Legendre : public Octant_Quadrature
-{
-  public:
+class Product_Chebyshev_Legendre : public Octant_Quadrature {
+public:
+  // CREATORS
 
-    // CREATORS
+  // The default values for snOrder_ and norm_ were set in QuadCreator.
+  Product_Chebyshev_Legendre(unsigned sn_order, unsigned azimuthal_order)
+      : Octant_Quadrature(sn_order), azimuthal_order_(azimuthal_order) {
+    Require(sn_order > 0 && sn_order % 2 == 0);
+    Require(azimuthal_order > 0 && azimuthal_order % 2 == 0);
+  }
 
-    // The default values for snOrder_ and norm_ were set in QuadCreator.
-    Product_Chebyshev_Legendre( unsigned sn_order,
-                                unsigned azimuthal_order)
-        : Octant_Quadrature(sn_order),
-          azimuthal_order_(azimuthal_order)
-    {
-        Require(sn_order>0 && sn_order%2==0);
-        Require(azimuthal_order>0 && azimuthal_order%2==0);
-    }
+  Product_Chebyshev_Legendre(unsigned sn_order, unsigned azimuthal_order,
+                             unsigned const mu_axis, unsigned const eta_axis)
+      : Octant_Quadrature(sn_order, mu_axis, eta_axis),
+        azimuthal_order_(azimuthal_order) {
+    Require(sn_order > 0 && sn_order % 2 == 0);
+    Require(azimuthal_order > 0 && azimuthal_order % 2 == 0);
+  }
 
-    Product_Chebyshev_Legendre( unsigned sn_order,
-                                unsigned azimuthal_order,
-                                unsigned const mu_axis,
-                                unsigned const eta_axis)
-        : Octant_Quadrature(sn_order,
-                            mu_axis,
-                            eta_axis),
-          azimuthal_order_(azimuthal_order)
-    {
-        Require(sn_order>0 && sn_order%2==0);
-        Require(azimuthal_order>0 && azimuthal_order%2==0);
-    }
+  Product_Chebyshev_Legendre(); // disable default construction
 
-    Product_Chebyshev_Legendre();    // disable default construction
+  // ACCESSORS
 
-    // ACCESSORS
+  // SERVICES
 
-    // SERVICES
+  // These functions override the virtual member functions specifed in the
+  // parent class Quadrature.
 
-    // These functions override the virtual member functions specifed in the
-    // parent class Quadrature.
+  DLL_PUBLIC_quadrature string name() const;
 
-    DLL_PUBLIC_quadrature
-    string name()        const;
+  DLL_PUBLIC_quadrature string parse_name() const;
 
-    DLL_PUBLIC_quadrature
-    string parse_name()  const;
+  DLL_PUBLIC_quadrature Quadrature_Class quadrature_class() const;
 
-    DLL_PUBLIC_quadrature
-    Quadrature_Class quadrature_class() const;
+  DLL_PUBLIC_quadrature unsigned number_of_levels() const;
 
-    DLL_PUBLIC_quadrature
-    unsigned number_of_levels() const;
+  DLL_PUBLIC_quadrature string as_text(string const &indent) const;
 
-    DLL_PUBLIC_quadrature
-    string as_text(string const &indent) const;
+  // STATICS
 
-    // STATICS
+  static SP<Quadrature> parse(Token_Stream &tokens);
 
-    static SP<Quadrature> parse(Token_Stream &tokens);
+private:
+  // IMPLEMENTATION
 
-  private:
+  //! Virtual hook for create_ordinate_set
+  DLL_PUBLIC_quadrature virtual void
+  create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                           vector<double> &wt) const;
 
-    // IMPLEMENTATION
+  unsigned const azimuthal_order_;
 
-    //! Virtual hook for create_ordinate_set
-    DLL_PUBLIC_quadrature
-    virtual void create_octant_ordinates_(vector<double> &mu,
-                                          vector<double> &eta,
-                                          vector<double> &wt) const;
-
-
-    unsigned const azimuthal_order_;
-
-    // DATA
+  // DATA
 };
 
 } // end namespace rtt_quadrature

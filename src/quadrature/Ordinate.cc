@@ -13,10 +13,7 @@
 
 #include "Ordinate.hh"
 
-namespace rtt_quadrature
-{
-
-} // end namespace rtt_quadrature
+namespace rtt_quadrature {} // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
 //              end of quadrature/Ordinate.cc

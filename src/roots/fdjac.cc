@@ -13,10 +13,7 @@
 
 #include "fdjac.hh"
 
-namespace kgb_recipes
-{
-
-} // end namespace kgb_recipes
+namespace kgb_recipes {} // end namespace kgb_recipes
 
 //---------------------------------------------------------------------------//
 // end of fdjac.cc

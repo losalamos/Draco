@@ -11,33 +11,30 @@
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
 //---------------------------------------------------------------------------------------//
 
-#include "parser/utilities.hh"
 #include "Tri_Chebyshev_Legendre.hh"
+#include "parser/utilities.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------------------//
 /*static*/
-SP<Quadrature> Tri_Chebyshev_Legendre::parse(Token_Stream &tokens)
-{
-    Token token = tokens.shift();
-    tokens.check_syntax(token.text()=="order", "expected an order");
+SP<Quadrature> Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
+  Token token = tokens.shift();
+  tokens.check_syntax(token.text() == "order", "expected an order");
 
-    unsigned sn_order = parse_positive_integer(tokens);
-    tokens.check_semantics(sn_order%2==0, "order must be even");
+  unsigned sn_order = parse_positive_integer(tokens);
+  tokens.check_semantics(sn_order % 2 == 0, "order must be even");
 
-    bool has_axis_assignments;
-    unsigned mu_axis, eta_axis;
-    Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
+  bool has_axis_assignments;
+  unsigned mu_axis, eta_axis;
+  Octant_Quadrature::parse(tokens, has_axis_assignments, mu_axis, eta_axis);
 
-    if (has_axis_assignments)
-        return SP<Quadrature>(new Tri_Chebyshev_Legendre(sn_order,
-                                                         mu_axis,
-                                                         eta_axis));
-    else
-        return SP<Quadrature>(new Tri_Chebyshev_Legendre(sn_order));
+  if (has_axis_assignments)
+    return SP<Quadrature>(
+        new Tri_Chebyshev_Legendre(sn_order, mu_axis, eta_axis));
+  else
+    return SP<Quadrature>(new Tri_Chebyshev_Legendre(sn_order));
 }
 
 } // end namespace rtt_quadrature

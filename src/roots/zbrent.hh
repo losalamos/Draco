@@ -14,20 +14,15 @@
 #ifndef utils_zbrent_hh
 #define utils_zbrent_hh
 
-namespace rtt_utils
-{
+namespace rtt_utils {
 
 //---------------------------------------------------------------------------//
 // Use explicit instantiation for these functions.
 //---------------------------------------------------------------------------//
 
 //! Pinpoint a bracketed root of a function.
-template<class Function, class Real>
-Real zbrent(Function func,
-            Real x1,
-            Real x2,
-            unsigned itmax,
-            Real &tol,
+template <class Function, class Real>
+Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
             Real &ftol);
 
 } // end namespace rtt_utils

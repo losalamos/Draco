@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_Halton_Sequence_hh
 #define rng_Halton_Sequence_hh
@@ -17,8 +15,7 @@
 #include "ds++/config.h"
 #include <vector>
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 //===========================================================================//
 /*!
@@ -68,49 +65,46 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng Halton_Sequence
-{
-  public:
+class DLL_PUBLIC_rng Halton_Sequence {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
+  //! Default constructor for declaring arrays et al.
+  Halton_Sequence() : base_(0), count_(0), value_(0.0), n_() { /*empty*/
+  }
 
-    //! Default constructor for declaring arrays et al.
-    Halton_Sequence() : base_(0), count_(0), value_(0.0), n_() {/*empty*/}
+  //! Normal constructor.
+  Halton_Sequence(unsigned const base_index, unsigned const count = 1);
 
-    //! Normal constructor.
-    Halton_Sequence( unsigned const base_index,
-                     unsigned const count = 1 );
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Get next element of sequence and advance sequence.
+  double shift();
 
-    //! Get next element of sequence and advance sequence.
-    double shift();
+  //! Look at next element of sequence without advancing sequence.
+  double lookahead() const { return value_; }
 
-    //! Look at next element of sequence without advancing sequence.
-    double lookahead() const { return value_; }
+  // ACCESSORS
 
-    // ACCESSORS
+  unsigned base() const { return base_; }
+  unsigned count() const { return count_; }
 
-    unsigned base() const { return base_; }
-    unsigned count() const { return count_; }
+  bool check_class_invariants() const;
 
-    bool check_class_invariants() const;
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-  private:
+  // IMPLEMENTATION
 
-    // NESTED CLASSES AND TYPEDEFS
+  // DATA
 
-    // IMPLEMENTATION
+  unsigned base_;  // Base of the sequence
+  unsigned count_; // Current element of the sequence
+  double value_;   // Value of current element of the sequence
 
-    // DATA
-
-    unsigned base_;  // Base of the sequence
-    unsigned count_; // Current element of the sequence
-    double value_;   // Value of current element of the sequence
-
-    std::vector<unsigned> n_; // Digits in base of current element of sequence
+  std::vector<unsigned> n_; // Digits in base of current element of sequence
 };
 
 } // end namespace rtt_rng

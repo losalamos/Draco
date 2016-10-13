@@ -15,17 +15,16 @@
 #ifndef __cdi_ipcress_IpcressMultigroupOpacity_hh__
 #define __cdi_ipcress_IpcressMultigroupOpacity_hh__
 
-#include "IpcressDataTable.hh"  // we have a smart pointer to a
-                                // IpcressDataTable object.
-#include "ds++/SP.hh"
+#include "IpcressDataTable.hh" // we have a smart pointer to a
+                               // IpcressDataTable object.
 #include "cdi/MultigroupOpacity.hh"
 #include "cdi/OpacityCommon.hh"
+#include "ds++/SP.hh"
 
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace rtt_cdi_ipcress
-{
+namespace rtt_cdi_ipcress {
 // -------------------- //
 // Forward declarations //
 // -------------------- //
@@ -90,77 +89,76 @@ class IpcressDataTable;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::MultigroupOpacity
-{
+class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity
+    : public rtt_cdi::MultigroupOpacity {
 
-    // DATA
+  // DATA
 
-    // ----------------------- //
-    // Specify unique material //
-    // ----------------------- //
+  // ----------------------- //
+  // Specify unique material //
+  // ----------------------- //
 
-    /*!
+  /*!
      * \brief The name of the ipcress data file.  This is saved for the packer
      *         routines
      */
-    std::string mutable ipcressFilename;
+  std::string mutable ipcressFilename;
 
-    /*!
+  /*!
      * \brief Identification number for one of the materials found in
      *     the IPCRESS file pointed to by spIpcressFile.
      */
-    size_t materialID;
+  size_t materialID;
 
-    // -------------------- //
-    // Available data types //
-    // -------------------- //
+  // -------------------- //
+  // Available data types //
+  // -------------------- //
 
-    // The IPCRESS file only holds specific data for each of its materials.
+  // The IPCRESS file only holds specific data for each of its materials.
 
-    //! A list of keys known by the IPCRESS file.
-    std::vector< std::string > fieldNames;
+  //! A list of keys known by the IPCRESS file.
+  std::vector<std::string> fieldNames;
 
-    // --------------- //
-    // Data specifiers //
-    // --------------- //
+  // --------------- //
+  // Data specifiers //
+  // --------------- //
 
-    /*!
+  /*!
      * \brief The physics model that the current data set is based on.
      *        { Rosseland, Plank }.  This enumeration is defined
      *        in cdi/OpacityCommon.hh.
      */
-    rtt_cdi::Model opacityModel;
+  rtt_cdi::Model opacityModel;
 
-    /*!
+  /*!
      * \brief The type of reaction rates that the current data set
      *        represents { Total, Scattering, Absorption }. This
      *        enumeration is defined in cdi/OpacityCommon.hh.
      */
-    rtt_cdi::Reaction opacityReaction;
+  rtt_cdi::Reaction opacityReaction;
 
-    //! A string that identifies the energy policy for this class.
-    std::string const energyPolicyDescriptor;
+  //! A string that identifies the energy policy for this class.
+  std::string const energyPolicyDescriptor;
 
-    // -------------------- //
-    // Opacity lookup table //
-    // -------------------- //
+  // -------------------- //
+  // Opacity lookup table //
+  // -------------------- //
 
-    /*!
+  /*!
      * \brief spIpcressDataTable contains a cached copy of the
      *        requested IPCRESS opacity lookup table.
      *
      * There is a one-to-one relationship between IpcressOpacity and
      * IpcressDataTable.
      */
-    rtt_dsxx::SP< const IpcressDataTable > spIpcressDataTable;
+  rtt_dsxx::SP<const IpcressDataTable> spIpcressDataTable;
 
-  public:
+public:
+  // ------------ //
+  // Constructors //
+  // ------------ //
 
-    // ------------ //
-    // Constructors //
-    // ------------ //
-
-    /*!
+  /*!
      * \brief This is the default IpcressMultigroupOpacity
      *     constructor.  It requires four arguments plus the energy
      *     model (this class) to be instantiated.
@@ -182,13 +180,11 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      * \param opacityReaction The type of reaction rate that the
      *     current data set represents.
      */
-    IpcressMultigroupOpacity(
-        rtt_dsxx::SP< IpcressFile const > const & spIpcressFile,
-        size_t            materialID,
-        rtt_cdi::Model    opacityModel,
-        rtt_cdi::Reaction opacityReaction );
+  IpcressMultigroupOpacity(rtt_dsxx::SP<IpcressFile const> const &spIpcressFile,
+                           size_t materialID, rtt_cdi::Model opacityModel,
+                           rtt_cdi::Reaction opacityReaction);
 
-    /*!
+  /*!
      * \brief Unpacking constructor.
      *
      * This constructor unpacks a IpcressMultigroupOpacity object from a
@@ -197,9 +193,9 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      * \param packed vector<char> of packed IpcressMultigroupOpacity state;
      * the packed state is attained by calling pack()
      */
-    explicit IpcressMultigroupOpacity(std::vector<char> const & packed);
+  explicit IpcressMultigroupOpacity(std::vector<char> const &packed);
 
-    /*!
+  /*!
      * \brief Default IpcressOpacity() destructor.
      *
      *     This is required to correctly release memory when a
@@ -207,13 +203,13 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     definition must be declared in the implementation file so
      *     that * we can avoid including too many header files
      */
-    ~IpcressMultigroupOpacity(void) { /* empty */ };
+  ~IpcressMultigroupOpacity(void){/* empty */};
 
-    // --------- //
-    // Accessors //
-    // --------- //
+  // --------- //
+  // Accessors //
+  // --------- //
 
-    /*!
+  /*!
      * \brief Opacity accessor that utilizes STL-like iterators.  This
      *     accessor expects a list of (temperature,density) tuples.
      *     A set of opacity multigroup values will be returned for
@@ -237,15 +233,14 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     returned.  These opacities correspond to the temperature
      *     and density values provied in the two InputIterators.
      */
-    template < class TemperatureIterator, class DensityIterator,
-	       class OpacityIterator >
-    OpacityIterator getOpacity( TemperatureIterator temperatureFirst,
-				TemperatureIterator temperatureLast,
-				DensityIterator densityFirst,
-				DensityIterator densityLast,
-				OpacityIterator opacityFirst ) const;
+  template <class TemperatureIterator, class DensityIterator,
+            class OpacityIterator>
+  OpacityIterator
+  getOpacity(TemperatureIterator temperatureFirst,
+             TemperatureIterator temperatureLast, DensityIterator densityFirst,
+             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
-    /*!
+  /*!
      * \brief Opacity accessor that utilizes STL-like iterators.  This
      *     accessor expects a list of temperatures in an STL
      *     container.  A set of multigroup opacity values will be
@@ -267,13 +262,13 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     returned.  These opacities correspond to the temperature
      *     provided in the STL container and the single density value.
      */
-    template < class TemperatureIterator, class OpacityIterator >
-    OpacityIterator getOpacity( TemperatureIterator temperatureFirst,
-				TemperatureIterator temperatureLast,
-				double targetDensity,
-				OpacityIterator opacityFirst ) const;
+  template <class TemperatureIterator, class OpacityIterator>
+  OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
+                             TemperatureIterator temperatureLast,
+                             double targetDensity,
+                             OpacityIterator opacityFirst) const;
 
-    /*!
+  /*!
      * \brief Opacity accessor that utilizes STL-like iterators.  This
      *     accessor expects a list of densities in an STL
      *     container.  A set of multigroup opacity values will be
@@ -295,13 +290,12 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     returned.  These opacities correspond to the density
      *     provided in the STL container and the single temperature value.
      */
-    template < class DensityIterator, class OpacityIterator >
-    OpacityIterator getOpacity( double targetTemperature,
-				DensityIterator densityFirst,
-				DensityIterator densityLast,
-				OpacityIterator opacityFirst ) const;
+  template <class DensityIterator, class OpacityIterator>
+  OpacityIterator
+  getOpacity(double targetTemperature, DensityIterator densityFirst,
+             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
-    /*!
+  /*!
      * \brief Opacity accessor that returns a
      *     vector of opacities that
      *     corresponds to the provided temperature and density.
@@ -312,10 +306,10 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     value is being requested.
      * \return A vector of opacities.
      */
-    std::vector< double > getOpacity( double targetTemperature,
-				      double targetDensity ) const;
+  std::vector<double> getOpacity(double targetTemperature,
+                                 double targetDensity) const;
 
-    /*!
+  /*!
      * \brief Opacity accessor that returns a vector of vectors of
      *     opacities
      *     that correspond to the provided vector of
@@ -327,11 +321,11 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     value is being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< double > > getOpacity(
-	std::vector<double> const & targetTemperature,
-	double targetDensity ) const;
+  std::vector<std::vector<double>>
+  getOpacity(std::vector<double> const &targetTemperature,
+             double targetDensity) const;
 
-    /*!
+  /*!
      * \brief Opacity accessor that returns a vector of vectors of
      *     opacities that correspond to the provided vector of
      *     densities and a single temperature value.
@@ -342,34 +336,35 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     opacity values are being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< double > > getOpacity(
-	double targetTemperature,
-	std::vector<double> const & targetDensity ) const;
+  std::vector<std::vector<double>>
+  getOpacity(double targetTemperature,
+             std::vector<double> const &targetDensity) const;
 
-    /*!
+  /*!
      * \brief Query whether the data is in tables or functional form.
      */
-    bool data_in_tabular_form() const { return true; }
+  bool data_in_tabular_form() const { return true; }
 
-    /*!
+  /*!
      * \brief Query to determine the reaction model.
      */
-    rtt_cdi::Reaction getReactionType() const { return opacityReaction; }
+  rtt_cdi::Reaction getReactionType() const { return opacityReaction; }
 
-    /*!
+  /*!
      * \brief Query to determine the physics model.
      */
-    rtt_cdi::Model getModelType() const { return opacityModel; }
+  rtt_cdi::Model getModelType() const { return opacityModel; }
 
-    /*!
+  /*!
      * \brief Returns a string that describes the templated
      *     EnergyPolicy.  Currently this will return either "mg" or
      *     "gray."
      */
-    std::string getEnergyPolicyDescriptor() const {
-	return energyPolicyDescriptor; };
+  std::string getEnergyPolicyDescriptor() const {
+    return energyPolicyDescriptor;
+  };
 
-    /*!
+  /*!
      * \brief Returns a "plain English" description of the opacity
      *     data that this class references. (e.g. "Multigroup Rosseland
      *     Scattering".)
@@ -378,83 +373,89 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
      *     the inclusion of the IpcressFile.hh definitions within this
      *     header file.
      */
-    std::string getDataDescriptor() const {
-        return spIpcressDataTable->getDataDescriptor(); }
+  std::string getDataDescriptor() const {
+    return spIpcressDataTable->getDataDescriptor();
+  }
 
-    /*!
+  /*!
      * \brief Returns the name of the associated IPCRESS file.
      *
      * The definition of this function is not included here to prevent
      *     the inclusion of the IpcressFile.hh definitions within this
      *     header file.
      */
-    std::string getDataFilename() const { return ipcressFilename; }
+  std::string getDataFilename() const { return ipcressFilename; }
 
-    /*!
+  /*!
      * \brief Returns a vector of temperatures that define the cached
      *     opacity data table.
      *
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    std::vector< double > getTemperatureGrid() const {
-        return spIpcressDataTable->getTemperatures(); }
+  std::vector<double> getTemperatureGrid() const {
+    return spIpcressDataTable->getTemperatures();
+  }
 
-    /*!
+  /*!
      * \brief Returns a vector of densities that define the cached
      *     opacity data table.
      *
      * We do not return a const reference because this function
      * must construct this information from more fundamental tables.
      */
-    std::vector< double > getDensityGrid() const {
-        return spIpcressDataTable->getDensities(); }
+  std::vector<double> getDensityGrid() const {
+    return spIpcressDataTable->getDensities();
+  }
 
-    /*!
+  /*!
      * \brief Returns a vector of energy values (keV) that define the
      *     energy boundaries of the cached multigroup opacity data
      *     table.
      */
-    std::vector< double > getGroupBoundaries() const {
-        return spIpcressDataTable->getGroupBoundaries(); }
+  std::vector<double> getGroupBoundaries() const {
+    return spIpcressDataTable->getGroupBoundaries();
+  }
 
-    //! Returns the size of the temperature grid.
-    size_t getNumTemperatures() const {
-        return spIpcressDataTable->getNumTemperatures(); }
+  //! Returns the size of the temperature grid.
+  size_t getNumTemperatures() const {
+    return spIpcressDataTable->getNumTemperatures();
+  }
 
-    //! Returns the size of the density grid.
-    size_t getNumDensities() const{
-        return spIpcressDataTable->getNumDensities(); }
+  //! Returns the size of the density grid.
+  size_t getNumDensities() const {
+    return spIpcressDataTable->getNumDensities();
+  }
 
-    /*!
+  /*!
      * \brief Returns the number of group boundaries found in the
      *     current multigroup data set.
      */
-    size_t getNumGroupBoundaries() const {
-        return spIpcressDataTable->getNumGroupBoundaries(); }
+  size_t getNumGroupBoundaries() const {
+    return spIpcressDataTable->getNumGroupBoundaries();
+  }
 
-    /*!
+  /*!
      * \brief Returns the number of gruops found in the current
      *     multigroup data set.
      */
-    size_t getNumGroups() const {
-	return getNumGroupBoundaries() - 1; };
+  size_t getNumGroups() const { return getNumGroupBoundaries() - 1; };
 
-    /*!
+  /*!
      * \brief Pack a IpcressMulitgroupOpacity object.
      *
      * \return packed state in a vector<char>
      */
-    std::vector<char> pack() const;
+  std::vector<char> pack() const;
 
-    /*!
+  /*!
      * \brief Returns the general opacity model type, defined in OpacityCommon.hh
      *
      * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
      */
-    rtt_cdi::OpacityModelType getOpacityModelType() const {
-        return rtt_cdi::IPCRESS_TYPE;
-    }
+  rtt_cdi::OpacityModelType getOpacityModelType() const {
+    return rtt_cdi::IPCRESS_TYPE;
+  }
 
 }; // end of class IpcressMultigroupOpacity
 
@@ -470,73 +471,61 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity : public rtt_cdi::Multigro
 // getOpacity with Tuple of (T,rho) arguments //
 // ------------------------------------------ //
 
-template < class TemperatureIterator, class DensityIterator,
-           class OpacityIterator >
+template <class TemperatureIterator, class DensityIterator,
+          class OpacityIterator>
 OpacityIterator IpcressMultigroupOpacity::getOpacity(
-    TemperatureIterator tempIter,
-    TemperatureIterator tempLast,
-    DensityIterator densIter,
-    DensityIterator Remember(densLast),
-    OpacityIterator opIter ) const
-{
-    // assert that the two input iterators have compatible sizes.
-    Require( std::distance( tempIter, tempLast )
-	     == std::distance( densIter, densLast ) );
+    TemperatureIterator tempIter, TemperatureIterator tempLast,
+    DensityIterator densIter, DensityIterator Remember(densLast),
+    OpacityIterator opIter) const {
+  // assert that the two input iterators have compatible sizes.
+  Require(std::distance(tempIter, tempLast) ==
+          std::distance(densIter, densLast));
 
-    // number of groups in this multigroup set.
-    size_t const ng = spIpcressDataTable->getNumGroupBoundaries()-1;
+  // number of groups in this multigroup set.
+  size_t const ng = spIpcressDataTable->getNumGroupBoundaries() - 1;
 
-    // loop over the (temperature,density) tuple.
-    for ( ; tempIter != tempLast; ++tempIter, ++densIter )
-        for( size_t g=0; g<ng; ++g, ++opIter )
-            *opIter = spIpcressDataTable->interpOpac( *tempIter,
-                                                      *densIter, g );
-    return opIter;
+  // loop over the (temperature,density) tuple.
+  for (; tempIter != tempLast; ++tempIter, ++densIter)
+    for (size_t g = 0; g < ng; ++g, ++opIter)
+      *opIter = spIpcressDataTable->interpOpac(*tempIter, *densIter, g);
+  return opIter;
 }
 
 // ------------------------------------ //
 // getOpacity() with container of temps //
 // ------------------------------------ //
 
-template < class TemperatureIterator, class OpacityIterator >
+template <class TemperatureIterator, class OpacityIterator>
 OpacityIterator IpcressMultigroupOpacity::getOpacity(
-    TemperatureIterator tempIter,
-    TemperatureIterator tempLast,
-    double targetDensity,
-    OpacityIterator opIter ) const
-{
-    // number of groups in this multigroup set.
-    size_t const ng = spIpcressDataTable->getNumGroupBoundaries()-1;
+    TemperatureIterator tempIter, TemperatureIterator tempLast,
+    double targetDensity, OpacityIterator opIter) const {
+  // number of groups in this multigroup set.
+  size_t const ng = spIpcressDataTable->getNumGroupBoundaries() - 1;
 
-    // loop over the (temperature,density) tuple.
-    for ( ; tempIter != tempLast; ++tempIter )
-        for( size_t g=0; g<ng; ++g, ++opIter )
-            *opIter = spIpcressDataTable->interpOpac( *tempIter,
-                                                       targetDensity, g );
-    return opIter;
+  // loop over the (temperature,density) tuple.
+  for (; tempIter != tempLast; ++tempIter)
+    for (size_t g = 0; g < ng; ++g, ++opIter)
+      *opIter = spIpcressDataTable->interpOpac(*tempIter, targetDensity, g);
+  return opIter;
 }
 
 // ---------------------------------------- //
 // getOpacity() with container of densities //
 // ---------------------------------------- //
 
-template < class DensityIterator, class OpacityIterator >
+template <class DensityIterator, class OpacityIterator>
 OpacityIterator IpcressMultigroupOpacity::getOpacity(
-    double targetTemperature,
-    DensityIterator densIter,
-    DensityIterator densLast,
-    OpacityIterator opIter ) const
-{
-    // number of groups in this multigroup set.
-    size_t const ng = spIpcressDataTable->getNumGroupBoundaries()-1;
+    double targetTemperature, DensityIterator densIter,
+    DensityIterator densLast, OpacityIterator opIter) const {
+  // number of groups in this multigroup set.
+  size_t const ng = spIpcressDataTable->getNumGroupBoundaries() - 1;
 
-    // loop over the (temperature,density) tuple.
-    for ( ; densIter != densLast; ++densIter )
-	// Call the Ipcress interpolator.  The vector opacity is returned.
-        for( size_t g=0; g<ng; ++g, ++opIter )
-            *opIter = spIpcressDataTable->interpOpac( targetTemperature,
-                                                      *densIter, g );
-    return opIter;
+  // loop over the (temperature,density) tuple.
+  for (; densIter != densLast; ++densIter)
+    // Call the Ipcress interpolator.  The vector opacity is returned.
+    for (size_t g = 0; g < ng; ++g, ++opIter)
+      *opIter = spIpcressDataTable->interpOpac(targetTemperature, *densIter, g);
+  return opIter;
 }
 
 } // end namespace rtt_cdi_ipcress

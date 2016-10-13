@@ -16,8 +16,7 @@
 
 #include "Quadrature.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 //=======================================================================================//
 /*!
@@ -29,65 +28,55 @@ namespace rtt_quadrature
  */
 //=======================================================================================//
 
-class Interval_Quadrature : public Quadrature 
-{
-  public:
-    
-    // CREATORS
+class Interval_Quadrature : public Quadrature {
+public:
+  // CREATORS
 
-    Interval_Quadrature(unsigned const sn_order);
+  Interval_Quadrature(unsigned const sn_order);
 
-    // ACCESSORS
+  // ACCESSORS
 
-    virtual Quadrature_Class quadrature_class() const;
+  virtual Quadrature_Class quadrature_class() const;
 
-    virtual bool has_axis_assignments() const;
+  virtual bool has_axis_assignments() const;
 
-    double mu(unsigned const m) const
-    {
-        Require(mu_.size() == sn_order());
-        Require(m < mu_.size());
+  double mu(unsigned const m) const {
+    Require(mu_.size() == sn_order());
+    Require(m < mu_.size());
 
-        return mu_[m];
-    }; 
+    return mu_[m];
+  };
 
-    double wt(unsigned const m) const
-    {
-        Require(wt_.size() == sn_order());
-        Require(m < wt_.size());
+  double wt(unsigned const m) const {
+    Require(wt_.size() == sn_order());
+    Require(m < wt_.size());
 
-        return wt_[m];
-    };
+    return wt_[m];
+  };
 
-    // STATICS
+  // STATICS
 
-  protected:
+protected:
+  using Quadrature::create_ordinates_;
 
-    using Quadrature::create_ordinates_;
+  //! Virtual hook for create_ordinate_set
+  virtual vector<Ordinate>
+  create_ordinates_(unsigned dimension, Geometry, double norm, unsigned mu_axis,
+                    unsigned eta_axis, bool include_starting_directions,
+                    bool include_extra_directions) const;
 
-    //! Virtual hook for create_ordinate_set
-    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
-                                               Geometry,
-                                               double norm,
-                                               unsigned mu_axis,
-                                               unsigned eta_axis,
-                                               bool include_starting_directions,
-                                               bool include_extra_directions) const;
+  //! Virtual hook for create_ordinate_set
+  virtual vector<Ordinate>
+  create_ordinates_(unsigned dimension, Geometry, double norm,
+                    bool include_starting_directions,
+                    bool include_extra_directions) const;
 
-    //! Virtual hook for create_ordinate_set
-    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
-                                               Geometry,
-                                               double norm,
-                                               bool include_starting_directions,
-                                               bool include_extra_directions) const;
-    
-    //! Virtual hook for create_ordinate_set
-    virtual vector<Ordinate> create_level_ordinates_(double norm) const = 0;
+  //! Virtual hook for create_ordinate_set
+  virtual vector<Ordinate> create_level_ordinates_(double norm) const = 0;
 
-    // DATA
+  // DATA
 
-    vector<double> mu_, wt_;
-
+  vector<double> mu_, wt_;
 };
 
 } // end namespace rtt_quadrature

@@ -22,8 +22,7 @@
 #include "c4_mpi.h"
 #endif
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 //===========================================================================//
 /*!
  * \class C4_ReqRefRep
@@ -41,50 +40,48 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 C4_ReqRefRep
-{
-    friend class C4_Req;
-    
-    int n;
-    int assigned;
-    
+class DLL_PUBLIC_c4 C4_ReqRefRep {
+  friend class C4_Req;
+
+  int n;
+  int assigned;
+
 #ifdef C4_MPI
-    MPI_Status  s;
-    MPI_Request r;
+  MPI_Status s;
+  MPI_Request r;
 #endif
 
-  private:
+private:
+  // Disallowed methods
 
-    // Disallowed methods
+  C4_ReqRefRep(const C4_ReqRefRep &rep);
+  C4_ReqRefRep &operator=(const C4_ReqRefRep &rep);
 
-    C4_ReqRefRep( const C4_ReqRefRep& rep );
-    C4_ReqRefRep& operator=( const C4_ReqRefRep& rep );
+  // Private default ctor and dtor for access from C4_Req only.
 
-    // Private default ctor and dtor for access from C4_Req only.
-    
-    C4_ReqRefRep();
-    ~C4_ReqRefRep();
+  C4_ReqRefRep();
+  ~C4_ReqRefRep();
 
-  public:
-    
-    void wait();
-    void free();
+public:
+  void wait();
+  void free();
 
-    bool complete();
+  bool complete();
 
-    unsigned count();
+  unsigned count();
 
-    int inuse() const { 
+  int inuse() const {
 #ifdef C4_MPI
-      if(assigned) {Check(r != MPI_REQUEST_NULL);}
-#endif
-      return assigned;
+    if (assigned) {
+      Check(r != MPI_REQUEST_NULL);
     }
+#endif
+    return assigned;
+  }
 
-  private:
-    
-    void set()      { assigned = 1; }
-    void clear()    { assigned = 0; }
+private:
+  void set() { assigned = 1; }
+  void clear() { assigned = 0; }
 };
 
 //===========================================================================//
@@ -104,69 +101,65 @@ class DLL_PUBLIC_c4 C4_ReqRefRep
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 C4_Req
-{
-    //! Request handle.
-    C4_ReqRefRep *p;
+class DLL_PUBLIC_c4 C4_Req {
+  //! Request handle.
+  C4_ReqRefRep *p;
 
-  public:
-    
-    C4_Req();
-    C4_Req( const C4_Req& req );
-    ~C4_Req();
-    C4_Req& operator=( const C4_Req& req );
+public:
+  C4_Req();
+  C4_Req(const C4_Req &req);
+  ~C4_Req();
+  C4_Req &operator=(const C4_Req &req);
 
-    //! \brief Equivalence operator
-    bool operator==(const C4_Req& right ) {
-        return (p == right.p); }
-    bool operator!=(const C4_Req& right ) {
-        return (p != right.p ); }
+  //! \brief Equivalence operator
+  bool operator==(const C4_Req &right) { return (p == right.p); }
+  bool operator!=(const C4_Req &right) { return (p != right.p); }
 
-    void wait()     { p->wait(); }
-    void free()     { p->free(); }
+  void wait() { p->wait(); }
+  void free() { p->free(); }
 
-    bool complete() { return p->complete(); }  // Should be const?
+  bool complete() { return p->complete(); } // Should be const?
 
-    unsigned count() { return p->count(); }
+  unsigned count() { return p->count(); }
 
-    int inuse() const { return p->inuse(); }
+  int inuse() const { return p->inuse(); }
 
-  private:
+private:
+  void set() { p->set(); }
 
-    void set()      { p->set(); }
+// Private access to the C4_ReqRefRep internals.
 
-    // Private access to the C4_ReqRefRep internals.
-    
 #ifdef C4_MPI
-    MPI_Request &r() { return p->r; }
+  MPI_Request &r() { return p->r; }
 #endif
 
-    void free_();
+  void free_();
 
-    // FRIENDSHIP
-    
-    // Specific friend C4 functions that may need to manipulate the
-    // C4_ReqRefRep internals.
+// FRIENDSHIP
+
+// Specific friend C4 functions that may need to manipulate the
+// C4_ReqRefRep internals.
 
 #ifdef C4_MPI
-    template<class T>
-    friend DLL_PUBLIC_c4 C4_Req send_async(const T *buf, int nels, int dest, int tag);
-    
-    template<class T>
-    friend C4_Req receive_async(T *buf, int nels, int source, int tag);
+  template <class T>
+  friend DLL_PUBLIC_c4 C4_Req send_async(const T *buf, int nels, int dest,
+                                         int tag);
 
-    template<class T>
-    friend DLL_PUBLIC_c4 void send_async(C4_Req &r, const T *buf, int nels, int dest,
-			   int tag);
-    template<class T>
-    friend DLL_PUBLIC_c4 void send_is(C4_Req &r, const T *buf, int nels, int dest,
-			   int tag);
-    template<class T>
-    friend DLL_PUBLIC_c4 void receive_async(C4_Req &r, T *buf, int nels, int source, 
-			      int tag);
+  template <class T>
+  friend C4_Req receive_async(T *buf, int nels, int source, int tag);
 
-    friend DLL_PUBLIC_c4 void     wait_all(int count, C4_Req *requests);
-    friend DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
+  template <class T>
+  friend DLL_PUBLIC_c4 void send_async(C4_Req &r, const T *buf, int nels,
+                                       int dest, int tag);
+  template <class T>
+  friend DLL_PUBLIC_c4 void send_is(C4_Req &r, const T *buf, int nels, int dest,
+                                    int tag);
+  template <class T>
+  friend DLL_PUBLIC_c4 void receive_async(C4_Req &r, T *buf, int nels,
+                                          int source, int tag);
+
+  friend DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
+  friend DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
 #endif
 };
 

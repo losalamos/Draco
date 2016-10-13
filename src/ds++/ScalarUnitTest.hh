@@ -16,8 +16,7 @@
 
 #include "UnitTest.hh"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -52,28 +51,28 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class ScalarUnitTest : public UnitTest
-{
-  public:
+class ScalarUnitTest : public UnitTest {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Default constructors.
+  DLL_PUBLIC_dsxx ScalarUnitTest(int &argc, char **&argv,
+                                 string_fp_void release_,
+                                 std::ostream &out_ = std::cout);
 
-    //! Default constructors.
-    DLL_PUBLIC_dsxx
-    ScalarUnitTest( int & argc, char **&argv, string_fp_void release_,
-                    std::ostream & out_ = std::cout );
+  //! The copy constructor is disabled.
+  ScalarUnitTest(const ScalarUnitTest &rhs);
 
-    //! The copy constructor is disabled.
-    ScalarUnitTest(const ScalarUnitTest &rhs);
+  //! Destructor.
+  ~ScalarUnitTest(void) {
+    out << resultMessage() << std::endl;
+    return;
+  };
 
-    //! Destructor.
-    ~ScalarUnitTest(void){ out << resultMessage() << std::endl; return; };
+  // MANIPULATORS
 
-    // MANIPULATORS
-
-    //! The assignment operator for ScalarUnitTest is disabled.
-    ScalarUnitTest& operator=(const ScalarUnitTest &rhs);
-
+  //! The assignment operator for ScalarUnitTest is disabled.
+  ScalarUnitTest &operator=(const ScalarUnitTest &rhs);
 };
 
 } // end namespace rtt_dsxx

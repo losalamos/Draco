@@ -8,27 +8,18 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "svdfit.i.hh"
 #include <vector>
 
-namespace rtt_fit
-{
+namespace rtt_fit {
 using std::vector;
 
-template DLL_PUBLIC_fit
-void svdfit(vector<double> const &x,
-            vector<double> const &y,
-            vector<double> const &sig,
-            vector<double> &a,
-            vector<double> &u,
-            vector<double> &v,
-            vector<double> &w,
-            double &chisq,
-            void (&funcs)(double, vector<double> const &),
-            double TOL);
+template DLL_PUBLIC_fit void
+svdfit(vector<double> const &x, vector<double> const &y,
+       vector<double> const &sig, vector<double> &a, vector<double> &u,
+       vector<double> &v, vector<double> &w, double &chisq,
+       void (&funcs)(double, vector<double> const &), double TOL);
 
 } // end namespace rtt_fit
 

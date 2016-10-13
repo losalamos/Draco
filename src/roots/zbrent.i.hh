@@ -17,8 +17,7 @@
 #include "ds++/DracoMath.hh"
 #include <limits>
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -61,137 +60,108 @@ namespace rtt_roots
  * varying near its zero, due to roundoff.
  */
 
-template<typename Function, typename Real>
-Real zbrent(Function func,
-            Real x1,
-            Real x2,
-            unsigned itmax,
-            Real &tol,
-            Real &ftol)
-{
-    using std::numeric_limits;
-    using std::min;
+template <typename Function, typename Real>
+Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
+            Real &ftol) {
+  using std::numeric_limits;
+  using std::min;
 
-    Real a=x1, b=x2, c=x2;
-    Real fa = func(a), fb = func(b);
+  Real a = x1, b = x2, c = x2;
+  Real fa = func(a), fb = func(b);
 
-    Require((fa>=0.0 && fb<=0.0) || (fa<=0.0 && fb>=0.0));
+  Require((fa >= 0.0 && fb <= 0.0) || (fa <= 0.0 && fb >= 0.0));
 
-    Real fc = fb;
-    Real d=b-a, e=b-a, xm=0;
-    for (unsigned iter=0; iter < itmax; iter++)
-    {
-	if ((fb>0.0 && fc>0.0) || (fb < 0.0 && fc<0.0))
-	{
-	    c=a;
-	    fc=fa;
-	    e=d=b-a;
-	}
-        Real afc = (fc>0.? fc : -fc);
-        Real afb = (fb>0.? fb : -fb);
-	if (afc < afb)
-	{
-	    a=b;
-	    b=c;
-	    c=a;
-	    fa=fb;
-	    fb=fc;
-	    fc=fa;
-	}
-
-        Real absb = (b>0.? b : -b);
-	Real const tol1 =
-	    2.0*numeric_limits<double>::epsilon()*absb + 0.5*tol;
-
-        xm = 0.5*(c-b);
-        Real axm = (xm>0.? xm : -xm);
-        afb = (fb>0.? fb : -fb);
-	if (axm <= tol1 || afb <= ftol)
-	{
-	    tol = fabs((xm));
-	    ftol = fabs((fb));
-	    return b;
-	}
-        Real ae = (e>0.? e : -e);
-        Real afa = (fa>0.? fa : -fa);
-	if (ae >= tol1 && afa > afb)
-	{
-	    Real const s = fb/fa;
-	    Real p, q;
-	    if (a==c)
-	    {
-		p = 2.0*xm*s;
-		q = 1.0-s;
-	    }
-	    else
-	    {
-		q = fa/fc;
-		Real const r = fb/fc;
-		p = s*(2.0*xm*q*(q-r)-(b-a)*(r-1.0));
-		q = (q-1.0)*(r-1.0)*(s-1.0);
-	    }
-	    if (p>0.0)
-	    {
-		q = -q;
-	    }
-	    p = (p>0.? p : -p);
-            Real const tlq = tol1*q;
-            Real const atlq = (tlq>0.? tlq : -tlq);
-	    Real const min1 = 3.0*xm*q-atlq;
-            Real eq = e*q;
-            Real const min2 = (eq>0.? eq : -eq);
-	    if (2.0*p < min(min1,min2))
-	    {
-		e=d;
-		d=p/q;
-	    }
-	    else
-	    {
-		d=xm;
-		e=d;
-	    }
-	}
-	else
-	{
-	    d=xm;
-	    e=d;
-	}
-	a=b;
-	fa=fb;
-        Real const ad = (d>0.? d : -d);
-	if (ad > tol1)
-	{
-	    b += d;
-	}
-	else
-	{
-	    if (xm<0.0)
-	    {
-		b -= tol1;
-	    }
-	    else
-	    {
-		b += tol1;
-	    }
-	}
-        try
-        {
-            fb = func(b);
-            if (!rtt_dsxx::isFinite(fb))
-            {
-                throw std::domain_error("function is not analytic "
-                                        "in the search interval");
-            }
-        }
-        catch(...)
-        {
-            throw std::domain_error("function is not analytic "
-                                    "in the search interval");
-        }
+  Real fc = fb;
+  Real d = b - a, e = b - a, xm = 0;
+  for (unsigned iter = 0; iter < itmax; iter++) {
+    if ((fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0)) {
+      c = a;
+      fc = fa;
+      e = d = b - a;
     }
-    tol = fabs(xm);
-    ftol = fabs(b);
-    return b;
+    Real afc = (fc > 0. ? fc : -fc);
+    Real afb = (fb > 0. ? fb : -fb);
+    if (afc < afb) {
+      a = b;
+      b = c;
+      c = a;
+      fa = fb;
+      fb = fc;
+      fc = fa;
+    }
+
+    Real absb = (b > 0. ? b : -b);
+    Real const tol1 =
+        2.0 * numeric_limits<double>::epsilon() * absb + 0.5 * tol;
+
+    xm = 0.5 * (c - b);
+    Real axm = (xm > 0. ? xm : -xm);
+    afb = (fb > 0. ? fb : -fb);
+    if (axm <= tol1 || afb <= ftol) {
+      tol = fabs((xm));
+      ftol = fabs((fb));
+      return b;
+    }
+    Real ae = (e > 0. ? e : -e);
+    Real afa = (fa > 0. ? fa : -fa);
+    if (ae >= tol1 && afa > afb) {
+      Real const s = fb / fa;
+      Real p, q;
+      if (a == c) {
+        p = 2.0 * xm * s;
+        q = 1.0 - s;
+      } else {
+        q = fa / fc;
+        Real const r = fb / fc;
+        p = s * (2.0 * xm * q * (q - r) - (b - a) * (r - 1.0));
+        q = (q - 1.0) * (r - 1.0) * (s - 1.0);
+      }
+      if (p > 0.0) {
+        q = -q;
+      }
+      p = (p > 0. ? p : -p);
+      Real const tlq = tol1 * q;
+      Real const atlq = (tlq > 0. ? tlq : -tlq);
+      Real const min1 = 3.0 * xm * q - atlq;
+      Real eq = e * q;
+      Real const min2 = (eq > 0. ? eq : -eq);
+      if (2.0 * p < min(min1, min2)) {
+        e = d;
+        d = p / q;
+      } else {
+        d = xm;
+        e = d;
+      }
+    } else {
+      d = xm;
+      e = d;
+    }
+    a = b;
+    fa = fb;
+    Real const ad = (d > 0. ? d : -d);
+    if (ad > tol1) {
+      b += d;
+    } else {
+      if (xm < 0.0) {
+        b -= tol1;
+      } else {
+        b += tol1;
+      }
+    }
+    try {
+      fb = func(b);
+      if (!rtt_dsxx::isFinite(fb)) {
+        throw std::domain_error("function is not analytic "
+                                "in the search interval");
+      }
+    } catch (...) {
+      throw std::domain_error("function is not analytic "
+                              "in the search interval");
+    }
+  }
+  tol = fabs(xm);
+  ftol = fabs(b);
+  return b;
 }
 
 } // end namespace rtt_roots

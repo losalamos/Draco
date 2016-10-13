@@ -11,19 +11,15 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
 #include "svdcmp.i.hh"
+#include <vector>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 using std::vector;
 
-template DLL_PUBLIC_linear
-void svdcmp(vector<double> &a,
-		     const unsigned m,
-		     const unsigned n,
-		     vector<double> &w,
-		     vector<double> &v);
+template DLL_PUBLIC_linear void svdcmp(vector<double> &a, const unsigned m,
+                                       const unsigned n, vector<double> &w,
+                                       vector<double> &v);
 
 } // end namespace rtt_linear
 

@@ -13,8 +13,8 @@
 #include <iostream>
 
 // Vendor software
-#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_sf_legendre.h>
 
 #include "Ordinate_Space.hh"
@@ -24,42 +24,42 @@
 
 using namespace rtt_units;
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 //---------------------------------------------------------------------------------------//
 /*!
  * \brief Compute the Azimuthal angle for the current quadrature direction.
  */
-double Ordinate_Space::compute_azimuthalAngle( double const mu,
-                                               double const eta )
-{
-    using rtt_units::PI;
-    using rtt_dsxx::soft_equiv;
+double Ordinate_Space::compute_azimuthalAngle(double const mu,
+                                              double const eta) {
+  using rtt_units::PI;
+  using rtt_dsxx::soft_equiv;
 
-    Require( std::abs(mu)  <= 1.0 );
-    Require( std::abs(eta) <= 1.0 );
+  Require(std::abs(mu) <= 1.0);
+  Require(std::abs(eta) <= 1.0);
 
-    if( soft_equiv( eta, 0.0 ) ) return PI;
+  if (soft_equiv(eta, 0.0))
+    return PI;
 
-//-------------------------------------------------------------
+  //-------------------------------------------------------------
 
-    double azimuthalAngle ( std::atan2( eta, mu) );
+  double azimuthalAngle(std::atan2(eta, mu));
 
-    // For axisymmetric cooridnates only, the azimuthal angle is on [0, 2\pi]
-    // It is important to remember that the positive mu axis points to the
-    // left and the positive eta axis points up, when the unit sphere is
-    // projected on the plane of the mu- and eta-axis. In this case, phi is
-    // measured from the mu-axis counterclockwise.
-    //
-    // This accounts for the fact that the aziumuthal angle is discretized
-    // on levels of the xi-axis, making the computation of the azimuthal angle
-    // here consistent with the discretization by using the eta and mu
-    // ordinates to define phi.
+  // For axisymmetric cooridnates only, the azimuthal angle is on [0, 2\pi]
+  // It is important to remember that the positive mu axis points to the
+  // left and the positive eta axis points up, when the unit sphere is
+  // projected on the plane of the mu- and eta-axis. In this case, phi is
+  // measured from the mu-axis counterclockwise.
+  //
+  // This accounts for the fact that the aziumuthal angle is discretized
+  // on levels of the xi-axis, making the computation of the azimuthal angle
+  // here consistent with the discretization by using the eta and mu
+  // ordinates to define phi.
 
-    if (this->geometry() == rtt_mesh_element::AXISYMMETRIC && azimuthalAngle < 0.0)
-        azimuthalAngle += 2*PI;
+  if (this->geometry() == rtt_mesh_element::AXISYMMETRIC &&
+      azimuthalAngle < 0.0)
+    azimuthalAngle += 2 * PI;
 
-    return azimuthalAngle;
+  return azimuthalAngle;
 }
 
 //---------------------------------------------------------------------------------------//
@@ -69,282 +69,235 @@ double Ordinate_Space::compute_azimuthalAngle( double const mu,
  * streaming operator.
  */
 /* private */
-void Ordinate_Space::compute_angle_operator_coefficients_()
-{
-    vector<Ordinate> const &ordinates = this->ordinates();
-    unsigned         const number_of_ordinates = ordinates.size();
-    rtt_mesh_element::Geometry const geometry = this->geometry();
+void Ordinate_Space::compute_angle_operator_coefficients_() {
+  vector<Ordinate> const &ordinates = this->ordinates();
+  unsigned const number_of_ordinates = ordinates.size();
+  rtt_mesh_element::Geometry const geometry = this->geometry();
 
-    // Compute the ordinate derivative coefficients.
+  // Compute the ordinate derivative coefficients.
 
-    // Default values are for the trivial case (Cartesian geometry).
-    is_dependent_.resize(number_of_ordinates, false);
-    alpha_.resize(number_of_ordinates, 0.0);
-    tau_.resize(number_of_ordinates, 1.0);
+  // Default values are for the trivial case (Cartesian geometry).
+  is_dependent_.resize(number_of_ordinates, false);
+  alpha_.resize(number_of_ordinates, 0.0);
+  tau_.resize(number_of_ordinates, 1.0);
 
-    // We rely on OrdinateSet to have already sorted the ordinates and
-    // inserted the starting ordinates for each level. We assume that the
-    // starting ordinates are distinguished by zero quadrature weight.
+  // We rely on OrdinateSet to have already sorted the ordinates and
+  // inserted the starting ordinates for each level. We assume that the
+  // starting ordinates are distinguished by zero quadrature weight.
 
-    levels_.resize(number_of_ordinates);
-    if (geometry==rtt_mesh_element::AXISYMMETRIC)
-    {
-        vector<double> C;
+  levels_.resize(number_of_ordinates);
+  if (geometry == rtt_mesh_element::AXISYMMETRIC) {
+    vector<double> C;
 
-        double Csum = 0;
-        int level = -1;
-        for (unsigned a=0; a<number_of_ordinates; a++)
-        {
-            double const mu = ordinates[a].mu();
-            double const wt = ordinates[a].wt();
-            if (wt!=0 || (wt == 0 && mu > 0))
-                // Not a starting ordinate.  Use Morel's recurrence relations
-                // to determine the next ordinate derivative coefficient.
-            {
-                Check(a>0);
-                alpha_[a] = alpha_[a-1] + mu*wt;
-                Csum += wt;
-                levels_[a] = level;
-                is_dependent_[a] = true;
-            }
-            else
-                // A starting ordinate. Reinitialize the recurrence relation.
-            {
-                Check(a==0 || std::fabs(alpha_[a-1])<1.0e-15);
-                // Be sure that the previous level (if any) had a final alpha
-                // of zero, to within roundoff, as expected for the Morel
-                // recursion formula.
+    double Csum = 0;
+    int level = -1;
+    for (unsigned a = 0; a < number_of_ordinates; a++) {
+      double const mu = ordinates[a].mu();
+      double const wt = ordinates[a].wt();
+      if (wt != 0 || (wt == 0 && mu > 0))
+      // Not a starting ordinate.  Use Morel's recurrence relations
+      // to determine the next ordinate derivative coefficient.
+      {
+        Check(a > 0);
+        alpha_[a] = alpha_[a - 1] + mu * wt;
+        Csum += wt;
+        levels_[a] = level;
+        is_dependent_[a] = true;
+      } else
+      // A starting ordinate. Reinitialize the recurrence relation.
+      {
+        Check(a == 0 || std::fabs(alpha_[a - 1]) < 1.0e-15);
+        // Be sure that the previous level (if any) had a final alpha
+        // of zero, to within roundoff, as expected for the Morel
+        // recursion formula.
 
-                if (a>0)
-                    alpha_[a-1] = 0.0;
+        if (a > 0)
+          alpha_[a - 1] = 0.0;
 
-                alpha_[a] = 0.0;
+        alpha_[a] = 0.0;
 
-                if (mu < 0.0)
-                {
-                    // Save the normalization sum for the previous level, if any.
-                    if (level>=0)
-                    {
-                        Check(static_cast<int>(C.size())==level);
-                        C.push_back(1.0/Csum);
-                    }
-                    level++;
-                    Csum = 0.0;
+        if (mu < 0.0) {
+          // Save the normalization sum for the previous level, if any.
+          if (level >= 0) {
+            Check(static_cast<int>(C.size()) == level);
+            C.push_back(1.0 / Csum);
+          }
+          level++;
+          Csum = 0.0;
 
-                    levels_[a] = level;
-                    is_dependent_[a] = false;
+          levels_[a] = level;
+          is_dependent_[a] = false;
 
-                    if (level> 0)
-                        first_angles_.push_back(a-1);
-                }
-            }
+          if (level > 0)
+            first_angles_.push_back(a - 1);
         }
-        // Save the normalization sum for the final level.
-        Check(static_cast<int>(C.size())==level);
-        C.push_back(1.0/Csum);
-        first_angles_.push_back(number_of_ordinates-1);
-        number_of_levels_ = C.size();
+      }
+    }
+    // Save the normalization sum for the final level.
+    Check(static_cast<int>(C.size()) == level);
+    C.push_back(1.0 / Csum);
+    first_angles_.push_back(number_of_ordinates - 1);
+    number_of_levels_ = C.size();
 
 #if DBC & 2
-        unsigned const dimension = this->dimension();
-        if (dimension == 2)
-            // Check that the level normalizations have the expected
-            // properties.
-        {
-            for (unsigned n=0; n<number_of_levels_/2; n++)
-            {
-                Check(C[n]>0.0);
-                Check(C[number_of_levels_-1-n] > 0.0);
-                Check(soft_equiv(C[n], C[number_of_levels_-1-n]));
-            }
-        }
+    unsigned const dimension = this->dimension();
+    if (dimension == 2)
+    // Check that the level normalizations have the expected
+    // properties.
+    {
+      for (unsigned n = 0; n < number_of_levels_ / 2; n++) {
+        Check(C[n] > 0.0);
+        Check(C[number_of_levels_ - 1 - n] > 0.0);
+        Check(soft_equiv(C[n], C[number_of_levels_ - 1 - n]));
+      }
+    }
 #endif
 
-        double mup = -2; // sentinel
-        double sinth = -2; // sentinel
-        double omp(0.0);
-        level = -1;
+    double mup = -2;   // sentinel
+    double sinth = -2; // sentinel
+    double omp(0.0);
+    level = -1;
 
-        for (unsigned a=0; a<number_of_ordinates; a++)
-        {
-            double const eta = ordinates[a].eta();
-            double const mu = ordinates[a].mu();
-            double const wt = ordinates[a].wt();
-            double const omm = omp;
-            double const mum = mup;
-            if (wt!=0)
-                // Not a new level.  Apply Morel's recurrence relation.
-            {
-                omp = omm - rtt_units::PI*C[level]*wt;
-                if (soft_equiv(omp, 0.0))
-                {
-                    omp = 0.0;
-                }
-            }
-            else if (mu < 0.0)
-                // New level.  Reinitialize the recurrence relation.
-            {
-                    omp = rtt_units::PI;
-                    Check(1-eta*eta >= 0.0);
-                    sinth = std::sqrt(1-eta*eta);
-                    level++;
-            }
-            mup = sinth*std::cos(omp);
-            if (wt!=0)
-            {
-                tau_[a] = (mu-mum)/(mup-mum);
-                //tau_[a] = 0.5;                          // old school
-
-                Check(tau_[a] >= 0.0 && tau_[a]<1.0);
-            }
-
+    for (unsigned a = 0; a < number_of_ordinates; a++) {
+      double const eta = ordinates[a].eta();
+      double const mu = ordinates[a].mu();
+      double const wt = ordinates[a].wt();
+      double const omm = omp;
+      double const mum = mup;
+      if (wt != 0)
+      // Not a new level.  Apply Morel's recurrence relation.
+      {
+        omp = omm - rtt_units::PI * C[level] * wt;
+        if (soft_equiv(omp, 0.0)) {
+          omp = 0.0;
         }
+      } else if (mu < 0.0)
+      // New level.  Reinitialize the recurrence relation.
+      {
+        omp = rtt_units::PI;
+        Check(1 - eta * eta >= 0.0);
+        sinth = std::sqrt(1 - eta * eta);
+        level++;
+      }
+      mup = sinth * std::cos(omp);
+      if (wt != 0) {
+        tau_[a] = (mu - mum) / (mup - mum);
+        //tau_[a] = 0.5;                          // old school
+
+        Check(tau_[a] >= 0.0 && tau_[a] < 1.0);
+      }
     }
-    else if (geometry == rtt_mesh_element::SPHERICAL)
-    {
-        number_of_levels_ = 1;
-        double norm(0);
-        for (unsigned a=0; a < number_of_ordinates; ++a)
-        {
-            levels_[a] = 0;
-            double const wt(ordinates[a].wt());
-            norm += wt;
-        }
-        double const rnorm = 1.0/norm;
-
-        for (unsigned a=0; a < number_of_ordinates; ++a)
-        {
-            double const mu(ordinates[a].mu());
-            double const wt(ordinates[a].wt());
-
-            if (wt!=0)
-            {
-                is_dependent_[a] = true;
-                alpha_[a] = alpha_[a-1] + 2*wt*mu;
-            }
-            else
-            {
-                alpha_[a] = 0;
-
-                if (mu < 0.0)
-                {
-                    is_dependent_[a] = false;
-                    first_angles_.push_back(number_of_ordinates-1);
-                }
-                else
-                {
-                    is_dependent_[a] = true;
-                }
-
-            }
-        }
-
-        double mup = -2; // sentinel
-        for (unsigned a=0; a < number_of_ordinates; ++a)
-        {
-            double const mu(ordinates[a].mu());
-            double const wt(ordinates[a].wt());
-
-            double const mum = mup;
-
-            if (wt !=0)
-                mup = mum + 2*wt*rnorm;
-            else
-                mup = mu;
-
-            if (wt !=0)
-            {
-                tau_[a] = (mu-mum)/(2*wt*rnorm);
-
-                Check(tau_[a]>0.0 && tau_[a]<=1.0);
-            }
-        }
+  } else if (geometry == rtt_mesh_element::SPHERICAL) {
+    number_of_levels_ = 1;
+    double norm(0);
+    for (unsigned a = 0; a < number_of_ordinates; ++a) {
+      levels_[a] = 0;
+      double const wt(ordinates[a].wt());
+      norm += wt;
     }
-    else if (geometry == rtt_mesh_element::CARTESIAN)
-    {
-        if (this->dimension() == 2 && this->ordering() == LEVEL_ORDERED)
-        {
-            // NEW: organize quadratures for 2D into levels, even for Cartesian coordinates,
-            // but do not compute angular derivative approximation coefficients
-            // For our purposes here, the use of the first_angles_ vector is
-            // different from the use for axisymmetric coordinates; it is used to
-            // record find the index into the first ordinate on each level
+    double const rnorm = 1.0 / norm;
 
-            int level = 0;
-            double etap;
-            double eta;
-            for (unsigned a=0; a<number_of_ordinates; a++)
-            {
-                levels_[a] = level;
+    for (unsigned a = 0; a < number_of_ordinates; ++a) {
+      double const mu(ordinates[a].mu());
+      double const wt(ordinates[a].wt());
 
-                if (a > 0)
-                {
-                    if (!soft_equiv(eta,etap))
-                    {
-                        // New level
-                        level++;
-                        first_angles_.push_back(a-1);
-                        etap = eta;
-                    }
-                    else
-                    {
-                        etap = eta;
-                        eta = ordinates[a].eta();
-                    }
-                }
-            else
-            {
-                eta = ordinates[a].eta();
-                etap = eta;
-            }
-            }
+      if (wt != 0) {
+        is_dependent_[a] = true;
+        alpha_[a] = alpha_[a - 1] + 2 * wt * mu;
+      } else {
+        alpha_[a] = 0;
 
-            first_angles_.push_back(number_of_ordinates);
-            number_of_levels_ = level+1;
-
+        if (mu < 0.0) {
+          is_dependent_[a] = false;
+          first_angles_.push_back(number_of_ordinates - 1);
+        } else {
+          is_dependent_[a] = true;
         }
-        else
-            number_of_levels_ = 0;
-    }
-    else
-    {
-        Insist(false, "unexpected geometry when creating an Ordinate_Space.");
+      }
     }
 
-    Insist(first_angles_.size() == number_of_levels_, "unexpected starting direction reflection index");
+    double mup = -2; // sentinel
+    for (unsigned a = 0; a < number_of_ordinates; ++a) {
+      double const mu(ordinates[a].mu());
+      double const wt(ordinates[a].wt());
+
+      double const mum = mup;
+
+      if (wt != 0)
+        mup = mum + 2 * wt * rnorm;
+      else
+        mup = mu;
+
+      if (wt != 0) {
+        tau_[a] = (mu - mum) / (2 * wt * rnorm);
+
+        Check(tau_[a] > 0.0 && tau_[a] <= 1.0);
+      }
+    }
+  } else if (geometry == rtt_mesh_element::CARTESIAN) {
+    if (this->dimension() == 2 && this->ordering() == LEVEL_ORDERED) {
+      // NEW: organize quadratures for 2D into levels, even for Cartesian coordinates,
+      // but do not compute angular derivative approximation coefficients
+      // For our purposes here, the use of the first_angles_ vector is
+      // different from the use for axisymmetric coordinates; it is used to
+      // record find the index into the first ordinate on each level
+
+      int level = 0;
+      double etap;
+      double eta;
+      for (unsigned a = 0; a < number_of_ordinates; a++) {
+        levels_[a] = level;
+
+        if (a > 0) {
+          if (!soft_equiv(eta, etap)) {
+            // New level
+            level++;
+            first_angles_.push_back(a - 1);
+            etap = eta;
+          } else {
+            etap = eta;
+            eta = ordinates[a].eta();
+          }
+        } else {
+          eta = ordinates[a].eta();
+          etap = eta;
+        }
+      }
+
+      first_angles_.push_back(number_of_ordinates);
+      number_of_levels_ = level + 1;
+
+    } else
+      number_of_levels_ = 0;
+  } else {
+    Insist(false, "unexpected geometry when creating an Ordinate_Space.");
+  }
+
+  Insist(first_angles_.size() == number_of_levels_,
+         "unexpected starting direction reflection index");
 }
 
 //---------------------------------------------------------------------------------------//
-vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
-                                             unsigned const sn_order)
-{
-    unsigned const dim = dimension();
-    Geometry const geometry = this->geometry();
+vector<Moment>
+Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_class,
+                              unsigned const sn_order) {
+  unsigned const dim = dimension();
+  Geometry const geometry = this->geometry();
 
-    if( dim == 3 )
-    {
-        return compute_n2lk_3D_(quadrature_class,
-                                sn_order);
-    }
-    else if( dim == 2)
-    {
-        if (geometry == rtt_mesh_element::AXISYMMETRIC)
-            return compute_n2lk_2Da_(quadrature_class,
-                                     sn_order);
-        else
-            return compute_n2lk_2D_(quadrature_class,
-                                    sn_order);
-    }
+  if (dim == 3) {
+    return compute_n2lk_3D_(quadrature_class, sn_order);
+  } else if (dim == 2) {
+    if (geometry == rtt_mesh_element::AXISYMMETRIC)
+      return compute_n2lk_2Da_(quadrature_class, sn_order);
     else
-    {
-        Check( dim == 1 );
-        if (geometry == rtt_mesh_element::AXISYMMETRIC)
-            return compute_n2lk_1Da_(quadrature_class,
-                                     sn_order);
-        else
-            return compute_n2lk_1D_(quadrature_class,
-                                    sn_order);
-    }
+      return compute_n2lk_2D_(quadrature_class, sn_order);
+  } else {
+    Check(dim == 1);
+    if (geometry == rtt_mesh_element::AXISYMMETRIC)
+      return compute_n2lk_1Da_(quadrature_class, sn_order);
+    else
+      return compute_n2lk_1D_(quadrature_class, sn_order);
+  }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -356,39 +309,31 @@ vector<Moment> Ordinate_Space::compute_n2lk_(Quadrature_Class const quadrature_c
  */
 
 void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
-                                      int const sn_order)
-{
-    int Lmax = expansion_order_;
-    if (Lmax>=0)
-    {
-        moments_ = compute_n2lk_(quadrature_class,
-                                 sn_order);
+                                      int const sn_order) {
+  int Lmax = expansion_order_;
+  if (Lmax >= 0) {
+    moments_ = compute_n2lk_(quadrature_class, sn_order);
 
-        moments_per_order_.resize(Lmax+1, 0U);
-        number_of_moments_ = 0;
-        for(unsigned n=0; n<moments_.size(); ++n)
-        {
-            int const l = moments_[n].L();
-            if (l<=Lmax || !prune())
-            {
-                if (l>Lmax)
-                {
-                    Lmax = l;
-                    moments_per_order_.resize(Lmax+1, 0U);
-                }
-                Check(l<static_cast<int>(moments_per_order_.size()));
-                moments_per_order_[l] += 1;
-                number_of_moments_++;
-            }
+    moments_per_order_.resize(Lmax + 1, 0U);
+    number_of_moments_ = 0;
+    for (unsigned n = 0; n < moments_.size(); ++n) {
+      int const l = moments_[n].L();
+      if (l <= Lmax || !prune()) {
+        if (l > Lmax) {
+          Lmax = l;
+          moments_per_order_.resize(Lmax + 1, 0U);
         }
+        Check(l < static_cast<int>(moments_per_order_.size()));
+        moments_per_order_[l] += 1;
+        number_of_moments_++;
+      }
     }
-    else
-    {
-        // moment space not needed
-        moments_.clear();
-        moments_per_order_.clear();
-        number_of_moments_ = 0;
-    }
+  } else {
+    // moment space not needed
+    moments_.clear();
+    moments_per_order_.clear();
+    number_of_moments_ = 0;
+  }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -414,42 +359,29 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
  * \param ordering Ordering into which to sort the ordinates.
  */
 
-Ordinate_Space::Ordinate_Space( unsigned const  dimension,
-                                Geometry const  geometry,
-                                vector<Ordinate> const &ordinates,
-                                int const  expansion_order,
-                                bool const  extra_starting_directions,
-                                Ordering const ordering)
-    : Ordinate_Set(dimension,
-                   geometry,
-                   ordinates,
+Ordinate_Space::Ordinate_Space(unsigned const dimension,
+                               Geometry const geometry,
+                               vector<Ordinate> const &ordinates,
+                               int const expansion_order,
+                               bool const extra_starting_directions,
+                               Ordering const ordering)
+    : Ordinate_Set(dimension, geometry, ordinates,
                    true, // include starting directions
-                   extra_starting_directions,
-                   ordering),
+                   extra_starting_directions, ordering),
       expansion_order_(expansion_order),
       has_extra_starting_directions_(extra_starting_directions),
-      number_of_levels_(0),
-      levels_(),
-      first_angles_(),
-      is_dependent_(false),
-      reflect_mu_(),
-      reflect_eta_(),
-      reflect_xi_(),
-      alpha_(),
-      tau_(),
-      number_of_moments_(0),
-      moments_(),
-      moments_per_order_()
-{
-    Require(dimension>0 && dimension<4);
-    Require(geometry!=rtt_mesh_element::END_GEOMETRY);
+      number_of_levels_(0), levels_(), first_angles_(), is_dependent_(false),
+      reflect_mu_(), reflect_eta_(), reflect_xi_(), alpha_(), tau_(),
+      number_of_moments_(0), moments_(), moments_per_order_() {
+  Require(dimension > 0 && dimension < 4);
+  Require(geometry != rtt_mesh_element::END_GEOMETRY);
 
-    compute_angle_operator_coefficients_();
+  compute_angle_operator_coefficients_();
 
-    compute_reflection_maps_();
+  compute_reflection_maps_();
 
-    Ensure(check_class_invariants());
-    Ensure(has_extra_starting_directions()==extra_starting_directions);
+  Ensure(check_class_invariants());
+  Ensure(has_extra_starting_directions() == extra_starting_directions);
 }
 
 //---------------------------------------------------------------------------------------//
@@ -457,15 +389,14 @@ Ordinate_Space::Ordinate_Space( unsigned const  dimension,
  * The psi coefficient is used to compute the self term in the angle
  * derivative term of the streaming operator.
  */
-double Ordinate_Space::psi_coefficient(unsigned const a) const
-{
-    Require(is_dependent(a));
+double Ordinate_Space::psi_coefficient(unsigned const a) const {
+  Require(is_dependent(a));
 
-    double const wt = ordinates()[a].wt();
-    double const alpha_a = alpha_[a];
-    double const tau_a = tau_[a];
-    double const Result = alpha_a/(wt*tau_a);
-    return Result;
+  double const wt = ordinates()[a].wt();
+  double const alpha_a = alpha_[a];
+  double const tau_a = tau_[a];
+  double const Result = alpha_a / (wt * tau_a);
+  return Result;
 }
 
 //---------------------------------------------------------------------------------------//
@@ -473,108 +404,91 @@ double Ordinate_Space::psi_coefficient(unsigned const a) const
  * The source coefficient is used to compute the previous midpoint angle term
  * in the angle derivative term of the streaming operator.
  */
-double Ordinate_Space::source_coefficient(unsigned const a) const
-{
-    Require(is_dependent(a));
+double Ordinate_Space::source_coefficient(unsigned const a) const {
+  Require(is_dependent(a));
 
-    double const wt = ordinates()[a].wt();
-    double const alpha_a = alpha_[a];
-    double const alpha_am1 = alpha_[a-1];
-    double const tau_a = tau_[a];
-    double const Result = (alpha_a*(1-tau_a)/tau_a + alpha_am1)/wt;
-    return Result;
+  double const wt = ordinates()[a].wt();
+  double const alpha_a = alpha_[a];
+  double const alpha_am1 = alpha_[a - 1];
+  double const tau_a = tau_[a];
+  double const Result = (alpha_a * (1 - tau_a) / tau_a + alpha_am1) / wt;
+  return Result;
 }
 //---------------------------------------------------------------------------------------//
 /*!
  * The bookkeeping coefficient is used to compute the next midpoint angle
  * specific intensity.
  */
-double Ordinate_Space::bookkeeping_coefficient(unsigned const a) const
-{
-    Require(is_dependent(a));
+double Ordinate_Space::bookkeeping_coefficient(unsigned const a) const {
+  Require(is_dependent(a));
 
-    double const tau_a = tau_[a];
-    double const Result = 1.0/tau_a;
+  double const tau_a = tau_[a];
+  double const Result = 1.0 / tau_a;
 
-    Require(Result>0.0);
-    return Result;
+  Require(Result > 0.0);
+  return Result;
 }
 
 //---------------------------------------------------------------------------------------//
-bool Ordinate_Space::check_class_invariants() const
-{
-    if (geometry() == rtt_mesh_element::CARTESIAN)
-    {
-        return ((this->dimension() != 2 || this->ordering() != LEVEL_ORDERED) ||
-                (first_angles_.size()  == number_of_levels_));
-    }
-    else
-    {
-        vector<Ordinate> const &ordinates = this->ordinates();
-        unsigned const number_of_ordinates = ordinates.size();
-
-        // Check that the number of levels is correct.
-        unsigned levels = 0;
-        for (unsigned a=0; a<number_of_ordinates; ++a)
-        {
-            if ((ordinates[a].wt() == 0) && (ordinates[a].mu() < 0.0))
-            {
-                ++levels;
-            }
-        }
-        if (number_of_levels_<levels)
-            return false;
-
-        // Check that the angle derivative coefficient arrays have the correct
-        // size.
-        return
-            is_dependent_.size()==number_of_ordinates &&
-            alpha_.size()==number_of_ordinates &&
-            tau_.size()==number_of_ordinates;
-    }
-}
-
-//---------------------------------------------------------------------------------------//
-void Ordinate_Space::compute_reflection_maps_()
-{
+bool Ordinate_Space::check_class_invariants() const {
+  if (geometry() == rtt_mesh_element::CARTESIAN) {
+    return ((this->dimension() != 2 || this->ordering() != LEVEL_ORDERED) ||
+            (first_angles_.size() == number_of_levels_));
+  } else {
     vector<Ordinate> const &ordinates = this->ordinates();
     unsigned const number_of_ordinates = ordinates.size();
 
-    reflect_mu_.resize(number_of_ordinates);
-    reflect_eta_.resize(number_of_ordinates);
-    reflect_xi_.resize(number_of_ordinates);
-
-    // Since the ordinate set will likely never number more than a few
-    // hundred, we go ahead and do the simpleminded quadratic search to match
-    // the ordinates up.
-
-    for (unsigned a=0; a+1<number_of_ordinates; ++a)
-    {
-        for (unsigned ap=a+1; ap<number_of_ordinates; ++ap)
-        {
-            if (soft_equiv(ordinates[a].mu(), -ordinates[ap].mu()) &&
-                soft_equiv(ordinates[a].eta(), ordinates[ap].eta()) &&
-                soft_equiv(ordinates[a].xi(), ordinates[ap].xi()))
-            {
-                reflect_mu_[a] = ap;
-                reflect_mu_[ap] = a;
-            }
-            else if (soft_equiv(ordinates[a].mu(), ordinates[ap].mu()) &&
-                soft_equiv(ordinates[a].eta(), -ordinates[ap].eta()) &&
-                soft_equiv(ordinates[a].xi(), ordinates[ap].xi()))
-            {
-                reflect_eta_[a] = ap;
-                reflect_eta_[ap] = a;
-            }
-            else if (soft_equiv(ordinates[a].mu(), ordinates[ap].mu()) &&
-                soft_equiv(ordinates[a].eta(), ordinates[ap].eta()) &&
-                soft_equiv(ordinates[a].xi(), -ordinates[ap].xi()))
-            {
-                reflect_xi_[a] = ap;
-                reflect_xi_[ap] = a;
-            }
-        }
+    // Check that the number of levels is correct.
+    unsigned levels = 0;
+    for (unsigned a = 0; a < number_of_ordinates; ++a) {
+      if ((ordinates[a].wt() == 0) && (ordinates[a].mu() < 0.0)) {
+        ++levels;
+      }
     }
+    if (number_of_levels_ < levels)
+      return false;
+
+    // Check that the angle derivative coefficient arrays have the correct
+    // size.
+    return is_dependent_.size() == number_of_ordinates &&
+           alpha_.size() == number_of_ordinates &&
+           tau_.size() == number_of_ordinates;
+  }
+}
+
+//---------------------------------------------------------------------------------------//
+void Ordinate_Space::compute_reflection_maps_() {
+  vector<Ordinate> const &ordinates = this->ordinates();
+  unsigned const number_of_ordinates = ordinates.size();
+
+  reflect_mu_.resize(number_of_ordinates);
+  reflect_eta_.resize(number_of_ordinates);
+  reflect_xi_.resize(number_of_ordinates);
+
+  // Since the ordinate set will likely never number more than a few
+  // hundred, we go ahead and do the simpleminded quadratic search to match
+  // the ordinates up.
+
+  for (unsigned a = 0; a + 1 < number_of_ordinates; ++a) {
+    for (unsigned ap = a + 1; ap < number_of_ordinates; ++ap) {
+      if (soft_equiv(ordinates[a].mu(), -ordinates[ap].mu()) &&
+          soft_equiv(ordinates[a].eta(), ordinates[ap].eta()) &&
+          soft_equiv(ordinates[a].xi(), ordinates[ap].xi())) {
+        reflect_mu_[a] = ap;
+        reflect_mu_[ap] = a;
+      } else if (soft_equiv(ordinates[a].mu(), ordinates[ap].mu()) &&
+                 soft_equiv(ordinates[a].eta(), -ordinates[ap].eta()) &&
+                 soft_equiv(ordinates[a].xi(), ordinates[ap].xi())) {
+        reflect_eta_[a] = ap;
+        reflect_eta_[ap] = a;
+      } else if (soft_equiv(ordinates[a].mu(), ordinates[ap].mu()) &&
+                 soft_equiv(ordinates[a].eta(), ordinates[ap].eta()) &&
+                 soft_equiv(ordinates[a].xi(), -ordinates[ap].xi())) {
+        reflect_xi_[a] = ap;
+        reflect_xi_[ap] = a;
+      }
+    }
+  }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -604,35 +518,29 @@ void Ordinate_Space::compute_reflection_maps_()
  */
 
 void Ordinate_Space::moment_to_flux(unsigned flux_map[3],
-                                    double flux_fact[3]) const
-{
-    static double const RROOT3 = 1.0/sqrt(3.0);
+                                    double flux_fact[3]) const {
+  static double const RROOT3 = 1.0 / sqrt(3.0);
 
-    if (dimension()==1)
-    {
-        flux_map[0] = 0;
-        if (geometry() != rtt_mesh_element::AXISYMMETRIC)
-            flux_fact[0] = RROOT3;
-        else
-            flux_fact[0] = -RROOT3;
-    }
-    else if (dimension()==2)
-    {
-        flux_map[0] = 1;
-        flux_fact[0] = RROOT3;
-        flux_map[1] = 0;
-        flux_fact[1] = -RROOT3;
-    }
+  if (dimension() == 1) {
+    flux_map[0] = 0;
+    if (geometry() != rtt_mesh_element::AXISYMMETRIC)
+      flux_fact[0] = RROOT3;
     else
-    {
-        Check(dimension()==3);
-        flux_map[0] = 2;
-        flux_fact[0] = -RROOT3;
-        flux_map[1] = 1;
-        flux_fact[1] = RROOT3;
-        flux_map[2] = 0;
-        flux_fact[2] = -RROOT3;
-    }
+      flux_fact[0] = -RROOT3;
+  } else if (dimension() == 2) {
+    flux_map[0] = 1;
+    flux_fact[0] = RROOT3;
+    flux_map[1] = 0;
+    flux_fact[1] = -RROOT3;
+  } else {
+    Check(dimension() == 3);
+    flux_map[0] = 2;
+    flux_fact[0] = -RROOT3;
+    flux_map[1] = 1;
+    flux_fact[1] = RROOT3;
+    flux_map[2] = 0;
+    flux_fact[2] = -RROOT3;
+  }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -658,48 +566,43 @@ void Ordinate_Space::moment_to_flux(unsigned flux_map[3],
  * flux_fact[i-1]*F[flux_map[i-1]].
  */
 void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
-                                    double flux_fact[3]) const
-{
-    static double const ROOT3 = sqrt(3.0);
+                                    double flux_fact[3]) const {
+  static double const ROOT3 = sqrt(3.0);
 
-    // We hardwire these on the optimistic assumption that the moment basis
-    // used by rtt_quadrature::Ordinate_Space will not often change.
-    if (dimension()==1)
-    {
-        // In 1D nonaxisymmetric, the polar axis of the spherical harmonics is
-        // aligned along the coordinate axis and only the k=0 harmonics are
-        // nonzero. The flux is then the Y(1,0) harmonic (times the
-        // normalization factor sqrt(3)). In 1D axisymmetric, the mu axis of
-        // the spherical harmonics is aligned along the coordinate axis for
-        // consistency with 2-D axisymmetric, and so the flux is the -Y(1,1)
-        // harmonic (times the normalization).
-        flux_map[0] = 0;
-        if (geometry() != rtt_mesh_element::AXISYMMETRIC)
-            flux_fact[0] = ROOT3;
-        else
-            flux_fact[0] = -ROOT3;
-    }
-    // In 2-D and 3-D the polar axis is aligned with the second coordinate
-    // axis and the mu axis is aligned with the first coordinate. Thus the x
-    // flux corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0)
-    // harmonic, and the z flux to the -Y(1,-1) harmonic.
-    else if (dimension()==2)
-    {
-        flux_map[0] = 1;
-        flux_fact[0] = -ROOT3;
-        flux_map[1] = 0;
-        flux_fact[1] = ROOT3;
-    }
+  // We hardwire these on the optimistic assumption that the moment basis
+  // used by rtt_quadrature::Ordinate_Space will not often change.
+  if (dimension() == 1) {
+    // In 1D nonaxisymmetric, the polar axis of the spherical harmonics is
+    // aligned along the coordinate axis and only the k=0 harmonics are
+    // nonzero. The flux is then the Y(1,0) harmonic (times the
+    // normalization factor sqrt(3)). In 1D axisymmetric, the mu axis of
+    // the spherical harmonics is aligned along the coordinate axis for
+    // consistency with 2-D axisymmetric, and so the flux is the -Y(1,1)
+    // harmonic (times the normalization).
+    flux_map[0] = 0;
+    if (geometry() != rtt_mesh_element::AXISYMMETRIC)
+      flux_fact[0] = ROOT3;
     else
-    {
-        Check(dimension()==3);
-        flux_map[0] = 2;
-        flux_fact[0] = -ROOT3;
-        flux_map[1] = 1;
-        flux_fact[1] = ROOT3;
-        flux_map[2] = 0;
-        flux_fact[2] = -ROOT3;
-    }
+      flux_fact[0] = -ROOT3;
+  }
+  // In 2-D and 3-D the polar axis is aligned with the second coordinate
+  // axis and the mu axis is aligned with the first coordinate. Thus the x
+  // flux corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0)
+  // harmonic, and the z flux to the -Y(1,-1) harmonic.
+  else if (dimension() == 2) {
+    flux_map[0] = 1;
+    flux_fact[0] = -ROOT3;
+    flux_map[1] = 0;
+    flux_fact[1] = ROOT3;
+  } else {
+    Check(dimension() == 3);
+    flux_map[0] = 2;
+    flux_fact[0] = -ROOT3;
+    flux_map[1] = 1;
+    flux_fact[1] = ROOT3;
+    flux_map[2] = 0;
+    flux_fact[2] = -ROOT3;
+  }
 }
 
 } // end namespace rtt_quadrature

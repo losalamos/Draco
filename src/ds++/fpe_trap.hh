@@ -22,11 +22,10 @@
 #define fpe_trap_hh
 
 #include "ds++/config.h"
-#include <string>
 #include <iostream>
+#include <string>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -61,26 +60,24 @@ namespace rtt_dsxx
  * Useful links:
  * - http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
 */
-class DLL_PUBLIC_dsxx  fpe_trap
-{
-  public:
-    //! constructor
-    fpe_trap( bool const abortWithInsist_in = true)
-        : fpeTrappingActive(false),
-          abortWithInsist( abortWithInsist_in )
-    {/* emtpy */};
-    ~fpe_trap(void) {/* empty */};
+class DLL_PUBLIC_dsxx fpe_trap {
+public:
+  //! constructor
+  fpe_trap(bool const abortWithInsist_in = true)
+      : fpeTrappingActive(false),
+        abortWithInsist(abortWithInsist_in){/* emtpy */};
+  ~fpe_trap(void){/* empty */};
 
-    //! Enable trapping of fpe signals.
-    bool enable( void );
-    //! Disable trapping of fpe signals.
-    void disable( void );
-    //! Query if trapping of fpe signals is active.
-    bool active(void) const { return fpeTrappingActive; }
+  //! Enable trapping of fpe signals.
+  bool enable(void);
+  //! Disable trapping of fpe signals.
+  void disable(void);
+  //! Query if trapping of fpe signals is active.
+  bool active(void) const { return fpeTrappingActive; }
 
-  private:
-    bool fpeTrappingActive;
-    bool abortWithInsist;
+private:
+  bool fpeTrappingActive;
+  bool abortWithInsist;
 };
 } // end namespace rtt_dsxx
 
@@ -117,34 +114,30 @@ class DLL_PUBLIC_dsxx  fpe_trap
 #include <Windows.h> // EXCEPTION_POINTERS
 //#include <cstdint>   // uintptr_t
 
-namespace rtt_dsxx
-{
-class DLL_PUBLIC_dsxx  CCrashHandler  
-{
+namespace rtt_dsxx {
+class DLL_PUBLIC_dsxx CCrashHandler {
 public:
+  // Constructor
+  CCrashHandler(){/*empty*/};
 
-    // Constructor
-    CCrashHandler() {/*empty*/};
+  // Destructor
+  virtual ~CCrashHandler(){/*empty*/};
 
-    // Destructor
-    virtual ~CCrashHandler() {/*empty*/};
+  //! Sets exception handlers that work on per-process basis
+  void SetProcessExceptionHandlers();
 
-    //! Sets exception handlers that work on per-process basis
-    void SetProcessExceptionHandlers();
+  //! Installs C++ exception handlers that function on per-thread basis
+  void SetThreadExceptionHandlers();
 
-    //! Installs C++ exception handlers that function on per-thread basis
-    void SetThreadExceptionHandlers();
+  //! Collects current process state.
+  static void GetExceptionPointers(DWORD dwExceptionCode,
+                                   EXCEPTION_POINTERS **pExceptionPointers);
 
-    //! Collects current process state.
-    static void GetExceptionPointers(
-        DWORD dwExceptionCode, 
-        EXCEPTION_POINTERS** pExceptionPointers);
+  //! Action to perform when an exception is found.
+  static void ActionOnException(std::string const &message,
+                                EXCEPTION_POINTERS *pExcPtrs);
 
-    //! Action to perform when an exception is found.
-    static void ActionOnException( std::string const & message,
-                                   EXCEPTION_POINTERS* pExcPtrs );
-
-    /*!
+  /*!
      * \brief This method creates minidump of the process
      * \param pExcPtrs Pointer to the EXCEPTION_POINTERS structure 
      *        containing exception information.
@@ -152,28 +145,30 @@ public:
      * The method calls the MiniDumpWriteDump() function from Microsoft Debug 
      * Help Library to generate a minidump file. 
      */
-     static void CreateMiniDump(EXCEPTION_POINTERS* pExcPtrs);
+  static void CreateMiniDump(EXCEPTION_POINTERS *pExcPtrs);
 
-    /* Exception handler functions. */
+  /* Exception handler functions. */
 
-    static LONG WINAPI SehHandler(PEXCEPTION_POINTERS pExceptionPtrs);
-    static void __cdecl TerminateHandler();
-    static void __cdecl UnexpectedHandler();
+  static LONG WINAPI SehHandler(PEXCEPTION_POINTERS pExceptionPtrs);
+  static void __cdecl TerminateHandler();
+  static void __cdecl UnexpectedHandler();
 
-    static void __cdecl PureCallHandler();
+  static void __cdecl PureCallHandler();
 
-    static void __cdecl InvalidParameterHandler(const wchar_t* expression, 
-           const wchar_t* function, const wchar_t* file, 
-           unsigned int line, uintptr_t pReserved);
+  static void __cdecl InvalidParameterHandler(const wchar_t *expression,
+                                              const wchar_t *function,
+                                              const wchar_t *file,
+                                              unsigned int line,
+                                              uintptr_t pReserved);
 
-    static int __cdecl NewHandler(size_t);
+  static int __cdecl NewHandler(size_t);
 
-    static void SigabrtHandler(int);
-    static void SigfpeHandler(int /*code*/, int subcode);
-    static void SigintHandler(int);
-    static void SigillHandler(int);
-    static void SigsegvHandler(int);
-    static void SigtermHandler(int);
+  static void SigabrtHandler(int);
+  static void SigfpeHandler(int /*code*/, int subcode);
+  static void SigintHandler(int);
+  static void SigillHandler(int);
+  static void SigsegvHandler(int);
+  static void SigtermHandler(int);
 };
 
 } // end namespace rtt_dsxx

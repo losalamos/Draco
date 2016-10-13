@@ -17,12 +17,11 @@
 #ifndef c4_swap_hh
 #define c4_swap_hh
 
-#include "C4_sys_times.h"
 #include "C4_Traits.hh"
+#include "C4_sys_times.h"
 #include <vector>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Send and receive a known pattern of messages of known size.
@@ -47,12 +46,13 @@ namespace rtt_c4
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T> DLL_PUBLIC_c4 
-void determinate_swap(std::vector<unsigned> const &outgoing_pid,
-                     std::vector<std::vector<T> > const &outgoing_data,
-                     std::vector<unsigned> const &incoming_pid,
-                     std::vector<std::vector<T> > &incoming_data,
-		     int tag = C4_Traits<T*>::tag);
+template <class T>
+DLL_PUBLIC_c4 void
+determinate_swap(std::vector<unsigned> const &outgoing_pid,
+                 std::vector<std::vector<T>> const &outgoing_data,
+                 std::vector<unsigned> const &incoming_pid,
+                 std::vector<std::vector<T>> &incoming_data,
+                 int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -74,10 +74,11 @@ void determinate_swap(std::vector<unsigned> const &outgoing_pid,
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T> DLL_PUBLIC_c4 
-void determinate_swap( std::vector<std::vector<T> > const &outgoing_data,
-                       std::vector<std::vector<T> > &incoming_data,
-                       int tag = C4_Traits<T*>::tag);
+template <class T>
+DLL_PUBLIC_c4 void
+determinate_swap(std::vector<std::vector<T>> const &outgoing_data,
+                 std::vector<std::vector<T>> &incoming_data,
+                 int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -101,12 +102,13 @@ void determinate_swap( std::vector<std::vector<T> > const &outgoing_data,
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T> DLL_PUBLIC_c4 
-void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
-                          std::vector<std::vector<T> > const &outgoing_data,
-                          std::vector<unsigned> const &incoming_pid,
-                          std::vector<std::vector<T> > &incoming_data,
-                          int tag = C4_Traits<T*>::tag);
+template <class T>
+DLL_PUBLIC_c4 void
+semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
+                     std::vector<std::vector<T>> const &outgoing_data,
+                     std::vector<unsigned> const &incoming_pid,
+                     std::vector<std::vector<T>> &incoming_data,
+                     int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -130,12 +132,12 @@ void semideterminate_swap(std::vector<unsigned> const &outgoing_pid,
  *
  * \param tag Tag for this exchange of data.
  */
-template<class T>
+template <class T>
 void indeterminate_swap(std::vector<unsigned> const &outgoing_pid,
-                        std::vector<std::vector<T> > const &outgoing_data,
+                        std::vector<std::vector<T>> const &outgoing_data,
                         std::vector<unsigned> &incoming_pid,
-                        std::vector<std::vector<T> > &incoming_data,
-                        int tag = C4_Traits<T*>::tag);
+                        std::vector<std::vector<T>> &incoming_data,
+                        int tag = C4_Traits<T *>::tag);
 
 } // end namespace rtt_c4
 

@@ -13,8 +13,7 @@
 
 #include "CDI.hh"
 
-namespace rtt_cdi
-{
+namespace rtt_cdi {
 //---------------------------------------------------------------------------//
 // Rosseland Spectrum Integrators
 //---------------------------------------------------------------------------//
@@ -47,42 +46,36 @@ namespace rtt_cdi
  * rosseland(T) = \int_{\nu_1}^{\nu_2}{\frac{\partial B(\nu,T)}{\partial T}d\nu}
  * \f]
  */
-void CDI::integrate_Rosseland_Planckian_Spectrum(double low,
-						 double high,
-						 double const T,
-						 double &planck, 
-						 double &rosseland)
-{
-    Require (low >= 0.0);
-    Require (high >= low);
-    Require (T >= 0.0);
+void CDI::integrate_Rosseland_Planckian_Spectrum(double low, double high,
+                                                 double const T, double &planck,
+                                                 double &rosseland) {
+  Require(low >= 0.0);
+  Require(high >= low);
+  Require(T >= 0.0);
 
-    if (T==0.0)
-    {
-        planck = 0.0;
-        rosseland = 0.0;
-        return;
-    }
-
-    double planck_high, rosseland_high;
-    double planck_low,  rosseland_low;
-
-    // Sale the frequencies by temperature
-    low /= T;
-    high /= T;
-
-    double const exp_low  = std::exp(-low);
-    double const exp_high = std::exp(-high);
-
-    integrate_planck_rosseland(low,  exp_low,  planck_low,
-                               rosseland_low);
-    integrate_planck_rosseland(high, exp_high, planck_high,
-                               rosseland_high);
-
-    planck    = planck_high    - planck_low;
-    rosseland = rosseland_high - rosseland_low;
-
+  if (T == 0.0) {
+    planck = 0.0;
+    rosseland = 0.0;
     return;
+  }
+
+  double planck_high, rosseland_high;
+  double planck_low, rosseland_low;
+
+  // Sale the frequencies by temperature
+  low /= T;
+  high /= T;
+
+  double const exp_low = std::exp(-low);
+  double const exp_high = std::exp(-high);
+
+  integrate_planck_rosseland(low, exp_low, planck_low, rosseland_low);
+  integrate_planck_rosseland(high, exp_high, planck_high, rosseland_high);
+
+  planck = planck_high - planck_low;
+  rosseland = rosseland_high - rosseland_low;
+
+  return;
 }
 
 } // end namespace rtt_cdi

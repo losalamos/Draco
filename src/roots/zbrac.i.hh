@@ -16,8 +16,7 @@
 
 #include "ds++/DracoMath.hh"
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -55,95 +54,80 @@ namespace rtt_roots
  */
 
 template <typename Function, typename Real>
-void zbrac(Function func, Real &x1, Real &x2)
-{
-    Require(x2>x1);
+void zbrac(Function func, Real &x1, Real &x2) {
+  Require(x2 > x1);
 
-    using namespace std;
+  using namespace std;
 
-    Real f1 = func(x1), f2 = func(x2), f3;
-    Real af1 = (f1>0.? f1 : -f1);
-    Real af2 = (f2>0.? f2 : -f2);
+  Real f1 = func(x1), f2 = func(x2), f3;
+  Real af1 = (f1 > 0. ? f1 : -f1);
+  Real af2 = (f2 > 0. ? f2 : -f2);
 
-    double scale = 0.5;
-    while ((f1<0 && f2<0) ||
-           (f1>0 && f2>0))
-    {
-	if (af1<af2)
-	{
-	    Real x0 = x1-scale*(x2-x1);
-	    if (x0==x1)
-	    {
-		throw std::domain_error("zbrac: "
-					"could not find search interval");
-	    }
-	    try
-	    {
-		Real f0 = func(x0);
-		if (!rtt_dsxx::isFinite(f0)) throw std::runtime_error("");
-		f1 = f0;
-                af1 = (f1>0.? f1 : -f1);
-		x1 = x0;
-		if (scale<0.5) scale *= 1.5;
-	    }
-	    catch (...)
-	    {
-		scale *= 0.5;
-	    }
-	}
-	else if (af1>af2)
-	{
-	    Real const x3 = x2+scale*(x2-x1);
-	    if (x2==x3)
-	    {
-		throw std::domain_error("zbrac: "
-					"could not find search interval");
-	    }
-	    try
-	    {
-		Real const f3 = func(x3);
-		if (!rtt_dsxx::isFinite(f3)) throw std::runtime_error("");
-		f2 = f3;
-                af2 = (f2>0.? f2 : -f2);
-		x2 = x3;
-		if (scale<0.5) scale *= 1.5;
-	    }
-	    catch (...)
-	    {
-		scale *= 0.5;
-	    }
-	}
-	else
-	{
-	    Real x0 = x1-0.5*scale*(x2-x1);
-	    Real x3 = x2+scale*(x2-x1);
-	    if (x0==x1 || x2==x3)
-	    {
-		throw std::domain_error("zbrac: "
-					"could not find search interval");
-	    }
-	    try
-	    {
-		Real f0 = func(x0);
-		if (!rtt_dsxx::isFinite(f0)) throw std::runtime_error("");
-		f3 = func(x3);
-		f1 = f0;
-                af1 = (f1>0.? f1 : -f1);
-		x1 = x0;
-		f2 = f3;
-                af2 = (f2>0.? f2 : -f2);
-		x2 = x3;
-		if (scale<0.5) scale *= 1.5;
-	    }
-	    catch (...)
-	    {
-		scale *= 0.5;
-	    }
-	}
+  double scale = 0.5;
+  while ((f1 < 0 && f2 < 0) || (f1 > 0 && f2 > 0)) {
+    if (af1 < af2) {
+      Real x0 = x1 - scale * (x2 - x1);
+      if (x0 == x1) {
+        throw std::domain_error("zbrac: "
+                                "could not find search interval");
+      }
+      try {
+        Real f0 = func(x0);
+        if (!rtt_dsxx::isFinite(f0))
+          throw std::runtime_error("");
+        f1 = f0;
+        af1 = (f1 > 0. ? f1 : -f1);
+        x1 = x0;
+        if (scale < 0.5)
+          scale *= 1.5;
+      } catch (...) {
+        scale *= 0.5;
+      }
+    } else if (af1 > af2) {
+      Real const x3 = x2 + scale * (x2 - x1);
+      if (x2 == x3) {
+        throw std::domain_error("zbrac: "
+                                "could not find search interval");
+      }
+      try {
+        Real const f3 = func(x3);
+        if (!rtt_dsxx::isFinite(f3))
+          throw std::runtime_error("");
+        f2 = f3;
+        af2 = (f2 > 0. ? f2 : -f2);
+        x2 = x3;
+        if (scale < 0.5)
+          scale *= 1.5;
+      } catch (...) {
+        scale *= 0.5;
+      }
+    } else {
+      Real x0 = x1 - 0.5 * scale * (x2 - x1);
+      Real x3 = x2 + scale * (x2 - x1);
+      if (x0 == x1 || x2 == x3) {
+        throw std::domain_error("zbrac: "
+                                "could not find search interval");
+      }
+      try {
+        Real f0 = func(x0);
+        if (!rtt_dsxx::isFinite(f0))
+          throw std::runtime_error("");
+        f3 = func(x3);
+        f1 = f0;
+        af1 = (f1 > 0. ? f1 : -f1);
+        x1 = x0;
+        f2 = f3;
+        af2 = (f2 > 0. ? f2 : -f2);
+        x2 = x3;
+        if (scale < 0.5)
+          scale *= 1.5;
+      } catch (...) {
+        scale *= 0.5;
+      }
     }
+  }
 
-    Ensure((f1<=0 && f2>=0) ||
-           (f1>=0 && f2<=0));
+  Ensure((f1 <= 0 && f2 >= 0) || (f1 >= 0 && f2 <= 0));
 }
 
 } // end namespace rtt_roots

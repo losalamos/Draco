@@ -15,18 +15,15 @@
 #include "quadrature/Quadrature.hh"
 #include "quadrature/Quadrature_Interface.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 using rtt_dsxx::UnitTest;
 
-DLL_PUBLIC_quadrature_test
-void quadrature_test(UnitTest &ut,
-                     Quadrature &quadrature);
+DLL_PUBLIC_quadrature_test void quadrature_test(UnitTest &ut,
+                                                Quadrature &quadrature);
 
-DLL_PUBLIC_quadrature_test
-void quadrature_integration_test(UnitTest &ut,
-                                 Quadrature &quadrature);
+DLL_PUBLIC_quadrature_test void
+quadrature_integration_test(UnitTest &ut, Quadrature &quadrature);
 
 } // end namespace rtt_quadrature
 

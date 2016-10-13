@@ -124,7 +124,7 @@ bounds_checking)
   fi
   bounds_checking=on
   run "module swap superlu-dist superlu-dist/4.3-bc"
-  run "module swap trilinos trilinos/12.6.1-bc"
+  run "module swap trilinos trilinos/12.8.1-bc"
   run "module swap metis metis/5.1.0-bc"
   run "module swap parmetis parmetis/4.0.3-bc"
   ;;
@@ -152,23 +152,7 @@ gcc530)
   run "module load ndi metis parmetis trilinos"
   comp=gcc-5.3.0
   ;;
-gcc530bc)
-  echo "Bounds checking option selected."
-  if ! test "${build_type}" == "Debug"; then
-    echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
-    exit 1
-  fi
-  bounds_checking=on
-  run "module purge"
-  run "module load user_contrib"
-  run "module load gcc/5.3.0 openmpi cmake"
-  run "module load dracoscripts subversion random123"
-  run "module load lapack gsl"
-  run "module load superlu-dist/4.3-bc"
-  run "module load ndi metis/5.1.0-bc parmetis/4.0.3-bc trilinos/12.6.1-bc"
-  comp=gcc-5.3.0
-  ;;
-  gcc610)
+gcc610)
     run "module purge"
     run "module load user_contrib"
     run "module load gcc/6.1.0 openmpi cmake"

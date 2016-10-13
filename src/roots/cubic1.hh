@@ -16,8 +16,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
 /*! Solver for cubic equation known to have only one real root.
@@ -29,8 +28,8 @@ namespace rtt_roots
  * \f$ x^3 + ax^2 + bx + c = 0\f$
  */
 
-template<typename Field> DLL_PUBLIC_roots
-Field cubic1(Field const &a, Field const &b, Field const &c);
+template <typename Field>
+DLL_PUBLIC_roots Field cubic1(Field const &a, Field const &b, Field const &c);
 
 } // end namespace rtt_roots
 

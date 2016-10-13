@@ -20,11 +20,10 @@
 #include "diagnostics/config.h"
 #include "ds++/config.h"
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace rtt_diagnostics
-{
+namespace rtt_diagnostics {
 
 //===========================================================================//
 /*!
@@ -55,9 +54,8 @@ namespace rtt_diagnostics
  */
 //===========================================================================//
 
-namespace Diagnostics
-{
-    
+namespace Diagnostics {
+
 //! Map of integer data.
 extern DLL_PUBLIC_diagnostics std::map<std::string, int> integers;
 
@@ -65,10 +63,12 @@ extern DLL_PUBLIC_diagnostics std::map<std::string, int> integers;
 extern DLL_PUBLIC_diagnostics std::map<std::string, double> doubles;
 
 //! Map of vector, integer data.
-extern DLL_PUBLIC_diagnostics std::map< std::string, std::vector<int> > vec_integers;
+extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<int>>
+    vec_integers;
 
 //! Map of vector, double data.
-extern DLL_PUBLIC_diagnostics std::map< std::string, std::vector<double> > vec_doubles;
+extern DLL_PUBLIC_diagnostics std::map<std::string, std::vector<double>>
+    vec_doubles;
 
 } // end of namespace Diagnostics
 

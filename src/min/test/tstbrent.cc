@@ -11,10 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "min/brent.hh"
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "min/brent.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -24,36 +24,30 @@ using namespace rtt_min;
 // TESTS
 //---------------------------------------------------------------------------//
 
-double f(double x)
-{
-    return cos(x);
-}
+double f(double x) { return cos(x); }
 
-void tstbrent(UnitTest &ut)
-{
-    double xmin;
-    double root = brent(0.0, 6.28, 2.0, f, 1.0e-12, xmin);
+void tstbrent(UnitTest &ut) {
+  double xmin;
+  double root = brent(0.0, 6.28, 2.0, f, 1.0e-12, xmin);
 
-    cout << xmin << " " << root << endl;
+  cout << xmin << " " << root << endl;
 
-    if (soft_equiv(xmin, M_PI))
-    {
-        ut.passes("correctly found first minimum of cos");
-    }
-    else
-    {
-        ut.failure("did NOT correctly find first minimum of cos");
-    }
+  if (soft_equiv(xmin, M_PI)) {
+    ut.passes("correctly found first minimum of cos");
+  } else {
+    ut.failure("did NOT correctly find first minimum of cos");
+  }
 }
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut(argc, argv, release);
-    try { tstbrent(ut); }
-    UT_EPILOG(ut);
-}   
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    tstbrent(ut);
+  }
+  UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of tstbrent.cc

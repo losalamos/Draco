@@ -17,8 +17,7 @@
 #include <cstring> // strcmp
 #include <vector>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 //-------------------------------------------------------------------------//
 /*!
  * \brief Structure to describe a parser keyword.
@@ -35,9 +34,8 @@ namespace rtt_parser
  * As a POD struct, Keyword can have no invariants.  However, Parse_Table
  * imposes constraints on the keywords it will accept for its keyword list.
  */
-struct Keyword
-{
-    /*! \brief The keyword moniker.
+struct Keyword {
+  /*! \brief The keyword moniker.
      *
      * The moniker should be a sequence of valid C++ identifiers separated by
      * a single space.  For example, <CODE>"WORD"</CODE>, <CODE>"First_Word
@@ -48,9 +46,9 @@ struct Keyword
      * monikers in its Keyword table according to a set of rules stored in the
      * Parse_Table (q.v.)
      */
-    char const *moniker;
+  char const *moniker;
 
-    /*! \brief The keyword parsing function.
+  /*! \brief The keyword parsing function.
      *
      * When a Parse_Table finds a match to a moniker in its keyword table, the
      * corresponding parse function is called. The parse function may read
@@ -65,9 +63,9 @@ struct Keyword
      * An integer argument that optionally allows a single parse function to
      * handle a set of related keywords. The
      */
-    void (*func)(Token_Stream &stream, int index);
+  void (*func)(Token_Stream &stream, int index);
 
-    /*! \brief The index argument to the parse function.
+  /*! \brief The index argument to the parse function.
      *
      * This is the index value that is passed to the parse function when the
      * Parse_Table finds a match to the keyword moniker. The parse function is
@@ -77,9 +75,9 @@ struct Keyword
      * enumerated or Boolean option may be set using a single parse function
      * that simply copies the index argument to the option variable.
      */
-    int index;
+  int index;
 
-    /*! Name of the module that supplied the keyword.
+  /*! Name of the module that supplied the keyword.
      *
      * This member is significant only if certain options are set in the
      * Parse_Table.  It is used to support parsing in frameworks that support
@@ -90,7 +88,7 @@ struct Keyword
      * clashes, where two modules have registered keywords with the same
      * moniker in the same Parse_Table.
      */
-    char const *module;
+  char const *module;
 };
 
 //-------------------------------------------------------------------------//
@@ -147,107 +145,102 @@ struct Keyword
 class DLL_PUBLIC_parser Parse_Table
 //    : private std::vector<Keyword>
 {
-  public:
+public:
+  // TYPEDEFS AND ENUMERATIONS
 
-    // TYPEDEFS AND ENUMERATIONS
+  //! Parser settings, which can be bitwise OR-ed together.
+  enum {
+    CASE_INSENSITIVE = 1U,         //!< Keyword match is case-insensitive
+    PARTIAL_IDENTIFIER_MATCH = 2U, //!< Match incomplete identifiers
+    ONCE = 4U                      //!< Parse single keyword, not a block
+  };
 
-    //! Parser settings, which can be bitwise OR-ed together.
-    enum
-    {
-	CASE_INSENSITIVE = 1U,          //!< Keyword match is case-insensitive
-	PARTIAL_IDENTIFIER_MATCH = 2U,  //!< Match incomplete identifiers
-        ONCE = 4U                       //!< Parse single keyword, not a block
-    };
+  // CREATORS
 
-    // CREATORS
+  //! Create an empty Parse_Table.
+  Parse_Table(void) : vec(0), flags_(0) { /* empty */
+  }
 
-    //! Create an empty Parse_Table.
-    Parse_Table(void) : vec(0), flags_(0) {/* empty */}
+  //! Construct a parse table with the specified keywords.
+  Parse_Table(Keyword const *table, size_t count, unsigned flags = 0);
 
-    //! Construct a parse table with the specified keywords.
-    Parse_Table(Keyword const *table, size_t count, unsigned flags=0);
+  //! This class is meant to be heritable.
+  virtual ~Parse_Table(void) { /* empty */
+  }
 
-    //! This class is meant to be heritable.
-    virtual ~Parse_Table(void){/* empty */}
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Add keywords to the table.
+  void add(Keyword const *table, size_t count);
 
-    //! Add keywords to the table.
-    void add(Keyword const *table, size_t count);
+  //! Add the keywords from another Parse_Table
+  void add(Parse_Table const &);
 
-    //! Add the keywords from another Parse_Table
-    void add(Parse_Table const &);
+  //! Remove a keyword from the table.
+  void remove(char const *);
 
-    //! Remove a keyword from the table.
-    void remove(char const *);
+  //! Request a change in capacity.
+  // using std::vector<Keyword>::reserve;
+  void reserve(std::vector<Keyword>::size_type n) { vec.reserve(n); }
 
-    //! Request a change in capacity.
-    // using std::vector<Keyword>::reserve;
-    void reserve (std::vector<Keyword>::size_type n) { vec.reserve(n); }
+  //! Set parser options.
+  void set_flags(unsigned char);
 
-    //! Set parser options.
-    void set_flags(unsigned char);
+  // ACCESSORS
 
+  //! Return the number of elements in the vector
+  // using std::vector<Keyword>::size;
+  std::vector<Keyword>::size_type size() const { return vec.size(); }
 
-    // ACCESSORS
+  //! Return the current parser options.
+  unsigned char get_flags() const { return flags_; }
 
-    //! Return the number of elements in the vector
-    // using std::vector<Keyword>::size;
-    std::vector<Keyword>::size_type size() const { return vec.size(); }
+  // SERVICES
 
-    //! Return the current parser options.
-    unsigned char get_flags() const { return flags_; }
+  //! Parse a token stream.
+  Token parse(Token_Stream &tokens) const;
 
-    // SERVICES
+  //! Parse a token stream.
+  Token parseforkeyword(Token_Stream &tokens) const;
 
-    //! Parse a token stream.
-    Token parse(Token_Stream &tokens) const;
+  //! Check the class invariants
+  bool check_class_invariants() const;
 
-    //! Parse a token stream.
-    Token parseforkeyword(Token_Stream &tokens) const;
+private:
+  // TYPEDEFS AND ENUMERATIONS
 
-    //! Check the class invariants
-    bool check_class_invariants() const;
-
-  private:
-
-
-    // TYPEDEFS AND ENUMERATIONS
-
-    //-----------------------------------------------------------------------//
-    /*!
+  //-----------------------------------------------------------------------//
+  /*!
      * \brief Ordering functor for Keyword
      *
      * Provides an ordering for Keyword compatible with STL sort and search
      * routines.
      */
 
-    class Keyword_Compare_
-    {
-      public:
-	Keyword_Compare_(unsigned char flags);
+  class Keyword_Compare_ {
+  public:
+    Keyword_Compare_(unsigned char flags);
 
-	bool operator()( Keyword const &k1, Keyword const &k2 ) const;
+    bool operator()(Keyword const &k1, Keyword const &k2) const;
 
-	bool operator()( Keyword const &keyword, Token const &token  ) const;
+    bool operator()(Keyword const &keyword, Token const &token) const;
 
-	int kk_comparison(char const *, char const *) const;
-	int kt_comparison(char const *, char const *) const;
+    int kk_comparison(char const *, char const *) const;
+    int kt_comparison(char const *, char const *) const;
 
-      private:
+  private:
+    unsigned char flags_;
+  };
 
-	unsigned char flags_;
-    };
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
+  //! Sort and check the table following the addition of new keywords
+  void sort_table_();
 
-    //! Sort and check the table following the addition of new keywords
-    void sort_table_();
+  // DATA
 
-    // DATA
-
-    std::vector<Keyword> vec;
-    unsigned char flags_;  //!< Option flags for this parse table.
+  std::vector<Keyword> vec;
+  unsigned char flags_; //!< Option flags for this parse table.
 };
 
 //---------------------------------------------------------------------------//
@@ -270,13 +263,9 @@ class DLL_PUBLIC_parser Parse_Table
  *	a.module == b.module </code>
  */
 
-inline bool operator==(Keyword const &a, Keyword const &b)
-{
-    return
-        strcmp( a.moniker, b.moniker ) == 0 &&
-        a.func  == b.func                   &&
-        a.index == b.index                  &&
-        strcmp( a.module, b.module ) == 0;
+inline bool operator==(Keyword const &a, Keyword const &b) {
+  return strcmp(a.moniker, b.moniker) == 0 && a.func == b.func &&
+         a.index == b.index && strcmp(a.module, b.module) == 0;
 }
 
 //---------------------------------------------------------------------------//
@@ -286,7 +275,7 @@ DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
 
 } // rtt_parser
 
-#endif  // CCS4_Parse_Table_HH
+#endif // CCS4_Parse_Table_HH
 
 //---------------------------------------------------------------------------//
 // end of Parse_Table.hh

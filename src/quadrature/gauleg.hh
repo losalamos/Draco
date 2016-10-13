@@ -21,8 +21,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Gauss-Legendre quadrature
@@ -59,78 +58,75 @@ namespace rtt_quadrature
  * \param N Number of points in quadrature.
  * 
  */
-template< typename FieldVector >
-void gauleg( double const x1, // expect FieldVector::value_type to be promoted to double.
-             double const x2, // expect FieldVector::value_type to be promoted to double.
-             FieldVector &x,
-             FieldVector &w,
-             unsigned const n )
-{
-    using rtt_dsxx::soft_equiv;
-    using rtt_units::PI;
-    using std::cos;
-    using std::numeric_limits;
+template <typename FieldVector>
+void gauleg(
+    double const x1, // expect FieldVector::value_type to be promoted to double.
+    double const x2, // expect FieldVector::value_type to be promoted to double.
+    FieldVector &x, FieldVector &w, unsigned const n) {
+  using rtt_dsxx::soft_equiv;
+  using rtt_units::PI;
+  using std::cos;
+  using std::numeric_limits;
 
-    typedef typename FieldVector::value_type Field;
+  typedef typename FieldVector::value_type Field;
 
-    Require( n > 0 );
-    Require( x2 > x1 );
+  Require(n > 0);
+  Require(x2 > x1);
 
-    // convergence tolerance
-    Field const tolerance( 100*numeric_limits< Field >::epsilon() );
-    
-    x.resize(n);
-    w.resize(n);
+  // convergence tolerance
+  Field const tolerance(100 * numeric_limits<Field>::epsilon());
 
-    // number of Gauss points in the half range.
-    // The roots are symmetric in the interval.  We only need to search for
-    // half of them.
-    unsigned const numHrGaussPoints( (n+1)/2 );
+  x.resize(n);
+  w.resize(n);
 
-    // mid-point of integration range
-    Field const mu_m( 0.5*(x2+x1) );
-    // length of half the integration range.
-    Field const mu_l( 0.5*(x2-x1) );
-    
-    // Loop over the desired roots.
-    for ( size_t iroot=0; iroot<numHrGaussPoints; ++iroot)
+  // number of Gauss points in the half range.
+  // The roots are symmetric in the interval.  We only need to search for
+  // half of them.
+  unsigned const numHrGaussPoints((n + 1) / 2);
+
+  // mid-point of integration range
+  Field const mu_m(0.5 * (x2 + x1));
+  // length of half the integration range.
+  Field const mu_l(0.5 * (x2 - x1));
+
+  // Loop over the desired roots.
+  for (size_t iroot = 0; iroot < numHrGaussPoints; ++iroot) {
+    // Approximate the i-th root.
+    Field z(cos(PI * (iroot + 0.75) / (n + 0.5)));
+
+    // Temporary storage;
+    Field z1, pp;
+
+    do // Use Newton's method to refine the value for the i-th root.
     {
-	// Approximate the i-th root.
-	Field z( cos( PI * ( iroot+0.75 ) / ( n+0.5 )) );
+      // Evaluate the Legendre polynomials evaluated at z.
+      Field p1 = gsl_sf_legendre_Pl(n, z);
+      Field p2 = gsl_sf_legendre_Pl(n - 1, z);
 
-        // Temporary storage;
-        Field z1, pp;
-        
-	do // Use Newton's method to refine the value for the i-th root.  
-	{
-	    // Evaluate the Legendre polynomials evaluated at z.
-            Field p1 = gsl_sf_legendre_Pl(n,z);
-            Field p2 = gsl_sf_legendre_Pl(n-1,z);
+      // p1 is now the desired Legendre polynomial evaluated at z. We
+      // next compute pp, its derivative, by a standard relation
+      // involving also p2, the polynomial of one lower order.
+      pp = n * (z * p1 - p2) / (z * z - 1.0);
 
-	    // p1 is now the desired Legendre polynomial evaluated at z. We
-	    // next compute pp, its derivative, by a standard relation
-	    // involving also p2, the polynomial of one lower order.
-	    pp = n * (z*p1-p2)/(z*z-1.0);
-	    
-	    // Update via Newton's Method
-	    z1 = z;
-	    z  = z1 - p1/pp;
+      // Update via Newton's Method
+      z1 = z;
+      z = z1 - p1 / pp;
 
-	} while( ! soft_equiv( z,z1, tolerance ) );
+    } while (!soft_equiv(z, z1, tolerance));
 
-	// Roots will be between -1 and 1.0 and symmetric about the origin. 
-        int const idxSymPart( n - iroot - 1 );
+    // Roots will be between -1 and 1.0 and symmetric about the origin.
+    int const idxSymPart(n - iroot - 1);
 
-        // Now, scale the root to tthe desired interval and put in its
-        // symmetric counterpart.
-	x[ iroot ]      = mu_m - mu_l*z;       
-	x[ idxSymPart ] = mu_m + mu_l*z;       
+    // Now, scale the root to tthe desired interval and put in its
+    // symmetric counterpart.
+    x[iroot] = mu_m - mu_l * z;
+    x[idxSymPart] = mu_m + mu_l * z;
 
-	// Compute the associated weight and its symmetric counterpart.
-        w[ iroot ]      = 2*mu_l / ((1-z*z)*pp*pp); 
-        w[ idxSymPart ] = w[ iroot ];
-    }	
-    return;
+    // Compute the associated weight and its symmetric counterpart.
+    w[iroot] = 2 * mu_l / ((1 - z * z) * pp * pp);
+    w[idxSymPart] = w[iroot];
+  }
+  return;
 }
 
 } // end namespace rtt_quadrature

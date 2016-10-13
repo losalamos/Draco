@@ -15,8 +15,7 @@
 
 #include "Ordinate_Space.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using std::ostream;
 
 //=======================================================================================//
@@ -31,75 +30,64 @@ using std::ostream;
  */
 //=======================================================================================//
 
-class Sn_Ordinate_Space : public Ordinate_Space
-{
-  public:
+class Sn_Ordinate_Space : public Ordinate_Space {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
+  //! Specify the ordinate quadrature with defaults.
+  Sn_Ordinate_Space(unsigned dimension, Geometry geometry,
+                    vector<Ordinate> const &, int expansion_order,
+                    bool extra_starting_directions = false,
+                    Ordering ordering = LEVEL_ORDERED);
 
-    //! Specify the ordinate quadrature with defaults.
-    Sn_Ordinate_Space(unsigned dimension,
-                   Geometry geometry,
-                   vector<Ordinate> const &,
-                   int expansion_order,
-                   bool extra_starting_directions=false,
-                   Ordering ordering=LEVEL_ORDERED);
+  // MANIPULATORS
 
-    // MANIPULATORS
+  // ACCESSORS
 
-    // ACCESSORS
+  bool check_class_invariants() const;
 
-    bool check_class_invariants() const;
+  // SERVICES
 
-    // SERVICES
+  virtual QIM quadrature_interpolation_model() const;
 
-    virtual QIM quadrature_interpolation_model() const;
+  //! Return the discrete to moment transform matrix
+  virtual vector<double> D() const;
 
-    //! Return the discrete to moment transform matrix
-    virtual vector<double> D() const;
+  //! Return the moment to discrete transform matrix
+  virtual vector<double> M() const;
 
-    //! Return the moment to discrete transform matrix
-    virtual vector<double> M() const;
+  // STATICS
 
-    // STATICS
+protected:
+  // NESTED CLASSES AND TYPEDEFS
 
-  protected:
+  // IMPLEMENTATION
 
-    // NESTED CLASSES AND TYPEDEFS
+  virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class, unsigned sn_order);
 
-    // IMPLEMENTATION
+  virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class, unsigned sn_order);
 
-    virtual vector<Moment> compute_n2lk_1D_(Quadrature_Class,
-                                            unsigned sn_order);
+  virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class, unsigned sn_order);
 
-    virtual vector<Moment> compute_n2lk_1Da_(Quadrature_Class,
-                                             unsigned sn_order);
+  virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class, unsigned sn_order);
 
-    virtual vector<Moment> compute_n2lk_2D_(Quadrature_Class,
-                                            unsigned sn_order);
+  virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class, unsigned sn_order);
 
-    virtual vector<Moment> compute_n2lk_2Da_(Quadrature_Class,
-                                             unsigned sn_order);
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    virtual vector<Moment> compute_n2lk_3D_(Quadrature_Class,
-                                            unsigned sn_order);
+  // IMPLEMENTATION
 
-  private:
+  void compute_M();
+  void compute_D();
 
-    // NESTED CLASSES AND TYPEDEFS
+  // DATA
 
-    // IMPLEMENTATION
-
-    void compute_M();
-    void compute_D();
-
-    // DATA
-
-    vector<double> D_;
-    //! Moment to discrete matrix
-    vector<double> M_;
+  vector<double> D_;
+  //! Moment to discrete matrix
+  vector<double> M_;
 };
 
 } // end namespace rtt_quadrature

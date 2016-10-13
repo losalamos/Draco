@@ -13,65 +13,59 @@
 
 #include "NodeFlags.hh"
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Parses the node_flags data block from the mesh file via calls to 
  *        private member functions.
  * \param meshfile Mesh file name.
  */
-void NodeFlags::readNodeFlags(ifstream & meshfile)
-{
-    readKeyword(meshfile);
-    readFlagTypes(meshfile);
-    readEndKeyword(meshfile);
+void NodeFlags::readNodeFlags(ifstream &meshfile) {
+  readKeyword(meshfile);
+  readFlagTypes(meshfile);
+  readEndKeyword(meshfile);
 }
 /*!
  * \brief Reads and validates the node_flags block keyword.
  * \param meshfile Mesh file name.
  */
-void NodeFlags::readKeyword(ifstream & meshfile)
-{
-    string dummyString;
+void NodeFlags::readKeyword(ifstream &meshfile) {
+  string dummyString;
 
-    meshfile >> dummyString;
-    Insist(dummyString == "node_flags",
-	   "Invalid mesh file: node_flags block missing");
-    std::getline(meshfile, dummyString);
+  meshfile >> dummyString;
+  Insist(dummyString == "node_flags",
+         "Invalid mesh file: node_flags block missing");
+  std::getline(meshfile, dummyString);
 }
 /*!
  * \brief Reads and validates the node_flags block data.
  * \param meshfile Mesh file name.
  */
-void NodeFlags::readFlagTypes(ifstream & meshfile)
-{
-    int flagTypeNum;
-    string dummyString;
+void NodeFlags::readFlagTypes(ifstream &meshfile) {
+  int flagTypeNum;
+  string dummyString;
 
-    for (size_t i = 0; i < static_cast<size_t>(dims.get_nnode_flag_types());
-         ++i)
-    {
-	meshfile >> flagTypeNum >> dummyString;
-	Insist(static_cast<size_t>(flagTypeNum) == i+1,
-	       "Invalid mesh file: node flag type out of order");
-	Check(i<flagTypes.size());
-	flagTypes[i].reset(new Flags(dims.get_nnode_flags(i), dummyString));
-	std::getline(meshfile, dummyString);
-	flagTypes[i]->readFlags(meshfile);
-    }
+  for (size_t i = 0; i < static_cast<size_t>(dims.get_nnode_flag_types());
+       ++i) {
+    meshfile >> flagTypeNum >> dummyString;
+    Insist(static_cast<size_t>(flagTypeNum) == i + 1,
+           "Invalid mesh file: node flag type out of order");
+    Check(i < flagTypes.size());
+    flagTypes[i].reset(new Flags(dims.get_nnode_flags(i), dummyString));
+    std::getline(meshfile, dummyString);
+    flagTypes[i]->readFlags(meshfile);
+  }
 }
 /*!
  * \brief Reads and validates the end_node_flags block keyword.
  * \param meshfile Mesh file name.
  */
-void NodeFlags::readEndKeyword(ifstream & meshfile)
-{
-    string dummyString;
+void NodeFlags::readEndKeyword(ifstream &meshfile) {
+  string dummyString;
 
-    meshfile >> dummyString;
-    Insist(dummyString == "end_node_flags",
-	   "Invalid mesh file: node_flags block missing end");
-    std::getline(meshfile, dummyString);       // read and discard blank line.
+  meshfile >> dummyString;
+  Insist(dummyString == "end_node_flags",
+         "Invalid mesh file: node_flags block missing end");
+  std::getline(meshfile, dummyString); // read and discard blank line.
 }
 /*!
  * \brief Returns the index to the node flag type that contains the specified
@@ -79,16 +73,14 @@ void NodeFlags::readEndKeyword(ifstream & meshfile)
  * \param desired_flag_type Flag type.
  * \return The node flag type index.
  */
-int NodeFlags::get_flag_type_index(string & desired_flag_type) const 
-{
-    int flag_type_index = -1;
-    for (int f = 0; f < dims.get_nnode_flag_types(); f++)
-    {
-        string flag_type = flagTypes[f]->getFlagType();
-        if (flag_type == desired_flag_type)
-      	    flag_type_index = f;
-    }
-    return flag_type_index;
+int NodeFlags::get_flag_type_index(string &desired_flag_type) const {
+  int flag_type_index = -1;
+  for (int f = 0; f < dims.get_nnode_flag_types(); f++) {
+    string flag_type = flagTypes[f]->getFlagType();
+    if (flag_type == desired_flag_type)
+      flag_type_index = f;
+  }
+  return flag_type_index;
 }
 
 } // end namespace rtt_RTT_Format_Reader

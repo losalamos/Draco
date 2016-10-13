@@ -14,16 +14,14 @@
 #ifndef norms_L2norm_hh
 #define norms_L2norm_hh
 
-#include <vector>
 #include "L2norm.i.hh"
 #include "ds++/config.h"
+#include <vector>
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //! Compute the L2-norm of a vector.
-template DLL_PUBLIC_norms
-double L2norm(std::vector<double> const &x);
+template DLL_PUBLIC_norms double L2norm(std::vector<double> const &x);
 
 } // end namespace rtt_norms
 

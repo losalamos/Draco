@@ -13,27 +13,21 @@
 
 #include "KroneckerDelta.i.hh"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 //---------------------------------------------------------------------------//
 // Make kronecker delta valid only for double, int, unsigned, and float.
 
-template DLL_PUBLIC_special_functions
-unsigned int kronecker_delta( double const test_value, 
-			double const offset ) ;
-template DLL_PUBLIC_special_functions
-unsigned int kronecker_delta( int const test_value, 
-		     int const offset ) ;
-template DLL_PUBLIC_special_functions
-unsigned int kronecker_delta( long const test_value, 
-		      long const offset ) ;
-template DLL_PUBLIC_special_functions
-unsigned int kronecker_delta( unsigned const test_value, 
-			  unsigned const offset ) ;
-template DLL_PUBLIC_special_functions
-unsigned int kronecker_delta( float const test_value, 
-		       float const offset ) ;
+template DLL_PUBLIC_special_functions unsigned int
+kronecker_delta(double const test_value, double const offset);
+template DLL_PUBLIC_special_functions unsigned int
+kronecker_delta(int const test_value, int const offset);
+template DLL_PUBLIC_special_functions unsigned int
+kronecker_delta(long const test_value, long const offset);
+template DLL_PUBLIC_special_functions unsigned int
+kronecker_delta(unsigned const test_value, unsigned const offset);
+template DLL_PUBLIC_special_functions unsigned int
+kronecker_delta(float const test_value, float const offset);
 
 } // end namespace rtt_sf
 

@@ -18,8 +18,7 @@
 
 #include "Quadrature.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 //=======================================================================================//
 /*!
@@ -36,84 +35,62 @@ namespace rtt_quadrature
  */
 //=======================================================================================//
 
-class Octant_Quadrature : public Quadrature
-{
-  public:
+class Octant_Quadrature : public Quadrature {
+public:
+  // CREATORS
 
-    // CREATORS
+  Octant_Quadrature(unsigned const sn_order)
+      : Quadrature(sn_order), has_axis_assignments_(false), mu_axis_(),
+        eta_axis_() { /* empty */
+  }
 
-    Octant_Quadrature(unsigned const sn_order)
-        :
-        Quadrature(sn_order),
-        has_axis_assignments_(false),
-        mu_axis_(),
-        eta_axis_()
-    { /* empty */ }
+  Octant_Quadrature(unsigned const sn_order, unsigned const mu_axis,
+                    unsigned const eta_axis)
+      : Quadrature(sn_order), has_axis_assignments_(true), mu_axis_(mu_axis),
+        eta_axis_(eta_axis) { /* empty */
+  }
 
-    Octant_Quadrature(unsigned const sn_order,
-                      unsigned const mu_axis,
-                      unsigned const eta_axis)
-        :
-        Quadrature(sn_order),
-        has_axis_assignments_(true),
-        mu_axis_(mu_axis),
-        eta_axis_(eta_axis)
-    { /* empty */ }
+  // ACCESSORS
 
-    // ACCESSORS
+  // SERVICES
+  DLL_PUBLIC_quadrature virtual bool has_axis_assignments() const;
 
-    // SERVICES
-    DLL_PUBLIC_quadrature
-    virtual bool has_axis_assignments() const;
+protected:
+  virtual string as_text(string const &indent) const = 0;
 
-  protected:
+  // IMPLEMENTATION
 
-    virtual string as_text(string const &indent) const = 0;
+  //! Virtual hook for create_ordinate_set
+  DLL_PUBLIC_quadrature virtual void
+  create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                           vector<double> &wt) const = 0;
 
-    // IMPLEMENTATION
+  // STATICS
 
-    //! Virtual hook for create_ordinate_set
-    DLL_PUBLIC_quadrature
-    virtual void create_octant_ordinates_(vector<double> &mu,
-                                          vector<double> &eta,
-                                          vector<double> &wt) const = 0;
+  static void parse(Token_Stream &tokens, bool &has_axis_assignments,
+                    unsigned &mu_axis, unsigned &eta_axis);
 
-    // STATICS
+private:
+  // IMPLEMENTATION
 
-    static
-    void parse(Token_Stream &tokens,
-               bool &has_axis_assignments,
-               unsigned &mu_axis,
-               unsigned &eta_axis);
+  using Quadrature::create_ordinates_;
 
-  private:
+  //! Virtual hook for create_ordinates
+  DLL_PUBLIC_quadrature virtual vector<Ordinate>
+  create_ordinates_(unsigned dimension, Geometry, double norm,
+                    bool include_starting_directions,
+                    bool include_extra_directions) const;
 
-    // IMPLEMENTATION
+  //! Virtual hook for create_ordinate_set
+  DLL_PUBLIC_quadrature virtual vector<Ordinate>
+  create_ordinates_(unsigned dimension, Geometry, double norm, unsigned mu_axis,
+                    unsigned eta_axis, bool include_starting_directions,
+                    bool include_extra_directions) const;
 
-    using Quadrature::create_ordinates_;
+  // DATA
 
-    //! Virtual hook for create_ordinates
-    DLL_PUBLIC_quadrature
-    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
-                                               Geometry,
-                                               double norm,
-                                               bool include_starting_directions,
-                                               bool include_extra_directions) const;
-
-    //! Virtual hook for create_ordinate_set
-    DLL_PUBLIC_quadrature
-    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
-                                               Geometry,
-                                               double norm,
-                                               unsigned mu_axis,
-                                               unsigned eta_axis,
-                                               bool include_starting_directions,
-                                               bool include_extra_directions) const;
-
-    // DATA
-
-    bool has_axis_assignments_;
-    unsigned mu_axis_, eta_axis_;
+  bool has_axis_assignments_;
+  unsigned mu_axis_, eta_axis_;
 };
 
 } // end namespace rtt_quadrature

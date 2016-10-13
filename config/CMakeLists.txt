@@ -69,12 +69,6 @@ endif()
 configure_file( draco-config-install.cmake.in
    ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake @ONLY)
 
-# For Knights corner systems, also install the unit test driver
-if( HAVE_MIC AND  EXISTS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
-  install( PROGRAMS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-    DESTINATION cmake/draco )
-endif()
-
 # Install scripts and macros to make them available by other projects.
 set( file_list ${CMake_src} ${CMake_in} ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
 

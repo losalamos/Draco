@@ -16,8 +16,7 @@
 
 #include "cdi/EoS.hh"
 
-namespace rtt_cdi_test
-{
+namespace rtt_cdi_test {
 
 //========================================================================
 /*!
@@ -34,43 +33,41 @@ namespace rtt_cdi_test
  *     heat capacity   = temperature + density/1000
  *     num free electrons = temperature/100
  *     thermal conductivity = 1000*temperature + density
- */  
+ */
 /*!
  * \example cdi/test/tEoS.cc
  * \example cdi/test/tCDI.cc
  */
 //========================================================================
 
-class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
-{
-  public:
-	
-    // -------------------------- //
-    // Constructors & Destructors //
-    // -------------------------- //
-	
-    /*!
+class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS {
+public:
+  // -------------------------- //
+  // Constructors & Destructors //
+  // -------------------------- //
+
+  /*!
      * \brief Constructor for DummyEoS object.
      * 
      * The constructor assigns fixed values for all of the member
      * data.  Every instance of this object has the same member
      * data. 
      */
-    DummyEoS();
+  DummyEoS();
 
-    /*!
+  /*!
      * \brief Default DummyEoS() destructor.
      *
      * This is required to correctly release memory when a
      * DummyEoS object is destroyed.
      */
-    ~DummyEoS();
-	
-    // --------- //
-    // Accessors //
-    // --------- //
-	
-    /*!
+  ~DummyEoS();
+
+  // --------- //
+  // Accessors //
+  // --------- //
+
+  /*!
      * \brief EoS accessor that returns a single specific electron 
      *        internal energy that corresponds to the provided
      *        temperature and density. 
@@ -83,10 +80,10 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      *     value is being requested (g/cm^3).
      * \return A specific electron internal energy (kJ/g).
      */
-    double getSpecificElectronInternalEnergy(
-	double temperature, double density ) const;
-	
-    /*!
+  double getSpecificElectronInternalEnergy(double temperature,
+                                           double density) const;
+
+  /*!
      * \brief EoS accessor that returns a vector of specific
      *     electron internal energies that
      *     correspond to the provided vectors of temperatures and 
@@ -100,11 +97,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      *     which the EoS values are being requested (g/cm^3).
      * \return A vector of specific electron internal energies (kJ/g).
      */
-    std::vector< double > getSpecificElectronInternalEnergy(
-	const std::vector< double >& vtemperature, 
-	const std::vector< double >& vdensity ) const;
+  std::vector<double>
+  getSpecificElectronInternalEnergy(const std::vector<double> &vtemperature,
+                                    const std::vector<double> &vdensity) const;
 
-    /*!
+  /*!
      * \brief Retrieve the electron based heat capacity for this
      *        material at the provided density and temperature.
      *
@@ -114,10 +111,9 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return The electron based heat capacity in kJ/g/K.
      */
-    double getElectronHeatCapacity(
-	double temperature, double density ) const;
+  double getElectronHeatCapacity(double temperature, double density) const;
 
-    /*!
+  /*!
      * \brief Retrieve a set of electron based heat capacities for
      *        this material that correspond to the tuple list of
      *        provided densities and temperatures. 
@@ -128,11 +124,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return The electron based heat capacity in kJ/g/K.
      */
-    std::vector< double > getElectronHeatCapacity(
-	const std::vector< double >& vtemperature, 
-	const std::vector< double >& vdensity ) const;
+  std::vector<double>
+  getElectronHeatCapacity(const std::vector<double> &vtemperature,
+                          const std::vector<double> &vdensity) const;
 
-    /*!
+  /*!
      * \brief Retrieve the specific ion internal energy for this
      *        material at the provided density and temperature.    
      *
@@ -142,10 +138,9 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return The specific ion internal energy in kJ/g.
      */
-    double getSpecificIonInternalEnergy(
-	double temperature, double density ) const;
+  double getSpecificIonInternalEnergy(double temperature, double density) const;
 
-    /*!
+  /*!
      * \brief Retrieve a set of specific ion internal energies for
      *        this material that correspond to the tuple list of
      *        provided densities and temperatures.      
@@ -156,11 +151,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return A vector of specific ion internal energies in kJ/g.
      */
-    std::vector< double > getSpecificIonInternalEnergy(
-	const std::vector< double >& vtemperature, 
-	const std::vector< double >& vdensity ) const;
+  std::vector<double>
+  getSpecificIonInternalEnergy(const std::vector<double> &vtemperature,
+                               const std::vector<double> &vdensity) const;
 
-    /*!
+  /*!
      * \brief Retrieve the ion based heat capacity for this
      *        material at the provided density and temperature.
      *
@@ -170,10 +165,9 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return The ion based heat capacity in kJ/g/K.
      */
-    double getIonHeatCapacity(
-	double temperature, double density ) const;
+  double getIonHeatCapacity(double temperature, double density) const;
 
-    /*!
+  /*!
      * \brief Retrieve a set of ion based heat capacities for
      *        this material that correspond to the tuple list of
      *        provided densities and temperatures. 
@@ -184,11 +178,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return A vector of ion based heat capacities in kJ/g/K.
      */
-    std::vector< double > getIonHeatCapacity(
-	const std::vector< double >& vtemperature,
-	const std::vector< double >& vdensity ) const;
+  std::vector<double>
+  getIonHeatCapacity(const std::vector<double> &vtemperature,
+                     const std::vector<double> &vdensity) const;
 
-    /*!
+  /*!
      * \brief Retrieve the number of free electrons per ion for this
      *        material at the provided density and temperature.
      *
@@ -198,10 +192,9 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return The number of free electrons per ion.
      */
-    double getNumFreeElectronsPerIon(
-	double temperature, double density ) const;
+  double getNumFreeElectronsPerIon(double temperature, double density) const;
 
-    /*!
+  /*!
      * \brief Retrieve a set of free electrons per ion averages for
      *        this material that correspond to the tuple list of
      *        provided densities and temperatures. 
@@ -210,11 +203,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return A vector of the number of free electrons per ion.
      */
-    std::vector< double > getNumFreeElectronsPerIon(
-	const std::vector< double >& vtemperature,
-	const std::vector< double >& vdensity ) const;
+  std::vector<double>
+  getNumFreeElectronsPerIon(const std::vector<double> &vtemperature,
+                            const std::vector<double> &vdensity) const;
 
-    /*!
+  /*!
      * \brief Retrieve the electron based thermal conductivity for this
      *        material at the provided density and temperature.
      *
@@ -224,10 +217,10 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \param temperature Temperature of the material in Kelvin.
      * \return The electron based thermal conductivity in 1/s/cm.
      */
-    double getElectronThermalConductivity(
-	double temperature, double density ) const;
+  double getElectronThermalConductivity(double temperature,
+                                        double density) const;
 
-    /*!
+  /*!
      * \brief Retrieve a set of electron based thermal conductivities for
      *        this material that correspond to the tuple list of
      *        provided densities and temperatures. 
@@ -239,11 +232,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      * \return A vector of electron based thermal conductivities
      * in 1/s/cm.
      */
-    std::vector< double > getElectronThermalConductivity(
-	const std::vector< double >& vtemperature,
-	const std::vector< double >& vdensity ) const;
+  std::vector<double>
+  getElectronThermalConductivity(const std::vector<double> &vtemperature,
+                                 const std::vector<double> &vdensity) const;
 
-    /*!
+  /*!
      * \brief Retrieve an electron temperature associated with the provided
      *        specific electron internal energy (kJ/g) and density (g/cm^3). 
      *
@@ -253,12 +246,11 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      *                root finder.
      * \return An electron (material) temperature in keV.
      */
-    double getElectronTemperature(
-        double density,
-        double SpecificElectronInternalEnergy,
-        double Tguess ) const;
+  double getElectronTemperature(double density,
+                                double SpecificElectronInternalEnergy,
+                                double Tguess) const;
 
-    /*!
+  /*!
      * \brief Retrieve an ion temperature associated with the provided
      *        specific ion internal energy (kJ/g) and density (g/cm^3). 
      *
@@ -268,16 +260,14 @@ class DLL_PUBLIC_cdi_test DummyEoS : public rtt_cdi::EoS
      *                root finder.
      * \return Ionic temperature in keV.
      */
-    double getIonTemperature(
-        double density,
-        double SpecificIonInternalEnergy,
-        double Tguess ) const;
+  double getIonTemperature(double density, double SpecificIonInternalEnergy,
+                           double Tguess) const;
 
-    // Dummy pack function.
-    std::vector<char> pack() const { return std::vector<char>(); }
+  // Dummy pack function.
+  std::vector<char> pack() const { return std::vector<char>(); }
 
 }; // end of class DummyEoS
-    
+
 } // end namespace rtt_cdi_test
 
 #endif // __cdi_DummyEoS_hh__

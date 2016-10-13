@@ -13,10 +13,7 @@
 
 #include "rotate.hh"
 
-namespace kgb_recipes
-{
-
-} // end namespace kgb_recipes
+namespace kgb_recipes {} // end namespace kgb_recipes
 
 //---------------------------------------------------------------------------//
 // end of rotate.cc

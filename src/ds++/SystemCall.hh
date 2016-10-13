@@ -5,7 +5,6 @@
  *         system calls.
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
- * \version $Id$
  */
 //---------------------------------------------------------------------------//
 
@@ -15,24 +14,23 @@
 #include "ds++/config.h"
 #include <string>
 #ifdef WIN32
-#include <sys/types.h> // _stat
-#include <WinSock2.h> // Must be included before Windows.h
-#include <Windows.h>  // WIN32_FIND_DATA
+#include <WinSock2.h>
+#include <Windows.h>
+#include <sys/types.h>
 #endif
-#include <sys/stat.h>   // stat (UNIX) or _stat (WIN32)
+#include <sys/stat.h> // stat (UNIX) or _stat (WIN32)
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //! Character used as path separator.
-char const WinDirSep  = '\\';
+char const WinDirSep = '\\';
 char const UnixDirSep = '/';
 #ifdef _MSC_VER
 char const dirSep = WinDirSep;
-std::string const exeExtension( ".exe" );
+std::string const exeExtension(".exe");
 #else
 char const dirSep = UnixDirSep;
-std::string const exeExtension( "" );
+std::string const exeExtension("");
 #endif
 
 //===========================================================================//
@@ -42,7 +40,7 @@ std::string const exeExtension( "" );
 /*! \section HOST_NAME_MAX
  *
  * The selection of a value for HOST_NAME_MAX is completed by
- ds++/CMakeLists.txt and ds++/config.h.in.
+ * ds++/CMakeLists.txt and ds++/config.h.in.
  *
  * - For most Linux platforms, \c HOST_NAME_MAX is defined in \c \<limits.h\>.
  *   However, according to the POSIX standard, \c HOST_NAME_MAX is a
@@ -65,47 +63,46 @@ std::string const exeExtension( "" );
 //===========================================================================//
 
 //! Return the local hostname
-DLL_PUBLIC_dsxx  std::string draco_gethostname( void );
+DLL_PUBLIC_dsxx std::string draco_gethostname(void);
 
 //! Return the local process id
-DLL_PUBLIC_dsxx  int draco_getpid( void );
+DLL_PUBLIC_dsxx int draco_getpid(void);
 
 //! Return the current working directory
-DLL_PUBLIC_dsxx  std::string draco_getcwd( void );
+DLL_PUBLIC_dsxx std::string draco_getcwd(void);
 
 //! Return the stat value for a file
-class DLL_PUBLIC_dsxx  draco_getstat
-{
-  private:
-    int stat_return_code;
+class DLL_PUBLIC_dsxx draco_getstat {
+private:
+  int stat_return_code;
 #ifdef WIN32
-    struct _stat buf;
-    bool filefound;
-    WIN32_FIND_DATA FileInformation; // Additional file information
+  struct _stat buf;
+  bool filefound;
+  WIN32_FIND_DATA FileInformation; // Additional file information
 #else
-    struct stat buf;
+  struct stat buf;
 #endif
 
-  public:
-    //! constructor
-    explicit draco_getstat( std::string const & fqName );
-    //! If the call to stat failed, this function will return false.
-    bool valid(void){ return stat_return_code==0; };
-    bool isreg(void);
-    bool isdir(void);
-    int errorCode(void) { return stat_return_code; }
-    /*!
+public:
+  //! constructor
+  explicit draco_getstat(std::string const &fqName);
+  //! If the call to stat failed, this function will return false.
+  bool valid(void) { return stat_return_code == 0; };
+  bool isreg(void);
+  bool isdir(void);
+  int errorCode(void) { return stat_return_code; }
+  /*!
      * \brief Determine if the file has the requested permission bits set.
      * \note The leading zero for the mask is important.
      */
-    bool has_permission_bit( int mask=0777 );
+  bool has_permission_bit(int mask = 0777);
 };
 
 //! Use Linux realpath to resolve symlinks
-DLL_PUBLIC_dsxx  std::string draco_getrealpath( std::string const & path );
+DLL_PUBLIC_dsxx std::string draco_getrealpath(std::string const &path);
 
 //! Create a directory
-DLL_PUBLIC_dsxx  void draco_mkdir( std::string const & path );
+DLL_PUBLIC_dsxx void draco_mkdir(std::string const &path);
 
 /*!
  * \brief Remove file or directory (not recursive)
@@ -113,7 +110,7 @@ DLL_PUBLIC_dsxx  void draco_mkdir( std::string const & path );
  * For recursive directory delete, see path.hh's walk_directory_tree and
  * the functor wdtOpRemove.
  */
-DLL_PUBLIC_dsxx  void draco_remove( std::string const & path );
+DLL_PUBLIC_dsxx void draco_remove(std::string const &path);
 
 } // end of rtt_dsxx
 

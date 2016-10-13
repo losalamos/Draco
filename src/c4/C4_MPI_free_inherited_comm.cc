@@ -18,8 +18,7 @@
 
 #include "C4_MPI.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 // MPI COMMUNICATOR
 //---------------------------------------------------------------------------//
@@ -28,14 +27,12 @@ extern MPI_Comm communicator;
 
 //---------------------------------------------------------------------------//
 
-void free_inherited_comm()
-{
-    if (communicator != MPI_COMM_WORLD)
-    {
-	MPI_Comm_free(&communicator);
-	communicator = MPI_COMM_WORLD;
-    }
-    return;
+void free_inherited_comm() {
+  if (communicator != MPI_COMM_WORLD) {
+    MPI_Comm_free(&communicator);
+    communicator = MPI_COMM_WORLD;
+  }
+  return;
 }
 
 } // end namespace rtt_c4

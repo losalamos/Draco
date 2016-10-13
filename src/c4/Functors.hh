@@ -14,8 +14,7 @@
 #ifndef rtt_c4_Functors_hh
 #define rtt_c4_Functors_hh
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -24,10 +23,8 @@ namespace rtt_c4
  * \param y, the second operand
  * \return the greater value of x or y
  */
-template <class T>
-struct max
-{
-    T operator()(const T & x, const T & y) const { return (x > y) ? x : y; }
+template <class T> struct max {
+  T operator()(const T &x, const T &y) const { return (x > y) ? x : y; }
 };
 
 //---------------------------------------------------------------------------//
@@ -37,10 +34,8 @@ struct max
  * \param y, the second operand
  * \return the lesser value of x or y
  */
-template <class T>
-struct min
-{
-    T operator()(const T & x, const T & y) const { return (x < y) ? x : y; }
+template <class T> struct min {
+  T operator()(const T &x, const T &y) const { return (x < y) ? x : y; }
 };
 
 } // end namespace rtt_c4

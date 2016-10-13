@@ -13,11 +13,10 @@
 #ifndef CCS4_Console_Token_Stream_HH
 #define CCS4_Console_Token_Stream_HH
 
-#include <fstream>
 #include "Text_Token_Stream.hh"
+#include <fstream>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using std::set;
 using std::string;
 
@@ -40,43 +39,39 @@ using std::string;
  * under our current unit testing system, since it is inherently interactive.
  */
 
-class DLL_PUBLIC_parser Console_Token_Stream : public Text_Token_Stream
-{
-  public:
+class DLL_PUBLIC_parser Console_Token_Stream : public Text_Token_Stream {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Construct a Console_Token_Stream.
+  Console_Token_Stream();
 
-    //! Construct a Console_Token_Stream.
-    Console_Token_Stream();
+  //! Construct a Console_Token_Stream.
+  explicit Console_Token_Stream(set<char> const &whitespace,
+                                bool no_nonbreaking_ws = false);
 
-    //! Construct a Console_Token_Stream.
-    explicit Console_Token_Stream(set<char> const &whitespace,
-                                  bool no_nonbreaking_ws = false);
+  // MANIPULATORS
 
-    // MANIPULATORS
+  void rewind();
 
-    void rewind();
+  virtual void report(const Token &token, const string &message);
 
-    virtual void report(const Token & token,
-                        const string &message);
+  virtual void report(const string &message);
 
-    virtual void report(const string &message);
+protected:
+  // IMPLEMENTATION
 
-  protected:
+  //! Return a locator string.
+  virtual string location_() const;
 
-    // IMPLEMENTATION
-
-    //! Return a locator string.
-    virtual string location_() const;
-
-    virtual void fill_character_buffer_();
-    virtual bool error_() const;
-    virtual bool end_() const;
+  virtual void fill_character_buffer_();
+  virtual bool error_() const;
+  virtual bool end_() const;
 };
 
 } // rtt_parser
 
-#endif  // CCS4_Console_Token_Stream_HH
+#endif // CCS4_Console_Token_Stream_HH
 //---------------------------------------------------------------------------//
 // end of Console_Token_Stream.hh
 //---------------------------------------------------------------------------//

@@ -14,8 +14,7 @@
 #ifndef roots_zbrac_hh
 #define roots_zbrac_hh
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
 // Use explicit instantiation of these template functions.

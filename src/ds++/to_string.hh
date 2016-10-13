@@ -16,8 +16,7 @@
 #include <sstream>
 #include <string>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 using std::string;
 
 //---------------------------------------------------------------------------//
@@ -25,13 +24,12 @@ using std::string;
 // http://public.research.att.com/~bs/bs_faq2.html
 //---------------------------------------------------------------------------//
 
-template< class T >
-string to_string(T const num, unsigned int const precision = 23 )
-{
-    std::stringstream s;
-    s.precision(precision);
-    s << num ;
-    return s.str();
+template <class T>
+string to_string(T const num, unsigned int const precision = 23) {
+  std::stringstream s;
+  s.precision(precision);
+  s << num;
+  return s.str();
 }
 
 } // end namespace rtt_dsxx

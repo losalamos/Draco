@@ -18,20 +18,18 @@ using namespace rtt_c4;
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    initialize(argc,argv);
-    if( argc > 1 )
-    {
-        std::cout << "Hello, world!" << std::endl;
-        finalize();
-        return 0;
-    }
-    
-    std::cout << "Goodbye cruel world..." << std::endl;
+int main(int argc, char *argv[]) {
+  initialize(argc, argv);
+  if (argc > 1) {
+    std::cout << "Hello, world!" << std::endl;
     finalize();
-    return 1;
-}   
+    return 0;
+  }
+
+  std::cout << "Goodbye cruel world..." << std::endl;
+  finalize();
+  return 1;
+}
 
 //---------------------------------------------------------------------------//
 // end of phw.cc

@@ -16,8 +16,7 @@
 #include "ds++/Packing_Utils.hh"
 #include <iomanip>
 
-namespace rtt_viz
-{
+namespace rtt_viz {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -26,16 +25,15 @@ namespace rtt_viz
  * Note that this is a function within the rtt_viz namespace, NOT a member
  * function of Ensight_Stream.
  */
-Ensight_Stream& endl(Ensight_Stream &s)
-{
-    Require(s.d_stream.is_open());
+Ensight_Stream &endl(Ensight_Stream &s) {
+  Require(s.d_stream.is_open());
 
-    if ( ! s.d_binary )
-        s.d_stream << '\n';
+  if (!s.d_binary)
+    s.d_stream << '\n';
 
-    Require(s.d_stream.good());
+  Require(s.d_stream.good());
 
-    return s;
+  return s;
 }
 
 //---------------------------------------------------------------------------//
@@ -49,14 +47,11 @@ Ensight_Stream& endl(Ensight_Stream &s)
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
  */
-Ensight_Stream::Ensight_Stream(const std::string &file_name,
-                               const bool binary,
+Ensight_Stream::Ensight_Stream(const std::string &file_name, const bool binary,
                                const bool geom_file)
-    : d_stream(),
-      d_binary(false)
-{
-    if (! file_name.empty())
-        open(file_name, binary, geom_file);
+    : d_stream(), d_binary(false) {
+  if (!file_name.empty())
+    open(file_name, binary, geom_file);
 }
 
 //---------------------------------------------------------------------------//
@@ -65,10 +60,7 @@ Ensight_Stream::Ensight_Stream(const std::string &file_name,
  *
  * Automatically closes stream, if open.
  */
-Ensight_Stream::~Ensight_Stream(void)
-{
-    close();
-}
+Ensight_Stream::~Ensight_Stream(void) { close(); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -83,67 +75,59 @@ Ensight_Stream::~Ensight_Stream(void)
  * \param binary     If true, output binary.  Otherwise, output ascii.
  * \param geom_file  If true, then a geometry file will be dumped.
  */
-void Ensight_Stream::open(const std::string &file_name,
-                          const bool binary,
-                          const bool geom_file)
-{
-    Require(! file_name.empty());
+void Ensight_Stream::open(const std::string &file_name, const bool binary,
+                          const bool geom_file) {
+  Require(!file_name.empty());
 
-    d_binary = binary;
+  d_binary = binary;
 
-// Open the stream.
-    if ( binary )
-        d_stream.open(file_name.c_str(), std::ios::binary);
-    else
-        d_stream.open(file_name.c_str());
+  // Open the stream.
+  if (binary)
+    d_stream.open(file_name.c_str(), std::ios::binary);
+  else
+    d_stream.open(file_name.c_str());
 
-    Check(d_stream);
+  Check(d_stream);
 
-// Set up the file.
+  // Set up the file.
 
-    if ( binary )
-    {
-        if ( geom_file )
-            *this << "C Binary";
-    }
-    else
-    {
-// set precision for ascii mode
-        d_stream.precision(5);
-        d_stream.setf(std::ios::scientific, std::ios::floatfield);
-    }
+  if (binary) {
+    if (geom_file)
+      *this << "C Binary";
+  } else {
+    // set precision for ascii mode
+    d_stream.precision(5);
+    d_stream.setf(std::ios::scientific, std::ios::floatfield);
+  }
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Closes the stream.
  */
-void Ensight_Stream::close()
-{
-    if ( d_stream.is_open() )
-    {
-        d_stream.close();
-    }
+void Ensight_Stream::close() {
+  if (d_stream.is_open()) {
+    d_stream.close();
+  }
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Output for ints.
  */
-Ensight_Stream& Ensight_Stream::operator<<(const int i)
-{
-    Require(d_stream.is_open());
+Ensight_Stream &Ensight_Stream::operator<<(const int i) {
+  Require(d_stream.is_open());
 
-    if ( d_binary )
-        binary_write(i);
-    else
-        d_stream << std::setw(10) << i;
+  if (d_binary)
+    binary_write(i);
+  else
+    d_stream << std::setw(10) << i;
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -153,17 +137,16 @@ Ensight_Stream& Ensight_Stream::operator<<(const int i)
  * This is a convience function.  It simply casts to int.  Ensight does not
  * support output of unsigned ints.
  */
-Ensight_Stream& Ensight_Stream::operator<<(const std::size_t i)
-{
-    Require(d_stream.is_open());
+Ensight_Stream &Ensight_Stream::operator<<(const std::size_t i) {
+  Require(d_stream.is_open());
 
-    int j(i);
-    Check(j >= 0);
-    *this << j;
+  int j(i);
+  Check(j >= 0);
+  *this << j;
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -172,72 +155,67 @@ Ensight_Stream& Ensight_Stream::operator<<(const std::size_t i)
  *
  * Note that Ensight only supports "float" for binary mode.
  */
-Ensight_Stream& Ensight_Stream::operator<<(const double d)
-{
+Ensight_Stream &Ensight_Stream::operator<<(const double d) {
 
 #if defined(MSVC) && MSVC_VERSION < 1900
-    // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
-    // because numeric_limits<double>::max() has a 3-digit exponent.)
-    // Enable two-digit exponent format to stay consistent with GNU and
-    // Intel on Linux.(requires <stdio.h>).
-    unsigned old_exponent_format = _set_output_format( _TWO_DIGIT_EXPONENT );
+  // [2015-02-06 KT]: By default, MSVC uses a 3-digit exponent (presumably
+  // because numeric_limits<double>::max() has a 3-digit exponent.)
+  // Enable two-digit exponent format to stay consistent with GNU and
+  // Intel on Linux.(requires <stdio.h>).
+  unsigned old_exponent_format = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
-    Require(d_stream.is_open());
+  Require(d_stream.is_open());
 
-    if ( d_binary )
-        binary_write(float(d));
-    else
-        d_stream << std::setw(12) << d;
+  if (d_binary)
+    binary_write(float(d));
+  else
+    d_stream << std::setw(12) << d;
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
 #if defined(MSVC) && MSVC_VERSION < 1900
-    // Disable two-digit exponent format
-    _set_output_format( old_exponent_format );
+  // Disable two-digit exponent format
+  _set_output_format(old_exponent_format);
 #endif
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Output for strings.
  */
-Ensight_Stream& Ensight_Stream::operator<<(const std::string &s)
-{
-    Require(d_stream.is_open());
+Ensight_Stream &Ensight_Stream::operator<<(const std::string &s) {
+  Require(d_stream.is_open());
 
-    if ( d_binary )
-    {
-        // Ensight demands all character strings be 80 chars.  Make it so.
-        std::string sc(s);
-        sc.resize(80);
-        d_stream.write(sc.c_str(), 80);
-    }
-    else
-        d_stream << s;
+  if (d_binary) {
+    // Ensight demands all character strings be 80 chars.  Make it so.
+    std::string sc(s);
+    sc.resize(80);
+    d_stream.write(sc.c_str(), 80);
+  } else
+    d_stream << s;
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Output for function pointers.
  */
-Ensight_Stream& Ensight_Stream::operator<<(FP f)
-{
-    Require(d_stream.is_open());
+Ensight_Stream &Ensight_Stream::operator<<(FP f) {
+  Require(d_stream.is_open());
 
-    Require(f);
+  Require(f);
 
-    f(*this);
+  f(*this);
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -252,21 +230,19 @@ Ensight_Stream& Ensight_Stream::operator<<(FP f)
  */
 // The template implementation is defined here because only functions within
 // this translation unit should be calling this function.
-template <typename T>
-void Ensight_Stream::binary_write(const T v)
-{
-    Require(d_stream.is_open());
+template <typename T> void Ensight_Stream::binary_write(const T v) {
+  Require(d_stream.is_open());
 
-    char *vc = new char[sizeof(T)];
+  char *vc = new char[sizeof(T)];
 
-    rtt_dsxx::Packer p;
-    p.set_buffer(sizeof(T), vc);
-    p.pack(v);
+  rtt_dsxx::Packer p;
+  p.set_buffer(sizeof(T), vc);
+  p.pack(v);
 
-    d_stream.write(vc, sizeof(T));
-    delete[] vc;
+  d_stream.write(vc, sizeof(T));
+  delete[] vc;
 
-    Ensure(d_stream.good());
+  Ensure(d_stream.good());
 }
 
 } // end of rtt_viz

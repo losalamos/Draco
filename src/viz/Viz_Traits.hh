@@ -17,8 +17,7 @@
 #include "ds++/Assert.hh"
 #include <vector>
 
-namespace rtt_viz
-{
+namespace rtt_viz {
 
 //===========================================================================//
 /*!
@@ -48,66 +47,61 @@ namespace rtt_viz
 //
 //===========================================================================//
 
-template<typename FT>
-class Viz_Traits
-{
-  private:
-    //! Reference to the field.
-    const FT &field;
+template <typename FT> class Viz_Traits {
+private:
+  //! Reference to the field.
+  const FT &field;
 
-  public:
-    //! Constructor.
-    Viz_Traits(const FT &field_in) : field(field_in) {/*...*/}
+public:
+  //! Constructor.
+  Viz_Traits(const FT &field_in) : field(field_in) { /*...*/
+  }
 
-    //! Overloaded operator().
-    typename FT::value_type operator()(size_t i, size_t j) const
-    { return field(i, j); }
+  //! Overloaded operator().
+  typename FT::value_type operator()(size_t i, size_t j) const {
+    return field(i, j);
+  }
 
-    //! Row size accessor.
-    size_t nrows() const { return field.nrows(); }
+  //! Row size accessor.
+  size_t nrows() const { return field.nrows(); }
 
-    //! Column size accessor.
-    size_t ncols(size_t row) const { return field.ncols(row); }
+  //! Column size accessor.
+  size_t ncols(size_t row) const { return field.ncols(row); }
 };
 
 //---------------------------------------------------------------------------//
 // Specialization for std::vector<std::vector>
 
-template<typename T>
-class Viz_Traits< std::vector<std::vector<T> > >
-{
-  public:
-    // Type traits
-    typedef T elementType;
+template <typename T> class Viz_Traits<std::vector<std::vector<T>>> {
+public:
+  // Type traits
+  typedef T elementType;
 
-  private:
-    // Reference to vector<vector> field.
-    const std::vector<std::vector<T> > &field;
+private:
+  // Reference to vector<vector> field.
+  const std::vector<std::vector<T>> &field;
 
-  public:
-    // Constructor.
-    Viz_Traits(const std::vector<std::vector<T> > &fin) : field(fin)
-    {
-        // Nothing to do here
-    }
+public:
+  // Constructor.
+  Viz_Traits(const std::vector<std::vector<T>> &fin) : field(fin) {
+    // Nothing to do here
+  }
 
-    // Overloaded operator().
-    T operator()(size_t i, size_t j) const
-    {
-        Require(i < field.size());
-        Require(j < field[i].size());
-        return field[i][j];
-    }
+  // Overloaded operator().
+  T operator()(size_t i, size_t j) const {
+    Require(i < field.size());
+    Require(j < field[i].size());
+    return field[i][j];
+  }
 
-    // Row size accessor.
-    size_t nrows() const { return field.size(); }
+  // Row size accessor.
+  size_t nrows() const { return field.size(); }
 
-    // Column size accessor.
-    size_t ncols(size_t row) const
-    {
-        Require (row < field.size());
-        return field[row].size();
-    }
+  // Column size accessor.
+  size_t ncols(size_t row) const {
+    Require(row < field.size());
+    return field[row].size();
+  }
 };
 
 //---------------------------------------------------------------------------//

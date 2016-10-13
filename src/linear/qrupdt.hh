@@ -14,15 +14,11 @@
 #ifndef linear_qrupdt_hh
 #define linear_qrupdt_hh
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //! Update the QR decomposition of a square matrix.
-template<class RandomContainer>
-void qrupdt(RandomContainer &r, 
-	    RandomContainer &qt, 
-	    const unsigned n,
-	    RandomContainer &u, 
-	    RandomContainer &v);
+template <class RandomContainer>
+void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
+            RandomContainer &u, RandomContainer &v);
 
 } // end namespace rtt_linear
 

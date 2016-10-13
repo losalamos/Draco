@@ -29,66 +29,60 @@ namespace rtt_timestep {
  * a new time-step required to hit some "target" problem time. This
  * is useful to assure that graphics dumps/IO/etc. occur precisely at
  * a predetermined problem time. 
- */ 
+ */
 //===========================================================================//
-class DLL_PUBLIC_timestep target_ts_advisor : public ts_advisor
-{
+class DLL_PUBLIC_timestep target_ts_advisor : public ts_advisor {
 
-// DATA
+  // DATA
 
-  private:
-    //! Target time (time)
-    double target_value; 
+private:
+  //! Target time (time)
+  double target_value;
 
-// CREATORS
+  // CREATORS
 
-  public:
-    //! Constructs a target time step advisor    
-    /*! \param name a unique name for the advisor
+public:
+  //! Constructs a target time step advisor
+  /*! \param name a unique name for the advisor
      *  \param usage_ how the advisor is to be used
      *  \param target_value_ the problem target time (time)
      *  \param active_ turns the advisor on/off
      */
-    target_ts_advisor( 
-	const std::string & name_  = std::string("Unlabeled"),
-	const usage_flag    usage_ = max,
-	const double target_value_ = -large(),
-	const bool         active_ = true );
-    
-    //! Destroys a target time step advisor
-    ~target_ts_advisor(void) {/*empty*/};
+  target_ts_advisor(const std::string &name_ = std::string("Unlabeled"),
+                    const usage_flag usage_ = max,
+                    const double target_value_ = -large(),
+                    const bool active_ = true);
 
-// MANIPULATORS
+  //! Destroys a target time step advisor
+  ~target_ts_advisor(void){/*empty*/};
 
-    //! Set the target value
-    /*! \param value_ the target value (time)
+  // MANIPULATORS
+
+  //! Set the target value
+  /*! \param value_ the target value (time)
      */
-    void set_target(double const value_ = -large() )
-    { 
-	target_value = value_;
-    }
+  void set_target(double const value_ = -large()) { target_value = value_; }
 
-// ACCESSORS
+  // ACCESSORS
 
-    //! Get the target value
-    double get_target() { return target_value; }
-    
-    //! Returns the recommended time-step
-    /*! \param tsm the time step manager in which the advisor resides 
+  //! Get the target value
+  double get_target() { return target_value; }
+
+  //! Returns the recommended time-step
+  /*! \param tsm the time step manager in which the advisor resides 
      *  \return the time step recommended by this advisor 
      */
-    double get_dt_rec(const ts_manager &tsm) const;
+  double get_dt_rec(const ts_manager &tsm) const;
 
-    //! Prints state
-    /*! Prints the internal state of the advisor to std out
+  //! Prints state
+  /*! Prints the internal state of the advisor to std out
      */
-    void print_state( std::ostream &out = std::cout ) const;
+  void print_state(std::ostream &out = std::cout) const;
 
-    //! Invariant function
-    /*! \return True if the invariant is satisfied
+  //! Invariant function
+  /*! \return True if the invariant is satisfied
      */
-    bool invariant_satisfied() const;
-
+  bool invariant_satisfied() const;
 };
 
 } // end of rtt_timestep namespace

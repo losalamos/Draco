@@ -16,8 +16,7 @@
 
 #include "Norms_Base.hh"
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //===========================================================================//
 /*!
@@ -48,49 +47,42 @@ namespace rtt_norms
 */
 //===========================================================================//
 template <typename Index_t>
-class DLL_PUBLIC_norms Norms_Index
-    : public Norms_Base
-{
-  public:
+class DLL_PUBLIC_norms Norms_Index : public Norms_Base {
+public:
+  //! Expose the template parameter
+  typedef Index_t Index;
 
-    //! Expose the template parameter
-    typedef Index_t Index;
+private:
+  // DATA
 
-  private:
+  // index location of max norm
+  Index_t d_index_Linf;
 
-    // DATA
+public:
+  // CREATORS
 
-    // index location of max norm
-    Index_t d_index_Linf;
+  Norms_Index();
 
-  public:
+  // Use default copy ctor, dtor, and assignment.
 
-    // CREATORS
+  // MANIPULATORS
 
-    Norms_Index();
+  // Adds v onto the norms with weight factor.
+  void add(const double v, const Index_t &index, const double weight = 1.0);
 
-    // Use default copy ctor, dtor, and assignment.
+  // Accumulates results to processor \a n.
+  void comm(const size_t n = 0);
 
-    // MANIPULATORS
+  // Re-initializes the norm values.
+  void reset();
 
-    // Adds v onto the norms with weight factor.
-    void add(const double   v,
-	     const Index_t &index,
-	     const double   weight = 1.0);
+  // Equality operator.
+  bool operator==(const Norms_Index &n) const;
 
-    // Accumulates results to processor \a n.
-    void comm(const size_t n = 0);
+  // ACCESSORS
 
-    // Re-initializes the norm values.
-    void reset();
-
-    // Equality operator.
-    bool operator==(const Norms_Index &n) const;
-
-    // ACCESSORS
-
-    /// Returns the index location of the \f$ L_{\infty} \f$ norm.
-    Index_t index_Linf() const { return d_index_Linf; }
+  /// Returns the index location of the \f$ L_{\infty} \f$ norm.
+  Index_t index_Linf() const { return d_index_Linf; }
 };
 
 } // namespace rtt_norms

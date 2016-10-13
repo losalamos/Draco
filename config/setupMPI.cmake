@@ -271,8 +271,10 @@ macro( setupCrayMPI )
   query_topology()
 
   # Extra flags for OpenMP + MPI
+  # -m 2g reserves 2GB per core when running with MAPN.
+  # Trinitite/Trinity has 4GB/node for haswells
   if( DEFINED ENV{OMP_NUM_THREADS} )
-    set( MPIEXEC_OMP_POSTFLAGS "-b -d $ENV{OMP_NUM_THREADS}" CACHE
+    set( MPIEXEC_OMP_POSTFLAGS "-q -b -m 2g -d $ENV{OMP_NUM_THREADS}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
     message( STATUS "
@@ -283,7 +285,8 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
   # -b        Bypass transfer of application executable to the compute node.
   # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
   # -q        Quiet
-  set( MPIEXEC_POSTFLAGS "-q -b -cc none" CACHE STRING
+  # -m 2g     Reserve 2 GB of RAM per PE.
+  set( MPIEXEC_POSTFLAGS "-q -b -m 2g" CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
 endmacro()

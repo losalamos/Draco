@@ -17,9 +17,9 @@
 #include "ds++/config.h"
 #include <algorithm>
 #include <cstring>
-#include <stdint.h>
 #include <iomanip>
 #include <iostream>
+#include <stdint.h>
 
 //---------------------------------------------------------------------------//
 /*!
@@ -50,8 +50,7 @@
  */
 //---------------------------------------------------------------------------//
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -88,16 +87,16 @@ namespace rtt_dsxx
  * form is provided if they need to manipulate the character data directly,
  * instead of using one of the byte_swap functions.
  */
-inline void char_byte_swap(unsigned char *data, int n)
-{
-    unsigned char *end = data+n-1;
-    while (data < end) std::swap(*data++, *end--);
+inline void char_byte_swap(unsigned char *data, int n) {
+  unsigned char *end = data + n - 1;
+  while (data < end)
+    std::swap(*data++, *end--);
 }
 
-inline void char_byte_swap(char *data, int n)
-{
-    char* end = data+n-1;
-    while (data < end) std::swap(*data++, *end--);
+inline void char_byte_swap(char *data, int n) {
+  char *end = data + n - 1;
+  while (data < end)
+    std::swap(*data++, *end--);
 }
 
 //---------------------------------------------------------------------------//
@@ -106,10 +105,8 @@ inline void char_byte_swap(char *data, int n)
  *
  * This function operates in place on its argument.
  */
-template <typename T>
-void byte_swap(T& value)
-{
-    char_byte_swap((unsigned char*)(&value), sizeof(T));
+template <typename T> void byte_swap(T &value) {
+  char_byte_swap((unsigned char *)(&value), sizeof(T));
 }
 
 //---------------------------------------------------------------------------//
@@ -118,11 +115,9 @@ void byte_swap(T& value)
  *
  * This function returns a byte-swapped copy of the argument.
  */
-template <typename T>
-T byte_swap_copy(T value) 
-{
-    byte_swap(value);
-    return value;
+template <typename T> T byte_swap_copy(T value) {
+  byte_swap(value);
+  return value;
 }
 
 //---------------------------------------------------------------------------//
@@ -131,7 +126,7 @@ T byte_swap_copy(T value)
  *
  * \return true if platform uses big endian format
  */
-DLL_PUBLIC_dsxx  bool is_big_endian(void);
+DLL_PUBLIC_dsxx bool is_big_endian(void);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -142,7 +137,7 @@ DLL_PUBLIC_dsxx  bool is_big_endian(void);
  * 
  * \return true if we support IEEE float representation.
  */
-DLL_PUBLIC_dsxx  bool has_ieee_float_representation(void);
+DLL_PUBLIC_dsxx bool has_ieee_float_representation(void);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -158,28 +153,26 @@ DLL_PUBLIC_dsxx  bool has_ieee_float_representation(void);
  * the 32 bit case, including loads, versus 2 instructions (including load)
  * for the inline asm case.
  */
-template <>
-inline uint32_t byte_swap_copy<uint32_t>(uint32_t const input)
-{
+template <> inline uint32_t byte_swap_copy<uint32_t>(uint32_t const input) {
 #ifdef __use_x86_gnu_asm
-    uint32_t output = input;
-    asm("bswap %0" : "+g" (output) : );
+  uint32_t output = input;
+  asm("bswap %0" : "+g"(output) :);
 #else
-    uint32_t byte, output;
-    byte = input & 255U;
-    output = (byte << 24);
+  uint32_t byte, output;
+  byte = input & 255U;
+  output = (byte << 24);
 
-    byte = input & 65280U;      // 255 << 8
-    output = output | (byte << 8);
-        
-    byte = input & 16711680U;   // 255 << 16
-    output = output | (byte >> 8);
-        
-    byte = input & 4278190080U; // 255 << 24
-    output = output | (byte >> 24); // look out--algebraic shift r.
-        
+  byte = input & 65280U; // 255 << 8
+  output = output | (byte << 8);
+
+  byte = input & 16711680U; // 255 << 16
+  output = output | (byte >> 8);
+
+  byte = input & 4278190080U;     // 255 << 24
+  output = output | (byte >> 24); // look out--algebraic shift r.
+
 #endif // __use_x86_asm
-    return output;
+  return output;
 }
 
 //---------------------------------------------------------------------------//
@@ -196,69 +189,65 @@ inline uint32_t byte_swap_copy<uint32_t>(uint32_t const input)
  * the 32 bit case, including loads, versus 2 instructions (including load)
  * for the inline asm case.
  */
-template <>
-inline double byte_swap_copy<double>(double const input)
-{
+template <> inline double byte_swap_copy<double>(double const input) {
 #ifdef __use_x86_gnu_asm
-    double output = input;
-    asm("bswap %0" : "+g" (output) : );   
+  double output = input;
+  asm("bswap %0" : "+g"(output) :);
 #else
-    union
-    {
-        double d;
-        uint64_t u;
-    } b64;
+  union {
+    double d;
+    uint64_t u;
+  } b64;
 
-    uint64_t byte, tmp, uinput;
+  uint64_t byte, tmp, uinput;
 
-    // change meaning of input bits to uint64_t:
-    b64.d = input;
-    uinput = b64.u;
+  // change meaning of input bits to uint64_t:
+  b64.d = input;
+  uinput = b64.u;
 
-    // 1
-    byte = uinput & 255;
-    tmp = (byte << 56);
-    // 2
-    byte = uinput & 65280;      // 255 << 8
-    tmp = tmp | (byte << 40);
-    // 3
-    byte = uinput & 16711680;   // 255 << 16
-    tmp = tmp | (byte << 24);
-    // 4
-    byte = uinput & 4278190080U; // 255 << 24
-    tmp = tmp | (byte << 8); 
-    // 5
-    byte = uinput & 1095216660480ULL; // 255 << 32
-    // byte = uinput & 1095216660480; // 255 << 32
-    tmp = tmp | (byte >> 8);
-    // 6 
-    byte = uinput & 280375465082880ULL; // 255 << 40
-    tmp = tmp | (byte >> 24);
-    // 7
-    byte = uinput & 71776119061217280ULL; // 255 << 48
-    tmp = tmp | (byte >> 40);
-    // 8
-    byte = uinput & 18374686479671623680ULL; // 255 << 56
-    // byte = uinput & 0xff00000000000000; // 255 << 56
-    tmp = tmp | (byte >> 56); 
-    
-    // change meaning of bits in b64.
-    b64.u = tmp;
-    double output = b64.d;
+  // 1
+  byte = uinput & 255;
+  tmp = (byte << 56);
+  // 2
+  byte = uinput & 65280; // 255 << 8
+  tmp = tmp | (byte << 40);
+  // 3
+  byte = uinput & 16711680; // 255 << 16
+  tmp = tmp | (byte << 24);
+  // 4
+  byte = uinput & 4278190080U; // 255 << 24
+  tmp = tmp | (byte << 8);
+  // 5
+  byte = uinput & 1095216660480ULL; // 255 << 32
+  // byte = uinput & 1095216660480; // 255 << 32
+  tmp = tmp | (byte >> 8);
+  // 6
+  byte = uinput & 280375465082880ULL; // 255 << 40
+  tmp = tmp | (byte >> 24);
+  // 7
+  byte = uinput & 71776119061217280ULL; // 255 << 48
+  tmp = tmp | (byte >> 40);
+  // 8
+  byte = uinput & 18374686479671623680ULL; // 255 << 56
+  // byte = uinput & 0xff00000000000000; // 255 << 56
+  tmp = tmp | (byte >> 56);
+
+  // change meaning of bits in b64.
+  b64.u = tmp;
+  double output = b64.d;
 #endif // __use_x86_gnu_asm
-        
-    return output;
-} 
+
+  return output;
+}
 
 } // end namespace rtt_dsxx
 
 //! These versions can be called by Fortran.  They wrap the C++ implementation.
-extern "C" 
-{
-DLL_PUBLIC_dsxx  int  dsxx_is_big_endian();
-DLL_PUBLIC_dsxx  void dsxx_byte_swap_int(     int     & value );
-DLL_PUBLIC_dsxx  void dsxx_byte_swap_int64_t( int64_t & value );
-DLL_PUBLIC_dsxx  void dsxx_byte_swap_double(  double  & value );
+extern "C" {
+DLL_PUBLIC_dsxx int dsxx_is_big_endian();
+DLL_PUBLIC_dsxx void dsxx_byte_swap_int(int &value);
+DLL_PUBLIC_dsxx void dsxx_byte_swap_int64_t(int64_t &value);
+DLL_PUBLIC_dsxx void dsxx_byte_swap_double(double &value);
 }
 
 #endif // dsxx_Endian_hh

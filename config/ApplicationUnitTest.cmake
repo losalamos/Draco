@@ -8,15 +8,13 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $
-#------------------------------------------------------------------------------#
 
 # Reference: https://rtt.lanl.gov/redmine/projects/draco/wiki/CMake-based_ApplicationUnitTest
 # Example: draco/src/diagnostics/test/tDracoInfo.cmake (and associated CMakeLists.txt).
 
-##---------------------------------------------------------------------------------------##
+#------------------------------------------------------------------------------#
 ## Example from draco/src/diagnostics/test/tDracoInfo.cmake
-##---------------------------------------------------------------------------------------##
+#------------------------------------------------------------------------------#
 
 # Use config/ApplicationUnitTest.cmake test registration:
 #
@@ -56,7 +54,7 @@
 
 # Variables defined above can be used in this script.
 
-##---------------------------------------------------------------------------------------##
+#------------------------------------------------------------------------------#
 
 include( parse_arguments )
 
@@ -70,8 +68,6 @@ endfunction()
 
 # Helper for setting the depth (-d) option for aprun.  We want
 # n*d==mpi_cores_per_cpu. For example:
-# Cielo: 16 = 4 x 4
-#           = 2 x 8, etc.
 # Trinity: 32 = 4 x 8
 #             = 2 x 16, etc.
 function(set_aprun_depth_flags numPE aprun_depth_options)
@@ -196,12 +192,6 @@ macro( aut_register_test )
   if( numPE )
     set(num_procs ${numPE} )
   endif()
-  if( "${MPIEXEC}" MATCHES "aprun" )
-    # On Cray machines, multiple independent processes cannot share cores on a
-    # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
-    # be exactly the number of cores per node.
-    set( num_procs ${MPI_CORES_PER_CPU} )
-  endif()
   string(REPLACE ";" " " RUN_CMD "${RUN_CMD}")
 
   if( VERBOSE_DEBUG )
@@ -291,7 +281,7 @@ macro( aut_register_test )
   unset(num_procs)
 endmacro()
 
-##---------------------------------------------------------------------------------------##
+#------------------------------------------------------------------------------#
 
 macro( add_app_unit_test )
 
@@ -337,19 +327,12 @@ macro( add_app_unit_test )
 
   # Load some information from the build environment:
   unset( RUN_CMD )
-  if( EXISTS ${DRACO_CONFIG_DIR}/run_test_on_mic.sh )
-    set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_CONFIG_DIR}/run_test_on_mic.sh ${aut_WORKDIR}" )
-  else()
-    set( MIC_RUN_CMD  "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${Draco_BINARY_DIR}/config/run_test_on_mic.sh ${aut_WORKDIR}" )
-  endif()
 
   if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
 
     # Parallel tests
     if( "${MPIEXEC}" MATCHES "srun" )
       set( RUN_CMD "srun -n" )
-    elseif( HAVE_MIC )
-      set( RUN_CMD "${MIC_RUN_CMD} ${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}" )
     else()
       set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}")
     endif()
@@ -358,11 +341,9 @@ macro( add_app_unit_test )
 
     # Scalar tests
     if( "${MPIEXEC}" MATCHES "aprun" )
-      set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1 -d ${MPI_CORES_PER_CPU}" )
+      set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1" )
     elseif( "${MPIEXEC}" MATCHES "srun" )
       set( RUN_CMD "srun -n 1" )
-    elseif( HAVE_MIC )
-      set( RUN_CMD "${MIC_RUN_CMD}" )
     endif()
   endif()
 
@@ -475,20 +456,20 @@ macro( aut_runTests )
   if( numPE )
     # Use 1 proc to run draco_info
     set( draco_info_numPE 1 )
-    if( "${MPIEXEC}" MATCHES "aprun" )
-      # Run with 1 proc, but tell aprun that we need the whole node.
-      set_aprun_depth_flags( 1 aprun_depth_options)
-    endif()
+#    if( "${MPIEXEC}" MATCHES "aprun" )
+#     # Run with 1 proc, but tell aprun that we need the whole node.
+#      set_aprun_depth_flags( 1 aprun_depth_options)
+#    endif()
   endif()
   if( EXISTS ${DRACO_INFO} )
     execute_process(
-      COMMAND ${RUN_CMD} ${draco_info_numPE} ${aprun_depth_options} ${DRACO_INFO} --version
+      COMMAND ${RUN_CMD} ${draco_info_numPE} ${DRACO_INFO} --version
       RESULT_VARIABLE testres
       OUTPUT_VARIABLE testout
       ERROR_VARIABLE  testerror
       )
     if( NOT ${testres} STREQUAL "0" )
-      FAILMSG("Unable to run '${runcmd} ${draco_info_numPE} ${aprun_depth_options} ${DRACO_INFO} --version'")
+      FAILMSG("Unable to run '${runcmd} ${draco_info_numPE} ${DRACO_INFO} --version'")
     else()
       message("${testout}")
     endif()
@@ -505,17 +486,17 @@ macro( aut_runTests )
     string( REPLACE ".err" "-${safe_argvalue}.err" ERRFILE ${ERRFILE} )
   endif()
 
-  if( "${MPIEXEC}" MATCHES "aprun" )
-    # Run with requested number of processors, but tell aprun that we need the
-    # whole node.
-    if( numPE )
-      set_aprun_depth_flags( ${numPE} aprun_depth_options)
-    endif()
-  endif()
+  # if( "${MPIEXEC}" MATCHES "aprun" )
+  #   # Run with requested number of processors, but tell aprun that we need the
+  #   # whole node.
+  #   if( numPE )
+  #     set_aprun_depth_flags( ${numPE} aprun_depth_options)
+  #   endif()
+  # endif()
 
   if( DEFINED RUN_CMD )
     string( REPLACE ";" " " run_cmd_string "${RUN_CMD}" )
-    message(">>> Running: ${run_cmd_string} ${numPE} ${aprun_depth_options}")
+    message(">>> Running: ${run_cmd_string} ${numPE}")
     message(">>>          ${APP}")
     if( DEFINED ARGVALUE)
       message(">>>          ${ARGVALUE}")
@@ -524,11 +505,7 @@ macro( aut_runTests )
     message(">>> Running: ${APP} ${ARGVALUE}" )
   endif()
   if( EXISTS ${STDINFILE} )
-    if( RUN_CMD MATCHES "run_test_on_mic" )
-      list( APPEND ARGVALUE "< ${STDINFILE}" )
-    else()
-      set( INPUT_FILE "INPUT_FILE ${STDINFILE}")
-    endif()
+    set( INPUT_FILE "INPUT_FILE ${STDINFILE}")
     message(">>>          < ${STDINFILE}")
   endif()
   message(">>>          > ${OUTFILE}
@@ -540,14 +517,14 @@ macro( aut_runTests )
   separate_arguments(ARGVALUE)
 
   execute_process(
-    COMMAND ${RUN_CMD} ${numPE} ${aprun_depth_options} ${APP} ${ARGVALUE}
+    COMMAND ${RUN_CMD} ${numPE} ${APP} ${ARGVALUE}
     WORKING_DIRECTORY ${WORKDIR}
     ${INPUT_FILE}
     RESULT_VARIABLE testres
     OUTPUT_VARIABLE testout
     ERROR_VARIABLE  testerror
     )
-  unset(aprun_depth_options)
+#  unset(aprun_depth_options)
 
   # Convert the ARGVALUE from a list back into a space separated string.
   if( ARGVALUE )
@@ -730,19 +707,19 @@ Did you list it when registering this test?" )
 
   if( numPE AND "${numPE}" GREATER "1" )
 
-    if( "${MPIEXEC}" MATCHES "aprun")
-      # For Cray environments, fill up the node by setting the depth (-d) flag.
-      set_aprun_depth_flags( ${numPE} aprun_depth_options)
-    endif()
-    set( pgdiff_gdiff  ${RUN_CMD} ${numPE} ${aprun_depth_options} ${PGDIFF} )
+#    if( "${MPIEXEC}" MATCHES "aprun")
+#      # For Cray environments, fill up the node by setting the depth (-d) flag.
+#      set_aprun_depth_flags( ${numPE} aprun_depth_options)
+#    endif()
+    set( pgdiff_gdiff  ${RUN_CMD} ${numPE} ${PGDIFF} )
 
   else()
 
     # Use 1 proc to run gdiff
-    if( "${MPIEXEC}" MATCHES "aprun")
-      set_aprun_depth_flags( 1 aprun_depth_options)
-    endif()
-    set( pgdiff_gdiff ${RUN_CMD} 1 ${aprun_depth_options} ${GDIFF} )
+#    if( "${MPIEXEC}" MATCHES "aprun")
+#      set_aprun_depth_flags( 1 aprun_depth_options)
+#    endif()
+    set( pgdiff_gdiff ${RUN_CMD} 1 ${GDIFF} )
 
   endif()
 

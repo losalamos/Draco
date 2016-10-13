@@ -16,12 +16,11 @@
 
 #include "diagnostics/config.h"
 #include "ds++/config.h"
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
-namespace rtt_diagnostics
-{
+namespace rtt_diagnostics {
 
 //===========================================================================//
 /*!
@@ -52,53 +51,52 @@ namespace rtt_diagnostics
  */
 //===========================================================================//
 
-class DLL_PUBLIC_diagnostics Timing_Diagnostics
-{
-  public:
-    // Useful typedef.
-    typedef std::vector<std::string> Vec_Keys;
+class DLL_PUBLIC_diagnostics Timing_Diagnostics {
+public:
+  // Useful typedef.
+  typedef std::vector<std::string> Vec_Keys;
 
-  private:
-    // >>> PRIVATE DATA MEMBERS
+private:
+  // >>> PRIVATE DATA MEMBERS
 
-    //! Map of timers.
-    static std::map<std::string, double> timers;
+  //! Map of timers.
+  static std::map<std::string, double> timers;
 
-  public:
-    // >>> FUNCTIONAL INTERFACE
+public:
+  // >>> FUNCTIONAL INTERFACE
 
-    // Add a value to the timer with name key.
-    static void update_timer(const std::string &key, double value);
+  // Add a value to the timer with name key.
+  static void update_timer(const std::string &key, double value);
 
-    //! Get a timer's value.  Adds timer with name key to map.
-    static double timer_value(const std::string &k) { return timers[k]; }
+  //! Get a timer's value.  Adds timer with name key to map.
+  static double timer_value(const std::string &k) { return timers[k]; }
 
-    //! Get number of timers in map.
-    static int num_timers() { return timers.size(); }
+  //! Get number of timers in map.
+  static int num_timers() { return timers.size(); }
 
-    // Return a vector of timer keys.
-    static Vec_Keys timer_keys();
+  // Return a vector of timer keys.
+  static Vec_Keys timer_keys();
 
-    // Reset a timer.
-    static void reset_timer(const std::string &key);
+  // Reset a timer.
+  static void reset_timer(const std::string &key);
 
-    // Reset all timers from the map of timers.
-    static void reset_timers();
+  // Reset all timers from the map of timers.
+  static void reset_timers();
 
-    // Delete a timer from the map of timers.
-    static void delete_timer(const std::string &key);
+  // Delete a timer from the map of timers.
+  static void delete_timer(const std::string &key);
 
-    // Delete all timers from the map of timers.
-    static void delete_timers();
+  // Delete all timers from the map of timers.
+  static void delete_timers();
 
-  private:
-    // >>> IMPLEMENTATION
+private:
+  // >>> IMPLEMENTATION
 
-    // This class is never constructed.
-    Timing_Diagnostics();
+  // This class is never constructed.
+  Timing_Diagnostics();
 
-    // This class is also never destructed.
-    ~Timing_Diagnostics();
+  // This class is also never destructed.
+  ~Timing_Diagnostics();
 };
 
 } // end namespace rtt_diagnostics
@@ -220,15 +218,15 @@ class DLL_PUBLIC_diagnostics Timing_Diagnostics
  */
 #if DRACO_TIMING == 0
 
-#define TIMER( timer)
+#define TIMER(timer)
 
-#define TIMER_START( timer)
+#define TIMER_START(timer)
 
-#define TIMER_STOP( timer)
+#define TIMER_STOP(timer)
 
-#define TIMER_RECORD( name, timer)
+#define TIMER_RECORD(name, timer)
 
-#define TIMER_REPORT( timer, ostream, comment)
+#define TIMER_REPORT(timer, ostream, comment)
 
 #endif
 
@@ -242,14 +240,14 @@ class DLL_PUBLIC_diagnostics Timing_Diagnostics
 
 #define DRACO_TIMING_ON
 
-#define TIMER( timer) rtt_c4::Timer timer
+#define TIMER(timer) rtt_c4::Timer timer
 
-#define TIMER_START( timer) timer.start()
+#define TIMER_START(timer) timer.start()
 
-#define TIMER_STOP( timer) timer.stop()
+#define TIMER_STOP(timer) timer.stop()
 
-#define TIMER_RECORD( name, timer)                                      \
-    rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
+#define TIMER_RECORD(name, timer)                                              \
+  rtt_diagnostics::Timing_Diagnostics::update_timer(name, timer.wall_clock())
 
 #endif
 
@@ -260,16 +258,17 @@ class DLL_PUBLIC_diagnostics Timing_Diagnostics
  */
 #if DRACO_TIMING > 1
 
-#define TIMER_REPORT( timer, ostream, comment)                  \
-    ostream << __FILE__ << " " << __LINE__ << ": " << comment   \
-    << " elapsed wall_clock: " << timer.wall_clock()            \
-        << " seconds; elapsed user_time: " << timer.user_cpu()  \
-        << " seconds; elapsed sys_time: " << timer.system_cpu() \
-        << " seconds.\n" << std::flush
+#define TIMER_REPORT(timer, ostream, comment)                                  \
+  ostream << __FILE__ << " " << __LINE__ << ": " << comment                    \
+          << " elapsed wall_clock: " << timer.wall_clock()                     \
+          << " seconds; elapsed user_time: " << timer.user_cpu()               \
+          << " seconds; elapsed sys_time: " << timer.system_cpu()              \
+          << " seconds.\n"                                                     \
+          << std::flush
 
 #else
 
-#define TIMER_REPORT( timer, ostream, comment)
+#define TIMER_REPORT(timer, ostream, comment)
 
 #endif
 

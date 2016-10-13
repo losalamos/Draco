@@ -7,17 +7,14 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_Halton_Subrandom_Generator_hh
 #define rng_Halton_Subrandom_Generator_hh
 
-#include "Subrandom_Generator.hh"
 #include "Halton_Sequence.hh"
+#include "Subrandom_Generator.hh"
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 //===========================================================================//
 /*!
@@ -34,30 +31,27 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng Halton_Subrandom_Generator : public Subrandom_Generator
-{
-  public:
+class DLL_PUBLIC_rng Halton_Subrandom_Generator : public Subrandom_Generator {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Normal constructor.
+  explicit Halton_Subrandom_Generator(unsigned const count = 1);
 
-    //! Normal constructor.
-    explicit Halton_Subrandom_Generator(unsigned const count = 1);
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Advance sequence.
+  void shift_vector();
 
-    //! Advance sequence.
-    void shift_vector();
+  //! Get the next element in the current vector.
+  double shift();
 
-    //! Get the next element in the current vector.
-    double shift();
+  // ACCESSORS
 
-    // ACCESSORS
+private:
+  // DATA
 
-  private:
-
-    // DATA
-
-    std::vector<Halton_Sequence> sequences_;
+  std::vector<Halton_Sequence> sequences_;
 };
 
 } // end namespace rtt_rng

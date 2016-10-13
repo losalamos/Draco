@@ -9,9 +9,9 @@
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Release.hh"
 #include "quadrature_test.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "quadrature/Lobatto.hh"
 
 using namespace std;
@@ -22,19 +22,16 @@ using namespace rtt_quadrature;
 // TESTS
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        for (unsigned n=4; n<16; n+=2)
-        {
-            Lobatto quadrature(n);
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    for (unsigned n = 4; n < 16; n += 2) {
+      Lobatto quadrature(n);
 
-            quadrature_test(ut, quadrature);
-        }
+      quadrature_test(ut, quadrature);
     }
-    UT_EPILOG(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

@@ -11,22 +11,18 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
 #include "qrdcmp.i.hh"
+#include <vector>
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 using std::vector;
 
 //---------------------------------------------------------------------------//
 // RandomContainer=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC_linear
-bool qrdcmp(vector<double> &a,
-    unsigned n,
-    vector<double> &c,
-    vector<double> &d);
+template DLL_PUBLIC_linear bool qrdcmp(vector<double> &a, unsigned n,
+                                       vector<double> &c, vector<double> &d);
 
 } // end namespace rtt_linear
 

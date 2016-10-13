@@ -14,12 +14,11 @@
 #ifndef rtt_units_UnitSystem_hh
 #define rtt_units_UnitSystem_hh
 
-#include <cmath>
-#include "ds++/Assert.hh"
 #include "UnitSystemType.hh"
+#include "ds++/Assert.hh"
+#include <cmath>
 
-namespace rtt_units
-{
+namespace rtt_units {
 
 //===========================================================================//
 /*! \class UnitSystem
@@ -102,110 +101,107 @@ namespace rtt_units
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //===========================================================================//
 
-class DLL_PUBLIC_units UnitSystem
-{
-  public:
+class DLL_PUBLIC_units UnitSystem {
+public:
+  // FRIENDS
 
-    // FRIENDS
+  //     //! Define the divisor operator for Units/Units.
+  //     friend UnitSystem operator/( UnitSystem const & op1,
+  // 				 UnitSystem const & op2 );
 
-//     //! Define the divisor operator for Units/Units.
-//     friend UnitSystem operator/( UnitSystem const & op1, 
-// 				 UnitSystem const & op2 );
+  //! Define the equality operator for Units==Units.
+  friend DLL_PUBLIC_units bool operator==(UnitSystem const &op1,
+                                          UnitSystem const &op2);
 
-    //! Define the equality operator for Units==Units.
-    friend DLL_PUBLIC_units bool operator==( UnitSystem const & op1, 
-			    UnitSystem const & op2 );
+  //! Define the equality operator for Units==Units.
+  friend DLL_PUBLIC_units bool operator!=(UnitSystem const &op1,
+                                          UnitSystem const &op2);
+  // CREATORS
 
-    //! Define the equality operator for Units==Units.
-    friend DLL_PUBLIC_units bool operator!=( UnitSystem const & op1, 
-			    UnitSystem const & op2 );
-    // CREATORS
-    
-    //! Prefered constructor
-    UnitSystem( UnitSystemType const & ust )
-	: d_ust( ust )
-    { Require( validUnits() ); }
+  //! Prefered constructor
+  UnitSystem(UnitSystemType const &ust) : d_ust(ust) { Require(validUnits()); }
 
-    //! Default constructor provides SI Units
-    UnitSystem()
-	: d_ust( UnitSystemType().SI() )
-    { Require( validUnits() ); }
-    
-    // ACCESSORS
+  //! Default constructor provides SI Units
+  UnitSystem() : d_ust(UnitSystemType().SI()) { Require(validUnits()); }
 
-    //! Return the conversion factor for length that when multiplied against
-    //! values in user-units yields the value in SI-units.
-    double      L()     const { return d_ust.L().cf(); }
-    //! Return the label for this unit (e.g. cm, m, etc.).
-    std::string Lname() const { return d_ust.L().label(); }
+  // ACCESSORS
 
-    //! Return the conversion factor for mass that when multiplied against
-    //! values in user-units yields the value in SI-units.
-    double      M()     const { return d_ust.M().cf(); }
-    //! Return the label for this unit (e.g. kg, g, etc.).
-    std::string Mname() const { return d_ust.M().label(); }
+  //! Return the conversion factor for length that when multiplied against
+  //! values in user-units yields the value in SI-units.
+  double L() const { return d_ust.L().cf(); }
+  //! Return the label for this unit (e.g. cm, m, etc.).
+  std::string Lname() const { return d_ust.L().label(); }
 
-    //! Return the conversion factor for time that when multiplied against
-    //! values in user-units yields the value in SI-units.
-    double t() const { return d_ust.t().cf(); }
-    //! Return the label for this unit (e.g. s, us, etc.).
-    std::string tname() const { return d_ust.t().label(); }
+  //! Return the conversion factor for mass that when multiplied against
+  //! values in user-units yields the value in SI-units.
+  double M() const { return d_ust.M().cf(); }
+  //! Return the label for this unit (e.g. kg, g, etc.).
+  std::string Mname() const { return d_ust.M().label(); }
 
-    //! Return the conversion factor for temperature that when multiplied
-    //! against values in user-units yields the value in SI-units.
-    double      T()     const { return d_ust.T().cf(); }
-    //! Return the label for this unit (e.g. K, keV, etc.).
-    std::string Tname() const { return d_ust.T().label(); }
+  //! Return the conversion factor for time that when multiplied against
+  //! values in user-units yields the value in SI-units.
+  double t() const { return d_ust.t().cf(); }
+  //! Return the label for this unit (e.g. s, us, etc.).
+  std::string tname() const { return d_ust.t().label(); }
 
-    //! Return the conversion factor for electric current that when
-    //! multiplied against values in user-units yields the value in
-    //! SI-units. 
-    double      I()     const { return d_ust.I().cf(); }
-    //! Return the label for this unit (e.g. amp, etc.).
-    std::string Iname() const { return d_ust.I().label(); }
+  //! Return the conversion factor for temperature that when multiplied
+  //! against values in user-units yields the value in SI-units.
+  double T() const { return d_ust.T().cf(); }
+  //! Return the label for this unit (e.g. K, keV, etc.).
+  std::string Tname() const { return d_ust.T().label(); }
 
-    //! Return the conversion factor for angle that when multiplied
-    //! against values in user-units yields the value in SI-units.
-    double      A()     const { return d_ust.A().cf(); }
-    //! Return the label for this unit (e.g. rad, deg, etc.).
-    std::string Aname() const { return d_ust.A().label(); }
+  //! Return the conversion factor for electric current that when
+  //! multiplied against values in user-units yields the value in
+  //! SI-units.
+  double I() const { return d_ust.I().cf(); }
+  //! Return the label for this unit (e.g. amp, etc.).
+  std::string Iname() const { return d_ust.I().label(); }
 
-    //! Return the conversion factor for quantity that when multiplied
-    //! against values in user-units yields the value in SI-units.
-    double      Q()     const { return d_ust.Q().cf(); }
-    //! Return the label for this unit (e.g. mol, etc.).
-    std::string Qname() const { return d_ust.Q().label(); }
+  //! Return the conversion factor for angle that when multiplied
+  //! against values in user-units yields the value in SI-units.
+  double A() const { return d_ust.A().cf(); }
+  //! Return the label for this unit (e.g. rad, deg, etc.).
+  std::string Aname() const { return d_ust.A().label(); }
 
-    //! Return the conversion factor for velocity
-    double v() const { return this->L() / this->t(); }
-    //! Return the conversion factor for acceleration
-    double a() const { return this->L()/std::pow(this->t(),2); }
-    //! Return the conversion factor for force
-    double f() const { return this->M() * this->L()/std::pow(this->t(),2); }
-    //! Return the conversion factor for energy
-    double e() const { return this->M() * std::pow(this->L(),2)/std::pow(this->t(),2); }
-    //! Return the conversion factor for power
-    double p() const { return this->M() * std::pow(this->L(),2)/std::pow(this->t(),3); }
+  //! Return the conversion factor for quantity that when multiplied
+  //! against values in user-units yields the value in SI-units.
+  double Q() const { return d_ust.Q().cf(); }
+  //! Return the label for this unit (e.g. mol, etc.).
+  std::string Qname() const { return d_ust.Q().label(); }
 
-    // CLASS IMPLEMENTATION
-    
-    //! Check whether conversion units are in an acceptable range.
-    bool validUnits() const;
-    
-  private:
-    
-    // DATA
+  //! Return the conversion factor for velocity
+  double v() const { return this->L() / this->t(); }
+  //! Return the conversion factor for acceleration
+  double a() const { return this->L() / std::pow(this->t(), 2); }
+  //! Return the conversion factor for force
+  double f() const { return this->M() * this->L() / std::pow(this->t(), 2); }
+  //! Return the conversion factor for energy
+  double e() const {
+    return this->M() * std::pow(this->L(), 2) / std::pow(this->t(), 2);
+  }
+  //! Return the conversion factor for power
+  double p() const {
+    return this->M() * std::pow(this->L(), 2) / std::pow(this->t(), 3);
+  }
 
-    UnitSystemType d_ust;
+  // CLASS IMPLEMENTATION
+
+  //! Check whether conversion units are in an acceptable range.
+  bool validUnits() const;
+
+private:
+  // DATA
+
+  UnitSystemType d_ust;
 
 }; // end of class UnitSystem
 
 } // end namespace rtt_units
 
-#endif  // rtt__units_UnitSystem_hh
+#endif // rtt__units_UnitSystem_hh
 
 //---------------------------------------------------------------------------//
 // end of UnitSystem.hh

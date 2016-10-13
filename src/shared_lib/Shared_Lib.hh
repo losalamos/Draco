@@ -15,11 +15,10 @@
 
 #include <shared_lib/config.h>
 
-#include <string>
 #include <ds++/Assert.hh>
+#include <string>
 
-namespace rtt_shared_lib
-{
+namespace rtt_shared_lib {
 
 //===========================================================================//
 /*!
@@ -58,55 +57,55 @@ namespace rtt_shared_lib
 */
 //===========================================================================//
 
-class Shared_Lib 
-{
-    // DATA
+class Shared_Lib {
+  // DATA
 
-    // The handle to the shared library.
-    void *d_handle;
+  // The handle to the shared library.
+  void *d_handle;
 
-    // The name of the shared library.
-    std::string d_file_name;
-    
-  public:
+  // The name of the shared library.
+  std::string d_file_name;
 
-    // Default constructor.
-    explicit Shared_Lib(const std::string &file_name = "");
+public:
+  // Default constructor.
+  explicit Shared_Lib(const std::string &file_name = "");
 
-    // Copy constructor.
-    explicit Shared_Lib(const Shared_Lib &from);
+  // Copy constructor.
+  explicit Shared_Lib(const Shared_Lib &from);
 
-    //! Destructor.  Automatically closes the shared library.
-    ~Shared_Lib() { close(); }
+  //! Destructor.  Automatically closes the shared library.
+  ~Shared_Lib() { close(); }
 
-    // Assignment.
-    Shared_Lib &operator=(const Shared_Lib &rhs);
+  // Assignment.
+  Shared_Lib &operator=(const Shared_Lib &rhs);
 
-    // Closes the shared library.
-    void close();
+  // Closes the shared library.
+  void close();
 
-    //! Returns a handle to the shared library.
-    void *get_handle() const { Require(is_open()); return d_handle; }
+  //! Returns a handle to the shared library.
+  void *get_handle() const {
+    Require(is_open());
+    return d_handle;
+  }
 
-    //! Returns the shared file name.
-    std::string get_file_name() const { return d_file_name; }
+  //! Returns the shared file name.
+  std::string get_file_name() const { return d_file_name; }
 
-    // Returns a function pointer from the shared library.
-    template <class Fp_t> inline Fp_t get_function(const std::string &name);
+  // Returns a function pointer from the shared library.
+  template <class Fp_t> inline Fp_t get_function(const std::string &name);
 
-    //! Returns true if library is open.
-    bool is_open() const { return d_handle; }
+  //! Returns true if library is open.
+  bool is_open() const { return d_handle; }
 
-    //! Returns true if platform is supported.
-    static bool is_supported();
+  //! Returns true if platform is supported.
+  static bool is_supported();
 
-    // Opens a shared library.
-    void open(const std::string &file_name);
+  // Opens a shared library.
+  void open(const std::string &file_name);
 
-  private:
-
-    // Does the dlsym() with error checking.
-    void *do_dlsym(const std::string &name);
+private:
+  // Does the dlsym() with error checking.
+  void *do_dlsym(const std::string &name);
 };
 
 //---------------------------------------------------------------------------//
@@ -122,21 +121,22 @@ class Shared_Lib
   \param name The name of the function in the shared lib.
   \param Fp_t The function pointer type for the function \a name.
  */
-template <class Fp_t>
-Fp_t Shared_Lib::get_function(const std::string &name)
-{
-    Require(is_open());
-    
-    // HACK WARNING: 5.2.10/6-7 implies that we cannot cast a
-    // pointer-to-object (in this case, the void* from dlsym) to a
-    // pointer-to-function.  If void* and Fp_t are different sizes, I suspect
-    // the hack below may not be portable. In the end, I suspect that platforms
-    // where this hack does not work don't support dlopen, anyway - lowrie
+template <class Fp_t> Fp_t Shared_Lib::get_function(const std::string &name) {
+  Require(is_open());
 
-    union { void *vp; Fp_t fp; };
-    vp = do_dlsym(name);
+  // HACK WARNING: 5.2.10/6-7 implies that we cannot cast a
+  // pointer-to-object (in this case, the void* from dlsym) to a
+  // pointer-to-function.  If void* and Fp_t are different sizes, I suspect
+  // the hack below may not be portable. In the end, I suspect that platforms
+  // where this hack does not work don't support dlopen, anyway - lowrie
 
-    return fp;
+  union {
+    void *vp;
+    Fp_t fp;
+  };
+  vp = do_dlsym(name);
+
+  return fp;
 }
 
 } // end namespace rtt_shared_lib

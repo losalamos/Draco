@@ -16,8 +16,7 @@
 
 #include "Interval_Quadrature.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 //=======================================================================================//
 /*!
@@ -30,36 +29,31 @@ namespace rtt_quadrature
  */
 //=======================================================================================//
 
-class Gauss_Legendre : public Interval_Quadrature
-{
-  public:
+class Gauss_Legendre : public Interval_Quadrature {
+public:
+  // CREATORS
+  DLL_PUBLIC_quadrature explicit Gauss_Legendre(unsigned sn_order);
 
-    // CREATORS
-    DLL_PUBLIC_quadrature
-    explicit Gauss_Legendre(unsigned sn_order);
+  // ACCESSORS
 
-    // ACCESSORS
+  // SERVICES
 
-    // SERVICES
+  virtual string name() const;
 
-    virtual string name() const;
+  virtual string parse_name() const;
 
-    virtual string parse_name() const;
+  virtual unsigned number_of_levels() const;
 
-    virtual unsigned number_of_levels() const;
+  virtual string as_text(string const &indent) const;
 
-    virtual string as_text(string const &indent) const;
+  bool check_class_invariants() const;
 
-    bool check_class_invariants() const;
+  // STATICS
 
-    // STATICS
+  static SP<Quadrature> parse(Token_Stream &tokens);
 
-    static SP<Quadrature> parse(Token_Stream &tokens);
-
-  protected:
-
-    virtual vector<Ordinate> create_level_ordinates_(double norm) const;
-
+protected:
+  virtual vector<Ordinate> create_level_ordinates_(double norm) const;
 };
 
 } // end namespace rtt_quadrature

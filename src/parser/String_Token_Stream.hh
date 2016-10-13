@@ -13,11 +13,10 @@
 #ifndef CCS4_String_Token_Stream_HH
 #define CCS4_String_Token_Stream_HH
 
-#include <fstream>
 #include "Text_Token_Stream.hh"
+#include <fstream>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using std::string;
 using std::set;
 
@@ -30,68 +29,62 @@ using std::set;
  * an internal string that can be retrieved at will.
  */
 
-class DLL_PUBLIC_parser String_Token_Stream : public Text_Token_Stream
-{
-  public:
+class DLL_PUBLIC_parser String_Token_Stream : public Text_Token_Stream {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Construct a String_Token_Stream from a string.
+  String_Token_Stream(string const &text);
 
-    //! Construct a String_Token_Stream from a string.
-    String_Token_Stream(string const &text);
+  //! Construct a String_Token_Stream from a string.
+  String_Token_Stream(string const &text, set<char> const &whitespace,
+                      bool no_nonbreaking_ws = false);
 
-    //! Construct a String_Token_Stream from a string.
-    String_Token_Stream(string const &text,
-                        set<char> const &whitespace,
-                        bool no_nonbreaking_ws=false);
+  // MANIPULATORS
 
-    // MANIPULATORS
+  // Return to the start of the string.
+  void rewind();
 
-    // Return to the start of the string.
-    void rewind();
+  //! Report a condition.
+  virtual void report(Token const &token, string const &message);
 
-    //! Report a condition.
-    virtual void report(Token const & token,
-                        string const &message);
+  //! Report a condition.
+  virtual void report(string const &message);
 
-    //! Report a condition.
-    virtual void report(string const &message);
+  // ACCESSORS
 
-    // ACCESSORS
+  //! Return the text to be tokenized.
+  string const &text() const { return text_; }
 
-    //! Return the text to be tokenized.
-    string const &text() const { return text_; }
+  //! Return the accumulated set of messages.
+  string messages() const { return messages_; }
 
-    //! Return the accumulated set of messages.
-    string messages() const { return messages_; }
+  //! Check the class invariant.
+  bool check_class_invariants() const;
 
-    //! Check the class invariant.
-    bool check_class_invariants() const;
+protected:
+  //! Generate a locator string.
+  virtual string location_() const;
 
-  protected:
+  virtual void fill_character_buffer_();
 
-    //! Generate a locator string.
-    virtual string location_() const;
+  virtual bool error_() const;
+  virtual bool end_() const;
 
-    virtual void fill_character_buffer_();
+private:
+  // IMPLEMENTATION
 
-    virtual bool error_() const;
-    virtual bool end_() const;
+  // DATA
 
-  private:
+  string text_;  //!< Text to be tokenized
+  unsigned pos_; //!< Cursor position in string
 
-    // IMPLEMENTATION
-
-    // DATA
-
-    string text_;       //!< Text to be tokenized
-    unsigned pos_;      //!< Cursor position in string
-
-    string messages_;   //!< Collection of diagnostic messages
+  string messages_; //!< Collection of diagnostic messages
 };
 
 } // rtt_parser
 
-#endif  // CCS4_String_Token_Stream_HH
+#endif // CCS4_String_Token_Stream_HH
 
 //---------------------------------------------------------------------------//
 // end of String_Token_Stream.hh

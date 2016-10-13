@@ -16,12 +16,12 @@
 
 #include "ds++/config.h"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 //! \brief kronecker_delta
-template< typename T > DLL_PUBLIC_special_functions
-unsigned int kronecker_delta( T const test_value, T const offset );
+template <typename T>
+DLL_PUBLIC_special_functions unsigned int kronecker_delta(T const test_value,
+                                                          T const offset);
 
 } // end namespace rtt_sf
 

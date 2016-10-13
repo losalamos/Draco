@@ -21,8 +21,7 @@
 #include "C4_Functions.hh"
 #include "ds++/UnitTest.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //===========================================================================//
 /*!
@@ -70,34 +69,30 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class ParallelUnitTest : public rtt_dsxx::UnitTest
-{
-  public:
+class ParallelUnitTest : public rtt_dsxx::UnitTest {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Default constructor.
+  DLL_PUBLIC_c4 ParallelUnitTest(int &argc, char **&argv,
+                                 string_fp_void release_,
+                                 std::ostream &out_ = std::cout);
 
-    //! Default constructor.
-    DLL_PUBLIC_c4
-    ParallelUnitTest( int            & argc,
-                      char         **& argv,
-                      string_fp_void   release_,
-                      std::ostream   & out_ = std::cout);
+  //!  The copy constructor is disabled.
+  ParallelUnitTest(ParallelUnitTest const &rhs);
 
-    //!  The copy constructor is disabled.
-    ParallelUnitTest( ParallelUnitTest const &rhs );
+  //! Destructor.
+  DLL_PUBLIC_c4 ~ParallelUnitTest();
 
-    //! Destructor.
-    DLL_PUBLIC_c4 ~ParallelUnitTest();
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! The assignment operator is disabled.
+  ParallelUnitTest &operator=(ParallelUnitTest const &rhs);
 
-    //! The assignment operator is disabled.
-    ParallelUnitTest& operator=( ParallelUnitTest const &rhs );
+  // ACCESSORS
 
-    // ACCESSORS
-
-    //! Provide a report of the number of unit test passes and fails.
-    DLL_PUBLIC_c4 void status( void );
+  //! Provide a report of the number of unit test passes and fails.
+  DLL_PUBLIC_c4 void status(void);
 };
 
 } // end namespace rtt_c4

@@ -51,10 +51,9 @@ macro( set_defaults )
 
   # Prerequisits:
   #
-  # This setup assumes that the project work_dir will contain 3
-  # subdirectories: source, build and target.  See how
-  # CMAKE_SOURCE_DIRECTORY, CMAKE_BUILD_DIRECTORY AND
-  # CMAKE_INSTALL_PREFIX are set just below.
+  # This setup assumes that the project work_dir will contain 3 subdirectories:
+  # source, build and target.  See how CMAKE_SOURCE_DIRECTORY,
+  # CMAKE_BUILD_DIRECTORY AND CMAKE_INSTALL_PREFIX are set just below.
   if( NOT work_dir )
     if( EXISTS "$ENV{work_dir}" )
       set( work_dir $ENV{work_dir} )
@@ -157,21 +156,20 @@ win32$ set work_dir=c:/full/path/to/work_dir
    set( CTEST_TEST_TIMEOUT "1800" ) # seconds
 
    # Parallelism for the regression:
-   # - Assume that the compile phase done on the same
-   #   platform/partition as the configure phase.  Query the system
-   #   using ProcessorCount to find out how many cores we can use.
+   # - Assume that the compile phase done on the same platform/partition as the
+   #   configure phase.  Query the system using ProcessorCount to find out how
+   #   many cores we can use.
    include(ProcessorCount)
    ProcessorCount(num_compile_procs)
    if( NOT WIN32 )
        if(NOT num_compile_procs EQUAL 0)
          set(CTEST_BUILD_FLAGS "-j${num_compile_procs} -l${num_compile_procs}")
-         if( "${sitename}" STREQUAL "Cielito" OR "${sitename}" STREQUAL "Trinitite")
-           # We compile on the front end for this machine. Since we don't
-           # know the actual load apriori, we use the -l option to limit
-           # the total load on the machine.  For CT, my experience shows
-           # that 'make -l N' actually produces a machine load ~ 1.5*N, so
-           # we will specify the max load to be half of the total number
-           # of procs.
+         if( "${sitename}" STREQUAL "Trinity" OR "${sitename}" STREQUAL "Trinitite")
+           # We compile on the front end for this machine. Since we don't know
+           # the actual load apriori, we use the -l option to limit the total
+           # load on the machine.  For CT, my experience shows that 'make -l N'
+           # actually produces a machine load ~ 1.5*N, so we will specify the
+           # max load to be half of the total number of procs.
            math(EXPR half_num_compile_procs "${num_compile_procs} / 2" )
            set(CTEST_BUILD_FLAGS "-j ${half_num_compile_procs} -l ${num_compile_procs}")
          endif()
@@ -180,8 +178,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
 
    # Testing parallelism
    # - Call the macro
-   #   find_num_procs_avail_for_running_tests(num_test_procs) from the
-   #   each projects ctest script (Draco_Linux64.ctest).
+   #   find_num_procs_avail_for_running_tests(num_test_procs) from the each
+   #   projects ctest script (Draco_Linux64.ctest).
 
    # Echo settings
    if( ${drm_verbose} )
@@ -308,8 +306,8 @@ macro( parse_args )
         set( compiler_short_name "intel-${compiler_version}" )
      endif()
   elseif( DEFINED ENV{PE_ENV} )
-    # Ceilo and Trinity (catamount) define this variable to define
-    # the flavor of the PrgEnv module currently laoded.
+    # Trinity define this variable to define the flavor of the PrgEnv module
+    # currently laoded.
     if( $ENV{PE_ENV} MATCHES "INTEL")
       set( compiler_short_name "intel" )
     elseif( $ENV{PE_ENV} MATCHES "PGI")
@@ -460,15 +458,9 @@ macro( find_tools )
   endif()
 
   find_program( CTEST_MEMORYCHECK_COMMAND NAMES valgrind )
-  set(          CTEST_MEMORYCHECK_COMMAND_OPTIONS
-     "-q --tool=memcheck --leak-check=full --trace-children=yes --suppressions=${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt --gen-suppressions=all" )
   # --show-reachable --num-callers=50
   # --suppressions=<filename>
   # --gen-suppressions=all|yes|no
-  if( EXISTS ${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt )
-     set( MEMORYCHECK_SUPPRESSIONS_FILE
-        ${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt )
-  endif()
 
   if(ENABLE_C_CODECOVERAGE)
     find_program( COV01 NAMES cov01 )
@@ -609,14 +601,6 @@ macro( setup_for_code_coverage )
             set( ENV{COVCLASSCFG} ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
             set( ENV{COVSRCCFG}   ${CTEST_BINARY_DIRECTORY}/covclass_cmake.cfg )
             set( ENV{COVFILE}     ${CTEST_BINARY_DIRECTORY}/CMake.cov )
-#             message("Setting up environment for Bullseye Coverage...
-# COVDIRCFG  = $ENV{COVDIRCFG}
-# COVFNCFG   = $ENV{COVFNCFG}
-# COVCLASSCFG= $ENV{COVCLASSCFG}
-# COVSRCCFG  = $ENV{COVSRCCFG}
-# COVFILE    = $ENV{COVFILE}
-# ${COV01} --on
-# ")
             execute_process(COMMAND "${COV01}" --on --verbose RESULT_VARIABLE RES)
 
             # Process and save lines of code
@@ -727,6 +711,23 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
 
   if( ${ENABLE_DYNAMICANALYSIS} )
     set( CTEST_TEST_TIMEOUT 7200 )
+    if( EXISTS ${CTEST_SOURCE_DIRECTORY}/regression/valgrind_suppress.txt )
+      set( MEMORYCHECK_SUPPRESSIONS_FILE
+        ${CTEST_SOURCE_DIRECTORY}/regression/valgrind_suppress.txt )
+    elseif( EXISTS ${CTEST_SOURCE_DIRECTORY}/scripts/valgrind_suppress.txt )
+      set( MEMORYCHECK_SUPPRESSIONS_FILE
+        ${CTEST_SOURCE_DIRECTORY}/scripts/valgrind_suppress.txt )
+    elseif( EXISTS ${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt )
+      set( MEMORYCHECK_SUPPRESSIONS_FILE
+        ${CTEST_SCRIPT_DIRECTORY}/valgrind_suppress.txt )
+    endif()
+    if( EXISTS ${MEMORYCHECK_SUPPRESSIONS_FILE} )
+      set( valgrind_suppress_option
+        "--suppressions=${MEMORYCHECK_SUPPRESSIONS_FILE}")
+      set( CTEST_MEMORYCHECK_COMMAND_OPTIONS
+        "-q --tool=memcheck --leak-check=full --trace-children=yes --gen-suppressions=all ${valgrind_suppress_option}" )
+    endif()
+    message(" CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}")
     message( "ctest_memcheck( SCHEDULE_RANDOM ON
                 EXCLUDE_LABEL nomemcheck )")
     ctest_memcheck(
@@ -738,14 +739,13 @@ endmacro(process_cc_or_da)
 # ------------------------------------------------------------
 # Special default settings for a couple of platforms
 #
-# Sets DRACO_DIR and CLUBIMC_DIR
-#
+# Sets DRACO_DIR
 # ------------------------------------------------------------
 macro(set_pkg_work_dir this_pkg dep_pkg)
 
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
-  # Assume that draco_work_dir is parallel to our current location, but
-  # only replace the directory name preceeding the dashboard name.
+  # Assume that draco_work_dir is parallel to our current location, but only
+  # replace the directory name preceeding the dashboard name.
   file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
   message("work_dir = ${work_dir}")
   string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"

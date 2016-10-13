@@ -19,87 +19,80 @@
 #include <string>
 #include <vector>
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the 
  *        header block of the mesh file.
  */
-class Header
-{
-// typedefs
-    typedef std::ifstream ifstream;
-    typedef std::string string;
-    typedef std::vector<string> vector_str;
+class Header {
+  // typedefs
+  typedef std::ifstream ifstream;
+  typedef std::string string;
+  typedef std::vector<string> vector_str;
 
-    string version;
-    string title;
-    string date;
-    int cycle;
-    double time;
-    int ncomments;
-    vector_str comments;
+  string version;
+  string title;
+  string date;
+  int cycle;
+  double time;
+  int ncomments;
+  vector_str comments;
 
-  public:
-    Header(void)
-        : version( std::string("") ),
-          title(   std::string("") ),
-          date(    std::string("") ),
-          cycle(     0   ),
-          time(      0.0 ),
-          ncomments( 0   ),
-          comments( std::vector<string>() )
-    {/*empty*/}
-    ~Header(void) {/*empty*/}
+public:
+  Header(void)
+      : version(std::string("")), title(std::string("")), date(std::string("")),
+        cycle(0), time(0.0), ncomments(0),
+        comments(std::vector<string>()) { /*empty*/
+  }
+  ~Header(void) { /*empty*/
+  }
 
-    void readHeader(ifstream & meshfile);
+  void readHeader(ifstream &meshfile);
 
-  private:
-    void readKeyword(ifstream & meshfile);
-    void readData(ifstream & meshfile);
-    void readEndKeyword(ifstream & meshfile);
+private:
+  void readKeyword(ifstream &meshfile);
+  void readData(ifstream &meshfile);
+  void readEndKeyword(ifstream &meshfile);
 
-  public:
-    // header data access
-/*!
+public:
+  // header data access
+  /*!
  * \brief Returns the mesh file version number.
  * \return Version number.
  */
-    string get_version() const { return version; }
-/*!
+  string get_version() const { return version; }
+  /*!
  * \brief Returns the mesh file title.
  * \return Title.
  */
-    string get_title() const { return title; }
-/*!
+  string get_title() const { return title; }
+  /*!
  * \brief Returns the mesh file date.
  * \return Date the mesh file was generated.
  */
-    string get_date() const { return date; }
-/*!
+  string get_date() const { return date; }
+  /*!
  * \brief Returns the mesh file cycle number.
  * \return Cycle number.
  */
-    int get_cycle() const { return cycle; }
-/*!
+  int get_cycle() const { return cycle; }
+  /*!
  * \brief Returns the mesh file problem time.
  * \return Problem time.
  */
-    double get_time() const { return time; }
-/*!
+  double get_time() const { return time; }
+  /*!
  * \brief Returns the number of comment lines in the mesh file.
  * \return The number of comment lines.
  */
-    int get_ncomments() const { return ncomments; }	
-/*!
+  int get_ncomments() const { return ncomments; }
+  /*!
  * \brief Returns the specified comment line from the mesh file.
  * \param i Line number of the comment to be returned.
  * \return The comment line.
  */
-    string get_comments(int i) const { return comments[i]; }
-
+  string get_comments(int i) const { return comments[i]; }
 };
-
 
 } // end namespace rtt_RTT_Format_Reader
 

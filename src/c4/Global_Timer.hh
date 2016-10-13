@@ -14,12 +14,11 @@
 #ifndef __c4_Global_Timer_hh__
 #define __c4_Global_Timer_hh__
 
+#include "Timer.hh"
 #include <map>
 #include <set>
-#include "Timer.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //===========================================================================//
 /*!
@@ -41,81 +40,77 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Global_Timer : public Timer
-{
-  private:
+class DLL_PUBLIC_c4 Global_Timer : public Timer {
+private:
+  char const *name_; // name assigned by client to this timer, to
+                     // distinguish its output from that of any other
+                     // timers.
 
-    char const *name_; // name assigned by client to this timer, to
-                       // distinguish its output from that of any other
-                       // timers.
+  bool active_; // This timer is active. This does not mean it is
+                // currently accumulating timing statistics, but only
+                // that it is flagged to do so when start() is
+                // called. If not active, a call to start() is ignored.
 
-    bool active_;     // This timer is active. This does not mean it is
-                      // currently accumulating timing statistics, but only
-                      // that it is flagged to do so when start() is
-                      // called. If not active, a call to start() is ignored.
+  //! All Global_Timers are active
+  static bool global_active_;
 
-    //! All Global_Timers are active
-    static bool global_active_;
+  struct timer_entry {
+    bool is_active; // permits activation of timers not yet constructed.
+    Global_Timer *timer;
 
-    struct timer_entry
-    {
-        bool is_active;   // permits activation of timers not yet constructed.
-        Global_Timer *timer;
+    timer_entry() : is_active(false), timer(NULL) {}
+  };
 
-        timer_entry() : is_active(false), timer(NULL) {}
-    };
+  typedef std::map<std::string, timer_entry> active_list_type;
 
-    typedef std::map<std::string, timer_entry> active_list_type;
+  //! Selected Global_Timers are active
+  static active_list_type active_list_;
 
-    //! Selected Global_Timers are active
-    static active_list_type active_list_;
+  //! Disable copy construction
+  Global_Timer(Global_Timer const &rhs);
 
-    //! Disable copy construction
-    Global_Timer( Global_Timer const & rhs );
+  // Disable assignment
+  Global_Timer operator=(Global_Timer const &rhs);
 
-    // Disable assignment
-    Global_Timer operator=( Global_Timer const & rhs );
+public:
+  // Constructors
 
-  public:
+  explicit Global_Timer(char const *name); //! default constructor
 
-    // Constructors
+  ~Global_Timer();
 
-    explicit Global_Timer(char const *name); //! default constructor
+  // Accessors
 
-    ~Global_Timer();
+  char const *name() const { return name_; }
 
-    // Accessors
+  bool is_active() const { return active_ || global_active_; }
 
-    char const *name() const { return name_; }
+  // Manipulators
 
-    bool is_active() const { return active_ || global_active_; }
+  void set_activity(bool active) { active_ = active; }
 
-    // Manipulators
+  void start() {
+    if (active_ || global_active_)
+      Timer::start();
+  }
 
-    void set_activity(bool active) { active_ = active; }
+  void stop() {
+    if (active_ || global_active_)
+      Timer::stop();
+  }
 
-    void start()
-    {
-        if (active_ || global_active_) Timer::start();
-    }
+  // Statics
 
-    void stop()
-    {
-        if (active_ || global_active_) Timer::stop();
-    }
+  static bool is_global_active() { return global_active_; }
 
-    // Statics
+  static void set_global_activity(bool active);
 
-    static bool is_global_active() { return global_active_; }
+  static void set_selected_activity(std::set<std::string> const &timer_list,
+                                    bool active);
 
-    static void set_global_activity(bool active);
+  static void reset_all();
 
-    static void set_selected_activity(std::set<std::string> const &timer_list,
-                                      bool active);
-
-    static void reset_all();
-
-    static void report_all(std::ostream &);
+  static void report_all(std::ostream &);
 };
 
 } // end namespace rtt_c4

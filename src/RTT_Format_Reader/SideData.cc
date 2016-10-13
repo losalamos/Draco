@@ -13,64 +13,56 @@
 
 #include "SideData.hh"
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Parses the side_data block data from the mesh file via calls to 
  *        private member functions.
  * \param meshfile Mesh file name.
  */
-void SideData::readSideData(ifstream & meshfile)
-{
-    readKeyword(meshfile);
-    if (dims.get_nside_data() > 0)
-        readData(meshfile);
-    readEndKeyword(meshfile);
+void SideData::readSideData(ifstream &meshfile) {
+  readKeyword(meshfile);
+  if (dims.get_nside_data() > 0)
+    readData(meshfile);
+  readEndKeyword(meshfile);
 }
 /*!
  * \brief Reads and validates the side_data block keyword.
  * \param meshfile Mesh file name.
  */
-void SideData::readKeyword(ifstream & meshfile)
-{
-    string dummyString;
+void SideData::readKeyword(ifstream &meshfile) {
+  string dummyString;
 
-    meshfile >> dummyString;
-    Insist(dummyString == "sidedat",
-	   "Invalid mesh file: sidedat block missing");
-    std::getline(meshfile, dummyString);
+  meshfile >> dummyString;
+  Insist(dummyString == "sidedat", "Invalid mesh file: sidedat block missing");
+  std::getline(meshfile, dummyString);
 }
 /*!
  * \brief Reads and validates the side data block data.
  * \param meshfile Mesh file name.
  */
-void SideData::readData(ifstream & meshfile)
-{
-    string dummyString;
-    int sideNum;
+void SideData::readData(ifstream &meshfile) {
+  string dummyString;
+  int sideNum;
 
-    for (int i = 0; i < dims.get_nsides(); ++i)
-    {
-	meshfile >> sideNum;
-	Insist(sideNum == i+1,
-	       "Invalid mesh file: side data index out of order");
-	for (int j = 0; j < dims.get_nside_data(); ++j)
-	    meshfile >> data[i][j];
-	std::getline(meshfile, dummyString);
-    }
+  for (int i = 0; i < dims.get_nsides(); ++i) {
+    meshfile >> sideNum;
+    Insist(sideNum == i + 1, "Invalid mesh file: side data index out of order");
+    for (int j = 0; j < dims.get_nside_data(); ++j)
+      meshfile >> data[i][j];
+    std::getline(meshfile, dummyString);
+  }
 }
 /*!
  * \brief Reads and validates the end_sidedat block keyword.
  * \param meshfile Mesh file name.
  */
-void SideData::readEndKeyword(ifstream & meshfile)
-{
-    string dummyString;
+void SideData::readEndKeyword(ifstream &meshfile) {
+  string dummyString;
 
-    meshfile >> dummyString;
-    Insist(dummyString == "end_sidedat",
-	   "Invalid mesh file: sidedat block missing end");
-    std::getline(meshfile, dummyString);       // read and discard blank line.
+  meshfile >> dummyString;
+  Insist(dummyString == "end_sidedat",
+         "Invalid mesh file: sidedat block missing end");
+  std::getline(meshfile, dummyString); // read and discard blank line.
 }
 
 } // end namespace rtt_RTT_Format_Reader

@@ -17,8 +17,7 @@
 #include "ds++/config.h"
 #include <string>
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //===========================================================================//
 /*!
@@ -27,23 +26,21 @@ namespace rtt_norms
  */
 //===========================================================================//
 
-struct DLL_PUBLIC_norms Index_Labeled
-{
-    //! The index.
-    size_t index;
+struct DLL_PUBLIC_norms Index_Labeled {
+  //! The index.
+  size_t index;
 
-    //! The processor number.
-    size_t processor;
+  //! The processor number.
+  size_t processor;
 
-    //! A string label.
-    std::string label;
+  //! A string label.
+  std::string label;
 
-    // Constructor.  Allow auto-casting from index.
-    Index_Labeled(const size_t index_ = 0,
-		  const std::string &label_ = "");
+  // Constructor.  Allow auto-casting from index.
+  Index_Labeled(const size_t index_ = 0, const std::string &label_ = "");
 
-    // Equality operator.
-    bool operator==(const Index_Labeled &rhs) const;
+  // Equality operator.
+  bool operator==(const Index_Labeled &rhs) const;
 };
 
 } // end namespace rtt_norms

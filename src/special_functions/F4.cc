@@ -11,11 +11,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <cmath>
 #include "F4.hh"
+#include <cmath>
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 using namespace std;
 
 //---------------------------------------------------------------------------//
@@ -36,35 +35,28 @@ using namespace std;
  *
  * \post \c Result>=0
  */
-double F4(double const eta)
-{
-    double f4;
-    
-//--case where eta > 1e-3
+double F4(double const eta) {
+  double f4;
 
-    if(eta > 1.e-3)
-    {
-        double const eta2=eta*eta;
-        double const eta3=eta*eta2;
-        double const eta4=eta*eta3;
-        double const eta5=eta*eta4;
-//        double const eta6=eta*eta5;
-        if (eta <= 30.)
-        {
-            f4=(0.2*eta5+6.5797*eta3+45.4576*eta)/
-               (1.-exp(-1.9484*eta));
-        }
-        else
-        {
-            f4=0.2*eta5+6.5797*eta3+45.4576*eta;
-        }
+  //--case where eta > 1e-3
+
+  if (eta > 1.e-3) {
+    double const eta2 = eta * eta;
+    double const eta3 = eta * eta2;
+    double const eta4 = eta * eta3;
+    double const eta5 = eta * eta4;
+    //        double const eta6=eta*eta5;
+    if (eta <= 30.) {
+      f4 = (0.2 * eta5 + 6.5797 * eta3 + 45.4576 * eta) /
+           (1. - exp(-1.9484 * eta));
+    } else {
+      f4 = 0.2 * eta5 + 6.5797 * eta3 + 45.4576 * eta;
     }
-    else
-    {
-        double const expeta=exp(eta);
-        f4=24.*expeta/(1.+0.0287*exp(0.9257*eta));
-    }
-    return f4;
+  } else {
+    double const expeta = exp(eta);
+    f4 = 24. * expeta / (1. + 0.0287 * exp(0.9257 * eta));
+  }
+  return f4;
 }
 
 } // end namespace rtt_sf

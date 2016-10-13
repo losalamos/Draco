@@ -37,9 +37,14 @@ target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
 # Use modules found in the draco directory
-module load user_contrib friendly-testing
-#export ucmf=$HOME/modulefiles
-#module use --append ~/modulefiles/trinitite
+sysname=`/usr/projects/hpcsoft/utilities/bin/sys_name`
+if test -d $HOME/modulefiles/$sysname; then
+  export ucmf=$HOME/modulefiles
+  module use --append ~/modulefiles/$sysname
+else
+  module load user_contrib
+fi
+module load friendly-testing
 
 export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
 gsl/2.1 cmake/3.6.1 numdiff ndi random123 eospac/6.2.4 \
@@ -47,9 +52,6 @@ subversion git"
 
 function dracoenv ()
 {
-  #module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu
-  #module load PrgEnv-intel
-  #module swap intel intel/16.0.3
   module unload gcc/6.1.0 cray-libsci
   for m in $dracomodules; do
     module load $m
@@ -70,11 +72,8 @@ function rmdracoenv ()
       module unload ${mods[$i]}
     #fi
   done
-  # module unload intel
-  # module unload gcc
   module unload PrgEnv-intel
   module load PrgEnv-intel
-  # module load PrgEnv-pgi
 }
 
 export OMP_NUM_THREADS=16

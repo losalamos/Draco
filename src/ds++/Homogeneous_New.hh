@@ -16,8 +16,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -87,69 +86,65 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx  Homogeneous_New 
-{
-  public:
+class DLL_PUBLIC_dsxx Homogeneous_New {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  enum {
 
-    enum
-    {
-        
 #ifdef isLinux
-        DEFAULT_BLOCK_SIZE = 4096
+    DEFAULT_BLOCK_SIZE = 4096
 #else
-        DEFAULT_BLOCK_SIZE = 4096
+    DEFAULT_BLOCK_SIZE = 4096
 #endif
-        
-    };
-    
-    // CREATORS
-    
-    //! Create an allocator for objects of the specified size, using the
-    //! specified block byte count (defaulting to a system-tuned value.)
-    Homogeneous_New(unsigned object_size,
-                    unsigned default_block_size = DEFAULT_BLOCK_SIZE);
-    
-    //! Destructor.
-    ~Homogeneous_New();
 
-    // MANIPULATORS
+  };
 
-    // Allocate storage for a single object.
-    void *allocate();
-    
-    // Release an object's storage.
-    void deallocate(void *);
+  // CREATORS
 
-    // Reserve storage for the specified number of objects.
-    void reserve(unsigned object_count);
+  //! Create an allocator for objects of the specified size, using the
+  //! specified block byte count (defaulting to a system-tuned value.)
+  Homogeneous_New(unsigned object_size,
+                  unsigned default_block_size = DEFAULT_BLOCK_SIZE);
 
-    // ACCESSORS
+  //! Destructor.
+  ~Homogeneous_New();
 
-    bool check_class_invariants() const;
+  // MANIPULATORS
 
-  private:
+  // Allocate storage for a single object.
+  void *allocate();
 
-    // NESTED CLASSES AND TYPEDEFS
+  // Release an object's storage.
+  void deallocate(void *);
 
-    // IMPLEMENTATION
-    
-    //! Copy constructor: not implemented
-    Homogeneous_New(const Homogeneous_New &rhs);
-    
-    //! Assignment operator for Homogeneous_New: not implemented.
-    Homogeneous_New& operator=(const Homogeneous_New &rhs);
+  // Reserve storage for the specified number of objects.
+  void reserve(unsigned object_count);
 
-    void allocate_block_(unsigned const block_size);
+  // ACCESSORS
 
-    // DATA
+  bool check_class_invariants() const;
 
-    unsigned object_size_;
-    unsigned default_block_size_;
-    unsigned total_number_of_segments_;
-    void *first_block_;
-    void *first_segment_;
+private:
+  // NESTED CLASSES AND TYPEDEFS
+
+  // IMPLEMENTATION
+
+  //! Copy constructor: not implemented
+  Homogeneous_New(const Homogeneous_New &rhs);
+
+  //! Assignment operator for Homogeneous_New: not implemented.
+  Homogeneous_New &operator=(const Homogeneous_New &rhs);
+
+  void allocate_block_(unsigned const block_size);
+
+  // DATA
+
+  unsigned object_size_;
+  unsigned default_block_size_;
+  unsigned total_number_of_segments_;
+  void *first_block_;
+  void *first_segment_;
 };
 
 } // end namespace rtt_dsxx

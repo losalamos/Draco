@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( fit CXX )
 
@@ -15,10 +13,8 @@ project( fit CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
 file( GLOB headers *.hh )
-list( REMOVE_ITEM headers ${template_implementations} )
 
 # Make the header files available in the IDE.
 if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )

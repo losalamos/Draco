@@ -14,15 +14,14 @@
 #ifndef ode_quad_i_hh
 #define ode_quad_i_hh
 
-#include <limits>
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 
 //#include "quad.hh"
 #include "ds++/Assert.hh"
 
-namespace rtt_ode
-{
+namespace rtt_ode {
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Adaptive quadrature of a function over a specified interval.
@@ -49,46 +48,39 @@ namespace rtt_ode
  *
  * \exception range_error Thrown if the step size becomes too small.
  */
-template<typename Function, typename Rule>
-typename Function_Traits<Function>::return_type 
-quad(Function func, 
-     double x1, 
-     double x2,
-     double &eps,
-     Rule rule)
-{
-    Require( x2 > x1 );
-    Require( eps >= 0 );
+template <typename Function, typename Rule>
+typename Function_Traits<Function>::return_type
+quad(Function func, double x1, double x2, double &eps, Rule rule) {
+  Require(x2 > x1);
+  Require(eps >= 0);
 
-    using namespace std;
+  using namespace std;
 
-    Quad_To_ODE<Function> derivs( func );
+  Quad_To_ODE<Function> derivs(func);
 
-    typedef typename Function_Traits<Function>::return_type Field;
+  typedef typename Function_Traits<Function>::return_type Field;
 
-    double x = x1;
-    double h = x2 - x1;
-    vector<Field> y( 1, Field( 0.0 ) );
-    vector<Field> dydx( 1 );
-    vector<double> yscal( 1 );
-    for( ;; )
-    {
-        dydx[0] = func( x );
-        yscal[0] = 1;
-        if( (x + h - x2)*(x + h - x1) > 0 ) h = x2 - x;
-        double hdid, hnext;
-        rule( y, dydx, x, h, eps, yscal, hdid, hnext, derivs );
-        if( (x - x2)*(x2 - x1) >= 0 )
-        {
-            return y[0];
-        }
-        if( std::fabs( hnext ) <=
-            std::numeric_limits<double>::epsilon()*(x2 - x1) )
-        {
-            throw std::range_error( "step size too small in quad" );
-        }
-        h = hnext;
+  double x = x1;
+  double h = x2 - x1;
+  vector<Field> y(1, Field(0.0));
+  vector<Field> dydx(1);
+  vector<double> yscal(1);
+  for (;;) {
+    dydx[0] = func(x);
+    yscal[0] = 1;
+    if ((x + h - x2) * (x + h - x1) > 0)
+      h = x2 - x;
+    double hdid, hnext;
+    rule(y, dydx, x, h, eps, yscal, hdid, hnext, derivs);
+    if ((x - x2) * (x2 - x1) >= 0) {
+      return y[0];
     }
+    if (std::fabs(hnext) <=
+        std::numeric_limits<double>::epsilon() * (x2 - x1)) {
+      throw std::range_error("step size too small in quad");
+    }
+    h = hnext;
+  }
 }
 
 } // end namespace rtt_ode

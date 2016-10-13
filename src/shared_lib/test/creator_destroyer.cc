@@ -10,8 +10,8 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Foo_Base.hh"
 #include "Foo.hh"
+#include "Foo_Base.hh"
 
 using rtt_shared_lib_test::Foo_Base;
 using rtt_shared_lib_test::Foo;
@@ -19,19 +19,15 @@ using rtt_shared_lib_test::Foo;
 // These functions are used by the tst_Shared_Lib to create and destroy Foo
 // objects, where Foo is defined within a shared library.
 
-extern "C"
-{
-    // The Creator
-    Foo_Base* my_creator(const double x)
-    {
-	return new Foo(x);
-    }
+extern "C" {
+// The Creator
+Foo_Base *my_creator(const double x) { return new Foo(x); }
 
-    // The Destroyer
-    void my_destroyer(Foo_Base* p)
-    {
-	if ( p ) delete p;
-    }
+// The Destroyer
+void my_destroyer(Foo_Base *p) {
+  if (p)
+    delete p;
+}
 }
 
 //---------------------------------------------------------------------------//

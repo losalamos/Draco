@@ -9,9 +9,9 @@
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Release.hh"
 #include "quadrature_test.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "quadrature/Double_Gauss.hh"
 
 using namespace std;
@@ -22,18 +22,16 @@ using namespace rtt_quadrature;
 // TESTS
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut(argc, argv, release);
-    try
-    {
-        Double_Gauss quad8(8); // SN order = 8
-        quadrature_test(ut, quad8);
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    Double_Gauss quad8(8); // SN order = 8
+    quadrature_test(ut, quad8);
 
-        Double_Gauss quad2(2); // SN order = 2
-        quadrature_test(ut, quad2);
-    }
-    UT_EPILOG(ut);
+    Double_Gauss quad2(2); // SN order = 2
+    quadrature_test(ut, quad2);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

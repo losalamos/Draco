@@ -12,13 +12,10 @@
 
 #include "Foo_Base.hh"
 
-namespace rtt_shared_lib_test
-{
+namespace rtt_shared_lib_test {
 
 // This should be linked in with the executable, NOT the shared lib.
-Foo_Base::~Foo_Base()
-{
-}
+Foo_Base::~Foo_Base() {}
 
 } // end namespace rtt_shared_lib_test
 

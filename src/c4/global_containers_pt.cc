@@ -15,24 +15,19 @@
 #ifdef C4_MPI
 #include "global_containers.i.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 using namespace std;
 
-template
-void global_merge(set<unsigned> &);
+template void global_merge(set<unsigned> &);
 
-template
-void global_merge(map<unsigned, double> &);
+template void global_merge(map<unsigned, double> &);
 
-template
-void global_merge(map<unsigned, unsigned> &);
+template void global_merge(map<unsigned, unsigned> &);
 
-template
-void global_merge(map<unsigned, bool> &);
+template void global_merge(map<unsigned, bool> &);
 
 } // end namespace rtt_c4
-#endif // C4_MPI 
+#endif // C4_MPI
 
 //---------------------------------------------------------------------------//
 // end of global_containers_pt.cc

@@ -17,8 +17,7 @@
 #include "Assert.hh"
 #include <iterator>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /*!
@@ -36,193 +35,155 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-template<typename Ran>
-class Slice
-{
-  private:
+template <typename Ran> class Slice {
+private:
+  typedef typename std::iterator_traits<Ran> traits;
 
-    typedef typename std::iterator_traits<Ran> traits;
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
+  typedef typename traits::value_type value_type;
+  // no allocator type
+  typedef unsigned size_type;
+  typedef typename traits::difference_type difference_type;
+
+  class iterator {
   public:
-
-    // NESTED CLASSES AND TYPEDEFS
-
-    typedef typename traits::value_type      value_type;
-    // no allocator type
-    typedef unsigned size_type;
+    typedef typename traits::iterator_category iterator_category;
+    typedef typename traits::value_type value_type;
     typedef typename traits::difference_type difference_type;
-
-    class iterator
-    {
-      public:
-	typedef typename traits::iterator_category iterator_category;
-	typedef typename traits::value_type        value_type;
-	typedef typename traits::difference_type   difference_type;
-	typedef typename traits::pointer           pointer;
-	typedef typename traits::reference         reference;
-
-        Ran first() const { return first_; }
-        difference_type offset() const { return offset_; }
-        unsigned stride() const { return stride_; }
-
-	iterator &operator++()
-	{
-	    offset_ += stride_;
-	    return *this;
-	}
-
-	iterator operator++(int)
-	{
-	    offset_ += stride_;
-	    return iterator(first_, offset_-stride_, stride_);
-	}
-
-	reference operator*() const
-	{
-	    return first_[offset_];
-	}
-
-	reference operator[](difference_type i) const
-	{
-	    return first_[offset_+i];
-	}
-
-	iterator operator+(difference_type i) const
-	{
-	    return iterator(first_, offset_+i*stride_, stride_);
-	}
-
-	difference_type operator-(iterator i) const
-	{
-	    Require((first_-i.first_)%stride_==0);
-	    Require(stride_==i.stride_);
-
-	    return ((first_-i.first_)+offset_-i.offset_)/stride_;
-	}
-
-      private:
-	friend class Slice;
-
-	iterator(Ran const first,
-		 difference_type const offset,
-		 unsigned const stride)
-	    : first_(first),
-	      offset_(offset),
-	      stride_(stride)
-	{
-	    Require(stride>0);
-	}
-
-	friend bool operator<(iterator a, iterator b)
-	{
-	    return a.first_-b.first_<b.offset_-a.offset_;
-	}
-
-	friend bool operator!=(iterator a, iterator b)
-	{
-	    return a.first_-b.first_!=b.offset_-a.offset_;
-	}
-
-	Ran first_;
-	difference_type offset_;
-	unsigned stride_;
-    };
-
-    class const_iterator
-    {
-      public:
-	typedef typename traits::iterator_category iterator_category;
-	typedef typename traits::value_type        value_type;
-	typedef typename traits::difference_type   difference_type;
-	typedef typename traits::pointer           pointer;
-	typedef typename traits::reference         reference;
-
-        Ran first() const { return first_; }
-        difference_type offset() const { return offset_; }
-        unsigned stride() const { return stride_; }
-
-	const_iterator &operator++()
-	{
-	    offset_ += stride_;
-	    return *this;
-	}
-
-	const_iterator operator++(int)
-	{
-	    offset_ += stride_;
-	    return const_iterator(first_, offset_-stride_, stride_);
-	}
-
-	value_type const & operator*() const
-	{
-	    return first_[offset_];
-	}
-
-	value_type const & operator[](difference_type i) const
-	{
-	    return first_[offset_+i];
-	}
-
-	const_iterator operator+(difference_type i) const
-	{
- 	    return const_iterator(first_, offset_+i*stride_, stride_);
-	}
-
-	difference_type operator-(const_iterator i) const
-	{
-	    Require((first_-i.first_)%stride_==0);
-	    Require(stride_==i.stride_);
-
-	    return ((first_-i.first_)+offset_-i.offset_)/stride_;
-	}
-
-	const_iterator(iterator const &i)
-	    : first_(i.first()),
-	      offset_(i.offset()),
-	      stride_(i.stride())
-	{
-	}
-
-      private:
-	friend class Slice;
-
-	const_iterator(Ran const first,
-		       difference_type const offset,
-		       unsigned const stride)
-	    : first_(first),
-	      offset_(offset),
-	      stride_(stride)
-	{
-	    Require(stride>0);
-	}
-
-	friend bool operator<(const_iterator a, const_iterator b)
-	{
-	    return a.first_-b.first_<b.offset_-a.offset_;
-	}
-
-	friend bool operator!=(const_iterator a, const_iterator b)
-	{
-	    return a.first_-b.first_!=b.offset_-a.offset_;
-	}
-
-	Ran first_;
-	difference_type offset_;
-	unsigned stride_;
-    };
-
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-
-    typedef typename traits::pointer   pointer;
+    typedef typename traits::pointer pointer;
     typedef typename traits::reference reference;
-    typedef value_type const *         const_pointer;
-    typedef value_type const &         const_reference;
 
-    // CREATORS
+    Ran first() const { return first_; }
+    difference_type offset() const { return offset_; }
+    unsigned stride() const { return stride_; }
 
-    //-----------------------------------------------------------------------//
-    /*!
+    iterator &operator++() {
+      offset_ += stride_;
+      return *this;
+    }
+
+    iterator operator++(int) {
+      offset_ += stride_;
+      return iterator(first_, offset_ - stride_, stride_);
+    }
+
+    reference operator*() const { return first_[offset_]; }
+
+    reference operator[](difference_type i) const {
+      return first_[offset_ + i];
+    }
+
+    iterator operator+(difference_type i) const {
+      return iterator(first_, offset_ + i * stride_, stride_);
+    }
+
+    difference_type operator-(iterator i) const {
+      Require((first_ - i.first_) % stride_ == 0);
+      Require(stride_ == i.stride_);
+
+      return ((first_ - i.first_) + offset_ - i.offset_) / stride_;
+    }
+
+  private:
+    friend class Slice;
+
+    iterator(Ran const first, difference_type const offset,
+             unsigned const stride)
+        : first_(first), offset_(offset), stride_(stride) {
+      Require(stride > 0);
+    }
+
+    friend bool operator<(iterator a, iterator b) {
+      return a.first_ - b.first_ < b.offset_ - a.offset_;
+    }
+
+    friend bool operator!=(iterator a, iterator b) {
+      return a.first_ - b.first_ != b.offset_ - a.offset_;
+    }
+
+    Ran first_;
+    difference_type offset_;
+    unsigned stride_;
+  };
+
+  class const_iterator {
+  public:
+    typedef typename traits::iterator_category iterator_category;
+    typedef typename traits::value_type value_type;
+    typedef typename traits::difference_type difference_type;
+    typedef typename traits::pointer pointer;
+    typedef typename traits::reference reference;
+
+    Ran first() const { return first_; }
+    difference_type offset() const { return offset_; }
+    unsigned stride() const { return stride_; }
+
+    const_iterator &operator++() {
+      offset_ += stride_;
+      return *this;
+    }
+
+    const_iterator operator++(int) {
+      offset_ += stride_;
+      return const_iterator(first_, offset_ - stride_, stride_);
+    }
+
+    value_type const &operator*() const { return first_[offset_]; }
+
+    value_type const &operator[](difference_type i) const {
+      return first_[offset_ + i];
+    }
+
+    const_iterator operator+(difference_type i) const {
+      return const_iterator(first_, offset_ + i * stride_, stride_);
+    }
+
+    difference_type operator-(const_iterator i) const {
+      Require((first_ - i.first_) % stride_ == 0);
+      Require(stride_ == i.stride_);
+
+      return ((first_ - i.first_) + offset_ - i.offset_) / stride_;
+    }
+
+    const_iterator(iterator const &i)
+        : first_(i.first()), offset_(i.offset()), stride_(i.stride()) {}
+
+  private:
+    friend class Slice;
+
+    const_iterator(Ran const first, difference_type const offset,
+                   unsigned const stride)
+        : first_(first), offset_(offset), stride_(stride) {
+      Require(stride > 0);
+    }
+
+    friend bool operator<(const_iterator a, const_iterator b) {
+      return a.first_ - b.first_ < b.offset_ - a.offset_;
+    }
+
+    friend bool operator!=(const_iterator a, const_iterator b) {
+      return a.first_ - b.first_ != b.offset_ - a.offset_;
+    }
+
+    Ran first_;
+    difference_type offset_;
+    unsigned stride_;
+  };
+
+  typedef std::reverse_iterator<iterator> reverse_iterator;
+  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+  typedef typename traits::pointer pointer;
+  typedef typename traits::reference reference;
+  typedef value_type const *const_pointer;
+  typedef value_type const &const_reference;
+
+  // CREATORS
+
+  //-----------------------------------------------------------------------//
+  /*!
      * \brief Construct from a sequence.
      *
      * The constructed Slice has reference semantics to the sequence.  That
@@ -245,68 +206,58 @@ class Slice
      * \param length Length of the constructed Slice.
      * \param stride Stride to apply to the sequence.
      */
-    Slice(Ran      const first,
-	  unsigned const length,
-	  unsigned const stride = 1)
-	: first(first), length(length), stride(stride)
-    {
-	Require(stride>0);
-    }
+  Slice(Ran const first, unsigned const length, unsigned const stride = 1)
+      : first(first), length(length), stride(stride) {
+    Require(stride > 0);
+  }
 
-    // MANIPULATORS
+  // MANIPULATORS
 
-    // ACCESSORS
+  // ACCESSORS
 
-    iterator begin()
-    {
-	return iterator(first, 0, stride);
-    }
-    const_iterator begin() const
-    {
-	return const_iterator(first, 0, stride);
-    }
-    iterator end()
-    {
-	return iterator(first, length*stride, stride);
-    }
-    const_iterator end() const
-    {
-	return const_iterator(first, length*stride, stride);
-    }
+  iterator begin() { return iterator(first, 0, stride); }
+  const_iterator begin() const { return const_iterator(first, 0, stride); }
+  iterator end() { return iterator(first, length * stride, stride); }
+  const_iterator end() const {
+    return const_iterator(first, length * stride, stride);
+  }
 
-    reverse_iterator rbegin();
-    const_reverse_iterator rbegin() const;
-    reverse_iterator rend();
-    const_reverse_iterator rend() const;
+  reverse_iterator rbegin();
+  const_reverse_iterator rbegin() const;
+  reverse_iterator rend();
+  const_reverse_iterator rend() const;
 
-    reference operator[](size_type n) {
-        Require(n<size());  return first[stride*n]; }
-    const_reference operator[](size_type n) const {
-        Require(n<size()); return first[stride*n]; }
+  reference operator[](size_type n) {
+    Require(n < size());
+    return first[stride * n];
+  }
+  const_reference operator[](size_type n) const {
+    Require(n < size());
+    return first[stride * n];
+  }
 
-    reference at(size_type n);
-    const_reference at(size_type n) const;
+  reference at(size_type n);
+  const_reference at(size_type n) const;
 
-    reference front();
-    const_reference front() const { return first[0]; }
-    reference back();
-    const_reference back() const { return first[stride*(size()-1)]; }
+  reference front();
+  const_reference front() const { return first[0]; }
+  reference back();
+  const_reference back() const { return first[stride * (size() - 1)]; }
 
-    size_type size() const { return length; }
-    bool empty() const { return size()==0; }
-    size_type max_size() const;
+  size_type size() const { return length; }
+  bool empty() const { return size() == 0; }
+  size_type max_size() const;
 
-  private:
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
+  // DATA
 
-    // DATA
-
-    Ran first;
-    unsigned length;
-    unsigned stride;
+  Ran first;
+  unsigned length;
+  unsigned stride;
 };
 
 //---------------------------------------------------------------------------//
@@ -325,15 +276,12 @@ class Slice
  * \return The desired Slice.
  */
 
-template<typename Ran>
-inline
-Slice<Ran> slice(Ran      const first,
-		 unsigned const length,
-		 unsigned const stride = 1)
-{
-    Require(stride>0);
+template <typename Ran>
+inline Slice<Ran> slice(Ran const first, unsigned const length,
+                        unsigned const stride = 1) {
+  Require(stride > 0);
 
-    return Slice<Ran>(first, length, stride);
+  return Slice<Ran>(first, length, stride);
 }
 
 } // end namespace rtt_dsxx

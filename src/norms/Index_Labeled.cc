@@ -14,31 +14,24 @@
 #include "Index_Labeled.hh"
 #include "c4/C4_Functions.hh"
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //---------------------------------------------------------------------------//
 /*!
   \brief Constructor.
 */
 //---------------------------------------------------------------------------//
-Index_Labeled::Index_Labeled(const size_t       index_,
-			     const std::string &label_)
-    : index(index_)
-    , processor(rtt_c4::node())
-    , label(label_)
-{
-}
+Index_Labeled::Index_Labeled(const size_t index_, const std::string &label_)
+    : index(index_), processor(rtt_c4::node()), label(label_) {}
 
 //---------------------------------------------------------------------------//
 /*!
   \brief Equality operator.
 */
 //---------------------------------------------------------------------------//
-bool Index_Labeled::operator==(const Index_Labeled &rhs) const
-{
-    return (index == rhs.index) && (processor == rhs.processor) &&
-	(label == rhs.label);
+bool Index_Labeled::operator==(const Index_Labeled &rhs) const {
+  return (index == rhs.index) && (processor == rhs.processor) &&
+         (label == rhs.label);
 }
 
 } // end namespace rtt_norms

@@ -10,12 +10,11 @@
 // $Id$
 //---------------------------------------------------------------------------------------//
 
+#include "Console_Token_Stream.hh"
 #include <iostream>
 #include <sstream>
-#include "Console_Token_Stream.hh"
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using namespace std;
 
 //-------------------------------------------------------------------------------------//
@@ -23,10 +22,9 @@ using namespace std;
  * Use the default Text_Token_Stream user-defined whitespace characters.
  */
 
-Console_Token_Stream::Console_Token_Stream()
-{
-    Ensure(check_class_invariants());
-    Ensure(location_() == "input");
+Console_Token_Stream::Console_Token_Stream() {
+  Ensure(check_class_invariants());
+  Ensure(location_() == "input");
 }
 
 //-------------------------------------------------------------------------------------//
@@ -39,12 +37,11 @@ Console_Token_Stream::Console_Token_Stream()
 
 Console_Token_Stream::Console_Token_Stream(set<char> const &ws,
                                            bool const no_nonbreaking_ws)
-    : Text_Token_Stream(ws, no_nonbreaking_ws)
-{
-    Ensure(check_class_invariants());
-    Ensure(location_() == "input");
-    Ensure(whitespace()==ws);
-    Ensure(this->no_nonbreaking_ws()==no_nonbreaking_ws);
+    : Text_Token_Stream(ws, no_nonbreaking_ws) {
+  Ensure(check_class_invariants());
+  Ensure(location_() == "input");
+  Ensure(whitespace() == ws);
+  Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }
 
 //-------------------------------------------------------------------------------------//
@@ -55,40 +52,29 @@ Console_Token_Stream::Console_Token_Stream(set<char> const &ws,
  * \return The string "input".
  */
 
-std::string Console_Token_Stream::location_() const
-{
-    return "input";
-}
+std::string Console_Token_Stream::location_() const { return "input"; }
 
 //-------------------------------------------------------------------------------------//
 /*!
  * This function moves the next character from cin into the character buffer.
  */
 
-void Console_Token_Stream::fill_character_buffer_()
-{
-    char c = cin.get();
-    if (cin.fail())
-    {
-	character_push_back_('\0');
+void Console_Token_Stream::fill_character_buffer_() {
+  char c = cin.get();
+  if (cin.fail()) {
+    character_push_back_('\0');
+  } else {
+    if (c == '\n') {
+      c = ';';
     }
-    else
-    {
-	if (c=='\n')
-        {
-            c=';';
-        }
-	character_push_back_(c);
-    }
+    character_push_back_(c);
+  }
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
-bool Console_Token_Stream::error_() const
-{
-    return cin.fail();
-}
+bool Console_Token_Stream::error_() const { return cin.fail(); }
 
 //-------------------------------------------------------------------------------------//
 /*!
@@ -99,22 +85,17 @@ bool Console_Token_Stream::error_() const
  * otherwise.
  */
 
-bool Console_Token_Stream::end_() const
-{
-    return cin.eof();
-}
+bool Console_Token_Stream::end_() const { return cin.eof(); }
 
 //-------------------------------------------------------------------------------------//
 /*!
  * This function sends a message by writing it to the error console stream.
  */
 
-void Console_Token_Stream::report(Token const &token,
-                                  string const &message)
-{
-    std::cerr << token.location() << ": " << message << std::endl;
+void Console_Token_Stream::report(Token const &token, string const &message) {
+  std::cerr << token.location() << ": " << message << std::endl;
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
@@ -123,12 +104,11 @@ void Console_Token_Stream::report(Token const &token,
  * This version assumes that the cursor gives the correct message location.
  */
 
-void Console_Token_Stream::report(string const &message)
-{
-    Token token = lookahead();
-    std::cerr << token.location() << ": " << message << std::endl;
+void Console_Token_Stream::report(string const &message) {
+  Token token = lookahead();
+  std::cerr << token.location() << ": " << message << std::endl;
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //-------------------------------------------------------------------------------------//
@@ -140,23 +120,22 @@ void Console_Token_Stream::report(string const &message)
  * This function flushes cin and resets the error count.
  */
 
-void Console_Token_Stream::rewind()
-{
-    cin.clear();     // Must clear the error/end flag bits.
+void Console_Token_Stream::rewind() {
+  cin.clear(); // Must clear the error/end flag bits.
 
-    // [2015-09-01 KT] After talking to Kent about this implementation, we
-    // decided that it does not make sense to rewind an interactive standard
-    // input buffer.  In fact, if this is done under an MPI environment
-    // (e.g. mpirun -np 1, aprun -n 1, etc. ), the seekg() will return an error
-    // condition.
+  // [2015-09-01 KT] After talking to Kent about this implementation, we
+  // decided that it does not make sense to rewind an interactive standard
+  // input buffer.  In fact, if this is done under an MPI environment
+  // (e.g. mpirun -np 1, aprun -n 1, etc. ), the seekg() will return an error
+  // condition.
 
-    // cin.seekg(0);
+  // cin.seekg(0);
 
-    Text_Token_Stream::rewind();
+  Text_Token_Stream::rewind();
 
-    Ensure(check_class_invariants());
-    Ensure(cin.rdstate() == 0);
-    Ensure(location_() == "input");
+  Ensure(check_class_invariants());
+  Ensure(cin.rdstate() == 0);
+  Ensure(location_() == "input");
 }
 
 } // namespace rtt_parser

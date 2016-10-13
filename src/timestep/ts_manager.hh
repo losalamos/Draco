@@ -19,8 +19,7 @@
 #include "ds++/SP.hh"
 #include <list>
 
-namespace rtt_timestep
-{
+namespace rtt_timestep {
 
 //===========================================================================//
 /*!
@@ -35,107 +34,99 @@ namespace rtt_timestep
  * radiation energy, ion energy, max allowed change, etc...).
  */
 //===========================================================================//
-class DLL_PUBLIC_timestep ts_manager
-{
+class DLL_PUBLIC_timestep ts_manager {
 
-// NESTED CLASSES AND TYPEDEFS
+  // NESTED CLASSES AND TYPEDEFS
 
-// DATA
+  // DATA
 
-  private:
+private:
+  //! the recommendation for the next time-step (time)
+  double dt_new;
+  //! problem time at the end of current cycle  (time)
+  double time;
+  //! the current time-step (time)
+  double dt;
+  //! current cycle number
+  int cycle;
+  //! name of the advisor in control
+  std::string controlling_advisor;
+  //! a list of Smart Pointers to time step advisors
+  std::list<rtt_dsxx::SP<ts_advisor>> advisors;
 
-    //! the recommendation for the next time-step (time)
-    double dt_new;
-    //! problem time at the end of current cycle  (time)
-    double time;
-    //! the current time-step (time)
-    double dt;
-    //! current cycle number
-    int    cycle;
-    //! name of the advisor in control
-    std::string controlling_advisor;
-    //! a list of Smart Pointers to time step advisors
-    std::list < rtt_dsxx::SP<ts_advisor> > advisors;
+  // CREATORS
 
-// CREATORS
+public:
+  //! Creates a timestep manager
+  ts_manager();
 
-  public:
-    //! Creates a timestep manager
-    ts_manager();
+  //! Destroys a timestep manager
+  ~ts_manager(){/* empty */};
 
-    //! Destroys a timestep manager
-    ~ts_manager() {/* empty */ };
+  // MANIPULATORS
 
-// MANIPULATORS
-
-    //! Adds a timestep advisor to a RTT timestep manager
-    /*! \param new_advisor the new advisor to be added
+  //! Adds a timestep advisor to a RTT timestep manager
+  /*! \param new_advisor the new advisor to be added
      */
-    void add_advisor(const rtt_dsxx::SP<ts_advisor> &new_advisor);
+  void add_advisor(const rtt_dsxx::SP<ts_advisor> &new_advisor);
 
-    //! Removes a timestep advisor from a RTT timestep manager
-    /*! \param advisor_to_remove the advisor to be removed
+  //! Removes a timestep advisor from a RTT timestep manager
+  /*! \param advisor_to_remove the advisor to be removed
      */
-    void remove_advisor(const rtt_dsxx::SP<ts_advisor> &advisor_to_remove);
+  void remove_advisor(const rtt_dsxx::SP<ts_advisor> &advisor_to_remove);
 
-    //! Sets timestep, cycle number, and problem time
-    /*! \param dt_ the timestep (time)
+  //! Sets timestep, cycle number, and problem time
+  /*! \param dt_ the timestep (time)
         \param cycle_ the time cycle
         \param time_ the problem time (time)
     */
-    void set_cycle_data(double dt_, int cycle_, double time_);
+  void set_cycle_data(double dt_, int cycle_, double time_);
 
-    //! Computes a new timestep based on the recommendations of each advisor
-    /*! \return the recommended timestep
+  //! Computes a new timestep based on the recommendations of each advisor
+  /*! \return the recommended timestep
      */
-    double compute_new_timestep();
+  double compute_new_timestep();
 
-// ACCESSORS
+  // ACCESSORS
 
-    //! Prints advisor names
-    /*! \return prints a list of the advisor names to std out
+  //! Prints advisor names
+  /*! \return prints a list of the advisor names to std out
      */
-    void print_advisors() const;
+  void print_advisors() const;
 
-    //! Prints a concise summary of the manager status
-    /*! \return prints a summary to std out
+  //! Prints a concise summary of the manager status
+  /*! \return prints a summary to std out
      */
-    void print_summary() const;
+  void print_summary() const;
 
-    //! Prints advisor information
-    /*! Prints a detailed listing of each advisors internal state to std out
+  //! Prints advisor information
+  /*! Prints a detailed listing of each advisors internal state to std out
      */
-    void print_adv_states() const;
+  void print_adv_states() const;
 
-    //! Returns the recommendation for the next timestep
-    /*! \return the recommended timestep
+  //! Returns the recommendation for the next timestep
+  /*! \return the recommended timestep
      */
-    double get_dt_new() const
-    {return dt_new;}
+  double get_dt_new() const { return dt_new; }
 
-    //! Returns the current problem time
-    double get_time() const
-    {return time;}
+  //! Returns the current problem time
+  double get_time() const { return time; }
 
-    //! Returns the current timestep
-    double get_dt() const
-    {return dt;}
+  //! Returns the current timestep
+  double get_dt() const { return dt; }
 
-    //! Returns the current time cycle number
-    int get_cycle() const
-    {return cycle;}
+  //! Returns the current time cycle number
+  int get_cycle() const { return cycle; }
 
-    //! Returns the controlling advisor
-    /*! \return The name of the controlling advisor
+  //! Returns the controlling advisor
+  /*! \return The name of the controlling advisor
      */
-    std::string get_controlling_advisor() const
-    {return controlling_advisor;}
+  std::string get_controlling_advisor() const { return controlling_advisor; }
 
-    //! Defines the timestep manager invariant function
-    /*! \return True if the invariant is satisfied
+  //! Defines the timestep manager invariant function
+  /*! \return True if the invariant is satisfied
      */
-    bool invariant_satisfied() const;
-
+  bool invariant_satisfied() const;
 };
 
 } // end of rtt_timestep namespace

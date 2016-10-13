@@ -28,14 +28,13 @@
 //
 //===========================================================================//
 
-#include <stdint.h>
 #include "Assert.hh"
 #include <cmath>
 #include <iterator>
+#include <stdint.h>
 #include <vector>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 // SCALAR SOFT EQUIVALENCE FUNCTIONS
@@ -57,62 +56,56 @@ namespace rtt_dsxx
  * \todo Should we be using numeric_limits instead of hard coded vales for
  *       e-12 and e-14?
  */
-template<typename FPT>
-inline bool soft_equiv( const FPT &value,
-                        const FPT &reference,
-                        const FPT precision = 1.0e-12)
-{
-    using std::fabs;
-    bool passed = false;
+template <typename FPT>
+inline bool soft_equiv(const FPT &value, const FPT &reference,
+                       const FPT precision = 1.0e-12) {
+  using std::fabs;
+  bool passed = false;
 
-    if (fabs(value - reference) < precision * fabs(reference))
-        passed = true;
-    else
-        passed = false;
+  if (fabs(value - reference) < precision * fabs(reference))
+    passed = true;
+  else
+    passed = false;
 
-    // second chance for passing if reference is within machine error of zero
-    if (!passed && (fabs(reference) < 1.0e-14))
-        if (fabs(value) < precision) passed = true;
+  // second chance for passing if reference is within machine error of zero
+  if (!passed && (fabs(reference) < 1.0e-14))
+    if (fabs(value) < precision)
+      passed = true;
 
-    return passed;
+  return passed;
 }
 
 //---------------------------------------------------------------------------//
 // Disallow integer types for Soft_Equiv.
-template<>
-inline bool soft_equiv( const int & /* value */,
-                        const int & /* reference */,
-                        const int   /* precision */ )
-{
-    Insist (0, "Can't do a soft compare with integers!");
-    return false;
+template <>
+inline bool soft_equiv(const int & /* value */, const int & /* reference */,
+                       const int /* precision */) {
+  Insist(0, "Can't do a soft compare with integers!");
+  return false;
 }
 
-template<>
-inline bool soft_equiv( const unsigned int & /* value */,
-                        const unsigned int & /* reference */,
-                        const unsigned int   /* precision */ )
-{
-    Insist (0, "Can't do a soft compare with integers!");
-    return false;
+template <>
+inline bool soft_equiv(const unsigned int & /* value */,
+                       const unsigned int & /* reference */,
+                       const unsigned int /* precision */) {
+  Insist(0, "Can't do a soft compare with integers!");
+  return false;
 }
 
-template<>
-inline bool soft_equiv( const int64_t & /* value */,
-                        const int64_t & /* reference */,
-                        const int64_t   /* precision */ )
-{
-    Insist (0, "Can't do a soft compare with integers!");
-    return false;
+template <>
+inline bool soft_equiv(const int64_t & /* value */,
+                       const int64_t & /* reference */,
+                       const int64_t /* precision */) {
+  Insist(0, "Can't do a soft compare with integers!");
+  return false;
 }
 
-template<>
-inline bool soft_equiv( const uint64_t & /* value */,
-                        const uint64_t & /* reference */,
-                        const uint64_t   /* precision */ )
-{
-    Insist (0, "Can't do a soft compare with integers!");
-    return false;
+template <>
+inline bool soft_equiv(const uint64_t & /* value */,
+                       const uint64_t & /* reference */,
+                       const uint64_t /* precision */) {
+  Insist(0, "Can't do a soft compare with integers!");
+  return false;
 }
 
 //===========================================================================//
@@ -143,14 +136,13 @@ inline bool soft_equiv( const uint64_t & /* value */,
  *   cout << "arrays match" << endl;
  * \endcode
  */
-template<unsigned Depth, typename FPT=double >
-class soft_equiv_deep
-{
-  public:
-    // Constructor
-    soft_equiv_deep(void) { /* empty */ }
+template <unsigned Depth, typename FPT = double> class soft_equiv_deep {
+public:
+  // Constructor
+  soft_equiv_deep(void) { /* empty */
+  }
 
-    /*!
+  /*!
      * \brief Compare two multi-level floating point fields for equivalence to a
      * specified tolerance.
      *
@@ -162,61 +154,48 @@ class soft_equiv_deep
      * \return true if values are the same within relative error specified by
      * precision and the fields are the same size, false if otherwise
      */
-    template<typename Value_Iterator, typename Ref_Iterator>
-    bool equiv(
-        Value_Iterator value,
-        Value_Iterator value_end,
-        Ref_Iterator ref,
-        Ref_Iterator ref_end,
-        FPT const precision = 1.0e-12 )
-    {
-        // first check that the sizes are equivalent
-        if (std::distance(value, value_end) != std::distance(ref, ref_end))
-            return false;
+  template <typename Value_Iterator, typename Ref_Iterator>
+  bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
+             Ref_Iterator ref_end, FPT const precision = 1.0e-12) {
+    // first check that the sizes are equivalent
+    if (std::distance(value, value_end) != std::distance(ref, ref_end))
+      return false;
 
-        // if the sizes are the same, loop through and check each element
-        bool passed = true;
-        while (value != value_end && passed == true)
-        {
-            passed = soft_equiv_deep<Depth-1,FPT>().equiv(
-                (*value).begin(), (*value).end(),
-                (*ref).begin(), (*ref).end(), precision);
-            value++;
-            ref++;
-        }
-        return passed;
+    // if the sizes are the same, loop through and check each element
+    bool passed = true;
+    while (value != value_end && passed == true) {
+      passed = soft_equiv_deep<Depth - 1, FPT>().equiv(
+          (*value).begin(), (*value).end(), (*ref).begin(), (*ref).end(),
+          precision);
+      value++;
+      ref++;
     }
+    return passed;
+  }
 };
 
 //! Specialization for Depth=1 case:
-template<typename FPT>
-class soft_equiv_deep<1,FPT>
-{
-  public:
-    // Constructor
-    soft_equiv_deep<1,FPT>(void) { /* empty */ }
-    template<typename Value_Iterator, typename Ref_Iterator>
-    bool equiv(
-        Value_Iterator value,
-        Value_Iterator value_end,
-        Ref_Iterator ref,
-        Ref_Iterator ref_end,
-        FPT const precision = 1.0e-12 )
-    {
-        // first check that the sizes are equivalent
-        if (std::distance(value, value_end) != std::distance(ref, ref_end))
-            return false;
+template <typename FPT> class soft_equiv_deep<1, FPT> {
+public:
+  // Constructor
+  soft_equiv_deep<1, FPT>(void) { /* empty */
+  }
+  template <typename Value_Iterator, typename Ref_Iterator>
+  bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
+             Ref_Iterator ref_end, FPT const precision = 1.0e-12) {
+    // first check that the sizes are equivalent
+    if (std::distance(value, value_end) != std::distance(ref, ref_end))
+      return false;
 
-        // if the sizes are the same, loop through and check each element
-        bool passed = true;
-        while (value != value_end && passed == true)
-        {
-            passed = soft_equiv(*value, *ref, precision);
-            value++;
-            ref++;
-        }
-        return passed;
+    // if the sizes are the same, loop through and check each element
+    bool passed = true;
+    while (value != value_end && passed == true) {
+      passed = soft_equiv(*value, *ref, precision);
+      value++;
+      ref++;
     }
+    return passed;
+  }
 };
 
 //===========================================================================//
@@ -241,18 +220,15 @@ class soft_equiv_deep<1,FPT>
  * value-types of both fields must be the same or a compile-time error will
  * result.
  */
-template<typename Value_Iterator, typename Ref_Iterator>
+template <typename Value_Iterator, typename Ref_Iterator>
 inline bool soft_equiv(
-    Value_Iterator value,
-    Value_Iterator value_end,
-    Ref_Iterator ref,
+    Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
     Ref_Iterator ref_end,
-    typename std::iterator_traits<Value_Iterator>::value_type const precision
-    = 1.0e-12)
-{
-    typedef typename std::iterator_traits<Value_Iterator>::value_type FPT;
-    return soft_equiv_deep<1,FPT>().equiv(value, value_end,
-                                          ref, ref_end, precision);
+    typename std::iterator_traits<Value_Iterator>::value_type const precision =
+        1.0e-12) {
+  typedef typename std::iterator_traits<Value_Iterator>::value_type FPT;
+  return soft_equiv_deep<1, FPT>().equiv(value, value_end, ref, ref_end,
+                                         precision);
 }
 
 //---------------------------------------------------------------------------//
@@ -279,32 +255,30 @@ inline bool soft_equiv(
 //---------------------------------------------------------------------------//
 // Specialiations for vector<double>
 //---------------------------------------------------------------------------//
-inline bool soft_equiv( const std::vector<double> &value,
-                        const std::vector<double> &ref,
-                        const double precision = 1.0e-12)
-{
-    return soft_equiv_deep<1,double>().equiv(value.begin(), value.end(),
-                                             ref.begin(), ref.end(), precision);
+inline bool soft_equiv(const std::vector<double> &value,
+                       const std::vector<double> &ref,
+                       const double precision = 1.0e-12) {
+  return soft_equiv_deep<1, double>().equiv(value.begin(), value.end(),
+                                            ref.begin(), ref.end(), precision);
 }
 //---------------------------------------------------------------------------//
 // Specialiation for vector<vector<T>>
 //---------------------------------------------------------------------------//
-inline bool soft_equiv( const std::vector<std::vector<double>> &value,
-                        const std::vector<std::vector<double>> &ref,
-                        const double precision = 1.0e-12)
-{
-    return soft_equiv_deep<2,double>().equiv(value.begin(), value.end(),
-                                             ref.begin(), ref.end(), precision);
+inline bool soft_equiv(const std::vector<std::vector<double>> &value,
+                       const std::vector<std::vector<double>> &ref,
+                       const double precision = 1.0e-12) {
+  return soft_equiv_deep<2, double>().equiv(value.begin(), value.end(),
+                                            ref.begin(), ref.end(), precision);
 }
 //---------------------------------------------------------------------------//
 // Specialiation for vector<vector<vector<T>>>
 //---------------------------------------------------------------------------//
-inline bool soft_equiv( const std::vector<std::vector<std::vector<double>>> &value,
-                        const std::vector<std::vector<std::vector<double>>> &ref,
-                        const double precision = 1.0e-12)
-{
-    return soft_equiv_deep<3,double>().equiv(value.begin(), value.end(),
-                                             ref.begin(), ref.end(), precision);
+inline bool
+soft_equiv(const std::vector<std::vector<std::vector<double>>> &value,
+           const std::vector<std::vector<std::vector<double>>> &ref,
+           const double precision = 1.0e-12) {
+  return soft_equiv_deep<3, double>().equiv(value.begin(), value.end(),
+                                            ref.begin(), ref.end(), precision);
 }
 
 } // end namespace rtt_dsxx

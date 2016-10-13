@@ -13,88 +13,87 @@
 #ifndef __RTT_Format_Reader_Cells_hh__
 #define __RTT_Format_Reader_Cells_hh__
 
+#include "CellDefs.hh"
+#include "CellFlags.hh"
+#include "Dims.hh"
+#include "Nodes.hh"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Dims.hh"
-#include "CellFlags.hh"
-#include "CellDefs.hh"
-#include "Nodes.hh"
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the 
  *        cells block of the mesh file.
  */
-class Cells
-{
-    // typedefs
-    typedef std::ifstream ifstream;
-    typedef std::string string;
-    typedef std::vector<int> vector_int;
-    typedef std::vector<std::vector<int> > vector_vector_int;
+class Cells {
+  // typedefs
+  typedef std::ifstream ifstream;
+  typedef std::string string;
+  typedef std::vector<int> vector_int;
+  typedef std::vector<std::vector<int>> vector_vector_int;
 
-    const CellFlags & cellFlags;
-    const Dims & dims;
-    const CellDefs & cellDefs;
-    vector_int cellType;
-    vector_vector_int nodes;
-    vector_vector_int flags;
+  const CellFlags &cellFlags;
+  const Dims &dims;
+  const CellDefs &cellDefs;
+  vector_int cellType;
+  vector_vector_int nodes;
+  vector_vector_int flags;
 
-  public:
-    Cells(const CellFlags & cellFlags_, const Dims & dims_,
-	  const CellDefs & cellDefs_) :
-	 cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
-         cellType(dims.get_ncells()),
-         nodes(dims.get_ncells()), flags(dims.get_ncells(), 
-         vector_int(dims.get_ncell_flag_types())) {}
-    ~Cells() {}
+public:
+  Cells(const CellFlags &cellFlags_, const Dims &dims_,
+        const CellDefs &cellDefs_)
+      : cellFlags(cellFlags_), dims(dims_), cellDefs(cellDefs_),
+        cellType(dims.get_ncells()), nodes(dims.get_ncells()),
+        flags(dims.get_ncells(), vector_int(dims.get_ncell_flag_types())) {}
+  ~Cells() {}
 
-    void readCells(ifstream & meshfile);
-    void redefineCells();
+  void readCells(ifstream &meshfile);
+  void redefineCells();
 
-  private:
-    void readKeyword(ifstream & meshfile);
-    void readData(ifstream & meshfile);
-    void readEndKeyword(ifstream & meshfile);
+private:
+  void readKeyword(ifstream &meshfile);
+  void readData(ifstream &meshfile);
+  void readEndKeyword(ifstream &meshfile);
 
-  public:
-/*!
+public:
+  /*!
  * \brief Returns the cell type associated with the specified cell.
  * \param cell_numb Cell number.
  * \return The cell type.
  */
-    int get_type(int cell_numb) const { return cellType[cell_numb]; }
-/*!
+  int get_type(int cell_numb) const { return cellType[cell_numb]; }
+  /*!
  * \brief Returns all of the node numbers for each of the cells.
  * \return The node numbers for all cells.
  */
-    vector_vector_int get_nodes() const { return nodes; }
-/*!
+  vector_vector_int get_nodes() const { return nodes; }
+  /*!
  * \brief Returns all of the node numbers associated with the specified cell.
  * \param cell_numb Cell number.
  * \return The cell node numbers.
  */
-    vector_int get_nodes(int cell_numb) const { return nodes[cell_numb]; }
-/*!
+  vector_int get_nodes(int cell_numb) const { return nodes[cell_numb]; }
+  /*!
  * \brief Returns the node number associated with the specified cell and 
  *        cell-node index.
  * \param cell_numb Cell number.
  * \param node_numb Cell-node index number.
  * \return The cell node number.
  */
-    int get_nodes(int cell_numb,int node_numb) const
-    { return nodes[cell_numb][node_numb]; }
-/*!
+  int get_nodes(int cell_numb, int node_numb) const {
+    return nodes[cell_numb][node_numb];
+  }
+  /*!
  * \brief Returns the cell flag for the specified cell and flag index
  * \param cell_numb Cell number.
  * \param flag_numb Cell flag index.
  * \return The cell flag.
  */
-    int get_flags(int cell_numb,int flag_numb) const
-    { return flags[cell_numb][flag_numb]; }
+  int get_flags(int cell_numb, int flag_numb) const {
+    return flags[cell_numb][flag_numb];
+  }
 };
 
 } // end namespace rtt_RTT_Format_Reader

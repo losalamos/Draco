@@ -15,8 +15,7 @@
 
 #include "ds++/DracoMath.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using rtt_dsxx::abs;
 //using rtt_dsxx::soft_equiv;
 
@@ -34,47 +33,38 @@ using rtt_dsxx::abs;
  */
 //=======================================================================================//
 
-class Moment
-{
-  public:
+class Moment {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Create an uninitialized Moment.  This is required by the
+  //! constructor for vector<Moment>.
+  Moment() : L_(0), M_(0) {}
 
-    //! Create an uninitialized Moment.  This is required by the
-    //! constructor for vector<Moment>.
-    Moment() : L_(0), M_(0) {}
+  //! Construct a Moment with specified degree and order.
+  Moment(unsigned const L, int const M) : L_(L), M_(M) {
+    // Chief constraint satisfied by the Moment.
+    Require(static_cast<unsigned>(abs(M)) <= L);
+  }
 
-    //! Construct a Moment with specified degree and order.
-    Moment(unsigned const L, int const M)
-        :
-        L_(L), M_(M)
-    {
-        // Chief constraint satisfied by the Moment.
-        Require(static_cast<unsigned>(abs(M))<=L);
-    }
+  // Accessors
 
-    // Accessors
+  unsigned L() const { return L_; };
+  int M() const { return M_; };
 
-    unsigned L()  const { return L_; };
-    int M() const { return M_; };
+private:
+  // DATA
 
-  private:
+  // The data must be kept private in order to protect the invariant.
 
-    // DATA
-
-    // The data must be kept private in order to protect the invariant.
-
-    unsigned L_;
-    int M_;
+  unsigned L_;
+  int M_;
 };
 
 //---------------------------------------------------------------------------------------//
 //! Test moments for equality
-inline bool operator==(Moment const &a, Moment const &b)
-{
-    return
-        a.L()==b.L() &&
-        a.M()==b.M();
+inline bool operator==(Moment const &a, Moment const &b) {
+  return a.L() == b.L() && a.M() == b.M();
 }
 
 } // end namespace rtt_quadrature

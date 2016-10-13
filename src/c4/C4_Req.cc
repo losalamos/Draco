@@ -11,12 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
-#include "ds++/Assert.hh"
 #include "C4_Req.hh"
+#include "ds++/Assert.hh"
+#include <iostream>
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -26,11 +25,7 @@ namespace rtt_c4
  */
 //---------------------------------------------------------------------------//
 
-C4_Req::C4_Req()
-    : p(new C4_ReqRefRep)
-{
-    ++p->n;
-}
+C4_Req::C4_Req() : p(new C4_ReqRefRep) { ++p->n; }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -40,14 +35,12 @@ C4_Req::C4_Req()
  */
 //---------------------------------------------------------------------------//
 
-C4_Req::C4_Req( const C4_Req& req )
-    : p(NULL)
-{
-    if (req.inuse())
-        p = req.p;
-    else
-        p = new C4_ReqRefRep;
-    ++p->n;
+C4_Req::C4_Req(const C4_Req &req) : p(NULL) {
+  if (req.inuse())
+    p = req.p;
+  else
+    p = new C4_ReqRefRep;
+  ++p->n;
 }
 
 //---------------------------------------------------------------------------//
@@ -59,10 +52,7 @@ C4_Req::C4_Req( const C4_Req& req )
  */
 //---------------------------------------------------------------------------//
 
-C4_Req::~C4_Req()
-{
-    free_();
-}
+C4_Req::~C4_Req() { free_(); }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -73,18 +63,17 @@ C4_Req::~C4_Req()
  */
 //---------------------------------------------------------------------------//
 
-C4_Req& C4_Req::operator=( const C4_Req& req )
-{
-    free_();
+C4_Req &C4_Req::operator=(const C4_Req &req) {
+  free_();
 
-    if (req.inuse())
-        p = req.p;
-    else
-        p = new C4_ReqRefRep;
+  if (req.inuse())
+    p = req.p;
+  else
+    p = new C4_ReqRefRep;
 
-    ++p->n;
+  ++p->n;
 
-    return *this;
+  return *this;
 }
 
 //---------------------------------------------------------------------------//
@@ -92,11 +81,10 @@ C4_Req& C4_Req::operator=( const C4_Req& req )
  * Utility for cleaning up letter in letter/envelope idiom
  */
 /* private */
-void C4_Req::free_()
-{
-    --p->n;
-    if (p->n <= 0)
-	delete p;
+void C4_Req::free_() {
+  --p->n;
+  if (p->n <= 0)
+    delete p;
 }
 
 //---------------------------------------------------------------------------//
@@ -108,14 +96,13 @@ void C4_Req::free_()
 //---------------------------------------------------------------------------//
 
 C4_ReqRefRep::C4_ReqRefRep()
-    : n(0)
-    , assigned(0)
+    : n(0), assigned(0)
 #ifdef C4_MPI
-    , s(MPI_Status())
-    , r(MPI_Request())
+      ,
+      s(MPI_Status()), r(MPI_Request())
 #endif
 {
-    // empty
+  // empty
 }
 
 //---------------------------------------------------------------------------//
@@ -129,44 +116,41 @@ C4_ReqRefRep::C4_ReqRefRep()
  */
 //---------------------------------------------------------------------------//
 
-C4_ReqRefRep::~C4_ReqRefRep() { /* empty */ }
+C4_ReqRefRep::~C4_ReqRefRep() { /* empty */
+}
 
 //---------------------------------------------------------------------------//
 //! Wait for an asynchronous message to complete.
 //---------------------------------------------------------------------------//
 
-void C4_ReqRefRep::wait()
-{
-    if (assigned) 
-    {
+void C4_ReqRefRep::wait() {
+  if (assigned) {
 #ifdef C4_MPI
-	MPI_Wait(&r, &s);
+    MPI_Wait(&r, &s);
 #endif
-    }
-    clear();
+  }
+  clear();
 }
 
 //---------------------------------------------------------------------------//
 //! Tests for the completion of a non blocking operation.
 //---------------------------------------------------------------------------//
 
-bool C4_ReqRefRep::complete()
-{
+bool C4_ReqRefRep::complete() {
 #ifdef C4_MPI
-    int flag       = 0;
-    bool indicator = false;
-    if (assigned)
-        MPI_Test( &r, &flag, &s );
-    if (flag != 0)
-    {
-        clear();
-	Check ( r == MPI_REQUEST_NULL);
-	indicator = true;
-    }
-    return indicator;
+  int flag = 0;
+  bool indicator = false;
+  if (assigned)
+    MPI_Test(&r, &flag, &s);
+  if (flag != 0) {
+    clear();
+    Check(r == MPI_REQUEST_NULL);
+    indicator = true;
+  }
+  return indicator;
 #endif
 #ifdef C4_SCALAR
-    throw "Send to self machinery has not been implemented in scalar mode.";
+  throw "Send to self machinery has not been implemented in scalar mode.";
 #endif
 }
 

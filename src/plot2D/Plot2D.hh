@@ -18,8 +18,7 @@
 #include "ds++/SP.hh"
 #include <vector>
 
-namespace rtt_plot2D
-{
+namespace rtt_plot2D {
 
 //===========================================================================//
 /*!
@@ -84,170 +83,152 @@ namespace rtt_plot2D
   allow something like "block data start" and "block data end" commands.
 */
 //===========================================================================//
-class Plot2D
-{
-    // TYPES
+class Plot2D {
+  // TYPES
 
-    // Mode for autoscaling on reads
-    enum AutoscaleMode {
-	AUTOSCALE_ON,
-	AUTOSCALE_OFF,
-	AUTOSCALE_FIRSTREAD
-    };
+  // Mode for autoscaling on reads
+  enum AutoscaleMode { AUTOSCALE_ON, AUTOSCALE_OFF, AUTOSCALE_FIRSTREAD };
 
-    // Version number (used for Grace's version).
-    // Assumes format v[0].v[1].v[2]
-    struct VersionNumber {
-	static const int indices = 3;
-	int v[indices];
+  // Version number (used for Grace's version).
+  // Assumes format v[0].v[1].v[2]
+  struct VersionNumber {
+    static const int indices = 3;
+    int v[indices];
 
-	VersionNumber() {
-	    for ( int i = 0; i < indices; i++ ) {
-		v[i] = 0;
-	    }
-	}
-    };
+    VersionNumber() {
+      for (int i = 0; i < indices; i++) {
+        v[i] = 0;
+      }
+    }
+  };
 
-    // DATA
+  // DATA
 
-    // current autoscale mode
-    int d_autoscale;
+  // current autoscale mode
+  int d_autoscale;
 
-    // number of graphs to be plotted
-    int d_numGraphs;
+  // number of graphs to be plotted
+  int d_numGraphs;
 
-    // number of rows in plot matrix
-    int d_numRows;
+  // number of rows in plot matrix
+  int d_numRows;
 
-    // number of columns in plot matrix
-    int d_numCols;
+  // number of columns in plot matrix
+  int d_numCols;
 
-    // true if in batch mode
-    bool d_batch;
+  // true if in batch mode
+  bool d_batch;
 
-    // grace's version number
-    VersionNumber d_graceVersion;
+  // grace's version number
+  VersionNumber d_graceVersion;
 
-    // current number of sets in each graph.  Needed so we can
-    // kill sets.
-    std::vector<int> d_numSets;
+  // current number of sets in each graph.  Needed so we can
+  // kill sets.
+  std::vector<int> d_numSets;
 
-    // If true for a particular graph, then sets have been read into
-    // the particular graph.
-    std::vector<bool> d_setsBeenRead;
+  // If true for a particular graph, then sets have been read into
+  // the particular graph.
+  std::vector<bool> d_setsBeenRead;
 
-  public:
+public:
+  // CREATORS
 
-    // CREATORS
+  // default constructor; window left unopened
+  // Plot2D();
 
-    // default constructor; window left unopened
-    // Plot2D();
+  // another constructor; window is opened
+  explicit Plot2D(const int numGraphs, const std::string &paramFile = "",
+                  const bool batch = false);
 
-    // another constructor; window is opened
-    explicit Plot2D(const int numGraphs,
-		    const std::string &paramFile = "",
-		    const bool batch = false);
+  // destructor
+  ~Plot2D();
 
-    // destructor
-    ~Plot2D();
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Returns true if platform is supported.
+  static bool is_supported();
 
-    //! Returns true if platform is supported.
-    static bool is_supported();
+  // arranges the graph matrix
+  void arrange(const int numRows = 0, const int numCols = 0);
 
-    // arranges the graph matrix
-    void arrange(const int numRows = 0,
-		 const int numCols = 0);
+  // closes Grace window
+  void close();
 
-    // closes Grace window
-    void close();
+  // deletes all data sets
+  void killAllSets();
 
-    // deletes all data sets
-    void killAllSets();
+  // opens Grace window
+  void open(const int numGraphs = 1, const std::string &paramFile = "",
+            const bool batch = false);
 
-    // opens Grace window
-    void open(const int numGraphs = 1,
-	      const std::string &paramFile = "",
-	      const bool batch = false);
+  // sends Grace a command
+  // void rawCom(const std::string command);
 
-    // sends Grace a command
-    // void rawCom(const std::string command);
+  // reads block data from file, one set per graph
+  void readBlock(const std::string blockFilename);
 
-    // reads block data from file, one set per graph
-    void readBlock(const std::string blockFilename);
+  // reads block data from file, all sets into one graph
+  void readBlock(const std::string blockFilename, const int iG);
 
-    // reads block data from file, all sets into one graph
-    void readBlock(const std::string blockFilename,
-		   const int iG);
+  // redraws the graphs
+  void redraw(const bool autoscale = false);
 
-    // redraws the graphs
-    void redraw(const bool autoscale = false);
+  // saves plot into Grace project file
+  void save(const std::string filename);
 
-    // saves plot into Grace project file
-    void save(const std::string filename);
+  // sets the titles
+  void setTitles(const std::string title, const std::string subTitle,
+                 const int iG = 0);
 
-    // sets the titles
-    void setTitles(const std::string title,
-		   const std::string subTitle,
-		   const int iG = 0);
+  // sets the axes labels
+  void setAxesLabels(const std::string xLabel, const std::string yLabel,
+                     const int iG, const double charSize = 1.0);
 
-    // sets the axes labels
-    void setAxesLabels(const std::string xLabel,
-		       const std::string yLabel,
-		       const int iG,
-		       const double charSize = 1.0);
+  // Turns on autoscale when reading sets.
+  // void autoscaleOnRead();
 
-    // Turns on autoscale when reading sets.
-    // void autoscaleOnRead();
+  // Turns off autoscale when reading sets.
+  //void noAutoscaleOnRead();
 
-    // Turns off autoscale when reading sets.
-    //void noAutoscaleOnRead();
+  // Turns on autoscaling for first set read into a graph.
+  // void autoscaleOnFirstRead();
 
-    // Turns on autoscaling for first set read into a graph.
-    // void autoscaleOnFirstRead();
+  // sets the properties for a data set
+  void setProps(const int iG, const int iSet, const SetProps &setProps);
 
-    // sets the properties for a data set
-    void setProps(const int iG,
-		  const int iSet,
-		  const SetProps &setProps);
+  // sets the properties for a data set in all graphs
+  // void setProps(const int iSet,
+  //     	  const SetProps &setProps);
 
+  // ACCESSORS
 
-    // sets the properties for a data set in all graphs
-    // void setProps(const int iSet,
-    //     	  const SetProps &setProps);
+  /// Returns true if running in batch mode.
+  bool batch() const { return d_batch; }
 
-    // ACCESSORS
+private:
+  // IMPLEMENTATION
 
-    /// Returns true if running in batch mode.
-    bool batch() const { return d_batch; }
+  // Returns grace's version number
+  VersionNumber graceVersion();
 
-  private:
+  // Returns the Grace graph number for the given graph number.
+  int graphNum(const int iEqn, const bool allowVacant = false) const;
 
-    // IMPLEMENTATION
+  // Returns the number of columns of data in file
+  int numColumnsInFile(const std::string filename) const;
 
-    // Returns grace's version number
-    VersionNumber graceVersion();
+  // sets the current autoscaling mode for a graph
+  void setAutoscale(const int iG);
 
-    // Returns the Grace graph number for the given graph number.
-    int graphNum(const int iEqn,
-		 const bool allowVacant = false) const;
+  // We don't implement these because it's not clear how
+  // the grace pipe would be copied.  Moreover, these
+  // ops are not well defined conceptually.
 
-    // Returns the number of columns of data in file
-    int numColumnsInFile(const std::string filename) const;
+  /// NOT IMPLEMENTED
+  Plot2D(const Plot2D &from);
 
-    // sets the current autoscaling mode for a graph
-    void setAutoscale(const int iG);
-
-    // We don't implement these because it's not clear how
-    // the grace pipe would be copied.  Moreover, these
-    // ops are not well defined conceptually.
-
-    /// NOT IMPLEMENTED
-    Plot2D(const Plot2D &from);
-
-    /// NOT IMPLEMENTED
-    Plot2D &operator=(const Plot2D &from);
+  /// NOT IMPLEMENTED
+  Plot2D &operator=(const Plot2D &from);
 };
 
 } // namespace rtt_plot2D

@@ -18,28 +18,24 @@
 
 #include "C4_Req.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
-unsigned wait_any(int      count,
-                             C4_Req * requests)
-{
-    using std::vector;
-    
-    vector<MPI_Request> array_of_requests(count);
-    for (int i=0; i<count; ++i)
-    {
-        if (requests[i].inuse())
-            array_of_requests[i] = requests[i].r();
-        else
-            array_of_requests[i] = MPI_REQUEST_NULL;
-    }
-    int index;
-    MPI_Waitany(count, &array_of_requests[0], &index, MPI_STATUSES_IGNORE);
-    requests[index] = C4_Req();
+unsigned wait_any(int count, C4_Req *requests) {
+  using std::vector;
 
-    return index;
+  vector<MPI_Request> array_of_requests(count);
+  for (int i = 0; i < count; ++i) {
+    if (requests[i].inuse())
+      array_of_requests[i] = requests[i].r();
+    else
+      array_of_requests[i] = MPI_REQUEST_NULL;
+  }
+  int index;
+  MPI_Waitany(count, &array_of_requests[0], &index, MPI_STATUSES_IGNORE);
+  requests[index] = C4_Req();
+
+  return index;
 }
 
 } // end namespace rtt_c4

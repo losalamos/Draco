@@ -11,12 +11,11 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <cmath>
 #include "F32.t.hh"
 #include "ds++/config.h"
+#include <cmath>
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 template DLL_PUBLIC_special_functions double F32(double const &x);
 

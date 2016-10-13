@@ -15,12 +15,11 @@
 
 #include "IpcressFile.hh"
 #include "ds++/Assert.hh"
-#include "ds++/path.hh"
 #include "ds++/Endian.hh"
+#include "ds++/path.hh"
 
-namespace rtt_cdi_ipcress
-{
- 
+namespace rtt_cdi_ipcress {
+
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Read 8 character strings from the binary file
@@ -29,39 +28,34 @@ namespace rtt_cdi_ipcress
  * \param vdata       return value 
  * \return vdata
  */
-template< typename T >
-void IpcressFile::read_v( size_t const byte_offset,
-                          std::vector< T > & vdata ) const
-{
-    Require( ipcressFileHandle.is_open() );
-    
-    size_t const nitems( vdata.size() );
+template <typename T>
+void IpcressFile::read_v(size_t const byte_offset,
+                         std::vector<T> &vdata) const {
+  Require(ipcressFileHandle.is_open());
 
-    // temporary space for loading data from file
-    std::vector<char> memblock(ipcress_word_size*nitems);
+  size_t const nitems(vdata.size());
 
-    // Move file pointer to requested location:
-    ipcressFileHandle.seekg( byte_offset, std::ios::beg );
+  // temporary space for loading data from file
+  std::vector<char> memblock(ipcress_word_size * nitems);
 
-    // Read the data
-    ipcressFileHandle.read( &memblock[0], ipcress_word_size*nitems );
+  // Move file pointer to requested location:
+  ipcressFileHandle.seekg(byte_offset, std::ios::beg);
 
-    // Copy data into vector<int> container
-    double ddata;
-    for( size_t i=0; i<nitems; ++i )
-    {
-        // cast raw cahr data to double and perform a byte swap
-        std::memcpy( &ddata,
-                     &memblock[i*ipcress_word_size],
-                     ipcress_word_size );
-        if( ! rtt_dsxx::is_big_endian() )
-            rtt_dsxx::byte_swap( ddata );
-        // Save to the vector<int>
-        vdata[i] = static_cast<T>(ddata);
-    }
-    return;    
+  // Read the data
+  ipcressFileHandle.read(&memblock[0], ipcress_word_size * nitems);
+
+  // Copy data into vector<int> container
+  double ddata;
+  for (size_t i = 0; i < nitems; ++i) {
+    // cast raw cahr data to double and perform a byte swap
+    std::memcpy(&ddata, &memblock[i * ipcress_word_size], ipcress_word_size);
+    if (!rtt_dsxx::is_big_endian())
+      rtt_dsxx::byte_swap(ddata);
+    // Save to the vector<int>
+    vdata[i] = static_cast<T>(ddata);
+  }
+  return;
 }
-
 
 } // end namespace rtt_cdi_ipcress
 

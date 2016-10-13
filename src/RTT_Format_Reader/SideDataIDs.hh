@@ -21,58 +21,55 @@
 #include <string>
 #include <vector>
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Controls parsing, storing, and accessing the data specific to the 
  *        side data ids block of the mesh file.
  */
-class SideDataIDs
-{
-    // typedefs
-    typedef std::ifstream ifstream;
-    typedef std::string string;
-    typedef std::vector<string> vector_str;
+class SideDataIDs {
+  // typedefs
+  typedef std::ifstream ifstream;
+  typedef std::string string;
+  typedef std::vector<string> vector_str;
 
-    const Dims & dims;
-    vector_str names;
-    vector_str units;
+  const Dims &dims;
+  vector_str names;
+  vector_str units;
 
-  public:
-    SideDataIDs(const Dims & dims_) : dims(dims_), 
-        names(dims.get_nside_data()), units(dims.get_nside_data()) {}
-    ~SideDataIDs() {}
+public:
+  SideDataIDs(const Dims &dims_)
+      : dims(dims_), names(dims.get_nside_data()),
+        units(dims.get_nside_data()) {}
+  ~SideDataIDs() {}
 
-    void readDataIDs(ifstream & meshfile);
+  void readDataIDs(ifstream &meshfile);
 
-  private:
-    void readKeyword(ifstream & meshfile);
-    void readData(ifstream & meshfile);
-    void readEndKeyword(ifstream & meshfile);
+private:
+  void readKeyword(ifstream &meshfile);
+  void readData(ifstream &meshfile);
+  void readEndKeyword(ifstream &meshfile);
 
-  public:
-/*!
+public:
+  /*!
  * \brief Returns the specified side_data_id name.
  * \param id_numb side_data_id index number.
  * \return The side_data_id name.
  */
-    string get_data_id_name(int id_numb) const 
-    { 
-	Insist(id_numb <= dims.get_nside_data() - 1,
-	       "Invalid side data id number!");
-        return names[id_numb];
-    }
-/*!
+  string get_data_id_name(int id_numb) const {
+    Insist(id_numb <= dims.get_nside_data() - 1,
+           "Invalid side data id number!");
+    return names[id_numb];
+  }
+  /*!
  * \brief Returns the units associated with the specified side_data_id.
  * \param id_numb side_data_id index number.
  * \return The side_data_id units.
  */
-    string get_data_id_units(int id_numb) const 
-    { 
-        Insist(id_numb <= dims.get_nside_data() - 1,
-	       "Invalid side data id number!");
-        return units[id_numb];
-    }
+  string get_data_id_units(int id_numb) const {
+    Insist(id_numb <= dims.get_nside_data() - 1,
+           "Invalid side data id number!");
+    return units[id_numb];
+  }
 };
 
 } // end namespace rtt_RTT_Format_Reader

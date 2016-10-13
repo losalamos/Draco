@@ -11,8 +11,7 @@
 
 #include "QIM.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------------------//
@@ -25,53 +24,40 @@ using namespace rtt_parser;
  * specifications, by allowing the client to set the QIM to END_QIM before
  * beginning his parse.
  */
-void parse_quadrature_interpolation_model(Token_Stream &tokens,
-                                          QIM &qim)
-{
-    tokens.check_semantics(qim==END_QIM,
-                           "quadrature interpolation model already specified");
+void parse_quadrature_interpolation_model(Token_Stream &tokens, QIM &qim) {
+  tokens.check_semantics(qim == END_QIM,
+                         "quadrature interpolation model already specified");
 
-    Token token = tokens.shift();
+  Token token = tokens.shift();
 
-    if (token.text()=="SN")
-    {
-        qim = SN;
-    }
-    else if (token.text()=="GQ1")
-    {
-        qim = GQ1;
-    }
-    else if (token.text()=="GQ2")
-    {
-        qim = GQ2;
-    }
-    else if (token.text()=="GQF")
-    {
-        qim = GQF;
-    }
-    else
-    {
-        tokens.check_semantics(false,
-                               "unrecognized quadrature interpolation model");
-    }
+  if (token.text() == "SN") {
+    qim = SN;
+  } else if (token.text() == "GQ1") {
+    qim = GQ1;
+  } else if (token.text() == "GQ2") {
+    qim = GQ2;
+  } else if (token.text() == "GQF") {
+    qim = GQF;
+  } else {
+    tokens.check_semantics(false,
+                           "unrecognized quadrature interpolation model");
+  }
 }
 
-std::string quadrature_interpolation_model_as_text(QIM q)
-{
-    switch (q)
-    {
-        case SN:
-            return "SN";
-        case GQ1:
-            return "GQ1";
-        case GQ2:
-            return "GQ2";
-        case GQF:
-            return "GQF";
-        default:
-            Insist(false, "bad case");
-            return 0; // to kill warnings; never reached
-    }
+std::string quadrature_interpolation_model_as_text(QIM q) {
+  switch (q) {
+  case SN:
+    return "SN";
+  case GQ1:
+    return "GQ1";
+  case GQ2:
+    return "GQ2";
+  case GQF:
+    return "GQF";
+  default:
+    Insist(false, "bad case");
+    return 0; // to kill warnings; never reached
+  }
 }
 
 } // end namespace rtt_quadrature

@@ -14,13 +14,11 @@
 #ifndef quadrature_Ordinate_Set_Factory_hh
 #define quadrature_Ordinate_Set_Factory_hh
 
-
-#include "Quadrature_Interface.hh"
 #include "Ordinate_Set.hh"
+#include "Quadrature_Interface.hh"
 #include "ds++/SP.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 using rtt_dsxx::SP;
 
@@ -32,27 +30,24 @@ using rtt_dsxx::SP;
  */
 //===========================================================================//
 
-class DLL_PUBLIC_quadrature Ordinate_Set_Factory
-{
-  public:
+class DLL_PUBLIC_quadrature Ordinate_Set_Factory {
+public:
+  // CREATORS
 
-    // CREATORS
+  Ordinate_Set_Factory(const quadrature_data &quad_in) : quad_(quad_in) {
+    check_quadrature_validity(quad_in);
+  }
 
-    Ordinate_Set_Factory(const quadrature_data& quad_in)
-    : quad_(quad_in) { check_quadrature_validity(quad_in); }
-    
-    // SERVICES
+  // SERVICES
 
-    //! Returns a smart pointer to the Quadrature object
-    SP<Ordinate_Set> get_Ordinate_Set() const;
+  //! Returns a smart pointer to the Quadrature object
+  SP<Ordinate_Set> get_Ordinate_Set() const;
 
-  private:
+private:
+  // DATA
 
-    // DATA
-
-    // Ordinate set data 
-    const quadrature_data quad_;
-    
+  // Ordinate set data
+  const quadrature_data quad_;
 };
 
 } // end namespace rtt_quadrature

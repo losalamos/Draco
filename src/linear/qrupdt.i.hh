@@ -14,13 +14,12 @@
 #ifndef linear_qrupdt_i_hh
 #define linear_qrupdt_i_hh
 
+#include "qrupdt.hh"
+#include "rotate.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
-#include "rotate.hh"
-#include "qrupdt.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Update the QR decomposition of a square matrix.
@@ -43,50 +42,43 @@ namespace rtt_linear
  * \todo Templatize on container element type
  */
 
-template<class RandomContainer>
-void qrupdt(RandomContainer &r, 
-	    RandomContainer &qt, 
-	    const unsigned n,
-	    RandomContainer &u, 
-	    RandomContainer &v)
-{
-    Require(r.size()==n*n);
-    Require(qt.size()==n*n);
-    Require(u.size()==n);
-    Require(v.size()==n);
+template <class RandomContainer>
+void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
+            RandomContainer &u, RandomContainer &v) {
+  Require(r.size() == n * n);
+  Require(qt.size() == n * n);
+  Require(u.size() == n);
+  Require(v.size() == n);
 
-    using std::fabs;
+  using std::fabs;
 
-    using namespace rtt_dsxx;
+  using namespace rtt_dsxx;
 
-    // Find first nonzero element of u.
-    int k;
-    for (k=n-1; k>=0; --k)
-    {
-	if (u[k]!=0.0) break;
-    } 
-    if (k<0) k=0;
-    for (int i=k-1; i>=0; i--)
-    {
-	rotate(r,qt,n,i,u[i],-u[i+1]);
-	if (u[i] == 0.0)
-	{
-	    u[i] = fabs(u[i+1]);
-	}
-	else if (fabs(u[i]) > fabs(u[i+1]))
-	{
-	    u[i]=fabs(u[i])*sqrt(1.0+square(u[i+1]/u[i]));
-	}
-	else 
-	{
-	    u[i] = fabs(u[i+1])*sqrt(1.0+square(u[i]/u[i+1]));
-	}
+  // Find first nonzero element of u.
+  int k;
+  for (k = n - 1; k >= 0; --k) {
+    if (u[k] != 0.0)
+      break;
+  }
+  if (k < 0)
+    k = 0;
+  for (int i = k - 1; i >= 0; i--) {
+    rotate(r, qt, n, i, u[i], -u[i + 1]);
+    if (u[i] == 0.0) {
+      u[i] = fabs(u[i + 1]);
+    } else if (fabs(u[i]) > fabs(u[i + 1])) {
+      u[i] = fabs(u[i]) * sqrt(1.0 + square(u[i + 1] / u[i]));
+    } else {
+      u[i] = fabs(u[i + 1]) * sqrt(1.0 + square(u[i] / u[i + 1]));
     }
-    for (unsigned j=0; j<n; j++) r[0+n*j] += u[0]*v[j];
-    for (int i=0; i<k; i++) rotate(r,qt,n,i,r[i+n*i],-r[i+1+n*i]);
+  }
+  for (unsigned j = 0; j < n; j++)
+    r[0 + n * j] += u[0] * v[j];
+  for (int i = 0; i < k; i++)
+    rotate(r, qt, n, i, r[i + n * i], -r[i + 1 + n * i]);
 
-    Ensure(r.size()==n*n);
-    Ensure(qt.size()==n*n);
+  Ensure(r.size() == n * n);
+  Ensure(qt.size() == n * n);
 }
 
 } // end namespace rtt_linear

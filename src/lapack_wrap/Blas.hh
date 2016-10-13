@@ -17,8 +17,7 @@
 #include <typeinfo>
 #include <vector>
 
-namespace rtt_lapack_wrap
-{
+namespace rtt_lapack_wrap {
 
 //---------------------------------------------------------------------------//
 // y <- x (COPY)
@@ -28,19 +27,15 @@ namespace rtt_lapack_wrap
  *
  * Results are written into y.
  */
-inline void blas_copy(int          N, 
-                      const float *x, 
-                      int          increment_x,
-                      float       *y,
-                      int          increment_y)
-{
-    Check (N >= 0);
-    Check (x);
-    Check (y);
+inline void blas_copy(int N, const float *x, int increment_x, float *y,
+                      int increment_y) {
+  Check(N >= 0);
+  Check(x);
+  Check(y);
 
-    // do a single precision copy
-    FC_GLOBAL(scopy,SCOPY)(&N, const_cast<float *>(x), &increment_x, y,
-                           &increment_y);
+  // do a single precision copy
+  FC_GLOBAL(scopy, SCOPY)
+  (&N, const_cast<float *>(x), &increment_x, y, &increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -49,19 +44,15 @@ inline void blas_copy(int          N,
  *
  * Results are written into y.
  */
-inline void blas_copy(int           N,  
-                      const double *x, 
-                      int           increment_x,
-                      double       *y,
-                      int           increment_y)
-{
-    Check (N >= 0);
-    Check (x);
-    Check (y);
-    
-    // do a double precision axpy
-    FC_GLOBAL(dcopy,DCOPY)(&N, const_cast<double *>(x), &increment_x, y,
-                           &increment_y);
+inline void blas_copy(int N, const double *x, int increment_x, double *y,
+                      int increment_y) {
+  Check(N >= 0);
+  Check(x);
+  Check(y);
+
+  // do a double precision axpy
+  FC_GLOBAL(dcopy, DCOPY)
+  (&N, const_cast<double *>(x), &increment_x, y, &increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -75,17 +66,13 @@ inline void blas_copy(int           N,
  *
  * The results are written into y.
  */
-template<class T>
-inline void blas_copy(const std::vector<T> &x,
-                      int                   increment_x,
-                      std::vector<T>       &y,
-                      int                   increment_y)
-{
-    Check (x.size() == y.size());
-    Check (typeid(T) == typeid(float) || typeid(T) == typeid(double));
+template <class T>
+inline void blas_copy(const std::vector<T> &x, int increment_x,
+                      std::vector<T> &y, int increment_y) {
+  Check(x.size() == y.size());
+  Check(typeid(T) == typeid(float) || typeid(T) == typeid(double));
 
-    blas_copy(static_cast<int>(x.size()), &x[0], increment_x, 
-              &y[0], increment_y);
+  blas_copy(static_cast<int>(x.size()), &x[0], increment_x, &y[0], increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -109,15 +96,11 @@ inline void blas_copy(const std::vector<T> &x,
 /*!
  * \brief Do \f$ x\leftarrow\alpha x \f$ for type double.
  */
-inline void blas_scal(int     N,
-                      double  alpha,
-                      double *x,
-                      int     increment_x)
-{
-    Check (N >= 0);
-    Check (x);
+inline void blas_scal(int N, double alpha, double *x, int increment_x) {
+  Check(N >= 0);
+  Check(x);
 
-    FC_GLOBAL(dscal,DSCAL)(&N, &alpha, x, &increment_x);
+  FC_GLOBAL(dscal, DSCAL)(&N, &alpha, x, &increment_x);
 }
 
 //---------------------------------------------------------------------------//
@@ -130,14 +113,11 @@ inline void blas_scal(int     N,
  *
  * The results are written into x.
  */
-template<class T>
-inline void blas_scal(T               alpha,
-                      std::vector<T> &x,
-                      int             /*increment_x*/)
-{
-    Check (typeid(T) == typeid(float) || typeid(T) == typeid(double));
+template <class T>
+inline void blas_scal(T alpha, std::vector<T> &x, int /*increment_x*/) {
+  Check(typeid(T) == typeid(float) || typeid(T) == typeid(double));
 
-    blas_scal(static_cast<int>(x.size()), alpha, &x[0], 1);
+  blas_scal(static_cast<int>(x.size()), alpha, &x[0], 1);
 }
 
 //---------------------------------------------------------------------------//
@@ -166,20 +146,15 @@ inline void blas_scal(T               alpha,
 /*!
  * \brief Do \f$ \mbox{dot}\leftarrow x^{T}y \f$ for type double.
  */
-inline double blas_dot(int           N,
-                       const double *x,
-                       int           increment_x,
-                       const double *y,
-                       int           increment_y)
-{
-    Check (N >= 0);
-    Check (x);
-    Check (y);
+inline double blas_dot(int N, const double *x, int increment_x, const double *y,
+                       int increment_y) {
+  Check(N >= 0);
+  Check(x);
+  Check(y);
 
-    // do a double precision dot (inner) product
-    return FC_GLOBAL(ddot,DDOT)(&N,
-                                const_cast<double *>(x), &increment_x, 
-                                const_cast<double *>(y), &increment_y);
+  // do a double precision dot (inner) product
+  return FC_GLOBAL(ddot, DDOT)(&N, const_cast<double *>(x), &increment_x,
+                               const_cast<double *>(y), &increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -193,17 +168,14 @@ inline double blas_dot(int           N,
  *
  * \return the dot product (type T)
  */
-template<class T>
-inline T blas_dot(const std::vector<T> &x,
-                  int                   increment_x,
-                  const std::vector<T> &y,
-                  int                   increment_y)
-{
-    Check (x.size() == y.size());
-    Check (typeid(T) == typeid(float) || typeid(T) == typeid(double));
+template <class T>
+inline T blas_dot(const std::vector<T> &x, int increment_x,
+                  const std::vector<T> &y, int increment_y) {
+  Check(x.size() == y.size());
+  Check(typeid(T) == typeid(float) || typeid(T) == typeid(double));
 
-    return blas_dot(static_cast<int>(x.size()), &x[0], increment_x, 
-                    &y[0], increment_y);
+  return blas_dot(static_cast<int>(x.size()), &x[0], increment_x, &y[0],
+                  increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -214,9 +186,9 @@ inline T blas_dot(const std::vector<T> &x,
  *
  * Results are written into y.
  */
-// inline void blas_axpy(int          N, 
-//                       float        alpha, 
-//                       const float *x, 
+// inline void blas_axpy(int          N,
+//                       float        alpha,
+//                       const float *x,
 //                       int          increment_x,
 //                       float       *y,
 //                       int          increment_y)
@@ -236,20 +208,15 @@ inline T blas_dot(const std::vector<T> &x,
  *
  * Results are written into y.
  */
-inline void blas_axpy(int           N, 
-                      double        alpha, 
-                      const double *x, 
-                      int           increment_x,
-                      double       *y,
-                      int           increment_y)
-{
-    Check (N >= 0);
-    Check (x);
-    Check (y);
-    
-    // do a double precision axpy
-    FC_GLOBAL(daxpy,DAXPY)(&N, &alpha, const_cast<double *>(x), &increment_x, y,
-                           &increment_y);
+inline void blas_axpy(int N, double alpha, const double *x, int increment_x,
+                      double *y, int increment_y) {
+  Check(N >= 0);
+  Check(x);
+  Check(y);
+
+  // do a double precision axpy
+  FC_GLOBAL(daxpy, DAXPY)
+  (&N, &alpha, const_cast<double *>(x), &increment_x, y, &increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -264,18 +231,14 @@ inline void blas_axpy(int           N,
  *
  * The results are written into y.
  */
-template<class T>
-inline void blas_axpy(T                     alpha,
-                      const std::vector<T> &x,
-                      int                   increment_x,
-                      std::vector<T>       &y,
-                      int                   increment_y)
-{
-    Check (x.size() == y.size());
-    Check (typeid(T) == typeid(float) || typeid(T) == typeid(double));
+template <class T>
+inline void blas_axpy(T alpha, const std::vector<T> &x, int increment_x,
+                      std::vector<T> &y, int increment_y) {
+  Check(x.size() == y.size());
+  Check(typeid(T) == typeid(float) || typeid(T) == typeid(double));
 
-    blas_axpy(static_cast<int>(x.size()), alpha, &x[0], increment_x, 
-              &y[0], increment_y);
+  blas_axpy(static_cast<int>(x.size()), alpha, &x[0], increment_x, &y[0],
+            increment_y);
 }
 
 //---------------------------------------------------------------------------//
@@ -284,7 +247,7 @@ inline void blas_axpy(T                     alpha,
 /*!
  * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ for type float.
  */
-// inline float blas_nrm2(int          N, 
+// inline float blas_nrm2(int          N,
 //                        const float *x,
 //                        int          increment_x)
 // {
@@ -302,18 +265,15 @@ inline void blas_axpy(T                     alpha,
 /*!
  * \brief Do \f$ \mbox{nrm2}\leftarrow \| x\|_{2} \f$ for type double.
  */
-inline double blas_nrm2(int           N, 
-                        const double *x,
-                        int           increment_x)
-{
-    Check (N >= 0);
-    Check (x);
+inline double blas_nrm2(int N, const double *x, int increment_x) {
+  Check(N >= 0);
+  Check(x);
 
-    // do a double precision 2-norm
-    double nrm2 = FC_GLOBAL(dnrm2,DNRM2)(&N, const_cast<double *>(x),
-                                         &increment_x);
-    Check (nrm2 >= 0.0);
-    return nrm2;
+  // do a double precision 2-norm
+  double nrm2 =
+      FC_GLOBAL(dnrm2, DNRM2)(&N, const_cast<double *>(x), &increment_x);
+  Check(nrm2 >= 0.0);
+  return nrm2;
 }
 
 //---------------------------------------------------------------------------//
@@ -327,38 +287,36 @@ inline double blas_nrm2(int           N,
  *
  * \return the 2-norm of x (the value_type of Forward_Iterator)
  */
-template<class Forward_Iterator>
+template <class Forward_Iterator>
 inline typename std::iterator_traits<Forward_Iterator>::value_type
-blas_nrm2(Forward_Iterator x_begin,
-          Forward_Iterator x_end)
-{
-    Check (typeid(typename std::iterator_traits<Forward_Iterator>::value_type)
-           == typeid(double) ||
-           typeid(typename std::iterator_traits<Forward_Iterator>::value_type) 
-           == typeid(float));
+blas_nrm2(Forward_Iterator x_begin, Forward_Iterator x_end) {
+  Check(typeid(typename std::iterator_traits<Forward_Iterator>::value_type) ==
+            typeid(double) ||
+        typeid(typename std::iterator_traits<Forward_Iterator>::value_type) ==
+            typeid(float));
 
-    // get the size of the arrays
-    int N = std::distance(x_begin, x_end); 
+  // get the size of the arrays
+  int N = std::distance(x_begin, x_end);
 
-    // allocate x array
-    typename std::iterator_traits<Forward_Iterator>::value_type *x;
-    x = new typename std::iterator_traits<Forward_Iterator>::value_type[N];
+  // allocate x array
+  typename std::iterator_traits<Forward_Iterator>::value_type *x;
+  x = new typename std::iterator_traits<Forward_Iterator>::value_type[N];
 
-    // the dot product
-    typename std::iterator_traits<Forward_Iterator>::value_type nrm2 = 0.0;
+  // the dot product
+  typename std::iterator_traits<Forward_Iterator>::value_type nrm2 = 0.0;
 
-    // copy into x
-    std::copy(x_begin, x_end, &x[0]);
+  // copy into x
+  std::copy(x_begin, x_end, &x[0]);
 
-    // do the 2-norm
-    nrm2 = blas_nrm2(N, x, 1);
-    Check (nrm2 >= 0.0);
+  // do the 2-norm
+  nrm2 = blas_nrm2(N, x, 1);
+  Check(nrm2 >= 0.0);
 
-    // clean up the memory
-    delete [] x;
+  // clean up the memory
+  delete[] x;
 
-    // return the result
-    return nrm2;
+  // return the result
+  return nrm2;
 }
 
 //---------------------------------------------------------------------------//
@@ -370,13 +328,11 @@ blas_nrm2(Forward_Iterator x_begin,
  *
  * \return the 2-norm of x (type T)
  */
-template<class T>
-inline T blas_nrm2(const std::vector<T> &x,
-                   int                   increment_x)
-{
-    Check (typeid(T) == typeid(float) || typeid(T) == typeid(double));
+template <class T>
+inline T blas_nrm2(const std::vector<T> &x, int increment_x) {
+  Check(typeid(T) == typeid(float) || typeid(T) == typeid(double));
 
-    return blas_nrm2(static_cast<int>(x.size()), &x[0], increment_x);
+  return blas_nrm2(static_cast<int>(x.size()), &x[0], increment_x);
 }
 
 } // end namespace rtt_lapack_wrap

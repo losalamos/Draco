@@ -3,17 +3,19 @@
 ;; Kelly Thompson
 ;; 8 Dec 2004
 ;;
-;; $Id$
-;;
 ;; Define some global key bindings
 ;; 
 ;; Usage: (require 'draco-global-keys)
 ;; ======================================================================
 
 ;; Clang-format
-(require 'clang-format)
-(global-set-key [(f12)] 'clang-format-region) ;; Windows/Linux
-(global-set-key [(C-M-tab)] 'clang-format-region) ;; Mac/Linux
+(if (file-exists-p (concat (getenv "VENDOR_DIR") "/bin/clang-format" ))
+    (if (> emacs-major-version 23)
+        (progn
+          (require 'clang-format)
+          (global-set-key [(f12)] 'clang-format-region) ;; Windows/Linux
+          (global-set-key [(C-M-tab)] 'clang-format-region) ;; Mac/Linux
+          )))
 
 ;; Kill default XEmacs key binding annoyances:
 

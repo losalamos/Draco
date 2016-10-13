@@ -16,24 +16,14 @@
 
 #include "ds++/config.h"
 
-namespace rtt_min
-{
+namespace rtt_min {
 //! Perform a nonlinear least-squares fit using Levenberg-Marquardt method
-template<class RandomContainer, class RandomBoolContainer, class ModelFunction>
-DLL_PUBLIC_min
-void mrqmin(RandomContainer const &x,
-            RandomContainer const &y,
-            RandomContainer const &sig,
-            unsigned n,
-            unsigned m,
-            RandomContainer &a,
-            RandomBoolContainer &ia,
-            RandomContainer &covar,
-            RandomContainer &alpha,
-            unsigned p,
-            double &chisq,
-            ModelFunction funcs,
-            double &alamda);
+template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
+DLL_PUBLIC_min void
+mrqmin(RandomContainer const &x, RandomContainer const &y,
+       RandomContainer const &sig, unsigned n, unsigned m, RandomContainer &a,
+       RandomBoolContainer &ia, RandomContainer &covar, RandomContainer &alpha,
+       unsigned p, double &chisq, ModelFunction funcs, double &alamda);
 
 } // end namespace rtt_min
 

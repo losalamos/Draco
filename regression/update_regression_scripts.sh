@@ -38,8 +38,13 @@ case ${target} in
     ;;
   ccscs*)
     REGDIR=/scratch/regress
+    VENDOR_DIR=/scratch/vendors
     keychain=keychain-2.8.2
-    SVN=/scratch/vendors/subversion-1.9.3/bin/svn
+    if ! [[ $MODULESHOME ]]; then
+       source /usr/share/Modules/init/bash
+    fi
+    run "module load user_contrib subversion"
+    SVN=`which svn`
     ;;
   ml-*)
     REGDIR=/usr/projects/jayenne/regress

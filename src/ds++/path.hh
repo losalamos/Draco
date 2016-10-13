@@ -17,54 +17,50 @@
 #include "SystemCall.hh"
 #include <iostream>
 #ifdef UNIX
-#include <dirent.h>      // struct DIR
-#include <sys/stat.h>    // struct stat; S_ISDIR
+#include <dirent.h>   // struct DIR
+#include <sys/stat.h> // struct stat; S_ISDIR
 #endif
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
-enum FilenameComponent
-{
-    FC_PATH,       //!< Extract path portion of fully qualified filename
-    FC_ABSOLUTE,
-    FC_NAME,       //!< Extract filename portion (w/o path).
-    FC_EXT,
-    FC_NAME_WE,
-    FC_REALPATH,
-    FC_NATIVE,     //!< Convert directory separator to native format.
-    FC_LASTVALUE
+enum FilenameComponent {
+  FC_PATH, //!< Extract path portion of fully qualified filename
+  FC_ABSOLUTE,
+  FC_NAME, //!< Extract filename portion (w/o path).
+  FC_EXT,
+  FC_NAME_WE,
+  FC_REALPATH,
+  FC_NATIVE, //!< Convert directory separator to native format.
+  FC_LASTVALUE
 };
 
 //---------------------------------------------------------------------------//
 //! Get a specific component of a full filename.
-DLL_PUBLIC_dsxx  std::string getFilenameComponent( std::string const & fqName,
-                                                   FilenameComponent   fc );
+DLL_PUBLIC_dsxx std::string getFilenameComponent(std::string const &fqName,
+                                                 FilenameComponent fc);
 
 //---------------------------------------------------------------------------//
 //! Does the file exist?
-DLL_PUBLIC_dsxx  bool fileExists(  std::string const & filename );
-DLL_PUBLIC_dsxx  bool isDirectory( std::string const & path );
+DLL_PUBLIC_dsxx bool fileExists(std::string const &filename);
+DLL_PUBLIC_dsxx bool isDirectory(std::string const &path);
 
 //---------------------------------------------------------------------------//
 //! Functor for printing all items in a directory tree
-class wdtOpPrint
-{
-  public:
-    void operator()( std::string const & dirpath ) const {
-        std::cout << dirpath << std::endl; }
+class wdtOpPrint {
+public:
+  void operator()(std::string const &dirpath) const {
+    std::cout << dirpath << std::endl;
+  }
 };
 
 //---------------------------------------------------------------------------//
 //! Functor for removing one item in a directory tree
-class wdtOpRemove
-{
-  public:
-    void operator()( std::string const & dirpath ) const
-    {
-        std::cout << "Removing \"" << dirpath << "\"" << std::endl;
-        draco_remove( dirpath );
-    }
+class wdtOpRemove {
+public:
+  void operator()(std::string const &dirpath) const {
+    std::cout << "Removing \"" << dirpath << "\"" << std::endl;
+    draco_remove(dirpath);
+  }
 };
 
 //---------------------------------------------------------------------------//
@@ -105,120 +101,116 @@ class wdtOpRemove
  }
  * \endcode
  */
-template< typename T >
-void draco_walk_directory_tree( std::string const & dirname,
-                                T const & myOperator )
-{
-    // If file does not exist, report and continue.
-    if( ! fileExists( dirname ) )
-    {
-        std::cout << "File/directory \"" << dirname
-                  << "\"does not exist.  Continuing..." << std::endl;
-        return;
-    }
+template <typename T>
+void draco_walk_directory_tree(std::string const &dirname,
+                               T const &myOperator) {
+  // If file does not exist, report and continue.
+  if (!fileExists(dirname)) {
+    std::cout << "File/directory \"" << dirname
+              << "\"does not exist.  Continuing..." << std::endl;
+    return;
+  }
 
 #ifdef WIN32
-    /*! \note If path contains the location of a directory, it cannot contain
+  /*! \note If path contains the location of a directory, it cannot contain
      * a trailing backslash. If it does, -1 will be returned and errno will be
      * set to ENOENT. */
-    std::string d_name;
-    if( dirname[dirname.size()-1] == rtt_dsxx::WinDirSep ||
-        dirname[dirname.size()-1] == rtt_dsxx::UnixDirSep )
-        d_name=dirname.substr(0,dirname.size()-1);
-    else
-        d_name=dirname;
+  std::string d_name;
+  if (dirname[dirname.size() - 1] == rtt_dsxx::WinDirSep ||
+      dirname[dirname.size() - 1] == rtt_dsxx::UnixDirSep)
+    d_name = dirname.substr(0, dirname.size() - 1);
+  else
+    d_name = dirname;
 
-    // If this is not a directory, no recursion is needed:
-    if( isDirectory( dirname ) )
-    {
-	// Handle to the file/directory
-	WIN32_FIND_DATA FileInformation;
+  // If this is not a directory, no recursion is needed:
+  if (isDirectory(dirname)) {
+    // Handle to the file/directory
+    WIN32_FIND_DATA FileInformation;
 
-	// Pattern to match all items in the current directory.
-	std::string strPattern = d_name + "\\*.*";
+    // Pattern to match all items in the current directory.
+    std::string strPattern = d_name + "\\*.*";
 
-	// Handle to directory
-	HANDLE hFile = ::FindFirstFile( strPattern.c_str(), &FileInformation );
+    // Handle to directory
+    HANDLE hFile = ::FindFirstFile(strPattern.c_str(), &FileInformation);
 
-	// sanity check
-	Insist( hFile != INVALID_HANDLE_VALUE, "Invalid file handle." );
+    // sanity check
+    Insist(hFile != INVALID_HANDLE_VALUE, "Invalid file handle.");
 
-	// Loop over all files in the current directory.
-	do
-	{
-	    // Do not process '.' or '..'
-	    if( FileInformation.cFileName[0] == '.' ) continue;
+    // Loop over all files in the current directory.
+    do {
+      // Do not process '.' or '..'
+      if (FileInformation.cFileName[0] == '.')
+        continue;
 
-            std::string itemPath( d_name + "\\" + FileInformation.cFileName );
+      std::string itemPath(d_name + "\\" + FileInformation.cFileName);
 
-            // if the entry is a directory, recursively delete it,
-            // otherwise, delete the file:
-            if( draco_getstat( itemPath ).isdir() )
-                draco_walk_directory_tree( itemPath, myOperator );
-            else
-                myOperator( itemPath );
+      // if the entry is a directory, recursively delete it,
+      // otherwise, delete the file:
+      if (draco_getstat(itemPath).isdir())
+        draco_walk_directory_tree(itemPath, myOperator);
+      else
+        myOperator(itemPath);
 
-	} while( ::FindNextFile(hFile, &FileInformation) == TRUE );
+    } while (::FindNextFile(hFile, &FileInformation) == TRUE);
 
-	// Close handle
-	::FindClose(hFile);
+    // Close handle
+    ::FindClose(hFile);
 
-	//DWORD dwError = ::GetLastError();
-	//Insist( dwError != ERROR_NO_MORE_FILES, "ERROR: No more files to delete." );
-    }
+    //DWORD dwError = ::GetLastError();
+    //Insist( dwError != ERROR_NO_MORE_FILES, "ERROR: No more files to delete." );
+  }
 
-    // Perform action on the top level entry
+  // Perform action on the top level entry
 
-    myOperator(d_name);
+  myOperator(d_name);
 
 #else
-    // If this is not a directory, no recursion is needed:
-    if( isDirectory( dirname ) )
-    {
-        DIR *dir;  // Handle to directory
-        struct dirent *entry;
-        // struct stat statbuf;
+  // If this is not a directory, no recursion is needed:
+  if (isDirectory(dirname)) {
+    DIR *dir; // Handle to directory
+    struct dirent *entry;
+    // struct stat statbuf;
 
-        dir = opendir( dirname.c_str() );
-        Insist(dir != NULL, "Error opendir()");
+    dir = opendir(dirname.c_str());
+    Insist(dir != NULL, "Error opendir()");
 
-        // Loop over all entries in the current directory.
-        while( (entry = readdir(dir)) != NULL )
-        {
-            std::string d_name( entry->d_name );
+    // Loop over all entries in the current directory.
+    while ((entry = readdir(dir)) != NULL) {
+      std::string d_name(entry->d_name);
 
-            // Don't include "." or ".." entries.
-            if( d_name[0] == '.' ) continue;
+      // Don't include "." or ".." entries.
+      if (d_name[0] == '.')
+        continue;
 
-            std::string itemPath;
-            if( dirname[dirname.length()-1] == UnixDirSep )
-                itemPath = dirname + d_name;
-            else
-                itemPath = dirname + UnixDirSep + d_name;
+      std::string itemPath;
+      if (dirname[dirname.length() - 1] == UnixDirSep)
+        itemPath = dirname + d_name;
+      else
+        itemPath = dirname + UnixDirSep + d_name;
 
-            // if the entry is a directory, recursively delete it,
-            // otherwise, delete the file
-            if( draco_getstat( itemPath ).isdir() )
-                draco_walk_directory_tree(itemPath, myOperator);
-            else
-                myOperator( itemPath );
-        }
-        closedir(dir);
+      // if the entry is a directory, recursively delete it,
+      // otherwise, delete the file
+      if (draco_getstat(itemPath).isdir())
+        draco_walk_directory_tree(itemPath, myOperator);
+      else
+        myOperator(itemPath);
     }
+    closedir(dir);
+  }
 
-    // Perform action on the top level entry
-    myOperator(dirname);
+  // Perform action on the top level entry
+  myOperator(dirname);
 
 #endif
 
-    return;
+  return;
 }
 
 //---------------------------------------------------------------------------//
 //! Recursively remove a directory.
-DLL_PUBLIC_dsxx  void draco_remove_dir( std::string const & path );
+DLL_PUBLIC_dsxx void draco_remove_dir(std::string const &path);
 //! Recursively print a directory tree.
-DLL_PUBLIC_dsxx  void draco_dir_print( std::string const & path );
+DLL_PUBLIC_dsxx void draco_dir_print(std::string const &path);
 
 } // end namespace rtt_dsxx
 

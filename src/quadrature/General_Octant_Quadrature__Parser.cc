@@ -10,11 +10,10 @@
 // $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
 //---------------------------------------------------------------------------------------//
 
-#include "parser/utilities.hh"
 #include "General_Octant_Quadrature.hh"
+#include "parser/utilities.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------------------//
@@ -30,64 +29,53 @@ using namespace rtt_parser;
  * /param tokens Token stream from which to parse the specification.
  */
 /*static*/
-SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens)
-{
-    Token token = tokens.shift();
-    tokens.check_syntax(token.text()=="sn order", "expected sn order");
+SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens) {
+  Token token = tokens.shift();
+  tokens.check_syntax(token.text() == "sn order", "expected sn order");
 
-    unsigned sn_order = parse_positive_integer(tokens);
+  unsigned sn_order = parse_positive_integer(tokens);
 
+  token = tokens.shift();
+  tokens.check_syntax(token.text() == "number of ordinates",
+                      "expected number of ordinates");
 
+  unsigned N = parse_positive_integer(tokens);
+
+  token = tokens.shift();
+  tokens.check_syntax(token.text() == "number of levels",
+                      "expected number of levels");
+
+  unsigned number_of_levels = parse_unsigned_integer(tokens);
+
+  token = tokens.lookahead();
+
+  Quadrature_Class quadrature_class = OCTANT_QUADRATURE;
+  if (token.text() == "quadrature class") {
+    tokens.shift();
     token = tokens.shift();
-    tokens.check_syntax(token.text()=="number of ordinates",
-                        "expected number of ordinates");
-
-    unsigned N = parse_positive_integer(tokens);
-
-    token = tokens.shift();
-    tokens.check_syntax(token.text()=="number of levels",
-                        "expected number of levels");
-
-    unsigned number_of_levels = parse_unsigned_integer(tokens);
-
-    token = tokens.lookahead();
-
-    Quadrature_Class quadrature_class = OCTANT_QUADRATURE;
-    if (token.text()=="quadrature class")
-    {
-        tokens.shift();
-        token = tokens.shift();
-        if (token.text()=="triangle")
-        {
-            quadrature_class = TRIANGLE_QUADRATURE;
-        }
-        else if (token.text()=="square")
-        {
-            quadrature_class = SQUARE_QUADRATURE;
-        }
-        else
-        {
-            tokens.check_semantics(token.text()=="octant",
-                                   "unrecognized quadrature class");
-        }
+    if (token.text() == "triangle") {
+      quadrature_class = TRIANGLE_QUADRATURE;
+    } else if (token.text() == "square") {
+      quadrature_class = SQUARE_QUADRATURE;
+    } else {
+      tokens.check_semantics(token.text() == "octant",
+                             "unrecognized quadrature class");
     }
+  }
 
-    vector<double> mu(N), eta(N), xi(N), wt(N);
+  vector<double> mu(N), eta(N), xi(N), wt(N);
 
-    for (unsigned i=0; i<N; ++i)
-    {
-        mu[i] = parse_real(tokens);
-        eta[i] = parse_real(tokens);
-        xi[i] = parse_real(tokens);
-        wt[i] = parse_real(tokens);
-    }
+  for (unsigned i = 0; i < N; ++i) {
+    mu[i] = parse_real(tokens);
+    eta[i] = parse_real(tokens);
+    xi[i] = parse_real(tokens);
+    wt[i] = parse_real(tokens);
+  }
 
-    tokens.check_syntax(tokens.shift().type()==END, "missing end?");
+  tokens.check_syntax(tokens.shift().type() == END, "missing end?");
 
-    return SP<Quadrature>(new General_Octant_Quadrature(sn_order,
-                                                        mu, eta, xi, wt,
-                                                        number_of_levels,
-                                                        quadrature_class));
+  return SP<Quadrature>(new General_Octant_Quadrature(
+      sn_order, mu, eta, xi, wt, number_of_levels, quadrature_class));
 }
 
 } // end namespace rtt_quadrature

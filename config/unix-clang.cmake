@@ -35,6 +35,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
 # Suppress warnings about typeid() called with function as an argument. In this
 # case, the function might not be called if the type can be deduced.
    set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -Wno-potentially-evaluated-expression" ) #  -std=c++11" )
+   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.8 )
+     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-undefined-var-template")
+   endif()
    set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
    set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
    set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")

@@ -13,12 +13,11 @@
 
 #include "cubic1.i.hh"
 
-namespace rtt_roots
-{
+namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
-template DLL_PUBLIC_roots
-double cubic1(double const &a, double const &b, double const &c);
+template DLL_PUBLIC_roots double cubic1(double const &a, double const &b,
+                                        double const &c);
 
 } // end namespace rtt_roots
 

@@ -1,7 +1,7 @@
 # crontab for ccscs7
 
 # Keep vendor installations in sync between ccs-net servers.
-45 21 * * 0-6 /home/kellyt/bin/sync_vendors.sh &> /ccs/codes/radtran/vendors/logs/sync_vendors_ccscs7.log
+45 21 * * 0-6 /scratch/regress/draco/regression/sync_vendors.sh &> /scratch/regress/logs/sync_vendors_ccscs.log
 
 # Update the regression scripts.
 01 22 * * 0-6 /scratch/regress/draco/regression/update_regression_scripts.sh &> /scratch/regress/logs/update_regression_scripts.log

@@ -32,12 +32,11 @@
 
 #include "diagnostics/config.h"
 #include "ds++/config.h"
-#include <vector>
-#include <string>
 #include <iostream>
+#include <string>
+#include <vector>
 
-namespace rtt_diagnostics
-{
+namespace rtt_diagnostics {
 
 //===========================================================================//
 /*!
@@ -124,16 +123,16 @@ namespace rtt_diagnostics
  * \example diagnostics/test/tstProcmon.cc
  */
 //===========================================================================//
-DLL_PUBLIC_diagnostics void procmon_resource_print(std::string const & identifier,
-                                       int         const & mynode = -1,
-                                       std::ostream      & msg    = std::cout );
+DLL_PUBLIC_diagnostics void
+procmon_resource_print(std::string const &identifier, int const &mynode = -1,
+                       std::ostream &msg = std::cout);
 
 } // end namespace rtt_diagnostics
 
 #ifdef USE_PROCMON
-#  define PROCMON_REPORT(string) rtt_diagnostics::procmon_resource_print(string)
+#define PROCMON_REPORT(string) rtt_diagnostics::procmon_resource_print(string)
 #else
-#  define PROCMON_REPORT(string)
+#define PROCMON_REPORT(string)
 #endif
 
 #endif // diagnostics_Procmon_hh

@@ -11,9 +11,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "viz/Viz_Traits.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "viz/Viz_Traits.hh"
 
 using namespace std;
 using rtt_viz::Viz_Traits;
@@ -21,101 +21,95 @@ using rtt_viz::Viz_Traits;
 //---------------------------------------------------------------------------//
 // simple test field class for checking viz traits
 
-template<typename T>
-class Test_Field
-{
-  public:
-    typedef T value_type;
+template <typename T> class Test_Field {
+public:
+  typedef T value_type;
 
-  private:
-    vector<vector<T> > data;
+private:
+  vector<vector<T>> data;
 
-  public:
-    Test_Field(const vector<vector<T> > &data_in) : data(data_in) {}
+public:
+  Test_Field(const vector<vector<T>> &data_in) : data(data_in) {}
 
-    T operator()(size_t i, size_t j) const { return data[i][j]; }
-    size_t nrows() const { return data.size(); }
-    size_t ncols(size_t r) const { return data[r].size(); }
+  T operator()(size_t i, size_t j) const { return data[i][j]; }
+  size_t nrows() const { return data.size(); }
+  size_t ncols(size_t r) const { return data[r].size(); }
 };
 
 //---------------------------------------------------------------------------//
 // test vector traits specialization
 
-template<typename VVF>
-void test_vector(rtt_dsxx::UnitTest & ut)
-{
-    typedef typename Viz_Traits<VVF>::elementType VVFet;
+template <typename VVF> void test_vector(rtt_dsxx::UnitTest &ut) {
+  typedef typename Viz_Traits<VVF>::elementType VVFet;
 
-    VVF field(3);
+  VVF field(3);
 
-    for( size_t i = 0; i < field.size(); i++ )
-    {
-        field[i].resize(i+2);
-        for( size_t j = 0; j < field[i].size(); j++ )
-            field[i][j] = static_cast<VVFet>(2 * i + 4 * j);
+  for (size_t i = 0; i < field.size(); i++) {
+    field[i].resize(i + 2);
+    for (size_t j = 0; j < field[i].size(); j++)
+      field[i][j] = static_cast<VVFet>(2 * i + 4 * j);
+  }
+
+  Viz_Traits<VVF> vdf(field);
+
+  if (vdf.nrows() != field.size())
+    ITFAILS;
+  for (size_t i = 0; i < vdf.nrows(); i++) {
+    if (vdf.ncols(i) != field[i].size())
+      ITFAILS;
+    for (size_t j = 0; j < vdf.ncols(i); j++) {
+      if (static_cast<int>(vdf(i, j)) != field[i][j])
+        ITFAILS;
+      if (vdf(i, j) != static_cast<VVFet>(2 * i + 4 * j))
+        ITFAILS;
     }
-
-    Viz_Traits<VVF> vdf(field);
-
-    if( vdf.nrows() != field.size() )                                 ITFAILS;
-    for( size_t i = 0; i < vdf.nrows(); i++ )
-    {
-        if( vdf.ncols(i) != field[i].size() )                         ITFAILS;
-        for( size_t j = 0; j < vdf.ncols(i); j++ )
-        {
-            if( static_cast<int>(vdf(i, j)) != field[i][j] )          ITFAILS;
-            if( vdf(i, j) != static_cast<VVFet>(2*i + 4*j) )          ITFAILS;
-        }
-    }
-    if( ut.numFails == 0 )
-        PASSMSG( "test_vector passes." );
-    return;
+  }
+  if (ut.numFails == 0)
+    PASSMSG("test_vector passes.");
+  return;
 }
 
 //---------------------------------------------------------------------------//
 // standard Viz_Traits field test
 
-template<typename T>
-void test_FT(rtt_dsxx::UnitTest & ut)
-{
-    vector<vector<T> > field(3);
-    for (size_t i = 0; i < field.size(); i++)
-    {
-        field[i].resize(i+2);
-        for (size_t j = 0; j < field[i].size(); j++)
-            field[i][j] = 2 * i + 4 * j;
-    }
+template <typename T> void test_FT(rtt_dsxx::UnitTest &ut) {
+  vector<vector<T>> field(3);
+  for (size_t i = 0; i < field.size(); i++) {
+    field[i].resize(i + 2);
+    for (size_t j = 0; j < field[i].size(); j++)
+      field[i][j] = 2 * i + 4 * j;
+  }
 
-    Test_Field<T> test_field(field);
+  Test_Field<T> test_field(field);
 
-    Viz_Traits<Test_Field<T> > vt(test_field);
+  Viz_Traits<Test_Field<T>> vt(test_field);
 
-    if (vt.nrows() != 3)                                         ITFAILS;
-    for (size_t i = 0; i < vt.nrows(); i++)
-    {
-        if (vt.ncols(i) != field[i].size())                      ITFAILS;
-        for (size_t j = 0; j < vt.ncols(i); j++)
-            if (vt(i, j) != field[i][j])                         ITFAILS;
-    }
-    if( ut.numFails == 0 )
-        PASSMSG( "test_FT passes." );
-    return;
+  if (vt.nrows() != 3)
+    ITFAILS;
+  for (size_t i = 0; i < vt.nrows(); i++) {
+    if (vt.ncols(i) != field[i].size())
+      ITFAILS;
+    for (size_t j = 0; j < vt.ncols(i); j++)
+      if (vt(i, j) != field[i][j])
+        ITFAILS;
+  }
+  if (ut.numFails == 0)
+    PASSMSG("test_FT passes.");
+  return;
 }
 
 //---------------------------------------------------------------------------//
-int main(int argc, char *argv[])
-{
-    rtt_dsxx::ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
-    try
-    {
-        // >>> UNIT TESTS
-        test_vector<vector<vector<int> > >   (ut);
-        test_vector<vector<vector<double> > >(ut);
-        test_vector<vector<vector<float> > > (ut);
-        test_FT<int>   (ut);
-        test_FT<double>(ut);
-    }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  try {
+    // >>> UNIT TESTS
+    test_vector<vector<vector<int>>>(ut);
+    test_vector<vector<vector<double>>>(ut);
+    test_vector<vector<vector<float>>>(ut);
+    test_FT<int>(ut);
+    test_FT<double>(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

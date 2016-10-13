@@ -11,21 +11,18 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <vector>
 #include "dbc.i.hh"
+#include <vector>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 using namespace std;
 
-template
-bool is_strict_monotonic_increasing(vector<double>::iterator first,
-                                    vector<double>::iterator last);
+template bool is_strict_monotonic_increasing(vector<double>::iterator first,
+                                             vector<double>::iterator last);
 
-template
-bool is_strict_monotonic_increasing(vector<double>::const_iterator first,
-                                    vector<double>::const_iterator last);
-
+template bool
+is_strict_monotonic_increasing(vector<double>::const_iterator first,
+                               vector<double>::const_iterator last);
 
 } // end namespace rtt_dsxx
 

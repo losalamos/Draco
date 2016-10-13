@@ -32,11 +32,10 @@
 #ifndef parser_Class_Parse_Table_hh
 #define parser_Class_Parse_Table_hh
 
-#include "ds++/SP.hh"
 #include "Parse_Table.hh"
+#include "ds++/SP.hh"
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using rtt_dsxx::SP;
 
 //---------------------------------------------------------------------------------------//
@@ -114,8 +113,7 @@ using rtt_dsxx::SP;
  * draco/environment/templates/template__parser.hh,cc
  */
 
-template<class Class>
-class Class_Parse_Table;
+template <class Class> class Class_Parse_Table;
 
 //---------------------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
@@ -126,49 +124,45 @@ class Class_Parse_Table;
  * the specification is not valid.
  */
 
-template<class Class_Parse_Table>
+template <class Class_Parse_Table>
 SP<typename Class_Parse_Table::Return_Class>
-parse_class_from_table(Token_Stream &tokens)
-{
-    using rtt_parser::Token;
-    using rtt_parser::END;
-    using rtt_parser::EXIT;
+parse_class_from_table(Token_Stream &tokens) {
+  using rtt_parser::Token;
+  using rtt_parser::END;
+  using rtt_parser::EXIT;
 
-    typedef typename Class_Parse_Table::Return_Class Return_Class;
+  typedef typename Class_Parse_Table::Return_Class Return_Class;
 
-    // Construct the parse object as described above.
-    Class_Parse_Table parse_table;
+  // Construct the parse object as described above.
+  Class_Parse_Table parse_table;
 
-    // Save the old error count, so we can distinguish fresh errors within
-    // this class keyword block from previous errors.
-    unsigned const old_error_count = tokens.error_count();
+  // Save the old error count, so we can distinguish fresh errors within
+  // this class keyword block from previous errors.
+  unsigned const old_error_count = tokens.error_count();
 
-    // Parse the class keyword block and check for completeness
-    Token const terminator = parse_table.parse_table().parse(tokens);
-    bool allow_exit = parse_table.allow_exit(); // improve code coverage
-    if (terminator.type() == END || (allow_exit && terminator.type()==EXIT))
-        // A class keyword block is expected to end with an END or (if
-        // allow_exit is true) an EXIT.
-    {
-        parse_table.check_completeness(tokens);
+  // Parse the class keyword block and check for completeness
+  Token const terminator = parse_table.parse_table().parse(tokens);
+  bool allow_exit = parse_table.allow_exit(); // improve code coverage
+  if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
+  // A class keyword block is expected to end with an END or (if
+  // allow_exit is true) an EXIT.
+  {
+    parse_table.check_completeness(tokens);
 
-        SP<Return_Class> Result;
-        if (tokens.error_count() == old_error_count)
-        {
-            // No fresh errors in the class keyword block.  Create the object.
-            Result = parse_table.create_object();
-        }
-        // else there were errors in the keyword block. Don't try to
-        // create a class object.  Return the null pointer.
-
-        return Result;
+    SP<Return_Class> Result;
+    if (tokens.error_count() == old_error_count) {
+      // No fresh errors in the class keyword block.  Create the object.
+      Result = parse_table.create_object();
     }
-    else
-    {
-        tokens.report_syntax_error("missing 'end'?");
-        return SP<Return_Class>();
-        // never reached; to eliminate spurious warning.
-    }
+    // else there were errors in the keyword block. Don't try to
+    // create a class object.  Return the null pointer.
+
+    return Result;
+  } else {
+    tokens.report_syntax_error("missing 'end'?");
+    return SP<Return_Class>();
+    // never reached; to eliminate spurious warning.
+  }
 }
 
 } // end namespace rtt_parser

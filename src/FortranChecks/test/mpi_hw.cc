@@ -20,23 +20,23 @@
 extern "C" void tst_mpi_hw(size_t *numFail);
 
 //---------------------------------------------------------------------------//
-void test_mpi_hw( rtt_dsxx::UnitTest & ut )
-{
-    // size_t np(ut.numPasses);
-    size_t nf(ut.numFails);
-    // Call fortran subroutine
-    tst_mpi_hw(&nf);
-    ut.numPasses = 1;
-    ut.numFails = nf;
-    return;
+void test_mpi_hw(rtt_dsxx::UnitTest &ut) {
+  // size_t np(ut.numPasses);
+  size_t nf(ut.numFails);
+  // Call fortran subroutine
+  tst_mpi_hw(&nf);
+  ut.numPasses = 1;
+  ut.numFails = nf;
+  return;
 }
 
 //---------------------------------------------------------------------------//
-int main(int argc, char *argv[])
-{
-    rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
-    try { test_mpi_hw(ut); }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  try {
+    test_mpi_hw(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

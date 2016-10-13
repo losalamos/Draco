@@ -8,14 +8,11 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef <spkg>_<class>_hh
 #define <spkg>_<class>_hh
 
-namespace <namespace>
-{
+namespace <namespace> {
 
 //===========================================================================//
 /*!
@@ -39,9 +36,7 @@ namespace <namespace>
  */
 //===========================================================================//
 
-template<typename T>
-class <class> 
-{
+  template <typename T> class <class> {
   public:
 
     // NESTED CLASSES AND TYPEDEFS

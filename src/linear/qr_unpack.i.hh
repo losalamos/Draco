@@ -14,15 +14,14 @@
 #ifndef linear_qr_unpack_i_hh
 #define linear_qr_unpack_i_hh
 
-#include <sstream>
 #include <algorithm>
+#include <sstream>
 
 #include "qr_unpack.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Compute an explicit representation of a packed QR decomposition.
@@ -62,60 +61,47 @@ namespace rtt_linear
  * \post \c qt.size()==r.size()
  */
 
-template<class RandomContainer>
-void qr_unpack(RandomContainer &r,
-	       const unsigned n,
-	       const RandomContainer &c,
-	       const RandomContainer &d,
-	       RandomContainer &qt)
-{
-    Require(r.size()==n*n);
-    Require(n==c.size());
-    Require(n==d.size());
-   
-    qt.resize(n*n);
+template <class RandomContainer>
+void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
+               const RandomContainer &d, RandomContainer &qt) {
+  Require(r.size() == n * n);
+  Require(n == c.size());
+  Require(n == d.size());
 
-    for (unsigned i=0; i<n; ++i)
-    {
-	for (unsigned j=0; j<n; ++j)
-	{
-	    qt[i+n*j] = 0;
-	}
-	qt[i+n*i] = 1;
+  qt.resize(n * n);
+
+  for (unsigned i = 0; i < n; ++i) {
+    for (unsigned j = 0; j < n; ++j) {
+      qt[i + n * j] = 0;
     }
-    // Explicitly form Q transpose
-    for (unsigned i=0; i+1<n; ++i)
-    {
-	if (c[i] != 0.0)
-	{
-	    double rscale = -1/c[i];
-	    for (unsigned j=0; j<n; ++j)
-	    {
-		double sum = r[i+n*i]*qt[i+n*j];
-		for (unsigned k=i+1; k<n; ++k)
-		{
-		    sum += r[k+n*i]*qt[k+n*j];
-		}
-		sum *= rscale;
-		for (unsigned k=i; k<n; k++)
-		{
-		    qt[k+n*j] += r[k+n*i]*sum;
-		}
-	    }
-	}
+    qt[i + n * i] = 1;
+  }
+  // Explicitly form Q transpose
+  for (unsigned i = 0; i + 1 < n; ++i) {
+    if (c[i] != 0.0) {
+      double rscale = -1 / c[i];
+      for (unsigned j = 0; j < n; ++j) {
+        double sum = r[i + n * i] * qt[i + n * j];
+        for (unsigned k = i + 1; k < n; ++k) {
+          sum += r[k + n * i] * qt[k + n * j];
+        }
+        sum *= rscale;
+        for (unsigned k = i; k < n; k++) {
+          qt[k + n * j] += r[k + n * i] * sum;
+        }
+      }
     }
-    // Explicitly form r
-    for (unsigned i=0; i<n; i++)
-    {
-	r[i+n*i] = d[i];
-	for (unsigned k=0; k<i; k++)
-	{
-	    r[i+n*k] = 0;
-	}
+  }
+  // Explicitly form r
+  for (unsigned i = 0; i < n; i++) {
+    r[i + n * i] = d[i];
+    for (unsigned k = 0; k < i; k++) {
+      r[i + n * k] = 0;
     }
-    
-    Ensure(r.size()==n*n);
-    Ensure(qt.size()==r.size());
+  }
+
+  Ensure(r.size() == n * n);
+  Ensure(qt.size() == r.size());
 }
 
 } // end namespace rtt_linear

@@ -10,18 +10,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <cstdlib>
-#include <cmath>
-#include <iostream>
-#include <gsl/gsl_sf_legendre.h>
-#include <gsl/gsl_sf_gamma.h>
+#include "Ylm.hh"
+#include "Factorial.hh"
 #include "ds++/Assert.hh"
 #include "units/PhysicalConstants.hh"
-#include "Factorial.hh"
-#include "Ylm.hh"
+#include <cmath>
+#include <cstdlib>
+#include <gsl/gsl_sf_gamma.h>
+#include <gsl/gsl_sf_legendre.h>
+#include <iostream>
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 using rtt_units::PI;
 
 //---------------------------------------------------------------------------//
@@ -52,17 +51,16 @@ using rtt_units::PI;
  * \pre \f$ l \ge k \f$
  * \pre \f$ \mu \in [-1, 1] \f$
  */
-double cPlk( unsigned const l, unsigned const k, double const mu )
-{
-    Require(k<=l);
-    Require(mu>=-1.0);
-    Require(mu<=1.0);
+double cPlk(unsigned const l, unsigned const k, double const mu) {
+  Require(k <= l);
+  Require(mu >= -1.0);
+  Require(mu <= 1.0);
 
-    // This routine computes the normalized associated legendre polynomial
-    // \f$ \sqrt{(2l+1)/(4\pi)} \sqrt{(l-m)!/(l+m)!} P_l^m(x) \f$ suitable 
-    // for use in spherical harmonics.
+  // This routine computes the normalized associated legendre polynomial
+  // \f$ \sqrt{(2l+1)/(4\pi)} \sqrt{(l-m)!/(l+m)!} P_l^m(x) \f$ suitable
+  // for use in spherical harmonics.
 
-    return gsl_sf_legendre_sphPlm( l, k, mu );
+  return gsl_sf_legendre_sphPlm(l, k, mu);
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -96,20 +94,19 @@ double cPlk( unsigned const l, unsigned const k, double const mu )
  * \pre \f$ k \ge 0 \f$
  * \pre \f$ \mu \in [-1, 1] \f$
  */
-double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
-    double const sumwt )
-{
-    using std::sqrt;
-    
-    Require(k<=l);
-    Require(mu>=-1.0);
-    Require(mu<=1.0);
+double cPlkGalerkin(unsigned const l, unsigned const k, double const mu,
+                    double const sumwt) {
+  using std::sqrt;
 
-    double coeff( (2*l+1)/sumwt );
-    coeff *= sqrt(1.0*factorial_fraction(l-k,l+k)); // ff = (l-k)! / (l+k)!
-    coeff *= gsl_sf_legendre_Plm( l, k, mu );
-    
-    return coeff;
+  Require(k <= l);
+  Require(mu >= -1.0);
+  Require(mu <= 1.0);
+
+  double coeff((2 * l + 1) / sumwt);
+  coeff *= sqrt(1.0 * factorial_fraction(l - k, l + k)); // ff = (l-k)! / (l+k)!
+  coeff *= gsl_sf_legendre_Plm(l, k, mu);
+
+  return coeff;
 }
 //---------------------------------------------------------------------------//
 /*!\brief Compute the normalized spherical harmonic \f$ y_{l,k}(\theta,\phi)
@@ -144,30 +141,29 @@ double cPlkGalerkin( unsigned const l, unsigned const k, double const mu,
  *  quadrature.  This adjustment will need to be done if the quadrature
  *  packages uses Ylm.
  */
-double normalizedYlk( unsigned const l,     int    const k,
-                      double   const theta, double const phi )
-{
-    int    const absk( std::abs( k)      );
-    double const mu  ( std::cos(theta)  );
+double normalizedYlk(unsigned const l, int const k, double const theta,
+                     double const phi) {
+  int const absk(std::abs(k));
+  double const mu(std::cos(theta));
 
-    // The constant and the Associated Legendre Polynomial.
-    double const cP( cPlk( l, absk, mu ) );
+  // The constant and the Associated Legendre Polynomial.
+  double const cP(cPlk(l, absk, mu));
 
-    // for k>0 and odd, the sign will be negative.
-    double sign( std::pow(-1.0,absk) );
-    
-    // As noted on the \ref special_functions_overview for this package, we
-    // are interested in the real portion of the spherical harmonics function.
+  // for k>0 and odd, the sign will be negative.
+  double sign(std::pow(-1.0, absk));
 
-    double result(-9999.0);
-    
-    if( k > 0 )
-        result = cP * std::sqrt(2.0) * std::sin( k * phi );
-    else if ( k == 0 )
-        result = cP;
-    else /* if k<0 */
-        result = sign * cP * std::sqrt(2.0) * std::cos( absk * phi );
-    return result;
+  // As noted on the \ref special_functions_overview for this package, we
+  // are interested in the real portion of the spherical harmonics function.
+
+  double result(-9999.0);
+
+  if (k > 0)
+    result = cP * std::sqrt(2.0) * std::sin(k * phi);
+  else if (k == 0)
+    result = cP;
+  else /* if k<0 */
+    result = sign * cP * std::sqrt(2.0) * std::cos(absk * phi);
+  return result;
 }
 
 //---------------------------------------------------------------------------//
@@ -202,24 +198,23 @@ double normalizedYlk( unsigned const l,     int    const k,
  *  quadrature.  This adjustment will need to be done if the quadrature
  *  packages uses Ylm.
  */
-double realYlk( unsigned const l, int const k,
-                double const theta, double const phi )
-{
-    int    const absk( std::abs( k)     );
-    double const mu  ( std::cos(theta) );
-    double sign( 1.0 );
-    
-    // The constant and the Associated Legendre Polynomial.
-    double const cP( cPlk( l, absk, mu ) );
+double realYlk(unsigned const l, int const k, double const theta,
+               double const phi) {
+  int const absk(std::abs(k));
+  double const mu(std::cos(theta));
+  double sign(1.0);
 
-    // Adjust the sign.
-    if( k < 0 )
-        sign=std::pow( -1.0, absk );
+  // The constant and the Associated Legendre Polynomial.
+  double const cP(cPlk(l, absk, mu));
 
-    // As noted on the \ref special_functions_overview for this package, we
-    // are interested in the real portion of the spherical harmonics function.
+  // Adjust the sign.
+  if (k < 0)
+    sign = std::pow(-1.0, absk);
 
-    return sign * cP * std::cos( absk * phi );
+  // As noted on the \ref special_functions_overview for this package, we
+  // are interested in the real portion of the spherical harmonics function.
+
+  return sign * cP * std::cos(absk * phi);
 }
 
 //---------------------------------------------------------------------------//
@@ -249,21 +244,20 @@ double realYlk( unsigned const l, int const k,
  *  quadrature.  This adjustment will need to be done if the quadrature
  *  packages uses Ylm.
  */
-double complexYlk( unsigned const l, int const k,
-                   double const theta, double const phi )
-{
-    int    const absk( std::abs( k)     );
-    double const mu  ( std::cos(theta) );
-    double sign( 1.0 );
-    
-    // The constant and the Associated Legendre Polynomial.
-    double const cP( cPlk( l, absk, mu ) );
+double complexYlk(unsigned const l, int const k, double const theta,
+                  double const phi) {
+  int const absk(std::abs(k));
+  double const mu(std::cos(theta));
+  double sign(1.0);
 
-    // Adjust the sign.
-    if( k < 0 )
-        sign=std::pow( -1.0, absk );
+  // The constant and the Associated Legendre Polynomial.
+  double const cP(cPlk(l, absk, mu));
 
-    return sign * cP * std::sin( absk * phi );
+  // Adjust the sign.
+  if (k < 0)
+    sign = std::pow(-1.0, absk);
+
+  return sign * cP * std::sin(absk * phi);
 }
 
 //---------------------------------------------------------------------------//
@@ -305,55 +299,44 @@ Please see the reference for a full description.
  * \pre \f$ \theta \in [0,\pi] \f$
  * \pre \f$ \phi \in [0, 2\pi] \f$
  */
-double galerkinYlk( unsigned const l,
-                    int      const k,
-                    double   const mu,
-                    double   const phi,
-                    double   const sumwt )
-{
-    int const absk( std::abs( k) );
-    
-    // The constant and the Associated Legendre Polynomial.
-    double Ylk( cPlkGalerkin( l, absk, mu, sumwt ) );
+double galerkinYlk(unsigned const l, int const k, double const mu,
+                   double const phi, double const sumwt) {
+  int const absk(std::abs(k));
 
-    // Adjust the sign.
-    if( k < 0 )
-    {
-//        Ylk*=std::pow( -1.0, absk );
-        Ylk*=std::sqrt(2.0)*std::sin(absk*phi);
-    }
-    else if( k > 0 )
-        Ylk*=std::sqrt(2.0)*std::cos(absk*phi);
+  // The constant and the Associated Legendre Polynomial.
+  double Ylk(cPlkGalerkin(l, absk, mu, sumwt));
 
-    return Ylk;
+  // Adjust the sign.
+  if (k < 0) {
+    //        Ylk*=std::pow( -1.0, absk );
+    Ylk *= std::sqrt(2.0) * std::sin(absk * phi);
+  } else if (k > 0)
+    Ylk *= std::sqrt(2.0) * std::cos(absk * phi);
+
+  return Ylk;
 }
 
 //---------------------------------------------------------------------------------------//
-double Ylm( unsigned const l,
-            int      const m,
-            double   const mu,
-            double   const phi,
-            double   const sumwt )
-{
-    int const absm( std::abs( m) );
-    
-    // The constant and the Associated Legendre Polynomial.
+double Ylm(unsigned const l, int const m, double const mu, double const phi,
+           double const sumwt) {
+  int const absm(std::abs(m));
 
-    double const alpha = (2.0*l + 1.0) * (gsl_sf_fact(l-absm)/gsl_sf_fact(l+absm)) * (m != 0 ? 2.0 : 1.0) / sumwt;
+  // The constant and the Associated Legendre Polynomial.
 
-    double ylm =  sqrt(alpha) * gsl_sf_legendre_Plm( l, absm, mu );
+  double const alpha = (2.0 * l + 1.0) *
+                       (gsl_sf_fact(l - absm) / gsl_sf_fact(l + absm)) *
+                       (m != 0 ? 2.0 : 1.0) / sumwt;
 
-    // Adjust 
-    if( m < 0 )
-    {
-        ylm *= std::sin(absm*phi);
-    }
-    else if( m > 0 )
-    {
-        ylm *= std::cos(absm*phi);
-    }
+  double ylm = sqrt(alpha) * gsl_sf_legendre_Plm(l, absm, mu);
 
-    return ylm;
+  // Adjust
+  if (m < 0) {
+    ylm *= std::sin(absm * phi);
+  } else if (m > 0) {
+    ylm *= std::cos(absm * phi);
+  }
+
+  return ylm;
 }
 
 } // end namespace rtt_sf

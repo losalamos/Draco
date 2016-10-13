@@ -20,7 +20,7 @@
 #define rtt_c4_global_hh
 
 // C4 Message Passing Functions
-#include "C4_Functions.hh" 
+#include "C4_Functions.hh"
 
 //---------------------------------------------------------------------------//
 // Include the appropriate header for an underlying message passing

@@ -38,30 +38,26 @@ bool rtt_shared_lib::Shared_Lib::is_supported() { return false; }
 
 static const int RTLD_LAZY = 1; // or whatever.
 
-void *dlopen(const char */*filename*/, int /*flag*/)
-{
-    Insist(0, "Serious Shared_Lib error.");
-    void *dummy(0);
-    return dummy;
+void *dlopen(const char * /*filename*/, int /*flag*/) {
+  Insist(0, "Serious Shared_Lib error.");
+  void *dummy(0);
+  return dummy;
 }
 
-const char *dlerror(void)
-{
-    Insist(0, "Serious Shared_Lib error.");
-    return "dummy";
+const char *dlerror(void) {
+  Insist(0, "Serious Shared_Lib error.");
+  return "dummy";
 }
 
-void *dlsym(void */*handle*/, const char */*symbol*/)
-{
-    Insist(0, "Serious Shared_Lib error.");
-    void *dummy(0);
-    return dummy;
+void *dlsym(void * /*handle*/, const char * /*symbol*/) {
+  Insist(0, "Serious Shared_Lib error.");
+  void *dummy(0);
+  return dummy;
 }
 
-int dlclose(void */*handle*/)
-{
-    Insist(0, "Serious Shared_Lib error.");
-    return 1;
+int dlclose(void * /*handle*/) {
+  Insist(0, "Serious Shared_Lib error.");
+  return 1;
 }
 
 #endif // USE_DLOPEN

@@ -17,50 +17,45 @@
 #include "cdi_analytic/Analytic_Models.hh"
 #include "ds++/Packing_Utils.hh"
 
-namespace rtt_cdi_analytic_test
-{
+namespace rtt_cdi_analytic_test {
 
 //===========================================================================//
 // USER-DEFINED ANALYTIC_OPACITY_MODEL
 //===========================================================================//
 
-class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model
-{
-  private:
-    double a;
+class Marshak_Model : public rtt_cdi_analytic::Analytic_Opacity_Model {
+private:
+  double a;
 
-  public:
-    Marshak_Model(double a_) : a(a_) {/*...*/}
+public:
+  Marshak_Model(double a_) : a(a_) { /*...*/
+  }
 
-    double calculate_opacity(double T, double /*rho*/) const
-    {
-	return a / (T * T * T);
-    }
+  double calculate_opacity(double T, double /*rho*/) const {
+    return a / (T * T * T);
+  }
 
-    double calculate_opacity(double T, double rho, double /*nu*/) const
-    {
-        return calculate_opacity(T, rho);
-    }
+  double calculate_opacity(double T, double rho, double /*nu*/) const {
+    return calculate_opacity(T, rho);
+  }
 
-    double calculate_opacity(double T, double rho, double /*nu0*/, double /*nu1*/) const
-    {
-        return calculate_opacity(T, rho);
-    }
+  double calculate_opacity(double T, double rho, double /*nu0*/,
+                           double /*nu1*/) const {
+    return calculate_opacity(T, rho);
+  }
 
-    std::vector<double> get_parameters() const
-    {
-	return std::vector<double>(1, a);
-    }
+  std::vector<double> get_parameters() const {
+    return std::vector<double>(1, a);
+  }
 
-    std::vector<char> pack() const
-    {
-	rtt_dsxx::Packer packer;
-	std::vector<char> p(sizeof(double) + sizeof(int));
-	packer.set_buffer(p.size(), &p[0]);
-	int indicator = 10;
-	packer << indicator << a;
-	return p;
-    }
+  std::vector<char> pack() const {
+    rtt_dsxx::Packer packer;
+    std::vector<char> p(sizeof(double) + sizeof(int));
+    packer.set_buffer(p.size(), &p[0]);
+    int indicator = 10;
+    packer << indicator << a;
+    return p;
+  }
 };
 
 } // end namespace rtt_cdi_analytic_test

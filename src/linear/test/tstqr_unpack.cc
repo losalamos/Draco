@@ -10,9 +10,9 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
+#include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/Release.hh"
 #include "linear/qr_unpack.hh"
 #include "linear/qrdcmp.hh"
 
@@ -24,34 +24,34 @@ using namespace rtt_linear;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void tstqr_unpack(UnitTest &ut)
-{
-    vector<double> A(2*2);
-    A[0+2*0] = 2.;
-    A[0+2*1] = 3.;
-    A[1+2*0] = 1.;
-    A[1+2*1] = 5.;
+void tstqr_unpack(UnitTest &ut) {
+  vector<double> A(2 * 2);
+  A[0 + 2 * 0] = 2.;
+  A[0 + 2 * 1] = 3.;
+  A[1 + 2 * 0] = 1.;
+  A[1 + 2 * 1] = 5.;
 
-    vector<double> C, D;
+  vector<double> C, D;
 
-    qrdcmp(A, 2, C, D);
+  qrdcmp(A, 2, C, D);
 
-    vector<double> Qt;
-    vector<double> R = A;
-    qr_unpack(R, 2, C, D, Qt);
+  vector<double> Qt;
+  vector<double> R = A;
+  qr_unpack(R, 2, C, D, Qt);
 
-    if (soft_equiv(R[0+2*0], D[0]))
-	PASSMSG("R[0+2*0] is correct");
-    else
-	FAILMSG("R[0+2*0] is NOT correct");
+  if (soft_equiv(R[0 + 2 * 0], D[0]))
+    PASSMSG("R[0+2*0] is correct");
+  else
+    FAILMSG("R[0+2*0] is NOT correct");
 }
 
 //---------------------------------------------------------------------------//
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut( argc, argv, release );
-    try { tstqr_unpack(ut); }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    tstqr_unpack(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

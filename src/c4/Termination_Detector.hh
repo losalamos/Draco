@@ -15,8 +15,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //===========================================================================//
 /*!
@@ -52,93 +51,73 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Termination_Detector 
-{
-  public:
+class DLL_PUBLIC_c4 Termination_Detector {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  // CREATORS
 
-    // CREATORS
-    
-    //! Constructor
-    explicit Termination_Detector(int tag);
+  //! Constructor
+  explicit Termination_Detector(int tag);
 
-    //! Destructor.
-    ~Termination_Detector();
+  //! Destructor.
+  ~Termination_Detector();
 
-    // MANIPULATORS
+  // MANIPULATORS
 
-    //! Indicate that an indetermine algorithm is starting.
-    void init();
+  //! Indicate that an indetermine algorithm is starting.
+  void init();
 
-    //! Indicate that a certain number of units of work have been performed.
-    void update_work_count(unsigned units_of_work)
-    {
-        work_count_ += units_of_work;
-    }
+  //! Indicate that a certain number of units of work have been performed.
+  void update_work_count(unsigned units_of_work) {
+    work_count_ += units_of_work;
+  }
 
-    //! Indicate that a certain number of messages have been received.
-    void update_receive_count(unsigned messages_received)
-    {
-        receive_count_ += messages_received;
-    }
+  //! Indicate that a certain number of messages have been received.
+  void update_receive_count(unsigned messages_received) {
+    receive_count_ += messages_received;
+  }
 
-    //! Indicate that a certain number of messages have been sent.
-    void update_send_count(unsigned messages_sent)
-    {
-        send_count_ += messages_sent;
-    }
+  //! Indicate that a certain number of messages have been sent.
+  void update_send_count(unsigned messages_sent) {
+    send_count_ += messages_sent;
+  }
 
-    //! See if the algorithm has terminated. 
-    bool is_terminated();
+  //! See if the algorithm has terminated.
+  bool is_terminated();
 
-    // ACCESSORS
+  // ACCESSORS
 
-  private:
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  //! What is the state of this processor?
+  enum State { DOWN, UP, TERMINATED };
 
-    //! What is the state of this processor?
-    enum State
-    {
-        DOWN,
-        UP,
-        TERMINATED
-    };
+  //! What action is the parent of this processor requesting?
+  enum Parent_Action_Request { SEND_DATA, TERMINATE };
 
-    //! What action is the parent of this processor requesting?
-    enum Parent_Action_Request
-    {
-        SEND_DATA,
-        TERMINATE
-    };
+  //! What sort of processor is this?
+  enum Processor_Type { ROOT, LEAF, INTERNAL };
 
-    //! What sort of processor is this?
-    enum Processor_Type
-    {
-        ROOT,
-        LEAF,
-        INTERNAL
-    };
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
+  //! Assignment operator: not implemented.
+  Termination_Detector &operator=(const Termination_Detector &rhs);
+  //! Copy constructor: not implemented.
+  Termination_Detector(const Termination_Detector &rhs);
 
-    //! Assignment operator: not implemented.
-    Termination_Detector& operator=(const Termination_Detector &rhs);
-    //! Copy constructor: not implemented.
-    Termination_Detector(const Termination_Detector &rhs);
+  // DATA
 
-    // DATA
-
-    int tag_;
-    unsigned number_of_processors_;
-    unsigned pid_;
-    unsigned parent_pid_, son_pid_, daughter_pid_;
-    Processor_Type ptype_;
-    State state_;
-    unsigned send_count_, receive_count_, work_count_;
-    unsigned subtree_send_count_, subtree_receive_count_, subtree_work_count_;
-    unsigned old_global_work_count_;
+  int tag_;
+  unsigned number_of_processors_;
+  unsigned pid_;
+  unsigned parent_pid_, son_pid_, daughter_pid_;
+  Processor_Type ptype_;
+  State state_;
+  unsigned send_count_, receive_count_, work_count_;
+  unsigned subtree_send_count_, subtree_receive_count_, subtree_work_count_;
+  unsigned old_global_work_count_;
 };
 
 } // end namespace rtt_c4

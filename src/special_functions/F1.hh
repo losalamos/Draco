@@ -15,8 +15,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 //! Compute the Fermi-Dirac function of index 1.
 DLL_PUBLIC_special_functions double F1(double eta);
 

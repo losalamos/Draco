@@ -14,11 +14,10 @@
 #ifndef __quadrature_Quadrature_hh__
 #define __quadrature_Quadrature_hh__
 
-#include "ds++/SP.hh"
 #include "Ordinate_Space.hh"
+#include "ds++/SP.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 using std::string;
 using std::vector;
 using rtt_dsxx::SP;
@@ -55,128 +54,110 @@ using rtt_mesh_element::Geometry;
  * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
 //=======================================================================================//
-class DLL_PUBLIC_quadrature Quadrature
-{
-  public:
+class DLL_PUBLIC_quadrature Quadrature {
+public:
+  // ENUMERATIONS AND TYPEDEFS
 
-    // ENUMERATIONS AND TYPEDEFS
+  // CREATORS
+  Quadrature(unsigned const sn_order) : sn_order_(sn_order) { /* empty */
+  }
 
-    // CREATORS
-    Quadrature(unsigned const sn_order)
-        : sn_order_(sn_order)
-    {/* empty */}
+  //! Virtual destructor.
+  virtual ~Quadrature() { /* empty */
+  }
 
-    //! Virtual destructor.
-    virtual ~Quadrature() {/* empty */}
+  // ACCESSORS
+  unsigned sn_order() const { return sn_order_; };
 
-    // ACCESSORS
-    unsigned sn_order() const {return sn_order_;};
+  // SERVICES
 
-    // SERVICES
+  //! Returns a string containing the name of the quadrature set.
+  virtual string name() const = 0;
 
-    //! Returns a string containing the name of the quadrature set.
-    virtual string name() const = 0;
+  //! Returns a string containing the input deck name of the set.
+  virtual string parse_name() const = 0;
 
-    //! Returns a string containing the input deck name of the set.
-    virtual string parse_name() const = 0;
+  //! Is this an interval or octant (1-D or multi-D) quadrature?
+  virtual Quadrature_Class quadrature_class() const = 0;
 
-    //! Is this an interval or octant (1-D or multi-D) quadrature?
-    virtual Quadrature_Class quadrature_class() const = 0;
+  //! Number of level sets. A value of 0 indicates this is not a level set quadrature.
+  virtual unsigned number_of_levels() const = 0;
 
-    //! Number of level sets. A value of 0 indicates this is not a level set quadrature.
-    virtual unsigned number_of_levels() const = 0;
+  //! Produce a text representation of the object
+  virtual string as_text(string const &indent) const = 0;
 
-    //! Produce a text representation of the object
-    virtual string as_text(string const &indent) const = 0;
+  //! Are the axes assigned?
+  virtual bool has_axis_assignments() const = 0;
 
-    //! Are the axes assigned?
-    virtual bool has_axis_assignments() const = 0;
+  //! Is the quadrature an open interval quadrature?
+  virtual bool is_open_interval() const;
 
-    //! Is the quadrature an open interval quadrature?
-    virtual bool is_open_interval() const;
+  vector<Ordinate> create_ordinates(unsigned dimension, Geometry, double norm,
+                                    unsigned mu_axis, unsigned eta_axis,
+                                    bool include_starting_directions,
+                                    bool include_extra_directions) const;
 
-    vector<Ordinate> create_ordinates(unsigned dimension,
-                                      Geometry,
-                                      double norm,
-                                      unsigned mu_axis,
-                                      unsigned eta_axis,
-                                      bool include_starting_directions,
-                                      bool include_extra_directions) const;
+  vector<Ordinate> create_ordinates(unsigned dimension, Geometry, double norm,
+                                    bool include_starting_directions,
+                                    bool include_extra_directions) const;
 
-    vector<Ordinate> create_ordinates(unsigned dimension,
-                                      Geometry,
-                                      double norm,
-                                      bool include_starting_directions,
-                                      bool include_extra_directions) const;
+  SP<Ordinate_Set> create_ordinate_set(unsigned dimension, Geometry,
+                                       double norm, unsigned mu_axis,
+                                       unsigned eta_axis,
+                                       bool include_starting_directions,
+                                       bool include_extra_directions,
+                                       Ordinate_Set::Ordering ordering) const;
 
-    SP<Ordinate_Set> create_ordinate_set(unsigned dimension,
-                                         Geometry,
-                                         double norm,
-                                         unsigned mu_axis,
-                                         unsigned eta_axis,
-                                         bool include_starting_directions,
-                                         bool include_extra_directions,
-                                         Ordinate_Set::Ordering ordering) const;
+  SP<Ordinate_Set> create_ordinate_set(unsigned dimension, Geometry,
+                                       double norm,
+                                       bool include_starting_directions,
+                                       bool include_extra_directions,
+                                       Ordinate_Set::Ordering ordering) const;
 
-    SP<Ordinate_Set> create_ordinate_set(unsigned dimension,
-                                         Geometry,
-                                         double norm,
-                                         bool include_starting_directions,
-                                         bool include_extra_directions,
-                                         Ordinate_Set::Ordering ordering) const;
+  SP<Ordinate_Space> create_ordinate_space(unsigned dimension, Geometry,
+                                           int moment_expansion_order,
+                                           bool include_extra_directions,
+                                           Ordinate_Set::Ordering ordering,
+                                           QIM qim) const;
 
-    SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
-                                             Geometry,
-                                             int moment_expansion_order,
-                                             bool include_extra_directions,
-                                             Ordinate_Set::Ordering ordering,
-                                             QIM qim) const;
+  SP<Ordinate_Space> create_ordinate_space(unsigned dimension, Geometry,
+                                           unsigned moment_expansion_order,
+                                           unsigned mu_axis, unsigned eta_axis,
+                                           bool include_extra_directions,
+                                           Ordinate_Set::Ordering ordering,
+                                           QIM qim) const;
 
-    SP<Ordinate_Space> create_ordinate_space(unsigned dimension,
-                                             Geometry,
-                                             unsigned moment_expansion_order,
-                                             unsigned mu_axis,
-                                             unsigned eta_axis,
-                                             bool include_extra_directions,
-                                             Ordinate_Set::Ordering ordering,
-                                             QIM qim) const;
+protected:
+  // IMPLEMENTATION
 
-  protected:
+  void add_1D_starting_directions_(Geometry geometry,
+                                   bool add_starting_directions,
+                                   bool add_extra_starting_directions,
+                                   vector<Ordinate> &) const;
 
-    // IMPLEMENTATION
+  void add_2D_starting_directions_(Geometry geometry,
+                                   bool add_starting_directions,
+                                   bool add_extra_starting_directions,
+                                   vector<Ordinate> &) const;
 
-    void add_1D_starting_directions_(Geometry geometry,
-                                     bool add_starting_directions,
-                                     bool add_extra_starting_directions,
-                                     vector<Ordinate> &) const;
+  void map_axes_(unsigned mu_axis, unsigned eta_axis, vector<double> &mu,
+                 vector<double> &eta, vector<double> &xi) const;
 
-    void add_2D_starting_directions_(Geometry geometry,
-                                     bool add_starting_directions,
-                                     bool add_extra_starting_directions,
-                                     vector<Ordinate> &) const;
+  //! Virtual hook for create_ordinates
+  virtual vector<Ordinate>
+  create_ordinates_(unsigned dimension, Geometry, double norm, unsigned mu_axis,
+                    unsigned eta_axis, bool include_starting_directions,
+                    bool include_extra_directions) const = 0;
 
-    void map_axes_(unsigned mu_axis, unsigned eta_axis,
-                   vector<double> &mu, vector<double> &eta, vector<double> &xi) const;
+  //! Virtual hook for create_ordinates
+  virtual vector<Ordinate>
+  create_ordinates_(unsigned dimension, Geometry, double norm,
+                    bool include_starting_directions,
+                    bool include_extra_directions) const = 0;
 
-    //! Virtual hook for create_ordinates
-    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
-                                               Geometry,
-                                               double norm,
-                                               unsigned mu_axis,
-                                               unsigned eta_axis,
-                                               bool include_starting_directions,
-                                               bool include_extra_directions) const = 0;
+  // data
 
-    //! Virtual hook for create_ordinates
-    virtual vector<Ordinate> create_ordinates_(unsigned dimension,
-                                               Geometry,
-                                               double norm,
-                                               bool include_starting_directions,
-                                               bool include_extra_directions) const = 0;
-
-    // data
-
-    unsigned const sn_order_;
+  unsigned const sn_order_;
 };
 
 } // end namespace rtt_quadrature

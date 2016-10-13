@@ -44,7 +44,7 @@ macro( setupLAPACKLibrariesUnix )
     message( STATUS "Looking for lapack....found ${LAPACK_LIB_DIR}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
-    # The above might define blas, or it might not.  Double check:
+    # The above might define blas, or it might not. Double check:
     if( NOT TARGET blas )
       find_package( BLAS )
       if( BLAS_FOUND )
@@ -152,6 +152,31 @@ macro( setupLAPACKLibrariesUnix )
         message(STATUS "Looking for lapack(OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
       else()
         message(STATUS "Looking for lapack(OpenBLAS)...NOTFOUND")
+      endif()
+
+  endif()
+
+  # If the above searches for LAPACK failed, then try to find netlib-lapack and
+  # netlib-blas on the local system (without the cmake config files).
+
+  if( NOT lapack_FOUND )
+      message( STATUS "Looking for lapack (no cmake config files)...")
+      find_package( BLAS QUIET )
+
+      if( BLAS_FOUND )
+        find_package( LAPACK QUIET)
+        set( lapack_FOUND TRUE )
+        add_library( lapack SHARED IMPORTED)
+        add_library( blas   SHARED IMPORTED)
+        set_target_properties( blas PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_blas_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        set_target_properties( lapack PROPERTIES
+          IMPORTED_LOCATION                 "${LAPACK_lapack_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        message(STATUS "Looking for lapack(no cmake config)...found ${LAPACK_lapack_LIBRARY}")
+      else()
+        message(STATUS "Looking for lapack(no cmake config)...NOTFOUND")
       endif()
 
   endif()

@@ -16,9 +16,8 @@
 
 #include "c4_mpi.h"
 
-namespace rtt_c4
-{
- 
+namespace rtt_c4 {
+
 //===========================================================================//
 /*!
  * \struct MPI_Traits
@@ -34,91 +33,62 @@ namespace rtt_c4
  */
 //===========================================================================//
 
-template<class T>
-struct MPI_Traits 
-{
-};
+template <class T> struct MPI_Traits {};
 
 //---------------------------------------------------------------------------//
 // SPECIALIZATIONS OF MPI_Traits FOR DIFFERENT TYPES
 //---------------------------------------------------------------------------//
 
-template<>
-struct MPI_Traits<char>
-{
-    static MPI_Datatype element_type() { return MPI_CHAR; }
+template <> struct MPI_Traits<char> {
+  static MPI_Datatype element_type() { return MPI_CHAR; }
 };
 
-template<>
-struct MPI_Traits<unsigned char>
-{
-    static MPI_Datatype element_type() { return MPI_UNSIGNED_CHAR; }
+template <> struct MPI_Traits<unsigned char> {
+  static MPI_Datatype element_type() { return MPI_UNSIGNED_CHAR; }
 };
 
-template<>
-struct MPI_Traits<short>
-{
-    static MPI_Datatype element_type() { return MPI_SHORT; }
+template <> struct MPI_Traits<short> {
+  static MPI_Datatype element_type() { return MPI_SHORT; }
 };
 
-template<>
-struct MPI_Traits<unsigned short>
-{
-    static MPI_Datatype element_type() { return MPI_UNSIGNED_SHORT; }
+template <> struct MPI_Traits<unsigned short> {
+  static MPI_Datatype element_type() { return MPI_UNSIGNED_SHORT; }
 };
 
-template<>
-struct MPI_Traits<int>
-{
-    static MPI_Datatype element_type() { return MPI_INT; }
+template <> struct MPI_Traits<int> {
+  static MPI_Datatype element_type() { return MPI_INT; }
 };
 
-template<>
-struct MPI_Traits<unsigned int>
-{
-    static MPI_Datatype element_type() { return MPI_UNSIGNED; }
+template <> struct MPI_Traits<unsigned int> {
+  static MPI_Datatype element_type() { return MPI_UNSIGNED; }
 };
 
-template<>
-struct MPI_Traits<long>
-{
-    static MPI_Datatype element_type() { return MPI_LONG; }
-};
-    
-template<>
-struct MPI_Traits<long long>
-{
-    static MPI_Datatype element_type() { return MPI_LONG_LONG; }
+template <> struct MPI_Traits<long> {
+  static MPI_Datatype element_type() { return MPI_LONG; }
 };
 
-template<>
-struct MPI_Traits<unsigned long>
-{
-    static MPI_Datatype element_type() { return MPI_UNSIGNED_LONG; }
+template <> struct MPI_Traits<long long> {
+  static MPI_Datatype element_type() { return MPI_LONG_LONG; }
 };
 
-template<>
-struct MPI_Traits<unsigned long long>
-{
-    static MPI_Datatype element_type() { return MPI_UNSIGNED_LONG_LONG; }
-};
-    
-template<>
-struct MPI_Traits<float>
-{
-    static MPI_Datatype element_type() { return MPI_FLOAT; }
+template <> struct MPI_Traits<unsigned long> {
+  static MPI_Datatype element_type() { return MPI_UNSIGNED_LONG; }
 };
 
-template<>
-struct MPI_Traits<double>
-{
-    static MPI_Datatype element_type() { return MPI_DOUBLE; }
+template <> struct MPI_Traits<unsigned long long> {
+  static MPI_Datatype element_type() { return MPI_UNSIGNED_LONG_LONG; }
 };
 
-template<>
-struct MPI_Traits<long double>
-{
-    static MPI_Datatype element_type() { return MPI_LONG_DOUBLE; }
+template <> struct MPI_Traits<float> {
+  static MPI_Datatype element_type() { return MPI_FLOAT; }
+};
+
+template <> struct MPI_Traits<double> {
+  static MPI_Datatype element_type() { return MPI_DOUBLE; }
+};
+
+template <> struct MPI_Traits<long double> {
+  static MPI_Datatype element_type() { return MPI_LONG_DOUBLE; }
 };
 
 } // end namespace rtt_c4

@@ -9,10 +9,10 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include "c4/global.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "roots/quadratic.hh"
 
 using namespace std;
@@ -23,28 +23,26 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut( argc, argv, release );
-    try
-    {
-        double r1, r2;
-        quadratic(2.0, -2.0, -12.0, r1, r2);
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    double r1, r2;
+    quadratic(2.0, -2.0, -12.0, r1, r2);
 
-        if (r1>r2)
-            swap(r1, r2);
+    if (r1 > r2)
+      swap(r1, r2);
 
-	if (soft_equiv(r1, -2.0))
-	    PASSMSG("quadratic solve returned correct first root");
-	else
-	    FAILMSG("quadratic solve returned INCORRECT first root");
+    if (soft_equiv(r1, -2.0))
+      PASSMSG("quadratic solve returned correct first root");
+    else
+      FAILMSG("quadratic solve returned INCORRECT first root");
 
-	if (soft_equiv(r2, 3.0))
-	    PASSMSG("quadratic solve returned correct second root");
-	else
-	    FAILMSG("quadratic solve returned INCORRECT second root");
-    }
-    UT_EPILOG(ut);
+    if (soft_equiv(r2, 3.0))
+      PASSMSG("quadratic solve returned correct second root");
+    else
+      FAILMSG("quadratic solve returned INCORRECT second root");
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

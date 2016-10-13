@@ -29,20 +29,26 @@ if( METIS_FOUND )
     )
 endif()
 
-if( ParMETIS_FOUND )
-add_parallel_tests(
-   SOURCES "tstParmetis.cc"
-   DEPS    "Lib_c4;ParMETIS::parmetis"
-   PE_LIST "3"
-   )
-endif()
+# Only run these tests if MPI is found and enabled. Both parmetis and
+# superlu-dist require MPI.
+if( ${DRACO_C4} STREQUAL "MPI" )
 
-if( SuperLU_DIST_FOUND )
-  add_parallel_tests(
-    SOURCES "tstSuperludist.cc"
-    DEPS    "Lib_c4;SuperLU_DIST::superludist;ParMETIS::parmetis;lapack"
-    PE_LIST "4"
-    )
+  if( ParMETIS_FOUND )
+    add_parallel_tests(
+      SOURCES "tstParmetis.cc"
+      DEPS    "Lib_c4;ParMETIS::parmetis"
+      PE_LIST "3"
+      )
+  endif()
+
+  if( SuperLU_DIST_FOUND )
+    add_parallel_tests(
+      SOURCES "tstSuperludist.cc"
+      DEPS    "Lib_c4;SuperLU_DIST::superludist;ParMETIS::parmetis;lapack"
+      PE_LIST "4"
+      )
+  endif()
+
 endif()
 
 # ---------------------------------------------------------------------------- #

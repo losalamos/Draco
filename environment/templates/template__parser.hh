@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*---------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   <pkg>/<class>__parser.hh
  * \author <user>
@@ -6,75 +6,67 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//--------------------------------------------------------------------------------------//
-// $Id: template.hh 7862 2016-02-03 16:03:54Z kellyt $
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef <spkg>_<class>__parser_hh
 #define <spkg>_<class>__parser_hh
 
-#include "parser/Class_Parse_Table.hh"
 #include "<class>.hh"
+#include "parser/Class_Parse_Table.hh"
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using <namespace>::<class>;
 
-//=======================================================================================//
-template<>
-class Class_Parse_Table<<class>>
-{
-  public:
+//============================================================================//
+template <> class Class_Parse_Table <<class>> {
+public:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // NESTED CLASSES AND TYPEDEFS
+  typedef <class> Return_Class;
 
-    typedef <class> Return_Class;
+  // CREATORS
 
-    // CREATORS
+  //! Default constructors.
+  Class_Parse_Table();
 
-    //! Default constructors.
-    Class_Parse_Table();
+  // MANIPULATORS
 
-    // MANIPULATORS
+  // ACCESSORS
 
-    // ACCESSORS
+  // SERVICES
 
-    // SERVICES
+  bool allow_exit() const { return true; }
 
-    bool allow_exit() const { return true; }
+  void check_completeness(Token_Stream & tokens);
 
-    void check_completeness(Token_Stream &tokens);
+  SP <<class>> create_object();
 
-    SP<<class>> create_object();
+  // STATICS
 
-    // STATICS
+  static Parse_Table const &parse_table() { return parse_table_; }
 
-    static Parse_Table const &parse_table() { return parse_table_; }
+protected:
+  // DATA
 
-  protected:
+  // STATIC
 
-    // DATA
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-    // STATIC
+  // IMPLEMENTATION
 
-  private:
+  // DATA
 
-    // NESTED CLASSES AND TYPEDEFS
+  // STATIC
 
-    // IMPLEMENTATION
-
-    // DATA
-
-    // STATIC
-
-    static Class_Parse_Table *current_;
-    static Parse_Table parse_table_;
+  static Class_Parse_Table *current_;
+  static Parse_Table parse_table_;
 };
 
 } // end namespace rtt_parser
 
 #endif // <spkg>_<class>__parser_hh
 
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of <pkg>/<class>__parser.hh
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -1,0 +1,13 @@
+* Purpose of Pull Request
+  * detail 1, refs #2 (redmine number)
+  * detail 2
+  * Fixes #3 (redmine number)
+  
+* [Pre-Merge Code Review](https://github.com/losalamos/Draco/wiki/Style-Guide)
+  * [ ] Travis CI checks pass
+  * [ ] Code coverage does not decrease
+  * [ ] Valgrind test passes
+  * [ ] Toss2 checks pass
+  * [ ] Trinitite checks pass
+  * [ ] Code reviewed/approved, sufficient DbC checks, testing, documentation
+  

@@ -14,8 +14,7 @@
 #include "Index_Proc.hh"
 #include "c4/C4_Functions.hh"
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -23,19 +22,15 @@ namespace rtt_norms
 */
 //---------------------------------------------------------------------------//
 Index_Proc::Index_Proc(const size_t index_)
-    : index(index_)
-    , processor(rtt_c4::node())
-{
-}
+    : index(index_), processor(rtt_c4::node()) {}
 
 //---------------------------------------------------------------------------//
 /*!
   \brief Equality operator.
 */
 //---------------------------------------------------------------------------//
-bool Index_Proc::operator==(const Index_Proc &rhs) const
-{
-    return (index == rhs.index) && (processor == rhs.processor);
+bool Index_Proc::operator==(const Index_Proc &rhs) const {
+  return (index == rhs.index) && (processor == rhs.processor);
 }
 
 } // end namespace rtt_norms

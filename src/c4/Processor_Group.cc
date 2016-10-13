@@ -20,8 +20,7 @@
 #include "Processor_Group.hh"
 #include "ds++/Assert.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 using namespace std;
 
 //--------------------------------------------------------------------------//
@@ -35,50 +34,40 @@ using namespace std;
  * group.
  */
 Processor_Group::Processor_Group(unsigned const stride)
-    : size_(0),
-      group_(),
-      comm_()
-{
-    int flag;
-    MPI_Initialized(&flag);
-    Insist(flag, "Processor_Group created before MPI is initialized");
+    : size_(0), group_(), comm_() {
+  int flag;
+  MPI_Initialized(&flag);
+  Insist(flag, "Processor_Group created before MPI is initialized");
 
-    unsigned const number_of_processors = rtt_c4::nodes();
-    unsigned const pid = rtt_c4::node();
-    
-    MPI_Group parent_group;
-    flag = MPI_Comm_group(MPI_COMM_WORLD, &parent_group);
+  unsigned const number_of_processors = rtt_c4::nodes();
+  unsigned const pid = rtt_c4::node();
 
-    vector<int> ranks;
-    for (unsigned i=0; i<number_of_processors; ++i)
-    {
-        if (i%stride == pid%stride)
-        {
-            ranks.push_back(i);
-        }
+  MPI_Group parent_group;
+  flag = MPI_Comm_group(MPI_COMM_WORLD, &parent_group);
+
+  vector<int> ranks;
+  for (unsigned i = 0; i < number_of_processors; ++i) {
+    if (i % stride == pid % stride) {
+      ranks.push_back(i);
     }
-    size_ = ranks.size();
-    flag = MPI_Group_incl(parent_group,
-                          size_,
-                          &ranks[0],
-                          &group_);
+  }
+  size_ = ranks.size();
+  flag = MPI_Group_incl(parent_group, size_, &ranks[0], &group_);
 
-    flag = MPI_Comm_create(MPI_COMM_WORLD, group_, &comm_);
+  flag = MPI_Comm_create(MPI_COMM_WORLD, group_, &comm_);
 
-    Ensure(check_class_invariants());
+  Ensure(check_class_invariants());
 }
 
 //---------------------------------------------------------------------------//
-Processor_Group::~Processor_Group()
-{
-    int flag;
-    MPI_Finalized(&flag);
-    if (!flag)
-    {
-        MPI_Comm_free(&comm_);
-        MPI_Group_free(&group_);
-    }
-    Ensure(check_class_invariants());
+Processor_Group::~Processor_Group() {
+  int flag;
+  MPI_Finalized(&flag);
+  if (!flag) {
+    MPI_Comm_free(&comm_);
+    MPI_Group_free(&group_);
+  }
+  Ensure(check_class_invariants());
 }
 
 } // end namespace rtt_c4

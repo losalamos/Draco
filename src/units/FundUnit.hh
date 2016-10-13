@@ -15,8 +15,7 @@
 
 #include "UnitSystemEnums.hh"
 
-namespace rtt_units
-{
+namespace rtt_units {
 
 //============================================================================//
 /*!
@@ -27,46 +26,43 @@ namespace rtt_units
  */
 //============================================================================//
 
-template< typename F >       // T is one of { Ltype, Mtype, etc. }
-class DLL_PUBLIC_units FundUnit    // Length, Mass, time, etc...
+template <typename F>           // T is one of { Ltype, Mtype, etc. }
+class DLL_PUBLIC_units FundUnit // Length, Mass, time, etc...
 {
-  public:
-    //! default constructor
-    FundUnit( F const enumVal, double const * cf, std::string const & labels )
-	: d_definingEnum( enumVal ),
-	  d_cf(           cf[ d_definingEnum ]),
-	  d_label( setUnitLabel( d_definingEnum, labels ) )
-    { /* empty */ }
+public:
+  //! default constructor
+  FundUnit(F const enumVal, double const *cf, std::string const &labels)
+      : d_definingEnum(enumVal), d_cf(cf[d_definingEnum]),
+        d_label(setUnitLabel(d_definingEnum, labels)) { /* empty */
+  }
 
-    //! copy constructor
-    FundUnit( FundUnit<F> const & rhs )
-	: d_definingEnum( rhs.enumVal() ),
-	  d_cf( rhs.cf() ),
-	  d_label( rhs.label() )
-    { /* empty */ }
+  //! copy constructor
+  FundUnit(FundUnit<F> const &rhs)
+      : d_definingEnum(rhs.enumVal()), d_cf(rhs.cf()),
+        d_label(rhs.label()) { /* empty */
+  }
 
-    // ACCESSORS
+  // ACCESSORS
 
-    //! return defining enumeration as specified in units/UnitSystemEnums.hh
-    F      enumVal() const { return d_definingEnum; }
-    //! return conversion factor.
-    //! Multiply by this number to get a value in SI units.
-    double cf()      const { return d_cf; }
-    //! return unit label (e.g.: cm or keV)
-    std::string label()   const { return d_label; }
+  //! return defining enumeration as specified in units/UnitSystemEnums.hh
+  F enumVal() const { return d_definingEnum; }
+  //! return conversion factor.
+  //! Multiply by this number to get a value in SI units.
+  double cf() const { return d_cf; }
+  //! return unit label (e.g.: cm or keV)
+  std::string label() const { return d_label; }
 
-  private:
+private:
+  // DATA
 
-    // DATA
-
-    F      d_definingEnum;
-    double d_cf;
-    std::string d_label;
+  F d_definingEnum;
+  double d_cf;
+  std::string d_label;
 };
 
 } // end namespace rtt_units
 
-#endif  // __units_FundUnit_hh__
+#endif // __units_FundUnit_hh__
 
 //---------------------------------------------------------------------------//
 // end of FundUnit.hh

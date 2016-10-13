@@ -17,8 +17,7 @@
 #include "ds++/SP.hh"
 #include <iostream>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using std::string;
 using std::vector;
 using rtt_dsxx::SP;
@@ -32,27 +31,25 @@ using rtt_dsxx::SP;
  * allowing all such parsers to share the same keyword table and ensuring that
  * the keyword table is properly cleaned up when the program terminates.
  */
-class DLL_PUBLIC_parser Abstract_Class_Parser_Base
-{
-  protected:
+class DLL_PUBLIC_parser Abstract_Class_Parser_Base {
+protected:
+  // TYPES
 
-    // TYPES
+  class DLL_PUBLIC_parser c_string_vector {
+  public:
+    ~c_string_vector();
+    c_string_vector(void) : data(0) { /* empty */
+    }
+    vector<char *> data;
+  };
 
-    class DLL_PUBLIC_parser c_string_vector
-    {
-      public:
-        ~c_string_vector();
-        c_string_vector(void) : data(0) {/* empty */}
-        vector<char *> data;
-    };
+  // provide a virtual destrcutor for the base class.
+  virtual ~Abstract_Class_Parser_Base(){/* empty */};
 
-    // provide a virtual destrcutor for the base class.
-    virtual ~Abstract_Class_Parser_Base() {/* empty */};
+  // DATA
 
-    // DATA
-
-    //! Keywords
-    static c_string_vector keys_;
+  //! Keywords
+  static c_string_vector keys_;
 };
 
 //===========================================================================//
@@ -97,36 +94,33 @@ class DLL_PUBLIC_parser Abstract_Class_Parser_Base
  * specifying a child class.
  */
 //===========================================================================//
-template< typename Abstract_Class,
-          Parse_Table &get_parse_table(),
-          SP<Abstract_Class> &get_parsed_object() >
-class Abstract_Class_Parser : private Abstract_Class_Parser_Base
-{
-  public:
+template <typename Abstract_Class, Parse_Table &get_parse_table(),
+          SP<Abstract_Class> &get_parsed_object()>
+class Abstract_Class_Parser : private Abstract_Class_Parser_Base {
+public:
+  // TYPES
 
-    // TYPES
+  typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
 
-    typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
+  // STATIC members
 
-    // STATIC members
+  //! Register children of the abstract class
+  static void register_child(string const &keyword,
+                             Parse_Function *parse_function);
 
-    //! Register children of the abstract class
-    static void register_child( string const &keyword, Parse_Function * parse_function );
+  //! Check the class invariants
+  static bool check_static_class_invariants();
 
-    //! Check the class invariants
-    static bool check_static_class_invariants();
+private:
+  // IMPLEMENTATION
 
-  private:
+  //! Parse the child type
+  static void parse_child_(Token_Stream &, int);
 
-    // IMPLEMENTATION
+  // DATA
 
-    //! Parse the child type
-    static void parse_child_(Token_Stream &, int);
-
-    // DATA
-
-    //! Map of child keywords to child creation functions
-    static vector<Parse_Function*> map_;
+  //! Map of child keywords to child creation functions
+  static vector<Parse_Function *> map_;
 };
 
 #include "Abstract_Class_Parser.i.hh"

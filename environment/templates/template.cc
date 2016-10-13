@@ -8,13 +8,10 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "<basename>.hh"
 
-namespace <namespace>
-{
+namespace <namespace> {
 
 } // end namespace <namespace>
 

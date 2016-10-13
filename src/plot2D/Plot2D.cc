@@ -13,18 +13,17 @@
 
 #include "Plot2D.hh"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cmath>
 #include <cctype>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 #include "plot2D_grace.h"
 
-namespace rtt_plot2D
-{
+namespace rtt_plot2D {
 
 //---------------------------------------------------------------------------//
 /*!
@@ -53,24 +52,17 @@ namespace rtt_plot2D
   \brief Constructor that calls open(); see open() for arguments.
 */
 //---------------------------------------------------------------------------//
-Plot2D::Plot2D(const int numGraphs,
-               const std::string &paramFile,
+Plot2D::Plot2D(const int numGraphs, const std::string &paramFile,
                const bool batch)
-    : d_autoscale(0),
-      d_numGraphs( numGraphs ),
-      d_numRows(0),
-      d_numCols(0),
-      d_batch( batch ),
-      d_graceVersion(),
-      d_numSets( std::vector<int>() ),
-      d_setsBeenRead( std::vector<bool>() )
-{
-    // is_supported must be checked for all constructors.
-    Insist(is_supported(), "Plot2D unsupported on this platform!");
+    : d_autoscale(0), d_numGraphs(numGraphs), d_numRows(0), d_numCols(0),
+      d_batch(batch), d_graceVersion(), d_numSets(std::vector<int>()),
+      d_setsBeenRead(std::vector<bool>()) {
+  // is_supported must be checked for all constructors.
+  Insist(is_supported(), "Plot2D unsupported on this platform!");
 
-    d_graceVersion = graceVersion();
+  d_graceVersion = graceVersion();
 
-    open(numGraphs, paramFile, batch);
+  open(numGraphs, paramFile, batch);
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -79,11 +71,7 @@ Plot2D::Plot2D(const int numGraphs,
   Closes the communication pipe if it is open.
 */
 //---------------------------------------------------------------------------//
-Plot2D::
-~Plot2D()
-{
-    close();
-}
+Plot2D::~Plot2D() { close(); }
 //---------------------------------------------------------------------------//
 /*!
   \brief Gets grace's version number.
@@ -97,52 +85,47 @@ Plot2D::
   \return The version number.
 */
 //---------------------------------------------------------------------------//
-Plot2D::VersionNumber
-Plot2D::
-graceVersion()
-{
-    // Grab the version string from a pipe.
-    std::FILE *pipe = popen("gracebat -version", "r");
+Plot2D::VersionNumber Plot2D::graceVersion() {
+  // Grab the version string from a pipe.
+  std::FILE *pipe = popen("gracebat -version", "r");
 
-    Insist(pipe,
-	   "plot2D::graceVersion: Unable to get grace version!");
+  Insist(pipe, "plot2D::graceVersion: Unable to get grace version!");
 
-    const int bufferSize = 20;
-    char buffer[bufferSize];
+  const int bufferSize = 20;
+  char buffer[bufferSize];
 
-    std::fgets(buffer, bufferSize, pipe); // get the blank line
-    std::fgets(buffer, bufferSize, pipe); // get the version string
+  std::fgets(buffer, bufferSize, pipe); // get the blank line
+  std::fgets(buffer, bufferSize, pipe); // get the version string
 
-    pclose(pipe);
+  pclose(pipe);
 
-    std::string s(buffer);
+  std::string s(buffer);
 
-    // Assume that the version string is of the form 'Grace-x.x.x'
+  // Assume that the version string is of the form 'Grace-x.x.x'
 
-    Insist(s.size() > 11,
-	   "plot2D::graceVersion: Version string too small");
+  Insist(s.size() > 11, "plot2D::graceVersion: Version string too small");
 
-    s = s.substr(6); // skip over 'Grace-'
+  s = s.substr(6); // skip over 'Grace-'
 
-    VersionNumber n;
+  VersionNumber n;
 
-    for ( int i = 0; i < 3; i++ ) {
-	std::string sn(s);
-	
-	if ( i < 2 ) {
-	    size_t dot = s.find(".");
-	    Insist(dot != std::string::npos,
-		   "plot2D::graceVersion: Version string wrong format.");
-	    sn = s.substr(0, dot);
-	    s  = s.substr(dot + 1);
-	}
+  for (int i = 0; i < 3; i++) {
+    std::string sn(s);
 
-	std::istringstream is(sn);
-
-	is >> n.v[i];
+    if (i < 2) {
+      size_t dot = s.find(".");
+      Insist(dot != std::string::npos,
+             "plot2D::graceVersion: Version string wrong format.");
+      sn = s.substr(0, dot);
+      s = s.substr(dot + 1);
     }
 
-    return n;
+    std::istringstream is(sn);
+
+    is >> n.v[i];
+  }
+
+  return n;
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -159,76 +142,67 @@ graceVersion()
   be generated and then saved with the save() function.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-open(const int numGraphs,
-     const std::string &paramFile,
-     const bool batch)
-{
-    Require(numGraphs > 0);
-    Require(! GraceIsOpen());
+void Plot2D::open(const int numGraphs, const std::string &paramFile,
+                  const bool batch) {
+  Require(numGraphs > 0);
+  Require(!GraceIsOpen());
 
-    d_numGraphs = numGraphs;
-    d_batch = batch;
-    d_numSets.resize(numGraphs);
-    d_setsBeenRead.resize(numGraphs);
-    
-    for ( int i = 0; i < d_numGraphs; i++ ) {
-	d_numSets[i] = 0;
-	d_setsBeenRead[i] = false;
+  d_numGraphs = numGraphs;
+  d_batch = batch;
+  d_numSets.resize(numGraphs);
+  d_setsBeenRead.resize(numGraphs);
+
+  for (int i = 0; i < d_numGraphs; i++) {
+    d_numSets[i] = 0;
+    d_setsBeenRead[i] = false;
+  }
+
+  // Open the grace pipe
+
+  const int bufferSize = 4096;
+  int openStatus;
+
+  if (d_batch) {
+    // Add -nosafe and -noask options for versions 5.1.8
+    // and later.
+
+    // GraceOpenVA takes a char * as its first arg, when it should take a
+    // const char *.  So to avoid the justified warnings/errors, jump
+    // through some hoops:
+    char *exe = new char[9];
+    std::strcpy(exe, "gracebat");
+
+    if (d_graceVersion.v[0] >= 5 && d_graceVersion.v[1] >= 1 &&
+        d_graceVersion.v[2] >= 8) {
+      openStatus =
+          GraceOpenVA(exe, bufferSize, "-noprint", "-nosafe", "-noask", NULL);
+      // 	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+      // 				     "-nosafe", "-noask", NULL);
+    } else {
+      openStatus = GraceOpenVA(exe, bufferSize, "-noprint", NULL);
+      // 	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
+      // 				     NULL);
     }
 
-    // Open the grace pipe
-    
-    const int bufferSize = 4096;
-    int openStatus;
+    delete[] exe; // end jumping through hoops
+  } else {
+    // Still want "safe" for non-batch mode?
+    openStatus = GraceOpen(bufferSize);
+  }
 
-    if ( d_batch ) {
-	// Add -nosafe and -noask options for versions 5.1.8
-	// and later.
+  Insist(openStatus != -1, "Error opening grace.");
 
-        // GraceOpenVA takes a char * as its first arg, when it should take a
-        // const char *.  So to avoid the justified warnings/errors, jump
-        // through some hoops:
-        char *exe = new char[9];
-        std::strcpy(exe, "gracebat");
-        
-	if ( d_graceVersion.v[0] >= 5 &&
-	     d_graceVersion.v[1] >= 1 &&
-	     d_graceVersion.v[2] >= 8 ) {
-	    openStatus = GraceOpenVA(exe, bufferSize, "-noprint",
-				     "-nosafe", "-noask", NULL);
-// 	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
-// 				     "-nosafe", "-noask", NULL);
-	}
-	else {
-	    openStatus = GraceOpenVA(exe, bufferSize, "-noprint",
-				     NULL);
-// 	    openStatus = GraceOpenVA("gracebat", bufferSize, "-noprint",
-// 				     NULL);
-	}
-        
-        delete[] exe; // end jumping through hoops
-    }
-    else {
-	// Still want "safe" for non-batch mode?
-	openStatus = GraceOpen(bufferSize);
-    }
+  if (paramFile.empty()) {
+    d_autoscale = AUTOSCALE_ON;
+  } else {
+    d_autoscale = AUTOSCALE_OFF;
+    // Grab the param file...
+    GracePrintf("getp \"%s\"", paramFile.c_str());
+  }
 
-    Insist(openStatus != -1, "Error opening grace.");
+  // Set up graph matrix
 
-    if ( paramFile.empty() ) {
-	d_autoscale = AUTOSCALE_ON;
-    }
-    else {
-	d_autoscale = AUTOSCALE_OFF;
-	// Grab the param file...
-	GracePrintf("getp \"%s\"", paramFile.c_str());
-    }
-
-    // Set up graph matrix
-
-    arrange(0, 0);
+  arrange(0, 0);
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -244,60 +218,52 @@ open(const int numGraphs,
   automatically.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-arrange(const int numRows,
-	const int numCols)
-{
-    Require(GraceIsOpen());
+void Plot2D::arrange(const int numRows, const int numCols) {
+  Require(GraceIsOpen());
 
-    if ( numRows > 0 ) {
-	// number of rows specified
-	d_numRows = numRows;
-	if ( numCols > 0 ) {
-	    // .. as are number of columns
-	    d_numCols = numCols;
-	    Require(d_numCols * d_numRows >= d_numGraphs);
-	}
-	else {
-	    // .. compute number of columns
-	    d_numCols = d_numGraphs / d_numRows;
-	    if ( d_numCols * d_numRows != d_numGraphs ) {
-		++d_numCols;
-	    }
-	}
+  if (numRows > 0) {
+    // number of rows specified
+    d_numRows = numRows;
+    if (numCols > 0) {
+      // .. as are number of columns
+      d_numCols = numCols;
+      Require(d_numCols * d_numRows >= d_numGraphs);
+    } else {
+      // .. compute number of columns
+      d_numCols = d_numGraphs / d_numRows;
+      if (d_numCols * d_numRows != d_numGraphs) {
+        ++d_numCols;
+      }
     }
-    else if ( numCols > 0 ) {
-	// only number of columns specified
-	d_numCols = numCols;
-	d_numRows = d_numGraphs / d_numCols;
-	if ( d_numCols * d_numRows != d_numGraphs ) {
-	    ++d_numRows;
-	}
+  } else if (numCols > 0) {
+    // only number of columns specified
+    d_numCols = numCols;
+    d_numRows = d_numGraphs / d_numCols;
+    if (d_numCols * d_numRows != d_numGraphs) {
+      ++d_numRows;
     }
-    else {
-	// neither number of columns or rows was specified
-	d_numRows = int(std::sqrt(double(d_numGraphs)));
-	d_numCols = d_numGraphs / d_numRows;
-    
-	if ( d_numCols * d_numRows != d_numGraphs ) {
-	    ++d_numCols;
-	}
-    }
+  } else {
+    // neither number of columns or rows was specified
+    d_numRows = int(std::sqrt(double(d_numGraphs)));
+    d_numCols = d_numGraphs / d_numRows;
 
-    GracePrintf("arrange(%d, %d, 0.1, 0.3, 0.2)",
-		d_numRows, d_numCols);
-    
-    // turn off unused graphs
-    
-    for ( int i = d_numGraphs; i < d_numCols * d_numRows; i++ ) {
-	GracePrintf("focus g%d", graphNum(i, true));
-	GracePrintf("frame off");
-	GracePrintf("xaxis off");
-	GracePrintf("yaxis off");
+    if (d_numCols * d_numRows != d_numGraphs) {
+      ++d_numCols;
     }
-    
-    redraw();
+  }
+
+  GracePrintf("arrange(%d, %d, 0.1, 0.3, 0.2)", d_numRows, d_numCols);
+
+  // turn off unused graphs
+
+  for (int i = d_numGraphs; i < d_numCols * d_numRows; i++) {
+    GracePrintf("focus g%d", graphNum(i, true));
+    GracePrintf("frame off");
+    GracePrintf("xaxis off");
+    GracePrintf("yaxis off");
+  }
+
+  redraw();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -307,15 +273,12 @@ arrange(const int numRows,
   by the destructor.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-close()
-{
-    if ( GraceIsOpen() ) {
-	if ( GraceClose() == -1 ) {
-	    std::cerr << "WARNING: Error closing xmgrace." << std::endl;
-	}
+void Plot2D::close() {
+  if (GraceIsOpen()) {
+    if (GraceClose() == -1) {
+      std::cerr << "WARNING: Error closing xmgrace." << std::endl;
     }
+  }
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -324,15 +287,12 @@ close()
   \param filename The file name to use.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-save(const std::string filename)
-{
-    Require(GraceIsOpen());
-    
-    if ( ! filename.empty() ) {
-	GracePrintf("saveall \"%s\"", filename.c_str());
-    }
+void Plot2D::save(const std::string filename) {
+  Require(GraceIsOpen());
+
+  if (!filename.empty()) {
+    GracePrintf("saveall \"%s\"", filename.c_str());
+  }
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -345,18 +305,14 @@ save(const std::string filename)
   \param iG The graph number to apply the titles to.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-setTitles(const std::string title,
-	  const std::string subTitle,
-	  const int iG)
-{
-    Require(GraceIsOpen());
-    
-    GracePrintf("focus g%d", graphNum(iG));
-    GracePrintf("title \"%s\"", title.c_str());
-    GracePrintf("subtitle \"%s\"", subTitle.c_str());
-    redraw();
+void Plot2D::setTitles(const std::string title, const std::string subTitle,
+                       const int iG) {
+  Require(GraceIsOpen());
+
+  GracePrintf("focus g%d", graphNum(iG));
+  GracePrintf("title \"%s\"", title.c_str());
+  GracePrintf("subtitle \"%s\"", subTitle.c_str());
+  redraw();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -371,32 +327,27 @@ setTitles(const std::string title,
   \param charSize The character size in [0,1].
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-setAxesLabels(const std::string xLabel,
-	      const std::string yLabel,
-	      const int iG,
-	      const double charSize)
-{
-    Require(GraceIsOpen());
+void Plot2D::setAxesLabels(const std::string xLabel, const std::string yLabel,
+                           const int iG, const double charSize) {
+  Require(GraceIsOpen());
 
-    GracePrintf("focus g%d", graphNum(iG));
+  GracePrintf("focus g%d", graphNum(iG));
 
-    GracePrintf("xaxis label \"%s\"", xLabel.c_str());
-    if ( xLabel.size() > 0 ) {
-	GracePrintf("xaxis label char size %f", charSize);
-    }
+  GracePrintf("xaxis label \"%s\"", xLabel.c_str());
+  if (xLabel.size() > 0) {
+    GracePrintf("xaxis label char size %f", charSize);
+  }
 
-    GracePrintf("yaxis label \"%s\"", yLabel.c_str());
-    if ( yLabel.size() > 0 ) {
-	GracePrintf("yaxis label layout perp");
-	GracePrintf("yaxis label char size %f", charSize);
-    }
+  GracePrintf("yaxis label \"%s\"", yLabel.c_str());
+  if (yLabel.size() > 0) {
+    GracePrintf("yaxis label layout perp");
+    GracePrintf("yaxis label char size %f", charSize);
+  }
 
-    GracePrintf("xaxis ticklabel char size %f", charSize);
-    GracePrintf("yaxis ticklabel char size %f", charSize);
+  GracePrintf("xaxis ticklabel char size %f", charSize);
+  GracePrintf("yaxis ticklabel char size %f", charSize);
 
-    redraw();
+  redraw();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -407,20 +358,17 @@ setAxesLabels(const std::string xLabel,
   call setProps(), after new sets are read.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-killAllSets()
-{
-    Require(GraceIsOpen());
-    
-    for ( int iG = 0; iG < d_numGraphs; iG++ ) {
+void Plot2D::killAllSets() {
+  Require(GraceIsOpen());
 
-	for ( int j = 0; j < d_numSets[iG]; j++ ) {
-	    GracePrintf("kill g%d.s%d saveall", graphNum(iG), j);
-	}
+  for (int iG = 0; iG < d_numGraphs; iG++) {
 
-	d_numSets[iG] = 0;
+    for (int j = 0; j < d_numSets[iG]; j++) {
+      GracePrintf("kill g%d.s%d saveall", graphNum(iG), j);
     }
+
+    d_numSets[iG] = 0;
+  }
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -498,25 +446,22 @@ killAllSets()
   where (x, y(N)) is the set added to graph number N.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-readBlock(const std::string blockFilename)
-{
-    Require(GraceIsOpen());
-    Require(numColumnsInFile(blockFilename) == d_numGraphs + 1);
+void Plot2D::readBlock(const std::string blockFilename) {
+  Require(GraceIsOpen());
+  Require(numColumnsInFile(blockFilename) == d_numGraphs + 1);
 
-    GracePrintf("read block \"%s\"", blockFilename.c_str());
-    
-    for ( int iG = 0; iG < d_numGraphs; iG++ ) {
-	GracePrintf("focus g%d", graphNum(iG));
-	setAutoscale(iG);
-	GracePrintf("block xy \"1:%d\"", iG + 2);
+  GracePrintf("read block \"%s\"", blockFilename.c_str());
 
-	++d_numSets[iG];
-	d_setsBeenRead[iG] = true;
-    }
+  for (int iG = 0; iG < d_numGraphs; iG++) {
+    GracePrintf("focus g%d", graphNum(iG));
+    setAutoscale(iG);
+    GracePrintf("block xy \"1:%d\"", iG + 2);
 
-    redraw();
+    ++d_numSets[iG];
+    d_setsBeenRead[iG] = true;
+  }
+
+  redraw();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -536,29 +481,25 @@ readBlock(const std::string blockFilename)
   where each pair (x, y(N)) is a set added to graph number \a iG.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-readBlock(const std::string blockFilename,
-	  const int iG)
-{
-    Require(GraceIsOpen());
-    Require(iG >= 0 && iG < d_numGraphs);
+void Plot2D::readBlock(const std::string blockFilename, const int iG) {
+  Require(GraceIsOpen());
+  Require(iG >= 0 && iG < d_numGraphs);
 
-    const int nSets = numColumnsInFile(blockFilename) - 1;
+  const int nSets = numColumnsInFile(blockFilename) - 1;
 
-    GracePrintf("autoscale onread none");
-    GracePrintf("read block \"%s\"", blockFilename.c_str());
-    GracePrintf("focus g%d", graphNum(iG));
-    setAutoscale(iG);
-    
-    for ( int i = 0; i < nSets; i++ ) {
-	GracePrintf("block xy \"1:%d\"", i + 2);
-	++d_numSets[iG];
-    }
+  GracePrintf("autoscale onread none");
+  GracePrintf("read block \"%s\"", blockFilename.c_str());
+  GracePrintf("focus g%d", graphNum(iG));
+  setAutoscale(iG);
 
-    d_setsBeenRead[iG] = true;
+  for (int i = 0; i < nSets; i++) {
+    GracePrintf("block xy \"1:%d\"", i + 2);
+    ++d_numSets[iG];
+  }
 
-    redraw();
+  d_setsBeenRead[iG] = true;
+
+  redraw();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -567,21 +508,18 @@ readBlock(const std::string blockFilename,
   \param autoscale If true, autoscale all of the graphs.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-redraw(const bool autoscale)
-{
-    Require(GraceIsOpen());
+void Plot2D::redraw(const bool autoscale) {
+  Require(GraceIsOpen());
 
-    if ( autoscale ) {
-	for ( int iG = 0; iG < d_numGraphs; iG++ ) {
-	    GracePrintf("focus g%d", graphNum(iG));
-	    GracePrintf("autoscale");
-	}
+  if (autoscale) {
+    for (int iG = 0; iG < d_numGraphs; iG++) {
+      GracePrintf("focus g%d", graphNum(iG));
+      GracePrintf("autoscale");
     }
+  }
 
-    GracePrintf("redraw");
-    GraceFlush();
+  GracePrintf("redraw");
+  GraceFlush();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -595,41 +533,32 @@ redraw(const bool autoscale)
   \param p The set properties.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-setProps(const int iG,
-	 const int iSet,
-	 const SetProps &p)
-{
-    Require(GraceIsOpen());
-    Require(iSet >= 0);
+void Plot2D::setProps(const int iG, const int iSet, const SetProps &p) {
+  Require(GraceIsOpen());
+  Require(iSet >= 0);
 
-    GracePrintf("focus g%d", graphNum(iG));
+  GracePrintf("focus g%d", graphNum(iG));
 
-    GracePrintf("s%d line linestyle %d", iSet, p.line.style);
-    if ( p.line.style != LineProps::STYLE_NONE )
-    {
-	GracePrintf("s%d line color %d", iSet, p.line.color);
-	GracePrintf("s%d line linewidth %f", iSet, p.line.width);
-    }
-    
-    GracePrintf("s%d symbol %d", iSet, p.symbol.shape);
-    if ( p.symbol.shape != SymbolProps::SHAPE_NONE )
-    {
-	GracePrintf("s%d symbol size %f", iSet, p.symbol.size);
-	GracePrintf("s%d symbol color %d", iSet, p.symbol.color);
-	GracePrintf("s%d symbol linewidth %f", iSet, p.symbol.width);
-	GracePrintf("s%d symbol fill pattern %d",
-		    iSet, p.symbol.fillPattern);
-	GracePrintf("s%d symbol fill color %d", iSet, p.symbol.fillColor);
-    }
-    
-    if ( p.legend.size() > 0 )
-    {
-	GracePrintf("s%d legend \"%s\"", iSet, p.legend.c_str());
-    }
+  GracePrintf("s%d line linestyle %d", iSet, p.line.style);
+  if (p.line.style != LineProps::STYLE_NONE) {
+    GracePrintf("s%d line color %d", iSet, p.line.color);
+    GracePrintf("s%d line linewidth %f", iSet, p.line.width);
+  }
 
-    redraw();
+  GracePrintf("s%d symbol %d", iSet, p.symbol.shape);
+  if (p.symbol.shape != SymbolProps::SHAPE_NONE) {
+    GracePrintf("s%d symbol size %f", iSet, p.symbol.size);
+    GracePrintf("s%d symbol color %d", iSet, p.symbol.color);
+    GracePrintf("s%d symbol linewidth %f", iSet, p.symbol.width);
+    GracePrintf("s%d symbol fill pattern %d", iSet, p.symbol.fillPattern);
+    GracePrintf("s%d symbol fill color %d", iSet, p.symbol.fillColor);
+  }
+
+  if (p.legend.size() > 0) {
+    GracePrintf("s%d legend \"%s\"", iSet, p.legend.c_str());
+  }
+
+  redraw();
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -670,22 +599,17 @@ setProps(const int iG,
   general layouts and does some checking.
 */
 //---------------------------------------------------------------------------//
-int
-Plot2D::
-graphNum(const int iG,
-	 const bool allowVacant) const
-{
-    Require(iG >= 0);
-    Require((allowVacant && iG < d_numRows * d_numCols)
-	    || iG < d_numGraphs);
-    
-    int iRow = iG / d_numCols;
-    int iCol = iG - d_numCols * iRow;
+int Plot2D::graphNum(const int iG, const bool allowVacant) const {
+  Require(iG >= 0);
+  Require((allowVacant && iG < d_numRows * d_numCols) || iG < d_numGraphs);
 
-    Ensure(iCol < d_numCols);
-    Ensure(iRow < d_numRows);
+  int iRow = iG / d_numCols;
+  int iCol = iG - d_numCols * iRow;
 
-    return iRow * d_numCols + iCol;
+  Ensure(iCol < d_numCols);
+  Ensure(iRow < d_numRows);
+
+  return iRow * d_numCols + iCol;
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -696,39 +620,31 @@ graphNum(const int iG,
   \returns The number of columns.
 */
 //---------------------------------------------------------------------------//
-int
-Plot2D::
-numColumnsInFile(const std::string filename) const
-{
-    using std::isspace;
+int Plot2D::numColumnsInFile(const std::string filename) const {
+  using std::isspace;
 
-    std::ifstream f(filename.c_str());
+  std::ifstream f(filename.c_str());
 
-    std::string buf;
-    std::getline(f, buf);
+  std::string buf;
+  std::getline(f, buf);
 
-    f.close();
+  f.close();
 
-    int n = 0; // return value
-    bool whitespace = true;
+  int n = 0; // return value
+  bool whitespace = true;
 
-    for ( size_t i = 0; i < buf.size(); i++ )
-    {
-	if ( isspace(buf[i]) )
-        {
-	    whitespace = true;
-	}
-	else
-        {
-	    if ( whitespace )
-            {
-		++n;
-	    }
-	    whitespace = false;
-	}
+  for (size_t i = 0; i < buf.size(); i++) {
+    if (isspace(buf[i])) {
+      whitespace = true;
+    } else {
+      if (whitespace) {
+        ++n;
+      }
+      whitespace = false;
     }
+  }
 
-    return n;
+  return n;
 }
 //---------------------------------------------------------------------------//
 /*!
@@ -739,26 +655,22 @@ numColumnsInFile(const std::string filename) const
   \param a The autoscale mode.
 */
 //---------------------------------------------------------------------------//
-void
-Plot2D::
-setAutoscale(const int iG)
-{
-    switch ( d_autoscale ) {
-    case AUTOSCALE_ON:
-	GracePrintf("autoscale onread xyaxes");
-	break;
-    case AUTOSCALE_OFF:
-	GracePrintf("autoscale onread none");
-	break;
-    case AUTOSCALE_FIRSTREAD:
-	if ( d_setsBeenRead[iG] ) {
-	    GracePrintf("autoscale onread none");
-	}
-	else {
-	    GracePrintf("autoscale onread xyaxes");
-	}
-	break;
+void Plot2D::setAutoscale(const int iG) {
+  switch (d_autoscale) {
+  case AUTOSCALE_ON:
+    GracePrintf("autoscale onread xyaxes");
+    break;
+  case AUTOSCALE_OFF:
+    GracePrintf("autoscale onread none");
+    break;
+  case AUTOSCALE_FIRSTREAD:
+    if (d_setsBeenRead[iG]) {
+      GracePrintf("autoscale onread none");
+    } else {
+      GracePrintf("autoscale onread xyaxes");
     }
+    break;
+  }
 }
 
 } // end namespace rtt_plot2D

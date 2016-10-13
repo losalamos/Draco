@@ -20,8 +20,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 //! Calculate the relativistic Fermi-Dirac dimensionless number density.
 DLL_PUBLIC_special_functions double F_eta(double eta, double gamma);

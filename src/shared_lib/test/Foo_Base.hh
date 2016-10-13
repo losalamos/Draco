@@ -13,8 +13,7 @@
 #ifndef shared_lib_test_Foo_Base_hh
 #define shared_lib_test_Foo_Base_hh
 
-namespace rtt_shared_lib_test
-{
+namespace rtt_shared_lib_test {
 
 //===========================================================================//
 /*!
@@ -28,16 +27,14 @@ namespace rtt_shared_lib_test
  */
 //===========================================================================//
 
-class Foo_Base
-{
-  public:
+class Foo_Base {
+public:
+  // Must define a virual destructor.  It's implementation should be linked
+  // in with the executable.
+  virtual ~Foo_Base() = 0;
 
-    // Must define a virual destructor.  It's implementation should be linked
-    // in with the executable.
-    virtual ~Foo_Base() = 0;
-
-    // Compute something.
-    virtual double compute(const double x) const = 0;
+  // Compute something.
+  virtual double compute(const double x) const = 0;
 };
 
 } // end namespace rtt_shared_lib_test

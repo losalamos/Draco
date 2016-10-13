@@ -15,31 +15,21 @@
 
 #include "mrqmin.i.hh"
 
-namespace rtt_min
-{
+namespace rtt_min {
 using std::vector;
 
 //---------------------------------------------------------------------------//
 // RandomContainer=vector<double>
 //---------------------------------------------------------------------------//
 
-template DLL_PUBLIC_min
-void mrqmin(vector<double> const &x,
-            vector<double> const &y,
-            vector<double> const &sig,
-            unsigned n,
-            unsigned m,
-            vector<double> &a,
-            vector<bool> &ia,
-            vector<double> &covar,
-            vector<double> &alpha,
-            unsigned p,
-            double &chisq,
-            void funcs(vector<double> const &,
-                       vector<double> const &,
-                       double &,
-                       vector<double> &),
-            double &alamda);
+template DLL_PUBLIC_min void
+mrqmin(vector<double> const &x, vector<double> const &y,
+       vector<double> const &sig, unsigned n, unsigned m, vector<double> &a,
+       vector<bool> &ia, vector<double> &covar, vector<double> &alpha,
+       unsigned p, double &chisq,
+       void funcs(vector<double> const &, vector<double> const &, double &,
+                  vector<double> &),
+       double &alamda);
 
 } // end namespace rtt_min
 

@@ -16,11 +16,10 @@
 
 #include "OpacityCommon.hh"
 #include "ds++/config.h"
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace rtt_cdi
-{
+namespace rtt_cdi {
 
 //========================================================================
 /*!
@@ -39,16 +38,14 @@ namespace rtt_cdi
  * \example cdi/test/tCDI.cc
  */
 //========================================================================
-    
-class DLL_PUBLIC_cdi OdfmgOpacity
-{
+
+class DLL_PUBLIC_cdi OdfmgOpacity {
   // DATA
 
   // There is no data for a pure virtual object.  This class
   // provides an interface and does not preserve state.
 
 public:
-
   // ---------- //
   // Destructor //
   // ---------- //
@@ -59,7 +56,7 @@ public:
    * This is required to correctly release memory when any
    * object derived from OdfmgOpacity is destroyed.
    */
-    virtual ~OdfmgOpacity() {/*empty*/};
+  virtual ~OdfmgOpacity(){/*empty*/};
 
   // --------- //
   // Accessors //
@@ -76,9 +73,9 @@ public:
    *     values are being requested (g/cm^3)
    * \return A vector of opacities (a single opacity for each group).
    */
-  virtual std::vector< std::vector<double> > getOpacity(double targetTemperature,
-							double targetDensity ) const = 0; 
-    
+  virtual std::vector<std::vector<double>>
+  getOpacity(double targetTemperature, double targetDensity) const = 0;
+
   /*!
    * \brief Opacity accessor that returns a vector of multigroupband
    *     opacity 2-D vectors that correspond to the provided vector of
@@ -92,9 +89,9 @@ public:
    *
    * \return A vector of multiband, multigroup opacity vectors (cm^2/g).
    */
-  virtual std::vector< std::vector< std::vector<double> > > 
-  getOpacity(const std::vector<double>& targetTemperature,
-	     double targetDensity) const = 0; 
+  virtual std::vector<std::vector<std::vector<double>>>
+  getOpacity(const std::vector<double> &targetTemperature,
+             double targetDensity) const = 0;
 
   /*!
    * \brief Opacity accessor that returns a vector of multigroupband
@@ -107,14 +104,14 @@ public:
    *     opacity values are being requested (g/cm^3).
    * \return A vector of multigroup opacity vectors (cm^2/g).
    */
-  virtual std::vector< std::vector< std::vector<double> > > 
+  virtual std::vector<std::vector<std::vector<double>>>
   getOpacity(double targetTemperature,
-	     const std::vector<double>& targetDensity) const = 0; 
-  
+             const std::vector<double> &targetDensity) const = 0;
+
   /*!
    * \brief Query whether the data is in tables or functional form.
    */
-  virtual bool data_in_tabular_form() const = 0; 
+  virtual bool data_in_tabular_form() const = 0;
 
   /*!
    * \brief Query to determine the reaction model.
@@ -129,7 +126,7 @@ public:
   /*!
    * \brief Returns a string that describes the EnergyPolicy.
    *     Currently this will return either "mg" or "gray."
-   */ 
+   */
   virtual std::string getEnergyPolicyDescriptor() const = 0;
 
   /*!

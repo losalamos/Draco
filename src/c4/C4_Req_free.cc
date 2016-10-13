@@ -13,33 +13,29 @@
 
 #include "C4_Req.hh"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
-void C4_ReqRefRep::free()
-{
+void C4_ReqRefRep::free() {
 #ifdef C4_MPI
-    if (assigned)
-    {
-	MPI_Cancel( &r );
-        MPI_Request_free( &r );
-    }
+  if (assigned) {
+    MPI_Cancel(&r);
+    MPI_Request_free(&r);
+  }
 #endif
-    clear();
+  clear();
 }
 
 //---------------------------------------------------------------------------//
 //! Return the number of items returned on the last complete operation.
 //---------------------------------------------------------------------------//
 
-unsigned C4_ReqRefRep::count()
-{
+unsigned C4_ReqRefRep::count() {
 #ifdef C4_MPI
-    int count;
-    MPI_Get_count( &s, MPI_CHAR, &count );
-    return count;
+  int count;
+  MPI_Get_count(&s, MPI_CHAR, &count);
+  return count;
 #else
-    return 0;
+  return 0;
 #endif
 }
 

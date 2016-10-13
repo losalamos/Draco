@@ -13,12 +13,11 @@
 
 #include "ScalarUnitTest.hh"
 #include "Assert.hh"
+#include "XGetopt.hh"
 #include <iostream>
 #include <sstream>
-#include "XGetopt.hh"
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for ScalarUnitTest
@@ -33,58 +32,55 @@ namespace rtt_dsxx
  * and numFails to zero.  It also prints a message that declares this to be a
  * scalar unit test and provides the unit test name.
  */
-ScalarUnitTest::ScalarUnitTest( int &argc, char **&argv,
-                                string_fp_void release_,
-                                std::ostream & out_ )
-    : UnitTest( argc, argv, release_, out_ )
-{
-    using std::endl;
-    using std::string;
+ScalarUnitTest::ScalarUnitTest(int &argc, char **&argv, string_fp_void release_,
+                               std::ostream &out_)
+    : UnitTest(argc, argv, release_, out_) {
+  using std::endl;
+  using std::string;
 
-    Require( argc > 0 );
-    Require( release != NULL );
+  Require(argc > 0);
+  Require(release != NULL);
 
-    // header
-    out << "\n============================================="
-        << "\n=== Scalar Unit Test: " << testName
-        << "\n=============================================\n" << endl;
+  // header
+  out << "\n============================================="
+      << "\n=== Scalar Unit Test: " << testName
+      << "\n=============================================\n"
+      << endl;
 
-    // version tag
-    out << testName << ": version " << release() << "\n" << endl;
+  // version tag
+  out << testName << ": version " << release() << "\n" << endl;
 
-    // Handle arguments:
-    rtt_dsxx::XGetopt::csmap long_options;
-    long_options['h'] = "help";
-    long_options['v'] = "version";
-    std::map<char,std::string> help_strings;
-    help_strings['h'] = "print this message.";
-    help_strings['v'] = "print version information and exit.";
-    rtt_dsxx::XGetopt program_options( argc, argv, long_options, help_strings );
+  // Handle arguments:
+  rtt_dsxx::XGetopt::csmap long_options;
+  long_options['h'] = "help";
+  long_options['v'] = "version";
+  std::map<char, std::string> help_strings;
+  help_strings['h'] = "print this message.";
+  help_strings['v'] = "print version information and exit.";
+  rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
-    int c(0);
-    while( ( c = program_options()) != -1 )
-    {
-        switch (c)
-        {
-            case 'v': // --version
-                throw rtt_dsxx::assertion( string( "Success" ) );
-                return;
+  int c(0);
+  while ((c = program_options()) != -1) {
+    switch (c) {
+    case 'v': // --version
+      throw rtt_dsxx::assertion(string("Success"));
+      return;
 
-            case 'h': // --help
-                std::cout << program_options.display_help( "tstXGetopt" ) << std::endl;
-                return;
-                break;
+    case 'h': // --help
+      std::cout << program_options.display_help("tstXGetopt") << std::endl;
+      return;
+      break;
 
-            default:
-                break; // nothing to do.
-        }
+    default:
+      break; // nothing to do.
     }
+  }
 
-    Ensure( numPasses == 0 );
-    Ensure( numFails  == 0 );
-    Ensure( testName.length() > 0 );
+  Ensure(numPasses == 0);
+  Ensure(numFails == 0);
+  Ensure(testName.length() > 0);
 
-    return;
+  return;
 }
 
 } // end namespace rtt_dsxx

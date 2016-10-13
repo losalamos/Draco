@@ -18,8 +18,7 @@
 #include "cdi/OdfmgOpacity.hh"
 #include "ds++/SP.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 
 //===========================================================================//
 /*!
@@ -32,57 +31,55 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpacity
-{
-  public:
-    // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
-    typedef std::vector<SP_Analytic_Model>             sf_Analytic_Model;
-    typedef std::vector<double>                        sf_double;
-    typedef std::vector<sf_double>                     vf_double;
-    typedef std::string                                std_string;
-    typedef std::vector<char>                          sf_char;
+class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity
+    : public rtt_cdi::OdfmgOpacity {
+public:
+  // Useful typedefs.
+  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
+  typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
+  typedef std::vector<double> sf_double;
+  typedef std::vector<sf_double> vf_double;
+  typedef std::string std_string;
+  typedef std::vector<char> sf_char;
 
-  private:
-    // Group structure.
-    sf_double groupBoundaries;
+private:
+  // Group structure.
+  sf_double groupBoundaries;
 
-    // Reaction model.
-    rtt_cdi::Reaction reaction;
+  // Reaction model.
+  rtt_cdi::Reaction reaction;
 
-    // CDI model.
-    rtt_cdi::Model model;
+  // CDI model.
+  rtt_cdi::Model model;
 
-    /*!
+  /*!
      * \brief The band boundaries should be the same as in the rest of the
      * problem.
      * It should be a vector with size(the number of bands + 1), 0 on the left,
      * and 1 on the right.
      */
-    std::vector<double> bandBoundaries;
+  std::vector<double> bandBoundaries;
 
-  protected:
-    // Constructor
-    // Constructor.
-    Analytic_Odfmg_Opacity(
-        const sf_double         &groups,
-        const sf_double         &bands,
-        rtt_cdi::Reaction        reaction_in,
-        rtt_cdi::Model           model_in = rtt_cdi::ANALYTIC);
+protected:
+  // Constructor
+  // Constructor.
+  Analytic_Odfmg_Opacity(const sf_double &groups, const sf_double &bands,
+                         rtt_cdi::Reaction reaction_in,
+                         rtt_cdi::Model model_in = rtt_cdi::ANALYTIC);
 
-    // Constructor for packed Analytic_Odfmg_Opacities
-    explicit Analytic_Odfmg_Opacity(const sf_char &);
+  // Constructor for packed Analytic_Odfmg_Opacities
+  explicit Analytic_Odfmg_Opacity(const sf_char &);
 
-    // Get the packed size of the object
-    unsigned packed_size() const;
+  // Get the packed size of the object
+  unsigned packed_size() const;
 
-  public:
-    // >>> ACCESSORS
+public:
+  // >>> ACCESSORS
 
-    // >>> INTERFACE SPECIFIED BY rtt_cdi::OdfmgOpacity
+  // >>> INTERFACE SPECIFIED BY rtt_cdi::OdfmgOpacity
 
-    /*!
+  /*!
      * \brief Opacity accessor that returns a 2-D vector of opacities (
      *     groups * bands ) that correspond to the
      *     provided temperature and density.
@@ -93,11 +90,10 @@ class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpac
      *     value is being requested.
      * \return A vector of opacities.
      */
-    std::vector< std::vector<double> > getOpacity(
-        double targetTemperature,
-        double targetDensity ) const = 0;
+  std::vector<std::vector<double>> getOpacity(double targetTemperature,
+                                              double targetDensity) const = 0;
 
-    /*!
+  /*!
      * \brief Opacity accessor that returns a vector of multigroupband
      *     opacity 2-D vectors that correspond to the provided vector of
      *     temperatures and a single density value.
@@ -108,11 +104,11 @@ class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpac
      *     value is being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity(
-        const std::vector<double>& targetTemperature,
-        double targetDensity ) const = 0;
+  std::vector<std::vector<std::vector<double>>>
+  getOpacity(const std::vector<double> &targetTemperature,
+             double targetDensity) const = 0;
 
-    /*!
+  /*!
      * \brief Opacity accessor that returns a vector of 2-D vectors of
      *     opacities that correspond to the provided vector of
      *     densities and a single temperature value.
@@ -123,87 +119,81 @@ class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpac
      *     opacity values are being requested.
      * \return A vector of vectors of opacities.
      */
-    std::vector< std::vector< std::vector<double> > > getOpacity(
-        double targetTemperature,
-        const std::vector<double>& targetDensity ) const = 0;
+  std::vector<std::vector<std::vector<double>>>
+  getOpacity(double targetTemperature,
+             const std::vector<double> &targetDensity) const = 0;
 
-    //! Query to see if data is in tabular or functional form (false).
-    bool data_in_tabular_form() const { return false; }
+  //! Query to see if data is in tabular or functional form (false).
+  bool data_in_tabular_form() const { return false; }
 
-    //! Query to get the reaction type.
-    rtt_cdi::Reaction getReactionType() const { return reaction; }
+  //! Query to get the reaction type.
+  rtt_cdi::Reaction getReactionType() const { return reaction; }
 
-    //! Query for model type.
-    rtt_cdi::Model getModelType() const { return model; }
+  //! Query for model type.
+  rtt_cdi::Model getModelType() const { return model; }
 
-    // Return the energy policy (gray).
-    inline std_string getEnergyPolicyDescriptor() const;
+  // Return the energy policy (gray).
+  inline std_string getEnergyPolicyDescriptor() const;
 
-    // Get the data description of the opacity.
-    inline std_string getDataDescriptor() const = 0;
+  // Get the data description of the opacity.
+  inline std_string getDataDescriptor() const = 0;
 
-    // Get the name of the associated data file.
-    inline std_string getDataFilename() const;
+  // Get the name of the associated data file.
+  inline std_string getDataFilename() const;
 
-    //! Get the temperature grid (size 0 for function-based analytic data).
-    sf_double getTemperatureGrid() const { return sf_double(0); }
+  //! Get the temperature grid (size 0 for function-based analytic data).
+  sf_double getTemperatureGrid() const { return sf_double(0); }
 
-    //! Get the density grid (size 0 for function-based analytic data).
-    sf_double getDensityGrid() const { return sf_double(0); }
+  //! Get the density grid (size 0 for function-based analytic data).
+  sf_double getDensityGrid() const { return sf_double(0); }
 
-    //! Get the group boundaries (keV) of the multigroup set.
-    sf_double getGroupBoundaries() const { return groupBoundaries; }
+  //! Get the group boundaries (keV) of the multigroup set.
+  sf_double getGroupBoundaries() const { return groupBoundaries; }
 
-    //! Get the size of the temperature grid (size 0).
-    size_t getNumTemperatures() const { return 0; }
+  //! Get the size of the temperature grid (size 0).
+  size_t getNumTemperatures() const { return 0; }
 
-    //! Get the size of the density grid (size 0).
-    size_t getNumDensities() const { return 0; }
+  //! Get the size of the density grid (size 0).
+  size_t getNumDensities() const { return 0; }
 
-    //! Get the number of frequency group boundaries.
-    size_t getNumGroupBoundaries() const { return groupBoundaries.size(); }
+  //! Get the number of frequency group boundaries.
+  size_t getNumGroupBoundaries() const { return groupBoundaries.size(); }
 
-    //! Get the number of frequency group boundaries.
-    size_t getNumGroups() const { return groupBoundaries.size() - 1; }
+  //! Get the number of frequency group boundaries.
+  size_t getNumGroups() const { return groupBoundaries.size() - 1; }
 
-    /*!
+  /*!
      * \brief Returns a vector of points along the cumulative opacity
      *          distribution that mark the fraction of each band. First point is
      *          always zero, last point is always one.
      */
-    std::vector<double> getBandBoundaries() const {
-        return bandBoundaries;
-    }
+  std::vector<double> getBandBoundaries() const { return bandBoundaries; }
 
-    /*!
+  /*!
      * \brief Returns the number of group boundaries found in the
      *     current multigroup data set.
      */
-    size_t getNumBandBoundaries() const {
-        return bandBoundaries.size();
-    }
+  size_t getNumBandBoundaries() const { return bandBoundaries.size(); }
 
-    /*!
+  /*!
      * \brief Returns the number of band boundaries set in the
      *     current multigroup data set. The lower boundary is always zero,
      *     and the upper boundary is always one. Analagous to multigroup:
      *     numBands = numBandBoundaries - 1.
      */
-    size_t getNumBands() const {
-        return getNumBandBoundaries() - 1;
-    }
+  size_t getNumBands() const { return getNumBandBoundaries() - 1; }
 
-    // Pack the Analytic_Odfmg_Opacity into a character string.
-    virtual sf_char pack() const = 0;
+  // Pack the Analytic_Odfmg_Opacity into a character string.
+  virtual sf_char pack() const = 0;
 
-    /*!
+  /*!
      * \brief Returns the general opacity model type, defined in OpacityCommon.hh
      *
      * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
      */
-    rtt_cdi::OpacityModelType getOpacityModelType() const {
-        return rtt_cdi::ANALYTIC_TYPE;
-    }
+  rtt_cdi::OpacityModelType getOpacityModelType() const {
+    return rtt_cdi::ANALYTIC_TYPE;
+  }
 };
 
 //---------------------------------------------------------------------------//
@@ -213,9 +203,8 @@ class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity : public rtt_cdi::OdfmgOpac
  * \brief Return the energy policy descriptor (mg).
  */
 Analytic_Odfmg_Opacity::std_string
-Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const
-{
-    return std_string("odfmg");
+Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const {
+  return std_string("odfmg");
 }
 
 //---------------------------------------------------------------------------//
@@ -223,9 +212,8 @@ Analytic_Odfmg_Opacity::getEnergyPolicyDescriptor() const
  * \brief Return NULL string for the data filename.
  */
 Analytic_Odfmg_Opacity::std_string
-Analytic_Odfmg_Opacity::getDataFilename() const
-{
-    return std_string();
+Analytic_Odfmg_Opacity::getDataFilename() const {
+  return std_string();
 }
 
 } // end namespace rtt_cdi_analytic

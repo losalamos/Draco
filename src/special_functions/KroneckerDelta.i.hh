@@ -15,8 +15,7 @@
 
 #include "KroneckerDelta.hh"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 
 //---------------------------------------------------------------------------//
 /*! 
@@ -28,10 +27,9 @@ namespace rtt_sf
  * \param offset
  * \return 1 if test_value == offset, otherwise return 0;
  */
-template< typename T >
-unsigned int kronecker_delta( T const test_value, T const offset )
-{ 
-    return (test_value==offset) ? 1 : 0; 
+template <typename T>
+unsigned int kronecker_delta(T const test_value, T const offset) {
+  return (test_value == offset) ? 1 : 0;
 }
 
 } // end namespace rtt_sf

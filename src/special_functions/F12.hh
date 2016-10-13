@@ -15,8 +15,7 @@
 
 #include "ds++/config.h"
 
-namespace rtt_sf
-{
+namespace rtt_sf {
 //! Calculate Fermi-Dirac integral of index 1/2.
 DLL_PUBLIC_special_functions double F12(double x);
 

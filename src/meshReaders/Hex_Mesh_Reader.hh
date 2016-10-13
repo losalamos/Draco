@@ -14,13 +14,12 @@
 #ifndef __meshReaders_Hex_Mesh_Reader_hh__
 #define __meshReaders_Hex_Mesh_Reader_hh__
 
-#include <vector>
-#include <string>
-#include "mesh_element/Element_Definition.hh"
 #include "Mesh_Reader.hh"
+#include "mesh_element/Element_Definition.hh"
+#include <string>
+#include <vector>
 
-namespace rtt_meshReaders
-{
+namespace rtt_meshReaders {
 
 //===========================================================================//
 /*!
@@ -41,110 +40,97 @@ namespace rtt_meshReaders
 //
 //===========================================================================//
 
-class DLL_PUBLIC_meshReaders Hex_Mesh_Reader : public rtt_meshReaders::Mesh_Reader
-{
+class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
+    : public rtt_meshReaders::Mesh_Reader {
 
-    // NESTED CLASSES AND TYPEDEFS
+  // NESTED CLASSES AND TYPEDEFS
 
-    // DATA
+  // DATA
 
-    std::string meshfile_name;
-    static std::string keyword()
-    {
-        return "cic19_hex_mesh";
-    }
-    std::string version;
-    int npoints;
-    int ncells;
-    int nvrtx;
-    int nvrpf;
-    int ndim;
-    int nvb_faces;
-    int nrb_faces;
-    int nmat;
-    std::vector<std::vector<double> > point_coords;
-    std::vector<std::vector<int> > ipar;
-    std::vector<int> imat_index;
-    std::vector<int> irgn_vb_index;
-    std::vector<std::vector<int> > ipar_vb;
-    std::vector<std::vector<int> > ipar_rb;
+  std::string meshfile_name;
+  static std::string keyword() { return "cic19_hex_mesh"; }
+  std::string version;
+  int npoints;
+  int ncells;
+  int nvrtx;
+  int nvrpf;
+  int ndim;
+  int nvb_faces;
+  int nrb_faces;
+  int nmat;
+  std::vector<std::vector<double>> point_coords;
+  std::vector<std::vector<int>> ipar;
+  std::vector<int> imat_index;
+  std::vector<int> irgn_vb_index;
+  std::vector<std::vector<int>> ipar_vb;
+  std::vector<std::vector<int>> ipar_rb;
 
-    std::map<std::string, std::set<int> > node_sets;
+  std::map<std::string, std::set<int>> node_sets;
 
-  public:
+public:
+  // CREATORS
 
-    // CREATORS
+  explicit Hex_Mesh_Reader(std::string filename);
 
-    explicit Hex_Mesh_Reader( std::string filename );
+  // Defaulted Hex_Mesh_Reader(const Hex_Mesh_Reader &rhs);
+  // Defaulted ~Hex_Mesh_Reader();
 
-    // Defaulted Hex_Mesh_Reader(const Hex_Mesh_Reader &rhs);
-    // Defaulted ~Hex_Mesh_Reader();
+  // MANIPULATORS
 
-    // MANIPULATORS
+  // Defaulted Hex_Mesh_Reader& operator=(const Hex_Mesh_Reader &rhs);
 
-    // Defaulted Hex_Mesh_Reader& operator=(const Hex_Mesh_Reader &rhs);
+  // ACCESSORS
 
-    // ACCESSORS
-
-    /*!
+  /*!
      *  Returns the point coordinates.
      */
-    std::vector<std::vector<double> > get_node_coords() const
-    {
-        return point_coords;
-    }
+  std::vector<std::vector<double>> get_node_coords() const {
+    return point_coords;
+  }
 
-    /*!
+  /*!
      * The Hex mesh format has no provision for labeling coordinate units
      * Consequently, this method always returns the default string:
      * "unknown".
      *
      */
-    std::string get_node_coord_units() const
-    {
-        return "unknown";
-    }
-    /*!
+  std::string get_node_coord_units() const { return "unknown"; }
+  /*!
      * The Hex mesh format has no provision for flagging nodes.
      * This method therefore always returns a map with one entry
      * which contains all the nodes.
      *
      */
-    std::map<std::string, std::set<int> > get_node_sets() const
-    {
-        return node_sets;
-    }
+  std::map<std::string, std::set<int>> get_node_sets() const {
+    return node_sets;
+  }
 
-    /*!
+  /*!
      * There is no provision in the Hex format for naming a mesh.
      * This function always returns the defualt string:
      * "Untitled -- CIC-19 Hex Mesh"
      *
      */
-    std::string get_title() const
-    {
-        return "Untitled -- CIC-19 Hex Mesh";
-    }
+  std::string get_title() const { return "Untitled -- CIC-19 Hex Mesh"; }
 
-    std::vector<std::vector<int> > get_element_nodes(void) const;
+  std::vector<std::vector<int>> get_element_nodes(void) const;
 
-    bool invariant() const;
+  bool invariant() const;
 
-    std::map<std::string, std::set<int> > get_element_sets() const;
+  std::map<std::string, std::set<int>> get_element_sets() const;
 
-    std::vector< rtt_mesh_element::Element_Definition::Element_Type >
-        get_element_types() const;
+  std::vector<rtt_mesh_element::Element_Definition::Element_Type>
+  get_element_types() const;
 
-    std::vector< rtt_mesh_element::Element_Definition::Element_Type >
-        get_unique_element_types() const;
+  std::vector<rtt_mesh_element::Element_Definition::Element_Type>
+  get_unique_element_types() const;
 
-    size_t get_dims_ndim() const {return ndim;};
+  size_t get_dims_ndim() const { return ndim; };
 
-  private:
+private:
+  bool check_dims() const;
 
-    bool check_dims() const;
-
-    // IMPLEMENTATION
+  // IMPLEMENTATION
 };
 
 } // end namespace rtt_meshReaders

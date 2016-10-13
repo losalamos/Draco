@@ -20,8 +20,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "units/PhysicalConstants.hh"
 
-namespace rtt_special_functions
-{
+namespace rtt_special_functions {
 //---------------------------------------------------------------------------//
 /*! 
  * \brief Gauss-Laguerre quadrature
@@ -37,71 +36,61 @@ namespace rtt_special_functions
  * \param N Number of points in quadrature.
  * 
  */
-template<class FieldVector>
-void gaulag(FieldVector &x,
-	    FieldVector &w,
-	    double const alf,
-	    unsigned const n)
-{
-    using namespace std;
+template <class FieldVector>
+void gaulag(FieldVector &x, FieldVector &w, double const alf,
+            unsigned const n) {
+  using namespace std;
 
-    typedef typename FieldVector::value_type Field;
+  typedef typename FieldVector::value_type Field;
 
-    const unsigned MAXITS=10;
+  const unsigned MAXITS = 10;
 
-    x.resize(n);
-    w.resize(n);
+  x.resize(n);
+  w.resize(n);
 
-    Field z(0);
-    for (unsigned i=0; i<n; ++i)
-    {
-	if (i==0)
-	{
-	    z = (1.0+alf)*(3.0+0.92*alf)/(1.0+2.4*n+1.8*alf);
-	}
-	else if (i==1)
-	{
-	    z += (15.0+6.25*alf)/(1.0+0.9*alf+2.5*n);
-	}
-	else
-	{
-	    const Field ai = i-1;
-	    z += ((1.0+2.55*ai)/(1.9*ai)+1.26*ai*alf/
-		  (1.0+3.5*ai))*(z-x[i-2])/(1.0+0.3*alf);
-	}
-	unsigned its;
-	Field pp, p2;
-	for (its=0; its<MAXITS; ++its)
-	{
-	    Field p1 = 1.0;
-	    p2 = 0.0;
-	    for (unsigned j=0; j<n; ++j)
-	    {
-		const Field p3=p2;
-		p2 = p1;
-		p1 = ((2*j+1+alf-z)*p2 - (j+alf)*p3)/(j+1);
-	    }
-	    
-	    // p1 is now the desired Legendre polynomial evaluated at z. We
-	    // next compute pp, its derivative, by a standard relation
-	    // involving also p2, the polynomial of one lower order.
-	    pp = (n*p1-(n+alf)*p2)/z;
-
-	    const Field z1 = z;
-
-            // Newton's Method
-            z = z1-p1/pp;
-	    if (fabs(z-z1) < 100*std::numeric_limits<Field>::epsilon()) break;
-	}
-	if (its >= MAXITS) 
-	{
-	    throw std::range_error(std::string("too many iterations in gaulag"));
-	}
-	x[i] = z;
-	w[i] = -exp( gsl_sf_lngamma(alf+n)
-                     - gsl_sf_lngamma( static_cast<double>(n) ) )
-               / (pp*n*p2);
+  Field z(0);
+  for (unsigned i = 0; i < n; ++i) {
+    if (i == 0) {
+      z = (1.0 + alf) * (3.0 + 0.92 * alf) / (1.0 + 2.4 * n + 1.8 * alf);
+    } else if (i == 1) {
+      z += (15.0 + 6.25 * alf) / (1.0 + 0.9 * alf + 2.5 * n);
+    } else {
+      const Field ai = i - 1;
+      z += ((1.0 + 2.55 * ai) / (1.9 * ai) +
+            1.26 * ai * alf / (1.0 + 3.5 * ai)) *
+           (z - x[i - 2]) / (1.0 + 0.3 * alf);
     }
+    unsigned its;
+    Field pp, p2;
+    for (its = 0; its < MAXITS; ++its) {
+      Field p1 = 1.0;
+      p2 = 0.0;
+      for (unsigned j = 0; j < n; ++j) {
+        const Field p3 = p2;
+        p2 = p1;
+        p1 = ((2 * j + 1 + alf - z) * p2 - (j + alf) * p3) / (j + 1);
+      }
+
+      // p1 is now the desired Legendre polynomial evaluated at z. We
+      // next compute pp, its derivative, by a standard relation
+      // involving also p2, the polynomial of one lower order.
+      pp = (n * p1 - (n + alf) * p2) / z;
+
+      const Field z1 = z;
+
+      // Newton's Method
+      z = z1 - p1 / pp;
+      if (fabs(z - z1) < 100 * std::numeric_limits<Field>::epsilon())
+        break;
+    }
+    if (its >= MAXITS) {
+      throw std::range_error(std::string("too many iterations in gaulag"));
+    }
+    x[i] = z;
+    w[i] =
+        -exp(gsl_sf_lngamma(alf + n) - gsl_sf_lngamma(static_cast<double>(n))) /
+        (pp * n * p2);
+  }
 }
 
 } // end namespace rtt_special_functions

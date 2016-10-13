@@ -11,12 +11,12 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "parser/Class_Parse_Table.hh"
-#include "parser/Abstract_Class_Parser.hh"
-#include "parser/utilities.hh"
-#include "parser/File_Token_Stream.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "parser/Abstract_Class_Parser.hh"
+#include "parser/Class_Parse_Table.hh"
+#include "parser/File_Token_Stream.hh"
+#include "parser/utilities.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -30,97 +30,75 @@ using namespace rtt_parser;
  * Parent class.
  */
 
-class Parent
-{
-  public:
+class Parent {
+public:
+  virtual ~Parent() {}
 
-    virtual ~Parent(){}
-
-    virtual string name() = 0;
+  virtual string name() = 0;
 };
 
 //---------------------------------------------------------------------------//
-namespace rtt_parser
-{
-template<>
-class Class_Parse_Table<Parent>
-{
-  public:
+namespace rtt_parser {
+template <> class Class_Parse_Table<Parent> {
+public:
+  // TYPEDEFS
 
-    // TYPEDEFS
+  typedef Parent Return_Class;
 
-    typedef Parent Return_Class;
+  // MANAGEMENT
 
-    // MANAGEMENT
+  Class_Parse_Table() {
+    child_.reset();
+    current_ = this;
+  }
 
-    Class_Parse_Table()
-    {
-        child_.reset();
-        current_ = this;
+  // SERVICES
+
+  Parse_Table const &parse_table() const { return parse_table_; }
+
+  bool allow_exit() const { return false; }
+
+  void check_completeness(Token_Stream &tokens) {
+    if (child_ == SP<Parent>()) {
+      tokens.report_semantic_error("no parent specified");
     }
+  }
 
-    // SERVICES
+  SP<Parent> create_object() { return child_; }
 
-    Parse_Table const &parse_table() const { return parse_table_; }
+  // STATICS
 
-    bool allow_exit() const { return false; }
+  static void register_model(string const &keyword,
+                             SP<Parent> parse_function(Token_Stream &)) {
+    Abstract_Class_Parser<Parent, get_parse_table_,
+                          get_parsed_object_>::register_child(keyword,
+                                                              parse_function);
+  }
 
-    void check_completeness(Token_Stream &tokens)
-    {
-        if (child_ == SP<Parent>())
-        {
-            tokens.report_semantic_error("no parent specified");
-        }
-    }
+private:
+  // IMPLEMENTATION
 
-    SP<Parent> create_object()
-    {
-        return child_;
-    }
+  static Parse_Table &get_parse_table_() { return parse_table_; }
 
-    // STATICS
+  static SP<Parent> &get_parsed_object_() { return child_; }
 
-    static void register_model(string const &keyword,
-                               SP<Parent> parse_function(Token_Stream&) )
-    {
-        Abstract_Class_Parser<Parent,
-                              get_parse_table_,
-                              get_parsed_object_>::register_child(keyword, parse_function);
-    }
+  // DATA
 
-  private:
-
-    // IMPLEMENTATION
-
-    static Parse_Table &get_parse_table_()
-    {
-        return parse_table_;
-    }
-
-    static SP<Parent> &get_parsed_object_()
-    {
-        return child_;
-    }
-
-    // DATA
-
-    static SP<Parent>         child_;
-    static Class_Parse_Table *current_;
-    static Parse_Table        parse_table_;
+  static SP<Parent> child_;
+  static Class_Parse_Table *current_;
+  static Parse_Table parse_table_;
 };
 
-SP<Parent>                 Class_Parse_Table<Parent>::child_;
+SP<Parent> Class_Parse_Table<Parent>::child_;
 Class_Parse_Table<Parent> *Class_Parse_Table<Parent>::current_;
-Parse_Table                Class_Parse_Table<Parent>::parse_table_;
+Parse_Table Class_Parse_Table<Parent>::parse_table_;
 
 //---------------------------------------------------------------------------//
 /*
  * Specialization of the parse_class function for T=Parent
  */
-template<>
-SP<Parent> parse_class<Parent>(Token_Stream &tokens)
-{
-    return parse_class_from_table<Class_Parse_Table<Parent> >(tokens);
+template <> SP<Parent> parse_class<Parent>(Token_Stream &tokens) {
+  return parse_class_from_table<Class_Parse_Table<Parent>>(tokens);
 }
 
 } // namespace rtt_parser
@@ -130,108 +108,89 @@ SP<Parent> parse_class<Parent>(Token_Stream &tokens)
  * The following is what you would expect to find in a file associated with
  * the Son class.
  */
-class Son : public Parent
-{
-  public:
+class Son : public Parent {
+public:
+  virtual string name() { return "son"; }
 
-    virtual string name(){ return "son"; }
-
-    Son(double /*snip_and_snails*/){}
+  Son(double /*snip_and_snails*/) {}
 };
 
 double parsed_snips_and_snails;
 
-void parse_snips_and_snails(Token_Stream &tokens, int)
-{
-    if (parsed_snips_and_snails>=0.0)
-    {
-        tokens.report_semantic_error("snips and snails already specified");
-    }
+void parse_snips_and_snails(Token_Stream &tokens, int) {
+  if (parsed_snips_and_snails >= 0.0) {
+    tokens.report_semantic_error("snips and snails already specified");
+  }
 
-    parsed_snips_and_snails = parse_real(tokens);
-    if (parsed_snips_and_snails<0.0)
-    {
-        tokens.report_semantic_error("snips and snails must not be "
-                                     "negative");
-        parsed_snips_and_snails = 2;
-    }
+  parsed_snips_and_snails = parse_real(tokens);
+  if (parsed_snips_and_snails < 0.0) {
+    tokens.report_semantic_error("snips and snails must not be "
+                                 "negative");
+    parsed_snips_and_snails = 2;
+  }
 }
 
-namespace rtt_parser
-{
-template<>
-class Class_Parse_Table<Son>
-{
-  public:
+namespace rtt_parser {
+template <> class Class_Parse_Table<Son> {
+public:
+  // TYPEDEFS
 
-    // TYPEDEFS
+  typedef Son Return_Class;
 
-    typedef Son Return_Class;
+  // MANAGEMENT
 
-    // MANAGEMENT
+  Class_Parse_Table() {
+    if (!parse_table_is_initialized_) {
+      const Keyword keywords[] = {
+          {"snips and snails", parse_snips_and_snails, 0, ""},
+      };
 
-    Class_Parse_Table()
-    {
-        if (!parse_table_is_initialized_)
-        {
-            const Keyword keywords[] =
-                {
-                    {"snips and snails", parse_snips_and_snails, 0, ""},
-                };
+      const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
+      parse_table_.add(keywords, number_of_keywords);
 
-            const unsigned number_of_keywords = sizeof(keywords)/sizeof(Keyword);
-            parse_table_.add(keywords, number_of_keywords);
-
-            parse_table_is_initialized_ = true;
-        }
-
-        parsed_snips_and_snails = -1;
-        current_ = this;
+      parse_table_is_initialized_ = true;
     }
 
-    // SERVICES
+    parsed_snips_and_snails = -1;
+    current_ = this;
+  }
 
-    bool allow_exit() const { return false; }
+  // SERVICES
 
-    Parse_Table const &parse_table() const { return parse_table_; }
+  bool allow_exit() const { return false; }
 
-    void check_completeness(Token_Stream &tokens)
-    {
-        if (parsed_snips_and_snails == -1)
-        {
-            tokens.report_semantic_error("no snips and snails specified");
-        }
+  Parse_Table const &parse_table() const { return parse_table_; }
+
+  void check_completeness(Token_Stream &tokens) {
+    if (parsed_snips_and_snails == -1) {
+      tokens.report_semantic_error("no snips and snails specified");
     }
+  }
 
-    SP<Son> create_object()
-    {
-        SP<Son> Result(new Son(parsed_snips_and_snails));
-        return Result;
-    }
+  SP<Son> create_object() {
+    SP<Son> Result(new Son(parsed_snips_and_snails));
+    return Result;
+  }
 
-  private:
+private:
+  // STATIC
 
-    // STATIC
-
-    static Class_Parse_Table *current_;
-    static Parse_Table parse_table_;
-    static bool parse_table_is_initialized_;
+  static Class_Parse_Table *current_;
+  static Parse_Table parse_table_;
+  static bool parse_table_is_initialized_;
 };
 
 //---------------------------------------------------------------------------//
 Class_Parse_Table<Son> *Class_Parse_Table<Son>::current_;
-Parse_Table             Class_Parse_Table<Son>::parse_table_;
+Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
 //---------------------------------------------------------------------------//
-template<>
-SP<Son> parse_class<Son>(Token_Stream &tokens)
-{
-    return parse_class_from_table<Class_Parse_Table<Son> >(tokens);
+template <> SP<Son> parse_class<Son>(Token_Stream &tokens) {
+  return parse_class_from_table<Class_Parse_Table<Son>>(tokens);
 }
 
 } // end namespace rtt_parser
-
 
 //---------------------------------------------------------------------------//
 /*
@@ -239,91 +198,75 @@ SP<Son> parse_class<Son>(Token_Stream &tokens)
  * the Daughter class.
  */
 
-class Daughter : public Parent
-{
-  public:
+class Daughter : public Parent {
+public:
+  virtual string name() { return "daughter"; }
 
-    virtual string name(){ return "daughter"; }
-
-    Daughter(double /*sugar_and_spice*/){}
+  Daughter(double /*sugar_and_spice*/) {}
 };
 
 double parsed_sugar_and_spice;
 
-void parse_sugar_and_spice(Token_Stream &tokens, int)
-{
-    if (parsed_sugar_and_spice>=0.0)
-    {
-        tokens.report_semantic_error("sugar and spice already specified");
-    }
+void parse_sugar_and_spice(Token_Stream &tokens, int) {
+  if (parsed_sugar_and_spice >= 0.0) {
+    tokens.report_semantic_error("sugar and spice already specified");
+  }
 
-    parsed_sugar_and_spice = parse_real(tokens);
-    if (parsed_sugar_and_spice<0.0)
-    {
-        tokens.report_semantic_error("sugar and spice must not be "
-                                     "negative");
-        parsed_sugar_and_spice = 2;
-    }
+  parsed_sugar_and_spice = parse_real(tokens);
+  if (parsed_sugar_and_spice < 0.0) {
+    tokens.report_semantic_error("sugar and spice must not be "
+                                 "negative");
+    parsed_sugar_and_spice = 2;
+  }
 }
 
-namespace rtt_parser
-{
-template<>
-class Class_Parse_Table<Daughter>
-{
-  public:
+namespace rtt_parser {
+template <> class Class_Parse_Table<Daughter> {
+public:
+  // TYPEDEFS
 
-    // TYPEDEFS
+  typedef Daughter Return_Class;
 
-    typedef Daughter Return_Class;
+  // MANAGEMENT
 
-    // MANAGEMENT
+  Class_Parse_Table() {
+    if (!parse_table_is_initialized_) {
+      const Keyword keywords[] = {
+          {"sugar and spice", parse_sugar_and_spice, 0, ""},
+      };
 
-    Class_Parse_Table()
-    {
-        if (!parse_table_is_initialized_)
-        {
-            const Keyword keywords[] =
-                {
-                    {"sugar and spice", parse_sugar_and_spice, 0, ""},
-                };
-
-            const unsigned number_of_keywords = sizeof(keywords)/sizeof(Keyword);
-            parse_table_.add(keywords, number_of_keywords);
-            parse_table_is_initialized_ = true;
-        }
-
-        parsed_sugar_and_spice = -1;
-        current_ = this;
+      const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
+      parse_table_.add(keywords, number_of_keywords);
+      parse_table_is_initialized_ = true;
     }
 
-    // SERVICES
+    parsed_sugar_and_spice = -1;
+    current_ = this;
+  }
 
-    bool allow_exit() const { return false; }
+  // SERVICES
 
-    Parse_Table const &parse_table() const { return parse_table_; }
+  bool allow_exit() const { return false; }
 
-    void check_completeness(Token_Stream &tokens)
-    {
-        if (parsed_sugar_and_spice == -1)
-        {
-            tokens.report_semantic_error("no sugar and spice specified");
-        }
+  Parse_Table const &parse_table() const { return parse_table_; }
+
+  void check_completeness(Token_Stream &tokens) {
+    if (parsed_sugar_and_spice == -1) {
+      tokens.report_semantic_error("no sugar and spice specified");
     }
+  }
 
-    SP<Daughter> create_object()
-    {
-        SP<Daughter> Result(new Daughter(parsed_sugar_and_spice));
-        return Result;
-    }
+  SP<Daughter> create_object() {
+    SP<Daughter> Result(new Daughter(parsed_sugar_and_spice));
+    return Result;
+  }
 
-  private:
+private:
+  // STATIC
 
-    // STATIC
-
-    static Class_Parse_Table *current_;
-    static Parse_Table parse_table_;
-    static bool parse_table_is_initialized_;
+  static Class_Parse_Table *current_;
+  static Parse_Table parse_table_;
+  static bool parse_table_is_initialized_;
 };
 
 Class_Parse_Table<Daughter> *Class_Parse_Table<Daughter>::current_;
@@ -331,10 +274,8 @@ Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
 //---------------------------------------------------------------------------//
-template<>
-SP<Daughter> parse_class<Daughter>(Token_Stream &tokens)
-{
-    return parse_class_from_table<Class_Parse_Table<Daughter> >(tokens);
+template <> SP<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
+  return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 
 } // end namespace rtt_parser
@@ -344,70 +285,58 @@ SP<Daughter> parse_class<Daughter>(Token_Stream &tokens)
 SP<Parent> parent;
 
 //static
-void parse_parent(Token_Stream &tokens, int)
-{
-    parent = parse_class<Parent>(tokens);
+void parse_parent(Token_Stream &tokens, int) {
+  parent = parse_class<Parent>(tokens);
 }
 
-const Keyword top_keywords[] =
-{
+const Keyword top_keywords[] = {
     {"parent", parse_parent, 0, ""},
 };
 
-const unsigned number_of_top_keywords = sizeof(top_keywords)/sizeof(Keyword);
+const unsigned number_of_top_keywords = sizeof(top_keywords) / sizeof(Keyword);
 
 Parse_Table top_parse_table(top_keywords, number_of_top_keywords);
 
-SP<Parent> parse_son(Token_Stream &tokens)
-{
-    return parse_class<Son>(tokens);
-}
+SP<Parent> parse_son(Token_Stream &tokens) { return parse_class<Son>(tokens); }
 
-SP<Parent> parse_daughter(Token_Stream &tokens)
-{
-    return parse_class<Daughter>(tokens);
+SP<Parent> parse_daughter(Token_Stream &tokens) {
+  return parse_class<Daughter>(tokens);
 }
 
 //---------------------------------------------------------------------------//
 /* Test all the above */
 
-void test(UnitTest &ut)
-{
-    Class_Parse_Table<Parent>::register_model("son",
-                                              parse_son );
+void test(UnitTest &ut) {
+  Class_Parse_Table<Parent>::register_model("son", parse_son);
 
-    Class_Parse_Table<Parent>::register_model("daughter",
-                                              parse_daughter );
+  Class_Parse_Table<Parent>::register_model("daughter", parse_daughter);
 
-    // Build path for the input file
-    string const sadInputFile( ut.getTestSourcePath()
-			       + std::string("sons_and_daughters.inp") );
+  // Build path for the input file
+  string const sadInputFile(ut.getTestSourcePath() +
+                            std::string("sons_and_daughters.inp"));
 
-    File_Token_Stream tokens( sadInputFile );
+  File_Token_Stream tokens(sadInputFile);
 
-    top_parse_table.parse(tokens);
+  top_parse_table.parse(tokens);
 
-    cout << parent->name() << endl;
+  cout << parent->name() << endl;
 
-    if (tokens.error_count()==0 &&
-        parent!=SP<Parent>() &&
-        parent->name()=="son")
-    {
-        PASSMSG("Parsed son correctly");
-    }
-    else
-    {
-        FAILMSG("Did NOT parse son correctly");
-    }
+  if (tokens.error_count() == 0 && parent != SP<Parent>() &&
+      parent->name() == "son") {
+    PASSMSG("Parsed son correctly");
+  } else {
+    FAILMSG("Did NOT parse son correctly");
+  }
 }
 
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut(argc, argv, release);
-    try { test(ut); }
-    UT_EPILOG(ut);
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
+    test(ut);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

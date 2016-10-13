@@ -16,8 +16,7 @@
 
 #include "utilities.hh"
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 //---------------------------------------------------------------------------//
 DLL_PUBLIC_parser void write_c(Unit const &units, ostream &out);
 
@@ -35,29 +34,22 @@ DLL_PUBLIC_parser void write_c(Unit const &units, ostream &out);
  */
 //===========================================================================//
 
-
 //---------------------------------------------------------------------------//
-class Constant_Expression : public Expression
-{
-  public:
+class Constant_Expression : public Expression {
+public:
+  // CREATORS
 
-    // CREATORS
-
-    /*! Create a dimensionless constant.
+  /*! Create a dimensionless constant.
      *
      * \param number_of_variables Number of indepedent variables in the
      * expression.
      *
      * \param value Value of the constant
      */
-    Constant_Expression(unsigned const number_of_variables,
-                        double const value)
-        :
-        Expression(number_of_variables,
-                   value*dimensionless) 
-    {}
-    
-    /*! Create a dimensioned constant.
+  Constant_Expression(unsigned const number_of_variables, double const value)
+      : Expression(number_of_variables, value * dimensionless) {}
+
+  /*! Create a dimensioned constant.
      *
      * \param number_of_variables Number of indepedent variables in the
      * expression.
@@ -65,41 +57,28 @@ class Constant_Expression : public Expression
      * \param value Dimensions and value of the constant. The value is stored
      * in the \c conv member of this argument.
      */
-    Constant_Expression(unsigned const number_of_variables,
-                        Unit const &value)
-        :
-        Expression(number_of_variables,
-                   value) 
-    {}
+  Constant_Expression(unsigned const number_of_variables, Unit const &value)
+      : Expression(number_of_variables, value) {}
 
-    // ACCESSORS
+  // ACCESSORS
 
-    virtual bool is_constant() const { return true; }
+  virtual bool is_constant() const { return true; }
 
-  private:
+private:
+  // IMPLEMENTATION
 
-    // IMPLEMENTATION
+  virtual double evaluate_(double const *const) const { return units().conv; }
 
-    virtual double evaluate_(double const *const) const
-    {
-        return units().conv;
+  virtual void write_(Precedence const, vector<string> const &,
+                      ostream &out) const {
+    if (is_compatible(units(), dimensionless)) {
+      out << units().conv;
+    } else {
+      write_c(units(), out);
     }
+  }
 
-    virtual void write_(Precedence const, 
-                        vector<string> const &,
-                        ostream &out) const
-    {
-        if (is_compatible(units(), dimensionless))
-        {
-            out << units().conv;
-        }
-        else
-        {
-            write_c(units(), out);
-        }
-    }
-
-    virtual bool is_constant_(unsigned) const { return true; }
+  virtual bool is_constant_(unsigned) const { return true; }
 };
 
 } // end namespace rtt_parser

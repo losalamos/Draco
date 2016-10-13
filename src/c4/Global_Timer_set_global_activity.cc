@@ -17,7 +17,7 @@
 // namespace rtt_c4
 // {
 // using namespace std;
-     
+
 // //---------------------------------------------------------------------------------------//
 // /* static */
 // void Global_Timer::set_global_activity(bool const active)
@@ -25,13 +25,13 @@
 //     if (rtt_c4::node()==0)
 //     {
 //         global_active_ = active;
-        
+
 //         cout << "***** Global timers are now ";
 //         if (active)
 //             cout << "ACTIVE";
 //         else
 //             cout << "INACTIVE";
-        
+
 //         cout << endl;
 //     }
 // }

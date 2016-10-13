@@ -18,8 +18,7 @@
 #include "cdi/GrayOpacity.hh"
 #include "ds++/SP.hh"
 
-namespace rtt_cdi_analytic
-{
+namespace rtt_cdi_analytic {
 
 //===========================================================================//
 /*!
@@ -63,89 +62,89 @@ namespace rtt_cdi_analytic
 //
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity
-{
-  public:
-    // Useful typedefs.
-    typedef rtt_dsxx::SP<Analytic_Opacity_Model>       SP_Analytic_Model;
-    typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_SP_Model;
-    typedef std::vector<double>                        sf_double;
-    typedef std::string                                std_string;
-    typedef std::vector<char>                          sf_char;
+class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity
+    : public rtt_cdi::GrayOpacity {
+public:
+  // Useful typedefs.
+  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_SP_Model;
+  typedef std::vector<double> sf_double;
+  typedef std::string std_string;
+  typedef std::vector<char> sf_char;
 
-  private:
-    // Analytic opacity model.
-    SP_Analytic_Model analytic_model;
+private:
+  // Analytic opacity model.
+  SP_Analytic_Model analytic_model;
 
-    // Reaction model.
-    rtt_cdi::Reaction reaction;
+  // Reaction model.
+  rtt_cdi::Reaction reaction;
 
-    // CDI model.
-    rtt_cdi::Model model;
+  // CDI model.
+  rtt_cdi::Model model;
 
-  public:
-    // Constructor.
-    Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction,
-			  rtt_cdi::Model = rtt_cdi::ANALYTIC);
+public:
+  // Constructor.
+  Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction,
+                        rtt_cdi::Model = rtt_cdi::ANALYTIC);
 
-    // Constructor for packed Analytic_Gray_Opacities.
-    explicit Analytic_Gray_Opacity(const sf_char &);
+  // Constructor for packed Analytic_Gray_Opacities.
+  explicit Analytic_Gray_Opacity(const sf_char &);
 
-    // >>> ACCESSORS
-    const_SP_Model get_Analytic_Model() const { return analytic_model; }
+  // >>> ACCESSORS
+  const_SP_Model get_Analytic_Model() const { return analytic_model; }
 
-    // >>> INTERFACE SPECIFIED BY rtt_cdi::GrayOpacity
+  // >>> INTERFACE SPECIFIED BY rtt_cdi::GrayOpacity
 
-    // Get an opacity.
-    double getOpacity(double, double) const;
+  // Get an opacity.
+  double getOpacity(double, double) const;
 
-    // Get an opacity field given a field of temperatures.
-    sf_double getOpacity(const sf_double &, double) const;
+  // Get an opacity field given a field of temperatures.
+  sf_double getOpacity(const sf_double &, double) const;
 
-    // Get an opacity field given a field of densities.
-    sf_double getOpacity(double, const sf_double &) const;
+  // Get an opacity field given a field of densities.
+  sf_double getOpacity(double, const sf_double &) const;
 
-    //! Query to see if data is in tabular or functional form (false).
-    bool data_in_tabular_form() const { return false; }
+  //! Query to see if data is in tabular or functional form (false).
+  bool data_in_tabular_form() const { return false; }
 
-    //! Query to get the reaction type.
-    rtt_cdi::Reaction getReactionType() const { return reaction; }
+  //! Query to get the reaction type.
+  rtt_cdi::Reaction getReactionType() const { return reaction; }
 
-    //! Query for model type.
-    rtt_cdi::Model getModelType() const { return model; }
+  //! Query for model type.
+  rtt_cdi::Model getModelType() const { return model; }
 
-    // Return the energy policy (gray).
-    inline std_string getEnergyPolicyDescriptor() const;
+  // Return the energy policy (gray).
+  inline std_string getEnergyPolicyDescriptor() const;
 
-    // Get the data description of the opacity.
-    inline std_string getDataDescriptor() const;
+  // Get the data description of the opacity.
+  inline std_string getDataDescriptor() const;
 
-    // Get the name of the associated data file.
-    inline std_string getDataFilename() const;
+  // Get the name of the associated data file.
+  inline std_string getDataFilename() const;
 
-    //! Get the temperature grid (size 0 for function-based analytic data).
-    sf_double getTemperatureGrid() const { return sf_double(0); }
+  //! Get the temperature grid (size 0 for function-based analytic data).
+  sf_double getTemperatureGrid() const { return sf_double(0); }
 
-    //! Get the density grid (size 0 for function-based analytic data).
-    sf_double getDensityGrid() const { return sf_double(0); }
+  //! Get the density grid (size 0 for function-based analytic data).
+  sf_double getDensityGrid() const { return sf_double(0); }
 
-    //! Get the size of the temperature grid (size 0).
-    size_t getNumTemperatures() const { return 0; }
+  //! Get the size of the temperature grid (size 0).
+  size_t getNumTemperatures() const { return 0; }
 
-    //! Get the size of the density grid (size 0).
-    size_t getNumDensities() const { return 0; }
+  //! Get the size of the density grid (size 0).
+  size_t getNumDensities() const { return 0; }
 
-    // Pack the Analytic_Gray_Opacity into a character string.
-    sf_char pack() const;
+  // Pack the Analytic_Gray_Opacity into a character string.
+  sf_char pack() const;
 
-    /*!
+  /*!
      * \brief Returns the general opacity model type, defined in OpacityCommon.hh
      *
      * Since this is an analytic model, return 1 (rtt_cdi::ANALYTIC_TYPE)
      */
-    rtt_cdi::OpacityModelType getOpacityModelType() const {
-        return rtt_cdi::ANALYTIC_TYPE;
-    }
+  rtt_cdi::OpacityModelType getOpacityModelType() const {
+    return rtt_cdi::ANALYTIC_TYPE;
+  }
 };
 
 //---------------------------------------------------------------------------//
@@ -156,9 +155,8 @@ class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity : public rtt_cdi::GrayOpacit
  * Analytic_Gray_Opacity).
  */
 Analytic_Gray_Opacity::std_string
-Analytic_Gray_Opacity::getEnergyPolicyDescriptor() const
-{
-    return std_string("gray");
+Analytic_Gray_Opacity::getEnergyPolicyDescriptor() const {
+  return std_string("gray");
 }
 
 //---------------------------------------------------------------------------//
@@ -166,20 +164,19 @@ Analytic_Gray_Opacity::getEnergyPolicyDescriptor() const
  * \brief Return a string describing the opacity model.
  */
 Analytic_Gray_Opacity::std_string
-Analytic_Gray_Opacity::getDataDescriptor() const
-{
-    std_string descriptor;
+Analytic_Gray_Opacity::getDataDescriptor() const {
+  std_string descriptor;
 
-    if (reaction == rtt_cdi::TOTAL)
-	descriptor = "Analytic Gray Total";
-    else if (reaction == rtt_cdi::ABSORPTION)
-	descriptor = "Analytic Gray Absorption";
-    else if (reaction == rtt_cdi::SCATTERING)
-	descriptor = "Analytic Gray Scattering";
-    else
-	Insist (0, "Invalid analytic gray model opacity!");
+  if (reaction == rtt_cdi::TOTAL)
+    descriptor = "Analytic Gray Total";
+  else if (reaction == rtt_cdi::ABSORPTION)
+    descriptor = "Analytic Gray Absorption";
+  else if (reaction == rtt_cdi::SCATTERING)
+    descriptor = "Analytic Gray Scattering";
+  else
+    Insist(0, "Invalid analytic gray model opacity!");
 
-    return descriptor;
+  return descriptor;
 }
 
 //---------------------------------------------------------------------------//
@@ -187,9 +184,8 @@ Analytic_Gray_Opacity::getDataDescriptor() const
  * \brief Return NULL string for the data filename.
  */
 Analytic_Gray_Opacity::std_string
-Analytic_Gray_Opacity::getDataFilename() const
-{
-    return std_string();
+Analytic_Gray_Opacity::getDataFilename() const {
+  return std_string();
 }
 
 } // end namespace rtt_cdi_analytic

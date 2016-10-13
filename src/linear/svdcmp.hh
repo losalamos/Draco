@@ -14,16 +14,12 @@
 #ifndef linear_svdcmp_hh
 #define linear_svdcmp_hh
 
-namespace rtt_linear
-{
+namespace rtt_linear {
 
 //! Compute the singular value decomposition of a matrix.
-template<class RandomContainer>
-void svdcmp(RandomContainer &a,
-	    const unsigned m,
-	    const unsigned n,
-	    RandomContainer &w,
-	    RandomContainer &v);
+template <class RandomContainer>
+void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
+            RandomContainer &w, RandomContainer &v);
 
 } // end namespace rtt_linear
 

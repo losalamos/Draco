@@ -13,9 +13,8 @@
 #ifndef __ds_isSorted_hh__
 #define __ds_isSorted_hh__
 
-namespace rtt_dsxx
-{
- 
+namespace rtt_dsxx {
+
 //===========================================================================//
 /*!
  * \fn    isSorted
@@ -23,20 +22,20 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-template<class ForwardIterator>
-bool isSorted(ForwardIterator first, ForwardIterator last)
-{
-    if (first == last)
-	return true;
-    
-    bool isSorted = true;
-    ForwardIterator prev = first; ++first;
-    while (isSorted && first != last)
-    {
-	isSorted = !(*first < *prev);
-	prev = first; ++first;
-    }
-    return isSorted;
+template <class ForwardIterator>
+bool isSorted(ForwardIterator first, ForwardIterator last) {
+  if (first == last)
+    return true;
+
+  bool isSorted = true;
+  ForwardIterator prev = first;
+  ++first;
+  while (isSorted && first != last) {
+    isSorted = !(*first < *prev);
+    prev = first;
+    ++first;
+  }
+  return isSorted;
 }
 
 //===========================================================================//
@@ -47,29 +46,29 @@ bool isSorted(ForwardIterator first, ForwardIterator last)
 // revision history:
 // -----------------
 // 0) original
-// 
+//
 //===========================================================================//
 
-template<class ForwardIterator, class StrictWeakOrdering>
+template <class ForwardIterator, class StrictWeakOrdering>
 bool isSorted(ForwardIterator first, ForwardIterator last,
-	      StrictWeakOrdering comp)
-{
-    if (first == last)
-	return true;
-    
-    bool isSorted = true;
-    ForwardIterator prev = first; ++first;
-    while (isSorted && first != last)
-    {
-	isSorted = !comp(*first, *prev);
-	prev = first; ++first;
-    }
-    return isSorted;
+              StrictWeakOrdering comp) {
+  if (first == last)
+    return true;
+
+  bool isSorted = true;
+  ForwardIterator prev = first;
+  ++first;
+  while (isSorted && first != last) {
+    isSorted = !comp(*first, *prev);
+    prev = first;
+    ++first;
+  }
+  return isSorted;
 }
 
 } // end namespace rtt_dsxx
 
-#endif                          // __ds_isSorted_hh__
+#endif // __ds_isSorted_hh__
 
 //---------------------------------------------------------------------------//
 //                              end of ds++/isSorted.hh

@@ -13,11 +13,10 @@
 #ifndef CCS4_Parallel_File_Token_Stream_HH
 #define CCS4_Parallel_File_Token_Stream_HH
 
-#include <fstream>
 #include "Text_Token_Stream.hh"
+#include <fstream>
 
-namespace rtt_parser
-{
+namespace rtt_parser {
 using std::string;
 using std::set;
 using std::ifstream;
@@ -35,72 +34,67 @@ using std::ifstream;
  * very flat.
  */
 
-class DLL_PUBLIC_parser Parallel_File_Token_Stream : public Text_Token_Stream
-{
-  public:
+class DLL_PUBLIC_parser Parallel_File_Token_Stream : public Text_Token_Stream {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Construct an empty Parallel_File_Token_Stream
+  Parallel_File_Token_Stream();
 
-    //! Construct an empty Parallel_File_Token_Stream
-    Parallel_File_Token_Stream();
+  //! Construct a Parallel_File_Token_Stream from a file.
+  Parallel_File_Token_Stream(string const &filename);
 
-    //! Construct a Parallel_File_Token_Stream from a file.
-    Parallel_File_Token_Stream(string const &filename);
+  //! Construct a Parallel_File_Token_Stream from a file.
+  Parallel_File_Token_Stream(string const &filename,
+                             set<char> const &whitespace);
 
-    //! Construct a Parallel_File_Token_Stream from a file.
-    Parallel_File_Token_Stream(string const &filename,
-			       set<char> const &whitespace);
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Reopen the Parallel_File_Token_Stream with a new file.
+  void open(string const &filename);
 
-    //! Reopen the Parallel_File_Token_Stream with a new file.
-    void open(string const &filename);
+  //! Rewind the Parallel_File_Token_Stream.
+  virtual void rewind();
 
-    //! Rewind the Parallel_File_Token_Stream.
-    virtual void rewind();
+  //! Report a condition.
+  virtual void report(Token const &token, string const &message);
 
-    //! Report a condition.
-    virtual void report(Token const & token,
-                        string const &message);
+  //! Report a condition.
+  virtual void report(string const &message);
 
-    //! Report a condition.
-    virtual void report(string const &message);
+  // ACCESSORS
 
-    // ACCESSORS
+  //! Check the class invariants.
+  bool check_class_invariants() const;
 
-    //! Check the class invariants.
-    bool check_class_invariants() const;
+protected:
+  // IMPLEMENTATION
 
-  protected:
+  virtual string location_() const;
 
-    // IMPLEMENTATION
+  virtual void fill_character_buffer_();
 
-    virtual string location_() const;
+  virtual bool error_() const;
+  virtual bool end_() const;
 
-    virtual void fill_character_buffer_();
+private:
+  //! Open the input stream.
+  void open_();
 
-    virtual bool error_() const;
-    virtual bool end_() const;
+  // DATA
 
-  private:
+  string filename_; //!< File from which to take token text.
+  ifstream infile_; //!< Stream from which to take token text.
 
-    //! Open the input stream.
-    void open_();
+  bool is_io_processor_; //!< Is this the designated I/O processor?
 
-    // DATA
-
-    string filename_;  //!< File from which to take token text.
-    ifstream infile_;  //!< Stream from which to take token text.
-
-    bool is_io_processor_;     //!< Is this the designated I/O processor?
-
-    bool at_eof_;        //!< Did processor 0 see the end of file?
-    bool at_error_;      //!< Did processor 0 see an I/O error?
+  bool at_eof_;   //!< Did processor 0 see the end of file?
+  bool at_error_; //!< Did processor 0 see an I/O error?
 };
 
 } // rtt_parser
 
-#endif  // CCS4_Parallel_File_Token_Stream_HH
+#endif // CCS4_Parallel_File_Token_Stream_HH
 
 //---------------------------------------------------------------------------//
 // end of Parallel_File_Token_Stream.hh

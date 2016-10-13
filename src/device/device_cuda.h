@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef device_device_cuda_h
 #define device_device_cuda_h
@@ -21,8 +19,6 @@
 // Intel defines __GNUC__ by default
 #  ifdef __INTEL_COMPILER
 #    pragma warning push
-//#    pragma warning(disable:1011) // missing return statement at end of non-void function 
-//#    pragma warning(disable:381)  // more than one instance of overloaded function
 #  endif
 #elif defined __SUNPRO_CC
 #  pragma disable_warn
@@ -48,5 +44,3 @@
 //---------------------------------------------------------------------------//
 // end of device_cuda.h
 //---------------------------------------------------------------------------//
-
-

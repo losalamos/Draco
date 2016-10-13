@@ -14,70 +14,69 @@
 #ifndef __RTT_Format_Reader_Flags_hh__
 #define __RTT_Format_Reader_Flags_hh__
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 
-namespace rtt_RTT_Format_Reader
-{
+namespace rtt_RTT_Format_Reader {
 /*!
  * \brief Controls parsing, storing, and accessing the data contained in the 
  *        node, side, and cell flag blocks of the mesh file.
  */
-class Flags
-{
-    // typedefs
-    typedef std::ifstream ifstream;
-    typedef std::string string;
-    typedef std::vector<string> vector_str;
-    typedef std::vector<int> vector_int;
+class Flags {
+  // typedefs
+  typedef std::ifstream ifstream;
+  typedef std::string string;
+  typedef std::vector<string> vector_str;
+  typedef std::vector<int> vector_int;
 
-    int nflags;
-    string name;
-    vector_int flag_nums;
-    vector_str flag_names;
+  int nflags;
+  string name;
+  vector_int flag_nums;
+  vector_str flag_names;
 
-  public:
-    Flags(int nflags_, const string & name_) : nflags(nflags_), name(name_), 
-        flag_nums(nflags), flag_names(nflags) {}
-    ~Flags() {}
+public:
+  Flags(int nflags_, const string &name_)
+      : nflags(nflags_), name(name_), flag_nums(nflags), flag_names(nflags) {}
+  ~Flags() {}
 
-    void readFlags(ifstream & meshfile);
+  void readFlags(ifstream &meshfile);
 
-  public:
-/*!
+public:
+  /*!
  * \brief Validates the specified flag index.
  * \param flag Flag index.
  * \return The existance of the flag.
  */
-    bool allowed_flag(int flag) const
-    { return flag_nums.end() != std::find(flag_nums.begin(), 
-					  flag_nums.end(), flag); }
-/*!
+  bool allowed_flag(int flag) const {
+    return flag_nums.end() !=
+           std::find(flag_nums.begin(), flag_nums.end(), flag);
+  }
+  /*!
  * \brief Returns the name of specified flag type
  * \param flagtype Flag type number.
  * \return The Flag type name.
  */
-    string getFlagType() const {return name;}
-/*!
+  string getFlagType() const { return name; }
+  /*!
  * \brief Returns the flag number associated with the specified flag index.
  * \param flag_index Flag index.
  * \return The Flag number.
  */
-    int getFlagNumber(int flag) const {return flag_nums[flag];}
-/*!
+  int getFlagNumber(int flag) const { return flag_nums[flag]; }
+  /*!
  * \brief Returns the flag name associated with the specified index.
  * \param flag_index Flag index.
  * \return The flag name.
  */
-    string getFlagName(int flag) const {return flag_names[flag];}
-/*!
+  string getFlagName(int flag) const { return flag_names[flag]; }
+  /*!
  * \brief Returns the number of flags.
  * \return The number of flags.
  */
-    int getFlagSize() const {return nflags;}
+  int getFlagSize() const { return nflags; }
 };
 
 } // end namespace rtt_RTT_Format_Reader

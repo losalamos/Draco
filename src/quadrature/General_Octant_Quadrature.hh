@@ -16,8 +16,7 @@
 
 #include "Octant_Quadrature.hh"
 
-namespace rtt_quadrature
-{
+namespace rtt_quadrature {
 
 //=======================================================================================//
 /*!
@@ -26,66 +25,59 @@ namespace rtt_quadrature
  */
 //=======================================================================================//
 
-class General_Octant_Quadrature : public Octant_Quadrature
-{
-  public:
+class General_Octant_Quadrature : public Octant_Quadrature {
+public:
+  // CREATORS
+  DLL_PUBLIC_quadrature
+  General_Octant_Quadrature(unsigned const sn_order, vector<double> const &mu,
+                            vector<double> const &eta, vector<double> const &xi,
+                            vector<double> const &wt, unsigned number_of_levels,
+                            Quadrature_Class);
 
-    // CREATORS
-    DLL_PUBLIC_quadrature
-    General_Octant_Quadrature(unsigned const sn_order,
-                              vector<double> const &mu,
-                              vector<double> const &eta,
-                              vector<double> const &xi,
-                              vector<double> const &wt,
-                              unsigned number_of_levels,
-                              Quadrature_Class);
+  General_Octant_Quadrature(); // disable default construction
 
-    General_Octant_Quadrature();    // disable default construction
+  // ACCESSORS
 
-    // ACCESSORS
+  vector<double> const &mu() const { return mu_; }
+  vector<double> const &eta() const { return eta_; }
+  vector<double> const &xi() const { return xi_; }
+  vector<double> const &wt() const { return wt_; }
 
-    vector<double> const & mu()     const { return mu_; }
-    vector<double> const & eta()    const { return eta_; }
-    vector<double> const & xi()     const { return xi_; }
-    vector<double> const & wt()     const { return wt_; }
+  // SERVICES
 
-    // SERVICES
+  // These functions override the virtual member functions specifed in the
+  // parent class Quadrature.
 
-    // These functions override the virtual member functions specifed in the
-    // parent class Quadrature.
+  string name() const;
 
-    string name()        const;
+  string parse_name() const;
 
-    string parse_name()  const;
+  Quadrature_Class quadrature_class() const;
 
-    Quadrature_Class quadrature_class() const;
+  unsigned number_of_levels() const;
 
-    unsigned number_of_levels() const;
+  string as_text(string const &indent) const;
 
-    string as_text(string const &indent) const;
+  bool is_open_interval() const;
 
-    bool is_open_interval() const;
+  bool check_class_invariants() const;
 
-    bool check_class_invariants() const;
+  // STATICS
 
-    // STATICS
+  static SP<Quadrature> parse(Token_Stream &tokens);
 
-    static SP<Quadrature> parse(Token_Stream &tokens);
+private:
+  // IMPLEMENTATION
 
-  private:
+  //! Virtual hook for create_ordinate_set
+  virtual void create_octant_ordinates_(vector<double> &mu, vector<double> &eta,
+                                        vector<double> &wt) const;
 
-    // IMPLEMENTATION
-
-    //! Virtual hook for create_ordinate_set
-    virtual void create_octant_ordinates_(vector<double> &mu,
-                                          vector<double> &eta,
-                                          vector<double> &wt) const;
-
-    // DATA
-    vector<double> mu_, eta_, xi_, wt_;
-    unsigned number_of_levels_;
-    Quadrature_Class quadrature_class_;
-    bool is_open_interval_;
+  // DATA
+  vector<double> mu_, eta_, xi_, wt_;
+  unsigned number_of_levels_;
+  Quadrature_Class quadrature_class_;
+  bool is_open_interval_;
 };
 
 } // end namespace rtt_quadrature

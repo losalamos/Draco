@@ -16,13 +16,12 @@
 
 #ifdef C4_MPI
 
-#include "C4_sys_times.h"
 #include "C4_Functions.hh"
-#include "C4_Req.hh"
 #include "C4_MPI.hh"
+#include "C4_Req.hh"
+#include "C4_sys_times.h"
 
-namespace rtt_c4
-{
+namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 // MPI COMMUNICATOR
@@ -41,64 +40,56 @@ const int proc_null = MPI_PROC_NULL;
 // SETUP FUNCTIONS
 //---------------------------------------------------------------------------//
 
-int initialize(int &argc, char **&argv, int required)
-{
-    int provided;
-    int result = MPI_Init_thread(&argc, &argv, required, &provided);
-    initialized = (result == MPI_SUCCESS);
-    Check( initialized );
+int initialize(int &argc, char **&argv, int required) {
+  int provided;
+  int result = MPI_Init_thread(&argc, &argv, required, &provided);
+  initialized = (result == MPI_SUCCESS);
+  Check(initialized);
 
-    // Resync clocks for Darwin mpich
-    Remember( double foo( MPI_Wtick() ); );
-    Ensure( foo > 0.0 );
-    return provided;
+  // Resync clocks for Darwin mpich
+  Remember(double foo(MPI_Wtick()););
+  Ensure(foo > 0.0);
+  return provided;
 }
 
 //---------------------------------------------------------------------------//
 
-void finalize()
-{
-    MPI_Finalize();
-    return;
+void finalize() {
+  MPI_Finalize();
+  return;
 }
 
 //---------------------------------------------------------------------------------------//
 
-void type_free(C4_Datatype &old_type)
-{
-    MPI_Type_free(&old_type);
-}
-    
+void type_free(C4_Datatype &old_type) { MPI_Type_free(&old_type); }
+
 //---------------------------------------------------------------------------//
 // QUERY FUNCTIONS
 //---------------------------------------------------------------------------//
 
-int node()
-{
-    int node = 0; 
-    MPI_Comm_rank(communicator, &node);
-    Check (node >= 0);
-    return node;
+int node() {
+  int node = 0;
+  MPI_Comm_rank(communicator, &node);
+  Check(node >= 0);
+  return node;
 }
 
 //---------------------------------------------------------------------------//
 
-int nodes()
-{
-    int nodes = 0;
-    MPI_Comm_size(communicator, &nodes);
-    Check (nodes > 0);
-    return nodes;
+int nodes() {
+  int nodes = 0;
+  MPI_Comm_size(communicator, &nodes);
+  Check(nodes > 0);
+  return nodes;
 }
 
 //---------------------------------------------------------------------------//
 // BARRIER FUNCTIONS
 //---------------------------------------------------------------------------//
 
-void global_barrier()
-{
-    MPI_Barrier(communicator);
-    return;
+void global_barrier() {
+  MPI_Barrier(communicator);
+  return;
 }
 
 //---------------------------------------------------------------------------//
@@ -106,108 +97,90 @@ void global_barrier()
 //---------------------------------------------------------------------------//
 
 // overloaded function (no args)
-double wall_clock_time()
-{
-    return MPI_Wtime();
-}
+double wall_clock_time() { return MPI_Wtime(); }
 // overloaded function (provide POSIX timer information).
-double wall_clock_time( DRACO_TIME_TYPE & now )
-{
-    // obtain posix timer information and return it to the user via the
-    // reference value argument "now".
+double wall_clock_time(DRACO_TIME_TYPE &now) {
+// obtain posix timer information and return it to the user via the
+// reference value argument "now".
 #ifdef WIN32
-    // now = time( NULL );
-    time( &now );
+  // now = time( NULL );
+  time(&now);
 #else
-    times( &now );
+  times(&now);
 #endif
-    // This funtion will return the MPI wall-clock time.
-    return MPI_Wtime();
+  // This funtion will return the MPI wall-clock time.
+  return MPI_Wtime();
 }
 
 //---------------------------------------------------------------------------//
 
-double wall_clock_resolution()
-{
-    return MPI_Wtick();
-}
+double wall_clock_resolution() { return MPI_Wtick(); }
 
 //---------------------------------------------------------------------------//
 // PROBE/WAIT FUNCTIONS
 //---------------------------------------------------------------------------//
 
-bool probe(int   source, 
-           int   tag,
-           int & message_size)
-{
-    Require(source>=0 && source<nodes());
+bool probe(int source, int tag, int &message_size) {
+  Require(source >= 0 && source < nodes());
 
-    int flag;
-    MPI_Status status;
-    
-    // post an MPI_Irecv (non-blocking receive)
-    MPI_Iprobe(source, tag, communicator, &flag, &status);
+  int flag;
+  MPI_Status status;
 
-    if (!flag) return false;
+  // post an MPI_Irecv (non-blocking receive)
+  MPI_Iprobe(source, tag, communicator, &flag, &status);
 
-    MPI_Get_count(&status, MPI_CHAR, &message_size);
-    
-    return true;
+  if (!flag)
+    return false;
+
+  MPI_Get_count(&status, MPI_CHAR, &message_size);
+
+  return true;
 }
 
 //---------------------------------------------------------------------------//
-void blocking_probe(int   source, 
-                    int   tag,
-                    int & message_size)
-{
-    Require(source>=0 && source<nodes());
+void blocking_probe(int source, int tag, int &message_size) {
+  Require(source >= 0 && source < nodes());
 
-    MPI_Status status;
-    MPI_Probe(source, tag, communicator, &status);
-    MPI_Get_count(&status, MPI_CHAR, &message_size);
+  MPI_Status status;
+  MPI_Probe(source, tag, communicator, &status);
+  MPI_Get_count(&status, MPI_CHAR, &message_size);
 }
 
 //---------------------------------------------------------------------------//
-void wait_all(int      count,
-              C4_Req * requests)
-{
-    // Nothing to do if count is zero.
-    if( count == 0 ) return;
-    
-    std::vector<MPI_Request> array_of_requests(count);
-    for (int i=0; i<count; ++i)
-    {
-        if (requests[i].inuse())
-            array_of_requests[i] = requests[i].r();
-        else
-            array_of_requests[i] = MPI_REQUEST_NULL;
-    }
-    Remember(int check =)
-    MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
-    Check(check==MPI_SUCCESS);
+void wait_all(int count, C4_Req *requests) {
+  // Nothing to do if count is zero.
+  if (count == 0)
     return;
+
+  std::vector<MPI_Request> array_of_requests(count);
+  for (int i = 0; i < count; ++i) {
+    if (requests[i].inuse())
+      array_of_requests[i] = requests[i].r();
+    else
+      array_of_requests[i] = MPI_REQUEST_NULL;
+  }
+  Remember(int check =)
+      MPI_Waitall(count, &array_of_requests[0], MPI_STATUSES_IGNORE);
+  Check(check == MPI_SUCCESS);
+  return;
 }
 
 //---------------------------------------------------------------------------//
 // ABORT
 //---------------------------------------------------------------------------//
-int abort(int error)
-{
-    // This test is not recorded as tested by BullseyeCoverage because abort
-    // terminates the execution and BullseyeCoverage only reports coverage for
-    // function that return control to main().
+int abort(int error) {
+  // This test is not recorded as tested by BullseyeCoverage because abort
+  // terminates the execution and BullseyeCoverage only reports coverage for
+  // function that return control to main().
 
-    int rerror = MPI_Abort(communicator, error);
-    return rerror;
+  int rerror = MPI_Abort(communicator, error);
+  return rerror;
 }
 
 //---------------------------------------------------------------------------//
 // isScalar
 //---------------------------------------------------------------------------//
-bool isScalar()
-{
-    return ! initialized;
-}
+bool isScalar() { return !initialized; }
 
 } // end namespace rtt_c4
 

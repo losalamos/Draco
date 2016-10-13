@@ -10,21 +10,17 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include "Norms_Index.hh"
 #include "Comm_Traits.hh"
+#include "Norms_Index.hh"
 
-namespace rtt_norms
-{
+namespace rtt_norms {
 
 //---------------------------------------------------------------------------//
 //! Default constructor.
 //---------------------------------------------------------------------------//
 template <class Index_t>
-Norms_Index<Index_t>::Norms_Index()
-    : Norms_Base(),
-      d_index_Linf( Index_t() )
-{
-    /* empty */
+Norms_Index<Index_t>::Norms_Index() : Norms_Base(), d_index_Linf(Index_t()) {
+  /* empty */
 }
 
 //---------------------------------------------------------------------------//
@@ -37,21 +33,18 @@ Norms_Index<Index_t>::Norms_Index()
 */
 //---------------------------------------------------------------------------//
 template <class Index_t>
-void Norms_Index<Index_t>::add(const double   v,
-			       const Index_t &index,
-			       const double   weight)
-{
-    double vabs = std::fabs(v);
-    
-    d_sum_weights += weight;
-    d_sum_L1 += weight * vabs;
-    d_sum_L2 += weight * v * v;
+void Norms_Index<Index_t>::add(const double v, const Index_t &index,
+                               const double weight) {
+  double vabs = std::fabs(v);
 
-    if ( vabs >= d_Linf )
-    {
-	d_Linf       = vabs;
-	d_index_Linf = index;
-    }
+  d_sum_weights += weight;
+  d_sum_L1 += weight * vabs;
+  d_sum_L2 += weight * v * v;
+
+  if (vabs >= d_Linf) {
+    d_Linf = vabs;
+    d_index_Linf = index;
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -59,11 +52,9 @@ void Norms_Index<Index_t>::add(const double   v,
   \brief  Re-initializes the norm values.
 */
 //---------------------------------------------------------------------------//
-template <class Index_t>
-void Norms_Index<Index_t>::reset()
-{
-    Norms_Base::reset();
-    d_index_Linf = Index_t();
+template <class Index_t> void Norms_Index<Index_t>::reset() {
+  Norms_Base::reset();
+  d_index_Linf = Index_t();
 }
 
 //---------------------------------------------------------------------------//
@@ -77,52 +68,45 @@ void Norms_Index<Index_t>::reset()
   \param n Processor on which norms are summed.
 */
 //---------------------------------------------------------------------------//
-template <class Index_t>
-void Norms_Index<Index_t>::comm(const size_t n)
-{
-    const size_t num_nodes = rtt_c4::nodes();
-    
-    if ( num_nodes == 1 ) return;
+template <class Index_t> void Norms_Index<Index_t>::comm(const size_t n) {
+  const size_t num_nodes = rtt_c4::nodes();
 
-    const size_t node = rtt_c4::node();
+  if (num_nodes == 1)
+    return;
 
-    if ( node == n )
-    {
-	// Accumulate the results onto this node.
-	
-	Index_t pe_index(0); // temporary for index
-	
-	for ( size_t i = 0; i < num_nodes; ++ i )
-	{
-	    if ( i != n )
-	    {
-		double x(0);
-		rtt_c4::receive(&x, 1, i);
-		d_sum_L1 += x;
-		rtt_c4::receive(&x, 1, i);
-		d_sum_L2 += x;
-		rtt_c4::receive(&x, 1, i);
-		d_sum_weights += x;
-		rtt_c4::receive(&x, 1, i);
-		Comm_Traits<Index_t>::receive(pe_index, i);
-		if ( x > d_Linf )
-		{
-		    d_Linf = x;
-		    d_index_Linf = pe_index;
-		}
-	    }
-	}
+  const size_t node = rtt_c4::node();
+
+  if (node == n) {
+    // Accumulate the results onto this node.
+
+    Index_t pe_index(0); // temporary for index
+
+    for (size_t i = 0; i < num_nodes; ++i) {
+      if (i != n) {
+        double x(0);
+        rtt_c4::receive(&x, 1, i);
+        d_sum_L1 += x;
+        rtt_c4::receive(&x, 1, i);
+        d_sum_L2 += x;
+        rtt_c4::receive(&x, 1, i);
+        d_sum_weights += x;
+        rtt_c4::receive(&x, 1, i);
+        Comm_Traits<Index_t>::receive(pe_index, i);
+        if (x > d_Linf) {
+          d_Linf = x;
+          d_index_Linf = pe_index;
+        }
+      }
     }
-    else
-    {
-	// Send this proc's result back to node n.
-	
-	rtt_c4::send(&d_sum_L1, 1, n);
-	rtt_c4::send(&d_sum_L2, 1, n);
-	rtt_c4::send(&d_sum_weights, 1, n);
-	rtt_c4::send(&d_Linf, 1, n);
-	Comm_Traits<Index_t>::send(d_index_Linf, n);
-    }
+  } else {
+    // Send this proc's result back to node n.
+
+    rtt_c4::send(&d_sum_L1, 1, n);
+    rtt_c4::send(&d_sum_L2, 1, n);
+    rtt_c4::send(&d_sum_weights, 1, n);
+    rtt_c4::send(&d_Linf, 1, n);
+    Comm_Traits<Index_t>::send(d_index_Linf, n);
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -131,10 +115,9 @@ void Norms_Index<Index_t>::comm(const size_t n)
 */
 //---------------------------------------------------------------------------//
 template <class Index_t>
-bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const
-{
-    bool b = Norms_Base::operator==(n);
-    return b &&	(d_index_Linf == n.d_index_Linf);
+bool Norms_Index<Index_t>::operator==(const Norms_Index &n) const {
+  bool b = Norms_Base::operator==(n);
+  return b && (d_index_Linf == n.d_index_Linf);
 }
 
 } // namespace rtt_norms

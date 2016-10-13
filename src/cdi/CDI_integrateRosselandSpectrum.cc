@@ -13,8 +13,7 @@
 
 #include "CDI.hh"
 
-namespace rtt_cdi
-{
+namespace rtt_cdi {
 //---------------------------------------------------------------------------//
 // Rosseland Spectrum Integrators
 //---------------------------------------------------------------------------//
@@ -37,21 +36,17 @@ namespace rtt_cdi
  * \return integrated normalized Rosseland from low to high
  *
  */
-double CDI::integrateRosselandSpectrum(
-    const double low,
-    const double high, 
-    const double T)
-{
-    Require (low  >= 0.0);
-    Require (high >= low);
-    Require (T >= 0.0);
+double CDI::integrateRosselandSpectrum(const double low, const double high,
+                                       const double T) {
+  Require(low >= 0.0);
+  Require(high >= low);
+  Require(T >= 0.0);
 
-    double planck, rosseland;
+  double planck, rosseland;
 
-    integrate_Rosseland_Planckian_Spectrum(low, high, T, planck,
-                                           rosseland); 
+  integrate_Rosseland_Planckian_Spectrum(low, high, T, planck, rosseland);
 
-    return rosseland;
+  return rosseland;
 }
 
 } // end namespace rtt_cdi

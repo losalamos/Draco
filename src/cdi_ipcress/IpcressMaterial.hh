@@ -15,16 +15,15 @@
 #define __cdi_ipcress_IpcressMaterial_hh__
 
 #include "ds++/Assert.hh"
+#include <algorithm>
+#include <cctype>
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <algorithm>
-#include <iostream>
-#include <cctype>
 
-namespace rtt_cdi_ipcress
-{
- 
+namespace rtt_cdi_ipcress {
+
 //===========================================================================//
 /*!
  * \class IpcressMaterial
@@ -75,29 +74,25 @@ namespace rtt_cdi_ipcress
  */
 //===========================================================================//
 
-class IpcressMaterial 
-{
+class IpcressMaterial {
 
-    // NESTED CLASSES AND TYPEDEFS
+  // NESTED CLASSES AND TYPEDEFS
 
-    // DATA
-    
-    std::vector< std::string > fieldNames;
-    std::vector< std::vector< double > > fieldValues;
-    
-    //! Ratio of Z to A for this material. Ration generated from 'comp' data.
-    double zoa; 
+  // DATA
 
-  public:
+  std::vector<std::string> fieldNames;
+  std::vector<std::vector<double>> fieldValues;
 
-    // CREATORS
+  //! Ratio of Z to A for this material. Ration generated from 'comp' data.
+  double zoa;
 
-    //! Default constructor builds an empty object.
-    IpcressMaterial(void)
-        : fieldNames(), fieldValues(), zoa(0.0)
-    { /* empty */ };
-    
-    /*!
+public:
+  // CREATORS
+
+  //! Default constructor builds an empty object.
+  IpcressMaterial(void) : fieldNames(), fieldValues(), zoa(0.0){/* empty */};
+
+  /*!
      * \brief IpcressMaterial constructor builds a complete object.
      *
      *    This is the standard IpcressMaterial constructor.  This object
@@ -106,26 +101,26 @@ class IpcressMaterial
      * \param in_fieldNames A list of field names to be stored in this
      * material records.
      */
-    // IpcressMaterial( std::vector< std::string > in_fieldNames,
-    //                  std::vector< std::vector<double> > in_fieldValues )
-    //      : fieldNames( in_fieldNames ),
-    //        fieldValues( in_fieldValues )
-    // {
-    //     Ensure( fieldNames.size() == fieldValues.size() );
-    //     for( size_t i=0; i<fieldNames.size(); ++i )
-    //         Ensure( fieldNames[i].size() > 0 );
-    // };
+  // IpcressMaterial( std::vector< std::string > in_fieldNames,
+  //                  std::vector< std::vector<double> > in_fieldValues )
+  //      : fieldNames( in_fieldNames ),
+  //        fieldValues( in_fieldValues )
+  // {
+  //     Ensure( fieldNames.size() == fieldValues.size() );
+  //     for( size_t i=0; i<fieldNames.size(); ++i )
+  //         Ensure( fieldNames[i].size() > 0 );
+  // };
 
-    // (defaulted) IpcressMaterial(const IpcressMaterial &rhs);
-    // (defaulted) ~IpcressMaterial();
-    // (defaulted) IpcressMaterial& operator=(const IpcressMaterial &rhs);
+  // (defaulted) IpcressMaterial(const IpcressMaterial &rhs);
+  // (defaulted) ~IpcressMaterial();
+  // (defaulted) IpcressMaterial& operator=(const IpcressMaterial &rhs);
 
-    // MANIPULATORS
+  // MANIPULATORS
 
-    //! Set the Z/A ratio for this material.
-    void set_zoa( double const in_zoa ) { zoa = in_zoa; };
+  //! Set the Z/A ratio for this material.
+  void set_zoa(double const in_zoa) { zoa = in_zoa; };
 
-    /*!
+  /*!
      * \brief Add a field and it's data to the current material.  This is the
      * normal way of populating this storage class.
      *
@@ -134,58 +129,52 @@ class IpcressMaterial
      * \param in_values a vector<double> of values that represent the data
      *        loaded from the IPCRESS file.
      */
-    void add_field( std::string & in_fieldName,
-                    std::vector<double> const & in_values )
-    {
-        // Remove white space from in_fieldName before saving it.
-        // NOTE: ::isspace forces the use of c namespace rather than std::isspace
-        in_fieldName.erase( std::remove_if( in_fieldName.begin(),
-                                            in_fieldName.end(),
-                                            ::isspace ),
-                            in_fieldName.end() );
+  void add_field(std::string &in_fieldName,
+                 std::vector<double> const &in_values) {
+    // Remove white space from in_fieldName before saving it.
+    // NOTE: ::isspace forces the use of c namespace rather than std::isspace
+    in_fieldName.erase(
+        std::remove_if(in_fieldName.begin(), in_fieldName.end(), ::isspace),
+        in_fieldName.end());
 
-        // Save the material data field (description and associated values).
-        fieldNames.push_back( in_fieldName );
-        fieldValues.push_back( in_values );
+    // Save the material data field (description and associated values).
+    fieldNames.push_back(in_fieldName);
+    fieldValues.push_back(in_values);
 
-        return;
-    }
-    
-    // ACCESSORS
+    return;
+  }
 
-    //! return the list of known field descriptors
-    std::vector< std::string > listDataFieldNames(void) const {
-        return fieldNames; }
+  // ACCESSORS
 
-    //! return the vector of data associated with a field name.
-    std::vector< double > data( std::string const & fieldName ) const {
-        Require( fieldName.size() > 0 );
-        Require( find( fieldNames.begin(), fieldNames.end(), fieldName )
-                 != fieldNames.end() );
-        return fieldValues[ getFieldIndex( fieldName ) ]; }
+  //! return the list of known field descriptors
+  std::vector<std::string> listDataFieldNames(void) const { return fieldNames; }
 
-  private:
-    
-    // IMPLEMENTATION
+  //! return the vector of data associated with a field name.
+  std::vector<double> data(std::string const &fieldName) const {
+    Require(fieldName.size() > 0);
+    Require(find(fieldNames.begin(), fieldNames.end(), fieldName) !=
+            fieldNames.end());
+    return fieldValues[getFieldIndex(fieldName)];
+  }
 
-    /*!
+private:
+  // IMPLEMENTATION
+
+  /*!
      * \brief Return the index of the provided string as stored in member data
      *       'fieldNames'
      */
-    size_t getFieldIndex( std::string const & fieldName ) const
-    {
-        Require( fieldName.size() > 0 );
-        Remember(
-            std::vector< std::string >::const_iterator pos =
-            find( fieldNames.begin(), fieldNames.end(), fieldName );
-            );
-        Check( pos != fieldNames.end() );
-        size_t fieldIndex = std::distance( fieldNames.begin(), 
-            std::find( fieldNames.begin(), fieldNames.end(), fieldName ) );
-        Ensure( fieldIndex < fieldNames.size() );
-        return fieldIndex;
-    }
-
+  size_t getFieldIndex(std::string const &fieldName) const {
+    Require(fieldName.size() > 0);
+    Remember(std::vector<std::string>::const_iterator pos =
+                 find(fieldNames.begin(), fieldNames.end(), fieldName););
+    Check(pos != fieldNames.end());
+    size_t fieldIndex = std::distance(
+        fieldNames.begin(),
+        std::find(fieldNames.begin(), fieldNames.end(), fieldName));
+    Ensure(fieldIndex < fieldNames.size());
+    return fieldIndex;
+  }
 };
 
 } // end namespace rtt_cdi_ipcress

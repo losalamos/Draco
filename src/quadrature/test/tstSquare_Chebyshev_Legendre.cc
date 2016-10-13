@@ -10,9 +10,9 @@
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Release.hh"
 #include "quadrature_test.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "quadrature/Square_Chebyshev_Legendre.hh"
 
 using namespace std;
@@ -23,37 +23,33 @@ using namespace rtt_quadrature;
 // TESTS
 //---------------------------------------------------------------------------//
 
-int main(int argc, char *argv[])
-{
-    ScalarUnitTest ut(argc, argv, release);
-    try
+int main(int argc, char *argv[]) {
+  ScalarUnitTest ut(argc, argv, release);
+  try {
     {
-        {
-            Square_Chebyshev_Legendre quadrature(8); // SN order = 8
-            if (quadrature.sn_order()!=8)
-            {
-                ut.failure("NOT correct SN order");
-            }
-            quadrature_test(ut, quadrature);
-        }
-        {
-            Square_Chebyshev_Legendre quadrature(8, 1, 2);
-            quadrature_test(ut, quadrature);
-        }
-
-        Square_Chebyshev_Legendre quadrature4(4);
-        quadrature_integration_test(ut, quadrature4);
-        Square_Chebyshev_Legendre quadrature8(8);
-        quadrature_integration_test(ut, quadrature8);
-        Square_Chebyshev_Legendre quadrature10(10);
-        quadrature_integration_test(ut, quadrature10);
-        Square_Chebyshev_Legendre quadrature12(12);
-        quadrature_integration_test(ut, quadrature12);
-        Square_Chebyshev_Legendre quadrature16(16);
-        quadrature_integration_test(ut, quadrature16);
-
+      Square_Chebyshev_Legendre quadrature(8); // SN order = 8
+      if (quadrature.sn_order() != 8) {
+        ut.failure("NOT correct SN order");
+      }
+      quadrature_test(ut, quadrature);
     }
-    UT_EPILOG(ut);
+    {
+      Square_Chebyshev_Legendre quadrature(8, 1, 2);
+      quadrature_test(ut, quadrature);
+    }
+
+    Square_Chebyshev_Legendre quadrature4(4);
+    quadrature_integration_test(ut, quadrature4);
+    Square_Chebyshev_Legendre quadrature8(8);
+    quadrature_integration_test(ut, quadrature8);
+    Square_Chebyshev_Legendre quadrature10(10);
+    quadrature_integration_test(ut, quadrature10);
+    Square_Chebyshev_Legendre quadrature12(12);
+    quadrature_integration_test(ut, quadrature12);
+    Square_Chebyshev_Legendre quadrature16(16);
+    quadrature_integration_test(ut, quadrature16);
+  }
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

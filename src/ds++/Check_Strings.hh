@@ -24,48 +24,39 @@
 #ifndef __ds_Check_Strings_hh__
 #define __ds_Check_Strings_hh__
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
-namespace rtt_dsxx
-{
- 
+namespace rtt_dsxx {
+
 // Private functors for internal use by string checking utilities.
 
-struct char_in_string
-{
-    std::string str2;
-    char_in_string(const std::string &s) : str2(s) { }
-    bool operator() (const std::string &str1) const
-    {
-	size_t out = str1.find_first_of(str2);
-	return out != std::string::npos;
-    }
+struct char_in_string {
+  std::string str2;
+  char_in_string(const std::string &s) : str2(s) {}
+  bool operator()(const std::string &str1) const {
+    size_t out = str1.find_first_of(str2);
+    return out != std::string::npos;
+  }
 };
 
-struct string_length_out_of_range
-{
-    size_t low;
-    size_t high;
-    string_length_out_of_range(const int l, const int h) 
-	: low(static_cast<size_t>(l)), 
-	  high(static_cast<size_t>(h)) { /* empty */ }
-    bool operator() (const std::string &str1) const
-    {
-	size_t i = str1.size();
-	return  (i < low) || (i > high);
-    }
+struct string_length_out_of_range {
+  size_t low;
+  size_t high;
+  string_length_out_of_range(const int l, const int h)
+      : low(static_cast<size_t>(l)), high(static_cast<size_t>(h)) { /* empty */
+  }
+  bool operator()(const std::string &str1) const {
+    size_t i = str1.size();
+    return (i < low) || (i > high);
+  }
 };
 
-struct strings_equal
-{
-    std::string str2;
-    strings_equal(const std::string &s) : str2(s) { }
-    bool operator() (const std::string &str1) const
-    {
-	return str1 == str2;
-    }
+struct strings_equal {
+  std::string str2;
+  strings_equal(const std::string &s) : str2(s) {}
+  bool operator()(const std::string &str1) const { return str1 == str2; }
 };
 
 /*!
@@ -97,22 +88,20 @@ struct strings_equal
  *         rtt_dsxx::check_string_lengths, and rtt_dsxx::check_strings_unique.
  *
  */
-template<class IT>
-std::vector<IT> check_string_chars( IT          const & first, 
-                                    IT          const & last, 
-	                            std::string const & match_chars ) 
-{
-    std::vector<IT> result_vector;
-    if (first == last) return result_vector;
-    
-    IT out = std::find_if(first, last, char_in_string(match_chars));
-    while (out != last)
-    {
-	result_vector.push_back(out);
-	++out;
-	out = std::find_if(out, last, char_in_string(match_chars));
-    }
+template <class IT>
+std::vector<IT> check_string_chars(IT const &first, IT const &last,
+                                   std::string const &match_chars) {
+  std::vector<IT> result_vector;
+  if (first == last)
     return result_vector;
+
+  IT out = std::find_if(first, last, char_in_string(match_chars));
+  while (out != last) {
+    result_vector.push_back(out);
+    ++out;
+    out = std::find_if(out, last, char_in_string(match_chars));
+  }
+  return result_vector;
 }
 
 /*!
@@ -144,24 +133,22 @@ std::vector<IT> check_string_chars( IT          const & first,
  *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_strings_unique.
  *
  */
-template<class IT>
-std::vector<IT> check_string_lengths( IT  const & first, 
-				      IT  const & last,
-		 	              int const   low, 
-				      int const   high ) 
-{
-    std::vector<IT> result_vector;
-    if (first == last) return result_vector;
-    int lw = low;
-    if (lw < 0) lw = 0;
-    IT out = std::find_if(first, last, string_length_out_of_range(lw, high));
-    while (out != last)
-    {
-	result_vector.push_back(out);
-	++out;
-	out = std::find_if(out, last, string_length_out_of_range(lw, high));
-    }
+template <class IT>
+std::vector<IT> check_string_lengths(IT const &first, IT const &last,
+                                     int const low, int const high) {
+  std::vector<IT> result_vector;
+  if (first == last)
     return result_vector;
+  int lw = low;
+  if (lw < 0)
+    lw = 0;
+  IT out = std::find_if(first, last, string_length_out_of_range(lw, high));
+  while (out != last) {
+    result_vector.push_back(out);
+    ++out;
+    out = std::find_if(out, last, string_length_out_of_range(lw, high));
+  }
+  return result_vector;
 }
 
 /*!
@@ -187,22 +174,21 @@ std::vector<IT> check_string_lengths( IT  const & first,
  *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_string_lengths.
  *
  */
-template<class IT>
-std::vector<IT> check_strings_unique( IT first, 
-				      IT const & last ) 
-{
-    std::vector<IT> result_vector;
-    if (first == last) return result_vector;
-    IT current =   first;
-    IT next    = ++first;
-    while (next != last)
-    {
-	IT out = std::find_if(next, last, strings_equal(*current));
-	if ( out != last) result_vector.push_back(out);
-	++current;
-	++next;
-    }
+template <class IT>
+std::vector<IT> check_strings_unique(IT first, IT const &last) {
+  std::vector<IT> result_vector;
+  if (first == last)
     return result_vector;
+  IT current = first;
+  IT next = ++first;
+  while (next != last) {
+    IT out = std::find_if(next, last, strings_equal(*current));
+    if (out != last)
+      result_vector.push_back(out);
+    ++current;
+    ++next;
+  }
+  return result_vector;
 }
 
 } // end namespace rtt_dsxx
