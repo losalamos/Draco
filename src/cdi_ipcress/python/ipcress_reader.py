@@ -1,15 +1,21 @@
+#-----------------------------*-python-*----------------------------------------#
+# file   src/cdi_ipcress/python/ipcress_reader.py
+# author Alex Long <along@lanl.gov>
+# date   Monday, December 15, 2014, 5:44 pm
+# brief  This script has fucntions that parse an IPCRESS file and returns a
+#        dictionary that contains data for each property and each material
+#        present in the file. This script also contains interpolation functions
+#        for opacity data.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 #!/usr/bin/env python
-
-# plot_ipcress_opacity.py
-# This program plots opacity from IPCRESS files. It could easily be extended
-# to plot other fields from IPCRESS files as well.
-# by Alex Long 12/15/2014
 
 # import block
 ################################################################################
 import re
 from numpy import arange, sin, pi, min, max
-import sys 
+import sys
 import numpy as np
 from struct import *
 from math import *
@@ -17,7 +23,7 @@ from math import *
 
 # These are the functions that are used to read data from the
 # binary IPCRESS file. It also contains a function for interpolating in
-# density and temperature. The data locations are specified in 
+# density and temperature. The data locations are specified in
 # cdi_ipcress/doc/IPCRESS_File_Format.pdf
 
 ################################################################################
@@ -29,12 +35,13 @@ def get_data_for_id(filename, data_start_index, num_entries):
     for i in range(num_entries):
       word = f.read(8)
       temp_grid.append(unpack('>d', word)[0])
-  return temp_grid 
+  return temp_grid
 ################################################################################
 
 
 ################################################################################
-def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, target_rho, target_T):
+def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, \
+    target_rho, target_T, print_str=""):
   n_rho = len(rho_grid)
   n_T = len(T_grid)
   n_hnu = len(hnu_grid)
@@ -45,8 +52,8 @@ def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, target_rho,
   if (target_T    < np.min(T_grid)):    target_T = np.min(T_grid)
   if (target_T    > np.max(T_grid)):    target_T = np.max(T_grid)
   print( \
-    "Interpolating multigroup data--Target rho: {0} , target T: {1}".format( \
-    target_rho, target_T))
+    "Interpolating {0}--Target rho: {1} , target T: {2}".format( \
+    print_str, target_rho, target_T))
 
   # get correct index of adjacent density points
   rho_L = 1000; rho_G =0
@@ -88,7 +95,7 @@ def interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, op_data, target_rho,
   print("hnu(keV)      opacity(sq_cm/g)     opacity(1/cm)")
   for i, hnu in enumerate(hnu_grid[:-1]):
     print("{0}   {1}   {2}".format( 0.5*(hnu + hnu_grid[i+1]), interp_op[i], interp_op[i]*target_rho))
-  return interp_op 
+  return interp_op
 ###############################################################################
 
 ################################################################################
@@ -118,7 +125,7 @@ def interpolate_gray_opacity_data(T_grid, rho_grid, op_data, target_rho, target_
 
   #get the adjacent rows of the opacity index
   rho_L_T_L = op_data[n_rho*T_L + rho_L]
-  rho_L_T_G = op_data[n_rho*T_G + rho_L] 
+  rho_L_T_G = op_data[n_rho*T_G + rho_L]
   rho_G_T_L = op_data[n_rho*T_L + rho_G]
   rho_G_T_G = op_data[n_rho*T_G + rho_G]
 
@@ -133,7 +140,7 @@ def interpolate_gray_opacity_data(T_grid, rho_grid, op_data, target_rho, target_
 
   #print("opacity(sq_cm/g)     opacity(1/cm)")
   #print("{0}   {1}".format(interp_op, interp_op*target_rho))
-  return interp_op 
+  return interp_op
 ###############################################################################
 
 
@@ -178,7 +185,7 @@ def read_information_from_file(ipcress_file):
       word = f.read(8)
       ds.append(int(unpack('>d', word)[0]))
 
-    # Read in array gives the offsets between data 
+    # Read in array gives the offsets between data
     f.seek(toc_int[1]*8)
     #print("Table of data file offesets")
     for i in range(n_data_records):
@@ -223,13 +230,13 @@ def read_information_from_file(ipcress_file):
   #print("List of available properties")
   #for i in property:
   #  print(i)
-  
+
   #return the list of available properties, data file offsets and data sizes
   return materials, property, dfo, ds
 ################################################################################
 
 ################################################################################
-# Checks to see if there are any zeros in the opcaity data--zero data is 
+# Checks to see if there are any zeros in the opcaity data--zero data is
 # difficult to handle and for now we are going to ignore data sets that contain
 # zeros and print an error message
 def check_valid_data(opacity_grid):
@@ -246,13 +253,16 @@ def get_property_map_from_ipcress_file(ipcress_file):
   #load data from IPCRESS file
   # dfo is the array of data file offsets, ds is the array of data sizes
   materials, property_list, dfo, ds = read_information_from_file(ipcress_file)
-  
+
   #build dictionary of data, keys are "property_matID"
   table_key_dict = {}
-  for mat in materials:
-    mat_ID = mat[1]
-    for prop_i, prop in enumerate(property_list):
-      table_key_dict["{0}_{1}".format(prop[1], mat_ID)] = get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
-  return table_key_dict
+  for prop_i, prop in enumerate(property_list):
+    table_key_dict["{0}_{1}".format(prop[1], prop[0])] = get_data_for_id( ipcress_file, dfo[prop_i+1], ds[prop_i+1])
+
+  material_list = []
+  for material in materials:
+    material_list.append(material[1])
+
+  return table_key_dict, material_list
 
 ################################################################################
