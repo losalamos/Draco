@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #-----------------------------*-python-*----------------------------------------#
 # file   src/cdi_ipcress/python/plot_ipcress_opacity.py
 # author Alex Long <along@lanl.gov>
@@ -7,8 +8,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-
-#!/usr/bin/env python
 
 # import block
 ################################################################################
