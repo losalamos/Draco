@@ -13,27 +13,30 @@
 #define c4_Invert_Comm_Map_hh
 
 #include "C4_Functions.hh"
-#include <vector>
+#include <map>
 
 namespace rtt_c4 {
 
+//! Map type for invert_comm_map
+typedef std::map<int, size_t> Invert_Comm_Map_t;
+
 //---------------------------------------------------------------------------//
 /**
- * \brief Invert the contents of a one-to-many mapping between nodes.
+ * \brief Inverts a communication map.
  *
- * \param to_values A vector of node numbers that this node communicates
- *        with.
- * \param from_values On output, the vector of node numbers that correspond
- *        to \a to_values.
+ * \param to_map On input, a map from processor number to the size of
+ *        information to be sent to (or received from) that processor
+ *        by the current processor.
+ * \param from_map On output, a map from processor number to the size of
+ *        information to be received from (or sent to) that processor by
+ *        the current processor.  On input, ignored and deleted.
  *
- * So if the argument \a to_values contains "send to" node values, then the
- * result \a from_values contains the "receive from" node values.  But this
- * routine can also be used as the argument \a to_values contains "receive
- * from" node values, then the result \a from_values contains the "send to"
- * node values.
+ * Here, the units of the "size of information" is up to the caller.  For
+ * example, it might be the number of bytes, or the number of elements in an
+ * array.  The size must be positive (specifically, nonzero).
  */
-void invert_comm_map(std::vector<int> const &to_values,
-                     std::vector<int> &from_values);
+DLL_PUBLIC_c4 void invert_comm_map(Invert_Comm_Map_t const &to_map,
+                                   Invert_Comm_Map_t &from_map);
 
 } // end namespace rtt_c4
 

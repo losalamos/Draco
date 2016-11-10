@@ -21,30 +21,25 @@ using namespace rtt_c4;
 //---------------------------------------------------------------------------//
 void test2(rtt_c4::ParallelUnitTest &ut) {
   size_t const node = rtt_c4::node();
-  std::vector<int> to_nodes;
+  Invert_Comm_Map_t to_map;
 
   if (node == 0) {
-    to_nodes.resize(1);
-    to_nodes[0] = 1;
-  }
-
-  if (node == 1) {
+    to_map[1] = 15;
+  } else if (node != 1) {
     // No communication from node 1.
-    to_nodes.resize(0);
+    FAILMSG("Incorrect node for test2.");
   }
 
-  std::vector<int> from_nodes(0);
-  invert_comm_map(to_nodes, from_nodes);
+  Invert_Comm_Map_t from_map;
+  invert_comm_map(to_map, from_map);
 
   if (node == 0) {
-    if (from_nodes.size() != 0u)
+    if (from_map.size() != 0u)
       FAILMSG("Incorrect map size on node 0.");
-  }
-
-  if (node == 1) {
-    if (from_nodes.size() != 1u)
+  } else if (node == 1) {
+    if (from_map.size() != 1u)
       FAILMSG("Incorrect size of map on node 1.");
-    if (from_nodes[0] != 0)
+    if (from_map[0] != 15)
       FAILMSG("Incorrect map contents on node 1.");
   }
 
@@ -59,38 +54,36 @@ void test2(rtt_c4::ParallelUnitTest &ut) {
 //----------------------------------------------------------------------------//
 void test4(rtt_c4::ParallelUnitTest &ut) {
   size_t const node = rtt_c4::node();
-  std::vector<int> to_nodes;
+  Invert_Comm_Map_t to_map;
 
   if (node == 0) {
-    to_nodes.push_back(1);
-    to_nodes.push_back(2);
-    to_nodes.push_back(3);
-  }
-  if (node == 1) {
-    to_nodes.push_back(0);
-  }
-  if (node == 2) {
-    to_nodes.push_back(0);
-  }
-  if (node == 3) {
-    to_nodes.push_back(0);
-  }
+    to_map[1] = 10;
+    to_map[2] = 20;
+    to_map[3] = 30;
+  } else if (node == 1)
+    to_map[0] = 110;
+  else if (node == 2)
+    to_map[0] = 120;
+  else if (node == 3)
+    to_map[0] = 130;
+  else
+    FAILMSG("Incorrect node for test4.");
 
-  std::vector<int> from_nodes(0);
+  Invert_Comm_Map_t from_map;
 
-  invert_comm_map(to_nodes, from_nodes);
+  invert_comm_map(to_map, from_map);
 
   if (node == 0) {
-    if (from_nodes.size() != 3u)
+    if (from_map.size() != 3u)
       FAILMSG("Incorrect map size on node 0");
     for (int i = 0; i < 3; ++i) {
-      if (from_nodes[i] != i + 1)
+      if (from_map[i + 1] != 100u + 10u * (i + 1))
         FAILMSG("Incorrent map contents on node 0");
     }
   } else {
-    if (from_nodes.size() != 1u)
+    if (from_map.size() != 1u)
       FAILMSG("Incorrect map size.");
-    if (from_nodes[0] != 0)
+    if (from_map[0] != 10u * node)
       FAILMSG("Incorrect map contents.");
   }
 
@@ -105,20 +98,21 @@ void test4(rtt_c4::ParallelUnitTest &ut) {
 //----------------------------------------------------------------------------//
 void test_n_to_n(rtt_c4::ParallelUnitTest &ut) {
 
+  const int node = rtt_c4::node();
   const int nodes = rtt_c4::nodes();
 
-  std::vector<int> to_nodes;
+  Invert_Comm_Map_t to_map;
   for (int i = 0; i < nodes; ++i)
-    to_nodes.push_back(i);
+    to_map[i] = 10u * node + 1u;
 
-  std::vector<int> from_nodes;
-  invert_comm_map(to_nodes, from_nodes);
+  Invert_Comm_Map_t from_map;
+  invert_comm_map(to_map, from_map);
 
-  if (static_cast<int>(from_nodes.size()) != nodes)
-    FAILMSG("Incorrect from_nodes size.");
+  if (static_cast<int>(from_map.size()) != nodes)
+    FAILMSG("Incorrect from_map size.");
 
   for (int i = 0; i < nodes; ++i) {
-    if (to_nodes[i] != from_nodes[i])
+    if (from_map[i] != 10u * i + 1u)
       FAILMSG("Incorrect data in map.");
   }
 
@@ -136,15 +130,15 @@ void test_cyclic(rtt_c4::ParallelUnitTest &ut) {
   const int node = rtt_c4::node();
   const int nodes = rtt_c4::nodes();
 
-  std::vector<int> to_nodes(1);
-  to_nodes[0] = (node + 1) % nodes;
+  Invert_Comm_Map_t to_map;
+  to_map[(node + 1) % nodes] = 10u;
 
-  std::vector<int> from_nodes;
-  invert_comm_map(to_nodes, from_nodes);
+  Invert_Comm_Map_t from_map;
+  invert_comm_map(to_map, from_map);
 
-  if (from_nodes.size() != 1u)
+  if (from_map.size() != 1u)
     FAILMSG("Incorrect map size.");
-  if (from_nodes[0] != (node + nodes - 1) % nodes)
+  if (from_map[(node + nodes - 1) % nodes] != 10u)
     FAILMSG("Incorrect map contents in cyclc test.");
 
   if (ut.numFails == 0)
@@ -158,12 +152,12 @@ void test_cyclic(rtt_c4::ParallelUnitTest &ut) {
 //----------------------------------------------------------------------------//
 void test_empty(rtt_c4::ParallelUnitTest &ut) {
 
-  std::vector<int> to_nodes;
-  std::vector<int> from_nodes;
+  Invert_Comm_Map_t to_map;
+  Invert_Comm_Map_t from_map;
 
-  invert_comm_map(to_nodes, from_nodes);
+  invert_comm_map(to_map, from_map);
 
-  if (from_nodes.size() != 0u)
+  if (from_map.size() != 0u)
     FAILMSG("Incorrect map size in empty test.");
 
   if (ut.numFails == 0)

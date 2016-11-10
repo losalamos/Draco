@@ -10,28 +10,28 @@
 //---------------------------------------------------------------------------//
 
 #include "Invert_Comm_Map.hh"
+#include "MPI_Traits.hh"
 #include "ds++/Assert.hh"
+#include <vector>
 
 namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 // MPI version of invert_comm_map
 #ifdef C4_MPI
-void invert_comm_map(std::vector<int> const &to_values,
-                     std::vector<int> &from_values) {
+void invert_comm_map(Invert_Comm_Map_t const &to_map,
+                     Invert_Comm_Map_t &from_map) {
   const int myproc = rtt_c4::node();
   const int numprocs = rtt_c4::nodes();
 
-  // value to indicate a proc will be communicating with myproc.
-  int flag = 1;
-
-  // The vector that the other procs will set the flag value, if they
-  // are writing to the current proc.
-  std::vector<int> proc_flag(numprocs, 0); // initially, all zero
+  // The local vector that the other procs will set the size they are sending,
+  // at the index of their processor number.  Zero indicates no comm from that
+  // proc.
+  std::vector<size_t> proc_flag(numprocs, 0); // initially, all zero
 
   // Create the RMA memory window of the vector.
   MPI_Win win;
-  MPI_Win_create(&proc_flag[0], numprocs * sizeof(int), sizeof(int),
+  MPI_Win_create(&proc_flag[0], numprocs * sizeof(size_t), sizeof(size_t),
                  MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
   // Assertion value for fences.  Currently, we effectively don't set
@@ -40,25 +40,26 @@ void invert_comm_map(std::vector<int> const &to_values,
 
   // Set the local and remote vector values
   MPI_Win_fence(fence_assert, win);
-  for (auto it = to_values.begin(); it != to_values.end(); ++it) {
-    Require(*it >= 0);
-    Require(*it < numprocs);
-    if (*it == myproc) {
+  for (auto it = to_map.begin(); it != to_map.end(); ++it) {
+    Require(it->first >= 0);
+    Require(it->first < numprocs);
+    Require(it->second > 0);
+    if (it->first == myproc) {
       // ... set our local value
-      proc_flag[myproc] = 1;
+      proc_flag[myproc] = it->second;
     } else {
       // ... set the value on the remote proc
-      MPI_Put(&flag, 1, MPI_INT, *it, myproc, 1, MPI_INT, win);
+      MPI_Put(&(it->second), 1, MPI_Traits<size_t>::element_type(), it->first,
+              myproc, 1, MPI_Traits<size_t>::element_type(), win);
     }
   }
   MPI_Win_fence(fence_assert, win);
 
-  // Back out the from_values from the full flags vector
-  from_values.clear();
+  // Back out the map from the vector
+  from_map.clear();
   for (int i = 0; i < numprocs; ++i) {
-    Check(proc_flag[i] == 0 || proc_flag[i] == flag);
-    if (proc_flag[i] == flag)
-      from_values.push_back(i);
+    if (proc_flag[i] > 0)
+      from_map[i] = proc_flag[i];
   }
 
   MPI_Win_free(&win);
@@ -67,18 +68,19 @@ void invert_comm_map(std::vector<int> const &to_values,
 //---------------------------------------------------------------------------//
 // SCALAR version of invert_comm_map
 #elif defined(C4_SCALAR)
-void invert_comm_map(std::vector<int> const &to_values,
-                     std::vector<int> &from_values) {
-  Require(to_values.size() <= 1);
-  from_values.clear();
-  if (to_values.size() > 0 && to_values[0] == 0) {
-    from_values.push_back(0);
+void invert_comm_map(Invert_Comm_Map_t const &to_map,
+                     Invert_Comm_Map_t &from_map) {
+  Require(to_map.size() == 0u || (to_map.size() == 1u && to_map[0] > 0));
+  from_map.clear();
+  auto it = to_map.find(0);
+  if (it != to_map.end()) {
+    from_map.push_back(it->second);
   }
 }
 #else
 //---------------------------------------------------------------------------//
 // Default version of invert_comm_map, which throws an error.
-void invert_comm_map(std::vector<int> const &, std::vector<int> &) {
+void invert_comm_map(Invert_Comm_Map_t const &, Invert_Comm_Map_t &) {
   Insist(0, "invert_comm_map not implemented for this communication type!");
 }
 #endif // ifdef C4_MPI
