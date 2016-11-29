@@ -75,6 +75,17 @@ try:
       else:
           tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point divide by zero)")
 
+          print "Standard out:"
+          with open(tFpeTrap.outfile) as f:
+            for line in f:
+              print "%s" % line
+
+          print "Standard error:"
+          with open(tFpeTrap.errfile) as f:
+            for line in f:
+          print "%s" % line
+
+
   # ---------------------------------------------------------------------------- #
   # Case 2: attempts to evaluate sqrt(-1.0)
   elif case_number == '2':
@@ -105,6 +116,17 @@ try:
         else:
           tFpeTrap.failmsg("Failed to catch SIGFPE (Invalid floating point operation)")
 
+          print "Standard out:"
+          with open(tFpeTrap.outfile) as f:
+            for line in f:
+              print "%s" % line
+
+          print "Standard error:"
+          with open(tFpeTrap.errfile) as f:
+            for line in f:
+          print "%s" % line
+
+
   # ---------------------------------------------------------------------------- #
   # Case 3: An overflow condition is generated.
   elif case_number == '3':
@@ -122,20 +144,23 @@ try:
       else:
           # Signaling error: SIGFPE (Floating point divide by zero)
           string_found = tFpeTrap.error_contains("Floating point divide by zero")
+          # 2nd try - look in the stdout stream
+          if (not string_found):
+            string_found = tFpeTrap.output_contains("Floating point divide by zero")
 
       if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Floating point overflow)")
       else:
           tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point overflow)")
 
-      print "Standard out:"
-      with open(tFpeTrap.outfile) as f:
-        for line in f:
-          print "%s" % line
+          print "Standard out:"
+          with open(tFpeTrap.outfile) as f:
+            for line in f:
+              print "%s" % line
 
-      print "Standard error:"
-      with open(tFpeTrap.errfile) as f:
-        for line in f:
+          print "Standard error:"
+          with open(tFpeTrap.errfile) as f:
+            for line in f:
           print "%s" % line
 
   print(" ")
