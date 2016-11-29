@@ -9,6 +9,7 @@
 #------------------------------------------------------------------------------#
 import sys
 import re
+import platform
 
 try:
 
@@ -54,6 +55,7 @@ try:
   # Case 1: attempts to divide by zero
   elif case_number == '1':
 
+
       # Check the test type
       string_found = tFpeTrap.output_contains("trying a div_by_zero operation")
       if( string_found ):
@@ -61,8 +63,13 @@ try:
       else:
           tFpeTrap.failmsg("Case 1 did not try the division by zero test")
 
-      # Signaling error: SIGFPE (Floating point divide by zero)
-      string_found = tFpeTrap.error_contains("Floating point divide by zero")
+      if any(platform.win32_ver()):
+          # Signaling error: A SIGFPE was detected!
+          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")          
+      else:
+          # Signaling error: SIGFPE (Floating point divide by zero)
+          string_found = tFpeTrap.error_contains("Floating point divide by zero")
+
       if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Floating point divide by zero)")
       else:
@@ -109,8 +116,13 @@ try:
       else:
           tFpeTrap.failmsg("Case 3 did not try the overflow condition test")
 
-      # Signaling error: SIGFPE (Floating point overflow)
-      string_found = tFpeTrap.error_contains("Floating point overflow")
+      if any(platform.win32_ver()):
+          # Signaling error: A SIGFPE was detected!
+          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")          
+      else:
+          # Signaling error: SIGFPE (Floating point divide by zero)
+          string_found = tFpeTrap.error_contains("Floating point divide by zero")
+
       if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Floating point overflow)")
       else:
