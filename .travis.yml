@@ -53,7 +53,7 @@ script:
   - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir -p build && cd build &&
     ${CMAKE} -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
     make -j 2 VERBOSE=1 &&
-    ${CTEST} -j 2 -E \(c4_tstOMP_2\) &&
+    ${CTEST} -j 1 -E \(c4_tstOMP_2\) -VV -R fpe_trap &&
     make install DESTDIR="${HOME}" && cd - ; fi
 
 after_success:
