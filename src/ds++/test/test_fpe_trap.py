@@ -65,7 +65,7 @@ try:
 
       if any(platform.win32_ver()):
           # Signaling error: A SIGFPE was detected!
-          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")          
+          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")
       else:
           # Signaling error: SIGFPE (Floating point divide by zero)
           string_found = tFpeTrap.error_contains("Floating point divide by zero")
@@ -73,7 +73,7 @@ try:
       if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Floating point divide by zero)")
       else:
-          tFpeTrap.failmsg("Failed catch SIGFPE (Floating point divide by zero)")
+          tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point divide by zero)")
 
   # ---------------------------------------------------------------------------- #
   # Case 2: attempts to evaluate sqrt(-1.0)
@@ -103,7 +103,7 @@ try:
         if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Invalid floating point operation)")
         else:
-          tFpeTrap.failmsg("Failed catch SIGFPE (Invalid floating point operation)")
+          tFpeTrap.failmsg("Failed to catch SIGFPE (Invalid floating point operation)")
 
   # ---------------------------------------------------------------------------- #
   # Case 3: An overflow condition is generated.
@@ -118,7 +118,7 @@ try:
 
       if any(platform.win32_ver()):
           # Signaling error: A SIGFPE was detected!
-          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")          
+          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")
       else:
           # Signaling error: SIGFPE (Floating point divide by zero)
           string_found = tFpeTrap.error_contains("Floating point divide by zero")
@@ -126,7 +126,17 @@ try:
       if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Floating point overflow)")
       else:
-          tFpeTrap.failmsg("Failed catch SIGFPE (Floating point overflow)")
+          tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point overflow)")
+
+      print "Standard out:"
+      with open(tFpeTrap.outfile) as f:
+        for line in f:
+          print "%s" % line
+
+      print "Standard error:"
+      with open(tFpeTrap.errfile) as f:
+        for line in f:
+          print "%s" % line
 
   print(" ")
 
