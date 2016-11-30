@@ -5,31 +5,19 @@
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Ipcress file test
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "../IpcressFile.hh"
 #include "cdi_ipcress_test.hh"
+#include "cdi_ipcress/IpcressFile.hh"
 #include "ds++/Release.hh"
 #include "ds++/SP.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
-#include <cmath>
-#include <iostream>
-#include <sstream>
-#include <vector>
 
 using namespace std;
 
 using rtt_cdi_ipcress::IpcressFile;
 using rtt_dsxx::SP;
-
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
 
 //---------------------------------------------------------------------------//
 // TESTS

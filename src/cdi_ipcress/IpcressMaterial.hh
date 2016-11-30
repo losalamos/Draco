@@ -5,10 +5,7 @@
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Header file for IpcressMaterial class
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_ipcress_IpcressMaterial_hh__
@@ -19,7 +16,6 @@
 #include <cctype>
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <vector>
 
 namespace rtt_cdi_ipcress {
@@ -28,8 +24,8 @@ namespace rtt_cdi_ipcress {
 /*!
  * \class IpcressMaterial
  *
- * \brief Encapsulate the data associated with a single material loaded from
- * an IPCRESS file.  This data includes:
+ * \brief Encapsulate the data associated with a single material loaded from an
+ * IPCRESS file.  This data includes:
  *
  * 1. The material identifier number (e.g.: 10001)
  * 2. A list of data fields associated with the material.  This list will look
@@ -64,13 +60,6 @@ namespace rtt_cdi_ipcress {
  * This object is used as a data container by the IpcressFile class.  A vector
  * of empty IpcressMaterials is created (length = num materials) and then the
  * data for each material is stored via the add_field() member function.
- */
-
-/*!
- * \example file.cc
- *
- * Desc.
- *
  */
 //===========================================================================//
 

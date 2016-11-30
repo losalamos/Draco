@@ -5,20 +5,13 @@
  * \date   Tue Aug 22 15:15:49 2000
  * \brief  Header file for IpcressFile class
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_ipcress_IpcressFile_hh__
 #define __cdi_ipcress_IpcressFile_hh__
 
 #include "IpcressMaterial.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_cdi_ipcress {
 
@@ -26,22 +19,22 @@ namespace rtt_cdi_ipcress {
 /*!
  * \class IpcressFile
  *
- * \brief This class controls access the the physical IPCRESS data
- *        file for IpcressOpacity.  Only one IpcressFile object should
- *        exist for each data file.  Several IpcressOpacity objects
- *        will access the same IpcressFile object (one per material
- *        found in the data file).
+ * \brief This class controls access the the physical IPCRESS data file for
+ *        IpcressOpacity. Only one IpcressFile object should exist for each data
+ *        file. Several IpcressOpacity objects will access the same IpcressFile
+ *        object (one per material found in the data file).
  *
- * This class is designed to be used in conjuction with
- * IpcressOpacity.  The client code should create a IpcressFile object
- * and that object is passed to the IpcressOpacity constructor to
- * create a link between the opacity object and the IPCRESS data file.
+ * This class is designed to be used in conjuction with IpcressOpacity. The
+ * client code should create a IpcressFile object and that object is passed to
+ * the IpcressOpacity constructor to create a link between the opacity object
+ * and the IPCRESS data file.
  *
  * Ipcress file layout
  *
  * - all words are 8 byte entries.  [] denotes 1 word.
  * - see doc/IPCRESS_File_Format.pdf
  *
+ * \code
  * offset (words)  data
  * --------------  ------------------------------------------------------
  * 0               [title][unused]
@@ -62,13 +55,10 @@ namespace rtt_cdi_ipcress {
  * dtf[2]          Mat 10001 has field rgrid
  * ds[2]           rgrid has ds[2] entries.
  * dfo[2]          rgrid's values can be loaded from this address.
- */
-
-/*!
+ * \endcode
+ *
  * \example cdi_ipcress/test/tIpcressFile.cc
- *
  * Example of IpcressFile useage independent of IpcressOpacity or CDI.
- *
  */
 //===========================================================================//
 

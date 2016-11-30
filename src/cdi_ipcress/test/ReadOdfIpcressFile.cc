@@ -5,20 +5,13 @@
  * \date   Thu July 10 2008
  * \brief
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: ReadOdfIpcressFile.cc
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
-#include "cdi/OpacityCommon.hh"
-#include "cdi_ipcress/IpcressFile.hh"
 #include "cdi_ipcress/IpcressOdfmgOpacity.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/XGetopt.hh"
-// #include <cstring> // stod
 #include <cstdlib> // atof
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;

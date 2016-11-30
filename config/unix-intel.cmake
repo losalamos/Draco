@@ -39,7 +39,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS
     "-w1 -vec-report0 -diag-disable remark -shared-intel -no-ftz -fma -diag-disable 11060" )
   set( CMAKE_C_FLAGS_DEBUG
-    "-g -O0 -inline-level=0 -ftrapuv -check=uninit -fp-model precise -fp-speculation safe -DDEBUG")
+    "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE
     "-O3 -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL
