@@ -3,7 +3,8 @@
  * \file   cdi_ipcress/IpcressOdfmgOpacity.hh
  * \author Kelly Thompson
  * \date   Mon Jan 22 13:56:01 2001
- * \brief  IpcressOdfmgOpacity class header file (derived from cdi/OdfmgOpacity)
+ * \brief  IpcressOdfmgOpacity class header file (derived from 
+ *         cdi/OdfmgOpacity)
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
@@ -52,7 +53,7 @@ class IpcressDataTable;
  *
  * This class only provides access to multigroup opacity data.  If the user
  * needs gray opacity IPCRESS data he/she should use the
- * cdi_ipcress/IpcressGrayOpacity class.
+ *     cdi_ipcress/IpcressGrayOpacity class.
  *
  * When instantiated, the IpcressOdfmgOpacity object creates a IpcressDataTable
  * object.  The IPCRESS data is cached in this table object.  When the client
@@ -91,13 +92,13 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
   /*!
    * \brief DS++ Smart Pointer to a IpcressFile object. spIpcressFile acts as a
    * hook to link this object to an IPCRESS file.
-   */
+     */
   rtt_dsxx::SP<const IpcressFile> spIpcressFile;
 
   /*!
    * \brief Identification number for one of the materials found in the IPCRESS
    * file pointed to by spIpcressFile.
-   */
+     */
   size_t materialID;
 
   // -------------------- //
@@ -119,14 +120,14 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
   /*!
    * \brief The physics model that the current data set is based on.  {
    * Rosseland, Plank }.  This enumeration is defined in cdi/OpacityCommon.hh.
-   */
+     */
   rtt_cdi::Model opacityModel;
 
   /*!
    * \brief The type of reaction rates that the current data set represents {
    * Total, Scattering, Absorption }. This enumeration is defined in
    * cdi/OpacityCommon.hh.
-   */
+     */
   rtt_cdi::Reaction opacityReaction;
 
   //! A string that identifies the energy policy for this class.
@@ -139,17 +140,17 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
   /*!
    * \brief spIpcressDataTable contains a cached copy of the requested IPCRESS
    * opacity lookup table.
-   *
-   * There is a one-to-one relationship between IpcressOpacity and
-   * IpcressDataTable.
-   */
+     *
+     * There is a one-to-one relationship between IpcressOpacity and
+     * IpcressDataTable.
+     */
   rtt_dsxx::SP<const IpcressDataTable> spIpcressDataTable;
 
   /*!
    * \brief The group boundaries that we use are not the same as those read in
    * by Ipcress, because Tops pretends that the ODFs are extra groups. We
-   * therefore have to store our own group and band structure.
-   */
+     * therefore have to store our own group and band structure.
+     */
   std::vector<double> groupBoundaries;
 
   /*!
@@ -157,22 +158,22 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    * the IPCRESS file and the number of bands input by the user.  It should be a
    * vector with size(the number of bands + 1), 0 on the left, and 1 on the
    * right.
-   */
+     */
   std::vector<double> bandBoundaries;
 
   /*!
-   * \brief Sometimes the opacities in the IPCRESS file are in ascending order
-   * inside each band, sometimes not. Figure it out at the beginning and store
-   * the result so that we know whether to reverse it later.
-   */
+     * \brief Sometimes the opacities in the IPCRESS file are in ascending order
+     * inside each band, sometimes not. Figure it out at the beginning and store
+     * the result so that we know whether to reverse it later.
+     */
   bool reverseBands;
 
   /*!
-   * \brief This private function translates the group structure stored in the
+     * \brief This private function translates the group structure stored in the
    * IPCRESS file to the correct group and band structure, given the user-input
    * number of bands. This should only need to be called once during
    * initialization.
-   */
+     */
   void loadGroupsAndBands(size_t const numBands);
 
 public:
@@ -183,11 +184,11 @@ public:
   /*!
    * \brief This is the default IpcressOdfmgOpacity constructor.  It requires
    * four arguments plus the energy model (this class) to be instantiated.
-   *
+     *
    * The combiniation of a data file and a material ID uniquely specifies a
    * material.  If we add the Model, Reaction and EnergyPolicy the opacity table
    * is uniquely defined.
-   *
+     *
    * \param spIpcressFile This smart pointer links an IPCRESS file (via the
    *     IpcressFile object) to a IpcressOpacity object. There may be many
    *     IpcressOpacity objects per IpcressFile object but only one IpcressFile
@@ -198,29 +199,29 @@ public:
    *     on.
    * \param opacityReaction The type of reaction rate that the current data set
    *     represents.
-   */
+     */
   IpcressOdfmgOpacity(rtt_dsxx::SP<const IpcressFile> const &spIpcressFile,
                       size_t materialID, rtt_cdi::Model opacityModel,
                       rtt_cdi::Reaction opacityReaction, size_t numBands);
 
   /*!
-   * \brief Unpacking constructor.
-   *
+     * \brief Unpacking constructor.
+     *
    * This constructor unpacks a IpcressOdfmgOpacity object from a state attained
    * through the pack function.
-   *
+     *
    * \param packed vector<char> of packed IpcressOdfmgOpacity state; the packed
    *     state is attained by calling pack()
-   */
+     */
   explicit IpcressOdfmgOpacity(std::vector<char> const &packed);
 
   /*!
-   * \brief Default IpcressOpacity() destructor.
-   *
+     * \brief Default IpcressOpacity() destructor.
+     *
    * This is required to correctly release memory when a IpcressOdfmgOpacity is
    * destroyed.  This constructor's definition must be declared in the
    * implementation file so that * we can avoid including too many header files
-   */
+     */
   ~IpcressOdfmgOpacity();
 
   // --------- //
@@ -234,7 +235,7 @@ public:
    *     density iterators are required to be the same length.  The opacity
    *     container should have a length equal to the number of tuples times the
    *     number of energy groups for multigroup data set.
-   *
+     *
    * \param temperatureFirst The beginning position of a STL container that
    *     holds a list of temperatures.
    * \param temperatureLast The end position of a STL container that holds a
@@ -249,7 +250,7 @@ public:
    * \return A list (of type OpacityIterator) of opacities are returned.  These
    *     opacities correspond to the temperature and density values provied in
    *     the two InputIterators.
-   */
+     */
   template <class TemperatureIterator, class DensityIterator,
             class OpacityIterator>
   OpacityIterator
@@ -264,7 +265,7 @@ public:
    *     provided.  The opacity container should have a length equal to the
    *     number of temperatures times the number of energy groups for multigroup
    *     data set.
-   *
+     *
    * \param temperatureFirst The beginning position of a STL container that
    *     holds a list of temperatures.
    * \param temperatureLast The end position of a STL container that holds a
@@ -277,7 +278,7 @@ public:
    * \return A list (of type OpacityIterator) of opacities are returned.  These
    *     opacities correspond to the temperature provided in the STL container
    *     and the single density value.
-   */
+     */
   template <class TemperatureIterator, class OpacityIterator>
   OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
                              TemperatureIterator temperatureLast,
@@ -290,7 +291,7 @@ public:
    *     opacity values will be returned for each density provided.  The opacity
    *     container should have a length equal to the number of density times the
    *     number of energy groups for multigroup data set.
-   *
+     *
    * \param targetTemperature The single temperature value used when computing
    *     opacities for each given density.
    * \param densityFirst The beginning position of a STL container that holds a
@@ -303,7 +304,7 @@ public:
    * \return A list (of type OpacityIterator) of opacities are returned.  These
    *     opacities correspond to the density provided in the STL container and
    *     the single temperature value.
-   */
+     */
   template <class DensityIterator, class OpacityIterator>
   OpacityIterator
   getOpacity(double targetTemperature, DensityIterator densityFirst,
@@ -312,13 +313,13 @@ public:
   /*!
    * \brief Opacity accessor that returns a 2-D vector of opacities ( groups *
    *     bands ) that correspond to the provided temperature and density.
-   *
+     *
    * \param targetTemperature The temperature value for which an opacity value
    *     is being requested.
    * \param targetDensity The density value for which an opacity value is being
    *     requested.
-   * \return A vector of opacities.
-   */
+     * \return A vector of opacities.
+     */
   std::vector<std::vector<double>> getOpacity(double targetTemperature,
                                               double targetDensity) const;
 
@@ -326,13 +327,13 @@ public:
    * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
    *     vectors that correspond to the provided vector of temperatures and a
    *     single density value.
-   *
+     *
    * \param targetTemperature A vector of temperature values for which opacity
    *     values are being requested.
    * \param targetDensity The density value for which an opacity value is being
    *     requested.
-   * \return A vector of vectors of opacities.
-   */
+     * \return A vector of vectors of opacities.
+     */
   std::vector<std::vector<std::vector<double>>>
   getOpacity(std::vector<double> const &targetTemperature,
              double targetDensity) const;
@@ -341,13 +342,13 @@ public:
    * \brief Opacity accessor that returns a vector of 2-D vectors of opacities
    *     that correspond to the provided vector of densities and a single
    *     temperature value.
-   *
+     *
    * \param targetTemperature The temperature value for which an opacity value
    *     is being requested.
    * \param targetDensity A vector of density values for which opacity values
    *     are being requested.
-   * \return A vector of vectors of opacities.
-   */
+     * \return A vector of vectors of opacities.
+     */
   std::vector<std::vector<std::vector<double>>>
   getOpacity(double targetTemperature,
              const std::vector<double> &targetDensity) const;
@@ -364,7 +365,7 @@ public:
   /*!
    * \brief Returns a string that describes the templated EnergyPolicy.
    *     Currently this will return either "mg" or "gray."
-   */
+     */
   std::string getEnergyPolicyDescriptor() const {
     return energyPolicyDescriptor;
   };
@@ -372,42 +373,42 @@ public:
   /*!
    * \brief Returns a "plain English" description of the opacity data that this
    *     class references. (e.g. "Odfmg Rosseland Scattering".)
-   *
+     *
    * The definition of this function is not included here to prevent the
    * inclusion of the IpcressFile.hh definitions within this header file.
-   */
+     */
   std::string getDataDescriptor() const;
 
   /*!
-   * \brief Returns the name of the associated IPCRESS file.
-   *
+     * \brief Returns the name of the associated IPCRESS file.
+     *
    * The definition of this function is not included here to prevent the
    * inclusion of the IpcressFile.hh definitions within this header file.
-   */
+     */
   std::string getDataFilename() const;
 
   /*!
-   * \brief Returns a vector of temperatures that define the cached opacity
-   *        data table.
-   *
+     * \brief Returns a vector of temperatures that define the cached opacity
+     *        data table.
+     *
    * We do not return a const reference because this function must construct
    * this information from more fundamental tables.
-   */
+     */
   std::vector<double> getTemperatureGrid() const;
 
   /*!
    * \brief Returns a vector of densities that define the cached opacity data
    *        table.
-   *
+     *
    * We do not return a const reference because this function must construct
    * this information from more fundamental tables.
-   */
+     */
   std::vector<double> getDensityGrid() const;
 
   /*!
-   * \brief Returns a vector of energy values (keV) that define the energy
-   *        boundaries of the cached multigroup opacity data table.
-   */
+     * \brief Returns a vector of energy values (keV) that define the energy
+     *        boundaries of the cached multigroup opacity data table.
+     */
   std::vector<double> getGroupBoundaries() const { return groupBoundaries; };
 
   //! Returns the size of the temperature grid.
@@ -417,28 +418,28 @@ public:
   size_t getNumDensities() const;
 
   /*!
-   * \brief Returns the number of group boundaries found in the current
-   *        multigroup data set.
-   */
+     * \brief Returns the number of group boundaries found in the current
+     *        multigroup data set.
+     */
   size_t getNumGroupBoundaries() const { return groupBoundaries.size(); };
 
   /*!
    * \brief Returns the number of gruops found in the current multigroup data
    *        set.
-   */
+     */
   size_t getNumGroups() const { return getNumGroupBoundaries() - 1; };
 
   /*!
    * \brief Returns a vector of points along the cumulative opacity distribution
    *        that mark the fraction of each band. First point is always zero,
    *        last point is always one.
-   */
+     */
   std::vector<double> getBandBoundaries() const { return bandBoundaries; };
 
   /*!
-   * \brief Returns the number of group boundaries found in the current
-   *        multigroup data set.
-   */
+     * \brief Returns the number of group boundaries found in the current
+     *        multigroup data set.
+     */
   size_t getNumBandBoundaries() const { return bandBoundaries.size(); };
 
   /*!
@@ -446,20 +447,20 @@ public:
    *        data set. The lower boundary is always zero, and the upper boundary
    *        is always one. Analagous to multigroup: numBands = numBandBoundaries
    *        - 1.
-   */
+     */
   size_t getNumBands() const { return getNumBandBoundaries() - 1; };
 
   /*!
-   * \brief Pack a IpcressMulitgroupOpacity object.
-   * \return packed state in a vector<char>
-   */
+     * \brief Pack a IpcressMulitgroupOpacity object.
+     * \return packed state in a vector<char>
+     */
   std::vector<char> pack() const;
 
   /*!
-   * \brief Returns the general opacity model type, defined in OpacityCommon.hh
-   *
-   * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
-   */
+     * \brief Returns the general opacity model type, defined in OpacityCommon.hh
+     *
+     * Since this is a Ipcress model, return 2 (rtt_cdi::IPCRESS_TYPE)
+     */
   rtt_cdi::OpacityModelType getOpacityModelType() const {
     return rtt_cdi::IPCRESS_TYPE;
   }
