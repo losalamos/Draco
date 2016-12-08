@@ -36,21 +36,27 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # [KT 2015-07-10] -diag-disable 11060 -- disable warning that is
   #    issued when '-ip' is turned on and a library has no symbols (this
   #    occurs when capsaicin links some trilinos libraries.)
-  set( CMAKE_C_FLAGS                "-w1 -vec-report0 -diag-disable remark -shared-intel -no-ftz -diag-disable 11060" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
-  if( HAVE_MIC )
-    # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
-    set( CMAKE_C_FLAGS_DEBUG        "${CMAKE_C_FLAGS_DEBUG} -fp-model precise -fp-speculation safe" )
-  endif()
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
-  set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe" )
+  set( CMAKE_C_FLAGS
+    "-w1 -vec-report0 -diag-disable remark -shared-intel -no-ftz -fma -diag-disable 11060" )
+  set( CMAKE_C_FLAGS_DEBUG
+    "-g -O0 -inline-level=0 -ftrapuv -check=uninit -DDEBUG")
+  set( CMAKE_C_FLAGS_RELEASE
+    "-O3 -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
+  set( CMAKE_C_FLAGS_MINSIZEREL
+    "${CMAKE_C_FLAGS_RELEASE}" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO
+    "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe" )
 
-  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
-  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
-  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
-  set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+  set( CMAKE_CXX_FLAGS
+    "${CMAKE_C_FLAGS} -std=c++11" )
+  set( CMAKE_CXX_FLAGS_DEBUG
+    "${CMAKE_C_FLAGS_DEBUG} -early-template-check")
+  set( CMAKE_CXX_FLAGS_RELEASE
+    "${CMAKE_C_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_MINSIZEREL
+    "${CMAKE_CXX_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO
+    "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
    # Use C99 standard.
    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -63,25 +69,33 @@ mark_as_advanced( INTEL_LIBM )
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
 ##---------------------------------------------------------------------------##
-set( CMAKE_C_FLAGS                "${CMAKE_C_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "compiler flags"
+  FORCE )
+set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING
+  "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}" CACHE STRING
+  "compiler flags" FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING
+  "compiler flags" FORCE )
 
-set( CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING
+  "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING
+  "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL}" CACHE STRING
+  "compiler flags" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
+  STRING "compiler flags" FORCE )
 
 # If this is a Cray, the compile wrappers take care of any xHost flags that are
 # needed.
 if( NOT CRAY_PE )
-  include(CheckCCompilerFlag)
-  check_c_compiler_flag(-xHost HAS_XHOST)
+ include(CheckCCompilerFlag)
+ check_c_compiler_flag(-xHost HAS_XHOST)
 #else()
-  # -craype-verbose
+ # -craype-verbose
 endif()
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 
