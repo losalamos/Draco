@@ -14,11 +14,10 @@
 
 namespace rtt_parser {
 
-DLL_PUBLIC_parser Abstract_Class_Parser_Base::c_string_vector
-    Abstract_Class_Parser_Base::keys_;
+DLL_PUBLIC_parser c_string_vector abstract_class_parser_keys;
 
 //---------------------------------------------------------------------------//
-Abstract_Class_Parser_Base::c_string_vector::~c_string_vector() {
+c_string_vector::~c_string_vector() {
   unsigned const n = data.size();
   for (unsigned i = 0; i < n; ++i) {
     delete[] data[i];

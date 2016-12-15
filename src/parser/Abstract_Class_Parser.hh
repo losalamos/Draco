@@ -24,36 +24,6 @@ using rtt_dsxx::SP;
 
 //===========================================================================//
 /*!
- * \class Abstract_Class_Parser_Base
- * \brief Template for parser that produces a class object.
- *
- * This class exists only to serve as a base for Abstract_Class_Parser,
- * allowing all such parsers to share the same keyword table and ensuring that
- * the keyword table is properly cleaned up when the program terminates.
- */
-class DLL_PUBLIC_parser Abstract_Class_Parser_Base {
-protected:
-  // TYPES
-
-  class DLL_PUBLIC_parser c_string_vector {
-  public:
-    ~c_string_vector();
-    c_string_vector(void) : data(0) { /* empty */
-    }
-    vector<char *> data;
-  };
-
-  // provide a virtual destrcutor for the base class.
-  virtual ~Abstract_Class_Parser_Base(){/* empty */};
-
-  // DATA
-
-  //! Keywords
-  static c_string_vector keys_;
-};
-
-//===========================================================================//
-/*!
  * \class Abstract_Class_Parser
  * \brief Template for parser that produces a class object.
  *
@@ -87,6 +57,10 @@ protected:
  * is simply a repository for keyword-parser combinations that is typically
  * used by the Class_Parser for the abstract class.
  *
+ * Note that this class is used only as a namespace; it should never have any
+ * nonstatic members. We use a class rather than namespace because we can't
+ * templatize names of namespaces.
+ *
  * See test/tstAbstract_Class_Parser for an example of its use.
  *
  * This template has proven useful but does not provide a fully satisfactory
@@ -96,7 +70,7 @@ protected:
 //===========================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
           SP<Abstract_Class> &get_parsed_object()>
-class Abstract_Class_Parser : private Abstract_Class_Parser_Base {
+class Abstract_Class_Parser {
 public:
   // TYPES
 
