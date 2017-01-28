@@ -9,7 +9,12 @@
 
 umask 0002
 
+# Redirect all output to a log file.
 target="`uname -n | sed -e s/[.].*//`"
+logdir="$( cd $scriptdir/../../logs && pwd )"
+logfile=$logdir/update_regression_scripts_$target.log
+exec > $logfile
+exec 2>&1
 
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -74,6 +79,7 @@ if test -d ${REGDIR}/draco; then
 else
   run "cd ${REGDIR}; git clone https://github.com/lanl/Draco.git draco"
 fi
+
 # Deal with proxy stuff on darwin
 case ${target} in
   darwin-fe* | cn[0-9]*)
@@ -101,6 +107,21 @@ if test -d ${REGDIR}/capsaicin; then
   run "cd ${REGDIR}/capsaicin; git pull"
 else
   run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:capsaicin/capsaicin.git"
+fi
+
+#------------------------------------------------------------------------------#
+# Cleanup old files and directories
+#------------------------------------------------------------------------------#
+if [[ -d $logdir ]]; then
+  echo "Cleaning up old log files."
+  run "cd $logdir"
+  run "find . -mtime +14 -type f" # -delete
+fi
+if [[ -d $REGDIR/cdash ]]; then
+  echo "Cleaning up old builds."
+  run "cd $REGDIR/cdash"
+  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d"
+      # -exec rm -r {} \;
 fi
 
 ##---------------------------------------------------------------------------##

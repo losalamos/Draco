@@ -23,10 +23,18 @@
 #    the compute node to access the latest git repository. This also copies down
 #    all pull requests.
 
-target="`uname -n | sed -e s/[.].*//`"
+# Prevent multiple copies of this script from running at the same time:
+[ "${FLOCKER}" != "$0" ] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@" || :
 
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Redirect all output to a log file.
+target="`uname -n | sed -e s/[.].*//`"
+logdir="$( cd $scriptdir/../../logs && pwd )"
+logfile=$logdir/sync_repository_$target.log
+exec > $logfile
+exec 2>&1
 
 #
 # MODULES
@@ -36,23 +44,55 @@ modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
   case ${target} in
-    tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init ;;
+    tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init/bash ;;
     # snow (Toss3)
-    sn-fey*) module_init_dir=/usr/share/lmod/lmod/init ;;
+    sn-fey*) module_init_dir=/usr/share/lmod/lmod/init/profile ;;
     # ccs-net, darwin, ml
-    *)       module_init_dir=/usr/share/Modules/init ;;
+    *)       module_init_dir=/usr/share/Modules/init/bash ;;
   esac
-  if test -f ${module_init_dir}/bash; then
-    source ${module_init_dir}/bash
+  if test -f ${module_init_dir}; then
+    source ${module_init_dir}
   else
     echo "ERROR: The module command was not found. No modules will be loaded."
   fi
   modcmd=`declare -f module`
+  if [[ ! ${modcmd} ]]; then
+    echo "ERROR: the module command was not found (even after sourcing $module_init_dir"
+    exit 1
+  fi
 fi
 
 #
 # Environment
 #
+
+##----------------------------------------------------------------------------##
+# Pause until the 'last modified' timestamp of file $1 to be $2 seconds old.
+function allow_file_to_age
+{
+  if [[ ! $2 ]]; then
+    echo "ERROR: This function requires two arguments: a filename and an age value (sec)."
+    exit 1
+  fi
+
+  # If file does not exist, no need to wait.
+  if [[ ! -f $1 ]]; then
+    return
+  fi
+
+  # assume file was last modified 0 seconds ago.
+  timediff=0
+
+  # If no changes for $2 seconds, continue
+  # else, wait until until file, $1, hasn't been touched for $2 seconds.
+  while [[ $timediff -lt $2 ]]; do
+    eval "$(date +'now=%s')"
+    pr_last_check=$(date +%s -r $1)
+    timediff=$(expr $now - $pr_last_check)
+    echo "$now, $pr_last_check, $timediff"
+    sleep 30s
+  done
+}
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
@@ -82,6 +122,11 @@ case ${target} in
     keychain=keychain-2.7.1
     ;;
   sn-fey*)
+    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/compiler"
+    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/libraries"
+    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/misc"
+    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/mpi"
+    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/tools"
     run "module load user_contrib subversion git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.sn
@@ -149,6 +194,9 @@ else
   run "mkdir -p $gitroot"
   run "cd $gitroot"
   run "git clone --bare git@github.com:lanl/Draco.git Draco.git"
+  run "Draco.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/pull/*:refs/pull/*"
 fi
 case ${target} in
   ccscs7*)
@@ -186,6 +234,9 @@ if test -d $gitroot/jayenne.git; then
 else
   run "mkdir -p $gitroot; cd $gitroot"
   run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+  run "cd jayenne.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
 fi
 case ${target} in
   ccscs7*)
@@ -222,6 +273,9 @@ if test -d $gitroot/capsaicin.git; then
 else
   run "mkdir -p $gitroot; cd $gitroot"
   run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin.git"
+  run "cd capsaicin.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
 fi
 case ${target} in
   ccscs7*)
@@ -265,11 +319,13 @@ for prline in $draco_prs; do
       # Coverage (Debug) & Valgrind (Debug)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (coverage) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
         -p draco -f pr${pr} &> $logfile &
       logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (valgrind) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
@@ -280,6 +336,7 @@ for prline in $draco_prs; do
     ml-fey*)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/ml-draco-Debug-fulldiagnostics-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (fulldiagnostics) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug \
@@ -288,13 +345,20 @@ for prline in $draco_prs; do
 
     # Snow ----------------------------------------
     sn-fe*)
-      # No CI
+      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+      logfile=$regdir/logs/sn-draco-Debug-fulldiagnostics-master-pr${pr}.log
+      allow_file_to_age $logfile 600
+      echo "- Starting regression (fulldiagnostics) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -p draco -f pr${pr} &> $logfile &
       ;;
 
     # Trinitite: Release
     tt-fey*)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/tt-draco-Release-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (Release) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
@@ -354,12 +418,14 @@ for prline in $jayenne_prs $capsaicin_prs; do
       # CCS-NET: Coverage (Debug) & Valgrind (Debug)
       ccscs*)
         logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-develop.log
+        allow_file_to_age $logfile 600
         echo "- Starting regression (coverage) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
           -p "${projects}" &> $logfile &
 
         logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-develop.log
+        allow_file_to_age $logfile 600
         echo "- Starting regression (valgrind) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
@@ -371,6 +437,7 @@ for prline in $jayenne_prs $capsaicin_prs; do
       # Moonlight: Fulldiagnostics (Debug)
       ml-fey*)
         logfile=$regdir/logs/ml-draco-Debug-fulldiagnostics-master-develop.log
+        allow_file_to_age $logfile 600
         echo "- Starting regression (fulldiagnostics) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug \
@@ -381,12 +448,20 @@ for prline in $jayenne_prs $capsaicin_prs; do
 
       # Snow ----------------------------------------
       sn-fe*)
-        # No CI
+        logfile=$regdir/logs/sn-draco-Debug-master-develop.log
+        allow_file_to_age $logfile 600
+        echo "- Starting regression for develop."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Debug \
+          -p draco &> $logfile
+        # Do not put the above command into the background! It must finish
+        # before jayenne is started.
         ;;
 
       # Trinitite: Release
       tt-fey*)
         logfile=$regdir/logs/tt-draco-Release-master-develop.log
+        allow_file_to_age $logfile 600
         echo "- Starting regression (Release) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
@@ -422,12 +497,14 @@ for prline in $jayenne_prs; do
     # CCS-NET: Coverage (Debug) & Valgrind (Debug)
     ccscs*)
       logfile=$regdir/logs/ccscs-jayenne-Debug-coverage-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (coverage) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
         -p "${projects}" -f "${featurebranches}" &> $logfile &
 
       logfile=$regdir/logs/ccscs-jayenne-Debug-valgrind-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (valgrind) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
@@ -437,6 +514,7 @@ for prline in $jayenne_prs; do
     # Moonlight: Fulldiagnostics (Debug)
     ml-fey*)
       logfile=$regdir/logs/ml-jayenne-Debug-fulldiagnostics-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (fulldiagnostics) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug \
@@ -446,12 +524,19 @@ for prline in $jayenne_prs; do
 
     # Snow ----------------------------------------
     sn-fe*)
-      # No CI
+      logfile=$regdir/logs/sn-jayenne-Debug-master-pr${pr}.log
+      allow_file_to_age $logfile 600
+      echo "- Starting regression for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -p "${projects}" -f "${featurebranches}" \
+        &> $logfile &
       ;;
 
     # Trinitite: Release
     tt-fey*)
       logfile=$regdir/logs/tt-jayenne-Release-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (Release) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Release \
@@ -483,12 +568,14 @@ for prline in $capsaicin_prs; do
     # CCS-NET: Coverage (Debug) & Valgrind (Debug)
     ccscs*)
       logfile=$regdir/logs/ccscs-capsaicin-Debug-coverage-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (coverage) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
         -p "${projects}" -f "${featurebranches}" &> $logfile &
 
       logfile=$regdir/logs/ccscs-capsaicin-Debug-valgrind-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (valgrind) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
@@ -498,6 +585,7 @@ for prline in $capsaicin_prs; do
     # Moonlight: Fulldiagnostics (Debug)
     ml-fey*)
       logfile=$regdir/logs/ml-capsaicin-Debug-fulldiagnostics-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (fulldiagnostics) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug \
@@ -507,12 +595,19 @@ for prline in $capsaicin_prs; do
 
     # Snow ----------------------------------------
     sn-fe*)
-      # No CI
+      logfile=$regdir/logs/sn-capsaicin-Debug-master-pr${pr}.log
+      allow_file_to_age $logfile 600
+      echo "- Starting regression for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -p "${projects}" -f "${featurebranches}" \
+        &> $logfile &
       ;;
 
     # Trinitite: Release
     tt-fey*)
       logfile=$regdir/logs/tt-capsaicin-Release-master-pr${pr}.log
+      allow_file_to_age $logfile 600
       echo "- Starting regression (Release) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Release \
@@ -525,6 +620,20 @@ for prline in $capsaicin_prs; do
       ;;
   esac
 done
+
+# Wait for all subprocesses to finish before exiting this script
+if [[ `jobs -p | wc -l` -gt 0 ]]; then
+  echo " "
+  echo "Jobs still running (if any):"
+  for job in `jobs -p`; do
+    echo "  waiting for job $job to finish..."
+    wait $job
+    echo "  waiting for job $job to finish...done"
+  done
+fi
+
+echo " "
+echo "All done."
 
 #------------------------------------------------------------------------------#
 # End sync_repository.sh

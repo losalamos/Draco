@@ -41,14 +41,13 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_DEBUG
     "-g -O0 -inline-level=0 -ftrapuv -check=uninit -fp-model precise -fp-speculation safe -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE
-    "-O3 -fp-speculation fast -fp-model precise -pthread -DNDEBUG" )
+    "-O3 -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
   # [KT 2017-01-19] On KNL, -fp-model fast changes behavior significantly for
   # IMC. Revert to -fp-model precise.
   if( "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
     string( REPLACE "-fp-model fast" "-fp-model precise" CMAKE_C_FLAGS_RELEASE
       ${CMAKE_C_FLAGS_RELEASE} )
   endif()
-
   set( CMAKE_C_FLAGS_MINSIZEREL
     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO
