@@ -23,14 +23,15 @@
 #    the compute node to access the latest git repository. This also copies down
 #    all pull requests.
 
+target="`uname -n | sed -e s/[.].*//`"
+
 # Prevent multiple copies of this script from running at the same time:
-[ "${FLOCKER}" != "$0" ] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@" || :
+[ "${FLOCKER}" != "${0}-$target" ] && exec env FLOCKER="${0}-$target" flock -en "${0}-$target" "${0}" "$@" || :
 
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Redirect all output to a log file.
-target="`uname -n | sed -e s/[.].*//`"
 logdir="$( cd $scriptdir/../../logs && pwd )"
 logfile=$logdir/sync_repository_$target.log
 exec > $logfile
@@ -312,6 +313,7 @@ esac
 # Draco CI ------------------------------------------------------------
 draco_prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE_DRACO | awk '{print $NF}'`
 for prline in $draco_prs; do
+  echo " "
   case ${target} in
 
     # CCS-NET: Coverage (Debug) & Valgrind (Debug)
@@ -346,9 +348,9 @@ for prline in $draco_prs; do
     # Snow ----------------------------------------
     sn-fe*)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-      logfile=$regdir/logs/sn-draco-Debug-fulldiagnostics-master-pr${pr}.log
+      logfile=$regdir/logs/sn-draco-Debug-master-pr${pr}.log
       allow_file_to_age $logfile 600
-      echo "- Starting regression (fulldiagnostics) for pr${pr}."
+      echo "- Starting regression for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug \
         -p draco -f pr${pr} &> $logfile &
