@@ -25,15 +25,17 @@
 
 target="`uname -n | sed -e s/[.].*//`"
 
-# Prevent multiple copies of this script from running at the same time:
-[ "${FLOCKER}" != "${0}-$target" ] && exec env FLOCKER="${0}-$target" flock -en "${0}-$target" "${0}" "$@" || :
-
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Redirect all output to a log file.
+# All output will be saved to this log file.  This is also the lockfile for flock.
 logdir="$( cd $scriptdir/../../logs && pwd )"
 logfile=$logdir/sync_repository_$target.log
+
+# Prevent multiple copies of this script from running at the same time:
+[ "${FLOCKER}" != "${logfile}" ] && exec env FLOCKER="${logfile}" flock -en "${logfile}" "${0}" "$@" || :
+
+# Redirect all future output to the logfile.
 exec > $logfile
 exec 2>&1
 
