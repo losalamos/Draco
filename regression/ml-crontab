@@ -1,10 +1,10 @@
 # crontab for ml-fey
 
 # Sync git repositories to local FS and run CI tests
-*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/sync_repository.ml.log
+*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh
 
 # Update the run scripts in the regression directory
-01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh &> /usr/projects/jayenne/regress/logs/update_regression_scripts.log
+01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh
 
 #------------------------------------------------------------------------------#
 # Regressions options:
