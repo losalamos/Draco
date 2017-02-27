@@ -12,6 +12,8 @@
 cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
 project( Draco CXX C )
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 # Do not look for Fortran for
 # 1. XCode based Generators, or
 # 2. Visual Studio IDE or NMake Generators (MSYS or CYGWIN environments will
