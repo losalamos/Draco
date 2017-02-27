@@ -4,7 +4,7 @@
  * \date   Fri May  1 09:51:28 1998
  * \brief  Explicit template instantiation for the time-step manager test
  *         facility. 
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

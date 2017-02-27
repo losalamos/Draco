@@ -3,7 +3,7 @@
  * \file   linear/test/tstgaussj.cc
  * \author Kent Budge
  * \date   Wed Sep 13 11:46:05 2006
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Monday, Aug 11, 2016, 17:05 pm
  * \brief  Implementation for draco info widget.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,31 +14,27 @@
 #include "../draco_info.hh"
 
 diWidget::diWidget(QWidget *parent)
-    : QWidget(parent),
-      layout( new QGridLayout(this) ),
-      label1( NULL ),
-      pushbutton1( new QPushButton("&Ok") )
-{
-    // Set the window title.
-    setWindowTitle( "draco_info-gui" );
+    : QWidget(parent), layout(new QGridLayout(this)), label1(NULL),
+      pushbutton1(new QPushButton("&Ok")) {
+  // Set the window title.
+  setWindowTitle("draco_info-gui");
 
-    // layout = new QGridLayout(this);
-    
-    // pushbutton1 = new QPushButton("&Ok");
-    connect(pushbutton1,SIGNAL(clicked()),parent,SLOT(close()));
+  // layout = new QGridLayout(this);
 
-    // Get the release information from Lib_diagnostics
-    QString msg( rtt_diagnostics::DracoInfo().briefReport().c_str() );
-    
-    label1 = new QLabel(msg,this);
-    label1->setWordWrap(false);
-    
-    layout->addWidget(label1,0,0);
-    layout->addWidget(pushbutton1,1,0,Qt::AlignCenter);
-    layout->columnStretch(0);
+  // pushbutton1 = new QPushButton("&Ok");
+  connect(pushbutton1, SIGNAL(clicked()), parent, SLOT(close()));
 
-    setLayout( layout );
+  // Get the release information from Lib_diagnostics
+  QString msg(rtt_diagnostics::DracoInfo().briefReport().c_str());
 
+  label1 = new QLabel(msg, this);
+  label1->setWordWrap(false);
+
+  layout->addWidget(label1, 0, 0);
+  layout->addWidget(pushbutton1, 1, 0, Qt::AlignCenter);
+  layout->columnStretch(0);
+
+  setLayout(layout);
 }
 
 //---------------------------------------------------------------------------//

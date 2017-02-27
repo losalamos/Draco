@@ -2,9 +2,8 @@
 /*!
  * \file   config.h
  * \brief  CPP defines necessary for the ds++ package.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
 #ifndef __dsxx_config_h__
@@ -52,6 +51,9 @@
 /*---------------------------------------------------------------------------*/
 /* Platform checks */
 /*---------------------------------------------------------------------------*/
+
+/* Does this machine support hardware FMA? */
+#cmakedefine HAVE_HARDWARE_FMA @HAVE_HARDWARE_FMA@
 
 /* Support for C99's restrict keyword */
 #cmakedefine HAVE_RESTRICT
@@ -171,27 +173,6 @@
 #if DRACO_DIAGNOSTICS & 4
 #define DRACO_DIAGNOSTICS_LEVEL_3
 #endif
-
-/* ---------------------------------------- */
-/* C++ 11 support */
-/* ---------------------------------------- */
-
-/* These values are set in
- * config/platform_checks.cmake::query_cxx11_features. */
-
-#cmakedefine CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@"
-#cmakedefine HAS_CXX11_ARRAY
-#cmakedefine HAS_CXX11_AUTO_TYPE
-#cmakedefine HAS_CXX11_DECLTYPE_AUTO
-#cmakedefine HAS_CXX11_NULLPTR
-#cmakedefine HAS_CXX11_LAMBDAS
-#cmakedefine HAS_CXX11_RVALUE_REFERENCES
-#cmakedefine HAS_CXX11_LONG_LONG
-#cmakedefine HAS_CXX11_STATIC_ASSERT
-#cmakedefine HAS_CXX11_DECLTYPE
-#cmakedefine HAS_CXX11_VARIADIC_TEMPLATES
-#cmakedefine HAS_CXX11_SIZEOF_MEMBER
-#cmakedefine HAS_CXX11_GENERALIZED_INITIALIZERS
 
 /* ---------------------------------------- */
 /* Configuration Options used by CMake      */

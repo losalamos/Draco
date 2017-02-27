@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------------------//

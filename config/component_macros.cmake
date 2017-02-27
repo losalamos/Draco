@@ -4,7 +4,7 @@
 # date   2010 Dec 1
 # brief  Provide extra macros to simplify CMakeLists.txt for component
 #        directories.
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -330,9 +330,8 @@ macro( add_component_library )
   # Find target file name and location
   get_target_property( impname ${acl_TARGET} OUTPUT_NAME )
 
-  # the above command returns the location in the build tree.  We
-  # need to convert this to the install location.
-  # get_filename_component( imploc ${imploc} NAME )
+  # the above command returns the location in the build tree.  We need to 
+  # convert this to the install location.
   if( ${DRACO_SHARED_LIBS} )
     set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${impname}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
   else()
@@ -340,7 +339,7 @@ macro( add_component_library )
   endif()
 
   set( ilil "")
-  if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND  "${acl_VENDOR_LIBS}x" STREQUAL "x")
+  if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND "${acl_VENDOR_LIBS}x" STREQUAL "x")
     # do nothing
   elseif( "${acl_TARGET_DEPS}x" STREQUAL "x" )
     set( ilil "${acl_VENDOR_LIBS}" )

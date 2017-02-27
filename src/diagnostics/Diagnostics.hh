@@ -4,7 +4,7 @@
  * \author Thomas M. Evans, Aimee Hungerford
  * \date   Fri Dec  9 10:52:38 2005
  * \brief  Diagnostics class for runtime info.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * 2010-11-29 This component was moved from clubimc/utils to

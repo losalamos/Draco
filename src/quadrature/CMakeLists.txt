@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/quadrature/CMakeLists.txt
 # brief  Instructions for building quadrature Makefiles.
-# note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)

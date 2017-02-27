@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 12 12:11:22 2003
  * \brief  Assertion tests.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

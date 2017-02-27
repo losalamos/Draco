@@ -5,7 +5,7 @@
  * \date   Monday, Apr 22, 2013, 10:10 am
  * \brief  Procmon class for printing runtime system diagnostics (free memory
  *         per node, etc).
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

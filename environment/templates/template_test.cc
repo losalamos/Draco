@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         // >>> UNIT TESTS
     }
     UT_EPILOG(ut);
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of <class>.cc

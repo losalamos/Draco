@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:06:56 2004
  * \brief  Test the tred2 nonlinear equation solver.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

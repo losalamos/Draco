@@ -4,7 +4,7 @@
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Sides class.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -43,10 +43,10 @@ class Sides {
 public:
   Sides(const SideFlags &sideFlags_, const Dims &dims_,
         const CellDefs &cellDefs_)
-    : sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_),
-      sideType(dims.get_nsides()), nodes(dims.get_nsides()),
-      flags(dims.get_nsides(),
-            vector_int(dims.get_nside_flag_types())) { /* empty */
+      : sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_),
+        sideType(dims.get_nsides()), nodes(dims.get_nsides()),
+        flags(dims.get_nsides(),
+              vector_int(dims.get_nside_flag_types())) { /* empty */
   }
 
   ~Sides() { /* empty */

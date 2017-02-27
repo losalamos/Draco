@@ -4,7 +4,7 @@ dist: trusty
 
 # Notes:
 # $HOME -> /home/travis
-# code checked out to (this is $PWD for the script) -> /home/travis/build/losalamos/Draco
+# code checked out to (this is $PWD for the script) -> /home/travis/build/lanl/Draco
 # travis will not install numdiff -> use ./.travis-install-dependencies.sh.
 
 env:
@@ -49,12 +49,7 @@ before_script:
   - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} --coverage\"; done; fi
 
 script:
-    # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
-  - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir -p build && cd build &&
-    ${CMAKE} -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
-    make -j 2 VERBOSE=1 &&
-    ${CTEST} -j 2 -E \(c4_tstOMP_2\) &&
-    make install DESTDIR="${HOME}" && cd - ; fi
+  - ./.travis-run-tests.sh
 
 after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-5; fi

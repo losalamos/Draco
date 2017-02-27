@@ -3,7 +3,7 @@
  * \file   fit/test/tstsvdfit.cc
  * \author Kent Budge
  * \date   Tue Aug 26 12:02:36 2008
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

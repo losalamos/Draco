@@ -3,7 +3,7 @@
 ! Author:   Kelly Thompson
 ! Date:     Tue June 12 2012
 ! Brief:    Fortran subroutine for cross language link checks.
-! Note:     Copyright (C) 2016 Los Alamos National Security, LLC.
+! Note:     Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 !           All rights reserved.
 !-----------------------------------------------------------------------------!
 ! $Id: sub1.f90 6654 2012-07-11 15:53:22Z wollaber $

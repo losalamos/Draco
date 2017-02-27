@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Friday, Dec 20, 2013, 10:15 am
  * \brief  Linux/X86 implementation of stack trace functions.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

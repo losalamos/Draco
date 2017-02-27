@@ -73,6 +73,9 @@ function cleanemacs
 ## ...scratch...    -> #
 ## .../projects/... -> @
 ##---------------------------------------------------------------------------##
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
 
 function npwd()
 {
@@ -328,4 +331,61 @@ function rdde ()
 {
   unset DRACO_BASHRC_DONE
   source ${DRACO_ENV_DIR}/bashrc/.bashrc
+}
+
+#------------------------------------------------------------------------------#
+# Quick remove: instead of 'rm -rf', mv the directory to .../trash/tmpname
+#
+# Use: qrm dir1 dir2 ...
+#------------------------------------------------------------------------------#
+function qrm ()
+{
+  # must provide at least one directory
+  if [[ ! $1 ]]; then
+    echo "You must provide a single argument to this function that is the name of the directory to delete."
+    return
+  fi
+
+  for dir in "$@"; do
+
+    # fully qualified directory name
+    fqd=`cd $dir && pwd`
+
+    if [[ ! -d $dir ]]; then
+      echo "$dir doesn't look like a directory. aborting."
+      return
+    fi
+
+    if [[ `echo $fqd | grep -c scratch` == 0 ]]; then
+      echo "This command should only be used for scratch directories."
+      return
+    fi
+
+    # Identify the scratch system
+    target=`uname -n`
+    case $target in
+      sn* | fi* | ic* | ml* | pi* | wf* | lu* )
+        if [[ `echo $fqd | grep -c scratch2` == 1 ]]; then
+          trashdir=/lustre/scratch2/yellow/$USER/trash
+        elif [[ `echo $fqd | grep -c scratch3` == 1 ]]; then
+          trashdir=/lustre/scratch3/yellow/$USER/trash
+        fi
+        ;;
+      tt* )
+        trashdir=/lustre/ttscratch1/$USER/trash ;;
+      tr* )
+        trashdir=/lustre/trscratch/$USER/trash ;;
+    esac
+
+    # ensure trash folder exists.
+    mkdir -p $trashdir
+
+    # We rename/move the old directory to a random name
+    TMPDIR=$(mktemp -d $trashdir/XXXXXXXXXX) || { echo \
+      "Failed to create temporary directory"; return; }
+
+    # do it
+    mv $dir $TMPDIR/.
+
+  done
 }

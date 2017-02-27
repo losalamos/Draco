@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Nov  3 22:35:14 2003
  * \brief  test the PhysicalConstants class
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

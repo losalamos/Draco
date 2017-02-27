@@ -3,7 +3,7 @@
  * \file   parser/test/tstClass_Parser.cc
  * \author Kent Budge
  * \date   Mon Aug 28 07:36:50 2006
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -151,13 +151,13 @@ void tstClass_Parser(UnitTest &ut) {
 
   SP<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
-  ut.check(dummy, "parsed the class object", true);
+  ut.check(dummy != nullptr, "parsed the class object", true);
   ut.check(dummy->Get_Insouciance() == 3.3, "parsed the insouciance correctly");
 
   tokens.rewind();
   dummy = parse_class<DummyClass>(tokens, true);
 
-  ut.check(dummy, "parsed the indolent class object", true);
+  ut.check(dummy != nullptr, "parsed the indolent class object", true);
   ut.check(dummy->Get_Insouciance() == -3.3,
            "parsed the indolent insouciance correctly");
 

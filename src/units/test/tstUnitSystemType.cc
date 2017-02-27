@@ -3,7 +3,7 @@
  * \file   units/test/tstUnitSystemTypes.cc
  * \author Kelly Thompson
  * \date   Wed Oct  8 13:50:19 2003
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

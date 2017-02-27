@@ -66,7 +66,7 @@ run "${GIT} checkout pr${featurebranch}"
 #         bare = false
 #         logallrefupdates = true
 # [remote "origin"]
-#         url = git@github.com:losalamos/Draco.git
+#         url = git@github.com:lanl/Draco.git
 #         fetch = +refs/heads/*:refs/remotes/origin/*
 #         fetch = +refs/pull/*/head:refs/remotes/origin/pr/*
 # [branch "develop"]

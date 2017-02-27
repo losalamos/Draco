@@ -4,7 +4,7 @@
 ## File  : regression/tt-regress.msub
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -160,13 +160,12 @@ fi
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
 if test "$USER" == "kellyt"; then
   run "module load git"
-  MYHOSTNAME="`uname -n`"
   keychain=keychain-2.7.1
   $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
-  if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+  if test -f $HOME/.keychain/$HOSTNAME-sh; then
+    run "source $HOME/.keychain/$HOSTNAME-sh"
   else
-    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+    echo "Error: could not find $HOME/.keychain/$HOSTNAME-sh"
   fi
 fi
 

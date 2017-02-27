@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ParallelUnitTest.hh"
@@ -26,6 +23,8 @@ namespace rtt_c4 {
  * \arg argv A list of strings containg the command line arguments
  * \arg release_ A function pointer to this package's release function.
  * \arg out_ A user specified iostream that defaults to std::cout.
+ * \arg verbose_ flags whether to print messages for successful tests. Defaults
+ * to true.
  * \exception rtt_dsxx::assertion An exception with the message "Success" will
  * be thrown if \c --version is found in the argument list.
  *
@@ -35,8 +34,9 @@ namespace rtt_c4 {
  * and provides the unit test name.
  */
 ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv,
-                                   string_fp_void release_, std::ostream &out_)
-    : UnitTest(argc, argv, release_, out_) {
+                                   string_fp_void release_, std::ostream &out_,
+                                   bool const verbose_)
+    : UnitTest(argc, argv, release_, out_, verbose_) {
   using std::string;
 
   initialize(argc, argv);
@@ -60,14 +60,26 @@ ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv,
 
   // Register and process command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
-  long_options['v'] = "version";
   std::map<char, std::string> help_strings;
+  long_options['v'] = "version";
   help_strings['v'] = "print version information and exit.";
+  long_options['p'] = "pause";
+  help_strings['p'] = "pause program at MPI init to allow debugger to attach";
   rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
   int c(0);
   while ((c = program_options()) != -1) {
     switch (c) {
+    case 'p': // --pause
+      char chtmp;
+      if (rtt_c4::node() == 0) {
+        std::cout << "Program paused to allow debugger to attach.\n"
+                  << "Enter any single char to continue...";
+        std::cin >> chtmp;
+      }
+      rtt_c4::global_barrier();
+      break;
+
     case 'v': // --version
       finalize();
       throw rtt_dsxx::assertion(string("Success"));

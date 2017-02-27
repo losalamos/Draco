@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Parsers for various quadrature classes.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC. All rights
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC. All rights
  *         reserved.
  */
 //---------------------------------------------------------------------------------------//
@@ -110,7 +110,8 @@ Class_Parse_Table<Quadrature>::Class_Parse_Table() {
 
 //---------------------------------------------------------------------------------------//
 void Class_Parse_Table<Quadrature>::check_completeness(Token_Stream &tokens) {
-  tokens.check_semantics(parsed_quadrature_, "no quadrature specified");
+  tokens.check_semantics(parsed_quadrature_ != nullptr,
+                         "no quadrature specified");
 }
 
 //---------------------------------------------------------------------------------------//

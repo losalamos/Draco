@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------------------//
 // $Id: Square_Chebyshev_Legendre.cc 6718 2012-08-30 20:03:01Z warsa $

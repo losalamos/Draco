@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Fri Jan 20 14:51:51 2006
  * \brief  Decleration and Definition of Index_Converter
- * \note   Copyright 2016 Los Alamos National Security, LLC.
+ * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
 // $Id$

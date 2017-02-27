@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: tstScalarUnitTest.cc 6864 2012-11-08 01:34:45Z kellyt $
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "draco_info.hh"
@@ -30,10 +27,9 @@ DracoInfo::DracoInfo(void)
       build_type(normalizeCapitalization(CMAKE_BUILD_TYPE)),
       library_type("static"), system_type("Unknown"), site_name("Unknown"),
       cuda(false), mpi(false), mpirun_cmd(""), openmp(false),
-      diagnostics_level("disabled"), diagnostics_timing(false), cxx11(false),
-      cxx11_features(), cxx(CMAKE_CXX_COMPILER), cxx_flags(CMAKE_CXX_FLAGS),
-      cc(CMAKE_C_COMPILER), cc_flags(CMAKE_C_FLAGS), fc("none"),
-      fc_flags("none") {
+      diagnostics_level("disabled"), diagnostics_timing(false),
+      cxx(CMAKE_CXX_COMPILER), cxx_flags(CMAKE_CXX_FLAGS), cc(CMAKE_C_COMPILER),
+      cc_flags(CMAKE_C_FLAGS), fc("none"), fc_flags("none") {
 #ifdef DRACO_SHARED_LIBS
   library_type = "Shared";
 #endif
@@ -65,8 +61,6 @@ DracoInfo::DracoInfo(void)
 #ifdef DRACO_TIMING
   diagnostics_timing = true;
 #endif
-  cxx11 = true;
-  cxx11_features = rtt_dsxx::UnitTest::tokenize(CXX11_FEATURE_LIST, ";", false);
   if (build_type == std::string("Release")) {
     cxx_flags += CMAKE_CXX_FLAGS_RELEASE;
     cc_flags += CMAKE_C_FLAGS_RELEASE;
@@ -113,19 +107,6 @@ std::string DracoInfo::fullReport(void) {
               << "\n    Diagnostics    : " << diagnostics_level
               << "\n    Diagnostics Timing: "
               << (diagnostics_timing ? "enabled" : "disabled");
-
-  // C++11
-
-  infoMessage << "\n    C++11 Support  : " << (cxx11 ? "enabled" : "disabled");
-
-  if (cxx11) {
-    infoMessage << "\n      Feature list : ";
-    for (size_t i = 0; i < cxx11_features.size(); ++i)
-      if (i == 0)
-        infoMessage << cxx11_features[i];
-      else
-        infoMessage << "\n                     " << cxx11_features[i];
-  }
 
   // Compilers and Flags
 

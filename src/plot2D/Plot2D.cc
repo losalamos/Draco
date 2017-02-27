@@ -4,7 +4,7 @@
  * \author lowrie
  * \date   2002-04-12
  * \brief  Implementation for Plot2D.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

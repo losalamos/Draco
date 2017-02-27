@@ -3,7 +3,7 @@
  * \file   <pkg>/<class>.hh
  * \author <user>
  * \brief  Define class <class>
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -28,7 +28,7 @@ namespace <namespace> {
  *     cout << "Hello, world." << endl;
  * \endcode
  */
-/*! 
+/*!
  * \example <pkg>/test/tst<class>.cc
  *
  * Test of <class>.
@@ -41,7 +41,7 @@ public:
     // NESTED CLASSES AND TYPEDEFS
 
     // CREATORS
-    
+
     //! Default constructors.
     <class>();
 
@@ -52,7 +52,7 @@ public:
     ~<class>();
 
     // MANIPULATORS
-    
+
     //! Assignment operator for <class>.
     <class>& operator=(const <class> &rhs);
 

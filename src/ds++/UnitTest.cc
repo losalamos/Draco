@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -28,20 +28,22 @@ namespace rtt_dsxx {
  * \param argv A list of command line arguments.
  * \param release_ A function pointer to the local package's release() function.
  * \param out_ A user selectable output stream.  By default this is std::cout.
+ * \param verbose_ Print the messages for passing tests. By default, this is
+ * set to true.
  *
  * This constructor automatically parses the command line to setup the name of
  * the unit test (used when generating status reports).  The object produced by
  * this constructor will respond to the command line argument "--version."
  */
 UnitTest::UnitTest(int & /* argc */, char **&argv, string_fp_void release_,
-                   std::ostream &out_)
+                   std::ostream &out_, bool const verbose_)
     : numPasses(0), numFails(0), fpe_trap_active(false),
       testName(getFilenameComponent(std::string(argv[0]), rtt_dsxx::FC_NAME)),
       testPath(getFilenameComponent(
           getFilenameComponent(std::string(argv[0]), rtt_dsxx::FC_REALPATH),
           rtt_dsxx::FC_PATH)),
       release(release_), out(out_), m_dbcRequire(false), m_dbcCheck(false),
-      m_dbcEnsure(false), m_dbcNothrow(false) {
+      m_dbcEnsure(false), m_dbcNothrow(false), verbose(verbose_) {
   Require(release != NULL);
   Ensure(numPasses == 0);
   Ensure(numFails == 0);
@@ -116,8 +118,10 @@ bool UnitTest::failure(int line, char const *file) {
  * \param passmsg The message to be printed to the iostream \c UnitTest::out.
  */
 bool UnitTest::passes(const std::string &passmsg) {
-  out << "Test: passed" << std::endl;
-  out << "     " << passmsg << std::endl;
+  if (verbose) {
+    out << "Test: passed" << std::endl;
+    out << "     " << passmsg << std::endl;
+  }
   UnitTest::numPasses++;
   return true;
 }

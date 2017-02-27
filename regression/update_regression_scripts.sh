@@ -3,16 +3,21 @@
 ## File  : regression/update_regression_scripts.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
 umask 0002
 
-target="`uname -n | sed -e s/[.].*//`"
-
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Redirect all output to a log file.
+target="`uname -n | sed -e s/[.].*//`"
+logdir="$( cd $scriptdir/../../logs && pwd )"
+logfile=$logdir/update_regression_scripts_$target.log
+exec > $logfile
+exec 2>&1
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
@@ -72,7 +77,7 @@ fi
 if test -d ${REGDIR}/draco; then
   run "cd ${REGDIR}/draco; git pull"
 else
-  run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
+  run "cd ${REGDIR}; git clone https://github.com/lanl/Draco.git draco"
 fi
 # Deal with proxy stuff on darwin
 case ${target} in
@@ -101,6 +106,22 @@ if test -d ${REGDIR}/capsaicin; then
   run "cd ${REGDIR}/capsaicin; git pull"
 else
   run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:capsaicin/capsaicin.git"
+fi
+
+#------------------------------------------------------------------------------#
+# Cleanup old files and directories
+#------------------------------------------------------------------------------#
+if [[ -d $logdir ]]; then
+  echo "Cleaning up old log files."
+  run "cd $logdir"
+  run "find . -mtime +14 -type f"
+  run "find . -mtime +14 -type f -delete"
+fi
+if [[ -d $REGDIR/cdash ]]; then
+  echo "Cleaning up old builds."
+  run "cd $REGDIR/cdash"
+  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d"
+  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
 fi
 
 ##---------------------------------------------------------------------------##

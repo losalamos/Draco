@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  Ensight_Stream implementation file.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

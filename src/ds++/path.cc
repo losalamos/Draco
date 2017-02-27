@@ -2,7 +2,7 @@
 /*!
  * \file   ds++/path.cc
  * \brief  Encapsulate path information (path separator, etc.)
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */

@@ -3,7 +3,7 @@
  * \file   ds++/test/tstdbc.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \brief  Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

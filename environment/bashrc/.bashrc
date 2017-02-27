@@ -39,6 +39,9 @@ case ${-} in
    shopt -s checkwinsize # autocorrect window size
    #shopt -s cdspell # autocorrect spelling errors on cd command line.
 
+   # Prevent creation of core files (ulimit -a to see all limits).
+   ulimit -c 0
+
    ##------------------------------------------------------------------------##
    ## Common aliases
    ##------------------------------------------------------------------------##

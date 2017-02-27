@@ -3,7 +3,7 @@
  * \file   quadrature/Quadrature.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 15:38:56 2000
- * \brief  Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \brief  Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

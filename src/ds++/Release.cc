@@ -4,7 +4,7 @@
  * \author Thomas Evans
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -143,7 +143,7 @@ const std::string copyright() {
   std::ostringstream msg;
 
   msg << author_list() << "\n"
-      << "Copyright (C) 2016 Los Alamos National Security, LLC. "
+      << "Copyright (C) 2016-2017 Los Alamos National Security, LLC. "
          "(LA-CC-16-016)"
       << std::endl;
 

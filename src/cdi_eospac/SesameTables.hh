@@ -5,7 +5,7 @@
  * \date   Fri Apr  6 08:57:48 2001
  * \brief  Header file for SesameTables (mapping material IDs
  *         to Sesame table indexes).
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

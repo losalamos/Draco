@@ -3,7 +3,7 @@
  * \file   quadrature/test/tstLobatto.cc
  * \author Kent G. Budge
  * \date   Tue Nov  6 13:08:49 2012
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
 // $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $

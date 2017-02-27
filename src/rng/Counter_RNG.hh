@@ -4,7 +4,7 @@
  * \author Peter Ahrens
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Declaration of class Counter_RNG.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved
  */
 //---------------------------------------------------------------------------//

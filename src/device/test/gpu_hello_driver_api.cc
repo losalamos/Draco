@@ -4,7 +4,7 @@
  * \author Kelly (KT) Thompson
  * \date   Thu Oct 25 15:28:48 2011
  * \brief  Simple test of the CUDA Driver API.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

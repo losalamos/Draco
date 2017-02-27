@@ -203,7 +203,7 @@ class UnitTest:
       self.numpasses = 0
       self.numfails = 0
 
-      debug = True
+      debug = False
       if (debug):
         print("Running with the following parameters")
         print("   APP       = {0}".format(self.app))
@@ -270,7 +270,7 @@ class UnitTest:
 
   ##############################################################################
   # Run the application and capture the output.
-  def aut_runTests(self):
+  def aut_runTests(self, continue_on_error=False ):
 
     try:
       print("\n=============================================")
@@ -363,16 +363,26 @@ class UnitTest:
       f_err.close()
       if (stdin_file): f_in.close();
 
-      # check for non-zero return code
+      # Test the return code. Normally, if the return code is non-zero print an
+      # error message and return control to ctest (don't run the remaining
+      # checks). If continue_on_error=True, print a message and continue running
+      # checks.
       if (testres):
-        # get last line written to stderror
-        f_error = open(self.errfile)
-        error_lines = f_error.readlines()
-        last_error = error_lines.pop()
-        print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
-        self.fatal_error("See {0} for full details.".format(self.outfile))
-        f_error.close()
+        # we have a non-zero return code.
+        if(continue_on_error):
+          print("Non-zero return code detected, but continue_on_error=True.")
+        else:
+          # get last line written to stderror
+          f_error = open(self.errfile)
+          error_lines = f_error.readlines()
+          last_error = error_lines.pop()
+          # print the last recorded error and stop running futher checks.
+          print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
+          self.fatal_error("See {0} for full details.".format(self.outfile))
+          f_error.close()
       else:
+        # The return code was zero. Record this success and continue running the
+        # checks.
         print_file(self.outfile)
         self.passmsg("Application ran to completion")
 
@@ -380,6 +390,18 @@ class UnitTest:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
+  ##############################################################################
+
+  ##############################################################################
+  # check to see if the error file contains a given string
+  def error_contains(self, search_string):
+    # search file for string
+    return_bool = False
+    with open(self.errfile) as f:
+      for line in f:
+        if (search_string in line):
+          return_bool = True
+    return return_bool
   ##############################################################################
 
   ##############################################################################
@@ -574,10 +596,14 @@ class UnitTest:
         clean_run_args.append(arg)
       if diff_exe.strip():
         clean_run_args.append(diff_exe.strip())
+        # If we are using fc on win32, assume that we want to compare binary 
+        # files.
+        if (diff_name == "fc"):
+          clean_run_args.append("/b")
       if path_1.strip():
-        clean_run_args.append(path_1.strip())
+        clean_run_args.append(os.path.abspath(path_1.strip()))
       if path_2.strip():
-        clean_run_args.append(path_2.strip())
+        clean_run_args.append(os.path.abspath(path_2.strip()))
       for arg in diff_args.split():
         if arg: clean_run_args.append(arg)
 

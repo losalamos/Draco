@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Aug 11 08:07:04 2004
  * \brief  Compute the Jacobian of a nonlinear system of equations
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -19,10 +19,12 @@
 #include <limits>
 #include <vector>
 
+#include "ds++/Assert.hh"
+
 namespace rtt_roots {
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Calculate the Jacobian of a nonlinear system of equations.
  *
  * This procedure computes the Jacobian using a forward-difference
@@ -30,14 +32,14 @@ namespace rtt_roots {
  *
  * \arg \a Field A field type
  * \arg \a Function_N_to_N A function representing a set of N functions of N
- * variables. 
- * 
+ * variables.
+ *
  * \param x Point at which the Jacobian is to be evaluated.
  * \param fvec Residuals of the equations at x.
  * \param df On return, contains the Jacobian. The ordering is that df[i+n*j]
  * contains the jth derivative of the ith residual.
  * \param vecfunc Multifunctor returning the residuals of the nonlinear
- * equations. 
+ * equations.
  *
  * \pre \c x.size()==fvec.size()
  *

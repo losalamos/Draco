@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:15:40 2004
  * \brief  Specializations of rkqs
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

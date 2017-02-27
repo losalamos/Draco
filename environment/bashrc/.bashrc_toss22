@@ -53,9 +53,9 @@ else
   fi
   module load friendly-testing
 
-  export dracomodules="clang-format/3.9.0 intel/17.0.1 openmpi/1.10.3 mkl trilinos/12.8.1 \
-superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4 \
-subversion cmake/3.6.2 numdiff git totalview emacs grace"
+  export dracomodules="clang-format/3.9.0 intel/17.0.1 openmpi/1.10.5 mkl \
+trilinos/12.8.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 \
+eospac/6.2.4 subversion cmake/3.6.2 numdiff git totalview emacs grace"
 
 fi
 

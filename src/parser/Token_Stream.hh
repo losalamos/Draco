@@ -3,7 +3,7 @@
  * \file   Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Token_Stream.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,6 +15,7 @@
 
 #include "Token.hh"
 #include <deque>
+#include <memory>
 
 namespace rtt_parser {
 //-------------------------------------------------------------------------//

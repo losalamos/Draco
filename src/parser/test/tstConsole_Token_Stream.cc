@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Wed May 19 11:26:15 MDT 2004
  * \brief  Unit tests for Console_Token_Stream class.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

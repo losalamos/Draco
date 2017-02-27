@@ -4,10 +4,8 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Header file for Shared_Lib.
- * \note   Copyright © 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_shared_lib_Shared_Lib_hh
@@ -24,7 +22,7 @@ namespace rtt_shared_lib {
 /*!
   \class Shared_Lib
   \brief Controls access to a shared (dynamically linked) library.
- 
+
   Access to functions defined in the shared library is provided via the
   get_function() member.
 
@@ -50,7 +48,7 @@ namespace rtt_shared_lib {
   Note that the above code should compile on all platforms, but on
   unsupported platforms, the "else" block will throw an error at run time.
  */
-/*! 
+/*!
  * \example shared_lib/test/tstShared_Lib.cc
  *
  * This example shows how classes may be created through shared objects.

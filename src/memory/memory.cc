@@ -3,7 +3,7 @@
  * \file   memory/memory.cc
  * \author Kent G. Budge
  * \brief  memory diagnostic utilities
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

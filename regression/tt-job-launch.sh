@@ -3,7 +3,7 @@
 ## File  : regression/tt-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -108,7 +108,7 @@ done
 # Select haswell or knl partition
 # option '-e knl' will select KNL, default is haswell.
 case $extra_params in
-knl) partition_options="-lnodes=2:knl:ppn=68,walltime=8:00:00" ;;
+knl) partition_options="-lnodes=4:knl:ppn=68,walltime=8:00:00" ;;
 #knl) partition_options="-lnodes=2:ppn=68:knl,advres=quadflat,walltime=8:00:00" ;;
 *)   partition_options="-lnodes=4:haswell:ppn=32,walltime=8:00:00" ;;
 esac

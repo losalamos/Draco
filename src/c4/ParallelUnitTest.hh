@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
@@ -76,7 +76,8 @@ public:
   //! Default constructor.
   DLL_PUBLIC_c4 ParallelUnitTest(int &argc, char **&argv,
                                  string_fp_void release_,
-                                 std::ostream &out_ = std::cout);
+                                 std::ostream &out_ = std::cout,
+                                 bool verbose_ = true);
 
   //!  The copy constructor is disabled.
   ParallelUnitTest(ParallelUnitTest const &rhs);

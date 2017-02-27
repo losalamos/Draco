@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS member definitions.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

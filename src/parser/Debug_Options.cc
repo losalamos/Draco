@@ -3,7 +3,7 @@
  * \file   parser/Debug_Options.cc
  * \author Kent Grimmett Budge
  * \brief
- * \note   Copyright (C) 2014-2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2014-2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 /*---------------------------------------------------------------------------*/

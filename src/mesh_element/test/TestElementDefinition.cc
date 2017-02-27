@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Mar 26 16:06:55 2002
  * \brief  Test Element Definitions.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC. 
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//

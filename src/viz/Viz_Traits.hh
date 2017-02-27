@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:10:54 2000
  * \brief  Viz_Traits header file.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

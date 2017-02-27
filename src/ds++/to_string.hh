@@ -3,7 +3,7 @@
  * \file   ds++/to_string.hh
  * \author Kent Budge
  * \brief  Define class to_string
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

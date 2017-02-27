@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Aug 27 07:48:41 1998
  * \brief  A dummy package to exercize the field time-step advisors.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,6 +15,7 @@
 #define __timestep_test_dummy_package_hh__
 
 #include "ds++/SP.hh"
+#include "ds++/config.h"
 #include <vector>
 
 // FORWARD REFERENCES

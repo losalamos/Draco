@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:08:03 2004
  * \brief  Solve a linear system from its singular value decomposition.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

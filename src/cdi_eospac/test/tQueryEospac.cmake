@@ -6,12 +6,7 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
-#------------------------------------------------------------------------------#
 
-# See examples at config/ApplicationUnitTest.cmake and diagnostics/test/tDracoInfo.cmake
-
-#------------------------------------------------------------------------------#
 # Setup the CMake based ApplicationUnitTest environment
 set( CMAKE_MODULE_PATH ${DRACO_CONFIG_DIR} )
 include( ApplicationUnitTest )

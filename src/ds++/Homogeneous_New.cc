@@ -3,7 +3,7 @@
  * \file   ds++/Homogeneous_New.cc
  * \author Kent Budge
  * \brief  Implement methods of class Homogeneous_New
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

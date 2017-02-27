@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 13:21:58 2004
  * \brief  Reduce norm of a set of functions on a ray.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

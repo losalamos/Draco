@@ -4,16 +4,13 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 20:44:39 2004
  * \brief  Implementation of Shared_Lib.
- * \note   Copyright © 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Shared_Lib.hh"
-#include <sstream>
-
 #include "dlfcn_support.hh"
+#include <sstream>
 
 namespace rtt_shared_lib {
 

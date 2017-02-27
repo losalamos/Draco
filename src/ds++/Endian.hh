@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Tue Oct 23 14:15:55 2007
  * \brief  Function declarations for endian conversions
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

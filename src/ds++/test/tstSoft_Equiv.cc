@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:55:54 2001
  * \brief  Soft_Equiv header testing utilities.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

@@ -3,7 +3,7 @@
 ## File  : regression/sn-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -67,15 +67,12 @@ if test $subproj == draco || test $subproj == jayenne; then
   fi
 fi
 
-# What queue should we use
-#access_queue=""
-#if test -x /opt/MOAB/bin/drmgroups; then
-#   avail_queues=`/opt/MOAB/bin/drmgroups`
+# What queue should we use ('-A access' or '-A dev')?
 avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
 case $avail_queues in
 *access*) access_queue="-A access" ;;
+*dev*) access_queue="-l qos=dev" ;;
 esac
-#fi
 
 # Banner
 echo "==========================================================================="

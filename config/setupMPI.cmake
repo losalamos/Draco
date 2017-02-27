@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
@@ -29,6 +29,140 @@
 #
 #------------------------------------------------------------------------------#
 
+#------------------------------------------------------------------------------#
+# OpenMPI:
+#------------------------------------------------------------------------------#
+# Comments from Gabriel Rockefeller concerning OpenMPI 1.10.5 (email dated
+# 2017 January 26):
+#
+# First, the multi-rank case:
+
+# To run an MPI+threads calculation under OpenMPI 1.10.5, distributing multiple
+# ranks across nodes (actually, sockets; more on this below) and using OpenMP
+# threads to fill available cores, binding each thread to a specific core:
+
+# % msub -I -lnodes=[number of nodes]
+# % setenv OMP_PLACES threads
+# % setenv NRANKS_PER_NODE [number of ranks per node]
+# % setenv OMP_NUM_THREADS `echo ${SLURM_CPUS_ON_NODE} / ${NRANKS_PER_NODE} | bc`
+# % mpirun -np `echo ${NRANKS_PER_NODE} \* ${SLURM_NNODES} | bc` --map-by socket:PE=${OMP_NUM_THREADS},span --bind-to core [application and other arguments ...]
+
+# For example,
+
+# % msub -I -lnodes=2
+# % setenv OMP_PLACES threads
+# % setenv NRANKS_PER_NODE 8
+# % setenv OMP_NUM_THREADS `echo ${SLURM_CPUS_ON_NODE} / ${NRANKS_PER_NODE} | bc`
+# % mpirun -np `echo ${NRANKS_PER_NODE} \* ${SLURM_NNODES} | bc` --map-by socket:PE=${OMP_NUM_THREADS},span --bind-to core ./xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on ml305.localdomain. (core affinity = 00)
+# Hello from rank 00, thread 01, on ml305.localdomain. (core affinity = 01)
+# Hello from rank 01, thread 00, on ml305.localdomain. (core affinity = 02)
+# Hello from rank 01, thread 01, on ml305.localdomain. (core affinity = 03)
+# Hello from rank 02, thread 00, on ml305.localdomain. (core affinity = 04)
+# Hello from rank 02, thread 01, on ml305.localdomain. (core affinity = 05)
+# Hello from rank 03, thread 00, on ml305.localdomain. (core affinity = 06)
+# Hello from rank 03, thread 01, on ml305.localdomain. (core affinity = 07)
+# Hello from rank 04, thread 00, on ml305.localdomain. (core affinity = 08)
+# Hello from rank 04, thread 01, on ml305.localdomain. (core affinity = 09)
+# Hello from rank 05, thread 00, on ml305.localdomain. (core affinity = 10)
+# Hello from rank 05, thread 01, on ml305.localdomain. (core affinity = 11)
+# Hello from rank 06, thread 00, on ml305.localdomain. (core affinity = 12)
+# Hello from rank 06, thread 01, on ml305.localdomain. (core affinity = 13)
+# Hello from rank 07, thread 00, on ml305.localdomain. (core affinity = 14)
+# Hello from rank 07, thread 01, on ml305.localdomain. (core affinity = 15)
+# Hello from rank 08, thread 00, on ml308.localdomain. (core affinity = 00)
+# Hello from rank 08, thread 01, on ml308.localdomain. (core affinity = 01)
+# Hello from rank 09, thread 00, on ml308.localdomain. (core affinity = 02)
+# Hello from rank 09, thread 01, on ml308.localdomain. (core affinity = 03)
+# Hello from rank 10, thread 00, on ml308.localdomain. (core affinity = 04)
+# Hello from rank 10, thread 01, on ml308.localdomain. (core affinity = 05)
+# Hello from rank 11, thread 00, on ml308.localdomain. (core affinity = 06)
+# Hello from rank 11, thread 01, on ml308.localdomain. (core affinity = 07)
+# Hello from rank 12, thread 00, on ml308.localdomain. (core affinity = 08)
+# Hello from rank 12, thread 01, on ml308.localdomain. (core affinity = 09)
+# Hello from rank 13, thread 00, on ml308.localdomain. (core affinity = 10)
+# Hello from rank 13, thread 01, on ml308.localdomain. (core affinity = 11)
+# Hello from rank 14, thread 00, on ml308.localdomain. (core affinity = 12)
+# Hello from rank 14, thread 01, on ml308.localdomain. (core affinity = 13)
+# Hello from rank 15, thread 00, on ml308.localdomain. (core affinity = 14)
+# Hello from rank 15, thread 01, on ml308.localdomain. (core affinity = 15)
+
+# For clarity, that mpirun command expands to
+
+# % mpirun -np 16 --map-by socket:PE=2,span --bind-to core ./xthi | sort -k 4,6
+
+# Note that you'll get an error if you try to run a combination of ranks and
+# threads that don't fit evenly into sockets; probably the most common scenario
+# that'll trigger this is running only one rank on a multi-socket node. There
+# are other odd scenarios, like running an unusual number of ranks per node but
+# a small number of threads per rank, where mapping by socket is probably the
+# best thing to do, which is why I recommend it first.
+
+# (As a digression, notice the affinity of threads on one node when I run two
+# ranks, six threads per rank, and map by socket:
+
+# % mpirun -np 2 --map-by socket:PE=6,span --bind-to core ./xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on ml305.localdomain. (core affinity = 00)
+# Hello from rank 00, thread 01, on ml305.localdomain. (core affinity = 01)
+# Hello from rank 00, thread 02, on ml305.localdomain. (core affinity = 02)
+# Hello from rank 00, thread 03, on ml305.localdomain. (core affinity = 03)
+# Hello from rank 00, thread 04, on ml305.localdomain. (core affinity = 04)
+# Hello from rank 00, thread 05, on ml305.localdomain. (core affinity = 05)
+# Hello from rank 01, thread 00, on ml305.localdomain. (core affinity = 08)
+# Hello from rank 01, thread 01, on ml305.localdomain. (core affinity = 09)
+# Hello from rank 01, thread 02, on ml305.localdomain. (core affinity = 10)
+# Hello from rank 01, thread 03, on ml305.localdomain. (core affinity = 11)
+# Hello from rank 01, thread 04, on ml305.localdomain. (core affinity = 12)
+# Hello from rank 01, thread 05, on ml305.localdomain. (core affinity = 13)
+
+# and compare the affinities when mapping by node instead:
+
+# % mpirun -np 2 --map-by node:PE=6,span --bind-to core ./xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on ml305.localdomain. (core affinity = 00)
+# Hello from rank 00, thread 01, on ml305.localdomain. (core affinity = 01)
+# Hello from rank 00, thread 02, on ml305.localdomain. (core affinity = 02)
+# Hello from rank 00, thread 03, on ml305.localdomain. (core affinity = 03)
+# Hello from rank 00, thread 04, on ml305.localdomain. (core affinity = 04)
+# Hello from rank 00, thread 05, on ml305.localdomain. (core affinity = 05)
+# Hello from rank 01, thread 00, on ml305.localdomain. (core affinity = 06)
+# Hello from rank 01, thread 01, on ml305.localdomain. (core affinity = 07)
+# Hello from rank 01, thread 02, on ml305.localdomain. (core affinity = 08)
+# Hello from rank 01, thread 03, on ml305.localdomain. (core affinity = 09)
+# Hello from rank 01, thread 04, on ml305.localdomain. (core affinity = 10)
+# Hello from rank 01, thread 05, on ml305.localdomain. (core affinity = 11)
+
+# Cores 0-7 live on the first socket; cores 8-15 live on the second. Sockets
+# represent "pools of memory bandwidth", so it's probably best to divide ranks
+# (and their associated threads) evenly among sockets, using "--map-by socket",
+# rather than filling the first socket and leaving the second underutilized, as
+# happens when mapping by node.)
+
+# To run a single-rank calculation and fill all available cores with OpenMP
+# threads (as an example of a case where mapping by node is required):
+
+# % msub -I -lnodes=1
+# % setenv OMP_PLACES threads
+# % setenv OMP_NUM_THREADS $SLURM_CPUS_ON_NODE
+# % mpirun -np 1 --map-by node:PE=${OMP_NUM_THREADS},span --bind-to core ./xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on ml305.localdomain. (core affinity = 00)
+# Hello from rank 00, thread 01, on ml305.localdomain. (core affinity = 01)
+# Hello from rank 00, thread 02, on ml305.localdomain. (core affinity = 02)
+# Hello from rank 00, thread 03, on ml305.localdomain. (core affinity = 03)
+# Hello from rank 00, thread 04, on ml305.localdomain. (core affinity = 04)
+# Hello from rank 00, thread 05, on ml305.localdomain. (core affinity = 05)
+# Hello from rank 00, thread 06, on ml305.localdomain. (core affinity = 06)
+# Hello from rank 00, thread 07, on ml305.localdomain. (core affinity = 07)
+# Hello from rank 00, thread 08, on ml305.localdomain. (core affinity = 08)
+# Hello from rank 00, thread 09, on ml305.localdomain. (core affinity = 09)
+# Hello from rank 00, thread 10, on ml305.localdomain. (core affinity = 10)
+# Hello from rank 00, thread 11, on ml305.localdomain. (core affinity = 11)
+# Hello from rank 00, thread 12, on ml305.localdomain. (core affinity = 12)
+# Hello from rank 00, thread 13, on ml305.localdomain. (core affinity = 13)
+# Hello from rank 00, thread 14, on ml305.localdomain. (core affinity = 14)
+# Hello from rank 00, thread 15, on ml305.localdomain. (core affinity = 15)
+
+# Note the change from "--map-by socket" to "--map-by node".
+#------------------------------------------------------------------------------#
 include( FeatureSummary )
 
 ##---------------------------------------------------------------------------##
@@ -174,27 +308,22 @@ macro( setupOpenMPI )
     message( FATAL_ERROR "OpenMPI version < 1.4 found." )
   endif()
 
-  # Setting mpi_paffinity_alone to 0 allows parallel ctest to
-  # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
-  # tests (and not MPI+OpenMP tests).
+  # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
+  # MPIEXEC_POSTFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
   if( "$ENV{GITLAB_CI}" STREQUAL "true" )
     set(runasroot "--allow-run-as-root")
   endif()
 
-  # This flag also shows up in
-  # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
+  # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
+  # regress_funcs.py.
   if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
     set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0 ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
-    # (2015-04-08) Flags provided by Sam Gutierrez:
-    # "-mca hwloc_base_binding_policy none"
-
-    # (2016-12-14) Replace the above with a new set of flags that are used by
-    # MCATK and EAP code projects. These options appear to work correctly for
-    # running concurrent unit tests on a node.
-    set( MPIEXEC_POSTFLAGS "-mca btl self,vader -bind-to none ${runasroot}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
+    # (2017-01-13) Bugs in openmpi-1.10.x are mostly fixed. Remove flags used
+    # to work around bugs: '-mca btl self,vader -mca timer_require_monotonic 0'
+    set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
+      "extra mpirun flags (list)." FORCE)
   endif()
 
   # Find cores/cpu, cpu/node, hyperthreading
@@ -252,8 +381,100 @@ macro( setupIntelMPI )
 endmacro()
 
 ##---------------------------------------------------------------------------##
-## Setup Cray MPI wrappers
+## Setup Cray MPI wrappers (APRUN)
 ##---------------------------------------------------------------------------##
+#------------------------------------------------------------------------------#
+# # Comments from Gabriel Rockefeller concerning OpenMPI 1.10.5 (email dated
+# 2017 January 26):
+#
+# For a MPI+OpenMP job that has exclusive access to its node:
+#
+# % setenv OMP_NUM_THREADS [number of threads per rank]
+# % setenv OMP_PLACES threads
+# % aprun -n [num_ranks] -N [ranks_per_node] --cc depth -d $OMP_NUM_THREADS -j 1 [your binary plus options]
+#
+# where ranks_per_node * OMP_NUM_THREADS should probably come out to the number
+# of PEs on each node (unless you're intentionally undersubscribing each node).
+#
+# (Optionally, if you are undersubscribing the node, add -S
+# [ranks_per_numa_node] to spread ranks out across both NUMA nodes; whether this
+# helps or hurts will depend on details of the particular calculation you're
+# running, i.e., whether communication between ranks or access to local memory
+# is more important. if you add it, ranks_per_numa_node should probably be
+# ranks_per_node / 2, on Trinitite/Trinity Haswell.)
+#
+# For example, on Trinitite:
+#
+# % msub -I -lnodes=1,walltime=1:00:00
+# % setenv OMP_NUM_THREADS 4
+# % setenv OMP_PLACES threads
+# % module load xthi
+# % aprun -n 4 --cc depth -d $OMP_NUM_THREADS -j 1 xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on nid00030. (core affinity = 00)
+# Hello from rank 00, thread 01, on nid00030. (core affinity = 01)
+# Hello from rank 00, thread 02, on nid00030. (core affinity = 02)
+# Hello from rank 00, thread 03, on nid00030. (core affinity = 03)
+# Hello from rank 01, thread 00, on nid00030. (core affinity = 04)
+# Hello from rank 01, thread 01, on nid00030. (core affinity = 05)
+# Hello from rank 01, thread 02, on nid00030. (core affinity = 06)
+# Hello from rank 01, thread 03, on nid00030. (core affinity = 07)
+# Hello from rank 02, thread 00, on nid00030. (core affinity = 08)
+# Hello from rank 02, thread 01, on nid00030. (core affinity = 09)
+# Hello from rank 02, thread 02, on nid00030. (core affinity = 10)
+# Hello from rank 02, thread 03, on nid00030. (core affinity = 11)
+# Hello from rank 03, thread 00, on nid00030. (core affinity = 12)
+# Hello from rank 03, thread 01, on nid00030. (core affinity = 13)
+# Hello from rank 03, thread 02, on nid00030. (core affinity = 14)
+# Hello from rank 03, thread 03, on nid00030. (core affinity = 15)
+#
+# The same, with -S 2, puts two ranks on each NUMA node, instead of all four
+# ranks on the first NUMA node:
+#
+# % aprun -n 4 -S 2 --cc depth -d $OMP_NUM_THREADS -j 1 xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on nid00030. (core affinity = 00)
+# Hello from rank 00, thread 01, on nid00030. (core affinity = 01)
+# Hello from rank 00, thread 02, on nid00030. (core affinity = 02)
+# Hello from rank 00, thread 03, on nid00030. (core affinity = 03)
+# Hello from rank 01, thread 00, on nid00030. (core affinity = 04)
+# Hello from rank 01, thread 01, on nid00030. (core affinity = 05)
+# Hello from rank 01, thread 02, on nid00030. (core affinity = 06)
+# Hello from rank 01, thread 03, on nid00030. (core affinity = 07)
+# Hello from rank 02, thread 00, on nid00030. (core affinity = 16)
+# Hello from rank 02, thread 01, on nid00030. (core affinity = 17)
+# Hello from rank 02, thread 02, on nid00030. (core affinity = 18)
+# Hello from rank 02, thread 03, on nid00030. (core affinity = 19)
+# Hello from rank 03, thread 00, on nid00030. (core affinity = 20)
+# Hello from rank 03, thread 01, on nid00030. (core affinity = 21)
+# Hello from rank 03, thread 02, on nid00030. (core affinity = 22)
+# Hello from rank 03, thread 03, on nid00030. (core affinity = 23)
+#
+# In contrast, for multiple jobs on the same node, unset OMP_PLACES and use --cc
+# none to avoid binding threads to particular PEs or ranges:
+#
+# % unsetenv OMP_PLACES
+# % aprun -n 4 --cc none -d $OMP_NUM_THREADS -j 1 xthi | sort -k 4,6
+# Hello from rank 00, thread 00, on nid00030. (core affinity = 00-63)
+# Hello from rank 00, thread 01, on nid00030. (core affinity = 00-63)
+# Hello from rank 00, thread 02, on nid00030. (core affinity = 00-63)
+# Hello from rank 00, thread 03, on nid00030. (core affinity = 00-63)
+# Hello from rank 01, thread 00, on nid00030. (core affinity = 00-63)
+# Hello from rank 01, thread 01, on nid00030. (core affinity = 00-63)
+# Hello from rank 01, thread 02, on nid00030. (core affinity = 00-63)
+# Hello from rank 01, thread 03, on nid00030. (core affinity = 00-63)
+# Hello from rank 02, thread 00, on nid00030. (core affinity = 00-63)
+# Hello from rank 02, thread 01, on nid00030. (core affinity = 00-63)
+# Hello from rank 02, thread 02, on nid00030. (core affinity = 00-63)
+# Hello from rank 02, thread 03, on nid00030. (core affinity = 00-63)
+# Hello from rank 03, thread 00, on nid00030. (core affinity = 00-63)
+# Hello from rank 03, thread 01, on nid00030. (core affinity = 00-63)
+# Hello from rank 03, thread 02, on nid00030. (core affinity = 00-63)
+# Hello from rank 03, thread 03, on nid00030. (core affinity = 00-63)
+#
+# I'll add this to Confluence once you've had a chance to try it. Running
+# multiple jobs on a Trinity/Trinitite node involves Adaptive's MAPN
+# functionality, which might not quite be working as intended yet.
+#
+#------------------------------------------------------------------------------#
 macro( setupCrayMPI )
 
   if( "${DBS_MPI_VER}x" STREQUAL "x" AND
@@ -267,32 +488,36 @@ macro( setupCrayMPI )
     endif()
   endif()
 
-  # According to email from Mike McKay (2013/04/18), we might
-  # need to set the the mpirun command to something like:
-  #
-  # setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}
-  # aprun ... -d ${MPI_CORES_PER_CPU} -n [0-9]+
-
   query_topology()
 
+  # -b        Bypass transfer of application executable to the compute node.
+  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
+  # -q        Quiet
+  # -m 1400m  Reserve 1.4 GB of RAM per PE. Trinitite/Trinity has 4GB/core for
+  #           haswells, 1.4GB/core for KNL
+  # -F shared enabled shared mode to allow multiple applications to run on a
+  #           single node.
+  set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+    # Consider using 'aprun -n # -N # -S # -d # -T -cc depth ...'
+    # -n #  number of processes
+    # -N #  number of processes per node
+    # -S #  number of processes per numa node
+    # -d #  cpus-per-pe
+    # -T    sync-output
+    # -cc depth PEs are constrained to CPUs with a distance of depth between
+    #       them so each PE's threads can be constrained to the CPUs closest to
+    #       the PE's CPU.
+    set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
+      CACHE STRING "extra mpirun flags (list)." FORCE)
   # Extra flags for OpenMP + MPI
-  # -m 1400m reserves 1.4 GB per core when running with MAPN.
-  # Trinitite/Trinity has 4GB/node for haswells
   if( DEFINED ENV{OMP_NUM_THREADS} )
-    set( MPIEXEC_OMP_POSTFLAGS "-q -b -m 1400m -d $ENV{OMP_NUM_THREADS}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
+
   else()
     message( STATUS "
 WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          all OMP tests will be disabled." )
   endif()
-
-  # -b        Bypass transfer of application executable to the compute node.
-  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
-  # -q        Quiet
-  # -m 1400m     Reserve 1.4 GB of RAM per PE.
-  set( MPIEXEC_POSTFLAGS "-q -b -m 1400m" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
 
 endmacro()
 

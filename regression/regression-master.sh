@@ -3,7 +3,7 @@
 ## File  : regression/regression-master.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -346,7 +346,7 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
-  sleep 1
+  sleep 1s
   draco_jobid=`jobs -p | sort -gr | head -n 1`
   ((ifb++))
 fi
@@ -363,7 +363,7 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
-  sleep 1
+  sleep 1s
   jayenne_jobid=`jobs -p | sort -gr | head -n 1`
   ((ifb++))
 fi
@@ -391,13 +391,24 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
-  sleep 1
+  sleep 1s
   capsaicin_jobid=`jobs -p | sort -gr | head -n 1`
   ((ifb++))
 fi
 
 # Wait for all parallel jobs to finish
-while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
+#while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
+
+# Wait for all subprocesses to finish before exiting this script
+if [[ `jobs -p | wc -l` -gt 0 ]]; then
+  echo " "
+  echo "Jobs still running (if any):"
+  for job in `jobs -p`; do
+    echo "  waiting for job $job to finish..."
+    wait $job
+    echo "  waiting for job $job to finish...done"
+  done
+fi
 
 # set permissions
 chgrp -R draco ${logdir} &> /dev/null

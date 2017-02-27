@@ -4,7 +4,7 @@
  * \author <user>
  * \date   <date>
  * \brief  <start>
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -29,9 +29,9 @@ namespace <namespace> {
  *     cout << "Hello, world." << endl;
  * \endcode
  */
-/*! 
- * \example <pkg>/test/tst<class>.cc 
- * 
+/*!
+ * \example <pkg>/test/tst<class>.cc
+ *
  * Test of <class>.
  */
 //===========================================================================//
@@ -42,7 +42,7 @@ namespace <namespace> {
     // NESTED CLASSES AND TYPEDEFS
 
     // CREATORS
-    
+
     //! Default constructors.
     <class>();
 
@@ -53,7 +53,7 @@ namespace <namespace> {
     ~<class>();
 
     // MANIPULATORS
-    
+
     //! Assignment operator for <class>.
     <class>& operator=(const <class><T> &rhs);
 

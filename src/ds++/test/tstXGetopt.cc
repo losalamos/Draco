@@ -4,7 +4,7 @@
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Wed Nov 10 09:35:09 2010
  * \brief  Test functions defined in ds++/XGetopt.cc
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

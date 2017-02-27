@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Wed Mar 27 10:41:12 2002
  * \brief  RTT_Mesh_Reader test.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  * \version $Id$
  */

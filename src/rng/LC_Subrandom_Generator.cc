@@ -3,7 +3,7 @@
  * \file   rng/LC_Subrandom_Generator.cc
  * \author Kent Budge
  * \brief  Define methods of class LC_Subrandom_Generator
- * \note   Copyright (C) 2016 Los Alamos National Laboratory,
+ * \note   Copyright (C) 2016-2017 Los Alamos National Laboratory,
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

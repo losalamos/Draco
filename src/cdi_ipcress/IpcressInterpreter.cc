@@ -4,7 +4,7 @@
  * \author Allan Wollaber
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Basic reader to print info in IPCRESS files.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

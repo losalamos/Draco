@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   draco_regression_macros.cmake
 # brief  Helper macros for setting up a CTest/CDash regression system
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -334,19 +334,19 @@ macro( parse_args )
   # Set the build name: (<platform>-<compiler>-<configuration>)
   if( WIN32 )
     if( "$ENV{dirext}" MATCHES "x64" )
-      set( CTEST_BUILD_NAME "Win64_${CTEST_BUILD_CONFIGURATION}" )
+      set( CTEST_BUILD_NAME "${CTEST_BUILD_CONFIGURATION}" )
     else()
-      set( CTEST_BUILD_NAME "Win32_${CTEST_BUILD_CONFIGURATION}" )
+      set( CTEST_BUILD_NAME "${CTEST_BUILD_CONFIGURATION}" )
     endif()
   elseif( APPLE ) # OS/X
-    set( CTEST_BUILD_NAME "OSX_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
+    set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   else() # Unix
-    set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
+    set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
     if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
       if( "$ENV{featurebranch}notset" STREQUAL "notset" )
         message(FATAL_ERROR "Checkout from github requested, but ENV{featurebranch} is not set.")
       endif()
-      set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-$ENV{featurebranch}" )
+      set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-$ENV{featurebranch}" )
     endif()
   endif()
 
@@ -529,7 +529,7 @@ macro( set_git_command gitpath )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
     if( ${gitpath} MATCHES "Draco" )
       set( CTEST_CHECKOUT_COMMAND
-        "${CTEST_GIT_COMMAND} clone --depth 1 https://github.com/losalamos/${gitpath} source" )
+        "${CTEST_GIT_COMMAND} clone --depth 1 https://github.com/lanl/${gitpath} source" )
     else()
       # This assumes that a valid ssh-key exists in the current environment and
       # works with gitlab.lanl.gov.
@@ -721,11 +721,21 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
         "-q --tool=memcheck --leak-check=full --trace-children=yes --gen-suppressions=all ${valgrind_suppress_option}" )
     endif()
     message(" CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}")
-    message( "ctest_memcheck( SCHEDULE_RANDOM ON
-                EXCLUDE_LABEL nomemcheck )")
-    ctest_memcheck(
-      SCHEDULE_RANDOM ON
-      EXCLUDE_LABEL "nomemcheck")
+
+    set( ctest_memcheck_options "SCHEDULE_RANDOM ON" )
+    string( APPEND ctest_memcheck_options " PARALLEL_LEVEL ${num_test_procs}" )
+    string( APPEND ctest_memcheck_options " EXCLUDE_LABEL nomemcheck")
+
+    # if we are running on a machine that openly shares resources, use the
+    # TEST_LOAD feature to limit the number of cores used while testing. For
+    # machines that run schedulers, the whole allocation is available so there
+    # is no need to limit the load.
+    if( "${CTEST_SITE}" MATCHES "ccscs" )
+      string( APPEND ctest_memcheck_options " TEST_LOAD ${max_system_load}" )
+    endif()
+    message( "ctest_memcheck( ${ctest_memcheck_options} )" )
+    separate_arguments( ctest_memcheck_options )
+    ctest_memcheck( ${ctest_memcheck_options} )
   endif()
 endmacro(process_cc_or_da)
 
@@ -749,8 +759,9 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr"        "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-perfbench" "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "gcc-perfbench"   "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
     if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin")

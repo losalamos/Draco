@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Thu Sep  2 15:00:32 2004
  * \brief  Specializations of tqli
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

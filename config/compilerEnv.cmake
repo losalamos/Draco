@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compilerEnv.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -40,9 +40,7 @@ endif()
 # ------------------------------------------------------------------------------
 site_name( SITENAME )
 string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
-if( ${SITENAME} MATCHES "c[it]" )
-  set( SITENAME "Cielito" )
-elseif( ${SITENAME} MATCHES "ml" OR ${SITENAME} MATCHES "lu" )
+if( ${SITENAME} MATCHES "ml" OR ${SITENAME} MATCHES "lu" )
   set( SITENAME "Moonlight" )
 elseif( ${SITENAME} MATCHES "tt") #" -login[0-9]+" OR ${SITENAME} MATCHES "tt-fey[0-9]+" )
   set( SITENAME "Trinitite" )
@@ -94,8 +92,6 @@ macro(dbsSetupCompilers)
   # we use it. This value is used in component_macros.cmake when properties
   # are assigned to individual targets. Current status:
   #
-  # - Cielito/Cielo: Intel with IPO (-ipo flag and linking with xiar) causes
-  #   parser/tstutilities to fail.
   # - Moonlight/Luna: Intel with IPO (-ipo flag) causes
   #   wedgehog_components/tstCensus_Manger_DD_2 to fail.
   # In component_macros.cmake, this target property will be set:
@@ -332,8 +328,9 @@ macro(dbsSetupFortran)
     find_program( CAFS_Fortran_COMPILER
       NAMES ${CAFS_Fortran_COMPILER} $ENV{CAFS_Fortran_COMPILER} gfortran
       PATHS
-      c:/MinGW/bin
-      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
+        c:/MinGW/bin
+        c:/msys64/usr/bin
+        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
 
     if( EXISTS ${CAFS_Fortran_COMPILER} )
       set( HAVE_Fortran ON )

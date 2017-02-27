@@ -1,11 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/CellDefs.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for CellDefs library.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
@@ -28,7 +28,7 @@ class CellDefs;
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Controls parsing, storing, and accessing the data contained in the 
+ * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
  */
 //---------------------------------------------------------------------------//
@@ -88,7 +88,7 @@ public:
  */
   size_t get_nsides() const { return nsides; }
   /*!
- * \brief   Returns the side type number associated with the cell definition 
+ * \brief   Returns the side type number associated with the cell definition
  *          specified side index.
  * \param s Side index number.
  * \return  The side type number.
@@ -113,7 +113,7 @@ public:
   /*!
      * \brief Returns the side definition of the specified side index of this
      * cell
-     *        definition with the returned cell-node indexes ordered to preserve 
+     *        definition with the returned cell-node indexes ordered to preserve
      *        the right hand rule for the outward-directed normal.
      * \param s Side index number.
      * \return The side definition (i.e., the cell-node indexes that comprise
@@ -128,7 +128,7 @@ public:
 
   /*!
      * \brief Returns the new nodes map when cell redefinition has been
-     *        performed. 
+     *        performed.
      * \return New nodes map.
      */
   const vector_int &get_node_map() const { return node_map; }
@@ -136,7 +136,7 @@ public:
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Controls parsing, storing, and accessing the data contained in the 
+ * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
  */
 class CellDefs {
@@ -188,21 +188,21 @@ public:
   const CellDef &get_cell_def(size_t i) const { return *(defs[i]); }
   rtt_dsxx::SP<CellDef> get_def(size_t i) const { return defs[i]; }
   /*!
- * \brief Returns the number of nodes associated with the specified cell 
+ * \brief Returns the number of nodes associated with the specified cell
  *        definition.
  * \param i Cell definition index number.
  * \return The number of nodes comprising the cell definition.
  */
   size_t get_nnodes(size_t i) const { return defs[i]->get_nnodes(); }
   /*!
- * \brief Returns the number of sides associated with the specified cell 
+ * \brief Returns the number of sides associated with the specified cell
  *        definition.
  * \param i Cell definition index number.
  * \return The number of sides comprising the cell definition.
  */
   size_t get_nsides(size_t i) const { return defs[i]->get_nsides(); }
   /*!
- * \brief Returns the side type number associated with the specified side 
+ * \brief Returns the side type number associated with the specified side
  *        index and cell definition.
  * \param i Cell definition index number.
  * \param s Side index number.
@@ -249,7 +249,7 @@ public:
  */
   bool get_redefined() const { return redefined; }
   /*!
- * \brief Returns the new node map for the specified cell definition when 
+ * \brief Returns the new node map for the specified cell definition when
  *        redefinition has been performed.
  * \param cell_def Cell definition index.
  * \return New cell definition node map.

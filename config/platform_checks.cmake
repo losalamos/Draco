@@ -1,7 +1,7 @@
 ##---------------------------------------------------------------------------##
 # file   : platform_checks.cmake
 # brief  : Platform Checks for Draco Build System
-# note   : Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   : Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #          All rights reserved
 ##---------------------------------------------------------------------------##
 
@@ -179,127 +179,6 @@ macro( query_have_restrict_keyword )
 endmacro()
 
 ##---------------------------------------------------------------------------##
-## Detect C++11 features
-##
-## This macro requires CMake 3.1+
-##
-## 1. This macro detects available C++11 features and sets CPP macros in
-##    the build system that have the form HAS_CXX11_<FEATURE>.  These
-##    values are saved in ds++/config.h.
-## 2. This macro also checks to ensure that the current C++ compiler
-##    supports the C++11 features already in use by draco.
-##
-## http://stackoverflow.com/questions/23042722/how-to-detect-which-c11-features-are-used-in-my-source-code
-## http://www.cmake.org/cmake/help/v3.1/prop_gbl/CMAKE_CXX_KNOWN_FEATURES.html
-##
-## CMake will automatically add the '-std=c++11' compiler flag if it
-## sees a command of the following form:
-##
-## target_compile_features( Lib_dsxx PRIVATE cxx_auto_type )
-##
-## Draco adds this flag automatically in config/unix-g++.cmake so the
-## above probably isn't needed anywhere.
-##
-##---------------------------------------------------------------------------##
-macro( query_cxx11_features )
-
-  message( STATUS "Looking for required C++11 features..." )
-  get_property(cxx_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
-  # compatibility with the old C++11 feature detection system
-  set( CXX11_FEATURE_LIST "${cxx_features}" CACHE STRING
-     "List of known C++11 features (ds++/config.h)." FORCE )
-  set( cxx11_required_features
-    cxx_auto_type
-    cxx_decltype_auto
-#    cxx_nullptr
-#    cxx_lambdas
-    cxx_rvalue_references
-    cxx_long_long_type
-    cxx_static_assert
-    cxx_decltype
-#    cxx_variadic_templates
-#    cxx_sizeof_member
-#    cxx_generalized_initializers
-    )
-# cxx_aggregate_default_initializers
-# cxx_alias_templates
-# cxx_alignas
-# cxx_alignof
-# cxx_attributes
-# cxx_attribute_deprecated
-# cxx_auto_type
-# cxx_binary_literals
-# cxx_constexpr
-# cxx_contextual_conversions
-# cxx_decltype
-# cxx_decltype_auto
-# cxx_decltype_incomplete_return_types
-# cxx_default_function_template_args
-# cxx_defaulted_functions
-# cxx_defaulted_move_initializers
-# cxx_delegating_constructors
-# cxx_deleted_functions
-# cxx_digit_separators
-# cxx_enum_forward_declarations
-# cxx_explicit_conversions
-# cxx_extended_friend_declarations
-# cxx_extern_templates
-# cxx_final
-# cxx_func_identifier
-# cxx_generalized_initializers
-# cxx_generic_lambdas
-# cxx_inheriting_constructors
-# cxx_inline_namespaces
-# cxx_lambdas
-# cxx_lambda_init_captures
-# cxx_local_type_template_args
-# cxx_long_long_type
-# cxx_noexcept
-# cxx_nonstatic_member_init
-# cxx_nullptr
-# cxx_override
-# cxx_range_for
-# cxx_raw_string_literals
-# cxx_reference_qualified_functions
-# cxx_relaxed_constexpr
-# cxx_return_type_deduction
-# cxx_right_angle_brackets
-# cxx_rvalue_references
-# cxx_sizeof_member
-# cxx_static_assert
-# cxx_strong_enums
-# cxx_template_template_parameters
-# cxx_thread_local
-# cxx_trailing_return_types
-# cxx_unicode_literals
-# cxx_uniform_initialization
-# cxx_unrestricted_unions
-# cxx_user_literals
-# cxx_variable_templates
-# cxx_variadic_macros
-# cxx_variadic_templates
-
-  foreach( cxx11reqfeature ${cxx11_required_features} )
-    string( TOUPPER ${cxx11reqfeature} reqfeat )
-    string( REPLACE "CXX_" "HAS_CXX11_" reqfeat ${reqfeat} )
-    if( NOT "${cxx_features}" MATCHES "${cxx11reqfeature}" )
-      message( FATAL_ERROR "Draco requires a C++ compiler that can support the '${cxx11reqfeature}' feature of the C++11 standard.")
-    endif()
-    # if not available, the variable will not be defined
-    set( "${reqfeat}" ON CACHE BOOL "C++11 feature macro value." FORCE )
-  endforeach()
-
-  # This one isn't known by cmake
-  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "XL"  )
-      unset( HAS_CXX11_ARRAY )
-  else()
-      set( HAS_CXX11_ARRAY 1 )
-  endif()
-  message( STATUS "Looking for required C++11 features...done.  See ds++/config.h for details." )
-
-endmacro()
-
-##---------------------------------------------------------------------------##
 ## Query OpenMP availability
 ##
 ## This feature is usually compiler specific and a compile flag must be
@@ -315,6 +194,61 @@ macro( query_openmp_availability )
   else()
     message(STATUS "Looking for OpenMP... not found")
   endif()
+endmacro()
+
+#------------------------------------------------------------------------------#
+# Query if hardware has FMA
+#
+# This code is adopted from
+# https://software.intel.com/en-us/node/405250?language=es&wapkw=avx2+cpuid
+#------------------------------------------------------------------------------#
+macro( query_fma_on_hardware )
+
+  message( STATUS "Looking for hardware FMA support...")
+  unset(HAVE_HARDWARE_FMA)
+  try_run(
+    HAVE_HARDWARE_FMA
+    HAVE_HARDWARE_FMA_COMPILE
+    ${CMAKE_CURRENT_BINARY_DIR}/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/config/query_fma.cc
+    )
+  if( NOT HAVE_HARDWARE_FMA_COMPILE )
+    message( FATAL_ERROR "Unable to compile config/query_fma.cc.")
+  endif()
+  if( HAVE_HARDWARE_FMA )
+    message( STATUS "Looking for hardware FMA support...found fma.")
+  else()
+    message( STATUS "Looking for hardware FMA support...fma not found.")
+  endif()
+
+  # Other things to look at (might be able to avoid the try-compile):
+
+  # if (WIN32)
+  #   # Not sure what to do here. Consider:
+  #   # - looking at $ENV{PROCESSOR_IDENTIFIER}. This will be something like:
+  #   #   "Intel64 Family 6 Model 45 Stepping 7, GenuineIntel" This string would
+  #   #   need to be decoded to know if the processor supports FMA.
+  #   # - running 'wmic cpu get * /fomrat:list'. This lists a lot of information
+  #   #   about the cpu, but it does not itemize features like fma. Optionally,
+  #   #   'wmic cpu get name'
+  #   # - run a 3rd party application like cpuz64.
+  # elseif (APPLE)
+  #   execute_process( COMMAND /usr/sbin/sysctl -n hw.optional.fma
+  #     OUTPUT_VARIABLE found_fma
+  #     OUTPUT_QUIET )
+  #   if( ${found_fma} GREATER 0 )
+  #     set(HAS_HARDWARE_FMA ON)
+  #   endif()
+  # else()
+  #   if( EXISTS /proc/cpuinfo )
+  #     execute_process( COMMAND /bin/cat /proc/cpuinfo
+  #       OUTPUT_VARIABLE cpuinfo-output )
+  #   string( FIND "${cpuinfo-output}" fma found_fma )
+  #   if( ${found_fma} GREATER 0 )
+  #     set(HAS_HARDWARE_FMA ON)
+  #   endif()
+  # endif()
+
 endmacro()
 
 ##---------------------------------------------------------------------------##

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -30,7 +30,7 @@ using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
-using rtt_dsxx::dynamic_pointer_cast;
+using std::dynamic_pointer_cast;
 
 //---------------------------------------------------------------------------//
 // TESTS

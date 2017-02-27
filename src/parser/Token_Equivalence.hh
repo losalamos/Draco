@@ -3,7 +3,7 @@
  * \file   Token_Equivalence.hh
  * \author Kelly G. Thompson
  * \brief  Provide services for ApplicationUnitTest framework.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

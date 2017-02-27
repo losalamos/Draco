@@ -3,7 +3,7 @@
  * \file   rng/test/tstRnd_Control_Inline.cc
  * \author Paul Henning
  * \brief  Rnd_Control test.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

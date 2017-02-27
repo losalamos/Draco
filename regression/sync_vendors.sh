@@ -3,7 +3,7 @@
 ## File  : regression/sync_vendors.sh
 ## Date  : Tuesday, Oct 25, 2016, 09:07 am
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -11,86 +11,94 @@
 #   - Mirror ccscs7:/scratch/vendors -> /ccs/codes/radtran/vendors/rhel72
 #     Do not mirror the ndi directory (300+ GB)
 #   - Mirror ccscs7:/scratch/vendors  -> ccscs[234568]:/scratch/vendors
+#     Do not mirror ndi to ccscs5 due to limited size of /scratch.
 
-function run ()
-{
-    echo $1;
-    if ! [ $dry_run ]; then
-        eval $1;
-    fi
-}
-
-machine=`uname -n`
+# From dir (ccscs7)
 vdir=/scratch/vendors
+# To dir
 r72v=/ccs/codes/radtran/vendors/rhel72vendors
-ccs_servers="2 3 4 5 6 7 8"
+# To machines (cccs[234568]:/scratch/vendors)
+ccs_servers="ccscs2 ccscs3 ccscs4 ccscs5 ccscs6 ccscs8"
 
-echo "Rsync vendor directory to /ccs/codes/radtran/vendors and to"
-echo "/scratch/vendors on:"
-for m in $ccs_servers; do echo " - ccscs${m}"; done
+target="`uname -n | sed -e s/[.].*//`"
 
-# make a backup copy of vendors to $r72v
+# Locate the directory that this script is located in:
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# All output will be saved to this log file.  This is also the lockfile for flock.
+logdir="$( cd $scriptdir/../../logs && pwd )"
+logfile=$logdir/sync_vendors_$target.log
+lockfile=/var/tmp/sync_vendors_$target.lock
+
+# Prevent multiple copies of this script from running at the same time:
+[ "${FLOCKER}" != "${lockfile}" ] && exec env FLOCKER="${lockfile}" flock -en "${lockfile}" "${0}" "$@" || :
+
+# Redirect all output to a log file.
+exec > $logfile
+exec 2>&1
+
+# import some bash functions
+source $scriptdir/scripts/common.sh
+
+# Ensure that the permissions are correct
+run "umask 0002"
+
+# Credentials via Keychain (SSH)
+# http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
+$vdir/keychain-2.8.2/keychain $HOME/.ssh/cmake_dsa
+if test -f $HOME/.keychain/$HOSTNAME-sh; then
+  run "source $HOME/.keychain/$HOSTNAME-sh"
+else
+  echo "Error: could not find $HOME/.keychain/$HOSTNAME-sh"
+fi
+
+# Banner
+echo "Rsync /scratch/vendors to $r72v and to /scratch/vendors on:"
+for m in $ccs_servers; do echo " - ${m}"; done
+
+# Sanity check
 if ! test -d $vdir; then
   echo "Source directory $vdir is missing."
   exit 1
 fi
 
-#cd $vdir
-#find . -name '*~' -exec echo rm -f {} \;
+# Make a backup copy of vendors to $r72v
 echo " "
 echo "Clean up permissions on source files..."
 run "chgrp -R draco $vdir"
 run "chmod -R g+rwX,o=g-w $vdir"
 
 echo " "
-echo "Save a copy on /ccs/codes/radtran..."
-run "rsync -av --exclude 'ndi' --delete $vdir/ $r72v"
-# -vaum
+echo "Save a copy of /scratch/vendors to $r72v..."
+#run "rsync -av --exclude 'ndi' --delete $vdir/ $r72v"
+# rsync -av --omit-dir-times --checksum --human-readable --progress <local dir> <remote dir>
 
 # rsync vendors ccscs7 -> other machines.
-# limit network to 50 MB/sec (400 mbps)
+# but limit network to 50 MB/sec (400 mbps)
 echo " "
 echo "Rsync $vdir to other ccs-net servers... "
 for m in $ccs_servers; do
-  if test `uname -n | grep $m | wc -l` = 0; then
+  if [[ `uname -n | grep -c $m` = 0 ]]; then
     case $m in
-      5)
+      ccscs5)
         # do not copy ndi, not enough space
-        run "rsync -av --exclude ndi --delete --bwlimit=50000 $vdir/ ccscs${m}:$vdir"
+        run "rsync -av --exclude ndi --delete --bwlimit=50000 $vdir/ ${m}:$vdir"
         ;;
       *)
-        run "rsync -av --delete --bwlimit=50000 $vdir/ ccscs${m}:$vdir"
-        # -vaum
+        run "rsync -av --delete --bwlimit=50000 $vdir/ ${m}:$vdir"
         ;;
     esac
   fi
 done
 
+# Cleanup
 echo " "
-echo "done"
+echo "Cleaning up..."
+run "rm $lockfile"
 
-# Rsync directories
-# cd $mastervdir
-# dirs=`\ls -1 $mastervdir`
-# for dir in $dirs; do
-#     shortdir=`echo $dir | sed -e 's/-.*//'`
+echo " "
+echo "All done."
 
-#     case $shortdir in
-#     modules* | Modules* | deprecated | environment | sources | win32 )
-#        # do not process
-#        ;;
-#     emacs* )
-#        # do not process
-#        ;;
-#     *)
-#        echo " "
-#        echo "cd $masterdir"
-#        echo "rsync -vaum $dir ${VENDOR_DIR}"
-#        rsync -vaum $dir ${VENDOR_DIR}
-#        ;;
-#     esac
-# done
-
-# chgrp -R draco ${VENDOR_DIR}
-# chmod -R g+rwX,o=g-w ${VENDOR_DIR}
+#------------------------------------------------------------------------------#
+# End sync_vendors.sh
+#------------------------------------------------------------------------------#

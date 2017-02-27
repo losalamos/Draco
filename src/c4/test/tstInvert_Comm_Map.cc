@@ -4,7 +4,7 @@
  * \author Mike Buksas, Rob Lowrie
  * \date   Mon Nov 19 16:33:08 2007
  * \brief  Tests Invert_Comm_Map
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

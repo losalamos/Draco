@@ -3,7 +3,7 @@
  * \file   test/ds++/tstSortPermutation.cc
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
- * \note   Copyright (c) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (c) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

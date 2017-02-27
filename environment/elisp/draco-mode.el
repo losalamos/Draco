@@ -6,7 +6,7 @@
 ;;
 ;; Brief  : ELisp package for making Draco related stuff easier.
 ;;
-;; Copyright (C) 2016 Los Alamos National Security, LLC
+;; Copyright (C) 2016-2017 Los Alamos National Security, LLC
 ;;
 ;; Version: 0.0.1
 ;;

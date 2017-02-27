@@ -7,11 +7,10 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6721 2012-08-30 20:38:59Z gaber $
-#------------------------------------------------------------------------------#
 
 import sys
 import re
+import platform
 
 try:
 
@@ -54,19 +53,23 @@ try:
 
   # diff binary files if on little endian system
   if tEnsight_Translator.is_little_endian():
+    if any(platform.win32_ver()):
+      diff_prog="fc"
+    else:
+      diff_prog="diff"
     print("\nSystem is little endian, diffing binary files\n")
     for var in vars:
       # testproblem_binary_ensight directory
       tEnsight_Translator.diff_two_files( "PROJECT_BINARY_DIR", \
         "testproblem_binary_ensight/{0}/data.0001".format(var), \
         "PROJECT_SOURCE_DIR", "bench/{0}.bin.0001".format(var), \
-        diff_name="diff")
+        diff_name=diff_prog)
 
       # part_testproblem_binary_ensight directory
       tEnsight_Translator.diff_two_files("PROJECT_BINARY_DIR", \
         "part_testproblem_binary_ensight/{0}/data.0001".format(var), \
         "PROJECT_SOURCE_DIR", "bench/{0}.bin.0001".format(var), \
-        diff_name="diff")
+        diff_name=diff_prog)
 
   ##--------------------------------------------------------------------------##
   ## Final report

@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/cdi_eospac/CMakeLists.txt
 # brief  Instructions for building cdi_eospac Makefiles.
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 # $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $

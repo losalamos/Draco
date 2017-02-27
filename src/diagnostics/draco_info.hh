@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: tstScalarUnitTest.cc 6864 2012-11-08 01:34:45Z kellyt $
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_diagnostics_draco_info_hh
@@ -47,12 +44,6 @@ namespace rtt_diagnostics {
  *     OpenMPI support: enabled
  *     Diagnostics    : disabled
  *     Diagnostics Timing: disabled
- *     C++11 Support  : enabled
- *       Feature list : HAS_CXX11_AUTO_TYPE
- *                      HAS_CXX11_NULLPTR
- *                      HAS_CXX11_LAMBDA
- *                      HAS_CXX11_STATIC_ASSERT
- *                      HAS_CXX11_SHARED_PTR
  * \endverbatim
  */
 //===========================================================================//
@@ -69,7 +60,7 @@ public:
   // -------
 
   /*! \brief Construct an information message that includes Draco's version,
-     * copyright and basic build parameters. */
+   * copyright and basic build parameters. */
   std::string fullReport(void);
 
   //! Version and Copyright only
@@ -98,8 +89,6 @@ private:
   bool openmp;
   std::string diagnostics_level;
   bool diagnostics_timing;
-  bool cxx11;
-  std::vector<std::string> cxx11_features;
   std::string cxx;
   std::string cxx_flags;
   std::string cc;

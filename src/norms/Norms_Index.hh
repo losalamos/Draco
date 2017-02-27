@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Fri Jan 14 13:00:32 2005
  * \brief  Header file for Norms_Index.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

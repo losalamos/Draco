@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/Dims.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Dims class.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,6 +14,7 @@
 #ifndef __RTT_Format_Reader_Dims_hh__
 #define __RTT_Format_Reader_Dims_hh__
 
+#include "ds++/Assert.hh"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,7 @@
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data contained in the 
+ * \brief Controls parsing, storing, and accessing the data contained in the
  *        dimensions block of the mesh file.
  */
 class Dims {

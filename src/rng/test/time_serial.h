@@ -4,7 +4,7 @@
  * \author Gabriel M. Rockefeller
  * \date   Mon Nov 19 10:35:04 2012
  * \brief  time_serial header file.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC
  */
 /*---------------------------------------------------------------------------*/
 /* $Id$ */
@@ -17,10 +17,10 @@
 #pragma GCC system_header
 #endif
 
+#include <Random123/aes.h>
+#include <Random123/ars.h>
 #include <Random123/philox.h>
 #include <Random123/threefry.h>
-#include <Random123/ars.h>
-#include <Random123/aes.h>
 
 #endif /* rng_time_serial_h */
 

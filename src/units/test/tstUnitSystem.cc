@@ -2,7 +2,7 @@
 /*!
  * \file   src/units/tstUnitSystem.cc
  * \brief  test the UnitSystem class.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved
  * \version $Id$
  */

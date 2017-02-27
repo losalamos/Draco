@@ -5,11 +5,8 @@
  * \date   Wed Nov  7 15:58:08 2001
  * \brief  Test the routines used for serializing and de-serializing C++
  *         objects.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Packing_Utils.hh"
@@ -498,31 +495,30 @@ void packing_functions_test(rtt_dsxx::UnitTest &ut) {
   if (packed_string.size() != y.size() + sizeof(int))
     ITFAILS;
 
-  /* We now pack the two packed datums (x and s) together by manually
-     * inserting the data, including the size of the already packed arrays,
-     * into a new array.
-     *
-     * Honestly, I can't think of a better demonstration of how brain-dead
-     * the packing system is. The root cause is the inistance of only packing
-     * and unpacking into vector<char>. These manage their own memory, so any
-     * attempt to put non-trivial objects together in a data stream will
-     * require copying data. We need the size of the packed data (which
-     * already contains size data) because we have to reserve space in a
-     * vector<char> when we unpack.
-     *
-     * The repeated steps for the two vectors performed below could be
-     * factored out into a function, but this is another layer of abstraction
-     * which shouldn't be necessary. Furthermore, it wouldn't fix all of the
-     * extra copies that this approach requires.
-     *
-     * I was able to improve the unpacking step somewhat with the addition of
-     * the extract command in the unpacker. At least we don't have to spoon
-     * the packed data between containers one character at a time any more.
-     *
-     * Someday, I'll fix this mess. But right now, I've got work to do.
-     *
-     *                                   -MWB.
-     */
+  /* We now pack the two packed datums (x and s) together by manually inserting
+   * the data, including the size of the already packed arrays, into a new
+   * array.
+   *
+   * Honestly, I can't think of a better demonstration of how brain-dead the
+   * packing system is. The root cause is the inistance of only packing and
+   * unpacking into vector<char>. These manage their own memory, so any attempt
+   * to put non-trivial objects together in a data stream will require copying
+   * data. We need the size of the packed data (which already contains size
+   * data) because we have to reserve space in a vector<char> when we unpack.
+   *
+   * The repeated steps for the two vectors performed below could be factored
+   * out into a function, but this is another layer of abstraction which
+   * shouldn't be necessary. Furthermore, it wouldn't fix all of the extra
+   * copies that this approach requires.
+   *
+   * I was able to improve the unpacking step somewhat with the addition of the
+   * extract command in the unpacker. At least we don't have to spoon the packed
+   * data between containers one character at a time any more.
+   *
+   * Someday, I'll fix this mess. But right now, I've got work to do.
+   *
+   *                                   -MWB.
+   */
 
   // A place the hold the packed sizes of already packed data.
   vector<char> packed_int(sizeof(int));

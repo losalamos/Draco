@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

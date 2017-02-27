@@ -3,7 +3,7 @@
 # author Gabriel Rockefeller
 # date   2012 Nov 1
 # brief  Establish flags for Unix - IBM XL Fortran
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

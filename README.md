@@ -1,8 +1,8 @@
 Draco
 ----------------
 
-[![Build Status](https://travis-ci.org/losalamos/Draco.svg?branch=develop)](https://travis-ci.org/losalamos/Draco)
-[![codecov.io](https://codecov.io/github/losalamos/Draco/coverage.svg?branch=develop)](https://codecov.io/github/losalamos/Draco/branch/develop)
+[![Build Status](https://travis-ci.org/lanl/Draco.svg?branch=develop)](https://travis-ci.org/lanl/Draco)
+[![codecov.io](https://codecov.io/github/lanl/Draco/coverage.svg?branch=develop)](https://codecov.io/github/lanl/Draco/branch/develop)
 
 Draco is an object-oriented component library geared towards
 numerically intensive, radiation (particle) transport applications
@@ -14,15 +14,15 @@ use in clients.
 
 To clone draco:
 
-    $ git clone https://github.com/losalamos/Draco.git
+    $ git clone https://github.com/lanl/Draco.git
 
-To get started, please see [Development - Quick Start Guide](https://github.com/losalamos/Draco/wiki/Development---Quick-Start)
+To get started, please see [Development - Quick Start Guide](https://github.com/lanl/Draco/wiki/Development---Quick-Start)
 in the wiki. Pull requestes must satisfy the requirements listed in
-the [Style Guide](https://github.com/losalamos/Draco/wiki/Style-Guide).
+the [Style Guide](https://github.com/lanl/Draco/wiki/Style-Guide).
 
 Authors
 ----------------
-Many thanks go to Draco's [contributors](https://github.com/losalamos/Draco/graphs/contributors).
+Many thanks go to Draco's [contributors](https://github.com/lanl/Draco/graphs/contributors).
 
 Draco was originally written by staff from Los Alamos's [CCS-2 Computational Physics and Methods Group](http://www.lanl.gov/org/padste/adtsc/computer-computational-statistical-sciences/computational-physics-methods/index.php):
 

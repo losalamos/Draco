@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Oct 26 10:50:44 2001
  * \brief
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

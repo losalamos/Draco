@@ -97,7 +97,7 @@ run "module load user_contrib"
 run "module load friendly-testing"
 run "module load cmake/3.6.2"
 run "module load intel/17.0.1"
-run "module load openmpi/1.10.3"
+run "module load openmpi/1.10.5"
 run "module load mkl"
 run "module load trilinos/12.8.1"
 run "module load superlu-dist"
@@ -122,14 +122,14 @@ case $extra_params in
     ;;
 cuda)
     echo "ERROR: CUDA is no longer supported."
-    echo "Draco requires openmpi-1.10.3, which only provided for Intel/16+."
+    echo "Draco requires openmpi-1.10.5, which only provided for Intel/16+."
     echo "The cudatoolkit is only compatible with Intel < 16."
     exit 1
 #     run "module unload eospac ndi parmetis metis"
 #     run "module unload superlu-dist trilinos"
 #     run "module unload mkl openmpi intel"
 #     run "module list"
-#     run "module load intel/16.0.3 openmpi/1.10.3"
+#     run "module load intel/16.0.3 openmpi/1.10.5"
 # # cudatoolkits/5 - 7.5 are incompatible with intel/16.
 # #    run "module load intel/16.0.3 openmpi/1.10.1"
 #     run "module load mkl trilinos/12.6.1 superlu-dist metis"
@@ -156,7 +156,7 @@ pgi)
     run "module unload superlu-dist trilinos"
     run "module unload mkl openmpi intel"
     run "module list"
-    run "module load pgi/16.4 openmpi/1.10.3"
+    run "module load pgi/16.4 openmpi/1.10.5"
     export TMPDIR=/usr/projects/jayenne/regress/tmp
     comp="pgCC"
     CXX=`which pgCC`

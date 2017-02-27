@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Mon Apr  6 17:22:53 1998
  * \brief  Defines a manager utility for time-step advisors.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -25,8 +25,7 @@ namespace rtt_timestep {
 
 ts_manager::ts_manager(void)
     : dt_new(ts_advisor::ts_small()), time(0.0), dt(ts_advisor::ts_small()),
-      cycle(9999), controlling_advisor("Not Set"),
-      advisors(rtt_dsxx::SP<ts_advisor>())
+      cycle(9999), controlling_advisor("Not Set")
 
 {
   Ensure(invariant_satisfied());

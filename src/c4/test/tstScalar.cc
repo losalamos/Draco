@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Nov  1 13:24:19 2005
  * \brief  Test functions provided by C4_Serial.cc/.hh
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

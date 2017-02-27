@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta_inv.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * The implementations here are derived from C implementations from Numerical

@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Monday, Aug 11, 2016, 17:05 pm
  * \brief  Implementation for draco info main Qt window.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -21,14 +21,13 @@
 
 //---------------------------------------------------------------------------//
 //! Constructor
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    //ui(new Ui::MainWindow),
-    diw(new diWidget(this))
-{
-    //ui->setupUi(this);
-    setCentralWidget( diw );
-    statusBar()->showMessage( tr( "Status Bar" ) );
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent),
+      //ui(new Ui::MainWindow),
+      diw(new diWidget(this)) {
+  //ui->setupUi(this);
+  setCentralWidget(diw);
+  statusBar()->showMessage(tr("Status Bar"));
 }
 
 //---------------------------------------------------------------------------//

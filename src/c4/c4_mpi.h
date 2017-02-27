@@ -4,7 +4,7 @@
  * \author Thomas M. Evans 
  * \date   Fri Jan  8 15:06:30 1999
  * \brief  put the right includes for MPI header files
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 /*---------------------------------------------------------------------------*/

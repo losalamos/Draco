@@ -3,7 +3,7 @@
  * \file   parser/Abstract_Class_Parser.hh
  * \author Kent Budge
  * \brief  Define class Abstract_Class_Parser
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,41 +15,39 @@
 
 #include "Parse_Table.hh"
 #include "ds++/SP.hh"
+#include <functional>
 #include <iostream>
 
 namespace rtt_parser {
 using std::string;
 using std::vector;
+using std::pointer_to_unary_function;
 using rtt_dsxx::SP;
 
 //===========================================================================//
 /*!
- * \class Abstract_Class_Parser_Base
- * \brief Template for parser that produces a class object.
+ * \brief Closure class for wrapping context-dependent parse functions
  *
- * This class exists only to serve as a base for Abstract_Class_Parser,
- * allowing all such parsers to share the same keyword table and ensuring that
- * the keyword table is properly cleaned up when the program terminates.
+ * This template class is used to bind a get_context() function to a parse
+ * function requiring a context argument, so that the function can be called
+ * with the usual two parameters (Token_Stream and int) from an
+ * Abstract_Class_Parse_Table.
+ *
+ * See test/tstAbstract_Class_Contextual_Parser.cc for an example of how it is
+ * used.
  */
-class DLL_PUBLIC_parser Abstract_Class_Parser_Base {
-protected:
-  // TYPES
+//===========================================================================//
+template <typename Abstract_Class, typename Context,
+          Context const &get_context()>
+class Contextual_Parse_Functor {
+public:
+  Contextual_Parse_Functor(SP<Abstract_Class> parse_function(Token_Stream &,
+                                                             Context const &));
 
-  class DLL_PUBLIC_parser c_string_vector {
-  public:
-    ~c_string_vector();
-    c_string_vector(void) : data(0) { /* empty */
-    }
-    vector<char *> data;
-  };
+  SP<Abstract_Class> operator()(Token_Stream &) const;
 
-  // provide a virtual destrcutor for the base class.
-  virtual ~Abstract_Class_Parser_Base(){/* empty */};
-
-  // DATA
-
-  //! Keywords
-  static c_string_vector keys_;
+private:
+  SP<Abstract_Class> (*f_)(Token_Stream &, Context const &);
 };
 
 //===========================================================================//
@@ -87,7 +85,7 @@ protected:
  * is simply a repository for keyword-parser combinations that is typically
  * used by the Class_Parser for the abstract class.
  *
- * See test/tstAbstract_Class_Parser for an example of its use.
+ * See test/tstAbstract_Class_Parser.cc for an example of its use.
  *
  * This template has proven useful but does not provide a fully satisfactory
  * solution to the problem of abstract class keywords other than those
@@ -95,18 +93,22 @@ protected:
  */
 //===========================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
-          SP<Abstract_Class> &get_parsed_object()>
-class Abstract_Class_Parser : private Abstract_Class_Parser_Base {
+          SP<Abstract_Class> &get_parsed_object(),
+          typename Parse_Function =
+              pointer_to_unary_function<Token_Stream &, SP<Abstract_Class>>>
+class Abstract_Class_Parser {
 public:
   // TYPES
-
-  typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
 
   // STATIC members
 
   //! Register children of the abstract class
   static void register_child(string const &keyword,
-                             Parse_Function *parse_function);
+                             Parse_Function parse_function);
+
+  //! Register children of the abstract class
+  static void register_child(string const &keyword,
+                             SP<Abstract_Class> parse_function(Token_Stream &));
 
   //! Check the class invariants
   static bool check_static_class_invariants();
@@ -120,7 +122,7 @@ private:
   // DATA
 
   //! Map of child keywords to child creation functions
-  static vector<Parse_Function *> map_;
+  static vector<Parse_Function> map_;
 };
 
 #include "Abstract_Class_Parser.i.hh"

@@ -5,25 +5,21 @@
  * \date   Thu Oct 13 16:52:05 2005
  * \brief  platform dependent implementation of fpe_trap functions.
  *
- * Copyright (C) 2016 Los Alamos National Security, LLC.
+ * Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *               All rights reserved.
  * Copyright (C) 1994-2001  K. Scott Hunziker.
  * Copyright (C) 1990-1994  The Boeing Company.
  *
  * See COPYING file for more copyright information.  This code is based
- * substantially on fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is
+ * substantially on fpe/i686-pc-linux-gnu.c from algae-4.3.6, which is 
  * available at http://algae.sourceforge.net/.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #include "fpe_trap.hh"
 #include "Assert.hh"
 #include "StackTrace.hh"
-#include <iostream>
 #include <sstream>
-#include <string>
 
 //---------------------------------------------------------------------------//
 // Linux_x86
@@ -89,13 +85,13 @@ bool fpe_trap::enable(void) {
   struct sigaction act;
 
   // Choose to use Draco's DbC Insist.  If set to false, the compiler should
-  // print a stack trace instead of the pretty print message defined above
-  // in catch_sigfpe.
+  // print a stack trace instead of the pretty print message defined above in
+  // catch_sigfpe.
   if (this->abortWithInsist)
-    act.sa_sigaction = catch_sigfpe; /* the signal handler       */
+    act.sa_sigaction = catch_sigfpe; // the signal handler
 
-  sigemptyset(&(act.sa_mask)); /* no other signals blocked */
-  act.sa_flags = SA_SIGINFO;   /* want 3 args for handler  */
+  sigemptyset(&(act.sa_mask)); // no other signals blocked
+  act.sa_flags = SA_SIGINFO;   // want 3 args for handler
 
   // specify handler
   Insist(!sigaction(SIGFPE, &act, NULL),

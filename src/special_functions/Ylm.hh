@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Jul  6 10:03:25 MDT 2004
  * \brief  Declare the Ylm function template.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

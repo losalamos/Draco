@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Dec 12 15:32:10 2005
  * \brief  Test the diagnostics/TIMER macros
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

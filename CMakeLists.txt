@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 April 28
 # brief  Instructions for building root level Makefile.
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -75,7 +75,7 @@ query_have_gethostname()
 query_have_maxpathlen()
 query_have_sys_headers() # sets HAVE_UNISTD_H, etc.
 query_have_restrict_keyword()
-query_cxx11_features()
+query_fma_on_hardware()
 
 # Set compiler options
 include( compilerEnv )

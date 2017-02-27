@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -77,7 +77,7 @@ template <typename T> void test_FT(rtt_dsxx::UnitTest &ut) {
   for (size_t i = 0; i < field.size(); i++) {
     field[i].resize(i + 2);
     for (size_t j = 0; j < field[i].size(); j++)
-      field[i][j] = 2 * i + 4 * j;
+      field[i][j] = static_cast<T>(2 * i + 4 * j);
   }
 
   Test_Field<T> test_field(field);

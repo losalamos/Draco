@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -17,6 +17,7 @@
 #include "path.hh"
 #include <list>
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace rtt_dsxx {
@@ -70,7 +71,7 @@ public:
 
   //! Default constructors.
   DLL_PUBLIC_dsxx UnitTest(int &argc, char **&argv, string_fp_void release_,
-                           std::ostream &out_ = std::cout);
+                           std::ostream &out_ = std::cout, bool verbose = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs);
@@ -226,6 +227,9 @@ protected:
   bool m_dbcCheck;
   bool m_dbcEnsure;
   bool m_dbcNothrow;
+
+  /* Report successful tests? */
+  bool verbose;
 };
 
 } // end namespace rtt_dsxx

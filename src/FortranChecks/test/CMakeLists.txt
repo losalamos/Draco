@@ -3,7 +3,7 @@
 # author Kelly Thompson
 # brief  Instructions for building a C++ main that links against an
 #        F90 library and uses ISO_C_BINDING.
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved
 # ---------------------------------------------------------------------------- #
 # $Id$

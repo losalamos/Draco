@@ -4,7 +4,7 @@
  *  \brief  Aggregates a collection of FundUnits to create a complete 
  *          UnitSystemType.
  *  \date   Fri Oct 24 15:04:41 2003
- *  \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ *  \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *          All rights reserved.
  */
 //---------------------------------------------------------------------------//

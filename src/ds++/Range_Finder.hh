@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Thu Feb  6 12:10:56 2003
  * \brief  Header file for Range_finder
- * \note   Copyright C 2016 Los Alamos National Security, LLC.
+ * \note   Copyright C 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

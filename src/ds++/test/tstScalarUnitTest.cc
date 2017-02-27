@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 17:17:24 2006
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -351,6 +351,12 @@ int main(int argc, char *argv[]) {
     tstVersion(ut, argv[0]);
 
     tstPaths(ut, argv[0]);
+
+    // Silenced version
+    ScalarUnitTest ssut(argc, argv, release, messages, false);
+    messages.str("");
+    ssut.check(true, "this test must pass");
+    ut.check(messages.str().size() == 0, "verbose==false is silent");
   }
 
   catch (rtt_dsxx::assertion &err) {

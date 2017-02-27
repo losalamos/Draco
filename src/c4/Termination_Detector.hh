@@ -3,7 +3,7 @@
  * \file   c4/Termination_Detector.hh
  * \author Kent Budge
  * \brief  Definition of class Termination_Detector
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

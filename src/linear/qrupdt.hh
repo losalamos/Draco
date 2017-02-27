@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Aug 10 11:59:48 2004
  * \brief  Update the QR decomposition of a square matrix
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

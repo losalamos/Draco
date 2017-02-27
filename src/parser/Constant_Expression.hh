@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Wed Jul 26 07:53:32 2006
  * \brief  Definition of class Constant_Expression
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

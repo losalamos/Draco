@@ -4,7 +4,7 @@
  * \author Rob Lowrie
  * \date   Thu Apr 15 23:03:32 2004
  * \brief  Tests Shared_Lib
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

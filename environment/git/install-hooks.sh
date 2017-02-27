@@ -25,8 +25,11 @@ if [[ $1 ]]; then
   if [[ -d $1/.git ]]; then
     export dotgitdir="$( cd "$1/.git" && pwd )"
   else
-    export dotgitdir="$( cd "$rscriptdir/../../.git" && pwd )"
+    echo "ERROR: Cannot find $1/.git. Aborting"
+    exit 1
   fi
+else
+  export dotgitdir="$( cd "$rscriptdir/../../.git" && pwd )"
 fi
 
 . "$(dirname -- "$0")/canonicalize_filename.sh"

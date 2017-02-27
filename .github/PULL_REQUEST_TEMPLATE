@@ -3,10 +3,11 @@
   * detail 2
   * Fixes #3 (redmine number)
 
-* [Pre-Merge Code Review](https://github.com/losalamos/Draco/wiki/Style-Guide)
+* [Pre-Merge Code Review](https://github.com/lanl/Draco/wiki/Style-Guide)
   * [ ] Travis CI checks pass
   * [ ] Code coverage does not decrease
   * [ ] [Valgrind test passes](https://rtt.lanl.gov/CDash/index.php?project=Draco)
   * [ ] [Toss2 checks pass](https://rtt.lanl.gov/CDash/index.php?project=Draco)
+  * [ ] [Toss3 checks pass](https://rtt.lanl.gov/CDash/index.php?project=Draco)
   * [ ] [Trinitite checks pass](https://rtt.lanl.gov/CDash/index.php?project=Draco)
   * [ ] Code reviewed/approved, sufficient DbC checks, testing, documentation

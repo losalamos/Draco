@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Oct  9 15:52:01 2001
  * \brief  CDI test executable.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//

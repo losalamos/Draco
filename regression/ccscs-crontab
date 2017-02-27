@@ -1,16 +1,16 @@
 # crontab for ccscs7
 
 # Keep vendor installations in sync between ccs-net servers.
-45 21 * * 0-6 /scratch/regress/draco/regression/sync_vendors.sh &> /scratch/regress/logs/sync_vendors_ccscs7.log
+45 21 * * 0-6 /scratch/regress/draco/regression/sync_vendors.sh
 
 # Update the regression scripts.
-01 22 * * 0-6 /scratch/regress/draco/regression/update_regression_scripts.sh &> /scratch/regress/logs/update_regression_scripts.log
+01 22 * * 0-6 /scratch/regress/draco/regression/update_regression_scripts.sh
 
 # Send a copy of our repositories to the Red.
 00 01 * * 0-6 /scratch/regress/draco/regression/push_repositories_xf.sh &> /scratch/regress/logs/push_repositories_xf.log
 
 # Keep a local bare copy of the repo available on the ccs-net.  This is used by Redmine.
-*/15 * * * * /scratch/regress/draco/regression/sync_repository.sh &> /scratch/regress/logs/sync_repository.log
+*/15 * * * * /scratch/regress/draco/regression/sync_repository.sh
 
 #------------------------------------------------------------------------------#
 # Regressions with system default compiler (gcc-4.8.5)

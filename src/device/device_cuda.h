@@ -4,7 +4,7 @@
  * \author Kelly (KT) Thompson
  * \brief  Wrap the cuda.h header while preventing comiler warnings about
  *         vendor code.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,28 +15,28 @@
 // All this garbage suppresses warnings found in "cuda.h".
 // http://wiki.services.openoffice.org/wiki/Writing_warning-free_code#When_all_else_fails
 #if defined __GNUC__
-#  pragma GCC system_header
+#pragma GCC system_header
 // Intel defines __GNUC__ by default
-#  ifdef __INTEL_COMPILER
-#    pragma warning push
-#  endif
+#ifdef __INTEL_COMPILER
+#pragma warning push
+#endif
 #elif defined __SUNPRO_CC
-#  pragma disable_warn
+#pragma disable_warn
 #elif defined _MSC_VER
-#  pragma warning(push, 1)
+#pragma warning(push, 1)
 #endif
 
 #include <cuda.h>
 
 #if defined __GNUC__
-#  pragma GCC system_header
-#  ifdef __INTEL_COMPILER
-#    pragma warning pop
-#  endif
+#pragma GCC system_header
+#ifdef __INTEL_COMPILER
+#pragma warning pop
+#endif
 #elif defined __SUNPRO_CC
-#  pragma enable_warn
+#pragma enable_warn
 #elif defined _MSC_VER
-#  pragma warning(pop)
+#pragma warning(pop)
 #endif
 
 #endif // device_device_cuda_h

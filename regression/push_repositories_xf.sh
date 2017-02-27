@@ -3,7 +3,7 @@
 ## File  : regression/push_repositories_xf.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -61,7 +61,7 @@ for repo in $repos; do
   #  run "git pull"
   #  run "cd .."
   #else
-  #  run "git clone https://github.com/losalamos/Draco.git draco.git"
+  #  run "git clone https://github.com/lanl/Draco.git draco.git"
   #fi
 
   if test -d $gitdir/$repo; then
