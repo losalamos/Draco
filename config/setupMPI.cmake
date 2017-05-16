@@ -496,7 +496,7 @@ macro( setupCrayMPI )
   #           single node.
   # set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
   #   "extra mpirun flags (list)." FORCE)
-   set( MPIEXEC_POSTFLAGS "-N 1 -c 1 --mem=1400m"
+   set( MPIEXEC_POSTFLAGS "--exclusive"
      CACHE STRING
      "extra mpirun flags (list)." FORCE)
     # Consider using 'aprun -n # -N # -S # -d # -T -cc depth ...'
@@ -511,7 +511,7 @@ macro( setupCrayMPI )
     #set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
     #  CACHE STRING "extra mpirun flags (list)." FORCE)
 
-    set( MPIEXEC_OMP_POSTFLAGS "-N 1 -c ${MPI_CORES_PER_CPU} --mem=1400m"
+    set( MPIEXEC_OMP_POSTFLAGS "-N 1 -c ${MPI_CORES_PER_CPU} --exclusive"
       CACHE STRING "extra mpirun flags (list)." FORCE)
   # Extra flags for OpenMP + MPI
 #   if( DEFINED ENV{OMP_NUM_THREADS} )
