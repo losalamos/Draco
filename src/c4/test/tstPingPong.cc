@@ -27,6 +27,7 @@ using rtt_c4::receive_async;
 using rtt_dsxx::soft_equiv;
 using rtt_c4::probe;
 using rtt_c4::blocking_probe;
+using rtt_c4::send_receive;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -415,6 +416,84 @@ void probe_ping_pong(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
+void send_receive_ping_pong(rtt_dsxx::UnitTest &ut) {
+  if (rtt_c4::nodes() != 2)
+    return;
+
+  char c = 0, cr;
+  int i = 0, ir;
+  long l = 0, lr;
+  float f = 0, fr;
+  double d = 0, dr;
+
+  // assign on node 0
+  if (rtt_c4::node() == 0) {
+    c = 'A';
+    i = 1;
+    l = 1000;
+    f = 1.5;
+    d = 2.5;
+
+    send_receive(&c, 1, 1, &cr, 1, 1);
+    send_receive(&i, 1, 1, &ir, 1, 1);
+    send_receive(&l, 1, 1, &lr, 1, 1);
+    send_receive(&f, 1, 1, &fr, 1, 1);
+    send_receive(&d, 1, 1, &dr, 1, 1);
+
+    // check values
+    if (cr != 'B')
+      ITFAILS;
+    if (ir != 2)
+      ITFAILS;
+    if (lr != 2000)
+      ITFAILS;
+    if (!soft_equiv(fr, 2.5f))
+      ITFAILS;
+    if (!soft_equiv(dr, 3.5))
+      ITFAILS;
+  }
+
+  // receive and send on node 1
+  if (rtt_c4::node() == 1) {
+    // assign new values
+    c = 'B';
+    i = 2;
+    l = 2000;
+    f = 2.5;
+    d = 3.5;
+
+    send_receive(&c, 1, 0, &cr, 1, 0);
+    send_receive(&i, 1, 0, &ir, 1, 0);
+    send_receive(&l, 1, 0, &lr, 1, 0);
+    send_receive(&f, 1, 0, &fr, 1, 0);
+    send_receive(&d, 1, 0, &dr, 1, 0);
+
+    // check values
+    if (cr != 'A')
+      ITFAILS;
+    if (ir != 1)
+      ITFAILS;
+    if (lr != 1000)
+      ITFAILS;
+    if (!soft_equiv(fr, 1.5f))
+      ITFAILS;
+    if (!soft_equiv(dr, 2.5))
+      ITFAILS;
+  }
+
+  rtt_c4::global_barrier();
+  if (ut.numFails == 0) {
+    ostringstream m;
+    m << "send-receive communication ok on " << rtt_c4::node();
+    PASSMSG(m.str());
+  } else {
+    ostringstream m;
+    m << "send-receive communication failed on " << rtt_c4::node();
+    FAILMSG(m.str());
+  }
+  return;
+}
+
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -427,6 +506,7 @@ int main(int argc, char *argv[]) {
     blocking_ping_pong(ut);
     non_blocking_ping_pong(ut);
     probe_ping_pong(ut);
+    send_receive_ping_pong(ut);
     tstC4_Req_free();
   }
   UT_EPILOG(ut);

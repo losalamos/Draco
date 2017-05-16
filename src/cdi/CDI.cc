@@ -5,10 +5,7 @@
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
@@ -31,7 +28,7 @@ namespace rtt_cdi {
  * that all of the set objects point to the same material.  CDI does do
  * checking that only one of each Model:Reaction pair of opacity objects
  * are assigned; however, the user can "fake" CDI with different
- * materials if he/she is malicious enough.  
+ * materials if he/she is malicious enough.
  *
  * CDI does allow a string material ID indicator.  It is up to the client
  * to ascribe meaning to the indicator.
@@ -73,7 +70,7 @@ std::vector<double> CDI::opacityCdfBandBoundaries = std::vector<double>();
  * Every multigroup opacity object held by any CDI object contains the
  * same frequency group boundaries.  This static function allows CDI
  * users to access the group boundaries without referencing a particular
- * material. 
+ * material.
  *
  * Note, the group boundaries are not set until a multigroup opacity
  * object is set for the first time (in any CDI object) with the
@@ -88,7 +85,7 @@ std::vector<double> CDI::getFrequencyGroupBoundaries() {
  * Every multiband opacity object held by any CDI object contains the
  * same band boundaries, and also inside each group.  This static function
  * allows CDI users to access the band boundaries without referencing a
- * particular material. 
+ * particular material.
  *
  * Note, the band boundaries are not set until a multigroup opacity
  * object is set for the first time (in any CDI object) with the
@@ -109,7 +106,7 @@ size_t CDI::getNumberFrequencyGroups() {
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the number of opacity bands. 
+ * \brief Return the number of opacity bands.
  */
 size_t CDI::getNumberOpacityBands() {
   return opacityCdfBandBoundaries.empty() ? 0
@@ -440,7 +437,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
  * \return A single interval Planckian weighted opacity value.
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum. 
+ * this function to obtain planckSpectrum.
  */
 double CDI::collapseMultigroupOpacitiesPlanck(
     std::vector<double> const &groupBounds,
@@ -508,7 +505,7 @@ double CDI::collapseMultigroupOpacitiesPlanck(
  * \return A single interval Planckian weighted reciprocal opacity value.
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum. 
+ * this function to obtain planckSpectrum.
  */
 double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
     std::vector<double> const &groupBounds, std::vector<double> const &opacity,
@@ -574,7 +571,7 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
  *    modified calculation that does not depend on the Rosseland integral.
  *
  * If neither of the special cases are in effect, then do the normal
- * evaluation. 
+ * evaluation.
  */
 double CDI::collapseMultigroupOpacitiesRosseland(
     std::vector<double> const &groupBounds, std::vector<double> const &opacity,
@@ -651,7 +648,7 @@ double CDI::collapseMultigroupOpacitiesRosseland(
  * \return A single interval Planckian weighted opacity value.
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum. 
+ * this function to obtain planckSpectrum.
  */
 double CDI::collapseOdfmgOpacitiesPlanck(
     std::vector<double> const &groupBounds,
@@ -729,7 +726,7 @@ double CDI::collapseOdfmgOpacitiesPlanck(
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  *
  * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum. 
+ * this function to obtain planckSpectrum.
  */
 double CDI::collapseOdfmgReciprocalOpacitiesPlanck(
     std::vector<double> const &groupBounds,
@@ -794,19 +791,18 @@ double CDI::collapseOdfmgReciprocalOpacitiesPlanck(
  * This function sets a gray opacity object of type rtt_cdi::GrayOpacity with
  * the CDI object.  It stores the gray opacity object based upon its
  * rtt_cdi::Model and rtt_cdi::Reaction types.  If a GrayOpacity with these
- * types has already been registered an exception is thrown.  To register a
- * new set of GrayOpacity objects call CDI::reset() first.  You cannot
- * overwrite registered objects with the setGrayOpacity() function!
+ * types has already been registered an exception is thrown.  To register a new
+ * set of GrayOpacity objects call CDI::reset() first.  You cannot overwrite
+ * registered objects with the setGrayOpacity() function!
  *
- * \param spGOp smart pointer (rtt_dsxx::SP) to a GrayOpacity object
+ * \param spGOp smart pointer to a GrayOpacity object
  */
 void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp) {
   Require(spGOp);
 
-  // determine the model and reaction type (these MUST be in the correct
-  // range because the Model and Reaction are constrained by the
-  // rtt_cdi::Model and rtt_cdi::Reaction enumerations, assuming nobody
-  // hosed these)
+  // determine the model and reaction type (these MUST be in the correct range
+  // because the Model and Reaction are constrained by the rtt_cdi::Model and
+  // rtt_cdi::Reaction enumerations, assuming nobody hosed these)
   rtt_cdi::Model model = spGOp->getModelType();
   rtt_cdi::Reaction reaction = spGOp->getReactionType();
 
@@ -832,7 +828,7 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp) {
  * call CDI::reset() first.  You cannot overwrite registered objects with the
  * setMultigroupOpacity() function!
  *
- * \param spGOp smart pointer (rtt_dsxx::SP) to a MultigroupOpacity object
+ * \param spGOp smart pointer to a MultigroupOpacity object
  */
 void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
   using rtt_dsxx::soft_equiv;
@@ -885,7 +881,7 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
  * call CDI::reset() first.  You cannot overwrite registered objects with the
  * setOdfmgOpacity() function!
  *
- * \param spGOp smart pointer (rtt_dsxx::SP) to a OdfmgOpacity object
+ * \param spGOp smart pointer to a OdfmgOpacity object
  */
 void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp) {
   using rtt_dsxx::soft_equiv;
@@ -964,13 +960,14 @@ void CDI::setEoS(const SP_EoS &in_spEoS) {
 /*!
  * \brief This fuction returns a GrayOpacity object.
  *
- * This provides the CDI with the full functionality of the interface
- * defined in GrayOpacity.hh.  For example, the host code could make the
- * following call: <tt> double newOp = spCDI1->gray()->getOpacity(
- * 55.3, 27.4 ); </tt>
+ * This provides the CDI with the full functionality of the interface defined in
+ * GrayOpacity.hh.  For example, the host code could make the following call:
+ * \code
+ * double newOp = spCDI1->gray()->getOpacity( 55.3, 27.4 );
+ * \endcode
  *
- * The appropriate gray opacity is returned for the given model and
- * reaction type.
+ * The appropriate gray opacity is returned for the given model and reaction
+ * type.
  *
  * \param m rtt_cdi::Model specifying the desired physics model
  * \param r rtt_cdi::Reaction specifying the desired reaction type
@@ -985,15 +982,15 @@ CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  *
  * This provides the CDI with the full functionality of the interface
  * defined in MultigroupOpacity.hh.  For example, the host code could
- * make the following call:<br> <tt> size_t numGroups =
- * spCDI1->mg()->getNumGroupBoundaries(); </tt>
+ * make the following call:
+ * \code
+ * size_t numGroups = spCDI1->mg()->getNumGroupBoundaries();
+ * \endcode
  *
- * The appropriate multigroup opacity is returned for the given reaction
- * type.
+ * The appropriate multigroup opacity is returned for the given reaction type.
  *
  * \param m rtt_cdi::Model specifying the desired physics model
  * \param r rtt_cdi::Reaction specifying the desired reaction type.
- *
  */
 CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
   Insist(multigroupOpacities[m][r], "Undefined MultigroupOpacity!");
@@ -1003,17 +1000,16 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
 /*!
  * \brief This fuction returns the OdfmgOpacity object.
  *
- * This provides the CDI with the full functionality of the interface
- * defined in OdfmgOpacity.hh.  For example, the host code could
- * make the following call:<br> <tt> size_t numGroups =
- * spCDI1->mg()->getNumGroupBoundaries(); </tt>
+ * This provides the CDI with the full functionality of the interface defined in
+ * OdfmgOpacity.hh.  For example, the host code could make the following call:
+ * \code
+ * size_t numGroups = spCDI1->mg()->getNumGroupBoundaries();
+ * \endcode
  *
- * The appropriate multigroup opacity is returned for the given reaction
- * type.
+ * The appropriate multigroup opacity is returned for the given reaction type.
  *
  * \param m rtt_cdi::Model specifying the desired physics model
  * \param r rtt_cdi::Reaction specifying the desired reaction type.
- *
  */
 CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
   Insist(odfmgOpacities[m][r], "Undefined OdfmgOpacity!");
@@ -1027,9 +1023,10 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  *
  * This provides the CDI with the full functionality of the interface
  * defined in EoS.hh.  For example, the host code could make the
- * following call:<br> <tt> double Cve =
- * spCDI1->eos()->getElectronHeatCapacity( * density, temperature );
- * </tt>
+ * following call:
+ * \code
+ * double Cve = spCDI1->eos()->getElectronHeatCapacity( * density, temperature );
+ * \endcode
  */
 CDI::SP_EoS CDI::eos() const {
   Insist(spEoS, "Undefined EoS!");
@@ -1043,15 +1040,14 @@ CDI::SP_EoS CDI::eos() const {
 /*!
  * \brief Reset the CDI object.
  *
- * This function "clears" all data objects (GrayOpacity,
- * MultigroupOpacity, EoS) held by CDI.  After clearing, new objects can
- * be set using the set functions.  
+ * This function "clears" all data objects (GrayOpacity, MultigroupOpacity, EoS)
+ * held by CDI.  After clearing, new objects can be set using the set functions.
  *
  * As stated in the set functions documentation, you are not allowed to
- * overwrite a data object with the same attributes as one that already
- * has been set.  The only way to "reset" these objects is to call
- * CDI::reset().  Note that CDI::reset() resets \b ALL of the objects
- * stored by CDI (including group boundaries).
+ * overwrite a data object with the same attributes as one that already has been
+ * set.  The only way to "reset" these objects is to call CDI::reset().  Note
+ * that CDI::reset() resets \b ALL of the objects stored by CDI (including group
+ * boundaries).
  */
 void CDI::reset() {
   Check(grayOpacities.size() == constants::num_Models);
@@ -1065,13 +1061,13 @@ void CDI::reset() {
     Check(odfmgOpacities[i].size() == constants::num_Reactions);
 
     for (size_t j = 0; j < constants::num_Reactions; j++) {
-      // reassign the GrayOpacity SP to a null SP
+      // reassign the GrayOpacity shared_ptr to a null shared_ptr
       grayOpacities[i][j] = SP_GrayOpacity();
 
-      // reassign the MultigroupOpacity SP to a null SP
+      // reassign the MultigroupOpacity shared_ptr to a null shared_ptr
       multigroupOpacities[i][j] = SP_MultigroupOpacity();
 
-      // reassign the OdfmgOpacity SP to a null SP
+      // reassign the OdfmgOpacity shared_ptr to a null shared_ptr
       odfmgOpacities[i][j] = SP_OdfmgOpacity();
 
       // check it
@@ -1088,7 +1084,7 @@ void CDI::reset() {
   opacityCdfBandBoundaries.clear();
   Check(opacityCdfBandBoundaries.empty());
 
-  // reset the EoS SP
+  // reset the EoS shared_ptr
   spEoS = SP_EoS();
   Check(!spEoS);
 }

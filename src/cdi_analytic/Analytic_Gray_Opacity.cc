@@ -5,9 +5,8 @@
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity member definitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Gray_Opacity.hh"
@@ -28,11 +27,10 @@ namespace rtt_cdi_analytic {
  * The reaction type for this instance of the class is determined by the
  * rtt_cdi::Reaction argument.
  *
- * \param analytic_model_in rtt_dsxx::SP to a derived
+ * \param analytic_model_in shared_ptr to a derived
  * rtt_cdi_analytic::Analytic_Opacity_Model object
  *
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
- *
  */
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
                                              rtt_cdi::Reaction reaction_in,
@@ -47,11 +45,11 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(SP_Analytic_Model model_in,
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
- * 
+ *
  * This constructor rebuilds and Analytic_Gray_Opacity from a vector<char>
  * that was created by a call to pack().  It can only rebuild Analytic_Model
  * types that have been registered in the rtt_cdi_analytic::Opacity_Models
- * enumeration. 
+ * enumeration.
  */
 Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
     : analytic_model(), reaction(), model() {
@@ -111,7 +109,7 @@ Analytic_Gray_Opacity::Analytic_Gray_Opacity(const sf_char &packed)
 // OPACITY INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return a scalar opacity given a scalar temperature and density. 
+ * \brief Return a scalar opacity given a scalar temperature and density.
  *
  * Given a scalar temperature and density, return an opacity for the reaction
  * type specified by the constructor.  The analytic opacity model is
@@ -137,7 +135,7 @@ double Analytic_Gray_Opacity::getOpacity(double temperature,
 //---------------------------------------------------------------------------//
 /*!
  * \brief Return a field of opacities given a field of temperatures and a
- * scalar density. 
+ * scalar density.
  *
  * Given a field of temperatures and a scalar density, return an opacity
  * field for the reaction type specified by the constructor.  The analytic

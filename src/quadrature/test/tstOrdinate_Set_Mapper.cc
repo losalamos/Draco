@@ -5,22 +5,17 @@
  * \date   Mon Mar  7 16:21:45 EST 2016
  * \brief  Ordinate Set Mapper tests
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-// $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
-//---------------------------------------------------------------------------//
-
-#include <algorithm>
-#include <numeric>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "quadrature/Ordinate_Set_Mapper.hh"
-
 #include "quadrature/Gauss_Legendre.hh"
 #include "quadrature/Level_Symmetric.hh"
+#include "quadrature/Ordinate_Set_Mapper.hh"
 #include "quadrature/Product_Chebyshev_Legendre.hh"
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -42,8 +37,8 @@ bool is_zero(double a) { return soft_equiv(a, 0.0); }
 struct dot_product_functor_3D {
   dot_product_functor_3D(const Ordinate &o_in) : o1(o_in) {}
 
-  // Returns the dot product of the ordinate passed into the functor
-  // with the local ordinate
+  // Returns the dot product of the ordinate passed into the functor with the
+  // local ordinate
   double operator()(const Ordinate &o2) const {
     return o1.mu() * o2.mu() + o1.eta() * o2.eta() + o1.xi() * o2.xi();
   }
@@ -205,7 +200,7 @@ void ordinate_set_2D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
   Level_Symmetric quadrature(N);
 
-  SP<Ordinate_Set> os_LS2 =
+  std::shared_ptr<Ordinate_Set> os_LS2 =
       quadrature.create_ordinate_set(2, geometry,
                                      1.0,   // norm,
                                      false, //starting_directions?
@@ -306,7 +301,7 @@ void ordinate_set_1D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
   Gauss_Legendre quadrature(N);
 
-  SP<Ordinate_Set> os_LS4 =
+  std::shared_ptr<Ordinate_Set> os_LS4 =
       quadrature.create_ordinate_set(1, //1-D
                                      geometry,
                                      1.0,   // norm,
@@ -404,7 +399,7 @@ void ordinate_set_3D_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
   Product_Chebyshev_Legendre quadrature(N, N);
 
-  SP<Ordinate_Set> os_LS2 =
+  std::shared_ptr<Ordinate_Set> os_LS2 =
       quadrature.create_ordinate_set(3, geometry,
                                      1.0,   // norm,
                                      false, //starting_directions?
@@ -511,12 +506,12 @@ void ordinate_set_1D_sph_nn_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::SPHERICAL);
   Gauss_Legendre quadrature(N);
 
-  // Note that this test uses "starting directions" in the Ordinate_Set
-  // These are necessary for SN in curvilinear geometries, but these
-  // starting directions have zero weight and do not actually contribute
-  // to the quadrature integration -- they should not be incluced as
-  // valid ordinates during the remapping!
-  SP<Ordinate_Set> os_LS2 =
+  // Note that this test uses "starting directions" in the Ordinate_Set These
+  // are necessary for SN in curvilinear geometries, but these starting
+  // directions have zero weight and do not actually contribute to the
+  // quadrature integration -- they should not be incluced as valid ordinates
+  // during the remapping!
+  std::shared_ptr<Ordinate_Set> os_LS2 =
       quadrature.create_ordinate_set(1, //1-D
                                      geometry,
                                      1.0,  // norm,
@@ -568,7 +563,7 @@ void ordinate_set_1D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
   Gauss_Legendre quadrature(N);
 
-  SP<Ordinate_Set> os_LS4 =
+  std::shared_ptr<Ordinate_Set> os_LS4 =
       quadrature.create_ordinate_set(1, //1-D
                                      geometry,
                                      1.0,   // norm,
@@ -698,7 +693,7 @@ void ordinate_set_2D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
   Level_Symmetric quadrature(N);
 
-  SP<Ordinate_Set> os_LS2 =
+  std::shared_ptr<Ordinate_Set> os_LS2 =
       quadrature.create_ordinate_set(2, geometry,
                                      1.0,   // norm,
                                      false, //starting_directions?
@@ -799,7 +794,7 @@ void ordinate_set_3D_nt_mapper_test(rtt_dsxx::UnitTest &ut) {
   rtt_mesh_element::Geometry geometry(rtt_mesh_element::CARTESIAN);
   Product_Chebyshev_Legendre quadrature(N, N);
 
-  SP<Ordinate_Set> os_LS2 =
+  std::shared_ptr<Ordinate_Set> os_LS2 =
       quadrature.create_ordinate_set(3, geometry,
                                      1.0,   // norm,
                                      false, //starting_directions?
@@ -917,5 +912,5 @@ int main(int argc, char *argv[]) {
 }
 
 //---------------------------------------------------------------------------//
-// end of tstOrdinate_Set_mapper_Test.cc
+// end of tstOrdinate_Set_Mapper.cc
 //---------------------------------------------------------------------------//

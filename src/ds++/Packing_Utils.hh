@@ -29,7 +29,6 @@ namespace rtt_dsxx {
  * \arg \b Packer packing class
  * \arg \b Unpacker unpacking class
  */
-
 /*!
  * \example ds++/test/tstPacking_Utils.cc
  * Test the Packer and Unpacker classes.
@@ -39,26 +38,26 @@ namespace rtt_dsxx {
 //===========================================================================//
 /*!
  * \class Packer
-
+ *
  * \brief Pack data into a byte stream.
-
+ *
  * This class allows clients to \em "register" a \c char* stream and then load
  * it with data of any type.  This assumes that the \c sizeof(T) operator works
  * and has meaning for the type.  Under the hood it uses \c std::memcpy to
  * perform the loading.  This class is easily understood by checking the
  * examples.
-
+ *
  * No memory allocation is performed by the Packer.  However, the memory
  * requirements may be computed by putting the Packer into
  * \c compute_buffer_size_mode().
-
+ *
  * The benefit of using the Packer class is that byte copies are isolated into
  * this one section of code, thus obviating the need for reinterpret_cast
  * statements in client code.  In fact, this functionality conforms exactly to
  * the ANSI C++ standard for copying byte-streams of data
  * (sec. 3.9). Additionally, bounds checking is performed on all stream packing
  * operations.  This bounds checking is always on.
-
+ *
  * This class returns real char * pointers through its query functions.  We do
  * not use the STL iterator notation, even though that is how the pointers are
  * used, so as not to confuse the fact that these char * streams are \e
@@ -66,7 +65,7 @@ namespace rtt_dsxx {
  * through the streams are real pointers, not an abstract iterator class.  So
  * one could think of these as iterators (they act like iterators) but they are
  * real pointers into a continguous memory \c char* stream.
-
+ *
  * Data can be unpacked using the Unpacker class.
  */
 //===========================================================================//
@@ -144,27 +143,27 @@ public:
 //---------------------------------------------------------------------------//
 /*!
  * \brief Set an allocated buffer to write data into.
-
+ *
  * If \c compute_buffer_size_mode() is on, this function turns it off.
-
+ *
  * This function accepts an allocated \c char* buffer.  It assigns begin and end
  * pointers and a mutable position pointer that acts like an iterator.  The
  * Packer will write POD (Plain Old Data) data into this buffer starting at the
  * beginning address of the buffer.  This function must be called before any \c
  * Packer::pack calls can be made.
-
+ *
  * Once \c Packer::set_buffer is called, all subsequent calls to \c Packer::pack
  * will write data incrementally into the buffer set by set_buffer.  To write
  * data into a different buffer, call \c Packer::set_buffer again; at this point
  * the Packer no longer has any knowledge about the old buffer.
-
+ *
  * Note, the buffer must be allocated large enough to hold all the data that the
  * client intends to load into it.  There is no memory allocation performed by
  * the Packer class; thus, the buffer cannot be increased in size if a value is
  * written past the end of the buffer.  Optionally, the required buffer size may
  * also be computed using the \c compute_buffer_size_mode().  See the \c
  * Packer::pack function for more details.
-
+ *
  * \param size_in size of the buffer
  * \param buffer pointer to the char * buffer
  */
@@ -184,31 +183,31 @@ void Packer::set_buffer(uint64_t size_in, pointer buffer) {
 /*!
  * \brief Depending on mode, pack data into a buffer, or compute increment
  * to buffer size.
-
+ *
  * This function's behavior depends on whether in compute_buffer_size_mode(), or
  * not.
-
+ *
  * In compute_buffer_size_mode(), the sizeof(T) operator is used to add the size
  * of the data to the total stream size.  Once this function is called for all
  * of the data to be packed, the size() member function may be used to retrieve
  * the buffer size required.
-
+ *
  * Note that using compute_buffer_size_mode() is optional.  See examples below.
-
+ *
  * Regardless, once the user allocates the buffer, set_buffer() may then be
  * called, which turns off compute_buffer_size_mode (if on).  A call to pack()
  * then actually packs its argument into the buffer.  It also advances the
  * pointer (iterator) location to the next location automatically.  It uses the
  * sizeof(T) operator to get the size of the data; thus, only data where
  * sizeof() has meaning will be properly written to the buffer.
-
+ *
  * Packer::pack() does bounds checking to ensure that the buffer and buffer size
  * defined by Packer::set_buffer are consistent.  This bounds-checking is always
  * on as the Packer is not normally used in compute-intensive calculations.
-
+ *
  * \param value data of type T to pack into the buffer; the data size must be
  *              accessible using the sizeof() operator.
-
+ *
  * Example using compute_buffer_size_mode():
  \code
  double d1 = 5.0, d2 = 10.3;         // data to be packed
@@ -219,7 +218,7 @@ void Packer::set_buffer(uint64_t size_in, pointer buffer) {
  p.set_buffer(p.size(), &buffer[0]);
  p << d1 << d2;                      // packs d1 and d2 into buffer
  \endcode
-
+ *
  * Example not using compute_buffer_size_mode():
  \code
  double d1 = 5.0, d2 = 10.3;
@@ -284,14 +283,14 @@ void Packer::pad(uint64_t bytes) {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Stream out (<<) operator for packing data.
-
+ *
  * The overloaded stream out operator can be used to pack data into streams
  * (Packer p; p.set_buffer(i,b); p << data;).  It simply calls the Packer::pack
  * function.  It returns a reference to the Packer object so that stream out
  * operations can be strung together.
-
- * This function also works when compute_buffer_size_mode() is on, in which case
- * the total required stream size is incremented.
+ *
+ * This function also works when compute_buffer_size_mode() is on, in which 
+ * case the total required stream size is incremented.
  */
 template <typename T> inline Packer &operator<<(Packer &p, const T &value) {
   // pack the value
@@ -304,23 +303,23 @@ template <typename T> inline Packer &operator<<(Packer &p, const T &value) {
 //===========================================================================//
 /*!
  * \class Unpacker
-
+ *
  * \brief Unpack data from a byte stream.
-
+ *
  * This class allows clients to "register" a char* stream and then unload data
  * from it.  This assumes that the sizeof(T) operator works and has meaning for
  * the type.  Under the hood it uses std::memcpy to perform the unloading.  This
  * class is easily understood by checking the examples.
-
+ *
  * No memory allocation is performed by the Unpacker.
-
+ *
  * The benefit of using the Unpacker class is that byte copies are isolated into
  * this one section of code, thus obviating the need for reinterpret_cast
  * statements in client code.  In fact, this functionality conforms exactly to
  * the ANSI C++ standard for copying byte-streams of data
  * (sec. 3.9). Additionally, bounds checking is performed on all stream packing
  * operations.  This bounds checking is always on.
-
+ *
  * This class returns real char * pointers through its query functions.  We do
  * not use the STL iterator notation, even though that is how the pointers are
  * used, so as not to confuse the fact that these char * streams are \e
@@ -328,7 +327,7 @@ template <typename T> inline Packer &operator<<(Packer &p, const T &value) {
  * through the streams are real pointers, not an abstract iterator class.  So
  * one could think of these as iterators (they act like iterators) but they are
  * real pointers into a continguous memory char * stream.
-
+ *
  * This class is the complement to the Packer class.
  */
 //===========================================================================//
@@ -390,23 +389,23 @@ public:
 //---------------------------------------------------------------------------//
 /*!
  * \brief Set an allocated buffer to read data from.
-
+ *
  * This function accepts an allocated char* buffer.  It assigns begin and end
  * pointers and a mutable position pointer that acts like an iterator.  The
  * Unpacker will read POD data from this buffer starting at the beginning
  * address of the buffer.  This function must be called before any
  * Unpacker::unpack calls can be made.
-
+ *
  * Once Unpacker::set_buffer is called, all subsequent calls to Unpacker::unpack
  * will read data incrementally from the buffer set by set_buffer.  To read data
  * from a different buffer, call Unpacker::set_buffer again; at this point the
  * Unpacker no longer has any knowledge about the old buffer.
-
+ *
  * Note, there is no memory allocation performed by the Unacker class.  Also,
  * the client must know how much data to read from the stream (of course checks
  * can be made telling where the end of the stream is located using the
  * Unpacker::get_ptr, Unpacker::begin, and Unpacker::end functions).
-
+ *
  * \param size_in size of the buffer
  * \param buffer const_pointer to the char * buffer
  */
@@ -423,18 +422,18 @@ void Unpacker::set_buffer(uint64_t size_in, const_pointer buffer) {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpack data from the buffer.
-
+ *
  * This function unpacks a piece of data (single datum) from the buffer set by
  * Unpacker::set_buffer.  It advances the pointer (iterator) location to the
  * next location automatically.  It uses the sizeof(T) operator to get the size
  * of the data; thus, only data where sizeof() has meaning will be properly read
  * from the buffer.POLYNOMIAL_Specific_Heat_ANALYTIC_EoS_MODEL
-
+ *
  * Unpacker::unpack() does bounds checking to ensure that the buffer and buffer
  * size defined by Unpacker::set_buffer are consistent.  This bounds-checking is
  * always on as this should not be used in computation intensive parts of the
  * code.
-
+ *
  * \param value data of type T to unpack from the buffer; the data size must be
  * accessible using the sizeof() operator
  */
@@ -488,7 +487,7 @@ template <typename T> void Unpacker::extract(uint64_t bytes, T it) {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Stream in (>>) operator for unpacking data.
-
+ *
  * The overloaded stream in operator can be used to unpack data from streams
  * (Unpacker u; u.set_buffer(i,b); u >> data;).  It simply calls the
  * Unpacker::unpack function.  It returns a reference to the Unpacker object so
@@ -716,6 +715,7 @@ void unpack_data(FT &field, std::vector<char> const &packed) {
   Ensure(unpacker.get_ptr() == &packed[0] + packed.size());
   return;
 }
+
 //---------------------------------------------------------------------------//
 template <typename keyT, typename dataT>
 void unpack_data(std::map<keyT, dataT> &unpacked_map,

@@ -1,6 +1,13 @@
-##-*- Mode: sh -*-
+#!/bin/bash
+##-*- Mode: bash -*-
 ##---------------------------------------------------------------------------##
-## .bashrc_ccs4_linux - my bash configuration file upon bash login
+## File  : environment/bashrc/.bashrc_linux64
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##
+##  Bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
@@ -10,9 +17,6 @@ fi
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
-
-# unlimit stack and core dump sizes.
-ulimit -s unlimited
 
 # Is the module function available?
 found=`declare -f module | wc -l`
@@ -37,7 +41,7 @@ ccscs[1-9]*)
     module load user_contrib
     export dracomodules="gcc/4.8.5 openmpi cmake \
 lapack random123 eospac gsl dracoscripts subversion ndi python
-metis parmetis superlu-dist trilinos git"
+metis parmetis superlu-dist trilinos git csk"
     ;;
 ccsnet3*)
     # Locate the vendor directory
@@ -47,50 +51,41 @@ ccsnet3*)
     module load user_contrib
     export dracomodules="dracoscripts subversion python git"
     ;;
+toolbox*)
+    # Locate the vendor directory
+    if ! [[ $VENDOR_DIR ]]; then
+      export VENDOR_DIR=/usr/projects/draco/vendors
+    fi
+    module use --append $VENDOR_DIR/spack/share/spack/modules/linux-rhel6-x86_64
+    export IGNOREMODULECONFLICTS=1
+    export dracomodules="python gcc/6.1.0 intel/17.0.1 openmpi/1.10.5 \
+cmake emacs git-2.12.0-gcc-5.3.0 gsl-2.1-intel-17.0.1 \
+numdiff-5.8.1-gcc-5.3.0 random123-1.09-gcc-5.3.0 \
+netlib-lapack-3.5.0-intel-17.0.1 metis-5.1.0-intel-17.0.1 \
+parmetis-4.0.3-intel-17.0.1 superlu-dist-4.3-intel-17.0.1"
+    ;;
 *)
     # Locate the vendor directory
-    if test "${VENDOR_DIR}x" == "x"; then
+    if ! [[ ${VENDOR_DIR} ]]; then
       export VENDOR_DIR=/ccs/codes/radtran/vendors
       if test -d /var/tmp/vendors; then
-      export VENDOR_DIR=/var/tmp/vendors
+        export VENDOR_DIR=/var/tmp/vendors
       fi
     fi
     module use /ccs/codes/radtran/vendors/Modules
-  export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
+  export dracomodules="gcc openmpi emacs/24.4 totalview cmake \
 lapack random123 eospac dracoscripts git svn dia graphviz doxygen \
-metis parmetis superlu-dist trilinos ndi"
+metis parmetis superlu-dist trilinos ndi csk"
     ;;
 esac
 
-# extra paths
-# extradirs="$VENDOR_DIR/bin"
-# for mydir in ${extradirs}; do
-#   if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-#     export PATH=$mydir:$PATH
-#   fi
-# done
-
 #LaTeX
-extradirs=". ${DRACO_SRC_DIR}/environment/latex"
-for mydir in ${extradirs}; do
-  if test -z "`echo $TEXINPUTS | grep $mydir`" && test -d $mydir; then
-    export TEXINPUTS=$mydir:$TEXINPUTS
-  fi
-done
-extradirs=". ${DRACO_SRC_DIR}/environment/bibtex"
-for mydir in ${extradirs}; do
-  if test -z "`echo $BSTINPUTS | grep $mydir`" && test -d $mydir; then
-    export BSTINPUTS=$mydir:$BSTINPUTS
-  fi
-done
-extradirs=". ${DRACO_SRC_DIR}/environment/bibfiles"
-for mydir in ${extradirs}; do
-  if test -z "`echo $BIBINPUTS | grep $mydir`" && test -d $mydir; then
-    export BIBINPUTS=$mydir:$BIBINPUTS
-  fi
-done
-unset extradirs
+add_to_path ${DRACO_SRC_DIR}/environment/latex TEXINPUTS
+add_to_path ${DRACO_SRC_DIR}/environment/bibtex BSTINPUTS
+add_to_path ${DRACO_SRC_DIR}/environment/bibfiles BIBINPUTS
 
+# see environment/bin/bash_functions.sh for the 'switch_to_lmod' bash function
+# definition.
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_linux64

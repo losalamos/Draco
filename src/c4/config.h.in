@@ -61,9 +61,11 @@
 #else
 #define DRACO_MAX_PROCESSOR_NAME 64
 #endif
-#ifndef MPI_THREAD_SINGLE
-#define MPI_THREAD_SINGLE 0
+#ifndef DRACO_MPI_THREAD_SINGLE
+  #define DRACO_MPI_THREAD_SINGLE 0
 #endif
+#else
+  #define DRACO_MPI_THREAD_SINGLE MPI_THREAD_SINGLE
 #endif
 
 /* Ensure that Sequoia mpi.h uses 'const' in function signatures. This is

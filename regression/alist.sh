@@ -1,8 +1,14 @@
 #!/bin/bash
-
-#------------------------------------------------------------------------------#
-# Generate a list of authors by using git annotate
-#------------------------------------------------------------------------------#
+## -*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## File  : regression/alist.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
+## Generate a list of authors by using git annotate
+##---------------------------------------------------------------------------##
 
 # Should be run from the draco top-level source directory.
 if ! test -f CMakeLists.txt; then
@@ -21,72 +27,120 @@ run () {
    fi
 }
 
-#------------------------------------------------------------------------------#
-# List of contributors
-author_list_file=`mktemp`
-git shortlog -s | cut -c8- &> $author_list_file
+function math ()
+{
+    calc="${@//p/+}";
+    calc="${calc//x/*}";
+    bc -l <<< "scale=10;$calc"
+}
+
+#--------------------------------------------------------------------------------
+# Generate basic statistics
+# Exclude some files (especially binary and gold files).
+
+# Generate a temporary file
+author_loc=`mktemp`
+
+# all files
+tmp=`git ls-files`
+
+# exclude data files
+unset projectfiles
+for file in $tmp; do
+  case $file in
+    *bench | *css | *dia | *eps | *fig | *ipcress | *jpg | *logfile )
+      # drop these files from the count.
+      ;;
+    *mesh | *output.in | *png | *ps | *xs4 )
+      # drop these files from the count.
+      ;;
+    *) projectfiles="$projectfiles $file" ;;
+  esac
+done
+
+echo " "
+echo "Collecting data.  This may take a few minutes..."
+echo " "
+echo $projectfiles | xargs -n1 git blame -w | perl -n -e '/^.*?\((.*?)\s+[\d]{4}/; print $1,"\n"' | sort -f | uniq -c | sort -rn > $author_loc
+
+#--------------------------------------------------------------------------------
+# Use pretty names and then de-duplicate.
 
 # Put the user list into an array (some entries may have spaces).
-IFS=$'\r\n' GLOBIGNORE='*' command eval 'user_list=($(cat $author_list_file))'
+IFS=$'\r\n' GLOBIGNORE='*' command eval 'entries=($(cat $author_loc))'
 
-#------------------------------------------------------------------------------#
-# http://stackoverflow.com/questions/1265040/how-to-count-total-lines-changed-by-a-specific-author-in-a-git-repository
+if [[ -f $author_loc ]]; then rm $author_loc; fi
 
-# Ingore some files used in Jayenne:
-# ignorespec=":(exclude)*/output.in" ":(exclude)*/*.bench"
+for entry in "${entries[@]}"; do
 
-# count loc for each author and report.
-author_loc=`mktemp`
-for name in "${user_list[@]}"; do
+  current_loc=`echo $entry | sed -e 's/[ ].*//'`
+  current_author=`echo $entry | sed -e 's/[^ ]* //'`
 
-  # sort by net lines added (lines added - lines removed)
-  numlines=`git log --author="$name" --pretty=tformat: --numstat -- . ":(exclude)clubimc" ":(exclude)wedgehog" ":(exclude)milagro" ":(exclude)*/output.in" ":(exclude)*/*.bench" | awk '{ add += $1; subs += $2; loc += $1 - $2; sum += $1 + $2 } END { printf "%s:\n", loc}'`
-  echo "$numlines$name"
+  if [[ $current_loc == "" ]]; then current_loc=0; fi
+
+  case $current_author in
+    along | Alex*  ) current_author="Alex Long" ;;
+    clevelam | *Cleveland) current_author="Matt Cleveland" ;;
+    gaber) current_author="Gabe Rockefeller" ;;
+    hkpark) current_author="HyeongKae Park" ;;
+    jdd) current_author="Jeff Densmore" ;;
+    jhchang | Jae* ) current_author="Jae Chang" ;;
+    keadyk | Kendra* ) current_author="Kendra P. Keady" ;;
+    kellyt | kgt | 107638 | Kelly*) current_author="Kelly Thompson" ;;
+    kgbudge) current_author="Kent G. Budge" ;;
+    kwang) current_author="Katherine Wang" ;;
+    lowrie | *Lowrie) current_author="Rob Lowrie" ;;
+    lpritch) current_author="Lori Pritchett-Sheats" ;;
+    maxrosa) current_author="Massimiliano Rosa" ;;
+    ntmyers) current_author="Nick Meyers" ;;
+    pahrens) current_author="Peter Ahrens" ;;
+    talbotp) current_author="Paul Talbot" ;;
+    tmonster) current_author="Todd Urbatsch" ;;
+    warsa) current_author="James Warsa" ;;
+    wollaber) current_author="Allan Wollaber" ;;
+    wollaege) current_author="Ryan Thomas Wollaeger" ;;
+  esac
+
+  echo "$current_author:$current_loc"
 
 done | sort -rn > $author_loc
 
-cat $author_loc
+# cat $author_loc
 
-# while read line; do
-#   echo $line | sed -e 's/\([0-9]*\):/current_developers[\1]=/'
-# done < $author_loc
+#--------------------------------------------------------------------------------
+# Merge data
 
-#------------------------------------------------------------------------------#
-# Old svn based script modified for git
-# # Build a list of files to inspect.
-# files=`find . -name '*.hh' -o -name '*.cc' -o -name '*.txt' \
-#          -o -name '*.cmake' -o -name '*.in' -o -name '*.h'`
+prev_author="none"
+prev_loc=0
 
-# # generate full annotations for these files.
-# author_per_loc=`mktemp`
-# for file in $files; do
-#   echo "annotate $file"
-#   git annotate --line-porcelain $file |  grep '^author ' | sed -e 's/author //' >> $author_per_loc
-# done
+# Put the user list into an array (some entries may have spaces).
+IFS=$'\r\n' GLOBIGNORE='*' command eval 'entries=($(cat $author_loc))'
+rm $author_loc
+for entry in "${entries[@]}"; do
 
-# # generate a list of users identified by 'git annotate'
-# #user_list=`cat $author_per_loc | awk '{print $3}' | sort -u`
-# author_list=`mktemp`
-# cat $author_per_loc | sort -u | grep -v Not > $author_list
+  current_author=`echo $entry | sed -e 's/:.*//'`
+  current_loc=`echo $entry | sed -e 's/.*://'`
 
-# # Put the user list into an array (some entries may have spaces).
-# IFS=$'\r\n' GLOBIGNORE='*' command eval 'user_list=($(cat $author_list))'
+  if [[ $current_author == $prev_author ]]; then
+    prev_loc=`math "$prev_loc + $current_loc"`
+  else
+    # previous author information before starting a new author.
+    if ! [[ $prev_author == "none" ]]; then
+      echo "${prev_loc}:${prev_author}" >> $author_loc
+    fi
 
-# # count loc for each author and report.
-# author_loc=`mktemp`
-# for name in "${user_list[@]}"; do
-#   if ! test "$name" == "kgt" && ! test "$name" == "Kelly (KT) Thompson" && \
-#      ! test "$name" == 107638; then
-#     numlines=`grep -c "$name" $author_per_loc`
-#     echo "$numlines:$name"
-#   fi
-# done | sort -rn > $author_loc
+    prev_author=$current_author
+    prev_loc=$current_loc
+  fi
 
-# while read line; do
-#   echo $line | sed -e 's/\([0-9]*\):/current_developers[\1]=/'
-# done < $author_loc
+done
+# the last entry
+echo "${prev_loc}:${prev_author}" >> $author_loc
 
+cat $author_loc | sort -rn
 
+# cleanup
+rm $author_loc $author_list_file
 
 #------------------------------------------------------------------------------#
 # end alist.sh

@@ -5,10 +5,7 @@
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Analytic_EoS_hh__
@@ -16,7 +13,7 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/EoS.hh"
-#include "ds++/SP.hh"
+#include <memory>
 
 namespace rtt_cdi_analytic {
 
@@ -50,8 +47,8 @@ namespace rtt_cdi_analytic {
 class DLL_PUBLIC_cdi_analytic Analytic_EoS : public rtt_cdi::EoS {
 public:
   // Useful typedefs.
-  typedef rtt_dsxx::SP<Analytic_EoS_Model> SP_Analytic_Model;
-  typedef rtt_dsxx::SP<const Analytic_EoS_Model> const_SP_Model;
+  typedef std::shared_ptr<Analytic_EoS_Model> SP_Analytic_Model;
+  typedef std::shared_ptr<const Analytic_EoS_Model> const_SP_Model;
   typedef std::vector<double> sf_double;
   typedef std::vector<char> sf_char;
 

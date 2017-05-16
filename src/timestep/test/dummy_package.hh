@@ -5,17 +5,14 @@
  * \date   Thu Aug 27 07:48:41 1998
  * \brief  A dummy package to exercize the field time-step advisors.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __timestep_test_dummy_package_hh__
 #define __timestep_test_dummy_package_hh__
 
-#include "ds++/SP.hh"
 #include "ds++/config.h"
+#include <memory>
 #include <vector>
 
 // FORWARD REFERENCES
@@ -64,9 +61,9 @@ private:
   // DATA
 
   rtt_timestep::ts_manager &tsm;
-  rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_te;
-  rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_ti;
-  rtt_dsxx::SP<rtt_timestep::field_ts_advisor> sp_ri;
+  std::shared_ptr<rtt_timestep::field_ts_advisor> sp_te;
+  std::shared_ptr<rtt_timestep::field_ts_advisor> sp_ti;
+  std::shared_ptr<rtt_timestep::field_ts_advisor> sp_ri;
 };
 
 } // end namespace rtt_timestep_test

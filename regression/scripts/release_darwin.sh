@@ -137,7 +137,7 @@ for env in $environments; do
   # e.g.: buildflavor=moonlight-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
-  export build_prefix="/$scratchdir/$USER/$pdir/$buildflavor"
+  export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
   export draco_prefix="/usr/projects/draco/$ddir/$buildflavor"
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do

@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -547,7 +544,7 @@ void tstutilities(UnitTest &ut) {
     map<std::string, pair<unsigned, Unit>> variable_map;
     Unit one = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     variable_map[std::string("x")] = std::make_pair(0, one);
-    SP<Expression> T = parse_temperature(string, 1, variable_map);
+    std::shared_ptr<Expression> T = parse_temperature(string, 1, variable_map);
     vector<double> x(1, 0.0);
     if (soft_equiv((*T)(x), 278.))
       PASSMSG("parsed temperature correctly");
@@ -559,7 +556,7 @@ void tstutilities(UnitTest &ut) {
     map<std::string, pair<unsigned, Unit>> variable_map;
     Unit one = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     variable_map[std::string("x")] = std::make_pair(0, one);
-    SP<Expression> T = parse_temperature(string, 1, variable_map);
+    std::shared_ptr<Expression> T = parse_temperature(string, 1, variable_map);
     vector<double> x(1, 0.0);
     if (soft_equiv((*T)(x), 1.0 / rtt_units::boltzmannSI))
       PASSMSG("parsed temperature correctly");
@@ -571,7 +568,7 @@ void tstutilities(UnitTest &ut) {
     map<std::string, pair<unsigned, Unit>> variable_map;
     Unit one = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     variable_map[std::string("x")] = std::make_pair(0, one);
-    SP<Expression> T =
+    std::shared_ptr<Expression> T =
         parse_quantity(string, K, "temperature", 1, variable_map);
     vector<double> x(1, 0.0);
     if (soft_equiv((*T)(x), 278.))
@@ -829,7 +826,7 @@ void tstutilities(UnitTest &ut) {
     set_unit_expressions_are_required(true);
     set_internal_unit_system(UnitSystem(UnitSystemType().SI()));
 
-    SP<Expression> c =
+    std::shared_ptr<Expression> c =
         parse_quantity(expression_with_units, erg * s, "action", 2U, vmap);
 
     if (expression_with_units.error_count() == 0 &&
@@ -936,6 +933,7 @@ void tstutilities(UnitTest &ut) {
     else
       FAILMSG("did NOT parse bare expression to SI correctly");
     bare_expression.rewind();
+    free_internal_unit_system();
   }
   return;
 }

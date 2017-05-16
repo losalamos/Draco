@@ -5,8 +5,7 @@
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Header file for ds++ library release function.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_ds_Release_hh

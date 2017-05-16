@@ -5,10 +5,7 @@
  * \date   Mon Mar  7 10:42:56 EST 2016
  * \brief  Builds an Ordinate_Set using a Quadrature_Interface struct
  * \note   Copyright (C)  2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: Ordinate.hh 6607 2012-06-14 22:31:45Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef quadrature_Ordinate_Set_Factory_hh
@@ -16,11 +13,9 @@
 
 #include "Ordinate_Set.hh"
 #include "Quadrature_Interface.hh"
-#include "ds++/SP.hh"
+#include <memory>
 
 namespace rtt_quadrature {
-
-using rtt_dsxx::SP;
 
 //===========================================================================//
 /*!
@@ -41,7 +36,7 @@ public:
   // SERVICES
 
   //! Returns a smart pointer to the Quadrature object
-  SP<Ordinate_Set> get_Ordinate_Set() const;
+  std::shared_ptr<Ordinate_Set> get_Ordinate_Set() const;
 
 private:
   // DATA

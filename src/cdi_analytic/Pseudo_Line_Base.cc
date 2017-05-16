@@ -4,13 +4,8 @@
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
-
-#include <fstream>
 
 #include "Pseudo_Line_Base.hh"
 #include "c4/C4_Functions.hh"
@@ -19,6 +14,7 @@
 #include "ds++/Packing_Utils.hh"
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
+#include <fstream>
 
 namespace rtt_cdi_analytic {
 using namespace std;
@@ -53,8 +49,8 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
     // Sort line centers
     sort(center_.begin(), center_.end());
   }
-  // else fuzz model: Instead of lines, we add a random opacity to each
-  // opacity bin to simulate very fine, unresolvable line structure.
+  // else fuzz model: Instead of lines, we add a random opacity to each opacity
+  // bin to simulate very fine, unresolvable line structure.
 
   unsigned ne = abs(number_of_edges);
   for (unsigned i = 0; i < ne; ++i) {
@@ -62,10 +58,9 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
       // normal behavior is to place edges randomly
       edge_[i] = (emax - emin) * static_cast<double>(rand()) / RAND_MAX + emin;
     } else {
-      // placed edges evenly; this makes it easier to choose a group
-      // structure that aligns with edges (as would likely be done with
-      // a production calculation using a real opacity with strong
-      // bound-free components)
+      // placed edges evenly; this makes it easier to choose a group structure
+      // that aligns with edges (as would likely be done with a production
+      // calculation using a real opacity with strong bound-free components)
       edge_[i] = (emax - emin) * (i + 1) / (ne + 1) + emin;
     }
     double C;
@@ -88,11 +83,10 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
 }
 
 //---------------------------------------------------------------------------//
-Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
-                                   int number_of_lines, double line_peak,
-                                   double line_width, int number_of_edges,
-                                   double edge_ratio, double Tref, double Tpow,
-                                   double emin, double emax, unsigned seed)
+Pseudo_Line_Base::Pseudo_Line_Base(
+    std::shared_ptr<Expression const> const &continuum, int number_of_lines,
+    double line_peak, double line_width, int number_of_edges, double edge_ratio,
+    double Tref, double Tpow, double emin, double emax, unsigned seed)
     : continuum_(continuum), continuum_table_(std::vector<double>()),
       emax_(-1.0), nu0_(-1), // as fast flag
       C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed),
@@ -101,7 +95,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(SP<Expression const> const &continuum,
       edge_ratio_(edge_ratio), Tref_(Tref), Tpow_(Tpow),
       center_(std::vector<double>()), edge_(abs(number_of_edges)),
       edge_factor_(abs(number_of_edges)) {
-  Require(continuum != SP<Expression>());
+  Require(continuum != std::shared_ptr<Expression>());
   Require(line_peak >= 0.0);
   Require(line_width >= 0.0);
   Require(edge_ratio >= 0.0);
@@ -131,8 +125,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
   Require(edge_ratio >= 0.0);
   Require(emin >= 0.0);
   Require(emax > emin);
-  // Require parameter (other than emin and emax) to be same on all
-  // processors
+  // Require parameter (other than emin and emax) to be same on all processors
 
   ifstream in(cont_file.c_str());
   if (!in) {
@@ -183,8 +176,8 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
 
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
-// Because we haven't implemented packing functionality for Expression
-// trees yet.
+// Because we haven't implemented packing functionality for Expression trees
+// yet.
 
 #if 0
 // caculate the size in bytes
@@ -243,8 +236,8 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
       Result += peak / (1 + d * d);
     }
   } else {
-    // Fuzz model. We had better be precalculating opacities for
-    // consistent behavior.
+    // Fuzz model. We had better be precalculating opacities for consistent
+    // behavior.
     Result += peak * static_cast<double>(rand()) / RAND_MAX;
   }
 

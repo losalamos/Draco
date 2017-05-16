@@ -1,3 +1,312 @@
+2017-03-29  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* "Release draco-6_21_0":https://rtt.lanl.gov/redmine/versions/47.
+	  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - "Jayenne-7_13_0":https://rtt.lanl.gov/redmine/versions/50
+	  - "Capsaicin-4_10_0":https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/LU           Intel 17.0.1    OpenMPI-1.10.5
+	  SN/FI/IC           Intel 17.0.1    OpenMPI-1.10.5
+	  TT/TR              Intel 17.0.1    Cray_MPICH2-7.5.2
+
+	* Summary of changes:
+	- 836 files changed, added or removed in 174 commits.
+	- Full support for new Toss3 machines: Snow, Fire, Ice.
+	- Mustang and Conejo decommissioned. No longer support these
+	  machines.
+	- Discontinue support/regressions for GPU kernels on Moonlight due
+	  to conflicts between the version of cudatoolkit and Intel compilers.
+	- Initial commit of Invert_Comm_Map, using RMA.
+	- New minimum requirement for MPI is OpenMPI-1.10 to support one
+	  sided messaging.
+	- Teach the build system about using GNU on CRAY machines.
+	- Retire the SP smart pointer template by making SP an alias for
+	  std::shared_ptr.
+	- Retire ArrayWrap, use std::array<T> instead.
+	- New package 'Compton'
+	- Add C4 interface for MPI_Sendrecv function.
+	- Improved CI support.
+	- First attempt to capture and report FMA behavior.
+	- Add parent masking to the Debug_Option parser
+	- Add optional context argument to parse_class template
+	  function.
+
+	* Developer Environment:
+
+	- Provide regression scripts for snow (#826)
+	- Update regression scripts on trinitite to support a KNL-based
+	  regression (#824)
+	- Improved behavior, including stability, for CI system (#815)
+	- Provide script that sets up a git pre-commit hook for clang-format.
+	- On HPC machines, add clang-format to the default Draco environment.
+	- Modify scripts to find capsaicin on gitlab instead of subversion (#834)
+	- Use builtin cmake_parse_arguments instead of our own macro (#658)
+	- Add new 'pause' command line option for ParallelUnitTest. Any
+	  unit test that is based on c4's ParallelUnitTest can now be
+	  given the command line argument '-p'.  This option will pause
+	  the program after MPI_Init to allow the developer to attach a
+	  debugger to the process before the program continues. This can
+	  be useful when debugging code on platforms that do not have a
+	  MPI-aware debugger.
+	- Add a new bash function, qrm (quick remove).  On Lustre scratch
+	  filesystems, use this function to move directories to a 'trash'
+	  folder instead of 'rm -rf'.  The recursive remove operation is
+	  very slow on Lustre, the new function is very fast and let's the
+	  system's garbage collection system complete the remove
+	  operation.
+	- Significant update to regression scripts. The initial goal of
+	  this work was to prevent two simultaneous CI instances ofthe
+	  same PR.  However, after working through several potential
+	  solutions it has resulted in a bigger set of changes as detailed
+	  in #841.
+
+	* Build System:
+
+	- Begin looking for newer versions of lapack.
+	- Extend copyright dates to 2017.
+	- Add support for ccache. Currently, we recommend the following
+	  content for ~/.ccache/ccache.conf:
+	    max_size = 30.0G
+	    cache_dir = /scratch/ccache
+	    umask = 0002
+
+	* c4
+
+	- Initial commit of Invert_Comm_Map, using RMA.
+	- Retire unused TigsTrace class and tests (#799).
+	- Add C4 interface for MPI_Sendrecv function.
+	- Extend c4::Processor_Group::sum to operate on any random access
+	  container.
+          The random access container must conform to the C++11
+	  conventions for such a containter. In particular, the value_type
+	  must be defined and &x[0] must return a pointer to T pointing to
+	  the beginning of the raw storage underlying the container.
+	  This is needed to support use of Teuchos::ArrayView and
+	  Teuchos::ArrayRCP in the Capsaicin project.
+
+	* dsxx
+
+	- Rework test harness for fpe_trap tests so they use
+	  applicationUnitTest.
+	- Tweak fpe_trap and tests for KNL (#835).
+	- Retire the SP smart pointer template by making SP an alias for
+	  std::shared_ptr. This has three consequences:
+          1. std::shared_ptr has no comparison operations with raw
+	     pointers, unlike the old SP template.
+          2. std::shared_ptr does not have an Insist check for a null
+	     pointer with the arrow operator.
+          3. The conversion to bool is explicit for std::shared_ptr. If
+	     tests and operator! are equivalent to explicit casts to bool
+	     under C++11, but an explicit cast is required in other
+	     contexts. This bites us mostly for functions like
+	     UnitTest::check() that expect a bool argument, but I have
+	     eased this by adding a template version of check() that
+	     accepts std::shared_ptr in place of bool. I have also done
+	     the same for Token_Stream::check_semantics().
+	- Retire ArrayWrap, use std::array<T> instead.
+	- Provide FMA macro to simulate more accurate math on older
+	  machines (#872). Includes a platform check to determine if the
+	  hardware provides FMA.
+	- Change Packing_Utils to use 64-bit integers to prevent overflow.
+	- Add option to UnitTest to suppress messages for successful tests
+	  in UnitTest::check.
+
+	* fit
+
+	- No longer generate a library for this package.  Convert the
+	  package to a header-only implementation.
+
+	* parser
+
+	- Add parent masking to the Debug_Option parser. The
+	  parse_debug_options function now takes an optional parent mask
+	  argument. The debug options parsed by the function set
+	  additional bits in this mask, or turn off set bits of the debug
+	  option keyword is preceded by a '!'. This allows an object being
+	  parsed to "inherit" debug options from a higher leverl of the
+	  parse tree and optionally modify them.
+	- Add optional context argument to parse_class template
+	  function. A second signature of the parse_class template
+	  function has been added that takes a second argument of type
+	  Class_Parse_Table::Context_Type const &. This allows a context
+	  object of class-dependent type to be passed to the parser which
+	  may provide context to change its behavior. In a similar
+	  fashion, a second version of the parse_class_from_table
+	  template function has been added that takes a second
+	  Class_Parse_Table::Context_Type & argument and passes it as an
+	  argument to the Class_Parse_Table constructor.
+	- Extend the Abstract_Class_Parser class to allow parsing with
+	  context.
+	  The original Abstract_Class_Parser assumed the parse functions
+	  for parsing particular child classes were all raw functions with
+	  the signature SP<Abstract_Class>
+	  parse_function(Token_Stream&). To optionally parse with context,
+	  the class needed to accomodate parse functions with the
+	  signature SP<Abstract_Class> parse_function(Token_Stream &,
+	  Context const &) where Context is the context object type.
+	  To accomplish this, the class was modified to take an additional
+	  parse functor type parameter. This allows the parse functors to
+	  be any type with an operator(Token_Stream &) defined.
+	  The old case is accomodated by adding a registration function
+	  that converts a raw function pointer to a std::fun_ptr object
+	  and making std::fun_ptr with suitable typing the default
+	  template parameter value for the parse functor type.
+	  The new case is accomodated by adding a new helper class,
+	  Contextual_Parse_Functor, which is a closure class that binds a
+	  call to a get_context() template parameter function to the
+	  second argument of a parse function with the desired signature
+	  SP<Abstract_Class> parse_function(Token_Stream &, Context
+	  const&). Contextual_Parse_Functor with suitable typing then
+	  becomes the parse functor type.
+          The new test, tstAbstract_Class_Contexual_Parser.cc, illustrates
+	  how all this works in practice for an abstract parent class with
+	  two child classes with context.
+	- Ensure timely deallocation of parser resources. Ensure that
+	  destructor of Class_Parse_Table<Quadrature> releases the parsed
+	  quadrature in a timely manner. Previously the parsed quadrature
+	  would not be released until general end of execution cleanups or
+	  until another quadrature was parsed.
+	  Provide a way to free the global pointer to the internal unit
+	  system. I'm not sure why this is implemented as a raw pointer
+	  rather than a shared_ptr, but the ability to free this storage
+	  manually is useful even if it were implemented as a shared_ptr.
+	- Add capability to extend debug options set. New functions added
+	  to allow applications to add highly application-specific options
+	  to the debug mask.
+
+	* quadrature
+
+	- Adding parser check to ensure even azimuthal order. Quadratures
+	  with an odd number of azimuthal angles should cause a parser
+	  error. Previously, error only occured in DBC check, which is
+	  often turned off in release.
+
+	* Details for defects and features can be found at
+	  https://rtt.lanl.gov/redmine/isues/#.
+
+	Corrected defects:
+	* Bug #835 test_fpe_trap is failing on KNL
+	* Bug #839 Cassio Understand/Fix MKL RPATH issues
+	* Bug #840 User_contrib: update wiki with spack instructions.
+	* Bug #841 Prevent CI scripts from starting regression tests for
+	           same PR from running simultaneously.
+	* Bug #852 User_contrib: at least one machine is reported as
+	           'unknown'
+	* Bug #855 CI on gitlab is failing
+	* Bug #856 valgrind regressions broken by PR#142
+	* Bug #881 Capsaicin: Valgrind results not posting to CDash
+	* Bug #890 gitlab.lanl.gov not sending email
+	* Bug #899 Cray: Change environment and modules to use
+	           cray-mpich/7.5.2
+
+	New Features:
+	* Feature #814 CMake - update the build system to use features
+	               available in ver. 3.7
+	* Feature #815 Develop a crontab to automatically test PR
+	* Feature #829 Migrate dev env to Intel/17 on Toss2/Toss3/Cray
+	* Feature #834 Migrate capsaicin to gitlab
+	* Feature #837 User_contrib: Use new header/footer for HPC module
+	               system
+	* Feature #843 user_contrib: provide fftw3
+	* Feature #844 Compare MPI flags to those used by EAP
+	* Feature #847 On HPC machines provide vendors and releases for
+	               gcc@5.3.0
+	* Feature #857 User_contrib: provide vendor stack on snow for
+	               intel-mpi
+	* Feature #862 Retire rtt_dsxx::SP
+	* Feature #871 Retire rtt_dsxx::ArrayWrap
+	* Feature #882 Use std::expm1 for more accurate exponents
+	* Feature #883 Followup from Intel/Cray bootcamp
+	* Feature #898 Add support for ccache
+	* Task    #658 CMake35 - Update build system to take advantage of
+	               CMake-3.5.0 features
+
+	Known Defects:
+	* Bug #885 CI system on trinitite can break
+	* Bug #877 Some tests fail for RelWithDebInfo builds
+	* Bug #893 Stand up CI for gcc/6.1 intel/17.0.2, openmpi/2.0.2
+
+	*Statistics:
+
+Contributers (updated Release.cc with this ordering).
+------------
+CCS-2 Draco Team: Kelly G. Thompson, James S. Warsa, Kent G. Budge,
+     Alex R. Long, Kendra P. Keady, Jae H. Chang, Rob B. Lowrie,
+     Matt A. Cleveland, Massimiliano Rosa, Daniel Holladay, Ryan T. Wollaeger,
+     Andrew T. Till, and Kris C. Garrett.
+Prior Contributers: Jeff D. Densmore, Allan B. Wollaber,
+     Lori A. Pritchett-Sheats, Peter Ahrens, Katherine J. Wang,
+     Gabriel M. Rockefeller, and Paul W. Talbot.
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             421          12264          21949          50595
+C/C++ Header                    330           6684          20713          16085
+Lisp                             17           2027           2897          13059
+CMake                           120           2136           5583           8930
+Bourne Shell                     28            625           1362           3068
+Bourne Again Shell               14            259            539           1447
+Python                           13            388            657           1316
+CSS                               1            113             37            395
+Fortran 90                        8            113            218            380
+C                                 4             47            114            244
+C Shell                           2             32             36            167
+DOS Batch                         4             56             65            122
+YAML                              2             18             98             74
+HTML                              2              6             47             65
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            971          24807          54390          96026
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+units/                               80 /    80 = 100%      58 /    58 = 100%
+lapack_wrap/                         12 /    12 = 100%       0 /     0
+compton/                             16 /    16 = 100%       0 /     0
+rng/                                 57 /    57 = 100%      23 /    24 =  95%
+fit/                                  1 /     1 = 100%      15 /    16 =  93%
+ode/                                  5 /     5 = 100%      29 /    32 =  90%
+min/                                  9 /     9 = 100%     137 /   154 =  88%
+RTT_Format_Reader/                  323 /   323 = 100%     373 /   434 =  85%
+linear/                              16 /    16 = 100%     334 /   392 =  85%
+roots/                                8 /     8 = 100%     259 /   312 =  83%
+cdi/                                 46 /    46 = 100%      63 /    76 =  82%
+cdi_ipcress/                        106 /   106 = 100%     188 /   247 =  76%
+viz/                                 32 /    32 = 100%     131 /   174 =  75%
+meshReaders/                         15 /    15 = 100%     127 /   172 =  73%
+diagnostics/                         15 /    15 = 100%      28 /    42 =  66%
+cdi_eospac/                          52 /    52 = 100%      65 /   127 =  51%
+FortranChecks/                        1 /     1 = 100%       7 /    14 =  50%
+ds++/                               317 /   321 =  98%     457 /   522 =  87%
+timestep/                            62 /    63 =  98%     104 /   178 =  58%
+parser/                             293 /   298 =  98%    1184 /  1512 =  78%
+quadrature/                         220 /   226 =  97%     580 /   738 =  78%
+norms/                               25 /    26 =  96%      21 /    34 =  61%
+mesh_element/                        23 /    24 =  95%     154 /   201 =  76%
+c4/                                 153 /   162 =  94%     373 /   421 =  88%
+special_functions/                   30 /    32 =  93%     192 /   216 =  88%
+cdi_analytic/                       146 /   165 =  88%     172 /   224 =  76%
+memory/                               4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2067 /  2117 =  97%    5074 /  6322 =  80%
+
+
+
+
+
 2016-11-16  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_20_1. This is a patch release.
@@ -15,6 +324,7 @@
 	  SQ                 GCC 5.3.0       MPICH2-1.5.0
 
 	* Summary of changes:
+
 	- 33 files changed, added or removed in 32 commits.
 	- Provide initial support for snow/fire/ice. #826
 	- Initial commit of Invert_Comm_Map, using RMA.

@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Apr  5 09:01:03 2011
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -40,9 +37,7 @@ void tstPseudo_Line_Analytic_MultigroupOpacity(UnitTest &ut) {
   int const number_of_edges = 10;
   unsigned seed = 1;
 
-  //    SP<Expression const> const continuum(new Constant_Expression(1,1.0e-2));;
-
-  SP<Expression const> continuum;
+  std::shared_ptr<Expression const> continuum;
   {
     map<string, pair<unsigned, Unit>> variables;
     variables["x"] = pair<unsigned, Unit>(0, raw);

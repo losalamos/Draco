@@ -3,7 +3,7 @@
 ## File  : regression/ccscs-regression.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -36,8 +36,6 @@ fi
 
 # Environment setup
 # ----------------------------------------
-umask 0002
-ulimit -a
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -79,12 +77,12 @@ echo "CCSCS Regression: ${ctestparts} from ${machine}."
 echo "                  ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
 
+umask 0002
+ulimit -a
+
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-  echo 'module function is defined'
-else
+if [[ `fn_exists module` == 0 ]]; then
   echo 'module function does not exist. defining a local function ...'
   source /usr/share/Modules/init/bash
 fi
@@ -92,12 +90,12 @@ fi
 source /usr/share/Modules/init/bash
 run "module purge"
 run "module load user_contrib"
-run "module load gcc openmpi cmake git"
+run "module load gcc openmpi cmake git ccache"
 run "module load dracoscripts subversion random123 valgrind"
 run "module load eospac lapack gsl" # grace
 run "module load superlu-dist/4.3"
 run "module load ndi metis parmetis trilinos"
-run "module load doxygen graphviz" # qt
+run "module load doxygen graphviz csk" # qt
 comp=gcc
 
 case $extra_params in
@@ -112,6 +110,8 @@ case $extra_params in
       exit 1
     fi
     build_type=Coverage
+    # Ccache breaks bullseye coverage!!!
+    run "module unload ccache"
     run "module load bullseyecoverage"
     CXX=`which g++`
     CC=`which gcc`
@@ -137,12 +137,12 @@ case $extra_params in
   clang)
     run "module purge"
     run "module load user_contrib"
-    run "module load llvm openmpi cmake"
+    run "module load llvm openmpi cmake git"
     run "module load dracoscripts subversion random123"
     run "module load lapack gsl" # eospac
     run "module load superlu-dist/4.3"
     run "module load ndi metis parmetis trilinos"
-    run "module load graphviz"
+    run "module load graphviz csk"
     comp=clang
     ;;
   fulldiagnostics)
@@ -151,21 +151,21 @@ case $extra_params in
   gcc530)
     run "module purge"
     run "module load user_contrib"
-    run "module load gcc/5.3.0 openmpi cmake"
+    run "module load gcc/5.3.0 openmpi cmake git"
     run "module load dracoscripts subversion random123"
     run "module load lapack gsl eospac"
     run "module load superlu-dist"
-    run "module load ndi metis parmetis trilinos"
+    run "module load ndi metis parmetis trilinos csk"
     comp=gcc-5.3.0
     ;;
   gcc610)
     run "module purge"
-    run "module load user_contrib"
+    run "module load user_contrib git"
     run "module load gcc/6.1.0 openmpi cmake"
     run "module load dracoscripts subversion random123"
     run "module load lapack gsl eospac"
     run "module load superlu-dist"
-    run "module load ndi metis parmetis trilinos"
+    run "module load ndi metis parmetis trilinos csk"
     comp=gcc-6.1.0
     ;;
   valgrind)
@@ -185,17 +185,11 @@ case $extra_params in
 esac
 run "module list"
 
-# Use a unique regression folder for each github branch
-if test ${USE_GITHUB:-0} == 1; then
-  comp=$comp-$featurebranch
-fi
-
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
 if test "$USER" == "kellyt"; then
-  run "module load git"
   MYHOSTNAME="`uname -n`"
   keychain=keychain-2.8.2
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
   else
@@ -299,10 +293,10 @@ if test "${build_type}" = "Coverage"; then
   # Coverage build imply Debug builds.
   build_type="Debug,${build_type}"
   run "export COVFILE=${work_dir}/build/CMake.cov"
-  if test -f ${COVFILE}; then
+  if [[ -f ${COVFILE} ]]; then
     run "rm -f ${COVFILE}"
-    cov01 --on
   fi
+  run "cov01 --on"
 fi
 if test "${build_type}" = "DynamicAnalysis"; then
   # DynamicAnalysis builds imply Debug builds.
@@ -325,8 +319,11 @@ if test -f "$COVFILE"; then
   run "cp $COVFILE $COVFILE.bak"
 fi
 
-run "chgrp -R draco ${work_dir}"
-run "chmod -R g+rwX,o-rwX ${work_dir}"
+if [[ ${regress_mode} == "on" ]]; then
+  echo " "
+  run "chgrp -R draco ${work_dir}"
+  run "chmod -R g+rwX,o-rwX ${work_dir}"
+fi
 
 echo "All done."
 

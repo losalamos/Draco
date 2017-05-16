@@ -4,25 +4,23 @@
  * \author Kent G. Budge
  * \brief  Define class quadrature_test
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "quadrature_test.hh"
+#include "parser/String_Token_Stream.hh"
+#include "parser/utilities.hh"
 #include <iomanip>
 #include <iostream>
 #include <numeric>
-
-#include "quadrature_test.hh"
-
-#include "parser/String_Token_Stream.hh"
-#include "parser/utilities.hh"
 
 namespace rtt_quadrature {
 using namespace std;
 using namespace rtt_parser;
 
 //----------------------------------------------------------------------------//
-void test_either(UnitTest &ut, SP<Ordinate_Space> const &ordinate_space,
+void test_either(UnitTest &ut,
+                 std::shared_ptr<Ordinate_Space> const &ordinate_space,
                  Quadrature &quadrature, unsigned const expansion_order) {
   vector<Ordinate> const &ordinates = ordinate_space->ordinates();
   unsigned const number_of_ordinates = ordinates.size();
@@ -366,7 +364,7 @@ void test_no_axis(UnitTest &ut, Quadrature &quadrature,
 
   // Build an angle operator
 
-  SP<Ordinate_Space> ordinate_space =
+  std::shared_ptr<Ordinate_Space> ordinate_space =
       quadrature.create_ordinate_space(dimension, geometry, expansion_order,
                                        add_extra_directions, ordering, qim);
 
@@ -389,9 +387,10 @@ void test_axis(UnitTest &ut, Quadrature &quadrature, unsigned const dimension,
 
   // Build an angle operator
 
-  SP<Ordinate_Space> ordinate_space = quadrature.create_ordinate_space(
-      dimension, geometry, expansion_order, mu_axis, eta_axis,
-      add_extra_directions, ordering, qim);
+  std::shared_ptr<Ordinate_Space> ordinate_space =
+      quadrature.create_ordinate_space(dimension, geometry, expansion_order,
+                                       mu_axis, eta_axis, add_extra_directions,
+                                       ordering, qim);
 
   test_either(ut, ordinate_space, quadrature, expansion_order);
 }
@@ -401,7 +400,7 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 
   if (quadrature.quadrature_class() != INTERVAL_QUADRATURE) {
     // Build an ordinate set
-    SP<Ordinate_Set> ordinate_set =
+    std::shared_ptr<Ordinate_Set> ordinate_set =
         quadrature.create_ordinate_set(3U, // dimension
                                        rtt_mesh_element::CARTESIAN,
                                        1.0,   // norm,
@@ -545,7 +544,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
 
   string text = quadrature.as_text("\n");
   String_Token_Stream tokens(text);
-  SP<Quadrature> parsed_quadrature = parse_class<Quadrature>(tokens);
+  std::shared_ptr<Quadrature> parsed_quadrature =
+      parse_class<Quadrature>(tokens);
 
   if (tokens.error_count()) {
     ut.failure("Textification and parse did NOT succeed");
@@ -556,8 +556,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
     ut.failure("Textification and parse did NOT give identical results");
   }
 
-  // ***** Test various geometry, dimensionaly, and interpolation model
-  // ***** options.
+  // ***** Test various geometry, dimensionaly, and interpolation model options.
 
   // Test 1-D options. These requre that the axes have not been reassigned.
 
@@ -565,7 +564,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
 
     // Build an ordinate set
 
-    SP<Ordinate_Set> ordinate_set =
+    std::shared_ptr<Ordinate_Set> ordinate_set =
         quadrature.create_ordinate_set(1U, // dimension
                                        rtt_mesh_element::CARTESIAN,
                                        1.0,   // norm,
@@ -604,9 +603,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                  Ordinate_Set::LEVEL_ORDERED);
 
     if (quadrature.is_open_interval()) {
-      // Our curvilinear angular operator algorithm doesn't work with
-      // closed interval quadratures (those for which mu=-1 is part of the
-      // set).
+      // Our curvilinear angular operator algorithm doesn't work with closed
+      // interval quadratures (those for which mu=-1 is part of the set).
       test_no_axis(ut, quadrature,
                    1U, // dimension,
                    rtt_mesh_element::SPHERICAL,
@@ -630,7 +628,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
   {
     // Build an ordinate set
 
-    SP<Ordinate_Set> ordinate_set =
+    std::shared_ptr<Ordinate_Set> ordinate_set =
         quadrature.create_ordinate_set(3U, // dimension
                                        rtt_mesh_element::CARTESIAN,
                                        1.0,   // norm,
@@ -687,8 +685,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
     }
 
     if (!quadrature.has_axis_assignments()) {
-      // Axisymmetric is hosed if axes have been reassigned, since the
-      // levels are only guaranteed on the xi axis.
+      // Axisymmetric is hosed if axes have been reassigned, since the levels
+      // are only guaranteed on the xi axis.
       if (false && quadrature.quadrature_class() == TRIANGLE_QUADRATURE) {
         test_no_axis(ut, quadrature,
                      1U, // dimension,
@@ -736,7 +734,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
 // This test gets called FROM Fortran to ensure that we can successfully create
 // and assign data into a "quadrature_data" type.  See
 // ftest/tstquadrature_interfaces.f90
-//----------------------------------------------------------------------------//
+// ----------------------------------------------------------------------------//
 extern "C" DLL_PUBLIC_quadrature_test void
 rtt_test_quadrature_interfaces(const quadrature_data &quad, int &error_code) {
   using std::cout;

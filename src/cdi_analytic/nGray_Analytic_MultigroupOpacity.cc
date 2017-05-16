@@ -30,17 +30,14 @@ namespace rtt_cdi_analytic {
  * rtt_cdi::Reaction argument.
  *
  * The group structure (in keV) must be provided by the groups argument.  The
- * number of Analytic_Opacity_Model objects given in the models argument must
- * be equal to the number of groups.
+ * number of Analytic_Opacity_Model objects given in the models argument must be
+ * equal to the number of groups.
  *
  * \param groups vector containing the group boundaries in keV from lowest to
  * highest
- *
- * \param models vector containing SPs to Analytic_Model derived types for
- * each group, the size should be groups.size() - 1
- *
+ * \param models vector containing shared_ptrs to Analytic_Model derived types
+ * for each group, the size should be groups.size() - 1
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
- *
  */
 nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
     const sf_double &groups, const sf_Analytic_Model &models,
@@ -55,7 +52,7 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
- * 
+ *
  * This constructor rebuilds and nGray_Analytic_MultigroupOpacity from a
  * vector<char> that was created by a call to pack().  It can only rebuild
  * Analytic_Model types that have been registered in the
@@ -122,7 +119,7 @@ nGray_Analytic_MultigroupOpacity::nGray_Analytic_MultigroupOpacity(
 // OPACITY INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the group opacities given a scalar temperature and density. 
+ * \brief Return the group opacities given a scalar temperature and density.
  *
  * Given a scalar temperature and density, return the group opacities
  * (vector<double>) for the reaction type specified by the constructor.  The
@@ -170,7 +167,7 @@ nGray_Analytic_MultigroupOpacity::getOpacity(double temperature,
  *
  * The field type for temperatures is an std::vector.
  *
- * \param temperature std::vector of material temperatures in keV 
+ * \param temperature std::vector of material temperatures in keV
  *
  * \param density material density in g/cm^3
  *
@@ -219,7 +216,7 @@ nGray_Analytic_MultigroupOpacity::getOpacity(const sf_double &temperature,
  *
  * The field type for density is an std::vector.
  *
- * \param temperature in keV 
+ * \param temperature in keV
  *
  * \param density std::vector of material densities in g/cm^3
  *

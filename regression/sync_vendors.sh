@@ -45,7 +45,7 @@ run "umask 0002"
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
-$vdir/keychain-2.8.2/keychain $HOME/.ssh/cmake_dsa
+$vdir/keychain-2.8.2/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
 if test -f $HOME/.keychain/$HOSTNAME-sh; then
   run "source $HOME/.keychain/$HOSTNAME-sh"
 else

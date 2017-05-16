@@ -1,55 +1,49 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//-----------------------*-C++-*----------------------------------------------//
 /*!
  * \file   quadrature/Quadrature.hh
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  Quadrature class header file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC. All rights
- *         reserved.
- */
-//---------------------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------------------//
+ *         reserved. */
+//----------------------------------------------------------------------------//
 
 #ifndef __quadrature_Quadrature_hh__
 #define __quadrature_Quadrature_hh__
 
 #include "Ordinate_Space.hh"
-#include "ds++/SP.hh"
 
 namespace rtt_quadrature {
 using std::string;
 using std::vector;
-using rtt_dsxx::SP;
 using rtt_mesh_element::Geometry;
 
-//=======================================================================================//
+//============================================================================//
 /*!
  * \class Quadrature
  *
  * \brief A class to encapsulate the angular discretization.
  *
  * The Quadrature class is an abstraction representation of an angular
- * quadrature scheme. It can be used to generate an Ordinate_Set containing
- * the correct set of ordinate directions for a given geometry. It can also
- * be used to generate an Ordinate_Space describing both a discrete ordinate
- * and a truncated moment representation of ordinate space.
+ * quadrature scheme. It can be used to generate an Ordinate_Set containing the
+ * correct set of ordinate directions for a given geometry. It can also be used
+ * to generate an Ordinate_Space describing both a discrete ordinate and a
+ * truncated moment representation of ordinate space.
  *
- * All multi-dimensional quadratures (not interval quadratures) are expected
- * to align any level structure they may have with the xi direction
- * cosine.
+ * All multi-dimensional quadratures (not interval quadratures) are expected to
+ * align any level structure they may have with the xi direction cosine.
  *
  * When an Ordinate_Set is constructed from the Quadrature, the direction
  * cosines in the Quadrature must be mapped to coordinate axes in the problem
  * geometry. By default, 1-D non-axisymmetric maps xi to the coordinate axis;
  * 1-D axisymmetric maps mu to the coordinate axis ande xi to the
- * (non-represented) symmetry axis; 2-D maps mu to the first coordinate axis
- * and xi to the second coordinate axis; and 3-D maps mu to the first, eta to
- * the second, and xi to the third coordinate axes. This is to ensure that the
+ * (non-represented) symmetry axis; 2-D maps mu to the first coordinate axis and
+ * xi to the second coordinate axis; and 3-D maps mu to the first, eta to the
+ * second, and xi to the third coordinate axes. This is to ensure that the
  * levels are placed on the axis of symmetry in reduced geometries.
  *
- * The client may override these default assignments. However, if he assigns
- * any direction cosine other than xi to the axis of symmetry in axisymmetric
+ * The client may override these default assignments. However, if he assigns any
+ * direction cosine other than xi to the axis of symmetry in axisymmetric
  * geometry, Bad Things Will Happen with any supported quadrature except
  * Level_Symmetric (for which axis assignment is without effect anyway.)
  */
@@ -80,7 +74,10 @@ public:
   //! Is this an interval or octant (1-D or multi-D) quadrature?
   virtual Quadrature_Class quadrature_class() const = 0;
 
-  //! Number of level sets. A value of 0 indicates this is not a level set quadrature.
+  /*!
+   * \brief Number of level sets. A value of 0 indicates this is not a level set
+   *        quadrature.
+   */
   virtual unsigned number_of_levels() const = 0;
 
   //! Produce a text representation of the object
@@ -101,31 +98,28 @@ public:
                                     bool include_starting_directions,
                                     bool include_extra_directions) const;
 
-  SP<Ordinate_Set> create_ordinate_set(unsigned dimension, Geometry,
-                                       double norm, unsigned mu_axis,
-                                       unsigned eta_axis,
-                                       bool include_starting_directions,
-                                       bool include_extra_directions,
-                                       Ordinate_Set::Ordering ordering) const;
+  std::shared_ptr<Ordinate_Set> create_ordinate_set(
+      unsigned dimension, Geometry, double norm, unsigned mu_axis,
+      unsigned eta_axis, bool include_starting_directions,
+      bool include_extra_directions, Ordinate_Set::Ordering ordering) const;
 
-  SP<Ordinate_Set> create_ordinate_set(unsigned dimension, Geometry,
-                                       double norm,
-                                       bool include_starting_directions,
-                                       bool include_extra_directions,
-                                       Ordinate_Set::Ordering ordering) const;
+  std::shared_ptr<Ordinate_Set>
+  create_ordinate_set(unsigned dimension, Geometry, double norm,
+                      bool include_starting_directions,
+                      bool include_extra_directions,
+                      Ordinate_Set::Ordering ordering) const;
 
-  SP<Ordinate_Space> create_ordinate_space(unsigned dimension, Geometry,
-                                           int moment_expansion_order,
-                                           bool include_extra_directions,
-                                           Ordinate_Set::Ordering ordering,
-                                           QIM qim) const;
+  std::shared_ptr<Ordinate_Space>
+  create_ordinate_space(unsigned dimension, Geometry,
+                        int moment_expansion_order,
+                        bool include_extra_directions,
+                        Ordinate_Set::Ordering ordering, QIM qim) const;
 
-  SP<Ordinate_Space> create_ordinate_space(unsigned dimension, Geometry,
-                                           unsigned moment_expansion_order,
-                                           unsigned mu_axis, unsigned eta_axis,
-                                           bool include_extra_directions,
-                                           Ordinate_Set::Ordering ordering,
-                                           QIM qim) const;
+  std::shared_ptr<Ordinate_Space>
+  create_ordinate_space(unsigned dimension, Geometry,
+                        unsigned moment_expansion_order, unsigned mu_axis,
+                        unsigned eta_axis, bool include_extra_directions,
+                        Ordinate_Set::Ordering ordering, QIM qim) const;
 
 protected:
   // IMPLEMENTATION
@@ -164,6 +158,6 @@ protected:
 
 #endif // __quadrature_Quadrature_hh__
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Quadrature.hh
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -7,13 +7,11 @@
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
- * This header defines several function templates that perform common
- * numerical operations not standardized in the STL algorithm header. It also
- * defines some useful STL-style predicates. These predicates are
- * particularly useful for writing Design by Contract assertions.
+ * This header defines several function templates that perform common numerical
+ * operations not standardized in the STL algorithm header. It also defines some
+ * useful STL-style predicates. These predicates are particularly useful for
+ * writing Design by Contract assertions.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_dbc_hh

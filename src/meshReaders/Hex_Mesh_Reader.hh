@@ -5,10 +5,7 @@
  * \date   Tue Mar  7 08:38:04 2000
  * \brief  Header file for CIC-19 Hex format mesh reader.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __meshReaders_Hex_Mesh_Reader_hh__
@@ -27,17 +24,12 @@ namespace rtt_meshReaders {
  *
  * \brief Reads a CIC-19 Hex Mesh format mesh data file.
  *
- * \sa The rtt_mesh_element::Element_Definition class provides
- *     information on the hex, quad, and line elements used in
- *     this class. The \ref rtt_meshreaders_overview page provides
- *     an overview of the other utilities in the rtt_meshReaders
- *     namespace. the \ref rtt_meshreaders_hexformat page provides
- *     a description of the Hex file format.
+ * \sa The rtt_mesh_element::Element_Definition class provides information on
+ *     the hex, quad, and line elements used in this class. The \ref
+ *     rtt_meshreaders_overview page provides an overview of the other utilities
+ *     in the rtt_meshReaders namespace. the \ref rtt_meshreaders_hexformat page
+ *     provides a description of the Hex file format.
  */
-// revision history:
-// -----------------
-// 0) original
-//
 //===========================================================================//
 
 class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
@@ -82,35 +74,30 @@ public:
   // ACCESSORS
 
   /*!
-     *  Returns the point coordinates.
-     */
+   *  Returns the point coordinates.
+   */
   std::vector<std::vector<double>> get_node_coords() const {
     return point_coords;
   }
 
   /*!
-     * The Hex mesh format has no provision for labeling coordinate units
-     * Consequently, this method always returns the default string:
-     * "unknown".
-     *
-     */
+   * The Hex mesh format has no provision for labeling coordinate units
+   * Consequently, this method always returns the default string: "unknown".
+   */
   std::string get_node_coord_units() const { return "unknown"; }
+
   /*!
-     * The Hex mesh format has no provision for flagging nodes.
-     * This method therefore always returns a map with one entry
-     * which contains all the nodes.
-     *
-     */
+   * The Hex mesh format has no provision for flagging nodes.  This method
+   * therefore always returns a map with one entry which contains all the nodes.
+   */
   std::map<std::string, std::set<int>> get_node_sets() const {
     return node_sets;
   }
 
   /*!
-     * There is no provision in the Hex format for naming a mesh.
-     * This function always returns the defualt string:
-     * "Untitled -- CIC-19 Hex Mesh"
-     *
-     */
+   * There is no provision in the Hex format for naming a mesh.  This function
+   * always returns the defualt string: "Untitled -- CIC-19 Hex Mesh"
+   */
   std::string get_title() const { return "Untitled -- CIC-19 Hex Mesh"; }
 
   std::vector<std::vector<int>> get_element_nodes(void) const;
@@ -141,21 +128,20 @@ private:
  * \page rtt_meshreaders_hexformat The CIC-19 Hex Mesh File Format
  *
  * <h3> Introduction </h3>
- * The CIC-19 Hex Format was developed primarily for small-scale testing
- * and development purposes. It's chief virtue is its simplicity.
- * A Hex mesh format
- * file is usually only a few hundred lines long, and is in ASCII text
- * format that can easily be directly modified by the developer with any
- * text editor. Moreover, the format does not requires a sophisticated
- * mesh generator. These
- * characteristics make the Hex format very useful for the creation and
- * manipulation of small, simple test problems in  support of an initial
- * debugging and development effort.
+
+ * The CIC-19 Hex Format was developed primarily for small-scale testing and
+ * development purposes. It's chief virtue is its simplicity.  A Hex mesh format
+ * file is usually only a few hundred lines long, and is in ASCII text format
+ * that can easily be directly modified by the developer with any text
+ * editor. Moreover, the format does not requires a sophisticated mesh
+ * generator. These characteristics make the Hex format very useful for the
+ * creation and manipulation of small, simple test problems in support of an
+ * initial debugging and development effort.
  *
- * The format is restricted to three element types: Line elements in
- * 1D, quadrilateral elements in 2D, and hexahedra in 3D. One flag
- * field is provided for interior elements, and one for non-reflective
- * boundary elements. Reflective boundary elements are listed separately.
+ * The format is restricted to three element types: Line elements in 1D,
+ * quadrilateral elements in 2D, and hexahedra in 3D. One flag field is provided
+ * for interior elements, and one for non-reflective boundary
+ * elements. Reflective boundary elements are listed separately.
  *
  * Support for reading this file format is provided by the
  * rtt_meshReaders::Hex_Mesh_Reader class.
@@ -195,17 +181,16 @@ private:
  *      nvrpf+1 integers per line.
  *</ul>
  *
- * The  "cube.mesh.in" file found in the Examples section provides
- * an example CIC-19 Hex format mesh file.
- *
+ * The "cube.mesh.in" file found in the Examples section provides an example
+ * CIC-19 Hex format mesh file.
  */
 
 /*!
  * \example meshReaders/test/cube.mesh.in
  *
- *   The following provides an example of a 3D, 5x5x5 hexahedra CIC-19
- *   Hex mesh format file. The mesh has 125 cells, 125 vacuum boundary
- *   faces, 25 reflective boundary faces, and four cell flag values.
+ *   The following provides an example of a 3D, 5x5x5 hexahedra CIC-19 Hex mesh
+ *   format file. The mesh has 125 cells, 125 vacuum boundary faces, 25
+ *   reflective boundary faces, and four cell flag values.
  */
 
 //---------------------------------------------------------------------------//

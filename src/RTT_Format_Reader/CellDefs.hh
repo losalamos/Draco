@@ -5,19 +5,16 @@
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for CellDefs library.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_CellDefs_hh__
 #define __RTT_Format_Reader_CellDefs_hh__
 
 #include "Dims.hh"
-#include "ds++/SP.hh"
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -149,7 +146,7 @@ class CellDefs {
   typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
 
   const Dims &dims;
-  std::vector<rtt_dsxx::SP<CellDef>> defs;
+  std::vector<std::shared_ptr<CellDef>> defs;
   bool redefined;
 
 public:
@@ -186,7 +183,7 @@ public:
  * \return The cell definition.
  */
   const CellDef &get_cell_def(size_t i) const { return *(defs[i]); }
-  rtt_dsxx::SP<CellDef> get_def(size_t i) const { return defs[i]; }
+  std::shared_ptr<CellDef> get_def(size_t i) const { return defs[i]; }
   /*!
  * \brief Returns the number of nodes associated with the specified cell
  *        definition.

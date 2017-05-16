@@ -70,11 +70,11 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
 #elif defined(C4_SCALAR)
 void invert_comm_map(Invert_Comm_Map_t const &to_map,
                      Invert_Comm_Map_t &from_map) {
-  Require(to_map.size() == 0u || (to_map.size() == 1u && to_map[0] > 0));
+  Require(to_map.size() == 0u || (to_map.size() == 1u && to_map.at(0) > 0));
   from_map.clear();
   auto it = to_map.find(0);
   if (it != to_map.end()) {
-    from_map.push_back(it->second);
+    from_map[0] = it->second;
   }
 }
 #else

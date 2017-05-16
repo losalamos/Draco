@@ -6,26 +6,21 @@
  * \brief  Regression test based on odfregression10.ipcress, also checks
  *         packing and unpacking.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: ReadOdfIpcressFile.cc
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "../IpcressFile.hh"
-#include "../IpcressMultigroupOpacity.hh"
-#include "../IpcressOdfmgOpacity.hh"
 #include "cdi_ipcress_test.hh"
 #include "cdi/OpacityCommon.hh"
+#include "cdi_ipcress/IpcressFile.hh"
+#include "cdi_ipcress/IpcressMultigroupOpacity.hh"
+#include "cdi_ipcress/IpcressOdfmgOpacity.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cstdio>
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 using rtt_cdi_ipcress::IpcressFile;
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 using std::cerr;
@@ -36,7 +31,7 @@ using std::string;
 using std::istringstream;
 using std::ostringstream;
 
-typedef SP<IpcressOdfmgOpacity const> SP_Goo;
+typedef std::shared_ptr<IpcressOdfmgOpacity const> SP_Goo;
 typedef std::vector<double> vec_d;
 typedef std::vector<std::vector<double>> vec2_d;
 
@@ -177,12 +172,12 @@ int main(int argc, char *argv[]) {
 
   // get the ipcress file name, and create the ipcress file
   string ipcressFileName = "odfregression10.ipcress";
-  SP<IpcressFile const> file;
+  std::shared_ptr<IpcressFile const> file;
   try {
     file.reset(new IpcressFile(ipcressFileName));
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
-    message << "Failed to create SP to new IpcressFile object for "
+    message << "Failed to create shared_ptr to new IpcressFile object for "
             << "file \"" << ipcressFileName << "\":" << excpt.what();
     FAILMSG(message.str());
     cout << "Aborting tests.";
@@ -190,7 +185,7 @@ int main(int argc, char *argv[]) {
   }
 
   //load the Ipcress ODFMG Opacity
-  SP<IpcressOdfmgOpacity const> spGandOpacity;
+  std::shared_ptr<IpcressOdfmgOpacity const> spGandOpacity;
 
   try {
     spGandOpacity.reset(new IpcressOdfmgOpacity(
@@ -203,7 +198,7 @@ int main(int argc, char *argv[]) {
     PASSMSG(message.str());
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
-    message << "Failed to create SP to new IpcressOpacity object with "
+    message << "Failed to create shared_ptr to new IpcressOpacity object with "
             << "data from \"" << ipcressFileName << "\":" << excpt.what();
     FAILMSG(message.str());
     cout << "Aborting tests.";
@@ -224,7 +219,7 @@ int main(int argc, char *argv[]) {
 
   packed = spGandOpacity->pack();
 
-  SP<IpcressOdfmgOpacity const> spUnpackedGandOpacity;
+  std::shared_ptr<IpcressOdfmgOpacity const> spUnpackedGandOpacity;
 
   try {
     spUnpackedGandOpacity.reset(new IpcressOdfmgOpacity(packed));
@@ -250,7 +245,8 @@ int main(int argc, char *argv[]) {
   //make sure it won't unpack as something else
   itPassed = false;
   try {
-    SP<IpcressMultigroupOpacity> opacity(new IpcressMultigroupOpacity(packed));
+    std::shared_ptr<IpcressMultigroupOpacity> opacity(
+        new IpcressMultigroupOpacity(packed));
   } catch (rtt_dsxx::assertion const &err) {
     itPassed = true;
     ostringstream message;

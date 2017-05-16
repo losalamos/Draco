@@ -1,14 +1,11 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \brief  Parse routines for parsing a General_Octant_Quadrature specification.
- * \note   © Copyright 2016 LANSLLC All rights reserved.
-
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #include "General_Octant_Quadrature.hh"
 #include "parser/utilities.hh"
@@ -16,20 +13,18 @@
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * The specification body must specify the number of ordinates and the number
- * of levels.
- * If it's organized in levels, then there is an sn order 
- * with which it can be associated naturally.
- * A quadrature class specification is optional; the default is octant.
- * The mu, eta, xi, and weight of each ordinate is then specified before
- * the terminating "end" statement.
+ * The specification body must specify the number of ordinates and the number of
+ * levels.  If it's organized in levels, then there is an sn order with which it
+ * can be associated naturally.  A quadrature class specification is optional;
+ * the default is octant.  The mu, eta, xi, and weight of each ordinate is then
+ * specified before the terminating "end" statement.
  *
- * /param tokens Token stream from which to parse the specification.
+ * \param tokens Token stream from which to parse the specification.
  */
-/*static*/
-SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens) {
+std::shared_ptr<Quadrature>
+General_Octant_Quadrature::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "sn order", "expected sn order");
 
@@ -74,12 +69,12 @@ SP<Quadrature> General_Octant_Quadrature::parse(Token_Stream &tokens) {
 
   tokens.check_syntax(tokens.shift().type() == END, "missing end?");
 
-  return SP<Quadrature>(new General_Octant_Quadrature(
+  return std::shared_ptr<Quadrature>(new General_Octant_Quadrature(
       sn_order, mu, eta, xi, wt, number_of_levels, quadrature_class));
 }
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.cc
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+// end of quadrature/Quadrature.cc
+//---------------------------------------------------------------------------//

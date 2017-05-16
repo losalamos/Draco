@@ -5,8 +5,7 @@
  * \date   Thu Jul 15 09:31:44 1999
  * \brief  Provides the function definition for Release.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Release.hh"
@@ -99,24 +98,28 @@ const std::string author_list() {
   std::stringstream alist;
 
   mmdevs current_developers;
-  current_developers.insert(fomdev(218815, "Kelly G. Thompson"));
+  // not totally fair... KT got credit for LOC when svn repository was converted
+  // to git.
+  current_developers.insert(fomdev(218240, "Kelly G. Thompson"));
   current_developers.insert(fomdev(6075, "James S. Warsa"));
-  current_developers.insert(fomdev(4382, "Kent G. Budge"));
-  current_developers.insert(fomdev(2985, "Jae H. Chang"));
-  current_developers.insert(fomdev(1766, "Alex R. Long"));
-  current_developers.insert(fomdev(992, "Rob B. Lowrie"));
+  current_developers.insert(fomdev(5544, "Kent G. Budge"));
+  current_developers.insert(fomdev(4451, "Alex R. Long"));
+  current_developers.insert(fomdev(2544, "Kendra P. Keady"));
+  current_developers.insert(fomdev(1726, "Jae H. Chang"));
+  current_developers.insert(fomdev(896, "Rob B. Lowrie"));
   current_developers.insert(fomdev(168, "Matt A. Cleveland"));
   current_developers.insert(fomdev(118, "Massimiliano Rosa"));
-  current_developers.insert(fomdev(94, "Kendra P. Keady"));
-  current_developers.insert(fomdev(8, "Andrew T. Till"));
-  current_developers.insert(fomdev(5, "Ryan T. Wollaeger"));
-  current_developers.insert(fomdev(5, "Kris C. Garrett"));
+  current_developers.insert(fomdev(28, "Daniel Holladay"));
+  current_developers.insert(fomdev(14, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(9, "Andrew T. Till"));
+  current_developers.insert(fomdev(1, "Kris C. Garrett"));
 
   mmdevs prior_developers;
 
   prior_developers.insert(fomdev(4451, "Jeff D. Densmore"));
   prior_developers.insert(fomdev(1160, "Allan B. Wollaber"));
   prior_developers.insert(fomdev(995, "Lori A. Pritchett-Sheats"));
+  prior_developers.insert(fomdev(788, "Peter Ahrens"));
   prior_developers.insert(fomdev(774, "Katherine J. Wang"));
   prior_developers.insert(fomdev(766, "Gabriel M. Rockefeller"));
   prior_developers.insert(fomdev(470, "Paul W. Talbot"));

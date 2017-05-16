@@ -1,5 +1,5 @@
 %%---------------------------------------------------------------------------%%
-%% 
+%%
 %% \file    draco/src/cdi_eospac/doc/cdi_eospac.tex
 %% \author  Kelly Thompson
 %% \date    Thu Apr 26 14:49:28 MST 2001
@@ -54,7 +54,7 @@
     {\end{quote}\end{quote}}
 
 \newenvironment{codeExample}
-{\footnotesize 
+{\footnotesize
   \VerbatimEnvironment
   \begin{SaveVerbatim}{\mycode}}%
   {\end{SaveVerbatim}%
@@ -89,12 +89,12 @@
 %-------OPTIONS
 %\reference{NPB Star Reimbursable Project}
 %\thru{P. D. Soran, XTM, MS B226}
-%\enc{list}      
+%\enc{list}
 %\attachments{list}
 %\cy{list}
 %\encas
 %\attachmentas
-%\attachmentsas 
+%\attachmentsas
 %-------OPTIONS
 
 %%---------------------------------------------------------------------------%%
@@ -103,38 +103,38 @@
 
 \distribution {
   CCS-4 MS D409:\\
-  Group Leader:  J.E. Morel, X-6 MS D409\\ 
+  Group Leader:  J.E. Morel, X-6 MS D409\\
 %  B.T. Adams, X-6 MS D409\\
-%  R.E. Alcouffe, X-6 MS D409\\ 
+%  R.E. Alcouffe, X-6 MS D409\\
 %  M.L. Alme, X-6 MS D409\\
-  D.G. Archuleta, X-6 MS D409\\ 
-%  R.S. Baker, X-6 MS D409\\ 
-%  F.W. Brinkley, Jr., X-6 MS D409\\ 
-%  J.A. Dahl, X-6 MS D409\\ 
-%  F.H. Dang, X-6 MS D409\\ 
-  T.M. Evans, X-6 MS D409\\ 
-%  S.A. Gallegos, X-6 MS D409\\ 
-%  B.D. Ganapol, X-6 MS D409\\ 
-  M.G. Gray, X-6 MS D409\\ 
-%  J.C. Gulick, X-6 MS D409\\ 
-%  M.L. Hall, X-6 MS D409\\ 
+  D.G. Archuleta, X-6 MS D409\\
+%  R.S. Baker, X-6 MS D409\\
+%  F.W. Brinkley, Jr., X-6 MS D409\\
+%  J.A. Dahl, X-6 MS D409\\
+%  F.H. Dang, X-6 MS D409\\
+  T.M. Evans, X-6 MS D409\\
+%  S.A. Gallegos, X-6 MS D409\\
+%  B.D. Ganapol, X-6 MS D409\\
+  M.G. Gray, X-6 MS D409\\
+%  J.C. Gulick, X-6 MS D409\\
+%  M.L. Hall, X-6 MS D409\\
 %  W.D. Hawkins, X-6 MS D409\\
-  H.G. Hughes, X-6 MS D409\\ 
+  H.G. Hughes, X-6 MS D409\\
 % M.A. Hunter, X-6 \\
- H. Lichtenstein, X-6 MS D409\\ 
-% D.R. Marr, X-6 MS D409\\ 
-  J.M. McGhee, X-6 MS D409\\ 
-%  D. Mihalas, X-6 MS D409\\ 
-%  M.L. Murillo, X-6 MS D409\\ 
-  G.L. Olson, X-6 MS D409\\ 
-  S. Pautz, X-6 MS D409\\ 
-%  A.K. Prinja, X-6\\ 
-%  E.W. Qarsen, X-6 MS D409\\ 
-  R.M. Roberts, X-6 MS D409\\ 
+ H. Lichtenstein, X-6 MS D409\\
+% D.R. Marr, X-6 MS D409\\
+  J.M. McGhee, X-6 MS D409\\
+%  D. Mihalas, X-6 MS D409\\
+%  M.L. Murillo, X-6 MS D409\\
+  G.L. Olson, X-6 MS D409\\
+  S. Pautz, X-6 MS D409\\
+%  A.K. Prinja, X-6\\
+%  E.W. Qarsen, X-6 MS D409\\
+  R.M. Roberts, X-6 MS D409\\
   K.G. Thompson, X-6 MS D409\\
-%  S.A. Turner, X-6 MS D409\\ 
-%  W.T. Urban, X-6 MS D409\\ 
-  T.J. Urbatsch, X-6 MS D409\\ 
+%  S.A. Turner, X-6 MS D409\\
+%  W.T. Urban, X-6 MS D409\\
+  T.J. Urbatsch, X-6 MS D409\\
 %  T.A. Wareing, X-6 MS D409\\
   J.S. Warsa, X-6 MS D409\\
 }
@@ -152,7 +152,7 @@
 \section{Introduction}
 \label{intro}
 
-The \texttt{cdi\_eospac} package has been introduced into the \draco\ 
+The \texttt{cdi\_eospac} package has been introduced into the \draco\
 project to provide a solution to two issues.  First, it provides a C++
 object based interface to LANL's Sesame Tables (equation of state)
 data.  These data tables have been produced by Thoeretical Division's
@@ -163,7 +163,7 @@ components that make up the \texttt{cdi\_eospac} package are shown
 below in Table~\ref{tab:components}.
 
 This initial release of the \texttt{cdi\_eospac} package only provides
-access to the following types of EOSPAC data: 
+access to the following types of EOSPAC data:
 
 \begin{itemize}
 \item Temperature-based specific electron internal energy (kJ/g).
@@ -178,7 +178,7 @@ This list of available queries will expand to include more data types.
 Additionally, this package has only been tested for the IRIX64 64-bit
 architecture.  Versions for Linux, SunOS, Tru64 and 32-bit IRIX64 will
 be released shortly.
-      
+
 % h - here, t - top, p - page
 \begin{table}[!ht]
 %  \begin{quote}
@@ -188,31 +188,31 @@ be released shortly.
   \label{tab:components}
 %  \end{quote}
   \footnotesize
-  
+
     \begin{center}
       \newcolumntype{Y}{>{\raggedleft\setlength{\hsize}{0.3\linewidth}\arraybackslash}X}
       \newcolumntype{Z}{>{\raggedright\setlength{\hsize}{0.7\linewidth}\arraybackslash}X}
                                 %    \begin{tabularx}{\linewidth}{YZ}
       \begin{tabularx}{0.8\linewidth}{YZ}
-        \multicolumn{1}{c}{\textbf{Class}} & \multicolumn{1}{c}{\textbf{Role}} \\ 
-        
+        \multicolumn{1}{c}{\textbf{Class}} & \multicolumn{1}{c}{\textbf{Role}} \\
+
         \hline
         \\
-        
+
         \textbf{SesameTables}    & Provides a map between the available
                                    EOSPAC data types that may be
                                    returned by the library and numeric
                                    material identifiers. \\
         \\
-        \textbf{Eospac}          & Provides access to equation of state 
+        \textbf{Eospac}          & Provides access to equation of state
                                    data for a single material whose
                                    properties are defined by
-                                   \bf{SesameTables}.\\ 
+                                   \bf{SesameTables}.\\
         \\
         \textbf{EospacWrapper}   & Provides C++ style access to the
                                    EOSPAC library functions ensuring
-                                   correct data type translation. \\ 
-        \\                                  
+                                   correct data type translation. \\
+        \\
         \textbf{EospacException} & Provides detailed information about
                                    and handle any exception thrown by
                                    the EOSPAC wrapper or library. \\
@@ -225,14 +225,14 @@ The \texttt{cdi\_eospac} package may be used as a stand-alone package;
 however, it has been designed as a plug-in component for CDI.  Because
 of this, its design follows the interface defined by the CDI package.
 In particular, \texttt{cdi\_eospac} offers no mechanism for mixing
-materials.  The only mixtures that it can utilize are those included 
-in the Sesame data tables provided by T-1 (e.g.: water). 
+materials.  The only mixtures that it can utilize are those included
+in the Sesame data tables provided by T-1 (e.g.: water).
 
 This package provides a wrapper to data access libraries written,
 supported and provided by X-division's data team
 (EOSPAC~\cite{eospac-cranfill,eospac-web-site}).  Because this wrapper
 interacts directly with the Sesame libraries it will only function on
-machines that have these libraries available locally. The \draco\ 
+machines that have these libraries available locally. The \draco\
 project keeps a copy of the EOSPAC libraries for revision control
 purposes.  The EOSPAC libraries are located at
 \url{/radtran/vendors/eospac}.  The \draco\ project does not keep a
@@ -287,20 +287,20 @@ main()
 {
   // Create a SesameTables object for Aluminum.
   // Must still assign material identifiers to one or more EOSPAC data types.
-  
+
   rtt_cdi_eospac::SesameTables AlSt;
-  
-  // This matID for Al has lookup tables for enelc. 
+
+  // This matID for Al has lookup tables for enelc.
   // Al has id=371 and this is table=7 for data category=0.
 
   const int Al3717 = 3717;
-  
-  // This matId for Al has has lookup tables for zfree3.  
+
+  // This matId for Al has has lookup tables for zfree3.
   // Al has id=371, this is table=4 for data category=2.
-  
+
   const int Al23714 = 23714;
 
- // Give the requested data types to AlSt and their associated material 
+ // Give the requested data types to AlSt and their associated material
  // identifiers (both for Al).
 
   AlSt.enelc( Al3717 ).zfree3( Al23714 );
@@ -313,11 +313,11 @@ main()
 \begin{table}[!ht]
   \setcaptionwidth{0.9\textwidth}
   \caption{EOSPAC provides access to 36 equation of state lookup
-    tables.  These fall into three table categories.  These tables can 
+    tables.  These fall into three table categories.  These tables can
     also be queried for derivative information.}
   \label{tab:SesameDataTypes}
   \footnotesize
-  
+
     \begin{center}
       \newcolumntype{C}{>{\centering\setlength{\hsize}{0.1\linewidth}\arraybackslash}X}
       \newcolumntype{D}{>{\centering\setlength{\hsize}{0.15\linewidth}\arraybackslash}X}
@@ -328,9 +328,9 @@ main()
 %        \multicolumn{1}{c}{\textbf{Data Type}} &
 %        \multicolumn{1}{c}{\textbf{Sesame Catalog Number}} &
 %        \multicolumn{1}{c}{\textbf{Table Category}} &
-%        \multicolumn{1}{l}{\textbf{Description}} \\ 
-        
-        \textbf{Data Type} & 
+%        \multicolumn{1}{l}{\textbf{Description}} \\
+
+        \textbf{Data Type} &
         \textbf{Sesame Catalog Number} &
         \textbf{Table Category} &
         \multicolumn{1}{c}{\textbf{Description}}
@@ -338,7 +338,7 @@ main()
         \\
         \hline
         \\
-        
+
         \textbf{prtot} & 301 & 0 & Temperature-based total pressure\\
         \textbf{entot} & 301 & 0 & Temperature-based total internal energy/mass\\
         \textbf{tptot} & 301 & 0 & Pressure-based total temperature\\
@@ -346,59 +346,59 @@ main()
 
         \textbf{pntot} & 301 & 0 & Energy-based total pressure\\
         \textbf{eptot} & 301 & 0 & Pressure-based total internal energy/mass\\
-            
+
 %            // Sesame Catalog 303 entries:
-            
+
         \textbf{prion} & 303 & 0 & Temperature-based ion pressure\\
         \textbf{enion} & 303 & 0 & Temperature-based ion internal energy/mass\\
         \textbf{tpion} & 303 & 0 & pressure-based ion temperature\\
         \textbf{tnion} & 303 & 0 & energy-based ion temperature\\
         \textbf{pnion} & 303 & 0 & energy-based ion pressure\\
         \textbf{epion} & 303 & 0 & pressure-based ion internal energy/mass\\
-            
+
 %            // Sesame Catalog 304 entries:
-            
+
         \textbf{prelc} & 304 & 0 & Temperature-based electron pressure\\
         \textbf{enelc} & 304 & 0 & Temperature-based electron internal energy/mass\\
         \textbf{tpelc} & 304 & 0 & Pressure-based electron temperature\\
         \textbf{tnelc} & 304 & 0 & Energy-based electron temperature\\
         \textbf{pnelc} & 304 & 0 & Energy-based electron pressure\\
         \textbf{epelc} & 304 & 0 & Pressure-based electron internal energy/mass\\
-          
+
 %            // Sesame Catalog 306 entries:
-            
+
         \textbf{prcld} & 306 & 0 & Temperature-based cold curve pressure\\
         \textbf{encld} & 306 & 0 & Temperature-based cold curve internal energy/mass\\
-            
+
 %            // Sesame Catalogs 502-505
-            
+
             \textbf{opacr}  & 502 & 1 & Temperature-based Rosseland mean opacity\\
             \textbf{opacc2} & 503 & 1 & Temperature-based electron conductive opacity\\
             \textbf{zfree2} & 504 & 1 & Temperature-based number of free electrons per ion\\
             \textbf{opacp}  & 505 & 1 & Temperature-based Planck mean opacity\\
-            
+
 %            // Sesame Catalogs 601-605
-            
+
             \textbf{zfree3} & 601 & 2 & Temperature-based number of free electrons per ion\\
             \textbf{econde} & 602 & 2 & Temperature-based electron electrical conductivity\\
             \textbf{tconde} & 603 & 2 & Temperature-based electron thermal conductivity\\
             \textbf{therme} & 604 & 2 & Temperature-based electron thermo-electric coef\\
             \textbf{opacc3} & 605 & 2 & Temperature-based electron conductive opacity\\
-            
+
 %            // Sesame Catalog 411
-            
+
             \textbf{tmelt} & 411 & 3 & Temperature-based melting temperature\\
             \textbf{pmelt} & 411 & 3 & Temperature-based melting pressure\\
             \textbf{emelt} & 411 & 3 & Temperature-based melting internal energy/mass\\
-            
+
 %            // Sesame Catalog 412
-            
+
             \textbf{tfreez} & 412 & 3 & Temperature-based freezing temperature\\
             \textbf{pfreez} & 412 & 3 & Temperature-based freezing pressure\\
             \textbf{efreez} & 412 & 3 & Temperature-based freezing internal energy/mass\\
-            
+
 %            // Sesame Catalog 431
-            
+
             \textbf{shearm} & 431 & 3 & Temperature-based shear modulus\\
 
     \end{tabularx}
@@ -449,11 +449,11 @@ data types listed in \S\ref{intro} (\texttt{enelc}, \texttt{enion},
 package will provide access all of the data types that EOSPAC knows
 about.
 
-In some situations a SesameTables object will only be used once and so 
+In some situations a SesameTables object will only be used once and so
 an explicit instantiation may not be required.  The SesameTables
 object can be a temporary that is passed as an argument to the Eospac
 contructor.  An example of this usage is shown below in Code Example
-\ref{codeExample:EospacInstantiation}. 
+\ref{codeExample:EospacInstantiation}.
 
 
 
@@ -467,7 +467,7 @@ The Eospac object provides access to \emph{Equation of State} data
 found in the Sesame Tables (\texttt{sesame}, \texttt{sescu},
 \texttt{sescu1}, \texttt{sescu9} and \texttt{sesou}) that are
 available on the ACL (\url{/usr/projects/data}) and X-Division
-(\url{/usr/local/codes/data}) networks.  
+(\url{/usr/local/codes/data}) networks.
 
 An Eospac object represents a \emph{single} material that is defined
 by a SesameTables object.  Please refer to the previous section
@@ -500,26 +500,25 @@ available in EOSPAC.
 \begin{codeExample}
 #inlcude "cdi_eospac/SesameTables.hh"
 #inlcude "cdi_eospac/Eospac.hh"
-#inlcude "ds++/SP.hh"
 
 main()
 {
-  // An Eospac object allows the user to access EoS information about a material that has been 
-  // constructed in a SesameTable object.  The constructor for Eospac takes one argument: a 
+  // An Eospac object allows the user to access EoS information about a material that has been
+  // constructed in a SesameTable object.  The constructor for Eospac takes one argument: a
   // SesameTables object.
-  
-  rtt_dsxx::SP< rtt_cdi_eospac::Eospac > spAlEospac;
+
+  std::shared_ptr< rtt_cdi_eospac::Eospac > spAlEospac;
 
   // See the previous code example for a description of these two const values.
 
   const int Al3717  = 3717; const int Al23714 = 23714;
 
   // Try to instantiate the new Eospac object.  Simultaneously, we are assigned material IDs to
-  // more SesameTable values.    
-  
-  spAlEospac = new 
+  // more SesameTable values.
+
+  spAlEospac = new
     rtt_cdi_eospac::Eospac( rtt_cdi_eospac::SesameTables().enion( Al3717 ).tconde( Al23714 ) ) );
- } 
+ }
 \end{codeExample}
 \caption{Example of instantiating an Eospac object.}
 \label{codeExample:EospacInstantiation}
@@ -539,7 +538,7 @@ smart pointer to an Eospac object and then intantiate the Eospac
 object.  The single argument provided to the Eospac constructor is a
 SesameTables object generated \emph{on-the-fly}.  The user can also
 choose to create a presistent SesameTables object as demonstrated in
-Code Example~\ref{codeExample:SesameTablesInstantiation}.  This object 
+Code Example~\ref{codeExample:SesameTablesInstantiation}.  This object
 represents the material Al (material 371) and has cached the data
 tables required accessing information about thermal conductivity and
 specific ion internal energy (and specific ion heat capacity, $C_{v_i} =
@@ -582,13 +581,13 @@ type is a \texttt{vector< double >}.
     \caption{Eospac scalar member functions.}
     \label{tab:accessFunctions}
     \footnotesize
-    
+
     \begin{center}
       \newcolumntype{Y}{>{\raggedright\setlength{\hsize}{0.5\linewidth}\arraybackslash}X}
       \newcolumntype{Z}{>{\raggedright\setlength{\hsize}{0.5\linewidth}\arraybackslash}X}
       \begin{tabularx}{0.9\linewidth}{YZ}
-        \multicolumn{1}{c}{\textbf{Eospac Member Functions}} & \multicolumn{1}{c}{\textbf{Role}} \\ 
-        
+        \multicolumn{1}{c}{\textbf{Eospac Member Functions}} & \multicolumn{1}{c}{\textbf{Role}} \\
+
         \hline
         \\
 \texttt{double~getSpecificElectronInternalEnergy(}
@@ -599,7 +598,7 @@ type is a \texttt{vector< double >}.
 &  Requires \texttt{enelc}. \\
 \\
 \texttt{double~getElectronHeatCapacity(}
-\texttt{\mbox{ double~temp,}} 
+\texttt{\mbox{ double~temp,}}
 \texttt{\mbox{ double~density)}}
 & Given the temperature (keV) and density(g/$cm^3$) information, return a bi-linearly
   interpolated specific electron heat capacity value (kJ/g/keV).\\
@@ -613,7 +612,7 @@ type is a \texttt{vector< double >}.
 &  Requires \texttt{enion}. \\
 \\
 \texttt{double~getIonHeatCapacity(}
-\texttt{\mbox{ double~temp,}} 
+\texttt{\mbox{ double~temp,}}
 \texttt{\mbox{ double~density)}}
 & Given the temperature (keV) and density(g/$cm^3$) information, return a bi-linearly
   interpolated specific ion heat capacity value (kJ/g/keV).\\
@@ -627,7 +626,7 @@ type is a \texttt{vector< double >}.
 &  Requires \texttt{zfree3}. \\
 \\
 \texttt{double~getElectronThermalConductivity(}
-\texttt{\mbox{ double~temp,}} 
+\texttt{\mbox{ double~temp,}}
 \texttt{\mbox{ double~density)}}
 & Given the temperature (keV) and density(g/$cm^3$) information, return a bi-linearly
   interpolated electron thermal conductivity ($cm^{-1}s^{-1}$).\\
@@ -637,7 +636,7 @@ type is a \texttt{vector< double >}.
     \end{center}
     \normalsize
 \end{table}
-  
+
 %In Addition to these \emph{standard} access functions, both
 %GandolfOpacity objects have STL-like accessor routines.  These
 %accessors can be used if the desired opacity container is not a
@@ -655,7 +654,6 @@ the \texttt{tEospac.cc} and \texttt{tEospacWithCDI.cc} unit tests.
 #include "cdi_eospac/Eospac.hh"
 #include "cdi_eospac/SesameTables.hh"
 #include "cdi/CDI.hh"
-#include "ds++/SP.hh"
 
 main()
 {
@@ -664,23 +662,23 @@ main()
   const int Al3717 = 3717;
   const int Al23714 = 23714;
 
-  // Declare a smart pointer to Eospac.  Eospac is derived from the interface defined by 
+  // Declare a smart pointer to Eospac.  Eospac is derived from the interface defined by
   // rtt_cdi:EoS.
 
-   rtt_dsxx::SP< rtt_cdi::EoS > spEosAl;
-        
-   // Use a try block when instantiating the Eospac object so that we can catch any thrown 
+   std::shared_ptr< rtt_cdi::EoS > spEosAl;
+
+   // Use a try block when instantiating the Eospac object so that we can catch any thrown
    // exceptions.
 
    try
       {
 
-        // Create the SesameTables object within the instantiation request.  Request enelc 
-        // (electron heat capacity) and tconde (electron thermal conductivity) data for Al 
+        // Create the SesameTables object within the instantiation request.  Request enelc
+        // (electron heat capacity) and tconde (electron thermal conductivity) data for Al
         // to be cached.
 
-         spEosAl = new 
-            rtt_cdi_eospac::Eospac( 
+         spEosAl = new
+            rtt_cdi_eospac::Eospac(
                SesameTables().enelc( Al3717 ).tconde( Al23714 ) );
       }
    catch ( const rtt_cdi_eospac:EospacException& EosError )
@@ -709,7 +707,7 @@ main()
 \begin{codeExample}
    // continued from above ...
 
-   // Interpolate and return a heat capacity value (kJ/g/keV) for Al at (temp, dens).  
+   // Interpolate and return a heat capacity value (kJ/g/keV) for Al at (temp, dens).
 
    double Cve = spEosAl->getElectronHeatCapacity( temp, dens );
 

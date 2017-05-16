@@ -5,10 +5,7 @@
  * \date   Wed Feb  1 08:58:48 2006
  * \brief  Unit test for Index_Counter
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Index_Converter.hh"
@@ -24,9 +21,11 @@ using namespace rtt_dsxx;
 
  tstIndex_Counter.cc will produce the following warning if inlining
  is enabled (gcc):
-
+ 
+ \code 
  /.../source/src/ds++/test/../Index_Counter.hh: In member function 'int rtt_dsxx::Index_Converter<D, OFFSET>::get_next_index(const rtt_dsxx::Index_Counter<D, OFFSET>&, int) const [with unsigned int D = 3u, int OFFSET = 1]':
  /.../source/src/ds++/test/../Index_Counter.hh:69: warning: array subscript is above array bounds
+ \endcode
 
  This appears to be an issue with speculative instructions issued by
  gcc due to the pattern of access indices found in the test.  This warning

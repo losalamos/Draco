@@ -4,10 +4,7 @@
  * \author Mike Buksas
  * \date   Fri Jan 20 15:53:51 2006
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Index_Converter.hh"

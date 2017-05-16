@@ -5,10 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Odfmg_Opacity class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC..
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Analytic_Odfmg_Opacity_hh__
@@ -16,7 +13,7 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/OdfmgOpacity.hh"
-#include "ds++/SP.hh"
+#include <memory>
 
 namespace rtt_cdi_analytic {
 
@@ -28,15 +25,14 @@ namespace rtt_cdi_analytic {
  *
  * Primarily code from Analytic_Multigroup_Opacity.
  */
-//
 //===========================================================================//
 
 class DLL_PUBLIC_cdi_analytic Analytic_Odfmg_Opacity
     : public rtt_cdi::OdfmgOpacity {
 public:
   // Useful typedefs.
-  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
+  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef std::shared_ptr<const Analytic_Opacity_Model> const_Model;
   typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
   typedef std::vector<double> sf_double;
   typedef std::vector<sf_double> vf_double;

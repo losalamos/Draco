@@ -5,10 +5,7 @@
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/SideFlags class.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_SideFlags_hh__
@@ -16,7 +13,7 @@
 
 #include "Dims.hh"
 #include "Flags.hh"
-#include "ds++/SP.hh"
+#include <memory>
 
 namespace rtt_RTT_Format_Reader {
 /*!
@@ -29,7 +26,7 @@ class SideFlags {
   typedef std::string string;
 
   const Dims &dims;
-  std::vector<rtt_dsxx::SP<Flags>> flagTypes;
+  std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
   SideFlags(const Dims &dims_)

@@ -53,7 +53,7 @@ DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
   return count;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template <typename T>
 DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
                            C4_Datatype &data_type, int tag) {
@@ -78,6 +78,26 @@ DLL_PUBLIC_c4 int receive_udt(T *buffer, int size, int source,
   // get the count of received data
   MPI_Get_count(&status, data_type, &count);
   return count;
+}
+
+//---------------------------------------------------------------------------//
+template <typename TS, typename TR>
+DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
+                               TR *recvbuf, int recvcount, int source,
+                               int sendtag, int recvtag) {
+  Require(sendbuf != nullptr);
+  Require(recvbuf != nullptr);
+  Require(recvbuf + recvcount <= sendbuf || recvbuf >= sendbuf + sendcount);
+  // buffers must not overlap
+
+  // get a handle to the MPI_Status
+  MPI_Status status;
+
+  int check = MPI_Sendrecv(sendbuf, sendcount, MPI_Traits<TS>::element_type(),
+                           destination, sendtag, recvbuf, recvcount,
+                           MPI_Traits<TR>::element_type(), source, recvtag,
+                           communicator, &status);
+  return check;
 }
 
 //---------------------------------------------------------------------------//
@@ -331,6 +351,15 @@ template <typename T> DLL_PUBLIC_c4 void global_max(T *x, int n) {
   // x
   MPI_Allreduce(&send_buffer[0], x, n, MPI_Traits<T>::element_type(), MPI_MAX,
                 communicator);
+}
+
+//---------------------------------------------------------------------------//
+
+template <typename T> DLL_PUBLIC_c4 T prefix_sum(const T node_value) {
+  T prefix_sum = 0;
+  MPI_Scan(&node_value, &prefix_sum, 1, MPI_Traits<T>::element_type(), MPI_SUM,
+           communicator);
+  return prefix_sum;
 }
 
 } // end namespace rtt_c4

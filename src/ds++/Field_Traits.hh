@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Define the Field_Traits class template.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef dsxx_Field_Traits_hh
@@ -31,10 +28,9 @@ namespace rtt_dsxx {
 
 template <typename Field> class Field_Traits {
 public:
-  //! Field types can be "labeled." For example, a value-plus-derivatives
-  //! class has a field value that is labeled with its derivatives. The
-  //! following typedef specifies the unlabeled type, by default the field
-  //! type itself.
+  //! Field types can be "labeled." For example, a value-plus-derivatives class
+  //! has a field value that is labeled with its derivatives. The following
+  //! typedef specifies the unlabeled type, by default the field type itself.
   typedef Field unlabeled_type;
 
   //! Return the unique zero element of the field. By default, this is
@@ -54,10 +50,9 @@ public:
  */
 template <> class Field_Traits<const double> {
 public:
-  //! Field types can be "labeled." For example, a value-plus-derivatives
-  //! class has a field value that is labeled with its derivatives. The
-  //! following typedef specifies the unlabeled type, by default the field
-  //! type itself.
+  //! Field types can be "labeled." For example, a value-plus-derivatives class
+  //! has a field value that is labeled with its derivatives. The following
+  //! typedef specifies the unlabeled type, by default the field type itself.
   typedef double unlabeled_type;
 
   //! Return the unique zero element of the field. By default, this is
@@ -73,11 +68,11 @@ public:
 //---------------------------------------------------------------------------//
 /*! Strip a field type of any labeling.
  *
- * Implicit conversion of a labeled field type (such as a
- * value-plus-derivatives class) to an underlying unlabeled field type can
- * be dangerous. However, unlike conversion constructors, conversion operators
- * cannot be flagged explicit. Our alternative is to templatize a conversion
- * function from labeled field type to unlabeled field type.
+ * Implicit conversion of a labeled field type (such as a value-plus-derivatives
+ * class) to an underlying unlabeled field type can be dangerous. However,
+ * unlike conversion constructors, conversion operators cannot be flagged
+ * explicit. Our alternative is to templatize a conversion function from labeled
+ * field type to unlabeled field type.
  *
  * The default implementation assumes there is no labeling to strip.
  *

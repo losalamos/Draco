@@ -42,10 +42,16 @@ site_name( SITENAME )
 string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
 if( ${SITENAME} MATCHES "ml" OR ${SITENAME} MATCHES "lu" )
   set( SITENAME "Moonlight" )
-elseif( ${SITENAME} MATCHES "tt") #" -login[0-9]+" OR ${SITENAME} MATCHES "tt-fey[0-9]+" )
+elseif( ${SITENAME} MATCHES "tt")
   set( SITENAME "Trinitite" )
-elseif( ${SITENAME} MATCHES "tr") #" -login[0-9]+" OR ${SITENAME} MATCHES "tr-fe[0-9]+" )
+elseif( ${SITENAME} MATCHES "tr")
   set( SITENAME "Trinity" )
+elseif( ${SITENAME} MATCHES "sn")
+  set( SITENAME "Snow" )
+elseif( ${SITENAME} MATCHES "fi")
+  set( SITENAME "Fire" )
+elseif( ${SITENAME} MATCHES "ic")
+  set( SITENAME "Ice" )
 elseif( ${SITENAME} MATCHES "ccscs[0-9]+" )
   # do nothing (keep the fullname)
 endif()
@@ -137,8 +143,10 @@ macro(dbsSetupCxx)
 
   # C++11 support:
   set( CMAKE_CXX_STANDARD 11 )
+  set( CXX_STANDARD_REQUIRED ON )
 
   # Do not enable extensions (e.g.: --std=gnu++11)
+  # https://crascit.com/2015/03/28/enabling-cxx11-in-cmake/
   set( CMAKE_CXX_EXTENSIONS OFF )
   set( CMAKE_C_EXTENSIONS   OFF )
 
@@ -195,46 +203,87 @@ macro(dbsSetupCxx)
     message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
   endif()
 
-  # To the greatest extent possible, installed versions of packages
-  # should record the configuration options that were used when they
-  # were built.  For preprocessor macros, this is usually
-  # accomplished via #define directives in config.h files.  A
-  # package's installed config.h file serves as both a record of
-  # configuration options and a central location for macro
-  # definitions that control features in the package.  Defining
-  # macros via the -D command-line option to the preprocessor leaves
-  # no record of configuration choices (except in a build log, which
-  # may not be preserved with the installation).
+  # To the greatest extent possible, installed versions of packages should
+  # record the configuration options that were used when they were built.  For
+  # preprocessor macros, this is usually accomplished via #define directives in
+  # config.h files.  A package's installed config.h file serves as both a record
+  # of configuration options and a central location for macro definitions that
+  # control features in the package.  Defining macros via the -D command-line
+  # option to the preprocessor leaves no record of configuration choices (except
+  # in a build log, which may not be preserved with the installation).
   #
-  # Unfortunately, there are cases where a particular macro must be
-  # defined before some particular system header file is included, or
-  # before any system header files are included.  In these
-  # situations, using the config.h mechanism introduces sensitivity
-  # to the order of header files, which can lead to brittleness;
-  # defining project-wide language- or system-feature macros via -D,
-  # using CMake's add_definitions command, is an acceptable
+  # Unfortunately, there are cases where a particular macro must be defined
+  # before some particular system header file is included, or before any system
+  # header files are included.  In these situations, using the config.h
+  # mechanism introduces sensitivity to the order of header files, which can
+  # lead to brittleness; defining project-wide language- or system-feature
+  # macros via -D, using CMake's add_definitions command, is an acceptable
   # alternative.  Such definitions appear below.
 
-  # Enable the definition of UINT64_C in stdint.h (required by
-  # Random123).
+  # Enable the definition of UINT64_C in stdint.h (required by Random123).
   add_definitions(-D__STDC_CONSTANT_MACROS)
   set( CMAKE_REQUIRED_DEFINITIONS
     "${CMAKE_REQUIRED_DEFINITIONS} -D__STDC_CONSTANT_MACROS" )
 
-  # Define _POSIX_C_SOURCE=200112 and _XOPEN_SOURCE=600, to enable
-  # definitions conforming to POSIX.1-2001, POSIX.2, XPG4, SUSv2,
-  # SUSv3, and C99.  See the feature_test_macros(7) man page for more
-  # information.
+  # Define _POSIX_C_SOURCE=200112 and _XOPEN_SOURCE=600, to enable definitions
+  # conforming to POSIX.1-2001, POSIX.2, XPG4, SUSv2, SUSv3, and C99.  See the
+  # feature_test_macros(7) man page for more information.
   add_definitions(-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600)
   set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_POSIX_C_SOURCE=200112" )
   set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_XOPEN_SOURCE=600")
   if ( APPLE )
-    # Defining the above requires adding POSIX extensions,
-    # otherwise, include ordering still goes wrong on Darwin,
-    # (i.e., putting fstream before iostream causes problems)
-    # see https://code.google.com/p/wmii/issues/detail?id=89
+    # Defining the above requires adding POSIX extensions, otherwise, include
+    # ordering still goes wrong on Darwin, (i.e., putting fstream before
+    # iostream causes problems) see
+    # https://code.google.com/p/wmii/issues/detail?id=89
     add_definitions(-D_DARWIN_C_SOURCE)
     set( CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS} -D_DARWIN_C_SOURCE ")
+  endif()
+
+  #----------------------------------------------------------------------------#
+  # Add user provided options:
+  #
+  # 1. Users may set environment variables
+  #    - C_FLAGS
+  #    - CXX_FLAGS
+  #    - Fortran_FLAGS
+  #    - EXE_LINKER_FLAGS
+  # 2. Provide these as arguments to cmake as -DC_FLAGS="whatever".
+  #----------------------------------------------------------------------------#
+  foreach( lang C CXX Fortran EXE_LINKER )
+    if( DEFINED ENV{${lang}_FLAGS} )
+      string( APPEND ${lang}_FLAGS " $ENV{${lang}_FLAGS}")
+    endif()
+    if( ${lang}_FLAGS )
+      toggle_compiler_flag( TRUE "${${lang}_FLAGS}" ${lang} "" )
+    endif()
+  endforeach()
+
+  # From https://crascit.com/2016/04/09/using-ccache-with-cmake/
+  message( STATUS "Looking for ccache...")
+  find_program(CCACHE_PROGRAM ccache)
+  if(CCACHE_PROGRAM)
+    message( STATUS "Looking for ccache... ${CCACHE_PROGRAM}")
+    # Set up wrapper scripts
+    set(CMAKE_C_COMPILER_LAUNCHER   "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    # configure_file(launch-c.in   launch-c)
+    # configure_file(launch-cxx.in launch-cxx)
+    # execute_process(COMMAND chmod a+rx "${CMAKE_BINARY_DIR}/launch-c" "${CMAKE_BINARY_DIR}/launch-cxx")
+    # if(CMAKE_GENERATOR STREQUAL "Xcode")
+    #   # Set Xcode project attributes to route compilation and linking
+    #     # through our scripts
+    #     set(CMAKE_XCODE_ATTRIBUTE_CC         "${CMAKE_BINARY_DIR}/launch-c")
+    #     set(CMAKE_XCODE_ATTRIBUTE_CXX        "${CMAKE_BINARY_DIR}/launch-cxx")
+    #     set(CMAKE_XCODE_ATTRIBUTE_LD         "${CMAKE_BINARY_DIR}/launch-c")
+    #     set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS "${CMAKE_BINARY_DIR}/launch-cxx")
+    #   else()
+    #     # Support Unix Makefiles and Ninja
+    #     set(CMAKE_C_COMPILER_LAUNCHER        "${CMAKE_BINARY_DIR}/launch-c")
+    #     set(CMAKE_CXX_COMPILER_LAUNCHER      "${CMAKE_BINARY_DIR}/launch-cxx")
+    #   endif()
+  else()
+    message( STATUS "Looking for ccache... not found.")
   endif()
 
 endmacro()
@@ -346,9 +395,9 @@ macro(dbsSetupFortran)
 
 endmacro()
 
-##---------------------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
 ## Setup profile tools: MAP, PAPI, HPCToolkit, TAU, etc.
-##---------------------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
 macro( dbsSetupProfilerTools )
 
   # ------------------------------------------------------------
@@ -425,7 +474,7 @@ macro( dbsSetupProfilerTools )
     if( NOT EXISTS $ENV{DDTROOT} )
       message( FATAL_ERROR "You must load the Allinea module first!")
     endif()
-    if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Cielito" )
+    if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Trinity" )
       #set( OLD_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} )
       #set( CMAKE_FIND_LIBRARY_SUFFIXES .a )
       find_library( ddt-dmalloc

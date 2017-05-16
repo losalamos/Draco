@@ -5,10 +5,7 @@
  * \date   Tuesday, Oct 27, 2016, 15:17 pm
  * \brief  Command line argument handling similar to getopt.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_XGetopt_hh

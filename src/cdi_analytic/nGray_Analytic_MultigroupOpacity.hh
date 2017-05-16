@@ -5,10 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_MultigroupOpacity class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
@@ -70,8 +67,8 @@ class DLL_PUBLIC_cdi_analytic nGray_Analytic_MultigroupOpacity
     : public Analytic_MultigroupOpacity {
 public:
   // Useful typedefs.
-  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
+  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef std::shared_ptr<const Analytic_Opacity_Model> const_Model;
   typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
   typedef std::vector<double> sf_double;
   typedef std::vector<sf_double> vf_double;

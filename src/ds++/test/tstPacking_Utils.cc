@@ -29,10 +29,10 @@ using rtt_dsxx::soft_equiv;
 
 void do_some_packing(Packer &p, vector<double> const &vd,
                      vector<int> const &vi) {
-  for (size_t i = 0; i < vd.size(); ++i)
-    p << vd[i];
-  for (size_t i = 0; i < vi.size(); ++i)
-    p << vi[i];
+  for (const auto &item : vd)
+    p << item;
+  for (const auto &item : vi)
+    p << item;
   return;
 }
 
@@ -736,7 +736,6 @@ void packing_map_test(rtt_dsxx::UnitTest &ut) {
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
-    // >>> UNIT TESTS
     packing_test(ut);
     packing_test_c90(ut);
     std_string_test(ut);

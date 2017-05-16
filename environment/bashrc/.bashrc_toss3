@@ -12,7 +12,7 @@ fi
 ##---------------------------------------------------------------------------##
 
 # unlimit stack and core dump sizes.
-ulimit -s unlimited
+# ulimit -s unlimited
 
 # Where is the vendor directory
 if [[ ! ${VENDOR_DIR} ]]; then

@@ -5,10 +5,7 @@
  * \date   Sun Jan 30 14:57:09 2000
  * \brief  Test code for the Check_Strings utility functions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Check_Strings.hh"
@@ -18,13 +15,12 @@
 using namespace std;
 
 //---------------------------------------------------------------------------//
-
 void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
+
   // Define a vector of strings for testing
-  string n[] = {"this", "is",  "a#", "test", "xxx!", "space check", "123", "x",
-                "test", "dog", "is", "cat",  "",     "abc"};
-  const int nn = sizeof(n) / sizeof(string);
-  vector<string> names(&n[0], &n[nn]);
+  vector<string> names = {"this",        "is",  "a#", "test", "xxx!",
+                          "space check", "123", "x",  "test", "dog",
+                          "is",          "cat", "",   "abc"};
   typedef vector<string>::iterator VS_iter;
 
   // Print a header
@@ -33,12 +29,11 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
   // List the test string
 
   cout << "The " << names.size() << " strings to be tested are: " << endl;
-  for (size_t i = 0; i < names.size(); ++i)
-    cout << "\"" << names[i] << "\"" << endl;
+  for (const auto &name : names)
+    cout << "\"" << name << "\"" << endl;
   cout << endl;
 
   //---------------------------------------------------------------------------//
-
   // Test for illegal characters.
 
   cout << "Illegal character utility test:" << endl;
@@ -49,8 +44,8 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Failed to find bad characters in string definition.");
   } else {
     PASSMSG("Successfully found bad characters in string definition.");
-    for (size_t i = 0; i < result.size(); i++)
-      cout << "Found disallowed character(s) in string: \"" << *result[i]
+    for (const auto bad_entry : result)
+      cout << "Found disallowed character(s) in string: \"" << *bad_entry
            << "\"" << endl;
     cout << "The following characters are forbidden:" << endl
          << " \"" << bad_chars << "\","
@@ -73,20 +68,19 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("*** Illegal character function test: FAILED ***");
 
   //---------------------------------------------------------------------------//
-
   // Test for acceptable lengths.
 
   cout << "String length utility test:" << endl;
-  int low = 1;
-  int high = 4;
+  int const low = 1;
+  int const high = 4;
   vector<VS_iter> result2 =
       rtt_dsxx::check_string_lengths(names.begin(), names.end(), low, high);
   if (result2.size() == 0) {
     FAILMSG("Failed to find bad characters in string definition.");
   } else {
     PASSMSG("Successfully found bad characters in string definition.");
-    for (size_t i = 0; i < result2.size(); i++)
-      cout << "Size of string is not in allowable range: \"" << *result2[i]
+    for (const auto bad_entry : result2)
+      cout << "Size of string is not in allowable range: \"" << *bad_entry
            << "\"" << endl;
     cout << "Strings lengths must be greater than " << low << " and less than "
          << high << "." << endl;
@@ -106,7 +100,6 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("*** String length function test: FAILED ***");
 
   //---------------------------------------------------------------------------//
-
   // Test for unique names.
 
   cout << "Unique strings utility test:" << endl;
@@ -116,8 +109,8 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Failed to find bad characters in string definition.");
   } else {
     PASSMSG("Successfully found bad characters in string definition.");
-    for (size_t i = 0; i < result3.size(); i++)
-      cout << "Duplicate string found: \"" << *result3[i] << "\"" << endl;
+    for (const auto &bad_entry : result3)
+      cout << "Duplicate string found: \"" << *bad_entry << "\"" << endl;
     cout << "All strings must be unique!" << endl;
   }
 
@@ -138,7 +131,6 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

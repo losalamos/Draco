@@ -1,10 +1,8 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> DRACO Component Libraries for Radiation Transport Codes
 >>> CCS-2 Computational Physics Group
->>> Copyright (C) 2016, Los Alamos National Security, LLC.
+>>> Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 >>> All rights reserved.
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> $Id$
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 Draco is an object-oriented component library geared towards numerically
@@ -25,15 +23,58 @@ Export Control Classification Number (ECCN) EAR99.
 Configuring and Building
 =============================
 
-Please review the notes at the top of CMakeLists.txt or the wiki page:
+Access the sources
+
+  git clone git@github.com:lanl/Draco.git draco
+
+Build with Makefiles:
+
+  mkdir build_dir && cd $_
+  [C_FLAGS='-Werror'] cmake $source_location [-DOPTION=value]
+  [ccmake] # check settings
+  make [-j] [install|target]
+  ctest [-j]
+
+Common options:
+
+  -DCMAKE_BUILD_TYPE=Release|Debug|RelWithDebInfo
+  -DBUILD_TESTING=OFF
+
+Common targets:
+
+ - all
+ - install
+ - Lib_quadrature       # build a library (and any needed deps)
+ - Exe_draco_info       # build an executable (and any needed deps)
+ - Ut_dsxx_tstSlice_exe # build one unit test (and any needed deps)
+ - help
+ - clean
+ - rebuild_cache
+ - autodoc
+
+Developer Environment Configuration
+=============================
+
+1. git-hooks:
+
+cd environment/git
+./install-hooks.sh $HOME/draco
+
+2. bash environment and modules:
+
+See environment/bashrc/README
+
+3. emacs
+
+See environment/elisp/README.elisp
+
 
 Active Draco Component Synopsis
 =============================
 
 RTT_Format_Reader:{mesh container and services}
-no description
 
-c4: {Communications library that wrapps MPI}
+c4: {Communications library that wraps MPI}
 
 cdi: {Get access to material data}
 The Common Data Interface specifies an common abstraction for objects and
@@ -44,27 +85,28 @@ cdi_analytic: {Analytic models for physical data}
 
 cdi_eospac: {Equation-of-State data}
 This class wraps the EOSPAC6 libraries (local copy at
-/ccs/codes/radtran/vendors/eospac).  The interface inherits from CDI/EOS.hh and
-can be used as a stand alone component or as a plug-in to CDI.  To make the
-component available you must set in your environment or in the CMakeCache.txt
-the variable EOSPAC_LIB_DIR to the path to libeospac.a
+    /ccs/codes/radtran/vendors/eospac).  The interface inherits from CDI/EOS.hh
+    and can be used as a stand alone component or as a plug-in to CDI.  To make
+    the component available you must set in your environment or in the
+    CMakeCache.txt the variable EOSPAC_LIB_DIR to the path to libeospac.a
 
 cdi_ipcress: {Gray and multigroup opacities}
-The classes in this component will read and parse opacity values from an IPCRESS
-file produced by TOPS.  The component presents this data through various
-accessors.  The interface inherits from CDI/Opacity.hh and can be used as a
-stand alone component or as a plug-in to CDI.
+    The classes in this component will read and parse opacity values from an
+    IPCRESS file produced by TOPS.  The component presents this data through
+    various accessors.  The interface inherits from CDI/Opacity.hh and can be
+    used as a stand alone component or as a plug-in to CDI.
 
 device: {Wrapper for heterogeneous device communication}
-The classes in this component provide access to DaCS and CUDA calls for use on
-heterogeneous architecture platforms (Roadrunner or GPU machines).
+    The classes in this component provide access to DaCS and CUDA calls for use
+    on heterogeneous architecture platforms (Roadrunner or GPU machines).
 
 diagnostics:
 CPP macros that are activated at compile time that can provide additional
 diagnostic verbosity during calculations.
 
 ds++: {Basic services}
-Smart pointers, Array containers, Assertion and Design-by-Contract, etc.
+    Array containers, assertion and Design-by-Contract, Ffle system information,
+    path manipulation, unit test system, etc.
 
 fit: {Least squares fit}
 
@@ -106,8 +148,7 @@ provide service functions that are commonly used.
 rng: {A random number generator component}
 The primary set of functions provided by this component were derived from
 Random123 (https://www.deshawresearch.com/downloads/download_random123.cgi)
-random number library.  A few additional random number generators are also
-provided.
+    random number library.  A few additional random number generators are also provided.
 
 roots: Root solvers
 
@@ -120,8 +161,8 @@ timestep: An object-oriented class that encapsulates a time step controller.
 traits: A traits class used by viz.
 
 units:
-Provides units standardization for Draco. Contains Units class for representing
-arbitrary systems and converting quantities to SI units.
+    Provides units standardization for Draco. Contains Units class for
+    representing arbitrary systems and converting quantities to SI units.
 
 viz:
 Generates Ensight files for data vizualization.

@@ -5,8 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_Odfmg_Opacity class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_nGray_Analytic_Odfmg_Opacity_hh__
@@ -30,8 +29,8 @@ class DLL_PUBLIC_cdi_analytic nGray_Analytic_Odfmg_Opacity
     : public Analytic_Odfmg_Opacity {
 public:
   // Useful typedefs.
-  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_Model;
+  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef std::shared_ptr<const Analytic_Opacity_Model> const_Model;
   typedef std::vector<SP_Analytic_Model> sf_Analytic_Model;
   typedef std::vector<double> sf_double;
   typedef std::vector<sf_double> vf_double;
@@ -63,16 +62,16 @@ public:
   // >>> INTERFACE SPECIFIED BY rtt_cdi::OdfmgOpacity
 
   /*!
-     * \brief Opacity accessor that returns a 2-D vector of opacities (
-     *     groups * bands ) that correspond to the
-     *     provided temperature and density.
-     *
-     * \param targetTemperature The temperature value for which an
-     *     opacity value is being requested.
-     * \param targetDensity The density value for which an opacity
-     *     value is being requested.
-     * \return A vector of opacities.
-     */
+   * \brief Opacity accessor that returns a 2-D vector of opacities
+   *        (groups*bands) that correspond to the provided temperature and
+   *        density.
+   *
+   * \param targetTemperature The temperature value for which an opacity value
+   *     is being requested.
+   * \param targetDensity The density value for which an opacity value is being
+   *     requested.
+   * \return A vector of opacities.
+   */
   std::vector<std::vector<double>> getOpacity(double targetTemperature,
                                               double targetDensity) const;
 

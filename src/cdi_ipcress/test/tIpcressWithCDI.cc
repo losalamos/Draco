@@ -5,10 +5,7 @@
  * \date   Mon Oct 29 17:16:32 2001
  * \brief  Ipcress + CDI test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_ipcress_test.hh"
@@ -26,7 +23,6 @@ using rtt_cdi_ipcress::IpcressFile;
 using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::CDI;
-using rtt_dsxx::SP;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -59,7 +55,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // ------------------------- //
 
   // Create a smart pointer to a IpcressFile object
-  SP<const IpcressFile> spGFAnalytic;
+  shared_ptr<const IpcressFile> spGFAnalytic;
 
   // Try to instantiate the object.
   try {
@@ -74,7 +70,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // If we make it here then spGFAnalytic was successfully instantiated.
-  PASSMSG("SP to new IpcressFile object created (spGFAnalytic).");
+  PASSMSG("shared_ptr to new IpcressFile object created (spGFAnalytic).");
 
   // ----------------------------------- //
   // Create a IpcressGrayOpacity object. //
@@ -85,7 +81,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   int const matid = 10001;
 
   // Create a smart pointer to an opacity object.
-  SP<const GrayOpacity> spOp_Analytic_ragray;
+  shared_ptr<const GrayOpacity> spOp_Analytic_ragray;
 
   // Try to instantiate the opacity object.
   try {
@@ -93,9 +89,10 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
         spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
-    message << "Failed to create SP to new IpcressGrayOpacity object for "
-            << "Al_BeCu.ipcress data." << endl
-            << "\t" << excpt.what();
+    message
+        << "Failed to create shared_ptr to new IpcressGrayOpacity object for "
+        << "Al_BeCu.ipcress data." << endl
+        << "\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
@@ -104,7 +101,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // If we get here then the object was successfully instantiated.
   {
     ostringstream message;
-    message << "SP to new IpcressGrayOpacity object created "
+    message << "shared_ptr to new IpcressGrayOpacity object created "
             << "for analyticOpacities.ipcress.";
     PASSMSG(message.str());
   }
@@ -113,14 +110,14 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // Create CDI object //
   // ----------------- //
 
-  SP<CDI> spCDI_Analytic;
+  shared_ptr<CDI> spCDI_Analytic;
   if ((spCDI_Analytic.reset(new CDI())), spCDI_Analytic) {
     ostringstream message;
-    message << "SP to CDI object created successfully (GrayOpacity).";
+    message << "shared_ptr to CDI object created successfully (GrayOpacity).";
     PASSMSG(message.str());
   } else {
     ostringstream message;
-    message << "Failed to create SP to CDI object (GrayOpacity).";
+    message << "Failed to create shared_ptr to CDI object (GrayOpacity).";
     FAILMSG(message.str());
   }
 
@@ -189,7 +186,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // ----------------------------------------- //
 
   // Create a smart pointer to an opacity object.
-  SP<const MultigroupOpacity> spOp_Analytic_ramg;
+  shared_ptr<const MultigroupOpacity> spOp_Analytic_ramg;
 
   // Try to instantiate the opacity object.
   try {
@@ -197,7 +194,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
         spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
-    message << "Failed to create SP to new IpcressMultigroupOpacity "
+    message << "Failed to create shared_ptr to new IpcressMultigroupOpacity "
             << "object for Al_BeCu.ipcress data." << endl
             << "\t" << excpt.what();
     FAILMSG(message.str());
@@ -208,7 +205,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   // If we get here then the object was successfully instantiated.
   {
     ostringstream message;
-    message << "SP to new Ipcress multigroup opacity object created"
+    message << "shared_ptr to new Ipcress multigroup opacity object created"
             << "\n\tfor analyticOpacities.ipcress.";
     PASSMSG(message.str());
   }

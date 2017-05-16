@@ -1,21 +1,18 @@
 //----------------------------------*-C++-*--------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/SideFlags.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/SideFlags class.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "SideFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Parses the side_flags data block of the mesh file via calls to 
+ * \brief Parses the side_flags data block of the mesh file via calls to
  *        private member functions.
  * \param meshfile Mesh file name.
  */

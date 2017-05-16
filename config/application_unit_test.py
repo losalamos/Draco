@@ -312,16 +312,6 @@ class UnitTest:
         self.outfile = self.outfile.replace(".out", "-{0}.out".format(self.numPE))
         self.errfile = self.errfile.replace(".err", "-{0}.err".format(self.numPE))
 
-      # clean up arg value
-      '''
-      if is_set(self.arg_value):
-        safe_arg_value = self.arg_value.replace("[-]","")
-        self.outfile = self.outfile.replace(".out", "-{0}.out".format(\
-          safe_arg_value))
-        self.errfile = self.errfile.replace(".err", "-{0}.err".format(\
-          safe_arg_value))
-      '''
-
       # print run command
       if is_defined(self.run_cmd):
         print(">>> Running: {0} {1}".format(self.run_cmd, self.numPE))
@@ -333,8 +323,6 @@ class UnitTest:
 
       # Run the application capturing all output.
       stdin_file = is_set(self.input)
-      f_out = open(self.outfile, 'w')
-      f_err = open(self.errfile, 'w')
       if stdin_file:
         f_in = open(self.input, 'r')
 
@@ -353,39 +341,46 @@ class UnitTest:
       # if test requires standard input, use the subprocess call to set the file
       if (stdin_file):
         print("About to run \'{0}\'".format(' '.join(clean_run_args)))
-        testres = subprocess.call(clean_run_args, stdout=f_out, stdin=f_in, \
-          stderr=f_err)
+        test_process = subprocess.Popen(clean_run_args, stdout=subprocess.PIPE, \
+          stderr=subprocess.PIPE, stdin=f_in, universal_newlines=True)
       else:
-        testres = subprocess.call(clean_run_args, stdout=f_out, stderr=f_err)
+        test_process = subprocess.Popen(clean_run_args, stdout=subprocess.PIPE, \
+          stderr=subprocess.PIPE, universal_newlines=True)
 
-      # close file handles
-      f_out.close()
-      f_err.close()
+      test_out, test_err = test_process.communicate()
       if (stdin_file): f_in.close();
 
       # Test the return code. Normally, if the return code is non-zero print an
       # error message and return control to ctest (don't run the remaining
       # checks). If continue_on_error=True, print a message and continue running
       # checks.
-      if (testres):
+      if (test_process.returncode):
         # we have a non-zero return code.
         if(continue_on_error):
           print("Non-zero return code detected, but continue_on_error=True.")
         else:
-          # get last line written to stderror
-          f_error = open(self.errfile)
-          error_lines = f_error.readlines()
-          last_error = error_lines.pop()
-          # print the last recorded error and stop running futher checks.
-          print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
+          if test_err:
+            print("Test FAILED: stderr is:")
+            print(test_err)
+          else:
+            print("Test FAILED: stderr is empty")
+          print("Test FAILED: stdout is:")
+          print(test_out)
           self.fatal_error("See {0} for full details.".format(self.outfile))
-          f_error.close()
       else:
         # The return code was zero. Record this success and continue running the
         # checks.
-        print_file(self.outfile)
+        print(test_out)
         self.passmsg("Application ran to completion")
 
+      # make output files
+      f_out = open(self.outfile,'w')
+      f_out.write(test_out)
+      f_out.close()
+      f_err = open(self.errfile, 'w')
+      if (test_err):
+        f_err.write(test_err)
+      f_err.close()
     except Exception:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
@@ -596,7 +591,7 @@ class UnitTest:
         clean_run_args.append(arg)
       if diff_exe.strip():
         clean_run_args.append(diff_exe.strip())
-        # If we are using fc on win32, assume that we want to compare binary 
+        # If we are using fc on win32, assume that we want to compare binary
         # files.
         if (diff_name == "fc"):
           clean_run_args.append("/b")

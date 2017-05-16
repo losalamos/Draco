@@ -5,20 +5,16 @@
  * \date   Wed Aug 29 16:46:52 2001
  * \brief  Analytic_Model definitions
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Analytic_Models_hh__
 #define __cdi_analytic_Analytic_Models_hh__
 
-#include <cmath>
-#include <vector>
-
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
+#include <cmath>
+#include <vector>
 
 namespace rtt_cdi_analytic {
 
@@ -67,7 +63,7 @@ enum EoS_Models { POLYNOMIAL_SPECIFIC_HEAT_ANALYTIC_EOS_MODEL };
  *
  * \arg vector<char> pack() const;
  *
- * This class is a pure virtual base class. 
+ * This class is a pure virtual base class.
  *
  * The returned opacity should have units of cm^2/g.
  *
@@ -194,9 +190,9 @@ public:
      * \param c_ temperature power
      * \param d_ density power
      * \param e_ frequency power
-     * \param f_ reference temperature 
+     * \param f_ reference temperature
      * \param g_ reference density
-     * \param h_ reference frequency 
+     * \param h_ reference frequency
      */
 
   Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_, double d_,
@@ -282,7 +278,7 @@ public:
  *
  * \arg a = [cm^2/g * (cm^3/g)^d]
  * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
- * 
+ *
  * For a typical bound-free or free-free absorption model, one should set
  * \arg a = 0
  * \arg b = constant > 0
@@ -290,12 +286,12 @@ public:
  * \arg d = constant
  * \arg e = -3
  *
- * This produces a Planck or Rosseland opacity of the form 
+ * This produces a Planck or Rosseland opacity of the form
  *         \f[ \overline{\sigma} \propto T^{-7/2} \f]
  * which is also known as Kramers' Opacity Law.
  * \sa{ http://en.wikipedia.org/wiki/Kramers'_opacity_law }
  *
- * 
+ *
  */
 
 class DLL_PUBLIC_cdi_analytic Stimulated_Emission_Analytic_Opacity_Model
@@ -319,7 +315,7 @@ public:
      * \param c_ temperature power
      * \param d_ density power
      * \param e_ frequency power
-     * \param f_ reference temperature 
+     * \param f_ reference temperature
      * \param g_ reference density
      * \param h_ reference frequency
      */
@@ -406,15 +402,15 @@ public:
  * \arg double calculate_elec_thermal_conductivity(double T, double rho)
  *
  * The units for each output are:
- * 
+ *
  * \arg electron internal energy      = kJ/g
  * \arg electron heat capacity        = kJ/g/keV
  * \arg ion internal energy           = kJ/g
  * \arg ion heat capacity             = kJ/g/keV
  * \arg electron thermal conductivity = /s/cm
- * 
+ *
  * These units correspond to the units defined by the rtt_cdi::EoS base
- * class. 
+ * class.
  *
  * To enable packing functionality, the class must be registered in the
  * EoS_Models enumeration.  Also, it must contain the following pure
@@ -422,7 +418,7 @@ public:
  *
  * \arg vector<char> pack() const;
  *
- * This class is a pure virtual base class. 
+ * This class is a pure virtual base class.
  */
 //===========================================================================//
 
@@ -485,7 +481,7 @@ public:
  * functions for EoS specific heat data.
  *
  * The electron and ion specific heats are defined:
- * 
+ *
  * \arg elec specific heat = a + bT^c
  * \arg ion specific heat  = d + eT^f
  *
@@ -500,7 +496,7 @@ public:
  * verification purposes.  More complex analytic EoS models can be easily
  * defined if they are required; however, radiation-only packages (without
  * Compton scatter) only require specfic heat data.
- * 
+ *
  */
 class DLL_PUBLIC_cdi_analytic Polynomial_Specific_Heat_Analytic_EoS_Model
     : public Analytic_EoS_Model {
@@ -565,9 +561,9 @@ public:
      * This is done by integrating the specific heat capacity at constant
      * density from T=0 to the specified temperature.
      *
-     * \param T 
+     * \param T
      * Temperature (keV) for which the specific internal energy is to be
-     * evaluated. 
+     * evaluated.
      * \param rho
      * Density (g/cm^3) for which the specific internal energy is to be
      * evaluated. This parameter is not actually used.
@@ -597,9 +593,9 @@ public:
      * This is done by integrating the specific heat capacity at constant
      * density from T=0 to the specified temperature.
      *
-     * \param T 
+     * \param T
      * Temperature (keV) for which the specific internal energy is to be
-     * evaluated. 
+     * evaluated.
      * \param rho
      * Density (g/cm^3) for which the specific internal energy is to be
      * evaluated. This parameter is not actually used.
@@ -661,7 +657,7 @@ public:
  * f(T) = U_e(T_i) - \int_0^{T_i}{C_{v_e}(T) dT}
  * \f]
  * \f[
- * f(T) = U_e(T_i) - a T_i - \frac{b}{c+1} T_i^{c+1} 
+ * f(T) = U_e(T_i) - a T_i - \frac{b}{c+1} T_i^{c+1}
  * \f]
  *
  */

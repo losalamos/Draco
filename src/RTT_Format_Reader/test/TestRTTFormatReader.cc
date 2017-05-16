@@ -5,27 +5,21 @@
  * \date   Wed Mar 27 10:26:42 2002
  * \brief  RTT_Format_Reader test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id$
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
-#include "../CellDefs.hh"
-#include "../RTT_Mesh_Reader.hh"
+#include "RTT_Format_Reader/CellDefs.hh"
+#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/path.hh"
-
 #include <sstream>
 
 using namespace std;
 using namespace rtt_dsxx;
 
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
-
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 map<Meshes, bool> Dims_validated;
 
@@ -51,18 +45,18 @@ void runTest(UnitTest &ut) {
       ostringstream m;
       m << "Read " << filename[mesh_number]
         << " without coreing in or firing an assertion." << std::endl;
-      ut.passes(m.str());
+      PASSMSG(m.str());
     }
     bool all_passed = true;
-    // The following switch allows addition of other meshes for testing,
-    // with the "DEFINED" mesh providing an example. Only the check_dims
-    // tests is required and it will be automatically called by the other
-    // tests (with the exception of check header) if not invoked herein.
-    // The comparison data must also be provided for additional meshes
-    // within the switch structure residing in the test functions.
+    // The following switch allows addition of other meshes for testing, with
+    // the "DEFINED" mesh providing an example. Only the check_dims tests is
+    // required and it will be automatically called by the other tests (with the
+    // exception of check header) if not invoked herein.  The comparison data
+    // must also be provided for additional meshes within the switch structure
+    // residing in the test functions.
     switch (mesh_number) {
-    // Test all nested class accessor functions for a very simplistic
-    // mesh file (enum DEFINED).
+    // Test all nested class accessor functions for a very simplistic mesh file
+    // (enum DEFINED).
     case (0):
       mesh_type = DEFINED;
       all_passed = all_passed && check_header(mesh, mesh_type, ut);
@@ -85,7 +79,7 @@ void runTest(UnitTest &ut) {
     default:
       ostringstream m;
       m << "Invalid mesh type encountered." << std::endl;
-      ut.failure(m.str());
+      FAILMSG(m.str());
       all_passed = false;
       break;
     }
@@ -94,22 +88,22 @@ void runTest(UnitTest &ut) {
       ostringstream m;
       m << "Errors occured testing mesh "
         << "number " << mesh_type << std::endl;
-      ut.failure(m.str());
+      FAILMSG(m.str());
     }
   }
 
   try {
     RTT_Format_Reader reader("no such");
-    ut.failure("did NOT detect nonexistent file");
+    FAILMSG("did NOT detect nonexistent file");
   } catch (...) {
-    ut.passes("detected nonexistent file correctly");
+    PASSMSG("detected nonexistent file correctly");
   }
 
   // Report results of test.
   if (ut.numFails == 0 && ut.numPasses > 0)
-    ut.passes("All tests passed.");
+    PASSMSG("All tests passed.");
   else
-    ut.failure("Some tests failed.");
+    FAILMSG("Some tests failed.");
   return;
 }
 
@@ -147,38 +141,38 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
   // Check version.
   if (mesh.get_header_version() != version) {
-    ut.failure("Header version not obtained.");
+    FAILMSG("Header version not obtained.");
     all_passed = false;
   }
   // Check title.
   if (mesh.get_header_title() != title) {
-    ut.failure("Header title not obtained.");
+    FAILMSG("Header title not obtained.");
     all_passed = false;
   }
   // Check date.
   if (mesh.get_header_date() != date) {
-    ut.failure("Header date not obtained.");
+    FAILMSG("Header date not obtained.");
     all_passed = false;
   }
   // Check cycle.
   if (mesh.get_header_cycle() != cycle) {
-    ut.failure("Header cycle not obtained.");
+    FAILMSG("Header cycle not obtained.");
     all_passed = false;
   }
   // Check time.
   if (mesh.get_header_time() != time) {
-    ut.failure("Header time not obtained.");
+    FAILMSG("Header time not obtained.");
     all_passed = false;
   }
   // Check ncomments.
   if (mesh.get_header_ncomments() != ncomments) {
-    ut.failure("Header ncomments not obtained.");
+    FAILMSG("Header ncomments not obtained.");
     all_passed = false;
   }
   // Check comments.
@@ -187,14 +181,14 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (comments[i] != mesh.get_header_comments(i))
       got_comments = false;
   if (!got_comments) {
-    ut.failure("Header comments not obtained.");
+    FAILMSG("Header comments not obtained.");
     all_passed = false;
   }
   // Check that all Header class accessors passed their tests.
   if (all_passed) {
-    ut.passes("Got all Header accessors.");
+    PASSMSG("Got all Header accessors.");
   } else {
-    ut.failure("Errors in some Header accessors.");
+    FAILMSG("Errors in some Header accessors.");
   }
 
   return all_passed;
@@ -265,58 +259,58 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
   // Check coordinate units.
   if (mesh.get_dims_coor_units() != coor_units) {
-    ut.failure("Dims coor_units not obtained.");
+    FAILMSG("Dims coor_units not obtained.");
     all_passed = false;
   }
   // Check problem time units.
   if (mesh.get_dims_prob_time_units() != prob_time_units) {
-    ut.failure("Dims prob_time_units not obtained.");
+    FAILMSG("Dims prob_time_units not obtained.");
     all_passed = false;
   }
   // Check number of cell definitions.
   if (mesh.get_dims_ncell_defs() != ncell_defs) {
-    ut.failure("Dims ncell_defs not obtained.");
+    FAILMSG("Dims ncell_defs not obtained.");
     all_passed = false;
   }
   // Check maximum number of nodes for cells in the "cell_defs" block.
   if (mesh.get_dims_nnodes_max() != nnodes_max) {
-    ut.failure("Dims nnodes_max not obtained.");
+    FAILMSG("Dims nnodes_max not obtained.");
     all_passed = false;
   }
   // Check maximum number of sides for cells in the "cell_defs" block.
   if (mesh.get_dims_nsides_max() != nsides_max) {
-    ut.failure("Dims nsides_max not obtained.");
+    FAILMSG("Dims nsides_max not obtained.");
     all_passed = false;
   }
   // Check maximum number of nodes/side for cells in the "cell_defs" block.
   if (mesh.get_dims_nnodes_side_max() != nnodes_side_max) {
-    ut.failure("Dims nnodes_side_max not obtained.");
+    FAILMSG("Dims nnodes_side_max not obtained.");
     all_passed = false;
   }
   // Check number of spatial dimensions.
   if (mesh.get_dims_ndim() != ndim) {
-    ut.failure("Dims ndim not obtained.");
+    FAILMSG("Dims ndim not obtained.");
     all_passed = false;
   }
   // Check number of topological dimensions.
   if (mesh.get_dims_ndim_topo() != ndim_topo) {
-    ut.failure("Dims ndim_topo not obtained.");
+    FAILMSG("Dims ndim_topo not obtained.");
     all_passed = false;
   }
   // Check total number of nodes in the mesh.
   if (mesh.get_dims_nnodes() != nnodes) {
-    ut.failure("Dims nnodes not obtained.");
+    FAILMSG("Dims nnodes not obtained.");
     all_passed = false;
   }
   // Check number of node flag types.
   if (mesh.get_dims_nnode_flag_types() != nnode_flag_types) {
-    ut.failure("Dims nnode_flag_types not obtained.");
+    FAILMSG("Dims nnode_flag_types not obtained.");
     all_passed = false;
   }
   // Check number of flags/node flag type.
@@ -325,22 +319,22 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (mesh.get_dims_nnode_flags(f) != nnode_flags[f])
       got_nnode_flags = false;
   if (!got_nnode_flags) {
-    ut.failure("Dims nnode_flags not obtained.");
+    FAILMSG("Dims nnode_flags not obtained.");
     all_passed = false;
   }
   // Check number of node data fields.
   if (mesh.get_dims_nnode_data() != nnode_data) {
-    ut.failure("Dims nnode_data not obtained.");
+    FAILMSG("Dims nnode_data not obtained.");
     all_passed = false;
   }
   // Check number of sides in the mesh.
   if (mesh.get_dims_nsides() != nsides) {
-    ut.failure("Dims nsides not obtained.");
+    FAILMSG("Dims nsides not obtained.");
     all_passed = false;
   }
   // Check number of side types actually present in "side" block.
   if (mesh.get_dims_nside_types() != nside_types) {
-    ut.failure("Dims nside_types not obtained.");
+    FAILMSG("Dims nside_types not obtained.");
     all_passed = false;
   }
   // Check side type indexes used in "side" block.
@@ -349,12 +343,12 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (mesh.get_dims_side_types(s) != side_types[s])
       got_side_types = false;
   if (!got_side_types) {
-    ut.failure("Dims side_types not obtained.");
+    FAILMSG("Dims side_types not obtained.");
     all_passed = false;
   }
   // Check number of side flag types.
   if (mesh.get_dims_nside_flag_types() != nside_flag_types) {
-    ut.failure("Dims nside_flag_types not obtained.");
+    FAILMSG("Dims nside_flag_types not obtained.");
     all_passed = false;
   }
   // Check number of side flags/side flag type.
@@ -363,22 +357,22 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (mesh.get_dims_nside_flags(f) != nside_flags[f])
       got_nside_flags = false;
   if (!got_nside_flags) {
-    ut.failure("Dims nside_flags not obtained.");
+    FAILMSG("Dims nside_flags not obtained.");
     all_passed = false;
   }
   // Check number of side data fields.
   if (mesh.get_dims_nside_data() != nside_data) {
-    ut.failure("Dims nside_data not obtained.");
+    FAILMSG("Dims nside_data not obtained.");
     all_passed = false;
   }
   // Check total number of cells in the mesh.
   if (mesh.get_dims_ncells() != ncells) {
-    ut.failure("Dims ncells not obtained.");
+    FAILMSG("Dims ncells not obtained.");
     all_passed = false;
   }
   // Check number of cell types actually present in "cells" block.
   if (mesh.get_dims_ncell_types() != ncell_types) {
-    ut.failure("Dims ncell_types not obtained.");
+    FAILMSG("Dims ncell_types not obtained.");
     all_passed = false;
   }
   // Check cell type indexes used in "cells" block.
@@ -387,12 +381,12 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (mesh.get_dims_cell_types(f) != cell_types[f])
       got_ncell_types = false;
   if (!got_ncell_types) {
-    ut.failure("Dims cell_types not obtained.");
+    FAILMSG("Dims cell_types not obtained.");
     all_passed = false;
   }
   // Check number of cell flag types.
   if (mesh.get_dims_ncell_flag_types() != ncell_flag_types) {
-    ut.failure("Dims ncell_flag_types not obtained.");
+    FAILMSG("Dims ncell_flag_types not obtained.");
     all_passed = false;
   }
   // Check number of flags/cell flag type.
@@ -401,19 +395,19 @@ bool check_dims(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (mesh.get_dims_ncell_flags(f) != ncell_flags[f])
       got_ncell_flags = false;
   if (!got_ncell_flags) {
-    ut.failure("Dims ncell_flags not obtained.");
+    FAILMSG("Dims ncell_flags not obtained.");
     all_passed = false;
   }
   // Check number of cell data fields.
   if (mesh.get_dims_ncell_data() != ncell_data) {
-    ut.failure("Dims ncell_data not obtained.");
+    FAILMSG("Dims ncell_data not obtained.");
     all_passed = false;
   }
   // Check that all Dims class accessors passed their tests.
   if (all_passed) {
-    ut.passes("Got all Dims accessors.");
+    PASSMSG("Got all Dims accessors.");
   } else {
-    ut.failure("Errors in some Dims accessors.");
+    FAILMSG("Errors in some Dims accessors.");
   }
 
   // Retain the result of testing the Dims integrity for this mesh type.
@@ -460,7 +454,7 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -471,22 +465,22 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (flagTypes[i] != mesh.get_node_flags_flag_type(i))
       got_node_flag_types = false;
   if (!got_node_flag_types) {
-    ut.failure("Node Flags flag_types not obtained.");
+    FAILMSG("Node Flags flag_types not obtained.");
     all_passed = false;
   }
   // Check node flag node_type flag number.
   if (ntype != mesh.get_node_flags_flag_type_index(flagTypes[ntype])) {
-    ut.failure("Node Flags node_type flag not obtained.");
+    FAILMSG("Node Flags node_type flag not obtained.");
     all_passed = false;
   }
   // Check node flag boundary flag number.
   if (bndry != mesh.get_node_flags_flag_type_index(flagTypes[bndry])) {
-    ut.failure("Node Flags boundary flag not obtained.");
+    FAILMSG("Node Flags boundary flag not obtained.");
     all_passed = false;
   }
   // Check node flag source flag number.
   if (src != mesh.get_node_flags_flag_type_index(flagTypes[src])) {
-    ut.failure("Node Flags source flag not obtained.");
+    FAILMSG("Node Flags source flag not obtained.");
     all_passed = false;
   }
   // Check node flag numbers for each of the flag types.
@@ -498,7 +492,7 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_node_flag_numbers = false;
   }
   if (!got_node_flag_numbers) {
-    ut.failure("Node Flags flag_numbers not obtained.");
+    FAILMSG("Node Flags flag_numbers not obtained.");
     all_passed = false;
   }
   // Check number of flags for each node flag type.
@@ -508,7 +502,7 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_node_flag_size = false;
   }
   if (!got_node_flag_size) {
-    ut.failure("Node Flags flag_size not obtained.");
+    FAILMSG("Node Flags flag_size not obtained.");
     all_passed = false;
   }
   // Check node flag names for each of the flag types.
@@ -520,14 +514,14 @@ bool check_node_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_node_flag_name = false;
   }
   if (!got_node_flag_name) {
-    ut.failure("Node Flags flag_name not obtained.");
+    FAILMSG("Node Flags flag_name not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all NodeFlags accessors.");
+    PASSMSG("Got all NodeFlags accessors.");
   } else {
-    ut.failure("Errors in some NodeFlags accessors.");
+    FAILMSG("Errors in some NodeFlags accessors.");
   }
 
   return all_passed;
@@ -558,7 +552,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -569,12 +563,12 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (flagTypes[i] != mesh.get_side_flags_flag_type(i))
       got_side_flag_types = false;
   if (!got_side_flag_types) {
-    ut.failure("Side Flags flag_types not obtained.");
+    FAILMSG("Side Flags flag_types not obtained.");
     all_passed = false;
   }
   // Check side flag boundary flag number.
   if (bndry != mesh.get_side_flags_flag_type_index(flagTypes[bndry])) {
-    ut.failure("Side Flags boundary flag not obtained.");
+    FAILMSG("Side Flags boundary flag not obtained.");
     all_passed = false;
   }
   // Check side flag numbers for each of the flag types.
@@ -586,7 +580,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_side_flag_numbers = false;
   }
   if (!got_side_flag_numbers) {
-    ut.failure("Side Flags flag_numbers not obtained.");
+    FAILMSG("Side Flags flag_numbers not obtained.");
     all_passed = false;
   }
   // Check number of flags for each side flag type.
@@ -597,7 +591,7 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_side_flag_size = false;
   }
   if (!got_side_flag_size) {
-    ut.failure("Side Flags flag_size not obtained.");
+    FAILMSG("Side Flags flag_size not obtained.");
     all_passed = false;
   }
   // Check side flag names for each of the flag types.
@@ -609,14 +603,14 @@ bool check_side_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_side_flag_name = false;
   }
   if (!got_side_flag_name) {
-    ut.failure("Side Flags flag_name not obtained.");
+    FAILMSG("Side Flags flag_name not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all SideFlags accessors.");
+    PASSMSG("Got all SideFlags accessors.");
   } else {
-    ut.failure("Errors in some SideFlags accessors.");
+    FAILMSG("Errors in some SideFlags accessors.");
   }
 
   return all_passed;
@@ -653,7 +647,7 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -664,17 +658,17 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (flagTypes[i] != mesh.get_cell_flags_flag_type(i))
       got_cell_flag_types = false;
   if (!got_cell_flag_types) {
-    ut.failure("Cell Flags flag_types not obtained.");
+    FAILMSG("Cell Flags flag_types not obtained.");
     all_passed = false;
   }
   // Check cell flag material flag number.
   if (matl != mesh.get_cell_flags_flag_type_index(flagTypes[matl])) {
-    ut.failure("Cell Flags material flag not obtained.");
+    FAILMSG("Cell Flags material flag not obtained.");
     all_passed = false;
   }
   // Check cell flag radiation source flag number.
   if (rsrc != mesh.get_cell_flags_flag_type_index(flagTypes[rsrc])) {
-    ut.failure("Cell Flags volume source flag not obtained.");
+    FAILMSG("Cell Flags volume source flag not obtained.");
     all_passed = false;
   }
   // Check cell flag numbers for each of the flag types.
@@ -686,7 +680,7 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_flag_numbers = false;
   }
   if (!got_cell_flag_numbers) {
-    ut.failure("Cell Flags flag_numbers not obtained.");
+    FAILMSG("Cell Flags flag_numbers not obtained.");
     all_passed = false;
   }
   // Check number of flags for each cell flag type.
@@ -696,7 +690,7 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_cell_flag_size = false;
   }
   if (!got_cell_flag_size) {
-    ut.failure("Cell Flags flag_size not obtained.");
+    FAILMSG("Cell Flags flag_size not obtained.");
     all_passed = false;
   }
   // Check cell flag names for each of the flag types.
@@ -708,14 +702,14 @@ bool check_cell_flags(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_flag_name = false;
   }
   if (!got_cell_flag_name) {
-    ut.failure("Cell Flags flag_name not obtained.");
+    FAILMSG("Cell Flags flag_name not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all CellFlags accessors.");
+    PASSMSG("Got all CellFlags accessors.");
   } else {
-    ut.failure("Errors in some CellFlags accessors.");
+    FAILMSG("Errors in some CellFlags accessors.");
   }
 
   return all_passed;
@@ -744,7 +738,7 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -756,7 +750,7 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_node_data_id_names = false;
   }
   if (!got_node_data_id_names) {
-    ut.failure("NodeDataIDs names not obtained.");
+    FAILMSG("NodeDataIDs names not obtained.");
     all_passed = false;
   }
 
@@ -767,14 +761,14 @@ bool check_node_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_node_data_id_units = false;
   }
   if (!got_node_data_id_units) {
-    ut.failure("NodeDataIDs units not obtained.");
+    FAILMSG("NodeDataIDs units not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all NodeDataIDs accessors.");
+    PASSMSG("Got all NodeDataIDs accessors.");
   } else {
-    ut.failure("Errors in some NodeDataIDs accessors.");
+    FAILMSG("Errors in some NodeDataIDs accessors.");
   }
 
   return all_passed;
@@ -801,7 +795,7 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -813,7 +807,7 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_side_data_id_names = false;
   }
   if (!got_side_data_id_names) {
-    ut.failure("SideDataIDs names not obtained.");
+    FAILMSG("SideDataIDs names not obtained.");
     all_passed = false;
   }
 
@@ -824,14 +818,14 @@ bool check_side_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_side_data_id_units = false;
   }
   if (!got_side_data_id_units) {
-    ut.failure("SideDataIDs units not obtained.");
+    FAILMSG("SideDataIDs units not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all SideDataIDs accessors.");
+    PASSMSG("Got all SideDataIDs accessors.");
   } else {
-    ut.failure("Errors in some SideDataIDs accessors.");
+    FAILMSG("Errors in some SideDataIDs accessors.");
   }
 
   return all_passed;
@@ -856,7 +850,7 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -868,7 +862,7 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_cell_data_id_names = false;
   }
   if (!got_cell_data_id_names) {
-    ut.failure("CellDataIDs names not obtained.");
+    FAILMSG("CellDataIDs names not obtained.");
     all_passed = false;
   }
 
@@ -879,14 +873,14 @@ bool check_cell_data_ids(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_cell_data_id_units = false;
   }
   if (!got_cell_data_id_units) {
-    ut.failure("CellDataIDs units not obtained.");
+    FAILMSG("CellDataIDs units not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all CellDataIDs accessors.");
+    PASSMSG("Got all CellDataIDs accessors.");
   } else {
-    ut.failure("Errors in some CellDataIDs accessors.");
+    FAILMSG("Errors in some CellDataIDs accessors.");
   }
 
   return all_passed;
@@ -1079,7 +1073,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -1091,7 +1085,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_cell_defs_names = false;
   }
   if (!got_cell_defs_names) {
-    ut.failure("CellDefs names not obtained.");
+    FAILMSG("CellDefs names not obtained.");
     all_passed = false;
   }
 
@@ -1104,9 +1098,9 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         myCellDef.get_all_side_types().size() == 0 &&
         myCellDef.get_all_sides().size() == 0 &&
         myCellDef.get_all_ordered_sides().size() == 0) {
-      ut.passes("mesh.get_cell_defs_cell_def() works.");
+      PASSMSG("mesh.get_cell_defs_cell_def() works.");
     } else {
-      ut.failure("mesh.get_cell_defs_cell_def() failed.");
+      FAILMSG("mesh.get_cell_defs_cell_def() failed.");
     }
   }
 
@@ -1116,9 +1110,9 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     size_t mySize = myNodes.size();
     // std::cout << "mySize = " << mySize << std::endl;
     if (mySize == 0) {
-      ut.passes("get_cell_defs_node_map(int) returned an empty vector.");
+      PASSMSG("get_cell_defs_node_map(int) returned an empty vector.");
     } else {
-      ut.passes("get_cell_defs_node_map(int) did not return an empty vector.");
+      PASSMSG("get_cell_defs_node_map(int) did not return an empty vector.");
       std::cout << "myNodes = { ";
       if (mySize > 0) {
         for (size_t i = 0; i < myNodes.size() - 1; ++i)
@@ -1139,11 +1133,11 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   {
     bool myBool = mesh.get_cell_defs_redefined();
     if (myBool)
-      ut.failure("Unexpected value for get_cell_defs_redefined(): Cells are "
-                 "redefined.");
+      FAILMSG("Unexpected value for get_cell_defs_redefined(): Cells are "
+              "redefined.");
     else
-      ut.passes("Expected value for get_cell_defs_redefined(): Cells are not "
-                "redefined.");
+      PASSMSG("Expected value for get_cell_defs_redefined(): Cells are not "
+              "redefined.");
   }
 
   // Check cell definition number of nodes.
@@ -1153,7 +1147,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_cell_defs_nnodes = false;
   }
   if (!got_cell_defs_nnodes) {
-    ut.failure("CellDefs nnodes not obtained.");
+    FAILMSG("CellDefs nnodes not obtained.");
     all_passed = false;
   }
   // Check cell definition number of sides.
@@ -1163,7 +1157,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
       got_cell_defs_nsides = false;
   }
   if (!got_cell_defs_nsides) {
-    ut.failure("CellDefs nsides not obtained.");
+    FAILMSG("CellDefs nsides not obtained.");
     all_passed = false;
   }
   // Check cell definition side types.
@@ -1174,7 +1168,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_defs_side_types = false;
   }
   if (!got_cell_defs_side_types) {
-    ut.failure("CellDefs side_types not obtained.");
+    FAILMSG("CellDefs side_types not obtained.");
     all_passed = false;
   }
 
@@ -1186,7 +1180,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_defs_side = false;
   }
   if (!got_cell_defs_side) {
-    ut.failure("CellDefs side not obtained.");
+    FAILMSG("CellDefs side not obtained.");
     all_passed = false;
   }
   // Check cell definition ordered_side sets.
@@ -1197,14 +1191,14 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_defs_ordered_side = false;
   }
   if (!got_cell_defs_ordered_side) {
-    ut.failure("CellDefs ordered_side not obtained.");
+    FAILMSG("CellDefs ordered_side not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all CellDefs accessors.");
+    PASSMSG("Got all CellDefs accessors.");
   } else {
-    ut.failure("Errors in some CellDefs accessors.");
+    FAILMSG("Errors in some CellDefs accessors.");
   }
 
   return all_passed;
@@ -1252,14 +1246,14 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
 
   // Check all of the node coords.
   if (coords != mesh.get_nodes_coords()) {
-    ut.failure("Nodes coordinates not obtained.");
+    FAILMSG("Nodes coordinates not obtained.");
     all_passed = false;
   }
   // Check all of the coordinate directions for a single node.
@@ -1268,7 +1262,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (coords[i] != mesh.get_nodes_coords(i))
       got_node_coords = false;
   if (!got_node_coords) {
-    ut.failure("Node coordinates not obtained.");
+    FAILMSG("Node coordinates not obtained.");
     all_passed = false;
   }
   // Check a single coordinate direction for a single node.
@@ -1279,7 +1273,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_node_coord = false;
   }
   if (!got_node_coord) {
-    ut.failure("Node coordinate not obtained.");
+    FAILMSG("Node coordinate not obtained.");
     all_passed = false;
   }
   // Check the node parents.
@@ -1288,7 +1282,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (parents[i] != mesh.get_nodes_parents(i))
       got_nodes_parents = false;
   if (!got_nodes_parents) {
-    ut.failure("Nodes parents not obtained.");
+    FAILMSG("Nodes parents not obtained.");
     all_passed = false;
   }
   // Check the node flags.
@@ -1299,14 +1293,14 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_nodes_flags = false;
   }
   if (!got_nodes_flags) {
-    ut.failure("Nodes flags not obtained.");
+    FAILMSG("Nodes flags not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all Nodes accessors.");
+    PASSMSG("Got all Nodes accessors.");
   } else {
-    ut.failure("Errors in some Nodes accessors.");
+    FAILMSG("Errors in some Nodes accessors.");
   }
 
   return all_passed;
@@ -1353,7 +1347,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -1364,12 +1358,12 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (sideType[i] != mesh.get_sides_type(i))
       got_sides_type = false;
   if (!got_sides_type) {
-    ut.failure("Side type not obtained.");
+    FAILMSG("Side type not obtained.");
     all_passed = false;
   }
   // Check all of the side nodes.
   if (nodes != mesh.get_sides_nodes()) {
-    ut.failure("Sides nodes not obtained.");
+    FAILMSG("Sides nodes not obtained.");
     all_passed = false;
   }
   // Check all of the nodes for a single side.
@@ -1378,7 +1372,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (nodes[i] != mesh.get_sides_nodes(i))
       got_side_nodes = false;
   if (!got_side_nodes) {
-    ut.failure("Side nodes not obtained.");
+    FAILMSG("Side nodes not obtained.");
     all_passed = false;
   }
   // Check a single node for a single side.
@@ -1390,7 +1384,7 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_side_node = false;
   }
   if (!got_side_node) {
-    ut.failure("Side node not obtained.");
+    FAILMSG("Side node not obtained.");
     all_passed = false;
   }
   // Check the side flags.
@@ -1401,14 +1395,14 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_sides_flags = false;
   }
   if (!got_sides_flags) {
-    ut.failure("Side flags not obtained.");
+    FAILMSG("Side flags not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all Sides accessors.");
+    PASSMSG("Got all Sides accessors.");
   } else {
-    ut.failure("Errors in some Sides accessors.");
+    FAILMSG("Errors in some Sides accessors.");
   }
 
   return all_passed;
@@ -1444,7 +1438,7 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
@@ -1455,12 +1449,12 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (cellType[i] != mesh.get_cells_type(i))
       got_cells_type = false;
   if (!got_cells_type) {
-    ut.failure("Cell type not obtained.");
+    FAILMSG("Cell type not obtained.");
     all_passed = false;
   }
   // Check all of the cell nodes.
   if (nodes != mesh.get_cells_nodes()) {
-    ut.failure("Cells nodes not obtained.");
+    FAILMSG("Cells nodes not obtained.");
     all_passed = false;
   }
   // Check all of the nodes for a single cell.
@@ -1469,7 +1463,7 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (nodes[i] != mesh.get_cells_nodes(i))
       got_cell_nodes = false;
   if (!got_cell_nodes) {
-    ut.failure("Cell nodes not obtained.");
+    FAILMSG("Cell nodes not obtained.");
     all_passed = false;
   }
   // Check a single node for a single cell.
@@ -1481,7 +1475,7 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_node = false;
   }
   if (!got_cell_node) {
-    ut.failure("Cell node not obtained.");
+    FAILMSG("Cell node not obtained.");
     all_passed = false;
   }
   // Check the cell flags.
@@ -1492,14 +1486,14 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cells_flags = false;
   }
   if (!got_cells_flags) {
-    ut.failure("Cell flags not obtained.");
+    FAILMSG("Cell flags not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all Cells accessors.");
+    PASSMSG("Got all Cells accessors.");
   } else {
-    ut.failure("Errors in some Cells accessors.");
+    FAILMSG("Errors in some Cells accessors.");
   }
 
   return all_passed;
@@ -1527,14 +1521,14 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
 
   // Check all of the node data.
   if (data != mesh.get_node_data()) {
-    ut.failure("NodeData not obtained for all nodes/fields.");
+    FAILMSG("NodeData not obtained for all nodes/fields.");
     all_passed = false;
   }
   // Check all of the data fields for a single node.
@@ -1543,7 +1537,7 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (data[i] != mesh.get_node_data(i))
       got_node_data_fields = false;
   if (!got_node_data_fields) {
-    ut.failure("NodeData fields not obtained for a node.");
+    FAILMSG("NodeData fields not obtained for a node.");
     all_passed = false;
   }
   // Check a single data field for a single node.
@@ -1554,14 +1548,14 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_node_data = false;
   }
   if (!got_node_data) {
-    ut.failure("NodeData value not obtained.");
+    FAILMSG("NodeData value not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all NodeData accessors.");
+    PASSMSG("Got all NodeData accessors.");
   } else {
-    ut.failure("Errors in some NodeData accessors.");
+    FAILMSG("Errors in some NodeData accessors.");
   }
 
   return all_passed;
@@ -1588,14 +1582,14 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
 
   // Check all of the side data.
   if (data != mesh.get_side_data()) {
-    ut.failure("SideData not obtained for all sides/fields.");
+    FAILMSG("SideData not obtained for all sides/fields.");
     all_passed = false;
   }
   // Check all of the data fields for a single side.
@@ -1604,7 +1598,7 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (data[i] != mesh.get_side_data(i))
       got_side_data_fields = false;
   if (!got_side_data_fields) {
-    ut.failure("SideData fields not obtained for a side.");
+    FAILMSG("SideData fields not obtained for a side.");
     all_passed = false;
   }
   // Check a single data field for a single side.
@@ -1615,14 +1609,14 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_side_data = false;
   }
   if (!got_side_data) {
-    ut.failure("SideData value not obtained.");
+    FAILMSG("SideData value not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes("Got all SideData accessors.");
+    PASSMSG("Got all SideData accessors.");
   } else {
-    ut.failure("Errors in some SideData accessors.");
+    FAILMSG("Errors in some SideData accessors.");
   }
 
   return all_passed;
@@ -1647,14 +1641,14 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     break;
 
   default:
-    ut.failure("Invalid mesh type encountered.");
+    FAILMSG("Invalid mesh type encountered.");
     all_passed = false;
     return all_passed;
   }
 
   // Check all of the cell data.
   if (data != mesh.get_cell_data()) {
-    ut.failure("CellData not obtained for all cells/fields.");
+    FAILMSG("CellData not obtained for all cells/fields.");
     all_passed = false;
   }
   // Check all of the data fields for a single cell.
@@ -1663,7 +1657,7 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     if (data[i] != mesh.get_cell_data(i))
       got_cell_data_fields = false;
   if (!got_cell_data_fields) {
-    ut.failure("CellData fields not obtained for a cell.");
+    FAILMSG("CellData fields not obtained for a cell.");
     all_passed = false;
   }
   // Check a single data field for a single cell.
@@ -1674,21 +1668,20 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
         got_cell_data = false;
   }
   if (!got_cell_data) {
-    ut.failure("CellData value not obtained.");
+    FAILMSG("CellData value not obtained.");
     all_passed = false;
   }
 
   if (all_passed) {
-    ut.passes(std::string("Got all CellData accessors."));
+    PASSMSG(std::string("Got all CellData accessors."));
   } else {
-    ut.failure("Errors in some CellData accessors.");
+    FAILMSG("Errors in some CellData accessors.");
   }
 
   return all_passed;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

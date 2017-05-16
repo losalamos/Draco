@@ -61,7 +61,10 @@ int check_xcr0_ymm() {
 #if defined(_MSC_VER)
   xcr0 = (MYINT)_xgetbv(0); /* min VS2010 SP1 compiler is required */
 #else
-  __asm__("xgetbv" : "=a"(xcr0) : "c"(0) : "%edx");
+  /* named form of xgetbv not supported on OSX, so must use byte form, see:
+     https://github.com/asmjit/asmjit/issues/78
+   */
+  __asm__(".byte 0x0F, 0x01, 0xd0" : "=a"(xcr0) : "c"(0) : "%edx");
 #endif
   return ((xcr0 & 6) ==
           6); /* checking if xmm and ymm state are enabled in XCR0 */

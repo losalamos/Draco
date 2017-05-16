@@ -4,17 +4,13 @@
  * \author Kent Budge
  * \brief  Define class Abstract_Class_Parser
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef parser_Abstract_Class_Parser_hh
 #define parser_Abstract_Class_Parser_hh
 
 #include "Parse_Table.hh"
-#include "ds++/SP.hh"
 #include <functional>
 #include <iostream>
 
@@ -22,7 +18,6 @@ namespace rtt_parser {
 using std::string;
 using std::vector;
 using std::pointer_to_unary_function;
-using rtt_dsxx::SP;
 
 //===========================================================================//
 /*!
@@ -41,13 +36,13 @@ template <typename Abstract_Class, typename Context,
           Context const &get_context()>
 class Contextual_Parse_Functor {
 public:
-  Contextual_Parse_Functor(SP<Abstract_Class> parse_function(Token_Stream &,
-                                                             Context const &));
+  Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(
+      Token_Stream &, Context const &));
 
-  SP<Abstract_Class> operator()(Token_Stream &) const;
+  std::shared_ptr<Abstract_Class> operator()(Token_Stream &) const;
 
 private:
-  SP<Abstract_Class> (*f_)(Token_Stream &, Context const &);
+  std::shared_ptr<Abstract_Class> (*f_)(Token_Stream &, Context const &);
 };
 
 //===========================================================================//
@@ -82,8 +77,8 @@ private:
  * end
  *
  * Note that Abstract_Class_Parser does not actually do any parsing itself. It
- * is simply a repository for keyword-parser combinations that is typically
- * used by the Class_Parser for the abstract class.
+ * is simply a repository for keyword-parser combinations that is typically used
+ * by the Class_Parser for the abstract class.
  *
  * See test/tstAbstract_Class_Parser.cc for an example of its use.
  *
@@ -93,9 +88,9 @@ private:
  */
 //===========================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
-          SP<Abstract_Class> &get_parsed_object(),
-          typename Parse_Function =
-              pointer_to_unary_function<Token_Stream &, SP<Abstract_Class>>>
+          std::shared_ptr<Abstract_Class> &get_parsed_object(),
+          typename Parse_Function = pointer_to_unary_function<
+              Token_Stream &, std::shared_ptr<Abstract_Class>>>
 class Abstract_Class_Parser {
 public:
   // TYPES
@@ -107,8 +102,9 @@ public:
                              Parse_Function parse_function);
 
   //! Register children of the abstract class
-  static void register_child(string const &keyword,
-                             SP<Abstract_Class> parse_function(Token_Stream &));
+  static void register_child(
+      string const &keyword,
+      std::shared_ptr<Abstract_Class> parse_function(Token_Stream &));
 
   //! Check the class invariants
   static bool check_static_class_invariants();

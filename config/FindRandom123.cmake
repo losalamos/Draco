@@ -10,7 +10,8 @@ find_path( RANDOM123_INCLUDE_DIR
     PATHS
        "${RANDOM123_INC_DIR}"
        "$ENV{RANDOM123_INC_DIR}"
-    NO_DEFAULT_PATH
+    PATH_SUFFIXES
+       include
 )
 mark_as_advanced( RANDOM123_INCLUDE_DIR )
 

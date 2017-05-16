@@ -3,11 +3,13 @@
 ## File  : environment/bashrc/.bashrc_tt
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##
 ## Bash configuration file for Cray HPC machines.
 ##---------------------------------------------------------------------------##
+
+# verbose=true
 
 if test -n "$verbose"; then
    echo "In draco/environment/bashrc/.bashrc_tt"

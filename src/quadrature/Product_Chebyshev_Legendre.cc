@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Product_Chebyshev_Legendre.cc
  * \author James S. Warsa
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class for Product Chebyshev-Gauss-Legendre quadrature sets.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Product_Chebyshev_Legendre.cc 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #include "Product_Chebyshev_Legendre.hh"
 #include "Gauss_Legendre.hh"
@@ -20,25 +17,25 @@
 namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::name() const {
   return "Product Chebyshev Legendre";
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::parse_name() const { return "product cl"; }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 Quadrature_Class Product_Chebyshev_Legendre::quadrature_class() const {
   return OCTANT_QUADRATURE;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 unsigned Product_Chebyshev_Legendre::number_of_levels() const {
   return sn_order_;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 string Product_Chebyshev_Legendre::as_text(string const &indent) const {
   string Result = indent + "type = " + parse_name() + indent + "  order = " +
                   to_string(sn_order()) + " " + to_string(azimuthal_order_) +
@@ -47,7 +44,7 @@ string Product_Chebyshev_Legendre::as_text(string const &indent) const {
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void Product_Chebyshev_Legendre::create_octant_ordinates_(
     vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
   using std::fabs;
@@ -67,9 +64,10 @@ void Product_Chebyshev_Legendre::create_octant_ordinates_(
   eta.resize(numOrdinates);
   wt.resize(numOrdinates);
 
-  SP<Gauss_Legendre> GL(new Gauss_Legendre(sn_order_));
+  std::shared_ptr<Gauss_Legendre> GL(new Gauss_Legendre(sn_order_));
 
-  // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical coords)
+  // NOTE: this aligns the gauss points with the x-axis (r-axis in cylindrical
+  // coords)
 
   unsigned icount = 0;
 
@@ -94,6 +92,6 @@ void Product_Chebyshev_Legendre::create_octant_ordinates_(
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of Product_Chebyshev_Legendre.cc
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

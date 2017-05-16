@@ -4,21 +4,17 @@
  *  \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *          All rights reserved.  */
 //---------------------------------------------------------------------------//
-//! \version $Id$
-//---------------------------------------------------------------------------//
 
 #include "dummy_package.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/global.hh"
+#include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "timestep/field_ts_advisor.hh"
 #include "timestep/fixed_ts_advisor.hh"
 #include "timestep/ratio_ts_advisor.hh"
 #include "timestep/target_ts_advisor.hh"
 #include "timestep/ts_manager.hh"
-
-#include "c4/ParallelUnitTest.hh"
-#include "c4/global.hh"
-#include "ds++/Release.hh"
-#include "ds++/Soft_Equivalence.hh"
-
 #include <sstream>
 
 // forward declaration
@@ -67,26 +63,26 @@ void run_tests(rtt_dsxx::UnitTest &ut) {
   // reference.  Activating this controller can also be used to freeze the
   // time-step at the current value.
 
-  rtt_dsxx::SP<fixed_ts_advisor> sp_dt(
+  std::shared_ptr<fixed_ts_advisor> sp_dt(
       new fixed_ts_advisor("Current Time-Step", ts_advisor::req, dt, false));
   mngr.add_advisor(sp_dt);
 
   // Set up a required time-step to be activated at the user's discretion
 
-  rtt_dsxx::SP<fixed_ts_advisor> sp_ovr(new fixed_ts_advisor(
+  std::shared_ptr<fixed_ts_advisor> sp_ovr(new fixed_ts_advisor(
       "User Override", ts_advisor::req, override_dt, false));
   mngr.add_advisor(sp_ovr);
 
   // Set up a min timestep
 
-  rtt_dsxx::SP<fixed_ts_advisor> sp_min(
+  std::shared_ptr<fixed_ts_advisor> sp_min(
       new fixed_ts_advisor("Minimum", ts_advisor::min, ts_advisor::ts_small()));
   mngr.add_advisor(sp_min);
   sp_min->set_fixed_value(dt_min);
 
   // Set up a lower limit on the timestep rate of change
 
-  rtt_dsxx::SP<ratio_ts_advisor> sp_llr(
+  std::shared_ptr<ratio_ts_advisor> sp_llr(
       new ratio_ts_advisor("Rate of Change Lower Limit", ts_advisor::min, 0.8));
   mngr.add_advisor(sp_llr);
 
@@ -98,19 +94,19 @@ void run_tests(rtt_dsxx::UnitTest &ut) {
 
   // Set up an upper limit on the time-step rate of change
 
-  rtt_dsxx::SP<ratio_ts_advisor> sp_ulr(
+  std::shared_ptr<ratio_ts_advisor> sp_ulr(
       new ratio_ts_advisor("Rate of Change Upper Limit"));
   mngr.add_advisor(sp_ulr);
 
   // Set up an advisor to watch for an upper limit on the time-step.
 
-  rtt_dsxx::SP<fixed_ts_advisor> sp_max(new fixed_ts_advisor("Maximum"));
+  std::shared_ptr<fixed_ts_advisor> sp_max(new fixed_ts_advisor("Maximum"));
   mngr.add_advisor(sp_max);
   sp_max->set_fixed_value(dt_max);
 
   // Set up a target time advisor
 
-  rtt_dsxx::SP<target_ts_advisor> sp_gd(
+  std::shared_ptr<target_ts_advisor> sp_gd(
       new target_ts_advisor("Graphics Dump", ts_advisor::max, graphics_time));
   mngr.add_advisor(sp_gd);
 

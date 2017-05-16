@@ -5,21 +5,16 @@
  * \date   Tue Nov 15 15:51:27 2011
  * \brief  IpcressMultigroupOpacity templated class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "IpcressMultigroupOpacity.hh"
-#include "IpcressFile.hh"      // we have smart pointers to
-                               // IpcressFile objects.
-#include "IpcressDataTable.hh" // we have a smart pointer to a
-                               // IpcressDataTable object.
-
-#include "ds++/Assert.hh" // we make use of Require()
+#include "IpcressDataTable.hh"
+#include "IpcressFile.hh"
+#include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
-#include <cmath> // we need to define log(double) and exp(double)
+#include <cmath>
+#include <memory>
 
 namespace rtt_cdi_ipcress {
 
@@ -30,12 +25,13 @@ namespace rtt_cdi_ipcress {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for IpcressMultigroupOpacity object.
- * 
+ *
  * See IpcressMultigroupOpacity.hh for details.
  */
 IpcressMultigroupOpacity::IpcressMultigroupOpacity(
-    rtt_dsxx::SP<IpcressFile const> const &spIpcressFile, size_t in_materialID,
-    rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction)
+    std::shared_ptr<IpcressFile const> const &spIpcressFile,
+    size_t in_materialID, rtt_cdi::Model in_opacityModel,
+    rtt_cdi::Reaction in_opacityReaction)
     : ipcressFilename(spIpcressFile->getDataFilename()),
       materialID(in_materialID), fieldNames(), opacityModel(in_opacityModel),
       opacityReaction(in_opacityReaction), energyPolicyDescriptor("mg"),
@@ -61,7 +57,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor for IpcressMultigroupOpacity object.
- * 
+ *
  * See IpcressMultigroupOpacity.hh for details.
  */
 IpcressMultigroupOpacity::IpcressMultigroupOpacity(
@@ -120,7 +116,7 @@ IpcressMultigroupOpacity::IpcressMultigroupOpacity(
   Ensure(unpacker.get_ptr() == &packed[0] + packed.size());
 
   // build a new IpcressFile
-  rtt_dsxx::SP<IpcressFile> spIpcressFile;
+  std::shared_ptr<IpcressFile> spIpcressFile;
   spIpcressFile.reset(new IpcressFile(ipcressFilename));
   Check(spIpcressFile);
 

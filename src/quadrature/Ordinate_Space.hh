@@ -77,20 +77,21 @@ using std::ostream;
  * angle derivative can be cast in block bidiagonal form, so that there is not
  * more than one direct dependency per ordinate. The Ordinate_Space may then
  * order the ordinates by dependency, so the first ordinate can have no
- * dependencies, the second may be directly dependent only on the first, and
- * so on. Thus a client need only check whether an ordinate is dependent on
- * the preceeding angle or not.
+ * dependencies, the second may be directly dependent only on the first, and so
+ * on. Thus a client need only check whether an ordinate is dependent on the
+ * preceeding angle or not.
  *
  * Each of the blocks in the block bidiagonal form of the angle operator is
  * referred to as a "level." This is terminology held over from the particular
  * case of 2-D axisymmetric geometry, where the ordinate sets generally are
  * organized on "levels" having the same z direction cosine (xi) which are
- * coupled by the omega derivative term. It is useful to know the number of
- * such blocks to optimize storage of intermediate results.
+ * coupled by the omega derivative term. It is useful to know the number of such
+ * blocks to optimize storage of intermediate results.
  *
- * We illustrate with an example. In axisymmetric geometry, <a
- * href="../../pdf/transport_implementation.pdf">Morel's
- * discretization</a> of the angle derivative term in the streaming operator is
+ * We illustrate with an example. In axisymmetric geometry, Morel's
+ * discretization (J.E. Morel, "An R-Z Geometry Triangular-Mesh Sn Spatial
+ * Differencing Scheme," Technical Memorandum CCS-4:03-14(U), May 12, 2003.) of
+ * the angle derivative term in the streaming operator is
  *
  * \f$\frac{\partial (\eta \psi)}{\partial \omega}\approx
  * \frac{1}{w_m}(\alpha_{m+1/2}\psi_{m+1/2}-\alpha_{m-1/2}\psi_{m-1/2})\f$
@@ -124,11 +125,11 @@ using std::ostream;
  * computation.
  *
  * Note that this discretization of the angle derivative terms must still be
- * substituted into the transport equation, which is then further discretized
- * in space. Thus the angle derivative term will generally be multiplied by an
+ * substituted into the transport equation, which is then further discretized in
+ * space. Thus the angle derivative term will generally be multiplied by an
  * additional factor arising from the spatial discretization.
  */
-//=======================================================================================//
+//============================================================================//
 
 class Ordinate_Space : public rtt_quadrature::Ordinate_Set {
 public:

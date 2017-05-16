@@ -3,18 +3,19 @@
 ## File  : regression/pull_repositories_xf.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
-# Pull SVN repositories from Yellow
+# Pull Git repositories from Yellow
 #
 # Assumptions:
-# 1. Mercury requests must have the id tag set
-#    tag             tar file              directory name
-#    ---             ---------             ---------------
-#    jayenne.repo    jayenne.hotcopy.tar   jayenne.hotcopy
-#    capsaicin.repo  capsaicin.hotcopy.tar capsaicin.hotcopy
-# 2. SVN repositories live at /usr/projects/draco/svn
+# 1. Tar'ed repository names
+#    repo             tar file
+#    ---             ---------
+#    draco           draco.git.tar
+#    jayenne         jayenne.git.tar
+#    capsaicin       capsaicin.git.tar
+# 2. Git repositories live at /usr/projects/draco/git
 # 3. Kerberos keytab files is at $HOME/.ssh/xfkeytab and is signed
 #    with principal transfer/${USER}push@lanl.gov
 #------------------------------------------------------------------------------#
@@ -26,23 +27,17 @@
 
 # dry_run=1
 
-# Helpful functions:
-die () { echo "FATAL ERROR: $1"; exit 1;}
-
-run () {
-   echo $1
-   if ! test $dry_run; then
-      eval $1
+# load some common bash functions
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f $rscriptdir/scripts/common.sh ]]; then
+  source $rscriptdir/scripts/common.sh
+else
+  echo " "
+  echo "FATAL ERROR: Unable to locate Draco's bash functions: "
+  echo "   looking for .../regression/scripts/common.sh"
+  echo "   searched rscriptdir = $rscriptdir"
+  exit 1
    fi
-}
-
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
 
 #------------------------------------------------------------------------------#
 function xfpull()
@@ -167,12 +162,6 @@ run "cd ${work_dir}/.."
 run "chgrp -R draco git"
 run "chmod -R g+rwX,o-rwX git"
 
-# Modules
-# ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
-    echo 'module function does not exist. defining a local function ...'
-    run "source /usr/share/Modules/init/bash"
-fi
+#------------------------------------------------------------------------------#
+# End pull_repositories_xf.sh
+#------------------------------------------------------------------------------#

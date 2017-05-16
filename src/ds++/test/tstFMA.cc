@@ -13,15 +13,14 @@
 #include <sstream>
 
 #define FP_ACCURATE_FMA 1
+#ifdef FP_ACCURATE_FMA
 #include "ds++/FMA.hh"
+#endif
 
 //---------------------------------------------------------------------------//
 // Test 1: Accurate FMA
 void test_fma1(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n>>> Begin test 1..." << std::endl;
-
-#define FP_ACCURATE_FMA 1
-#include "ds++/FMA.hh"
 
   double const a(1.0e-16), b(1.0e16), c(-1.0);
 

@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Definition of class Expression
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef parser_Expression_hh
@@ -15,7 +12,6 @@
 
 #include "Token_Stream.hh"
 #include "Unit.hh"
-#include "ds++/SP.hh"
 #include <map>
 #include <ostream>
 #include <utility>
@@ -27,13 +23,12 @@ using std::pair;
 using std::string;
 using std::map;
 using std::ostream;
-using rtt_dsxx::SP;
 
 //===========================================================================//
 /*!
  * \class Expression
  * \brief Represents a mathematical expression, typically parsed from user
- * input. 
+ * input.
  *
  * Test problems and numerical experiments often require that a problem domain
  * be initialized or driven in a way that varies in space and time.  For
@@ -58,7 +53,7 @@ using rtt_dsxx::SP;
  * Expressions are evaluated for an arbitrary set of variables. These are
  * specified when the Expression is parsed using a map from variable name (as
  * a std::string) to variable index and units. The map can specify any number
- * of variables. 
+ * of variables.
  */
 //===========================================================================//
 
@@ -136,12 +131,12 @@ public:
   // STATIC
 
   //! Parse an Expression from a Token_Stream.
-  static SP<Expression>
+  static std::shared_ptr<Expression>
   parse(unsigned number_of_variables,
         map<string, pair<unsigned, Unit>> const &variables, Token_Stream &);
 
   //! Parse an Expression with specified dimensions from a Token_Stream.
-  static SP<Expression>
+  static std::shared_ptr<Expression>
   parse(unsigned number_of_variables,
         map<string, pair<unsigned, Unit>> const &variables,
         Unit const &expected_units, string const &expected_units_text,
@@ -161,9 +156,9 @@ protected:
       : number_of_variables_(number_of_variables), units_(units) {}
 
   //! allow child classes access to Expression::evaluate
-  static double evaluate_def_(SP<Expression const> const &e,
+  static double evaluate_def_(std::shared_ptr<Expression const> const &e,
                               double const *const x) {
-    Require(e != SP<Expression>());
+    Require(e != std::shared_ptr<Expression>());
 
     return e->evaluate_(x);
   }

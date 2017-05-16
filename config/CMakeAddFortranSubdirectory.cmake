@@ -326,7 +326,7 @@ cmake_add_fortran_subdirectory
    Extra args : ${ARGS_CMAKE_COMMAND_LINE}
       ")
       include(print_target_properties)
-      echo_targets(${tgt})
+      print_targets_properties(${tgt})
   endif()
   endforeach()
 

@@ -10,8 +10,6 @@
  * This class is deprecated. New code should use Norm_Index instead.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef norms_L2norm_i_hh
 #define norms_L2norm_i_hh

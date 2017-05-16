@@ -5,10 +5,7 @@
  * \date   Wed Nov 21 14:36:15 2001
  * \brief  Analytic_Models implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Models.hh"
@@ -22,8 +19,9 @@ namespace rtt_cdi_analytic {
 // EOS_ANALYTIC_MODEL MEMBER DEFINITIONS
 //===========================================================================//
 
-/*! \brief Calculate the electron temperature given density and Electron internal
- *         energy
+/*!
+ * \brief Calculate the electron temperature given density and Electron internal
+ *        energy
  *
  * \f[
  * U_e(T_i) = \int_{T=0}^{T_i}{C_v(\rho,T)dT}
@@ -32,10 +30,10 @@ namespace rtt_cdi_analytic {
  * Where we assume \f$ U_e(0) \equiv 0 \f$.
  *
  * We have chosen to use absolute electron energy instead of dUe to mimik the
- * behavior of EOSPAC. 
+ * behavior of EOSPAC.
  *
  * \todo Consider using GSL root finding with Newton-Raphson for improved
- *       efficiency. 
+ *       efficiency.
  */
 double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
     double const /*rho*/, double const Ue, double const Te0) const {
@@ -75,10 +73,10 @@ double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_elec_temperature(
  * Where we assume \f$ U_ic(0) \equiv 0 \f$.
  *
  * We have chosen to use absolute electron energy instead of dUe to mimik the
- * behavior of EOSPAC. 
+ * behavior of EOSPAC.
  *
  * \todo Consider using GSL root finding with Newton-Raphson for improved
- *       efficiency. 
+ *       efficiency.
  */
 double Polynomial_Specific_Heat_Analytic_EoS_Model::calculate_ion_temperature(
     double const /*rho*/, double const Uic, double const Ti0) const {

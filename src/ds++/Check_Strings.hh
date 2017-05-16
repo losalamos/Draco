@@ -3,22 +3,20 @@
  * \file   ds++/Check_Strings.hh
  * \author John McGhee
  * \date   Sun Jan 30 14:57:09 2000 *
- * \brief  Provides some utilities to check containers of strings. 
+ * \brief  Provides some utilities to check containers of strings.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * Functions are provided to examine a container of strings: 1) for the
- * occurrence of certain characters, 2) for the length of each string
- * outside of high and low limits, and 3) to determine if there are any 
- * duplicate strings in the container. Return value is a vector of 
- * iterators which point to any strings which are selected.
+ * occurrence of certain characters, 2) for the length of each string outside of
+ * high and low limits, and 3) to determine if there are any duplicate strings
+ * in the container. Return value is a vector of iterators which point to any
+ * strings which are selected.
  *
  * \example ds++/test/tstCheck_Strings.cc
  * The following code provides examples of how to use the Check_Strings
- * utilities. 
+ * utilities.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef __ds_Check_Strings_hh__
@@ -64,29 +62,25 @@ struct strings_equal {
  *        the container use any of the characters specified in the input
  *        parameter "match_chars".
  *
- * For example, if you want to create a set of files or directories from a
- *     list of strings, this function can be used to check for characters
- *     (like "*" for instance) that really shouldn't be used for file or
- *     directory names.
+ * For example, if you want to create a set of files or directories from a list
+ * of strings, this function can be used to check for characters (like "*" for
+ * instance) that really shouldn't be used for file or directory names.
  *
- * \param first iterator for the first string in the container to
- *        be checked.
+ * \param first iterator for the first string in the container to be checked.
  *
- * \param last iterator for the last string in the container to be
- *        to be checked plus one.
+ * \param last iterator for the last string in the container to be to be checked
+ *        plus one.
  *
  * \param match_chars a string containing the characters for which to search.
- *        i.e. - If you want to check for the presence of "*" or "^"
- *        then set std::string match_chars = "*^".
+ *        i.e. - If you want to check for the presence of "*" or "^" then set
+ *        std::string match_chars = "*^".
  *
- * \return a vector of iterators for any strings which contain
- *         one or more of the match characters. If the size of this vector
- *         is 0 no strings that contained any of the matching
- *         characters were found.
+ * \return a vector of iterators for any strings which contain one or more of
+ *         the match characters. If the size of this vector is 0 no strings that
+ *         contained any of the matching characters were found.
  *
- * \sa     Other string checking utilities are available in
+ * \sa Other string checking utilities are available in
  *         rtt_dsxx::check_string_lengths, and rtt_dsxx::check_strings_unique.
- *
  */
 template <class IT>
 std::vector<IT> check_string_chars(IT const &first, IT const &last,
@@ -104,34 +98,31 @@ std::vector<IT> check_string_chars(IT const &first, IT const &last,
   return result_vector;
 }
 
+//---------------------------------------------------------------------------//
 /*!
- * \brief Looks through a container of strings to see if the size of any
- *        of the strings in the container is outside the specified
- *        range.
+ * \brief Looks through a container of strings to see if the size of any of the
+ *        strings in the container is outside the specified range.
  *
- * For example, if you want to check a container of strings to make
- *        sure that all lengths are in the range 1:19 inclusive,
- *        set parameter low=1, and parameter high=19.
+ * For example, if you want to check a container of strings to make sure that
+ * all lengths are in the range 1:19 inclusive, set parameter low=1, and
+ * parameter high=19.
  *
- * \param first iterator for the first string in the container to
- *        be checked.
+ * \param first iterator for the first string in the container to be checked.
  *
- * \param last iterator for the last string in the container to be
- *        to be checked plus one.
+ * \param last iterator for the last string in the container to be to be checked
+ *        plus one.
  *
- * \param low lower limit of acceptable string length. If less than
- *        zero, it is assumed to be zero.
+ * \param low lower limit of acceptable string length. If less than zero, it is
+ *        assumed to be zero.
  *
  * \param high upper limit of acceptable string length
  *
- * \return a vector of iterators for any strings which are of 
- *         length less than low or greater than high.
- *         If the size of this vector is 0 no strings with 
- *         out-of-range lengths were found.
+ * \return a vector of iterators for any strings which are of length less than
+ *         low or greater than high.  If the size of this vector is 0 no strings
+ *         with out-of-range lengths were found.
  *
- * \sa     Other string checking utilities are available in
+ * \sa Other string checking utilities are available in
  *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_strings_unique.
- *
  */
 template <class IT>
 std::vector<IT> check_string_lengths(IT const &first, IT const &last,
@@ -151,28 +142,26 @@ std::vector<IT> check_string_lengths(IT const &first, IT const &last,
   return result_vector;
 }
 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Looks through a container of strings to see if there are any
  *        duplicates.
- * 
- * If a string is duplicated more than once, it will appear in the output
- *        vector more than once.
  *
- * \param first iterator for the first string in the container to
- *        be checked. 
+ * If a string is duplicated more than once, it will appear in the output vector
+ * more than once.
  *
- * \param last iterator for the last string in the container to be
- *        to be checked plus one.
+ * \param first iterator for the first string in the container to be checked.
  *
- * \return a vector of iterators for any strings which are found
- *         to be duplicated. 
- *         If the size of this vector is 0 no duplicate strings
- *         were found, that is, all the strings in the container
- *         in the range first:last-1 are unique.
+ * \param last iterator for the last string in the container to be to be checked
+ *        plus one.
  *
- * \sa     Other string checking utilities are available in
+ * \return a vector of iterators for any strings which are found to be
+ *         duplicated.  If the size of this vector is 0 no duplicate strings
+ *         were found, that is, all the strings in the container in the range
+ *         first:last-1 are unique.
+ *
+ * \sa Other string checking utilities are available in
  *         rtt_dsxx::check_string_chars, and rtt_dsxx::check_string_lengths.
- *
  */
 template <class IT>
 std::vector<IT> check_strings_unique(IT first, IT const &last) {

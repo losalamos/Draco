@@ -5,10 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Pseudo_Line_Analytic_Odfmg_Opacity class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Pseudo_Line_Analytic_Odfmg_Opacity_hh__
@@ -28,7 +25,6 @@ using std::pair;
  *
  * Primarily code from Analytic_Multigroup_Opacity.
  */
-//
 //===========================================================================//
 
 class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_Odfmg_Opacity
@@ -46,11 +42,11 @@ public:
   // Constructor.
   Pseudo_Line_Analytic_Odfmg_Opacity(
       const sf_double &groups, const sf_double &bands,
-      rtt_cdi::Reaction reaction_in, SP<Expression const> const &cont,
-      int number_of_lines, double line_peak, double line_width,
-      int number_of_edges, double edge_ratio, double Tref, double Tpow,
-      double emin, double emax, Averaging averaging, unsigned qpoints,
-      unsigned seed);
+      rtt_cdi::Reaction reaction_in,
+      std::shared_ptr<Expression const> const &cont, int number_of_lines,
+      double line_peak, double line_width, int number_of_edges,
+      double edge_ratio, double Tref, double Tpow, double emin, double emax,
+      Averaging averaging, unsigned qpoints, unsigned seed);
 
   // Constructor.
   Pseudo_Line_Analytic_Odfmg_Opacity(

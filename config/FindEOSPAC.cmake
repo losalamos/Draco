@@ -1,3 +1,10 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/FindEOSPAC.cmake
+# date   2017 February 28
+# brief  Instructions for discovering the EOSPAC vendor libraries.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # - Find EOSPAC
 # Find the native EOSPAC includes and library
 #
@@ -45,7 +52,7 @@ if( NOT EOSPAC_LIBRARY )
    find_path( EOSPAC_INCLUDE_DIR    NAMES eos_Interface.h )
    find_library(EOSPAC_LIBRARY      NAMES ${EOSPAC_LIBRARY_NAME} )
 endif()
-mark_as_advanced( EOSPAC_LIBRARY EOSPAC_INCLUDE_DIR EOSPAC_LIBRARY )
+mark_as_advanced( EOSPAC_LIBRARY EOSPAC_INCLUDE_DIR )
 
 # handle the QUIETLY and REQUIRED arguments and set EOSPAC_FOUND to TRUE if 
 # all listed variables are TRUE

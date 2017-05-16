@@ -1,10 +1,10 @@
 # crontab for ml-fey
 
 # Sync git repositories to local FS and run CI tests
-*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/sync_repository.ml.log
+*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh
 
 # Update the run scripts in the regression directory
-01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh &> /usr/projects/jayenne/regress/logs/update_regression_scripts.log
+01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh
 
 #------------------------------------------------------------------------------#
 # Regressions options:
@@ -21,22 +21,22 @@
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
-# Intel/16.0.3 and OpenMPI/1.10.1
+# Intel/17.0.1 and OpenMPI/1.10.5
 #------------------------------------------------------------------------------#
 
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin" &> /usr/projects/jayenne/regress/logs/ml-Debug-master.log
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin"
 
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin" &> /usr/projects/jayenne/regress/logs/ml-Release-master.log
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin"
 
 #------------------------------------------------------------------------------#
 # Special: NR, PerfBench and FullDiagnostics regressions.
 #------------------------------------------------------------------------------#
 
-01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e nr -p "jayenne" &> /usr/projects/jayenne/regress/logs/ml-Release-nr-master.log
+01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e nr -p "jayenne"
 
-01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e perfbench -p "jayenne capsaicin" &> /usr/projects/jayenne/regress/logs/ml-Release-perfbench-master.log
+01 03 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e perfbench -p "jayenne capsaicin"
 
-01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e fulldiagnostics -p "draco jayenne capsaicin"  &> /usr/projects/jayenne/regress/logs/ml-Debug-fulldiagnostics-master.log
+01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e fulldiagnostics -p "draco jayenne capsaicin"
 
 #------------------------------------------------------------------------------#
 # Periodic usage reports

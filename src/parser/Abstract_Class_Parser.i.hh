@@ -5,10 +5,7 @@
  * \date   Thu Jul 17 14:08:42 2008
  * \brief  Member definitions of class Abstract_Class_Parser
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved */
 //---------------------------------------------------------------------------//
 
 #ifndef utils_Abstract_Class_Parser_i_hh
@@ -18,13 +15,13 @@
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
 Contextual_Parse_Functor<Abstract_Class, Context, get_context>::
-    Contextual_Parse_Functor(SP<Abstract_Class> parse_function(Token_Stream &,
-                                                               Context const &))
+    Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(
+        Token_Stream &, Context const &))
     : f_(parse_function) {}
 
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
-SP<Abstract_Class>
+std::shared_ptr<Abstract_Class>
 Contextual_Parse_Functor<Abstract_Class, Context, get_context>::
 operator()(Token_Stream &tokens) const {
   return f_(tokens, get_context());
@@ -32,8 +29,8 @@ operator()(Token_Stream &tokens) const {
 
 //===========================================================================//
 /*!
- * Helper class defining a table of raw strings created by strdup that will be properly
- * deallocated using free on program termination.
+ * Helper class defining a table of raw strings created by strdup that will be
+ * properly deallocated using free on program termination.
  */
 class c_string_vector {
 public:
@@ -46,13 +43,16 @@ DLL_PUBLIC_parser extern c_string_vector abstract_class_parser_keys;
 
 //===========================================================================//
 /*
- * The following rather lengthy and clumsy declaration declares storage for
- * the parse functions.
+ * The following rather lengthy and clumsy declaration declares storage for the
+ * parse functions.
  *
- * Remember: typedef SP<Abstract_Class> Parse_Function(Token_Stream &);
+ * Remember:
+ * \code
+ * typedef std::shared_ptr<Abstract_Class> Parse_Function(Token_Stream &);
+ * \code
  */
 template <typename Class, Parse_Table &get_parse_table(),
-          SP<Class> &get_parsed_object(), typename Parse_Function>
+          std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
 vector<Parse_Function> Abstract_Class_Parser<
     Class, get_parse_table, get_parsed_object, Parse_Function>::map_;
 
@@ -67,7 +67,7 @@ vector<Parse_Function> Abstract_Class_Parser<
  * Token_Stream and returns a corresponding object of the child class.
  */
 template <typename Class, Parse_Table &get_parse_table(),
-          SP<Class> &get_parsed_object(), typename Parse_Function>
+          std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
 void Abstract_Class_Parser<
     Class, get_parse_table, get_parsed_object,
     Parse_Function>::register_child(string const &keyword,
@@ -100,11 +100,11 @@ void Abstract_Class_Parser<
  * Token_Stream and returns a corresponding object of the child class.
  */
 template <typename Class, Parse_Table &get_parse_table(),
-          SP<Class> &get_parsed_object(), typename Parse_Function>
-void Abstract_Class_Parser<
-    Class, get_parse_table, get_parsed_object,
-    Parse_Function>::register_child(string const &keyword,
-                                    SP<Class> parse_function(Token_Stream &)) {
+          std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
+void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
+                           Parse_Function>::
+    register_child(string const &keyword,
+                   std::shared_ptr<Class> parse_function(Token_Stream &)) {
   using namespace rtt_parser;
 
   char *cptr = new char[keyword.size() + 1];
@@ -128,7 +128,7 @@ void Abstract_Class_Parser<
  * makes use of the Parse_Function associated with each child keyword.
  */
 template <typename Class, Parse_Table &get_parse_table(),
-          SP<Class> &get_parsed_object(), typename Parse_Function>
+          std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
 void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
                            Parse_Function>::parse_child_(Token_Stream &tokens,
                                                          int const child) {
@@ -145,7 +145,7 @@ void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
 
 //---------------------------------------------------------------------------//
 template <typename Class, Parse_Table &get_parse_table(),
-          SP<Class> &get_parsed_object(), typename Parse_Function>
+          std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
 bool Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
                            Parse_Function>::check_static_class_invariants() {
   return true; // no significant invariant for now

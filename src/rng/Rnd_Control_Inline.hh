@@ -4,14 +4,14 @@
  * \author Paul Henning
  * \brief  Rnd_Control header file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_rng_Rnd_Control_Inline_hh
 #define rtt_rng_Rnd_Control_Inline_hh
 
 #include "Counter_RNG.hh"
+#include <limits>
 
 namespace rtt_rng {
 

@@ -5,10 +5,7 @@
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator header file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_viz_Ensight_Translator_hh
@@ -17,7 +14,7 @@
 #include "Ensight_Stream.hh"
 #include "Viz_Traits.hh"
 #include "ds++/Check_Strings.hh"
-#include "ds++/SP.hh"
+#include <memory>
 #include <set>
 
 namespace rtt_viz {
@@ -150,7 +147,7 @@ public:
 
   typedef set_int::const_iterator set_const_iterator;
 
-  typedef std::vector<rtt_dsxx::SP<Ensight_Stream>> vec_stream;
+  typedef std::vector<std::shared_ptr<Ensight_Stream>> vec_stream;
 
 private:
   // >>> DATA

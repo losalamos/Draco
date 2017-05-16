@@ -37,8 +37,8 @@ macro( dbsSetDefaults )
   mark_as_advanced( LIBRARY_OUTPUT_PATH )
   mark_as_advanced( DART_TESTING_TIMEOUT )
 
-  # For win32 platforms avoid copying all dependent dll libraries into the test directories
-  # by using a common runtime directory.
+  # For win32 platforms avoid copying all dependent dll libraries into the test
+  # directories by using a common runtime directory.
   if( WIN32 )
      if( CMAKE_CONFIGURATION_TYPES )
         set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR} )
@@ -58,6 +58,13 @@ macro( dbsSetDefaults )
      set( CMAKE_SUPPRESS_REGENERATION ON )
   endif()
 
+  if( CMAKE_CONFIGURATION_TYPES )
+    set( Draco_BUILD_TYPE "Multi-config")
+  else()
+    set( Draco_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+    string( TOUPPER ${CMAKE_BUILD_TYPE} Draco_BUILD_TYPE )
+  endif()
+
   # Design-by-Contract
   if( NOT DEFINED DRACO_DBC_LEVEL )
 
@@ -68,8 +75,12 @@ macro( dbsSetDefaults )
     #   Ensure() postconditions: add +4 to DBC_LEVEL
     #   Do not throw on error  : add +8 to DBC_LEVEL
     set( DRACO_DBC_LEVEL "7" )
-    if( NOT CMAKE_CONFIGURATION_TYPES AND "${CMAKE_BUILD_TYPE}" MATCHES "[Rr][Ee][Ll][Ee][Aa][Ss][Ee]" )
-      set( DRACO_DBC_LEVEL "0" )
+    if( NOT CMAKE_CONFIGURATION_TYPES )
+      if( "${Draco_BUILD_TYPE}" MATCHES "RELEASE" )
+        set( DRACO_DBC_LEVEL "0" )
+      elseif( "${CMAKE_BUILD_TYPE}" MATCHES "RELWITHDEBINFO" )
+        set( DRACO_DBC_LEVEL "15" )
+      endif()
     endif()
     set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING "Design-by-Contract (0-31)?" )
     # provide a constrained drop down menu in cmake-gui
@@ -79,12 +90,12 @@ macro( dbsSetDefaults )
   endif()
 
   if( CMAKE_CONFIGURATION_TYPES )
-    # This generator expression will be expanded when the project is
-    # installed (CMake-3.4.0+)
+    # This generator expression will be expanded when the project is installed
+    # (CMake-3.4.0+)
     set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
-    # Generate a complete installation directory structure to avoid
-    # errors of the form "imported target includes non-existent path"
-    # when configuring Jayenne.
+    # Generate a complete installation directory structure to avoid errors of
+    # the form "imported target includes non-existent path" when configuring
+    # Jayenne.
     foreach( config ${CMAKE_CONFIGURATION_TYPES} )
       file( MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${config}/include )
     endforeach()

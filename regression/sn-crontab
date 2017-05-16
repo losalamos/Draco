@@ -1,10 +1,6 @@
 # crontab for sn-fey
 
-# Sync git repositories to local FS and run CI tests
-# */15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/sync_repository.sn.log
-
-# Update the run scripts in the regression directory (currently, only do this from ml)
-# 01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh &> /usr/projects/jayenne/regress/logs/update_regression_scripts.log
+*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh
 
 #------------------------------------------------------------------------------#
 # Regressions options:
@@ -24,9 +20,13 @@
 # Intel/17.0.1 and OpenMPI/1.10.5
 #------------------------------------------------------------------------------#
 
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin" &> /usr/projects/jayenne/regress/logs/sn-Debug-master.log
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin"
 
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin" &> /usr/projects/jayenne/regress/logs/sn-Release-master.log
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin"
+
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" -e newtools
+
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" -e gcc610
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

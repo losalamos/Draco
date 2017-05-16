@@ -9,10 +9,6 @@
 ##
 ## Summary: Misc bash functions useful during development of code.
 ##
-## 1. Use GNU tools instead of vendor tools when possible
-## 2. Create some alias commands to provide hints when invalid commands are
-##    issued.
-##
 ## Functions
 ## ---------
 ##
@@ -25,11 +21,23 @@
 ## findsymbol <sym>  - search all libraries (.so and .a files) in the
 ##                     current directory for symbol <sym>.
 ##
-## pkgdepends        - Print a list of dependencies for the current
-##                     directory.
-##
 ## npwd              - function used to set the prompt under bash.
 ##
+## xfstatus          - report status of transfer.lanl.gov
+##
+## rm_from_path      - remove a directory from $PATH
+##
+## add_to_path       - add a directory to $PATH
+##
+## proxy             - (un)set http_proxy variables
+##
+## fn_exists         - test if a bash function is defined
+##
+## run               - echo then evaluate a bash command
+##
+## rdde              - reload the default draco environment
+##
+## qrm               - quick remove (for lustre filesystems).
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
@@ -168,86 +176,6 @@ function findsymbol()
 }
 
 ##---------------------------------------------------------------------------##
-## Usage:
-##    pkgdepends
-##
-## Purpose:
-##    The script will list all of the vendors and Draco packages
-##    dependencies for the files in the current directory.
-##---------------------------------------------------------------------------##
-
-function pkgdepends()
-{
-  echo "This package depends on:"
-  echo " "
-  echo "Packages:"
-  grep 'include [<"].*[/]' *.cc *.hh | sed -e 's/.*[#]include [<"]/   /' | sed -e 's/\/.*//' | sort -u
-  echo " "
-  if test -f configure.ac; then
-    echo "Vendors:"
-    grep "SETUP[(]pkg" configure.ac | sed -e 's/AC_/   /' | sed -e 's/_.*//'
-  fi
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    findgrep <regex>
-##
-## Finds all occurances of <regex> by looking at all files in the
-## current directory and all subdirectories recursively.  Prints the
-## filename and line number for each occurance.
-##---------------------------------------------------------------------------##
-function findgrep()
-{
-  # Exclude .svn directories: (-path '*/.svn' -prune)
-  # Or (-o)
-  files=`find . -path '*/.svn' -prune -o -type f -exec grep -q $1 {} /dev/null \; -print`
-  for file in $files; do
-    echo " "
-    echo "--> Found \"$1\" in file \"$file\" :"
-    echo " "
-    grep $1 $file
-  done
-  echo " "
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    archive [age_in_days]
-##
-## Move all files older than [age_in_days] (default: 7d) from the
-## current directory into a subdirectory named as the current year.
-##---------------------------------------------------------------------------##
-function archive()
-{
-  # Find files (-type f) older than 7 days (-mtime +7) and in the local
-  # directory (-maxdepth 1) and move them to a subdirectory named by
-  # the current year.
-  local dt=7
-  if test -n "$1"; then
-    dt=$1
-  fi
-  local year=`date +%Y`
-  #  local year=`stat {} | grep Change | sed -e 's/Change: //' -e 's/[-].*//'
-  #  if ! test -d $year; then
-  #    mkdir $year
-  #  fi
-  #  echo "Moving files to ${year}/..."
-  #  cmd="find . -maxdepth 1 -mtime +${dt} -type f -exec mv {} ${year}/. \;"
-  # echo $cmd
-  #  eval $cmd
-  files=`find . -maxdepth 1 -mtime +${dt} -type f`
-  for file in $files; do
-    year=`stat ${file} | grep Modify | sed -e 's/Modify: //' -e 's/[-].*//'`
-    echo "   Moving $file to ${year}"
-    if ! test -d $year; then
-      mkdir $year
-    fi
-    mv ${file} $year/$file
-  done
-}
-
-##---------------------------------------------------------------------------##
 ## Transfer 2.0 (Mercury replacement)
 ## Ref: http://transfer.lanl.gov
 ##
@@ -276,6 +204,27 @@ function rm_from_path ()
   done
   newpath=`echo $newpath | sed -e s/^[:]//`
   export PATH=$newpath
+}
+
+##---------------------------------------------------------------------------##
+## If path is a directory add it to PATH (if not already in PATH)
+##---------------------------------------------------------------------------##
+function add_to_path ()
+{
+  case $2 in
+    TEXINPUTS)
+      if [ -d "$1" ] && [[ ":${TEXINPUTS}:" != *":$1:"* ]]; then
+        TEXINPUTS="${TEXINPUTS:+${TEXINPUTS}:}$1"; fi ;;
+    BSTINPUTS)
+      if [ -d "$1" ] && [[ ":${BSTINPUTS}:" != *":$1:"* ]]; then
+        BSTINPUTS="${BSTINPUTS:+${BSTINPUTS}:}$1"; fi ;;
+    BIBINPUTS)
+      if [ -d "$1" ] && [[ ":${BIBINPUTS}:" != *":$1:"* ]]; then
+        BIBINPUTS="${BIBINPUTS:+${BIBINPUTS}:}$1"; fi ;;
+    *)
+      if [ -d "$1" ] && [[ ":${PATH}:" != *":$1:"* ]]; then
+        PATH="${PATH:+${PATH}:}$1"; fi ;;
+  esac
 }
 
 ##---------------------------------------------------------------------------##
@@ -362,23 +311,14 @@ function qrm ()
     fi
 
     # Identify the scratch system
-    target=`uname -n`
-    case $target in
-      sn* | fi* | ic* | ml* | pi* | wf* | lu* )
-        if [[ `echo $fqd | grep -c scratch2` == 1 ]]; then
-          trashdir=/lustre/scratch2/yellow/$USER/trash
-        elif [[ `echo $fqd | grep -c scratch3` == 1 ]]; then
-          trashdir=/lustre/scratch3/yellow/$USER/trash
-        fi
-        ;;
-      tt* )
-        trashdir=/lustre/ttscratch1/$USER/trash ;;
-      tr* )
-        trashdir=/lustre/trscratch/$USER/trash ;;
-    esac
+    trashdir=`echo $fqd | sed -e "s%$USER.*%$USER/trash%"`
 
     # ensure trash folder exists.
     mkdir -p $trashdir
+    if ! [[ -d $trashdir ]]; then
+      echo "FATAL ERROR: Unable access trashdir = $trashdir"
+      return
+    fi
 
     # We rename/move the old directory to a random name
     TMPDIR=$(mktemp -d $trashdir/XXXXXXXXXX) || { echo \
@@ -389,3 +329,61 @@ function qrm ()
 
   done
 }
+
+#------------------------------------------------------------------------------#
+# Helper for ccs-net machines while we transition to lmod
+#------------------------------------------------------------------------------#
+
+function switch_to_lmod()
+{
+  export SPACK_ROOT=/scratch/vendors/spack.20170502
+  if ! [[ -d $SPACK_ROOT ]]; then
+    echo "FATAL ERROR: spack root not found."
+    return
+  fi
+  export PATH=$SPACK_ROOT/bin:$PATH
+  # Remove any environment-modules modulefiles.
+  module purge
+  # Point to lmod application and spack's lmod modulefiles.
+  MODULE_HOME=`spack location -i lmod`
+  if [[ -f $MODULE_HOME/lmod/lmod/init/bash ]]; then
+    source $MODULE_HOME/lmod/lmod/init/bash
+    module use $SPACK_ROOT/share/spack/lmod/`spack arch`/Core
+    module unuse /usr/share/Modules/modulefiles
+  fi
+  # eospac, ndi, csk
+  module use --append /scratch/vendors/Modules.lmod
+  if [[ -d $HOME/privatemodules ]]; then
+    module use --append $HOME/privatemodules
+  fi
+
+  # Environment for default compiler (no module file)
+  export CC=/bin/gcc
+  export CXX=/bin/g++
+  export FC=/bin/gfortran
+  export F90=/bin/gfortran
+  export F95=/bin/gfortran
+  export LCOMPILER=gcc
+  export LCOMPILERVER=4.8.5
+
+  # aliases
+  alias mlo='module load'
+  alias mls='module list'
+  alias mav='module avail'
+
+  # modules for draco developer environment
+  dm_core="cmake eospac git tk ndi python totalview dia graphviz doxygen \
+ack ccache"
+  dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk"
+  dm_openmpi="openmpi parmetis superlu-dist trilinos"
+  export dracomodules="$dm_core $dm_gcc $dm_openmpi"
+  module load $dracomodules
+
+  if [[ -d $VENDOR_DIR/bin ]]; then
+    export PATH=$PATH:$VENDOR_DIR/bin
+  fi
+}
+
+#------------------------------------------------------------------------------#
+# End environment/bin/.bash_functions
+#------------------------------------------------------------------------------#

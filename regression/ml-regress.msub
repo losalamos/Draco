@@ -3,13 +3,9 @@
 ## File  : regression/ccscs-regression.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
-
-#MSUB -l walltime=08:00:00
-#MSUB -l nodes=1:ppn=16
-#MSUB -j oe
 
 #----------------------------------------------------------------------#
 # The script starts here
@@ -41,7 +37,6 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
-run "ulimit -a"
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -79,12 +74,11 @@ echo "Moonlight regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
 
+run "ulimit -a"
+
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
+if [[ `fn_exists module` == 0 ]]; then
     echo 'module function does not exist. defining a local function ...'
     run "source /usr/share/Modules/init/bash"
 fi
@@ -173,16 +167,14 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB:-0} == 1; then
-  comp=$comp-$featurebranch
-fi
+comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
-if test "$USER" == "kellyt"; then
+if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   MYHOSTNAME="`uname -n`"
   keychain=keychain-2.7.1
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
   else
@@ -208,21 +200,13 @@ if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
-   # Keep build and target dirs out of /usr/projects locations to
-   # prevent the .snapshots directory from filling up.
-   # scratch_dir=/scratch/${moniker}/cdash/ml
-   scratch_dir=/lustre/scratch2/yellow/${USER}/cdash/ml
-   mkdir -p $scratch_dir
-   if ! test -d ${scratch_dir}; then
-      echo "Fatal Error, scratch_dir=${scratch_dir} not found."
+   if ! test -d ${scratchdir}; then
+      echo "FATAL ERROR, scratchdir=${scratchdir} not found."
       echo "  Have the names/locations of scratch space changed?"
       exit 1
    fi
-   if test "${regress_mode}" = "off"; then
-      base_dir=/usr/projects/jayenne/devs/${USER}/cdash/ml
-   else
-      base_dir=/usr/projects/jayenne/regress/cdash/ml
-   fi
+   scratchdir=$scratchdir/$LOGNAME/cdash/ml
+   base_dir=$regdir/cdash/ml
 fi
 
 echo " "
@@ -249,42 +233,69 @@ elif test "${subproj}" == capsaicin; then
     script_name=Capsaicin_Linux64.cmake
 fi
 
-if test "${regress_mode}" = "off"; then
-    export buildname_append="-${USER}"
+if ! [[ "${regress_mode}" == "on" ]]; then
+  export buildname_append="-${USER}"
 fi
 
+# work_dir and scratch_dir are not the same for regress_mode == on.
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
-export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratchdir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+if ! [[ -d $scratch_dir ]]; then
+  run "mkdir -p $scratch_dir" || die "unable to access scratch_dir = $scratch_dir"
+fi
+if ! [[ -d $work_dir ]]; then
+  run "mkdir -p $work_dir" || die "unable to access work_dir = $work_dir"
+fi
 
 echo "ml-regress.msub: work_dir       = ${work_dir}"
 echo "ml-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
 if [[ ${setup_dirs} ]]; then
+
    if ! test -d ${work_dir}/source; then
-      run "/usr/bin/install -d ${work_dir}/source"
-   fi
-   # See notes above where scratch_dir is set concerning why these
-   # are soft links.
-   if ! test -d ${scratch_dir}/build; then
-      run "/usr/bin/install -d ${scratch_dir}/build"
-   fi
-   if ! test -d ${work_dir}/build; then
-      run "ln -s ${scratch_dir}/build ${work_dir}/build"
-   fi
-   if ! test -d ${scratch_dir}/target; then
-      run "/usr/bin/install -d ${scratch_dir}/target"
-   fi
-   if ! test -d ${work_dir}/target; then
-      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+      run "mkdir -p ${work_dir}/source"
    fi
 
-   # clean the installation directory to remove any files that might
-   # no longer be generated.
-   if test -d ${work_dir}/target/lib; then
+   # See notes above where scratch_dir is set concerning why these are soft
+   # links.
+   if [[ "${regress_mode}" == "on" ]]; then
+     if ! [[ -d ${scratch_dir}/build ]]; then
+       run "mkdir -p ${scratch_dir}/build"
+     fi
+     if [[ -L ${work_dir}/build ]]; then
+       rm ${work_dir}/build
+     elif [[ -d ${work_dir}/build ]]; then
+       rm -rf ${work_dir}/build
+     fi
+     run "ln -s ${scratch_dir}/build ${work_dir}/build"
+
+     if ! [[ -d ${scratch_dir}/target ]]; then
+       run "mkdir -p ${scratch_dir}/target"
+     fi
+     if [[ -L ${work_dir}/target ]]; then
+       rm ${work_dir}/target
+     elif [[ -d ${work_dir}/target ]]; then
+       rm -rf ${work_dir}/target
+     fi
+     run "ln -s ${scratch_dir}/target ${work_dir}/target"
+
+   else
+
+     if ! [[ -d ${work_dir}/build ]]; then
+       run "mkdir -p ${work_dir}/build"
+     fi
+     if ! [[ -d ${work_dir}/target ]]; then
+       run "mkdir -p ${work_dir}/target"
+     fi
+   fi
+
+   # clean the installation directory to remove any files that might no longer
+   # be generated.
+   if [[ -d ${work_dir}/target/lib ]]; then
        run "rm -rf ${work_dir}/target/*"
    fi
-   if test -f ${work_dir}/build/CMakeCache.txt; then
+   if [[ -f ${work_dir}/build/CMakeCache.txt ]]; then
        run "rm -rf ${work_dir}/build/*"
    fi
 fi
@@ -295,11 +306,16 @@ echo "--------------------(environment)------------------------------"
 set
 echo "--------------------(end environment)--------------------------"
 
+date
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
-run "chgrp -R draco ${work_dir}"
-run "chmod -R g+rwX,o-rwX ${work_dir}"
+if [[ ${regress_mode} == "on" ]]; then
+  echo " "
+  run "chgrp -R draco ${work_dir}"
+  run "chmod -R g+rwX,o-rwX ${work_dir}"
+fi
 
 echo "All done."
 

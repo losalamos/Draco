@@ -5,10 +5,7 @@
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  Analytic_Odfmg_Opacity test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
@@ -19,7 +16,6 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "parser/Constant_Expression.hh"
-
 #include <sstream>
 
 using namespace std;
@@ -73,7 +69,7 @@ void odfmg_test(UnitTest &ut) {
   bands[1] = 0.75;
   bands[2] = 1.0;
 
-  vector<SP<Analytic_Opacity_Model>> models(3);
+  vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
 
   // make a Marshak (user-defined) model for the first group
   models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
@@ -237,9 +233,9 @@ void odfmg_test(UnitTest &ut) {
   }
 
   // Test the get_Analytic_Model() member function.
-  SP<Analytic_Opacity_Model const> my_mg_opacity_model =
+  std::shared_ptr<Analytic_Opacity_Model const> my_mg_opacity_model =
       opacity.get_Analytic_Model(1);
-  SP<Analytic_Opacity_Model const> expected_model(models[0]);
+  std::shared_ptr<Analytic_Opacity_Model const> expected_model(models[0]);
 
   if (expected_model == my_mg_opacity_model)
     ut.passes(std::string("get_Analytic_Model() returned the expected") +
@@ -267,7 +263,7 @@ void test_CDI(UnitTest &ut) {
   bands[1] = 0.75;
   bands[2] = 1.0;
 
-  vector<SP<Analytic_Opacity_Model>> models(3);
+  vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
 
   // make a Marshak (user-defined) model for the first group
   models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
@@ -280,7 +276,7 @@ void test_CDI(UnitTest &ut) {
   models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
   // make an analytic multigroup opacity object for absorption
-  SP<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
+  std::shared_ptr<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
       groups, bands, models, rtt_cdi::ABSORPTION));
 
   // make a CDI object
@@ -352,7 +348,7 @@ void packing_test(UnitTest &ut) {
   bands[2] = 1.0;
 
   {
-    vector<SP<Analytic_Opacity_Model>> models(3);
+    vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
 
     // make a Polynomial model for the first group
     models[0].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
@@ -366,7 +362,7 @@ void packing_test(UnitTest &ut) {
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    SP<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
+    std::shared_ptr<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
         groups, bands, models, rtt_cdi::ABSORPTION));
 
     // pack it
@@ -458,7 +454,7 @@ void packing_test(UnitTest &ut) {
   // make sure we catch an assertion showing that we cannot unpack an
   // unregistered opacity
   {
-    vector<SP<Analytic_Opacity_Model>> models(3);
+    vector<std::shared_ptr<Analytic_Opacity_Model>> models(3);
 
     // make a Marshak (user-defined) model for the first group
     models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
@@ -471,7 +467,7 @@ void packing_test(UnitTest &ut) {
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    SP<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
+    std::shared_ptr<const OdfmgOpacity> odfmg(new nGray_Analytic_Odfmg_Opacity(
         groups, bands, models, rtt_cdi::ABSORPTION));
 
     packed = odfmg->pack();
@@ -513,7 +509,8 @@ void pseudo_line_opacity_test(UnitTest &ut) {
   unsigned const bands_per_group = bands.size() - 1;
 
   // continuum
-  SP<Expression const> const continuum(new Constant_Expression(1, 1.0));
+  std::shared_ptr<Expression const> const continuum(
+      new Constant_Expression(1, 1.0));
 
   Pseudo_Line_Analytic_Odfmg_Opacity model(groups, bands, rtt_cdi::ABSORPTION,
                                            continuum,

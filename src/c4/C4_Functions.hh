@@ -58,7 +58,7 @@ class C4_Req;
  * \brief Initialize a parallel job.
  */
 DLL_PUBLIC_c4 int initialize(int &argc, char **&argv,
-                             int required = MPI_THREAD_SINGLE);
+                             int required = DRACO_MPI_THREAD_SINGLE);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -141,6 +141,14 @@ DLL_PUBLIC_c4 int receive(T *buffer, int size, int source,
 template <typename T>
 DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
                            C4_Datatype &, int tag = C4_Traits<T *>::tag);
+
+//---------------------------------------------------------------------------//
+//! Do a point-to-point, blocking send-receive.
+template <typename TS, typename TR>
+DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
+                               TR *recvbuf, int recvcount, int source,
+                               int sendtag = C4_Traits<TS *>::tag,
+                               int recvtag = C4_Traits<TR *>::tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive of a user-defined type.
@@ -457,6 +465,17 @@ DLL_PUBLIC_c4 bool isScalar();
 //---------------------------------------------------------------------------//
 //! Return the processor name for each rank.
 DLL_PUBLIC_c4 std::string get_processor_name();
+
+//---------------------------------------------------------------------------//
+// prefix_sum
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Return the value of the prefix sum at this processor.
+ *
+ * \param node_value Current node's value of variable to be prefix summed
+ * \return Sum of value over nodes up to and including this node.
+ */
+template <typename T> DLL_PUBLIC_c4 T prefix_sum(const T node_value);
 
 } // end namespace rtt_c4
 

@@ -5,24 +5,20 @@
  * \date   Tue Oct  9 10:52:50 2001
  * \brief  EoS class test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
 #include "cdi/EoS.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <memory>
 #include <sstream>
 
 using namespace std;
 
 using rtt_cdi::EoS;
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -35,7 +31,7 @@ void test_EoS(rtt_dsxx::UnitTest &ut) {
   // --------------------- //
 
   // The smart pointer points to a generic EoS object.
-  SP<EoS> spEoS;
+  std::shared_ptr<EoS> spEoS;
 
   // The actual instatniate is specific (dummyEoS).
   if ((spEoS.reset(new rtt_cdi_test::DummyEoS())), spEoS) {

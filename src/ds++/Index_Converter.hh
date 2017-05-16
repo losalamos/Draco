@@ -5,9 +5,7 @@
  * \date   Fri Jan 20 14:51:51 2006
  * \brief  Decleration and Definition of Index_Converter
  * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef dsxx_Index_Converter_hh
@@ -21,7 +19,7 @@ namespace rtt_dsxx {
 /*!
  * \class Index_Converter
  * \brief Utiltity class for converting one dimension indicies to and from
- * N-dimensional ones.
+ *        N-dimensional ones.
  *
  * \sa Index_Converter.cc for detailed descriptions.
  */
@@ -51,7 +49,7 @@ public:
   }
 
   //! Assignment operator for Index_Converter.
-  //    Index_Converter& operator=(const Index_Converter &rhs);
+  // Index_Converter& operator=(const Index_Converter &rhs);
 
   //! Re-assignment operator
   void set_size(const unsigned *dimensions);
@@ -78,13 +76,13 @@ public:
   //! Extract a single N-index from the 1-index
   int get_single_index(int index, unsigned dimension) const;
 
-  // Get the next index from a 1-index and direction
+  //! Get the next index from a 1-index and direction
   int get_next_index(int index, int direction) const;
 
-  // Get the next index from an Index_Counter and direction
+  //! Get the next index from an Index_Counter and direction
   int get_next_index(const Counter &counter, int direction) const;
 
-  // Create an iterator over the index set
+  //! Create an iterator over the index set
   Counter counter() const { return Counter(*this); }
 
 private:
@@ -103,10 +101,7 @@ private:
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-/**
- * \brief Resize the index converter object with new dimensions.
- *
- */
+//! Resize the index converter object with new dimensions.
 template <unsigned D, int OFFSET>
 inline void Index_Converter<D, OFFSET>::set_size(const unsigned *dimensions) {
   Base::set_size(dimensions);
@@ -126,10 +121,7 @@ inline void Index_Converter<D, OFFSET>::set_size(unsigned dimension) {
 }
 
 //---------------------------------------------------------------------------//
-/**
- * \brief Convert an N-index to a 1-index
- *
- */
+//! Convert an N-index to a 1-index
 template <unsigned D, int OFFSET>
 template <typename IT>
 int Index_Converter<D, OFFSET>::get_index(IT indices) const {
@@ -155,7 +147,6 @@ int Index_Converter<D, OFFSET>::get_index(IT indices) const {
  *
  * \arg index The index
  * \arg iterator The iterator pointing to the place to store the results.
- *
  */
 template <unsigned D, int OFFSET>
 template <typename IT>
@@ -183,7 +174,6 @@ void Index_Converter<D, OFFSET>::get_indices(int index, IT iter) const {
  * vector in the return statement in order to allow the compiler to perform
  * return value optimization (RVO). This can potentially eliminate the
  * creation of a temporary return object.
- *
  */
 template <unsigned D, int OFFSET>
 std::vector<int> Index_Converter<D, OFFSET>::get_indices(int index) const {
@@ -203,7 +193,6 @@ std::vector<int> Index_Converter<D, OFFSET>::get_indices(int index) const {
  *
  * \arg index The 1-index
  * \arg dimension The desired index dimension
- *
  */
 template <unsigned D, int OFFSET>
 int Index_Converter<D, OFFSET>::get_single_index(int index,
@@ -221,12 +210,11 @@ int Index_Converter<D, OFFSET>::get_single_index(int index,
 //---------------------------------------------------------------------------//
 /**
  * \brief Return the next index in a given direction. Return -1 if this
- * direction is outside the range of indices
+ *        direction is outside the range of indices
  *
- * \arg index   The index in question
+ * \arg index     The index in question
  * \arg direction The direction, 1-based numbered (negative,positive) by
- * dimension.
- *
+ *                dimension.
  */
 template <unsigned D, int OFFSET>
 int Index_Converter<D, OFFSET>::get_next_index(int index, int direction) const {
@@ -248,13 +236,12 @@ int Index_Converter<D, OFFSET>::get_next_index(int index, int direction) const {
 
 //---------------------------------------------------------------------------//
 /**
- * \brief Return rhe next index in a given direction. Return -1 if this
- * direction if outside the range of indices.
+ * \brief Return the next index in a given direction. Return -1 if this
+ *        direction if outside the range of indices.
  *
- * \arg counter An Index_Counter pointing to the desired space in the indices.
- * \arg direction. The direction, 1-based numbered (negative, positive) by
- * dimension.
- *
+ * \arg counter   An Index_Counter pointing to the desired space in the indices.
+ * \arg direction The direction, 1-based numbered (negative, positive) by
+ *                dimension.
  */
 template <unsigned D, int OFFSET>
 int Index_Converter<D, OFFSET>::get_next_index(
@@ -283,7 +270,6 @@ int Index_Converter<D, OFFSET>::get_next_index(
  * \brief Assign the internal data members.
  *
  * Used once the dimensions array has been filled.
- *
  */
 template <unsigned D, int OFFSET>
 void Index_Converter<D, OFFSET>::compute_sub_sizes() {

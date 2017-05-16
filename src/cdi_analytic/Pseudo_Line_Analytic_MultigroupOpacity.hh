@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Pseudo_Line_Analytic_MultigroupOpacity_hh__
@@ -17,7 +14,6 @@
 #include "Pseudo_Line_Base.hh"
 
 namespace rtt_cdi_analytic {
-using rtt_dsxx::SP;
 using rtt_parser::Expression;
 
 //---------------------------------------------------------------------------//
@@ -48,7 +44,7 @@ private:
 public:
   Pseudo_Line_Analytic_MultigroupOpacity(
       sf_double const &group_bounds, rtt_cdi::Reaction reaction,
-      SP<Expression const> const &cont, unsigned number_of_lines,
+      std::shared_ptr<Expression const> const &cont, unsigned number_of_lines,
       double line_peak, double line_width, unsigned number_of_edges,
       double edge_ratio, double Tref, double Tpow, double emin, double emax,
       Averaging averaging, unsigned qpoints, unsigned seed);

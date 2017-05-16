@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/NodeFlags.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/NodeFlags class.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_NodeFlags_hh__
@@ -16,15 +13,15 @@
 
 #include "Dims.hh"
 #include "Flags.hh"
-#include "ds++/SP.hh"
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        node flags block of the mesh file.
  */
 class NodeFlags {
@@ -33,7 +30,7 @@ class NodeFlags {
   typedef std::string string;
 
   const Dims &dims;
-  std::vector<rtt_dsxx::SP<Flags>> flagTypes;
+  std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
   NodeFlags(const Dims &dims_)

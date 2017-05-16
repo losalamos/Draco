@@ -32,7 +32,7 @@ endif()
 #
 option( GCC_ENABLE_ALL_WARNINGS "Add \"-Weffc++\" to the compile options." OFF )
 option( GCC_ENABLE_GLIBCXX_DEBUG
-   "Use special version of libc.so that includes STL bounds checking." OFF )
+  "Use special version of libc.so that includes STL bounds checking." OFF )
 
 #
 # Compiler flag checks
@@ -43,6 +43,7 @@ check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
 check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
 check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
 check_cxx_compiler_flag( "-Wunused-local-typedefs"   HAS_WUNUSED_LOCAL_TYPEDEFS )
+#check_cxx_compiler_flag( "-Wunused-macros"           HAS_WUNUSED_MACROS )
 check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" HAS_WZER0_AS_NULL_POINTER_CONSTANT )
 include(platform_checks)
 query_openmp_availability()
@@ -55,10 +56,10 @@ execute_process(
   )
 
 if( ${DBS_CXX_IS_BULLSEYE} MATCHES BullseyeCoverage )
-   set( DBS_CXX_IS_BULLSEYE "ON" )
-   set( DBS_CXX_IS_BULLSEYE ${DBS_CXX_IS_BULLSEYE}
-      CACHE BOOL "Are we running Bullseye" )
-   mark_as_advanced( DBS_CXX_IS_BULLSEYE )
+  set( DBS_CXX_IS_BULLSEYE "ON" )
+  set( DBS_CXX_IS_BULLSEYE ${DBS_CXX_IS_BULLSEYE}
+    CACHE BOOL "Are we running Bullseye" )
+  mark_as_advanced( DBS_CXX_IS_BULLSEYE )
 endif()
 
 #
@@ -71,81 +72,74 @@ endif()
 # -Wstrict-overflow=4
 # -Wwrite-strings
 # -Wunreachable-code
+# - https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 #
 # Consider using these optimization flags:
-# -ffast-math -mtune=native -ftree-vectorize
+# -ffast-math -ftree-vectorize
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
 
 if( NOT CXX_FLAGS_INITIALIZED )
-   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
+  set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
-   #if( CMAKE_C_COMPILER_VERSION VERSION_GREATER 5.0 )
-     #set( CMAKE_C_FLAGS              "${CMAKE_C_FLAGS} -fdiagnostics-color=always" )
-     # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
-   #endif()
-   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
-   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
-   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
+  set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
+  set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
-   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
-     # LTO appears to be broken for gcc/4.8.5 (at least for Jayenne).
-     string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
-   endif()
-   if (NOT APPLE AND HAS_MARCH_NATIVE)
-     string( APPEND CMAKE_C_FLAGS " -march=native" )
-   endif()
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
+    # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
+    # string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
 
-   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
-   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
-   set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
-   set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
-   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
+    # See https://gcc.gnu.org/gcc-5/changes.html
+    # UndefinedBehaviorSanitizer gained a few new sanitization options:
+    #  -fsanitize=float-divide-by-zero: detect floating-point division by 0
+    #  -fsanitize=float-cast-overflow: check that the result of floating-point
+    #             type to integer conversions do not overflow;
+    #  -fsanitize=bounds: enable instrumentation of array bounds and detect
+    #             out-of-bounds accesses;
+    #  -fsanitize=alignment: enable alignment checking, detect various
+    #             misaligned objects;
+    #  -fsanitize=object-size: enable object size checking, detect various
+    #             out-of-bounds accesses.
+    #  -fsanitize=vptr: enable checking of C++ member function calls, member
+    #             accesses and some conversions between pointers to base and
+    #             derived classes, detect if the referenced object does not have
+    #             the correct dynamic type.
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=always")
+    # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
+  endif()
 
-   # Extra Debug flags that only exist in newer gcc versions.
-   if( HAS_WNOEXCEPT )
-     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wnoexcept" )
-   endif()
-   if( HAS_WSUGGEST_ATTRIBUTE )
-     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wsuggest-attribute=const" )
-   endif()
-   if( HAS_WUNUSED_LOCAL_TYPEDEFS )
-     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-local-typedefs" )
-   endif()
+  # [2017-04-15 KT] -march=native doesn't seem to work correctly on toolbox
+  # Systems running CRAY_PE use commpile wrappers to specify this option.
+  site_name( sitename )
+  string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
+  if (HAS_MARCH_NATIVE AND
+      NOT APPLE AND
+      NOT CRAY_PE AND
+      NOT "${sitename}" MATCHES "toolbox")
+    string( APPEND CMAKE_C_FLAGS " -march=native" )
+  endif()
 
-   # Features for GCC-5.0 or later
-   # See https://gcc.gnu.org/gcc-5/changes.html
-   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
-      # UndefinedBehaviorSanitizer gained a few new sanitization options:
-      #    -fsanitize=float-divide-by-zero: detect floating-point division
-      #                     by zero;
-      #    -fsanitize=float-cast-overflow: check that the result of
-      #                     floating-point type to integer conversions do
-      #                     not overflow;
-      #    -fsanitize=bounds: enable instrumentation of array bounds and
-      #                     detect out-of-bounds accesses;
-      #    -fsanitize=alignment: enable alignment checking, detect various
-      #                     misaligned objects;
-      #    -fsanitize=object-size: enable object size checking, detect
-      #                     various out-of-bounds accesses.
-      #    -fsanitize=vptr: enable checking of C++ member function calls,
-      #                     member accesses and some conversions between
-      #                     pointers to base and derived classes, detect if
-      #                     the referenced object does not have the correct
-      #                     dynamic type.
-      # Pointer Bounds Checker, a bounds violation detector, has been added
-      # and can be enabled via -fcheck-pointer-bounds. Memory accesses are
-      # instrumented with run-time checks of used pointers against their
-      # bounds to detect pointer bounds violations (overflows). The Pointer
-      # Bounds Checker is available on x86/x86-64 GNU/Linux targets with a
-      # new ISA extension Intel MPX support. See the Pointer Bounds Checker
-      # Wiki page for more details
-      # (https://gcc.gnu.org/wiki/Intel%20MPX%20support%20in%20the%20GCC%20compiler)
+  set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS}" )
+  set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -Woverloaded-virtual")
+  set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_RELEASE}")
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
-      # string( APPEND CMAKE_C_FLAGS_DEBUG
-      #         " -fsanitize=float-divide-by-zero -fcheck-ponter-bounds")
-   endif()
+  # Extra Debug flags that only exist in newer gcc versions.
+  if( HAS_WNOEXCEPT )
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wnoexcept" )
+  endif()
+  if( HAS_WSUGGEST_ATTRIBUTE )
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wsuggest-attribute=const" )
+  endif()
+  if( HAS_WUNUSED_LOCAL_TYPEDEFS )
+    string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-local-typedefs" )
+  endif()
+
 endif()
 
 ##---------------------------------------------------------------------------##
@@ -168,15 +162,18 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 #
 toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
 toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG
-   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
+  "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+
+# Issues with tstFMA[12].cc:
+# toggle_compiler_flag( HAS_WUNUSED_MACROS "-Wunused-macros" "C;CXX" "" )
 
 # On SQ, our Random123/1.08 vendor uses a series of include directives that fail
 # to compile with g++-4.7.2 when the -pedantic option is requested. The core
 # issue is that fabs is defined with two different exception signatures in
 # math.h and in ppu_intrinsics.h. On this platform, we choose not use -pedantic.
 if( ${SITENAME} MATCHES "seq" )
-   toggle_compiler_flag( OFF "-pedantic" "CXX" "")
+  toggle_compiler_flag( OFF "-pedantic" "CXX" "")
 endif()
 
 #------------------------------------------------------------------------------#

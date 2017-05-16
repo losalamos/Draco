@@ -5,10 +5,7 @@
  * \date   Wed Nov 09 14:15:14 2011
  * \brief  Function declarations for endian conversions
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Endian.hh"
@@ -17,7 +14,6 @@ namespace rtt_dsxx {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Does this platform use big or little endianness
- *
  * \return true if platform uses big endian format
  */
 bool is_big_endian(void) {
@@ -33,9 +29,9 @@ bool is_big_endian(void) {
 /*!
  * \brief Does this platform support IEEE float representation?
  *
- * Some older Cray machines did not support the IEEE float representation.
- * This simple test will identify machines that are IEEE compliant.
- * 
+ * Some older Cray machines did not support the IEEE float representation.  This
+ * simple test will identify machines that are IEEE compliant.
+ *
  * \return true if we support IEEE float representation.
  */
 bool has_ieee_float_representation(void) {

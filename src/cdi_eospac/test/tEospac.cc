@@ -5,25 +5,19 @@
  * \date   Mon Apr 2 14:20:14 2001
  * \brief  Implementation file for tEospac
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_eospac/Eospac.hh"
 #include "cdi_eospac/EospacException.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <iomanip>
 #include <sstream>
 
 namespace rtt_cdi_eospac_test {
 
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -108,7 +102,7 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   // material that has been constructed in a SesameTable object.  The
   // constructor for Eospac takes one argument: a SesameTables object.
 
-  rtt_dsxx::SP<rtt_cdi_eospac::Eospac const> spEospac;
+  std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac;
 
   // Try to instantiate the new Eospac object.  Simultaneously, we are
   // assigned material IDs to more SesameTable values.
@@ -117,9 +111,9 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
       new rtt_cdi_eospac::Eospac(AlSt.Ue_DT(Al3717).Zfc_DT(Al23714)));
 
   if (spEospac) {
-    PASSMSG("SP to new Eospac object created.");
+    PASSMSG("shared_ptr to new Eospac object created.");
   } else {
-    FAILMSG("Unable to create SP to new Eospac object.");
+    FAILMSG("Unable to create shared_ptr to new Eospac object.");
 
     // if construction fails, there is no reason to continue testing...
     return;
@@ -141,15 +135,15 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   //     // can, instead, create a temporary version that is only used here in
   //     // the constructor of Eospac().
 
-  //     rtt_dsxx::SP< rtt_cdi_eospac::Eospac const > spEospacAlt;
+  //     std::shared_ptr< rtt_cdi_eospac::Eospac const > spEospacAlt;
   //     spEospacAlt = new rtt_cdi_eospac::Eospac(
   //         rtt_cdi_eospac::SesameTables().Ue_DT( Al3717 ).Zfc_DT( Al23714
   //             ).Uic_DT( Al3717 ).Ktc_DT( Al23714 ) );
 
   //     if ( spEospacAlt )
-  //         PASSMSG("SP to new Eospac object created (Alternate ctor).");
+  //         PASSMSG("shared_ptr to new Eospac object created (Alternate ctor).");
   //     else
-  //         FAILMSG("Unable to create SP to new Eospac object (Alternate ctor).");
+  //         FAILMSG("Unable to create shared_ptr to new Eospac object (Alternate ctor).");
   // }
 
   // --------------------------- //
@@ -394,7 +388,7 @@ void cdi_eospac_except_test(rtt_dsxx::UnitTest &ut) {
 
   // Generate an Eospac object
 
-  rtt_dsxx::SP<rtt_cdi_eospac::Eospac const> spEospac(
+  std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac(
       new rtt_cdi_eospac::Eospac(FeSt));
 
   // Print table information for Pt_DT:
@@ -454,7 +448,7 @@ void cdi_eospac_tpack(rtt_dsxx::UnitTest &ut) {
   int const Al23714 = 23714;
   rtt_cdi_eospac::SesameTables AlSt;
   AlSt.Uic_DT(Al3717).Ktc_DT(Al23714).Ue_DT(Al3717).Zfc_DT(Al23714);
-  rtt_dsxx::SP<rtt_cdi_eospac::Eospac const> spEospac(
+  std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac(
       new rtt_cdi_eospac::Eospac(AlSt));
 
   {
@@ -479,7 +473,7 @@ void cdi_eospac_tpack(rtt_dsxx::UnitTest &ut) {
 
     // Create a new Eospac by unpacking the packed data.
     std::cout << "Unpacking an Eospac object." << std::endl;
-    rtt_dsxx::SP<rtt_cdi_eospac::Eospac const> spUnpacked_Eospac(
+    std::shared_ptr<rtt_cdi_eospac::Eospac const> spUnpacked_Eospac(
         new rtt_cdi_eospac::Eospac(packed));
 
     // Sanity Check

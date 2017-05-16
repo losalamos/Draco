@@ -5,8 +5,7 @@
  * \date   Tue Jan 27 08:51:19 2004
  * \brief  Quadrature interface definitions
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Quadrature_Interface.hh"
@@ -56,13 +55,12 @@ void check_quadrature_validity(const quadrature_data &quad) {
 
 //---------------------------------------------------------------------------//
 void get_quadrature(quadrature_data &quad) {
-  using rtt_dsxx::SP;
   using namespace ::rtt_quadrature;
 
   check_quadrature_validity(quad);
 
   Ordinate_Set_Factory osf(quad);
-  SP<Ordinate_Set> ordinate_set = osf.get_Ordinate_Set();
+  std::shared_ptr<Ordinate_Set> ordinate_set = osf.get_Ordinate_Set();
 
   vector<Ordinate> const ordinates(ordinate_set->ordinates());
   size_t i(0);

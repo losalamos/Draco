@@ -1,22 +1,18 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Double_Gauss.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
- * \brief  A class representing an interval dobule Gauss-Legendre quadrature set.
+ * \brief  A class representing an interval dobule Gauss-Legendre quadrature
+ *         set.
  * \note   Copyright 2016-2017 Los Alamos National Security, LLC. All rights
- *         reserved. 
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
-
-#include <numeric>
+ *         reserved. */
+//---------------------------------------------------------------------------//
 
 #include "Double_Gauss.hh"
 #include "Gauss_Legendre.hh"
-
 #include "ds++/to_string.hh"
+#include <numeric>
 
 namespace rtt_quadrature {
 using namespace std;
@@ -37,7 +33,7 @@ Double_Gauss::Double_Gauss(unsigned sn_order) : Interval_Quadrature(sn_order) {
   {
     Check(sn_order == 2);
 
-    SP<Gauss_Legendre> GL(new Gauss_Legendre(sn_order));
+    std::shared_ptr<Gauss_Legendre> GL(new Gauss_Legendre(sn_order));
     for (unsigned m = 0; m < sn_order; ++m) {
       mu_[m] = GL->mu(m);
       wt_[m] = GL->wt(m);
@@ -48,13 +44,13 @@ Double_Gauss::Double_Gauss(unsigned sn_order) : Interval_Quadrature(sn_order) {
     Check(n2 % 2 == 0);
     Check(n2 > 2);
 
-    SP<Gauss_Legendre> GL(new Gauss_Legendre(n2));
+    std::shared_ptr<Gauss_Legendre> GL(new Gauss_Legendre(n2));
 
     // map the quadrature onto the two half-ranges
 
     for (unsigned m = 0; m < n2; ++m) {
-      // Map onto [-1,0] then skew-symmetrize
-      // (ensuring ascending order on [-1, 1])
+      // Map onto [-1,0] then skew-symmetrize (ensuring ascending order on [-1,
+      // 1])
 
       mu_[m] = 0.5 * (GL->mu(m) - 1.0);
       wt_[m] = 0.5 * GL->wt(m);
@@ -68,19 +64,19 @@ Double_Gauss::Double_Gauss(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Ensure(this->sn_order() == sn_order);
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /* virtual */
 string Double_Gauss::name() const { return "Double-Gauss"; }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /* virtual */
 string Double_Gauss::parse_name() const { return "double gauss"; }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /* virtual */
 unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /* virtual */ string Double_Gauss::as_text(string const &indent) const {
   string Result = indent + "type = double gauss" + indent + "  order = " +
                   to_string(sn_order()) + indent + "end";
@@ -88,12 +84,12 @@ unsigned Double_Gauss::number_of_levels() const { return sn_order(); }
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Double_Gauss::check_class_invariants() const {
   return sn_order() > 0 && sn_order() % 2 == 0;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate>
 Double_Gauss::create_level_ordinates_(double const norm) const {
@@ -119,6 +115,6 @@ Double_Gauss::create_level_ordinates_(double const norm) const {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.cc
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+// end of quadrature/Quadrature.cc
+//---------------------------------------------------------------------------//

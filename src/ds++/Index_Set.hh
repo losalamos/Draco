@@ -4,18 +4,13 @@
  * \author Mike Buksas
  * \date   Thu Feb  2 10:01:46 2006
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef dsxx_Index_Set_hh
 #define dsxx_Index_Set_hh
 
 #include "Assert.hh"
-// #include <functional>
-// #include <numeric>
 #include <algorithm>
 
 namespace rtt_dsxx {
@@ -32,8 +27,6 @@ namespace rtt_dsxx {
 //===========================================================================//
 template <unsigned D, int OFFSET> class Index_Set {
 public:
-  // NESTED CLASSES AND TYPEDEFS
-
   // CREATORS
 
   //! Default constructors.

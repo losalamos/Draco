@@ -3,9 +3,7 @@
  * \file   ds++/path_getFilenameComponent.cc
  * \brief  Encapsulate path information (path separator, etc.)
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id: path.cc 7388 2015-01-22 16:02:07Z kellyt $
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "path.hh"
@@ -20,8 +18,8 @@ namespace rtt_dsxx {
  * \param fqName A fully qualified filename (/path/to/the/unit/test)
  * \return filename only, or path to file only.
  *
- * This function expects a fully qualfied name of a unit test (e.g.:
- * argv[0]).  It strips off the path and returns the name of the unit test.
+ * This function expects a fully qualfied name of a unit test (e.g.: argv[0]).
+ * It strips off the path and returns the name of the unit test.
  *
  * Options:
  *    FC_PATH        Return path portion only for fqName
@@ -30,7 +28,8 @@ namespace rtt_dsxx {
  *    FC_EXT         not implemented.
  *    FC_NAME_WE     not implemented.
  *    FC_REALPATH    resolve all symlinks
- *    FC_NATIVE      convert path to use native slashes for the current filesystem
+ *    FC_NATIVE      convert path to use native slashes for the current
+ *                   filesystem
  *    FC_LASTVALUE
  */
 std::string getFilenameComponent(std::string const &fqName,
@@ -42,8 +41,7 @@ std::string getFilenameComponent(std::string const &fqName,
 
   switch (fc) {
   case FC_PATH:
-    // if fqName is a directory and ends with "/", trim the trailing
-    // dirSep.
+    // if fqName is a directory and ends with "/", trim the trailing dirSep.
     if (fqName.rfind(rtt_dsxx::UnixDirSep) == fqName.length() - 1)
       fullName = fqName.substr(0, fqName.length() - 1);
     if (fqName.rfind(rtt_dsxx::WinDirSep) == fqName.length() - 1)
@@ -51,8 +49,8 @@ std::string getFilenameComponent(std::string const &fqName,
 
     idx = fullName.rfind(rtt_dsxx::UnixDirSep);
     if (idx == string::npos) {
-      // Didn't find directory separator, as 2nd chance look for
-      // Windows directory separator.
+      // Didn't find directory separator, as 2nd chance look for Windows
+      // directory separator.
       idx = fullName.rfind(rtt_dsxx::WinDirSep);
     }
     // If we still cannot find a path separator, return "./"
@@ -72,12 +70,12 @@ std::string getFilenameComponent(std::string const &fqName,
 
     idx = fullName.rfind(UnixDirSep);
     if (idx == string::npos) {
-      // Didn't find directory separator, as 2nd chance look for
-      // Windows directory separator.
+      // Didn't find directory separator, as 2nd chance look for Windows
+      // directory separator.
       idx = fullName.rfind(WinDirSep);
     }
-    // If we still cannot find a path separator, return the whole
-    // string as the test name.
+    // If we still cannot find a path separator, return the whole string as the
+    // test name.
     if (idx == string::npos)
       retVal = fullName;
     else
@@ -106,7 +104,8 @@ std::string getFilenameComponent(std::string const &fqName,
     Insist(false, "case for FC_NAME_WE not implemented.");
     break;
   case FC_NATIVE:
-    // This is always done before returning (see implementation found after the case statement)
+    // This is always done before returning (see implementation found after the
+    // case statement)
     retVal = fullName;
     break;
 

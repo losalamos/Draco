@@ -12,9 +12,9 @@
 #ifndef __cdi_ipcress_IpcressMultigroupOpacity_hh__
 #define __cdi_ipcress_IpcressMultigroupOpacity_hh__
 
-#include "IpcressDataTable.hh" // we have a smart pointer to a
-                               // IpcressDataTable object.
+#include "IpcressDataTable.hh"
 #include "cdi/MultigroupOpacity.hh"
+#include <memory>
 
 namespace rtt_cdi_ipcress {
 // -------------------- //
@@ -143,7 +143,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressMultigroupOpacity
    * There is a one-to-one relationship between IpcressOpacity and
    * IpcressDataTable.
    */
-  rtt_dsxx::SP<const IpcressDataTable> spIpcressDataTable;
+  std::shared_ptr<const IpcressDataTable> spIpcressDataTable;
 
 public:
   // ------------ //
@@ -170,9 +170,10 @@ public:
    * \param opacityReaction The type of reaction rate that the current data set
    *     represents.
    */
-  IpcressMultigroupOpacity(rtt_dsxx::SP<IpcressFile const> const &spIpcressFile,
-                           size_t materialID, rtt_cdi::Model opacityModel,
-                           rtt_cdi::Reaction opacityReaction);
+  IpcressMultigroupOpacity(
+      std::shared_ptr<IpcressFile const> const &spIpcressFile,
+      size_t materialID, rtt_cdi::Model opacityModel,
+      rtt_cdi::Reaction opacityReaction);
 
   /*!
    * \brief Unpacking constructor.

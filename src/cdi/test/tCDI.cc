@@ -5,10 +5,7 @@
  * \date   Tue Oct  9 15:52:01 2001
  * \brief  CDI test executable.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "DummyEoS.hh"
@@ -19,7 +16,6 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -35,7 +31,6 @@ using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::OdfmgOpacity;
 using rtt_cdi::EoS;
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -270,17 +265,17 @@ void check_CDI(rtt_dsxx::UnitTest &ut, CDI const &cdi) {
 //---------------------------------------------------------------------------//
 
 void test_CDI(rtt_dsxx::UnitTest &ut) {
-  // make SPs to opacity and EoS objects
-  SP<const GrayOpacity> gray_planck_abs;
-  SP<const GrayOpacity> gray_iso_scatter;
-  SP<const MultigroupOpacity> mg_planck_abs;
-  SP<const MultigroupOpacity> mg_iso_scatter;
-  SP<const MultigroupOpacity> mg_diff_bound;
-  SP<const OdfmgOpacity> odfmg_planck_abs;
-  SP<const OdfmgOpacity> odfmg_iso_scatter;
-  SP<const OdfmgOpacity> odfmg_diff_bound;
-  SP<const OdfmgOpacity> odfmg_diff_bound2;
-  SP<const EoS> eos;
+  // make shared_ptrs to opacity and EoS objects
+  std::shared_ptr<const GrayOpacity> gray_planck_abs;
+  std::shared_ptr<const GrayOpacity> gray_iso_scatter;
+  std::shared_ptr<const MultigroupOpacity> mg_planck_abs;
+  std::shared_ptr<const MultigroupOpacity> mg_iso_scatter;
+  std::shared_ptr<const MultigroupOpacity> mg_diff_bound;
+  std::shared_ptr<const OdfmgOpacity> odfmg_planck_abs;
+  std::shared_ptr<const OdfmgOpacity> odfmg_iso_scatter;
+  std::shared_ptr<const OdfmgOpacity> odfmg_diff_bound;
+  std::shared_ptr<const OdfmgOpacity> odfmg_diff_bound2;
+  std::shared_ptr<const EoS> eos;
 
   // assign to dummy state objects
   gray_planck_abs.reset(
@@ -685,7 +680,7 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
 
   // Catch an illegal group assertion.
   CDI cdi;
-  SP<const MultigroupOpacity> mg(
+  std::shared_ptr<const MultigroupOpacity> mg(
       new DummyMultigroupOpacity(rtt_cdi::SCATTERING, rtt_cdi::THOMSON));
   cdi.setMultigroupOpacity(mg);
 
@@ -1054,7 +1049,7 @@ void test_mgopacity_collapse(rtt_dsxx::UnitTest &ut) {
   // Test functions that collapse MG opacity data into one-group data using
   // either Planckian or Rosseland weight functions:
 
-  SP<const MultigroupOpacity> mg_planck_abs(
+  std::shared_ptr<const MultigroupOpacity> mg_planck_abs(
       new DummyMultigroupOpacity(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK));
 
   // bounds = { 0.05, 0.5, 5, 50 }
@@ -1262,7 +1257,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest &ut) {
   // Test functions that collapse MG opacity data into one-group data using
   // either Planckian or Rosseland weight functions:
 
-  SP<const OdfmgOpacity> op(
+  std::shared_ptr<const OdfmgOpacity> op(
       new DummyOdfmgOpacity(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK));
 
   // bounds = { 0.05, 0.5, 5, 50 }

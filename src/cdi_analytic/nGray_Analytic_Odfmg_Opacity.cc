@@ -5,10 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_Odfmg_Opacity class member definitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "nGray_Analytic_Odfmg_Opacity.hh"
@@ -37,8 +34,8 @@ namespace rtt_cdi_analytic {
  * \param groups vector containing the group boundaries in keV from lowest to
  * highest
  *
- * \param models vector containing SPs to Analytic_Model derived types for
- * each group, the size should be groups.size() - 1
+ * \param models vector containing shared_ptrs to Analytic_Model derived types
+ * for each group, the size should be groups.size() - 1
  *
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  *
@@ -58,7 +55,7 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
- * 
+ *
  * This constructor rebuilds and nGray_Analytic_Odfmg_Opacity from a
  * vector<char> that was created by a call to pack().  It can only rebuild
  * Analytic_Model types that have been registered in the
@@ -133,7 +130,7 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
 // OPACITY INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the group opacities given a scalar temperature and density. 
+ * \brief Return the group opacities given a scalar temperature and density.
  *
  * Given a scalar temperature and density, return the group opacities
  * (vector<double>) for the reaction type specified by the constructor.  The

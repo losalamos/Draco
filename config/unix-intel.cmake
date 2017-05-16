@@ -39,7 +39,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS
     "-w1 -vec-report0 -diag-disable remark -shared-intel -no-ftz -fma -diag-disable 11060" )
   set( CMAKE_C_FLAGS_DEBUG
-    "-g -O0 -inline-level=0 -ftrapuv -check=uninit -fp-model precise -fp-speculation safe -DDEBUG")
+    "-g -O0 -inline-level=0 -ftrapuv -check=uninit -fp-model precise -fp-speculation safe -debug inline-debug-info -fno-omit-frame-pointer -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE
     "-O3 -fp-speculation fast -fp-model precise -pthread -DNDEBUG" )
   # [KT 2017-01-19] On KNL, -fp-model fast changes behavior significantly for
@@ -52,7 +52,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_MINSIZEREL
     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO
-    "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe" )
+    "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe -fno-omit-frame-pointer" )
 
   set( CMAKE_CXX_FLAGS
     "${CMAKE_C_FLAGS} -std=c++11" )

@@ -21,15 +21,24 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
 
-  message( STATUS "Looking for lapack...")
+  # There are several flavors of LAPACK.
+  # 1. look for netlib-lapack
+  # 2. look for MKL (Intel)
+  # 3. look for OpenBLAS.
+
+  message( STATUS "Looking for lapack (netlib)...")
   set( lapack_FOUND FALSE )
+
   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
-  foreach( version 3.4.1 3.4.2 3.5.0 3.6.0 3.6.1 )
-    if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
-      list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
-      find_package( lapack CONFIG )
-    endif()
-  endforeach()
+  # This first try will also look for BLAS/LAPACK at CMAKE_PREFIX_PATH.
+  if( EXISTS ${LAPACK_LIB_DIR}/cmake )
+    file( GLOB lapack_cmake_prefix_path
+      LIST_DIRECTORIES true
+      ${LAPACK_LIB_DIR}/cmake/lapack-* )
+    list( APPEND CMAKE_PREFIX_PATH ${lapack_cmake_prefix_path} )
+  endif()
+  find_package( lapack CONFIG QUIET )
+
   if( lapack_FOUND )
     set( lapack_flavor "netlib")
     foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
@@ -38,7 +47,7 @@ macro( setupLAPACKLibrariesUnix )
         set( lapack_FOUND TRUE )
       endif()
     endforeach()
-    message( STATUS "Looking for lapack....found ${LAPACK_LIB_DIR}")
+    message( STATUS "Looking for lapack (netlib)....found ${LAPACK_LIB_DIR}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
     # The above might define blas, or it might not. Double check:
@@ -50,12 +59,12 @@ macro( setupLAPACKLibrariesUnix )
           IMPORTED_LOCATION                 "${BLAS_LIBRARIES}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran")
       else()
-        message( FATAL_ERROR "Looking for lapack....blas not found")
+        message( FATAL_ERROR "Looking for lapack (netlib)....blas not found")
       endif()
     endif()
 
   else()
-    message( STATUS "Looking for lapack....not found")
+    message( STATUS "Looking for lapack (netlib)....not found")
   endif()
 
   mark_as_advanced( lapack_DIR lapack_FOUND )
@@ -66,7 +75,7 @@ macro( setupLAPACKLibrariesUnix )
 
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
-      message( STATUS "Looking for lapack(MKL)...")
+      message( STATUS "Looking for lapack (MKL)...")
       # CMake uses the 'Intel10_64lp' enum to indicate MKL. For details see the
       # cmake documentation for FindBLAS.
       set( BLA_VENDOR "Intel10_64lp" )
@@ -91,8 +100,9 @@ macro( setupLAPACKLibrariesUnix )
       endif()
 
       if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE )
-        set( lapack_FOUND ON )
+        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?")
+        set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?")
+        set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
         set( lapack_flavor "mkl")
         add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas   ${MKL_LIBRARY_TYPE} IMPORTED)
@@ -117,9 +127,9 @@ macro( setupLAPACKLibrariesUnix )
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_LIBRARIES blas
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
-        message(STATUS "Looking for lapack(MKL)...found ${BLAS_mkl_intel_lp64_LIBRARY}")
+        message(STATUS "Looking for lapack (MKL)...found ${BLAS_mkl_intel_lp64_LIBRARY}")
       else()
-        message(STATUS "Looking for lapack(MKL)...NOTFOUND")
+        message(STATUS "Looking for lapack (MKL)...NOTFOUND")
       endif()
 
     endif()
@@ -129,15 +139,15 @@ macro( setupLAPACKLibrariesUnix )
   # local system.
 
   if( NOT lapack_FOUND )
-      message( STATUS "Looking for lapack(OpenBLAS)...")
+      message( STATUS "Looking for lapack (OpenBLAS)...")
       # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro. For
       # details see the cmake documentation for FindBLAS.
       set( BLA_VENDOR "OpenBLAS" )
       find_package( BLAS QUIET )
 
       if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE )
-        set( lapack_FOUND ON )
+        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
+        set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
         set( lapack_flavor "openblas")
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
@@ -147,9 +157,9 @@ macro( setupLAPACKLibrariesUnix )
         set_target_properties( lapack PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        message(STATUS "Looking for lapack(OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
+        message(STATUS "Looking for lapack (OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
       else()
-        message(STATUS "Looking for lapack(OpenBLAS)...NOTFOUND")
+        message(STATUS "Looking for lapack (OpenBLAS)...NOTFOUND")
       endif()
 
   endif()
@@ -187,26 +197,28 @@ macro( setupLAPACKLibrariesUnix )
       # print_targets_properties("blas;lapack")
       set( props
         GNUtoMS
+        IMPORTED
         IMPORTED_CONFIGURATIONS
-        IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
-        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
-        IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
         IMPORTED_IMPLIB
         IMPORTED_IMPLIB_DEBUG
         IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
+        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
+        IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
+        IMPORTED_LOCATION
         IMPORTED_LOCATION_DEBUG
         IMPORTED_LOCATION_RELEASE
         IMPORTED_LOCATION_RELWITHDEBINFO
-        IMPORTED
         IMPORTED_SONAME_DEBUG
         IMPORTED_SONAME_RELEASE
         IMPORTED_SONAME_RELWITHDEBINFO
         INTERFACE_INCLUDE_DIRECTORIES
+        INTERFACE_LINK_LIBRARIES
         POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
+        )
       if( "${lapack_flavor}" STREQUAL "mkl" )
-        save_vendor_imported_library_to_draco_config( "blas::mkl_thread;blas::mkl_core" "${props}" )
+        save_vendor_imported_library_to_draco_config(
+          "blas::mkl_thread;blas::mkl_core" "${props}" )
       endif()
       save_vendor_imported_library_to_draco_config( "lapack;blas" "${props}" )
   endif()
@@ -378,8 +390,7 @@ set_target_properties( ${tgt} PROPERTIES")
    ${prop} \"${v}\"")
         endif()
       endforeach()
-      set( tmp "${tmp}
-   TYPE \"${library_type}_LIBRARY\" )
+      set( tmp "${tmp} )
 ")
     else()
       message(FATAL_ERROR "There is no target named '${tgt}'")

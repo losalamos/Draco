@@ -5,10 +5,7 @@
  * \date   Tue Jul 12 16:00:59 2011
  * \brief  Test functions found in ds++/path.hh and path.cc
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -342,9 +339,7 @@ int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, release);
   try {
     test_currentPath(ut);
-
     test_getFilenameComponent(ut, string(argv[0]));
-
     test_draco_remove(ut);
   }
   UT_EPILOG(ut);

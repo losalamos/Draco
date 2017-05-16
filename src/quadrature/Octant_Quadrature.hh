@@ -1,17 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Octant_Quadrature.hh
  * \author Kent Budge
  * \date   Friday, Nov 30, 2012, 08:28 am
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- *
- * Long description.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Octant_Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #ifndef quadrature_Octant_Quadrature_hh
 #define quadrature_Octant_Quadrature_hh
@@ -20,20 +15,20 @@
 
 namespace rtt_quadrature {
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \class Octant_Quadrature
  * \brief This is an abstract class representing all quadratures over the unit
  * sphere.
  *
- * At present, all our unit sphere quadratures are symmetric in octants,
- * though we will likely relax this restriction in the future.
+ * At present, all our unit sphere quadratures are symmetric in octants, though
+ * we will likely relax this restriction in the future.
  *
  * For level quadratures, the levels must be in the xi direction cosine. The
  * user may override the default axis assignments when he constructs an
  * Ordinate_Set or an Ordinate_Space from the Octant_Quadrature.
  */
-//=======================================================================================//
+//===========================================================================//
 
 class Octant_Quadrature : public Quadrature {
 public:
@@ -97,6 +92,6 @@ private:
 
 #endif // quadrature_Octant_Quadrature_hh
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of quadrature/Octant_Quadrature.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

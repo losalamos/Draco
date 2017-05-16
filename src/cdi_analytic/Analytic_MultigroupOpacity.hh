@@ -5,10 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_MultigroupOpacity class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Analytic_MultigroupOpacity_hh__
@@ -16,7 +13,7 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/MultigroupOpacity.hh"
-#include "ds++/SP.hh"
+#include <memory>
 
 namespace rtt_cdi_analytic {
 

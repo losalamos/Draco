@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug 28 07:36:50 2006
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -51,7 +48,7 @@ public:
 
   void check_completeness(Token_Stream &tokens);
 
-  SP<DummyClass> create_object();
+  std::shared_ptr<DummyClass> create_object();
 
 protected:
   // DATA
@@ -78,14 +75,15 @@ Parse_Table Class_Parse_Table<DummyClass>::parse_table_;
 bool Class_Parse_Table<DummyClass>::parse_table_is_initialized_ = false;
 
 //---------------------------------------------------------------------------//
-template <> SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
+template <>
+std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens);
 }
 
 //---------------------------------------------------------------------------//
 template <>
-SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
-                                       bool const &is_indolent) {
+std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
+                                                    bool const &is_indolent) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens,
                                                                is_indolent);
 }
@@ -134,8 +132,9 @@ void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens) {
 }
 
 //---------------------------------------------------------------------------//
-SP<DummyClass> Class_Parse_Table<DummyClass>::create_object() {
-  SP<DummyClass> Result = SP<DummyClass>(new DummyClass(parsed_insouciance));
+std::shared_ptr<DummyClass> Class_Parse_Table<DummyClass>::create_object() {
+  std::shared_ptr<DummyClass> Result =
+      std::shared_ptr<DummyClass>(new DummyClass(parsed_insouciance));
   return Result;
 }
 
@@ -149,7 +148,7 @@ void tstClass_Parser(UnitTest &ut) {
   string text = "insouciance = 3.3\nend\n";
   String_Token_Stream tokens(text);
 
-  SP<DummyClass> dummy = parse_class<DummyClass>(tokens);
+  std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
   ut.check(dummy != nullptr, "parsed the class object", true);
   ut.check(dummy->Get_Insouciance() == 3.3, "parsed the insouciance correctly");
@@ -168,7 +167,7 @@ void tstClass_Parser(UnitTest &ut) {
 
   bool good = false;
   try {
-    SP<DummyClass> dummy = parse_class<DummyClass>(etokens);
+    std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(etokens);
   } catch (Syntax_Error &) {
     good = true;
   }
@@ -177,7 +176,7 @@ void tstClass_Parser(UnitTest &ut) {
   tokens.rewind();
   good = false;
   try {
-    SP<DummyClass> dummy = parse_class<DummyClass>(etokens, true);
+    std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(etokens, true);
   } catch (Syntax_Error &) {
     good = true;
   }

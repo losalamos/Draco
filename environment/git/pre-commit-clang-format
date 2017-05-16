@@ -59,6 +59,9 @@ PARSE_EXTS=true
 # FILE_EXTS=".c .h .cpp .hpp"
 FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx"
 
+# file endings for files to exclude from parsing when PARSE_EXTS is true.
+FILE_ENDINGS="_f.h _f77.h _f90.h"
+
 ##################################################################
 # There should be no need to change anything below this line.
 
@@ -100,7 +103,10 @@ set -e
 matches_extension() {
     local filename=$(basename "$1")
     local extension=".${filename##*.}"
+    local end
     local ext
+
+    for end in $FILE_ENDINGS; do [[ "$filename" == *"$end" ]] && return 1; done
 
     for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
 

@@ -16,6 +16,7 @@
 
 #include "Expression.hh"
 #include "mesh_element/Geometry.hh"
+#include <memory>
 
 namespace rtt_parser {
 //! Can the next token in the stream be interpreted as real number?
@@ -57,20 +58,21 @@ set_internal_unit_system(rtt_units::UnitSystem const &units);
 DLL_PUBLIC_parser void set_unit_expressions_are_required(bool);
 DLL_PUBLIC_parser rtt_units::UnitSystem const &get_internal_unit_system();
 DLL_PUBLIC_parser bool unit_expressions_are_required();
+DLL_PUBLIC_parser void free_internal_unit_system();
 
 //! parser a real number followed by a unit expression.
 DLL_PUBLIC_parser double parse_quantity(Token_Stream &tokens, Unit const &unit,
                                         char const *name);
 
 //! parse an expression followed by a unit expression.
-DLL_PUBLIC_parser SP<Expression>
+DLL_PUBLIC_parser std::shared_ptr<Expression>
 parse_quantity(Token_Stream &tokens, Unit const &unit, char const *name,
                unsigned number_of_variables,
                std::map<string, pair<unsigned, Unit>> const &);
 
 DLL_PUBLIC_parser double parse_temperature(Token_Stream &);
 
-DLL_PUBLIC_parser SP<Expression>
+DLL_PUBLIC_parser std::shared_ptr<Expression>
 parse_temperature(Token_Stream &, unsigned number_of_variables,
                   std::map<string, pair<unsigned, Unit>> const &);
 
@@ -81,9 +83,9 @@ parse_temperature(Token_Stream &, unsigned number_of_variables,
  * signature for all functions that parse an object of a specified class from a
  * Token_Stream, so that the common code idiom for parsing an object of MyClass
  * is:
- *
- *   SP<MyClass> spMyClass = parse_class<MyClass>(tokens);
- *
+ * \code
+ *   std::shared_ptr<MyClass> spMyClass = parse_class<MyClass>(tokens);
+ * \endcode
  * Developers may specialize this function as needed. A particular
  * implementation is suggested in Class_Parse_Table.hh.
  *
@@ -95,24 +97,23 @@ parse_temperature(Token_Stream &, unsigned number_of_variables,
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
  */
-template <typename Class> rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
+template <typename Class>
+std::shared_ptr<Class> parse_class(Token_Stream &tokens);
 
 //----------------------------------------------------------------------------//
 /*! Template for parse function that produces a class object.
  *
- * This function resembles the previous one, but takes a second argument supply a context
- * that may alter the parser behavior..
+ * This function resembles the previous one, but takes a second argument supply
+ * a context that may alter the parser behavior..
  *
  * \param tokens Token stream from which to parse the user input.
- *
  * \param context Context for the parse.
- *
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
  */
-
 template <typename Class, typename Context>
-rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens, Context const &context);
+std::shared_ptr<Class> parse_class(Token_Stream &tokens,
+                                   Context const &context);
 
 } // rtt_parser
 

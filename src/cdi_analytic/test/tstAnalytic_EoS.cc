@@ -5,10 +5,7 @@
  * \date   Thu Oct  4 11:45:19 2001
  * \brief  Analytic_EoS test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
@@ -23,7 +20,6 @@ using rtt_cdi_analytic::Analytic_EoS_Model;
 using rtt_cdi_analytic::Polynomial_Specific_Heat_Analytic_EoS_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::EoS;
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
@@ -37,7 +33,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic model (polynomial specific heats)
   // elec specific heat = a + bT^c
   // ion specific heat  = d + eT^f
-  SP<Polynomial_Model> model(
+  shared_ptr<Polynomial_Model> model(
       new Polynomial_Model(0.0, 1.0, 3.0, 0.2, 0.0, 0.0));
 
   if (!model)
@@ -155,10 +151,10 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
 
   // Test the get_Analytic_Model() member function.
   {
-    SP<Polynomial_Model const> myEoS_model =
+    shared_ptr<Polynomial_Model const> myEoS_model =
         dynamic_pointer_cast<Polynomial_Model const>(
             analytic.get_Analytic_Model());
-    SP<Polynomial_Model const> expected_model(model);
+    shared_ptr<Polynomial_Model const> expected_model(model);
 
     if (expected_model == myEoS_model)
       PASSMSG("get_Analytic_Model() returned the expected EoS model.");
@@ -192,7 +188,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
   // make an analytic model like Su-Olson (polynomial specific heats)
   // elec specific heat = a + bT^c
   // ion specific heat  = d + eT^f
-  SP<Polynomial_Model> so_model(
+  shared_ptr<Polynomial_Model> so_model(
       new Polynomial_Model(0.0, 54880.0, 3.0, 0.2, 0.0, 0.0));
   // make an analtyic eos
   Analytic_EoS so_analytic(so_model);
@@ -267,14 +263,14 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   CDI eosdata;
 
   // analytic model
-  SP<Analytic_EoS_Model> model(
+  shared_ptr<Analytic_EoS_Model> model(
       new Polynomial_Model(0.0, 1.0, 3.0, 0.0, 0.0, 0.0));
 
   // assign the eos object
-  SP<Analytic_EoS> analytic_eos(new Analytic_EoS(model));
+  shared_ptr<Analytic_EoS> analytic_eos(new Analytic_EoS(model));
 
   // EoS object
-  SP<const EoS> eos = analytic_eos;
+  shared_ptr<const EoS> eos = analytic_eos;
   if (typeid(*eos) != typeid(Analytic_EoS))
     ITFAILS;
 
@@ -358,11 +354,11 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   try {
     eosdata.eos();
   } catch (const rtt_dsxx::assertion &ass) {
-    PASSMSG("Good, caught an unreferenced EoS SP!");
+    PASSMSG("Good, caught an unreferenced EoS shared_ptr!");
     caught = true;
   }
   if (!caught)
-    FAILMSG("Failed to catch an unreferenced SP<EoS>!");
+    FAILMSG("Failed to catch an unreferenced shared_ptr<EoS>!");
 
   // now assign the analytic eos to CDI directly
   eosdata.setEoS(analytic_eos);
@@ -428,11 +424,11 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
   {
     // make an analytic model (polynomial specific heats)
-    SP<Polynomial_Model> model(
+    shared_ptr<Polynomial_Model> model(
         new Polynomial_Model(0.0, 1.0, 3.0, 0.2, 0.0, 0.0));
 
     // make an analtyic eos
-    SP<EoS> eos(new Analytic_EoS(model));
+    shared_ptr<EoS> eos(new Analytic_EoS(model));
 
     packed = eos->pack();
   }

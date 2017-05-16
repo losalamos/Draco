@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Level_Symmetric.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
  * \note   Copyright 2016-2017 Los Alamos National Security, LLC. All rights
- *         reserved. 
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         reserved. */
+//---------------------------------------------------------------------------//
 
 #include "Level_Symmetric.hh"
 #include "parser/utilities.hh"
@@ -17,9 +14,8 @@
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------------------//
-/*static*/
-SP<Quadrature> Level_Symmetric::parse(Token_Stream &tokens) {
+//---------------------------------------------------------------------------//
+std::shared_ptr<Quadrature> Level_Symmetric::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "order", "expected an order");
 
@@ -28,11 +24,11 @@ SP<Quadrature> Level_Symmetric::parse(Token_Stream &tokens) {
 
   tokens.check_syntax(tokens.shift().type() == END, "missing end?");
 
-  return SP<Quadrature>(new Level_Symmetric(sn_order));
+  return std::shared_ptr<Quadrature>(new Level_Symmetric(sn_order));
 }
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.cc
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
+// end of quadrature/Quadrature.cc
+//---------------------------------------------------------------------------//

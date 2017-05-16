@@ -5,10 +5,7 @@
  * \date   Tue Mar 26 16:37:01 2002
  * \brief  Hex Mesh Reader test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "TestHexMeshReader.hh"
@@ -32,7 +29,6 @@ using namespace rtt_dsxx;
 
 void runTest(UnitTest &ut) {
   using rtt_meshReaders::Hex_Mesh_Reader;
-  using rtt_dsxx::SP;
   using rtt_mesh_element::Element_Definition;
 
   cout << "\n******* CIC-19 Hex Mesh Reader Tests *******" << std::endl;
@@ -50,7 +46,8 @@ void runTest(UnitTest &ut) {
   }
 
   rtt_meshReaders_test::check_mesh(ut, mesh_1D, "slab");
-  vector<SP<Element_Definition>> element_defs = mesh_1D.get_element_defs();
+  vector<std::shared_ptr<Element_Definition>> element_defs =
+      mesh_1D.get_element_defs();
   if (element_defs.size() > 0)
     FAILMSG("element defs is NOT empty for slab");
 

@@ -1,17 +1,15 @@
 //----------------------------------*-C++-*--------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/RTT_Mesh_Reader.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Mesh_Reader library.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <algorithm>
-
 #include "RTT_Mesh_Reader.hh"
+#include <algorithm>
 
 namespace rtt_RTT_Format_Reader {
 
@@ -22,8 +20,8 @@ using rtt_mesh_element::Element_Definition;
  */
 void RTT_Mesh_Reader::transform2CGNS(void) {
   Element_Definition::Element_Type cell_def;
-  rtt_dsxx::SP<rtt_mesh_element::Element_Definition> cell;
-  std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition>>
+  std::shared_ptr<rtt_mesh_element::Element_Definition> cell;
+  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
       cell_definitions;
   vector_int new_side_types;
   std::vector<std::vector<size_t>> new_ordered_sides;
@@ -78,7 +76,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
     if (cell_def == Element_Definition::POLYGON) {
       Insist(rttMesh->get_dims_ndim() == 2,
              "Polygon cell definition only supported in 2D");
-      rtt_dsxx::SP<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
+      std::shared_ptr<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
 
       std::vector<Element_Definition> elem_defs;
       elem_defs.push_back(Element_Definition(Element_Definition::BAR_2));
@@ -92,7 +90,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
     } else if (cell_def == Element_Definition::POLYHEDRON) {
       Insist(rttMesh->get_dims_ndim() == 3,
              "Polyhedron cell definition only supported in 3D");
-      rtt_dsxx::SP<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
+      std::shared_ptr<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
 
       // check to see if the QUAD_9 element is present in the cell_definitions
       // and check for QUAD_4 in the event that a QUAD_9 is in fact present
@@ -201,7 +199,7 @@ std::vector<std::vector<int>> RTT_Mesh_Reader::get_element_nodes() const {
 /*!
  * \brief Returns the nodes associated with each node_flag_type_name and
  *        node_flag_name combination.
- * \return The nodes associated with each node_flag_type_name/node_flag_name 
+ * \return The nodes associated with each node_flag_type_name/node_flag_name
  *         combination.
  */
 std::map<std::string, std::set<int>> RTT_Mesh_Reader::get_node_sets() const {
@@ -228,10 +226,10 @@ std::map<std::string, std::set<int>> RTT_Mesh_Reader::get_node_sets() const {
   return node_sets;
 }
 /*!
- * \brief Returns the elements (i.e., sides and cells) associated with each 
+ * \brief Returns the elements (i.e., sides and cells) associated with each
  *        flag_type_name and flag_name combination for the sides and cells
  *        read from the mesh file data.
- * \return The elements associated with each flag_type_name/flag_name 
+ * \return The elements associated with each flag_type_name/flag_name
  *         combination.
  */
 std::map<std::string, std::set<int>> RTT_Mesh_Reader::get_element_sets() const {

@@ -15,7 +15,6 @@ digraph bubba_package_level {
    level4 -> level3 -> level2 -> level1 -> level0;
 
    /* level 0 */
-   dsxx_SPhh [shape=box, label="ds++/SP.hh" color=red];
    gsl_gsl_sf_gammah [shape=box, label="gsl/gsl_sf_gamma.h" color=red];
    QuadServicesihh [shape=box, label="QuadServices.i.hh"];
    special_functions_Factorialhh [shape=box, label="special_functions/Factorial.hh" color=red];
@@ -65,7 +64,7 @@ digraph bubba_package_level {
    QuadServicescc [shape=box, label="QuadServices.cc"];
 
    /* Dependencies */
-   {rank=same; level0 dsxx_SPhh gsl_gsl_sf_gammah QuadServicesihh special_functions_Factorialhh gsl_gsl_sf_legendreh special_functions_Ylmhh mesh_element_Geometryhh gsl_gsl_blash dsxx_Asserthh gsl_gsl_linalgh dsxx_Soft_Equivalencehh units_PhysicalConstantshh Releasehh};
+   {rank=same; level0 gsl_gsl_sf_gammah QuadServicesihh special_functions_Factorialhh gsl_gsl_sf_legendreh special_functions_Ylmhh mesh_element_Geometryhh gsl_gsl_blash dsxx_Asserthh gsl_gsl_linalgh dsxx_Soft_Equivalencehh units_PhysicalConstantshh Releasehh};
    {rank=same; level1 Releasecc gaulaghh gauleghh Quadraturehh};
    {rank=same; level2 QuadCreatorhh Q2DSquareChebyshevLegendrehh Q1DGaussLeghh Ordinatehh Q1DDoubleGausshh GeneralQuadraturehh Q1Axialhh Q1DLobattohh Q2DLevelSymhh Quadraturecc Q3DLevelSymhh};
    {rank=same; level3 QuadServiceshh Q2DLevelSymcc Q1Axialcc Ordinatecc Q1DGaussLegcc Q2DSquareChebyshevLegendrecc GeneralQuadraturecc QuadCreatorcc Q3DLevelSymcc Q1DLobattocc Q1DDoubleGausscc};
@@ -83,13 +82,12 @@ digraph bubba_package_level {
 
    /* level 2 */
    QuadCreatorhh -> { Quadraturehh};
-   QuadCreatorhh -> { dsxx_SPhh} [color=red, style=solid];
    Q2DSquareChebyshevLegendrehh -> { Quadraturehh};
    Q2DSquareChebyshevLegendrehh -> {} [color=red, style=solid];
    Q1DGaussLeghh -> { Quadraturehh};
    Q1DGaussLeghh -> {} [color=red, style=solid];
    Ordinatehh -> { Quadraturehh};
-   Ordinatehh -> { dsxx_SPhh dsxx_Soft_Equivalencehh mesh_element_Geometryhh} [color=red, style=solid];
+   Ordinatehh -> { dsxx_Soft_Equivalencehh mesh_element_Geometryhh} [color=red, style=solid];
    Q1DDoubleGausshh -> { Quadraturehh};
    Q1DDoubleGausshh -> {} [color=red, style=solid];
    GeneralQuadraturehh -> { Quadraturehh};

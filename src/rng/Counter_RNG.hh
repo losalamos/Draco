@@ -58,8 +58,8 @@
 #endif
 
 #include "uniform.hpp"
+#include "ds++/Data_Table.hh"
 #include <algorithm>
-#include <ds++/Data_Table.hh>
 
 namespace rtt_rng {
 

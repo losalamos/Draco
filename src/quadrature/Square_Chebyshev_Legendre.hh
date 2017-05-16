@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Square_Chebyshev_Legendre.hh
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Square_Chebyshev_Legendre.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #ifndef quadrature_Square_Chebyshev_Legendre_hh
 #define quadrature_Square_Chebyshev_Legendre_hh
@@ -18,12 +15,12 @@
 
 namespace rtt_quadrature {
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \class Square_Chebyshev_Legendre
  * \brief A class to encapsulate a triangular Chebyshev-Legendre quadrature set.
  */
-//=======================================================================================//
+//===========================================================================//
 
 class Square_Chebyshev_Legendre : public Octant_Quadrature {
 public:
@@ -66,7 +63,7 @@ public:
 
   // STATICS
 
-  static SP<Quadrature> parse(Token_Stream &tokens);
+  static std::shared_ptr<Quadrature> parse(Token_Stream &tokens);
 
 private:
   // IMPLEMENTATION
@@ -83,6 +80,6 @@ private:
 
 #endif // quadrature_Square_Chebyshev_Legendre_hh
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of quadrature/Square_Chebyshev_Legendre.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

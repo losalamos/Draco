@@ -7,10 +7,6 @@
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
-#MSUB -l walltime=08:00:00
-#MSUB -l nodes=1:ppn=36
-#MSUB -j oe
-
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -41,7 +37,6 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
-run "ulimit -a"
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -75,16 +70,15 @@ esac
 # ----------------------------------------
 machine=`uname -n`
 echo "==========================================================================="
-echo "Moonlight regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
+echo "Snow regression: ${ctestparts} from ${machine}."
+echo "                 ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
+
+run "ulimit -a"
 
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
+if [[ `fn_exists module` == 0 ]]; then
     echo 'module function does not exist. defining a local function ...'
     run "source /usr/share/Modules/init/bash"
 fi
@@ -93,35 +87,47 @@ fi
 run "module purge &> /dev/null"
 unset _LMFILES_
 run "module list"
-run "module load user_contrib"
-run "module load friendly-testing"
-run "module load cmake/3.6.2"
-run "module load intel/17.0.1"
-run "module load openmpi/1.10.5"
-run "module load mkl"
-run "module load trilinos/12.8.1"
-run "module load superlu-dist"
-run "module load metis"
-run "module load parmetis"
-run "module load ndi"
-run "module load numdiff"
-run "module load subversion git"
-run "module load random123"
-run "module load eospac/6.2.4"
+run "module load user_contrib friendly-testing"
+run "module load intel/17.0.1 openmpi/1.10.5"
+run "module load trilinos/12.8.1 superlu-dist metis parmetis"
+run "module load cmake/3.6.2 ndi numdiff git"
+run "module load mkl random123 eospac/6.2.4"
 
+export OMP_NUM_THREADS=18
 comp=`basename $CXX`
-export OMP_NUM_THREADS=8
-
-if test "${comp}" == "icpc"; then
+if [[ "${comp}" == "icpc" ]]; then
   comp="intel"
 fi
 
+# Extra parameters
 case $extra_params in
 "")
     # no-op
     ;;
 fulldiagnostics)
     comp="${comp}-fulldiagnostics"
+    ;;
+gcc610)
+    run "module purge &> /dev/null"
+    run "module list"
+    run "module load user_contrib friendly-testing"
+    run "module load gcc/6.1.0 openmpi/2.0.2"
+    run "module load trilinos/12.8.1 superlu-dist metis parmetis"
+    run "module load cmake/3.7.1 ndi numdiff git"
+    run "module load random123 eospac/6.2.4 lapack/3.6.1"
+    comp="${LCOMPILER}"
+    # ${LCOMPILERVER}
+    echo "comp = $comp"
+    ;;
+newtools)
+    run "module purge &> /dev/null"
+    run "module list"
+    run "module load user_contrib friendly-testing"
+    run "module load intel/17.0.2 openmpi/2.0.2"
+    run "module load trilinos/12.8.1 superlu-dist metis parmetis"
+    run "module load cmake/3.7.1 ndi numdiff git"
+    run "module load mkl random123 eospac/6.2.4"
+    comp="${comp}-1702"
     ;;
 nr)
     comp="${comp}-nr"
@@ -139,16 +145,14 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB:-0} == 1; then
-  comp=$comp-$featurebranch
-fi
+comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
-if test "$USER" == "kellyt"; then
+if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   MYHOSTNAME="`uname -n`"
   keychain=keychain-2.7.1
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
   else
@@ -174,21 +178,13 @@ if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
-   # Keep build and target dirs out of /usr/projects locations to
-   # prevent the .snapshots directory from filling up.
-   # scratch_dir=/scratch/${moniker}/cdash/sn
-   scratch_dir=/lustre/scratch2/yellow/${USER}/cdash/sn
-   mkdir -p $scratch_dir
-   if ! test -d ${scratch_dir}; then
-      echo "Fatal Error, scratch_dir=${scratch_dir} not found."
+   if ! [[ -d ${scratchdir} ]]; then
+      echo "FATAL ERROR, scratchdir=${scratchdir} not found."
       echo "  Have the names/locations of scratch space changed?"
       exit 1
    fi
-   if test "${regress_mode}" = "off"; then
-      base_dir=/usr/projects/jayenne/devs/${USER}/cdash/sn
-   else
-      base_dir=/usr/projects/jayenne/regress/cdash/sn
-   fi
+   scratchdir=$scratchdir/$LOGNAME/cdash/sn
+   base_dir=$regdir/cdash/sn
 fi
 
 echo " "
@@ -215,12 +211,13 @@ elif test "${subproj}" == capsaicin; then
     script_name=Capsaicin_Linux64.cmake
 fi
 
-if test "${regress_mode}" = "off"; then
-    export buildname_append="-${USER}"
+if ! [[ "${regress_mode}" == "on" ]]; then
+  export buildname_append="-${USER}"
 fi
 
+# work_dir and scratch_dir are not the same for regress_mode == on.
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
-export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratchdir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 
 echo "sn-regress.msub: work_dir       = ${work_dir}"
 echo "sn-regress.msub: scratch_dir    = ${scratch_dir}"
@@ -228,25 +225,37 @@ echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
 if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}/source; then
-      run "/usr/bin/install -d ${work_dir}/source"
+      run "mkdir -p ${work_dir}/source"
    fi
-   # See notes above where scratch_dir is set concerning why these
-   # are soft links.
-   if ! test -d ${scratch_dir}/build; then
-      run "/usr/bin/install -d ${scratch_dir}/build"
-   fi
-   if ! test -d ${work_dir}/build; then
-      run "ln -s ${scratch_dir}/build ${work_dir}/build"
-   fi
-   if ! test -d ${scratch_dir}/target; then
-      run "/usr/bin/install -d ${scratch_dir}/target"
-   fi
-   if ! test -d ${work_dir}/target; then
-      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+   # See notes above where scratch_dir is set concerning why these are soft
+   # links.
+   if test "${regress_mode}" = "on"; then
+     if ! test -d ${scratch_dir}/build; then
+       run "mkdir -p ${scratch_dir}/build"
+     fi
+     # remove symlinks
+     rm ${work_dir}/build ${work_dir}/target
+     if ! test -d ${work_dir}/build; then
+       run "ln -s ${scratch_dir}/build ${work_dir}/build"
+     fi
+     if ! test -d ${scratch_dir}/target; then
+       run "mkdir -p ${scratch_dir}/target"
+     fi
+     if ! test -d ${work_dir}/target; then
+       run "ln -s ${scratch_dir}/target ${work_dir}/target"
+     fi
+   else
+     # $work_dir is $scratchdir/$USER/cdash/$machine/$build_name
+     if ! test -d ${work_dir}/build; then
+       run "mkdir -p ${work_dir}/build"
+     fi
+     if ! test -d ${work_dir}/target; then
+       run "mkdir -p ${work_dir}/target"
+     fi
    fi
 
-   # clean the installation directory to remove any files that might
-   # no longer be generated.
+   # clean the installation directory to remove any files that might no longer
+   # be generated.
    if test -d ${work_dir}/target/lib; then
        run "rm -rf ${work_dir}/target/*"
    fi
@@ -261,11 +270,16 @@ echo "--------------------(environment)------------------------------"
 set
 echo "--------------------(end environment)--------------------------"
 
+date
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
-run "chgrp -R draco ${work_dir}"
-run "chmod -R g+rwX,o-rwX ${work_dir}"
+if [[ ${regress_mode} == "on" ]]; then
+  echo " "
+  run "chgrp -R draco ${work_dir}"
+  run "chmod -R g+rX,o-rwX ${work_dir}"
+fi
 
 echo "All done."
 

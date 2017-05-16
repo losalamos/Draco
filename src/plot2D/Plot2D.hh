@@ -5,17 +5,13 @@
   \date   2002-04-12
   \brief  Header for Plot2D.
   \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
-          All rights reserved.
-*/
-//---------------------------------------------------------------------------//
-// $Id$
+          All rights reserved.*/
 //---------------------------------------------------------------------------//
 
 #ifndef INCLUDED_plot2D_Plot2D_hh
 #define INCLUDED_plot2D_Plot2D_hh
 
 #include "SetProps.hh"
-#include "ds++/SP.hh"
 #include <vector>
 
 namespace rtt_plot2D {

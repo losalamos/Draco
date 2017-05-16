@@ -5,10 +5,7 @@
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Analytic_Gray_Opacity_hh__
@@ -16,7 +13,7 @@
 
 #include "Analytic_Models.hh"
 #include "cdi/GrayOpacity.hh"
-#include "ds++/SP.hh"
+#include <memory>
 
 namespace rtt_cdi_analytic {
 
@@ -66,8 +63,8 @@ class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity
     : public rtt_cdi::GrayOpacity {
 public:
   // Useful typedefs.
-  typedef rtt_dsxx::SP<Analytic_Opacity_Model> SP_Analytic_Model;
-  typedef rtt_dsxx::SP<const Analytic_Opacity_Model> const_SP_Model;
+  typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
+  typedef std::shared_ptr<const Analytic_Opacity_Model> const_SP_Model;
   typedef std::vector<double> sf_double;
   typedef std::string std_string;
   typedef std::vector<char> sf_char;

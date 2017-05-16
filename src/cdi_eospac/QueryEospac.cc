@@ -5,10 +5,7 @@
  * \date   Friday, Nov 09, 2012, 13:02 pm
  * \brief  An interactive program for querying data from EOSPAC.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: tEospac.cc 6822 2012-10-12 22:56:00Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Eospac.hh"
@@ -16,12 +13,11 @@
 #include "SesameTables.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/XGetopt.hh"
-
 #include <cmath>
 #include <cstdlib> // defines atoi
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -78,7 +74,7 @@ void query_eospac() {
     }
 
     // Generate EOS Table
-    rtt_dsxx::SP<rtt_cdi_eospac::Eospac const> spEospac(
+    std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac(
         new rtt_cdi_eospac::Eospac(SesameTab));
 
     // Parameters

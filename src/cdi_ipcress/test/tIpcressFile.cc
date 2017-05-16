@@ -11,13 +11,11 @@
 #include "cdi_ipcress_test.hh"
 #include "cdi_ipcress/IpcressFile.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 
 using rtt_cdi_ipcress::IpcressFile;
-using rtt_dsxx::SP;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -39,7 +37,7 @@ void ipcress_file_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   std::cout << "Creating a Ipcress File object\n" << std::endl;
 
-  SP<IpcressFile> spGF(new rtt_cdi_ipcress::IpcressFile(op_data_file));
+  shared_ptr<IpcressFile> spGF(new rtt_cdi_ipcress::IpcressFile(op_data_file));
 
   // Test the new object to verify the constructor and accessors.
 

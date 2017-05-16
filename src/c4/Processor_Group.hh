@@ -57,7 +57,8 @@ public:
 
   //! Sum a set of values over the group, returning the sum to all
   //! processors.
-  template <typename T> void sum(std::vector<T> &values);
+  template <typename RandomAccessContainer>
+  void sum(RandomAccessContainer &values);
 
   //! Assemble a set of local vectors into global vectors.
   template <typename T>

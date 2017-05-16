@@ -3,9 +3,7 @@
  * \file   ds++/Assert.cc
  * \brief  Helper functions for the Assert facility.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id$
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Assert.hh"
@@ -70,8 +68,9 @@ void toss_cookies_ptr(char const *const cond, char const *const file,
 /*!
  * \brief Throw a rtt_dsxx::assertion for Require, Check, Ensure macros.
  *
- * This version defers the branch, and so is preferred for testing code coverage by the test
- * suite. However, it has the performance penalty of an extra function call.
+ * This version defers the branch, and so is preferred for testing code coverage
+ * by the test suite. However, it has the performance penalty of an extra
+ * function call.
  *
  * \return Throws an assertion.
  */
@@ -108,11 +107,11 @@ void insist(std::string const &cond, std::string const &msg,
 /*!
  * \brief Throw a rtt_dsxx::assertion for Insist_ptr macros.
  *
- * Having a (non-inlined) version that takes pointers prevents the compiler
- * from having to construct std::strings from the pointers each time.  This
- * is particularly important for things like rtt_dsxx::SP::operator->, that
- * (a) have an insist in them, (b) don't need complicated strings and (c) are
- * called frequently.
+ * Having a (non-inlined) version that takes pointers prevents the compiler from
+ * having to construct std::strings from the pointers each time.  This is
+ * particularly important for things like std::shared_pt::operator->, that (a)
+ * have an insist in them, (b) don't need complicated strings and (c) are called
+ * frequently.
  */
 void insist_ptr(char const *const cond, char const *const msg,
                 char const *const file, int const line) {
@@ -141,11 +140,11 @@ void check_insist(bool const cond, char const *const condstr,
 /*!
  * \brief Conditionally throw a rtt_dsxx::assertion for Insist_ptr macros.
  *
- * Having a (non-inlined) version that takes pointers prevents the compiler
- * from having to construct std::strings from the pointers each time.  This
- * is particularly important for things like rtt_dsxx::SP::operator->, that
- * (a) have an insist in them, (b) don't need complicated strings and (c) are
- * called frequently.
+ * Having a (non-inlined) version that takes pointers prevents the compiler from
+ * having to construct std::strings from the pointers each time.  This is
+ * particularly important for things like std::shared_ptr::operator->, that (a)
+ * have an insist in them, (b) don't need complicated strings and (c) are called
+ * frequently.
  */
 void check_insist_ptr(bool const cond, char const *const condstr,
                       char const *const msg, char const *const file,
@@ -158,9 +157,9 @@ void check_insist_ptr(bool const cond, char const *const condstr,
 //---------------------------------------------------------------------------//
 /*! \brief Add hostname and pid to error messages.
  *
- * Several of the errors that might be reported by DACS_Device could be
- * specific to one or a few nodes (filesystems not mounted, etc.).
- * verbose_error adds the hostname and pid to error messages.
+ * Several of the errors that might be reported by DACS_Device could be specific
+ * to one or a few nodes (filesystems not mounted, etc.).  verbose_error adds
+ * the hostname and pid to error messages.
  */
 std::string verbose_error(std::string const &message) {
   int pid = draco_getpid();

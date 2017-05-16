@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
  * \note   Copyright (C) 2016, Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_Pseudo_Line_Base_hh__
@@ -19,7 +16,6 @@
 namespace rtt_cdi_analytic {
 using std::vector;
 using std::string;
-using rtt_dsxx::SP;
 using rtt_parser::Expression;
 
 #ifdef _MSC_VER
@@ -51,7 +47,7 @@ public:
 
 private:
   // Coefficients
-  SP<Expression const> continuum_; // continuum opacity [cm^2/g]
+  std::shared_ptr<Expression const> continuum_; // continuum opacity [cm^2/g]
   vector<double> continuum_table_;
   double emax_;
 
@@ -78,10 +74,10 @@ private:
   void setup_(double emin, double emax);
 
 public:
-  Pseudo_Line_Base(SP<Expression const> const &cont, int number_of_lines,
-                   double line_peak, double line_width, int number_of_edges,
-                   double edge_ratio, double Tref, double Tpow, double emin,
-                   double emax, unsigned seed);
+  Pseudo_Line_Base(std::shared_ptr<Expression const> const &cont,
+                   int number_of_lines, double line_peak, double line_width,
+                   int number_of_edges, double edge_ratio, double Tref,
+                   double Tpow, double emin, double emax, unsigned seed);
 
   Pseudo_Line_Base(string const &cont_file, int number_of_lines,
                    double line_peak, double line_width, int number_of_edges,

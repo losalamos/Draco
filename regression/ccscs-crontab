@@ -10,7 +10,12 @@
 00 01 * * 0-6 /scratch/regress/draco/regression/push_repositories_xf.sh &> /scratch/regress/logs/push_repositories_xf.log
 
 # Keep a local bare copy of the repo available on the ccs-net.  This is used by Redmine.
-*/15 * * * * /scratch/regress/draco/regression/sync_repository.sh
+*/20 * * * * /scratch/regress/draco/regression/sync_repository.sh
+
+# Run the metrics report on the first monday of each month.
+00 08 1-7 * * [ "$(date '+%a')" == "Mon" ] && /scratch/regress/draco/regression/metric_report.sh -e kgt@lanl.gov -p draco
+01 08 1-7 * * [ "$(date '+%a')" == "Mon" ] && /scratch/regress/draco/regression/metric_report.sh -e kgt@lanl.gov -p jayenne
+03 08 1-7 * * [ "$(date '+%a')" == "Mon" ] && /scratch/regress/draco/regression/metric_report.sh -e kgt@lanl.gov -p capsaicin
 
 #------------------------------------------------------------------------------#
 # Regressions with system default compiler (gcc-4.8.5)
@@ -21,44 +26,23 @@
 # -p projects:
 # -e extra args:
 #    coverage        - build bullseyecoverage data and send it to cdash
-#    bounds-checking - turn on bounds checking in the STL
 #    clang
-#    gcc530
 #    gcc610
 #------------------------------------------------------------------------------#
-05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -a -r -b Release -d Nightly -p "draco jayenne capsaicin" &> /scratch/regress/logs/ccscs-Release-master.log
 
-00 01 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e coverage &> /scratch/regress/logs/ccscs-Debug-coverage-master.log
+05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -a -r -b Release -d Nightly -p "draco jayenne capsaicin"
 
-00 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e bounds_checking &> /scratch/regress/logs/ccscs-Debug-master-bounds_checking.log
+00 01 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e coverage
 
-30 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e valgrind &> /scratch/regress/logs/ccscs-Debug-master-valgrind.log
-
-#------------------------------------------------------------------------------#
-# Clang-3.8.0, gcc-5.3.0, gcc-6.1.0
-#------------------------------------------------------------------------------#
-
-00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e clang &> /scratch/regress/logs/ccscs-Debug-clang-master.log
-
-00 04 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e gcc530 &> /scratch/regress/logs/ccscs-Debug-gcc530-master.log
-
-00 05 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e gcc610 &> /scratch/regress/logs/ccscs-Debug-gcc610-master.log
+30 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e valgrind
 
 #------------------------------------------------------------------------------#
-# Additional special regressions
+# Clang-3.8.0, gcc-6.1.0
 #------------------------------------------------------------------------------#
 
-00 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco capsaicin" -e belosmods &> /scratch/regress/logs/ccscs-Debug-belosmods.log
+00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e clang
 
-#------------------------------------------------------------------------------#
-# Example for running a regression for a PR that is under consideration
-#------------------------------------------------------------------------------#
-
-# Build both draco and jayenne from PRs.
-# 05 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -b Release -p "draco jayenne" -f "develop pr42" &> /scratch/regress/logs/ccscs-Release-master-pr1.log
-
-# Build jayenne from PR (use develop for draco)
-# 05 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -b Release -p "draco" -f "pr42" &> /scratch/regress/logs/ccscs-Release-master-pr1.log
+00 05 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e gcc610
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

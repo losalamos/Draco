@@ -3,28 +3,25 @@
  * \file   quadrature/Ordinate_Set_Factory.cc
  * \author Allan Wollaber
  * \date   Mon Mar  7 10:42:56 EST 2016
- * \brief  Implementation file for the class rtt_quadrature::Ordinate_Set_Factory.
+ * \brief  Implementation file for the class
+ *         rtt_quadrature::Ordinate_Set_Factory.
  * \note   Copyright (C)  2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved. 
- */
-//---------------------------------------------------------------------------//
-// $Id: Ordinate_Set_Factory.cc 6607 2012-06-14 22:31:45Z kellyt $
+ *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <numeric>
-
+#include "Ordinate_Set_Factory.hh"
 #include "Gauss_Legendre.hh"
 #include "Level_Symmetric.hh"
 #include "Lobatto.hh"
-#include "Ordinate_Set_Factory.hh"
 #include "Product_Chebyshev_Legendre.hh"
 #include "Quadrature.hh"
 #include "Quadrature_Interface.hh"
 #include "Square_Chebyshev_Legendre.hh"
 #include "Tri_Chebyshev_Legendre.hh"
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
 
 namespace rtt_quadrature {
 
@@ -46,12 +43,10 @@ namespace rtt_quadrature {
  *  in order to call "create_ordinate_set".  This solution avoids both of those
  *  pitfalls, but it is not ideal and could be refactored into one or the other
  *  classes if their design ever changes.
- *
  */
-SP<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
+std::shared_ptr<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
 
   using rtt_mesh_element::Geometry;
-  using rtt_dsxx::SP;
   using namespace ::rtt_quadrature;
 
   bool add_starting_directions = false;
@@ -80,7 +75,7 @@ SP<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
     geometry = rtt_mesh_element::CARTESIAN;
   }
 
-  SP<Ordinate_Set> ordinate_set;
+  std::shared_ptr<Ordinate_Set> ordinate_set;
 
   if (quad_.dimension == 1) { // 1D quadratures
 
@@ -138,5 +133,5 @@ SP<Ordinate_Set> Ordinate_Set_Factory::get_Ordinate_Set() const {
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
-//              end of quadrature/Ordinate_Set_Factory.cc
+// end of quadrature/Ordinate_Set_Factory.cc
 //---------------------------------------------------------------------------//

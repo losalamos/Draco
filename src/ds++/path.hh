@@ -4,7 +4,6 @@
  * \brief  Encapsulate path information (path separator, etc.)
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
- * \version $Id$
  *
  * \bug Consider replacing path.cc and path.hh with Boost FileSystem.
  */
@@ -65,8 +64,8 @@ public:
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Walk a directory tree structure, perform myOperator() action on
- *        each entry.
+ * \brief Walk a directory tree structure, perform myOperator() action on each
+ *        entry.
  * \arg dirname String representing the top node of the directory to be parsed.
  * \arg myOperator Functor that defines action to be taken on each entry in
  *      the directory. Recommend using wdtOpPrint or wdtOpRemove
@@ -74,8 +73,8 @@ public:
  *
  * \sa draco_remove_dir Helper function to recurively delete a directory and all
  * its contents.
- * \sa draco_dir_print Helper function that will print a directory and all
- * its contents.
+ * \sa draco_dir_print Helper function that will print a directory and all its
+ * contents.
  *
  * Sample implementation for Win32 (uses Win API which I don't want to do)
  * http://forums.codeguru.com/showthread.php?239271-Windows-SDK-File-System-How-to-delete-a-directory-and-subdirectories
@@ -112,9 +111,9 @@ void draco_walk_directory_tree(std::string const &dirname,
   }
 
 #ifdef WIN32
-  /*! \note If path contains the location of a directory, it cannot contain
-     * a trailing backslash. If it does, -1 will be returned and errno will be
-     * set to ENOENT. */
+  /*! \note If path contains the location of a directory, it cannot contain a
+     * trailing backslash. If it does, -1 will be returned and errno will be set
+     * to ENOENT. */
   std::string d_name;
   if (dirname[dirname.size() - 1] == rtt_dsxx::WinDirSep ||
       dirname[dirname.size() - 1] == rtt_dsxx::UnixDirSep)
@@ -156,8 +155,6 @@ void draco_walk_directory_tree(std::string const &dirname,
     // Close handle
     ::FindClose(hFile);
 
-    //DWORD dwError = ::GetLastError();
-    //Insist( dwError != ERROR_NO_MORE_FILES, "ERROR: No more files to delete." );
   }
 
   // Perform action on the top level entry

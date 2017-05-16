@@ -5,10 +5,7 @@
  * \date   Tue Oct  2 16:22:32 2001
  * \brief  Analytic_EoS member definitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Analytic_EoS.hh"
@@ -25,9 +22,8 @@ namespace rtt_cdi_analytic {
  * This constructor builds an analytic EoS model defined by the
  * rtt_cdi_analytic::Analytic_EoS_Model derived class argument.
  *
- * \param analytic_model_in rtt_dsxx::SP to a derived
- * rtt_cdi_analytic::Analytic_EoS_Model object
- *
+ * \param analytic_model_in shared_ptr to a derived
+ *        rtt_cdi_analytic::Analytic_EoS_Model object
  */
 Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)
     : analytic_model(model_in) {
@@ -37,7 +33,7 @@ Analytic_EoS::Analytic_EoS(SP_Analytic_Model model_in)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
- * 
+ *
  * This constructor rebuilds and Analytic_EoS from a vector<char> that was
  * created by a call to pack().  It can only rebuild Analytic_Model types
  * that have been registered in the rtt_cdi_analytic::EoS_Models enumeration.

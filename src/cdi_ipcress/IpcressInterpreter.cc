@@ -5,10 +5,7 @@
  * \date   Fri Oct 12 15:39:39 2001
  * \brief  Basic reader to print info in IPCRESS files.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "IpcressFile.hh"
@@ -17,16 +14,14 @@
 #include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/XGetopt.hh"
-
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <vector>
 
-using rtt_dsxx::SP;
 using rtt_cdi_ipcress::IpcressFile;
 using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 using rtt_cdi_ipcress::IpcressGrayOpacity;
@@ -61,7 +56,7 @@ void ipcress_file_read(std::string const &op_data_file) {
 
   cout << "Creating a Ipcress File object from " << op_data_file << endl;
 
-  SP<IpcressFile> spGF;
+  std::shared_ptr<IpcressFile> spGF;
   try {
     spGF.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
   } catch (rtt_dsxx::assertion const &excpt) {
@@ -83,7 +78,7 @@ void ipcress_file_read(std::string const &op_data_file) {
   cout << "=========================================" << endl;
   cout << "For Material " << i + 1 << " with ID number " << matIDs[i] << endl;
   cout << "=========================================" << endl;
-  SP<MultigroupOpacity> spMgOp;
+  std::shared_ptr<MultigroupOpacity> spMgOp;
   try {
     spMgOp.reset(new IpcressMultigroupOpacity(
         spGF, matIDs[i], rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
@@ -165,7 +160,7 @@ void ipcress_file_read(std::string const &op_data_file) {
     Insist((selID < 6), "Invalid choice.");
 
     if (selID == 1) {
-      SP<GrayOpacity> spGOp;
+      std::shared_ptr<GrayOpacity> spGOp;
       spGOp.reset(new IpcressGrayOpacity(
           spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
       cout << "The Gray Rosseland Absorption Opacity for " << endl;
@@ -173,7 +168,7 @@ void ipcress_file_read(std::string const &op_data_file) {
            << density << ", temperature " << temperature << " is "
            << spGOp->getOpacity(temperature, density) << endl;
     } else if (selID == 2) {
-      SP<GrayOpacity> spGOp;
+      std::shared_ptr<GrayOpacity> spGOp;
       spGOp.reset(new IpcressGrayOpacity(spGF, matIDs[matID], rtt_cdi::PLANCK,
                                          rtt_cdi::ABSORPTION));
       cout << "The Gray Planck Absorption Opacity for " << endl;
@@ -182,7 +177,7 @@ void ipcress_file_read(std::string const &op_data_file) {
            << spGOp->getOpacity(temperature, density) << endl;
 
     } else if (selID == 3) {
-      SP<MultigroupOpacity> spMGOp;
+      std::shared_ptr<MultigroupOpacity> spMGOp;
       spMGOp.reset(new IpcressMultigroupOpacity(
           spGF, matIDs[matID], rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
       cout << "The Multigroup Rosseland Absorption Opacity for " << endl;
@@ -194,7 +189,7 @@ void ipcress_file_read(std::string const &op_data_file) {
         cout << g + 1 << "\t " << 0.5 * (groups[g] + groups[g + 1]) << "   \t "
              << opData[g] << endl;
     } else if (selID == 4) {
-      SP<MultigroupOpacity> spMGOp;
+      std::shared_ptr<MultigroupOpacity> spMGOp;
       spMGOp.reset(new IpcressMultigroupOpacity(
           spGF, matIDs[matID], rtt_cdi::PLANCK, rtt_cdi::ABSORPTION));
       cout << "The Multigroup Planck Absorption Opacity for " << endl;
@@ -207,7 +202,7 @@ void ipcress_file_read(std::string const &op_data_file) {
              << opData[g] << endl;
     }
     if (selID == 5) {
-      SP<GrayOpacity> spGOp;
+      std::shared_ptr<GrayOpacity> spGOp;
       spGOp.reset(new IpcressGrayOpacity(spGF, matIDs[matID],
                                          rtt_cdi::ROSSELAND, rtt_cdi::TOTAL));
       cout << "The Gray Rosseland Total Opacity for " << endl;

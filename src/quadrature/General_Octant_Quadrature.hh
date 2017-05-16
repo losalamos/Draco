@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/General_Octant_Quadrature.hh
  * \author Kelly Thompson
@@ -7,9 +7,7 @@
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------------------//
-// $Id: General_Octant_Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 #ifndef quadrature_General_Octant_Quadrature_hh
 #define quadrature_General_Octant_Quadrature_hh
@@ -18,12 +16,12 @@
 
 namespace rtt_quadrature {
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \class General_Octant_Quadrature
  * \brief A class to encapsulate a client-defined ordinate set.
  */
-//=======================================================================================//
+//===========================================================================//
 
 class General_Octant_Quadrature : public Octant_Quadrature {
 public:
@@ -64,7 +62,7 @@ public:
 
   // STATICS
 
-  static SP<Quadrature> parse(Token_Stream &tokens);
+  static std::shared_ptr<Quadrature> parse(Token_Stream &tokens);
 
 private:
   // IMPLEMENTATION
@@ -84,6 +82,6 @@ private:
 
 #endif // quadrature_General_Octant_Quadrature_hh
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of quadrature/General_Octant_Quadrature.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

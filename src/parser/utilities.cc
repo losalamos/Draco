@@ -5,9 +5,9 @@
  * \date   18 Feb 2003
  * \brief  Definitions of parsing utility functions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
+
 #include "utilities.hh"
 #include "units/PhysicalConstants.hh"
 #include "units/PhysicalConstantsSI.hh"
@@ -62,6 +62,15 @@ void set_internal_unit_system(rtt_units::UnitSystem const &units) {
   if (internal_unit_system != nullptr)
     delete internal_unit_system;
   internal_unit_system = new rtt_units::UnitSystem(units);
+}
+
+//---------------------------------------------------------------------------------------//
+// For tracking down memory leaks, it is useful to be able to free any static data.
+
+void free_internal_unit_system() {
+  if (internal_unit_system != nullptr)
+    delete internal_unit_system;
+  internal_unit_system = nullptr;
 }
 
 //---------------------------------------------------------------------------//
@@ -141,9 +150,7 @@ unsigned parse_unsigned_integer(Token_Stream &tokens) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- *
+ * \param tokens Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
 unsigned parse_positive_integer(Token_Stream &tokens) {
@@ -159,9 +166,7 @@ unsigned parse_positive_integer(Token_Stream &tokens) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- *
+ * \param tokens Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
 int parse_integer(Token_Stream &tokens) {
@@ -193,8 +198,7 @@ int parse_integer(Token_Stream &tokens) {
 /*!
  * This function does not move the cursor in the token stream.
  *
- * \param tokens
- * Token stream from which to parse the quantity.
+ * \param tokens Token stream from which to parse the quantity.
  * \return \c true if the next token is REAL or INTEGER; \c false otherwise.
  */
 bool at_real(Token_Stream &tokens) {
@@ -211,8 +215,7 @@ bool at_real(Token_Stream &tokens) {
  * with the integers being a subset of reals, and with about five decades of
  * common practice in the computer language community.
  *
- * \param tokens
- * Token stream from which to parse the quantity.
+ * \param tokens Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
 double parse_real(Token_Stream &tokens) {
@@ -246,9 +249,7 @@ double parse_real(Token_Stream &tokens) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- *
+ * \param tokens Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
 double parse_positive_real(Token_Stream &tokens) {
@@ -264,9 +265,7 @@ double parse_positive_real(Token_Stream &tokens) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- *
+ * \param tokens Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
 double parse_nonnegative_real(Token_Stream &tokens) {
@@ -282,10 +281,8 @@ double parse_nonnegative_real(Token_Stream &tokens) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- * \param x
- * On return, contains the parsed vector components.
+ * \param tokens Token stream from which to parse the quantity.
+ * \param x On return, contains the parsed vector components.
  * \pre \c x!=NULL
  */
 void parse_vector(Token_Stream &tokens, double x[]) {
@@ -306,17 +303,13 @@ void parse_vector(Token_Stream &tokens, double x[]) {
     x[2] = 0.0;
   }
 }
-//---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- * \param x
- * On return, contains the parsed vector components.
+ * \param tokens Token stream from which to parse the quantity.
+ * \param x On return, contains the parsed vector components.
  * \pre \c x!=NULL
  */
-
 void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
   Require(x != NULL);
 
@@ -338,18 +331,16 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
 /*!
  * \brief Are we at a unit term?
  *
- * We are at a unit term if the next token on the Token_Stream is a valid
- * unit name.
+ * We are at a unit term if the next token on the Token_Stream is a valid unit
+ * name.
  *
- * \param tokens
- * Token_Stream from which to parse.
- * \param pos
- * Position in Token_Stream at which to parse.  This lookahead capability is
- * needed by parse_unit to see if a hyphen '-' is part of a unit expression.
+ * \param tokens Token_Stream from which to parse.
+ * \param pos Position in Token_Stream at which to parse.  This lookahead
+ * capability is needed by parse_unit to see if a hyphen '-' is part of a unit
+ * expression.
  *
  * \return \c true if we are at the start of a unit term; \c false otherwise
  */
-
 bool at_unit_term(Token_Stream &tokens, unsigned position) {
   Token const token = tokens.lookahead(position);
   if (token.type() == KEYWORD) {
@@ -447,14 +438,12 @@ Unit parse_unit(Token_Stream &tokens);
 /*!
  * \brief Parse a unit name.
  *
- * A unit name can either be a literal unit name, like "kg", or a
- * parenthesized unit expression.
+ * A unit name can either be a literal unit name, like "kg", or a parenthesized
+ * unit expression.
  *
- * \param tokens
- * Token_Stream from which to parse.
+ * \param tokens Token_Stream from which to parse.
  * \return The unit.
  */
-
 static Unit parse_unit_name(Token_Stream &tokens) {
   Token token = tokens.shift();
   if (token.type() == KEYWORD) {
@@ -648,11 +637,9 @@ static Unit parse_unit_name(Token_Stream &tokens) {
  *
  * A unit term is a unit name optionally raised to some power.
  *
- * \param tokens
- * Token_Stream from which to parse.
+ * \param tokens Token_Stream from which to parse.
  * \return The unit term.
  */
-
 static Unit parse_unit_term(Token_Stream &tokens) {
   Unit const Result = parse_unit_name(tokens);
   Token const token = tokens.lookahead();
@@ -673,11 +660,9 @@ static Unit parse_unit_term(Token_Stream &tokens) {
  * expression is permitted and returns rtt_parser::dimensionless, the
  * identity Unit representing the pure number 1.
  *
- * \param tokens
- * Token_Stream from which to parse.
+ * \param tokens Token_Stream from which to parse.
  * \return The unit expression.
  */
-
 Unit parse_unit(Token_Stream &tokens) {
   if (!at_unit_term(tokens))
     return dimensionless;
@@ -710,17 +695,14 @@ Unit parse_unit(Token_Stream &tokens) {
  * will be converted to the desired unit system, as indicated by the \c .conv
  * member of the \c target_unit argument.
  *
- * \param tokens
- * Token stream from which to parse the quantity.
- * \param target_unit
- * Expected units for the quantity parsed, including conversion factor.
- * \param name
- * Name of the units expected for the quantity parsed, such as "length" or
- * "ergs/cm/sec/Hz". Used to generate diagnostic messages.
+ * \param tokens Token stream from which to parse the quantity.
+ * \param target_unit Expected units for the quantity parsed, including
+ * conversion factor.
+ * \param name Name of the units expected for the quantity parsed, such as
+ * "length" or "ergs/cm/sec/Hz". Used to generate diagnostic messages.
  *
  * \return The parsed value, converted to the desired unit system.
  */
-
 double parse_quantity(Token_Stream &tokens, Unit const &target_unit,
                       char const *const name) {
   double const value = parse_real(tokens);
@@ -742,18 +724,15 @@ double parse_quantity(Token_Stream &tokens, Unit const &target_unit,
 /*!
  * \brief Parse a temperature specification
  *
- * It is very common for transport researchers to specify a temperature in
- * units of energy, using Boltzmann's constant as the conversion factor.
- * This function is useful for parsers that accomodate this convention.
+ * It is very common for transport researchers to specify a temperature in units
+ * of energy, using Boltzmann's constant as the conversion factor.  This
+ * function is useful for parsers that accomodate this convention.
  *
- * \param tokens
- * Token stream from which to parse the specification.
- *
+ * \param tokens Token stream from which to parse the specification.
  * \return The parsed temperature.
  *
  * \post \c Result>=0.0
  */
-
 double parse_temperature(Token_Stream &tokens) {
   double T = parse_real(tokens);
 
@@ -786,15 +765,14 @@ double parse_temperature(Token_Stream &tokens) {
 /*!
  * \brief Parse a temperature specification
  *
- * It is very common for transport researchers to specify a temperature in
- * units of energy, using Boltzmann's constant as the conversion factor.
- * This function is useful for parsers that accomodate this convention.
+ * It is very common for transport researchers to specify a temperature in units
+ * of energy, using Boltzmann's constant as the conversion factor.  This
+ * function is useful for parsers that accomodate this convention.
  *
  * This version of the function parses a temperature expression containing
  * user-defined variables.
  *
- * \param tokens
- * Token stream from which to parse the specification.
+ * \param tokens Token stream from which to parse the specification.
  *
  * \param number_of_variables Number of user-defined variables potentially
  * present in the parsed expression.
@@ -805,11 +783,10 @@ double parse_temperature(Token_Stream &tokens) {
  *
  * \post \c Result>=0.0
  */
-
-SP<Expression>
+std::shared_ptr<Expression>
 parse_temperature(Token_Stream &tokens, unsigned const number_of_variables,
                   std::map<string, pair<unsigned, Unit>> const &variable_map) {
-  SP<Expression> T =
+  std::shared_ptr<Expression> T =
       Expression::parse(number_of_variables, variable_map, tokens);
 
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
@@ -838,11 +815,9 @@ parse_temperature(Token_Stream &tokens, unsigned const number_of_variables,
 /*!
  * Parses a STRING token and strips the delimiting quotation marks.
  *
- * \param tokens
- * Token_Stream from which to parse.
+ * \param tokens Token_Stream from which to parse.
  * \return The stripped string.
  */
-
 std::string parse_manifest_string(Token_Stream &tokens) {
   Token const token = tokens.shift();
   if (token.type() != STRING) {
@@ -859,8 +834,7 @@ std::string parse_manifest_string(Token_Stream &tokens) {
 /*!
  * \brief Parse a geometry specification.
  *
- * \param tokens
- * Token stream from which to parse the geometry.
+ * \param tokens Token stream from which to parse the geometry.
  * \param parsed_geometry On entry, if the value is not \c END_GEOMETRY, a
  * diagnostic is generated to the token stream. On return, contains the
  * geometry that was parsed.
@@ -895,12 +869,9 @@ void parse_geometry(Token_Stream &tokens,
 
 //---------------------------------------------------------------------------//
 /*!
- * \param tokens
- * Token stream from which to parse the quantity.
- *
+ * \param tokens Token stream from which to parse the quantity.
  * \return The parsed quantity.
  */
-
 bool parse_bool(Token_Stream &tokens) {
   Token const token = tokens.shift();
   if (token.text() == "true") {
@@ -919,27 +890,21 @@ bool parse_bool(Token_Stream &tokens) {
  * will be converted to the desired unit system, as indicated by the \c .conv
  * member of the \c target_unit argument.
  *
- * \param tokens
- * Token stream from which to parse the quantity.
- * \param target_unit
- * Expected units for the quantity parsed, including conversion factor.
- * \param name
- * Name of the units expected for the quantity parsed, such as "length" or
- * "ergs/cm/sec/Hz". Used to generate diagnostic messages.
- *
+ * \param tokens Token stream from which to parse the quantity.
+ * \param target_unit Expected units for the quantity parsed, including
+ * conversion factor.
+ * \param name Name of the units expected for the quantity parsed, such as
+ * "length" or "ergs/cm/sec/Hz". Used to generate diagnostic messages.
  * \param number_of_variables Number of user-defined variables potentially
  * present in the parsed expression.
- *
  * \param variable_map Map of variable names to variables indices.
- *
  * \return The parsed value, converted to the desired unit system.
  */
-
-SP<Expression>
+std::shared_ptr<Expression>
 parse_quantity(Token_Stream &tokens, Unit const &target_unit,
                char const *const name, unsigned const number_of_variables,
                std::map<string, pair<unsigned, Unit>> const &variable_map) {
-  SP<Expression> value =
+  std::shared_ptr<Expression> value =
       Expression::parse(number_of_variables, variable_map, tokens);
 
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {

@@ -5,9 +5,7 @@
  * \date   Wed Jul 26 07:53:32 2006
  * \brief  Implementation of class Expression
  * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Constant_Expression.hh"
@@ -15,31 +13,28 @@
 namespace rtt_parser {
 using namespace rtt_dsxx;
 
-typedef SP<Expression> pE;
+typedef std::shared_ptr<Expression> pE;
 typedef map<string, pair<unsigned, Unit>> Variable_Map;
 
 //---------------------------------------------------------------------------//
 /*!
- *
  * The and operator implicitly converts its operands to bool. Hence no unit
  * compatibility of the operands is required, and the result is dimensionless.
  */
 class And_Expression : public Expression {
 public:
   And_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(e1->number_of_variables() == e2->number_of_variables());
-
     Ensure(check_class_invariant());
   }
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -84,7 +79,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return expression_ != SP<Expression>() &&
+    return expression_ != std::shared_ptr<Expression>() &&
            is_compatible(expression_->units(), dimensionless) &&
            expression_->number_of_variables() == number_of_variables();
   }
@@ -131,7 +126,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -177,7 +173,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return expression_ != SP<Expression>() &&
+    return expression_ != std::shared_ptr<Expression>() &&
            is_compatible(expression_->units(), dimensionless) &&
            expression_->number_of_variables() == number_of_variables();
   }
@@ -224,7 +220,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -272,7 +269,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -320,7 +318,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -368,7 +367,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            is_compatible(e1_->units(), e2_->units()) &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
@@ -414,7 +414,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return expression_ != SP<Expression>() &&
+    return expression_ != std::shared_ptr<Expression>() &&
            is_compatible(expression_->units(), dimensionless) &&
            expression_->number_of_variables() == number_of_variables();
   }
@@ -458,7 +458,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return expression_ != SP<Expression>() &&
+    return expression_ != std::shared_ptr<Expression>() &&
            expression_->number_of_variables() == number_of_variables();
   }
 
@@ -500,7 +500,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return expression_ != SP<Expression>() &&
+    return expression_ != std::shared_ptr<Expression>() &&
            expression_->number_of_variables() == number_of_variables();
   }
 
@@ -544,7 +544,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -594,7 +595,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -642,7 +644,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -688,7 +691,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -733,7 +737,7 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return expression_ != SP<Expression>() &&
+    return expression_ != std::shared_ptr<Expression>() &&
            is_compatible(expression_->units(), dimensionless) &&
            expression_->number_of_variables() == number_of_variables();
   }
@@ -780,7 +784,8 @@ public:
 
   //! Check the class invariant
   bool check_class_invariant() const {
-    return e1_ != SP<Expression>() && e2_ != SP<Expression>() &&
+    return e1_ != std::shared_ptr<Expression>() &&
+           e2_ != std::shared_ptr<Expression>() &&
            e1_->number_of_variables() == number_of_variables() &&
            e2_->number_of_variables() == number_of_variables();
   }
@@ -1164,7 +1169,7 @@ double Expression::operator()(vector<double> const &x) const {
  * \param variable_map Map specifying variable names and the associated index
  * and units. It is acceptable to alias variable names. The unit dimensions
  * must be identical for aliases. The conversion factor is ignored but should
- * be nonzero. 
+ * be nonzero.
  *
  * \param tokens Token stream from which to parse an Expression.
  *
@@ -1172,16 +1177,17 @@ double Expression::operator()(vector<double> const &x) const {
  * grammatically ill-formed.
  */
 
-SP<Expression> Expression::parse(unsigned const number_of_variables,
-                                 Variable_Map const &variable_map,
-                                 Token_Stream &tokens) {
+std::shared_ptr<Expression>
+Expression::parse(unsigned const number_of_variables,
+                  Variable_Map const &variable_map, Token_Stream &tokens) {
   // No index in the variable map can be greater than or equal to the number
   // of variables.
 
-  // The top expression is the or expression, which we anticipate
-  // will be useful for piecewise functions.
+  // The top expression is the or expression, which we anticipate will be useful
+  // for piecewise functions.
 
-  SP<Expression> Result = parse_or(number_of_variables, variable_map, tokens);
+  std::shared_ptr<Expression> Result =
+      parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
     Result.reset(new Or_Expression(
@@ -1201,12 +1207,12 @@ SP<Expression> Expression::parse(unsigned const number_of_variables,
  * be nonzero.
  *
  * \param expected_units Unit dimensions the final expression is expected to
- * have. If the final expression does not have these units, and if
- * unit checking is not disabled (as determined by a call to
- * rtt_parser::are_units_disabled()), then a semantic error will be reported
- * to tokens.
+ * have. If the final expression does not have these units, and if unit checking
+ * is not disabled (as determined by a call to
+ * rtt_parser::are_units_disabled()), then a semantic error will be reported to
+ * tokens.
  *
- * \paran expected_units_text Human-friendly description of the units that
+ * \param expected_units_text Human-friendly description of the units that
  * were expected, e.g. "force", "energy density"
  *
  * \param tokens Token stream from which to parse an Expression.
@@ -1214,19 +1220,18 @@ SP<Expression> Expression::parse(unsigned const number_of_variables,
  * \return Pointer to the Expression. If null, the expression was empty or
  * grammatically ill-formed.
  */
+std::shared_ptr<Expression>
+Expression::parse(unsigned const number_of_variables,
+                  Variable_Map const &variable_map, Unit const &expected_units,
+                  string const &expected_units_text, Token_Stream &tokens) {
+  // No index in the variable map can be greater than or equal to the number of
+  // variables.
 
-SP<Expression> Expression::parse(unsigned const number_of_variables,
-                                 Variable_Map const &variable_map,
-                                 Unit const &expected_units,
-                                 string const &expected_units_text,
-                                 Token_Stream &tokens) {
-  // No index in the variable map can be greater than or equal to the number
-  // of variables.
+  // The top expression is the or expression, which we anticipate will be useful
+  // for piecewise functions.
 
-  // The top expression is the or expression, which we anticipate
-  // will be useful for piecewise functions.
-
-  SP<Expression> Result = parse_or(number_of_variables, variable_map, tokens);
+  std::shared_ptr<Expression> Result =
+      parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
     Result.reset(new Or_Expression(
@@ -1252,5 +1257,5 @@ void Expression::write(Precedence const p, vector<string> const &vars,
 } // end namespace rtt_parser
 
 //---------------------------------------------------------------------------//
-//                 end of Expression.cc
+// end of Expression.cc
 //---------------------------------------------------------------------------//

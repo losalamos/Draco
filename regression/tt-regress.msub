@@ -1,5 +1,4 @@
 #!/bin/bash -l
-
 ##---------------------------------------------------------------------------##
 ## File  : regression/tt-regress.msub
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
@@ -38,7 +37,6 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
-ulimit -a
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -56,51 +54,49 @@ export GIT_SSL_NO_VERIFY=true
 source $rscriptdir/scripts/common.sh
 
 machine=`uname -n`
-case $machine in
-tt-login[0-9]*)
+case $REGRESSION_PHASE in
+  cb) ctestparts="Configure,Build" ;;
+  t)
     ctestparts="Test"
 
     # Node type (aprun -n 1 lscpu)
-    partition=`aprun -q -n $PBS_NUM_NODES -N 1 grep -i "model name" /proc/cpuinfo | sort | uniq -c`
+    #partition=`aprun -q -n $PBS_NUM_NODES -N 1 grep -i "model name" /proc/cpuinfo | sort | uniq -c`
 
     # Force create of a new log file (don't append)
     echo "Purging ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log"
     echo "    " > ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log
     ;;
-tt-fey*)
-    if test "${REGRESSION_PHASE}" = "cb"; then
-       ctestparts="Configure,Build"
-    elif test "${REGRESSION_PHASE}" = "s"; then
-       ctestparts="Submit"
-       # Submitting to CDash requires this
-       unset http_proxy
-       unset https_proxy
-       unset HTTP_PROXY
-       unset HTTPS_PROXY
-    else
-       echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
-       exit 1
-    fi
+  s)
+    ctestparts="Submit"
+    # Submitting to CDash requires this
+    unset http_proxy
+    unset https_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    ;;
+  *)
+    echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
+    exit 1
     ;;
 esac
 
+# Header
+# ----------------------------------------
 echo "==========================================================================="
 echo "Trinitite regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
-if [[ ${partition} ]]; then
+if [[ ${SLURM_JOB_PARTITION} ]]; then
   echo " "
   echo "Allocation configuration:"
-  echo $partition
+  echo $SLURM_JOB_PARTITION
   echo " "
 fi
+run "ulimit -a"
 
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
+if [[ `fun_exists module` == 0 ]]; then
     echo 'module function does not exist. defining a local function ...'
     module ()
     {
@@ -111,7 +107,7 @@ fi
 run "module load user_contrib friendly-testing"
 
 # Clean up old environment
-run "module unload cmake numdiff svn subversion"
+run "module unload cmake numdiff git"
 run "module unload gsl random123 eospac"
 run "module unload trilinos ndi"
 run "module unload superlu-dist metis parmetis"
@@ -120,9 +116,10 @@ run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 run "module load PrgEnv-intel"
 run "module unload intel"
 run "module load intel/17.0.1"
+#run "module swap cray-mpich cray-mpich/7.4.2"
 run "module unload cray-libsci gcc/6.1.0"
 run "module load craype-hugepages4M"
-run "module load cmake/3.6.2 numdiff subversion git"
+run "module load cmake/3.7.1 numdiff git"
 run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 
@@ -133,7 +130,7 @@ export CRAYPE_LINK_TYPE=dynamic
 export OMP_NUM_THREADS=16
 comp=CC
 
-# Extra parameers
+# Extra parameters
 case $extra_params in
 knl)
     run "module swap craype-haswell craype-mic-knl"
@@ -153,15 +150,13 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB:-0} == 1; then
-  comp=$comp-$featurebranch
-fi
+comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
-if test "$USER" == "kellyt"; then
+if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   keychain=keychain-2.7.1
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
   if test -f $HOME/.keychain/$HOSTNAME-sh; then
     run "source $HOME/.keychain/$HOSTNAME-sh"
   else
@@ -184,20 +179,15 @@ fi
 # Build type     : Release, Debug
 
 if [[ ! ${dashboard_type} ]]; then
-   dashboard_type=Experimental
+  dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
-    scratch_dir=/lustre/ttscratch1/${USER}/cdash/tt
-    mkdir -p $scratch_dir
-    if ! test -d ${scratch_dir}; then
-      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
-      exit 1
-    fi
-    if test "${regress_mode}" = "off"; then
-      base_dir=${scratch_dir}
-    else
-      base_dir=/usr/projects/jayenne/regress/cdash/tt
-    fi
+  if ! test -d ${scratchdir}; then
+    echo "Fatal Error, scratchdir=${scratchdir} not found.."
+    exit 1
+  fi
+  scratchdir=$scratchdir/$LOGNAME/cdash/tt
+  base_dir=${regdir}/cdash/tt
 fi
 
 echo " "
@@ -224,44 +214,54 @@ elif test "${subproj}" == capsaicin; then
     script_name=Capsaicin_Linux64.cmake
 fi
 
-if test "${regress_mode}" = "off"; then
-    export buildname_append="-${USER}"
+if ! [[ "${regress_mode}" == "on" ]]; then
+  export buildname_append="-${USER}"
 fi
 
+# work_dir and scratch_dir are not the same for regress_mode == on.
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
-export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratchdir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 
 echo "tt-regress.msub: work_dir       = ${work_dir}"
 echo "tt-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
-if test "${ctestparts}" = "Configure,Build"; then
+setup_dirs=`echo $ctestparts | grep Configure`
+if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}/source; then
-      run "/usr/bin/install -d ${work_dir}/source"
+      run "mkdir -p ${work_dir}/source"
    fi
-   # See notes above where scratch_dir is set concerning why these
-   # are soft links.
-   if ! test -d ${scratch_dir}/build; then
-      run "/usr/bin/install -d ${scratch_dir}/build"
-   fi
-   if ! test -d ${work_dir}/build; then
-      run "ln -s ${scratch_dir}/build ${work_dir}/build"
-   fi
-   if ! test -d ${scratch_dir}/target; then
-      run "/usr/bin/install -d ${scratch_dir}/target"
-   fi
-   if ! test -d ${work_dir}/target; then
-      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+   # See notes above where scratch_dir is set concerning why these are soft
+   # links.
+   if test "${regress_mode}" = "on"; then
+     if ! test -d ${scratch_dir}/build; then
+       run "mkdir -p ${scratch_dir}/build"
+     fi
+     if ! test -d ${work_dir}/build; then
+       run "ln -s ${scratch_dir}/build ${work_dir}/build"
+     fi
+     if ! test -d ${scratch_dir}/target; then
+       run "mkdir -p ${scratch_dir}/target"
+     fi
+     if ! test -d ${work_dir}/target; then
+       run "ln -s ${scratch_dir}/target ${work_dir}/target"
+     fi
+   else
+     if ! test -d ${work_dir}/build; then
+       run "mkdir -p ${work_dir}/build"
+     fi
+     if ! test -d ${work_dir}/target; then
+       run "mkdir -p ${scratch_dir}/target"
+     fi
    fi
 
-   # clean the installation directory to remove any files that might
-   # no longer be generated.
+   # clean the installation directory to remove any files that might no longer
+   # be generated.
    if test -d ${work_dir}/target/lib; then
        run "rm -rf ${work_dir}/target/*"
    fi
    if test -f ${work_dir}/build/CMakeCache.txt; then
        run "rm -rf ${work_dir}/build/*"
    fi
-
 fi
 
 # Environment
@@ -275,8 +275,11 @@ echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},$
 echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
-run "chgrp -R draco ${work_dir}"
-run "chmod -R g+rwX,o-rwX ${work_dir}"
+if [[ ${regress_mode} == "on" ]]; then
+  echo " "
+  run "chgrp -R draco ${work_dir}"
+  run "chmod -R g+rX,o-rwX ${work_dir}"
+fi
 
 echo "All done."
 

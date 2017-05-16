@@ -21,6 +21,7 @@ using rtt_c4::global_sum;
 using rtt_c4::global_prod;
 using rtt_c4::global_min;
 using rtt_c4::global_max;
+using rtt_c4::prefix_sum;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -190,11 +191,125 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
+void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
+
+  // Calculate prefix sums on rank ID with MPI call and by hand and compare
+  // the output. The prefix sum on a node includes all previous node's value
+  // and the value of the current node
+
+  // test ints
+  int xint = rtt_c4::node();
+  int xint_prefix_sum = prefix_sum(xint);
+
+  int int_answer = 0;
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i < rtt_c4::node())
+      int_answer += i + 1;
+  }
+
+  std::cout << "int: Prefix sum on this node: " << xint_prefix_sum;
+  std::cout << " Answer: " << int_answer << std::endl;
+
+  if (xint_prefix_sum != int_answer)
+    ITFAILS;
+
+  // test unsigned ints (start at max of signed int)
+  uint32_t xuint = rtt_c4::node();
+  if (rtt_c4::node() == 0)
+    xuint = std::numeric_limits<int>::max();
+  uint32_t xuint_prefix_sum = prefix_sum(xuint);
+
+  uint32_t uint_answer = std::numeric_limits<int>::max();
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i < rtt_c4::node())
+      uint_answer += i + 1;
+  }
+
+  std::cout << "uint32_t: Prefix sum on this node: " << xuint_prefix_sum;
+  std::cout << " Answer: " << uint_answer << std::endl;
+
+  if (xuint_prefix_sum != uint_answer)
+    ITFAILS;
+
+  // test longs
+  long xlong = rtt_c4::node() + 1000;
+  long xlong_prefix_sum = prefix_sum(xlong);
+
+  long long_answer = 0;
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i <= rtt_c4::node() || i == 0)
+      long_answer += i + 1000;
+  }
+
+  std::cout << "long: Prefix sum on this node: " << xlong_prefix_sum;
+  std::cout << " Answer: " << long_answer << std::endl;
+
+  if (xlong_prefix_sum != long_answer)
+    ITFAILS;
+
+  // test unsigned longs (start at max of unsigned int)
+  uint64_t xulong = rtt_c4::node();
+  if (rtt_c4::node() == 0)
+    xulong = std::numeric_limits<uint32_t>::max();
+  uint64_t xulong_prefix_sum = prefix_sum(xulong);
+
+  uint64_t ulong_answer = std::numeric_limits<uint32_t>::max();
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i < rtt_c4::node())
+      ulong_answer += i + 1;
+  }
+
+  std::cout << "uint64_t: Prefix sum on this node: " << xulong_prefix_sum;
+  std::cout << " Answer: " << ulong_answer << std::endl;
+
+  if (xulong_prefix_sum != ulong_answer)
+    ITFAILS;
+
+  // test floats
+  float xfloat = static_cast<float>(rtt_c4::node()) + 0.01;
+  float xfloat_prefix_sum = prefix_sum(xfloat);
+
+  float float_answer = 0.0;
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i <= rtt_c4::node() || i == 0)
+      float_answer += static_cast<float>(i) + 0.01;
+  }
+
+  std::cout << "float: Prefix sum on this node: " << xfloat_prefix_sum;
+  std::cout << " Answer: " << float_answer << std::endl;
+
+  if (!soft_equiv(xfloat_prefix_sum, float_answer))
+    ITFAILS;
+
+  // test doubles
+  double xdbl = static_cast<double>(rtt_c4::node()) + 1.0e-9;
+  double xdbl_prefix_sum = prefix_sum(xdbl);
+
+  double dbl_answer = 0.0;
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i <= rtt_c4::node() || i == 0)
+      dbl_answer += static_cast<double>(i) + 1.0e-9;
+  }
+
+  std::cout.precision(16);
+  std::cout << "double: Prefix sum on this node: " << xdbl_prefix_sum;
+  std::cout << " Answer: " << dbl_answer << std::endl;
+
+  if (!soft_equiv(xdbl_prefix_sum, dbl_answer))
+    ITFAILS;
+
+  if (ut.numFails == 0)
+    PASSMSG("Prefix sum ok.");
+  return;
+}
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     elemental_reduction(ut);
     array_reduction(ut);
+    test_prefix_sum(ut);
   }
   UT_EPILOG(ut);
 }

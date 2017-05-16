@@ -3,7 +3,7 @@
 ## File  : regression/ccscs-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -74,8 +74,13 @@ echo "CCSCS Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
-echo "   subproj        = ${subproj}"
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
+fi
+echo "   build_autodoc  = ${build_autodoc}"
 echo "   build_type     = ${build_type}"
+echo "   dashboard_type = ${dashboard_type}"
+echo "   epdash         = $epdash"
 if [[ ! ${extra_params} ]]; then
   echo "   extra_params   = none"
 else
@@ -84,11 +89,16 @@ fi
 if [[ ${featurebranch} ]]; then
   echo "   featurebranch  = ${featurebranch}"
 fi
-echo "   regdir         = ${regdir}"
-echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   build_autodoc  = ${build_autodoc}"
+echo "   logfile        = ${logfile}"
+echo "   machine_name_long = $machine_name_long"
+echo "   prdash         = $prdash"
+echo "   projects       = \"${projects}\""
+echo "   regdir         = ${regdir}"
+echo "   regress_mode   = ${regress_mode}"
+echo "   rscriptdir     = ${rscriptdir}"
+echo "   scratchdir     = ${scratchdir}"
+echo "   subproj        = ${subproj}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "

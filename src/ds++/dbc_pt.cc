@@ -5,10 +5,7 @@
  * \date   Tue Feb 19 14:28:59 2008
  * \brief  Explicit template instatiations for class dbc.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "dbc.i.hh"

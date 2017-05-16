@@ -7,13 +7,11 @@
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
-  * This header defines several function templates that perform common
- * numerical operations not standardized in the STL algorithm header. It also
- * defines some useful STL-style predicates. These predicates are particularly
- * useful for writing Design by Contract assertions.
+ * This header defines several function templates that perform common numerical
+ * operations not standardized in the STL algorithm header. It also defines some
+ * useful STL-style predicates. These predicates are particularly useful for
+ * writing Design by Contract assertions.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_dbc_i_hh
@@ -21,7 +19,6 @@
 
 #include <algorithm>
 #include <functional>
-//#include <limits>
 #include "Soft_Equivalence.hh"
 
 namespace rtt_dsxx {
@@ -32,9 +29,9 @@ namespace rtt_dsxx {
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Check whether a sequence is monotonically increasing.
  *
- * Checks whether every element in a sequence is less than or equal
- * to the next element of the sequence.  This is particularly useful for
- * Design by Contract assertions that check that a sequence is sorted.
+ * Checks whether every element in a sequence is less than or equal to the next
+ * element of the sequence.  This is particularly useful for Design by Contract
+ * assertions that check that a sequence is sorted.
  *
  * \arg \a Forward_Iterator
  * A forward iterator whose value type supports \c operator<.
@@ -66,9 +63,9 @@ bool is_monotonic_increasing(Forward_Iterator first, Forward_Iterator last) {
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Check whether a sequence is strictly monotonically increasing.
  *
- * Checks whether every element in a sequence is less than the next element
- * of the sequence.  This is particularly useful for Design by Contract
- * assertions that check the validity of a table of data.
+ * Checks whether every element in a sequence is less than the next element of
+ * the sequence.  This is particularly useful for Design by Contract assertions
+ * that check the validity of a table of data.
  *
  * \arg \a Forward_Iterator
  * A forward iterator whose value type supports \c operator<.
@@ -100,8 +97,8 @@ bool is_strict_monotonic_increasing(Forward_Iterator first,
  * \date Thu Jan 23 08:41:54 MST 2003
  * \brief Check whether a sequence is strictly monotonically decreasing.
  *
- * Checks whether every element in a sequence is greater than
- * the next element of the sequence.
+ * Checks whether every element in a sequence is greater than the next element
+ * of the sequence.
  *
  * \arg \a Forward_Iterator
  * A forward iterator whose value type supports \c operator<.

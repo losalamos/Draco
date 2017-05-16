@@ -5,10 +5,7 @@
  * \date   Sun Nov 21 19:36:12 2004
  * \brief  Tests File_Input and File_Output.
  * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/File_Streams.hh"
@@ -138,7 +135,6 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

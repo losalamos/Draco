@@ -5,18 +5,15 @@
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  nGray_Analytic_MultigroupOpacity test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi_analytic_test.hh"
 #include "cdi/CDI.hh"
 #include "cdi_analytic/nGray_Analytic_MultigroupOpacity.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include <memory>
 #include <sstream>
 
 using namespace std;
@@ -27,7 +24,6 @@ using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
 using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::MultigroupOpacity;
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -44,7 +40,7 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
     groups[3] = 50.0;
   }
 
-  vector<SP<Analytic_Opacity_Model>> models(3);
+  vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
   // make a Marshak (user-defined) model for the first group
   models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
@@ -173,9 +169,9 @@ void multigroup_test(rtt_dsxx::UnitTest &ut) {
 
   // Test the get_Analytic_Model() member function.
   {
-    SP<Analytic_Opacity_Model const> my_mg_opacity_model =
+    shared_ptr<Analytic_Opacity_Model const> my_mg_opacity_model =
         opacity.get_Analytic_Model(1);
-    SP<Analytic_Opacity_Model const> expected_model(models[0]);
+    shared_ptr<Analytic_Opacity_Model const> expected_model(models[0]);
 
     if (expected_model == my_mg_opacity_model)
       PASSMSG("get_Analytic_Model() returned the expected MG Opacity model.");
@@ -199,7 +195,7 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
     groups[3] = 50.0;
   }
 
-  vector<SP<Analytic_Opacity_Model>> models(3);
+  vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
   // make a Marshak (user-defined) model for the first group
   models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
@@ -212,7 +208,7 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
   models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
   // make an analytic multigroup opacity object for absorption
-  SP<const MultigroupOpacity> mg(new nGray_Analytic_MultigroupOpacity(
+  shared_ptr<const MultigroupOpacity> mg(new nGray_Analytic_MultigroupOpacity(
       groups, models, rtt_cdi::ABSORPTION));
 
   // make a CDI object
@@ -270,7 +266,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   }
 
   {
-    vector<SP<Analytic_Opacity_Model>> models(3);
+    vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
     // make a Polynomial model for the first group
     models[0].reset(new rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model(
@@ -284,7 +280,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    SP<const MultigroupOpacity> mg(new nGray_Analytic_MultigroupOpacity(
+    shared_ptr<const MultigroupOpacity> mg(new nGray_Analytic_MultigroupOpacity(
         groups, models, rtt_cdi::ABSORPTION));
 
     // pack it
@@ -363,7 +359,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
   // make sure we catch an assertion showing that we cannot unpack an
   // unregistered opacity
   {
-    vector<SP<Analytic_Opacity_Model>> models(3);
+    vector<shared_ptr<Analytic_Opacity_Model>> models(3);
 
     // make a Marshak (user-defined) model for the first group
     models[0].reset(new rtt_cdi_analytic_test::Marshak_Model(100.0));
@@ -376,7 +372,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     models[2].reset(new rtt_cdi_analytic::Constant_Analytic_Opacity_Model(3.0));
 
     // make an analytic multigroup opacity object for absorption
-    SP<const MultigroupOpacity> mg(new nGray_Analytic_MultigroupOpacity(
+    shared_ptr<const MultigroupOpacity> mg(new nGray_Analytic_MultigroupOpacity(
         groups, models, rtt_cdi::ABSORPTION));
 
     packed = mg->pack();

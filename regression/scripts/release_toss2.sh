@@ -27,42 +27,31 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_1
+ddir=draco-6_21_0
 pdir=$ddir
 
 # environment (use draco modules)
 # release for each module set
-environments="intel17env gcc530env"
-function intel16env()
-{
-  run "module purge"
-  run "module load friendly-testing user_contrib"
-  run "module load cmake/3.6.2 git numdiff"
-  run "module load intel/16.0.3 openmpi/1.10.5"
-  run "module load random123 eospac/6.2.4 gsl/2.1"
-  run "module load mkl metis/5.1.0 ndi"
-  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
-  run "module list"
-}
+environments="intel17env gcc610env"
 function intel17env()
 {
   run "module purge"
   run "module load friendly-testing user_contrib"
-  run "module load cmake/3.6.2 git numdiff"
+  run "module load cmake/3.7.1 git numdiff"
   run "module load intel/17.0.1 openmpi/1.10.5"
   run "module load random123 eospac/6.2.4 gsl/2.1"
   run "module load mkl metis/5.1.0 ndi"
   run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
   run "module list"
 }
-function gcc530env()
+function gcc610env()
 {
   run "module purge"
   run "module load friendly-testing user_contrib"
-  run "module load cmake/3.6.2 git numdiff"
-  run "module load gcc/5.3.0 openmpi/1.10.5"
-  run "module load random123 eospac/6.2.4 gsl/2.1"
-  run "module load lapack/3.5.0 metis/5.1.0 ndi"
+  run "module load cmake/3.7.1 git numdiff"
+  run "module load gcc/6.1.0 openmpi/1.10.5"
+  run "module load random123 eospac/6.2.4 gsl/2.3"
+  run "module load lapack/3.6.1 metis/5.1.0 ndi"
   run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
   run "module list"
 }
@@ -108,17 +97,19 @@ esac
 # =============================================================================
 
 OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release"
-OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  "
+OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_DBC_LEVEL=15"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-VERSIONS=( "debug" "opt" )
+VERSIONS=( "debug" "opt" "rwdi" )
 OPTIONS=(\
     "$OPTIMIZE_OFF $LOGGING_OFF" \
     "$OPTIMIZE_ON $LOGGING_OFF" \
+    "$OPTIMIZE_RWDI $LOGGING_OFF" \
 )
 
 ##---------------------------------------------------------------------------##
@@ -133,7 +124,7 @@ if test $verbose == 1; then
   echo "script_dir     = $script_dir"
   echo "source_prefix  = $source_prefix"
   echo "log_dir        = $source_prefix/logs"
-  echo "scratchdir     = /$scratchdir/$USER"
+  echo "scratchdir     = $scratchdir/$USER"
   echo
   echo "package     = $package"
   echo "versions:"
@@ -160,7 +151,7 @@ for env in $environments; do
   # e.g.: buildflavor=moonlight-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
-  export build_prefix="/$scratchdir/$USER/$pdir/$buildflavor"
+  export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
   export draco_prefix="/usr/projects/draco/$ddir/$buildflavor"
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do

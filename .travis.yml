@@ -40,9 +40,12 @@ addons:
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
+  - pip install --upgrade pip
+  - pip install --upgrade setuptools
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
-install: ./.travis-install-dependencies.sh
+install:
+  - ./.travis-install-dependencies.sh
 
 before_script:
   - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Install git pre-commit hooks. The root directory of the target local git
 # repository is expected as a parameter.

@@ -3,7 +3,7 @@
 ## File  : regression/ml-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -22,14 +22,8 @@ nargs=${#args[@]}
 scriptname=${0##*/}
 host=`uname -n`
 
-export MOABHOMEDIR=/opt/MOAB
-extradirs="/opt/MOAB/bin /opt/MOAB/default/bin"
-for mydir in ${extradirs}; do
-   if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-      export PATH=${PATH}:${mydir}
-   fi
-done
-export SHOWQ=`which showq`
+export SHOWQ=`which squeue`
+export MSUB=`which sbatch`
 
 # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -67,15 +61,12 @@ if test $subproj == draco || test $subproj == jayenne; then
   fi
 fi
 
-# What queue should we use
-#access_queue=""
-#if test -x /opt/MOAB/bin/drmgroups; then
-#   avail_queues=`/opt/MOAB/bin/drmgroups`
-avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
-case $avail_queues in
-*access*) access_queue="-A access" ;;
+available_queues=`sacctmgr -np list assoc user=$LOGNAME | grep access | sed -e 's/.*|\(.*access.*\)|.*/\1/'  | sed -e 's/|.*//'`
+# snow: available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
+case $available_queues in
+  *access*) access_queue="-A access --qos=access" ;;
+  *dev*) access_queue="--qos=dev" ;;
 esac
-#fi
 
 # Banner
 echo "==========================================================================="
@@ -95,10 +86,11 @@ if [[ ${featurebranch} ]]; then
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
+echo "   scratchdir     = ${scratchdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
 echo "   build_autodoc  = ${build_autodoc}"
-echo "   MOAB queue     = ${access_queue}"
+echo "   access_queue   = ${access_queue}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -134,7 +126,11 @@ eval "${cmd}"
 echo " "
 echo "Build, Test:"
 export REGRESSION_PHASE=bt
-cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${rscriptdir}/ml-regress.msub"
+logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log
+if [[ -f $logfile ]]; then
+  rm $logfile
+fi
+cmd="$MSUB ${access_queue} -o ${logfile} -e ${logfile} -t 4:00:00 ${rscriptdir}/ml-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -142,8 +138,10 @@ jobid=`echo ${jobid//[^0-9]/}`
 
 # Wait for BT (build and test) to finish
 sleep 1m
-while test "`$SHOWQ | grep $jobid`" != ""; do
-   $SHOWQ | grep $jobid
+echo "$SHOWQ | grep $jobid"
+while test "`$SHOWQ | grep -c $jobid`" == "1"; do
+#   $SHOWQ | grep $jobid
+   echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 minutes)."
    sleep 5m
 done
 

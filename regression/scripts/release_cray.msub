@@ -1,4 +1,6 @@
-#!/bin/bash -l
+#!/bin/bash
+
+# -l
 
 # For config and build steps, this file is run as a bash script on the
 # front-end.  For the test step, this file is submitted to the batch
@@ -18,9 +20,10 @@ export test_pe=`npes_test`
 ##---------------------------------------------------------------------------##
 
 verbose=1
+
 if test $verbose == 1; then
   echo
-  echo "Starting release build for $package - $version - $buildflavor:"
+  echo "Starting release build for $package - $version - $buildflavor - $TARGET:"
   echo "================================================================================"
   echo "install_prefix = $install_prefix/$version"
   echo "build_prefix   = $build_prefix/$version"
@@ -28,13 +31,15 @@ if test $verbose == 1; then
   echo "make command = make -j $build_pe -l $build_pe"
   echo "test command = ctest -j $test_pe"
   echo "steps        = ${steps}"
-  # echo "queue        = $access_queue"
   echo
   echo
 fi
 
 #dry_run=1
 install_versions
+
+echo -e "\nAll done with release_cray.msub\n"
+
 
 ##---------------------------------------------------------------------------##
 ## End

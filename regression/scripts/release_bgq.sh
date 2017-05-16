@@ -134,7 +134,7 @@ if test $verbose == 1; then
   echo "script_dir     = $script_dir"
   echo "source_prefix  = $source_prefix"
   echo "log_dir        = $source_prefix/logs"
-  echo "scratchdir     = /$scratchdir/$USER"
+  echo "scratchdir     = $scratchdir/$USER"
   echo
   echo "package     = $package"
   echo "versions:"
@@ -161,7 +161,7 @@ for env in $environments; do
   # e.g.: buildflavor=moonlight-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
-  export build_prefix="/$scratchdir/$USER/$pdir/$buildflavor"
+  export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
   export draco_prefix="/usr/gapps/jayenne/$ddir/$buildflavor"
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do

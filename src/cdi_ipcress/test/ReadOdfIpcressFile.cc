@@ -16,7 +16,6 @@
 
 using rtt_cdi_ipcress::IpcressOdfmgOpacity;
 using rtt_cdi_ipcress::IpcressFile;
-using rtt_dsxx::SP;
 
 using std::cerr;
 using std::cout;
@@ -26,7 +25,7 @@ using std::string;
 using std::istringstream;
 using std::ostringstream;
 
-typedef SP<const IpcressOdfmgOpacity> SP_Goo;
+typedef std::shared_ptr<const IpcressOdfmgOpacity> SP_Goo;
 typedef std::vector<double> vec_d;
 typedef std::vector<std::vector<double>> vec2_d;
 
@@ -118,7 +117,7 @@ int main(int argc, char *argv[]) {
     ipcressFileName =
         ut.getTestInputPath() + std::string("odfregression10.ipcress");
 
-  SP<const IpcressFile> file;
+  std::shared_ptr<const IpcressFile> file;
   try {
     file.reset(new IpcressFile(ipcressFileName));
   } catch (rtt_dsxx::assertion const &excpt) {
@@ -251,7 +250,7 @@ int main(int argc, char *argv[]) {
   Insist(numBands > 0, "Must have a positive number of bands.");
 
   //load the Ipcress ODFMG Opacity
-  SP<const IpcressOdfmgOpacity> spGandOpacity;
+  std::shared_ptr<const IpcressOdfmgOpacity> spGandOpacity;
 
   spGandOpacity.reset(
       new IpcressOdfmgOpacity(file, matID, model, reaction, numBands));

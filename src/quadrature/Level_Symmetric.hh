@@ -1,15 +1,12 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   quadrature/Level_Symmetric.hh
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
  * \brief  A class to encapsulate a 3D Level Symmetric quadrature set.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Level_Symmetric.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #ifndef quadrature_Level_Symmetric_hh
 #define quadrature_Level_Symmetric_hh
@@ -18,12 +15,12 @@
 
 namespace rtt_quadrature {
 
-//=======================================================================================//
+//===========================================================================//
 /*!
  * \class Level_Symmetric
  * \brief A class to encapsulate a 3D Level Symmetric quadrature set.
  */
-//=======================================================================================//
+//===========================================================================//
 
 class Level_Symmetric : public Octant_Quadrature {
 public:
@@ -58,7 +55,7 @@ public:
 
   // STATICS
 
-  static SP<Quadrature> parse(Token_Stream &tokens);
+  static std::shared_ptr<Quadrature> parse(Token_Stream &tokens);
 
 private:
   // IMPLEMENTATION
@@ -75,6 +72,6 @@ private:
 
 #endif // quadrature_Level_Symmetric_hh
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of quadrature/Level_Symmetric.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

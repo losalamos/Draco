@@ -5,10 +5,7 @@
  * \date   Thu Apr 19 11:00:24 2001
  * \brief  Implementation file for tEospacWithCDI
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "cdi/CDI.hh"
@@ -16,10 +13,8 @@
 #include "cdi_eospac/EospacException.hh"
 #include "cdi_eospac/SesameTables.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -27,7 +22,6 @@
 using namespace std;
 
 namespace rtt_cdi_eospac_test {
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -111,7 +105,7 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   // material that has been constructed in a SesameTable object.  The
   // constructor for Eospac takes one argument: a SesameTables object.
 
-  rtt_dsxx::SP<const rtt_cdi::EoS> spEospac;
+  std::shared_ptr<const rtt_cdi::EoS> spEospac;
 
   // Try to instantiate the new Eospac object.  Simultaneously, we are
   // assigned material IDs to more SesameTable values.
@@ -120,9 +114,9 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
           new const rtt_cdi_eospac::Eospac(AlSt.Ue_DT(Al3717).Zfc_DT(Al23714))),
       spEospac)
 
-    PASSMSG("SP to new Eospac object created.");
+    PASSMSG("shared_ptr to new Eospac object created.");
   else {
-    FAILMSG("Unable to create SP to new Eospac object.");
+    FAILMSG("Unable to create shared_ptr to new Eospac object.");
 
     // if construction fails, there is no reason to continue testing...
     return;
@@ -144,26 +138,26 @@ void eospac_with_cdi_test(rtt_dsxx::UnitTest &ut) {
   //     // can, instead, create a temporary version that is only used here in
   //     // the constructor of Eospac().
 
-  //     rtt_dsxx::SP< rtt_cdi_eospac::Eospac const > spEospacAlt;
+  //     std::shared_ptr< rtt_cdi_eospac::Eospac const > spEospacAlt;
   //     spEospacAlt = new rtt_cdi_eospac::Eospac(
   //         rtt_cdi_eospac::SesameTables().Ue_DT( Al3717 ).Zfc_DT( Al23714
   //             ).Uic_DT( Al3717 ).Ktc_DT( Al23714 ) );
 
   //     if ( spEospacAlt )
-  //         PASSMSG("SP to new Eospac object created (Alternate ctor).");
+  //         PASSMSG("shared_ptr to new Eospac object created (Alternate ctor).");
   //     else
-  //         FAILMSG("Unable to create SP to new Eospac object (Alternate ctor).");
+  //         FAILMSG("Unable to create shared_ptr to new Eospac object (Alternate ctor).");
   // }
 
   // ------------------- //
   // Create a CDI object //
   // ------------------- //
 
-  rtt_dsxx::SP<rtt_cdi::CDI> spCdiEos;
+  std::shared_ptr<rtt_cdi::CDI> spCdiEos;
   if (spCdiEos.reset(new rtt_cdi::CDI()), spCdiEos)
-    PASSMSG("SP to CDI object created successfully.");
+    PASSMSG("shared_ptr to CDI object created successfully.");
   else
-    FAILMSG("Failed to create SP to CDI object.");
+    FAILMSG("Failed to create shared_ptr to CDI object.");
 
   // -------------------- //
   // Assign Eos to CDI    //

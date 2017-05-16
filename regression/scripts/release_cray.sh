@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_1
+ddir=draco-6_21_0
 pdir=$ddir
 
 # environment (use draco modules)
@@ -43,7 +43,7 @@ function intel17env()
 run "module load user_contrib friendly-testing"
 run "module unload ndi metis parmetis superlu-dist trilinos"
 run "module unload lapack gsl intel"
-run "module unload cmake numdiff"
+run "module unload cmake"
 run "module unload intel gcc"
 run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
@@ -68,7 +68,7 @@ function intel17env-knl()
 run "module load user_contrib friendly-testing"
 run "module unload ndi metis parmetis superlu-dist trilinos"
 run "module unload lapack gsl intel"
-run "module unload cmake numdiff"
+run "module unload cmake"
 run "module unload intel gcc"
 run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
@@ -85,7 +85,7 @@ CC=`which cc`
 CXX=`which CC`
 FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=17
 export TARGET=knl
 }
 
@@ -98,8 +98,7 @@ export TARGET=knl
 ##---------------------------------------------------------------------------##
 sdir=`dirname $0`
 cdir=`pwd`
-cd $sdir
-export script_dir=`pwd`
+export script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export draco_script_dir=$script_dir
 
 # CMake options that will be included in the configuration step
@@ -124,20 +123,19 @@ ppn=`lookupppn`
 
 OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=SHARED"
 OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=SHARED"
-#OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DDRACO_LIBRARY_TYPE=SHARED"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_LIBRARY_TYPE=SHARED -DDRACO_DBC_LEVEL=15"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-# VERSIONS=( "debug" "opt" "rwdi" )
-VERSIONS=( "debug" "opt" )
+VERSIONS=( "debug" "opt" "rwdi" )
 OPTIONS=(\
     "$OPTIMIZE_OFF  $LOGGING_OFF" \
     "$OPTIMIZE_ON   $LOGGING_OFF" \
+    "$OPTIMIZE_RWDI $LOGGING_OFF" \
 )
-#     "$OPTIMIZE_RWDI $LOGGING_OFF" \
 
 ##---------------------------------------------------------------------------##
 ## Environment review
@@ -178,7 +176,7 @@ for env in $environments; do
   # e.g.: buildflavor=moonlight-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
-  export build_prefix="/$scratchdir/$USER/$pdir/$buildflavor"
+  export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
   export draco_prefix="/usr/projects/draco/$ddir/$buildflavor"
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
@@ -196,7 +194,7 @@ for env in $environments; do
 
     # Run the tests on the back-end.
     export steps="test"
-    cmd="msub -V $access_queue -l walltime=08:00:00 \
+    cmd="msub -V -l walltime=08:00:00 \
 -l nodes=2:${TARGET}:ppn=${ppn} -j oe \
 -o $source_prefix/logs/release-$buildflavor-$version-t.log \
 $draco_script_dir/release_cray.msub"

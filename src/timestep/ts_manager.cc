@@ -5,10 +5,7 @@
  * \date   Mon Apr  6 17:22:53 1998
  * \brief  Defines a manager utility for time-step advisors.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ts_manager.hh"
@@ -19,7 +16,6 @@ using std::endl;
 using std::cerr;
 using std::cout;
 using std::ios;
-using rtt_dsxx::SP;
 
 namespace rtt_timestep {
 
@@ -31,9 +27,9 @@ ts_manager::ts_manager(void)
   Ensure(invariant_satisfied());
 }
 
-void ts_manager::add_advisor(const SP<ts_advisor> &new_advisor) {
+void ts_manager::add_advisor(const std::shared_ptr<ts_advisor> &new_advisor) {
   bool not_in_use = true;
-  for (list<SP<ts_advisor>>::iterator py = advisors.begin();
+  for (list<std::shared_ptr<ts_advisor>>::iterator py = advisors.begin();
        py != advisors.end(); py++) {
     if ((**py).get_name() == (*new_advisor).get_name()) {
       not_in_use = false;
@@ -47,8 +43,9 @@ void ts_manager::add_advisor(const SP<ts_advisor> &new_advisor) {
   }
 }
 
-void ts_manager::remove_advisor(const SP<ts_advisor> &advisor_to_remove) {
-  for (list<SP<ts_advisor>>::iterator py = advisors.begin();
+void ts_manager::remove_advisor(
+    const std::shared_ptr<ts_advisor> &advisor_to_remove) {
+  for (list<std::shared_ptr<ts_advisor>>::iterator py = advisors.begin();
        py != advisors.end(); py++) {
     if ((**py).get_name() == (*advisor_to_remove).get_name()) {
       advisors.erase(py);
@@ -68,7 +65,7 @@ double ts_manager::compute_new_timestep() {
   // Check to be sure that there is at least one usable advisor
 
   bool found = false;
-  for (list<SP<ts_advisor>>::iterator py = advisors.begin();
+  for (list<std::shared_ptr<ts_advisor>>::iterator py = advisors.begin();
        py != advisors.end(); py++) {
     if ((**py).advisor_usable(*this)) {
       found = true;
@@ -90,7 +87,7 @@ double ts_manager::compute_new_timestep() {
   // Check for one and only one mandatory advisor
 
   int i = 0;
-  for (list<SP<ts_advisor>>::iterator py = advisors.begin();
+  for (list<std::shared_ptr<ts_advisor>>::iterator py = advisors.begin();
        py != advisors.end(); py++) {
     if ((**py).advisor_usable(*this) && (**py).get_usage() == ts_advisor::req) {
       i++;
@@ -109,11 +106,11 @@ double ts_manager::compute_new_timestep() {
 
   // Loop over the advisors finding the one that controls
 
-  list<SP<ts_advisor>>::iterator py1 = advisors.end();
-  list<SP<ts_advisor>>::iterator py2 = advisors.end();
+  list<std::shared_ptr<ts_advisor>>::iterator py1 = advisors.end();
+  list<std::shared_ptr<ts_advisor>>::iterator py2 = advisors.end();
   double x1 = ts_advisor::ts_small();
   double x2 = ts_advisor::large();
-  for (list<SP<ts_advisor>>::iterator py = advisors.begin();
+  for (list<std::shared_ptr<ts_advisor>>::iterator py = advisors.begin();
        py != advisors.end(); py++) {
     if ((**py).advisor_usable(*this)) {
       if ((**py).get_usage() == ts_advisor::min) {
@@ -168,8 +165,7 @@ double ts_manager::compute_new_timestep() {
 //---------------------------------------------------------------------------//
 /*!
  * Defines a functor which determines if one timestep advisor is less than
- * another. This is done by comparing the recommended time step of each
- * advisor.
+ * another. This is done by comparing the recommended time step of each advisor.
  */
 class sptsa_less_than {
 public:
@@ -182,8 +178,8 @@ public:
   }
 
   // Defines the operator () for sptsa_less_than functor
-  bool operator()(const SP<ts_advisor> &sp_lhs,
-                  const SP<ts_advisor> &sp_rhs) const {
+  bool operator()(const std::shared_ptr<ts_advisor> &sp_lhs,
+                  const std::shared_ptr<ts_advisor> &sp_rhs) const {
     return (sp_lhs->get_dt_rec(tsm) < sp_rhs->get_dt_rec(tsm));
   }
 };
@@ -194,7 +190,7 @@ void ts_manager::print_advisors() const {
 
   cout << endl;
   cout << "*** Time-Step Manager: Advisor Listing ***" << endl;
-  for (list<SP<ts_advisor>>::const_iterator py = advisors.begin();
+  for (list<std::shared_ptr<ts_advisor>>::const_iterator py = advisors.begin();
        py != advisors.end(); py++) {
     cout << (**py).get_name() << endl;
   }
@@ -209,7 +205,7 @@ void ts_manager::print_summary() const {
   cout.setf(ios::scientific, ios::floatfield);
   cout.precision(4);
   cout.setf(ios::left, ios::adjustfield);
-  list<SP<ts_advisor>> temp = advisors;
+  list<std::shared_ptr<ts_advisor>> temp = advisors;
   temp.sort(sptsa_less_than(*this));
   cout << endl;
   cout << "  *** Time-Step Manager Summary ***" << endl;
@@ -221,8 +217,7 @@ void ts_manager::print_summary() const {
   cout << endl;
   cout << "  *** Time-Step Advisor Data Table *** " << endl;
   cout << "    Recommendation   In-Use  Name " << endl;
-  for (list<SP<ts_advisor>>::const_iterator py = temp.begin(); py != temp.end();
-       py++) {
+  for (auto py = temp.begin(); py != temp.end(); py++) {
     (**py).print(*this, (**py).get_name() == controlling_advisor);
   }
   cout << endl;
@@ -235,7 +230,7 @@ void ts_manager::print_adv_states() const {
 
   cout << endl;
   cout << "*** Time-Step Manager: Advisor State Listing ***" << endl;
-  for (list<SP<ts_advisor>>::const_iterator py = advisors.begin();
+  for (list<std::shared_ptr<ts_advisor>>::const_iterator py = advisors.begin();
        py != advisors.end(); py++) {
     (**py).print_state();
   }

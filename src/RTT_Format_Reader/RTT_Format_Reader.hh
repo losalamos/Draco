@@ -5,10 +5,7 @@
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader library.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_RTT_Format_Reader_hh__
@@ -62,19 +59,19 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader {
 private:
   Header header;
   Dims dims;
-  rtt_dsxx::SP<NodeFlags> spNodeFlags;
-  rtt_dsxx::SP<SideFlags> spSideFlags;
-  rtt_dsxx::SP<CellFlags> spCellFlags;
-  rtt_dsxx::SP<NodeDataIDs> spNodeDataIds;
-  rtt_dsxx::SP<SideDataIDs> spSideDataIds;
-  rtt_dsxx::SP<CellDataIDs> spCellDataIds;
-  rtt_dsxx::SP<CellDefs> spCellDefs;
-  rtt_dsxx::SP<Nodes> spNodes;
-  rtt_dsxx::SP<Sides> spSides;
-  rtt_dsxx::SP<Cells> spCells;
-  rtt_dsxx::SP<NodeData> spNodeData;
-  rtt_dsxx::SP<SideData> spSideData;
-  rtt_dsxx::SP<CellData> spCellData;
+  std::shared_ptr<NodeFlags> spNodeFlags;
+  std::shared_ptr<SideFlags> spSideFlags;
+  std::shared_ptr<CellFlags> spCellFlags;
+  std::shared_ptr<NodeDataIDs> spNodeDataIds;
+  std::shared_ptr<SideDataIDs> spSideDataIds;
+  std::shared_ptr<CellDataIDs> spCellDataIds;
+  std::shared_ptr<CellDefs> spCellDefs;
+  std::shared_ptr<Nodes> spNodes;
+  std::shared_ptr<Sides> spSides;
+  std::shared_ptr<Cells> spCells;
+  std::shared_ptr<NodeData> spNodeData;
+  std::shared_ptr<SideData> spSideData;
+  std::shared_ptr<CellData> spCellData;
 
 public:
   //! Constructor
@@ -485,7 +482,7 @@ public:
     return spCellDefs->get_cell_def(i);
   }
 
-  rtt_dsxx::SP<CellDef> get_cell_defs_def(int i) const {
+  std::shared_ptr<CellDef> get_cell_defs_def(int i) const {
     return spCellDefs->get_def(i);
   }
   /*!

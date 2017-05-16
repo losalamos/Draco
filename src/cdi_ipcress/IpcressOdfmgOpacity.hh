@@ -11,10 +11,10 @@
 #ifndef __cdi_ipcress_IpcressOdfmgOpacity_hh__
 #define __cdi_ipcress_IpcressOdfmgOpacity_hh__
 
-#include "IpcressDataTable.hh" // we have a smart pointer to a IpcressDataTable
-                               // object.
+#include "IpcressDataTable.hh"
 #include "cdi/OdfmgOpacity.hh"
-#include <cmath> // we need to define log(double) and exp(double)
+#include <cmath>
+#include <memory>
 
 namespace rtt_cdi_ipcress {
 // -------------------- //
@@ -92,7 +92,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    * \brief DS++ Smart Pointer to a IpcressFile object. spIpcressFile acts as a
    * hook to link this object to an IPCRESS file.
    */
-  rtt_dsxx::SP<const IpcressFile> spIpcressFile;
+  std::shared_ptr<const IpcressFile> spIpcressFile;
 
   /*!
    * \brief Identification number for one of the materials found in the IPCRESS
@@ -143,7 +143,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    * There is a one-to-one relationship between IpcressOpacity and
    * IpcressDataTable.
    */
-  rtt_dsxx::SP<const IpcressDataTable> spIpcressDataTable;
+  std::shared_ptr<const IpcressDataTable> spIpcressDataTable;
 
   /*!
    * \brief The group boundaries that we use are not the same as those read in
@@ -199,7 +199,7 @@ public:
    * \param opacityReaction The type of reaction rate that the current data set
    *     represents.
    */
-  IpcressOdfmgOpacity(rtt_dsxx::SP<const IpcressFile> const &spIpcressFile,
+  IpcressOdfmgOpacity(std::shared_ptr<const IpcressFile> const &spIpcressFile,
                       size_t materialID, rtt_cdi::Model opacityModel,
                       rtt_cdi::Reaction opacityReaction, size_t numBands);
 

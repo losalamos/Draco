@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
@@ -10,35 +10,30 @@
  * which is consistent in format with the other parse functins in utilities.hh
  * No implementation is provided. However, we recommend using the templates in
  * this header (Class_Parse_Table.hh) to provide an implementation of the form
-
- template<>
- SP<Class> parse_class(Token_Stream &tokens)
- {
-   return parse_class_from_table<Class_Parse_Table<Class> >(tokens);
- }
-
+ * \code
+ * template<>
+ * std::shared_ptr<Class> parse_class(Token_Stream &tokens) {
+ *   return parse_class_from_table<Class_Parse_Table<Class> >(tokens);
+ * }
+ *
  * Why don't we define this as the default implementation? Because then any file
  * that #included Class_Parse_Table.hh would attempt to use the default
  * implementation for every call to parse_class in the file. When you are
  * parsing objects that include class subobjects, this would require including
  * the definition of the parse table class for every such subobject type. This
- * breaks encapsulation, to put it mildly. So we refrain from providing such
- * a default implementation.
+ * breaks encapsulation, to put it mildly. So we refrain from providing such a
+ * default implementation.
  */
-//---------------------------------------------------------------------------------------//
-// $Id: parse_class.hh 7905 2015-02-24 17:58:45Z kellyt $
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef parser_Class_Parse_Table_hh
 #define parser_Class_Parse_Table_hh
 
 #include "Parse_Table.hh"
-#include "ds++/SP.hh"
 
 namespace rtt_parser {
-using rtt_dsxx::SP;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Template for parse table classes
  *
  * No general implementation is provided. The developer wishing to make his
@@ -99,7 +94,7 @@ using rtt_dsxx::SP;
  * If default values are permitted for some parameters (which is not
  * recommended), then they should be applied here.
  *
- *   SP<Return_Class> create_object();
+ *   shared_ptr<Return_Class> create_object();
  *
  * Create the object from the parsed fields.  This function should have no
  * preconditions that are not guaranteed by a preceding successful call to
@@ -115,7 +110,7 @@ using rtt_dsxx::SP;
 
 template <class Class> class Class_Parse_Table;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
  *
  * \param tokens Token stream from which to parse the user input.
@@ -125,7 +120,7 @@ template <class Class> class Class_Parse_Table;
  */
 
 template <class Class_Parse_Table>
-SP<typename Class_Parse_Table::Return_Class>
+std::shared_ptr<typename Class_Parse_Table::Return_Class>
 parse_class_from_table(Token_Stream &tokens) {
   using rtt_parser::Token;
   using rtt_parser::END;
@@ -143,7 +138,7 @@ parse_class_from_table(Token_Stream &tokens) {
   // Parse the class keyword block and check for completeness
   Token const terminator = parse_table.parse_table().parse(tokens);
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
-  SP<Return_Class> Result;
+  std::shared_ptr<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
   // A class keyword block is expected to end with an END or (if
   // allow_exit is true) an EXIT.
@@ -162,20 +157,20 @@ parse_class_from_table(Token_Stream &tokens) {
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Template for helper function that produces a class object.
  *
  * \param tokens Token stream from which to parse the user input.
  *
- * \param context A context object that controls the behavior of the parser. This is passed
- * to the constructor for the Class_Parse_Table.
+ * \param context A context object that controls the behavior of the
+ * parser. This is passed to the constructor for the Class_Parse_Table.
  *
  * \return A pointer to an object matching the user specification, or NULL if
  * the specification is not valid.
  */
 
 template <typename Class_Parse_Table, typename Context>
-SP<typename Class_Parse_Table::Return_Class>
+std::shared_ptr<typename Class_Parse_Table::Return_Class>
 parse_class_from_table(Token_Stream &tokens, Context const &context) {
   using rtt_parser::Token;
   using rtt_parser::END;
@@ -193,7 +188,7 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
   // Parse the class keyword block and check for completeness
   Token const terminator = parse_table.parse_table().parse(tokens);
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
-  SP<Return_Class> Result;
+  std::shared_ptr<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
   // A class keyword block is expected to end with an END or (if
   // allow_exit is true) an EXIT.
@@ -217,6 +212,6 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
 
 #endif // parser_Class_Parse_Table_hh
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of parser/Class_Parse_Table.hh
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

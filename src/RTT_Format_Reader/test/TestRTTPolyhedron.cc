@@ -5,17 +5,13 @@
  * \date   Fri Aug 19 12:31:47 2016
  * \brief  Testing the POLYHEDRON Element_Definition
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <sstream>
-
-#include "ds++/Release.hh"
-#include "ds++/SP.hh"
-#include "ds++/ScalarUnitTest.hh"
-
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include <sstream>
 
 using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 using rtt_mesh_element::Element_Definition;
@@ -50,7 +46,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
   for (unsigned i = 0; i < filenames.size(); ++i) {
     string filename(filenames[i]);
-    SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
+    shared_ptr<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
 
     ostringstream m;
     m << "Read mesh file " << filename << std::endl;
@@ -61,7 +57,8 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       FAILMSG("Unexpected dimension.");
     }
 
-    vector<SP<Element_Definition>> const element_defs(mesh->get_element_defs());
+    vector<shared_ptr<Element_Definition>> const element_defs(
+        mesh->get_element_defs());
     for (size_t j = 0; j < element_defs.size(); ++j) {
       cout << "Element definition for element " << j << endl;
       element_defs[j]->print(cout);
@@ -79,7 +76,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
     for (unsigned i = 0; i < filenames.size(); ++i) {
       string filename(filenames[i]);
-      SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
+      shared_ptr<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
 
       ostringstream m;
       m << "Read mesh file " << filename << std::endl;
@@ -97,7 +94,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
           mesh->get_element_types());
       vector<vector<int>> const element_nodes(mesh->get_element_nodes());
       map<string, set<int>> element_sets(mesh->get_element_sets());
-      vector<SP<Element_Definition>> const element_defs(
+      vector<shared_ptr<Element_Definition>> const element_defs(
           mesh->get_element_defs());
 
       if (ndim != 3) {
@@ -143,7 +140,8 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
             static_cast<Element_Definition::Element_Type>(
                 element_types[representative_element]);
 
-        SP<Element_Definition const> type(new Element_Definition(type_index));
+        shared_ptr<Element_Definition const> type(
+            new Element_Definition(type_index));
 
         if (type->get_dimension() == ndim) {
           std::cout << " Elements with flags " + it->first
@@ -164,7 +162,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       unsigned ncorner = 0;
       for (unsigned et = nsides; et < element_types.size(); et++) {
         unsigned const c = et - nsides;
-        SP<Element_Definition> cell_def = element_defs[c];
+        shared_ptr<Element_Definition> cell_def = element_defs[c];
         unsigned const number_of_nodes = cell_def->get_number_of_nodes();
         ncorner += number_of_nodes;
       }

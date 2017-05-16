@@ -5,16 +5,12 @@
  * \date   Wednesday, Nov 16, 2011, 17:04 pm
  * \brief  Implementation file for IpcressDataTable objects.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "IpcressDataTable.hh"  // the associated header file.
-#include "IpcressFile.hh"       // we have a SP to a GandofFile object.
-#include "cdi/OpacityCommon.hh" // defines Model and Reaction
-                                // enumerated values.
+#include "IpcressDataTable.hh"
+#include "IpcressFile.hh"
+#include "cdi/OpacityCommon.hh"
 #include "ds++/Assert.hh"
 #include <cmath> // we need to define log(double)
 
@@ -59,7 +55,7 @@ IpcressDataTable::IpcressDataTable(
     std::string const &in_opacityEnergyDescriptor,
     rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction,
     std::vector<std::string> const &in_fieldNames, size_t in_matID,
-    rtt_dsxx::SP<const IpcressFile> const &spIpcressFile)
+    std::shared_ptr<const IpcressFile> const &spIpcressFile)
     : ipcressDataTypeKey(""), dataDescriptor(""),
       opacityEnergyDescriptor(in_opacityEnergyDescriptor),
       opacityModel(in_opacityModel), opacityReaction(in_opacityReaction),
@@ -68,10 +64,9 @@ IpcressDataTable::IpcressDataTable(
       logTemperatures(), temperatures(), logDensities(), densities(),
       groupBoundaries(), logOpacities() {
   // Obtain the Ipcress keyword for the opacity data type specified by the
-  // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords
-  // are: { ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray } This
-  // function also ensures that the requested data type is available in the
-  // IPCRESS file.
+  // EnergyPolicy, opacityModel and the opacityReaction.  Valid keywords are: {
+  // ramg, rsmg, rtmg, pmg, rgray, ragray, rsgray, pgray } This function also
+  // ensures that the requested data type is available in the IPCRESS file.
   setIpcressDataTypeKey();
 
   // Retrieve the data set and resize the vector containers.
@@ -91,9 +86,9 @@ IpcressDataTable::IpcressDataTable(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief This function sets both "ipcressDataTypeKey" and
- *     "dataDescriptor" based on the values given for
- *     opacityEnergyDescriptor, opacityModel and opacityReaction.
+ * \brief This function sets both "ipcressDataTypeKey" and "dataDescriptor"
+ *     based on the values given for opacityEnergyDescriptor, opacityModel and
+ *     opacityReaction.
  */
 void IpcressDataTable::setIpcressDataTypeKey() const {
   // Build the Ipcress key for the requested data.  Valid keys are: { ramg,
@@ -216,14 +211,14 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Load the temperature, density, energy boundary and
- *     opacity opacity tables from the IPCRESS file.  Convert all
- *     tables (except energy boundaries) to log values.
+ * \brief Load the temperature, density, energy boundary and opacity opacity
+ *     tables from the IPCRESS file.  Convert all tables (except energy
+ *     boundaries) to log values.
  */
 void IpcressDataTable::loadDataTable(
-    rtt_dsxx::SP<const IpcressFile> const &spIpcressFile) {
-  // The interpolation routines expect everything to be in log form so we
-  // only store the logorithmic temperature, density and opacity data.
+    std::shared_ptr<const IpcressFile> const &spIpcressFile) {
+  // The interpolation routines expect everything to be in log form so we only
+  // store the logorithmic temperature, density and opacity data.
   logTemperatures.resize(temperatures.size());
   std::transform(temperatures.begin(), temperatures.end(),
                  logTemperatures.begin(), unary_log);
@@ -239,7 +234,7 @@ void IpcressDataTable::loadDataTable(
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief This function returns "true" if "key" is found in the list
  *        of "keys".  This is a static member function.
  */
@@ -256,9 +251,9 @@ bool IpcressDataTable::key_available(T const &key,
 } // end of IpcressDataTable::key_available( string, vector<string> )
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief 
- * 
+/*!
+ * \brief
+ *
  * \param name description
  * \return description
  *

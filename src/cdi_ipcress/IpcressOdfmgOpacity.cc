@@ -5,21 +5,17 @@
  * \date   Mon Jan 22 15:24210 2001
  * \brief  IpcressOdfmgOpacity templated class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "IpcressOdfmgOpacity.hh"
-#include "IpcressFile.hh"      // we have smart pointers to
-                               // IpcressFile objects.
-#include "IpcressDataTable.hh" // we have a smart pointer to a
-                               // IpcressDataTable object.
-#include "ds++/Assert.hh"      // we make use of Require()
+#include "IpcressDataTable.hh"
+#include "IpcressFile.hh"
+#include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <algorithm> // for std::reverse
-#include <cmath>     // we need to define log(double) and exp(double)
+#include <algorithm>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 
@@ -31,11 +27,11 @@ namespace rtt_cdi_ipcress {
 
 /*!
  * \brief Constructor for IpcressOdfmgOpacity object.
- * 
+ *
  * See IpcressOdfmgOpacity.hh for details.
  */
 IpcressOdfmgOpacity::IpcressOdfmgOpacity(
-    rtt_dsxx::SP<const IpcressFile> const &in_spIpcressFile,
+    std::shared_ptr<const IpcressFile> const &in_spIpcressFile,
     size_t in_materialID, rtt_cdi::Model in_opacityModel,
     rtt_cdi::Reaction in_opacityReaction, size_t numBands)
     : spIpcressFile(in_spIpcressFile), materialID(in_materialID),
@@ -69,7 +65,7 @@ IpcressOdfmgOpacity::IpcressOdfmgOpacity(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor for IpcressOdfmgOpacity object.
- * 
+ *
  * See IpcressOdfmgOpacity.hh for details.
  */
 IpcressOdfmgOpacity::IpcressOdfmgOpacity(std::vector<char> const &packed)

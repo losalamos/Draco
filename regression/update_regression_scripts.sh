@@ -57,7 +57,7 @@ esac
 
 # Load some identities used for accessing gitlab.
 MYHOSTNAME="`uname -n`"
-$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
 else
@@ -79,6 +79,7 @@ if test -d ${REGDIR}/draco; then
 else
   run "cd ${REGDIR}; git clone https://github.com/lanl/Draco.git draco"
 fi
+
 # Deal with proxy stuff on darwin
 case ${target} in
   darwin-fe* | cn[0-9]*)

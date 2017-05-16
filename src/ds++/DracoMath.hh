@@ -5,13 +5,7 @@
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  New or overloaded cmath or cmath-like functions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- *
- * History:
- * 2013-10-17 Many small header files were combined to create DracoMath.hh.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_DracoMath_hh
@@ -32,10 +26,9 @@ namespace rtt_dsxx {
 //
 // Try to use the C++11/C99 functions isinf, isnan and isfinite defined in
 // <cmath> instead of defining our own.  I would like to use C++11
-// implemenations which are true functions in the std:: namespace.  The
-// problem here is that PGI/13.7 does not have these language features.
-// However, PGI does provide the C99 _macros_ of the same name (w/o namespace
-// qualifier).
+// implemenations which are true functions in the std:: namespace.  The problem
+// here is that PGI/13.7 does not have these language features.  However, PGI
+// does provide the C99 _macros_ of the same name (w/o namespace qualifier).
 // ---------------------------------------------------------------------------//
 #if defined _WIN32 || defined __CYGWIN__
 
@@ -61,8 +54,8 @@ template <typename T> bool isFinite(T a) { return std::isfinite(a); }
 /*
  * abs.hh
  *
- * Absolute values are a mess in the STL, in part because they are a mess in
- * the standard C library. We do our best to give a templatized version here.
+ * Absolute values are a mess in the STL, in part because they are a mess in the
+ * standard C library. We do our best to give a templatized version here.
  */
 //---------------------------------------------------------------------------//
 /*!
@@ -92,9 +85,9 @@ template <> inline long abs(long a) { return std::labs(a); }
 /*!
  * \brief Return the conjugate of a quantity.
  *
- * The default implementation assumes a field type that is self-conjugate,
- * such as \c double.  An example of a field type that is \em not
- * self-conjugate is \c complex.
+ * The default implementation assumes a field type that is self-conjugate, such
+ * as \c double.  An example of a field type that is \em not self-conjugate is
+ * \c complex.
  *
  * \arg \a Field type
  */
@@ -129,8 +122,8 @@ template <typename Semigroup> inline Semigroup cube(Semigroup const &x) {
  *
  * This is a replacement for the FORTRAN DIM function.
  *
- * \arg \a Ordered_Group_Element A type for which operator< and unary
- * operator- are defined and which can be constructed from a literal \c 0.
+ * \arg \a Ordered_Group_Element A type for which operator< and unary operator-
+ * are defined and which can be constructed from a literal \c 0.
  *
  * \param a
  * Minuend
@@ -173,15 +166,14 @@ template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
 /*!
  * \brief Compute the hypotenuse of a right triangle.
  *
- * This function evaluates the expression \f$\sqrt{a^2+b^2}\f$ in a way that
- * is insensitive to roundoff and preserves range.
+ * This function evaluates the expression \f$\sqrt{a^2+b^2}\f$ in a way that is
+ * insensitive to roundoff and preserves range.
  *
  * \arg \a Real A real number type
  * \param a First leg of triangle
  * \param b Second leg of triangle
  * \return Hypotenuse, \f$\sqrt{a^2+b^2}\f$
  */
-
 template <typename Real> inline double pythag(Real a, Real b) {
   Real absa = abs(a), absb = abs(b);
   if (absa > absb) {
@@ -201,8 +193,8 @@ template <typename Real> inline double pythag(Real a, Real b) {
  * \brief  Transfer the sign of the second argument to the first argument.
  *
  * This is a replacement for the FORTRAN SIGN function.  It is useful in
- * numerical algorithms that are roundoff or overflow insensitive and should
- * not be deprecated.
+ * numerical algorithms that are roundoff or overflow insensitive and should not
+ * be deprecated.
  *
  * \arg \a Ordered_Group
  * A type for which \c operator< and unary \c operator- are defined and which
@@ -216,7 +208,6 @@ template <typename Real> inline double pythag(Real a, Real b) {
  *
  * \return \f$|a|sgn(b)\f$
  */
-
 template <typename Ordered_Group>
 inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
   using rtt_dsxx::abs; // just to be clear
@@ -239,8 +230,8 @@ inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
  * \return The y value associated with x based on linear interpolation between
  * (x1,y1) and (x2,y2).
  *
- * Given two points (x1,y1) and (x2,y2), use linaer interpolation to find the
- * y value associated with the provided x value.
+ * Given two points (x1,y1) and (x2,y2), use linaer interpolation to find the y
+ * value associated with the provided x value.
  *
  *          y2-y1
  * y = y1 + ----- * (x-x1)

@@ -33,6 +33,7 @@ message(" ")
 message( STATUS "Configuring Level 2 packages --" )
 add_dir_if_exists( c4 )           # needs ds++
 add_dir_if_exists( cdi )          # needs ds++
+add_dir_if_exists( compton )      # needs ds++
 add_dir_if_exists( device )       # needs ds++
 add_dir_if_exists( linear )       # needs ds++
 add_dir_if_exists( mesh_element ) # needs ds++
@@ -104,14 +105,8 @@ feature_summary(
 feature_summary(
   WHAT DISABLED_FEATURES
   INCLUDE_QUIET_PACKAGES
+#  QUIET_ON_EMPTY # only available for cmake-3.8+
   DESCRIPTION "Disabled features:")
-
-if( CMAKE_CONFIGURATION_TYPES )
-  set( Draco_BUILD_TYPE "Multi-config")
-else()
-  set( Draco_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
-  string( TOUPPER ${CMAKE_BUILD_TYPE} Draco_BUILD_TYPE )
-endif()
 
 message("
 Draco build summary:
@@ -138,11 +133,11 @@ if( CMAKE_CONFIGURATION_TYPES )
     message("FC Release F: ${CMAKE_Fortran_FLAGS_RELEASE}")
   endif()
 else()
-  message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
-  message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+  message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${Draco_BUILD_TYPE}}")
+  message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${Draco_BUILD_TYPE}}")
   if( _LANGUAGES_ MATCHES Fortran)
     message("Fortran     : ${CMAKE_Fortran_COMPILER}")
-    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
+    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${Draco_BUILD_TYPE}}")
   endif()
 endif()
 if( CAFS_Fortran_COMPILER )

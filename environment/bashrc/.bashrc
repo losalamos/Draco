@@ -4,11 +4,14 @@
 ## File  : environment/bashrc/.bashrc
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##
 ##  Bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
+
+#uncomment to debug this script.
+#export verbose=true
 
 ## Instructions (customization)
 ##
@@ -37,7 +40,7 @@ case ${-} in
 
    # Turn on checkwinsize
    shopt -s checkwinsize # autocorrect window size
-   #shopt -s cdspell # autocorrect spelling errors on cd command line.
+   shopt -s cdspell # autocorrect spelling errors on cd command line.
 
    # Prevent creation of core files (ulimit -a to see all limits).
    ulimit -c 0
@@ -48,10 +51,10 @@ case ${-} in
 
    # Generic Settings
 
-   alias ll='ls -Flh'
-   alias lt='ls -Flth'
-   alias ls='ls -F'
-   alias l.='ls -h -d .*'
+   alias ll='\ls -Flh'
+   alias lt='\ls -Flth'
+   alias ls='\ls -F'
+   alias l.='\ls -h -d .*'
 
    # alias a2ps='a2ps --sides=duplex --medium=letter'
    alias btar='tar --use-compress-program /usr/bin/bzip2'
@@ -79,11 +82,11 @@ case ${-} in
    if test "${TERM}" != emacs &&
        test "${TERM}" != dumb; then
      # replace list aliases with ones that include colorized output.
-     alias ll='ls --color -Flh'
-     alias l.='ls --color -hd .*'
-     alias lt='ls --color -Flth'
-     alias lt.='ls --color -Flth .*'
-     alias ls='ls --color -F'
+     alias ll='\ls --color -Flh'
+     alias l.='\ls --color -hd .*'
+     alias lt='\ls --color -Flth'
+     alias lt.='\ls --color -Flth .*'
+     alias ls='\ls --color -F'
    fi
 
    # Turquoise network
@@ -99,10 +102,27 @@ case ${-} in
 
 *) # Not an interactive shell (e.g. A PBS shell?)
    export INTERACTIVE=false
-   # return
    ;;
 esac
-#export verbose=true
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS - bash functions (all interactive sessions)
+##---------------------------------------------------------------------------##
+
+# Bash functions are not inherited by subshells.
+if [[ ${INTERACTIVE} ]]; then
+
+  # Attempt to find DRACO
+  if ! [[ $DRACO_SRC_DIR ]]; then
+    _BINDIR=`dirname "$BASH_ARGV"`
+    export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
+    export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
+  fi
+
+  # Common bash functions and alias definitions
+  source ${DRACO_ENV_DIR}/bin/bash_functions.sh
+  source ${DRACO_ENV_DIR}/../regression/scripts/common.sh
+fi
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS - once per login
@@ -128,22 +148,9 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
   export LD_LIBRARY_PATH=`echo ${LD_LIBRARY_PATH} | sed -e 's/[:]$//'`
 
-  # Attempt to find DRACO
-  if test -z "$DRACO_SRC_DIR"; then
-    _BINDIR=`dirname "$BASH_ARGV"`
-    export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
-  fi
-  if test -z "$DRACO_ENV_DIR"; then
-    export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
-  fi
-
   # Append PATHS (not linux specific, not ccs2 specific).
-  extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools"
-  for mydir in ${extradirs}; do
-    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-      export PATH=${PATH}:${mydir}
-    fi
-  done
+  add_to_path ${DRACO_ENV_DIR}/bin
+  add_to_path ${DRACO_SRC_DIR}/tools
 
   # Tell wget to use LANL's www proxy (see
   # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
@@ -194,7 +201,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
       ;;
     # trinitite (tt-fey) | trinity (tr-fe)
-    tt-fey* | tt-login* | tr-fe* | tr-login*)
+    tt-fey* | tt-login* | tr-fe* | tr-login* | nid0* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
       ;;
     # rzuseq
@@ -204,7 +211,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
 
     # Assume CCS machine (ccscs[0-9] or personal workstation)
     *)
-      if test -d /ccs/codes/radtran; then
+      if [[ -d /ccs/codes/radtran ]]; then
         # assume this is a CCS LAN machine (64-bit)
         if test `uname -m` = 'x86_64'; then
           # draco environment only supports 64-bit linux...
@@ -212,8 +219,11 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
         else
           echo "Draco's environment is not fully supported on 32-bit Linux."
           echo "Module support may not be available. Email kgt@lanl.gov for more information."
-          source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
+          # source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
         fi
+      elif [[ -d /usr/projects/draco ]]; then
+        # XCP machine like 'toolbox'?
+        source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux64
       fi
       export NoModules=1
       ;;
@@ -226,9 +236,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
     # only define if they do not already exist...
     function dracoenv ()
     {
-      for m in $dracomodules; do
-        module load $m
-      done
+      module load $dracomodules
     }
     function rmdracoenv ()
     {
@@ -248,9 +256,6 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   export DRACO_BASHRC_DONE=yes
 
 fi
-
-# Common bash functions and alias definitions
-source ${DRACO_ENV_DIR}/bin/bash_functions.sh
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc

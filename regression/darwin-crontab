@@ -1,14 +1,12 @@
 # crontab for darwin-fe
 
-01 22 * * 0-6 /usr/projects/draco/regress/draco/regression/update_regression_scripts.sh &> /usr/projects/draco/regress/logs/update_regression_scripts.log
+01 22 * * 0-6 /usr/projects/draco/regress/draco/regression/update_regression_scripts.sh
 
-01 23 * * 0-6 /usr/projects/draco/regress/draco/regression/sync_repository.sh &> /usr/projects/draco/regress/logs/sync_repository.log
+01 23 * * 0-6 /usr/projects/draco/regress/draco/regression/sync_repository.sh
 
-01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin" &> /usr/projects/draco/regress/logs/darwin-Debug-master.log
+01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin"
 
-01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin" &> /usr/projects/draco/regress/logs/darwin-Release-master.log
-
-# 01 02 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -e knightscorner -p "draco jayenne capsaicin" &> /usr/projects/draco/regress/logs/darwin-Release-master.log
+01 01 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne capsaicin"
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

@@ -58,10 +58,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
   #   populate the correct project property. Also, this option causes 'illegal
   #   instruction' for rng on KT's desktop (2017-02-14).
   set( CMAKE_C_FLAGS "/W2 /Gy /fp:precise /DWIN32 /D_WINDOWS /MP${numproc} /wd4251" )
-  set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Gm /Zi /DDEBUG /D_DEBUG" )
+  set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /DDEBUG /D_DEBUG" )
   set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Gm /Zi /DDEBUG" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Zi /DDEBUG" )
 
   # Suppress some MSVC warnings about "unsafe" pointer use.
   if(MSVC_VERSION GREATER 1399)
@@ -80,7 +80,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Gm /Zi /DDEBUG" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Zi /DDEBUG" )
 
 endif()
 

@@ -28,12 +28,6 @@ macro( set_draco_uname )
       set( draco_isAIX 1 )
       set( DRACO_UNAME "AIX" )
     endif()
-    # Special setup for catamount
-    if( ${CMAKE_SYSTEM_NAME} MATCHES "Catamount" )
-       set( draco_isLinux_with_aprun 1 )
-       set( draco_isCatamount 1 )
-       set( DRACO_UNAME "Catamount" )
-    endif()
 endmacro()
 
 ##---------------------------------------------------------------------------##

@@ -1,14 +1,11 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/RTT_Mesh_Reader.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Mesh_Reader library.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_RTT_Mesh_Reader_hh__
@@ -26,12 +23,12 @@ namespace rtt_RTT_Format_Reader {
  * \brief An input routine to parse an RTT Format mesh file using the DRACO
  *        meshReaders standard interface.
  *
- *\sa The RTT_Mesh_Reader class is a derived-type of the Mesh_Reader abstract 
- *    base class specified in the meshReaders package. Packages using the 
+ *\sa The RTT_Mesh_Reader class is a derived-type of the Mesh_Reader abstract
+ *    base class specified in the meshReaders package. Packages using the
  *    RTT_Mesh_Reader should thus include the RTT_Mesh_Reader.hh decorator
- *    file located in the meshReaders directory to resolve the namespace. 
- *    RTT_Mesh_Reader contains a RTT_Format_Reader as a private data member, 
- *    so none of the RTT_Format_Reader class public accessor functions are 
+ *    file located in the meshReaders directory to resolve the namespace.
+ *    RTT_Mesh_Reader contains a RTT_Format_Reader as a private data member,
+ *    so none of the RTT_Format_Reader class public accessor functions are
  *    accessible.
  */
 //
@@ -54,8 +51,9 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader
   // DATA
 
 private:
-  rtt_dsxx::SP<RTT_Format_Reader> rttMesh;
-  std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition>> element_defs;
+  std::shared_ptr<RTT_Format_Reader> rttMesh;
+  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
+      element_defs;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> element_types;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type>
       unique_element_types;
@@ -115,13 +113,13 @@ public:
     return element_types;
   }
 
-  virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition>>
+  virtual std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
   get_element_defs() const {
     return element_defs;
   }
 
   /*!
- * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that 
+ * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that
  *        are defined in the mesh file.
  * \return Element definitions.
  */

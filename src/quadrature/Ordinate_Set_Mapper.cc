@@ -3,26 +3,25 @@
  * \file   quadrature/Ordinate_Set_Mapper.cc
  * \author Allan Wollaber
  * \date   Mon Mar  7 10:42:56 EST 2016
- * \brief  Implementation file for the class rtt_quadrature::Ordinate_Set_Mapper.
+ * \brief  Implementation file for the class
+ *         rtt_quadrature::Ordinate_Set_Mapper.
  * \note   Copyright (C)  2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved. 
- */
-//---------------------------------------------------------------------------//
-// $Id: Ordinate_Set_Mapper.cc 6607 2012-06-14 22:31:45Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "Ordinate_Set_Mapper.hh"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
-
-#include "Ordinate_Set_Mapper.hh"
 
 namespace {
 using namespace std;
 using namespace rtt_quadrature;
 
 // convenience functions to check ordinates
+
+#if DBC & 1
 
 //---------------------------------------------------------------------------//
 bool check_4(Ordinate const &ordinate) {
@@ -41,6 +40,8 @@ bool check_2(Ordinate const &ordinate) {
     return false;
   return true;
 }
+
+#endif
 
 //---------------------------------------------------------------------------//
 typedef std::pair<double, size_t> dsp;
@@ -63,8 +64,8 @@ bool Ordinate_Set_Mapper::check_class_invariants() const {
  * \param[in] interp_in Selected interpolation scheme to use for remapping
  * \param[out] weights vector of output weights produced by remapping
  *
- *  The output weights preserve the incoming weight assuming that the 
- *  incoming ordinate's weight is associated via a delta function in angle.
+ *  The output weights preserve the incoming weight assuming that the incoming
+ *  ordinate's weight is associated via a delta function in angle.
  */
 void Ordinate_Set_Mapper::map_angle_into_ordinates(
     const Ordinate &ord_in, const Interpolation_Type &interp_in,
@@ -220,5 +221,5 @@ double Ordinate_Set_Mapper::zeroth_moment(const vector<double> &weights) const {
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
-//              end of quadrature/Ordinate_Set_Mapper.cc
+// end of quadrature/Ordinate_Set_Mapper.cc
 //---------------------------------------------------------------------------//
