@@ -330,7 +330,7 @@ macro( add_component_library )
   # Find target file name and location
   get_target_property( impname ${acl_TARGET} OUTPUT_NAME )
 
-  # the above command returns the location in the build tree.  We need to 
+  # the above command returns the location in the build tree.  We need to
   # convert this to the install location.
   if( ${DRACO_SHARED_LIBS} )
     set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${impname}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
@@ -723,11 +723,8 @@ macro( add_scalar_tests test_sources )
   # On some platforms (Trinity), even scalar tests must be run underneath
   # MPIEXEC (aprun):
   separate_arguments(MPIEXEC_POSTFLAGS)
-  if( "${MPIEXEC}" MATCHES "aprun" )
-    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1)
-    set( APT_TARGET_FILE_PREFIX "./" )
-  elseif( "${MPIEXEC}" MATCHES "srun" )
-    set( RUN_CMD ${MPIEXEC} -n 1 )
+  if( "${MPIEXEC}" MATCHES "srun" )
+    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1 )
   else()
     unset( RUN_CMD )
   endif()

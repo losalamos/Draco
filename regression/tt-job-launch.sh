@@ -16,6 +16,11 @@
 #    $build_type - 'Debug', 'Release'
 #    $extra_params - '', 'intel13', 'pgi', 'coverage'
 
+# Under cron, a basic environment might not be loaded yet.
+if [[ `which sbatch 2>/dev/null | grep -c sbatch` == 0 ]]; then
+  source /etc/bash.bashrc.local
+fi
+
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
@@ -36,24 +41,19 @@ done
 
 # sanity check
 if [[ ! ${regdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
-    exit 1
+  die "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
 fi
 if [[ ! ${rscriptdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
-    exit 1
+  die "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
 fi
 if [[ ! ${subproj} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
-    exit 1
+  die "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
 fi
 if [[ ! ${build_type} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
-    exit 1
+  die "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
 fi
 if [[ ! ${logdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
-    exit 1
+  die "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
 fi
 
 if test $subproj == draco || test $subproj == jayenne; then
@@ -127,7 +127,10 @@ logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra
 cmd="$MSUB -o ${logfile} -e ${logfile} ${partition_options} ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
-jobid=`echo $jobid | sed '/^$/d'`
+# delete blank lines
+#jobid=`echo $jobid | sed '/^$/d'`
+# only keep the job number
+jobid=`echo $jobid | sed -e 's/.*[ ]//'`
 echo "jobid = ${jobid}"
 
 # Wait for testing to finish
