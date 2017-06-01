@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 ##---------------------------------------------------------------------------##
 ## File  : regression/tt-regress.msub
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
@@ -7,31 +7,40 @@
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
+# Under cron, a basic environment might not be loaded yet.
+if [[ `which srun 2>/dev/null | grep -c srun` == 0 ]]; then
+  source /etc/bash.bashrc.local
+fi
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
 
 # Sanity Check
 # ----------------------------------------
-if [[ ! ${subproj} ]]; then
-   echo "Fatal Error, subproj not found in environment."
-   exit 1
-fi
-if [[ ! ${regdir} ]]; then
-   echo "Fatal Error, regdir not found in environment."
-   exit 1
-fi
 if [[ ! ${rscriptdir} ]]; then
    echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
+
+# import some bash functions
+source $rscriptdir/scripts/common.sh
+
+
+if [[ ! ${subproj} ]]; then
+  die "Fatal Error, subproj not found in environment."
+fi
+if [[ ! ${regdir} ]]; then
+  die "Fatal Error, regdir not found in environment."
+fi
 if [[ ! ${build_type} ]]; then
-   echo "Fatal Error, build_type not found in environment."
-   exit 1
+  die "Fatal Error, build_type not found in environment."
 fi
 if [[ ! ${logdir} ]]; then
-   echo "Fatal Error, logdir not found in environment."
-   exit 1
+  die "Fatal Error, logdir not found in environment."
+fi
+if [[ `which srun 2>/dev/null | grep -c srun` == 0 ]]; then
+  die "Cannot find srun.  Possibly bad environment or machine issue."
 fi
 
 # Environment setup
@@ -49,9 +58,6 @@ export NO_PROXY=$no_proxy
 export VENDOR_DIR=/usr/projects/draco/vendors
 # gitlab.lanl.gov has an unkown certificate, disable checking
 export GIT_SSL_NO_VERIFY=true
-
-# import some bash functions
-source $rscriptdir/scripts/common.sh
 
 machine=`uname -n`
 case $REGRESSION_PHASE in
@@ -96,11 +102,11 @@ run "ulimit -a"
 
 # Modules
 # ----------------------------------------
-if [[ `fun_exists module` == 0 ]]; then
+if [[ `fn_exists module` == 0 ]]; then
     echo 'module function does not exist. defining a local function ...'
     module ()
     {
-        eval `/opt/cray/pe/modules/3.2.10.4/bin/modulecmd bash $*`
+      eval `/opt/cray/pe/modules/3.2.10.5/bin/modulecmd bash $*`
     }
 fi
 

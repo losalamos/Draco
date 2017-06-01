@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "C4_Req.hh"
 #include "ds++/Assert.hh"
@@ -87,6 +85,16 @@ void C4_Req::free_() {
     delete p;
 }
 
+void C4_ReqRefRep::free() {
+#ifdef C4_MPI
+  if (assigned) {
+    MPI_Cancel(&r);
+    MPI_Request_free(&r);
+  }
+#endif
+  clear();
+}
+
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor.
@@ -96,10 +104,10 @@ void C4_Req::free_() {
 //---------------------------------------------------------------------------//
 
 C4_ReqRefRep::C4_ReqRefRep()
-    : n(0), assigned(0)
+    : n(0), assigned(false)
 #ifdef C4_MPI
       ,
-      s(MPI_Status()), r(MPI_Request())
+      r(MPI_Request())
 #endif
 {
   // empty
@@ -120,37 +128,61 @@ C4_ReqRefRep::~C4_ReqRefRep() { /* empty */
 }
 
 //---------------------------------------------------------------------------//
-//! Wait for an asynchronous message to complete.
-//---------------------------------------------------------------------------//
+/*!
+ * \brief Wait for an asynchronous message to complete.
+ * \param status Status object.
+ *
+ * This function is non-const because it updates the underlying request
+ * data member.
+ */
+// ---------------------------------------------------------------------------//
 
-void C4_ReqRefRep::wait() {
+void C4_ReqRefRep::wait(C4_Status *status) {
   if (assigned) {
 #ifdef C4_MPI
-    MPI_Wait(&r, &s);
+    MPI_Status *s = MPI_STATUS_IGNORE;
+    if (status) {
+      s = status->get_status_obj();
+      Check(s);
+    }
+    MPI_Wait(&r, s);
 #endif
   }
   clear();
 }
 
 //---------------------------------------------------------------------------//
-//! Tests for the completion of a non blocking operation.
+/*!
+ * \brief Tests for the completion of a non blocking operation.
+ * \param status Status object.
+ *
+ * This function is non-const because it updates the underlying request
+ * data member.
+ */
 //---------------------------------------------------------------------------//
 
-bool C4_ReqRefRep::complete() {
+bool C4_ReqRefRep::complete(C4_Status *status) {
 #ifdef C4_MPI
   int flag = 0;
   bool indicator = false;
-  if (assigned)
-    MPI_Test(&r, &flag, &s);
+  if (assigned) {
+    MPI_Status *s = MPI_STATUS_IGNORE;
+    if (status) {
+      s = status->get_status_obj();
+      Check(s);
+    }
+    MPI_Test(&r, &flag, s);
+  }
   if (flag != 0) {
     clear();
     Check(r == MPI_REQUEST_NULL);
     indicator = true;
   }
   return indicator;
-#endif
-#ifdef C4_SCALAR
-  throw "Send to self machinery has not been implemented in scalar mode.";
+#elif defined(C4_SCALAR)
+  throw "C4_Req::complete() has not been implemented in scalar mode.";
+#else
+  throw "C4_Req::complete() has not been implemented for this communicator";
 #endif
 }
 

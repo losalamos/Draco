@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 project( c4_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -88,6 +86,7 @@ endif()
 
 # Tests that expect exactly 2 PE (omit for DRACO_C4=SCALAR builds):
 set( two_pe_tests ${PROJECT_SOURCE_DIR}/tstPingPong.cc )
+list( APPEND two_pe_tests ${PROJECT_SOURCE_DIR}/tstC4_Status.cc )
 list( REMOVE_ITEM test_sources ${two_pe_tests} )
 if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
   add_parallel_tests(

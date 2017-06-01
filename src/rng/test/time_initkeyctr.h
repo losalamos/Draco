@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
 #endif
 
-#if TRY_OTHER
+#if defined(TRY_OTHER)
 static mrg1x32_ctr_t good_mrg1x32_1 = {{0x4b2cd7ee}};
 static mt1x32_ctr_t good_mt1x32_1 = {{0x39037a7d}};
 static mtsmall1x32_ctr_t good_mtsmall1x32_1 = {{0x7afd2a98}};

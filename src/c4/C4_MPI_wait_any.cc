@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id: C4_MPI_wait_any.cc 7388 2015-01-22 16:02:07Z kellyt $
-//---------------------------------------------------------------------------//
 
 #include "c4/config.h"
 #include <vector>
@@ -21,11 +19,11 @@
 namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
-unsigned wait_any(int count, C4_Req *requests) {
+unsigned wait_any(unsigned count, C4_Req *requests) {
   using std::vector;
 
   vector<MPI_Request> array_of_requests(count);
-  for (int i = 0; i < count; ++i) {
+  for (unsigned i = 0; i < count; ++i) {
     if (requests[i].inuse())
       array_of_requests[i] = requests[i].r();
     else

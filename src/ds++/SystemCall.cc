@@ -1,13 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/SystemCall.cc
- * \brief  Implementation for the Draco wrapper for system calls. This
- routine attempts to hide differences between Unix/Windows system
- calls.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id$
- */
+ * \file  ds++/SystemCall.cc
+ * \brief Implementation for the Draco wrapper for system calls. This routine
+ *        attempts to hide differences between Unix/Windows system calls.
+ * \note  Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *        All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "SystemCall.hh"
@@ -177,7 +174,7 @@ draco_getstat::draco_getstat(std::string const &fqName)
 //---------------------------------------------------------------------------//
 //! Is this a regular file?
 bool draco_getstat::isreg() {
-#if WIN32
+#ifdef WIN32
   bool b = FileInformation.dwFileAttributes & FILE_ATTRIBUTE_NORMAL;
   return filefound && b;
 #else
@@ -189,7 +186,7 @@ bool draco_getstat::isreg() {
 //---------------------------------------------------------------------------//
 //! Is this a directory?
 bool draco_getstat::isdir() {
-#if WIN32
+#ifdef WIN32
   bool b = FileInformation.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
   return filefound && b;
 #else
@@ -202,7 +199,7 @@ bool draco_getstat::isdir() {
 //! Is a Unix permission bit set?
 bool draco_getstat::has_permission_bit(int mask) {
   Insist(isreg(), "Can only check permission bit for regular files.");
-#if WIN32
+#ifdef WIN32
   Insist(false,
          "draco_getstat::hsa_permission_bit() not implemented for WIN32");
   return false;
@@ -242,9 +239,9 @@ void draco_mkdir(std::string const &path) {
 
   draco_getstat dirInfo(path);
   if (!dirInfo.isdir()) {
-    /*! \note If path contains the location of a directory, it cannot
-         * contain a trailing backslash. If it does, -1 will be returned and
-         * errno will be set to ENOENT. */
+    /*! \note If path contains the location of a directory, it cannot contain a
+     * trailing backslash. If it does, -1 will be returned and errno will be set
+     * to ENOENT. */
     std::string clean_fqName;
     if (path[path.size() - 1] == rtt_dsxx::WinDirSep ||
         path[path.size() - 1] == rtt_dsxx::UnixDirSep)

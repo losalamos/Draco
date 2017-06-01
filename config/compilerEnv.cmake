@@ -400,6 +400,36 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( dbsSetupProfilerTools )
 
+  # These become variables of the form ${spt_NAME}, etc.
+  cmake_parse_arguments(
+    spt
+    ""
+    "MEMORYCHECK_SUPPRESSIONS_FILE"
+    ""
+    ${ARGV}
+    )
+
+  # Valgrind suppression file
+  # Try running 'ctest -D ExperimentalMemCheck -j 12 -R c4'
+  if( DEFINED spt_MEMORYCHECK_SUPPRESSIONS_FILE )
+    set( MEMORYCHECK_SUPPRESSIONS_FILE
+      "${spt_MEMORYCHECK_SUPPRESSIONS_FILE}" CACHE FILEPATH
+      "valgrind warning suppression file." FORCE )
+  else()
+    find_file(
+      msf
+      NAMES
+        "valgrind_suppress.txt"
+      PATHS
+        ${PROJECT_SOURCE_DIR}/regrssion
+        ${PROJECT_SOURCE_DIR}/scripts
+    )
+    if( ${msf} )
+      set( MEMORYCHECK_SUPPRESSIONS_FILE "${msf}" CACHE FILEPATH
+      "valgrind warning suppression file." FORCE )
+    endif()
+  endif()
+
   # ------------------------------------------------------------
   # Allinea MAP
   # ------------------------------------------------------------

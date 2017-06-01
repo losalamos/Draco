@@ -4,30 +4,32 @@
  * \author Kent Budge
  * \brief  Implement methods of class Homogeneous_New
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Homogeneous_New.hh"
 #include "Assert.hh"
 #include <algorithm>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace rtt_dsxx {
+
 //---------------------------------------------------------------------------//
 Homogeneous_New::Homogeneous_New(unsigned const object_size,
                                  unsigned const default_block_size)
     : object_size_(object_size), default_block_size_(default_block_size),
       total_number_of_segments_(0), first_block_(NULL), first_segment_(NULL) {
+
   Require(object_size >= sizeof(void *));
   Require(default_block_size > sizeof(void *));
 
   if ((default_block_size_ - sizeof(void *)) % object_size != 0) {
-    unsigned count = (default_block_size_ - sizeof(void *)) / object_size;
+    unsigned count =
+        (default_block_size_ - static_cast<unsigned>(sizeof(void *))) /
+        object_size;
     ++count;
-    default_block_size_ = count * object_size + sizeof(void *);
+    default_block_size_ =
+        count * object_size + static_cast<unsigned>(sizeof(void *));
   }
 
   Ensure(check_class_invariants());
@@ -96,7 +98,7 @@ void Homogeneous_New::deallocate(void *const ptr) {
 void Homogeneous_New::reserve(unsigned const object_count) {
   if (object_count > total_number_of_segments_) {
     unsigned count = object_count - total_number_of_segments_;
-    count = count * object_size_ + sizeof(void *);
+    count = count * object_size_ + static_cast<unsigned>(sizeof(void *));
     count = std::max(count, default_block_size_);
     allocate_block_(count);
   }

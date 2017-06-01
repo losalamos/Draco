@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * util_expandtpl.h to "templatize" over all the different permutations of RNGs
  * and NxW and R.
  */
+
 #include "util.h"
 
 #include "time_serial.h"

@@ -5,9 +5,7 @@
  * \date   Mon Feb 14 14:18:27 2000
  * \brief  SortPermutation class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __ds_SortPermutation_hh__
@@ -27,52 +25,44 @@ namespace rtt_dsxx {
 /*!
  * \class SortPermutation
  *
- *  This class determines a permutation used to sort a sequence.
+ * This class determines a permutation used to sort a sequence.
  *
- *  This is necessary if multiple sequences need to be re-arranged, via
- *  the ordering necessary to sort a sequece of "keys".
+ * This is necessary if multiple sequences need to be re-arranged, via the
+ * ordering necessary to sort a sequece of "keys".
  *
- *  Create an object of class SortPermutation using either of the following
- *  constructors:
- *  \code
+ * Create an object of class SortPermutation using either of the following
+ * constructors:
+ * \code
  *      template<class ForwardIterator>
  *      SortPermutation(ForwardIterator first, ForwardIterator last)
  *
  *      template<class ForwardIterator, class StrictWeakOrdering>
  *      SortPermutation(ForwardIterator first, ForwardIterator last,
  *                      StrictWeakOrdering comp)
- *  \endcode
- *  The object creates a permutation that results in an ordering of
- *  elements in [first,last) into nondescending order.  This ordering
- *  is not necessarily stable.
+ * \endcode
+ * The object creates a permutation that results in an ordering of elements in
+ * [first,last) into nondescending order.  This ordering is not necessarily
+ * stable.
  *
- *  The SortPermutation object can be used to access the "index table"
- *  for the sequence via operator[](int), begin(), and end().
+ * The SortPermutation object can be used to access the "index table" for the
+ * sequence via operator[](int), begin(), and end().
  *
- *  An index table is a table of integer pointers telling which number
- *  sequence element comes first in ascending order, which second,
- *  and so on.
- *  See "Numerical Recipes" for a full discussion of an index table.
+ * An index table is a table of integer pointers telling which number sequence
+ * element comes first in ascending order, which second, and so on.  See
+ * "Numerical Recipes" for a full discussion of an index table.
  *
- *  The inverse operations on the SortPermutation object can be used
- *  to access the "rank table" for the sequence via inv(int), inv_begin(),
- *  and inv_end().
+ * The inverse operations on the SortPermutation object can be used to access
+ * the "rank table" for the sequence via inv(int), inv_begin(), and inv_end().
  *
- *  A rank table is a table telling what the numerical rank of the first
- *  sequence element, the second sequence element, and so on.
- *  See "Numerical Recipes" for a full discussion of a rank table.
+ * A rank table is a table telling what the numerical rank of the first sequence
+ * element, the second sequence element, and so on.  See "Numerical Recipes" for
+ * a full discussion of a rank table.
  */
 /*!
  * \example tstSortPermutation.cc
- * 
+ *
  * Test of rtt_dsxx::SortPermutation and isSorted.hh functions.
  */
-// revision history:
-// -----------------
-// 0) original
-// 1) 020503 : added some comments and formatting (this class is used by
-//             meshReaders-Services
-//
 //===========================================================================//
 
 class SortPermutation {
@@ -173,69 +163,53 @@ public:
   // ACCESSORS
 
   /*!
-     * \brief Returns the i'th entry into the index table.
-     * \param i The i'th entry into the sorted order.
-     * The condition, *(first + sortPerm[i+1]) < *(first + sortPerm[i]),
-     * is guaranteed to be false.
-     * 
-     * For example,
-     * \code
-     *     first = unsorted.begin();
-     *     last  = unsorted.end()
-     *     SortPermutation sortPerm(first, last);
-     *     for (int i=0; i<unsorted.size(); i++)
-     *        sorted[i] = unsorted[sortPerm[i]];
-     * \endcode
-     * results in sorted containing the sorted elements of [first, last).
-     */
+   * \brief Returns the i'th entry into the index table.
+   * \param i The i'th entry into the sorted order.  The condition, *(first +
+   *        sortPerm[i+1]) < *(first + sortPerm[i]), is guaranteed to be false.
+   *
+   * For example,
+   * \code
+   *     first = unsorted.begin();
+   *     last  = unsorted.end()
+   *     SortPermutation sortPerm(first, last);
+   *     for (int i=0; i<unsorted.size(); i++)
+   *        sorted[i] = unsorted[sortPerm[i]];
+   * \endcode
+   * results in sorted containing the sorted elements of [first, last).
+   */
 
   value_type operator[](int i) const { return indexTable_m[i]; }
 
-  /*!
-     * \brief Returns the begin const_iterator into the index table.
-     */
-
+  //! Returns the begin const_iterator into the index table.
   const_iterator begin() const { return indexTable_m.begin(); }
 
-  /*!
-     * \brief Returns the end const_iterator into the index table.
-     */
-
+  //! Returns the end const_iterator into the index table.
   const_iterator end() const { return indexTable_m.end(); }
 
   /*!
-     * \brief Returns the i'th entry into the rank table.
-     * \param i The i'th entry from the sorted order.
-     * 
-     * For example,
-     * \code 
-     *     first = unsorted.begin();
-     *     last  = unsorted.end()
-     *     SortPermutation sortPerm(first, last);
-     *     for (int i=0; i<unsorted.size(); i++)
-     *        sorted[sortPerm.inv(i)] = unsorted[i];
-     * \endcode
-     * results in sorted containing the sorted elements of [first, last).
-     */
-
+   * \brief Returns the i'th entry into the rank table.
+   * \param i The i'th entry from the sorted order.
+   *
+   * For example,
+   * \code
+   *     first = unsorted.begin();
+   *     last  = unsorted.end()
+   *     SortPermutation sortPerm(first, last);
+   *     for (int i=0; i<unsorted.size(); i++)
+   *        sorted[sortPerm.inv(i)] = unsorted[i];
+   * \endcode
+   * results in sorted containing the sorted elements of [first, last).
+   */
   value_type inv(int i) const { return rankTable_m[i]; }
 
-  /*!
-     * \brief Returns the begin const_iterator into the rank table.
-     */
-
+  //! Returns the begin const_iterator into the rank table.
   const_iterator inv_begin() const { return rankTable_m.begin(); }
 
-  /*!
-     * \brief Returns the end const_iterator into the rank table.
-     */
-
+  //! Returns the end const_iterator into the rank table.
   const_iterator inv_end() const { return rankTable_m.end(); }
 
-  /*!
-     * \brief Returns the size of the index and rank tables.
-     */
-  int size() const { return indexTable_m.size(); }
+  //! Returns the size of the index and rank tables.
+  int size() const { return static_cast<int>(indexTable_m.size()); }
 
 private:
   // IMPLEMENTATION
@@ -291,5 +265,5 @@ private:
 #endif // __ds_SortPermutation_hh__
 
 //---------------------------------------------------------------------------//
-//                              end of ds++/SortPermutation.hh
+// end of ds++/SortPermutation.hh
 //---------------------------------------------------------------------------//

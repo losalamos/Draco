@@ -422,13 +422,18 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #endif // DBC & 8
 
 //---------------------------------------------------------------------------//
-// If any of DBC is on, then make the remember macro active
+// If any of DBC is on, then make the remember macro active and the NOEXCEPT
+// inactive.
 //---------------------------------------------------------------------------//
 #if DBC
 #define REMEMBER_ON
 #define Remember(c) c
+#define NOEXCEPT
+#define NOEXCEPT_C(c)
 #else
 #define Remember(c)
+#define NOEXCEPT noexcept
+#define NOEXCEPT_C(c) noexcept(c)
 #endif
 
 #if defined(MSVC)

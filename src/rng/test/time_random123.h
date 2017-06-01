@@ -69,12 +69,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    unrepresentative of the kinds of optimizations that are possible in
    practice.  I.e., we could not find any "real" use of the output of
    the RNG that permitted SSE-ization of the RNG. */
-#define LOOK_AT(A, I, N) do{                                            \
-    if (N==4) if(R123_BUILTIN_EXPECT(!(A.v[N>2?3:0]^A.v[N>2?2:0]^A.v[N>1?1:0]^A.v[0]), 0)) ++I; \
-    if (N==2) if(R123_BUILTIN_EXPECT(!(A.v[N>1?1:0]^A.v[0]), 0)) ++I;   \
-    if (N==1) if(R123_BUILTIN_EXPECT(!(A.v[0]), 0)) ++I;                \
-    }while(0)
-
+#define LOOK_AT(A, I, N)                                                       \
+  do {                                                                         \
+    if (N == 4)                                                                \
+      if (R123_BUILTIN_EXPECT(!(A.v[N > 2 ? 3 : 0] ^ A.v[N > 2 ? 2 : 0] ^      \
+                                A.v[N > 1 ? 1 : 0] ^ A.v[0]),                  \
+                              0))                                              \
+        ++I;                                                                   \
+    if (N == 2)                                                                \
+      if (R123_BUILTIN_EXPECT(!(A.v[N > 1 ? 1 : 0] ^ A.v[0]), 0))              \
+        ++I;                                                                   \
+    if (N == 1)                                                                \
+      if (R123_BUILTIN_EXPECT(!(A.v[0]), 0))                                   \
+        ++I;                                                                   \
+  } while (0)
 
 /* Macro that will expand later into all the Random123 PRNGs for NxW_R */
 /* Note that making the first argument uint seems to expose some
@@ -83,30 +91,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    fits in 32 bits, we assign it to a 32-bit (uint) to reduce loop
    overhead.
 */
-#define TEST_TPL(NAME, N, W, R)                                         \
-KERNEL void test_##NAME##N##x##W##_##R(uint64_t n64, NAME##N##x##W##_ukey_t uk, NAME##N##x##W##_ctr_t ctrinit, MEMTYPE NAME##N##x##W##_ctr_t *ctr) \
-{                                                                       \
-    uint n = (uint)n64;                                                 \
-    unsigned tid = get_global_id(0);                                    \
-    uint i;                                                             \
-    NAME##N##x##W##_ctr_t c, v={{0}};                                   \
-    NAME##N##x##W##_key_t k=NAME##N##x##W##keyinit(uk);                 \
-    c = ctrinit;                                                        \
-    if( R == NAME##N##x##W##_rounds ){                                  \
-        for (i = 0; i < n; ++i) {                                       \
-	    v = NAME##N##x##W(c, k);                                    \
-	    LOOK_AT(v, i, N);                                           \
-            c.v[0]++;                                                   \
-        }                                                               \
-    }else {                                                             \
-        for (i = 0; i < n; ++i) {                                       \
-            v = NAME##N##x##W##_R(R, c, k);                             \
-	    LOOK_AT(v, i, N);                                           \
-            c.v[0]++;                                                   \
-        }                                                               \
-    }                                                                   \
-    ctr[tid] = v;                                                       \
-}
+#define TEST_TPL(NAME, N, W, R)                                                \
+  KERNEL void test_##NAME##N##x##W##_##R(                                      \
+      uint64_t n64, NAME##N##x##W##_ukey_t uk, NAME##N##x##W##_ctr_t ctrinit,  \
+      MEMTYPE NAME##N##x##W##_ctr_t *ctr) {                                    \
+    uint n = (uint)n64;                                                        \
+    unsigned tid = get_global_id(0);                                           \
+    uint i;                                                                    \
+    NAME##N##x##W##_ctr_t c, v = {{0}};                                        \
+    NAME##N##x##W##_key_t k = NAME##N##x##W##keyinit(uk);                      \
+    c = ctrinit;                                                               \
+    if (R == NAME##N##x##W##_rounds) {                                         \
+      for (i = 0; i < n; ++i) {                                                \
+        v = NAME##N##x##W(c, k);                                               \
+        LOOK_AT(v, i, N);                                                      \
+        c.v[0]++;                                                              \
+      }                                                                        \
+    } else {                                                                   \
+      for (i = 0; i < n; ++i) {                                                \
+        v = NAME##N##x##W##_R(R, c, k);                                        \
+        LOOK_AT(v, i, N);                                                      \
+        c.v[0]++;                                                              \
+      }                                                                        \
+    }                                                                          \
+    ctr[tid] = v;                                                              \
+  }
 
 /*
  * Hackery to time GSL and XORWOW in the same framework, they can
@@ -114,9 +123,9 @@ KERNEL void test_##NAME##N##x##W##_##R(uint64_t n64, NAME##N##x##W##_ukey_t uk, 
  * above, so we undefine TRY_OTHER before including
  * util_expandtpl.  Ugh.
  */
-#if TRY_OTHER
-# include "time_other.h"
-# define RESTORE_OTHER 1
+#if defined(TRY_OTHER)
+#include "time_other.h"
+#define RESTORE_OTHER 1
 #endif
 
 /* Now expand TEST_TPL for all the relevant RNGs */
@@ -126,10 +135,10 @@ KERNEL void test_##NAME##N##x##W##_##R(uint64_t n64, NAME##N##x##W##_ukey_t uk, 
  * Now restore TRY_OTHER if needed to that subsequent
  * expandtpl (e.g. for time_keyctrinit) will work.
  */
-#if RESTORE_OTHER
-# undef TRY_OTHER
-# define TRY_OTHER 1
-# undef RESTORE_OTHER
+#if defined(RESTORE_OTHER)
+#undef TRY_OTHER
+#define TRY_OTHER 1
+#undef RESTORE_OTHER
 #endif
 
 #endif /* TIME_RANDOM123_H__ */

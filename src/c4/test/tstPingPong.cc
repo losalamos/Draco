@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -19,6 +17,7 @@
 using namespace std;
 
 using rtt_c4::C4_Req;
+using rtt_c4::C4_Status;
 using rtt_c4::C4_Traits;
 using rtt_c4::send;
 using rtt_c4::receive;
@@ -189,11 +188,38 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     drs.wait();
 
     // wait on receives and check
-    crr.wait();
-    irr.wait();
-    lrr.wait();
-    frr.wait();
-    drr.wait();
+
+    C4_Status status;
+
+    crr.wait(&status);
+    if (status.get_message_size() != 1)
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    irr.wait(&status);
+    if (status.get_message_size() != sizeof(int))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    lrr.wait(&status);
+    if (status.get_message_size() != sizeof(long))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    frr.wait(&status);
+    if (status.get_message_size() != sizeof(float))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    drr.wait(&status);
+    if (status.get_message_size() != sizeof(double))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
 
     // check values
     if (cr != 'B')
@@ -205,17 +231,6 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     if (!soft_equiv(fr, 2.5f))
       ITFAILS;
     if (!soft_equiv(dr, 3.5))
-      ITFAILS;
-
-    if (crr.count() != 1)
-      ITFAILS;
-    if (irr.count() != sizeof(int))
-      ITFAILS;
-    if (lrr.count() != sizeof(long))
-      ITFAILS;
-    if (frr.count() != sizeof(float))
-      ITFAILS;
-    if (drr.count() != sizeof(double))
       ITFAILS;
   }
 

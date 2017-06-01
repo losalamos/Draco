@@ -1,385 +1,78 @@
 # -*-sh-*-
-# Valgrind Suppression Instructions
-# generate these expressions by specifying 'valgrind --gen-suppressions=yes'
-
-# For help, use '--gen-suppressions=[yes|all]'
-
+#------------------------------------------------------------------------------#
+# File  : regression/valgrind_suppress.txt
+# Date  : Friday, May 19, 2017, 10:26 am
+# Author: Kelly Thompson <kgt@lanl.gov>
+# Breif : Valgrind Suppression Instructions
+# Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+#         All rights are reserved.
+#------------------------------------------------------------------------------#
+#
 # Example valgrind use:
+#
 # valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes
-#   --trace-children=yes --num-callers=50 --gen-suppressions=yes
+#   --trace-children=yes --num-callers=50 --gen-suppressions=all
 #   --suppressions="$HOME/draco/regression/valgrind_suppress.txt"
-#   /ccs/codes/mpi/openmpi/Linux64/1.6/bin/mpiexec -np 1 phw hello
-
-# OR --------
-
-# mpirun -np 1 valgrind --leak-check=full --suppressions=/home/kellyt/draco/regression/valgrind_suppress.txt ./phw
+#   mpirun -np 1 phw hello
+#
+# -------- OR --------
+#
+# ctest -D ExperimentalMemCheck -j 12 -R c4
+#
+#------------------------------------------------------------------------------#
 
 ## -------------------------------------------------------------------------- ##
-## OpenMPI-1.10
+## rhel7
 ## -------------------------------------------------------------------------- ##
 {
-   libpthread/memcheck/param/01
-   Memcheck:Param
-   write(buf)
-   obj:/lib64/libpthread-2.12.so
-   ...
-   fun:orterun
-   fun:main
-}
-{
-   libpthread/memcheck/param/02
-   Memcheck:Param
-   write(buf)
-   obj:/usr/lib64/libpthread-2.17.so
-   ...
-   fun:orterun
-   fun:main
-}
-{
-  <orterun memory leaks should be ignored>
-  Memcheck:Leak
-  ...
-  fun:orterun
-}
-
-{
-  <pmpi_init_thread>
+   rhel7/e001
    Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
+   match-leak-kinds: reachable
+   fun:realloc
    ...
-   fun:PMPI_Init_thread
-   ...
-}
-
-{
-  <pmpi_init_thread-2>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:strdup
-   ...
-   fun:PMPI_Init_thread
+   fun:gomp_realloc
    ...
 }
 {
-  <pmpi_init_thread-3>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:fetch
-   ...
-   fun:PMPI_Init_thread
-   ...
-}
-{
-  <pmpi_init_thread-4>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:store
-   ...
-   fun:PMPI_Init_thread
-}
-
-{
-   <ompi_mpi_init>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:store
-   ...
-   fun:ompi_mpi_init
-}
-{
-  <clone>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:opal_dss_copy_value
-   ...
-   fun:start_thread
-   fun:clone
-}
-{
-   clone3
+   rhel7/e002
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   fun:opal_class_initialize
-   fun:listen_thread
-   fun:start_thread
-   fun:clone
-}
-
-{
-  <pmpi_init_thread-5>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:df_search
    ...
-   fun:PMPI_Init_thread
+   fun:gomp_realloc
    ...
 }
 {
-  <pmpi_init_thread-6>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:df_search
-   ...
-   fun:PMPI_Init
-   ...
-}
-{
-  <clone-2>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:opal_dss_unpack_value
-   ...
-   fun:start_thread
-   fun:clone
-}
-{
-  <pmpi_init_thread-6>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:mca_bml_r2_add_procs
-   ...
-   fun:PMPI_Init_thread
-   ...
-}
-
-{
-  <pmpi_init_thread-7>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   ...
-   fun:ompi_mpi_init
-   fun:PMPI_Init_thread
-   ...
-}
-
-{
-  <pmpi_init>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:strdup
-   ...
-   fun:PMPI_Init
-   ...
-}
-{
-  <pmpi_init>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:mca_bml_r2_add_procs
-   ...
-   fun:PMPI_Init
-   ...
-}
-
-{
-  <fortran>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:strdup
-   ...
-   fun:mpi_init
-   ...
-}
-
-{
-  <fortran-2>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:mca_bml_r2_add_procs
-   ...
-   fun:mpi_init
-   ...
-}
-{
-
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:fetch
-   fun:opal_db_base_fetch
-   fun:ompi_rte_db_fetch
-   fun:ompi_modex_recv
-   fun:vader_add_procs
-   fun:mca_bml_r2_add_procs
-   fun:mca_pml_ob1_add_procs
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:mpi_init
-   fun:__draco_mpi_MOD_f90_mpi_init
-}
-{
-
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:fetch
-   fun:opal_db_base_fetch
-   fun:ompi_rte_db_fetch
-   fun:ompi_modex_recv
-   fun:mca_btl_tcp_proc_create
-   fun:mca_btl_tcp_del_procs
-   fun:mca_bml_r2_add_procs
-   fun:mca_pml_ob1_add_procs
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:mpi_init
-}
-{
-
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:fetch
-   fun:opal_db_base_fetch
-   fun:ompi_rte_db_fetch
-   fun:ompi_modex_recv
-   fun:mca_btl_tcp_proc_create
-   fun:mca_btl_tcp_add_procs
-   fun:mca_bml_r2_add_procs
-   fun:mca_pml_ob1_add_procs
-   fun:ompi_mpi_init
-   fun:PMPI_Init
-   fun:mpi_init
-}
-{
-  <fortran-mpi>
-   Memcheck:Leak
-   ...
-   fun:mpi_init
-   ...
-}
-{
-  <fortran-mpi>
-   Memcheck:Leak
-   ...
-   fun:mpi_init
-}
-{
-
+   rhel7/e003
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   fun:strdup
-   fun:hwloc__add_info
-   fun:hwloc__get_dmi_id_one_info.isra.8
-   fun:hwloc__get_dmi_id_info
-   fun:hwloc_look_linuxfs
-   fun:hwloc_discover
-   fun:hwloc_topology_load
-   fun:opal_hwloc_base_get_topology
-   fun:rte_init
-   fun:orte_init
-}
-{
-   <tstparmetis/compdup>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:ompi_comm_set_nb
    ...
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:store
-   fun:opal_db_base_store
-   fun:ompi_modex_send
-   fun:mca_btl_tcp_component_init
-   fun:mca_btl_base_select
-   fun:mca_bml_r2_component_init
-   fun:mca_bml_base_init
-   fun:mca_pml_ob1_component_init
-   fun:mca_pml_base_select
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:store
-   fun:opal_db_base_store
-   fun:ompi_modex_send
-   fun:mca_btl_base_vader_modex_send
-   fun:mca_btl_vader_component_init
-   fun:mca_btl_base_select
-   fun:mca_bml_r2_component_init
-   fun:mca_bml_base_init
-   fun:mca_pml_ob1_component_init
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:fetch
-   fun:opal_db_base_fetch
-   fun:ompi_rte_db_fetch
+   fun:gomp_malloc
    ...
-   fun:mca_pml_ob1_add_procs
-   fun:ompi_mpi_init
 }
 {
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:opal_dss_unpack_value
-   fun:opal_dss_unpack_buffer
-   fun:opal_dss_unpack
-   fun:orte_grpcomm_base_store_modex
-   fun:app_recv
-   fun:orte_rml_base_process_msg
-   fun:event_process_active_single_queue
-   fun:event_process_active
-   fun:opal_libevent2021_event_base_loop
-   fun:orte_progress_thread_engine
-   fun:start_thread
-}
-#--------------------------------------------------------
-## Python suppressions
-{
-   python_lib/memcheck/leak
-   Memcheck:Leak
-   ...
-   obj:/*/libpython2.4.so*
-}
-{
-   python_lib/memcheck/leak 
+   rhel7/e004
    Memcheck:Leak
    match-leak-kinds: possible
-   fun:malloc
-   fun:PyObject_Malloc
+   fun:calloc
+   ...
+   fun:pthread_create@@GLIBC_2.2.5
    ...
 }
 {
-   python_lib/memcheck/leak  
+   rhel7/e005
    Memcheck:Leak
-   match-leak-kinds: possible
+   match-leak-kinds: reachable
    fun:malloc
-   obj:/usr/lib64/libpython2.7.so.1.0
+   fun:__fopen_internal
+   ...
 }
 
-#--------------------------------------------------------
-## CMake suppressions
+## -------------------------------------------------------------------------- ##
+## CMake
+## -------------------------------------------------------------------------- ##
+
 {
    ld/memcheck/leak
    Memcheck:Leak
@@ -480,6 +173,14 @@
 ## Added with upgrade to valgrind 3.6.1
 ## ---------------------------------------------------------------------- ##
 
+{
+   ld217/e001
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   obj:/usr/lib64/ld-2.17.so
+}
 {
    tstSP/condjump/ld25so
    Memcheck:Cond
@@ -759,25 +460,6 @@
    fun:__gmpn_divrem
    ...
 }
-
-{
-   numdiff/lost/01
-   Memcheck:Leak
-   fun:calloc
-   fun:process_substring
-   fun:get_separating_string
-   fun:setargs
-   fun:main
-}
-{
-   numdiff/lost/02
-   Memcheck:Leak
-   fun:calloc
-   fun:process_substring
-   fun:get_separating_string
-   fun:setargs
-   fun:main
-}
 {
    numdiff/lost/03
    Memcheck:Leak
@@ -788,6 +470,15 @@
    fun:init_mpa
    fun:init_mpa_support
    fun:main
+}
+{
+   numdiff/lost/04
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:process_substring
+   fun:get_separating_string
+   ...
 }
 
 #==================== F90 open/read/write errors ====================#
@@ -1061,3 +752,573 @@
    fun:_ZSt9transformIN9__gnu_cxx17__normal_iteratorIPSsSt6vectorISsSaISsEEEESt20back_insert_iteratorIS3_IPcSaIS8_EEEPFS8_RKSsEET0_T_SH_SG_T1_
    ...
 }
+
+
+#------------------------------------------------------------------------------#
+# Import OpenMPI's openmpi-valgrind.supp
+# Openmpi-2.1.0
+#
+# ccs-net: /scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-6.3.0/openmpi-2.1.0-vrj55htfsolpnbtjv63xzh3jnl4kly3k/share/openmpi/openmpi-valgrind.supp
+#------------------------------------------------------------------------------#
+###############################################################
+#
+# OPAL suppressions
+#
+###############################################################
+
+# weirdness in init routines on Gentoo
+{
+  linux_pthread_init
+  Memcheck:Leak
+  fun:calloc
+  fun:allocate_dtv
+  fun:_dl_allocate_tls_storage
+  fun:_dl_allocate_tls
+}
+{
+  linux_pthread_init2
+  Memcheck:Leak
+  fun:calloc
+  fun:_dl_tls_setup
+  fun:__pthread_initialize_minimal
+}
+{
+  linux_pthread_init3
+  Memcheck:Leak
+  fun:memalign
+  fun:_dl_allocate_tls_storage
+  fun:_dl_allocate_tls
+  fun:__pthread_initialize_minimal
+}
+
+# The event library leaves some blocks in use that we should clean up,
+# but it would require much changing of the event library, so it
+# really isn't worth it...
+{
+  event_lib_poll
+  Memcheck:Leak
+  fun:malloc
+  fun:realloc
+  fun:opal_realloc
+  fun:poll_dispatch
+}
+
+
+###############################################################
+#
+# ORTE suppressions
+#
+###############################################################
+
+# inet_ntoa on linux mallocs a static buffer.  We can't free
+# it, so we have to live with it
+{
+  linux_inet_ntoa
+  Memcheck:Leak
+  fun:malloc
+  fun:inet_ntoa
+}
+{
+  linux_inet_ntoa_thread
+  Memcheck:Leak
+  fun:calloc
+  fun:pthread_setspecific
+  fun:inet_ntoa
+}
+
+
+###############################################################
+#
+# OMPI suppressions
+#
+###############################################################
+{
+  tcp_send
+  Memcheck:Param
+  writev(vector[...])
+  fun:writev
+  fun:mca_btl_tcp_frag_send
+  fun:mca_btl_tcp_endpoint_send
+}
+
+###############################################################
+#
+# Suppressions for various commonly-used packages
+#
+###############################################################
+
+# Portals reference implementation has a read from invalid issue
+{
+  portals_send
+  Memcheck:Param
+  socketcall.send(msg)
+  fun:send
+  fun:utcp_sendbytes
+  fun:utcp_sendto
+  fun:utcp_msg_wait
+}
+
+#------------------------------------------------------------------------------#
+# Openmpi-2.1.0 (added by KT)
+#------------------------------------------------------------------------------#
+
+{
+   openmpi210/e001
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001a
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001b
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001ba
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001c
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:calloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001d
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001d
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001d
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:realloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001e
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e002
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e003
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0004
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0004a
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0004b
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:calloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0004c
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0005
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0005
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0005a
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:realloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0006
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0007
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0007
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:calloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0008
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0009
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0009a
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0010
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0011
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0012
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:PMPI_Recv
+   ...
+}
+{
+   openmpi210/e0013
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:PMPI_Send
+   ...
+}
+{
+   openmpi210/e0014
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:PMPI_Irecv
+   ...
+}
+{
+   openmpi210/e0014
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:PMPI_Gather
+   ...
+}
+{
+   openmpi210/e0015
+   Memcheck:Cond
+   ...
+   fun:orterun
+   ...
+}
+{
+   openmpi210/e0016
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Init
+   ...
+}
+{
+   openmpi210/e0017
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Comm_create
+   ...
+}
+{
+   openmpi210/e0018
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Comm_split
+   ...
+}
+{
+   openmpi210/e0019
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Comm_dup
+   ...
+}
+{
+   openmpi210/e0019
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Win_create
+   ...
+}
+
+#------------------------------------------------------------------------------#
+# Python 2.7
+#------------------------------------------------------------------------------#
+{
+   python/e001
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:dictresize
+   ...
+}
+{
+   python/e002
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   ...
+}
+{
+   python/e002b
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   ...
+}
+{
+   python/e003
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   fun:dlopen@@GLIBC_2.2.5
+   ...
+}
+{
+   python/e004
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:Py_Main
+   ...
+}
+{
+   python/e004a
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:Py_Main
+   ...
+}
+{
+   python/e004b
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:Py_Main
+   ...
+}
+{
+   python/e005
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:import_submodule
+   ...
+}
+{
+   python/e006
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:PyObject_Call
+   ...
+}
+{
+   python/e007
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:PyObject_Call
+   ...
+}
+{
+   python/e008
+   Memcheck:Addr4
+   fun:PyObject_Free
+   ...
+}
+{
+   python/e009
+   Memcheck:Addr4
+   fun:PyObject_Realloc
+   ...
+}
+{
+   python/e010
+   Memcheck:Value8
+   fun:PyObject_Free
+   ...
+}
+{
+   python/e010a
+   Memcheck:Value8
+   fun:PyObject_Realloc
+   ...
+}
+{
+   python/e011
+   Memcheck:Cond
+   fun:PyObject_Free
+   ...
+}
+{
+   python/e011
+   Memcheck:Cond
+   fun:PyObject_Realloc
+   ...
+}
+
+#------------------------------------------------------------------------------#
+# End valgrind_suppress.txt
+#------------------------------------------------------------------------------#

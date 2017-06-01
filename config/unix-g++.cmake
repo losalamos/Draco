@@ -82,7 +82,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
+  set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -DDEBUG")
+  # '-Werror'
+  # -D_FORTIFY_SOURCE=2 -Wconversion -Wfloat-equal -Wunreachable-code
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
@@ -109,6 +111,11 @@ if( NOT CXX_FLAGS_INITIALIZED )
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=always")
+#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=vptr")
+#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=object-size")
+#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=alignment")
+#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=bounds")
+#    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=address")
     # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
   endif()
 

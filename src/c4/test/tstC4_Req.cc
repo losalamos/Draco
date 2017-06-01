@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
@@ -27,19 +25,19 @@ void tstCopyConstructor(rtt_dsxx::UnitTest &ut) {
   C4_Req requestB(requestA);
 
   // The behavior of the copy constructor is not obvious.  If requestA has
-  // not been used (inuse() returns 0) then requestA != requestB.
+  // not been used (inuse() returns false) then requestA != requestB.
 
-  if (requestA.inuse() == 0 && requestA == requestB)
-    FAILMSG("requestA.inuse()==0, so requestA cannot == requestB.");
+  if (!requestA.inuse() && requestA == requestB)
+    FAILMSG("requestA.inuse() is false, so requestA cannot == requestB.");
 
-  if (requestA.inuse() == 0 && requestA != requestB)
-    PASSMSG("requestA.inuse()==0 and requestA != requestB.");
+  if (!requestA.inuse() && requestA != requestB)
+    PASSMSG("requestA.inuse() is false and requestA != requestB.");
 
-  if (requestA.inuse() == 1 && requestA == requestB)
-    PASSMSG("requestA.inuse()=1 and requestA == requestB.");
+  if (requestA.inuse() && requestA == requestB)
+    PASSMSG("requestA.inuse() is true and requestA == requestB.");
 
-  if (requestA.inuse() == 1 && requestA != requestB)
-    FAILMSG("requestA.inuse()=1, so requestA must == requestB.");
+  if (requestA.inuse() && requestA != requestB)
+    FAILMSG("requestA.inuse() is true, so requestA must == requestB.");
 
   if (ut.numFails == 0)
     PASSMSG("tstCopyConstructor() is okay.");

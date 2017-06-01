@@ -5,10 +5,7 @@
  * \date   Wed Nov  7 14:10:55 2001
  * \brief  Soft_Equivalence functions for floating point comparisons.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __dsxx_Soft_Equivalence_hh__
@@ -19,19 +16,12 @@
 //
 // Purpose : checks that two reals or fields of reals are within a tolerance
 // of each other.
-//
-// revision history:
-// -----------------
-// 0) original
-// 1) 01-24-02 : modified the soft_equiv function to allow using an absolute
-//               error check if the reference value is within 1.0e-14 of zero.
-//
 //===========================================================================//
 
 #include "Assert.hh"
 #include <cmath>
+#include <cstdint>
 #include <iterator>
-#include <stdint.h>
 #include <vector>
 
 namespace rtt_dsxx {

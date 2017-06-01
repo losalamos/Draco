@@ -3,12 +3,8 @@
  * \file   ds++/test/tstEndian.cc
  * \author Mike Buksas
  * \date   Tue Oct 23 16:20:59 2007
- * \brief
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Endian.hh"
@@ -102,12 +98,12 @@ void test_int64(ScalarUnitTest &ut) {
 void test_idempotence(ScalarUnitTest &ut) {
 
   /* This test demonstrates that two applications of byte-swap in succession
-     * return the original value.
-     *
-     * To do this, we sweep over a lot of double values. We use a non-integral
-     * multiplier for successive values to avoid small subsets of the
-     * available patterns of bits. E.g. multiples of 2.
-     */
+   * return the original value.
+   *
+   * To do this, we sweep over a lot of double values. We use a non-integral
+   * multiplier for successive values to avoid small subsets of the available
+   * patterns of bits. E.g. multiples of 2.
+   */
 
   for (double value = 1.0;
        value < std::numeric_limits<double>::max() / 4.0; // divide by 4 to
@@ -119,15 +115,14 @@ void test_idempotence(ScalarUnitTest &ut) {
     byte_swap(local);
 
     // These numbers should be identical, so I'm testing for equality.
-    if (local != value)
-      ut.failure("byte_swap failed to reproduce original number");
+    if (std::abs(local - value) > std::numeric_limits<double>::epsilon())
+      FAILMSG("byte_swap failed to reproduce original number");
 
     // Use the copy-generating version to test negative numbers.
-
     const double neg_local = byte_swap_copy(byte_swap_copy(-value));
 
-    if (neg_local != -value)
-      ut.failure("byte_swap failed to reproduce original number");
+    if (std::abs(neg_local + value) > std::numeric_limits<double>::epsilon())
+      FAILMSG("byte_swap failed to reproduce original number");
   }
 
   return;

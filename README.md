@@ -26,11 +26,15 @@ Many thanks go to Draco's [contributors](https://github.com/lanl/Draco/graphs/co
 
 Draco was originally written by staff from Los Alamos's [CCS-2 Computational Physics and Methods Group](http://www.lanl.gov/org/padste/adtsc/computer-computational-statistical-sciences/computational-physics-methods/index.php):
 
-> Kelly G. Thompson, Kent G. Budge, Tom M. Evans, B. Todd Adams,
-> Rob Lowrie, John McGhee, Mike W. Buksas, Gabriel M. Rockefeller,
-> James S. Warsa, Seth R. Johnson, Allan B. Wollaber, Randy M. Roberts,
-> Jae H. Chang, Paul W. Talbot, Katherine J. Wang, Jeff Furnish,
-> Matthew A. Cleveland, Benjamin K. Bergen, Paul J. Henning.
+> Kelly G. Thompson, James S. Warsa, Kent G. Budge, Alex R. Long,
+> Kendra P. Keady, Jae H. Chang, Rob B. Lowrie, Matt A. Cleveland,
+> Massimiliano Rosa, Daniel Holladay, Ryan T. Wollaeger,
+> Andrew T. Till, and C. Kris Garrett.
+
+> Jeff D. Densmore, Allan B. Wollaber, Lori A. Pritchett-Sheats,
+> Peter Ahrens, Katherine J. Wang, Gabriel M. Rockefeller, and
+> Paul W. Talbot.
+
 
 Release
 ----------------

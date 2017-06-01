@@ -33,7 +33,7 @@ DracoInfo::DracoInfo(void)
 #ifdef DRACO_SHARED_LIBS
   library_type = "Shared";
 #endif
-#if DRACO_UNAME == Linux
+#ifdef draco_isLinux
   system_type = "Linux";
 #endif
 #ifdef SITENAME

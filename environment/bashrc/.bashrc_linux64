@@ -18,44 +18,90 @@ fi
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
 
-# Is the module function available?
-found=`declare -f module | wc -l`
-# Module is provided by the system:
-if test ${found} == 0; then
-  if test -f /usr/share/Modules/init/bash; then
-    source /usr/share/Modules/init/bash
-  elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
-    # CCS workstations (e.g.: gondolin)
-    # 2015-10-09 Kent's workstation still requires this!
-    source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
-  fi
+# Vendor (Third party libraries) location:
+if ! [[ ${VENDOR_DIR} ]]; then
+  target=`uname -n`
+  case $target in
+    ccscs[1-9]* | ccsnet* ) export VENDOR_DIR=/scratch/vendors ;;
+    toolbox*) export VENDOR_DIR=/usr/projects/draco/vendors ;;
+    *)
+      if [[ -d /ccs/codes/radtran/vendors ]]; then
+        export VENDOR_DIR=/ccs/codes/radtran/vendors
+      fi
+      ;;
+  esac
 fi
+
+add_to_path ${VENDOR_DIR}/bin PATH
+
+#------------------------------------------------------------------------------#
+# Setup Modules (Lmod or TCL)
+
+# Is the module function available?
+function setup_tcl_modules ()
+{
+  found=`declare -f module | wc -l`
+  # Module is provided by the system:
+  if test ${found} == 0; then
+    if test -f /usr/share/Modules/init/bash; then
+      source /usr/share/Modules/init/bash
+    elif test -f /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash; then
+      # CCS workstations (e.g.: gondolin)
+      # 2015-10-09 Kent's workstation still requires this!
+      source /ccs/opt/x86_64/modules/Modules/3.2.10/init/bash
+    fi
+  fi
+}
+
+function setup_lmod_modules()
+{
+  local do_lmod_setup=0
+  if [[ `fn_exists module` == 1 ]]; then
+    if [[ `declare -f module | grep -c LMOD` == 0 ]]; then
+      # we have tcl modules
+      module purge
+      unset dracomodules
+      unset NoModules
+      unset _LMFILES_
+      unset MODULEPATH
+      unset LOADEDMODULES
+      unset MODULESHOME
+
+      # If TCL modulefiles, switch to Lmod
+      do_lmod_setup=1
+    fi
+  else
+    do_lmod_setup=1
+  fi
+
+  if [[ $do_lmod_setup ]]; then
+    export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
+    source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
+    module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core
+  fi
+}
 
 target=`uname -n`
 case $target in
-ccscs[1-9]*)
-    # Locate the vendor directory
-    if test "${VENDOR_DIR}x" == "x"; then
-      export VENDOR_DIR=/scratch/vendors
+  ccscs[1-9]*)
+    setup_lmod_modules
+    module use --append /scratch/vendors/Modules.lmod
+    if [[ -d $HOME/privatemodules ]]; then
+      module use --append $HOME/privatemodules
     fi
-    module load user_contrib
-    export dracomodules="gcc/4.8.5 openmpi cmake \
-lapack random123 eospac gsl dracoscripts subversion ndi python
-metis parmetis superlu-dist trilinos git csk"
+    dm_core="cmake eospac git tk ndi python doxygen ccache numdiff totalview \
+dia graphviz ack"
+    dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
+    dm_openmpi="openmpi parmetis superlu-dist trilinos valgrind"
+    export dracomodules="$dm_core $dm_gcc $dm_openmpi"
     ;;
-ccsnet3*)
-    # Locate the vendor directory
-    if test "${VENDOR_DIR}x" == "x"; then
-      export VENDOR_DIR=/scratch/vendors
-    fi
+  ccsnet3*)
+    setup_tcl_modules
     module load user_contrib
     export dracomodules="dracoscripts subversion python git"
     ;;
 toolbox*)
-    # Locate the vendor directory
-    if ! [[ $VENDOR_DIR ]]; then
-      export VENDOR_DIR=/usr/projects/draco/vendors
-    fi
+    setup_tcl_modules
     module use --append $VENDOR_DIR/spack/share/spack/modules/linux-rhel6-x86_64
     export IGNOREMODULECONFLICTS=1
     export dracomodules="python gcc/6.1.0 intel/17.0.1 openmpi/1.10.5 \
@@ -65,13 +111,7 @@ netlib-lapack-3.5.0-intel-17.0.1 metis-5.1.0-intel-17.0.1 \
 parmetis-4.0.3-intel-17.0.1 superlu-dist-4.3-intel-17.0.1"
     ;;
 *)
-    # Locate the vendor directory
-    if ! [[ ${VENDOR_DIR} ]]; then
-      export VENDOR_DIR=/ccs/codes/radtran/vendors
-      if test -d /var/tmp/vendors; then
-        export VENDOR_DIR=/var/tmp/vendors
-      fi
-    fi
+    setup_tcl_modules
     module use /ccs/codes/radtran/vendors/Modules
   export dracomodules="gcc openmpi emacs/24.4 totalview cmake \
 lapack random123 eospac dracoscripts git svn dia graphviz doxygen \

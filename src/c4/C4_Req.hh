@@ -8,13 +8,12 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef c4_C4_Req_hh
 #define c4_C4_Req_hh
 
 // C4 package configure
+#include "C4_Status.hh"
 #include "c4/config.h"
 #include "ds++/Assert.hh"
 
@@ -43,11 +42,13 @@ namespace rtt_c4 {
 class DLL_PUBLIC_c4 C4_ReqRefRep {
   friend class C4_Req;
 
+  // number of ref counts
   int n;
-  int assigned;
+
+  // if true, we hold a request
+  bool assigned;
 
 #ifdef C4_MPI
-  MPI_Status s;
   MPI_Request r;
 #endif
 
@@ -63,14 +64,11 @@ private:
   ~C4_ReqRefRep();
 
 public:
-  void wait();
+  void wait(C4_Status *status = nullptr);
+  bool complete(C4_Status *status = nullptr);
   void free();
 
-  bool complete();
-
-  unsigned count();
-
-  int inuse() const {
+  bool inuse() const {
 #ifdef C4_MPI
     if (assigned) {
       Check(r != MPI_REQUEST_NULL);
@@ -80,8 +78,8 @@ public:
   }
 
 private:
-  void set() { assigned = 1; }
-  void clear() { assigned = 0; }
+  void set() { assigned = true; }
+  void clear() { assigned = false; }
 };
 
 //===========================================================================//
@@ -115,14 +113,10 @@ public:
   bool operator==(const C4_Req &right) { return (p == right.p); }
   bool operator!=(const C4_Req &right) { return (p != right.p); }
 
-  void wait() { p->wait(); }
+  void wait(C4_Status *status = nullptr) { p->wait(status); }
+  bool complete(C4_Status *status = nullptr) { return p->complete(status); }
   void free() { p->free(); }
-
-  bool complete() { return p->complete(); } // Should be const?
-
-  unsigned count() { return p->count(); }
-
-  int inuse() const { return p->inuse(); }
+  bool inuse() const { return p->inuse(); }
 
 private:
   void set() { p->set(); }
@@ -158,8 +152,8 @@ private:
   friend DLL_PUBLIC_c4 void receive_async(C4_Req &r, T *buf, int nels,
                                           int source, int tag);
 
-  friend DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
-  friend DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
+  friend DLL_PUBLIC_c4 void wait_all(unsigned count, C4_Req *requests);
+  friend DLL_PUBLIC_c4 unsigned wait_any(unsigned count, C4_Req *requests);
 #endif
 };
 

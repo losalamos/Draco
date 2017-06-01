@@ -52,8 +52,9 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
 
   char const test_string[] = "test";
 
-  unsigned int total_size =
-      num_vi * sizeof(int) + num_vd * sizeof(double) + sizeof(test_string);
+  unsigned int total_size = num_vi * static_cast<unsigned>(sizeof(int)) +
+                            num_vd * static_cast<unsigned>(sizeof(double)) +
+                            static_cast<unsigned>(sizeof(test_string));
   // includes one padding byte
 
   Packer p;
@@ -176,17 +177,18 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
     double d = 0;
     int i = 0;
+    double eps(1.0e-16);
 
     u.set_buffer(s1, b1);
     u >> d >> i;
-    if (d != 102.45)
+    if (!soft_equiv(d, 102.45, eps))
       ITFAILS;
     if (i != 10)
       ITFAILS;
 
     u.unpack(d);
     u.unpack(i);
-    if (d != 203.89)
+    if (!soft_equiv(d, 203.89, eps))
       ITFAILS;
     if (i != 11)
       ITFAILS;

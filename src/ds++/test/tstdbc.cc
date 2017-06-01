@@ -34,12 +34,16 @@ void dbc_test(UnitTest &ut) {
   using rtt_dsxx::dim;
   using namespace std;
 
-  if (!(abs(5.4) == 5.4) || !(abs(-2.1) == 2.1) || !(abs(0.0) == 0.0))
+  if (abs(abs(5.4) - 5.4) > std::numeric_limits<double>::epsilon() ||
+      abs(abs(-2.1) - 2.1) > std::numeric_limits<double>::epsilon() ||
+      abs(abs(0.0) - 0.0) > std::numeric_limits<double>::epsilon())
     FAILMSG("abs function template FAILED");
   else
     PASSMSG("abs function template ok");
 
-  if (!(dim(2, 7) == 0) || !(dim(5, -3) == 8) || !(dim(4, 4) == 0))
+  if (abs(dim(2, 7) - 0) > std::numeric_limits<int>::epsilon() ||
+      abs(dim(5, -3) - 8) > std::numeric_limits<int>::epsilon() ||
+      abs(dim(4, 4) - 0) > std::numeric_limits<int>::epsilon())
     FAILMSG("dim function template FAILED");
   else
     PASSMSG("dim function template ok");

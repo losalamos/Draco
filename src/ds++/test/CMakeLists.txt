@@ -73,7 +73,9 @@ if( PYTHONINTERP_FOUND )
   # create the do_exception execurtable.
   add_executable( Exe_do_exception ${PROJECT_SOURCE_DIR}/do_exception.cc )
   target_link_libraries( Exe_do_exception Lib_dsxx )
-  set_target_properties( Exe_do_exception PROPERTIES OUTPUT_NAME do_exception )
+  set_target_properties( Exe_do_exception PROPERTIES 
+    FOLDER dsxx_test
+    OUTPUT_NAME do_exception )
 
   include( ApplicationUnitTest )
   add_app_unit_test(

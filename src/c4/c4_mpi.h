@@ -5,10 +5,7 @@
  * \date   Fri Jan  8 15:06:30 1999
  * \brief  put the right includes for MPI header files
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-/*---------------------------------------------------------------------------*/
-/* $Id$ */
+ *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
 #ifndef rtt_c4_c4_mpi_h

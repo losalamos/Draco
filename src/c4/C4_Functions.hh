@@ -14,14 +14,13 @@
  * old-style C4 functions and classes are declared in the C4 namespace.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef c4_C4_Functions_hh
 #define c4_C4_Functions_hh
 
 #include "C4_Datatype.hh"
 #include "C4_Req.hh"
+#include "C4_Status.hh"
 #include "C4_Traits.hh"
 #include "C4_sys_times.h"
 
@@ -48,8 +47,14 @@ namespace rtt_c4 {
  */
 //---------------------------------------------------------------------------//
 
-// Forward declarations.
-class C4_Req;
+//---------------------------------------------------------------------------//
+// GLOBAL CONSTANTS
+//---------------------------------------------------------------------------//
+
+//! Any source rank
+DLL_PUBLIC_c4 extern const int any_source;
+//! Null source/destination rank
+DLL_PUBLIC_c4 extern const int proc_null;
 
 //---------------------------------------------------------------------------//
 // SETUP FUNCTIONS
@@ -428,7 +433,7 @@ DLL_PUBLIC_c4 void blocking_probe(int source, int tag, int &message_size);
  * \param requests
  * Set of requests to wait on.
  */
-DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
+DLL_PUBLIC_c4 void wait_all(unsigned count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -440,7 +445,7 @@ DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
  * Set of requests to wait on.
  * \return The request that completed.
  */
-DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
+DLL_PUBLIC_c4 unsigned wait_any(unsigned count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 // ABORT

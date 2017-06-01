@@ -34,119 +34,131 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Random123/features/compilerfeatures.h>
 #if !R123_USE_SSE
 #include <stdio.h>
-int main(){ printf("No SSE.  Nothing to check.  OK\n"); return 0; }
+int main() {
+  printf("No SSE.  Nothing to check.  OK\n");
+  return 0;
+}
 #else
 
 #include "ut_M128.hh"
 #include <sstream>
 
-int main(int, char **){
-    r123m128i uninitialized;
-    __m128i zm = _mm_setzero_si128();
-#if R123_USE_CXX1X_UNRESTRICTED_UNIONS
-    r123m128i zM(zm);
+int main(int, char **) {
+  r123m128i uninitialized;
+  __m128i zm = _mm_setzero_si128();
+#if defined(R123_USE_CXX1X_UNRESTRICTED_UNIONS)
+  r123m128i zM(zm);
 #else
-    r123m128i zM; zM.m = zm;
+  r123m128i zM;
+  zM.m = zm;
 #endif
-    uninitialized.m = _mm_setzero_si128();
+  uninitialized.m = _mm_setzero_si128();
 
-    // operator bool (or maybe void*)
-    assert(!uninitialized);
-    assert(!zM);
+  // operator bool (or maybe void*)
+  assert(!uninitialized);
+  assert(!zM);
 
-    // operator=(__m128i)
-    // conversion to __m128i
-    __m128i one = _mm_set_epi32(0, 0, 0, 1);
-    __m128i two = _mm_set_epi32(0, 0, 0, 2);
-    r123m128i One, Two;
-    One = one;
-    Two = two;
-    assert(!!One);
-    assert(!!Two);
-    r123m128i AnotherOne;
-    AnotherOne = one;
+  // operator=(__m128i)
+  // conversion to __m128i
+  __m128i one = _mm_set_epi32(0, 0, 0, 1);
+  __m128i two = _mm_set_epi32(0, 0, 0, 2);
+  r123m128i One, Two;
+  One = one;
+  Two = two;
+  assert(!!One);
+  assert(!!Two);
+  r123m128i AnotherOne;
+  AnotherOne = one;
 
-    assert( AnotherOne == One );
-    assert( Two != One );
-    __m128i m = One;
-    AnotherOne = m;
-    assert( AnotherOne ==  One );
+  assert(AnotherOne == One);
+  assert(Two != One);
+  __m128i m = One;
+  AnotherOne = m;
+  assert(AnotherOne == One);
 
-    // operator++ (prefix)
-    ++One;
-    assert( One == Two );
-    assert( One != AnotherOne );
+  // operator++ (prefix)
+  ++One;
+  assert(One == Two);
+  assert(One != AnotherOne);
 
-    // operator+=(R123_ULONG_LONG)
-    // operator==(R123_ULONG_LONG, r123m128i)
-    R123_ULONG_LONG ull = 2;
-    AnotherOne += 1;
-    for(int i=0; i<1000; ++i){
-        AnotherOne += i;
-        ull += i;
-        for(int j=0; j<i; ++j){
-            assert(One != AnotherOne);
-            ++One;
-        }
-        assert(One == AnotherOne);
-        assert(ull == AnotherOne);
+  // operator+=(R123_ULONG_LONG)
+  // operator==(R123_ULONG_LONG, r123m128i)
+  R123_ULONG_LONG ull = 2;
+  AnotherOne += 1;
+  for (int i = 0; i < 1000; ++i) {
+    AnotherOne += i;
+    ull += i;
+    for (int j = 0; j < i; ++j) {
+      assert(One != AnotherOne);
+      ++One;
     }
+    assert(One == AnotherOne);
+    assert(ull == AnotherOne);
+  }
 
-    // Do some additions that require carrying.
-    // Check the identity behavior of the streams
-    // as well
-    for(uint64_t i=0; i<1000; ++i){
-        uint64_t fff = (~((uint64_t)0)) - i;
-        AnotherOne += fff;
-        ull += fff; // will overflow
-        One += fff/2;
-        One += fff - fff/2;
-        assert(AnotherOne == One);
-        assert( !(ull == One) );
-        std::stringstream ss;
-        r123m128i YetAnother;
-        ss << AnotherOne;
-        ss >> YetAnother;
+  // Do some additions that require carrying.
+  // Check the identity behavior of the streams
+  // as well
+  for (uint64_t i = 0; i < 1000; ++i) {
+    uint64_t fff = (~((uint64_t)0)) - i;
+    AnotherOne += fff;
+    ull += fff; // will overflow
+    One += fff / 2;
+    One += fff - fff / 2;
+    assert(AnotherOne == One);
+    assert(!(ull == One));
+    std::stringstream ss;
+    r123m128i YetAnother;
+    ss << AnotherOne;
+    ss >> YetAnother;
 
-        assert( YetAnother == AnotherOne );
-    }
+    assert(YetAnother == AnotherOne);
+  }
 
-    // Sep 2011 - clang in the fink build of llvm-2.9.1 on MacOS 10.5.8
-    // fails to catch anything, and hence fails this test.  I suspect
-    // a problem with the packaging/installation rather than a bug
-    // in llvm.  However, if it shows up in other contexts, some
-    // kind of #ifndef might be appropriate.  N.B.  There's a similar
-    // exception test in ut_carray.cpp
-    rngRemember(bool caught);
-    rngRemember(caught = false);
-    bool b(false);
-    try{
-        b = One < AnotherOne;
-    }catch(std::runtime_error& ){ rngRemember(caught = true); }
-    assert(caught);
+  // Sep 2011 - clang in the fink build of llvm-2.9.1 on MacOS 10.5.8
+  // fails to catch anything, and hence fails this test.  I suspect
+  // a problem with the packaging/installation rather than a bug
+  // in llvm.  However, if it shows up in other contexts, some
+  // kind of #ifndef might be appropriate.  N.B.  There's a similar
+  // exception test in ut_carray.cpp
+  rngRemember(bool caught);
+  rngRemember(caught = false);
+  bool b(false);
+  try {
+    b = One < AnotherOne;
+  } catch (std::runtime_error &) {
+    rngRemember(caught = true);
+  }
+  assert(caught);
 
-    rngRemember(caught = false);
-    try{
-        b = One <= AnotherOne;
-    }catch(std::runtime_error& ){ rngRemember(caught = true); }
-    assert(caught);
+  rngRemember(caught = false);
+  try {
+    b = One <= AnotherOne;
+  } catch (std::runtime_error &) {
+    rngRemember(caught = true);
+  }
+  assert(caught);
 
-    rngRemember(caught = false);
-    try{
-        b = One > AnotherOne;
-    }catch(std::runtime_error& ){ rngRemember(caught = true); }
-    assert(caught);
+  rngRemember(caught = false);
+  try {
+    b = One > AnotherOne;
+  } catch (std::runtime_error &) {
+    rngRemember(caught = true);
+  }
+  assert(caught);
 
-    rngRemember(caught = false);
-    try{
-        b = One >= AnotherOne;
-    }catch(std::runtime_error& ){ rngRemember(caught = true); }
-    assert(caught);
+  rngRemember(caught = false);
+  try {
+    b = One >= AnotherOne;
+  } catch (std::runtime_error &) {
+    rngRemember(caught = true);
+  }
+  assert(caught);
 
-    // assemble_from_u32<r123m128i>
+  // assemble_from_u32<r123m128i>
 
-    std::cout << "ut_M128: OK (b=" << b << ")\n";
-    return 0;
+  std::cout << "ut_M128: OK (b=" << b << ")\n";
+  return 0;
 }
 
 #endif

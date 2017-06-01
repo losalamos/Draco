@@ -10,7 +10,6 @@
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-// #include <cmath>
 
 using namespace std;
 
@@ -449,6 +448,21 @@ void tverbose_error(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
+bool no_exception() NOEXCEPT;
+bool no_exception_c() NOEXCEPT_C(true);
+
+void tnoexcept(rtt_dsxx::UnitTest &ut) {
+#if DBC
+  ut.check(!noexcept(no_exception()), "with DBC on, NOEXCEPT has no effect");
+  ut.check(!noexcept(no_exception_c()),
+           "with DBC on, NOEXCEPT_C has no effect");
+#else
+  ut.check(noexcept(no_exception()), "with DBC off, NOEXCEPT has effect");
+  ut.check(noexcept(no_exception_c()), "with DBC off, NOEXCEPT_C has effect");
+#endif
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -475,6 +489,9 @@ int main(int argc, char *argv[]) {
 
     // fancy ouput
     tverbose_error(ut);
+
+    // noexcept
+    tnoexcept(ut);
   }
   UT_EPILOG(ut);
 }

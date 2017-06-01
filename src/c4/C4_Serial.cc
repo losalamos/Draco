@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "c4/config.h"
 
@@ -23,10 +21,16 @@
 namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
+// Any source rank
+//---------------------------------------------------------------------------//
+
+const int any_source = -1;
+
+//---------------------------------------------------------------------------//
 // Null source/destination rank
 //---------------------------------------------------------------------------//
 
-const int proc_null = -1;
+const int proc_null = -2;
 
 //---------------------------------------------------------------------------//
 // SETUP FUNCTIONS
@@ -106,12 +110,12 @@ DLL_PUBLIC_c4 void blocking_probe(int /* source */, int /* tag */,
   Insist(false, "no messages expected in serial programs!");
 }
 
-DLL_PUBLIC_c4 void wait_all(int /*count*/, C4_Req * /*requests*/) {
+DLL_PUBLIC_c4 void wait_all(unsigned /*count*/, C4_Req * /*requests*/) {
   // Insist(false, "no messages expected in serial programs!");
   return;
 }
 
-DLL_PUBLIC_c4 unsigned wait_any(int /*count*/, C4_Req * /*requests*/) {
+DLL_PUBLIC_c4 unsigned wait_any(unsigned /*count*/, C4_Req * /*requests*/) {
   Insist(false, "no messages expected in serial programs!");
   return 0;
 }

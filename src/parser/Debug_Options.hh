@@ -4,10 +4,7 @@
  * \author Kent Grimmett Budge
  * \brief  Define the Debug_Options enumeration and declare parse functions.
  * \note   Copyright (C) 2014-2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-/*---------------------------------------------------------------------------*/
-/* $Id: template.h 7388 2014-01-22 16:02:07Z kellyt $ */
+ *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
 #ifndef parser_Debug_Options_hh

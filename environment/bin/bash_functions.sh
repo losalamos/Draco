@@ -3,7 +3,7 @@
 ## File  : environment/bin/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -208,6 +208,9 @@ function rm_from_path ()
 
 ##---------------------------------------------------------------------------##
 ## If path is a directory add it to PATH (if not already in PATH)
+##
+## Use:
+##   add_to_path <path> TEXINPUTS|BSTINPUTS|BIBINPUTS|PATH
 ##---------------------------------------------------------------------------##
 function add_to_path ()
 {
@@ -328,60 +331,6 @@ function qrm ()
     mv $dir $TMPDIR/.
 
   done
-}
-
-#------------------------------------------------------------------------------#
-# Helper for ccs-net machines while we transition to lmod
-#------------------------------------------------------------------------------#
-
-function switch_to_lmod()
-{
-  export SPACK_ROOT=/scratch/vendors/spack.20170502
-  if ! [[ -d $SPACK_ROOT ]]; then
-    echo "FATAL ERROR: spack root not found."
-    return
-  fi
-  export PATH=$SPACK_ROOT/bin:$PATH
-  # Remove any environment-modules modulefiles.
-  module purge
-  # Point to lmod application and spack's lmod modulefiles.
-  MODULE_HOME=`spack location -i lmod`
-  if [[ -f $MODULE_HOME/lmod/lmod/init/bash ]]; then
-    source $MODULE_HOME/lmod/lmod/init/bash
-    module use $SPACK_ROOT/share/spack/lmod/`spack arch`/Core
-    module unuse /usr/share/Modules/modulefiles
-  fi
-  # eospac, ndi, csk
-  module use --append /scratch/vendors/Modules.lmod
-  if [[ -d $HOME/privatemodules ]]; then
-    module use --append $HOME/privatemodules
-  fi
-
-  # Environment for default compiler (no module file)
-  export CC=/bin/gcc
-  export CXX=/bin/g++
-  export FC=/bin/gfortran
-  export F90=/bin/gfortran
-  export F95=/bin/gfortran
-  export LCOMPILER=gcc
-  export LCOMPILERVER=4.8.5
-
-  # aliases
-  alias mlo='module load'
-  alias mls='module list'
-  alias mav='module avail'
-
-  # modules for draco developer environment
-  dm_core="cmake eospac git tk ndi python totalview dia graphviz doxygen \
-ack ccache"
-  dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk"
-  dm_openmpi="openmpi parmetis superlu-dist trilinos"
-  export dracomodules="$dm_core $dm_gcc $dm_openmpi"
-  module load $dracomodules
-
-  if [[ -d $VENDOR_DIR/bin ]]; then
-    export PATH=$PATH:$VENDOR_DIR/bin
-  fi
 }
 
 #------------------------------------------------------------------------------#

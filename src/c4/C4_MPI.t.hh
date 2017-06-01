@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef c4_C4_MPI_t_hh
 #define c4_C4_MPI_t_hh
@@ -38,7 +36,6 @@ DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination, int tag) {
 
 template <typename T>
 DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
-  int count = 0;
 
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -49,6 +46,7 @@ DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
   Check(check == MPI_SUCCESS);
 
   // get the count of received data
+  int count = 0;
   MPI_Get_count(&status, MPI_Traits<T>::element_type(), &count);
   return count;
 }
@@ -67,7 +65,6 @@ DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
 template <typename T>
 DLL_PUBLIC_c4 int receive_udt(T *buffer, int size, int source,
                               C4_Datatype &data_type, int tag) {
-  int count = 0;
 
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -76,6 +73,7 @@ DLL_PUBLIC_c4 int receive_udt(T *buffer, int size, int source,
   MPI_Recv(buffer, size, data_type, source, tag, communicator, &status);
 
   // get the count of received data
+  int count = 0;
   MPI_Get_count(&status, data_type, &count);
   return count;
 }
@@ -87,16 +85,13 @@ DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
                                int sendtag, int recvtag) {
   Require(sendbuf != nullptr);
   Require(recvbuf != nullptr);
-  Require(recvbuf + recvcount <= sendbuf || recvbuf >= sendbuf + sendcount);
   // buffers must not overlap
-
-  // get a handle to the MPI_Status
-  MPI_Status status;
+  Require(recvbuf + recvcount <= sendbuf || recvbuf >= sendbuf + sendcount);
 
   int check = MPI_Sendrecv(sendbuf, sendcount, MPI_Traits<TS>::element_type(),
                            destination, sendtag, recvbuf, recvcount,
                            MPI_Traits<TR>::element_type(), source, recvtag,
-                           communicator, &status);
+                           communicator, MPI_STATUS_IGNORE);
   return check;
 }
 
@@ -107,6 +102,7 @@ DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
 template <typename T>
 DLL_PUBLIC_c4 C4_Req send_async(const T *buffer, int size, int destination,
                                 int tag) {
+
   // make a c4 request handle
   C4_Req request;
 
@@ -158,6 +154,7 @@ DLL_PUBLIC_c4 void send_is(C4_Req &request, const T *buffer, int size,
 
 template <typename T>
 C4_Req receive_async(T *buffer, int size, int source, int tag) {
+
   // make a c4 request handle
   C4_Req request;
 
@@ -196,6 +193,7 @@ DLL_PUBLIC_c4 void receive_async(C4_Req &request, T *buffer, int size,
 
 template <typename T>
 DLL_PUBLIC_c4 int broadcast(T *buffer, int size, int root) {
+  Require(root >= 0 && root < nodes());
   int r = MPI_Bcast(buffer, size, MPI_Traits<T>::element_type(), root,
                     communicator);
   return r;
@@ -308,6 +306,8 @@ template <typename T> DLL_PUBLIC_c4 void global_max(T &x) {
 //---------------------------------------------------------------------------//
 
 template <typename T> DLL_PUBLIC_c4 void global_sum(T *x, int n) {
+  Require(x != nullptr);
+  Require(n > 0);
   // copy data into a send buffer
   std::vector<T> send_buffer(x, x + n);
 
@@ -320,6 +320,8 @@ template <typename T> DLL_PUBLIC_c4 void global_sum(T *x, int n) {
 //---------------------------------------------------------------------------//
 
 template <typename T> DLL_PUBLIC_c4 void global_prod(T *x, int n) {
+  Require(x != nullptr);
+  Require(n > 0);
   // copy data into a send buffer
   std::vector<T> send_buffer(x, x + n);
 
@@ -332,6 +334,8 @@ template <typename T> DLL_PUBLIC_c4 void global_prod(T *x, int n) {
 //---------------------------------------------------------------------------//
 
 template <typename T> DLL_PUBLIC_c4 void global_min(T *x, int n) {
+  Require(x != nullptr);
+  Require(n > 0);
   // copy data into a send buffer
   std::vector<T> send_buffer(x, x + n);
 
@@ -344,6 +348,8 @@ template <typename T> DLL_PUBLIC_c4 void global_min(T *x, int n) {
 //---------------------------------------------------------------------------//
 
 template <typename T> DLL_PUBLIC_c4 void global_max(T *x, int n) {
+  Require(x != nullptr);
+  Require(n > 0);
   // copy data into a send buffer
   std::vector<T> send_buffer(x, x + n);
 

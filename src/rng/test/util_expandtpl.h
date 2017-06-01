@@ -42,14 +42,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
 #endif
 
-#if TRY_OTHER
+#if defined(TRY_OTHER)
 TEST_TPL(mrg, 1, 32, 1)
 TEST_TPL(mt, 1, 32, 1)
 TEST_TPL(mtsmall, 1, 32, 1)
 TEST_TPL(cmrg, 1, 32, 1)
 TEST_TPL(xorwow, 1, 32, 1)
 #endif
-#if TRY_PHILOX2X32
+#if defined(TRY_PHILOX2X32)
 TEST_TPL(philox, 2, 32, 7)
 TEST_TPL(philox, 2, 32, 10)
 #endif

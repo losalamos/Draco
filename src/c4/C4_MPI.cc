@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "c4/config.h"
 #include <vector>
@@ -29,6 +27,12 @@ namespace rtt_c4 {
 
 MPI_Comm communicator = MPI_COMM_WORLD;
 bool initialized(false);
+
+//---------------------------------------------------------------------------//
+// Any source rank
+//---------------------------------------------------------------------------//
+
+const int any_source = MPI_ANY_SOURCE;
 
 //---------------------------------------------------------------------------//
 // Null source/destination rank
@@ -121,12 +125,14 @@ double wall_clock_resolution() { return MPI_Wtick(); }
 //---------------------------------------------------------------------------//
 
 bool probe(int source, int tag, int &message_size) {
+  // TODO: Change message_size to C4_Status to allow source = any_source
+  //Require(source == any_source || (source >= 0 && source < nodes()));
   Require(source >= 0 && source < nodes());
 
   int flag;
   MPI_Status status;
 
-  // post an MPI_Irecv (non-blocking receive)
+  // post a non-blocking probe
   MPI_Iprobe(source, tag, communicator, &flag, &status);
 
   if (!flag)
@@ -139,6 +145,8 @@ bool probe(int source, int tag, int &message_size) {
 
 //---------------------------------------------------------------------------//
 void blocking_probe(int source, int tag, int &message_size) {
+  // TODO: Change message_size to C4_Status to allow source = any_source
+  //Require(source == any_source || (source >= 0 && source < nodes()));
   Require(source >= 0 && source < nodes());
 
   MPI_Status status;
@@ -147,13 +155,14 @@ void blocking_probe(int source, int tag, int &message_size) {
 }
 
 //---------------------------------------------------------------------------//
-void wait_all(int count, C4_Req *requests) {
+void wait_all(unsigned count, C4_Req *requests) {
+
   // Nothing to do if count is zero.
   if (count == 0)
     return;
 
   std::vector<MPI_Request> array_of_requests(count);
-  for (int i = 0; i < count; ++i) {
+  for (unsigned i = 0; i < count; ++i) {
     if (requests[i].inuse())
       array_of_requests[i] = requests[i].r();
     else

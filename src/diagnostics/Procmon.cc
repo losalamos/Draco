@@ -6,10 +6,7 @@
  * \brief  Procmon class for printing runtime system diagnostics (free memory
  *         per node, etc).
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: Procmon.hh 5523 2010-11-30 01:12:12Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Procmon.hh"
@@ -108,7 +105,7 @@ void procmon_resource_print(std::string const &identifier, int const &mynode,
 
   MemTotal = statex.ullTotalPhys / 1024.0; // bytes -> kB.
 
-#elif APPLE
+#elif defined(APPLE)
   // can we use use 'system_profiler?'
   MemTotal = 1;
 #else

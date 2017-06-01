@@ -5,8 +5,7 @@
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Declaration of class Counter_RNG.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved
- */
+ *         All rights reserved */
 //---------------------------------------------------------------------------//
 
 #ifndef Counter_RNG_hh

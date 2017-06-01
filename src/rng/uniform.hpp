@@ -47,7 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //   uneg11:  output is as dense as possible in {-1,1}, never 0.0.  May
 //     return 1.0 or -1.0 if and only if the number of output mantissa bits
 //     is less than the width of the input.
-//   u01fixedpt:  output is "fixed point", equispaced, open at both ends, 
+//   u01fixedpt:  output is "fixed point", equispaced, open at both ends,
 //      and is never 0.0, 0.5 nor 1.0.
 //
 // The behavior of u01 and uneg11 depend on the pre-processor symbol:
@@ -76,8 +76,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <type_traits>
 #endif
 
-
-namespace r123{
+namespace r123 {
 
 #if R123_USE_CXX11_TYPE_TRAITS
 using std::make_signed;
@@ -86,13 +85,13 @@ using std::make_unsigned;
 // Sigh... We could try to find another <type_traits>, e.g., from
 // boost or TR1.  Or we can do it ourselves in the r123 namespace.
 // It's not clear which will cause less headache...
-template <typename T> struct make_signed{};
-template <typename T> struct make_unsigned{};
-#define R123_MK_SIGNED_UNSIGNED(ST, UT)                 \
-template<> struct make_signed<ST>{ typedef ST type; }; \
-template<> struct make_signed<UT>{ typedef ST type; }; \
-template<> struct make_unsigned<ST>{ typedef UT type; }; \
-template<> struct make_unsigned<UT>{ typedef UT type; }
+template <typename T> struct make_signed {};
+template <typename T> struct make_unsigned {};
+#define R123_MK_SIGNED_UNSIGNED(ST, UT)                                        \
+  template <> struct make_signed<ST> { typedef ST type; };                     \
+  template <> struct make_signed<UT> { typedef ST type; };                     \
+  template <> struct make_unsigned<ST> { typedef UT type; };                   \
+  template <> struct make_unsigned<UT> { typedef UT type; }
 
 R123_MK_SIGNED_UNSIGNED(int8_t, uint8_t);
 R123_MK_SIGNED_UNSIGNED(int16_t, uint16_t);
@@ -106,25 +105,24 @@ R123_MK_SIGNED_UNSIGNED(__int128_t, __uint128_t);
 
 #if defined(__CUDACC__) || defined(_LIBCPP_HAS_NO_CONSTEXPR)
 // Amazing! cuda thinks numeric_limits::max() is a __host__ function, so
-// we can't use it in a device function.  
+// we can't use it in a device function.
 //
 // The LIBCPP_HAS_NO_CONSTEXP test catches situations where the libc++
 // library thinks that the compiler doesn't support constexpr, but we
 // think it does.  As a consequence, the library declares
 // numeric_limits::max without constexpr.  This workaround should only
 // affect a narrow range of compiler/library pairings.
-// 
+//
 // In both cases, we find max() by computing ~(unsigned)0 right-shifted
 // by is_signed.
 template <typename T>
-R123_CONSTEXPR R123_STATIC_INLINE R123_CUDA_DEVICE T maxTvalue(){
-    typedef typename make_unsigned<T>::type uT;
-    return (~uT(0)) >> std::numeric_limits<T>::is_signed;
- }
+R123_CONSTEXPR R123_STATIC_INLINE R123_CUDA_DEVICE T maxTvalue() {
+  typedef typename make_unsigned<T>::type uT;
+  return (~uT(0)) >> std::numeric_limits<T>::is_signed;
+}
 #else
-template <typename T>
-R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue(){
-    return std::numeric_limits<T>::max();
+template <typename T> R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue() {
+  return std::numeric_limits<T>::max();
 }
 #endif
 
@@ -136,20 +134,21 @@ R123_CONSTEXPR R123_STATIC_INLINE T maxTvalue(){
 //
 //  If the input is a uniformly distributed integer, then the
 //  result is a uniformly distributed floating point number in [0, 1].
-//  The result is never exactly 0.0.  
+//  The result is never exactly 0.0.
 //  The smallest value returned is 2^-W.
 //  Let M be the number of mantissa bits in Ftype.
 //  If W>M  then the largest value retured is 1.0.
 //  If W<=M then the largest value returned is the largest Ftype less than 1.0.
 template <typename Ftype, typename Itype>
-R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in){
-    typedef typename make_unsigned<Itype>::type Utype;
-    R123_CONSTEXPR Ftype factor = Ftype(1.)/(maxTvalue<Utype>() + Ftype(1.));
-    R123_CONSTEXPR Ftype halffactor = Ftype(0.5)*factor;
-#if R123_UNIFORM_FLOAT_STORE
-    volatile Ftype x = Utype(in)*factor; return x+halffactor;
+R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in) {
+  typedef typename make_unsigned<Itype>::type Utype;
+  R123_CONSTEXPR Ftype factor = Ftype(1.) / (maxTvalue<Utype>() + Ftype(1.));
+  R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
+#ifdef R123_UNIFORM_FLOAT_STORE
+  volatile Ftype x = Utype(in) * factor;
+  return x + halffactor;
 #else
-    return Utype(in)*factor + halffactor;
+  return Utype(in) * factor + halffactor;
 #endif
 }
 
@@ -168,14 +167,15 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01(Itype in){
 //  If W<=M then the largest value returned is the largest Ftype less than 1.0
 //    and the smallest value returned is the smallest Ftype greater than -1.0.
 template <typename Ftype, typename Itype>
-R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in){
-    typedef typename make_signed<Itype>::type Stype;
-    R123_CONSTEXPR Ftype factor = Ftype(1.)/(maxTvalue<Stype>() + Ftype(1.));
-    R123_CONSTEXPR Ftype halffactor = Ftype(0.5)*factor;
-#if R123_UNIFORM_FLOAT_STORE
-    volatile Ftype x = Stype(in)*factor; return x+halffactor;
+R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in) {
+  typedef typename make_signed<Itype>::type Stype;
+  R123_CONSTEXPR Ftype factor = Ftype(1.) / (maxTvalue<Stype>() + Ftype(1.));
+  R123_CONSTEXPR Ftype halffactor = Ftype(0.5) * factor;
+#ifdef R123_UNIFORM_FLOAT_STORE
+  volatile Ftype x = Stype(in) * factor;
+  return x + halffactor;
 #else
-    return Stype(in)*factor + halffactor;
+  return Stype(in) * factor + halffactor;
 #endif
 }
 
@@ -193,16 +193,16 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype uneg11(Itype in){
 //   - are uniformly spaced by 2^-(B-1),
 //   - are balanced around 0.5
 template <typename Ftype, typename Itype>
-R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
-    typedef typename make_unsigned<Itype>::type Utype;
-    R123_CONSTEXPR int excess = std::numeric_limits<Utype>::digits - std::numeric_limits<Ftype>::digits;
-    if(excess>=0)
-    {
+R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
+  typedef typename make_unsigned<Itype>::type Utype;
+  R123_CONSTEXPR int excess =
+      std::numeric_limits<Utype>::digits - std::numeric_limits<Ftype>::digits;
+  if (excess >= 0) {
 
 // 2015-09-26 KT - Suppress warnings for the following expressions (see https://rtt.lanl.gov/redmine/issues/416)
 //
 // Basically, GCC under BullseyeCoverage issues the following warning every time this file is included:
-//         
+//
 // Counter_RNG.hh:124:65:   required from here
 // uniform.hpp:200:48: warning: second operand of conditional expression has no effect [-Wunused-value]
 //         R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
@@ -215,23 +215,21 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in){
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
-        
-        R123_CONSTEXPR int ex_nowarn = (excess>=0) ? excess : 0;
+
+    R123_CONSTEXPR int ex_nowarn = (excess >= 0) ? excess : 0;
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 
-        R123_CONSTEXPR Ftype factor = Ftype(1.)/(Ftype(1.) + ((maxTvalue<Utype>()>>ex_nowarn)));
-        return (1 | (Utype(in)>>ex_nowarn)) * factor;
-    }
-    else
-    {
-        return u01<Ftype>(in);
-    }
+    R123_CONSTEXPR Ftype factor =
+        Ftype(1.) / (Ftype(1.) + ((maxTvalue<Utype>() >> ex_nowarn)));
+    return (1 | (Utype(in) >> ex_nowarn)) * factor;
+  } else {
+    return u01<Ftype>(in);
+  }
 }
 
 } // namespace r123
 
 #endif
-

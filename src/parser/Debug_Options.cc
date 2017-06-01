@@ -18,7 +18,7 @@ unsigned available = rtt_parser::DEBUG_END;
 std::map<std::string, unsigned> extended_debug_option;
 std::map<unsigned, std::string> extended_debug_back_option;
 
-#ifdef DBC
+#ifdef REQUIRE_ON
 
 //! Is the bit actually a bit? That is, a power of 2?
 bool is_bit(unsigned bit) {
@@ -31,6 +31,7 @@ bool is_bit(unsigned bit) {
   // Erase that bit; see if the result is zero, as it must be for a power of 2.
   return (bit ^ 1U) == 0U;
 }
+
 #endif
 
 } // end anonymous namespace
