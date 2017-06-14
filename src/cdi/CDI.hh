@@ -197,8 +197,8 @@ static double polylog_series_minus_one_planck(double const x,
  *
  * This helper function is used by CDI::integrate_planck_rosseland
  * (also in this file).
- * 
- * ==> The underlying function x^4/(exp(x) - 1) can be difficult to evaluate 
+ *
+ * ==> The underlying function x^4/(exp(x) - 1) can be difficult to evaluate
  *     with double precision when x is very small. Instead, when x < 1.e-5,
  *     we use the first 2 terms in the expansion x^4/(exp(x) - 1) ~ x^3(1-x/2),
  *     remaining terms are x^5/12 + O(x^7).
@@ -207,11 +207,11 @@ static double polylog_series_minus_one_planck(double const x,
  *     1-exp(-x) suffers when x is large. However, std::expm1 should improve
  *     the accuracy of that evaluation.
  * ==> The large x fix might be able to be changed in the future if bug listed
- *     in man page is corrected. 
- * 
- * \param  freq The frequency for the upper limit of the integrand. 
+ *     in man page is corrected.
+ *
+ * \param  freq The frequency for the upper limit of the integrand.
  * \param  exp_freq exp(-freq)
- * \return The difference between the integrated Planck and Rosseland 
+ * \return The difference between the integrated Planck and Rosseland
  * curves over \f$ (0,\nu) \f$.
  */
 static double Planck2Rosseland(double const freq, double const exp_freq) {
@@ -378,8 +378,6 @@ namespace rtt_cdi {
  * function.  When both frequency bounds reside above the Planckian peak
  * (above 2.822 T), we skip the Taylor series calculations and use the
  * polylogarithmic series minus one (the minus one is for roundoff control).
- *
- *
  *
  * This Rosseland functions integrate the normalized Rosseland that is defined:
  * \f[

@@ -29,27 +29,27 @@ void test_either(UnitTest &ut,
   unsigned const dimension = ordinate_space->dimension();
 
   if (ordinate_space->moments()[0] == Moment(0, 0)) {
-    ut.passes("first moment is correct");
+    PASSMSG("first moment is correct");
   } else {
-    ut.failure("first moment is NOT correct");
+    FAILMSG("first moment is NOT correct");
   }
 
   if (number_of_ordinates == ordinate_space->alpha().size()) {
-    ut.passes("alpha size is correct");
+    PASSMSG("alpha size is correct");
   } else {
-    ut.failure("alpha size is NOT correct");
+    FAILMSG("alpha size is NOT correct");
   }
 
   if (ordinate_space->ordinates().size() == ordinate_space->tau().size()) {
-    ut.passes("tau size is correct");
+    PASSMSG("tau size is correct");
   } else {
-    ut.failure("tau size is NOT correct");
+    FAILMSG("tau size is NOT correct");
   }
 
   if (ordinate_space->expansion_order() == static_cast<int>(expansion_order)) {
-    ut.passes("expansion order is correct");
+    PASSMSG("expansion order is correct");
   } else {
-    ut.failure("expansion_order is NOT correct");
+    FAILMSG("expansion_order is NOT correct");
   }
 
   vector<unsigned> const &first_angles = ordinate_space->first_angles();
@@ -57,14 +57,14 @@ void test_either(UnitTest &ut,
 
   if (geometry == rtt_mesh_element::SPHERICAL) {
     if (first_angles.size() == 1) {
-      ut.passes("first angles is correct");
+      PASSMSG("first angles is correct");
     } else {
-      ut.failure("first angles is NOT correct");
+      FAILMSG("first angles is NOT correct");
     }
 
     if (ordinate_space->bookkeeping_coefficient(number_of_ordinates - 1) <=
         0.0) {
-      ut.failure("bookkeeping coefficient is NOT plausible");
+      FAILMSG("bookkeeping coefficient is NOT plausible");
     }
 
     ordinate_space->psi_coefficient(number_of_ordinates - 1);
@@ -73,14 +73,14 @@ void test_either(UnitTest &ut,
   } else if (geometry == rtt_mesh_element::AXISYMMETRIC) {
     if ((dimension > 1 && first_angles.size() == number_of_levels) ||
         (dimension == 1 && 2 * first_angles.size() == number_of_levels)) {
-      ut.passes("first angles is correct");
+      PASSMSG("first angles is correct");
     } else {
-      ut.failure("first angles is NOT correct");
+      FAILMSG("first angles is NOT correct");
     }
 
     if (ordinate_space->bookkeeping_coefficient(number_of_ordinates - 1) <=
         0.0) {
-      ut.failure("bookkeeping coefficient is NOT plausible");
+      FAILMSG("bookkeeping coefficient is NOT plausible");
     }
 
     ordinate_space->psi_coefficient(number_of_ordinates - 1);
@@ -89,13 +89,13 @@ void test_either(UnitTest &ut,
 
     vector<unsigned> const &levels = ordinate_space->levels();
     if (levels.size() == number_of_ordinates) {
-      ut.passes("levels size is correct");
+      PASSMSG("levels size is correct");
     } else {
-      ut.failure("levels size is NOT correct");
+      FAILMSG("levels size is NOT correct");
     }
     for (unsigned i = 0; i < number_of_ordinates; ++i) {
       if (levels[i] >= number_of_levels) {
-        ut.failure("levels is NOT in bounds");
+        FAILMSG("levels is NOT in bounds");
         return;
       }
     }
@@ -104,14 +104,14 @@ void test_either(UnitTest &ut,
         ordinate_space->moments_per_order();
 
     if (moments_per_order.size() == expansion_order + 1) {
-      ut.passes("moments_per_order size is correct");
+      PASSMSG("moments_per_order size is correct");
     } else {
-      ut.failure("moments_per_order size is NOT correct");
+      FAILMSG("moments_per_order size is NOT correct");
     }
     for (unsigned i = 0; i <= expansion_order; ++i) {
       if ((dimension == 1 && moments_per_order[i] != i / 2 + 1) ||
           (dimension > 1 && moments_per_order[i] != i + 1)) {
-        ut.failure("moments_per_order is NOT correct");
+        FAILMSG("moments_per_order is NOT correct");
         return;
       }
     }
@@ -120,31 +120,32 @@ void test_either(UnitTest &ut,
          number_of_levels == 2 * ordinate_space->number_of_levels()) ||
         (dimension > 1 &&
          number_of_levels == ordinate_space->number_of_levels())) {
-      ut.passes("number of levels is consistent");
+      PASSMSG("number of levels is consistent");
     } else {
-      ut.failure("number of levels is NOT consistent");
+      FAILMSG("number of levels is NOT consistent");
     }
   } else {
     if (ordinate_space->first_angles().size() == 0) {
-      ut.passes("first angles is correct");
+      PASSMSG("first angles is correct");
     } else {
-      ut.failure("first angles is NOT correct");
+      FAILMSG("first angles is NOT correct");
     }
   }
 
   vector<unsigned> const &reflect_mu = ordinate_space->reflect_mu();
   if (reflect_mu.size() == number_of_ordinates) {
-    ut.passes("reflect_mu is correct size");
+    PASSMSG("reflect_mu is correct size");
   } else {
-    ut.failure("reflect_mu is NOT correct size");
+    FAILMSG("reflect_mu is NOT correct size");
   }
   for (unsigned i = 0; i < number_of_ordinates; ++i) {
     if (reflect_mu[i] >= number_of_ordinates) {
-      ut.failure("reflect_mu is out of bounds");
+      FAILMSG("reflect_mu is out of bounds");
       return;
     }
-    if (ordinates[i].wt() != 0.0 && reflect_mu[reflect_mu[i]] != i) {
-      ut.failure("reflect_mu is inconsistent");
+    if (!rtt_dsxx::soft_equiv(ordinates[i].wt(), 0.0) &&
+        reflect_mu[reflect_mu[i]] != i) {
+      FAILMSG("reflect_mu is inconsistent");
       return;
     }
   }
@@ -152,17 +153,17 @@ void test_either(UnitTest &ut,
   if (dimension > 1) {
     vector<unsigned> const &reflect_eta = ordinate_space->reflect_eta();
     if (reflect_eta.size() == number_of_ordinates) {
-      ut.passes("reflect_eta is correct size");
+      PASSMSG("reflect_eta is correct size");
     } else {
-      ut.failure("reflect_eta is NOT correct size");
+      FAILMSG("reflect_eta is NOT correct size");
     }
     for (unsigned i = 0; i < number_of_ordinates; ++i) {
       if (reflect_eta[i] >= number_of_ordinates) {
-        ut.failure("reflect_eta is out of bounds");
+        FAILMSG("reflect_eta is out of bounds");
         return;
       }
       if (reflect_eta[reflect_eta[i]] != i) {
-        ut.failure("reflect_eta is inconsistent");
+        FAILMSG("reflect_eta is inconsistent");
         return;
       }
     }
@@ -170,17 +171,17 @@ void test_either(UnitTest &ut,
     if (dimension > 2) {
       vector<unsigned> const &reflect_xi = ordinate_space->reflect_xi();
       if (reflect_xi.size() == number_of_ordinates) {
-        ut.passes("reflect_xi is correct size");
+        PASSMSG("reflect_xi is correct size");
       } else {
-        ut.failure("reflect_xi is NOT correct size");
+        FAILMSG("reflect_xi is NOT correct size");
       }
       for (unsigned i = 0; i < number_of_ordinates; ++i) {
         if (reflect_xi[i] >= number_of_ordinates) {
-          ut.failure("reflect_xi is out of bounds");
+          FAILMSG("reflect_xi is out of bounds");
           return;
         }
         if (reflect_xi[reflect_xi[i]] != i) {
-          ut.failure("reflect_xi is inconsistent");
+          FAILMSG("reflect_xi is inconsistent");
           return;
         }
       }
@@ -195,17 +196,17 @@ void test_either(UnitTest &ut,
   case TRIANGLE_QUADRATURE:
     if (dimension == 1) {
       if (geometry == rtt_mesh_element::CARTESIAN && L != N)
-        ut.failure("ordinate count is wrong for triangular quadrature");
+        FAILMSG("ordinate count is wrong for triangular quadrature");
     } else if (dimension == 3) {
       if (L * (L + 2) != N)
-        ut.failure("ordinate count is wrong for triangular quadrature");
+        FAILMSG("ordinate count is wrong for triangular quadrature");
     }
     break;
 
   case SQUARE_QUADRATURE:
     if (dimension == 3) {
       if (2 * L * L != N) {
-        ut.failure("ordinate count is wrong for square quadrature");
+        FAILMSG("ordinate count is wrong for square quadrature");
       }
     }
     break;
@@ -213,7 +214,7 @@ void test_either(UnitTest &ut,
   default:
     if (dimension == 3) {
       if (4 * L > N) {
-        ut.failure("ordinate count is too small for level count");
+        FAILMSG("ordinate count is too small for level count");
       }
     }
     break;
@@ -241,46 +242,46 @@ void test_either(UnitTest &ut,
     }
 
     if (soft_equiv(J, MAGIC)) {
-      ut.passes("J okay");
+      PASSMSG("J okay");
     } else {
-      ut.failure("J NOT okay");
+      FAILMSG("J NOT okay");
     }
     if (soft_equiv(Fx, 0.0)) {
-      ut.passes("Fx okay");
+      PASSMSG("Fx okay");
     } else {
       std::cout << "Fx = " << Fx << std::endl;
-      ut.failure("Fx NOT okay");
+      FAILMSG("Fx NOT okay");
     }
     if (soft_equiv(Fx2, MAGIC / 3.0)) {
-      ut.passes("Fx2 okay");
+      PASSMSG("Fx2 okay");
     } else {
       cout << "Fx2 = " << Fx2 << ", expected " << (MAGIC / 3.0) << endl;
-      ut.failure("Fx2 NOT okay");
+      FAILMSG("Fx2 NOT okay");
     }
     if (dimension > 1) {
       if (soft_equiv(Fy, 0.0)) {
-        ut.passes("Fy okay");
+        PASSMSG("Fy okay");
       } else {
-        ut.failure("Fy NOT okay");
+        FAILMSG("Fy NOT okay");
       }
       if (soft_equiv(Fy2, MAGIC / 3.0)) {
-        ut.passes("Fy2 okay");
+        PASSMSG("Fy2 okay");
       } else {
         cout << "Fy2 = " << Fz2 << ", expected " << (MAGIC / 3.0) << endl;
-        ut.failure("Fy2 NOT okay");
+        FAILMSG("Fy2 NOT okay");
       }
     }
     if (dimension > 2) {
       if (soft_equiv(Fz, 0.0)) {
-        ut.passes("Fz okay");
+        PASSMSG("Fz okay");
       } else {
-        ut.failure("Fz NOT okay");
+        FAILMSG("Fz NOT okay");
       }
       if (soft_equiv(Fz2, MAGIC / 3.0)) {
-        ut.passes("Fz2 okay");
+        PASSMSG("Fz2 okay");
       } else {
         cout << "Fz2 = " << Fz2 << ", expected " << (MAGIC / 3.0) << endl;
-        ut.failure("Fz2 NOT okay");
+        FAILMSG("Fz2 NOT okay");
       }
     }
 
@@ -292,14 +293,14 @@ void test_either(UnitTest &ut,
     unsigned number_of_moments = ordinate_space->number_of_moments();
 
     if (M.size() == number_of_moments * number_of_ordinates) {
-      ut.passes("M has right size");
+      PASSMSG("M has right size");
     } else {
-      ut.failure("M does NOT have right size");
+      FAILMSG("M does NOT have right size");
     }
     if (D.size() == number_of_moments * number_of_ordinates) {
-      ut.passes("D has right size");
+      PASSMSG("D has right size");
     } else {
-      ut.failure("D does NOT have right size");
+      FAILMSG("D does NOT have right size");
     }
 
     if ((ordinate_space->quadrature_interpolation_model() == GQ1) ||
@@ -313,12 +314,12 @@ void test_either(UnitTest &ut,
           }
           if (m == n) {
             if (!soft_equiv(sum, 1.0)) {
-              ut.failure("diagonal element of M*D NOT 1");
+              FAILMSG("diagonal element of M*D NOT 1");
               return;
             }
           } else {
             if (!soft_equiv(sum, 0.0)) {
-              ut.failure("off-diagonal element of M*D NOT 0");
+              FAILMSG("off-diagonal element of M*D NOT 0");
               return;
             }
           }
@@ -476,7 +477,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
       if (L) {
         cout << "  Number of level sets = " << L << endl;
       } else {
-        ut.failure("no level sets are defined.");
+        FAILMSG("no level sets are defined.");
       }
     }
     break;
@@ -488,7 +489,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
       if (L) {
         cout << "  Number of level sets = " << L << endl;
       } else {
-        ut.failure("no level sets are defined.");
+        FAILMSG("no level sets are defined.");
       }
     }
     break;
@@ -504,40 +505,40 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
     break;
 
   default:
-    ut.failure("Bad value for quadrature class");
+    FAILMSG("Bad value for quadrature class");
     return;
   }
 
   // Test moment comparison.
 
   if (Moment(1, 1) == Moment(0, 0)) {
-    ut.failure("moment comparison NOT correct");
+    FAILMSG("moment comparison NOT correct");
   }
   if (Moment(1, 1) == Moment(1, 0)) {
-    ut.failure("moment comparison NOT correct");
+    FAILMSG("moment comparison NOT correct");
   }
 
   // Test default moment initialization
 
   if (Moment(1, 1) == Moment()) {
-    ut.failure("moment comparison NOT correct");
+    FAILMSG("moment comparison NOT correct");
   }
 
   // Test ordinate comparison.
 
   if (Ordinate(0.4, 0.3, sqrt(1.0 - 0.4 * 0.4 - 0.3 * 0.3), 0.5) ==
       Ordinate(0.3, 0.4, sqrt(1.0 - 0.4 * 0.4 - 0.3 * 0.3), 0.5)) {
-    ut.failure("moment comparison NOT correct");
+    FAILMSG("moment comparison NOT correct");
   }
   if (!(Ordinate(0.4, 0.3, sqrt(1.0 - 0.4 * 0.4 - 0.3 * 0.3), 0.5) ==
         Ordinate(0.4, 0.3, sqrt(1.0 - 0.4 * 0.4 - 0.3 * 0.3), 0.5))) {
-    ut.failure("moment comparison NOT correct");
+    FAILMSG("moment comparison NOT correct");
   }
 
   // Test ordinate access.
 
-  if (Ordinate(1.0, 0.0, 0.0, 0.0).cosines()[0] != 1.0) {
-    ut.failure("Ordinate::cosines NOT right");
+  if (!rtt_dsxx::soft_equiv(Ordinate(1.0, 0.0, 0.0, 0.0).cosines()[0], 1.0)) {
+    FAILMSG("Ordinate::cosines NOT right");
   }
 
   // Test textifying and parsing.
@@ -548,12 +549,12 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
       parse_class<Quadrature>(tokens);
 
   if (tokens.error_count()) {
-    ut.failure("Textification and parse did NOT succeed");
+    FAILMSG("Textification and parse did NOT succeed");
   }
 
   string text2 = parsed_quadrature->as_text("\n");
   if (text2 != text) {
-    ut.failure("Textification and parse did NOT give identical results");
+    FAILMSG("Textification and parse did NOT give identical results");
   }
 
   // ***** Test various geometry, dimensionaly, and interpolation model options.
@@ -573,15 +574,15 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                                        Ordinate_Set::LEVEL_ORDERED);
 
     if (ordinate_set->ordinates().size() >= 2) {
-      ut.passes("Ordinate count is plausible");
+      PASSMSG("Ordinate count is plausible");
     } else {
-      ut.failure("Ordinate count is NOT plausible");
+      FAILMSG("Ordinate count is NOT plausible");
     }
 
     if (soft_equiv(ordinate_set->norm(), 1.0)) {
-      ut.passes("Ordinate norm is correct");
+      PASSMSG("Ordinate norm is correct");
     } else {
-      ut.failure("Ordinate norm is NOT correct");
+      FAILMSG("Ordinate norm is NOT correct");
     }
 
     ordinate_set->display();
@@ -637,15 +638,15 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                                        Ordinate_Set::LEVEL_ORDERED);
 
     if (ordinate_set->ordinates().size() >= 2) {
-      ut.passes("Ordinate count is plausible");
+      PASSMSG("Ordinate count is plausible");
     } else {
-      ut.failure("Ordinate count is NOT plausible");
+      FAILMSG("Ordinate count is NOT plausible");
     }
 
     if (soft_equiv(ordinate_set->norm(), 1.0)) {
-      ut.passes("Ordinate norm is correct");
+      PASSMSG("Ordinate norm is correct");
     } else {
-      ut.failure("Ordinate norm is NOT correct");
+      FAILMSG("Ordinate norm is NOT correct");
     }
 
     ordinate_set->display();

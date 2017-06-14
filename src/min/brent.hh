@@ -5,10 +5,7 @@
  * \date   Tue Aug 17 15:30:23 2004
  * \brief  Find minimum of a function.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef min_brent_hh
@@ -109,12 +106,13 @@ double brent(double const ax, double const bx, double const cx, Function f,
       } else {
         b = u;
       }
-      if (fu <= fw || w == x) {
+      if (fu <= fw || rtt_dsxx::soft_equiv(w,x)) {
         v = w;
         w = u;
         fv = fw;
         fw = fu;
-      } else if (fu <= fv || v == x || v == w) {
+      } else if (fu <= fv || rtt_dsxx::soft_equiv(v,x) ||
+                 rtt_dsxx::soft_equiv(v,w)) {
         v = u;
         fv = fu;
       }

@@ -10,6 +10,7 @@
 #include "ds++/Field_Traits.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -20,27 +21,27 @@ using namespace rtt_dsxx;
 
 void tstFT(UnitTest &ut) {
   if (Field_Traits<complex<double>>::zero() == 0.0)
-    ut.passes("complex zero good");
+    PASSMSG("complex zero good");
   else
-    ut.failure("complex zero NOT good");
+    FAILMSG("complex zero NOT good");
   if (Field_Traits<complex<double>>::one() == 1.0)
-    ut.passes("complex zero good");
+    PASSMSG("complex zero good");
   else
-    ut.failure("complex zero NOT good");
+    FAILMSG("complex zero NOT good");
   double const x = 3.7;
-  if (value(x) == 3.7)
-    ut.passes("complex zero good");
+  if (rtt_dsxx::soft_equiv(value(x),3.7))
+    PASSMSG("complex zero good");
   else
-    ut.failure("complex zero NOT good");
+    FAILMSG("complex zero NOT good");
 
-  if (Field_Traits<double const>::zero() == 0.0)
-    ut.passes("double zero good");
+  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::zero(),0.0))
+    PASSMSG("double zero good");
   else
-    ut.failure("double zero NOT good");
-  if (Field_Traits<double const>::one() == 1.0)
-    ut.passes("double zero good");
+    FAILMSG("double zero NOT good");
+  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::one(),1.0))
+    PASSMSG("double zero good");
   else
-    ut.failure("double zero NOT good");
+    FAILMSG("double zero NOT good");
   return;
 }
 
@@ -70,17 +71,17 @@ void tstvalue(UnitTest &ut) {
   double x = 3;
   double const cx = 4;
 
-  if (x == value(x) && cx == value(cx))
-    ut.passes("value strips double correctly");
+  if (rtt_dsxx::soft_equiv(x,value(x)) && rtt_dsxx::soft_equiv(cx,value(cx)))
+    PASSMSG("value strips double correctly");
   else
-    ut.failure("value does NOT strip double correctly");
+    FAILMSG("value does NOT strip double correctly");
 
   labeled s = {{1}, 2};
 
   if (value(s) == s)
-    ut.passes("value strips struct correctly");
+    PASSMSG("value strips struct correctly");
   else
-    ut.failure("value does NOT strip struct correctly");
+    FAILMSG("value does NOT strip struct correctly");
 
   return;
 }

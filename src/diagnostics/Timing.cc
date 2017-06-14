@@ -5,17 +5,12 @@
  * \date   Tue Dec 13 10:44:29 2005
  * \brief  Timing class member defininitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- *
- * 2010-11-29 This component was moved from clubimc/utils to
- * draco/diagnostics. 
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Timing.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_diagnostics {
 
@@ -25,9 +20,9 @@ namespace rtt_diagnostics {
 /*!
  * \brief Add to a specified timer.
  *
- * This functions adds value to the timer with name key.  The first time this
- * is called the value is added to zero.  The timers are all static, so
- * multiple calls to the same key will keep a running tally.  To reset, call
+ * This functions adds value to the timer with name key.  The first time this is
+ * called the value is added to zero.  The timers are all static, so multiple
+ * calls to the same key will keep a running tally.  To reset, call
  * reset_timer().
  *
  * Calling this function adds the timer with name key to the map of timers.
@@ -69,7 +64,7 @@ Timing_Diagnostics::Vec_Keys Timing_Diagnostics::timer_keys() {
  */
 void Timing_Diagnostics::reset_timer(const std::string &key) {
   timers[key] = 0.0;
-  Ensure(timers[key] == 0.0);
+  Ensure(rtt_dsxx::soft_equiv(timers[key], 0.0));
 }
 
 //---------------------------------------------------------------------------//
@@ -116,5 +111,5 @@ std::map<std::string, double> Timing_Diagnostics::timers;
 } // end namespace rtt_diagnostics
 
 //---------------------------------------------------------------------------//
-//                 end of Timing.cc
+// end of Timing.cc
 //---------------------------------------------------------------------------//

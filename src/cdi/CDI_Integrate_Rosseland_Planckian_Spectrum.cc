@@ -5,15 +5,13 @@
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: CDI.cc 7388 2015-01-22 16:02:07Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
 
 namespace rtt_cdi {
+
 //---------------------------------------------------------------------------//
 // Rosseland Spectrum Integrators
 //---------------------------------------------------------------------------//
@@ -53,7 +51,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double low, double high,
   Require(high >= low);
   Require(T >= 0.0);
 
-  if (T == 0.0) {
+  if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16)) {
     planck = 0.0;
     rosseland = 0.0;
     return;

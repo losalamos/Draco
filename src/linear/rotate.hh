@@ -5,25 +5,22 @@
  * \date   Tue Aug 10 12:37:43 2004
  * \brief  Perform a Jacobi rotation on a pair of matrices.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_rotate_hh
 #define linear_rotate_hh
 
 #include <cmath>
-
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 namespace rtt_linear {
 
 using std::sqrt;
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Perform a Jacobi rotation on a QR decomposition.
  *
  * Perform a Jacobi rotation on rows \f$i\f$ and \f$i+1\f$ of the orthonormal
@@ -47,7 +44,6 @@ using std::sqrt;
  * \post \c r.size()==n*n
  * \post \c qt.size()==n*n
  */
-
 template <class RandomContainer>
 void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
             unsigned i, double a, double b) {
@@ -59,7 +55,7 @@ void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
 
   double c, s; // cosine and sine of rotation
 
-  if (a == 0.0) {
+  if (rtt_dsxx::soft_equiv(a, 0.0, 1.0e-16)) {
     c = 0.0;
     s = (b > 0.0 ? 1.0 : -1.0);
   } else if (fabs(a) > fabs(b)) {

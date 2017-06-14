@@ -4,15 +4,13 @@
  * \author Thomas M. Evans
  * \date   Mon Jan 24 11:12:59 2000
  * \brief  Ensight_Translator test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2000-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
 #include "viz/Ensight_Translator.hh"
 
@@ -174,7 +172,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   vec_d dump_times = translator.get_dump_times();
   if (dump_times.size() != 1)
     ITFAILS;
-  if (dump_times[0] != .01)
+  if (!rtt_dsxx::soft_equiv(dump_times[0], 0.01))
     ITFAILS;
 
   // build another ensight translator; this should overwrite the existing

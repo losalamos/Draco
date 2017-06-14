@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Implementation of mrqmin
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2009-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef min_mrqmin_i_hh
@@ -19,7 +16,6 @@
 #include "ds++/DracoMath.hh"
 #include "ds++/dbc.hh"
 #include "linear/gaussj.hh"
-
 #include <cmath>
 #include <math.h>
 
@@ -28,9 +24,7 @@ namespace rtt_min {
 using namespace std;
 
 //---------------------------------------------------------------------------//
-/*! Helper function for mrqmin
- */
-
+//! Helper function for mrqmin
 template <class RandomContainer, class RandomBoolContainer>
 void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
             unsigned const mfit) {
@@ -54,8 +48,7 @@ void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
 }
 
 //---------------------------------------------------------------------------//
-/*! Helper function for mrqmin
- */
+//! Helper function for mrqmin
 
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
 void mrqcof(RandomContainer const &x, RandomContainer const &y,
@@ -109,7 +102,7 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Perform a nonlinear least squares fit of data to a model function.
  *
  * \arg \a RandomContainer A random access container
@@ -125,10 +118,10 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
  * </code>
  *
  * \param x Ordinates of the data points.
- * 
+ *
  * \param y Values of the data points.
- * 
- * \param sig Uncertainty of the data points. 
+ *
+ * \param sig Uncertainty of the data points.
  *
  * \param n Number of data points
  *
@@ -204,7 +197,7 @@ void mrqmin(RandomContainer const &x, RandomContainer const &y,
     }
     da[j] = oneda[j];
   }
-  if (alamda == 0.0) {
+  if (rtt_dsxx::soft_equiv(alamda, 0.0)) {
     covsrt(covar, ia, ma, mfit);
     covsrt(alpha, ia, ma, mfit);
     return;

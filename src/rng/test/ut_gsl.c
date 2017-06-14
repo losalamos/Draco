@@ -37,6 +37,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Random123/conventional/gsl_cbrng.h"
 #include <assert.h>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
+
 /* Exercise the GSL_CBRNG macro */
 
 GSL_CBRNG(cbrng, threefry4x64); /* creates gsl_rng_cbrng */
@@ -111,10 +116,14 @@ int main(int argc, char **argv){
 	printf("%d: %.4g\n", i, gsl_rng_uniform(r));
     }
 
-
     gsl_rng_free (rcopy);
     gsl_rng_free (r);
 
     printf("ut_gsl: OK\n");
     return 0;
 }
+
+#ifdef __GNUC__
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
