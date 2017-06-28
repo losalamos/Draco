@@ -160,7 +160,7 @@ public:
   Parse_Table const &parse_table() const { return parse_table_; }
 
   void check_completeness(Token_Stream &tokens) {
-    if (parsed_snips_and_snails == -1) {
+    if (rtt_dsxx::soft_equiv(parsed_snips_and_snails, -1.0, 1.0e-16)) {
       tokens.report_semantic_error("no snips and snails specified");
     }
   }
@@ -249,7 +249,7 @@ public:
   Parse_Table const &parse_table() const { return parse_table_; }
 
   void check_completeness(Token_Stream &tokens) {
-    if (parsed_sugar_and_spice == -1) {
+    if (rtt_dsxx::soft_equiv(parsed_sugar_and_spice, -1.0, 1.0e-16)) {
       tokens.report_semantic_error("no sugar and spice specified");
     }
   }

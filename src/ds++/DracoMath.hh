@@ -12,6 +12,7 @@
 #define rtt_dsxx_DracoMath_hh
 
 #include "Assert.hh"
+#include "Soft_Equivalence.hh"
 #include <algorithm>
 #include <cmath>
 #include <complex>
@@ -179,7 +180,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
   if (absa > absb) {
     return absa * std::sqrt(1.0 + square(absb / absa));
   } else {
-    if (absb == 0.0)
+    if ( rtt_dsxx::soft_equiv(absb,0.0, 1.0e-16 ) )
       return 0.0;
     else
       return absb * std::sqrt(1.0 + square(absa / absb));

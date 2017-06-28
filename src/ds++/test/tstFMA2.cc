@@ -10,6 +10,7 @@
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
 #define FP_ACCURATE_FMA 0
@@ -63,7 +64,7 @@ void test_fma2(rtt_dsxx::UnitTest &ut) {
 #endif
             << std::endl;
 
-  if (result == macro_fma_result)
+  if( rtt_dsxx::soft_equiv(result, macro_fma_result, 1.0e-16) )
     PASSMSG("With FP_ACCURATE_FMA=0, a*b+c == FMA(a,b,c).");
   else
     FAILMSG("With FP_ACCURATE_FMA=0, a*b+c != FMA(a,b,c).");
