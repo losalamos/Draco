@@ -60,8 +60,8 @@ namespace rtt_roots {
  *
  * \pre \c x.size()>0
  *
- * \bug KGB: STPMX is not a very useful tuning parameter.  In general,
- * the search parameters are not very well thought out for this procedure.
+ * \bug KGB: STPMX is not a very useful tuning parameter.  In general, the
+ *      search parameters are not very well thought out for this procedure.
  */
 template <class Field, class Function_N_to_N>
 void broydn(std::vector<Field> &x, const double /*STPMX*/,
@@ -150,8 +150,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
             scale = fs;
           }
         }
-        Check(scale);
-        //Check(abs(scale) > std::numeric_limits<double>::epsilon());
+        Check(fabs(scale) > std::numeric_limits<double>::epsilon());
         // Shouldn't happen, as a negligible change in x should already have
         // triggered a successful return.
         double const rscale = 1 / scale;
@@ -165,10 +164,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         qrupdt(r, qt, n, t, s);
         // Check singularity.
         for (unsigned i = 0; i < n; i++) {
-          //if (!rtt_dsxx::soft_equiv(r[i + n * i], 0.0,
-          //std::numeric_limits<double>::epsilon()))
-          if (!r[i + n * i])
-            throw range_error("broydn: singular Jacobian matrix");
+          if( fabs(r[i+n*i]) < std::numeric_limits<double>::epsilon())
+            throw range_error("broydn: singular Jacobian matrix (1)");
         }
       }
     }
@@ -386,8 +383,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         double scale = fabs(s[0]); // To avoid overflow
         for (unsigned i = 1; i < n; i++)
           scale = std::max(scale, fabs(s[i]));
-        Check(scale);
-        // Check(abs(scale) > std::numeric_limits<double>::epsilon());
+        Check(fabs(scale) > std::numeric_limits<double>::epsilon());
         // Shouldn't happen, as a negligible change in x should already have
         // triggered a successful return.
         double const rscale = 1 / scale;
@@ -402,10 +398,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         qrupdt(r, qt, n, t, s);
         // Check singularity.
         for (unsigned i = 0; i < n; i++) {
-          //if (!rtt_dsxx::soft_equiv(r[i + n * i], 0.0,
-          //std::numeric_limits<double>::epsilon()))
-          if (!r[i + n * i])
-            throw range_error("broydn: singular Jacobian matrix");
+          if( fabs(r[i+n*i]) < std::numeric_limits<double>::epsilon())
+            throw range_error("broydn: singular Jacobian matrix (2)");
         }
       }
     }
