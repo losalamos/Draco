@@ -122,7 +122,7 @@ double F_eta(double const eta, double const gamma) {
         dsi += dterm;
       }
       double const term = 0.75 * sqrt(PI) * e * fac * si / factorial(i);
-      if (fabs(term / sum) < std::numeric_limits<double>::epsilon())
+      if (fabs(term) < fabs(sum) * std::numeric_limits<double>::epsilon())
         break;
       double const dterm =
           0.75 * sqrt(PI) * fac * (de * si + e * dsi) / factorial(i);

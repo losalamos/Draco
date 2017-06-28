@@ -480,6 +480,9 @@ void tstutilities(UnitTest &ut) {
       PASSMSG("detected bad real correctly");
     }
   }
+#ifndef DRACO_DIAGNOSTICS_LEVEL_3
+  // Exclude this check if FPE trapping is enabled.  Attempting to convert this
+  // string to a double causes an overflow condition when strtod is called.
   {
     String_Token_Stream string("1.8e10000");
     parse_real(string);
@@ -488,6 +491,7 @@ void tstutilities(UnitTest &ut) {
     else
       PASSMSG("detected real overflow correctly");
   }
+#endif
   {
     String_Token_Stream string("-8");
     parse_positive_real(string);
