@@ -229,7 +229,10 @@ case $target in
   sn-fe*) startCI ${project} Debug na $pr ;;
 
   # Trinitite: Release
-  tt-fe*) startCI ${project} Release na $pr ;;
+  tt-fe*)
+    startCI ${project} Release na $pr
+    startCI ${project} Release knl $pr
+    ;;
 
   # Darwin: Disabled
   darwin-fe*)

@@ -15,7 +15,7 @@ project( compton_test CXX )
 
  set( test_sources
   ${PROJECT_SOURCE_DIR}/tCompton.cc )
- file( GLOB compton_data *.compton )
+ file( GLOB compton_data *.compton *.compton_nu_ratios )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -34,7 +34,8 @@ include_directories(
 add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS    "Lib_compton"
-  LABEL   "nomemcheck" )
+  LABEL   "nomemcheck"
+  MPI_PLUS_OMP )
 
 #------------------------------------------------------------------------------#
 # Copy data files

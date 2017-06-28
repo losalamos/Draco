@@ -24,6 +24,7 @@ namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 
 //! Send char data asynchronously.
+template C4_Req DLL_PUBLIC_c4 send_async<bool>(const bool *, int, int, int);
 template C4_Req DLL_PUBLIC_c4 send_async<char>(const char *, int, int, int);
 //! Send uchar data asynchronously.
 template C4_Req DLL_PUBLIC_c4 send_async<unsigned char>(const unsigned char *,
@@ -48,6 +49,7 @@ template C4_Req DLL_PUBLIC_c4 send_async<long long>(const long long *, int, int,
 template C4_Req DLL_PUBLIC_c4
 send_async<unsigned long long>(const unsigned long long *, int, int, int);
 
+template C4_Req DLL_PUBLIC_c4 receive_async<bool>(bool *, int, int, int);
 template C4_Req DLL_PUBLIC_c4 receive_async<char>(char *, int, int, int);
 template C4_Req DLL_PUBLIC_c4 receive_async<unsigned char>(unsigned char *, int,
                                                            int, int);
@@ -69,6 +71,8 @@ template C4_Req DLL_PUBLIC_c4 receive_async<long long>(long long *, int, int,
 template C4_Req DLL_PUBLIC_c4
 receive_async<unsigned long long>(unsigned long long *, int, int, int);
 
+template void DLL_PUBLIC_c4 send_async<bool>(C4_Req &, const bool *, int, int,
+                                             int);
 template void DLL_PUBLIC_c4 send_async<char>(C4_Req &, const char *, int, int,
                                              int);
 template void DLL_PUBLIC_c4 send_async<unsigned char>(C4_Req &,
@@ -101,6 +105,8 @@ template void DLL_PUBLIC_c4 send_async<long long>(C4_Req &, const long long *,
 template void DLL_PUBLIC_c4 send_async<unsigned long long>(
     C4_Req &, const unsigned long long *, int, int, int);
 
+template void DLL_PUBLIC_c4 send_is<bool>(C4_Req &, const bool *, int, int,
+                                          int);
 template void DLL_PUBLIC_c4 send_is<char>(C4_Req &, const char *, int, int,
                                           int);
 template void DLL_PUBLIC_c4 send_is<unsigned char>(C4_Req &,
@@ -131,6 +137,8 @@ template void DLL_PUBLIC_c4 send_is<long long>(C4_Req &, const long long *, int,
 template void DLL_PUBLIC_c4 send_is<unsigned long long>(
     C4_Req &, const unsigned long long *, int, int, int);
 
+template void DLL_PUBLIC_c4 receive_async<bool>(C4_Req &, bool *, int, int,
+                                                int);
 template void DLL_PUBLIC_c4 receive_async<char>(C4_Req &, char *, int, int,
                                                 int);
 template void DLL_PUBLIC_c4 receive_async<unsigned char>(C4_Req &,

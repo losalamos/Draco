@@ -39,6 +39,10 @@ template <class T> struct MPI_Traits {};
 // SPECIALIZATIONS OF MPI_Traits FOR DIFFERENT TYPES
 //---------------------------------------------------------------------------//
 
+template <> struct MPI_Traits<bool> {
+  static MPI_Datatype element_type() { return MPI_C_BOOL; }
+};
+
 template <> struct MPI_Traits<char> {
   static MPI_Datatype element_type() { return MPI_CHAR; }
 };

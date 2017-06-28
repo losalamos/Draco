@@ -18,7 +18,7 @@ esac
 # Draco Developer Environment
 #------------------------------------------------------------------------------#
 export DRACO_ENV_DIR=${HOME}/draco/environment
-if test -f ${DRACO_ENV_DIR}/bashrc/.bashrc; then
+if [[ -f ${DRACO_ENV_DIR}/bashrc/.bashrc ]]; then
   source ${DRACO_ENV_DIR}/bashrc/.bashrc
 fi
 
@@ -67,3 +67,7 @@ if test "$INTERACTIVE" = true; then
   # export BIBINPUTS=$mydir:$BIBINPUTS
 
 fi
+
+#------------------------------------------------------------------------------#
+# end ~/.bash_profile
+#------------------------------------------------------------------------------#

@@ -222,8 +222,8 @@ protected:
   std::ostream &out;
 
   /*! Save the state of DBC so that it is easily accessible from within a
-     * unit test.
-     */
+   * unit test.
+   */
   bool m_dbcRequire;
   bool m_dbcCheck;
   bool m_dbcEnsure;
@@ -240,7 +240,6 @@ protected:
 #define UT_CHECK(ut, m) ut.check(m, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
-//#define UT_PROLOG(foo) typedef ut foo
 #define UT_EPILOG(foo)                                                         \
   catch (rtt_dsxx::assertion & err) {                                          \
     std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \

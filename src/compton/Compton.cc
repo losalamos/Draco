@@ -30,7 +30,7 @@ namespace rtt_compton {
  * Compton data object, a smart pointer to which is then passed to (and held by)
  * the CSK_generator etemp_interp class.
  *
- * \param filehandle The name of the multigroup file to use for Compton scatters
+ * \param[in] filehandle The name of the Compton multigroup file
  */
 Compton::Compton(const std::string &filehandle) {
 
@@ -51,16 +51,31 @@ Compton::Compton(const std::string &filehandle) {
 /*!
  * \brief Constructor for an existing pointwise file and a multigroup structure.
  *
- * This calls CSK_generator methods to read the pointwise library and construct a
- * multigroup Compton data object, a smart pointer to which is then passed
+ * In the .hh file, we default the number of angular evals (n_xi) to zero
+ * This causes the CSK routines to use the full angular fidelity of the library
+ * if no n_xi argument is passed
+ *
+ * This calls CSK_generator methods to read the pointwise library and construct
+ * a multigroup Compton data object, a smart pointer to which is then passed
  * to (and held by) the CSK_generator etemp_interp class.
  *
- * \param filehandle The name of the pointwise lib to build MG data from
- * \param grp_bds    A vector containing the multigroup bounds (in keV)
- * \param n_xi       The number of angular points/Legendre moments desired
+ * \param[in] filehandle The name of the pointwise lib to build MG data from
+ * \param[in] grp_bds    A vector containing the multigroup bounds (in keV)
+ * \param[in] opac_type  The type of opacity to build. Valid options for CSK
+ *                       v0.2 are "jayenne" (for IMC-style opacities) or
+ *                       "capsaicin" (for Sn-style opacities). Any other string
+ *                       will cause CSK to throw an exception
+ * \param[in] wt_func    The frequency weighting function used to numerically
+ *                       integrate the opacities. Valid options for CSK v0.2 are
+ *                       "flat", "wien" or "planck." Any other string will cause
+ *                       CSK to throw an exception.
+ * \param[in] induced    Bool to toggle consideration of induced effects off/on
+ * \param[in] n_xi       The number of angular points/Legendre moments desired
  */
 Compton::Compton(const std::string &filehandle,
-                 const std::vector<double> &grp_bds, const size_t nxi) {
+                 const std::vector<double> &grp_bds,
+                 const std::string &opac_type, const std::string &wt_func,
+                 const bool induced, const size_t nxi) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
@@ -73,11 +88,13 @@ Compton::Compton(const std::string &filehandle,
             << std::endl;
 
   // make a group_data struct to pass to the lib builder:
-  // TODO: How do we actually want to handle the weighting function?
-  // Allow the user to pass it in? Make some intelligent decision at runtime?
   multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
-                                     multigroup::Weighting_function::PLANCK,
-                                     filehandle, nxi, grp_bds};
+                                     multigroup::string_to_opac_type(opac_type),
+                                     multigroup::string_to_wt_func(wt_func),
+                                     induced,
+                                     filehandle,
+                                     nxi,
+                                     grp_bds};
 
   // Construct a multigroup library builder:
   multigroup_lib_builder MG_builder(grp_data);
@@ -98,34 +115,47 @@ Compton::Compton(const std::string &filehandle,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Interpolated data to a given SCALED electron temperature (T / m_e)
+ * \brief Interpolate opacity data to a given SCALED electron temperature
+ * (T / m_e)
  *
- * This method interpolates MG Compton lib data to a given electron temperature.
- * It returns the interpolated values for ALL g, g', and angular points
- * in the specified multigroup structure.
+ * This method interpolates MG Compton opacity data to a given electron
+ * temperature. It returns the interpolated values for ALL g, g', and angular
+ * points in the specified multigroup structure.
  *
- * \param etemp The SCALED electron temperature ( temp / electron rest-mass )
- * \return      n_grp x n_grp x n_xi interpolated scattering kernel values
+ * \param[in] etemp The SCALED electron temperature (temp / electron rest-mass)
+ * \return   n_opac x n_grp x n_grp x n_xi interpolated opacity values
  */
-std::vector<std::vector<std::vector<double>>>
-Compton::interpolate(const double etemp) {
+std::vector<std::vector<std::vector<std::vector<double>>>>
+Compton::interpolate_csk(const double etemp) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_etemp(etemp);
+  return ei->interpolate_csk(etemp);
 }
 
-std::vector<std::vector<std::vector<double>>>
-Compton::interpolate(const double etemp) const {
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate nu_ratio data to a given SCALED electron temperature
+ * (T / m_e)
+ *
+ * This method interpolates MG Compton nu_ratio data to a given electron
+ * temperature. It returns the interpolated values for ALL g and g' points
+ * in the specified multigroup structure.
+ *
+ * \param[in] etemp The SCALED electron temperature (temp / electron rest-mass)
+ * \return    n_grp x n_grp interpolated nu_ratio values
+ */
+std::vector<std::vector<double>>
+Compton::interpolate_nu_ratio(const double etemp) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_etemp(etemp);
+  return ei->interpolate_nu_ratio(etemp);
 }
 }

@@ -648,11 +648,11 @@ macro( SetupVendorLibrariesUnix )
     PURPOSE "Required for running the fpe_trap tests."
     )
   if( PYTHONINTERP_FOUND )
-    if( ${PYTHON_VERSION_STRING} GREATER 2.9.9 )
-      message( FATAL_ERROR
-        "Looking for Python....found version"
-        "${PYTHON_VERSION_STRING}, but Draco requires version < 3.0." )
-    endif()
+    # if( ${PYTHON_VERSION_STRING} GREATER 3.9.9 )
+    #   message( FATAL_ERROR
+    #     "Looking for Python....found version"
+    #     "${PYTHON_VERSION_STRING}, but Draco requires version < 4.0." )
+    # endif()
     message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
   else()
     message( STATUS "Looking for Python....not found" )

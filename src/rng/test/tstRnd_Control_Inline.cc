@@ -4,10 +4,7 @@
  * \author Paul Henning
  * \brief  Rnd_Control test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -43,8 +40,8 @@ void test_control(UnitTest &ut) {
   if (control2.get_num() != 0)
     ITFAILS;
 
-  // Create a third controller with the same seed as controller1, but
-  // starting with a different stream number.
+  // Create a third controller with the same seed as controller1, but starting
+  // with a different stream number.
   uint64_t streamnum = 2000;
   Rnd_Control control3(seed1, streamnum);
 
@@ -56,11 +53,11 @@ void test_control(UnitTest &ut) {
     control2.initialize(rng2);
     control3.initialize(rng3);
 
-    // Both rng1 and rng2 should be on stream number i.  control1 and
-    // control2 should be on stream number i+1.  rng3 should be on stream
-    // number i+streamnum.  control3 should be on stream number
-    // i+streamnum+1.  Other controller state should not have changed.
-    // None of the generators should match each other.
+    // Both rng1 and rng2 should be on stream number i.  control1 and control2
+    // should be on stream number i+1.  rng3 should be on stream number
+    // i+streamnum.  control3 should be on stream number i+streamnum+1.  Other
+    // controller state should not have changed.  None of the generators should
+    // match each other.
     if (rng1.get_num() != i)
       ITFAILS;
     if (rng2.get_num() != i)
@@ -126,12 +123,15 @@ void test_control(UnitTest &ut) {
     ITFAILS;
 
   if (ut.numFails == 0)
-    ut.passes("test_control passed");
+    PASSMSG("test_control passed");
 }
 
 //---------------------------------------------------------------------------//
 void test_exceptions(UnitTest &ut) {
+// 1. Only test exceptions if DbC is enabled.
+// 2. However, do not run these tests if no-throw DbC is enabled (DBC & 8)
 #ifdef REQUIRE_ON
+#if !(DBC & 8)
   // Try to create a controller that allows 0 streams.
   bool caught = false;
   try {
@@ -143,8 +143,8 @@ void test_exceptions(UnitTest &ut) {
   if (!caught)
     ITFAILS;
 
-  // Try to create a controller with an initial stream number greater than
-  // its maximum number of streams.
+  // Try to create a controller with an initial stream number greater than its
+  // maximum number of streams.
   caught = false;
   try {
     Rnd_Control control(0, 1001, 1000);
@@ -169,8 +169,8 @@ void test_exceptions(UnitTest &ut) {
   if (!caught)
     ITFAILS;
 
-  // Set the stream number to std::numeric_limits<uint64_t>::max() - 1, then
-  // try to initialize two generators.  One should succeed.
+  // Set the stream number to std::numeric_limits<uint64_t>::max() - 1, then try
+  // to initialize two generators.  One should succeed.
   control.set_num(std::numeric_limits<uint64_t>::max() - 1);
   caught = false;
   uint64_t num_rngs = 0;
@@ -229,13 +229,13 @@ void test_exceptions(UnitTest &ut) {
   if (num_rngs != 10)
     ITFAILS;
 #endif
+#endif
 
   if (ut.numFails == 0)
-    ut.passes("test_exceptions passed");
+    PASSMSG("test_exceptions passed");
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

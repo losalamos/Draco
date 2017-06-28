@@ -58,25 +58,76 @@ case ${-} in
 
    # alias a2ps='a2ps --sides=duplex --medium=letter'
    alias btar='tar --use-compress-program /usr/bin/bzip2'
-   alias cd..='cd ..'
    alias cpuinfo='cat /proc/cpuinfo'
    alias df='df -h'
    alias dirs='dirs -v'
-   alias dmesg='dmesg -s 65536'
    alias du='du -h --max-depth=1 --exclude=.snapshot'
-   alias free='free -m'
-   alias hosts='cat /etc/hosts'
-   alias hpss='echo Try using psi instead of hpss'
-   alias ldmesg='dmesg -s 65536 | less'
    alias less='/usr/bin/less -r'
    alias mdstat='cat /proc/mdstat'
    alias meminfo='cat /proc/meminfo'
    alias mroe='more'
-   alias print='lp'
    nodename=`uname -n | sed -e 's/[.].*//g'`
    alias resettermtitle='echo -ne "\033]0;${nodename}\007"'
-   alias sdl='DISPLAY=127.0.0.1:0.0;echo The DISPLAY value is now: $DISPLAY'
    alias xload="xload -label `hostname | sed -e 's/[.].*//'`"
+
+   # Module related:
+   alias ma='module avail'
+   alias mls='module list'
+   alias mld='module load'
+
+   # Slurm related:
+   # See http://hpcfaq.lanl.gov/faqs/view/58
+   alias sqrun='squeue -o "%.7i %.8Q %.9P %.10u %.16a %.12j %.9B %.6C %.12L %S" -S "L" -t R'
+   alias sqpend='squeue -o "%.7i %.8Q %.10u %.12a %.9P %.10j %.6C %.12S %.12L %.r" -t PD'
+   alias pend='squeue -O "jobid:.7,prioritylong:.10,username:.10,account:.16,qos:.12,partition:.14,numnodes:.7,timelimit:.14,starttime:.22,reason:.20" -t PD'
+   alias sqother='squeue -o "%.7i %.10u %.12T %.6C %10l %R" -S "-T" -t S,CG,CD,CF,CA,F,TO,PR,NF'
+   alias sq='(echo RUNNING:;sqrun;echo "\nPENDING:";sqpend;echo "\nOther";sqother)'
+   alias sqall='squeue -o "%.7i %.10u %.8T %.6C %.12L %S" -S "-t,-L"'
+   alias showme='squeue -u ${USER} -o "%.7i %.10u %.8T %.6D %.6C %.12L %S" -S "-t,-L"'
+   # checkjob analogs
+   function chk() {
+     job=$1
+     if [ "$job" == "" ]; then
+       echo No JobID Specified
+     else
+       scontrol show job $job
+       #scontrol -d show job $job
+       #scontrol -dd show job $job
+     fi
+   }
+   # Show me all the possible qos and accounts
+   function suser () {
+     user=$1
+     if [ "$user" == "" ]; then
+       user=${USER}
+     fi
+     sacct -u $1 --format=JobID,Priority,JobName,Account,QOS,Partition,Start,Elapsed,State
+   }
+   function sshare_acct () {
+     acct=$1
+     if [ "$acct" == "" ]; then
+       echo No Account Specified
+     else
+       sshare -m -a -A $1
+     fi
+   }
+   function drmgroups () {
+     user=$1
+     if [ "$user" == "" ]; then
+       user=${USER}
+     fi
+     sshare -m -u $user | grep $user | cut -f3 -d" " | uniq | sed '/^\s*$/d' | paste -d, -s
+   }
+   function sreason () {
+     squeue -o "%.7i %.10u %.10T %r" -t PD,S,CG,CD,CF,CA,F,TO,PR,NF -j $1
+   }
+   function showuser () {
+     user=$1
+     if [ "$user" == "" ]; then
+       user=${USER}
+     fi
+     sacctmgr list assoc user=$user format=Cluster,Account,Partition,QOS%-40
+   }
 
    # Provide special ls commands if this is a color-xterm or compatible terminal.
    if test "${TERM}" != emacs &&
@@ -88,11 +139,6 @@ case ${-} in
      alias lt.='\ls --color -Flth .*'
      alias ls='\ls --color -F'
    fi
-
-   # Turquoise network
-   #alias mapache='ssh -t -X wtrw.lanl.gov ssh mp-fe1'
-   #alias tscp='scp $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
-   #alias trsync='rsync -avz -e ssh --protocol=20 $1 turq-fta1.lanl.gov:/scratch/$USERNAME/$1'
 
    ;; # end case 'interactive'
 

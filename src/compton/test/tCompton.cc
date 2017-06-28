@@ -81,9 +81,14 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // and check the result:
   const double test_etemp = 4.87227167e-04;
   std::vector<std::vector<std::vector<double>>> interp_data =
-      compton_test->interpolate(test_etemp);
+      compton_test->interpolate_csk(test_etemp)[0];
+  // get interpolated nu_ratios
+  std::vector<std::vector<double>> interp_nu_data =
+      compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
+  Ensure(interp_nu_data.size() == 1);
+  Ensure(interp_nu_data[0].size() == 1);
   Ensure(interp_data.size() == 1);
   Ensure(interp_data[0].size() == 1);
   Ensure(interp_data[0][0].size() == 4);
@@ -96,6 +101,17 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
     ITFAILS;
   if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  if (!soft_equiv(interp_nu_data[0][0], 1.5000000e+00))
+    ITFAILS;
+
+  const double test_etemp2 = 6.75507064e-04;
+  // get interpolated nu_ratio for a different
+  std::vector<std::vector<double>> interp_nu_data2 =
+      compton_test->interpolate_nu_ratio(test_etemp2);
+
+  if (!soft_equiv(interp_nu_data2[0][0], 2.0000000e+00))
     ITFAILS;
 
   // get the number of xi evals in the library (we know it should be 4)
@@ -170,10 +186,16 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   // try "interpolating" at one of the exact eval points in the test library,
   // and check the result:
   const double test_etemp = 4.87227167e-04;
+  // get interpolated csks
   std::vector<std::vector<std::vector<double>>> interp_data =
-      compton_test->interpolate(test_etemp);
+      compton_test->interpolate_csk(test_etemp)[0];
+  // get interpolated nu_ratios
+  std::vector<std::vector<double>> interp_nu_data =
+      compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
+  Ensure(interp_nu_data.size() == 1);
+  Ensure(interp_nu_data[0].size() == 1);
   Ensure(interp_data.size() == 1);
   Ensure(interp_data[0].size() == 1);
   Ensure(interp_data[0][0].size() == 4);
@@ -186,6 +208,17 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
     ITFAILS;
   if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  if (!soft_equiv(interp_nu_data[0][0], 1.5000000e+00))
+    ITFAILS;
+
+  const double test_etemp2 = 6.75507064e-04;
+  // get interpolated nu_ratio for a different
+  std::vector<std::vector<double>> interp_nu_data2 =
+      compton_test->interpolate_nu_ratio(test_etemp2);
+
+  if (!soft_equiv(interp_nu_data2[0][0], 2.0000000e+00))
     ITFAILS;
 
   // get the number of xi evals in the library (we know it should be 4)
@@ -226,6 +259,9 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   // make a small fake group structure to pass in:
   const std::vector<double> test_groups = {20.0, 30.0, 40.0, 50.0, 60.0};
+  const std::string opac_type = "jayenne";
+  const std::string wt_func = "planck";
+  const bool induced = false;
 
   // set the number of angular points to retrieve (legendre or otherwise)
   const size_t nxi = 3;
@@ -234,7 +270,8 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
     // (This call has some output of its own, so we print some newlines
     // around it)
     std::cout << "\n\n";
-    compton_test.reset(new rtt_compton::Compton(filename, test_groups, nxi));
+    compton_test.reset(new rtt_compton::Compton(
+        filename, test_groups, opac_type, wt_func, induced, nxi));
     std::cout << "\n\n";
   } catch (rtt_dsxx::assertion &asrt) {
     FAILMSG("Failed to construct a Compton object!");
@@ -252,7 +289,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   if (!soft_equiv(compton_test->get_min_etemp(), 0.0))
     FAILMSG("Min etemp read incorrectly!");
-  if (!soft_equiv(compton_test->get_max_etemp(), 1.0))
+  if (!soft_equiv(compton_test->get_max_etemp(), 0.0223607))
     FAILMSG("Max etemp read incorrectly!");
 
   if (ut.numFails == 0) {

@@ -39,6 +39,8 @@ template <class T> struct C4_Traits {};
 // SPECIALIZATION OF INTRINSIC ELEMENTAL TYPES
 //---------------------------------------------------------------------------//
 
+template <> struct C4_Traits<bool> { static const int tag = 430; };
+
 template <> struct C4_Traits<char> { static const int tag = 431; };
 
 template <> struct C4_Traits<unsigned char> { static const int tag = 432; };
@@ -70,6 +72,8 @@ template <> struct C4_Traits<long long> { static const int tag = 443; };
 //---------------------------------------------------------------------------//
 // SPECIALIZATION OF INTRINSIC POINTER TYPES
 //---------------------------------------------------------------------------//
+
+template <> struct C4_Traits<bool *> { static const int tag = 450; };
 
 template <> struct C4_Traits<char *> { static const int tag = 451; };
 

@@ -963,6 +963,16 @@
    ...
 }
 {
+   openmpi210/e0004p
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
    openmpi210/e0004
    Memcheck:Leak
    match-leak-kinds: definite
@@ -1002,9 +1012,29 @@
    ...
 }
 {
+   openmpi210/e0004d
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
    openmpi210/e0005
    Memcheck:Leak
    match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:progress_engine
+   fun:start_thread
+   ...
+}
+{
+   openmpi210/e0005a
+   Memcheck:Leak
+   match-leak-kinds: possible
    fun:realloc
    ...
    fun:progress_engine

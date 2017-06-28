@@ -23,6 +23,7 @@ namespace rtt_c4 {
 // EXPLICIT INSTANTIATIONS OF BLOCKING SEND/RECEIVE AND BROADCAST
 //---------------------------------------------------------------------------//
 
+template DLL_PUBLIC_c4 int send<bool>(const bool *, int, int, int);
 template DLL_PUBLIC_c4 int send<char>(const char *, int, int, int);
 template DLL_PUBLIC_c4 int send<unsigned char>(const unsigned char *, int, int,
                                                int);
@@ -46,6 +47,7 @@ template DLL_PUBLIC_c4 int send<long double>(const long double *, int, int,
 template DLL_PUBLIC_c4 int send_udt<double>(const double *, int, int,
                                             C4_Datatype &, int);
 
+template DLL_PUBLIC_c4 int receive<bool>(bool *, int, int, int);
 template DLL_PUBLIC_c4 int receive<char>(char *, int, int, int);
 template DLL_PUBLIC_c4 int receive<unsigned char>(unsigned char *, int, int,
                                                   int);
@@ -67,6 +69,7 @@ template DLL_PUBLIC_c4 int receive<long double>(long double *, int, int, int);
 template DLL_PUBLIC_c4 int receive_udt<double>(double *, int, int,
                                                C4_Datatype &, int);
 
+template DLL_PUBLIC_c4 int broadcast<bool>(bool *, int, int);
 template DLL_PUBLIC_c4 int broadcast<char>(char *, int, int);
 template DLL_PUBLIC_c4 int broadcast<unsigned char>(unsigned char *, int, int);
 template DLL_PUBLIC_c4 int broadcast<short>(short *, int, int);
@@ -83,6 +86,10 @@ template DLL_PUBLIC_c4 int broadcast<float>(float *, int, int);
 template DLL_PUBLIC_c4 int broadcast<double>(double *, int, int);
 template DLL_PUBLIC_c4 int broadcast<long double>(long double *, int, int);
 
+template DLL_PUBLIC_c4 int send_receive(bool *sendbuf, int sendcount,
+                                        int destination, bool *recvbuf,
+                                        int recvcount, int source, int sendtag,
+                                        int recvtag);
 template DLL_PUBLIC_c4 int send_receive(char *sendbuf, int sendcount,
                                         int destination, char *recvbuf,
                                         int recvcount, int source, int sendtag,

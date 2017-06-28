@@ -105,6 +105,10 @@ done
 # Optional: Use -C quad,flat to select KNL mode
 # sinfo -o "%45n %30b %65f" | cut -b 47-120 | sort | uniq -c
 case $extra_params in
+# '--gres=' - See KT's email 2017-05-30 from Paul Peltz; Hal Marshall wants a
+#             different solution (see email from same day).
+#knl) partition_options="-p knl -N 1 -t 8:00:00 --gres=craynetwork:0" ;;
+#*)   partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0" ;;
 knl) partition_options="-p knl -N 1 -t 8:00:00" ;;
 *)   partition_options="-N 1 -t 8:00:00" ;;
 esac
@@ -124,7 +128,7 @@ export REGRESSION_PHASE=t
 echo "Test from the login node..."
 echo " "
 logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log
-cmd="$MSUB -o ${logfile} -e ${logfile} ${partition_options} ${rscriptdir}/tt-regress.msub"
+cmd="$MSUB -o ${logfile} -J ${subproj:0:5}-${featurebranch} ${partition_options} ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # delete blank lines

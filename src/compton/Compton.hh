@@ -43,11 +43,8 @@ namespace rtt_compton {
  * Cmake searches for the CSK_generator library/include headers during the
  * configuration step. The script that does this is located at:
  *
- * /draco/config/findCompton.cmake
+ * /draco/config/findCOMPTON.cmake
  *
- * TODO: The CSK_generator libs can be built with or without openMP. We need to
- * decide which will be released (or if both will exist on a system), and ensure
- * draco links to the correct one based on the preproc macro OPENMP_FOUND.
  */
 
 /*!
@@ -69,39 +66,35 @@ public:
 
   //! Constructor to build a multigroup library from an existing pointwise file
   Compton(const std::string &file, const std::vector<double> &group_bounds,
-          const size_t n_xi);
+          const std::string &opac_type, const std::string &wt_func,
+          const bool induced, const size_t n_xi = 0);
 
-  //! Interpolation of all data to a certain electron temperature:
-  std::vector<std::vector<std::vector<double>>> interpolate(const double etemp);
-  std::vector<std::vector<std::vector<double>>>
-  interpolate(const double etemp) const;
+  //! Interpolation of all csk opacity data to a certain electron temperature:
+  std::vector<std::vector<std::vector<std::vector<double>>>>
+  interpolate_csk(const double etemp) const;
+
+  //! Interpolation of all nu_ratio data to an electron temperature:
+  std::vector<std::vector<double>>
+  interpolate_nu_ratio(const double etemp) const;
 
   //! Retrieve group structure for the given library:
-  std::vector<double> get_group_bounds() {
-    return ei->get_Cdata()->get_group_bds();
-  }
   std::vector<double> get_group_bounds() const {
     return ei->get_Cdata()->get_group_bds();
   }
 
   //! Retrieve min electron temperature for the given library:
-  double get_min_etemp() { return ei->get_min_etemp(); }
   double get_min_etemp() const { return ei->get_min_etemp(); }
 
   //! Retrieve max electron temperature for the given library:
-  double get_max_etemp() { return ei->get_max_etemp(); }
   double get_max_etemp() const { return ei->get_max_etemp(); }
 
   //! Retrieve number of groups in the given multigroup structure:
-  size_t get_num_groups() { return ei->get_Cdata()->get_n_grps(); }
   size_t get_num_groups() const { return ei->get_Cdata()->get_n_grps(); }
 
   //! Retrieve number of angular moments/evaluation points in the lib data:
-  size_t get_num_xi() { return ei->get_Cdata()->get_n_xi_pts(); }
   size_t get_num_xi() const { return ei->get_Cdata()->get_n_xi_pts(); }
 
   //! Retrieve electron temperature eval points (diagnostic use)
-  std::vector<double> get_etemp_pts() { return ei->get_etemp_pts(); }
   std::vector<double> get_etemp_pts() const { return ei->get_etemp_pts(); }
 };
 }
