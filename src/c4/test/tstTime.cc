@@ -214,10 +214,10 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   int const old_intervals = t.intervals();
   t.merge(t);
 
-  if (rtt_dsxx::soft_equiv(2*old_wall_time, t.sum_wall_clock()) &&
-      rtt_dsxx::soft_equiv(2*old_system_time, t.sum_system_cpu()) &&
-      rtt_dsxx::soft_equiv(2*old_user_time, t.sum_user_cpu()) &&
-      2*old_intervals == t.intervals())
+  if (rtt_dsxx::soft_equiv(2 * old_wall_time, t.sum_wall_clock()) &&
+      rtt_dsxx::soft_equiv(2 * old_system_time, t.sum_system_cpu()) &&
+      rtt_dsxx::soft_equiv(2 * old_user_time, t.sum_user_cpu()) &&
+      2 * old_intervals == t.intervals())
     PASSMSG("merge okay");
   else
     FAILMSG("merge NOT okay");

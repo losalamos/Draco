@@ -11,11 +11,11 @@
 #ifndef linear_qr_unpack_i_hh
 #define linear_qr_unpack_i_hh
 
-#include <algorithm>
-#include <sstream>
 #include "qr_unpack.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
+#include <algorithm>
+#include <sstream>
 
 namespace rtt_linear {
 //---------------------------------------------------------------------------//

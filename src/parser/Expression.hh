@@ -58,7 +58,7 @@ using std::ostream;
 //===========================================================================//
 
 class DLL_PUBLIC_parser Expression {
-  public:
+public:
   enum Precedence {
     COMMA_PRECEDENCE,
 
@@ -132,18 +132,17 @@ class DLL_PUBLIC_parser Expression {
 
   //! Parse an Expression from a Token_Stream.
   static std::shared_ptr<Expression>
-    parse(unsigned number_of_variables,
-          map<string, pair<unsigned, Unit>> const &variables, Token_Stream &);
+  parse(unsigned number_of_variables,
+        map<string, pair<unsigned, Unit>> const &variables, Token_Stream &);
 
   //! Parse an Expression with specified dimensions from a Token_Stream.
   static std::shared_ptr<Expression>
-    parse(unsigned number_of_variables,
-          map<string, pair<unsigned, Unit>> const &variables,
-          Unit const &expected_units, string const &expected_units_text,
-          Token_Stream &);
+  parse(unsigned number_of_variables,
+        map<string, pair<unsigned, Unit>> const &variables,
+        Unit const &expected_units, string const &expected_units_text,
+        Token_Stream &);
 
-  protected:
-
+protected:
   // IMPLEMENTATION
 
   /*!
@@ -152,7 +151,7 @@ class DLL_PUBLIC_parser Expression {
    * \param units Dimensions of the expression..
    */
   Expression(unsigned const number_of_variables, Unit const &units)
-    : number_of_variables_(number_of_variables), units_(units) {}
+      : number_of_variables_(number_of_variables), units_(units) {}
 
   //! allow child classes access to Expression::evaluate
   static double evaluate_def_(std::shared_ptr<Expression const> const &e,
@@ -161,8 +160,7 @@ class DLL_PUBLIC_parser Expression {
     return e->evaluate_(x);
   }
 
-  private:
-
+private:
   // IMPLEMENTATION
 
   //! virtual hook for operator().

@@ -8,8 +8,6 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <fstream>
-#include <iostream>
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -17,6 +15,8 @@
 #include "rng/Halton_Subrandom_Generator.hh"
 #include "rng/LC_Subrandom_Generator.hh"
 #include "rng/Sobol_Sequence.hh"
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;

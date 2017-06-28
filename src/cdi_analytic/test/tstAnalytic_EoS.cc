@@ -54,7 +54,7 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
     double Ui = 0.2 * T;
 
     // specific heats
-    if (!soft_equiv(analytic.getElectronHeatCapacity(T, rho),Cve))
+    if (!soft_equiv(analytic.getElectronHeatCapacity(T, rho), Cve))
       ITFAILS;
     if (!soft_equiv(analytic.getIonHeatCapacity(T, rho), Cvi))
       ITFAILS;

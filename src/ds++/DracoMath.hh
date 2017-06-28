@@ -180,7 +180,7 @@ template <typename Real> inline double pythag(Real a, Real b) {
   if (absa > absb) {
     return absa * std::sqrt(1.0 + square(absb / absa));
   } else {
-    if ( rtt_dsxx::soft_equiv(absb,0.0, 1.0e-16 ) )
+    if (rtt_dsxx::soft_equiv(absb, 0.0, 1.0e-16))
       return 0.0;
     else
       return absb * std::sqrt(1.0 + square(absa / absb));

@@ -63,7 +63,7 @@ bool qrdcmp(RandomContainer &a, unsigned n, RandomContainer &c,
     for (unsigned j = i + 1; j < n; j++)
       scale = std::max(scale, fabs(a[j + n * i]));
 
-    if (std::fabs(scale) < std::numeric_limits<double>::epsilon() ) {
+    if (std::fabs(scale) < std::numeric_limits<double>::epsilon()) {
 
       // ith column is already zeroed from ith element down; the matrix is
       // singular, and the Householder vector is also zero.

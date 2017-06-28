@@ -61,7 +61,7 @@ namespace rtt_parser {
 using namespace rtt_parser;
 //---------------------------------------------------------------------------//
 void write_c(Unit const &u, ostream &out) {
-  unsigned count = ! rtt_dsxx::soft_equiv(u.conv, 1.0);
+  unsigned count = !rtt_dsxx::soft_equiv(u.conv, 1.0);
   double p(0.0);
   if (!rtt_dsxx::soft_equiv(u.m, 0.0)) {
     count++;
@@ -103,7 +103,7 @@ void write_c(Unit const &u, ostream &out) {
   Require(count != 0); // should not come here if dimensionless
 
   if (count == 1) {
-    if (p < 0 && rtt_dsxx::soft_equiv(ceil(p),p)) {
+    if (p < 0 && rtt_dsxx::soft_equiv(ceil(p), p)) {
       out << '(';
     }
   }
@@ -146,7 +146,7 @@ void write_c(Unit const &u, ostream &out) {
     }
   }
   if (count == 1) {
-    if (p < 0 && rtt_dsxx::soft_equiv(ceil(p),p)) {
+    if (p < 0 && rtt_dsxx::soft_equiv(ceil(p), p)) {
       out << ')';
     }
   }

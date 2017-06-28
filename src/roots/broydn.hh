@@ -164,7 +164,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         qrupdt(r, qt, n, t, s);
         // Check singularity.
         for (unsigned i = 0; i < n; i++) {
-          if( fabs(r[i+n*i]) < std::numeric_limits<double>::epsilon())
+          if (fabs(r[i + n * i]) < std::numeric_limits<double>::epsilon())
             throw range_error("broydn: singular Jacobian matrix (1)");
         }
       }
@@ -398,7 +398,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         qrupdt(r, qt, n, t, s);
         // Check singularity.
         for (unsigned i = 0; i < n; i++) {
-          if( fabs(r[i+n*i]) < std::numeric_limits<double>::epsilon())
+          if (fabs(r[i + n * i]) < std::numeric_limits<double>::epsilon())
             throw range_error("broydn: singular Jacobian matrix (2)");
         }
       }

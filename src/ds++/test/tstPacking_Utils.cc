@@ -214,7 +214,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     u >> i >> d;
     if (i != 12)
       ITFAILS;
-    if( ! rtt_dsxx::soft_equiv(d,203.88) )
+    if (!rtt_dsxx::soft_equiv(d, 203.88))
       ITFAILS;
 
     if (u.get_ptr() != s2 + b2)
@@ -273,7 +273,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     if (u.get_ptr() != buffer + size)
       ITFAILS;
 
-    if ( ! rtt_dsxx::soft_equiv( x.begin(), x.end(), ref.begin(), ref.end() ) )
+    if (!rtt_dsxx::soft_equiv(x.begin(), x.end(), ref.begin(), ref.end()))
       ITFAILS;
 
     if (c[0] != 'c')
@@ -304,10 +304,10 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     u.extract(2, cc);
 
     for (size_t i = 0; i < 50; ++i)
-      if ( ! rtt_dsxx::soft_equiv(x[i], 0.0) )
+      if (!rtt_dsxx::soft_equiv(x[i], 0.0))
         ITFAILS;
     for (size_t i = 50; i < x.size(); ++i)
-      if ( ! rtt_dsxx::soft_equiv(x[i],ref[i]) )
+      if (!rtt_dsxx::soft_equiv(x[i], ref[i]))
         ITFAILS;
 
     if (cc[0] != 'a')
@@ -372,14 +372,14 @@ void packing_test_c90(rtt_dsxx::UnitTest &ut) {
 
     u.set_buffer(s1, &b1[0]);
     u >> d >> i;
-    if ( ! rtt_dsxx::soft_equiv(d,x) )
+    if (!rtt_dsxx::soft_equiv(d, x))
       ITFAILS;
     if (i != ix)
       ITFAILS;
 
     u.unpack(d);
     u.unpack(i64);
-    if ( ! rtt_dsxx::soft_equiv(d,y) )
+    if (!rtt_dsxx::soft_equiv(d, y))
       ITFAILS;
     if (i64 != iy)
       ITFAILS;
@@ -391,7 +391,7 @@ void packing_test_c90(rtt_dsxx::UnitTest &ut) {
     u >> i >> d;
     if (i != iz)
       ITFAILS;
-    if ( ! rtt_dsxx::soft_equiv(d,z) )
+    if (!rtt_dsxx::soft_equiv(d, z))
       ITFAILS;
 
     if (u.get_ptr() != s2 + &b2[0])

@@ -28,18 +28,17 @@ namespace rtt_sf {
  */
 template <typename T>
 unsigned int kronecker_delta(
-  T const test_value, T const offset,
-  typename std::enable_if<std::is_integral<T>::value >::type* = 0) {
+    T const test_value, T const offset,
+    typename std::enable_if<std::is_integral<T>::value>::type * = 0) {
   return (test_value == offset) ? 1 : 0;
 }
 
 template <typename T>
 unsigned int kronecker_delta(
-  T const test_value, T const offset,
-  typename std::enable_if<std::is_floating_point<T>::value >::type* = 0) {
+    T const test_value, T const offset,
+    typename std::enable_if<std::is_floating_point<T>::value>::type * = 0) {
   return rtt_dsxx::soft_equiv(test_value, offset, 1.0e-16) ? 1 : 0;
 }
-
 
 } // end namespace rtt_sf
 

@@ -106,13 +106,13 @@ double brent(double const ax, double const bx, double const cx, Function f,
       } else {
         b = u;
       }
-      if (fu <= fw || rtt_dsxx::soft_equiv(w,x)) {
+      if (fu <= fw || rtt_dsxx::soft_equiv(w, x)) {
         v = w;
         w = u;
         fv = fw;
         fw = fu;
-      } else if (fu <= fv || rtt_dsxx::soft_equiv(v,x) ||
-                 rtt_dsxx::soft_equiv(v,w)) {
+      } else if (fu <= fv || rtt_dsxx::soft_equiv(v, x) ||
+                 rtt_dsxx::soft_equiv(v, w)) {
         v = u;
         fv = fu;
       }

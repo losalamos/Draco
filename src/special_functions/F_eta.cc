@@ -11,9 +11,6 @@
  */
 //---------------------------------------------------------------------------//
 
-#include <cmath>
-#include <limits>
-#include <vector>
 #include "F_eta.hh"
 #include "Factorial.hh"
 #include "ds++/Assert.hh"
@@ -21,6 +18,9 @@
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
 #include "units/PhysicalConstants.hh"
+#include <cmath>
+#include <limits>
+#include <vector>
 
 namespace rtt_sf {
 using namespace std;
@@ -115,14 +115,14 @@ double F_eta(double const eta, double const gamma) {
         sign *= -1;
         double srt = pow((double)j, i + 1.5);
         double term = sign * ep / srt;
-        if( fabs(term/si) < std::numeric_limits<double>::epsilon() )
+        if (fabs(term / si) < std::numeric_limits<double>::epsilon())
           break;
         double dterm = sign * dep / srt;
         si += term;
         dsi += dterm;
       }
       double const term = 0.75 * sqrt(PI) * e * fac * si / factorial(i);
-      if( fabs(term/sum) < std::numeric_limits<double>::epsilon() )
+      if (fabs(term / sum) < std::numeric_limits<double>::epsilon())
         break;
       double const dterm =
           0.75 * sqrt(PI) * fac * (de * si + e * dsi) / factorial(i);

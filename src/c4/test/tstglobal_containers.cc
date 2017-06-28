@@ -63,7 +63,7 @@ void tstglobal_containers(UnitTest &ut) {
           local_map.count(number_of_processors + p) != 1) {
         FAILMSG("WRONG element in map");
       }
-      if (!rtt_dsxx::soft_equiv(local_map[p],static_cast<double>(p)) ||
+      if (!rtt_dsxx::soft_equiv(local_map[p], static_cast<double>(p)) ||
           !rtt_dsxx::soft_equiv(local_map[number_of_processors + p],
                                 static_cast<double>(2 * p))) {
         FAILMSG("WRONG element value in map");
@@ -108,8 +108,7 @@ int main(int argc, char *argv[]) {
     PASSMSG("Test inactive for scalar");
 #endif // C4_MPI
   } catch (exception &err) {
-    cout << "ERROR: While testing tstglobal_containers, " << err.what()
-         << endl;
+    cout << "ERROR: While testing tstglobal_containers, " << err.what() << endl;
     ut.numFails++;
   } catch (...) {
     cout << "ERROR: While testing tstglobal_containers, "

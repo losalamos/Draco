@@ -33,11 +33,11 @@ using namespace std;
 
 void dash_insert(ostream &str, bool &dash, double const value,
                  char const *const name) {
-  if (abs(value) > std::numeric_limits<double>::epsilon() ) {
+  if (abs(value) > std::numeric_limits<double>::epsilon()) {
     if (dash) {
       str << '-';
     }
-    if (! rtt_dsxx::soft_equiv(value, 1.0, 1.0e-16)) {
+    if (!rtt_dsxx::soft_equiv(value, 1.0, 1.0e-16)) {
       str << name << '^' << value;
     } else {
       str << name;

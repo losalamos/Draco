@@ -37,12 +37,13 @@ public:
 //----------------------------------------------------------------------------//
 // Use soft_equiv for floading-point types, but not for integral types.
 
-bool compare_vdf_field(double const & v1, double const & v2 ) {
-  return rtt_dsxx::soft_equiv(v1,v2);}
-bool compare_vdf_field(float const & v1, float const & v2 ) {
-  return rtt_dsxx::soft_equiv(v1,v2);}
-bool compare_vdf_field(int const & v1, int const & v2 ) {
-  return v1==v2;}
+bool compare_vdf_field(double const &v1, double const &v2) {
+  return rtt_dsxx::soft_equiv(v1, v2);
+}
+bool compare_vdf_field(float const &v1, float const &v2) {
+  return rtt_dsxx::soft_equiv(v1, v2);
+}
+bool compare_vdf_field(int const &v1, int const &v2) { return v1 == v2; }
 
 //---------------------------------------------------------------------------//
 // test vector traits specialization
@@ -66,7 +67,7 @@ template <typename VVF> void test_vector(rtt_dsxx::UnitTest &ut) {
     if (vdf.ncols(i) != field[i].size())
       ITFAILS;
     for (size_t j = 0; j < vdf.ncols(i); j++) {
-      if (!compare_vdf_field(vdf(i,j),field[i][j]))
+      if (!compare_vdf_field(vdf(i, j), field[i][j]))
         ITFAILS;
       // if (vdf(i, j) != static_cast<VVFet>(2 * i + 4 * j))
       if (!compare_vdf_field(vdf(i, j), static_cast<VVFet>(2 * i + 4 * j)))

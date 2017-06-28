@@ -12,18 +12,18 @@
  */
 //---------------------------------------------------------------------------//
 
-#include <cmath>
-#include <limits>
-#include <vector>
+#include "F_eta_inv.hh"
 #include "F12inv.hh"
 #include "F_eta.hh"
-#include "F_eta_inv.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
 #include "roots/zbrac.hh"
 #include "roots/zbrent.hh"
+#include <cmath>
+#include <limits>
+#include <vector>
 
 namespace rtt_sf {
 using namespace std;
@@ -70,7 +70,7 @@ double F_eta_inv(double const n, double const gamma) {
   Require(n >= 0);
   Require(gamma > 0);
 
-  if( fabs(n) < numeric_limits<double>::min() )
+  if (fabs(n) < numeric_limits<double>::min())
     return -numeric_limits<double>::max();
 
   const double TOL = 1.0e-5;

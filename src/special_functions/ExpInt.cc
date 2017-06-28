@@ -38,9 +38,10 @@ namespace rtt_sf {
 double En(unsigned const n, double const x) {
   using std::numeric_limits;
 
-  Insist(!(x < 0.0 ||
-           (rtt_dsxx::soft_equiv(x, 0.0, std::numeric_limits<double>::epsilon())
-            && (n == 0 || n == 1))), "bad arguments in En");
+  Insist(!(x < 0.0 || (rtt_dsxx::soft_equiv(
+                           x, 0.0, std::numeric_limits<double>::epsilon()) &&
+                       (n == 0 || n == 1))),
+         "bad arguments in En");
 
   const int MAXIT = 100;
   const double EULER = 0.577215664901533;

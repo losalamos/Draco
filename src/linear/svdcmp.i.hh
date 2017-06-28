@@ -11,10 +11,10 @@
 #ifndef linear_svdcmp_i_hh
 #define linear_svdcmp_i_hh
 
-#include <sstream>
-#include <vector>
 #include "svdcmp.hh"
 #include "ds++/DracoMath.hh"
+#include <sstream>
+#include <vector>
 
 namespace rtt_linear {
 //---------------------------------------------------------------------------//

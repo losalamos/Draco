@@ -84,9 +84,9 @@ private:
 //! Test ordinates for equality
 inline bool operator==(Ordinate const &a, Ordinate const &b) {
   return rtt_dsxx::soft_equiv(a.mu(), b.mu()) &&
-    rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
-    rtt_dsxx::soft_equiv(a.xi(), b.xi()) &&
-    rtt_dsxx::soft_equiv(a.wt(), b.wt());
+         rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
+         rtt_dsxx::soft_equiv(a.xi(), b.xi()) &&
+         rtt_dsxx::soft_equiv(a.wt(), b.wt());
 }
 
 } // end namespace rtt_quadrature

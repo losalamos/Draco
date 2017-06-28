@@ -92,8 +92,8 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
     for (unsigned a = 0; a < number_of_ordinates; a++) {
       double const mu = ordinates[a].mu();
       double const wt = ordinates[a].wt();
-      if (!rtt_dsxx::soft_equiv(wt, 0.0) || (rtt_dsxx::soft_equiv(wt,0.0) &&
-                                             mu > 0))
+      if (!rtt_dsxx::soft_equiv(wt, 0.0) ||
+          (rtt_dsxx::soft_equiv(wt, 0.0) && mu > 0))
       // Not a starting ordinate.  Use Morel's recurrence relations to determine
       // the next ordinate derivative coefficient.
       {
@@ -439,7 +439,7 @@ bool Ordinate_Space::check_class_invariants() const {
     unsigned levels = 0;
     for (unsigned a = 0; a < number_of_ordinates; ++a) {
       if ((rtt_dsxx::soft_equiv(ordinates[a].wt(), 0.0)) &&
-           (ordinates[a].mu() < 0.0)) {
+          (ordinates[a].mu() < 0.0)) {
         ++levels;
       }
     }

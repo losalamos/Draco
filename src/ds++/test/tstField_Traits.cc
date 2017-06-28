@@ -29,16 +29,16 @@ void tstFT(UnitTest &ut) {
   else
     FAILMSG("complex zero NOT good");
   double const x = 3.7;
-  if (rtt_dsxx::soft_equiv(value(x),3.7))
+  if (rtt_dsxx::soft_equiv(value(x), 3.7))
     PASSMSG("complex zero good");
   else
     FAILMSG("complex zero NOT good");
 
-  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::zero(),0.0))
+  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::zero(), 0.0))
     PASSMSG("double zero good");
   else
     FAILMSG("double zero NOT good");
-  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::one(),1.0))
+  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::one(), 1.0))
     PASSMSG("double zero good");
   else
     FAILMSG("double zero NOT good");
@@ -71,7 +71,7 @@ void tstvalue(UnitTest &ut) {
   double x = 3;
   double const cx = 4;
 
-  if (rtt_dsxx::soft_equiv(x,value(x)) && rtt_dsxx::soft_equiv(cx,value(cx)))
+  if (rtt_dsxx::soft_equiv(x, value(x)) && rtt_dsxx::soft_equiv(cx, value(cx)))
     PASSMSG("value strips double correctly");
   else
     FAILMSG("value does NOT strip double correctly");

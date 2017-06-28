@@ -12,11 +12,11 @@
 #ifndef ode_rkqs_i_hh
 #define ode_rkqs_i_hh
 
-#include <algorithm>
-#include <cmath>
 #include "Function_Traits.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <algorithm>
+#include <cmath>
 
 namespace rtt_ode {
 

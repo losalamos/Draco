@@ -10,13 +10,13 @@
 #ifndef linear_gaussj_i_hh
 #define linear_gaussj_i_hh
 
-#include <algorithm>
-#include <sstream>
-#include <vector>
 #include "gaussj.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 #include "ds++/Field_Traits.hh"
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 namespace rtt_linear {
 using std::fabs;

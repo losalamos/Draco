@@ -11,9 +11,9 @@
 #ifndef linear_rotate_hh
 #define linear_rotate_hh
 
-#include <cmath>
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <cmath>
 
 namespace rtt_linear {
 

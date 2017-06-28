@@ -435,7 +435,7 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
       for (int band = numBands - 1; band >= 0; band--) {
         collapsedOpacity += bandWidths[band] / multiBandOpacities[group][band];
       }
-      if (!rtt_dsxx::soft_equiv(collapsedOpacity,0.0))
+      if (!rtt_dsxx::soft_equiv(collapsedOpacity, 0.0))
         collapsedOpacity = 1 / collapsedOpacity;
     } else // arithmetic average for planckian
     {
@@ -582,8 +582,7 @@ void printData(SP_Goo spGandOpacity, double temperature, double density) {
     double currentRatio = 0.0;
 
     cout << "=== Group " << group + 1 << " has energy range ["
-         << groupBoundaries[group] << "," << groupBoundaries[group + 1]
-         << "]\n"
+         << groupBoundaries[group] << "," << groupBoundaries[group + 1] << "]\n"
          << "Group Band  Width        Opacity  Ratio to first\n";
 
     // print data for each band

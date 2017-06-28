@@ -147,7 +147,7 @@ void test_loop(rtt_dsxx::UnitTest &ut) {
       if (kk != k)
         ITFAILS;
       Insist(!broadcast(&foofoo, 1, 0), "MPI Error");
-      if (!rtt_dsxx::soft_equiv(foofoo,k + 0.5))
+      if (!rtt_dsxx::soft_equiv(foofoo, k + 0.5))
         ITFAILS;
     }
   }

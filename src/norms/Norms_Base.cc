@@ -37,9 +37,9 @@ void Norms_Base::reset() {
 //! Equality operator.
 bool Norms_Base::operator==(const Norms_Base &n) const {
   return rtt_dsxx::soft_equiv(d_sum_L1, n.d_sum_L1) &&
-    rtt_dsxx::soft_equiv(d_sum_L2, n.d_sum_L2) &&
-    rtt_dsxx::soft_equiv(d_Linf, n.d_Linf) &&
-    rtt_dsxx::soft_equiv(d_sum_weights, n.d_sum_weights);
+         rtt_dsxx::soft_equiv(d_sum_L2, n.d_sum_L2) &&
+         rtt_dsxx::soft_equiv(d_Linf, n.d_Linf) &&
+         rtt_dsxx::soft_equiv(d_sum_weights, n.d_sum_weights);
 }
 
 //---------------------------------------------------------------------------//

@@ -30,27 +30,27 @@ void test(rtt_dsxx::UnitTest &ut) {
   double const big = 1.0e200;
   double const tiny = 1.0e-200;
 
-  if (!rtt_dsxx::soft_equiv(safe_pos_divide(big, tiny),max))
+  if (!rtt_dsxx::soft_equiv(safe_pos_divide(big, tiny), max))
     ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_pos_divide(10.0, 5.0),2.0))
-    ITFAILS;
-
-  if (!rtt_dsxx::soft_equiv(safe_divide(big, tiny),max))
-    ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_divide(-big, tiny),-max))
-    ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_divide(-big, -tiny),max))
-    ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_divide(big, -tiny),-max))
+  if (!rtt_dsxx::soft_equiv(safe_pos_divide(10.0, 5.0), 2.0))
     ITFAILS;
 
-  if (!rtt_dsxx::soft_equiv(safe_divide(10.0, 5.0),2.0))
+  if (!rtt_dsxx::soft_equiv(safe_divide(big, tiny), max))
     ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_divide(-10.0, 5.0),-2.0))
+  if (!rtt_dsxx::soft_equiv(safe_divide(-big, tiny), -max))
     ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_divide(-10.0, -5.0),2.0))
+  if (!rtt_dsxx::soft_equiv(safe_divide(-big, -tiny), max))
     ITFAILS;
-  if (!rtt_dsxx::soft_equiv(safe_divide(10.0, -5.0),-2.0))
+  if (!rtt_dsxx::soft_equiv(safe_divide(big, -tiny), -max))
+    ITFAILS;
+
+  if (!rtt_dsxx::soft_equiv(safe_divide(10.0, 5.0), 2.0))
+    ITFAILS;
+  if (!rtt_dsxx::soft_equiv(safe_divide(-10.0, 5.0), -2.0))
+    ITFAILS;
+  if (!rtt_dsxx::soft_equiv(safe_divide(-10.0, -5.0), 2.0))
+    ITFAILS;
+  if (!rtt_dsxx::soft_equiv(safe_divide(10.0, -5.0), -2.0))
     ITFAILS;
 
   if (ut.numFails == 0)

@@ -59,7 +59,7 @@ void zbrac(Function func, Real &x1, Real &x2) {
   while ((f1 < 0 && f2 < 0) || (f1 > 0 && f2 > 0)) {
     if (af1 < af2) {
       Real x0 = x1 - scale * (x2 - x1);
-      if ( std::abs(x0-x1) < std::numeric_limits<Real>::epsilon() ) {
+      if (std::abs(x0 - x1) < std::numeric_limits<Real>::epsilon()) {
         throw std::domain_error("zbrac: "
                                 "could not find search interval");
       }
@@ -97,8 +97,8 @@ void zbrac(Function func, Real &x1, Real &x2) {
     } else {
       Real x0 = x1 - 0.5 * scale * (x2 - x1);
       Real x3 = x2 + scale * (x2 - x1);
-      if ( std::abs(x0-x1) < std::numeric_limits<Real>::epsilon() ||
-           std::abs(x2-x3) < std::numeric_limits<Real>::epsilon() ) {
+      if (std::abs(x0 - x1) < std::numeric_limits<Real>::epsilon() ||
+          std::abs(x2 - x3) < std::numeric_limits<Real>::epsilon()) {
         throw std::domain_error("zbrac: "
                                 "could not find search interval");
       }

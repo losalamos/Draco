@@ -15,7 +15,6 @@
 
 // namespace rtt_sf {
 
-
 // } // end namespace rtt_sf
 
 // #endif // sf_KroneckerDelta_i_hh

@@ -67,12 +67,12 @@ bool UnitSystem::validUnits() const {
  */
 bool operator==(UnitSystem const &op1, UnitSystem const &op2) {
   return rtt_dsxx::soft_equiv(op1.L(), op2.L()) &&
-    rtt_dsxx::soft_equiv(op1.M(), op2.M()) &&
-    rtt_dsxx::soft_equiv(op1.t(), op2.t()) &&
-    rtt_dsxx::soft_equiv(op1.T(), op2.T()) &&
-    rtt_dsxx::soft_equiv(op1.I(), op2.I()) &&
-    rtt_dsxx::soft_equiv(op1.A(), op2.A()) &&
-    rtt_dsxx::soft_equiv(op1.Q(), op2.Q());
+         rtt_dsxx::soft_equiv(op1.M(), op2.M()) &&
+         rtt_dsxx::soft_equiv(op1.t(), op2.t()) &&
+         rtt_dsxx::soft_equiv(op1.T(), op2.T()) &&
+         rtt_dsxx::soft_equiv(op1.I(), op2.I()) &&
+         rtt_dsxx::soft_equiv(op1.A(), op2.A()) &&
+         rtt_dsxx::soft_equiv(op1.Q(), op2.Q());
 }
 
 bool operator!=(UnitSystem const &op1, UnitSystem const &op2) {

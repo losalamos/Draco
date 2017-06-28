@@ -11,10 +11,10 @@
 #ifndef linear_svbksb_i_hh
 #define linear_svbksb_i_hh
 
-#include <vector>
 #include "svbksb.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <vector>
 
 namespace rtt_linear {
 //---------------------------------------------------------------------------//

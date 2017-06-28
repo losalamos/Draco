@@ -23,23 +23,19 @@ void tstKdelta(rtt_dsxx::UnitTest &ut) {
   if (kronecker_delta(0, 0) == 1)
     PASSMSG("Found kronecker_delta(0,0) == 1, kronecker_delta is working.");
   else
-    FAILMSG(
-        "Found kronecker_delta(0,0) != 1, kronecker_delta is not working.");
+    FAILMSG("Found kronecker_delta(0,0) != 1, kronecker_delta is not working.");
   if (kronecker_delta(0, 1) == 0)
     PASSMSG("Found kronecker_delta(0,1) == 0, kronecker_delta is working.");
   else
-    FAILMSG(
-        "Found kronecker_delta(0,1) != 0, kronecker_delta is not working.");
+    FAILMSG("Found kronecker_delta(0,1) != 0, kronecker_delta is not working.");
   if (kronecker_delta(1, 1) == 1)
     PASSMSG("Found kronecker_delta(1,1) == 1, kronecker_delta is working.");
   else
-    FAILMSG(
-        "Found kronecker_delta(1,1) != 1, kronecker_delta is not working.");
+    FAILMSG("Found kronecker_delta(1,1) != 1, kronecker_delta is not working.");
   if (kronecker_delta(1, 0) == 0)
     PASSMSG("Found kronecker_delta(1,0) == 0, kronecker_delta is working.");
   else
-    FAILMSG(
-        "Found kronecker_delta(1,0) != 0, kronecker_delta is not working.");
+    FAILMSG("Found kronecker_delta(1,0) != 0, kronecker_delta is not working.");
   if (kronecker_delta(-1, 0) == 0)
     PASSMSG("Found kronecker_delta(-1,0) == 0, kronecker_delta is working.");
   else
@@ -58,17 +54,17 @@ void tstKdelta(rtt_dsxx::UnitTest &ut) {
 
   if (kronecker_delta(uOne, uZero) == uZero)
     PASSMSG("Found kronecker_delta<unsigned>(uOne,uZero) == uZero, "
-              "kronecker_delta is working.");
+            "kronecker_delta is working.");
   else
     FAILMSG("Found kronecker_delta<unsigned>(uOne,uZero) != uZero, "
-               "kronecker_delta is not working.");
+            "kronecker_delta is not working.");
 
   if (kronecker_delta(lOne, lZero) == lZero)
     PASSMSG("Found kronecker_delta<long>(uOne,uZero) == uZero, "
-              "kronecker_delta is working.");
+            "kronecker_delta is working.");
   else
     FAILMSG("Found kronecker_delta<long>(uOne,uZero) != uZero, "
-               "kronecker_delta is not working.");
+            "kronecker_delta is not working.");
 
   return;
 }
@@ -116,12 +112,11 @@ void tstFactorial(rtt_dsxx::UnitTest &ut) {
         "Found factorial<unsigned>(1) == unsigned(1), factorial is working.");
   else
     FAILMSG("Found factorial<unsigned>(1) != unsigned(1), factorial is not "
-               "working.");
+            "working.");
   if (factorial(lOne) == lOne)
     PASSMSG("Found factorial<long>(1) == long(1), factorial is working.");
   else
-    FAILMSG(
-        "Found factorial<long>(1) != long(1), factorial is not working.");
+    FAILMSG("Found factorial<long>(1) != long(1), factorial is not working.");
   return;
 }
 

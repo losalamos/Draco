@@ -42,8 +42,9 @@ public:
 
 private:
   virtual double evaluate_(double const *const x) const {
-    double const eps( std::numeric_limits<double>::epsilon() );
-    return (abs(evaluate_def_(e1_, x))>eps) && (abs(evaluate_def_(e2_, x))>eps);
+    double const eps(std::numeric_limits<double>::epsilon());
+    return (abs(evaluate_def_(e1_, x)) > eps) &&
+           (abs(evaluate_def_(e2_, x)) > eps);
   }
 
   virtual bool is_constant_(unsigned const i) const {
@@ -114,8 +115,7 @@ private:
 class Difference_Expression : public Expression {
 public:
   Difference_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), e1->units()),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), e1->units()), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(is_compatible(e1->units(), e2->units()));
@@ -206,8 +206,7 @@ private:
 class Greater_Expression : public Expression {
 public:
   Greater_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(is_compatible(e1->units(), e2->units()));
@@ -254,8 +253,7 @@ private:
 class GE_Expression : public Expression {
 public:
   GE_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(is_compatible(e1->units(), e2->units()));
@@ -302,8 +300,7 @@ private:
 class Less_Expression : public Expression {
 public:
   Less_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(is_compatible(e1->units(), e2->units()));
@@ -350,8 +347,7 @@ private:
 class LE_Expression : public Expression {
 public:
   LE_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(is_compatible(e1->units(), e2->units()));
@@ -497,7 +493,7 @@ public:
 
 private:
   virtual double evaluate_(double const *const x) const {
-    double const eps( std::numeric_limits<double>::epsilon() );
+    double const eps(std::numeric_limits<double>::epsilon());
     return abs(evaluate_def_(expression_, x)) < eps;
   }
 
@@ -524,8 +520,7 @@ private:
 class Or_Expression : public Expression {
 public:
   Or_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(e1->number_of_variables() == e2->number_of_variables());
@@ -543,9 +538,9 @@ public:
 
 private:
   virtual double evaluate_(double const *const x) const {
-    double const eps( std::numeric_limits<double>::epsilon() );
+    double const eps(std::numeric_limits<double>::epsilon());
     return (abs(evaluate_def_(e1_, x)) > eps) ||
-      (abs(evaluate_def_(e2_, x)) > eps);
+           (abs(evaluate_def_(e2_, x)) > eps);
   }
 
   virtual bool is_constant_(unsigned const i) const {
@@ -760,8 +755,7 @@ private:
 class Sum_Expression : public Expression {
 public:
   Sum_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), e1->units()),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), e1->units()), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(is_compatible(e1->units(), e2->units()));
@@ -808,8 +802,7 @@ class Variable_Expression : public Expression {
 public:
   Variable_Expression(unsigned const index, unsigned const number_of_variables,
                       Unit const &units)
-      : Expression(number_of_variables, units),
-        index_(index) {
+      : Expression(number_of_variables, units), index_(index) {
     Require(index < number_of_variables);
 
     Ensure(check_class_invariant());
