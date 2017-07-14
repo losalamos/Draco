@@ -20,7 +20,7 @@
 ## machineName   - return a string to represent the current machine.
 ## osName        - return a string to represent the current machine's OS.
 ## flavor        - build a string that looks like fire-openmpi-2.0.2-intel-17.0.1
-## selectscratch - find a scratch drive
+## selectscratchdir - find a scratch drive
 ## lookupppn     - return PE's per node.
 ## npes_build    - return PE's to be used for compiling.
 ## npes_test     - return PE's to be used for testing.
@@ -28,6 +28,8 @@
 ## publish_release - helper for doing releases (see release_toss2.sh)
 ## allow_file_to_age - pause a program until a file is 'old'
 
+##---------------------------------------------------------------------------##
+## Helpful functions
 ##---------------------------------------------------------------------------##
 
 # Print an error message and exit.
@@ -218,6 +220,10 @@ function selectscratchdir
     scratchdirs=`df --output=pcent,target | grep scratch | sort -g`
   else
     scratchdirs=`df -a 2> /dev/null | grep net/scratch | awk '{ print $4 " "$5 }' | sort -g`
+    if ! [[ $scratchdirs ]]; then
+      scratchdirs=`df -a 2> /dev/null | grep lustre/scratch | awk '{ print $4 " "$5 }' | sort -g`
+
+    fi
   fi
   local odd=1
   for item in $scratchdirs; do
@@ -289,20 +295,32 @@ function npes_build
 function npes_test
 {
   local np=1
-  if [[ ${PBS_NP} ]]; then
-    np=${PBS_NP}
-  elif [[ ${SLURM_NPROCS} ]]; then
-    np=${SLURM_NPROCS}
-  elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
-    np=${SLURM_CPUS_ON_NODE}
-  elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-    np=${SLURM_TSKS_PER_NODE}
-  elif [[ `uname -p` == "ppc" ]]; then
-    # sinfo --long --partition=pdebug (show limits)
-    np=64
-  elif [[ -f /proc/cpuinfo ]]; then
-    # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
-    np=`cat /proc/cpuinfo | grep -c processor`
+  # use lscpu if it is available.
+  if ! [[ `which lscpu 2>/dev/null` == 0 ]]; then
+    # number of cores per socket
+    local cps=`lscpu | grep "^Core(s)" | awk '{ print $4 }'`
+    # number of sockets
+    local ns=`lscpu | grep "^Socket(s):" | awk '{ print $2 }'`
+    np=`expr $cps \* $ns`
+
+  else
+
+    if [[ ${PBS_NP} ]]; then
+      np=${PBS_NP}
+    elif [[ ${SLURM_NPROCS} ]]; then
+      np=${SLURM_NPROCS}
+    elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
+      np=${SLURM_CPUS_ON_NODE}
+    elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
+      np=${SLURM_TSKS_PER_NODE}
+    elif [[ `uname -p` == "ppc" ]]; then
+      # sinfo --long --partition=pdebug (show limits)
+      np=64
+    elif [[ -f /proc/cpuinfo ]]; then
+      # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
+      np=`cat /proc/cpuinfo | grep -c processor`
+    fi
+
   fi
   echo $np
 }
@@ -356,10 +374,10 @@ function install_versions
     echo "E.g.: install_prefix=/usr/projects/draco/$pdir/$buildflavor"
     return
   fi
-  if test -z ${build_pe}; then
+  if ! [[ ${build_pe} ]]; then
     build_pe=`npes_build`
   fi
-  if test -z ${test_pe}; then
+  if ! [[ ${test_pe} ]]; then
     test_pe=`npes_test`
   fi
 
@@ -450,7 +468,7 @@ function publish_release()
   establish_permissions
 
   case `osName` in
-    toss* | cle* ) SHOWQ=showq ;;
+    toss* | cle* ) SHOWQ=squeue ;;
     darwin| ppc64) SHOWQ=squeue ;;
   esac
 

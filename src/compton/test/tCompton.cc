@@ -1,19 +1,17 @@
-//----------------------------------*-C++-*----------------------------------//
+//-----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   compton/test/tCompton.cc
  * \author Kendra Keady
  * \date   2017 Feb 10
  * \brief  Implementation file for tCompton
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "compton/Compton.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -22,22 +20,20 @@ namespace rtt_compton_test {
 
 using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //!  Tests the Compton constructor and a couple of access routines.
 void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << "   Test Draco code calling CSK_generator routines" << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << "   Test Draco code calling CSK_generator routines\n"
+            << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
-  const std::string filename = "mg_ascii.compton";
+  const std::string filename = ut.getTestSourcePath() + "mg_ascii.compton";
   std::cout << "Attempting to construct a Compton object...\n" << std::endl;
   std::shared_ptr<rtt_compton::Compton> compton_test;
 
@@ -131,18 +127,16 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+//----------------------------------------------------------------------------//
 void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << " Test Draco code calling CSK_generator routines -- const "
-            << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << " Test Draco code calling CSK_generator routines -- const \n"
+            << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
-  const std::string filename = "mg_ascii.compton";
+  const std::string filename = ut.getTestSourcePath() + "mg_ascii.compton";
   std::cout << "Attempting to construct a const Compton object...\n"
             << std::endl;
   std::shared_ptr<const rtt_compton::Compton> compton_test;
@@ -239,19 +233,18 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+//----------------------------------------------------------------------------//
 //!  Tests the Compton mg build capability
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << "Test Draco call to CSK_generator mg opacity builder"
-            << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << "Test Draco call to CSK_generator mg opacity builder\n"
+            << "---------------------------------------------------------\n";
 
   // open a small pointwise opacity file:
-  const std::string filename = "lagrange_csk_ascii.compton";
+  const std::string filename =
+      ut.getTestSourcePath() + "lagrange_csk_ascii.compton";
   std::cout << "Attempting to construct a Compton object..." << std::endl;
 
   // make an uninitialized pointer...
@@ -267,8 +260,8 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   const size_t nxi = 3;
 
   try {
-    // (This call has some output of its own, so we print some newlines
-    // around it)
+    // (This call has some output of its own, so we print some newlines around
+    // it)
     std::cout << "\n\n";
     compton_test.reset(new rtt_compton::Compton(
         filename, test_groups, opac_type, wt_func, induced, nxi));
@@ -304,15 +297,14 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+//----------------------------------------------------------------------------//
 //!  Tests Compton's error-handling on a non-existent file.
 void compton_fail_test(rtt_dsxx::UnitTest &ut) {
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << "    Test Compton bad file handling    " << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << "    Test Compton bad file handling    \n"
+            << "---------------------------------------------------------\n";
   // open a small mg opacity file:
-  std::string filename = "non_existent.compton";
+  std::string filename = ut.getTestSourcePath() + "non_existent.compton";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
   std::shared_ptr<rtt_compton::Compton> compton_test;
 
@@ -340,7 +332,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
 }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -352,3 +344,7 @@ int main(int argc, char *argv[]) {
   }
   UT_EPILOG(ut);
 }
+
+//----------------------------------------------------------------------------//
+// End of test/tCompton.cc
+//----------------------------------------------------------------------------//

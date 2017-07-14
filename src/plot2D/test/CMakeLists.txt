@@ -40,9 +40,9 @@ if ( NOT ${NUMDIFF} MATCHES NOTFOUND )
       SOURCES "${test_sources}"
       DEPS    "${test_deps}" )
    ##------------------------------------------------------------------------##
-   ## This test doesn't behave correctly under valgrind (the pause
-   ## doesn't work and that causes everything else to fail).
-   ##------------------------------------------------------------------------##
+   ## This test doesn't behave correctly under valgrind (the pause doesn't work
+   ## and that causes everything else to fail).
+   ## ------------------------------------------------------------------------##
    set_tests_properties( plot2D_tstPlot2D
       PROPERTIES LABELS "nomemcheck" )
 endif()

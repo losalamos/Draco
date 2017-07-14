@@ -3,10 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for plot2D.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( plot2D CXX )
@@ -16,7 +14,7 @@ project( plot2D CXX )
 # ---------------------------------------------------------------------------- #
 
 # Create config.h
-if( GRACE_FOUND )
+if( Grace_FOUND )
    set( GRACE_H ${Grace_INCLUDE_DIR}/grace_np.h )
 endif()
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/plot2D/config.h )
@@ -38,7 +36,7 @@ endif()
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
 
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}   # sources
    ${PROJECT_BINARY_DIR}   # config.h
    ${draco_src_dir_SOURCE_DIR} # ds++ header files
@@ -49,11 +47,11 @@ include_directories(
 # Build package library
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_plot2D
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME plot2D
-   SOURCES      "${sources}" 
+   SOURCES      "${sources}"
    )
 
 # ---------------------------------------------------------------------------- #
@@ -69,7 +67,7 @@ install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/plot2D )
 
 if( BUILD_TESTING )
    add_subdirectory( test )
-endif()   
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Autodoc

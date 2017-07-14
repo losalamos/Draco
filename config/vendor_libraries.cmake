@@ -74,7 +74,7 @@ macro( setupLAPACKLibrariesUnix )
   # to find MKL on the local system.
 
   if( NOT lapack_FOUND )
-    if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
+    if( DEFINED ENV{MKLROOT} )
       message( STATUS "Looking for lapack (MKL)...")
       # CMake uses the 'Intel10_64lp' enum to indicate MKL. For details see the
       # cmake documentation for FindBLAS.
@@ -100,8 +100,8 @@ macro( setupLAPACKLibrariesUnix )
       endif()
 
       if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?")
-        set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?")
+        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
+        set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
         set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
         set( lapack_flavor "mkl")
         add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
@@ -625,13 +625,19 @@ macro( SetupVendorLibrariesUnix )
     message( STATUS "Looking for Random123.not found")
   endif()
 
-  # GRACE ------------------------------------------------------------------
+  # Grace ------------------------------------------------------------------
+  message( STATUS "Looking for Grace...")
   find_package( Grace QUIET )
   set_package_properties( Grace PROPERTIES
     DESCRIPTION "A WYSIWYG 2D plotting tool."
     TYPE OPTIONAL
     PURPOSE "Required for building the plot2D component."
     )
+  if( Grace_FOUND )
+    message( STATUS "Looking for Grace.....found ${Grace_EXECUTABLE}")
+  else()
+    message( STATUS "Looking for Grace.....not found")
+  endif()
 
   # CUDA ------------------------------------------------------------------
   setupCudaEnv()

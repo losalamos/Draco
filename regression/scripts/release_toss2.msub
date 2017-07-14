@@ -1,8 +1,8 @@
 #!/bin/bash -l
 
 # called from release_toss2.sh with the following command:
-#run "msub -V -l walltime=04:00:00 -l nodes=1:ppn=${test_pes} -j oe \
-#-o $source_prefix/logs/release_$flavor.log $script_dir/release_toss2.msub"
+#run "sbatch -v [--qos=dev] -t 4:00:00 -N  \
+#-o $source_prefix/logs/release_$flavor.log $script_dir/release_toss3.msub"
 
 source $draco_script_dir/common.sh
 export buildflavor=`flavor`
@@ -24,13 +24,15 @@ if test $verbose == 1; then
   echo "make command = make -j $build_pe -l $build_pe"
   echo "test command = ctest -j $test_pe"
   echo "steps        = ${steps}"
-  # echo "queue        = $access_queue"
+  echo "queue        = $access_queue"
   echo
   echo
 fi
 
 # dry_run=1
 install_versions
+
+echo -e "\nAll done with release_toss.msub\n"
 
 ##---------------------------------------------------------------------------##
 ## End

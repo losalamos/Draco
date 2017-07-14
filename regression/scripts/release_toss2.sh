@@ -18,8 +18,7 @@
 ## 1. Set modulefiles to be loaded in named environment functions.
 ## 2. Update variables that control the build:
 ##    - $ddir
-##    - $CONFIG_BASE
-## 3. Run this script: ./release_ml &> ../logs/relase_moonlight.log
+## 3. Run this script: ./release_toss2.sh &> ../logs/relase_moonlight.log
 
 #----------------------------------------------------------------------#
 # Per release settings go here (edits go here)
@@ -27,7 +26,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_21_0
+ddir=draco-6_22_0
 pdir=$ddir
 
 # environment (use draco modules)
@@ -63,12 +62,11 @@ function gcc610env()
 ##---------------------------------------------------------------------------##
 ## Generic setup (do not edit)
 ##---------------------------------------------------------------------------##
-sdir=`dirname $0`
-cdir=`pwd`
-cd $sdir
+initial_working_dir=`pwd`
+cd $`dirname $0`
 export script_dir=`pwd`
 export draco_script_dir=$script_dir
-cd $cdir
+cd $initial_working_dir
 source $draco_script_dir/common.sh
 
 # CMake options that will be included in the configuration step
@@ -81,14 +79,28 @@ establish_permissions
 export source_prefix="/usr/projects/$package/$pdir"
 (cd /usr/projects/$package; rm latest; ln -s $pdir latest)
 scratchdir=`selectscratchdir`
-ppn=`showstats -n | tail -n 1 | awk '{print $3}'`
+
+# ppn=`showstats -n | tail -n 1 | awk '{print $3}'`
 #build_pe=`npes_build`
 #test_pe=`npes_test`
 
-avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
+# SLURM
+avail_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\|.*access.*\)|.*/\1/' | sed -e 's/|.*//'`
+
 case $avail_queues in
-  *access*) access_queue="-A access" ;;
+  *access*) access_queue="-A access --qos=access" ;;
+  *dev*) access_queue="--qos=dev" ;;
 esac
+
+# Make sure there is enough tmp space for the compiler's temporary files.
+export TMPDIR=/$scratchdir/$USER/tmp
+if ! test -d $TMPDIR; then
+  mkdir -p $TMPDIR
+fi
+if ! test -d $TMPDIR; then
+  echo "Could not create TMPDIR=$TMPDIR."
+  exit 1
+fi
 
 # =============================================================================
 # Build types:
@@ -163,8 +175,9 @@ for env in $environments; do
 
     # export dry_run=1
     export steps="config build test"
-    cmd="msub -V $access_queue -l walltime=01:00:00 -l nodes=1:ppn=${ppn} -j oe \
--o $source_prefix/logs/release-$buildflavor-$version.log $script_dir/release_toss2.msub"
+    cmd="sbatch -J release_draco $access_queue -t 1:00:00 -N 1 \
+-o $source_prefix/logs/release-$buildflavor-$version.log \
+$script_dir/release_toss2.msub"
     echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
     jobid=`eval ${cmd} &`

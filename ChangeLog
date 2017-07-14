@@ -1,6 +1,204 @@
+2017-07-03  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* "Release draco-6_22_0":https://rtt.lanl.gov/redmine/versions/52.
+	  This is a minor Draco release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - "Jayenne-7_14_0":https://rtt.lanl.gov/redmine/versions/54
+	  - "Capsaicin-4_11_0":https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/LU           Intel 17.0.1    OpenMPI-1.10.5
+	  SN/FI/IC           Intel 17.0.1    OpenMPI-1.10.5
+	  TT/TR              Intel 17.0.1    Cray_MPICH2-7.5.2
+
+	* Summary of changes:
+	- 141 files changed, added or removed in 88 commits.
+	- Begin using Lmod heirarchical modulefiles on ccs-net machines.
+	- Switch to slurm on all LANL HPC machines (Redmine #903, PR #203).
+	- Added MPI operations for Bool variables (PR #240)
+	- Enable builds with Python 3 (PR #239)
+	- Add prefix sums for unsigned longs (PR #205 #208)
+	- Change Invert_Comm_Map to eliminate n_proc length arrays (#914)
+
+	* Developer Environment:
+
+	- Make setup of lmod modulefiles run faster for setup scripts.
+	- Automate selection of scratch directory.
+	- Improve robustness of CI scripting.
+	- New CI environment targets Snow + Intel-17.0.2 + OpenMPI-2.0.2.
+	- Preliminary enviornment files for the machine 'toolbox' were
+	  added.
+	- Deprecate support for Visual Studio 2013. Begin support for Visual
+	  Studio 2017.
+	- vim formatting to set a warning line at 80 columns
+	- Retire some rarely used aliases (.bashrc):
+          + dmesg, ldmesg
+          + free, hosts
+          + print, cd.., sdl, hpss
+          + mapache, tscp, trsync
+	- Add some module related aliases (I have trouble typing 'moduel').
+	  + ma='module avail'
+	  + mls='module list'
+          + mld='module load'
+	- Add some slurm related aliases (from hpcfaq.lanl.gov/faqs/view/58)
+          + showq-like functions: sqrun, sqpend, pend, sqother, sq, sqall, showme
+          + checkjob-like functions: chk
+          + drmgroups, etc: suser, sshare_acct, drmgroups, sreason, showuser
+	- For non-interactive shells, ensure that DRACO_ENV_DIR is set.
+
+	* Build system:
+
+	- Improve how python unit tester captures stderr.
+	- Allow command line options for setting compiler flags (#896)
+	  1. `C_FLAGS="-Wfoo" CXX_FLAGS="-Wbar" cmake <path/to/draco>`, or
+	  2. `export C_FLAGS="-Wfoo"; cmake ...; make`, or
+	  3. `cmake -DC_FLAGS="-Wfoo" <path/to/draco>`
+	- `RelWithDebInfo` builds now defualt to `DRACO_DBC_LEVEL=15`.
+	- Require that C++11 features be available.
+	- Make it easier to run valgrind checks. `ctest -D ExperimentalMemCheck
+	  [-j 12 -R c4]` (#216)
+	- Turn on GCC Warning `Wundef`
+	- Update scripts to allow them to work with Python 3.
+
+	* c4:
+
+	- Added prefix sum function.
+          + The MPI scan function calculates a prefix sum (often used in
+	    determining offsets in parallel problems) without forming a n_proc
+	    length array on every node.
+	  + Rename MPI_THREAD_SINGLE to DRACO_MPI_THREAD_SINGLE to clarify that
+	    we are modifying this value in the case of a no MPI build.
+	+ Remove num_procs array for Invert_Comm_Map; add any_source capability.
+	+ Add `bool` to the list of supported MPI data types.
+
+	* ds++
+
+	- Add a NOEXCEPT macro that flags a function as throwing no exceptions
+	  ONLY if DBC is fully turned off. This allows us to test preconditions
+	  and postconditions while allowing production code to gain the
+	  performance advantages of having suitable functions flagged as never
+	  throwing exceptions.
+	- Add Tim's move semantics example. This example shows how to use move
+	  semantics in object construction to avoid deep copies.
+
+	* compton
+
+	- Add routines to interpolate the group-avg frequency ratio
+	- Rename the original interpolation function to interpolate_csk
+	- Pass a default parameter to the constructor to use the full number of
+	  angular evals in the library file
+
+	* Details for defects and features can be found at
+	  https://rtt.lanl.gov/redmine/isues/#.
+
+	Corrected defects:
+	* Bug #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	* Bug #877 Some tests fail for RelWithDebInfo builds
+	* Bug #885 CI system on trinitite can break
+	* Bug #893 Stand up CI for gcc/6.1 intel/17.0.2, openmpi/2.0.2
+	* Bug #907 Moonlight and Snow regressions are not running
+	* Bug #908 cyclic dependency in capsaicin
+	* Bug #920 Coverage builds appear to be broken
+	* Bug #957 Can't view git repo from Redmine
+
+	New Features:
+	* Feature #548 C++11: Replace copy with move symantics
+	* Feature #888 New tools/regression
+	* Feature #896 Allow users set set extra compile flags, link libraries from command line
+	* Feature #909 Update sync_repository.sh to use checkpr.sh
+	* Feature #913 On ccs-net machines switch to lmod
+	* Feature #914 Change Invert_Comm_Map to eliminate n_proc length arrays
+	* Feature #936 Add MPI_ANY_SOURCE support to C4
+	* Task #903 Begin migrating from MOAB to SLURM
+	* Task #955 Provide libquo built against openmpi@1.10.5 and gcc@6.3.0 on ccs-net machines
+
+	Known Defects:
+	* Bug #954 plot2D test are failing on snow
+	* Bug #906 All gitlab pipelines are failing
+	* Bug #956 snow: Not finding MKL as suitable provider of LAPACK
+
+	* Statistics:
+
+Contributers (updated Release.cc and README.md with this ordering).
+------------
+
+CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, James S. Warsa,
+     Alex R. Long, Rob B. Lowrie, Kendra P. Keady, Jae H. Chang,
+     Matt A. Cleveland, Andrew T. Till, Daniel Holladay, Ryan T. Wollaeger,
+     Massimiliano Rosa and Kris C. Garrett.
+Prior Contributers: Jeff D. Densmore, Gabriel M. Rockefeller,
+     Allan B. Wollaber, Lori A. Pritchett-Sheats,  Paul W. Talbot,
+     and Katherine J. Wang.
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             423          12363          22080          51057
+C/C++ Header                    331           6695          20707          16176
+Lisp                             17           2027           2897          13059
+CMake                           120           2144           5635           8960
+Bourne Shell                     35            712           1597           3346
+Bourne Again Shell               15            288            564           1562
+Python                           13            387            654           1315
+CSS                               1            113             37            395
+Fortran 90                        8            113            218            380
+C                                 4             48            114            244
+C Shell                           2             32             36            167
+DOS Batch                         4             53             71             93
+YAML                              2             18             98             77
+HTML                              2              6             47             65
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            982          25038          54830          96975
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+units/                               80 /    80 = 100%      58 /    58 = 100%
+quadrature/                           1 /     1 = 100%       0 /     0
+lapack_wrap/                         12 /    12 = 100%       0 /     0
+compton/                             10 /    10 = 100%       0 /     0
+rng/                                 57 /    57 = 100%      23 /    24 =  95%
+fit/                                  1 /     1 = 100%      15 /    16 =  93%
+ode/                                  5 /     5 = 100%      29 /    32 =  90%
+min/                                  9 /     9 = 100%     137 /   154 =  88%
+RTT_Format_Reader/                  323 /   323 = 100%     373 /   434 =  85%
+linear/                              16 /    16 = 100%     334 /   392 =  85%
+roots/                                8 /     8 = 100%     259 /   312 =  83%
+cdi/                                 46 /    46 = 100%      63 /    76 =  82%
+cdi_ipcress/                        106 /   106 = 100%     188 /   247 =  76%
+viz/                                 32 /    32 = 100%     131 /   174 =  75%
+meshReaders/                         15 /    15 = 100%     127 /   172 =  73%
+cdi_eospac/                          52 /    52 = 100%      65 /   127 =  51%
+FortranChecks/                        1 /     1 = 100%       7 /    14 =  50%
+ds++/                               317 /   321 =  98%     457 /   522 =  87%
+timestep/                            62 /    63 =  98%     104 /   178 =  58%
+parser/                             293 /   298 =  98%    1184 /  1512 =  78%
+quadrature/                         221 /   227 =  97%     580 /   738 =  78%
+norms/                               25 /    26 =  96%      21 /    34 =  61%
+mesh_element/                        23 /    24 =  95%     154 /   201 =  76%
+c4/                                 157 /   166 =  94%     378 /   429 =  88%
+special_functions/                   30 /    32 =  93%     192 /   216 =  88%
+cdi_analytic/                       146 /   165 =  88%     172 /   224 =  76%
+diagnostics/                         15 /    20 =  75%      28 /    42 =  66%
+memory/                               4 /     6 =  66%       0 /     2 =   0%
+diagnostics/                          0 /     5 =   0%       0 /     0
+--------------------------------  ---------------------  ---------------------
+Total                               2066 /  2121 =  97%    5079 /  6330 =  80%
+
+
 2017-03-29  Kelly (KT) Thompson  <kgt@lanl.gov>
 
-	* "Release draco-6_21_0":https://rtt.lanl.gov/redmine/versions/47.
+	* "Release draco-6_21_0":https://rtt.lanl.gov/redmine/versions/48.
 	  This is a minor Draco release.
 
 	* This release was required by Jayenne and Capsaicin.  It is
@@ -230,7 +428,7 @@
 	* Bug #877 Some tests fail for RelWithDebInfo builds
 	* Bug #893 Stand up CI for gcc/6.1 intel/17.0.2, openmpi/2.0.2
 
-	*Statistics:
+	* Statistics:
 
 Contributers (updated Release.cc with this ordering).
 ------------
@@ -302,9 +500,6 @@ cdi_analytic/                       146 /   165 =  88%     172 /   224 =  76%
 memory/                               4 /     6 =  66%       0 /     2 =   0%
 --------------------------------  ---------------------  ---------------------
 Total                               2067 /  2117 =  97%    5074 /  6322 =  80%
-
-
-
 
 
 2016-11-16  Kelly (KT) Thompson  <kgt@lanl.gov>

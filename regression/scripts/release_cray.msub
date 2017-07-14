@@ -20,7 +20,6 @@ export test_pe=`npes_test`
 ##---------------------------------------------------------------------------##
 
 verbose=1
-
 if test $verbose == 1; then
   echo
   echo "Starting release build for $package - $version - $buildflavor - $TARGET:"

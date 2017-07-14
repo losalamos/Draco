@@ -13,9 +13,8 @@ project( compton_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
- set( test_sources
+set( test_sources
   ${PROJECT_SOURCE_DIR}/tCompton.cc )
- file( GLOB compton_data *.compton *.compton_nu_ratios )
 
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
@@ -36,12 +35,6 @@ add_scalar_tests(
   DEPS    "Lib_compton"
   LABEL   "nomemcheck"
   MPI_PLUS_OMP )
-
-#------------------------------------------------------------------------------#
-# Copy data files
-#------------------------------------------------------------------------------#
-
-provide_aux_files( FILES "${compton_data}" )
 
 # ---------------------------------------------------------------------------- #
 # end of compton/test/ CMakeLists.txt

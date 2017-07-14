@@ -2,17 +2,14 @@
 /*!
  * \file   plot2D/test/tstPlot2D.cc
  * \author Rob Lowrie
- * \date   In the past.
  * \brief  Plot2D test.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/XGetopt.hh"
 #include "plot2D/Plot2D.hh"
-
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -33,10 +30,10 @@ void pause();
 
 void tstPlot2D(const bool batch);
 int main(int argc, char *argv[]);
-
 bool pass(true);
 
 //---------------------------------------------------------------------------//
+// Helper function
 //---------------------------------------------------------------------------//
 namespace test {
 
@@ -45,7 +42,9 @@ void pause() {
   cin.get();
 }
 }
+
 //---------------------------------------------------------------------------//
+// The main test
 //---------------------------------------------------------------------------//
 void tstPlot2D(const bool batch) {
   string paramFile("tstPlot2D.par");
@@ -88,8 +87,7 @@ void tstPlot2D(const bool batch) {
     p.setAxesLabels("x", ylabel.str(), j);
   }
 
-  // Changes some set properties; most were set in the param
-  // file.
+  // Changes some set properties; most were set in the param file.
 
   SetProps prop;
   prop.line.color = rtt_plot2D::COLOR_RED;
@@ -104,8 +102,8 @@ void tstPlot2D(const bool batch) {
   // Plot 2.  Add a set to each graph of the previous plot.
   //////////////////////////////////////////////////////////////////////
 
-  // Generate new data.  Use a different temporary filename,
-  // because Grace may not have read the data from plot 1 yet.
+  // Generate new data.  Use a different temporary filename, because Grace may
+  // not have read the data from plot 1 yet.
 
   blockName = "tmp2.block";
   block.open(blockName.c_str());
@@ -141,8 +139,7 @@ void tstPlot2D(const bool batch) {
   p.save("plot3.agr");
 
   //////////////////////////////////////////////////////////////////////
-  // Plot 4.  Put all of the data of the previous plot
-  // into one graph.
+  // Plot 4.  Put all of the data of the previous plot into one graph.
   //////////////////////////////////////////////////////////////////////
 
   p.close();
@@ -159,7 +156,28 @@ void tstPlot2D(const bool batch) {
 
   p.save("plot4.agr");
 }
+
 //---------------------------------------------------------------------------//
+/* Compare the generated plot file to gold standard.
+ *
+ * Note: The XM Grace plot file has this format:
+ *
+ * Line(s)  Description
+ * -------  -------------
+ * 1-2      Header
+ * 3        XM-GRACE Version
+ * 4-<A>    Meta data (fonts, colors, etc)
+ *          This block ends with the line "@timestamp def "..."
+ *          The length of this block varies by machine and XM-Grace version.
+ * <A>-EOF  Plot data
+ *
+ * The top portion of these files are often mismatched due to different
+ * timestamps, grace versions, fonts, colors, etc. Don't compare these.
+ *
+ * We need to find the line number ofr the timestamp and only compare text
+ * that appears after this line.
+ */
+//----------------------------------------------------------------------------//
 void checkOutputFiles(std::string const &filename) {
   using std::string;
 
@@ -170,27 +188,35 @@ void checkOutputFiles(std::string const &filename) {
 
   string benchfile(string("bench_") + filename);
 
-  // Portions of the plot fill will never match:
-  // Line  3: grace version number
-  // Line 57: datestamp
-  std::vector<int> begin(2);
-  std::vector<int> end(2);
+  // Look at the output file and locate the line number of the timestamp.
+  int end_of_metadata_block = 1; // ndselect starts counting at 1.
+  // open the file for reading
+  std::ifstream rawfile(filename + string(".agr"), std::ifstream::in);
+  Insist(rawfile.good(), (string("Could not open file ") + filename).c_str());
+  string line; // store each line of the file in this temporary.
+  while (getline(rawfile, line)) {
+    ++end_of_metadata_block;
+    if (line.find("@timestamp def") != string::npos)
+      break;
+  }
+  rawfile.close();
 
-  begin[0] = 4;
-  end[0] = 56;
-  begin[1] = 58;
-  end[1] = -1;
+  // Trim the meta-data text from the top of the generated files and then
+  // compare the remaining content with gold files.
+
+  std::vector<int> begin = {end_of_metadata_block};
+  std::vector<int> end = {-1};
 
   Check(begin.size() == end.size());
-  Check(end[0] >= begin[0]);
   for (size_t i = 1; i < begin.size(); ++i) {
     Check(begin[i] >= end[i - 1]);
     if (end[i] > 0)
       Check(end[i] >= begin[i]);
   }
 
-  // break the file into portions that do not include these lines and then
-  // run numdiff on each portion...
+  // break the file into portions that do not include these lines and then run
+  // numdiff on each portion. Don't compare the first block as this contains
+  // font names that can differ between machines.
   for (size_t i = 0; i < begin.size(); ++i) {
     std::ostringstream ndselect_file;
     std::ostringstream ndselect_bench;
@@ -217,9 +243,11 @@ void checkOutputFiles(std::string const &filename) {
     if (ret != 0)
       pass = false;
 
-    // benchmark file
+    // benchmark file (meta data section already pruned)
     ndselect_bench << "ndselect ";
-    if (begin[i] >= 0)
+    if (i == 0)
+      ndselect_bench << "-b 1";
+    else
       ndselect_bench << "-b " << begin[i];
     if (end[i] >= 0)
       ndselect_bench << " -e " << end[i];
@@ -285,9 +313,8 @@ int main(int argc, char *argv[]) {
     if (Plot2D::is_supported()) {
       tstPlot2D(batch);
 
-      // Grace doesn't apper to flush the data to disk immediately.  We
-      // need to wait a bit before comparing the output to the gold
-      // standards.
+      // Grace doesn't apper to flush the data to disk immediately.  We need to
+      // wait a bit before comparing the output to the gold standards.
       std::cout << "\nWaiting for Grace to finish writing files...\n"
                 << std::endl;
       system("sleep 5");

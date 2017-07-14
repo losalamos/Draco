@@ -66,12 +66,11 @@ function xlc12()
 ##---------------------------------------------------------------------------##
 ## Generic setup (do not edit)
 ##---------------------------------------------------------------------------##
-sdir=`dirname $0`
-cdir=`pwd`
-cd $sdir
+initial_working_dir=`pwd`
+cd `dirname $0`
 export script_dir=`pwd`
 export draco_script_dir=$script_dir
-cd $cdir
+cd $initial_working_dir
 source $draco_script_dir/common.sh
 
 # CMake options that will be included in the configuration step
