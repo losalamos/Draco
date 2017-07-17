@@ -3,8 +3,7 @@
  * \file   cdi_ipcress/test/ReadOdfIpcressFile.cc
  * \author Seth R. Johnson
  * \date   Thu July 10 2008
- * \brief
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2008-2017 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -260,7 +259,8 @@ int main(int argc, char *argv[]) {
 
   switch (actionToTake) {
   case 0:
-    if (temperature == 0 || density == 0) {
+    if (rtt_dsxx::soft_equiv(temperature, 0.0) ||
+        rtt_dsxx::soft_equiv(density, 0.0)) {
       printGrid(spGandOpacity);
       askTempDens(temperature, density, is_unittest);
     }
@@ -270,21 +270,24 @@ int main(int argc, char *argv[]) {
     analyzeData(spGandOpacity);
     break;
   case 2:
-    if (temperature == 0 || density == 0) {
+    if (rtt_dsxx::soft_equiv(temperature, 0.0) ||
+        rtt_dsxx::soft_equiv(density, 0.0)) {
       printGrid(spGandOpacity);
       askTempDens(temperature, density, is_unittest);
     }
     printCData(spGandOpacity, temperature, density);
     break;
   case 3:
-    if (temperature == 0 || density == 0) {
+    if (rtt_dsxx::soft_equiv(temperature, 0.0) ||
+        rtt_dsxx::soft_equiv(density, 0.0)) {
       printGrid(spGandOpacity);
       askTempDens(temperature, density, is_unittest);
     }
     collapseOpacities(spGandOpacity, temperature, density);
     break;
   case 4:
-    if (temperature == 0 || density == 0) {
+    if (rtt_dsxx::soft_equiv(temperature, 0.0) ||
+        rtt_dsxx::soft_equiv(density, 0.0)) {
       printGrid(spGandOpacity);
       askTempDens(temperature, density, is_unittest);
     }
@@ -432,7 +435,7 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
       for (int band = numBands - 1; band >= 0; band--) {
         collapsedOpacity += bandWidths[band] / multiBandOpacities[group][band];
       }
-      if (collapsedOpacity != 0.0)
+      if (!rtt_dsxx::soft_equiv(collapsedOpacity, 0.0))
         collapsedOpacity = 1 / collapsedOpacity;
     } else // arithmetic average for planckian
     {
@@ -529,12 +532,12 @@ void printCData(SP_Goo spGandOpacity, double temperature, double density) {
   cout << "};" << endl;
 
   // print opacity data
-  cout << "const double opacities[numGroups][numBands] = {" << endl;
+  cout << "const double opacities[numGroups][numBands] = {\n";
 
   vec2_d multiBandOpacities = spGandOpacity->getOpacity(temperature, density);
 
   for (int group = 0; group < numGroups; group++) {
-    cout << "{" << endl;
+    cout << "{\n";
     // print data for each band
     for (int band = 0; band < numBands; band++) {
       printf("\t%#25.16g", multiBandOpacities[group][band]);
@@ -544,14 +547,14 @@ void printCData(SP_Goo spGandOpacity, double temperature, double density) {
 
       printf("\t\t// group %d band %d", group + 1, band + 1);
 
-      cout << endl;
+      cout << "\n";
     }
 
     cout << "}";
     if (group != numGroups - 1)
       cout << ",";
 
-    cout << endl;
+    cout << "\n";
   }
   cout << "};" << endl;
 }
@@ -566,9 +569,9 @@ void printData(SP_Goo spGandOpacity, double temperature, double density) {
   const vec_d groupBoundaries = spGandOpacity->getGroupBoundaries();
   const vec_d bandBoundaries = spGandOpacity->getBandBoundaries();
 
-  cout << "=============================================" << endl;
+  cout << "=============================================\n";
   cout << "Printing band data at " << temperature << " keV, "
-       << "rho = " << density << endl;
+       << "rho = " << density << "\n";
 
   vec2_d multiBandOpacities = spGandOpacity->getOpacity(temperature, density);
 
@@ -579,10 +582,8 @@ void printData(SP_Goo spGandOpacity, double temperature, double density) {
     double currentRatio = 0.0;
 
     cout << "=== Group " << group + 1 << " has energy range ["
-         << groupBoundaries[group] << "," << groupBoundaries[group + 1]
-         << "]\n";
-
-    cout << "Group Band  Width        Opacity  Ratio to first" << std::endl;
+         << groupBoundaries[group] << "," << groupBoundaries[group + 1] << "]\n"
+         << "Group Band  Width        Opacity  Ratio to first\n";
 
     // print data for each band
     for (int band = 0; band < numBands; band++) {
@@ -601,12 +602,12 @@ void printData(SP_Goo spGandOpacity, double temperature, double density) {
     }
   }
 
-  cout << "=============================================" << endl;
-  cout << "At " << temperature << " keV, "
-       << "rho = " << density << endl;
-  cout << "Best odf was in group " << maxGroup << " which had a high-to-low "
-       << "ratio of " << maxRatio << "." << endl;
-  cout << "=============================================" << endl;
+  cout << "=============================================\n"
+       << "At " << temperature << " keV, "
+       << "rho = " << density << "\n"
+       << "Best odf was in group " << maxGroup << " which had a high-to-low "
+       << "ratio of " << maxRatio << ".\n"
+       << "=============================================" << endl;
 }
 
 //---------------------------------------------------------------------------//

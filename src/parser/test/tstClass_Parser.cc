@@ -151,13 +151,14 @@ void tstClass_Parser(UnitTest &ut) {
   std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
   ut.check(dummy != nullptr, "parsed the class object", true);
-  ut.check(dummy->Get_Insouciance() == 3.3, "parsed the insouciance correctly");
+  ut.check(rtt_dsxx::soft_equiv(dummy->Get_Insouciance(), 3.3, 1.0e-16),
+           "parsed the insouciance correctly");
 
   tokens.rewind();
   dummy = parse_class<DummyClass>(tokens, true);
 
   ut.check(dummy != nullptr, "parsed the indolent class object", true);
-  ut.check(dummy->Get_Insouciance() == -3.3,
+  ut.check(rtt_dsxx::soft_equiv(dummy->Get_Insouciance(), -3.3, 1.0e-16),
            "parsed the indolent insouciance correctly");
 
   // Test that missing end is caught.

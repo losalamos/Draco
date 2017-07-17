@@ -5,10 +5,7 @@
  * \date   Mon Nov 8 11:17:12 2004
  * \brief  Provide declaration of templatized factorial function.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef sf_factorial_hh

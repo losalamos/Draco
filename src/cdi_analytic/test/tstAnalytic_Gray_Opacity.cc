@@ -82,7 +82,8 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
     T[i] = 0.1 + i / 100.0;
     rho[i] = 1.0 + i / 10.0;
 
-    if (grayp->getOpacity(T[i], rho[i]) != constant_opacity)
+    if (!rtt_dsxx::soft_equiv(grayp->getOpacity(T[i], rho[i]),
+                              constant_opacity))
       ITFAILS;
   }
 

@@ -10,6 +10,7 @@
 
 #include "CDI.hh"
 #include "ds++/Safe_Divide.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <iostream>
 #include <limits>
 #include <numeric>
@@ -267,7 +268,7 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
 
   planck.resize(groups, 0.0);
 
-  if (T == 0)
+  if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16))
     return;
 
   double scaled_frequency;
@@ -317,7 +318,7 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds,
 
   rosseland.resize(groups, 0.0);
 
-  if (T == 0.0)
+  if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16))
     return;
 
   double scaled_frequency;
@@ -378,7 +379,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
   planck.resize(groups, 0.0);
   rosseland.resize(groups, 0.0);
 
-  if (T == 0.0)
+  if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16))
     return;
 
   double scaled_frequency;

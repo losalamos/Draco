@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Definition the Unit struct
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __parser_Unit_hh__
@@ -23,11 +20,11 @@ namespace rtt_parser {
  * \class Unit
  * \brief Define units and conversions to SI
  *
- * Unit is a POD struct describing a physical unit.  It gives
- * the dimensions of the unit in terms of the nine fundamental SI
- * units as well as the conversion factor to SI. The dimensions are
- * specified as real numbers because there are some physical quantities
- * whose unit description requires noninteger powers of the basic units.
+ * Unit is a POD struct describing a physical unit.  It gives the dimensions of
+ * the unit in terms of the nine fundamental SI units as well as the conversion
+ * factor to SI. The dimensions are specified as real numbers because there are
+ * some physical quantities whose unit description requires noninteger powers of
+ * the basic units.
  *
  * Several examples follow the struct definition.
  */
@@ -86,7 +83,6 @@ inline Unit operator*(Unit const &a, Unit const &b) {
  * \param b Unit factor
  * \return Product of the two factors
  */
-
 inline Unit operator*(double const a, Unit const &b) {
   Unit Result = b;
 
@@ -103,7 +99,6 @@ inline Unit operator*(double const a, Unit const &b) {
  * \param a Scalar factor
  * \return Product of the two factors
  */
-
 inline Unit operator*(Unit const &b, double const a) { return operator*(a, b); }
 
 //---------------------------------------------------------------------------//
@@ -114,7 +109,6 @@ inline Unit operator*(Unit const &b, double const a) { return operator*(a, b); }
  * \param b Denominator
  * \return Ratio of the two factors
  */
-
 inline Unit operator/(Unit const &a, Unit const &b) {
   Unit Result;
 
@@ -141,7 +135,6 @@ inline Unit operator/(Unit const &a, Unit const &b) {
  * \param b Unit denominator
  * \return Reciprocal of the unit times the scalar
  */
-
 inline Unit operator/(double const a, Unit const &b) {
   Unit Result;
 
@@ -168,7 +161,6 @@ inline Unit operator/(double const a, Unit const &b) {
  * \param a Scalar denominator
  * \return unit divided by the scalar
  */
-
 inline Unit operator/(Unit const &b, double const a) { return b * (1 / a); }
 
 //---------------------------------------------------------------------------//
@@ -179,7 +171,6 @@ inline Unit operator/(Unit const &b, double const a) { return b * (1 / a); }
  * \param a Scalar power
  * \return unit raised to power of the scalar
  */
-
 inline Unit pow(Unit const &b, double const a) {
   Unit result = b;
   result.m *= a;
@@ -208,7 +199,6 @@ inline Unit pow(Unit const &b, double const a) {
  * \param b Second factor
  * \return \c true if the units are identical; \c false otherwise
  */
-
 inline bool operator==(Unit const &a, Unit const &b) {
   using rtt_dsxx::soft_equiv;
   return soft_equiv(a.m, b.m) && soft_equiv(a.kg, b.kg) &&
@@ -228,7 +218,6 @@ inline bool operator==(Unit const &a, Unit const &b) {
  * \param b Second factor
  * \return \c !(a==b)
  */
-
 inline bool operator!=(Unit const &a, Unit const &b) { return !(a == b); }
 
 //---------------------------------------------------------------------------//
@@ -242,10 +231,12 @@ inline bool operator!=(Unit const &a, Unit const &b) { return !(a == b); }
  * \param b Second factor
  * \return \c true if the units are compatible; \c false otherwise
  */
-
 inline bool is_compatible(Unit const &a, Unit const &b) {
-  return a.m == b.m && a.kg == b.kg && a.s == b.s && a.A == b.A && a.K == b.K &&
-         a.mol == b.mol && a.cd == b.cd && a.rad == b.rad && a.sr == b.sr;
+  return rtt_dsxx::soft_equiv(a.m, b.m) && rtt_dsxx::soft_equiv(a.kg, b.kg) &&
+         rtt_dsxx::soft_equiv(a.s, b.s) && rtt_dsxx::soft_equiv(a.A, b.A) &&
+         rtt_dsxx::soft_equiv(a.K, b.K) && rtt_dsxx::soft_equiv(a.mol, b.mol) &&
+         rtt_dsxx::soft_equiv(a.cd, b.cd) &&
+         rtt_dsxx::soft_equiv(a.rad, b.rad) && rtt_dsxx::soft_equiv(a.sr, b.sr);
 }
 
 //---------------------------------------------------------------------------//
@@ -307,11 +298,11 @@ Unit const pound = {1, 1, -2, 0, 0, 0, 0, 0, 0, 4.448221615}; //!< pound force
 
 // Miscellaneous units
 
+//! Electron volts
 Unit const eV = {2, 1, -2, 0, 0, 0, 0, 0, 0, rtt_units::electronChargeSI};
-//!< Electron volts
+//! Thousands of electron volts
 Unit const keV = {2, 1, -2, 0, 0,
                   0, 0, 0,  0, 1e3 * rtt_units::electronChargeSI};
-//!< Thousands of electron volts
 
 // Numbers for which no conversion is requested
 Unit const constant = {0, 0, 0, 0, 0,
@@ -324,19 +315,17 @@ Unit const raw = {
 /*! Systems of units
  *
  * Here we let the "dimension" be the unit conversion factor.
+ *
+ * double m;            //!< Length dimension
+ * double kg;           //!< Mass dimension
+ * double s;            //!< Time dimension
+ * double A;            //!< Current dimension
+ * double K;            //!< Temperature dimension
+ * double mol;          //!< Quantity dimension
+ * double cd;           //!< Luminous intensity dimension
+ * double rad;          //!< Plane angle dimension
+ * double sr;           //!< Solid angle dimension
  */
-
-/*
-  double m;            //!< Length dimension
-  double kg;           //!< Mass dimension
-  double s;            //!< Time dimension
-  double A;            //!< Current dimension
-  double K;            //!< Temperature dimension
-  double mol;          //!< Quantity dimension
-  double cd;           //!< Luminous intensity dimension
-  double rad;          //!< Plane angle dimension
-  double sr;           //!< Solid angle dimension
-*/
 
 Unit const MKS = {1., 1., 1., 1., 1., 1., 1., 1., 1., 0.};
 Unit const CGS = {0.01, 0.001, 1., 1., 1., 1., 1., 1., 1., 0.};

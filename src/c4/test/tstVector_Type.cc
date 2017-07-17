@@ -4,16 +4,14 @@
  * \author Thomas M. Evans
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: tstVector_Type.cc 6965 2013-01-04 21:54:13Z kellyt $
+ * \note   Copyright (C) 2002-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/global.hh"
 #include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 using namespace rtt_c4;
@@ -28,9 +26,9 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
   int ierr = create_vector_type<double>(3, 2, 4, data_type);
 
   if (ierr == C4_SUCCESS)
-    ut.passes("created vector type successfully");
+    PASSMSG("created vector type successfully");
   else
-    ut.failure("did NOT create vector type successfully");
+    FAILMSG("did NOT create vector type successfully");
 
   // try sending a couple
 
@@ -56,19 +54,19 @@ void test_simple(rtt_dsxx::UnitTest &ut) {
     for (unsigned j = 0; j < 6; ++j) {
       for (unsigned i = 0; i < 4; ++i) {
         if (i >= 1 && i <= 2 && j >= 2 && j <= 4) {
-          if (array[i + 4 * j] != 10 * i + j) {
-            ut.failure("did NOT transmit correct subarray");
+          if (!rtt_dsxx::soft_equiv(array[i + 4 * j], 10.0 * i + j)) {
+            FAILMSG("did NOT transmit correct subarray");
             return;
           }
         } else {
-          if (array[i + 4 * j] != 0) {
-            ut.failure("did NOT transmit correct subarray");
+          if (!rtt_dsxx::soft_equiv(array[i + 4 * j], 0.0)) {
+            FAILMSG("did NOT transmit correct subarray");
             return;
           }
         }
       }
     }
-    ut.passes("transmitted correct subarray");
+    PASSMSG("transmitted correct subarray");
   }
 
   type_free(data_type);

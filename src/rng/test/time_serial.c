@@ -45,6 +45,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define get_global_id(i) (i)
 #include "time_random123.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
+
 #define TEST_TPL(NAME, N, W, R)                                                              \
   void NAME##N##x##W##_##R(                                                                  \
       NAME##N##x##W##_ukey_t ukey, NAME##N##x##W##_ctr_t ctr,                                \
@@ -154,6 +159,11 @@ int main(int argc, char **argv) {
   }
   return 0;
 }
+
+#ifdef __GNUC__
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
 
 //---------------------------------------------------------------------------//
 // end time_serial.c

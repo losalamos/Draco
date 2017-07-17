@@ -5,10 +5,7 @@
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
  * \note   Copyright (C)  2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved. 
- */
-//---------------------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved.  */
 //---------------------------------------------------------------------------------------//
 
 #ifndef quadrature_Ordinate_hh
@@ -21,14 +18,13 @@ using rtt_dsxx::soft_equiv;
 
 //=======================================================================================//
 /*!
- * \class Ordinate
- * \brief Class containing angle cosines and weights for an element of
- * an ordinate set.
+ * \class Ordinate \brief Class containing angle cosines and weights for an
+ *        element of an ordinate set.
  *
- * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x +
- * \eta_m \mathbf e_y + \xi_m \mathbf e_z \f$ plus the associated point weight,
- * \f$ w_m \f$. We could represent this as a simple 4-tuple of doubles, but
- * the ordinates must satisfy certain invariants that are protected by the
+ * Provides a container that represents \f$ \mathbf\Omega_m = \mu_m \mathbf e_x
+ * + \eta_m \mathbf e_y + \xi_m \mathbf e_z \f$ plus the associated point
+ * weight, \f$ w_m \f$. We could represent this as a simple 4-tuple of doubles,
+ * but the ordinates must satisfy certain invariants that are protected by the
  * class representation.
  */
 //=======================================================================================//
@@ -37,8 +33,8 @@ class Ordinate {
 public:
   // CREATORS
 
-  //! Create an uninitialized Ordinate.  This is required by the
-  //! constructor for vector<Ordinate>.
+  //! Create an uninitialized Ordinate.  This is required by the constructor for
+  //! vector<Ordinate>.
   Ordinate() : mu_(0), eta_(0), xi_(0), wt_(0) {}
 
   //! Construct an Ordinate from the specified vector and weight.
@@ -63,8 +59,8 @@ public:
   void set_wt(double const wt) { wt_ = wt; };
 
   double const *cosines() const {
-    // This is a little krufty, but guaranteed to work according to C++
-    // object layout rules.
+    // This is a little krufty, but guaranteed to work according to C++ object
+    // layout rules.
     return &mu_;
   }
 
@@ -73,9 +69,11 @@ private:
 
   // The data must be kept private in order to protect the norm invariant.
 
-  //! Angle cosines for the ordinate.
-  // Do not change the layout of these members! They must be declared in
-  // this sequence for cosines() to work as expected!
+  /*!
+   * \brief Angle cosines for the ordinate.
+   *
+   * Do not change the layout of these members! They must be declared in this
+   * sequence for cosines() to work as expected! */
   double mu_, eta_, xi_;
 
   //! Quadrature weight for the ordinate.
@@ -85,8 +83,10 @@ private:
 //---------------------------------------------------------------------------------------//
 //! Test ordinates for equality
 inline bool operator==(Ordinate const &a, Ordinate const &b) {
-  return a.mu() == b.mu() && a.eta() == b.eta() && a.xi() == b.xi() &&
-         a.wt() == b.wt();
+  return rtt_dsxx::soft_equiv(a.mu(), b.mu()) &&
+         rtt_dsxx::soft_equiv(a.eta(), b.eta()) &&
+         rtt_dsxx::soft_equiv(a.xi(), b.xi()) &&
+         rtt_dsxx::soft_equiv(a.wt(), b.wt());
 }
 
 } // end namespace rtt_quadrature
@@ -94,5 +94,5 @@ inline bool operator==(Ordinate const &a, Ordinate const &b) {
 #endif // quadrature_Ordinate_hh
 
 //---------------------------------------------------------------------------------------//
-//              end of quadrature/Ordinate.hh
+// end of quadrature/Ordinate.hh
 //---------------------------------------------------------------------------------------//

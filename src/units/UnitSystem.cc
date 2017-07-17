@@ -2,23 +2,17 @@
 /*! \file   UnitSystem.cc
  *  \author Kelly Thompson
  *  \date   Thu Oct 24 15:10:32 2003
- *  \brief
- *  \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *  \note   Copyright (C) 2003-2017 Los Alamos National Security, LLC.
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "UnitSystem.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <limits>
 
 namespace rtt_units {
 
-/*!
- * \brief Ensure that all unit conversions are valid (larger than some
- *        minimum value.)
- */
+//! Ensure that all unit conversions are valid (larger than some minimum value.)
 bool UnitSystem::validUnits() const {
   double minConversion(std::numeric_limits<double>::min());
 
@@ -43,11 +37,10 @@ bool UnitSystem::validUnits() const {
 } // end validUnits()
 
 //---------------------------------------------------------------------------//
-
-// /*!
-//  * \brief Return a new UnitSystem object whose data has the item-by-item ratio of
-//  *        two UnitSystem objects.
-//  */
+/*!
+ * \brief Return a new UnitSystem object whose data has the item-by-item ratio
+ *        of two UnitSystem objects.
+ */
 // UnitSystem operator/( UnitSystem const & op1, UnitSystem const & op2 )
 // {
 //     return UnitSystem( op1.lengthConversion      / op2.lengthConversion,
@@ -57,9 +50,9 @@ bool UnitSystem::validUnits() const {
 // }
 
 //---------------------------------------------------------------------------//
-
 /*!
  * \brief Return true if op1 and op2 are identical.
+ *
  * \return true if conversion data members are the same between op1 and
  *         op2. Otherwise return false.
  *
@@ -67,15 +60,19 @@ bool UnitSystem::validUnits() const {
  * \verbatim
  * UnitSystem UserUnits(34.0, 60.0, 0.0003, 99);
  * UnitSystem SIUnits(1.0, 1.0, 1.0 1.0 );
- * 
+ *
  * Units NewUnits = UserUnits/SIUnits
  * Ensure( NewUnits == UserUnits );
  * \endverbatim
  */
 bool operator==(UnitSystem const &op1, UnitSystem const &op2) {
-  return op1.L() == op2.L() && op1.M() == op2.M() && op1.t() == op2.t() &&
-         op1.T() == op2.T() && op1.I() == op2.I() && op1.A() == op2.A() &&
-         op1.Q() == op2.Q();
+  return rtt_dsxx::soft_equiv(op1.L(), op2.L()) &&
+         rtt_dsxx::soft_equiv(op1.M(), op2.M()) &&
+         rtt_dsxx::soft_equiv(op1.t(), op2.t()) &&
+         rtt_dsxx::soft_equiv(op1.T(), op2.T()) &&
+         rtt_dsxx::soft_equiv(op1.I(), op2.I()) &&
+         rtt_dsxx::soft_equiv(op1.A(), op2.A()) &&
+         rtt_dsxx::soft_equiv(op1.Q(), op2.Q());
 }
 
 bool operator!=(UnitSystem const &op1, UnitSystem const &op2) {

@@ -37,6 +37,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * being the number of rounds.
  */
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexpansion-to-defined"
@@ -78,6 +83,11 @@ TEST_TPL(aesni, 4, 32, 10)
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
+#endif
+
+#ifdef __GNUC__
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
 #endif
 
 #undef TEST_TPL

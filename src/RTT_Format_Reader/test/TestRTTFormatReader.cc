@@ -13,6 +13,7 @@
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
 #include <sstream>
 
@@ -166,7 +167,7 @@ bool check_header(RTT_Format_Reader const &mesh, Meshes const &meshtype,
     all_passed = false;
   }
   // Check time.
-  if (mesh.get_header_time() != time) {
+  if (!rtt_dsxx::soft_equiv(mesh.get_header_time(), time)) {
     FAILMSG("Header time not obtained.");
     all_passed = false;
   }
@@ -1269,7 +1270,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   bool got_node_coord = true;
   for (size_t i = 0; i < mesh.get_dims_nnodes(); i++) {
     for (size_t d = 0; d < mesh.get_dims_ndim(); d++)
-      if (coords[i][d] != mesh.get_nodes_coords(i, d))
+      if (!rtt_dsxx::soft_equiv(coords[i][d], mesh.get_nodes_coords(i, d)))
         got_node_coord = false;
   }
   if (!got_node_coord) {
@@ -1544,7 +1545,7 @@ bool check_node_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   bool got_node_data = true;
   for (size_t i = 0; i < mesh.get_dims_nnodes(); i++) {
     for (size_t d = 0; d < mesh.get_dims_nnode_data(); d++)
-      if (data[i][d] != mesh.get_node_data(i, d))
+      if (!rtt_dsxx::soft_equiv(data[i][d], mesh.get_node_data(i, d)))
         got_node_data = false;
   }
   if (!got_node_data) {
@@ -1605,7 +1606,7 @@ bool check_side_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   bool got_side_data = true;
   for (size_t i = 0; i < mesh.get_dims_nsides(); i++) {
     for (size_t d = 0; d < mesh.get_dims_nside_data(); d++)
-      if (data[i][d] != mesh.get_side_data(i, d))
+      if (!rtt_dsxx::soft_equiv(data[i][d], mesh.get_side_data(i, d)))
         got_side_data = false;
   }
   if (!got_side_data) {
@@ -1664,7 +1665,7 @@ bool check_cell_data(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   bool got_cell_data = true;
   for (size_t i = 0; i < mesh.get_dims_ncells(); i++) {
     for (size_t d = 0; d < mesh.get_dims_ncell_data(); d++)
-      if (data[i][d] != mesh.get_cell_data(i, d))
+      if (!rtt_dsxx::soft_equiv(data[i][d], mesh.get_cell_data(i, d)))
         got_cell_data = false;
   }
   if (!got_cell_data) {

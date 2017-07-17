@@ -4,13 +4,9 @@
  * \author Kent Budge
  * \date   Thu Dec 22 14:16:45 2006
  * \brief  Test the Subrandom_Sequence class
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2006-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-#include <fstream>
-#include <iostream>
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -19,6 +15,8 @@
 #include "rng/Halton_Subrandom_Generator.hh"
 #include "rng/LC_Subrandom_Generator.hh"
 #include "rng/Sobol_Sequence.hh"
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -39,10 +37,10 @@ void tstSubrandom_Sequence(UnitTest &ut) {
 
   double v1 = seq.lookahead();
   seq = Halton_Sequence(BASE, COUNT + 1);
-  if (seq.lookahead() == v1) {
-    ut.passes("correct restart");
+  if (rtt_dsxx::soft_equiv(seq.lookahead(), v1)) {
+    PASSMSG("correct restart");
   } else {
-    ut.failure("NOT correct restart");
+    FAILMSG("NOT correct restart");
   }
 
   {
@@ -52,24 +50,24 @@ void tstSubrandom_Sequence(UnitTest &ut) {
     // container should be empty
     std::vector<double> myValues(sobol.values());
     if (myValues.empty())
-      ut.failure(__LINE__);
+      FAILMSG(__LINE__);
     if (!soft_equiv(myValues[0], 0.5))
-      ut.failure(__LINE__);
+      FAILMSG(__LINE__);
 
     // Test Halton_Sequene default constructor
 
     Halton_Sequence halton;
     if (halton.base() != 0)
-      ut.failure(__LINE__);
+      FAILMSG(__LINE__);
     if (halton.count() != 0)
-      ut.failure(__LINE__);
+      FAILMSG(__LINE__);
 
     // Test LC_Subrandom_Generator
 
     LC_Subrandom_Generator lcsg;
     double value = lcsg.shift();
     if (!soft_equiv(value, 0.999741748906672))
-      ut.failure(__LINE__);
+      FAILMSG(__LINE__);
     lcsg.shift_vector();
   }
 
@@ -84,11 +82,11 @@ void tstSubrandom_Sequence(UnitTest &ut) {
   //     seq = Sobol_Sequence(1, COUNT+1);
   //     if (seq.lookahead() == v1)
   //     {
-  //         ut.passes("correct restart");
+  //         PASSMSG("correct restart");
   //     }
   //     else
   //     {
-  //         ut.failure("NOT correct restart");
+  //         FAILMSG("NOT correct restart");
   //     }
 
   // Integrate the unit sphere.
@@ -126,7 +124,7 @@ void tstSubrandom_Sequence(UnitTest &ut) {
     if (!soft_equiv(x, 2 * (generator.shift() - 0.5)) ||
         !soft_equiv(y, 2 * (generator.shift() - 0.5)) ||
         !soft_equiv(z, 2 * (generator.shift() - 0.5))) {
-      ut.failure("Subrandom_Generator does not match Halton_Sequence");
+      FAILMSG("Subrandom_Generator does not match Halton_Sequence");
       break;
     }
     generator.shift_vector();
@@ -148,16 +146,15 @@ void tstSubrandom_Sequence(UnitTest &ut) {
   }
   unsigned const myCount = generator.count();
   if (myCount == imax) {
-    ut.passes("Member function count returned the expected value (imax=100).");
+    PASSMSG("Member function count returned the expected value (imax=100).");
   } else {
-    ut.failure(
+    FAILMSG(
         "Member function count did not return the expected value (imax=100).");
   }
   return;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

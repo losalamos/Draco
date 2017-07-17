@@ -35,7 +35,7 @@ void tstutilities(UnitTest &ut) {
   // Try to read a real number.
 
   double d = parse_real(tokens);
-  if (tokens.error_count() != 0 || d != 5.)
+  if (tokens.error_count() != 0 || !rtt_dsxx::soft_equiv(d, 5.0, 1.0e-16))
     FAILMSG("real NOT successfully parsed");
   else
     PASSMSG("real successfully parsed");
@@ -75,7 +75,7 @@ void tstutilities(UnitTest &ut) {
   // Try to read an integer as a real.
 
   d = parse_real(tokens);
-  if (tokens.error_count() != 0 || d != 2.)
+  if (tokens.error_count() != 0 || !rtt_dsxx::soft_equiv(d, 2.0, 1.0e-16))
     FAILMSG("integer NOT successfully parsed as real");
   else
     PASSMSG("integer successfully parsed as real");
@@ -85,7 +85,9 @@ void tstutilities(UnitTest &ut) {
   double v[3];
   parse_vector(tokens, v);
   Token token = tokens.shift();
-  if (v[0] == 3. && v[1] == 0.0 && v[2] == 0.0 && token.type() == KEYWORD &&
+  if (rtt_dsxx::soft_equiv(v[0], 3.0, 1.0e-16) &&
+      rtt_dsxx::soft_equiv(v[1], 0.0, 1.0e-16) &&
+      rtt_dsxx::soft_equiv(v[2], 0.0, 1.0e-16) && token.type() == KEYWORD &&
       token.text() == "stop")
     PASSMSG("1-D vector successfully parsed");
   else
@@ -93,14 +95,18 @@ void tstutilities(UnitTest &ut) {
 
   parse_vector(tokens, v);
   token = tokens.shift();
-  if (v[0] == 1. && v[1] == 2.0 && v[2] == 0.0 && token.type() == KEYWORD &&
+  if (rtt_dsxx::soft_equiv(v[0], 1.0, 1.0e-16) &&
+      rtt_dsxx::soft_equiv(v[1], 2.0, 1.0e-16) &&
+      rtt_dsxx::soft_equiv(v[2], 0.0, 1.0e-16) && token.type() == KEYWORD &&
       token.text() == "stop")
     PASSMSG("2-D vector successfully parsed");
   else
     FAILMSG("2-D vector NOT successfully parsed");
 
   parse_vector(tokens, v);
-  if (v[0] == 4. && v[1] == 3.0 && v[2] == 2.0 &&
+  if (rtt_dsxx::soft_equiv(v[0], 4.0, 1.0e-16) &&
+      rtt_dsxx::soft_equiv(v[1], 3.0, 1.0e-16) &&
+      rtt_dsxx::soft_equiv(v[2], 2.0, 1.0e-16) &&
       tokens.shift().text() == "stop")
     PASSMSG("3-D vector successfully parsed");
   else
@@ -309,7 +315,7 @@ void tstutilities(UnitTest &ut) {
   {
     String_Token_Stream tokens("-3.0 K");
     double const T = parse_temperature(tokens);
-    if (tokens.error_count() == 0 || T != 0)
+    if (tokens.error_count() == 0 || (!rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16)))
       FAILMSG("did NOT detect negative temperature");
     else
       PASSMSG("correctly detected negative temperature");
@@ -460,7 +466,7 @@ void tstutilities(UnitTest &ut) {
   }
   {
     String_Token_Stream string("+3f");
-    if (parse_real(string) == 3.0)
+    if (rtt_dsxx::soft_equiv(parse_real(string), 3.0))
       PASSMSG("parsed real correctly");
     else
       FAILMSG("did NOT parse real +3 correctly");
@@ -474,6 +480,9 @@ void tstutilities(UnitTest &ut) {
       PASSMSG("detected bad real correctly");
     }
   }
+#ifndef DRACO_DIAGNOSTICS_LEVEL_3
+  // Exclude this check if FPE trapping is enabled.  Attempting to convert this
+  // string to a double causes an overflow condition when strtod is called.
   {
     String_Token_Stream string("1.8e10000");
     parse_real(string);
@@ -482,6 +491,7 @@ void tstutilities(UnitTest &ut) {
     else
       PASSMSG("detected real overflow correctly");
   }
+#endif
   {
     String_Token_Stream string("-8");
     parse_positive_real(string);
@@ -526,7 +536,7 @@ void tstutilities(UnitTest &ut) {
   {
     String_Token_Stream string("0.0");
     double const T = parse_nonnegative_real(string);
-    if (T == 0.0)
+    if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16))
       PASSMSG("parsed nonnegative real correctly");
     else
       FAILMSG("did NOT parse nonnegative real correctly");
@@ -652,8 +662,8 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT parse bare quantity to SI correctly");
     bare_quantity.rewind();
   }
-  // Screw around with unit expression settings, as before, but for
-  // temperature expressions in K.
+  // Screw around with unit expression settings, as before, but for temperature
+  // expressions in K.
   {
     using namespace rtt_units;
 
@@ -730,8 +740,8 @@ void tstutilities(UnitTest &ut) {
       FAILMSG("did NOT parse bare quantity to X4 correctly");
     bare_quantity.rewind();
   }
-  // Screw around with unit expression settings, as before, but for
-  // temperature expressions in keV.
+  // Screw around with unit expression settings, as before, but for temperature
+  // expressions in keV.
   {
     using namespace rtt_units;
 

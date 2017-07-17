@@ -4,23 +4,19 @@
  * \author Kent Budge
  * \brief  Solve a linear system by Gaussian elimination.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_gaussj_i_hh
 #define linear_gaussj_i_hh
 
-#include <algorithm>
-#include <sstream>
-#include <vector>
-
 #include "gaussj.hh"
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 #include "ds++/Field_Traits.hh"
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 namespace rtt_linear {
 using std::fabs;
@@ -40,21 +36,20 @@ bool is_square(DoubleRandomContainer const &A) {
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \arg \a RandomContainer A random access container type
  *
  * \param A Coefficient matrix of the system of equations. Destroyed on return.
  *
  * \param n Rank of matrix A
- * 
+ *
  * \param b Right hand side of the system of equations. Replaced by the
- * solution on return.
+ *          solution on return.
  *
  * \param m Column count of the right hand side of the system of equations.
- * Setting this to a value other than one amounts to simultaneously solving m
- * systems of equations.
+ *          Setting this to a value other than one amounts to simultaneously
+ *          solving m systems of equations.
  */
-
 template <class RandomContainer>
 void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
             unsigned const m) {
@@ -95,7 +90,7 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
     }
     indxr[i] = irow;
     indxc[i] = icol;
-    if (A[icol + n * icol] == 0) {
+    if (rtt_dsxx::soft_equiv(A[icol + n * icol], 0.0, 1.0e-16)) {
       throw invalid_argument("gaussj:  singular matrix");
     }
     double const pivinv = 1.0 / A[icol + n * icol];
@@ -131,18 +126,16 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
- * \arg \a DoubleRandomContainer A double-subscript random access container
- * type
+/*!
+ * \arg \a DoubleRandomContainer A double-subscript random access container type
  *
  * \arg \a RandomContainer A random access container type
  *
  * \param A Coefficient matrix of the system of equations. Destroyed on return.
- * 
- * \param b Right hand side of the system of equations. Replacec by the
- * solution of the system on return.
+ *
+ * \param b Right hand side of the system of equations. Replacec by the solution
+ *          of the system on return.
  */
-
 template <class DoubleRandomContainer, class RandomContainer>
 void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
   using namespace std;
@@ -173,7 +166,7 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
         }
       }
     }
-    if (big == 0.0) {
+    if (rtt_dsxx::soft_equiv(big, 0.0, 1.0e-16)) {
       throw invalid_argument("gaussj:  singular matrix");
     }
     ++ipiv[icol];
@@ -185,7 +178,7 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
     }
     indxr[i] = irow;
     indxc[i] = icol;
-    if (value(A[icol][icol]) == 0) {
+    if (rtt_dsxx::soft_equiv(value(A[icol][icol]), 0.0, 1.0e-16)) {
       throw invalid_argument("gaussj:  singular matrix");
     }
     double const pivinv = 1.0 / A[icol][icol];
