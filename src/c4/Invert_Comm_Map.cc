@@ -21,8 +21,8 @@ namespace rtt_c4 {
 #ifdef C4_MPI
 int get_num_recv(Invert_Comm_Map_t::const_iterator first,
                  Invert_Comm_Map_t::const_iterator last) {
-  const int myproc = rtt_c4::node();
-  const int numprocs = rtt_c4::nodes();
+  const int my_proc = rtt_c4::node();
+  Remember(const int num_procs = rtt_c4::nodes());
   const int one = 1;
   int num_recv(0); // return value
 
@@ -39,8 +39,8 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
   MPI_Win_fence(fence_assert, win);
   for (auto it = first; it != last; ++it) {
     Require(it->first >= 0);
-    Require(it->first < numprocs);
-    if (it->first != myproc) { // treat only non-local sends
+    Require(it->first < num_procs);
+    if (it->first != my_proc) { // treat only non-local sends
       // ...increment the remote number of receives
       MPI_Accumulate(&one, 1, MPI_Traits<int>::element_type(), it->first, 0, 1,
                      MPI_Traits<int>::element_type(), MPI_SUM, win);
@@ -49,7 +49,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
   MPI_Win_fence(fence_assert, win);
   MPI_Win_free(&win);
 
-  Ensure(num_recv >= 0 && num_recv < numprocs);
+  Ensure(num_recv >= 0 && num_recv < num_procs);
   return num_recv;
 }
 //---------------------------------------------------------------------------//
@@ -72,7 +72,7 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
 void invert_comm_map(Invert_Comm_Map_t const &to_map,
                      Invert_Comm_Map_t &from_map) {
   const int my_proc = rtt_c4::node();
-  const int num_procs = rtt_c4::nodes();
+  Remember(const int num_procs = rtt_c4::nodes());
 
   // number of procs we will receive data from
   const int num_recv = get_num_recv(to_map.begin(), to_map.end());

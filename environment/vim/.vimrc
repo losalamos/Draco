@@ -25,3 +25,11 @@ endfun
 
 " fix trailing spaces when you write a file
 autocmd BufWritePre * :call RemoveTrailing()
+
+" sets a gray warning line at 81 columns
+if exists('+colorcolumn')
+  highlight ColorColumn ctermbg=gray
+  set colorcolumn=81
+else
+  au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
+endif

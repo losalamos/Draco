@@ -46,7 +46,7 @@ if( HAVE_Fortran AND
     NOT CMAKE_C_COMPILER MATCHES clang )
   add_dir_if_exists( lapack_wrap )  # needs ds++
 endif()
-if( GRACE_FOUND )
+if( Grace_FOUND )
   add_dir_if_exists( plot2D )
 endif()
 if( NOT WIN32 )

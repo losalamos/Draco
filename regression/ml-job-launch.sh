@@ -20,7 +20,6 @@
 args=( "$@" )
 nargs=${#args[@]}
 scriptname=${0##*/}
-host=`uname -n`
 
 export SHOWQ=`which squeue`
 export MSUB=`which sbatch`
@@ -31,72 +30,29 @@ for (( i=0; i < $nargs ; ++i )); do
    dep_jobids="${dep_jobids} ${args[$i]} "
 done
 
-# sanity check
-if [[ ! ${regdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
-    exit 1
-fi
-if [[ ! ${rscriptdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
-    exit 1
-fi
-if [[ ! ${subproj} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
-    exit 1
-fi
-if [[ ! ${build_type} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
-    exit 1
-fi
-if [[ ! ${logdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
-    exit 1
+# load some common bash functions
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f $rscriptdir/scripts/common.sh ]]; then
+  source $rscriptdir/scripts/common.sh
+else
+  echo " "
+  echo "FATAL ERROR: Unable to locate Draco's bash functions: "
+  echo "   looking for .../regression/scripts/common.sh"
+  echo "   searched rscriptdir = $rscriptdir"
+  exit 1
 fi
 
-if test $subproj == draco || test $subproj == jayenne; then
-  if [[ ! ${featurebranch} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
-    echo "printenv -> "
-    printenv
-  fi
-fi
+# sanity checks
+job_launch_sanity_checks
 
 available_queues=`sacctmgr -np list assoc user=$LOGNAME | grep access | sed -e 's/.*|\(.*access.*\)|.*/\1/'  | sed -e 's/|.*//'`
-# snow: available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
 case $available_queues in
   *access*) access_queue="-A access --qos=access" ;;
   *dev*) access_queue="--qos=dev" ;;
 esac
 
 # Banner
-echo "==========================================================================="
-echo "ML Regression job launcher for ${subproj} - ${build_type} flavor."
-echo "==========================================================================="
-echo " "
-echo "Environment:"
-echo "   subproj        = ${subproj}"
-echo "   build_type     = ${build_type}"
-if [[ ! ${extra_params} ]]; then
-  echo "   extra_params   = none"
-else
-  echo "   extra_params   = ${extra_params}"
-fi
-if [[ ${featurebranch} ]]; then
-  echo "   featurebranch  = ${featurebranch}"
-fi
-echo "   regdir         = ${regdir}"
-echo "   rscriptdir     = ${rscriptdir}"
-echo "   scratchdir     = ${scratchdir}"
-echo "   logdir         = ${logdir}"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   build_autodoc  = ${build_autodoc}"
-echo "   access_queue   = ${access_queue}"
-echo " "
-echo "   ${subproj}: dep_jobids = ${dep_jobids}"
-echo " "
-
-echo "module purge &> /dev/null"
-module purge &> /dev/null
+print_job_launch_banner
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
@@ -130,7 +86,7 @@ logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra
 if [[ -f $logfile ]]; then
   rm $logfile
 fi
-cmd="$MSUB ${access_queue} -o ${logfile} -e ${logfile} -t 4:00:00 ${rscriptdir}/ml-regress.msub"
+cmd="$MSUB ${access_queue} -o ${logfile} -t 4:00:00 ${rscriptdir}/ml-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -149,7 +105,7 @@ done
 echo " "
 echo "Submit:"
 export REGRESSION_PHASE=s
-echo "Jobs done, now submitting ${build_type} results from ${host}."
+echo "Jobs done, now submitting ${build_type} results."
 cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
 echo "${cmd}"
 eval "${cmd}"

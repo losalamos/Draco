@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi_eospac/test.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( cdi_eospac_test CXX )
@@ -55,3 +55,7 @@ add_app_unit_test(
   APP    $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
   TEST_ARGS "--version;--help"
 )
+
+# ---------------------------------------------------------------------------- #
+# End cdi_eospac/test/CMakeLists.txt
+# ---------------------------------------------------------------------------- #

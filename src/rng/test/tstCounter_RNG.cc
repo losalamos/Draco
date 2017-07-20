@@ -4,10 +4,8 @@
  * \author Peter Ahrens
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Counter_RNG tests.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -43,8 +41,8 @@ void test_equality(UnitTest &ut) {
   seed = 2;
   Counter_RNG rng2(seed, streamnum);
 
-  // rng2's stream number should match rng's, but the two generators should
-  // not be identical.
+  // rng2's stream number should match rng's, but the two generators should not
+  // be identical.
   if (rng2.get_num() != streamnum)
     ITFAILS;
   if (rng2.get_num() != rng.get_num())
@@ -161,7 +159,10 @@ void test_equality(UnitTest &ut) {
     ITFAILS;
 
 // Try to create a Counter_RNG from a data array that's too short.
+// 1. Only test exceptions if DbC is enabled.
+// 2. However, do not run these tests if no-throw DbC is enabled (DBC & 8)
 #ifdef REQUIRE_ON
+#if !(DBC & 8)
   bool caught = false;
   try {
     Counter_RNG rng7(&data[0], &data[0] + CBRNG_DATA_SIZE - 1);
@@ -171,6 +172,7 @@ void test_equality(UnitTest &ut) {
   }
   if (!caught)
     ITFAILS;
+#endif
 #endif
 
   // Test for equality using iterators.
@@ -186,7 +188,7 @@ void test_equality(UnitTest &ut) {
     ITFAILS;
 
   if (ut.numFails == 0)
-    ut.passes("test_equality passed");
+    PASSMSG("test_equality passed");
 }
 
 //---------------------------------------------------------------------------//
@@ -203,8 +205,8 @@ void test_stream(UnitTest &ut) {
   // Generate a random double (and advance the stream) from rng.
   double x = rng.ran();
 
-  // rng and rng2 should no longer match, but their stream numbers and
-  // unique identifiers should be the same.
+  // rng and rng2 should no longer match, but their stream numbers and unique
+  // identifiers should be the same.
   if (rng == rng2)
     ITFAILS;
   if (rng.get_num() != streamnum)
@@ -217,8 +219,8 @@ void test_stream(UnitTest &ut) {
   // Generate a random double (and advance the stream) from rng2.
   double y = rng2.ran();
 
-  // Now rng and rng2 should match again, and the two generated doubles
-  // should be identical.
+  // Now rng and rng2 should match again, and the two generated doubles should
+  // be identical.
   if (rng != rng2)
     ITFAILS;
   if (!soft_equiv(x, y))
@@ -247,8 +249,8 @@ void test_stream(UnitTest &ut) {
   data[3] = 0;
   Counter_RNG rng3(&data[0], &data[0] + CBRNG_DATA_SIZE);
 
-  // Initially, rng3 should exactly match neither rng nor rng2, but all
-  // three should have the same stream number and "unique" identifier.
+  // Initially, rng3 should exactly match neither rng nor rng2, but all three
+  // should have the same stream number and "unique" identifier.
   if (!std::equal(rng3.begin(), rng3.end(), data.begin()))
     ITFAILS;
   if (rng3 == rng)
@@ -281,13 +283,13 @@ void test_stream(UnitTest &ut) {
     ITFAILS;
 
   if (ut.numFails == 0)
-    ut.passes("test_stream passed");
+    PASSMSG("test_stream passed");
 }
 
 //---------------------------------------------------------------------------//
 void test_alias(UnitTest &ut) {
-  // Create four Counter_RNGs; rng and rng2 are identical, and rng, rng2,
-  // and rng3 have the same stream number.
+  // Create four Counter_RNGs; rng and rng2 are identical, and rng, rng2, and
+  // rng3 have the same stream number.
   uint64_t streamnum = 0x20202020;
   Counter_RNG rng(0x1111, streamnum);
   Counter_RNG rng2(0x1111, streamnum);
@@ -389,8 +391,7 @@ void test_alias(UnitTest &ut) {
     ITFAILS;
 
   // Invoking ref.ran should have altered rng; it should still have the same
-  // stream number as rng2 and rng3, but it should be identical to none of
-  // them.
+  // stream number as rng2 and rng3, but it should be identical to none of them.
   if (rng.get_num() != rng2.get_num())
     ITFAILS;
   if (rng.get_num() != rng3.get_num())
@@ -478,7 +479,10 @@ void test_alias(UnitTest &ut) {
     ITFAILS;
 
 // Try to create a Counter_RNG_Ref with a data array that's too short.
+// 1. Only test exceptions if DbC is enabled.
+// 2. However, do not run these tests if no-throw DbC is enabled (DBC & 8)
 #ifdef REQUIRE_ON
+#if !(DBC & 8)
   bool caught = false;
   try {
     Counter_RNG_Ref ref3(&data[0], &data[0] + CBRNG_DATA_SIZE - 1);
@@ -489,9 +493,10 @@ void test_alias(UnitTest &ut) {
   if (!caught)
     ITFAILS;
 #endif
+#endif
 
   if (ut.numFails == 0)
-    ut.passes("test_alias passed");
+    PASSMSG("test_alias passed");
 }
 
 //---------------------------------------------------------------------------//
@@ -518,8 +523,8 @@ void test_rollover(UnitTest &ut) {
   if (!std::equal(rng.begin(), rng.end(), data.begin()))
     ITFAILS;
 
-  // Generate another random double and verify that the counter has
-  // incremented correctly.
+  // Generate another random double and verify that the counter has incremented
+  // correctly.
   data[0] = 0;
   data[1] = 2;
   double z = rng.ran();
@@ -560,7 +565,7 @@ void test_rollover(UnitTest &ut) {
     ITFAILS;
 
   if (ut.numFails == 0)
-    ut.passes("test_rollover passed");
+    PASSMSG("test_rollover passed");
 }
 
 //---------------------------------------------------------------------------//
@@ -670,8 +675,8 @@ void test_spawn(UnitTest &ut) {
   Counter_RNG original(seed, streamnum);
   Counter_RNG parent(seed, streamnum);
 
-  // Repeatedly spawn from parent.  See how long it takes to create a
-  // duplicate of a previous generator.
+  // Repeatedly spawn from parent.  See how long it takes to create a duplicate
+  // of a previous generator.
   set<uint64_t> spawn_id;
   spawn_id.insert(original.begin()[3]);
 
@@ -685,9 +690,8 @@ void test_spawn(UnitTest &ut) {
     Counter_RNG child;
     parent.spawn(child);
 
-    // The child generator should always have the same stream number as
-    // the parent and the original but should never be identical to
-    // either.
+    // The child generator should always have the same stream number as the
+    // parent and the original but should never be identical to either.
     if (child.get_num() != streamnum)
       ITFAILS;
     if (parent.get_num() != streamnum)
@@ -722,8 +726,8 @@ void test_spawn(UnitTest &ut) {
   if (gen != expected_period)
     ITFAILS;
 
-  // Go again from that parent, this time through a reference.  How long
-  // until it repeats this time?
+  // Go again from that parent, this time through a reference.  How long until
+  // it repeats this time?
   Counter_RNG_Ref parent_ref(parent.ref());
   if (!parent_ref.is_alias_for(parent))
     ITFAILS;
@@ -740,9 +744,8 @@ void test_spawn(UnitTest &ut) {
     if (!parent_ref.is_alias_for(parent))
       ITFAILS;
 
-    // The child generator should always have the same stream number as
-    // the parent and the original but should never be identical to
-    // either.
+    // The child generator should always have the same stream number as the
+    // parent and the original but should never be identical to either.
     if (child.get_num() != streamnum)
       ITFAILS;
     if (parent.get_num() != streamnum)
@@ -777,8 +780,8 @@ void test_spawn(UnitTest &ut) {
   if (gen != expected_period)
     ITFAILS;
 
-  // Repeat the experiment, but this time use the first child as the
-  // starting parent.
+  // Repeat the experiment, but this time use the first child as the starting
+  // parent.
   Counter_RNG child;
   parent.spawn(child);
 
@@ -806,9 +809,9 @@ void test_spawn(UnitTest &ut) {
     Counter_RNG grandchild;
     child.spawn(grandchild);
 
-    // The grandchild generator should always have the same stream number
-    // as its parent, grandparent, and the original generator but should
-    // never be identical to any of them.
+    // The grandchild generator should always have the same stream number as its
+    // parent, grandparent, and the original generator but should never be
+    // identical to any of them.
     if (grandchild.get_num() != streamnum)
       ITFAILS;
     if (child.get_num() != streamnum)
@@ -846,7 +849,7 @@ void test_spawn(UnitTest &ut) {
     ITFAILS;
 
   if (ut.numFails == 0)
-    ut.passes("test_spawn passed");
+    PASSMSG("test_spawn passed");
 }
 
 //---------------------------------------------------------------------------//
@@ -894,9 +897,9 @@ void test_unique(UnitTest &ut) {
       ITFAILS;
   }
 
-  // Spawn some generators from rng3.  While all spawned generators should
-  // have the same stream number as the original parent, their unique
-  // numbers should differ.
+  // Spawn some generators from rng3.  While all spawned generators should have
+  // the same stream number as the original parent, their unique numbers should
+  // differ.
   unsigned int expected_period = 0;
   for (unsigned int i = 0; i < 8 * sizeof(uint64_t); ++i)
     expected_period += i;
@@ -926,7 +929,7 @@ void test_unique(UnitTest &ut) {
   }
 
   if (ut.numFails == 0)
-    ut.passes("test_unique passed");
+    PASSMSG("test_unique passed");
 }
 
 //---------------------------------------------------------------------------//

@@ -43,12 +43,12 @@ namespace rtt_dsxx {
  * Scalar UnitTests should have the following syntax.
  * \code
 
- int main(int argc, char *argv[])
- {
- rtt_utils::ScalarUnitTest ut( argc, argv, release );
- try { tstOne(ut); }
- UT_EPILOG(ut);
+ int main(int argc, char *argv[]) {
+   rtt_utils::ScalarUnitTest ut( argc, argv, release );
+   try { tstOne(ut); }
+   UT_EPILOG(ut);
  }
+
  * \endcode
  *
  * \test All of the member functions of this class are tested by
@@ -81,8 +81,9 @@ public:
   //! The assignment operator is disabled.
   UnitTest &operator=(UnitTest const &rhs);
 
-  //! Only special cases should use these (like the unit test
-  //! tstScalarUnitTest.cc).
+  /*!
+   * \brief Only special cases should use these (like the unit test
+   * tstScalarUnitTest.cc). */
   void dbcRequire(bool b) {
     m_dbcRequire = b;
     return;
@@ -106,8 +107,11 @@ public:
   DLL_PUBLIC_dsxx bool passes(std::string const &passmsg);
   DLL_PUBLIC_dsxx bool check(bool, std::string const &checkmsg,
                              bool fatal = false);
-  //! This pure virtual function must be provided by the inherited class.
-  //It should provide output concerning the status of UnitTest.
+  /*!
+   * \brief Provide a summary of the test status
+   *
+   * This pure virtual function must be provided by the inherited class.
+   * It should provide output concerning the status of UnitTest. */
   void status(void) const {
     out << resultMessage() << std::endl;
     return;
@@ -126,16 +130,16 @@ public:
   std::string getTestPath(void) const { return testPath; }
   std::string getTestName(void) const { return testName; }
   /*!
-     * \brief Returns the path of the test binary directory (useful for locating
-     * input files).
-     *
-     * This function depends on the cmake build system setting the
-     * COMPILE_DEFINITIONS target property. This should be done in
-     * config/component_macros.cmake.
-     *
-     * set_target_property( unit_test_target_name
-     *    COMPILE_DEFINITIONS PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
-     */
+   * \brief Returns the path of the test binary directory (useful for locating
+   * input files).
+   *
+   * This function depends on the cmake build system setting the
+   * COMPILE_DEFINITIONS target property. This should be done in
+   * config/component_macros.cmake.
+   *
+   * set_target_property( unit_test_target_name
+   *    COMPILE_DEFINITIONS PROJECT_BINARY_DIR="${PROJECT_BINARY_DIR}" )
+   */
   static inline std::string getTestInputPath(void) {
 #ifdef PROJECT_BINARY_DIR
     std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_BINARY_DIR,
@@ -147,23 +151,23 @@ public:
 
     return sourcePath;
 #else
-    // We should never get here. However, when compiling ScalarUnitTest.cc,
-    // this function must be valid.  ScalarUnitTest.cc is not a unit test so
+    // We should never get here. However, when compiling ScalarUnitTest.cc, this
+    // function must be valid.  ScalarUnitTest.cc is not a unit test so
     // PROJECT_SOURCE_DIR is not defnied.
     return std::string("unknown");
 #endif
   }
   /*!
-     * \brief Returns the path of the test source directory (useful for locating
-     * input files).
-     *
-     * This function depends on the cmake build system setting the
-     * COMPILE_DEFINITIONS target property. This should be done in
-     * config/component_macros.cmake.
-     *
-     * set_target_property( unit_test_target_name
-     *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
-     */
+   * \brief Returns the path of the test source directory (useful for locating
+   * input files).
+   *
+   * This function depends on the cmake build system setting the
+   * COMPILE_DEFINITIONS target property. This should be done in
+   * config/component_macros.cmake.
+   *
+   * set_target_property( unit_test_target_name
+   *    COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}" )
+   */
   static inline std::string getTestSourcePath(void) {
 #ifdef PROJECT_SOURCE_DIR
     std::string sourcePath(rtt_dsxx::getFilenameComponent(PROJECT_SOURCE_DIR,
@@ -175,8 +179,8 @@ public:
 
     return sourcePath;
 #else
-    // We should never get here. However, when compiling ScalarUnitTest.cc,
-    // this function must be valid.  ScalarUnitTest.cc is not a unit test so
+    // We should never get here. However, when compiling ScalarUnitTest.cc, this
+    // function must be valid.  ScalarUnitTest.cc is not a unit test so
     // PROJECT_SOURCE_DIR is not defnied.
     return std::string("unknown");
 #endif
@@ -218,8 +222,8 @@ protected:
   std::ostream &out;
 
   /*! Save the state of DBC so that it is easily accessible from within a
-     * unit test.
-     */
+   * unit test.
+   */
   bool m_dbcRequire;
   bool m_dbcCheck;
   bool m_dbcEnsure;
@@ -236,7 +240,6 @@ protected:
 #define UT_CHECK(ut, m) ut.check(m, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
-//#define UT_PROLOG(foo) typedef ut foo
 #define UT_EPILOG(foo)                                                         \
   catch (rtt_dsxx::assertion & err) {                                          \
     std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \

@@ -3,7 +3,7 @@ rem ---------------------------------------------------------------------------
 rem File  : regression/win32-regress.bat
 rem Date  : Tuesday, May 31, 2016, 14:48 pm
 rem Author: Kelly Thompson
-rem Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+rem Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 rem         All rights are reserved.
 rem ---------------------------------------------------------------------------
 
@@ -11,46 +11,14 @@ rem This file copied from c:\program files (x86)\Microsoft Visual Studio 12.0\VC
 rem It establishes a Visual Studio environment in a command prompt.  The 
 rem Windows shortcut runs the following command:
 rem
-rem %comspec% /[k|c] ""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"" x86
+rem %comspec% /[k|c] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86 %*
 rem
 rem This fill is called from win32-regression-master.bat so that all outpout
 rem can be captured in a log file.
 
-if "%1" == "" goto x86
-if not "%2" == "" goto usage
-
-if /i %1 == x86       goto x86
-if /i %1 == amd64     goto amd64
-if /i %1 == x64       goto amd64
-if /i %1 == arm       goto arm
-if /i %1 == x86_arm   goto x86_arm
-if /i %1 == x86_amd64 goto x86_amd64
-if /i %1 == amd64_x86 goto amd64_x86
-if /i %1 == amd64_arm goto amd64_arm
-goto usage
-
-:x86
-if not exist "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" goto missing
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
-goto :SetVisualStudioVersion
-
-:SetVisualStudioVersion
-set VisualStudioVersion=12.0
-goto :vendorsetup
-
-:usage
-echo Error in script usage. The correct usage is:
-echo     %0 [option]
-echo where [option] is: x86 ^| amd64 ^| arm ^| x86_amd64 ^| x86_arm ^| amd64_x86 ^| amd64_arm
-echo:
-echo For example:
-echo     %0 x86_amd64
-goto :eof
-
-:missing
-echo The specified configuration type is missing.  The tools for the
-echo configuration might not be installed.
-goto :eof
+:setupvs17commenv
+rem 32-bit builds ==> x86
+@call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86 %*
 
 rem -------------------------------------------------------------------------------------------
 rem The main regression script starts here.
@@ -58,7 +26,6 @@ rem ----------------------------------------------------------------------------
 
 :vendorsetup
 call e:\work\vendors\setupvendors.bat
-set USE_GITHUB=1
 
 :cdash
 rem set dashboard_type=Experimental

@@ -96,6 +96,13 @@ case $project in
     print_use; exit 1 ;;
 esac
 
+
+if ! [[ $LOGNAME == "kellyt" ]]; then
+  echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
+  exit 1
+fi
+
+
 if [[ $regress_mode == "on" ]]; then
   if ! [[ $LOGNAME == "kellyt" ]]; then
     echo ""; echo "FATAL ERROR: invalid use of -r"
@@ -229,7 +236,10 @@ case $target in
   sn-fe*) startCI ${project} Debug na $pr ;;
 
   # Trinitite: Release
-  tt-fe*) startCI ${project} Release na $pr ;;
+  tt-fe*)
+    startCI ${project} Release na $pr
+    startCI ${project} Release knl $pr
+    ;;
 
   # Darwin: Disabled
   darwin-fe*)

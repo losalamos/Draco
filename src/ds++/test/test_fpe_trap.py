@@ -81,15 +81,15 @@ try:
         tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point divide by zero)")
 
 
-      print "Standard out:"
+      print("Standard out:")
       with open(tFpeTrap.outfile) as f:
         for line in f:
-          print "%s" % line
+          print("%s" % line)
 
-      print "Standard error:"
+      print("Standard error:")
       with open(tFpeTrap.errfile) as f:
         for line in f:
-          print "%s" % line
+          print("%s" % line)
 
   # ---------------------------------------------------------------------------- #
   # Case 2: attempts to evaluate sqrt(-1.0)
@@ -121,15 +121,15 @@ try:
       else:
         tFpeTrap.failmsg("Failed to catch SIGFPE (Invalid floating point operation)")
 
-        print "Standard out:"
+        print("Standard out:")
         with open(tFpeTrap.outfile) as f:
           for line in f:
-            print "%s" % line
+            print("%s" % line)
 
-        print "Standard error:"
+        print("Standard error:")
         with open(tFpeTrap.errfile) as f:
           for line in f:
-            print "%s" % line
+            print("%s" % line)
 
   # ---------------------------------------------------------------------------- #
   # Case 3: An overflow condition is generated.
@@ -157,15 +157,15 @@ try:
     else:
       tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point overflow)")
 
-      print "Standard out:"
+      print("Standard out:")
       with open(tFpeTrap.outfile) as f:
         for line in f:
-          print "%s" % line
+          print("%s" % line)
 
-      print "Standard error:"
+      print("Standard error:")
       with open(tFpeTrap.errfile) as f:
         for line in f:
-          print "%s" % line
+          print("%s" % line)
 
   print(" ")
 

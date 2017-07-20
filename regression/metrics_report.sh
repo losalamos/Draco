@@ -1,12 +1,23 @@
 #!/bin/bash
 
+## -*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## File  : regression/metrics_report.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
+## Generate a code-coverage and LOC report and send it by email.
+##---------------------------------------------------------------------------##
+
 # Collect montly metrics for Jayenne codes and email a report.
 # Use:
 #    <path>/metrics_report.sh -e "email1 [email2]" -p "project1 [project2]"
 
 # Typical use:
 # ./metrics_report.sh -e kgt@lanl.gov -p "draco jayenne capsaicin"
-# ./metrics_report.sh -e "jsbrock@lanl.gov jomc@lanl.gov sriram@lanl.gov draco@lanl.gov" -p "draco jayenne capsaicin"
+# ./metrics_report.sh -e "jsbrock@lanl.gov jomc@lanl.gov gshipman@lanl.gov draco@lanl.gov" -p "draco"
 
 ##---------------------------------------------------------------------------##
 ## Support functions
@@ -78,13 +89,69 @@ fi
 # Environment setup
 ##---------------------------------------------------------------------------##
 
-if test -z "$MODULESHOME"; then
-  # This is a new login
-  if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
-    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
-  fi
+# load some common bash functions
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f $rscriptdir/scripts/common.sh ]]; then
+  source $rscriptdir/scripts/common.sh
+else
+  echo " "
+  echo "FATAL ERROR: Unable to locate Draco's bash functions: "
+  echo "   looking for .../regression/scripts/common.sh"
+  echo "   searched rscriptdir = $rscriptdir"
+  exit 1
 fi
-module load bullseyecoverage
+
+
+
+# Modules
+# ----------------------------------------
+
+if [[ `fn_exists module` == 1 ]]; then
+  echo " "
+  if [[ `declare -f module | grep -c LMOD` == 0 ]]; then
+    # we have tcl modules
+    echo "Found Tcl modules:"
+    run "module list"
+    echo "unloading"
+    run "module purge"
+    run "module list"
+    unset dracomodules
+    unset NoModules
+    unset _LMFILES_
+    unset MODULEPATH
+    unset LOADEDMODULES
+    unset MODULESHOME
+
+    # If TCL modulefiles, switch to Lmod
+    echo " "
+    echo "Switching to Lmod modulefiles..."
+    export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
+    source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
+    run "module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core" || die "Can't find Lmod Core modulefiles."
+
+  else
+    # we have Lmod modules
+    echo "Found Lmod modules:"
+    run "module avail"
+    run "module list"
+    run "module purge"
+    run "module list"
+  fi
+else
+  echo " "
+  echo "No modules available"
+  echo "Loading Lmod modulefiles..."
+  export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
+  source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
+  run "module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core" || die "Can't find Lmod Core modulefiles."
+fi
+
+# Establish environment via Lmod...
+
+# eospac, ndi, csk
+run "module use --append /scratch/vendors/Modules.lmod"
+run "module load bullseyecoverage"
+
 COVDIR=`which covdir`
 if ! test -x $COVDIR; then
    echo "FATAL ERROR: covdir not found in PATH  Contact Kelly Thompson <kgt@lanl.gov>."
@@ -204,9 +271,12 @@ export COVDIRCFG=$work_dir/draco/regression/mcovdir.cfg
 # 1. Generate a merged report, then
 # 2. Trim leading directory names.
 # 3. Strip out the line '../source/src/'
+# 4. Drop lines that are package subdirectories since the function coverate
+#    numbers are already included in the parent.
 covdir -w120 \
-| sed -r 's%../source/src/([A-Za-z0-9+_]+)/%\1/             %' \
-| grep -v "../source/src/"
+| sed -r 's%../source/src/([A-Za-z0-9+_/]+)/%\1/             %' \
+| grep -v "../source/src/" \
+| grep -v '[a-z]/[a-z]'
 
 #| sed -e 's/Directory               /Directory/' \
 #| sed -e 's/------------------------------------------------/---------------------------------/' \

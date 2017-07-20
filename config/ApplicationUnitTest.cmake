@@ -356,8 +356,8 @@ macro( add_app_unit_test )
   if( DEFINED aut_PE_LIST AND ${DRACO_C4} MATCHES "MPI" )
 
     # Parallel tests
-    if( "${MPIEXEC}" MATCHES "srun" )
-      set( RUN_CMD "srun -n" )
+    if( "${MPIEXEC}" MATCHES "aprun" )
+      set( RUN_CMD "aprun -n" )
     else()
       set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG}")
     endif()
@@ -365,10 +365,8 @@ macro( add_app_unit_test )
   else()
 
     # Scalar tests
-    if( "${MPIEXEC}" MATCHES "aprun" )
+    if( "${MPIEXEC}" MATCHES "aprun" OR "${MPIEXEC}" MATCHES "srun" )
       set( RUN_CMD "${MPIEXEC} ${MPIEXEC_POSTFLAGS} ${MPIEXEC_NUMPROC_FLAG} 1" )
-    elseif( "${MPIEXEC}" MATCHES "srun" )
-      set( RUN_CMD "srun -n 1" )
     endif()
   endif()
 

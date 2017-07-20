@@ -31,12 +31,16 @@ endif()
 # TODO: Win32 logic untested as of 2/28/17.
 if( WIN32 )
    if( COMPTON_STATIC )
-      set( COMPTON_LIBRARY_NAME libcompton.lib)
+      set( COMPTON_LIBRARY_NAME compton.lib)
    else()
       set( COMPTON_LIBRARY_NAME libcompton_dll.lib)
    endif()
 else()
-   set( COMPTON_LIBRARY_NAME libLib_compton.a)
+  if( OPENMP_FOUND )
+    set( COMPTON_LIBRARY_NAME Lib_compton_omp)
+  else()
+    set( COMPTON_LIBRARY_NAME Lib_compton)
+  endif()
 endif()
 
 find_library(COMPTON_LIBRARY

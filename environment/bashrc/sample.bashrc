@@ -22,7 +22,9 @@ case ${-} in
    fi
    ;;
 *) # Not an interactive shell
-  export INTERACTIVE=false ;;
+  export INTERACTIVE=false
+  export DRACO_ENV_DIR=$HOME/draco/environment
+  ;;
 esac
 
 #------------------------------------------------------------------------------#
@@ -55,4 +57,5 @@ if test "$INTERACTIVE" = true; then
   # alias cmakebc='cmake -DGCC_ENABLE_GLIBCXX_DEBUG=ON'
   # Turn on extra debug info and floating point exception checking.
   # alias cmakefd='cmake -DDRACO_DIAGNOSTICS=7'
+
 fi

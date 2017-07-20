@@ -21,6 +21,8 @@ if [[ ! ${VENDOR_DIR} ]]; then
    fi
 fi
 
+add_to_path $VENDOR_DIR/bin
+
 #
 # MODULES
 #
@@ -42,8 +44,16 @@ if [[ ! ${modcmd} ]]; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-  module use --append /usr/projects/packages/user_contrib/modulefiles/fta
-  module load hsi psi
+  # If modulefiles is located at $HOME, assume that the current developer wants
+  # to use his/her own checkout of user_contrib modulefiles.
+  if test -d $HOME/modulefiles; then
+    export ucmf=$HOME/modulefiles
+    module use --append $ucmf/fta
+  else
+    module load user_contrib
+  fi
+
+  export dracomodules="hsi psi svn"
 
 fi
 

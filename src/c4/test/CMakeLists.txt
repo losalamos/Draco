@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   c4/test/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for c4/test.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( c4_test CXX )
@@ -66,15 +66,6 @@ if( NOT OPENMP_FOUND )
    # no-op
 elseif( DBS_CXX_IS_BULLSEYE )
    # no-op
-elseif( "${MPIEXEC}" MATCHES "aprun" )
-   if( NOT "$ENV{OMP_NUM_THREADS}x" STREQUAL "x" )
-      add_parallel_tests(
-         SOURCES   "${special_test}"
-         DEPS      Lib_c4
-         PE_LIST   "1;2"
-         MPI_PLUS_OMP
-         )
-   endif()
 else()
    add_parallel_tests(
       SOURCES   "${special_test}"
@@ -114,3 +105,7 @@ add_parallel_tests(
    DEPS      Lib_c4
    PE_LIST   "1;2;4"
    )
+
+#------------------------------------------------------------------------------#
+# End src/c4/test/CMakeLists.txt
+#------------------------------------------------------------------------------#

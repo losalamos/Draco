@@ -20,7 +20,6 @@
 args=( "$@" )
 nargs=${#args[@]}
 scriptname=${0##*/}
-host=`uname -n`
 
  # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -28,80 +27,23 @@ for (( i=0; i < $nargs ; ++i )); do
    dep_jobids="${dep_jobids} ${args[$i]} "
 done
 
-# sanity check
-if [[ ! ${regdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
-    echo "printenv -> "
-    printenv
-    exit 1
-fi
-if [[ ! ${rscriptdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
-    echo "printenv -> "
-    printenv
-    exit 1
-fi
-if [[ ! ${subproj} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
-    echo "printenv -> "
-    printenv
-    exit 1
-fi
-if [[ ! ${build_type} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
-    echo "printenv -> "
-    printenv
-    exit 1
-fi
-if [[ ! ${logdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
-    echo "printenv -> "
-    printenv
-    exit 1
+# load some common bash functions
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f $rscriptdir/scripts/common.sh ]]; then
+  source $rscriptdir/scripts/common.sh
+else
+  echo " "
+  echo "FATAL ERROR: Unable to locate Draco's bash functions: "
+  echo "   looking for .../regression/scripts/common.sh"
+  echo "   searched rscriptdir = $rscriptdir"
+  exit 1
 fi
 
-if test $subproj == draco || test $subproj == jayenne; then
-  if [[ ! ${featurebranch} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
-    echo "printenv -> "
-    printenv
-  fi
-fi
+# sanity checks
+job_launch_sanity_checks
 
 # Banner
-echo "==========================================================================="
-echo "CCSCS Regression job launcher for ${subproj} - ${build_type} flavor."
-echo "==========================================================================="
-echo " "
-echo "Environment:"
-if [[ ${featurebranch} ]]; then
-  echo "   featurebranch  = ${featurebranch}"
-fi
-echo "   build_autodoc  = ${build_autodoc}"
-echo "   build_type     = ${build_type}"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   epdash         = $epdash"
-if [[ ! ${extra_params} ]]; then
-  echo "   extra_params   = none"
-else
-  echo "   extra_params   = ${extra_params}"
-fi
-if [[ ${featurebranch} ]]; then
-  echo "   featurebranch  = ${featurebranch}"
-fi
-echo "   logdir         = ${logdir}"
-echo "   logfile        = ${logfile}"
-echo "   machine_name_long = $machine_name_long"
-echo "   prdash         = $prdash"
-echo "   projects       = \"${projects}\""
-echo "   regdir         = ${regdir}"
-echo "   regress_mode   = ${regress_mode}"
-echo "   rscriptdir     = ${rscriptdir}"
-echo "   scratchdir     = ${scratchdir}"
-echo "   subproj        = ${subproj}"
-echo " "
-echo "   ${subproj}: dep_jobids = ${dep_jobids}"
-echo " "
+print_job_launch_banner
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job

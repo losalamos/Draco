@@ -67,6 +67,7 @@ echo " "
 echo "Clean up permissions on source files..."
 run "chgrp -R draco $vdir"
 run "chmod -R g+rwX,o=g-w $vdir"
+run "chmod -R o-rwX $vdir/ndi* $vdir/csk* $vdir/cubit* $vdir/eospac*"
 
 echo " "
 echo "Save a copy of /scratch/vendors to $r72v..."

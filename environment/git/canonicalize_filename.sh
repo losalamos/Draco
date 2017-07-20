@@ -25,7 +25,7 @@ canonicalize_filename () {
     # Need to restore the working directory after work.
     local working_dir="`pwd`"
 
-    cd -- "$(dirname -- "$target_file")"
+    cd -- "$(dirname -- "$target_file")" &> /dev/null
     target_file="$(basename -- "$target_file")"
 
     # Iterate down a (possible) chain of symlinks

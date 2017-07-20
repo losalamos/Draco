@@ -20,7 +20,7 @@
 ## machineName   - return a string to represent the current machine.
 ## osName        - return a string to represent the current machine's OS.
 ## flavor        - build a string that looks like fire-openmpi-2.0.2-intel-17.0.1
-## selectscratch - find a scratch drive
+## selectscratchdir - find a scratch drive
 ## lookupppn     - return PE's per node.
 ## npes_build    - return PE's to be used for compiling.
 ## npes_test     - return PE's to be used for testing.
@@ -28,6 +28,8 @@
 ## publish_release - helper for doing releases (see release_toss2.sh)
 ## allow_file_to_age - pause a program until a file is 'old'
 
+##---------------------------------------------------------------------------##
+## Helpful functions
 ##---------------------------------------------------------------------------##
 
 # Print an error message and exit.
@@ -215,9 +217,13 @@ function selectscratchdir
   # if df is too old this command won't work correctly, use an alternate form.
   local scratchdirs=`df --output=pcent,target 2>&1 | grep -c unrecognized`
   if [[ $scratchdirs == 0 ]]; then
-    scratchdirs=`df --output=pcent,target | grep scratch | sort -g`
+    scratchdirs=`df --output=pcent,target | grep scratch | grep -v netscratch | sort -g`
   else
     scratchdirs=`df -a 2> /dev/null | grep net/scratch | awk '{ print $4 " "$5 }' | sort -g`
+    if ! [[ $scratchdirs ]]; then
+      scratchdirs=`df -a 2> /dev/null | grep lustre/scratch | awk '{ print $4 " "$5 }' | sort -g`
+
+    fi
   fi
   local odd=1
   for item in $scratchdirs; do
@@ -229,19 +235,35 @@ function selectscratchdir
     else
       odd=1
     fi
-    # if this location is good, return the path.
+    # if this location is good (must be able to write to this location), return
+    # the path.
     mkdir -p $item/$USER &> /dev/null
-    if [[ -x $item/$USER ]]; then
+    touch $item/$USER/selectscratchdir &> /dev/null
+    if [[ -f $item/$USER/selectscratchdir ]]; then
+      rm $item/$USER/selectscratchdir
       echo "$item"
       return
     fi
     # might need another directory level 'yellow'
     mkdir -p $item/yellow/$USER &> /dev/null
-    if [[ -x $item/yellow/$USER ]]; then
+    touch $item/yellow/$USER/selectscratchdir &> /dev/null
+    if [[ -f $item/yellow/$USER/selectscratchdir ]]; then
+      rm $item/yellow/$USER/selectscratchdir
       echo "$item/yellow"
       return
     fi
   done
+
+  # if no writable scratch directory is located, then also try netscratch;
+  item=/netscratch/$USER
+  mkdir -p $item &> /dev/null
+  touch $item/selectscratchdir &> /dev/null
+  if [[ -f $item/selectscratchdir ]]; then
+    rm $item/selectscratchdir
+    echo "$item"
+    return
+  fi
+
 }
 
 #------------------------------------------------------------------------------#
@@ -289,20 +311,32 @@ function npes_build
 function npes_test
 {
   local np=1
-  if [[ ${PBS_NP} ]]; then
-    np=${PBS_NP}
-  elif [[ ${SLURM_NPROCS} ]]; then
-    np=${SLURM_NPROCS}
-  elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
-    np=${SLURM_CPUS_ON_NODE}
-  elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-    np=${SLURM_TSKS_PER_NODE}
-  elif [[ `uname -p` == "ppc" ]]; then
-    # sinfo --long --partition=pdebug (show limits)
-    np=64
-  elif [[ -f /proc/cpuinfo ]]; then
-    # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
-    np=`cat /proc/cpuinfo | grep -c processor`
+  # use lscpu if it is available.
+  if ! [[ `which lscpu 2>/dev/null` == 0 ]]; then
+    # number of cores per socket
+    local cps=`lscpu | grep "^Core(s)" | awk '{ print $4 }'`
+    # number of sockets
+    local ns=`lscpu | grep "^Socket(s):" | awk '{ print $2 }'`
+    np=`expr $cps \* $ns`
+
+  else
+
+    if [[ ${PBS_NP} ]]; then
+      np=${PBS_NP}
+    elif [[ ${SLURM_NPROCS} ]]; then
+      np=${SLURM_NPROCS}
+    elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
+      np=${SLURM_CPUS_ON_NODE}
+    elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
+      np=${SLURM_TSKS_PER_NODE}
+    elif [[ `uname -p` == "ppc" ]]; then
+      # sinfo --long --partition=pdebug (show limits)
+      np=64
+    elif [[ -f /proc/cpuinfo ]]; then
+      # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
+      np=`cat /proc/cpuinfo | grep -c processor`
+    fi
+
   fi
   echo $np
 }
@@ -356,10 +390,10 @@ function install_versions
     echo "E.g.: install_prefix=/usr/projects/draco/$pdir/$buildflavor"
     return
   fi
-  if test -z ${build_pe}; then
+  if ! [[ ${build_pe} ]]; then
     build_pe=`npes_build`
   fi
-  if test -z ${test_pe}; then
+  if ! [[ ${test_pe} ]]; then
     test_pe=`npes_test`
   fi
 
@@ -450,7 +484,7 @@ function publish_release()
   establish_permissions
 
   case `osName` in
-    toss* | cle* ) SHOWQ=showq ;;
+    toss* | cle* ) SHOWQ=squeue ;;
     darwin| ppc64) SHOWQ=squeue ;;
   esac
 
@@ -513,6 +547,84 @@ function allow_file_to_age
   done
 }
 
+#------------------------------------------------------------------------------#
+# Ensure environment is reasonable
+# Called from <machine>-job-launch.sh
+function job_launch_sanity_checks()
+{
+  if [[ ! ${regdir} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${rscriptdir} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${subproj} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${build_type} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${logdir} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
+}
+
+#------------------------------------------------------------------------------#
+# Job Launch Banner
+function print_job_launch_banner()
+{
+echo "==========================================================================="
+echo "$machine_name_long regression job launcher for ${subproj} - ${build_type} flavor."
+echo "==========================================================================="
+echo " "
+echo "Environment:"
+echo "   build_autodoc  = ${build_autodoc}"
+echo "   build_type     = ${build_type}"
+echo "   dashboard_type = ${dashboard_type}"
+echo "   epdash         = $epdash"
+if [[ ! ${extra_params} ]]; then
+  echo "   extra_params   = none"
+else
+  echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
+fi
+echo "   logdir         = ${logdir}"
+echo "   logfile        = ${logfile}"
+echo "   machine_name_long = $machine_name_long"
+echo "   prdash         = $prdash"
+echo "   projects       = \"${projects}\""
+echo "   regdir         = ${regdir}"
+echo "   regress_mode   = ${regress_mode}"
+echo "   rscriptdir     = ${rscriptdir}"
+echo "   scratchdir     = ${scratchdir}"
+echo "   subproj        = ${subproj}"
+echo " "
+echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+echo " "
+}
+
 ##----------------------------------------------------------------------------##
 export die
 export run
@@ -524,6 +636,7 @@ export selectscratchdir
 export npes_build
 export npes_test
 export install_versions
+export job_launch_sanity_checks
 
 ##----------------------------------------------------------------------------##
 ## End common.sh

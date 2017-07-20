@@ -18,6 +18,9 @@
 # Enable job control
 set -m
 
+# Allow variable as case condition
+shopt -s extglob
+
 # load some common bash functions
 export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ -f $rscriptdir/scripts/common.sh ]]; then
@@ -32,26 +35,25 @@ fi
 
 # Host based variables
 export host=`uname -n | sed -e 's/[.].*//g'`
+case $host in
+  ccscs*) machine_name_short=ccscs ;;
+  ml*)    machine_name_short=ml ;;
+  sn*)    machine_name_short=sn ;;
+  tt*)    machine_name_short=tt ;;
+  *)
+    echo "FATAL ERROR: I don't know how to run regression on host = ${host}."
+    print_use;  exit 1 ;;
+esac
+
+platform_extra_params=`echo $platform_extra_params | sed -e 's/ / | /g'`
+source $rscriptdir/$machine_name_short-options.sh
 
 ##---------------------------------------------------------------------------##
 ## Support functions
 ##---------------------------------------------------------------------------##
-ccs_extra_params="belosmods bounds_checking clang coverage fulldiagnostics gcc530 gcc610 nr perfbench valgrind "
-darwin_extra_params="cuda fulldiagnostics nr perfbench valgrind"
-ml_extra_params="fulldiagnostics nr perfbench pgi valgrind"
-sn_extra_params="fulldiagnostics gcc610 newtools nr perfbench"
-tt_extra_params="fulldiagnostics knl nr perfbench"
-all_extra_params=`echo $ml_extra_params $tt_extra_params $sn_extra_params $ccs_extra_params $darwin_extra_params | xargs -n1 | sort -u | xargs`
 
 print_use()
 {
-  case $host in
-    ccscs*) platform_extra_params=ccs_extra_params ;;
-    darwin*) platform_extra_params=darwin_extra_params ;;
-    ml-*) platform_extra_params=ml_extra_params ;;
-    sn-*) platform_extra_params=sn_extra_params ;;
-    tt-*) platform_extra_params=tt_extra_params ;;
-  esac
   platform_extra_params=`echo $platform_extra_params | sed -e 's/ / | /g'`
 
   echo " "
@@ -183,99 +185,25 @@ off)
     exit 1 ;;
 esac
 
+# Extra parameters valid for this machine?
+if [[ ${extra_params} ]]; then
+  case $extra_params in
+    none)
+      extra_params=""; epdash=""
+      ;;
+    @($pem_match) )
+    # known, continue
+    ;;
+    *)
+      echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+      print_use; exit 1
+      ;;
+  esac
+fi
+
 ##---------------------------------------------------------------------------##
 ## Main
 ##---------------------------------------------------------------------------##
-
-case ${host} in
-ml-*)
-    export machine_name_long=Moonlight
-    export machine_name_short=ml
-    if [[ `fn_exists module` == 0 ]]; then
-      source /usr/share/Modules/init/bash
-    fi
-    module purge
-    # Argument checks
-    if [[ ${extra_params} ]]; then
-        case $extra_params in
-        none)  extra_params=""; epdash="" ;;
-        fulldiagnostics | nr | perfbench | pgi | valgrind ) # known, continue
-        ;;
-        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-           print_use; exit 1 ;;
-        esac
-    fi
-    ;;
-sn-*)
-    export machine_name_long=Snow
-    export machine_name_short=sn
-    if [[ `fn_exists module` == 0 ]]; then
-      source /usr/share/lmod/lmod/init/bash
-    fi
-    module purge
-    # Argument checks
-    if [[ ${extra_params} ]]; then
-        case $extra_params in
-        none)  extra_params=""; epdash="" ;;
-        fulldiagnostics | gcc610 | newtools | nr | perfbench ) # known, continue
-        ;;
-        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-           print_use; exit 1 ;;
-        esac
-    fi
-    ;;
-tt-*)
-    export machine_name_long=Trinitite
-    export machine_name_short=tt
-    # Argument checks
-    if [[ ${extra_params} ]]; then
-        case $extra_params in
-        none) extra_params=""; epdash="" ;;
-        fulldiagnostics | knl | nr | perfbench ) # known, continue
-        ;;
-        *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-            print_use; exit 1 ;;
-        esac
-    fi
-    ;;
-ccscs[0-9])
-    export machine_name_long="Linux64 on CCS LAN"
-    export machine_name_short=ccscs
-    # Argument checks
-    if [[ ${extra_params} ]]; then
-        case $extra_params in
-        none)  extra_params=""; epdash="" ;;
-        belosmods | bounds_checking | coverage | fulldiagnostics | nr | perfbench | valgrind ) # known, continue
-        ;;
-        gcc530 | clang | gcc610 ) # known, continue
-        ;;
-        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-           print_use; exit 1 ;;
-        esac
-    fi
-    ;;
-darwin*)
-    export machine_name_long="Linux64 on CCS Darwin cluster"
-    export machine_name_short=darwin
-    # Argument checks
-    if [[ ${extra_params} ]]; then
-        case $extra_params in
-        none)  extra_params=""; epdash="" ;;
-        cuda | fulldiagnostics | nr | perfbench | valgrind ) # known, continue
-        ;;
-        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-           print_use; exit 1 ;;
-        esac
-    fi
-    ;;
-*)
-    echo "FATAL ERROR: I don't know how to run regression on host = ${host}."
-    print_use;  exit 1 ;;
-esac
-
-#------------------------------------------------------------------------------#
-# Redirect output to a logfile.
-#------------------------------------------------------------------------------#
 
 # Ensure log dir exists.
 mkdir -p $logdir || die "Could not create a directory for log files."
@@ -283,7 +211,7 @@ mkdir -p $logdir || die "Could not create a directory for log files."
 # Redirect output to logfile.
 timestamp=`date +%Y%m%d-%H%M`
 logfile=$logdir/${machine_name_short}-${build_type}-master-$timestamp.log
-#echo "Redirecting output to $logfile"
+echo "Redirecting output to $logfile"
 exec > $logfile
 exec 2>&1
 
@@ -291,7 +219,8 @@ exec 2>&1
 ## Export environment
 ##---------------------------------------------------------------------------##
 export build_autodoc build_type dashboard_type epdash extra_params
-export featurebranches logdir prdash regdir regress_mode scratchdir
+export featurebranches logdir prdash machine_name_short regdir regress_mode
+export scratchdir
 
 ##---------------------------------------------------------------------------##
 # Banner

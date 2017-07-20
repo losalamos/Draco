@@ -3,10 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( diagnostics CXX )
@@ -15,7 +13,7 @@ project( diagnostics CXX )
 # Special options for this component
 ##---------------------------------------------------------------------------##
 
-# DRACO_DIAGNOSICS IS SET IN DS++ (ds++/config.h).
+# DRACO_DIAGNOSICS is set in ds++ (ds++/config.h).
 
 # From autoconf build system: "yes" --> 2, "no" --> 0
 set( DRACO_TIMING "0"

@@ -1,19 +1,17 @@
-//----------------------------------*-C++-*----------------------------------//
+//-----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   compton/test/tCompton.cc
  * \author Kendra Keady
  * \date   2017 Feb 10
  * \brief  Implementation file for tCompton
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "compton/Compton.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -22,22 +20,20 @@ namespace rtt_compton_test {
 
 using rtt_dsxx::soft_equiv;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 //!  Tests the Compton constructor and a couple of access routines.
 void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << "   Test Draco code calling CSK_generator routines" << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << "   Test Draco code calling CSK_generator routines\n"
+            << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
-  const std::string filename = "mg_ascii.compton";
+  const std::string filename = ut.getTestSourcePath() + "mg_ascii.compton";
   std::cout << "Attempting to construct a Compton object...\n" << std::endl;
   std::shared_ptr<rtt_compton::Compton> compton_test;
 
@@ -81,9 +77,14 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // and check the result:
   const double test_etemp = 4.87227167e-04;
   std::vector<std::vector<std::vector<double>>> interp_data =
-      compton_test->interpolate(test_etemp);
+      compton_test->interpolate_csk(test_etemp)[0];
+  // get interpolated nu_ratios
+  std::vector<std::vector<double>> interp_nu_data =
+      compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
+  Ensure(interp_nu_data.size() == 1);
+  Ensure(interp_nu_data[0].size() == 1);
   Ensure(interp_data.size() == 1);
   Ensure(interp_data[0].size() == 1);
   Ensure(interp_data[0][0].size() == 4);
@@ -96,6 +97,17 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
     ITFAILS;
   if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  if (!soft_equiv(interp_nu_data[0][0], 1.5000000e+00))
+    ITFAILS;
+
+  const double test_etemp2 = 6.75507064e-04;
+  // get interpolated nu_ratio for a different
+  std::vector<std::vector<double>> interp_nu_data2 =
+      compton_test->interpolate_nu_ratio(test_etemp2);
+
+  if (!soft_equiv(interp_nu_data2[0][0], 2.0000000e+00))
     ITFAILS;
 
   // get the number of xi evals in the library (we know it should be 4)
@@ -115,18 +127,16 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+//----------------------------------------------------------------------------//
 void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << " Test Draco code calling CSK_generator routines -- const "
-            << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << " Test Draco code calling CSK_generator routines -- const \n"
+            << "---------------------------------------------------------\n";
 
   // open a small mg opacity file:
-  const std::string filename = "mg_ascii.compton";
+  const std::string filename = ut.getTestSourcePath() + "mg_ascii.compton";
   std::cout << "Attempting to construct a const Compton object...\n"
             << std::endl;
   std::shared_ptr<const rtt_compton::Compton> compton_test;
@@ -170,10 +180,16 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   // try "interpolating" at one of the exact eval points in the test library,
   // and check the result:
   const double test_etemp = 4.87227167e-04;
+  // get interpolated csks
   std::vector<std::vector<std::vector<double>>> interp_data =
-      compton_test->interpolate(test_etemp);
+      compton_test->interpolate_csk(test_etemp)[0];
+  // get interpolated nu_ratios
+  std::vector<std::vector<double>> interp_nu_data =
+      compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
+  Ensure(interp_nu_data.size() == 1);
+  Ensure(interp_nu_data[0].size() == 1);
   Ensure(interp_data.size() == 1);
   Ensure(interp_data[0].size() == 1);
   Ensure(interp_data[0][0].size() == 4);
@@ -186,6 +202,17 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
     ITFAILS;
   if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  if (!soft_equiv(interp_nu_data[0][0], 1.5000000e+00))
+    ITFAILS;
+
+  const double test_etemp2 = 6.75507064e-04;
+  // get interpolated nu_ratio for a different
+  std::vector<std::vector<double>> interp_nu_data2 =
+      compton_test->interpolate_nu_ratio(test_etemp2);
+
+  if (!soft_equiv(interp_nu_data2[0][0], 2.0000000e+00))
     ITFAILS;
 
   // get the number of xi evals in the library (we know it should be 4)
@@ -206,19 +233,18 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+//----------------------------------------------------------------------------//
 //!  Tests the Compton mg build capability
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << "Test Draco call to CSK_generator mg opacity builder"
-            << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << "Test Draco call to CSK_generator mg opacity builder\n"
+            << "---------------------------------------------------------\n";
 
   // open a small pointwise opacity file:
-  const std::string filename = "lagrange_csk_ascii.compton";
+  const std::string filename =
+      ut.getTestSourcePath() + "lagrange_csk_ascii.compton";
   std::cout << "Attempting to construct a Compton object..." << std::endl;
 
   // make an uninitialized pointer...
@@ -226,15 +252,19 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   // make a small fake group structure to pass in:
   const std::vector<double> test_groups = {20.0, 30.0, 40.0, 50.0, 60.0};
+  const std::string opac_type = "jayenne";
+  const std::string wt_func = "planck";
+  const bool induced = false;
 
   // set the number of angular points to retrieve (legendre or otherwise)
   const size_t nxi = 3;
 
   try {
-    // (This call has some output of its own, so we print some newlines
-    // around it)
+    // (This call has some output of its own, so we print some newlines around
+    // it)
     std::cout << "\n\n";
-    compton_test.reset(new rtt_compton::Compton(filename, test_groups, nxi));
+    compton_test.reset(new rtt_compton::Compton(
+        filename, test_groups, opac_type, wt_func, induced, nxi));
     std::cout << "\n\n";
   } catch (rtt_dsxx::assertion &asrt) {
     FAILMSG("Failed to construct a Compton object!");
@@ -252,7 +282,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   if (!soft_equiv(compton_test->get_min_etemp(), 0.0))
     FAILMSG("Min etemp read incorrectly!");
-  if (!soft_equiv(compton_test->get_max_etemp(), 1.0))
+  if (!soft_equiv(compton_test->get_max_etemp(), 0.0223607))
     FAILMSG("Max etemp read incorrectly!");
 
   if (ut.numFails == 0) {
@@ -267,15 +297,14 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+//----------------------------------------------------------------------------//
 //!  Tests Compton's error-handling on a non-existent file.
 void compton_fail_test(rtt_dsxx::UnitTest &ut) {
-  std::cout << "\n---------------------------------------------------------"
-            << std::endl;
-  std::cout << "    Test Compton bad file handling    " << std::endl;
-  std::cout << "---------------------------------------------------------"
-            << std::endl;
+  std::cout << "\n---------------------------------------------------------\n"
+            << "    Test Compton bad file handling    \n"
+            << "---------------------------------------------------------\n";
   // open a small mg opacity file:
-  std::string filename = "non_existent.compton";
+  std::string filename = ut.getTestSourcePath() + "non_existent.compton";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
   std::shared_ptr<rtt_compton::Compton> compton_test;
 
@@ -303,7 +332,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
 }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -315,3 +344,7 @@ int main(int argc, char *argv[]) {
   }
   UT_EPILOG(ut);
 }
+
+//----------------------------------------------------------------------------//
+// End of test/tCompton.cc
+//----------------------------------------------------------------------------//

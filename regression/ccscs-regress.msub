@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 ##---------------------------------------------------------------------------##
 ## File  : regression/ccscs-regression.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
@@ -82,32 +82,75 @@ ulimit -a
 
 # Modules
 # ----------------------------------------
-if [[ `fn_exists module` == 0 ]]; then
-  echo 'module function does not exist. defining a local function ...'
-  source /usr/share/Modules/init/bash
+
+if [[ `fn_exists module` == 1 ]]; then
+  echo " "
+  if [[ `declare -f module | grep -c LMOD` == 0 ]]; then
+    # we have tcl modules
+    echo "Found Tcl modules:"
+    run "module list"
+    echo "unloading"
+    run "module purge"
+    run "module list"
+    unset dracomodules
+    unset NoModules
+    unset _LMFILES_
+    unset MODULEPATH
+    unset LOADEDMODULES
+    unset MODULESHOME
+
+    # If TCL modulefiles, switch to Lmod
+    echo " "
+    echo "Switching to Lmod modulefiles..."
+    export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
+    source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
+    run "module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core" || die "Can't find Lmod Core modulefiles."
+
+  else
+    # we have Lmod modules
+    echo "Found Lmod modules:"
+    run "module avail"
+    run "module list"
+    run "module purge"
+    run "module list"
+  fi
+else
+  echo " "
+  echo "No modules available"
+  echo "Loading Lmod modulefiles..."
+  export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
+  source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
+  run "module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core" || die "Can't find Lmod Core modulefiles."
 fi
 
-source /usr/share/Modules/init/bash
-run "module purge"
-run "module load user_contrib"
-run "module load gcc openmpi cmake git ccache"
-run "module load dracoscripts subversion random123 valgrind"
-run "module load eospac lapack gsl" # grace
-run "module load superlu-dist/4.3"
-run "module load ndi metis parmetis trilinos"
-run "module load doxygen graphviz csk" # qt
-comp=gcc
+# Establish environment via Lmod...
 
+# eospac, ndi, csk
+run "module use --append /scratch/vendors/Modules.lmod"
+
+# Load default set of modules
+dm_core="cmake eospac git ndi python graphviz doxygen ccache numdiff"
+dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
+dm_openmpi="openmpi parmetis superlu-dist trilinos"
+export dracomodules="$dm_core $dm_gcc $dm_openmpi"
+
+# use bash_functions.sh::add_to_path?
+if [ -d $VENDOR_DIR/bin ] && [[ ":${PATH}:" != *":${VENDOR_DIR}/bin:"* ]]; then
+  PATH="${PATH:+${PATH}:}${VENDOOR_DIR}/bin"
+fi
+
+# Setup for special builds (extra_params)
 case $extra_params in
   "")
-    # no-op
+    run "module load $dracomodules"
+    comp=gcc
     ;;
   coverage)
-    # comp=gcc-5.2.0
+    run "module load $dracomodules"
+    comp=gcc
     echo "Coverage option selected."
-    if ! test "${build_type}" == "Debug"; then
-      echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
-      exit 1
+    if ! [[ "${build_type}" == "Debug" ]]; then
+      die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
     fi
     build_type=Coverage
     # Ccache breaks bullseye coverage!!!
@@ -116,63 +159,26 @@ case $extra_params in
     CXX=`which g++`
     CC=`which gcc`
     ;;
-  belosmods)
-    echo "Use special version of Trilinos (pr539)"
-    run "module swap trilinos trilinos/12.8.1-belosmods"
-    comp=$comp-belosmods
-    export buildname_append="-belosmods"
-    ;;
-  bounds_checking)
-    echo "Bounds checking option selected."
-    if ! test "${build_type}" == "Debug"; then
-      echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
-      exit 1
-    fi
-    bounds_checking=on
-    run "module swap superlu-dist superlu-dist/4.3-bc"
-    run "module swap trilinos trilinos/12.8.1-bc"
-    run "module swap metis metis/5.1.0-bc"
-    run "module swap parmetis parmetis/4.0.3-bc"
-    ;;
   clang)
-    run "module purge"
-    run "module load user_contrib"
-    run "module load llvm openmpi cmake git"
-    run "module load dracoscripts subversion random123"
-    run "module load lapack gsl" # eospac
-    run "module load superlu-dist/4.3"
-    run "module load ndi metis parmetis trilinos"
-    run "module load graphviz csk"
+    run "module load $dm_core"
+    run "module load llvm netlib-lapack gsl metis random123 csk"
+    run "module load $dm_openmpi"
     comp=clang
     ;;
   fulldiagnostics)
-    comp="intel-fulldiagnostics"
+    run "module load $dracomodules"
+    comp="gcc-fulldiagnostics"
     ;;
-  gcc530)
-    run "module purge"
-    run "module load user_contrib"
-    run "module load gcc/5.3.0 openmpi cmake git"
-    run "module load dracoscripts subversion random123"
-    run "module load lapack gsl eospac"
-    run "module load superlu-dist"
-    run "module load ndi metis parmetis trilinos csk"
-    comp=gcc-5.3.0
-    ;;
-  gcc610)
-    run "module purge"
-    run "module load user_contrib git"
-    run "module load gcc/6.1.0 openmpi cmake"
-    run "module load dracoscripts subversion random123"
-    run "module load lapack gsl eospac"
-    run "module load superlu-dist"
-    run "module load ndi metis parmetis trilinos csk"
-    comp=gcc-6.1.0
+  gcc630)
+    run "module load $dracomodules"
+    comp=gcc-6.3.0
     ;;
   valgrind)
+    run "module load $dracomodules valgrind"
+    comp=gcc
     echo "Dynamic Analysis (valgrind) option selected."
-    if ! test "${build_type}" == "Debug"; then
-      echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
-      exit 1
+    if ! [[ "${build_type}" == "Debug" ]]; then
+      die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
     fi
     build_type=DynamicAnalysis
     ;;

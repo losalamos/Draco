@@ -61,7 +61,6 @@ macro( dbsSetDefaults )
   if( CMAKE_CONFIGURATION_TYPES )
     set( Draco_BUILD_TYPE "Multi-config")
   else()
-    set( Draco_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
     string( TOUPPER ${CMAKE_BUILD_TYPE} Draco_BUILD_TYPE )
   endif()
 
@@ -78,11 +77,12 @@ macro( dbsSetDefaults )
     if( NOT CMAKE_CONFIGURATION_TYPES )
       if( "${Draco_BUILD_TYPE}" MATCHES "RELEASE" )
         set( DRACO_DBC_LEVEL "0" )
-      elseif( "${CMAKE_BUILD_TYPE}" MATCHES "RELWITHDEBINFO" )
+      elseif( "${Draco_BUILD_TYPE}" MATCHES "RELWITHDEBINFO" )
         set( DRACO_DBC_LEVEL "15" )
       endif()
     endif()
-    set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING "Design-by-Contract (0-31)?" )
+    set( DRACO_DBC_LEVEL "${DRACO_DBC_LEVEL}" CACHE STRING
+      "Design-by-Contract (0-31)?" )
     # provide a constrained drop down menu in cmake-gui
     set_property( CACHE DRACO_DBC_LEVEL PROPERTY STRINGS
       0 1 2 3 4 5 6 7 9 10 11 12 13 14 15
@@ -92,7 +92,8 @@ macro( dbsSetDefaults )
   if( CMAKE_CONFIGURATION_TYPES )
     # This generator expression will be expanded when the project is installed
     # (CMake-3.4.0+)
-    set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING "Install subdirectory for multiconfig build tools.")
+    set(DBSCFGDIR "\$<CONFIG>/" CACHE STRING
+      "Install subdirectory for multiconfig build tools.")
     # Generate a complete installation directory structure to avoid errors of
     # the form "imported target includes non-existent path" when configuring
     # Jayenne.
@@ -107,9 +108,11 @@ macro( dbsSetDefaults )
 
   # Library type to build
   # Linux: STATIC is a lib<XXX>.a
-  #        SHARED is a lib<XXX>.so (requires rpath or .so found in $LD_LIBRARY_PATH
+  #        SHARED is a lib<XXX>.so (requires rpath or .so found in
+  #               $LD_LIBRARY_PATH)
   # MSVC : STATIC is <XXX>.lib
-  #        SHARED is <XXX>.dll (requires dll to be in $PATH or in same directory as exe).
+  #        SHARED is <XXX>.dll (requires dll to be in $PATH or in same
+  #               directory as exe).
   if( NOT DEFINED DRACO_LIBRARY_TYPE )
     set( DRACO_LIBRARY_TYPE "SHARED" )
   endif()
@@ -132,8 +135,8 @@ macro( dbsSetDefaults )
 
      # Do not skip the full RPATH for the build tree
      set( CMAKE_SKIP_BUILD_RPATH OFF )
-     # When building, don't use the install RPATH already
-     # (but later on when installing)
+     # When building, don't use the install RPATH already (but later on when
+     # installing)
      set( CMAKE_BUILD_WITH_INSTALL_RPATH OFF )
 
      # For libraries created within the build tree, replace the RPATH
@@ -142,8 +145,8 @@ macro( dbsSetDefaults )
        "RPATH to embed in dynamic libraries and executables when
 targets are installed." FORCE )
 
-     # add the automatically determined parts of the RPATH
-     # which point to directories outside the build tree to the install RPATH
+     # add the automatically determined parts of the RPATH which point to
+     # directories outside the build tree to the install RPATH
      set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
   endif()
 

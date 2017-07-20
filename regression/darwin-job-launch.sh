@@ -22,6 +22,8 @@ nargs=${#args[@]}
 scriptname=${0##*/}
 host=`uname -n`
 
+die "darwin-job-launch.sh needs to be upgraded to match other job-launch scripts."
+
 #export MOABHOMEDIR=/opt/MOAB
 export SHOWQ=/bin/squeue
 
@@ -32,59 +34,10 @@ for (( i=0; i < $nargs ; ++i )); do
 done
 
 # sanity check
-if [[ ! ${regdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
-    exit 1
-fi
-if [[ ! ${rscriptdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
-    exit 1
-fi
-if [[ ! ${subproj} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
-    exit 1
-fi
-if [[ ! ${build_type} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
-    exit 1
-fi
-if [[ ! ${logdir} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
-    exit 1
-fi
-
-if test $subproj == draco || test $subproj == jayenne; then
-  if [[ ! ${featurebranch} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
-    echo "printenv -> "
-    printenv
-  fi
-fi
+job_launch_sanity_checks()
 
 # Banner
-echo "==========================================================================="
-echo "Darwin Regression job launcher for ${subproj} - ${build_type} flavor."
-echo "==========================================================================="
-echo " "
-echo "Environment:"
-echo "   subproj        = ${subproj}"
-echo "   build_type     = ${build_type}"
-if [[ ! ${extra_params} ]]; then
-  echo "   extra_params   = none"
-else
-  echo "   extra_params   = ${extra_params}"
-fi
-if [[ ${featurebranch} ]]; then
-  echo "   featurebranch  = ${featurebranch}"
-fi
-echo "   regdir         = ${regdir}"
-echo "   rscriptdir     = ${rscriptdir}"
-echo "   logdir         = ${logdir}"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   build_autodoc  = ${build_autodoc}"
-echo " "
-echo "   ${subproj}: dep_jobids = ${dep_jobids}"
-echo " "
+print_job_launch_banner()
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job

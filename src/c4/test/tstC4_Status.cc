@@ -39,7 +39,8 @@ void tst2Procs(rtt_dsxx::UnitTest &ut) {
   if (my_proc == 0) {
     std::vector<int> send_buffer(num_int);
     std::vector<double> recv_buffer(num_double);
-    rtt_c4::receive_async(request, &recv_buffer[0], num_double, 1, tag);
+    rtt_c4::receive_async(request, &recv_buffer[0], num_double,
+                          rtt_c4::any_source, tag);
     rtt_c4::send_async(&send_buffer[0], num_int, 1, tag);
     request.wait(&status);
     if (status.get_source() == 1)
@@ -57,7 +58,8 @@ void tst2Procs(rtt_dsxx::UnitTest &ut) {
   } else { // my_proc == 1
     std::vector<double> send_buffer(num_double);
     std::vector<int> recv_buffer(num_int);
-    rtt_c4::receive_async(request, &recv_buffer[0], num_int, 0, tag);
+    rtt_c4::receive_async(request, &recv_buffer[0], num_int, rtt_c4::any_source,
+                          tag);
     rtt_c4::send_async(&send_buffer[0], num_double, 0, tag);
     request.wait(&status);
     if (status.get_source() == 0)

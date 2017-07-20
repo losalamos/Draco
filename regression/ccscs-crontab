@@ -12,10 +12,10 @@
 # Keep a local bare copy of the repo available on the ccs-net.  This is used by Redmine.
 */20 * * * * /scratch/regress/draco/regression/sync_repository.sh
 
-# Run the metrics report on the first monday of each month.
-00 08 1-7 * * [ "$(date '+%a')" == "Mon" ] && /scratch/regress/draco/regression/metric_report.sh -e kgt@lanl.gov -p draco
-01 08 1-7 * * [ "$(date '+%a')" == "Mon" ] && /scratch/regress/draco/regression/metric_report.sh -e kgt@lanl.gov -p jayenne
-03 08 1-7 * * [ "$(date '+%a')" == "Mon" ] && /scratch/regress/draco/regression/metric_report.sh -e kgt@lanl.gov -p capsaicin
+# Run the metrics report on the first Monday of each month.
+00 07 1-7 * * [ "$(date '+\%a')" == "Mon" ] && /scratch/regress/draco/regression/metrics_report.sh -e kgt@lanl.gov -p draco
+02 07 1-7 * * [ "$(date '+\%a')" == "Mon" ] && /scratch/regress/draco/regression/metrics_report.sh -e kgt@lanl.gov -p jayenne
+04 07 1-7 * * [ "$(date '+\%a')" == "Mon" ] && /scratch/regress/draco/regression/metrics_report.sh -e kgt@lanl.gov -p capsaicin
 
 #------------------------------------------------------------------------------#
 # Regressions with system default compiler (gcc-4.8.5)
@@ -32,17 +32,15 @@
 
 05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -a -r -b Release -d Nightly -p "draco jayenne capsaicin"
 
-00 01 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e coverage
+00 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e coverage
 
-30 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e valgrind
+00 04 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e valgrind
 
 #------------------------------------------------------------------------------#
 # Clang-3.8.0, gcc-6.1.0
 #------------------------------------------------------------------------------#
 
-00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e clang
-
-00 05 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e gcc610
+00 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco jayenne capsaicin" -e clang
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

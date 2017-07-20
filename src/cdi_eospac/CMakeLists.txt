@@ -4,8 +4,6 @@
 # note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( cdi_eospac CXX )
 
@@ -89,3 +87,7 @@ endif()
 process_autodoc_pages()
 
 endif() # EOSPAC_FOUND
+
+# ---------------------------------------------------------------------------- #
+# End cdi_eospac/CMakeLists.txt
+# ---------------------------------------------------------------------------- #

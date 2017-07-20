@@ -320,11 +320,14 @@ fi
 echo " "
 echo "========================================================================"
 echo "Starting CI regressions (if any)"
+date
 echo "========================================================================"
 echo " "
 # Draco CI ------------------------------------------------------------
 
 draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+# remove any duplicates
+draco_prs=`echo $draco_prs | xargs -n1 | sort -u | xargs`
 for pr in $draco_prs; do
   run "$scriptdir/checkpr.sh -r -p draco -f $pr"
 done
@@ -332,6 +335,8 @@ done
 # Jayenne CI ----------------------------------------------------------
 
 jayenne_prs=`cat $TMPFILE_JAYENNE | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+# remove any duplicates
+jayenne_prs=`echo $jayenne_prs | xargs -n1 | sort -u | xargs`
 for pr in $jayenne_prs; do
   run "$scriptdir/checkpr.sh -r -p jayenne -f $pr"
 done
@@ -339,6 +344,8 @@ done
 # Capsaicin CI ----------------------------------------------------------
 
 capsaicin_prs=`cat $TMPFILE_CAPSAICIN | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+# remove any duplicates
+capsaicin_prs=`echo $capsaicin_prs | xargs -n1 | sort -u | xargs`
 for pr in $capsaicin_prs; do
   run "$scriptdir/checkpr.sh -r -p capsaicin -f $pr"
 done
@@ -361,6 +368,7 @@ run "rm $TMPFILE_DRACO $TMPFILE_JAYENNE $TMPFILE_CAPSAICIN"
 run "rm $lockfile"
 
 echo " "
+date
 echo "All done."
 
 #------------------------------------------------------------------------------#

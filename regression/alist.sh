@@ -79,26 +79,26 @@ for entry in "${entries[@]}"; do
   if [[ $current_loc == "" ]]; then current_loc=0; fi
 
   case $current_author in
-    along | Alex*  ) current_author="Alex Long" ;;
-    clevelam | *Cleveland) current_author="Matt Cleveland" ;;
-    gaber) current_author="Gabe Rockefeller" ;;
+    along | Alex*  ) current_author="Alex R. Long" ;;
+    clevelam | *Cleveland) current_author="Matt A. Cleveland" ;;
+    gaber) current_author="Gabe M. Rockefeller" ;;
     hkpark) current_author="HyeongKae Park" ;;
-    jdd) current_author="Jeff Densmore" ;;
-    jhchang | Jae* ) current_author="Jae Chang" ;;
+    jdd) current_author="Jeff D. Densmore" ;;
+    jhchang | Jae* ) current_author="Jae H. Chang" ;;
     keadyk | Kendra* ) current_author="Kendra P. Keady" ;;
-    kellyt | kgt | 107638 | Kelly*) current_author="Kelly Thompson" ;;
+    kellyt | kgt | 107638 | Kelly*) current_author="Kelly G. Thompson" ;;
     kgbudge) current_author="Kent G. Budge" ;;
-    kwang) current_author="Katherine Wang" ;;
-    lowrie | *Lowrie) current_author="Rob Lowrie" ;;
-    lpritch) current_author="Lori Pritchett-Sheats" ;;
+    kwang) current_author="Katherine J. Wang" ;;
+    lowrie | *Lowrie) current_author="Rob B. Lowrie" ;;
+    lpritch) current_author="Lori A. Pritchett-Sheats" ;;
     maxrosa) current_author="Massimiliano Rosa" ;;
     ntmyers) current_author="Nick Meyers" ;;
     pahrens) current_author="Peter Ahrens" ;;
     talbotp) current_author="Paul Talbot" ;;
-    tmonster) current_author="Todd Urbatsch" ;;
-    warsa) current_author="James Warsa" ;;
-    wollaber) current_author="Allan Wollaber" ;;
-    wollaege) current_author="Ryan Thomas Wollaeger" ;;
+    tmonster) current_author="Todd J. Urbatsch" ;;
+    warsa) current_author="James S. Warsa" ;;
+    wollaber) current_author="Allan B. Wollaber" ;;
+    wollaege | *Wollaeger) current_author="Ryan T. Wollaeger" ;;
   esac
 
   echo "$current_author:$current_loc"
