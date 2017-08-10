@@ -20,6 +20,11 @@ query_openmp_availability()
 # http://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
 # -fdiagnostics-show-hotness
 #
+# valgrind like options - https://clang.llvm.org/docs/AddressSanitizer.html
+#      '-g -fsanitize=address -fno-omit-frame-pointer'
+#      must use clang++ for linking
+#      suppressions: LSAN_OPTIONS=suppressions=MyLSan.supp
+#      human readable: ASAN_SYMBOLIZER_PATH=/usr/local/bin/llvm-symbolizer ./a.out
 
 #
 # Compiler Flags

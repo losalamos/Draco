@@ -1,120 +1,71 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/tstSoft_Equiv.cc
  * \author Thomas M. Evans
  * \date   Wed Nov  7 15:55:54 2001
  * \brief  Soft_Equiv header testing utilities.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <array>
 #include <deque>
 #include <sstream>
 #include <typeinfo>
-#ifdef HAS_CXX11_ARRAY
-#include <array>
-#endif
 
 using namespace std;
 using rtt_dsxx::soft_equiv;
 using rtt_dsxx::soft_equiv_deep;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-template <typename INT> void test_bad_data_type(rtt_dsxx::ScalarUnitTest &ut) {
-  // ensure that we can not use integer fields or tolerance.
-  {
-    try {
-      INT x = 31415;
-      INT y = 31416;
-      INT tol = 1l;
-      /* bool result =  */ soft_equiv(x, y, tol);
-      throw "Bogus!";
-    } catch (rtt_dsxx::assertion const & /* error */) {
-      std::string type;
-      if (typeid(INT) == typeid(int))
-        type = "int";
-      else if (typeid(INT) == typeid(unsigned int))
-        type = "unsigned";
-      else if (typeid(INT) == typeid(int64_t))
-        type = "int64_t";
-      else if (typeid(INT) == typeid(uint64_t))
-        type = "uint64_t";
-      else
-        type = typeid(INT).name(); // may not be a useful name for gcc.
-      std::ostringstream msg;
-      msg << "Successfully prevented use of soft_equiv(" << type << "," << type
-          << "," << type << ").";
-      PASSMSG(msg.str());
-    } catch (...) {
-      FAILMSG("We should never get here.");
-    }
-  }
-  return;
-}
-
-//---------------------------------------------------------------------------------------//
 void test_soft_equiv_scalar(rtt_dsxx::ScalarUnitTest &ut) {
-  // ensure that we can not use integer fields or tolerance.
-  test_bad_data_type<int>(ut);
-  test_bad_data_type<unsigned int>(ut);
-  test_bad_data_type<int64_t>(ut);
-  test_bad_data_type<uint64_t>(ut);
 
-  // test with doubles
-  {
-    double x = 0.9876543212345678;
-    double y = 0.9876543212345678;
+  double x = 0.9876543212345678;
+  double y = 0.9876543212345678;
 
-    if (!soft_equiv(x, y, 1.e-16))
-      ITFAILS;
-    if (!soft_equiv(x, y))
-      ITFAILS;
+  if (!soft_equiv(x, y, 1.e-16))
+    ITFAILS;
+  if (!soft_equiv(x, y))
+    ITFAILS;
 
-    double z = 0.9876543212345679;
+  double z = 0.9876543212345679;
 
-    if (soft_equiv(x, z, 1.e-16))
-      ITFAILS;
+  if (soft_equiv(x, z, 1.e-16))
+    ITFAILS;
 
-    double a = 0.987654321234;
+  double a = 0.987654321234;
 
-    if (!soft_equiv(x, a))
-      ITFAILS;
+  if (!soft_equiv(x, a))
+    ITFAILS;
 
-    a = 0.987654321233;
+  a = 0.987654321233;
 
-    if (soft_equiv(x, a))
-      ITFAILS;
+  if (soft_equiv(x, a))
+    ITFAILS;
 
-    // checks for the new "reference=zero" coding 4aug00
-    double zero = 0.0;
-    if (soft_equiv(1.0e-10, zero))
-      ITFAILS;
-    if (soft_equiv(-1.0e-10, zero))
-      ITFAILS;
-    if (!soft_equiv(-1.0e-35, zero))
-      ITFAILS;
-    if (!soft_equiv(1.0e-35, zero))
-      ITFAILS;
-  }
+  // checks for the new "reference=zero" coding 4aug00
+  double zero = 0.0;
+  if (soft_equiv(1.0e-10, zero))
+    ITFAILS;
+  if (soft_equiv(-1.0e-10, zero))
+    ITFAILS;
+  if (!soft_equiv(-1.0e-35, zero))
+    ITFAILS;
+  if (!soft_equiv(1.0e-35, zero))
+    ITFAILS;
+
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
-  vector<double> values(3, 0.0);
-  values[0] = 0.3247333291470;
-  values[1] = 0.3224333221471;
-  values[2] = 0.3324333522912;
-
+  vector<double> values = {0.3247333291470, 0.3224333221471, 0.3324333522912};
   vector<double> const reference(values);
 
   if (soft_equiv(values.begin(), values.end(), reference.begin(),
@@ -156,8 +107,6 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
   else
     ITFAILS;
 
-#ifdef HAS_CXX11_ARRAY
-#ifdef HAS_CXX11_INITIALIZER_LISTS
   // C++ std::array containers
   std::array<double, 3> cppa_vals{
       {0.3247333291470, 0.3224333221471, 0.3324333522912}};
@@ -166,8 +115,6 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
     PASSMSG("Passed std::array<int,3> equivalence test.");
   else
     ITFAILS;
-#endif
-#endif
 
   // Try with a std::deque
   deque<double> d;
@@ -182,10 +129,8 @@ void test_soft_equiv_container(rtt_dsxx::ScalarUnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifdef HAS_CXX11_ARRAY
-#ifdef HAS_CXX11_INITIALIZER_LISTS
 void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest &ut) {
 
   vector<vector<double>> values = {
@@ -244,10 +189,8 @@ void test_soft_equiv_deep_container(rtt_dsxx::ScalarUnitTest &ut) {
 
   return;
 }
-#endif
-#endif
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_vector_specialization(rtt_dsxx::ScalarUnitTest &ut) {
   double const epsilon(1.0e-27);
   {
@@ -303,24 +246,19 @@ void test_vector_specialization(rtt_dsxx::ScalarUnitTest &ut) {
   return;
 }
 
-//---------------------------------------------------------------------------//
-
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // >>> UNIT TESTS
     test_soft_equiv_scalar(ut);
     test_soft_equiv_container(ut);
-#ifdef HAS_CXX11_ARRAY
-#ifdef HAS_CXX11_INITIALIZER_LISTS
     test_soft_equiv_deep_container(ut);
-#endif
-#endif
     test_vector_specialization(ut);
   }
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of tstSoft_Equiv.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

@@ -474,6 +474,8 @@ void tstutilities(UnitTest &ut) {
       PASSMSG("detected bad real correctly");
     }
   }
+#ifndef DRACO_DIAGNOSTICS_LEVEL_3
+  // Don't run this test if we are trying to catch FPE signals.
   {
     String_Token_Stream string("1.8e10000");
     parse_real(string);
@@ -482,6 +484,7 @@ void tstutilities(UnitTest &ut) {
     else
       PASSMSG("detected real overflow correctly");
   }
+#endif
   {
     String_Token_Stream string("-8");
     parse_positive_real(string);

@@ -22,6 +22,7 @@
 #include <cmath>
 #include <cstdint>
 #include <iterator>
+#include <limits>
 #include <vector>
 
 namespace rtt_dsxx {
@@ -31,24 +32,25 @@ namespace rtt_dsxx {
 //===========================================================================//
 /*!
  * \brief Compare two floating point scalars for equivalence to a specified
- * tolerance.
+ *        tolerance.
  *
- * \param value scalar floating point value
- *
- * \param reference scalar floating point reference to which value is
- * compared
- *
- * \param precision tolerance of relative error (default 1.0e-12)
+ * \param[in] value scalar floating point value
+ * \param[in] reference scalar floating point reference to which value is
+ *        compared
+ * \param[in] precision tolerance of relative error (default 1.0e-12)
  *
  * \return true if values are the same within relative error specified by
- * precision, false if otherwise
+ *        precision, false if otherwise
  *
  * \todo Should we be using numeric_limits instead of hard coded vales for
  *       e-12 and e-14?
+ *
+ * We use std::enable_if to disable this function for integral types.
+ * \sa http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
  */
-template <typename FPT>
-inline bool soft_equiv(const FPT &value, const FPT &reference,
-                       const FPT precision = 1.0e-12) {
+template <typename T>
+inline typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+soft_equiv(const T &value, const T &reference, const T precision = 1.0e-12) {
   using std::fabs;
   bool passed = false;
 
@@ -62,59 +64,30 @@ inline bool soft_equiv(const FPT &value, const FPT &reference,
     if (fabs(value) < precision)
       passed = true;
 
+  // Return false if the result is subnormal
+  passed =
+      passed || (std::abs(value - reference) < std::numeric_limits<T>::min());
+
   return passed;
-}
-
-//---------------------------------------------------------------------------//
-// Disallow integer types for Soft_Equiv.
-template <>
-inline bool soft_equiv(const int & /* value */, const int & /* reference */,
-                       const int /* precision */) {
-  Insist(0, "Can't do a soft compare with integers!");
-  return false;
-}
-
-template <>
-inline bool soft_equiv(const unsigned int & /* value */,
-                       const unsigned int & /* reference */,
-                       const unsigned int /* precision */) {
-  Insist(0, "Can't do a soft compare with integers!");
-  return false;
-}
-
-template <>
-inline bool soft_equiv(const int64_t & /* value */,
-                       const int64_t & /* reference */,
-                       const int64_t /* precision */) {
-  Insist(0, "Can't do a soft compare with integers!");
-  return false;
-}
-
-template <>
-inline bool soft_equiv(const uint64_t & /* value */,
-                       const uint64_t & /* reference */,
-                       const uint64_t /* precision */) {
-  Insist(0, "Can't do a soft compare with integers!");
-  return false;
 }
 
 //===========================================================================//
 // FIELD SOFT EQUIVALENCE FUNCTIONS
 //===========================================================================//
 /*!
- * \brief Object that allows multilevel STL containers of floating point
- * values to be compared within a tolerance.
+ * \brief Object that allows multilevel STL containers of floating point values
+ *        to be compared within a tolerance.
  *
  * \param Depth levels of containers for analysis (2 for vector<vector<T>>).
  *
  * This class provides a template recursion object that allows two STL
  * containers to be compared element-by-element no matter how many levels of
  * containers exist.  The value and reference fields must have STL-type
- * iterators.  The value-types of both fields must be the same or a
- * compile-time error will result.
+ * iterators.  The value-types of both fields must be the same or a compile-time
+ * error will result.
  *
- * This class is specialized for Depth=1.  This is the lowest level of
- * recursion and is the level where actual numeric comparison occurs.
+ * This class is specialized for Depth=1.  This is the lowest level of recursion
+ * and is the level where actual numeric comparison occurs.
  *
  * Typical use:
  *
@@ -133,17 +106,18 @@ public:
   }
 
   /*!
-     * \brief Compare two multi-level floating point fields for equivalence to a
-     * specified tolerance.
-     *
-     * \param value floating point field of values
-     * \param value_end one past the end of the floating point field of values
-     * \param reference floating point field to which values are compared
-     * \param reference_end one past the end of the floating point field to which values are compared
-     * \param precision tolerance of relative error (default 1.0e-12)
-     * \return true if values are the same within relative error specified by
-     * precision and the fields are the same size, false if otherwise
-     */
+   * \brief Compare two multi-level floating point fields for equivalence to a
+   *        specified tolerance.
+   *
+   * \param[in] value floating point field of values
+   * \param[in] value_end one past the end of the floating point field of values
+   * \param[in] reference floating point field to which values are compared
+   * \param[in] reference_end one past the end of the floating point field to
+   *      which values are compared
+   * \param[in] precision tolerance of relative error (default 1.0e-12)
+   * \return true if values are the same within relative error specified by
+   *        precision and the fields are the same size, false if otherwise
+   */
   template <typename Value_Iterator, typename Ref_Iterator>
   bool equiv(Value_Iterator value, Value_Iterator value_end, Ref_Iterator ref,
              Ref_Iterator ref_end, FPT const precision = 1.0e-12) {
@@ -164,6 +138,7 @@ public:
   }
 };
 
+//----------------------------------------------------------------------------//
 //! Specialization for Depth=1 case:
 template <typename FPT> class soft_equiv_deep<1, FPT> {
 public:
@@ -193,22 +168,19 @@ public:
 //===========================================================================//
 /*!
  * \brief Compare two floating point fields for equivalence to a specified
- * tolerance.
+ *        tolerance.
  *
- * \param value  floating point field of values
- *
- * \param reference floating point field to which values are compared
- *
- * \param precision tolerance of relative error (default 1.0e-12)
+ * \param[in] value  floating point field of values
+ * \param[in] reference floating point field to which values are compared
+ * \param[in] precision tolerance of relative error (default 1.0e-12)
  *
  * \return true if values are the same within relative error specified by
- * precision and the fields are the same size, false if otherwise
+ *        precision and the fields are the same size, false if otherwise
  *
  * The field soft_equiv check is an element-by-element check of two
- * single-dimension fields.  The precision is the same type as the value
- * field.  The value and reference fields must have STL-type iterators.  The
- * value-types of both fields must be the same or a compile-time error will
- * result.
+ * single-dimension fields.  The precision is the same type as the value field.
+ * The value and reference fields must have STL-type iterators.  The value-types
+ * of both fields must be the same or a compile-time error will result.
  */
 template <typename Value_Iterator, typename Ref_Iterator>
 inline bool soft_equiv(

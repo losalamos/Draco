@@ -77,8 +77,6 @@ public:
 
   explicit Global_Timer(char const *name); //! default constructor
 
-  ~Global_Timer();
-
   // Accessors
 
   char const *name() const { return name_; }

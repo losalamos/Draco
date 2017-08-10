@@ -34,6 +34,7 @@ PhysicalConstants::PhysicalConstants()
       d_faradayConstant(faradayConstantSI),
       d_permeabilityOfVacuum(permeabilityOfVacuumSI),
       d_permittivityOfFreeSpace(permittivityOfFreeSpaceSI),
+      d_classicalElectronRadius(classicalElectronRadiusSI),
       d_electronMass(electronMassSI), d_protonMass(protonMassSI) {
   // empty
 }
@@ -59,6 +60,7 @@ PhysicalConstants::PhysicalConstants(UnitSystem const &u)
       d_permeabilityOfVacuum(permeabilityOfVacuumSI / u.L()),
       d_permittivityOfFreeSpace(1.0 / d_permeabilityOfVacuum /
                                 std::pow(d_cLight, 2)),
+      d_classicalElectronRadius(classicalElectronRadiusSI * u.L()),
       d_electronMass(electronMassSI * u.M()),
       d_protonMass(protonMassSI * u.M()) {
   // empty

@@ -4,15 +4,13 @@
  * \author Thomas M. Evans
  * \date   Fri Jan 21 17:51:52 2000
  * \brief  Viz_Traits test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2000-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "viz/Viz_Traits.hh"
 
 using namespace std;
@@ -36,6 +34,17 @@ public:
   size_t ncols(size_t r) const { return data[r].size(); }
 };
 
+//----------------------------------------------------------------------------//
+// Use soft_equiv for floating-point types, but not for integral types.
+
+bool compare_vdf_field(double const &v1, double const &v2) {
+  return rtt_dsxx::soft_equiv(v1, v2);
+}
+bool compare_vdf_field(float const &v1, float const &v2) {
+  return rtt_dsxx::soft_equiv(v1, v2);
+}
+bool compare_vdf_field(int const &v1, int const &v2) { return v1 == v2; }
+
 //---------------------------------------------------------------------------//
 // test vector traits specialization
 
@@ -58,9 +67,10 @@ template <typename VVF> void test_vector(rtt_dsxx::UnitTest &ut) {
     if (vdf.ncols(i) != field[i].size())
       ITFAILS;
     for (size_t j = 0; j < vdf.ncols(i); j++) {
-      if (static_cast<int>(vdf(i, j)) != field[i][j])
+      if (!compare_vdf_field(vdf(i, j), field[i][j]))
         ITFAILS;
-      if (vdf(i, j) != static_cast<VVFet>(2 * i + 4 * j))
+      // if (vdf(i, j) != static_cast<VVFet>(2 * i + 4 * j))
+      if (!compare_vdf_field(vdf(i, j), static_cast<VVFet>(2 * i + 4 * j)))
         ITFAILS;
     }
   }
@@ -90,7 +100,7 @@ template <typename T> void test_FT(rtt_dsxx::UnitTest &ut) {
     if (vt.ncols(i) != field[i].size())
       ITFAILS;
     for (size_t j = 0; j < vt.ncols(i); j++)
-      if (vt(i, j) != field[i][j])
+      if (!compare_vdf_field(vt(i, j), field[i][j]))
         ITFAILS;
   }
   if (ut.numFails == 0)

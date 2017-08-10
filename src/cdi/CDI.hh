@@ -119,6 +119,7 @@ static inline double taylor_series_planck(double x) {
 static double polylog_series_minus_one_planck(double const x,
                                               double const eix) {
   Require(x >= 0.0);
+  Require(x < std::sqrt(std::numeric_limits<double>::max()));
   Require(rtt_dsxx::soft_equiv(std::exp(-x), eix));
 
   double const xsqrd = x * x;
@@ -197,8 +198,8 @@ static double polylog_series_minus_one_planck(double const x,
  *
  * This helper function is used by CDI::integrate_planck_rosseland
  * (also in this file).
- * 
- * ==> The underlying function x^4/(exp(x) - 1) can be difficult to evaluate 
+ *
+ * ==> The underlying function x^4/(exp(x) - 1) can be difficult to evaluate
  *     with double precision when x is very small. Instead, when x < 1.e-5,
  *     we use the first 2 terms in the expansion x^4/(exp(x) - 1) ~ x^3(1-x/2),
  *     remaining terms are x^5/12 + O(x^7).
@@ -207,29 +208,30 @@ static double polylog_series_minus_one_planck(double const x,
  *     1-exp(-x) suffers when x is large. However, std::expm1 should improve
  *     the accuracy of that evaluation.
  * ==> The large x fix might be able to be changed in the future if bug listed
- *     in man page is corrected. 
- * 
- * \param  freq The frequency for the upper limit of the integrand. 
- * \param  exp_freq exp(-freq)
- * \return The difference between the integrated Planck and Rosseland 
- * curves over \f$ (0,\nu) \f$.
+ *     in man page is corrected.
+ *
+ * \param[in] freq The frequency for the upper limit of the integrand.
+ * \param[in] exp_freq exp(-freq)
+ * \return The difference between the integrated Planck and Rosseland
+ *         curves over \f$ (0,\nu) \f$.
  */
 static double Planck2Rosseland(double const freq, double const exp_freq) {
-  Check(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
+  Require(freq >= 0.0);
+  Require(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
+
+  // Case 1: if nu/T is sufficiently large, then the evaluation is 0.0.
+  //         this evaluation also prevents overflow when evaluating (nu/T)^4.
+  if (freq > std::pow(std::numeric_limits<decltype(freq)>::max(), 1.0 / 4.0))
+    return 0.0;
 
   double const freq_3 = freq * freq * freq;
-  // ensure freq_3 is not an overflow
-  Check(freq > 1.0 ? freq < std::numeric_limits<decltype(freq)>::max() / freq_3
-                   : true);
 
-  double factor(0.0);
+  // Case 2: if nu/T < 1.0e-5, evaluate via Taylor expansion.
+  if (freq < 1.0e-5)
+    return NORM_FACTOR * freq_3 * (1.0 - 0.5 * freq);
 
-  if (freq > 1.0e-5)
-    factor = NORM_FACTOR * exp_freq * freq_3 * freq / -std::expm1(-freq);
-  else
-    factor = NORM_FACTOR * freq_3 * (1 - 0.5 * freq);
-
-  return factor;
+  // Case 3: All other cases
+  return NORM_FACTOR * exp_freq * freq_3 * freq / -std::expm1(-freq);
 }
 
 } // end of unnamed namespace
@@ -378,8 +380,6 @@ namespace rtt_cdi {
  * function.  When both frequency bounds reside above the Planckian peak
  * (above 2.822 T), we skip the Taylor series calculations and use the
  * polylogarithmic series minus one (the minus one is for roundoff control).
- *
- *
  *
  * This Rosseland functions integrate the normalized Rosseland that is defined:
  * \f[
@@ -723,21 +723,38 @@ double CDI::integrate_planck(double const scaled_freq) {
 //---------------------------------------------------------------------------//
 /**
  * \brief Integrate the normalized Planckian spectrum from 0 to \f$ x
- * (\frac{h\nu}{kT}) \f$.
+ *        (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq upper integration limit, scaled by the temperature.
  *
  * \return integrated normalized Plankian from 0 to x \f$(\frac{h\nu}{kT})\f$
+ *
+ * There are 3 cases to consider:
+ * 1. nu/T is very large
+ *    If nu/T is large enough, then the integral will be 1.0.
+ * 2. nu/T is small
+ *    Represent the integral via Taylor series exapansion (this will be
+ *    more efficient than case 3).
+ * 3. All other cases. Use the polylog algorithm.
  */
 double CDI::integrate_planck(double const scaled_freq,
                              double const exp_scaled_freq) {
+  Require(scaled_freq >= 0);
+
+  // Case 1: nu/T very large -> integral == 1.0
+  if (scaled_freq > std::sqrt(std::numeric_limits<double>::max()))
+    return 1.0;
+
+  // Case 2: nu/T is sufficiently small
+  // FWIW the break is at about scaled_freq < 2.06192398071289
+  double const taylor = taylor_series_planck(std::min(scaled_freq, 1.0e15));
+  // Case 3: all other situations
   double const poly =
       polylog_series_minus_one_planck(scaled_freq, exp_scaled_freq) + 1.0;
-  double const taylor = taylor_series_planck(std::min(scaled_freq, 1.0e15));
-  // Truncated argument to avoid overlow with IEEE standard double precision. At
-  // values this large, the next line will always select the polylog value.
-  double integral = std::min(taylor, poly);
-  // FWIW the break is at about scaled_freq == 2.06192398071289
+
+  // Choose between 2&3: For large enough nu/T, the next line will always
+  // select the polylog value.
+  double const integral = std::min(taylor, poly);
 
   Ensure(integral >= 0.0);
   Ensure(integral <= 1.0);
@@ -745,8 +762,8 @@ double CDI::integrate_planck(double const scaled_freq,
 }
 
 //---------------------------------------------------------------------------//
-/*! \brief Integrate the normalized Planckian and Rosseland spectrums from 0 to \f$ x
- * (\frac{h\nu}{kT}) \f$.
+/*! \brief Integrate the normalized Planckian and Rosseland spectrums from 0 to
+ *         \f$ x (\frac{h\nu}{kT}) \f$.
  *
  * \param scaled_freq frequency upper integration limit scaled by temperature
  * \param planck Variable to return the Planck integral

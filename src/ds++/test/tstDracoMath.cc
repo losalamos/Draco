@@ -11,7 +11,6 @@
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -20,11 +19,11 @@
 void tstabs(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::abs;
 
-  if (abs(-2.2) == abs(2.2))
+  if (rtt_dsxx::soft_equiv(abs(-2.2), abs(2.2)))
     PASSMSG("Correctly calculated abs(double)");
   else
     FAILMSG("Did NOT correctly calculate abs(double)");
-  if (abs(-2.2f) == abs(2.2f))
+  if (rtt_dsxx::soft_equiv(abs(-2.2f), abs(2.2f)))
     PASSMSG("Correctly calculated abs(float)");
   else
     FAILMSG("Did NOT correctly calculate abs(float)");
@@ -85,11 +84,11 @@ void tstpythag(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 void tstsign(rtt_dsxx::UnitTest &ut) {
   using rtt_dsxx::sign;
-  if (sign(3.2, 5.6) != 3.2)
+  if (!rtt_dsxx::soft_equiv(sign(3.2, 5.6), 3.2))
     FAILMSG("sign: FAILED");
   else
     PASSMSG("sign: passed");
-  if (sign(4.1, -0.3) != -4.1)
+  if (!rtt_dsxx::soft_equiv(sign(4.1, -0.3), -4.1))
     FAILMSG("sign: FAILED");
   else
     PASSMSG("sign: passed");

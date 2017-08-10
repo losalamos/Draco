@@ -32,7 +32,7 @@ namespace rtt_units {
  * \sa rtt_units::FundUnit
  * \sa Nuclide Chart
  *
- * Code Sample: 
+ * Code Sample:
  *
  * \verbatim
  * UnitSystem u( UnitSystem().getAstroUnits() );
@@ -42,7 +42,7 @@ namespace rtt_units {
  *                                          // AstroPhysics units.
  * \endverbatim
  *
- * Example 
+ * Example
  * \example test/tstPhysicalConstants.cc
  * This is the unit regression test for the PhysicalConstants class.  It
  * demonstrates typical usage.
@@ -118,6 +118,11 @@ public:
   //! see permittivityOfFreeSpace()
   double epsi0() const { return permittivityOfFreeSpace(); }
 
+  //! accesses the classical electron radius (units of length)
+  double classicalElectronRadius() const { return d_classicalElectronRadius; }
+  //! see classicalElectronRadius()
+  double re() const { return classicalElectronRadius(); }
+
   //! accesses the electron mass (units of mass)
   double electronMass() const { return d_electronMass; }
   //! see electronMass()
@@ -170,6 +175,9 @@ private:
 
   //! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
   double const d_permittivityOfFreeSpace;
+
+  //! [re] Classical electron radius (M)
+  double const d_classicalElectronRadius;
 
   //! [me] ELECTRON REST MASS (KG)
   double const d_electronMass;

@@ -317,7 +317,8 @@ int main(int argc, char *argv[]) {
       // wait a bit before comparing the output to the gold standards.
       std::cout << "\nWaiting for Grace to finish writing files...\n"
                 << std::endl;
-      system("sleep 5");
+      bool system_call_ok = system("sleep 5") == 0;
+      Insist(system_call_ok, "system call returned an error.");
 
       // Check the created files by comparing to a gold standard.
       checkOutputFiles(std::string("plot1"));

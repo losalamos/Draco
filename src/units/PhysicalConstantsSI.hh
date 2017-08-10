@@ -93,7 +93,7 @@ static double const protonMassSI = 1.672621777e-27; // kg
 /*! \brief EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
  *
  * (TEMPERATURE IN eV) * EV2K = (TEMPERATURE IN KELVIN)
- * 
+ *
  * If this number is changed, you must also update the conversion factor found
  * in UniSystemUnums.hh.
  */
@@ -103,7 +103,7 @@ static double const EV2K = electronChargeSI / boltzmannSI;
  *
  * /f
  * \sigma_{SB} = \frac{2 \pi^5 k^4} {15 h^3 c^2}
- *             = 5.670373e-8 
+ *             = 5.670373e-8
  * /f
  */
 static double const stefanBoltzmannSI =
@@ -119,6 +119,11 @@ static double const permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
 //! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
 static double const permittivityOfFreeSpaceSI =
     1.0 / permeabilityOfVacuumSI / cLightSI / cLightSI; // Coloumb^2/J/m
+
+//! [re] Classical electron radius (M)
+static double const classicalElectronRadiusSI =
+    std::pow(electronChargeSI, 2) / (4 * PI * permittivityOfFreeSpaceSI *
+                                     electronMassSI * std::pow(cLightSI, 2));
 
 } // end namespace rtt_units
 

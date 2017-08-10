@@ -10,16 +10,9 @@
  * These routines are based on C routines from Numerical Recipes.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
-
-#include <cmath>
-#include <limits>
-#include <vector>
 
 #include "F_eta.hh"
 #include "Factorial.hh"
-#include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
@@ -35,17 +28,16 @@ using rtt_units::PI;
 static double leta, lgamma;
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Integrand of integral representation of F_eta
- * 
- * \param x Argument
+ *
+ * \param x[in] Argument
  *
  * \return Value of integrand at the argument,
- * \f$\frac{(x^2+2x)^{3/2}}{e^\frac{x-\eta}{\gamma}+1}\f$
+ *         \f$\frac{(x^2+2x)^{3/2}}{e^\frac{x-\eta}{\gamma}+1}\f$
  *
  * \post \c Result>=0
  */
-
 static double Feta_integrand(double x) {
   double const y = x * x + 2 * x;
   double const d = (2 * lgamma * lgamma * sqrt(2 * lgamma));
@@ -58,8 +50,8 @@ static double Feta_integrand(double x) {
 }
 
 static double Feta_brute(double const eta, double const gamma) {
-  // Partial degenerate:  Sommerfeld expansion not sufficiently
-  // accurate.  Must integrate explicitly.
+  // Partial degenerate: Sommerfeld expansion not sufficiently accurate.  Must
+  // integrate explicitly.
   leta = eta;
   lgamma = gamma;
   double const max1 = (eta > 0 ? Feta_integrand(eta) : 0);
@@ -68,10 +60,9 @@ static double Feta_brute(double const eta, double const gamma) {
   double tol = numeric_limits<double>::epsilon() * max(max1, max(max2, max3)) *
                (max(eta, 0.0) + gamma);
 
-  // help the compiler out by telling it that rkqs is
-  // a function pointer that returns void and has the
-  // following argument list.  We have added this typedef
-  // because cxx needs help parsing the call to quad(...).
+  // help the compiler out by telling it that rkqs is a function pointer that
+  // returns void and has the following argument list.  We have added this
+  // typedef because cxx needs help parsing the call to quad(...).
   typedef void (*fpv)(std::vector<double> &, std::vector<double> const &,
                       double &, double, double, std::vector<double> const &,
                       double &, double &, Quad_To_ODE<double (*)(double)>);
@@ -80,23 +71,22 @@ static double Feta_brute(double const eta, double const gamma) {
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
+ * \brief Evaluate the relativistic Fermi-Dirac integral
+ *
  * The relativistic Fermi-Dirac integral is defined as
  * \f[
  * F_{3/2}(\eta, \gamma) = \frac{1}{2^{3/2}\gamma^{5/2}} \int_0^\infty
  * \frac{(x^2+2x)^{3/2}}{e^\frac{x-\eta}{\gamma}+1} dx
  * \f]
  * The dimensionless number density is its partial derivative with eta.
- * 
- * \param eta
- * Dimensionless chemical potential \f$\eta=\frac{\mu}{kT}\f$
- * \param gamma
- * Dimensionless temperature \f$\gamma=\frac{kT}{mc^2}\f$
+ *
+ * \param eta[in] Dimensionless chemical potential \f$\eta=\frac{\mu}{kT}\f$
+ * \param gamma[in] Dimensionless temperature \f$\gamma=\frac{kT}{mc^2}\f$
  *
  * \return Dimensionless number density \f$\frac{\partial
- * F_{3/2}}{\partial\eta}=\frac{3Nh^3}{8\pi m^3c^3}\f$.
+ *         F_{3/2}}{\partial\eta}=\frac{3Nh^3}{8\pi m^3c^3}\f$.
  */
-
 double F_eta(double const eta, double const gamma) {
   Require(gamma > 0.0);
 
@@ -121,14 +111,14 @@ double F_eta(double const eta, double const gamma) {
         sign *= -1;
         double srt = pow((double)j, i + 1.5);
         double term = sign * ep / srt;
-        if (si + term == si)
+        if (fabs(term) < fabs(si) * std::numeric_limits<double>::epsilon())
           break;
         double dterm = sign * dep / srt;
         si += term;
         dsi += dterm;
       }
       double const term = 0.75 * sqrt(PI) * e * fac * si / factorial(i);
-      if (sum + term == sum)
+      if (fabs(term) < fabs(sum) * std::numeric_limits<double>::epsilon())
         break;
       double const dterm =
           0.75 * sqrt(PI) * fac * (de * si + e * dsi) / factorial(i);

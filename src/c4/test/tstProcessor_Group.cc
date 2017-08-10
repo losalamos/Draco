@@ -5,10 +5,7 @@
  * \date   Tue Sep 21 11:45:44 2004
  * \brief  Unit tests for the Processor_Group class and member functions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -37,7 +34,7 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
   unsigned const base = pid % 2;
   vector<double> sum(1, base + 1.);
   comm.sum(sum);
-  if (sum[0] == group_pids * (base + 1.))
+  if (rtt_dsxx::soft_equiv(sum[0], group_pids * (base + 1.)))
     PASSMSG("Correct processor group sum");
   else
     FAILMSG("NOT correct processor group sum");

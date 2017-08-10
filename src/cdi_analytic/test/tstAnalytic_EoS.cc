@@ -54,22 +54,21 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
     double Ui = 0.2 * T;
 
     // specific heats
-    if (analytic.getElectronHeatCapacity(T, rho) != Cve)
+    if (!soft_equiv(analytic.getElectronHeatCapacity(T, rho), Cve))
       ITFAILS;
-    if (analytic.getIonHeatCapacity(T, rho) != Cvi)
+    if (!soft_equiv(analytic.getIonHeatCapacity(T, rho), Cvi))
       ITFAILS;
 
     // specific internal energies
     if (!soft_equiv(analytic.getSpecificElectronInternalEnergy(T, rho), Ue))
       ITFAILS;
-
     if (!soft_equiv(analytic.getSpecificIonInternalEnergy(T, rho), Ui))
       ITFAILS;
 
     // everything else is zero
-    if (analytic.getNumFreeElectronsPerIon(T, rho) != 0.0)
+    if (!soft_equiv(analytic.getNumFreeElectronsPerIon(T, rho), 0.0))
       ITFAILS;
-    if (analytic.getElectronThermalConductivity(T, rho) != 0.0)
+    if (!soft_equiv(analytic.getElectronThermalConductivity(T, rho), 0.0))
       ITFAILS;
   }
 
@@ -90,16 +89,8 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
 
   // field check
   {
-    vector<double> T(6);
+    vector<double> T = {0.993, 0.882, 0.590, 0.112, 0.051, 0.001};
     vector<double> rho(6);
-
-    T[0] = .993;
-    T[1] = .882;
-    T[2] = .590;
-    T[3] = .112;
-    T[4] = .051;
-    T[5] = .001;
-
     std::fill(rho.begin(), rho.end(), 3.0);
     rho[3] = 2.5;
 
@@ -142,9 +133,9 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
         ITFAILS;
 
       // all else are zero
-      if (nfe[i] != 0.0)
+      if (!soft_equiv(nfe[i], 0.0))
         ITFAILS;
-      if (etc[i] != 0.0)
+      if (!soft_equiv(etc[i], 0.0))
         ITFAILS;
     }
   }
@@ -255,7 +246,6 @@ void analytic_eos_test(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void CDI_test(rtt_dsxx::UnitTest &ut) {
   typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -282,16 +272,8 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Can't reference EoS smart pointer");
 
   // make temperature and density fields
-  vector<double> T(6);
+  vector<double> T = {0.993, 0.882, 0.590, 0.112, 0.051, 0.001};
   vector<double> rho(6);
-
-  T[0] = .993;
-  T[1] = .882;
-  T[2] = .590;
-  T[3] = .112;
-  T[4] = .051;
-  T[5] = .001;
-
   std::fill(rho.begin(), rho.end(), 3.0);
   rho[3] = 2.5;
 
@@ -335,13 +317,13 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
         ITFAILS;
 
       // all else are zero
-      if (Cvi[i] != 0.0)
+      if (!soft_equiv(Cvi[i], 0.0))
         ITFAILS;
-      if (iie[i] != 0.0)
+      if (!soft_equiv(iie[i], 0.0))
         ITFAILS;
-      if (nfe[i] != 0.0)
+      if (!soft_equiv(nfe[i], 0.0))
         ITFAILS;
-      if (etc[i] != 0.0)
+      if (!soft_equiv(etc[i], 0.0))
         ITFAILS;
     }
   }
@@ -401,13 +383,13 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
         ITFAILS;
 
       // all else are zero
-      if (Cvi[i] != 0.0)
+      if (!soft_equiv(Cvi[i], 0.0))
         ITFAILS;
-      if (iie[i] != 0.0)
+      if (!soft_equiv(iie[i], 0.0))
         ITFAILS;
-      if (nfe[i] != 0.0)
+      if (!soft_equiv(nfe[i], 0.0))
         ITFAILS;
-      if (etc[i] != 0.0)
+      if (!soft_equiv(etc[i], 0.0))
         ITFAILS;
     }
   }
@@ -416,7 +398,6 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void packing_test(rtt_dsxx::UnitTest &ut) {
   typedef Polynomial_Specific_Heat_Analytic_EoS_Model Polynomial_Model;
 
@@ -447,9 +428,9 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     double Ui = 0.2 * T;
 
     // specific heats
-    if (neos.getElectronHeatCapacity(T, rho) != Cve)
+    if (!soft_equiv(neos.getElectronHeatCapacity(T, rho), Cve))
       ITFAILS;
-    if (neos.getIonHeatCapacity(T, rho) != Cvi)
+    if (!soft_equiv(neos.getIonHeatCapacity(T, rho), Cvi))
       ITFAILS;
 
     // specific internal energies
@@ -460,9 +441,9 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     // everything else is zero
-    if (neos.getNumFreeElectronsPerIon(T, rho) != 0.0)
+    if (!soft_equiv(neos.getNumFreeElectronsPerIon(T, rho), 0.0))
       ITFAILS;
-    if (neos.getElectronThermalConductivity(T, rho) != 0.0)
+    if (!soft_equiv(neos.getElectronThermalConductivity(T, rho), 0.0))
       ITFAILS;
   }
 

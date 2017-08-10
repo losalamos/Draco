@@ -1221,6 +1221,23 @@
    fun:PMPI_Win_create
    ...
 }
+{
+   openmpi210/e0020
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:pmix1_server_register_nspace
+   fun:orte_pmix_server_register_nspace
+   fun:orte_odls_base_default_construct_child_list
+   fun:orte_odls_default_launch_local_procs
+   fun:orte_daemon_recv
+   fun:orte_rml_base_process_msg
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:orterun
+   fun:main
+}
 
 #------------------------------------------------------------------------------#
 # Python 2.7

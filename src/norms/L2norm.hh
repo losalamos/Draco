@@ -16,8 +16,11 @@
 
 namespace rtt_norms {
 //! Compute the L2-norm of a vector.
-template <class In> double L2norm(In const &x);
+template <typename In> double L2norm(In const &x);
 
+//! Compute the L2-norm of the difference between two vectors.
+template <typename In1, typename In2>
+double L2norm_diff(In1 const &x, In2 const &y);
 } // end namespace rtt_norms
 
 #endif // norms_L2norm_hh

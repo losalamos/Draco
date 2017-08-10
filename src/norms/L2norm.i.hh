@@ -40,9 +40,52 @@ double accumulate_norm_(double const init, Field const &x) {
  *
  * \param x Container representing a real vector whose norm is desired.
  */
-template <class In> double L2norm(In const &x) {
+template <typename In> double L2norm(In const &x) {
   double norm = std::accumulate(x.begin(), x.end(), 0.0,
                                 accumulate_norm_<typename In::value_type>);
+
+  rtt_c4::global_sum(norm);
+
+  unsigned xlength(x.size());
+
+  rtt_c4::global_sum(xlength);
+  Require(xlength > 0);
+
+  norm = sqrt(norm / xlength);
+
+  Ensure(norm >= 0.0);
+  return norm;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * This function computes the norm of the difference between two vectors. We
+ * have found that this is a surprisingly common operation, and there is
+ * advantage to not having to compute the difference vector if all we want is
+ * its norm.
+ *
+ * \arg \a In1 An input container type whose elements are real, such as
+ * <code>vector<double></code> or <code>list<float></code>.
+ *
+ * \arg \a In2 An input container type whose elements are real, such as
+ * <code>vector<double></code> or <code>list<float></code>.
+ *
+ * \param x Container representing a real vector.
+ *
+ * \param y Container representing a real vector.
+ */
+template <typename In1, typename In2>
+double L2norm_diff(In1 const &x, In2 const &y) {
+  Require(x.size() == y.size());
+
+  auto xi = x.begin();
+  auto yi = y.begin();
+  // Looping this way avoids restriction to random access containers.
+  double norm = 0.0;
+  for (; xi != x.end(); ++xi, ++yi) {
+    norm +=
+        norm_diff<typename In1::value_type, typename In2::value_type>(*xi, *yi);
+  }
 
   rtt_c4::global_sum(norm);
 

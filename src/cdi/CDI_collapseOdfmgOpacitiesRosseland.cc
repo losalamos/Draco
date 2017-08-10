@@ -5,10 +5,7 @@
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: CDI.cc 7388 2015-01-22 16:02:07Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
@@ -20,7 +17,7 @@ namespace rtt_cdi {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Collapse a multigroup-multiband opacity set into a single
- * representative value weighted by the Rosseland function.
+ *        representative value weighted by the Rosseland function.
  *
  * \param groupBounds The vector of group boundaries. Size n+1
  * \param T         The material temperature.
@@ -30,16 +27,15 @@ namespace rtt_cdi {
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \return A single interval Rosseland weighted opacity value.
  *
- * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain rosselandSpectrum. 
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain rosselandSpectrum.
  *
  * There are 2 special cases that we check for:
  * 1. All opacities are zero - just return 0.0;
  * 2. The Rosseland Integral is very small (or zero).  In this case, perform a
  *    modified calculation that does not depend on the Rosseland integral.
  *
- * If neither of the special cases are in effect, then do the normal
- * evaluation. 
+ * If neither of the special cases are in effect, then do the normal evaluation.
  */
 double CDI::collapseOdfmgOpacitiesRosseland(
     std::vector<double> const &groupBounds,
@@ -52,7 +48,7 @@ double CDI::collapseOdfmgOpacitiesRosseland(
   Require(rosselandSpectrum.size() == groupBounds.size() - 1);
 
   // If all opacities are zero, then the Rosseland mean will also be zero.
-  double const eps(1.0e-16);
+  double const eps(std::numeric_limits<double>::epsilon());
   double opacity_sum(0.0);
   for (size_t g = 1; g < groupBounds.size(); ++g)
     opacity_sum +=
@@ -70,11 +66,11 @@ double CDI::collapseOdfmgOpacitiesRosseland(
   double const rosseland_integral =
       std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
 
-  // If the group bounds are well outside the Rosseland Spectrum at the
-  // current temperature, our algorithm may return a value that is within
-  // machine precision of zero.  In this case, we assume that this occurs
-  // when the temperature -> 0, so that limit(T->0) dB/dT = \delta(\nu).
-  // In this case we have:
+  // If the group bounds are well outside the Rosseland Spectrum at the current
+  // temperature, our algorithm may return a value that is within machine
+  // precision of zero.  In this case, we assume that this occurs when the
+  // temperature -> 0, so that limit(T->0) dB/dT = \delta(\nu).  In this case we
+  // have:
   //
   // sigma_R = sigma(g=0)
 

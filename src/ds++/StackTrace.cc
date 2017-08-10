@@ -5,10 +5,7 @@
  * \date   Friday, Dec 20, 2013, 10:15 am
  * \brief  Linux/X86 implementation of stack trace functions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "StackTrace.hh"
@@ -56,7 +53,7 @@ std::string rtt_dsxx::print_stacktrace(std::string const &error_name) {
   // Now read the symbolic link (process name)
   unsigned const buf_size(512);
   char buf[buf_size];
-  int ret = readlink(linkname.c_str(), buf, buf_size);
+  auto ret = readlink(linkname.c_str(), buf, buf_size);
   buf[ret] = 0;
   std::string process_name(buf);
 

@@ -5,41 +5,35 @@
  * \date   Thu Jun 22 16:22:07 2000
  * \brief  CDI class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: CDI.cc 7388 2015-01-22 16:02:07Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "CDI.hh"
 
 namespace rtt_cdi {
+
 //---------------------------------------------------------------------------//
 // Rosseland Spectrum Integrators
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
 /*!
- * The arguments to this function must all be in consistent units. For
- * example, if low and high are expressed in keV, then the temperature must
- * also be expressed in keV. If low and high are in Hz and temperature is in
- * K, then low and high must first be multiplied by Planck's constant and
- * temperature by Boltzmann's constant before they are passed to this function.
+ * The arguments to this function must all be in consistent units. For example,
+ * if low and high are expressed in keV, then the temperature must also be
+ * expressed in keV. If low and high are in Hz and temperature is in K, then low
+ * and high must first be multiplied by Planck's constant and temperature by
+ * Boltzmann's constant before they are passed to this function.
  *
  * \brief Integrate the Planckian and Rosseland spectrum over a frequency
  *        range.
  *
  * \param low Lower limit of frequency range.
- *
  * \param high Higher limit of frequency range.
- *
- * \param T Temperature (must be greater than 0.0).
- *
- * \planck On return, contains the integrated normalized Planckian from
- * low to high.
- *
- * \rosseland On return, contains the integrated normalized Rosseland from
- * low to high
+ * \param[in] T Temperature (must be greater than 0.0).
+ * \param[out] planck On return, contains the integrated normalized Planckian
+ *             from low to high.
+ * \param[out] rosseland On return, contains the integrated normalized Rosseland
+ *             from low to high
  *
  * \f[
  * planck(T) = \int_{\nu_1}^{\nu_2}{B(\nu,T)d\nu}
@@ -53,7 +47,9 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double low, double high,
   Require(high >= low);
   Require(T >= 0.0);
 
-  if (T == 0.0) {
+  // high/T must be < numeric_limits<double>::max().  So, if T ~< high*min, then
+  // return early with zero values (assuming max() ~ 1/min()).
+  if (T <= high * std::numeric_limits<double>::min()) {
     planck = 0.0;
     rosseland = 0.0;
     return;

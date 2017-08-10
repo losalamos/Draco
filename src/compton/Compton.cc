@@ -34,9 +34,6 @@ namespace rtt_compton {
  */
 Compton::Compton(const std::string &filehandle) {
 
-  // Check input validity
-  Require(std::ifstream(filehandle).good());
-
   // Make a compton file object to read the multigroup data
   compton_file Cfile(false);
 

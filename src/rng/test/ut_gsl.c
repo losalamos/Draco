@@ -31,90 +31,102 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "rng/config.h"
 
+#include "Random123/conventional/gsl_cbrng.h"
+#include "ut_gsl.h"
+#include <assert.h>
 #include <gsl/gsl_randist.h>
 #include <stdio.h>
-#include "ut_gsl.h"
-#include "Random123/conventional/gsl_cbrng.h"
-#include <assert.h>
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
 
 /* Exercise the GSL_CBRNG macro */
 
 GSL_CBRNG(cbrng, threefry4x64); /* creates gsl_rng_cbrng */
 
-int main(int argc, char **argv){
-    int i;
-    gsl_rng *r;
-    gsl_rng *rcopy;
-    unsigned long x;
-    rngRemember(unsigned long save);
-    rngRemember(unsigned long saved[5]);
-    double sum = 0.;
-    (void)argc; (void)argv; /* unused */
+int main(int argc, char **argv) {
+  int i;
+  gsl_rng *r;
+  gsl_rng *rcopy;
+  unsigned long x;
+  rngRemember(unsigned long save);
+  rngRemember(unsigned long saved[5]);
+  double sum = 0.;
+  (void)argc;
+  (void)argv; /* unused */
 
-    /* Silence an unused-parameter warning. */
-    (void)argc;
+  /* Silence an unused-parameter warning. */
+  (void)argc;
 
-    r = gsl_rng_alloc(gsl_rng_cbrng);
-    assert (gsl_rng_min(r) == 0);
-    assert (gsl_rng_max(r) == 0xffffffffUL); /* Not necessarily ~0UL */
-    assert (gsl_rng_size(r) > 0);
+  r = gsl_rng_alloc(gsl_rng_cbrng);
+  assert(gsl_rng_min(r) == 0);
+  assert(gsl_rng_max(r) == 0xffffffffUL); /* Not necessarily ~0UL */
+  assert(gsl_rng_size(r) > 0);
 
-    printf("%s\nulongs from %s in initial state\n", argv[0], gsl_rng_name(r));
-    for (i = 0; i < 5; i++) {
-	x = gsl_rng_get(r);
-        rngRemember(saved[i] = x);
-	printf("%d: 0x%lx\n", i, x);
-	assert(x != 0);
-    }
-    printf("uniforms from %s\n", gsl_rng_name(r));
-    for (i = 0; i < 5; i++) {
-        double z = gsl_rng_uniform(r);
-        sum += z;
-        printf("%d: %.4g\n", i, z);
-    }
-    assert( sum < 0.9*5 && sum > 0.1*5 && (long)"sum must be reasonably close  to 0.5*number of trials");
-    rngRemember(save =) gsl_rng_get(r);
+  printf("%s\nulongs from %s in initial state\n", argv[0], gsl_rng_name(r));
+  for (i = 0; i < 5; i++) {
+    x = gsl_rng_get(r);
+    rngRemember(saved[i] = x);
+    printf("%d: 0x%lx\n", i, x);
+    assert(x != 0);
+  }
+  printf("uniforms from %s\n", gsl_rng_name(r));
+  for (i = 0; i < 5; i++) {
+    double z = gsl_rng_uniform(r);
+    sum += z;
+    printf("%d: %.4g\n", i, z);
+  }
+  assert(sum < 0.9 * 5 && sum > 0.1 * 5 &&
+         (long)"sum must be reasonably close  to 0.5*number of trials");
+  rngRemember(save =) gsl_rng_get(r);
 
-    gsl_rng_set(r, 0xdeadbeef); /* set a non-zero seed */
-    printf("ulongs from %s after seed\n", gsl_rng_name(r));
-    for (i = 0; i < 5; i++) {
-	x = gsl_rng_get(r);
-	printf("%d: 0x%lx\n", i, x);
-	assert(x != 0);
-    }
-    /* make a copy of the total state */
-    rcopy = gsl_rng_alloc(gsl_rng_cbrng);
-    gsl_rng_memcpy(rcopy, r);
-    printf("uniforms from %s\n", gsl_rng_name(r));
-    sum = 0.;
-    for (i = 0; i < 5; i++) {
-        double x = gsl_rng_uniform(r);
-        rngRemember(double y = gsl_rng_uniform(rcopy));
-	printf("%d: %.4g\n", i, x);
-        sum += x;
-        assert(x == y);
-    }
-    assert(gsl_rng_get(r) != save);
-    assert( sum < 0.9*5 && sum > 0.1*5 && (long)"sum must be reasonably close  to 0.5*number of trials");
+  gsl_rng_set(r, 0xdeadbeef); /* set a non-zero seed */
+  printf("ulongs from %s after seed\n", gsl_rng_name(r));
+  for (i = 0; i < 5; i++) {
+    x = gsl_rng_get(r);
+    printf("%d: 0x%lx\n", i, x);
+    assert(x != 0);
+  }
+  /* make a copy of the total state */
+  rcopy = gsl_rng_alloc(gsl_rng_cbrng);
+  gsl_rng_memcpy(rcopy, r);
+  printf("uniforms from %s\n", gsl_rng_name(r));
+  sum = 0.;
+  for (i = 0; i < 5; i++) {
+    double x = gsl_rng_uniform(r);
+    rngRemember(double y = gsl_rng_uniform(rcopy));
+    printf("%d: %.4g\n", i, x);
+    sum += x;
+    assert(x == y);
+  }
+  assert(gsl_rng_get(r) != save);
+  assert(sum < 0.9 * 5 && sum > 0.1 * 5 &&
+         (long)"sum must be reasonably close  to 0.5*number of trials");
 
-    /* gsl_rng_set(*, 0) is supposed to recover the default seed */
-    gsl_rng_set(r, 0);
-    printf("ulongs from %s after restore to initial\n", gsl_rng_name(r));
-    for (i = 0; i < 5; i++) {
-	x = gsl_rng_get(r);
-        assert( x == saved[i] );
-	printf("%d: 0x%lx\n", i, x);
-	assert(x != 0);
-    }
-    printf("uniforms from %s\n", gsl_rng_name(r));
-    for (i = 0; i < 5; i++) {
-	printf("%d: %.4g\n", i, gsl_rng_uniform(r));
-    }
+  /* gsl_rng_set(*, 0) is supposed to recover the default seed */
+  gsl_rng_set(r, 0);
+  printf("ulongs from %s after restore to initial\n", gsl_rng_name(r));
+  for (i = 0; i < 5; i++) {
+    x = gsl_rng_get(r);
+    assert(x == saved[i]);
+    printf("%d: 0x%lx\n", i, x);
+    assert(x != 0);
+  }
+  printf("uniforms from %s\n", gsl_rng_name(r));
+  for (i = 0; i < 5; i++) {
+    printf("%d: %.4g\n", i, gsl_rng_uniform(r));
+  }
 
+  gsl_rng_free(rcopy);
+  gsl_rng_free(r);
 
-    gsl_rng_free (rcopy);
-    gsl_rng_free (r);
-
-    printf("ut_gsl: OK\n");
-    return 0;
+  printf("ut_gsl: OK\n");
+  return 0;
 }
+
+#ifdef __GNUC__
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif

@@ -3,16 +3,14 @@
  * \file   c4/test/tstglobal_containers.cc
  * \author Kent Budge
  * \date   Mon Mar 24 09:41:04 2008
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2008-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "c4/global_containers.i.hh"
 #include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <cmath>
 #include <set>
 
@@ -35,16 +33,15 @@ void tstglobal_containers(UnitTest &ut) {
 
     global_merge(local_set);
 
-    if (local_set.size() == 2 * number_of_processors) {
-      ut.passes("Correct number of global elements");
-    } else {
-      ut.failure("NOT correct number of global elements");
-    }
+    if (local_set.size() == 2 * number_of_processors)
+      PASSMSG("Correct number of global elements");
+    else
+      FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
       if (local_set.count(p) != 1 ||
           local_set.count(number_of_processors + p) != 1) {
-        ut.failure("WRONG element in set");
+        FAILMSG("WRONG element in set");
       }
     }
   }
@@ -56,19 +53,20 @@ void tstglobal_containers(UnitTest &ut) {
 
     global_merge(local_map);
 
-    if (local_map.size() == 2 * number_of_processors) {
-      ut.passes("Correct number of global elements");
-    } else {
-      ut.failure("NOT correct number of global elements");
-    }
+    if (local_map.size() == 2 * number_of_processors)
+      PASSMSG("Correct number of global elements");
+    else
+      FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
       if (local_map.count(p) != 1 ||
           local_map.count(number_of_processors + p) != 1) {
-        ut.failure("WRONG element in map");
+        FAILMSG("WRONG element in map");
       }
-      if (local_map[p] != p || local_map[number_of_processors + p] != 2 * p) {
-        ut.failure("WRONG element value in map");
+      if (!rtt_dsxx::soft_equiv(local_map[p], static_cast<double>(p)) ||
+          !rtt_dsxx::soft_equiv(local_map[number_of_processors + p],
+                                static_cast<double>(2 * p))) {
+        FAILMSG("WRONG element value in map");
       }
     }
   }
@@ -80,43 +78,41 @@ void tstglobal_containers(UnitTest &ut) {
 
     global_merge(local_map);
 
-    if (local_map.size() == 2 * number_of_processors) {
-      ut.passes("Correct number of global elements");
-    } else {
-      ut.failure("NOT correct number of global elements");
-    }
+    if (local_map.size() == 2 * number_of_processors)
+      PASSMSG("Correct number of global elements");
+    else
+      FAILMSG("NOT correct number of global elements");
 
     for (unsigned p = 0; p < number_of_processors; ++p) {
       if (local_map.count(p) != 1 ||
           local_map.count(number_of_processors + p) != 1) {
-        ut.failure("WRONG element in map");
+        FAILMSG("WRONG element in map");
       }
       if (local_map[p] != false ||
           local_map[number_of_processors + p] != true) {
-        ut.failure("WRONG element value in map");
+        FAILMSG("WRONG element value in map");
       }
     }
   }
 }
+#endif // C4_MPI
 
 //---------------------------------------------------------------------------//
-#endif // C4_MPI
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
 #ifdef C4_MPI
     tstglobal_containers(ut);
 #else
-    ut.passes("Test inactive for scalar");
+    PASSMSG("Test inactive for scalar");
 
 #endif // C4_MPI
-  } catch (std::exception &err) {
-    std::cout << "ERROR: While testing tstglobal_containers, " << err.what()
-              << endl;
+  } catch (exception &err) {
+    cout << "ERROR: While testing tstglobal_containers, " << err.what() << endl;
     ut.numFails++;
   } catch (...) {
-    std::cout << "ERROR: While testing tstglobal_containers, "
-              << "An unknown exception was thrown." << endl;
+    cout << "ERROR: While testing tstglobal_containers, "
+         << "An unknown exception was thrown." << endl;
     ut.numFails++;
   }
   return ut.numFails;

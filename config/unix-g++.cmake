@@ -66,9 +66,7 @@ endif()
 # Compiler Flags
 #
 # Consider using these diagnostic flags for Debug builds:
-# -Wundef     - warn about CPP macros read but not defined.
 # -Wcast-qual - warn about casts that remove qualifiers like const.
-# -Wfloat-equal
 # -Wstrict-overflow=4
 # -Wwrite-strings
 # -Wunreachable-code
@@ -82,10 +80,11 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
-  set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -DDEBUG")
-  # '-Werror'
-  # -D_FORTIFY_SOURCE=2 -Wconversion -Wfloat-equal -Wunreachable-code
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
+  set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
+  # -Wfloat-equal
+  # -Werror
+  # -Wconversion
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
 
@@ -110,7 +109,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #             the correct dynamic type.
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=always")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=auto")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=vptr")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=object-size")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=alignment")

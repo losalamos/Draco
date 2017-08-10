@@ -1,3 +1,4 @@
+/*----------------------------------------------------------------------------*/
 /*
 Copyright 2016, D. E. Shaw Research.
 All rights reserved.
@@ -29,6 +30,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*----------------------------------------------------------------------------*/
 #ifndef UTIL_H__
 #define UTIL_H__
 
@@ -40,14 +42,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wundef"
+/* This is a Random123 file. Ignore advanced gcc warnings eminating from this
+ * file. */
+#ifdef __GNUC__
+#pragma GCC system_header
 #endif
+
 #include <Random123/features/compilerfeatures.h>
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 
 extern const char *progname;
 extern int debug;
@@ -324,3 +325,7 @@ double hextod(const char *cp) {
   } while (0)
 
 #endif /* UTIL_H__ */
+
+/*----------------------------------------------------------------------------*/
+/* End util.h */
+/*----------------------------------------------------------------------------*/

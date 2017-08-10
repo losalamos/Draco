@@ -5,10 +5,7 @@
  * \date   Tue Apr  2 15:57:11 2002
  * \brief  Ping Pong communication test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -150,7 +147,7 @@ void test_loop(rtt_dsxx::UnitTest &ut) {
       if (kk != k)
         ITFAILS;
       Insist(!broadcast(&foofoo, 1, 0), "MPI Error");
-      if (foofoo != k + 0.5)
+      if (!rtt_dsxx::soft_equiv(foofoo, k + 0.5))
         ITFAILS;
     }
   }

@@ -678,6 +678,59 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(int_range, 0.0345683, 3.e-5))
     ITFAILS;
 
+  //
+  // Extreme cases: test early return logic for integration routines.
+  //
+  double const tol = std::numeric_limits<double>::epsilon();
+
+  // Extreme case 1. This should do the normal computation, but the result is
+  // zero.
+  {
+    double const integrate_range_cold =
+        CDI::integratePlanckSpectrum(0.001, 1.0, 1.0e-30);
+    if (!soft_equiv(integrate_range_cold, 0.0))
+      ITFAILS;
+  }
+  // Extreme case 2. T < numeric_limits<double>::min() --> follow special logic
+  // and return zero.
+  {
+    double const integrate_range_cold =
+        CDI::integratePlanckSpectrum(0.1, 1.0, 1.0e-308);
+    if (!soft_equiv(integrate_range_cold, 0.0, tol))
+      ITFAILS;
+  }
+  // Extreme case 3. This should do the normal computation, but the result is
+  // zero.
+  {
+    std::vector<double> const bounds = {1.0, 3.0, 30.0};
+    // If T < sqrt(numeric_limits<double>::min()), the integration will fail.
+    double const T_eval = 1.0e-300;
+    std::vector<double> planck;
+    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    if (!soft_equiv(planck[0], 0.0, tol))
+      ITFAILS;
+  }
+  // Extreme case 4a. T < numeric_limits<double>::min() --> follow special logic
+  // and return zero.
+  {
+    std::vector<double> const bounds = {1.0, 3.0, 30.0};
+    double const T_eval = 1.0e-308;
+    std::vector<double> planck;
+    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0), tol))
+      ITFAILS;
+  }
+  // Extreme case 4b. T < numeric_limits<double>::min() --> follow special logic
+  // and return zero. Also, let v_0 == 0.0
+  {
+    std::vector<double> const bounds = {0.0, 3.0, 30.0};
+    double const T_eval = 1.0e-308;
+    std::vector<double> planck;
+    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0), tol))
+      ITFAILS;
+  }
+
   // Catch an illegal group assertion.
   CDI cdi;
   std::shared_ptr<const MultigroupOpacity> mg(
@@ -785,7 +838,6 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   // Only report this as a failure if 1) the error was not caught AND 2)
   // the Require macro is available.
@@ -951,6 +1003,8 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   if (CDI::getNumberFrequencyGroups() != 3)
     ITFAILS;
 
+  // ----- Rosseland+Planckian ----- //
+
   // First group
   CDI::integrate_Rosseland_Planckian_Spectrum(1, 1.0, PL, ROS);
   if (!soft_equiv(PL, 0.005286862763740451, 1.e-6))
@@ -1033,6 +1087,57 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
   else
     FAILMSG(string("Group-wize and Full spectrum Planckian and ") +
             "Rosseland integrals do not match.");
+
+  // More checks for extreme inputs
+
+  // Extreme case 1. This should do the normal computation, but the result is
+  // zero.
+  {
+    std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
+    double const T_eval = 1.0e-30;
+    std::vector<double> rosseland;
+    CDI::integrate_Rosseland_Spectrum(bounds, T_eval, rosseland);
+    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+      ITFAILS;
+  }
+  // Extreme case 2. T < numeric_limits<double>::min() --> follow special logic
+  // and return zero.
+  {
+    std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
+    double const T_eval = 1.0e-308;
+    std::vector<double> rosseland;
+    CDI::integrate_Rosseland_Spectrum(bounds, T_eval, rosseland);
+    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+      ITFAILS;
+  }
+  // Extreme case 3. This should do the normal computation, but the result is
+  // zero.
+  {
+    std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
+    double const T_eval = 1.0e-30;
+    std::vector<double> planck;
+    std::vector<double> rosseland;
+    CDI::integrate_Rosseland_Planckian_Spectrum(bounds, T_eval, planck,
+                                                rosseland);
+    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+      ITFAILS;
+    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0)))
+      ITFAILS;
+  }
+  // Extreme case 4. T < numeric_limits<double>::min() --> follow special logic
+  // and return zero.
+  {
+    std::vector<double> const bounds = {0.1, 0.3, 1.0, 3.0, 30.0};
+    double const T_eval = 1.0e-308;
+    std::vector<double> planck;
+    std::vector<double> rosseland;
+    CDI::integrate_Rosseland_Planckian_Spectrum(bounds, T_eval, planck,
+                                                rosseland);
+    if (!soft_equiv(rosseland, std::vector<double>(rosseland.size(), 0.0)))
+      ITFAILS;
+    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0)))
+      ITFAILS;
+  }
 
   if (ut.numFails == 0) {
     PASSMSG("All Rosseland and Rosseland/Planckian integral tests ok.");

@@ -211,6 +211,7 @@ vector<char> Pseudo_Line_Base::pack() const {
 
 //---------------------------------------------------------------------------//
 double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
+
   int const number_of_lines = number_of_lines_;
   double const width = line_width_;
   double const peak = line_peak_;
@@ -232,7 +233,7 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
     for (int i = 0; i < number_of_lines; ++i) {
       double const nu0 = center_[i];
       double const d = (x - nu0) / (width * nu0);
-      //        Result += peak*exp(-d*d);
+      // Result += peak*exp(-d*d);
       Result += peak / (1 + d * d);
     }
   } else {
@@ -249,8 +250,10 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
       Result += edge_factor_[i] * cube(nu0 / x);
     }
   }
-  if (Tpow_ != 0.0) {
-    Result = Result * pow(T / Tref_, Tpow_);
+  // if the power is ~0, then pow(a,0) == 1.0.
+  if (!rtt_dsxx::soft_equiv(Tpow_, 0.0,
+                            std::numeric_limits<double>::epsilon())) {
+    Result *= pow(T / Tref_, Tpow_);
   }
   return Result;
 }

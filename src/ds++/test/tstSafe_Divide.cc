@@ -4,15 +4,13 @@
  * \author Mike Buksas
  * \date   Tue Jun 21 16:02:52 2005
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/Safe_Divide.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -27,32 +25,32 @@ using namespace rtt_dsxx;
 // TESTS
 //---------------------------------------------------------------------------//
 void test(rtt_dsxx::UnitTest &ut) {
-  double max = numeric_limits<double>::max();
+  double const max = numeric_limits<double>::max();
 
-  double big = 1.0e200;
-  double tiny = 1.0e-200;
+  double const big = 1.0e200;
+  double const tiny = 1.0e-200;
 
-  if (safe_pos_divide(big, tiny) != max)
+  if (!rtt_dsxx::soft_equiv(safe_pos_divide(big, tiny), max))
     ITFAILS;
-  if (safe_pos_divide(10.0, 5.0) != 2.0)
-    ITFAILS;
-
-  if (safe_divide(big, tiny) != max)
-    ITFAILS;
-  if (safe_divide(-big, tiny) != -max)
-    ITFAILS;
-  if (safe_divide(-big, -tiny) != max)
-    ITFAILS;
-  if (safe_divide(big, -tiny) != -max)
+  if (!rtt_dsxx::soft_equiv(safe_pos_divide(10.0, 5.0), 2.0))
     ITFAILS;
 
-  if (safe_divide(10.0, 5.0) != 2.0)
+  if (!rtt_dsxx::soft_equiv(safe_divide(big, tiny), max))
     ITFAILS;
-  if (safe_divide(-10.0, 5.0) != -2.0)
+  if (!rtt_dsxx::soft_equiv(safe_divide(-big, tiny), -max))
     ITFAILS;
-  if (safe_divide(-10.0, -5.0) != 2.0)
+  if (!rtt_dsxx::soft_equiv(safe_divide(-big, -tiny), max))
     ITFAILS;
-  if (safe_divide(10.0, -5.0) != -2.0)
+  if (!rtt_dsxx::soft_equiv(safe_divide(big, -tiny), -max))
+    ITFAILS;
+
+  if (!rtt_dsxx::soft_equiv(safe_divide(10.0, 5.0), 2.0))
+    ITFAILS;
+  if (!rtt_dsxx::soft_equiv(safe_divide(-10.0, 5.0), -2.0))
+    ITFAILS;
+  if (!rtt_dsxx::soft_equiv(safe_divide(-10.0, -5.0), 2.0))
+    ITFAILS;
+  if (!rtt_dsxx::soft_equiv(safe_divide(10.0, -5.0), -2.0))
     ITFAILS;
 
   if (ut.numFails == 0)
@@ -61,7 +59,6 @@ void test(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

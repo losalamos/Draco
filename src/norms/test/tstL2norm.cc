@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Tue Sep 18 09:06:26 2007
  * \brief  Test the L2norm function template.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -30,12 +30,17 @@ void tstL2norm(UnitTest &ut) {
 
   vector<double> x(N, rtt_c4::node() + 1);
 
-  double const norm = L2norm(x);
+  double norm = L2norm(x);
+  ut.check(soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))),
+           "L2norm is correct");
 
-  if (soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))))
-    ut.passes("L2norm is correct");
-  else
-    ut.failure("L2norm is NOT correct");
+  norm = L2norm_diff(x, x);
+  ut.check(soft_equiv(norm, 0.0), "L2norm_diff of vector with self is zero");
+
+  vector<double> y(N, 2 * rtt_c4::node() + 2);
+  norm = L2norm_diff(x, y);
+  ut.check(soft_equiv(norm, sqrt(1. / 6 + n * (0.5 + n / 3.))),
+           "L2norm_diff is correct");
 
   return;
 }

@@ -5,10 +5,7 @@
  * \date   Mon Mar 25 17:19:16 2002
  * \brief  Test timing functions in C4.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/Global_Timer.hh"
@@ -211,15 +208,15 @@ void wall_clock_test(rtt_dsxx::UnitTest &ut) {
   // Check the merge method
   //------------------------------------------------------//
 
-  double old_wall_time = t.sum_wall_clock();
-  double old_system_time = t.sum_system_cpu();
-  double old_user_time = t.sum_user_cpu();
-  double old_intervals = t.intervals();
+  double const old_wall_time = t.sum_wall_clock();
+  double const old_system_time = t.sum_system_cpu();
+  double const old_user_time = t.sum_user_cpu();
+  int const old_intervals = t.intervals();
   t.merge(t);
 
-  if (2 * old_wall_time == t.sum_wall_clock() &&
-      2 * old_system_time == t.sum_system_cpu() &&
-      2 * old_user_time == t.sum_user_cpu() &&
+  if (rtt_dsxx::soft_equiv(2 * old_wall_time, t.sum_wall_clock()) &&
+      rtt_dsxx::soft_equiv(2 * old_system_time, t.sum_system_cpu()) &&
+      rtt_dsxx::soft_equiv(2 * old_user_time, t.sum_user_cpu()) &&
       2 * old_intervals == t.intervals())
     PASSMSG("merge okay");
   else

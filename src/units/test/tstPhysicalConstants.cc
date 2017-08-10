@@ -460,6 +460,22 @@ void test_scaled_values(rtt_dsxx::UnitTest &ut) {
     FAILMSG(msg.str());
   }
 
+  // Classical electron radius
+  dev = 2.8179403227e-15; // m (NIST value)
+  dev = dev * us.L() / si.L();
+  if (soft_equiv(pc.classicalElectronRadius(), dev, 2e-9)) {
+    ostringstream msg;
+    msg << "Scaled classical electron radius looks correct." << endl;
+    PASSMSG(msg.str());
+  } else {
+    ostringstream msg;
+    msg << "Scaled classical electron radius is not correct." << endl
+        << "\tvalue =  " << std::setprecision(16)
+        << pc.classicalElectronRadius() << " != " << std::setprecision(16)
+        << dev << "." << endl;
+    FAILMSG(msg.str());
+  }
+
   // Electron mass
 
   dev = 9.1093897e-31; // kg

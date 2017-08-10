@@ -12,6 +12,7 @@
 #define rtt_dsxx_DracoMath_hh
 
 #include "Assert.hh"
+#include "Soft_Equivalence.hh"
 #include <algorithm>
 #include <cmath>
 #include <complex>
@@ -51,20 +52,16 @@ template <typename T> bool isFinite(T a) { return std::isfinite(a); }
 #endif
 
 //---------------------------------------------------------------------------//
-/*
- * abs.hh
- *
- * Absolute values are a mess in the STL, in part because they are a mess in the
- * standard C library. We do our best to give a templatized version here.
- */
-//---------------------------------------------------------------------------//
 /*!
  * \brief abs
  *
- * \arg \a Ordered_Group
- *         A type for which operator< and unary operator- are defined.
- * \param a Argument whose absolute value is to be calculated.
+ * \param Ordered_Group A type for which operator< and unary operator- are
+ *             defined.
+ * \param Argument whose absolute value is to be calculated.
  * \return \f$|a|\f$
+ *
+ * Absolute values are a mess in the STL, in part because they are a mess in the
+ * standard C library. We do our best to give a templatized version here.
  */
 template <typename Ordered_Group> inline Ordered_Group abs(Ordered_Group a) {
   if (a < 0)
@@ -80,8 +77,6 @@ template <> inline int abs(int a) { return std::abs(a); }
 template <> inline long abs(long a) { return std::labs(a); }
 
 //---------------------------------------------------------------------------//
-// conj.hh
-//---------------------------------------------------------------------------//
 /*!
  * \brief Return the conjugate of a quantity.
  *
@@ -89,7 +84,7 @@ template <> inline long abs(long a) { return std::labs(a); }
  * as \c double.  An example of a field type that is \em not self-conjugate is
  * \c complex.
  *
- * \arg \a Field type
+ * \param[in] Field type
  */
 template <typename Field> inline Field conj(const Field &x) { return x; }
 
@@ -99,38 +94,30 @@ template <> inline std::complex<double> conj(const std::complex<double> &x) {
 }
 
 //---------------------------------------------------------------------------//
-// cube.hh
-//---------------------------------------------------------------------------//
 /*!
  * \brief Return the cube of a value.
  *
- * \arg \a Semigroup A type representing an algebraic structure closed under
- * multiplication such as the integers or the reals.
- *
- * \param x Value to be cubed.
+ * \param[in] x Value to be cubed.
  * \return \f$x^3\f$
+ *
+ * \c Semigroup is a type representing an algebraic structure closed under
+ * multiplication such as the integers or the reals.
  */
 template <typename Semigroup> inline Semigroup cube(Semigroup const &x) {
   return x * x * x;
 }
 
-//---------------------------------------------------------------------------//
-// dim.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \brief Return the positive difference of the arguments.
  *
  * This is a replacement for the FORTRAN DIM function.
  *
  * \arg \a Ordered_Group_Element A type for which operator< and unary operator-
- * are defined and which can be constructed from a literal \c 0.
+ *      are defined and which can be constructed from a literal \c 0.
  *
- * \param a
- * Minuend
- *
- * \param b
- * Subtrahend
- *
+ * \param a Minuend
+ * \param b Subtrahend
  * \return \f$max(0, a-b)\f$
  *
  * \deprecated A FORTRAN relic that should disappear eventually.
@@ -145,23 +132,19 @@ inline Ordered_Group_Element dim(Ordered_Group_Element a,
 }
 
 //---------------------------------------------------------------------------//
-// square.hh
-//---------------------------------------------------------------------------//
 /*!
  * \brief Return the square of a value.
  *
  * \arg \a Semigroup A type representing an algebraic structure closed under
- * multiplication, such as the integers or the reals.
+ *      multiplication, such as the integers or the reals.
  *
- * \param x Value to be squared.
+ * \param[in] x Value to be squared.
  * \return \f$x^2\f$
  */
 template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
   return x * x;
 }
 
-//---------------------------------------------------------------------------//
-// pythag.hh
 //---------------------------------------------------------------------------//
 /*!
  * \brief Compute the hypotenuse of a right triangle.
@@ -176,18 +159,18 @@ template <typename Semigroup> inline Semigroup square(const Semigroup &x) {
  */
 template <typename Real> inline double pythag(Real a, Real b) {
   Real absa = abs(a), absb = abs(b);
-  if (absa > absb) {
+  // We must avoid (a/b)^2 > max.
+  if (absa <= absb * std::sqrt(std::numeric_limits<Real>::min()))
+    return absb;
+  if (absb <= absa * std::sqrt(std::numeric_limits<Real>::min()))
+    return absa;
+  // The regular case...
+  if (absa > absb)
     return absa * std::sqrt(1.0 + square(absb / absa));
-  } else {
-    if (absb == 0.0)
-      return 0.0;
-    else
-      return absb * std::sqrt(1.0 + square(absa / absb));
-  }
+  else
+    return absb * std::sqrt(1.0 + square(absa / absb));
 }
 
-//---------------------------------------------------------------------------//
-// sign.hh
 //---------------------------------------------------------------------------//
 /*!
  * \brief  Transfer the sign of the second argument to the first argument.
@@ -200,12 +183,8 @@ template <typename Real> inline double pythag(Real a, Real b) {
  * A type for which \c operator< and unary \c operator- are defined and which
  * can be compared to literal \c 0.
  *
- * \param a
- * Argument supplying magnitude of result.
- *
- * \param b
- * Argument supplying sign of result.
- *
+ * \param a Argument supplying magnitude of result.
+ * \param b Argument supplying sign of result.
  * \return \f$|a|sgn(b)\f$
  */
 template <typename Ordered_Group>
@@ -228,7 +207,7 @@ inline Ordered_Group sign(Ordered_Group a, Ordered_Group b) {
  * \param[in] y2 y coordinate of second data point.
  * \param[in] x  x coordinate associated with requested y value.
  * \return The y value associated with x based on linear interpolation between
- * (x1,y1) and (x2,y2).
+ *         (x1,y1) and (x2,y2).
  *
  * Given two points (x1,y1) and (x2,y2), use linaer interpolation to find the y
  * value associated with the provided x value.
