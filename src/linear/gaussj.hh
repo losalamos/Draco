@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Solve a system of equations by Gaussian elimination.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_gaussj_hh

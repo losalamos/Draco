@@ -5,10 +5,7 @@
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Calculate the singular value decomposition of a matrix.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_svdcmp_hh

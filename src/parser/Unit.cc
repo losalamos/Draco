@@ -1,45 +1,44 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   Unit.cc
  * \author Kent G. Budge
  * \date   Wed Jan 22 15:18:23 MST 2003
  * \brief  Definitions of Unit methods.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Unit.hh"
 #include <iostream>
+#include <limits>
 #include <sstream>
 
 namespace {
 using namespace std;
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Write text for a component of a unit.
- * 
+ *
  * This is a helper function for operator<<(ostream, const Unit &).  It has
  * the logic for ensuring that dashes are inserted where necessary, e.g., the
  * dash in kg-m^2/s^2.
  *
- * \param str Stream to which to write the unit component.
+ * \param str  Stream to which to write the unit component.
  * \param dash A dash is required after the last component written to the
- * stream.  May be modified on return.
+ *             stream.  May be modified on return.
  * \param value Unit dimension value
  * \param unit Unit name
  */
-
 void dash_insert(ostream &str, bool &dash, double const value,
                  char const *const name) {
-  if (value != 0.0) {
+  double const eps = std::numeric_limits<double>::epsilon();
+  double const mrv = std::numeric_limits<double>::min();
+  if (std::abs(value) > mrv) {
     if (dash) {
       str << '-';
     }
-    if (value != 1.0) {
+    if (!rtt_dsxx::soft_equiv(value, 1.0, eps)) {
       str << name << '^' << value;
     } else {
       str << name;
@@ -47,18 +46,18 @@ void dash_insert(ostream &str, bool &dash, double const value,
     dash = true;
   }
 }
-}
+
+} // end anonymous namespace
 
 namespace rtt_parser {
 using namespace std;
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \param str Stream to which to write the text description.
  * \param u Unit to write the text description for.
  * \return A reference to s.
  */
-
 std::ostream &operator<<(std::ostream &str, const Unit &u) {
   str << u.conv << ' ';
   bool dash = false;

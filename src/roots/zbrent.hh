@@ -5,10 +5,7 @@
  * \date   Tue Aug 17 15:57:06 2004
  * \brief  Find a bracketed root of a function.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef utils_zbrent_hh

@@ -285,8 +285,8 @@ void tstExpression(UnitTest &ut) {
     cout << expression_text_copy.str() << endl;
 
     char const *expression_text_raw = "(log(1)+cos(2)+exp(3)+sin(4))/(m*s)";
-    // changes slightly due to stripping of extraneous whitespace,
-    // parentheses, and positive prefix
+    // changes slightly due to stripping of extraneous whitespace, parentheses,
+    // and positive prefix
     if (expression_text_copy.str() == expression_text_raw) {
       PASSMSG("expression successfully rendered as text");
     } else {

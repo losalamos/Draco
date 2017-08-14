@@ -5,10 +5,7 @@
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of gaussj
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "gaussj.i.hh"

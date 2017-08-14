@@ -145,19 +145,21 @@ std::shared_ptr<DummyClass> Class_Parse_Table<DummyClass>::create_object() {
 //---------------------------------------------------------------------------//
 
 void tstClass_Parser(UnitTest &ut) {
+  double const eps = std::numeric_limits<double>::epsilon();
   string text = "insouciance = 3.3\nend\n";
   String_Token_Stream tokens(text);
 
   std::shared_ptr<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
   ut.check(dummy != nullptr, "parsed the class object", true);
-  ut.check(dummy->Get_Insouciance() == 3.3, "parsed the insouciance correctly");
+  ut.check(rtt_dsxx::soft_equiv(dummy->Get_Insouciance(), 3.3, eps),
+           "parsed the insouciance correctly");
 
   tokens.rewind();
   dummy = parse_class<DummyClass>(tokens, true);
 
   ut.check(dummy != nullptr, "parsed the indolent class object", true);
-  ut.check(dummy->Get_Insouciance() == -3.3,
+  ut.check(rtt_dsxx::soft_equiv(dummy->Get_Insouciance(), -3.3, eps),
            "parsed the indolent insouciance correctly");
 
   // Test that missing end is caught.

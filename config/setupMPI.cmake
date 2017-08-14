@@ -476,40 +476,27 @@ macro( setupCrayMPI )
 
   query_topology()
 
-  # -b        Bypass transfer of application executable to the compute node.
-  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
-  # -q        Quiet
-  # -m 1400m  Reserve 1.4 GB of RAM per PE. Trinitite/Trinity has 4GB/core for
-  #           haswells, 1.4GB/core for KNL
-  # -F shared enabled shared mode to allow multiple applications to run on a
-  #           single node.
-  # set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
-  #   "extra mpirun flags (list)." FORCE)
-   set( MPIEXEC_POSTFLAGS "-N 1 --cpu_bind=cores --gres=craynetwork:0 --exclusive"
-     CACHE STRING
-     "extra mpirun flags (list)." FORCE)
-    # Consider using 'aprun -n # -N # -S # -d # -T -cc depth ...'
-    # -n #  number of processes
-    # -N #  number of processes per node
-    # -S #  number of processes per numa node
-    # -d #  cpus-per-pe
-    # -T    sync-output
-    # -cc depth PEs are constrained to CPUs with a distance of depth between
-    #       them so each PE's threads can be constrained to the CPUs closest to
-    #       the PE's CPU.
-    #set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
-    #  CACHE STRING "extra mpirun flags (list)." FORCE)
+  # srun options:
+  # --------------------
+  # -N        limit job to a single node.
+  # --cpu_bind=verbose,cores
+  #           bind MPI ranks to cores
+  #           print a summary of binding when run
+  # --gres=craynetwork:0 register the craynetwork as a required resource.  This
+  #           is needed for packing many parallel jobs onto one node.
+  # --exclusive This is needed for packing many parallel jobs onto one node.
+  #           The salloc or sbatch command must also use '--exclusive'
+  # --vm-overcommit=disabled Do not allow overcommit of heap resources. As of
+  #           2017-08-14 this option did not work on trinitite.
 
-    set( MPIEXEC_OMP_POSTFLAGS "${MPIEXEC_POSTFLAGS} -c ${MPI_CORES_PER_CPU}"
-      CACHE STRING "extra mpirun flags (list)." FORCE)
-  # Extra flags for OpenMP + MPI
-#   if( DEFINED ENV{OMP_NUM_THREADS} )
+  set(postflags "-N 1 --cpu_bind=verbose,cores --gres=craynetwork:0 ")
+  # string(APPEND postflags " --vm-overcommit=disabled")
+  string(APPEND postflags " --exclusive")
+  set( MPIEXEC_POSTFLAGS ${postflags} CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
-#   else()
-#     message( STATUS "
-# WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
-#          all OMP tests will be disabled." )
-#   endif()
+  set( MPIEXEC_OMP_POSTFLAGS "${MPIEXEC_POSTFLAGS} -c ${MPI_CORES_PER_CPU}"
+    CACHE STRING "extra mpirun flags (list)." FORCE)
 
 endmacro()
 
@@ -629,10 +616,11 @@ macro( setupMPILibrariesUnix )
           "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
         setupIntelMPI()
 
-      # elseif( "${MPIEXEC}" MATCHES aprun)
       elseif( CRAY_PE )
         setupCrayMPI()
 
+      # LANL Cray systems also use srun, so this 'elseif' must appear after our
+      # test for CRAY_PE.
       elseif( "${MPIEXEC}" MATCHES srun)
         setupSequoiaMPI()
 
@@ -643,9 +631,8 @@ The Draco build system doesn't know how to configure the build for
   DBS_MPI_VER = ${DBS_MPI_VER}")
       endif()
 
-      # Mark some of the variables created by the above logic as
-      # 'advanced' so that they do not show up in the 'simple' ccmake
-      # view.
+      # Mark some of the variables created by the above logic as 'advanced' so
+      # that they do not show up in the 'simple' ccmake view.
       mark_as_advanced( MPI_EXTRA_LIBRARY MPI_LIBRARY )
 
       message(STATUS "Looking for MPI.......found ${MPIEXEC}")

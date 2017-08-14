@@ -5,10 +5,7 @@
  * \date   Tue Aug 10 11:59:48 2004
  * \brief  Update the QR decomposition of a square matrix
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
-  */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_qrupdt_i_hh
@@ -21,18 +18,18 @@
 
 namespace rtt_linear {
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Update the QR decomposition of a square matrix.
  *
- * One of the great advantages of the QR decomposition is the ease with which
- * it can be updated.  If \f$A=QR\f$ where \f$Q\f$ is an orthonormal matrix
- * and \f$R\f$ is upper triangular, then \f$A+s\bigotimes t = Q(R+u
- * \bigotimes v)\f$ where \f$v=t\f$ and \f$u=Q^Ts\f$.  Updating the QR
- * decomposition takes of order \f$N^2\f$ operations rather than the
- * \f$N^3\f$ operations of a full matrix inversion.
+ * One of the great advantages of the QR decomposition is the ease with which it
+ * can be updated.  If \f$A=QR\f$ where \f$Q\f$ is an orthonormal matrix and
+ * \f$R\f$ is upper triangular, then \f$A+s\bigotimes t = Q(R+u \bigotimes v)\f$
+ * where \f$v=t\f$ and \f$u=Q^Ts\f$.  Updating the QR decomposition takes of
+ * order \f$N^2\f$ operations rather than the \f$N^3\f$ operations of a full
+ * matrix inversion.
  *
  * \arg \a RandomContainer A random access container.
- * 
+ *
  * \param r Upper triangular matrix of the QR decomposition.
  * \param qt Transpose of orthonormal matrix of the QR decomposition.
  * \param n Rank of the matrix.
@@ -41,30 +38,33 @@ namespace rtt_linear {
  *
  * \todo Templatize on container element type
  */
-
 template <class RandomContainer>
 void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
             RandomContainer &u, RandomContainer &v) {
+
   Require(r.size() == n * n);
   Require(qt.size() == n * n);
   Require(u.size() == n);
   Require(v.size() == n);
 
   using std::fabs;
-
   using namespace rtt_dsxx;
+
+  // minumum representable value
+  double const mrv =
+      std::numeric_limits<typename RandomContainer::value_type>::min();
 
   // Find first nonzero element of u.
   int k;
   for (k = n - 1; k >= 0; --k) {
-    if (u[k] != 0.0)
+    if (std::abs(u[k]) > mrv)
       break;
   }
   if (k < 0)
     k = 0;
   for (int i = k - 1; i >= 0; i--) {
     rotate(r, qt, n, i, u[i], -u[i + 1]);
-    if (u[i] == 0.0) {
+    if (std::abs(u[i]) < mrv) {
       u[i] = fabs(u[i + 1]);
     } else if (fabs(u[i]) > fabs(u[i + 1])) {
       u[i] = fabs(u[i]) * sqrt(1.0 + square(u[i + 1] / u[i]));

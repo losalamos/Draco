@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Fri Aug 7 11:11:31 MDT 2009
  * \brief  Implementation of mrqmin
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2009-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef min_mrqmin_i_hh
@@ -19,7 +16,6 @@
 #include "ds++/DracoMath.hh"
 #include "ds++/dbc.hh"
 #include "linear/gaussj.hh"
-
 #include <cmath>
 #include <math.h>
 
@@ -28,9 +24,7 @@ namespace rtt_min {
 using namespace std;
 
 //---------------------------------------------------------------------------//
-/*! Helper function for mrqmin
- */
-
+//! Helper function for mrqmin
 template <class RandomContainer, class RandomBoolContainer>
 void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
             unsigned const mfit) {
@@ -54,8 +48,7 @@ void covsrt(RandomContainer &covar, RandomBoolContainer &ia, unsigned const ma,
 }
 
 //---------------------------------------------------------------------------//
-/*! Helper function for mrqmin
- */
+//! Helper function for mrqmin
 
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
 void mrqcof(RandomContainer const &x, RandomContainer const &y,
@@ -109,50 +102,36 @@ void mrqcof(RandomContainer const &x, RandomContainer const &y,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Perform a nonlinear least squares fit of data to a model function.
  *
  * \arg \a RandomContainer A random access container
- *
  * \arg \a RandomBoolContainer A random access bool container
- *
  * \arg \a ModelFunction A model function with effective signature:
  *
- * <code>     void funcs(const double,
+ * <code>
+ *            void funcs(const double,
  *                       vector<double> const &,
  *                       double &,
  *                       vector<double> &)
  * </code>
  *
  * \param x Ordinates of the data points.
- * 
  * \param y Values of the data points.
- * 
- * \param sig Uncertainty of the data points. 
- *
+ * \param sig Uncertainty of the data points.
  * \param n Number of data points
- *
  * \param m Number of ordinates
- *
  * \param a Model parameter values
- *
  * \param ia Map of parameters that are actually allowed to vary
- *
  * \param covar Covariance matrix of the final fit
- *
  * \param alpha Curvature matrix
- *
  * \param ma Number of parameters
- *
  * \param chisq Final chi square of the fit
- *
  * \param funcs Model function
- *
- * \param alamda Fit parameter. If less than zero, initialize the
- * algorithm. If zero, finalize the algorith. Any other value is assumed to be
- * the value that was returned by a previous iteration.
+ * \param alamda Fit parameter. If less than zero, initialize the algorithm. If
+ *             zero, finalize the algorith. Any other value is assumed to be the
+ *             value that was returned by a previous iteration.
  */
-
 template <class RandomContainer, class RandomBoolContainer, class ModelFunction>
 void mrqmin(RandomContainer const &x, RandomContainer const &y,
             RandomContainer const &sig, unsigned const n, unsigned const m,
@@ -204,7 +183,7 @@ void mrqmin(RandomContainer const &x, RandomContainer const &y,
     }
     da[j] = oneda[j];
   }
-  if (alamda == 0.0) {
+  if (std::abs(alamda) < std::numeric_limits<double>::min()) {
     covsrt(covar, ia, ma, mfit);
     covsrt(alpha, ia, ma, mfit);
     return;

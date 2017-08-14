@@ -4,13 +4,13 @@
  * \author Kent Budge
  * \date   Wed Jul 26 07:53:32 2006
  * \brief  Definition of methods of class Constant_Expression
- * \note   Copyright © 2016-2017 Los Alamos National Security, LLC
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2006-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Constant_Expression.hh"
+#include <cmath>
+#include <limits>
 
 namespace {
 using namespace std;
@@ -23,7 +23,8 @@ void upper(ostream &out, char const *const label, double const power,
       out << '*';
     }
     first = false;
-    if (power == static_cast<unsigned>(power)) {
+    if (rtt_dsxx::soft_equiv(power, trunc(power),
+                             std::numeric_limits<double>::epsilon())) {
       out << label;
       for (unsigned i = 1; i < power; ++i) {
         out << '*' << label;
@@ -45,14 +46,15 @@ void lower(ostream &out, char const *const label, double const power,
     }
     first = false;
     unsigned ipower = static_cast<unsigned>(-power);
-    if (power == ipower) {
-      out << label;
-      for (unsigned i = 1; i < ipower; ++i) {
-        out << '*' << label;
-      }
-    } else {
-      out << "pow(" << label << "," << ipower << ")";
-    }
+    // This can never occur! ipower >= 0 && power < 0
+    // if (power == ipower) {
+    //   out << label;
+    //   for (unsigned i = 1; i < ipower; ++i) {
+    //    out << '*' << label;
+    //  }
+    //} else {
+    out << "pow(" << label << "," << ipower << ")";
+    // }
   }
 }
 
@@ -62,41 +64,44 @@ namespace rtt_parser {
 using namespace rtt_parser;
 //---------------------------------------------------------------------------//
 void write_c(Unit const &u, ostream &out) {
-  unsigned count = u.conv != 1.0;
+  double const eps = std::numeric_limits<double>::epsilon();
+  double const mrv = std::numeric_limits<double>::min();
+
+  unsigned count = !rtt_dsxx::soft_equiv(u.conv, 1.0, eps);
   double p(0.0);
-  if (u.m != 0) {
+  if (!rtt_dsxx::soft_equiv(u.m, 0.0, mrv)) {
     count++;
     p = u.m;
   }
-  if (u.kg != 0) {
+  if (!rtt_dsxx::soft_equiv(u.kg, 0.0, mrv)) {
     count++;
     p = u.kg;
   }
-  if (u.s != 0) {
+  if (!rtt_dsxx::soft_equiv(u.s, 0.0, mrv)) {
     count++;
     p = u.s;
   }
-  if (u.A != 0) {
+  if (!rtt_dsxx::soft_equiv(u.A, 0.0, mrv)) {
     count++;
     p = u.A;
   }
-  if (u.K != 0) {
+  if (!rtt_dsxx::soft_equiv(u.K, 0.0, mrv)) {
     count++;
     p = u.K;
   }
-  if (u.mol != 0) {
+  if (!rtt_dsxx::soft_equiv(u.mol, 0.0, mrv)) {
     count++;
     p = u.mol;
   }
-  if (u.cd != 0) {
+  if (!rtt_dsxx::soft_equiv(u.cd, 0.0, mrv)) {
     count++;
     p = u.cd;
   }
-  if (u.rad != 0) {
+  if (!rtt_dsxx::soft_equiv(u.rad, 0.0, mrv)) {
     count++;
     p = u.rad;
   }
-  if (u.sr != 0) {
+  if (!rtt_dsxx::soft_equiv(u.sr, 0.0, mrv)) {
     count++;
     p = u.sr;
   }
@@ -104,13 +109,13 @@ void write_c(Unit const &u, ostream &out) {
   Require(count != 0); // should not come here if dimensionless
 
   if (count == 1) {
-    if (p < 0 && p == static_cast<int>(p)) {
+    if (p < 0 && rtt_dsxx::soft_equiv(ceil(p), p, eps)) {
       out << '(';
     }
   }
 
   bool first = true;
-  if (u.conv != 1.0) {
+  if (!rtt_dsxx::soft_equiv(u.conv, 1.0, eps)) {
     out << u.conv;
     first = false;
   }
@@ -147,7 +152,7 @@ void write_c(Unit const &u, ostream &out) {
     }
   }
   if (count == 1) {
-    if (p < 0 && p == static_cast<int>(p)) {
+    if (p < 0 && rtt_dsxx::soft_equiv(ceil(p), p, eps)) {
       out << ')';
     }
   }
@@ -156,5 +161,5 @@ void write_c(Unit const &u, ostream &out) {
 } // end namespace rtt_parser
 
 //---------------------------------------------------------------------------//
-//              end of parser/Constant_Expression.cc
+// end of parser/Constant_Expression.cc
 //---------------------------------------------------------------------------//

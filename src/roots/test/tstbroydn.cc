@@ -5,9 +5,7 @@
  * \date   Mon Aug  9 13:06:56 2004
  * \brief  Test the broydn nonlinear equation solver.
  * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/global.hh"
@@ -53,17 +51,15 @@ public:
 
 //---------------------------------------------------------------------------//
 void tstbroydn(UnitTest &ut) {
-  vector<double> x(2);
-  x[0] = 0.2;
-  x[1] = -0.1;
+  vector<double> x = {0.2, -0.1};
 
   // Check broydn solution method for function
   broydn(x, 100.0, &broydn_test_function, 1.0e-2);
 
   if (fabs(cos(x[0] + x[1])) > 1.0e-12 || fabs(sin(x[0] - x[1])) > 1.0e-12) {
-    ut.failure("broydn: FAILED");
+    FAILMSG("broydn: FAILED");
   } else {
-    ut.passes("broydn: passed");
+    PASSMSG("broydn: passed");
   }
 
   // Check broydn solution method for class
@@ -72,9 +68,9 @@ void tstbroydn(UnitTest &ut) {
   broydn(x, 100.0, Broydn_Test_Class(), 1.0e-2);
 
   if (fabs(cos(x[0] + x[1])) > 1.0e-12 || fabs(sin(x[0] - x[1])) > 1.0e-12) {
-    ut.failure("broydn: FAILED");
+    FAILMSG("broydn: FAILED");
   } else {
-    ut.passes("broydn: passed");
+    PASSMSG("broydn: passed");
   }
 
   // Check broydn solution with analytic derivatives
@@ -82,9 +78,9 @@ void tstbroydn(UnitTest &ut) {
   x[1] -= 0.1;
   broydn(x, 100.0, Broydn_Test_Class(), Broydn_Test_Class(), 1.0e-2, 0.0);
   if (fabs(cos(x[0] + x[1])) > 1.0e-12 || fabs(sin(x[0] - x[1])) > 1.0e-12) {
-    ut.failure("broydn: FAILED");
+    FAILMSG("broydn: FAILED");
   } else {
-    ut.passes("broydn: passed");
+    PASSMSG("broydn: passed");
   }
 }
 

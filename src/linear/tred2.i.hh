@@ -5,10 +5,7 @@
  * \date   Thu Sep  2 14:49:55 2004
  * \brief  Householder reduce a symmetric matrix.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_tred2_i_hh
@@ -23,24 +20,20 @@ namespace rtt_linear {
 // Use explicit instantiations.
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Householder-reduce a symmetric matrix
  *
  * \arg \a FieldVector1 A random access container on a field type.
  * \arg \a FieldVector2 A random access container on a field type.
  * \arg \a FieldVector3 A random access container on a field type.
  *
- * \param[in,out] a
- * Symmetric matrix stored in [r+n*c] form, that is, as a full matrix.  On
- * return, this is replaced by the rotation matrix used to effect the
- * reduction.  This is needed for any subsequent call to tqli if the
- * eigenvectors are desired.
- * \param[in] n
- * Dimension of the matrix
- * \param[out] d
- * Diagonal of reduced matrix
- * \param[out] e
- * Superdiagonal of reduced matrix
+ * \param[in,out] a Symmetric matrix stored in [r+n*c] form, that is, as a full
+ *                  matrix.  On return, this is replaced by the rotation matrix
+ *                  used to effect the reduction.  This is needed for any
+ *                  subsequent call to tqli if the eigenvectors are desired.
+ * \param[in] n Dimension of the matrix
+ * \param[out] d Diagonal of reduced matrix
+ * \param[out] e Superdiagonal of reduced matrix
  *
  * \pre \c a.size()==n*n
  * \pre \c Is_Symmetric(a,n)
@@ -60,6 +53,9 @@ void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
 
   typedef typename FieldVector1::value_type Field;
 
+  // minimum representable value
+  double const mrv = std::numeric_limits<Field>::min();
+
   d.resize(n);
   e.resize(n);
 
@@ -71,7 +67,7 @@ void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
       for (unsigned k = 0; k <= l; k++) {
         scale += std::abs(a[i + n * k]);
       }
-      if (scale == 0.0) {
+      if (std::abs(scale) < mrv) {
         e[i] = a[i + n * l];
       } else {
         for (unsigned k = 0; k <= l; k++) {
@@ -113,7 +109,7 @@ void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
   d[0] = 0.0;
   e[0] = 0.0;
   for (unsigned i = 0; i < n; i++) {
-    if (d[i] != 0) {
+    if (std::abs(d[i]) > mrv) {
       for (unsigned j = 0; j < i; j++) {
         double g = 0.0;
         for (unsigned k = 0; k < i; k++) {

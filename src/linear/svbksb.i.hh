@@ -5,47 +5,42 @@
  * \date   Tue Aug 10 13:08:03 2004
  * \brief  Solve a linear system from its singular value decomposition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_svbksb_i_hh
 #define linear_svbksb_i_hh
 
-#include <vector>
-
 #include "svbksb.hh"
 #include "ds++/Assert.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <limits>
+#include <vector>
 
 namespace rtt_linear {
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * Solve a linear system given its singular value decomposition.
  *
- * Solves the system \f$UWV^Tx=b\f$ where \f$U\f$ is an \f$M\times N\f$ 
- * column-orthogonal matrix, \f$W\f$ is an \f$N\times N\f$ diagonal matrix,
- * and \f$V\f$ is an \f$N\times N\f$ orthonormal matrix.  These matrices
- * define the singular value decomposition of a general \f$M\times N\f$ matrix.
- * \f$b\f$ is a vector of length \f$M\f$ containing the right-hand side and
- * \f$x\f$ is a vector of length \f$N\f$ into which the solution will be 
- * stored.
+ * Solves the system \f$ UWV^Tx=b \f$ where \f$ U \f$ is an \f$ M\times N \f$
+ * column-orthogonal matrix, \f$ W \f$ is an \f$ N\times N \f$ diagonal matrix,
+ * and \f$ V \f$ is an \f$ N\times N \f$ orthonormal matrix.  These matrices
+ * define the singular value decomposition of a general \f$ M\times N \f$
+ * matrix.  \f$ b \f$ is a vector of length \f$ M \f$ containing the right-hand
+ * side and \f$ x \f$ is a vector of length \f$ N \f$ into which the solution
+ * will be stored.
  *
-* \arg \a RandomContainer A random access container
- *
- * \param u 
- * Injection matrix of singular-value decomposition of the linear system.
- * \param w
- * Singular value matrix of singular-value decomposition of the linear system.
- * \param v
- * Projection matrix of singular-value decomposition of the linear system.
+ * \arg \a RandomContainer A random access container
+ * \param u Injection matrix of singular-value decomposition of the linear
+ *          system.
+ * \param w Singular value matrix of singular-value decomposition of the linear
+ *          system.
+ * \param v Projection matrix of singular-value decomposition of the linear
+ *          system.
  * \param m Rows of the original coefficient matrix
  * \param n Columns of the original coefficient matrix
- * \param b
- * Right-hand side of the linear system.
- * \param x
- * On return, contains the solution of the system.
+ * \param b Right-hand side of the linear system.
+ * \param x On return, contains the solution of the system.
  *
  * \pre \c u.size()==m*n
  * \pre \c w.size()==n
@@ -55,7 +50,6 @@ namespace rtt_linear {
  * \post \c x.size()==n
  * \post \c x satisfies \f$UWVx=b\f$
  */
-
 template <class RandomContainer>
 void svbksb(const RandomContainer &u, const RandomContainer &w,
             const RandomContainer &v, const unsigned m, const unsigned n,
@@ -66,13 +60,14 @@ void svbksb(const RandomContainer &u, const RandomContainer &w,
   Require(v.size() == n * n);
 
   typedef typename RandomContainer::value_type value_type;
-
+  // minimum representable value
+  double const mrv = std::numeric_limits<value_type>::min();
   std::vector<value_type> tmp(n);
 
   for (unsigned i = 0; i < n; i++) {
-    if (w[i] != 0.0)
-    // Exclude singular values.  This is most of the "magic"
-    // of singular value decomposition.
+    if (std::abs(w[i]) > mrv)
+    // Exclude singular values.  This is most of the "magic" of singular value
+    // decomposition.
     {
       // Multiply the RHS by transpose of U == inverse of U.
       value_type sum = 0.0;

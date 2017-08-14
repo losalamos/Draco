@@ -5,10 +5,7 @@
  * \date   Tue Aug 10 13:08:03 2004
  * \brief  Solve a linear system from its singular value decomposition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef linear_svbksb_hh

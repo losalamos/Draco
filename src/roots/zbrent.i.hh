@@ -5,10 +5,7 @@
  * \date   Tue Aug 17 15:57:06 2004
  * \brief  Find a bracketed root of a function.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef roots_zbrent_i_hh
@@ -23,49 +20,46 @@ namespace rtt_roots {
 /*!
  * Pinpoint a bracketed root of a function.
  *
- * \c zbrent returns when either \c tol or \c ftol achieves the requested
- * value or when \c ITMAX iterations have been attempted.
+ * \c zbrent returns when either \c tol or \c ftol achieves the requested value
+ *           or when \c ITMAX iterations have been attempted.
  *
  * \arg \a Function The template type must support <code>double
- * operator()(double)</code>.
+ *           operator()(double)</code>.
  *
- * \param[in] func
- * Function whose zero is to be found.
- * \param[in] x1
- * Lower limit of search range.
- * \param[in] x2
- * Upper limit of search range.  \c x1 and \c x2 must bracket a root; that is,
- * the value of \c func(x1) must differ in sign from the value of \c func(x2).
- * rtt_roots::zbrac may be helpful for bracketing a root.
+ * \param[in] func Function whose zero is to be found.
+ * \param[in] x1 Lower limit of search range.
+ * \param[in] x2 Upper limit of search range.  \c x1 and \c x2 must bracket a
+ *           root; that is, the value of \c func(x1) must differ in sign from
+ *           the value of \c func(x2).  rtt_roots::zbrac may be helpful for
+ *           bracketing a root.
  * \param[in] itmax Maximum number of iterations to try.
- * \param[in,out] tol
- * On entry, the desired absolute tolerance in the argument.  On return,
- * this is replaced with the tolerance actually achieved.
- * \param[in,out] ftol
- * On entry, the desired absolute tolerance in the function value.
- * On return, this is replaced with the tolerance actually achieved.
+ * \param[in,out] tol On entry, the desired absolute tolerance in the argument.
+ *           On return, this is replaced with the tolerance actually achieved.
+ * \param[in,out] ftol On entry, the desired absolute tolerance in the function
+ *           value.  On return, this is replaced with the tolerance actually
+ *           achieved.
  *
  * \pre <code>(fa>=0.0 && fb<=0.0) || (fa<=0.0 && fb>=0.0)</code>
  *
  * \return An estimated zero of the function.
  *
  * \throw std::domain_error If the function does not appear to be analytic in
- * the search interval.
+ *           the search interval.
  *
  * \note The tolerances \c tol and \c ftol should always be checked after the
- * function is called, to verify that an acceptable accuracy has been
- * achieved.  If the function is analytic in <code>[x1,x2]</code>, then in
- * principle zbrent cannot fail.  In practice, zbrent may fail to achieve
- * tight tolerances if the function is either very slowly or very rapidly
- * varying near its zero, due to roundoff.
+ *       function is called, to verify that an acceptable accuracy has been
+ *       achieved.  If the function is analytic in <code>[x1,x2]</code>, then in
+ *       principle zbrent cannot fail.  In practice, zbrent may fail to achieve
+ *       tight tolerances if the function is either very slowly or very rapidly
+ *       varying near its zero, due to roundoff.
  */
-
 template <typename Function, typename Real>
 Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
             Real &ftol) {
   using std::numeric_limits;
   using std::min;
 
+  double const eps = std::numeric_limits<Real>::epsilon();
   Real a = x1, b = x2, c = x2;
   Real fa = func(a), fb = func(b);
 
@@ -107,7 +101,7 @@ Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
     if (ae >= tol1 && afa > afb) {
       Real const s = fb / fa;
       Real p, q;
-      if (a == c) {
+      if (rtt_dsxx::soft_equiv(a, c, eps)) {
         p = 2.0 * xm * s;
         q = 1.0 - s;
       } else {

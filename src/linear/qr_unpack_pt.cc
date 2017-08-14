@@ -5,15 +5,11 @@
  * \date   Wed Aug 11 15:21:38 2004
  * \brief  Specializations of qr_unpack
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
-
-#include <vector>
 
 #include "qr_unpack.i.hh"
+#include <vector>
 
 namespace rtt_linear {
 using std::vector;

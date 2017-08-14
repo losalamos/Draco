@@ -1,41 +1,32 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
-  \file   Norms_Base.cc
-  \author Rob Lowrie
-  \date   Fri Jan 14 13:01:37 2005
-  \brief  Implemention for Norms_Base class.
-  \note   Copyright © 2016-2017 Los Alamos National Security, LLC.  
-*/
-//---------------------------------------------------------------------------//
-// $Id$
+ * \file   Norms_Base.cc
+ * \author Rob Lowrie
+ * \date   Fri Jan 14 13:01:37 2005
+ * \brief  Implemention for Norms_Base class.
+ * \note   Copyright (C) 2005-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Norms_Base.hh"
+#include "ds++/Soft_Equivalence.hh"
 
 using namespace rtt_norms;
 
 //---------------------------------------------------------------------------//
-/*!
-  \brief Default constructor.
-*/
-//---------------------------------------------------------------------------//
+//! Default constructor.
 Norms_Base::Norms_Base(void)
     : d_sum_L1(-42.0), d_sum_L2(-42.0), d_Linf(-42.0), d_sum_weights(-42.0) {
   reset();
 }
+
 //---------------------------------------------------------------------------//
-/*!
-  \brief Destructor.
-*/
-//---------------------------------------------------------------------------//
+//! Destructor.
 Norms_Base::~Norms_Base() { /* empty */
 }
 
 //---------------------------------------------------------------------------//
-/*!
-  \brief  Re-initializes the norm values.
-*/
-//---------------------------------------------------------------------------//
+//!  Re-initializes the norm values.
 void Norms_Base::reset() {
   d_sum_L1 = 0.0;
   d_sum_L2 = 0.0;
@@ -43,13 +34,12 @@ void Norms_Base::reset() {
   d_sum_weights = 0.0;
 }
 //---------------------------------------------------------------------------//
-/*!
-  \brief Equality operator.
-*/
-//---------------------------------------------------------------------------//
+//! Equality operator.
 bool Norms_Base::operator==(const Norms_Base &n) const {
-  return (d_sum_L1 == n.d_sum_L1) && (d_sum_L2 == n.d_sum_L2) &&
-         (d_Linf == n.d_Linf) && (d_sum_weights == n.d_sum_weights);
+  return rtt_dsxx::soft_equiv(d_sum_L1, n.d_sum_L1) &&
+         rtt_dsxx::soft_equiv(d_sum_L2, n.d_sum_L2) &&
+         rtt_dsxx::soft_equiv(d_Linf, n.d_Linf) &&
+         rtt_dsxx::soft_equiv(d_sum_weights, n.d_sum_weights);
 }
 
 //---------------------------------------------------------------------------//

@@ -5,10 +5,7 @@
  * \date   Thu Sep  2 14:49:55 2004
  * \brief  Specializations of tred2
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "tred2.i.hh"
