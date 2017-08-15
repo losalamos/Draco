@@ -13,7 +13,7 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
-#define FP_ACCURATE_FMA 0
+// #define FP_ACCURATE_FMA 0
 #include "ds++/FMA.hh"
 
 //---------------------------------------------------------------------------//
