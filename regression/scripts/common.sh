@@ -238,17 +238,13 @@ function selectscratchdir
     # if this location is good (must be able to write to this location), return
     # the path.
     mkdir -p $item/$USER &> /dev/null
-    touch $item/$USER/selectscratchdir &> /dev/null
-    if [[ -f $item/$USER/selectscratchdir ]]; then
-      rm $item/$USER/selectscratchdir
+    if [[ -w $item/$USER ]]; then
       echo "$item"
       return
     fi
     # might need another directory level 'yellow'
     mkdir -p $item/yellow/$USER &> /dev/null
-    touch $item/yellow/$USER/selectscratchdir &> /dev/null
-    if [[ -f $item/yellow/$USER/selectscratchdir ]]; then
-      rm $item/yellow/$USER/selectscratchdir
+    if [[ -w $item/yellow/$USER ]]; then
       echo "$item/yellow"
       return
     fi
@@ -257,9 +253,7 @@ function selectscratchdir
   # if no writable scratch directory is located, then also try netscratch;
   item=/netscratch/$USER
   mkdir -p $item &> /dev/null
-  touch $item/selectscratchdir &> /dev/null
-  if [[ -f $item/selectscratchdir ]]; then
-    rm $item/selectscratchdir
+  if [[ -w $item ]]; then
     echo "$item"
     return
   fi

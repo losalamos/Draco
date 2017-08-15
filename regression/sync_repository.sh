@@ -241,66 +241,69 @@ fi
 # Mirror git repository for redmine integration
 #------------------------------------------------------------------------------#
 
-# Broken? - KT needs to research this.
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
+    echo " "
+    echo "(Redmine) Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco-redmine.git; then
+      run "cd $gitroot/Draco-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+      run "chmod -R g+rwX Draco-redmine.git"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --mirror git@github.com:lanl/Draco.git Draco-redmine.git"
+      run "chmod -R g+rwX Draco-redmine.git"
+      run "chmod g+s Draco-redmine.git"
+    fi
+    ;;
+esac
 
-# case ${target} in
-#   ccscs7*)
-#     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
-#     # PRs since this seems to confuse Redmine.
-#     echo " "
-#     echo "(Redmine) Copy Draco git repository to the local file system..."
-#     if test -d $gitroot/Draco-redmine.git; then
-#       run "cd $gitroot/Draco-redmine.git"
-#       run "git fetch origin +refs/heads/*:refs/heads/*"
-#       run "git reset --soft"
-#     else
-#       run "mkdir -p $gitroot"
-#       run "cd $gitroot"
-#       run "git clone --mirror git@github.com:lanl/Draco.git Draco-redmine.git"
-#       run "chmod -R g+rwX Draco-redmine.git"
-#     fi
-#     ;;
-# esac
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
+    echo " "
+    echo "(Redmine) Copy Jayenne git repository to the local file system..."
+    if test -d $gitroot/jayenne-redmine.git; then
+      run "cd $gitroot/jayenne-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+      # run "chgrp -R draco $gitroot/jayenne-redmine.git"
+      run "chmod -R g+rwX $gitroot/jayenne-redmine.git"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
+      run "chmod -R g+rwX jayenne-redmine.git"
+      run "chmod g+s jayenne-redmine.git"
+    fi
+    ;;
+esac
 
-# case ${target} in
-#   ccscs7*)
-#     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
-#     # PRs since this seems to confuse Redmine.
-#     echo " "
-#     echo "(Redmine) Copy Jayenne git repository to the local file system..."
-#     if test -d $gitroot/jayenne-redmine.git; then
-#       run "cd $gitroot/jayenne-redmine.git"
-#       run "git fetch origin +refs/heads/*:refs/heads/*"
-#       run "git reset --soft"
-#       run "chgrp -R draco $gitroot/capsaicin.git"
-#       run "chmod -R g+rwX $gitroot/capsaicin.git"
-#     else
-#       run "mkdir -p $gitroot"
-#       run "cd $gitroot"
-#       run "git clone --mirror git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
-#       run "chmod -R g+rwX jayenne-redmine.git"
-#     fi
-#     ;;
-# esac
-
-# case ${target} in
-#   ccscs7*)
-#     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
-#     # PRs since this seems to confuse Redmine.
-#     echo " "
-#     echo "(Redmine) Copy Capsaicin git repository to the local file system..."
-#     if test -d $gitroot/capsaicin-redmine.git; then
-#       run "cd $gitroot/capsaicin-redmine.git"
-#       run "git fetch origin +refs/heads/*:refs/heads/*"
-#       run "git reset --soft"
-#     else
-#       run "mkdir -p $gitroot"
-#       run "cd $gitroot"
-#       run "git clone --mirror git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
-#       run "chmod -R g+rwX capsaicin-redmine.git"
-#     fi
-#     ;;
-# esac
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
+    echo " "
+    echo "(Redmine) Copy Capsaicin git repository to the local file system..."
+    if test -d $gitroot/capsaicin-redmine.git; then
+      run "cd $gitroot/capsaicin-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+      run "chmod -R g+rwX $gitroot/capsaicin-redmine.git"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --mirror git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+      run "chmod -R g+rwX capsaicin-redmine.git"
+      run "chmod g+s capsaicin-redmine.git"
+    fi
+    ;;
+esac
 
 #------------------------------------------------------------------------------#
 # Continuous Integration Hooks:
