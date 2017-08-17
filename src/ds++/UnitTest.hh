@@ -240,6 +240,12 @@ protected:
 #define UT_CHECK(ut, m) ut.check(m, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
+#define FAIL_IF_NOT(c)                                                         \
+  if (!(c))                                                                    \
+  ITFAILS
+#define FAIL_IF(c)                                                             \
+  if ((c))                                                                     \
+  ITFAILS
 #define UT_EPILOG(foo)                                                         \
   catch (rtt_dsxx::assertion & err) {                                          \
     std::cout << "DRACO ERROR: While testing " << foo.getTestName() << ", "    \

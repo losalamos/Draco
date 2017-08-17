@@ -57,16 +57,34 @@ function establish_permissions
   # Permissions - new files should be marked u+rwx,g+rwx,o+rx
   # Group is set to $1 or draco
   umask 0002
-  if [[ `groups | grep -c othello` = 1 ]]; then
-    install_group="othello"
-    install_permissions="g+rwX,o-rwX"
-  elif [[ `groups | grep -c dacodes` = 1 ]]; then
-    install_group="dacodes"
-    install_permissions="g+rwX,o-rwX"
-  else
-    install_group="draco"
-    install_permissions="g+rwX,o-rwX"
+
+  # Different permissions for jayenne/capsaicin vs. draco.  Trigger based on
+  # value of $package.
+  if ! [[ $package ]]; then
+    die "env(package) must be set before calling establish_permissions."
   fi
+
+  case $package in
+    draco)
+      # Draco is open source - allow anyone to read.
+      install_group="draco"
+      install_permissions="g+rwX,o=g-w"
+      ;;
+    capsaicin | jayenne)
+      # Export controlled sources - limit access
+      if [[ `groups | grep -c ccsrad` = 1 ]]; then
+        install_group="ccsrad"
+        install_permissions="g+rwX,o-rwX"
+      elif [[ `groups | grep -c dacodes` = 1 ]]; then
+        install_group="dacodes"
+        install_permissions="g+rwX,o-rwX"
+      else
+        install_group="jayenne"
+        install_permissions="g+rwX,o-rwX"
+      fi
+      ;;
+  esac
+
   build_group="$USER"
   build_permissions="g+rwX,o-rwX"
 }
@@ -500,6 +518,7 @@ function publish_release()
     if test -d $install_prefix; then
       run "chgrp -R ${install_group} $source_prefix"
       run "chmod -R $install_permissions $source_prefix"
+      run "find $source_prefix -type d -exec chmod g+s {} +"
     fi
   fi
 }
