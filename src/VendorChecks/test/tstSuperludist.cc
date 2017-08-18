@@ -52,9 +52,12 @@ int main(int argc, char *argv[]) {
  *   5. Release the process grid and terminate the MPI environment
  */
 void test_superludist(rtt_c4::ParallelUnitTest &ut) {
-  // If we are using suprelu-dist@5:, then we need
-  //   superlu_dist_options_t options;
+// SUPERLU_DIST_MAJOR_VERSION is defined in superlu_defs.h
+#if SUPERLU_DIST_MAJOR_VERSION > 4
+  superlu_dist_options_t options;
+#else
   superlu_options_t options;
+#endif
   SuperLUStat_t stat;
   SuperMatrix A;
   ScalePermstruct_t ScalePermstruct;
