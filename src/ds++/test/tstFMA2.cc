@@ -36,6 +36,10 @@ void test_fma2(rtt_dsxx::UnitTest &ut) {
 
   std::cout << "Hardware FMA is available.\n";
 
+#if FP_ACCURATE_FMA > 0
+  FAILMSG("This test requires FP_ACCURATE_FMA=0.");
+#endif
+
 #ifdef FP_FAST_FMA
   std::cout << "\t#define FMA(a,b,c) fma(a,b,c)\n" << std::endl;
 

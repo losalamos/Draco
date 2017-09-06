@@ -299,8 +299,9 @@ std::shared_ptr<Ordinate_Space> Quadrature::create_ordinate_space(
 
   vector<Ordinate> ordinates =
       create_ordinates(dimension, geometry,
-                       1.0,  // hardwired norm
-                       true, // include starting directions
+                       1.0, // hardwired norm
+                       geometry != rtt_mesh_element::CARTESIAN,
+                       // include starting directions if curvilinear
                        include_extra_directions);
 
   std::shared_ptr<Ordinate_Space> Result;

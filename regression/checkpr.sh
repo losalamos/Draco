@@ -96,12 +96,15 @@ case $project in
     print_use; exit 1 ;;
 esac
 
-
-if ! [[ $LOGNAME == "kellyt" ]]; then
-  echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
-  exit 1
-fi
-
+# Restrict the use of ccscs7.
+case $target in
+  ccscs7*)
+    if ! [[ $LOGNAME == "kellyt" ]]; then
+      echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
+      exit 1
+    fi
+    ;;
+esac
 
 if [[ $regress_mode == "on" ]]; then
   if ! [[ $LOGNAME == "kellyt" ]]; then
@@ -223,17 +226,26 @@ esac
 
 echo " "
 case $target in
+  # CCS-NET: Release
+  ccscs2*)
+    startCI ${project} Release na $pr
+    ;;
+
   # CCS-NET: Coverage (Debug) & Valgrind (Debug)
-  ccscs*)
+  ccscs7*)
     startCI ${project} Debug coverage $pr
     startCI ${project} Debug valgrind $pr
     ;;
 
   # Moonlight: Fulldiagnostics (Debug)
-  ml-fey*) startCI ${project} Debug fulldiagnostics $pr ;;
+  ml-fey*) startCI ${project} Debug $pr ;;
 
   # Snow: Debug
-  sn-fe*) startCI ${project} Debug na $pr ;;
+  sn-fe*)
+    startCI ${project} Debug na $pr
+    startCI ${project} Release na $pr
+    startCI ${project} Debug fulldiagnostics $pr
+    ;;
 
   # Trinitite: Release
   tt-fe*)

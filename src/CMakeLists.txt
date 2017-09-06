@@ -23,6 +23,13 @@ macro( add_dir_if_exists package )
   endif()
 endmacro()
 
+# Extra 'draco-only' flags (don't pass these to Capsaicin).
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
+    toggle_compiler_flag( TRUE "-Wfloat-equal -Wunused-macros" "CXX;C" "DEBUG")
+  endif()
+endif()
+
 # Level 1
 message(" ")
 message( STATUS "Configuring Level 1 packages --" )

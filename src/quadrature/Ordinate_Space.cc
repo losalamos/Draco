@@ -363,7 +363,8 @@ Ordinate_Space::Ordinate_Space(unsigned const dimension,
                                bool const extra_starting_directions,
                                Ordering const ordering)
     : Ordinate_Set(dimension, geometry, ordinates,
-                   true, // include starting directions
+                   geometry != rtt_mesh_element::CARTESIAN,
+                   // include starting directions if curvilinear
                    extra_starting_directions, ordering),
       expansion_order_(expansion_order),
       has_extra_starting_directions_(extra_starting_directions),

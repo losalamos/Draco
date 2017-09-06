@@ -1,0 +1,30 @@
+# crontab for ccscs2
+
+# Update the regression scripts.
+01 22 * * 0-6 /scratch/regress/draco/regression/update_regression_scripts.sh
+
+# Keep a local bare copy of the repo available on the ccs-net.  This is used by Redmine.
+*/20 * * * * /scratch/regress/draco/regression/sync_repository.sh
+
+#------------------------------------------------------------------------------#
+# Regressions with system default compiler (gcc-4.8.5)
+# -a build autodoc
+# -r use regress account
+# -b build_type: Release|Debug
+# -d dashboard:  Nightly|Experimental
+# -p projects:
+# -e extra args:
+#    coverage        - build bullseyecoverage data and send it to cdash
+#    clang
+#------------------------------------------------------------------------------#
+
+05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p "draco jayenne capsaicin"
+
+# |    |    |    |    |   |
+# |    |    |    |    |   +- command
+# |    |    |    |    +----- day of week (0 - 6) (Sunday=0)
+# |    |    |    +---------- month (1 - 12)
+# |    |    +--------------- day of month (1 - 31)
+# |    +-------------------- hour (0 - 23)
+# +------------------------- min (0 - 59)
+#

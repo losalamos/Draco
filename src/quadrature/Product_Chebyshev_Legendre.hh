@@ -31,6 +31,8 @@ public:
       : Octant_Quadrature(sn_order), azimuthal_order_(azimuthal_order) {
     Require(sn_order > 0 && sn_order % 2 == 0);
     Require(azimuthal_order > 0 && azimuthal_order % 2 == 0);
+
+    Ensure(this->azimuthal_order() == azimuthal_order);
   }
 
   Product_Chebyshev_Legendre(unsigned sn_order, unsigned azimuthal_order,
@@ -39,11 +41,18 @@ public:
         azimuthal_order_(azimuthal_order) {
     Require(sn_order > 0 && sn_order % 2 == 0);
     Require(azimuthal_order > 0 && azimuthal_order % 2 == 0);
+
+    Ensure(this->azimuthal_order() == azimuthal_order);
   }
 
   Product_Chebyshev_Legendre(); // disable default construction
 
   // ACCESSORS
+
+  unsigned azimuthal_order() const {
+    Ensure(azimuthal_order_ > 0 && azimuthal_order_ % 2 == 0);
+    return azimuthal_order_;
+  }
 
   // SERVICES
 

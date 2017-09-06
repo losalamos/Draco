@@ -36,6 +36,7 @@ fi
 
 # Environment setup
 # ----------------------------------------
+umask 0002
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -48,6 +49,8 @@ export NO_PROXY=$no_proxy
 export VENDOR_DIR=/scratch/vendors
 # gitlab.lanl.gov has an unkown certificate, disable checking
 export GIT_SSL_NO_VERIFY=true
+# ccscs7 has 8 cores per socket
+export OMP_NUM_THREADS=8
 
 # import some bash functions
 source $rscriptdir/scripts/common.sh
@@ -77,8 +80,7 @@ echo "CCSCS Regression: ${ctestparts} from ${machine}."
 echo "                  ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
 
-umask 0002
-ulimit -a
+run "ulimit -a"
 
 # Modules
 # ----------------------------------------
@@ -131,7 +133,7 @@ run "module use --append /scratch/vendors/Modules.lmod"
 # Load default set of modules
 dm_core="cmake eospac git ndi python graphviz doxygen ccache numdiff"
 dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
-dm_openmpi="openmpi parmetis superlu-dist trilinos"
+dm_openmpi="openmpi parmetis superlu-dist/4.3-netlib trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"
 
 # use bash_functions.sh::add_to_path?
@@ -190,6 +192,7 @@ case $extra_params in
     ;;
 esac
 run "module list"
+comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
 if test "$USER" == "kellyt"; then
@@ -251,6 +254,9 @@ elif test "${subproj}" == jayenne; then
   script_dir=`echo ${rscriptdir} | sed -e 's/draco/jayenne/'`
   script_name=Jayenne_Linux64.cmake
 elif test "${subproj}" == capsaicin; then
+  # For now force Capsaicin to only 1 OMP thread per MPI rank to avoid
+  # oversubscribing the system.
+  export OMP_NUM_THREADS=1
   script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
   script_name=Capsaicin_Linux64.cmake
 elif test "${subproj}" == asterisk; then

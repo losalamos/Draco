@@ -211,7 +211,7 @@ mkdir -p $logdir || die "Could not create a directory for log files."
 # Redirect output to logfile.
 timestamp=`date +%Y%m%d-%H%M`
 logfile=$logdir/${machine_name_short}-${build_type}-master-$timestamp.log
-echo "Redirecting output to $logfile"
+# echo "Redirecting output to $logfile"
 exec > $logfile
 exec 2>&1
 
