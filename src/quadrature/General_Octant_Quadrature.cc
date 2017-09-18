@@ -3,14 +3,13 @@
  * \file   quadrature/General_Octant_Quadrature.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \brief
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "General_Octant_Quadrature.hh"
+#include "ds++/DracoStrings.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/to_string.hh"
 #include "units/PhysicalConstants.hh"
 #include <algorithm>
 #include <cmath>

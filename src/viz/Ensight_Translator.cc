@@ -5,20 +5,16 @@
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator implementation file (non-templated code).
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Ensight_Translator.hh"
+#include "ds++/Check_Strings.hh"
 #include "ds++/SystemCall.hh"
 #include "ds++/path.hh"
+#include <cerrno>
 #include <cstring>
 #include <iomanip>
-// <cerrno> defines the last error number from the system
-//          www.cplusplus.com/reference/clibrary/cerrno/errno/
-#include <cerrno>
 
 namespace rtt_viz {
 
@@ -181,63 +177,35 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
 
   d_num_cell_types = 15;
 
-  // Assign values to d_cell_names. These are
-  // the official "Ensight" names that must be used in
-  // the Ensight file.
-  d_cell_names.resize(d_num_cell_types);
-  d_cell_names[0] = "point";
-  d_cell_names[1] = "bar2";
-  d_cell_names[2] = "bar3";
-  d_cell_names[3] = "tria3";
-  d_cell_names[4] = "tria6";
-  d_cell_names[5] = "quad4";
-  d_cell_names[6] = "quad8";
-  d_cell_names[7] = "tetra4";
-  d_cell_names[8] = "tetra10";
-  d_cell_names[9] = "pyramid5";
-  d_cell_names[10] = "pyramid13";
-  d_cell_names[11] = "hexa8";
-  d_cell_names[12] = "hexa20";
-  d_cell_names[13] = "penta6";
-  d_cell_names[14] = "penta15";
+  // Assign values to d_cell_names. These are the official "Ensight" names that
+  // must be used in the Ensight file.
+  d_cell_names = {"point",     "bar2",  "bar3",   "tria3",   "tria6",
+                  "quad4",     "quad8", "tetra4", "tetra10", "pyramid5",
+                  "pyramid13", "hexa8", "hexa20", "penta6",  "penta15"};
+  Check(d_cell_names.size() == d_num_cell_types);
 
-  // Assign values to vrtx_count, the number of vertices
-  // in a cell.
-  d_vrtx_cnt.resize(d_num_cell_types);
-  d_vrtx_cnt[0] = 1;
-  d_vrtx_cnt[1] = 2;
-  d_vrtx_cnt[2] = 3;
-  d_vrtx_cnt[3] = 3;
-  d_vrtx_cnt[4] = 6;
-  d_vrtx_cnt[5] = 4;
-  d_vrtx_cnt[6] = 8;
-  d_vrtx_cnt[7] = 4;
-  d_vrtx_cnt[8] = 10;
-  d_vrtx_cnt[9] = 5;
-  d_vrtx_cnt[10] = 13;
-  d_vrtx_cnt[11] = 8;
-  d_vrtx_cnt[12] = 20;
-  d_vrtx_cnt[13] = 6;
-  d_vrtx_cnt[14] = 15;
+  // Assign values to vrtx_count, the number of vertices in a cell.
+  d_vrtx_cnt = {1, 2, 3, 3, 6, 4, 8, 4, 10, 5, 13, 8, 20, 6, 15};
+  Check(d_vrtx_cnt.size() == d_num_cell_types);
 
-  // Assign values to d_cell_type_index. The user will
-  // use these to identify cell types.
-  d_cell_type_index.resize(d_num_cell_types);
-  d_cell_type_index[0] = point;
-  d_cell_type_index[1] = two_node_bar;
-  d_cell_type_index[2] = three_node_bar;
-  d_cell_type_index[3] = three_node_triangle;
-  d_cell_type_index[4] = six_node_triangle;
-  d_cell_type_index[5] = four_node_quadrangle;
-  d_cell_type_index[6] = eight_node_quadrangle;
-  d_cell_type_index[7] = four_node_tetrahedron;
-  d_cell_type_index[8] = ten_node_tetrahedron;
-  d_cell_type_index[9] = five_node_pyramid;
-  d_cell_type_index[10] = thirteen_node_pyramid;
-  d_cell_type_index[11] = eight_node_hexahedron;
-  d_cell_type_index[12] = twenty_node_hexahedron;
-  d_cell_type_index[13] = six_node_wedge;
-  d_cell_type_index[14] = fifteen_node_wedge;
+  // Assign values to d_cell_type_index. The user will use these to identify
+  // cell types.
+  d_cell_type_index = {point,
+                       two_node_bar,
+                       three_node_bar,
+                       three_node_triangle,
+                       six_node_triangle,
+                       four_node_quadrangle,
+                       eight_node_quadrangle,
+                       four_node_tetrahedron,
+                       ten_node_tetrahedron,
+                       five_node_pyramid,
+                       thirteen_node_pyramid,
+                       eight_node_hexahedron,
+                       twenty_node_hexahedron,
+                       six_node_wedge,
+                       fifteen_node_wedge};
+  Check(d_cell_type_index.size() == d_num_cell_types);
 
   // Check d_dump_dir
   rtt_dsxx::draco_getstat dumpDirStat(d_dump_dir);
@@ -281,12 +249,11 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
     }
   }
 
-  // Check to make sure the variable names are of acceptable length
-  // and contain no forbidden characters. Ensight prohibits the
-  // characters "( ) [ ] + - @ ! # * ^ $ / space", and requires
-  // the names be 19 characters or less. Moreover, since these
-  // names will be used to label output and to create directories,
-  // the names should also be unique.
+  // Check to make sure the variable names are of acceptable length and contain
+  // no forbidden characters. Ensight prohibits the characters "( ) [ ] + - @ !
+  // # * ^ $ / space", and requires the names be 19 characters or
+  // less. Moreover, since these names will be used to label output and to
+  // create directories, the names should also be unique.
 
   size_t nvdata = d_vdata_names.size();
   size_t ncdata = d_cdata_names.size();
@@ -344,8 +311,7 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
     }
   }
 
-  // calculate and make the geometry directory if this is not a
-  // continuation
+  // calculate and make the geometry directory if this is not a continuation
   d_geo_dir = d_prefix + "/geo";
   if (!graphics_continue)
     rtt_dsxx::draco_mkdir(d_geo_dir);
@@ -363,7 +329,8 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
   for (size_t i = 0; i < d_cdata_names.size(); i++) {
     d_cdata_dirs[i] = d_prefix + rtt_dsxx::dirSep + d_cdata_names[i];
 
-    // if this is not a continuation make the directory (Mat_Erg, Mat_Temp, Rad_Temp, etc.)
+    // if this is not a continuation make the directory (Mat_Erg, Mat_Temp,
+    // Rad_Temp, etc.)
     if (!graphics_continue)
       rtt_dsxx::draco_mkdir(d_cdata_dirs[i]);
   }

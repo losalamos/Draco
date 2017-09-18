@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for parser/test.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( parser_test CXX )
@@ -78,3 +78,7 @@ add_parallel_tests(
    SOURCES "${test_sources}"
    PE_LIST "1;2"
    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
+
+#------------------------------------------------------------------------------#
+# End parser/CMakeLists.txt
+#------------------------------------------------------------------------------#

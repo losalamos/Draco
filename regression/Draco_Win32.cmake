@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------#
 # Ref: http://www.cmake.org/Wiki/CMake_Scripting_Of_CTest
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 
 # Use:
 # - See draco/regression/regression_master.sh

@@ -26,7 +26,6 @@ fi
 # import some bash functions
 source $rscriptdir/scripts/common.sh
 
-
 if [[ ! ${subproj} ]]; then
   die "Fatal Error, subproj not found in environment."
 fi
@@ -45,7 +44,7 @@ fi
 
 # Environment setup
 # ----------------------------------------
-umask 0002
+umask 0007
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -125,7 +124,7 @@ run "module load intel/17.0.1"
 #run "module swap cray-mpich cray-mpich/7.4.2"
 run "module unload cray-libsci gcc/6.1.0"
 run "module load craype-hugepages4M"
-run "module load cmake/3.7.1 numdiff git"
+run "module load cmake/3.9.0 numdiff git"
 run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 
@@ -236,28 +235,11 @@ if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}/source; then
       run "mkdir -p ${work_dir}/source"
    fi
-   # See notes above where scratch_dir is set concerning why these are soft
-   # links.
-   if test "${regress_mode}" = "on"; then
-     if ! test -d ${scratch_dir}/build; then
-       run "mkdir -p ${scratch_dir}/build"
-     fi
-     if ! test -d ${work_dir}/build; then
-       run "ln -s ${scratch_dir}/build ${work_dir}/build"
-     fi
-     if ! test -d ${scratch_dir}/target; then
-       run "mkdir -p ${scratch_dir}/target"
-     fi
-     if ! test -d ${work_dir}/target; then
-       run "ln -s ${scratch_dir}/target ${work_dir}/target"
-     fi
-   else
-     if ! test -d ${work_dir}/build; then
-       run "mkdir -p ${work_dir}/build"
-     fi
-     if ! test -d ${work_dir}/target; then
-       run "mkdir -p ${scratch_dir}/target"
-     fi
+   if ! test -d ${work_dir}/build; then
+     run "mkdir -p ${work_dir}/build"
+   fi
+   if ! test -d ${work_dir}/target; then
+     run "mkdir -p ${scratch_dir}/target"
    fi
 
    # clean the installation directory to remove any files that might no longer
@@ -272,18 +254,19 @@ fi
 
 # Environment
 echo " "
-echo "--------------------(environment)------------------------------"
-set
-echo "--------------------(end environment)--------------------------"
+#echo "--------------------(environment)------------------------------"
+#set
+#echo "--------------------(end environment)--------------------------"
 
 date
+echo " "
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
 if [[ ${regress_mode} == "on" ]]; then
   echo " "
-  run "chgrp -R draco ${work_dir}"
+  run "chgrp -R ccsrad ${work_dir}"
   run "chmod -R g+rX,o-rwX ${work_dir}"
 fi
 

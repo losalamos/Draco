@@ -93,13 +93,13 @@ public:
   Token_Type type() const { return type_; }
 
   //! Return the token text.
-  string text() const { return text_; }
+  string const &text() const { return text_; }
 
   //! Return the location information.
-  string location() const { return location_; }
+  string const &location() const { return location_; }
 
   //! Check that the class invariants are satisfied.
-  bool check_class_invariants() const;
+  bool check_class_invariant() const;
 
 private:
   Token_Type type_; //!< Type of this token
@@ -139,7 +139,7 @@ inline Token::Token(Token_Type const type, string const &text,
   Require(type != STRING || Is_String_Text(text.c_str()));
   Require(type != OTHER || Is_Other_Text(text.c_str()));
 
-  Ensure(check_class_invariants());
+  Ensure(check_class_invariant());
   Ensure(this->type() == type);
   Ensure(this->text() == text);
   Ensure(this->location() == location);
@@ -157,7 +157,7 @@ inline Token::Token(char const c, string const &location)
     : type_(OTHER), text_(1, c), location_(location) {
   Require(Is_Other_Text(string(1, c).c_str()));
 
-  Ensure(check_class_invariants());
+  Ensure(check_class_invariant());
   Ensure(this->type() == OTHER);
   Ensure(this->text() == string(1, c));
   Ensure(this->location() == location);
@@ -177,7 +177,7 @@ inline Token::Token(Token_Type const type, string const &location)
     : type_(type), text_(), location_(location) {
   Require(!Is_Text_Token(type));
 
-  Ensure(check_class_invariants());
+  Ensure(check_class_invariant());
   Ensure(this->type() == type);
   Ensure(this->text() == "");
   Ensure(this->location() == location);

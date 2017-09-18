@@ -8,6 +8,7 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/XGetopt.hh"
@@ -265,7 +266,7 @@ void tst_shortopts_args_h(rtt_dsxx::UnitTest &ut) {
   std::cout << helpmsg.str() << std::endl;
   bool verbose(true);
   std::map<std::string, unsigned> word_list(
-      rtt_dsxx::UnitTest::get_word_count(helpmsg, verbose));
+      rtt_dsxx::get_word_count(helpmsg, verbose));
   if (word_list[std::string("Options")] != 2)
     ITFAILS;
   if (word_list[std::string("<value>")] != 1)
@@ -388,7 +389,7 @@ void tst_shortopts_args_helpstrings(rtt_dsxx::UnitTest &ut) {
   std::cout << helpmsg.str() << std::endl;
   bool verbose(true);
   std::map<std::string, unsigned> word_list(
-      rtt_dsxx::UnitTest::get_word_count(helpmsg, verbose));
+      rtt_dsxx::get_word_count(helpmsg, verbose));
   if (word_list[std::string("Options")] != 2)
     ITFAILS;
   if (word_list[std::string("<value>")] != 1)
@@ -777,7 +778,7 @@ void tst_lopts_args_help(rtt_dsxx::UnitTest &ut) {
   std::cout << helpmsg.str() << std::endl;
   bool verbose(true);
   std::map<std::string, unsigned> word_list(
-      rtt_dsxx::UnitTest::get_word_count(helpmsg, verbose));
+      rtt_dsxx::get_word_count(helpmsg, verbose));
   if (word_list[std::string("Options")] != 2)
     ITFAILS;
   if (word_list[std::string("--help")] != 1)
@@ -931,7 +932,7 @@ void tst_lopts_args_helpstrings(rtt_dsxx::UnitTest &ut) {
   std::cout << helpmsg.str() << std::endl;
   bool verbose(true);
   std::map<std::string, unsigned> word_list(
-      rtt_dsxx::UnitTest::get_word_count(helpmsg, verbose));
+      rtt_dsxx::get_word_count(helpmsg, verbose));
   if (word_list[std::string("Options")] != 2)
     ITFAILS;
   if (word_list[std::string("<value>")] != 2)

@@ -1,28 +1,23 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Lobatto.cc
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2016-2017 Los Alamos National Security, LLC. All rights
- *         reserved. 
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Quadrature.hh 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
-
-#include <numeric>
+ * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved.  */
+//----------------------------------------------------------------------------//
 
 #include "Lobatto.hh"
-
 #include "gauleg.hh"
-#include "ds++/to_string.hh"
+#include "ds++/DracoStrings.hh"
+#include <numeric>
 
 namespace rtt_quadrature {
 using namespace std;
 using rtt_dsxx::to_string;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Require(sn_order > 0 && sn_order % 2 == 0);
 
@@ -116,19 +111,19 @@ Lobatto::Lobatto(unsigned sn_order) : Interval_Quadrature(sn_order) {
   Ensure(this->sn_order() == sn_order);
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 string Lobatto::name() const { return "Lobatto"; }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 string Lobatto::parse_name() const { return "axial"; }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 unsigned Lobatto::number_of_levels() const { return sn_order_; }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */ string Lobatto::as_text(string const &indent) const {
   string Result = indent + "type = lobatto" + indent + "  order = " +
                   to_string(sn_order()) + indent + "end";
@@ -136,12 +131,12 @@ unsigned Lobatto::number_of_levels() const { return sn_order_; }
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Lobatto::check_class_invariants() const {
   return sn_order() > 0 && sn_order() % 2 == 0;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* virtual */
 vector<Ordinate> Lobatto::create_level_ordinates_(double const norm) const {
   // Sanity Checks: none at present
@@ -164,7 +159,7 @@ vector<Ordinate> Lobatto::create_level_ordinates_(double const norm) const {
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 bool Lobatto::is_open_interval() const {
   // Lobatto is one of our few closed interval quadratures.
   return false;
@@ -172,6 +167,6 @@ bool Lobatto::is_open_interval() const {
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
-//                       end of quadrature/Quadrature.cc
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// end of quadrature/Lobatto.cc
+//----------------------------------------------------------------------------//

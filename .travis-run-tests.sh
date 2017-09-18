@@ -18,10 +18,14 @@ topdir=`pwd` # /home/travis/build/lanl/Draco
 # USER = travis
 # GROUP = travis
 RANDOM123_VER=1.09
-CMAKE_VERSION=3.6.2-Linux-x86_64
+CMAKE_VERSION=3.9.0-Linux-x86_64
 NUMDIFF_VER=5.8.1
 CLANG_FORMAT_VER=3.9
-OPENMPI_VER=1.10.3
+OPENMPI_VER=1.10.5
+GCCVER=6
+export CXX=`which g++-${GCCVER}`
+export CC=`which gcc-${GCCVER}`
+export FC=`which gfortran-${GCCVER}`
 
 if [[ ${STYLE} ]]; then
   regression/check_style.sh -t

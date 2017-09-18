@@ -6,86 +6,192 @@
 # note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# - Find Compton
-# Find the native Compton includes and library
-#
-#  COMPTON_INCLUDE_DIRS   - where to find multigroup_lib_builder.hh, etc.
-#  COMPTON_LIBRARIES      - List of libraries when using Compton.
-#  COMPTON_FOUND          - True if Compton found.
 
-if (APPLE)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
+#.rst:
+# FindCOMPTON
+# ---------
+#
+# Find the CSK COMPTON includes and libraries.
+#
+# CSK COMPTON is a project dedicated to the calculation and interpolation of
+# Compton Scattering Kernel (CSK, hence the project name) values for use in
+# radiative transfer simulations.  https://gitlab.lanl.gov/keadyk/CSK_generator
+#
+# Imported Targets
+# ^^^^^^^^^^^^^^^^
+#
+# If COMPTON is found, this module defines the following :prop_tgt:`IMPORTED`
+# targets::
+#
+#  COMPTON::compton         - The COMPTON library.
+#
+# Result Variables
+# ^^^^^^^^^^^^^^^^
+#
+# This module will set the following variables in your project::
+#
+#  COMPTON_FOUND          - True if COMPTON found on the local system
+#  COMPTON_INCLUDE_DIRS   - Location of COMPTON header files.
+#  COMPTON_LIBRARIES      - The COMPTON libraries.
+#  COMPTON_VERSION        - The version of the discovered COMPTON install.
+#
+# Hints
+# ^^^^^
+#
+# Set ``COMPTON_ROOT_DIR`` to a directory that contains a COMPTON installation.
+#
+# This script expects to find libraries at ``$COMPTON_ROOT_DIR/lib`` and the
+# COMPTON headers at ``$COMPTON_ROOT_DIR/include``.  The library directory may
+# optionally provide Release and Debug folders.
+#
+# Cache Variables
+# ^^^^^^^^^^^^^^^
+#
+# This module may set the following variables depending on platform and type of
+# COMPTON installation discovered.  These variables may optionally be set to
+# help this module find the correct files::
+#
+#  COMPTON_LIBRARY        - Location of the COMPTON library.
+#  COMPTON_LIBRARY_DEBUG  - Location of the debug COMPTON library (if any).
+#
+#------------------------------------------------------------------------------#
+
+# Include these modules to handle the QUIETLY and REQUIRED arguments.
+include(FindPackageHandleStandardArgs)
+
+#=============================================================================
+# If the user has provided ``COMPTON_ROOT_DIR``, use it!  Choose items found
+# at this location over system locations.
+if( EXISTS "$ENV{COMPTON_ROOT_DIR}" )
+  file( TO_CMAKE_PATH "$ENV{COMPTON_ROOT_DIR}" COMPTON_ROOT_DIR )
+  set( COMPTON_ROOT_DIR "${COMPTON_ROOT_DIR}" CACHE PATH
+    "Prefix for COMPTON installation." )
 endif()
 
- find_path( COMPTON_INCLUDE_DIR 
-    NAMES
-       multigroup_lib_builder.hh
-    PATHS
-       ${COMPTON_INC_DIR}
-       $ENV{COMPTON_INC_DIR}
-       $ENV{VENDOR_DIR}/include
-       ${VENDOR_DIR}/include
-    NO_DEFAULT_PATH
+#=============================================================================
+# Set COMPTON_INCLUDE_DIRS and COMPTON_LIBRARIES. Try to find the libraries at
+# $COMPTON_ROOT_DIR (if provided) or in standard system locations.  These
+# find_library and find_path calls will prefer custom locations over standard
+# locations (HINTS).  If the requested file is not found at the HINTS location,
+# standard system locations will be still be searched (/usr/lib64 (Redhat),
+# lib/i386-linux-gnu (Debian)).
+
+find_path( COMPTON_INCLUDE_DIR
+  NAMES multigroup_lib_builder.hh
+  HINTS ${COMPTON_ROOT_DIR}/include ${COMPTON_INCLUDEDIR}
+  PATH_SUFFIXES Release Debug
 )
 
-# TODO: Win32 logic untested as of 2/28/17.
-if( WIN32 )
-   if( COMPTON_STATIC )
-      set( COMPTON_LIBRARY_NAME compton.lib)
-   else()
-      set( COMPTON_LIBRARY_NAME libcompton_dll.lib)
-   endif()
-else()
-  if( OPENMP_FOUND )
-    set( COMPTON_LIBRARY_NAME Lib_compton_omp)
-  else()
-    set( COMPTON_LIBRARY_NAME Lib_compton)
+set( COMPTON_LIBRARY_NAME Lib_compton)
+if( OPENMP_FOUND )
+  set( COMPTON_LIBRARY_NAME Lib_compton_omp)
+endif()
+find_library( COMPTON_LIBRARY
+  NAMES ${COMPTON_LIBRARY_NAME}
+  HINTS ${COMPTON_ROOT_DIR}/lib ${COMPTON_LIBDIR}
+  PATH_SUFFIXES Release Debug
+)
+# Do we also have debug versions?
+find_library( COMPTON_LIBRARY_DEBUG
+  NAMES ${COMPTON_LIBRARY_NAME}
+  HINTS ${COMPTON_ROOT_DIR}/lib ${COMPTON_LIBDIR}
+  PATH_SUFFIXES Debug
+)
+set( COMPTON_INCLUDE_DIRS ${COMPTON_INCLUDE_DIR} )
+set( COMPTON_LIBRARIES ${COMPTON_LIBRARY} )
+
+# Try to find the version.
+if( NOT COMPTON_VERSION )
+  if( EXISTS "${COMPTON_INCLUDE_DIRS}/compton.h" )
+    file( STRINGS "${COMPTON_INCLUDE_DIRS}/compton.h" compton_h_major
+        REGEX "define COMPTON_VER_MAJOR" )
+    file( STRINGS "${COMPTON_INCLUDE_DIRS}/compton.h" compton_h_minor
+        REGEX "define COMPTON_VER_MINOR" )
+    file( STRINGS "${COMPTON_INCLUDE_DIRS}/compton.h" compton_h_subminor
+        REGEX "define COMPTON_VER_SUBMINOR" )
+    string( REGEX REPLACE ".*([0-9]+)" "\\1" COMPTON_MAJOR ${compton_h_major} )
+    string( REGEX REPLACE ".*([0-9]+)" "\\1" COMPTON_MINOR ${compton_h_minor} )
+    string( REGEX REPLACE ".*([0-9]+)" "\\1" COMPTON_SUBMINOR ${compton_h_subminor} )
+  endif()
+  # We might also try scraping the directory name for a regex match
+  # "csk-X.X.X"
+  if( NOT COMPTON_MAJOR )
+    string( REGEX REPLACE ".*csk-([0-9]+).([0-9]+).([0-9]+).*" "\\1"
+      COMPTON_MAJOR ${COMPTON_INCLUDE_DIR} )
+    string( REGEX REPLACE ".*csk-([0-9]+).([0-9]+).([0-9]+).*" "\\2"
+      COMPTON_MINOR ${COMPTON_INCLUDE_DIR} )
+    string( REGEX REPLACE ".*csk-([0-9]+).([0-9]+).([0-9]+).*" "\\3"
+      COMPTON_SUBMINOR ${COMPTON_INCLUDE_DIR} )
   endif()
 endif()
 
-find_library(COMPTON_LIBRARY
-    NAMES ${COMPTON_LIBRARY_NAME}
-    PATHS
-        ${COMPTON_LIB_DIR}
-        $ENV{COMPTON_LIB_DIR}
-        $ENV{VENDOR_DIR}/lib
-        ${VENDOR_DIR}/lib
-    NO_DEFAULT_PATH
-)
+#=============================================================================
+# handle the QUIETLY and REQUIRED arguments and set COMPTON_FOUND to TRUE if
+# all listed variables are TRUE.
+find_package_handle_standard_args( COMPTON
+  FOUND_VAR
+    COMPTON_FOUND
+  REQUIRED_VARS
+    COMPTON_INCLUDE_DIR
+    COMPTON_LIBRARY
+  VERSION_VAR
+    COMPTON_VERSION
+    )
 
-# If above fails, look in default locations
-if( NOT COMPTON_LIBRARY )
-   find_path( COMPTON_INCLUDE_DIR    NAMES multigroup_lib_builder.hh )
-   find_library(COMPTON_LIBRARY      NAMES ${COMPTON_LIBRARY_NAME} )
-endif()
-mark_as_advanced( COMPTON_LIBRARY COMPTON_INCLUDE_DIR )
+mark_as_advanced( COMPTON_ROOT_DIR COMPTON_VERSION COMPTON_LIBRARY
+  COMPTON_INCLUDE_DIR COMPTON_LIBRARY_DEBUG COMPTON_USE_PKGCONFIG COMPTON_CONFIG
+  )
 
-# handle the QUIETLY and REQUIRED arguments and set COMPTON_FOUND to TRUE if 
-# all listed variables are TRUE
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(COMPTON DEFAULT_MSG COMPTON_INCLUDE_DIR COMPTON_LIBRARY)
+#=============================================================================
+# Register imported libraries:
+# 1. If we can find a Windows .dll file (or if we can find both Debug and
+#    Release libraries), we will set appropriate target properties for these.
+# 2. However, for most systems, we will only register the import location and
+#    include directory.
 
-if (COMPTON_FOUND)
-   set(COMPTON_FOUND ${COMPTON_FOUND} CACHE BOOL "Did we find the Compton libraries?")
-   set(COMPTON_INCLUDE_DIRS ${COMPTON_INCLUDE_DIR})
-   set(COMPTON_LIBRARIES    ${COMPTON_LIBRARY} CACHE
-      FILEPATH "Compton libraries for linking."  )
-   
-   string( REPLACE "_dll.lib" ".dll" COMPTON_DLL ${COMPTON_LIBRARY} )
-   mark_as_advanced( COMPTON_DLL )
-   if( EXISTS ${COMPTON_DLL} )
-      set(COMPTON_DLL_LIBRARIES "${COMPTON_DLL}" CACHE STRING 
-         "list of compton dll files.")
-   mark_as_advanced( COMPTON_DLL_LIBRARIES COMPTON_LIBRARIES )
-   else()
-      set( COMPTON_DLL "NOTFOUND")
-   endif()
+# Look for dlls, or Release and Debug libraries.
+if(WIN32)
+  string( REPLACE ".lib" ".dll" COMPTON_LIBRARY_DLL
+    "${COMPTON_LIBRARY}" )
+  string( REPLACE ".lib" ".dll" COMPTON_LIBRARY_DEBUG_DLL
+    "${COMPTON_LIBRARY_DEBUG}" )
 endif()
 
-if( VERBOSE )
-message("
-COMPTON_FOUND =        ${COMPTON_FOUND}
-COMPTON_INCLUDE_DIRS = ${COMPTON_INCLUDE_DIR}
-COMPTON_LIBRARIES    = ${COMPTON_LIBRARY}
-")
+if( COMPTON_FOUND AND NOT TARGET COMPTON::compton )
+  if( EXISTS "${COMPTON_LIBRARY_DLL}" )
+
+    # Windows systems with dll libraries.
+    add_library( COMPTON::compton SHARED IMPORTED )
+
+    # Windows with dlls, but only Release libraries.
+    set_target_properties( COMPTON::compton PROPERTIES
+      IMPORTED_LOCATION_RELEASE         "${COMPTON_LIBRARY_DLL}"
+      IMPORTED_IMPLIB                   "${COMPTON_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES     "${COMPTON_INCLUDE_DIRS}"
+      IMPORTED_CONFIGURATIONS           Release
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" )
+
+    # If we have both Debug and Release libraries
+    if( EXISTS "${COMPTON_LIBRARY_DEBUG_DLL}" )
+      set_property( TARGET COMPTON::compton APPEND PROPERTY
+        IMPORTED_CONFIGURATIONS Debug )
+      set_target_properties( COMPTON::compton PROPERTIES
+        IMPORTED_LOCATION_DEBUG           "${COMPTON_LIBRARY_DEBUG_DLL}"
+        IMPORTED_IMPLIB_DEBUG             "${COMPTON_LIBRARY_DEBUG}" )
+    endif()
+
+  else()
+
+    # For all other environments (ones without dll libraries), create the
+    # imported library targets.
+    add_library( COMPTON::compton    UNKNOWN IMPORTED )
+    set_target_properties( COMPTON::compton PROPERTIES
+      IMPORTED_LOCATION                 "${COMPTON_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES     "${COMPTON_INCLUDE_DIRS}"
+      IMPORTED_LINK_INTERFACE_LANGUAGES "CXX" )
+  endif()
 endif()
+
+#------------------------------------------------------------------------------#
+# End FindCOMPTON.cmake
+#------------------------------------------------------------------------------#

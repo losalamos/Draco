@@ -3,7 +3,7 @@
 ## File  : ./travis-install-dependencies.sh
 ## Date  : Tuesday, Sep 20, 2016, 11:50 am
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -19,10 +19,10 @@ topdir=`pwd` # /home/travis/build/lanl/Draco
 # USER = travis
 # GROUP = travis
 RANDOM123_VER=1.09
-CMAKE_VERSION=3.6.2-Linux-x86_64
+CMAKE_VERSION=3.9.0-Linux-x86_64
 NUMDIFF_VER=5.8.1
 CLANG_FORMAT_VER=3.9
-OPENMPI_VER=1.10.3
+OPENMPI_VER=1.10.5
 
 # Return integer > 0 if 'develop' branch is found.
 function find_dev_branch
@@ -99,6 +99,7 @@ else
   run "tar -zxf openmpi-${OPENMPI_VER}.tar.gz > build-openmpi.log"
   run "cd openmpi-${OPENMPI_VER}"
   run "./configure --enable-mpi-thread-multiple --quiet >> build-openmpi.log 2>&1"
+  # run "travis_wait 20 make"
   run "make >> build-openmpi.log 2>&1"
   run "sudo make install"
   run "sudo sh -c 'echo \"/usr/local/lib\n/usr/local/lib/openmpi\" > /etc/ld.so.conf.d/openmpi.conf'"

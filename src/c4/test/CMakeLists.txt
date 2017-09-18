@@ -107,5 +107,17 @@ add_parallel_tests(
    )
 
 #------------------------------------------------------------------------------#
+# Python based test runners
+#------------------------------------------------------------------------------#
+if( NOT WIN32 AND NOT APPLE )
+include( ApplicationUnitTest )
+add_app_unit_test(
+  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py
+  APP       $<TARGET_FILE_DIR:Exe_xthi>/$<TARGET_FILE_NAME:Exe_xthi>
+  PE_LIST   "1;2"
+  )
+endif()
+
+#------------------------------------------------------------------------------#
 # End src/c4/test/CMakeLists.txt
 #------------------------------------------------------------------------------#

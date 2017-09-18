@@ -47,7 +47,7 @@ DisableFormat:   false
 ExperimentalAutoDetectBinPacking: false
 ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 IncludeCategories:
-  - Regex:           '^"(c4|cdi|cdi_analytic|cdi_eospac|cdi_ipcress|device|diagnostics|ds\+\+|fit|linear|memory|mesh_element|meshReaders|min|norms|ode|parser|plot2D|quadrature|rng|roots|RTT_Format_Reader|shared_lib|special_functions|timestep|units|viz)/'
+  - Regex:           '^"(c4|cdi|cdi_analytic|cdi_eospac|cdi_ipcress|compton|device|diagnostics|ds\+\+|fit|linear|memory|mesh_element|meshReaders|min|norms|ode|parser|plot2D|quadrature|rng|roots|RTT_Format_Reader|shared_lib|special_functions|timestep|units|viz)/'
     Priority:        2
   - Regex:           '^(<|"(gtest|isl|json)/)'
     Priority:        3

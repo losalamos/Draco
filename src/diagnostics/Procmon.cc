@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Procmon.hh"
-#include "ds++/UnitTest.hh" // tokenize()
+#include "ds++/DracoStrings.hh" // tokenize()
 #include "ds++/path.hh"
 #include <cstdlib> // atof (XLC)
 #include <fstream>
@@ -27,18 +27,12 @@
 #include <unistd.h>
 #endif
 
-//#ifdef MSVC
-//#include <Windows.h>
-//#include <stdio.h>
-//#include <tchar.h>
-//#endif
-
 namespace rtt_diagnostics {
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*
- * Notes:  In Cassio's procmon routines, all absolute values are given in
- * bytes instead of kB.  Cassio's procmon report has the following fields:
+ * Notes: In Cassio's procmon routines, all absolute values are given in bytes
+ * instead of kB.  Cassio's procmon report has the following fields:
  *
  * Estimate: mpi_sum_node( 2 * rss_max ) / max_mem_node
  * RSS     : mpi_sum_node( vmrss       ) / max_mem_node
@@ -63,11 +57,15 @@ void procmon_resource_print(std::string const &identifier, int const &mynode,
   //double MemFree(-1.0);
 
   // int proc_uid (-1);
-  int proc_vmpeak(
-      -1); // The peak size of the virtual memory allocated to the process
-  //int proc_vmsize(-1);  // The size of the virtual memory allocated to the process
-  int proc_vmrss(
-      -1); // The amount of memory mapped in RAM ( instead of swapped out )
+
+  // The peak size of the virtual memory allocated to the process
+  int proc_vmpeak(-1);
+
+  // The size of the virtual memory allocated to the process
+  //int proc_vmsize(-1);
+
+  // The amount of memory mapped in RAM ( instead of swapped out )
+  int proc_vmrss(-1);
   // int proc_vmdata(-1);  // The size of the Data segment
   // int proc_vmstk(-1);   // The stack size.
 
@@ -123,7 +121,7 @@ void procmon_resource_print(std::string const &identifier, int const &mynode,
     std::getline(fs, line);
 
     // tokenize the string
-    std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize(line, " \t");
+    std::vector<std::string> tokens = rtt_dsxx::tokenize(line, " \t");
     if (tokens.size() > 1) // protect against empty line
     {
       if (tokens[0] == std::string("MemTotal:"))
@@ -163,15 +161,20 @@ void procmon_resource_print(std::string const &identifier, int const &mynode,
     {
       if (tokens[0] == std::string("Name:"))
         proc_name = tokens[1];
-      // if( tokens[0] == std::string("PPid:") )   proc_ppid = atoi(tokens[1].c_str());
-      // if( tokens[0] == std::string("Uid:") )    proc_uid  = atoi(tokens[1].c_str());
+      // if( tokens[0] == std::string("PPid:") )
+      // proc_ppid = atoi(tokens[1].c_str());
+      // if( tokens[0] == std::string("Uid:") )
+      // proc_uid  = atoi(tokens[1].c_str());
       if (tokens[0] == std::string("VmPeak:"))
         proc_vmpeak = atoi(tokens[1].c_str());
-      // if( tokens[0] == std::string("VmSize:") ) proc_vmsize = atoi(tokens[1].c_str());
+      // if( tokens[0] == std::string("VmSize:") )
+      // proc_vmsize = atoi(tokens[1].c_str());
       if (tokens[0] == std::string("VmRSS:"))
         proc_vmrss = atoi(tokens[1].c_str());
-      // if( tokens[0] == std::string("VmData:") ) proc_vmdata = atoi(tokens[1].c_str());
-      // if( tokens[0] == std::string("VmStk:") )  proc_vmstk  = atoi(tokens[1].c_str());
+      // if( tokens[0] == std::string("VmData:") )
+      // proc_vmdata = atoi(tokens[1].c_str());
+      // if( tokens[0] == std::string("VmStk:") )
+      // proc_vmstk  = atoi(tokens[1].c_str());
     }
   }
   fs.close();

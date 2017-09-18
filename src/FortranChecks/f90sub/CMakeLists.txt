@@ -3,15 +3,15 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2013 June 24
 # brief  Generate build project files for fortran.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project( FortranChecks_f90sub Fortran )
 
 # ---------------------------------------------------------------------------- #
-# Setup - For Generators other than "Unix Makefiles", this folder is
-# parsed independent of parent folders, so we need  some basic setup.
+# Setup - For Generators other than "Unix Makefiles", this folder is parsed
+# independent of parent folders, so we need some basic setup.
 # ---------------------------------------------------------------------------- #
 # Build system configuration files are located here.
 if( NOT EXISTS ${draco_DIR} )
@@ -28,11 +28,11 @@ include( component_macros )
 # ---------------------------------------------------------------------------- #
 
 # If we are using cmake_add_fortran_subdirectory to include this package, the
-# library targets Lib_dsxx and Lib_FC_derived_typ will not be defined.
-# We must manually find these libraries.
+# library targets Lib_dsxx and Lib_FC_derived_typ will not be defined.  We must
+# manually find these libraries.
 #
-# Note: A more complex example of CMakeAddFortranSubdirectory can be
-# found in jayenne/src/wedgehog/ftest.
+# Note: A more complex example of CMakeAddFortranSubdirectory can be found in
+# jayenne/src/wedgehog/ftest.
 
 if(NOT TARGET Lib_dsxx)
   # Rebuild the list Draco_TPL_INCLUDE_DIRS from the packed list (see
@@ -95,8 +95,13 @@ if(NOT TARGET Lib_dsxx)
         "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
       # should be located in ENV{PATH} at c:/Program Files/Microsoft MPI/Bin/
       find_file( MPI_gfortran_LIBRARIES NAMES "libmsmpi.a" )
-      set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
-        "msmpi for gfortran" FORCE )
+      if( MPI_gfortran_LIBRARIES )
+        set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
+          "msmpi for gfortran" FORCE )
+      else()
+        message( FATAL_ERROR "Unable to find libmsmpi.a. This library must"
+        " be created from msmpi.dll and saved as a MinGW library. ")
+      endif()
     endif()
   endif()
 

@@ -36,7 +36,7 @@ fi
 
 # Environment setup
 # ----------------------------------------
-umask 0002
+umask 0007
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -89,7 +89,7 @@ unset _LMFILES_
 run "module list"
 run "module load user_contrib"
 run "module load friendly-testing"
-run "module load cmake/3.6.2"
+run "module load cmake/3.9.0"
 run "module load intel/17.0.1"
 run "module load openmpi/1.10.5"
 run "module load mkl"

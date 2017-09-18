@@ -71,7 +71,7 @@ public:
                            std::ostream &out_ = std::cout, bool verbose = true);
 
   //! The copy constructor is disabled.
-  UnitTest(UnitTest const &rhs);
+  UnitTest(UnitTest const &rhs) = delete;
 
   //! Destructor is virtual because this class will be inherited from.
   virtual ~UnitTest(void){/*empty*/};
@@ -83,7 +83,8 @@ public:
 
   /*!
    * \brief Only special cases should use these (like the unit test
-   * tstScalarUnitTest.cc). */
+   *        tstScalarUnitTest.cc).
+   */
   void dbcRequire(bool b) {
     m_dbcRequire = b;
     return;
@@ -110,8 +111,9 @@ public:
   /*!
    * \brief Provide a summary of the test status
    *
-   * This pure virtual function must be provided by the inherited class.
-   * It should provide output concerning the status of UnitTest. */
+   * This pure virtual function must be provided by the inherited class.  It
+   *        should provide output concerning the status of UnitTest.
+   */
   void status(void) const {
     out << resultMessage() << std::endl;
     return;
@@ -131,7 +133,7 @@ public:
   std::string getTestName(void) const { return testName; }
   /*!
    * \brief Returns the path of the test binary directory (useful for locating
-   * input files).
+   *        input files).
    *
    * This function depends on the cmake build system setting the
    * COMPILE_DEFINITIONS target property. This should be done in
@@ -194,15 +196,6 @@ public:
 
   //! Is fpe_traping active?
   bool fpe_trap_active;
-
-  // Features
-  DLL_PUBLIC_dsxx static std::map<std::string, unsigned>
-  get_word_count(std::ostringstream const &data, bool verbose = false);
-  DLL_PUBLIC_dsxx static std::map<std::string, unsigned>
-  get_word_count(std::string const &filename, bool verbose = false);
-  DLL_PUBLIC_dsxx static std::vector<std::string>
-  tokenize(std::string const &source, char const *delimiter_list = " ",
-           bool keepEmpty = false);
 
 protected:
   // IMPLEMENTATION

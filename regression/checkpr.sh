@@ -16,6 +16,7 @@
 #   -h            - help message
 #   -r            - special run mode that uses the regress account's
 #                   credentials.
+#   -t            - remove the last-draco tagfile (when was draco last built?).
 #
 # <number> must be an integer value that represents the pull request.
 
@@ -62,10 +63,11 @@ print_use()
   echo "         common: 'develop', '42'"
   echo "   -p    project name = { draco, jayenne, capsaicin }"
   echo "   -r    special run mode that uses the regress account's credentials."
+  echo "   -t    remove the last-draco tagfile."
   echo " "
   echo "Examples:"
   echo "  ${0##*/} -p jayenne -f 42"
-  echo "  ${0##*/} -p draco"
+  echo "  ${0##*/} -p draco -t"
   echo "  ${0##*/} -p capsaicin -f develop"
   echo " "
 }
@@ -80,6 +82,7 @@ f)  pr=$OPTARG ;;
 h)  print_use; exit 0 ;;
 p)  project=$OPTARG ;;
 r)  regress_mode="on" ;;
+t)  rmlastdracotag="on" ;;
 \?) echo "" ;echo "invalid option: -$OPTARG"; print_use; exit 1 ;;
 :)  echo "" ;echo "option -$OPTARG requires an argument."; print_use; exit 1 ;;
 esac
@@ -97,14 +100,14 @@ case $project in
 esac
 
 # Restrict the use of ccscs7.
-case $target in
-  ccscs7*)
-    if ! [[ $LOGNAME == "kellyt" ]]; then
-      echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
-      exit 1
-    fi
-    ;;
-esac
+# case $target in
+#   ccscs7*)
+#     if ! [[ $LOGNAME == "kellyt" ]]; then
+#       echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
+#       exit 1
+#     fi
+#     ;;
+# esac
 
 if [[ $regress_mode == "on" ]]; then
   if ! [[ $LOGNAME == "kellyt" ]]; then
@@ -165,14 +168,14 @@ function startCI()
     rflag="-r"
   fi
 
-  logfile=${logdir}/${machine_name_short}-${project}-${build_type}${edash}${extra}-master-${pr}.log
-  allow_file_to_age $logfile 600
-  echo " "
-  echo "- Starting CI regression ${extrastring}for ${pr}."
-  echo "  Log: $logfile"
+  # logfile=${logdir}/${machine_name_short}-${project}-${build_type}${edash}${extra}-master-${pr}.log
+  # allow_file_to_age $logfile 600
+  echo -e "\n- Starting CI regression ${extrastring}for ${pr}."
+#  echo "  Log: $logfile"
+  echo "  Log: $logdir/${machine_name_short}-${build_type}-master-YYYYMMDD-hhmm.log"
   echo " "
   cmd="$rscriptdir/regression-master.sh ${rflag} -b ${build_type}"
-  cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr} &> $logfile"
+  cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr}"
   echo "$cmd"
   eval "$cmd"
 }
@@ -190,12 +193,20 @@ case $target in
   darwin*) machine_name_short=darwin ;;
 esac
 
+# This file tracks when draco was last built.
+# reset the draco-last-built tag (draco has changed)
+draco_tag_file=$logdir/last-draco-develop-${target}.log
+if [[ $rmlastdracotag == "on" ]]; then
+  if [[ -f $draco_tag_file ]]; then
+    run "rm $draco_tag_file"
+  fi
+fi
+
 case $project in
   jayenne|capsaicin)
     # Do we need to build draco? Only build draco-develop once per day.
     eval "$(date +'today=%F now=%s')"
     midnight=$(date -d "$today 0" +%s)
-    draco_tag_file=$logdir/last-draco-develop-${machine_name_short}.log
     if [[ -f $draco_tag_file ]]; then
       draco_last_built=$(date +%s -r $draco_tag_file)
     else
@@ -227,22 +238,19 @@ esac
 echo " "
 case $target in
   # CCS-NET: Release
-  ccscs2*)
-    startCI ${project} Release na $pr
-    ;;
+  ccscs2*) startCI ${project} Release na $pr ;;
 
-  # CCS-NET: Coverage (Debug) & Valgrind (Debug)
-  ccscs7*)
-    startCI ${project} Debug coverage $pr
-    startCI ${project} Debug valgrind $pr
-    ;;
+  # CCS-NET: Valgrind (Debug)
+  ccscs6*) startCI ${project} Debug valgrind $pr ;;
+
+  # CCS-NET: Coverage (Debug)
+  ccscs7*) startCI ${project} Debug coverage $pr ;;
 
   # Moonlight: Fulldiagnostics (Debug)
-  ml-fey*) startCI ${project} Debug $pr ;;
+  ml-fey*) startCI ${project} Debug na $pr ;;
 
   # Snow: Debug
   sn-fe*)
-    startCI ${project} Debug na $pr
     startCI ${project} Release na $pr
     startCI ${project} Debug fulldiagnostics $pr
     ;;

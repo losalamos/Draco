@@ -133,19 +133,17 @@ bool unit_expressions_are_required() { return require_unit_expressions; }
  */
 unsigned parse_unsigned_integer(Token_Stream &tokens) {
   Token const token = tokens.shift();
-  if (token.type() == INTEGER) {
-    errno = 0;
-    char *endptr;
-    unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
-    if (Result != static_cast<unsigned>(Result) || errno == ERANGE) {
-      tokens.report_semantic_error("integer value overflows");
-    }
-    Check(endptr != NULL);
-    return Result;
-  } else {
-    tokens.report_syntax_error(token, "expected an unsigned integer");
-    return 0;
-  }
+  tokens.check_syntax(token.type() == INTEGER, "expected an unsigned integer");
+  errno = 0;
+  char *endptr;
+  unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
+
+  tokens.check_semantics(Result == static_cast<unsigned>(Result) &&
+                             errno != ERANGE,
+                         "integer value overflows");
+
+  Check(endptr != NULL);
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -846,9 +844,9 @@ std::string parse_manifest_string(Token_Stream &tokens) {
 
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry) {
-  if (parsed_geometry != rtt_mesh_element::END_GEOMETRY) {
-    tokens.report_semantic_error("geometry specified twice");
-  }
+  tokens.check_semantics(parsed_geometry == rtt_mesh_element::END_GEOMETRY,
+                         "geometry specified twice");
+
   Token const token = tokens.shift();
   if (token.text() == "axisymmetric" || token.text() == "cylindrical") {
     parsed_geometry = rtt_mesh_element::AXISYMMETRIC;

@@ -3,12 +3,10 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for FortranChecks.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project( FortranChecks CXX )
 
 # When using CXX/Fortran cross language linking and function calling the CMake
@@ -50,9 +48,10 @@ set_target_properties( Lib_FC_Derived_Type PROPERTIES FOLDER FortranChecks )
 if( BUILD_TESTING )
 
   if( HAVE_Fortran )
-    # For Unix, this will simply run add_subdirectory(f90sub). For MVSE or
-    # XCode, an ExternalProject will be created that uses an alternate gfortran
-    # via Makefiles to generate the library external to the main project.
+    # For Unix, this will simply run add_subdirectory(f90sub). For Visual Studio
+    # or XCode, an ExternalProject will be created that uses an alternate
+    # gfortran via Makefiles to generate the library external to the main
+    # project.
     include(CMakeAddFortranSubdirectory)
 
     # CMake does not support storing a list of lists when sending data to a

@@ -692,10 +692,10 @@ macro( setup_for_code_coverage )
             # https://github.com/Slicer/Slicer/blob/57f14d0d233ee103e365161cfc0b3962df0bc203/CMake/MIDASCTestUploadURL.cmake#L69
             # In CDash, ensure that
             # Settings->Project->Miscellaneous->File upload quota > 0.
-            file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
-               "http://rtt.lanl.gov/redmine" )
+            #file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
+            #   "http://rtt.lanl.gov/redmine" )
             ctest_upload( FILES
-              "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
+            #  "${CMAKE_CURRENT_BINARY_DIR}/redmine.url"
               "${CTEST_BINARY_DIRECTORY}/lines-of-code.log"
               "${CTEST_BINARY_DIRECTORY}/lines-of-code-notest.log" )
 

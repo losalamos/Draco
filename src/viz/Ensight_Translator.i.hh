@@ -5,10 +5,7 @@
  * \date   Fri Jan 21 16:36:10 2000
  * \brief  Ensight_Translator template definitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include <map>
@@ -23,30 +20,29 @@ namespace rtt_viz {
  * \brief Constructor for Ensight_Translator.
  *
  * This constructor builds an Ensight_Translator.  The behavior of the
- * (existing) ensight dump files is controlled by the overwrite parameter.
- * If this is true, any existing ensight dumps (with the same problem name)
- * will be overwritten.  If overwrite is false then the ensight dumps are
- * appended.  The ensight case files are parsed to get the dump times if
- * overwrite is false.
+ * (existing) ensight dump files is controlled by the overwrite parameter.  If
+ * this is true, any existing ensight dumps (with the same problem name) will be
+ * overwritten.  If overwrite is false then the ensight dumps are appended.  The
+ * ensight case files are parsed to get the dump times if overwrite is false.
  *
  * \param prefix std_string giving the name of the problem
  * \param gd_wpath directory where dumps are stored
  * \param vdata_names string field containing vertex data names
  * \param cdata_names string field containing cell data names
- * \param overwrite bool that controls whether an existing ensight
- * directory is to be appended to or overwritten.  If true, overwrites the
- * existing ensight directory.  If false, and the ensight directory exists,
- * the case file is appended to.  In either case, if the ensight directory
- * does not exist it is created.  The default for overwrite is false.
- * \param static_geom optional input that if true, geometry is assumed
- * the same across all calls to Ensight_Translator::ensight_dump.
- * \param binary If true, geometry and variable data files are output in
- * binary format.
+ * \param overwrite bool that controls whether an existing ensight directory is
+ *           to be appended to or overwritten.  If true, overwrites the existing
+ *           ensight directory.  If false, and the ensight directory exists, the
+ *           case file is appended to.  In either case, if the ensight directory
+ *           does not exist it is created.  The default for overwrite is false.
+ * \param static_geom optional input that if true, geometry is assumed the same
+ *           across all calls to Ensight_Translator::ensight_dump.
+ * \param binary If true, geometry and variable data files are output in binary
+ *           format.
  *
- * NOTE: If appending data (\a overwrite is false), then \a binary must
- * be the same value as the first ensight dump.  This class does NOT check
- * for this potential error (yes, it's possible to check and is left for a
- * future exercise).
+ * NOTE: If appending data (\a overwrite is false), then \a binary must be the
+ * same value as the first ensight dump.  This class does NOT check for this
+ * potential error (yes, it's possible to check and is left for a future
+ * exercise).
  */
 template <typename SSF>
 Ensight_Translator::Ensight_Translator(
@@ -257,7 +253,7 @@ void Ensight_Translator::ensight_dump(
         find(parts_list.begin(), parts_list.end(), cell_rgn_index[i]);
 
     Check(find_location != parts_list.end());
-    Check(iel_type[i] < d_num_cell_types);
+    Check(iel_type[i] < static_cast<int>(d_num_cell_types));
 
     int ipart = find_location - parts_list.begin();
 
@@ -383,7 +379,7 @@ void Ensight_Translator::write_part(int part_num, const std_string &part_name,
   sf2_int cells_of_type(d_num_cell_types);
 
   for (size_t i = 0; i < ncells; ++i) {
-    Check(iel_type[i] < d_num_cell_types);
+    Check(iel_type[i] < static_cast<int>(d_num_cell_types));
     cells_of_type[iel_type[i]].push_back(i);
   }
 
@@ -465,7 +461,7 @@ void Ensight_Translator::write_geom(const int part_num,
       d_geom_out << zero << endl;
 
   // for each cell type, dump the local vertex indices for each cell.
-  for (int type = 0; type < d_num_cell_types; type++) {
+  for (unsigned type = 0; type < d_num_cell_types; type++) {
     const sf_int &c = cells_of_type[type];
     const size_t num_elem = c.size();
 
@@ -547,7 +543,7 @@ void Ensight_Translator::write_cell_data(
     cellout << part_num << endl;
 
     // loop over ensight cell types
-    for (int type = 0; type < d_num_cell_types; type++) {
+    for (unsigned type = 0; type < d_num_cell_types; type++) {
       const sf_int &c = cells_of_type[type];
 
       size_t num_elem = c.size();

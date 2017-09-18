@@ -1,45 +1,39 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   quadrature/Level_Symmetric.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \brief  
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------------------//
-// $Id: Level_Symmetric.cc 6718 2012-08-30 20:03:01Z warsa $
-//---------------------------------------------------------------------------------------//
+ *         All rights reserved. */
+//----------------------------------------------------------------------------//
 
+#include "Level_Symmetric.hh"
+#include "ds++/DracoStrings.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "units/PhysicalConstants.hh"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 
-#include "Level_Symmetric.hh"
-
-#include "ds++/Soft_Equivalence.hh"
-#include "ds++/to_string.hh"
-#include "units/PhysicalConstants.hh"
-
 namespace rtt_quadrature {
 using namespace rtt_dsxx;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Level_Symmetric::name() const { return "Level Symmetric"; }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Level_Symmetric::parse_name() const { return "level symmetric"; }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 Quadrature_Class Level_Symmetric::quadrature_class() const {
   return TRIANGLE_QUADRATURE;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 unsigned Level_Symmetric::number_of_levels() const { return sn_order_; }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 string Level_Symmetric::as_text(string const &indent) const {
   string Result = indent + "type = level symmetric" + indent + "  order = " +
                   to_string(sn_order_) + indent + "end";
@@ -47,7 +41,7 @@ string Level_Symmetric::as_text(string const &indent) const {
   return Result;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*virtual*/
 void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
                                                vector<double> &eta,
@@ -369,6 +363,6 @@ void Level_Symmetric::create_octant_ordinates_(vector<double> &mu,
 
 } // end namespace rtt_quadrature
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Level_Symmetric.cc
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

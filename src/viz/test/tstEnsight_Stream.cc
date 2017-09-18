@@ -5,10 +5,7 @@
  * \date   Fri Nov 12 22:52:46 2004
  * \brief  Test for Ensight_Stream.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Packing_Utils.hh"

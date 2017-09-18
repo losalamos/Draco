@@ -23,6 +23,19 @@
 #   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.cmake
 #   APP    $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
 #   LABELS nomemcheck )
+#
+# Optional Parameters:
+#   GOLDFILE      - Compare the output from APP against this file.
+#   STDINFILE     - APP expects interactive input, use data from this file.
+#   WORKDIR       - APP must be run from this directory.
+#   BUILDENV
+#   FAIL_REGEX
+#   LABELS        - E.g.: nomemcheck, nr, perfbench
+#   PASS_REGEX
+#   PE_LIST       - How may mpi ranks to use "1;2;4"
+#   RESOURCE_LOCK - Prevent tests with the same string from running concurrently.
+#   RUN_AFTER     - Run the named tests before this test is started.
+#   TEST_ARGS     - optional papmeters that will be given to APP.
 
 # The above will generate a test with data similar to this:
 #

@@ -5,19 +5,17 @@
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "UnitTest.hh"
 #include "path.hh"
+#include <fstream>
+#include <sstream>
+
 #ifdef DRACO_DIAGNOSTICS_LEVEL_3
 #include "fpe_trap.hh"
 #endif
-#include <fstream>
-#include <sstream>
 
 namespace rtt_dsxx {
 
@@ -89,9 +87,9 @@ std::string UnitTest::resultMessage() const {
 
 //---------------------------------------------------------------------------//
 /*!\brief Increment the failure count and print a message with the source line
- * number.
- * \param line The line number of the source code where the failure was
- * ecnountered.
+ *        number.
+ * \param[in] line The line number of the source code where the failure was
+ *        ecnountered.
  */
 bool UnitTest::failure(int line) {
   out << "Test: failed on line " << line << std::endl;
@@ -102,7 +100,7 @@ bool UnitTest::failure(int line) {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Increment the failure count and print a message with the source line
- * number.
+ *        number.
  * \param line The line number of the source code where fail was called from.
  * \param file The name of the file where the failure occured.
  */
@@ -130,29 +128,36 @@ bool UnitTest::passes(const std::string &passmsg) {
 /*!
  * \brief Increment either the pass or fail count and print a test description.
  *
- * This function is intended to reduce the number of uncovered branches in the test suite
- * when performing coverage analysis. It is used as follows:
+ * This function is intended to reduce the number of uncovered branches in the
+ * test suite when performing coverage analysis. It is used as follows:
  *
+ * \code
  *     ut.check(a>0.0, "a>0.0");
+ * \endcode
  *
- * If a is in fact greater than zero, the pass count is incremented and the output stream
- * receives
+ * If a is in fact greater than zero, the pass count is incremented and the
+ * output stream receives
  *
+ * \code
  *     Test: passed
  *     a>0.0
+ * \endcode
  *
  * Otherwise the fail count in incremented and the output stream receives
  *
+ * \code
  *     Test: failed
  *     a>0.0
+ * \endcode
  *
- * No branch is visible in the calling code that will be left uncovered during coverage
- * analysis.
+ * No branch is visible in the calling code that will be left uncovered during
+ * coverage analysis.
  *
- * To further reduce visible branches, a failed test optionally throws an exception, so that
- * a series of tests will be terminated if it is impossible to recover. For example, if an
- * object needed for subsequent tests is not successfully created, the test for successful
- * creation should set the fatal argument so that the sequence of tests is aborted.
+ * To further reduce visible branches, a failed test optionally throws an
+ * exception, so that a series of tests will be terminated if it is impossible
+ * to recover. For example, if an object needed for subsequent tests is not
+ * successfully created, the test for successful creation should set the fatal
+ * argument so that the sequence of tests is aborted.
  *
  * \param good True if the test passed, false otherwise.
  * \param passmsg The message to be printed to the iostream \c UnitTest::out.
@@ -180,106 +185,6 @@ bool UnitTest::failure(const std::string &failmsg) {
   out << "     " << failmsg << std::endl;
   UnitTest::numFails++;
   return false;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Parse msg to provide a list of words and the number of occurances of each.
- */
-std::map<std::string, unsigned>
-UnitTest::get_word_count(std::ostringstream const &msg, bool verbose) {
-  using std::map;
-  using std::string;
-  using std::cout;
-  using std::endl;
-
-  map<string, unsigned> word_list;
-  string msgbuf(msg.str());
-  string delims(" \n\t:,.;");
-
-  { // Build a list of words found in msgbuf.  Count the number of
-    // occurances.
-
-    // Find the beginning of the first word.
-    string::size_type begIdx = msgbuf.find_first_not_of(delims);
-    string::size_type endIdx;
-
-    // While beginning of a word found
-    while (begIdx != string::npos) {
-      // search end of actual word
-      endIdx = msgbuf.find_first_of(delims, begIdx);
-      if (endIdx == string::npos)
-        endIdx = msgbuf.length();
-
-      // the word is we found is...
-      string word(msgbuf, begIdx, endIdx - begIdx);
-
-      // add it to the map
-      word_list[word]++;
-
-      // search to the beginning of the next word
-      begIdx = msgbuf.find_first_not_of(delims, endIdx);
-    }
-  }
-
-  if (verbose) {
-    cout << "The messages from the message stream contained the following "
-            "words/occurances."
-         << endl;
-    // print the word_list
-    for (auto it = word_list.begin(); it != word_list.end(); ++it)
-      cout << it->first << ": " << it->second << endl;
-  }
-
-  return word_list;
-}
-
-//---------------------------------------------------------------------------------------//
-//! \brief Convert a string into a vector of words.
-std::vector<std::string> UnitTest::tokenize(std::string const &source,
-                                            char const *delimiter_list,
-                                            bool keepEmpty) {
-  std::vector<std::string> results;
-
-  size_t prev = 0;
-  size_t next = 0;
-
-  while ((next = source.find_first_of(delimiter_list, prev)) !=
-         std::string::npos) {
-    if (keepEmpty || (next - prev != 0))
-      results.push_back(source.substr(prev, next - prev));
-    prev = next + 1;
-  }
-
-  if (prev < source.size())
-    results.push_back(source.substr(prev));
-
-  return results;
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Parse text file to provide a list of words and the number of occurances of each.
- */
-std::map<std::string, unsigned>
-UnitTest::get_word_count(std::string const &filename, bool verbose) {
-  // open the file
-  std::ifstream infile;
-  infile.open(filename.c_str());
-  Insist(infile, std::string("Cannot open specified file = \"") + filename +
-                     std::string("\"."));
-
-  // read and store the text file contents
-  std::ostringstream data;
-  std::string line;
-  if (infile.is_open())
-    while (infile.good()) {
-      getline(infile, line);
-      data << line << std::endl;
-    }
-
-  infile.close();
-  return UnitTest::get_word_count(data, verbose);
 }
 
 } // end namespace rtt_dsxx

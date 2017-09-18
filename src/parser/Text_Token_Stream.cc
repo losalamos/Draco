@@ -83,6 +83,7 @@ Text_Token_Stream::Text_Token_Stream(void)
   Ensure(check_class_invariants());
   Ensure(whitespace() == default_whitespace);
   Ensure(line() == 1);
+  Ensure(!no_nonbreaking_ws());
 }
 
 //----------------------------------------------------------------------------//
@@ -595,9 +596,13 @@ void Text_Token_Stream::eat_whitespace_() {
  */
 
 void Text_Token_Stream::character_push_back_(char const c) {
+  Remember(unsigned const old_buffer__size = buffer_.size());
+
   buffer_.push_back(c);
 
   Ensure(check_class_invariants());
+  Ensure(buffer_.size() == old_buffer__size + 1);
+  Ensure(buffer_.back() == c);
 }
 
 } // end namespace rtt_parser

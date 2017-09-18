@@ -6,70 +6,73 @@
 # note   Copyright (C) 2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project( compton CXX )
 
-##---------------------------------------------------------------------------##
-# Requires COMPTON
-##---------------------------------------------------------------------------##
-find_package( COMPTON QUIET )
-set_package_properties( COMPTON PROPERTIES
-   DESCRIPTION "Access multigroup Compton scattering data."
-   TYPE OPTIONAL
-   PURPOSE "Required for bulding the compton component."
-   )
+# This packages requires libcompton.  See draco/config/vendor_libraries.cmake
+# and draco/config/FindCOMPTON.cmake to manage how the build system discovers
+# this TPL.  If not found, only a stub header file will be installed.
 
-if( COMPTON_FOUND )
+configure_file( ${PROJECT_SOURCE_DIR}/config.h.in
+  ${PROJECT_BINARY_DIR}/config.h )
+
+set( headers
+  ${PROJECT_BINARY_DIR}/config.h
+  ${PROJECT_SOURCE_DIR}/Compton.hh )
+
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB sources *.cc )
-file( GLOB headers *.hh )
+if( COMPTON_FOUND )
 
-# Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} )
-endif()
+set( sources ${PROJECT_SOURCE_DIR}/Compton.cc )
 
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
+  # Make the header files available in the IDE.
+  if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+    list( APPEND sources ${headers} )
+  endif()
 
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # component headers
-   ${PROJECT_BINARY_DIR}      # compton/config.h
-   ${PROJECT_SOURCE_DIR}/..   # ds++ and compton header files
-   ${dsxx_BINARY_DIR}         # ds++/config.h
-   ${ode_BINARY_DIR}          # ode/config.h
-   ${COMPTON_INCLUDE_DIR}
+  # -------------------------------------------------------------------------- #
+  # Directories to search for include directives
+  # -------------------------------------------------------------------------- #
+
+  include_directories(
+    ${Draco_SOURCE_DIR}/src    # compton/Compton.hh ds++/Assert.hh
+    ${Draco_BINARY_DIR}/src    # compton/config.h
+    ${dsxx_BINARY_DIR}         # ds++/config.h
+    )
+
+  # -------------------------------------------------------------------------- #
+  # Build package library
+  # -------------------------------------------------------------------------- #
+
+  add_component_library(
+    TARGET       Lib_compton
+    TARGET_DEPS  "Lib_dsxx;COMPTON::compton"
+    LIBRARY_NAME compton
+    SOURCES      "${sources}"
+#    VENDOR_LIST "COMPTON"
+#    VENDOR_LIBS "${COMPTON_LIBRARY}"
+#    VENDOR_INCLUDE_DIRS "${COMPTON_INCLUDE_DIR}"
 )
 
-# ---------------------------------------------------------------------------- #
-# Build package library
-# ---------------------------------------------------------------------------- #
+  install( TARGETS Lib_compton  EXPORT draco-targets DESTINATION
+    ${DBSCFGDIR}lib )
 
-add_component_library(
-   TARGET       Lib_compton
-   TARGET_DEPS  Lib_dsxx
-   LIBRARY_NAME compton
-   SOURCES      "${sources}"
-   VENDOR_LIST "COMPTON"
-   VENDOR_LIBS "${COMPTON_LIBRARY}"
-   VENDOR_INCLUDE_DIRS "${COMPTON_INCLUDE_DIR}" )
+endif() # COMPTON_FOUND
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_compton  EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/compton )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
 # ---------------------------------------------------------------------------- #
 
-if( BUILD_TESTING )
+if( BUILD_TESTING AND COMPTON_FOUND )
   add_subdirectory( test )
 endif()
 
@@ -79,4 +82,6 @@ endif()
 
 process_autodoc_pages()
 
-endif() # COMPTON_FOUND
+#------------------------------------------------------------------------------#
+# End compton/CMakeLists.txt
+#------------------------------------------------------------------------------#

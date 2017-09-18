@@ -11,7 +11,7 @@
 
 #include "Double_Gauss.hh"
 #include "Gauss_Legendre.hh"
-#include "ds++/to_string.hh"
+#include "ds++/DracoStrings.hh"
 #include <numeric>
 
 namespace rtt_quadrature {
@@ -116,5 +116,5 @@ Double_Gauss::create_level_ordinates_(double const norm) const {
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
-// end of quadrature/Quadrature.cc
+// end of quadrature/Double_Gauss.cc
 //---------------------------------------------------------------------------//

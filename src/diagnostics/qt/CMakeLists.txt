@@ -3,10 +3,10 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2015 June 26
 # brief  Generate build project files for diagnostics/qt
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-cmake_minimum_required( VERSION 3.0.0 )
+cmake_minimum_required( VERSION 3.9.0 )
 project( diagnostics_qt CXX )
 
 # ---------------------------------------------------------------------------- #

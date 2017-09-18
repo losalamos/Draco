@@ -5,12 +5,10 @@
  * \date   Thursday, Dec 19, 2013, 15:09 pm
  * \brief  Demonstrate/Test fpe_trap's print_stacktrace function.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved */
 //---------------------------------------------------------------------------//
 
+#include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/StackTrace.hh"
@@ -24,11 +22,13 @@ void sr2(std::string &msg) {
   return;
 }
 
+//----------------------------------------------------------------------------//
 void sr1(std::string &msg) {
   sr2(msg);
   return;
 }
 
+//----------------------------------------------------------------------------//
 void runtest(rtt_dsxx::UnitTest &ut) {
   std::cout << "Running tstStackTrace...\n\n"
             << "Requesting a trace..." << std::endl;
@@ -56,7 +56,8 @@ void runtest(rtt_dsxx::UnitTest &ut) {
 
   // Check for word counts
   bool const verbose(false);
-  std::map<std::string, unsigned> words = ut.get_word_count(msg, verbose);
+  std::map<std::string, unsigned> words =
+      rtt_dsxx::get_word_count(msg, verbose);
 
   // Expected values.
   if (words[std::string("PID")] != 1)
@@ -70,7 +71,6 @@ void runtest(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

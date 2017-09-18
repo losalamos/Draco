@@ -13,7 +13,6 @@
 
 #include "Ensight_Stream.hh"
 #include "Viz_Traits.hh"
-#include "ds++/Check_Strings.hh"
 #include <memory>
 #include <set>
 
@@ -162,7 +161,7 @@ private:
   std_string d_dump_dir;
 
   // Number of Ensight cell types.
-  int d_num_cell_types;
+  unsigned d_num_cell_types;
 
   // Ensight cell names.
   sf_string d_cell_names;

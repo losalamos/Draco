@@ -57,7 +57,7 @@ done
 
 if ! test -d $logdir; then
   mkdir -p $logdir
-  chgrp draco $logdir
+  chgrp ccsrad $logdir
   chmod g+rwX $logdir
   chmod g+s $logdir
 fi

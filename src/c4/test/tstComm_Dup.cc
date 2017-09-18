@@ -5,10 +5,7 @@
  * \date   Thu Jul 18 11:10:10 2002
  * \brief  test Communicator Duplication
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -22,6 +19,7 @@ using namespace std;
 //---------------------------------------------------------------------------//
 
 void test_mpi_comm_dup(rtt_dsxx::UnitTest &ut) {
+
 // we only run this particular test when mpi is on
 #ifdef C4_MPI
 
@@ -30,8 +28,7 @@ void test_mpi_comm_dup(rtt_dsxx::UnitTest &ut) {
   int node = rtt_c4::node();
   int snode = 0;
 
-  // split up nodes (two communicators) 0 -> 0, 2 -> 1 and
-  // 1 -> 0, 3 -> 1
+  // split up nodes (two communicators) 0 -> 0, 2 -> 1 and 1 -> 0, 3 -> 1
   MPI_Comm new_comm;
 
   if (node == 1) {

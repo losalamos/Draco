@@ -10,6 +10,7 @@
 
 #include "cdi_eospac/Eospac.hh"
 #include "cdi_eospac/EospacException.hh"
+#include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -399,7 +400,7 @@ void cdi_eospac_except_test(rtt_dsxx::UnitTest &ut) {
 
     // Examine the output
     std::map<std::string, unsigned> wordcount =
-        rtt_dsxx::UnitTest::get_word_count(msg, false);
+        rtt_dsxx::get_word_count(msg, false);
 
     if (wordcount[std::string("EOS_Pt_DT")] == 1 &&
         wordcount[std::string("2140")] == 1)

@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project( c4 CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -58,6 +58,11 @@ add_component_library(
    VENDOR_LIBS  "${c4_VENDOR_LIBS}"
    VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_PATH}"
    )
+
+# xthi binary
+if( NOT WIN32 AND NOT APPLE )
+  add_subdirectory( bin )
+endif()
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

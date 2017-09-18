@@ -72,7 +72,7 @@ if [[ ${SLURM_JOB_PARTITION} == "knl" ]]; then
 fi
 
 export dracomodules="clang-format metis parmetis/4.0.3 trilinos/12.8.1 \
-superlu-dist/4.3 gsl/2.1 cmake/3.6.2 numdiff ndi random123 eospac/6.2.4 \
+superlu-dist/4.3 gsl/2.1 cmake/3.9.0 numdiff ndi random123 eospac/6.2.4 \
 subversion git craype-hugepages4M"
 
 function dracoenv ()

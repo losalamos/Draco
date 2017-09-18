@@ -36,7 +36,7 @@ fi
 
 # Environment setup
 # ----------------------------------------
-umask 0002
+umask 0007
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -114,6 +114,7 @@ if [[ `fn_exists module` == 1 ]]; then
     run "module avail"
     run "module list"
     run "module purge"
+    run "module load user_contrib"
     run "module list"
   fi
 else
@@ -131,7 +132,7 @@ fi
 run "module use --append /scratch/vendors/Modules.lmod"
 
 # Load default set of modules
-dm_core="cmake eospac git ndi python graphviz doxygen ccache numdiff"
+dm_core="cmake/3.9.1 eospac git ndi python graphviz doxygen ccache numdiff"
 dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
 dm_openmpi="openmpi parmetis superlu-dist/4.3-netlib trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"
@@ -198,7 +199,7 @@ comp=$comp-$featurebranch
 if test "$USER" == "kellyt"; then
   MYHOSTNAME="`uname -n`"
   keychain=keychain-2.8.2
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+  run "$VENDOR_DIR/$keychain/keychain $HOME/.ssh/id_rsa"
   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
   else
@@ -319,10 +320,10 @@ if test "${bounds_checking:-off}" = "on"; then
 fi
 
 # Environment
-echo " "
-echo "--------------------(environment)------------------------------"
-set
-echo "--------------------(end environment)--------------------------"
+#echo " "
+#echo "--------------------(environment)------------------------------"
+#set
+#echo "--------------------(end environment)--------------------------"
 
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}

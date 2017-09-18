@@ -7,20 +7,38 @@
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
+# switch to group 'ccsrad' and set umask
+if [[ $(id -gn) != ccsrad ]]; then
+  exec sg ccsrad "$0 $*"
+fi
+umask 0007
+
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Redirect all output to a log file.
+timestamp=`date +%Y%m%d-%H%M`
+target="`uname -n | sed -e s/[.].*//`"
+logdir="$( cd $scriptdir/../../logs && pwd )"
+logfile=$logdir/push_repositories_xf-$target-$timestamp.log
+exec > $logfile
+exec 2>&1
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
 
+echo -e "Executing $0 $*...\n"
+echo "Group: `id -gn`"
+echo -e "umask: `umask` \n"
+
+#------------------------------------------------------------------------------#
 # Q: How do I create a keytab that works with transfer 2.0
 # A: See
 #    https://rtt.lanl.gov/redmine/projects/draco/wiki/Kelly_Thompson#Generating-keytab-file-that-works-with-transfer-20
 #    or see the comments at the end of this file.
 
 # When kellyt runs this as a crontab, a special kerberos key must be used.
-user=`whoami`
-if test $user = "kellyt"; then
+if [[ $USER == "kellyt" ]] ; then
     # Use a different cache location to avoid destroying any active user's
     # kerberos.
     export KRB5CCNAME=/tmp/regress_kerb_cache
@@ -30,16 +48,16 @@ if test $user = "kellyt"; then
 fi
 
 # Sanity check
-if test `klist -l | grep -c $user` = 0; then
+if test `klist -l | grep -c $USER` = 0; then
     die "You must have an active kerberos ticket to run this script."
 fi
 
 #------------------------------------------------------------------------------#
 # Clone the github and gitlab repositories and push them to the red.
 
-gitdir=/ccs/codes/radtran/git
+gitdir=/ccs/codes/radtran/git.${target}
 
-if test -d $gitdir; then
+if [[ -d $gitdir ]]; then
   run "cd $gitdir"
 else
   die "GIT root directory not found. Expected to find $gitdir."
@@ -50,27 +68,17 @@ repos="Draco.git jayenne.git capsaicin.git"
 for repo in $repos; do
 
   # Remove the old tar file.
-  if test -f $repo.tar; then
-    rm -f $repo.tar
+  if [[ -f $repo.tar ]]; then
+    run "rm -f $repo.tar"
   fi
 
-  # Checkout or update the git repository
-  # Assume this is already done by sync_repositories.sh (every 15 minutes).
-  #if test -d $repo; then
-  #  run "cd $repo"
-  #  run "git pull"
-  #  run "cd .."
-  #else
-  #  run "git clone https://github.com/lanl/Draco.git draco.git"
-  #fi
-
-  if test -d $gitdir/$repo; then
+  if [[ -d $gitdir/$repo ]]; then
 
     # Tar it up
     run "tar -cvf $repo.tar $repo"
 
     # Ensure the new files have group rwX permissions.
-    run "chgrp -R draco $repo.tar"
+    run "chgrp -R ccsrad $repo.tar"
     run "chmod -R g+rwX,o-rwX  $repo.tar"
 
     # Transfer the file via transfer.lanl.gov
@@ -82,6 +90,11 @@ for repo in $repos; do
   fi
 
 done
+
+echo -e "\n--------------------------------------------------------------------------------"
+echo "All done."
+echo "--------------------------------------------------------------------------------"
+
 
 #------------------------------------------------------------------------------#
 # Notes on using Transfer 2.0 (copied from the Draco wiki):

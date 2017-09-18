@@ -5,13 +5,11 @@
  * \date   Monday, Apr 22, 2013, 13:59 pm
  * \brief  Procmon test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-//! \version $Id: tstProcmon.cc 5830 2011-05-05 19:43:43Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "diagnostics/Procmon.hh"
+#include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include <cstdlib> // atof (XLC)
@@ -37,7 +35,7 @@ void tst_procmon_basic(rtt_dsxx::UnitTest &ut) {
     std::ostringstream msg;
     procmon_resource_print("tst_procmon_use_01", mynode, msg);
     std::string line = msg.str();
-    std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize(line, " \t");
+    std::vector<std::string> tokens = rtt_dsxx::tokenize(line, " \t");
 
     std::cout << msg.str() << std::endl;
     for (size_t i = 0; i < tokens.size(); ++i)
@@ -66,7 +64,7 @@ void tst_procmon_basic(rtt_dsxx::UnitTest &ut) {
 
     procmon_resource_print("tst_procmon_use_02", mynode, msg);
     std::string line = msg.str();
-    std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize(line, " \t");
+    std::vector<std::string> tokens = rtt_dsxx::tokenize(line, " \t");
 
     // Save the VmRSS size
     vmrss_bigger = atof(tokens[10].c_str());
@@ -86,7 +84,7 @@ void tst_procmon_basic(rtt_dsxx::UnitTest &ut) {
     std::ostringstream msg;
     procmon_resource_print("tst_procmon_use_03", mynode, msg);
     std::string line = msg.str();
-    std::vector<std::string> tokens = rtt_dsxx::UnitTest::tokenize(line, " \t");
+    std::vector<std::string> tokens = rtt_dsxx::tokenize(line, " \t");
 
     // Save the VmRSS size
     vmrss_end = atof(tokens[10].c_str());
@@ -99,8 +97,8 @@ void tst_procmon_basic(rtt_dsxx::UnitTest &ut) {
     PASSMSG("No failures in tst_procmon_basic.");
   return;
 }
-//---------------------------------------------------------------------------//
 
+//---------------------------------------------------------------------------//
 void tst_procmon_macro(rtt_dsxx::UnitTest &ut) {
   std::cout << "\nRunning tst_procmon_macro(ut)..." << std::endl;
   std::ostringstream msg;
@@ -115,11 +113,9 @@ void tst_procmon_macro(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
-    // >>> UNIT TESTS
     tst_procmon_basic(ut);
     tst_procmon_macro(ut);
   }

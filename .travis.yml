@@ -10,12 +10,12 @@ dist: trusty
 env:
   global:
     - BLAS_blas_LIBRARY=/usr/lib/libblas.a
-    - CC=gcc-5
+    - CC=gcc-6
     - CCACHE_CPP2=yes
-    - CMAKE=$HOME/cmake-3.6.2-Linux-x86_64/bin/cmake
-    - CTEST=$HOME/cmake-3.6.2-Linux-x86_64/bin/ctest
-    - CXX=g++-5
-    - FC=gfortran-5
+    - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
+    - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
+    - CXX=g++-6
+    - FC=gfortran-6
     - LAPACK_LIB_DIR=/usr/lib
     - OMP_NUM_THREADS=4
     - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
@@ -33,19 +33,19 @@ addons:
     packages:
       - ccache
       - libgsl0-dev
-      - gcc-5
-      - g++-5
-      - gfortran-5
+      - gcc-6
+      - g++-6
+      - gfortran-6
       - liblapack-dev
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
   - pip install --upgrade pip
-  - pip install --upgrade setuptools
+#  - pip install --upgrade setuptools
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
-  - ./.travis-install-dependencies.sh
+  - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
   - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
@@ -55,13 +55,13 @@ script:
   - ./.travis-run-tests.sh
 
 after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-5; fi
+  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
 
 cache:
   - ccache
 
 compiler:
-  - gcc
+  - gcc-6
 
 git:
   depth: 3
@@ -70,17 +70,11 @@ git:
 # output from printenv
 #
 # CASHER_DIR=/home/travis/.casher
-# CC=gcc-5
 # CCACHE_CPP2=yes
 # CI=true
-# CMAKE=/home/travis/cmake-3.5.2-Linux-x86_64/bin/cmake
-# CMAKE_VERSION=3.5.2-Linux-x86_64
 # COMPOSER_NO_INTERACTION=1
 # CONTINUOUS_INTEGRATION=true
-# CTEST=/home/travis/cmake-3.5.2-Linux-x86_64/bin/ctest
-# CXX=g++-5
 # DEBIAN_FRONTEND=noninteractive
-# FC=gfortran-5
 # GEM_HOME=/home/travis/.rvm/gems/ruby-2.2.5
 # GEM_PATH=/home/travis/.rvm/gems/ruby-2.2.5:/home/travis/.rvm/gems/ruby-2.2.5@global
 # GIT_ASKPASS=echo

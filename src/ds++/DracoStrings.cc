@@ -1,0 +1,176 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   ds++/DracoStrings.cc
+ * \author Kelly G. Thompson <kgt@lanl.gov
+ * \date   Wednesday, Aug 23, 2017, 12:48 pm
+ * \brief  Enscapulates common string manipulations (implementation).
+ * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
+
+#include "DracoStrings.hh"
+#include "Assert.hh"
+#include <fstream>
+#include <iostream>
+
+namespace rtt_dsxx {
+
+//----------------------------------------------------------------------------//
+// Definitions for fully specialized template functions
+//----------------------------------------------------------------------------//
+
+template <> auto parse_number_impl<int>(std::string const &str) -> int {
+  return std::stoi(str);
+}
+template <> auto parse_number_impl<long>(std::string const &str) -> long {
+  return std::stol(str);
+}
+template <>
+auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long {
+  return std::stoul(str);
+}
+template <> auto parse_number_impl<float>(std::string const &str) -> float {
+  return std::stof(str);
+}
+template <> auto parse_number_impl<double>(std::string const &str) -> double {
+  return std::stod(str);
+}
+
+//----------------------------------------------------------------------------//
+// Definitions for regular functions
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+//! trim whitespace (or other characters) from before and after main text.
+std::string trim(std::string const &str, std::string const &whitespace) {
+  auto const strBegin = str.find_first_not_of(whitespace);
+  if (strBegin == std::string::npos)
+    return ""; // no content
+  auto const strEnd = str.find_last_not_of(whitespace);
+  auto const strRange = strEnd - strBegin + 1;
+  return str.substr(strBegin, strRange);
+}
+
+//----------------------------------------------------------------------------//
+//! Removes all specified characters from a string.
+std::string prune(std::string const &orig_str,
+                  std::string const &chars_to_remove) {
+  std::string str(orig_str);
+  for (char c : chars_to_remove)
+    str.erase(std::remove(str.begin(), str.end(), c), str.end());
+  return str;
+}
+
+//----------------------------------------------------------------------------//
+//! Split a string into a vector<string> using a specified delimiter.
+std::vector<std::string> tokenize(std::string const &str,
+                                  std::string const &delimiters,
+                                  bool keepEmptyStrings) {
+  std::vector<std::string> retval; // Storage for the result
+  // convert a string into a stream to be processed by getline.
+
+  // Simple implementaiton if only one delimiter
+  if (delimiters.size() == 1) {
+    std::istringstream iss(str);
+    std::string single_word; // local storage
+    while (getline(iss, single_word, delimiters[0]))
+      if (single_word.length() > 0 || keepEmptyStrings)
+        retval.push_back(trim(single_word));
+  } else {
+    // Allow multiple delimiter characters.
+    size_t prev = 0;
+    size_t next = 0;
+    while ((next = str.find_first_of(delimiters, prev)) != std::string::npos) {
+      if (keepEmptyStrings || (next - prev != 0))
+        retval.push_back(str.substr(prev, next - prev));
+      prev = next + 1;
+    }
+    if (prev < str.size())
+      retval.push_back(str.substr(prev));
+  }
+
+  return retval;
+}
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Parse msg to provide a list of words and the number of occurances of
+ *        each.
+ */
+std::map<std::string, unsigned> get_word_count(std::ostringstream const &msg,
+                                               bool verbose) {
+  using std::map;
+  using std::string;
+  using std::cout;
+  using std::endl;
+
+  map<string, unsigned> word_list;
+  string msgbuf(msg.str());
+  string delims(" \n\t:,.;");
+
+  { // Build a list of words found in msgbuf.  Count the number of occurances.
+
+    // Find the beginning of the first word.
+    string::size_type begIdx = msgbuf.find_first_not_of(delims);
+    string::size_type endIdx;
+
+    // While beginning of a word found
+    while (begIdx != string::npos) {
+      // search end of actual word
+      endIdx = msgbuf.find_first_of(delims, begIdx);
+      if (endIdx == string::npos)
+        endIdx = msgbuf.length();
+
+      // the word is we found is...
+      string word(msgbuf, begIdx, endIdx - begIdx);
+
+      // add it to the map
+      word_list[word]++;
+
+      // search to the beginning of the next word
+      begIdx = msgbuf.find_first_not_of(delims, endIdx);
+    }
+  }
+
+  if (verbose) {
+    cout << "The messages from the message stream contained the following "
+         << "words/occurances." << endl;
+    // print the word_list
+    for (auto it : word_list)
+      cout << it.first << ": " << it.second << endl;
+  }
+
+  return word_list;
+}
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Parse text file to provide a list of words and the number of
+ *        occurances of each.
+ */
+std::map<std::string, unsigned> get_word_count(std::string const &filename,
+                                               bool verbose) {
+  // open the file
+  std::ifstream infile;
+  infile.open(filename.c_str());
+  Insist(infile, std::string("Cannot open specified file = \"") + filename +
+                     std::string("\"."));
+
+  // read and store the text file contents
+  std::ostringstream data;
+  std::string line;
+  if (infile.is_open())
+    while (infile.good()) {
+      getline(infile, line);
+      data << line << std::endl;
+    }
+
+  infile.close();
+  return get_word_count(data, verbose);
+}
+
+} // namespace rtt_dsxx
+
+//---------------------------------------------------------------------------//
+// end of DracoStrings.cc
+//---------------------------------------------------------------------------//

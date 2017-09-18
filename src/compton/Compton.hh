@@ -11,13 +11,14 @@
 #ifndef __compton_Compton_hh__
 #define __compton_Compton_hh__
 
+#include "compton/config.h"
+
+#ifdef COMPTON_FOUND
+
 // C++ standard library dependencies
 #include <iostream>
 #include <memory>
 #include <vector>
-// headers provided in compton CSK_generator include directory
-#include "etemp_interp.hh"
-#include "multigroup_compton_data.hh"
 
 namespace rtt_compton {
 //===========================================================================//
@@ -25,7 +26,7 @@ namespace rtt_compton {
  * \class Compton
  *
  * \brief Provides access to relativistic Compton scattering angle and
- * multigroup frequency distributions from the CSK_generator project.
+ *        multigroup frequency distributions from the CSK_generator project.
  *
  * This interface class allows the client to:
  * 1) access (interpolate) data from existing multigroup CSK_generator libraries
@@ -38,13 +39,12 @@ namespace rtt_compton {
  * If this is not found at the CMake configure step, the lib_compton portion of
  * draco will not be built.
  *
- * <b>User's environment</b>
+ * \b User's \b environment
  *
- * Cmake searches for the CSK_generator library/include headers during the
+ * CMake searches for the CSK_generator library/include headers during the
  * configuration step. The script that does this is located at:
  *
- * /draco/config/findCOMPTON.cmake
- *
+ * \c /draco/config/FindCOMPTON.cmake
  */
 
 /*!
@@ -99,4 +99,10 @@ public:
 };
 }
 
-#endif
+#endif // COMPTON_FOUND
+
+#endif // __compton_Compton_hh__
+
+//----------------------------------------------------------------------------//
+// End compton/Compton.hh
+//----------------------------------------------------------------------------//

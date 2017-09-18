@@ -40,6 +40,25 @@ String_Token_Stream::String_Token_Stream(string const &text)
 //-------------------------------------------------------------------------------------//
 /*!
  * Construct a String_Token_Stream that derives its text from the specified
+ * string. Use the default Text_Token_Stream user-defined whitespace
+ * characters.
+ *
+ * This is the move-aware version.
+ *
+ * \param text
+ * Text to be tokenized.
+ */
+
+String_Token_Stream::String_Token_Stream(string &&text)
+    : text_(text), pos_(0), messages_(std::string()) {
+  Ensure(check_class_invariants());
+  Ensure(whitespace() == Text_Token_Stream::default_whitespace);
+  Ensure(messages() == "");
+}
+
+//-------------------------------------------------------------------------------------//
+/*!
+ * Construct a String_Token_Stream that derives its text from the specified
  * string.
  *
  * \param text Text from which to extract tokens.

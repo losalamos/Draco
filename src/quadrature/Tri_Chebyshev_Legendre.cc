@@ -3,14 +3,13 @@
  * \file   quadrature/Tri_Chebyshev_Legendre.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \brief
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Tri_Chebyshev_Legendre.hh"
 #include "Gauss_Legendre.hh"
-#include "ds++/to_string.hh"
+#include "ds++/DracoStrings.hh"
 #include "units/MathConstants.hh"
 
 namespace rtt_quadrature {

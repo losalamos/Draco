@@ -12,8 +12,6 @@
  * tests.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef c4_ParallelUnitTest_hh
 #define c4_ParallelUnitTest_hh
@@ -31,8 +29,7 @@ namespace rtt_c4 {
  * This class inherits from UnitTest.  Much of the documentation for the
  * services of this class is provided in UnitTest.hh
  *
- * \sa rtt_dsxx::UnitTest for detailed description of all the UnitTest
- * classes.
+ * \sa rtt_dsxx::UnitTest for detailed description of all the UnitTest classes.
  *
  * \par Code Sample:
  * \code
@@ -49,19 +46,19 @@ namespace rtt_c4 {
  * \endcode
  *
  * \test All of the member functions of this class are tested by
- * ds++/test/tstScalarUnitTest.cc, including the early exit caused by
- * \c --version on the command line.
+ *       ds++/test/tstScalarUnitTest.cc, including the early exit caused by
+ *       \c --version on the command line.
  *
- * \warning The output from this class is closely tied to the DBS python
- * script \c tools/regression_filter.py that is used during \c gmake \c check.
- * Changing the format or keyword in the output streams from this class should
- * be coordinated with the regular expression matches found in \c
- * tools/regression_filter.py.
+ * \warning The output from this class is closely tied to the DBS python script
+ *       \c tools/regression_filter.py that is used during \c gmake \c check.
+ *       Changing the format or keyword in the output streams from this class
+ *       should be coordinated with the regular expression matches found in \c
+ *       tools/regression_filter.py.
  *
  * \warning The differences between ScalarUnitTest, ParallelUnitTest and
- * ApplicationUnitTest are correlated to the DBS m4 macros \c AC_RUNTESTS and
- * \c AC_TEST_APPLICATION.  Changes to these classes should be coordinated with
- * changes to these DBS m4 macro command
+ *       ApplicationUnitTest are correlated to the DBS m4 macros \c AC_RUNTESTS
+ *       and \c AC_TEST_APPLICATION.  Changes to these classes should be
+ *       coordinated with changes to these DBS m4 macro command
  */
 /*!
  * \example c4/test/tstParallelUnitTest.cc

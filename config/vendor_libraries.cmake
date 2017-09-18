@@ -550,9 +550,9 @@ macro( setupParMETIS )
     set_package_properties( ParMETIS PROPERTIES
       DESCRIPTION "MPI Parallel METIS"
       URL "http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview"
-      PURPOSE "ParMETIS is an MPI-based parallel library that implements a variety of algorithms for partitioning
-   unstructured graphs, meshes, and for computing fill-reducing orderings of sparse matrices."
-      )
+      PURPOSE "ParMETIS is an MPI-based parallel library that implements a
+variety of algorithms for partitioning unstructured graphs, meshes, and for
+computing fill-reducing orderings of sparse matrices." )
 
   endif()
 
@@ -588,20 +588,68 @@ macro( setupSuperLU_DIST )
         POSITION_INDEPENDENT_CODE
         IMPORTED_LOCATION )
 
-      save_vendor_imported_library_to_draco_config( "SuperLU_DIST::superludist" "${props}" )
+      save_vendor_imported_library_to_draco_config(
+        "SuperLU_DIST::superludist" "${props}" )
     else()
       message( STATUS "Looking for SuperLU_DIST.....not found" )
     endif()
 
-    #=============================================================================
+    #===========================================================================
     # Include some information that can be printed by the build system.
     set_package_properties( SuperLU_DIST PROPERTIES
       DESCRIPTION "SuperLU_DIST"
       URL " http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
-      PURPOSE "SuperLU is a general purpose library for the direct solution of large, sparse,
-   nonsymmetric systems of linear equations on high performance machines."
-      )
+      PURPOSE "SuperLU is a general purpose library for the direct solution of
+large, sparse, nonsymmetric systems of linear equations on high performance
+machines."  )
 
+  endif()
+
+endmacro()
+
+#------------------------------------------------------------------------------
+# Setup COMPTON (https://gitlab.lanl.gov/keadyk/CSK_generator)
+#------------------------------------------------------------------------------
+macro( setupCOMPTON )
+
+  if( NOT TARGET compton::compton )
+    message( STATUS "Looking for COMPTON..." )
+
+    find_package( COMPTON QUIET )
+
+    if( COMPTON_FOUND )
+      message( STATUS "Looking for COMPTON.....found ${COMPTON_LIBRARY}" )
+
+      # Export COMPTON target information to draco-config.cmake
+      # Choose items for props list via:
+      # include(print_target_properties)
+      # print_targets_properties("COMPTON::compton")
+      set( props
+        GNUtoMS
+        IMPORTED_CONFIGURATIONS
+        IMPORTED_IMPLIB
+        IMPORTED_IMPLIB_DEBUG
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LOCATION_DEBUG
+        IMPORTED_LOCATION_RELEASE
+        IMPORTED
+        INTERFACE_INCLUDE_DIRECTORIES
+        POSITION_INDEPENDENT_CODE
+        IMPORTED_LOCATION )
+
+      save_vendor_imported_library_to_draco_config(
+        "COMPTON::compton" "${props}" )
+    else()
+      message( STATUS "Looking for COMPTON.....not found" )
+    endif()
+
+    #===========================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( COMPTON PROPERTIES
+      DESCRIPTION "Access multigroup Compton scattering data."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the compton component." )
   endif()
 
 endmacro()
@@ -615,6 +663,7 @@ macro( SetupVendorLibrariesUnix )
   setupGSL()
   setupParMETIS()
   setupSuperLU_DIST()
+  setupCOMPTON()
 
   # Random123 ----------------------------------------------------------------
   message( STATUS "Looking for Random123...")

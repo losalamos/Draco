@@ -347,8 +347,8 @@ if [[ `jobs -p | wc -l` -gt 0 ]]; then
 fi
 
 # set permissions
-chgrp -R draco ${logdir} &> /dev/null
-chmod -R g+rX ${logdir} &> /dev/null
+chgrp -R ccsrad ${logdir} &> /dev/null
+chmod -R g+rX,o-rwX ${logdir} &> /dev/null
 
 echo " "
 echo "All done"

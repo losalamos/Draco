@@ -7,20 +7,31 @@
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
+# switch to group 'ccsrad' and set umask
+if [[ $(id -gn) != ccsrad ]]; then
+  exec sg ccsrad "$0 $*"
+fi
 umask 0002
 
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Redirect all output to a log file.
+timestamp=`date +%Y%m%d-%H%M`
 target="`uname -n | sed -e s/[.].*//`"
 logdir="$( cd $scriptdir/../../logs && pwd )"
-logfile=$logdir/update_regression_scripts_$target.log
+logfile=$logdir/update_regression_scripts-$target-$timestamp.log
 exec > $logfile
 exec 2>&1
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
+
+echo -e "Executing $0 $*...\n"
+echo "Group: `id -gn`"
+echo -e "umask: `umask` \n"
+
+#------------------------------------------------------------------------------#
 
 # Per machine setup
 case ${target} in
@@ -41,9 +52,6 @@ case ${target} in
     REGDIR=/scratch/regress
     VENDOR_DIR=/scratch/vendors
     keychain=keychain-2.8.2
-    if ! [[ $MODULESHOME ]]; then
-       source /usr/share/Modules/init/bash
-    fi
     ;;
   ml-*)
     REGDIR=/usr/projects/jayenne/regress
@@ -56,29 +64,19 @@ case ${target} in
 esac
 
 # Load some identities used for accessing gitlab.
-MYHOSTNAME="`uname -n`"
-$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
-if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+if [[ -f $HOME/.ssh/id_rsa ]]; then
+  MYHOSTNAME="`uname -n`"
+  run "$VENDOR_DIR/$keychain/keychain $HOME/.ssh/id_rsa"
+  if [[ -f $HOME/.keychain/$MYHOSTNAME-sh ]]; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
-else
+  else
     echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+  fi
 fi
 
 # ---------------------------------------------------------------------------- #
 # Update the regression script directories
 # ---------------------------------------------------------------------------- #
-
-# Draco
-echo " "
-echo "Updating $REGDIR/draco..."
-if ! test -d $REGDIR; then
-  run "mkdir -p ${REGDIR}"
-fi
-if test -d ${REGDIR}/draco; then
-  run "cd ${REGDIR}/draco; git pull"
-else
-  run "cd ${REGDIR}; git clone https://github.com/lanl/Draco.git draco"
-fi
 
 # Deal with proxy stuff on darwin
 case ${target} in
@@ -92,38 +90,50 @@ case ${target} in
   ;;
 esac
 
-# Jayenne
-echo " "
-echo "Updating $REGDIR/jayenne..."
-if test -d ${REGDIR}/jayenne; then
-  run "cd ${REGDIR}/jayenne; git pull"
-else
-  run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
+# Setup
+if ! [[ -d $REGDIR ]]; then
+  run "mkdir -p ${REGDIR}"
+  run "chmod g+rwX,o-rwX ${REGDIR}"
+  run "chmod g+s ${REGDIR}"
 fi
-# Capsaicin
-echo " "
-echo "Updating $REGDIR/capsaicin..."
-if test -d ${REGDIR}/capsaicin; then
-  run "cd ${REGDIR}/capsaicin; git pull"
-else
-  run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:capsaicin/capsaicin.git"
-fi
+
+# Draco/Jayenne/Capsaicin
+projects="draco jayenne capsaicin"
+for p in $projects; do
+  echo -e "\nUpdating $REGDIR/$p..."
+  if test -d ${REGDIR}/$p; then
+    run "cd ${REGDIR}/$p; git pull"
+  else
+    case $p in
+      draco)
+        run "cd ${REGDIR}; git clone git@github.com:lanl/Draco.git $p"
+        ;;
+      *)
+        run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${p}/${p}.git"
+        ;;
+    esac
+  fi
+done
 
 #------------------------------------------------------------------------------#
 # Cleanup old files and directories
 #------------------------------------------------------------------------------#
 if [[ -d $logdir ]]; then
-  echo "Cleaning up old log files."
+  echo -e "\nCleaning up old log files."
   run "cd $logdir"
   run "find . -mtime +14 -type f"
   run "find . -mtime +14 -type f -delete"
 fi
 if [[ -d $REGDIR/cdash ]]; then
-  echo "Cleaning up old builds."
+  echo -e "\nCleaning up old builds."
   run "cd $REGDIR/cdash"
   run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d"
   run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
 fi
+
+echo -e "\n--------------------------------------------------------------------------------"
+echo "All done."
+echo "--------------------------------------------------------------------------------"
 
 ##---------------------------------------------------------------------------##
 ## End update_regression_scripts.sh

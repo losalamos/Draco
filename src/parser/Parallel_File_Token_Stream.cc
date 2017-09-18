@@ -132,9 +132,8 @@ void Parallel_File_Token_Stream::open_() {
       at_error_ = true;
     }
   }
-  unsigned err_count = at_error_;
-  rtt_c4::global_sum(err_count);
-  if (err_count > 0) {
+  rtt_c4::broadcast(&at_error_, 1, 0);
+  if (at_error_) {
     ostringstream errmsg;
     errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
            << "The file specified could not be found.\n"
@@ -258,8 +257,6 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
       character_push_back_(*iter);
     }
   }
-
-  rtt_c4::global_barrier();
 
   Ensure(check_class_invariants());
 }

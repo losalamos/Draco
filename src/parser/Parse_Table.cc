@@ -37,7 +37,7 @@ using namespace std;
 Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
                          unsigned const flags)
     : vec(), flags_(flags) {
-  Require(count == 0 || table != NULL);
+  Require(count == 0 || table != nullptr);
   Require(count == 0 ||
           std::find_if(table, table + count, Is_Well_Formed_Keyword));
 
@@ -61,7 +61,7 @@ Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
  * of, say, vector<Keyword>.
  */
 void Parse_Table::add(Keyword const *const table, size_t const count) {
-  Require(count == 0 || table != NULL);
+  Require(count == 0 || table != nullptr);
   // Additional precondition checked in loop below
 
   // Add the new keywords.
@@ -130,9 +130,9 @@ void Parse_Table::sort_table_() {
 
   // Look for ambiguous keywords, and resolve the ambiguity, if possible.
 
-  std::vector<Keyword>::iterator i = vec.begin();
+  auto i = vec.begin();
   while (i + 1 != vec.end()) {
-    Check(i->moniker != NULL && (i + 1)->moniker != NULL);
+    Check(i->moniker != nullptr && (i + 1)->moniker != nullptr);
     if (!comp(i[0], i[1]))
     // kptr[i] and kptr[i+1] have the same moniker.
     {
@@ -467,7 +467,7 @@ Token Parse_Table::parseforkeyword(Token_Stream &tokens) const {
 void Parse_Table::set_flags(unsigned char const f) {
   flags_ = f;
 
-  add(NULL, 0U);
+  add(nullptr, 0U);
   // The keyword list needs to be sorted and checked.  For example, if the
   // options are changed so that a previously case-sensitive Parse_Table is
   // no longer case-sensitive, then the ordering changes, and previously
@@ -517,8 +517,8 @@ Parse_Table::Keyword_Compare_::Keyword_Compare_(unsigned char const flags)
  */
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
                                                Keyword const &k2) const {
-  Require(k1.moniker != NULL);
-  Require(k2.moniker != NULL);
+  Require(k1.moniker != nullptr);
+  Require(k2.moniker != nullptr);
 
   return kk_comparison(k1.moniker, k2.moniker) < 0;
 }
@@ -527,8 +527,8 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
                                                  char const *m2) const {
   using namespace std;
 
-  Require(m1 != NULL);
-  Require(m2 != NULL);
+  Require(m1 != nullptr);
+  Require(m2 != nullptr);
 
   if (flags_ & CASE_INSENSITIVE) {
     while (*m1 != '\0' && *m2 != '\0') {
@@ -586,7 +586,7 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
 
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
                                                Token const &k2) const {
-  Require(k1.moniker);
+  Require(k1.moniker != nullptr);
 
   return kt_comparison(k1.moniker, k2.text().c_str()) < 0;
 }
@@ -595,8 +595,8 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
                                                  char const *m2) const {
   using namespace std;
 
-  Require(m1 != NULL);
-  Require(m2 != NULL);
+  Require(m1 != nullptr);
+  Require(m2 != nullptr);
 
   if (flags_ & PARTIAL_IDENTIFIER_MATCH) {
     while (*m1 != '\0' && *m2 != '\0') {
@@ -677,7 +677,7 @@ int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
 bool Is_Well_Formed_Keyword(Keyword const &key) {
   using namespace std;
 
-  if (key.moniker == NULL || key.func == NULL)
+  if (key.moniker == nullptr || key.func == nullptr)
     return false;
   char const *cptr = key.moniker;
   for (;;) {
@@ -712,8 +712,7 @@ bool Parse_Table::check_class_invariants() const {
   // The keyword table must be well-formed, sorted, and unambiguous.
 
   Keyword_Compare_ const comparator(flags_);
-  for (std::vector<Keyword>::const_iterator i = vec.begin(); i != vec.end();
-       ++i) {
+  for (auto i = vec.begin(); i != vec.end(); ++i) {
     if (!Is_Well_Formed_Keyword(i[0]))
       return false;
     if (i + 1 != vec.end()) {

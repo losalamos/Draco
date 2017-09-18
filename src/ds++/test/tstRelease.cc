@@ -4,11 +4,11 @@
  * \author Kelly Thompson <kgt@lanl.gov>
  * \date   Friday, Jul 29, 2016, 10:05 am
  * \brief  Check basic functionality of Release.hh/cc files.
- * \note   Copyright (C) 2011-2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -38,7 +38,7 @@ void maintest(UnitTest &ut) {
 
     bool verbose(false);
     std::map<std::string, unsigned> wc =
-        ut.get_word_count(releaseString, verbose);
+        rtt_dsxx::get_word_count(releaseString, verbose);
 
     if (wc[string("DRACO_DIAGNOSTICS")] != 1)
       ITFAILS;
@@ -59,7 +59,7 @@ void maintest(UnitTest &ut) {
 
     bool verbose(false);
     std::map<std::string, unsigned> wc =
-        ut.get_word_count(copyrightString, verbose);
+        rtt_dsxx::get_word_count(copyrightString, verbose);
 
     if (wc[string("CCS-2")] != 1)
       ITFAILS;
@@ -75,7 +75,6 @@ void maintest(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
@@ -85,5 +84,5 @@ int main(int argc, char *argv[]) {
 }
 
 //---------------------------------------------------------------------------//
-// end of tstJayenneRelease.cc
+// end of tstRelease.cc
 //---------------------------------------------------------------------------//

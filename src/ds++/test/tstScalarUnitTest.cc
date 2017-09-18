@@ -5,12 +5,10 @@
  * \date   Thu May 18 17:17:24 2006
  * \brief  Unit test for the ds++ classes UnitTest and ScalarUnitTest.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include <algorithm>
@@ -74,7 +72,7 @@ void tstTwo(UnitTest &unitTest) {
 //---------------------------------------------------------------------------//
 void tstTwoCheck(UnitTest &unitTest, ostringstream &msg) {
   bool verbose(true);
-  map<string, unsigned> word_list(UnitTest::get_word_count(msg, verbose));
+  map<string, unsigned> word_list(rtt_dsxx::get_word_count(msg, verbose));
 
   // Check the list of occurrences against the expected values
   if (word_list[string("Test")] == 8)
@@ -121,7 +119,7 @@ void tstGetWordCountFile(UnitTest &unitTest) {
   }
 
   // Now read the file and parse the contents:
-  map<string, unsigned> word_list(UnitTest::get_word_count(filename, false));
+  map<string, unsigned> word_list(get_word_count(filename, false));
 
   // Some output
   cout << "The world_list has the following statistics (word, count):\n"

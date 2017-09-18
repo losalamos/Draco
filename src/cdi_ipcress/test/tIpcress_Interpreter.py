@@ -3,7 +3,7 @@
 # author Alex Long <along@lanl.gov>
 # date   Wednesday, September 14, 2016, 14:16 pm
 # brief  This is a Python script that is used to test cdi_ipcress/Ipcress_Interpreter
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys

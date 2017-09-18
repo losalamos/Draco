@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------//
 
 // headers provided in draco:
-#include "Compton.hh"
+#include "compton/Compton.hh"
 #include "ds++/Assert.hh"
 // headers provided in Compton include directory:
 #include "compton_file.hh"
@@ -26,9 +26,9 @@ namespace rtt_compton {
 /*!
  * \brief Constructor for an existing multigroup libfile.
  *
- * This calls CSK_generator methods to read the data file and store everything in a
- * Compton data object, a smart pointer to which is then passed to (and held by)
- * the CSK_generator etemp_interp class.
+ * This calls CSK_generator methods to read the data file and store everything
+ * in a Compton data object, a smart pointer to which is then passed to (and
+ * held by) the CSK_generator etemp_interp class.
  *
  * \param[in] filehandle The name of the Compton multigroup file
  */

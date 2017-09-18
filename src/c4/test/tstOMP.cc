@@ -1,29 +1,23 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/test/phw.cc
+ * \file   c4/test/tstOMP.cc
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
- * \brief  Parallel application used by the unit test for tstApplicationUnitTest.
+ * \brief  Demonstrate basic OMP threads under MPI.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "c4_omp.h"
 #include "c4/ParallelUnitTest.hh"
 #include "c4/Timer.hh"
 #include "c4/gatherv.hh"
 #include "c4/global.hh"
-
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-
 #include <complex>
 #include <numeric>
 #include <vector>
-
-#include "c4_omp.h"
 
 using namespace rtt_c4;
 

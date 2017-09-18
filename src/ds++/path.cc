@@ -3,9 +3,7 @@
  * \file   ds++/path.cc
  * \brief  Encapsulate path information (path separator, etc.)
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- * \version $Id$
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "path.hh"
@@ -25,17 +23,16 @@ namespace rtt_dsxx {
  * 1. Read the file attributes using stat.
  * 2. If we were able to get the file attributes so the file obviously exists.
  * 3. If we were not able to get the file attributes.  This may mean that we
- *    don't have permission to access the folder which contains this
- *    file. If you need to do that level of checking, lookup the return
- *    values of stat which will give you more details on why stat failed.
+ *    don't have permission to access the folder which contains this file. If
+ *    you need to do that level of checking, lookup the return values of stat
+ *    which will give you more details on why stat failed.
  */
 bool fileExists(std::string const &strFilename) {
   return draco_getstat(strFilename).errorCode() == 0;
 }
 
-//---------------------------------------------------------------------------//
-/*! \brief Does the 'path' represent a directory?
- */
+//----------------------------------------------------------------------------//
+//! Does the 'path' represent a directory?
 bool isDirectory(std::string const &path) {
   // If the path does not exist, then it cannot be a directory.
   if (!fileExists(path))
@@ -48,12 +45,14 @@ bool isDirectory(std::string const &path) {
   return retVal;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! Recursively remove a directory.
 void draco_remove_dir(std::string const &path) {
   draco_walk_directory_tree(path, wdtOpRemove());
   return;
 }
+
+//----------------------------------------------------------------------------//
 //! Recursively print a directory tree.
 void draco_dir_print(std::string const &path) {
   draco_walk_directory_tree(path, wdtOpPrint());
