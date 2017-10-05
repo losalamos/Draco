@@ -18,9 +18,6 @@
 #include <sstream>
 #include <string>
 
-#define FAIL_IF_NOT(c) if(!(c)) ITFAILS
-#define FAIL_IF(c) if((c)) ITFAILS
-
 using rtt_dsxx::Thread_Wrapper;
 using rtt_dsxx::UnitTest;
 
@@ -88,11 +85,16 @@ void testDetach(UnitTest &ut){
     FAIL_IF_NOT(tid == tid2);
   }
   s << "host thread: done\n";
-  std::chrono::seconds so_long(1);
+  std::chrono::seconds so_long(2);
   std::this_thread::sleep_for(so_long);
   // It would be odd if the detached OS thread finished faster than its
   // std::thread / Thread_Wrapper handle went out of scope.
-  FAIL_IF_NOT(s.str() == "host thread: done\nslow_action: done\n");
+  bool ok = s.str() == "host thread: done\nslow_action: done\n";
+  if(!ok){
+    printf("%s:%i s.str = '%s', expected '%s'\n",__FUNCTION__,__LINE__,
+      s.str().c_str(),"host thread: done\nslow_action: done\n");
+  }
+  FAIL_IF_NOT(ok);
   return;
 } //testDetach
 
