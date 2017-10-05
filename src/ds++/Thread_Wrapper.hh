@@ -13,6 +13,7 @@
 #ifndef THREAD_WRAPPER_HH
 #define THREAD_WRAPPER_HH
 
+#include "Assert.hh"
 #include <thread>
 
 namespace rtt_dsxx {
@@ -49,6 +50,7 @@ public:
         t_.detach();
       }
     }
+    Check(!t_.joinable());
   } // dtor
 
 private:
