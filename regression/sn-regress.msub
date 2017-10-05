@@ -92,6 +92,8 @@ run "module load intel/17.0.1 openmpi/1.10.5"
 run "module load trilinos/12.8.1 superlu-dist metis parmetis"
 run "module load cmake/3.9.0 ndi numdiff git"
 run "module load mkl random123 eospac/6.2.4"
+run "module use --append ${VENDOR_DIR}-ec/modulefiles"
+run "module load csk"
 
 export OMP_NUM_THREADS=18
 comp=`basename $CXX`
@@ -152,7 +154,7 @@ if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   MYHOSTNAME="`uname -n`"
   keychain=keychain-2.7.1
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/regress_rsa
   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
   else

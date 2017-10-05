@@ -436,6 +436,50 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #define NOEXCEPT_C(c) noexcept(c)
 #endif
 
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Define a macro that disables potential exception throws for optimized
+ *        (Release) code.
+ *
+ * Example:
+ *
+ * \code
+ * double get_db(Vec3 const &, Vec3 const &) const ONLY_DBC_THROWS;
+ * \endcode
+ *
+ * Issues:
+ * - C++11 - Dynamic exception specifications are deprecated until C++17 except
+ *           on lambda-declarator or on a function declarator that is the
+ *           top-level (until C++17) declarator of a function, variable, or
+ *           non-static data member, whose type is a function type, a pointer to
+ *           function type, a reference to function type, a pointer to member
+ *           function type. It may appear on the declarator of a parameter or on
+ *           the declarator of a return type.
+ *           \ref http://en.cppreference.com/w/cpp/language/except_spec
+ */
+//----------------------------------------------------------------------------//
+
+// Disable since we default to C++11 ('throw()' is deprecated)
+#if 0
+
+#if DBC
+#define ONLY_DBC_THROWS throw(rtt_dsxx::assertion)
+#else
+#define ONLY_DBC_THROWS throw()
+#endif
+
+#else
+
+#if DBC
+#define ONLY_DBC_THROWS
+#else
+#define ONLY_DBC_THROWS noexcept
+#endif
+
+#endif
+
+//----------------------------------------------------------------------------//
+
 #if defined(MSVC)
 #pragma warning(pop)
 #endif

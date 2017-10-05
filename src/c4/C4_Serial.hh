@@ -5,10 +5,7 @@
  * \date   Mon Mar 25 17:06:25 2002
  * \brief  Serial implementation of C4.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_C4_Serial_hh__
@@ -48,18 +45,36 @@ int send(const T * /* buffer*/, int /* size */, int /* destination */,
   return C4_SUCCESS;
 }
 
+//---------------------------------------------------------------------------//
 template <class T>
 int send(const T * /* buffer*/, int /* size */, int /* destination */,
          C4_Datatype & /*data_type*/, int /* tag */) {
   return C4_SUCCESS;
 }
 
+//---------------------------------------------------------------------------//
+template <class T>
+DLL_PUBLIC_c4 int send_custom(const T * /* buffer */, int /* size */,
+                              int /* destination */, int /* tag*/) {
+  return C4_SUCCESS;
+}
+
+//---------------------------------------------------------------------------//
 template <class T>
 DLL_PUBLIC_c4 void send_is(C4_Req & /*request*/, const T * /*buffer*/,
                            int /* size*/, int /*destination*/, int /*tag*/) {
   Insist(false, "send_is is not support for C4_SCALAR builds.");
 }
 
+//---------------------------------------------------------------------------//
+template <class T>
+DLL_PUBLIC_c4 void send_is_custom(C4_Req & /* request */,
+                                  const T * /* buffer */, int /* size */,
+                                  int /* destination */, int /* tag*/) {
+  Insist(false, "send_is_custom is not support for C4_SCALAR builds.");
+}
+
+//---------------------------------------------------------------------------//
 template <typename T>
 DLL_PUBLIC_c4 int send_udt(const T * /*buffer*/, int /*size*/,
                            int /*destination*/, C4_Datatype & /*data_type*/,
@@ -67,6 +82,7 @@ DLL_PUBLIC_c4 int send_udt(const T * /*buffer*/, int /*size*/,
   return C4_SUCCESS;
 }
 
+//---------------------------------------------------------------------------//
 template <typename TS, typename TR>
 DLL_PUBLIC_c4 int send_receive(TS * /*sendbuf*/, int /*sendcount*/,
                                int /*destination*/, TR * /*recvbuf*/,
@@ -77,25 +93,35 @@ DLL_PUBLIC_c4 int send_receive(TS * /*sendbuf*/, int /*sendcount*/,
 }
 
 //---------------------------------------------------------------------------//
-
 template <class T>
 int receive(T * /* buffer */, int /* size */, int /* source */, int /* tag */) {
   return C4_SUCCESS;
 }
 
+//---------------------------------------------------------------------------//
 template <class T>
 int receive(T * /* buffer */, int /* size */, int /* source */,
             C4_Datatype & /*data_type*/, int /* tag */) {
   return C4_SUCCESS;
 }
 
+//---------------------------------------------------------------------------//
+template <class T>
+DLL_PUBLIC_c4 int receive_custom(T * /* buffer */, int size,
+                                 int /* destination */, int /* tag*/) {
+  // expects a size of message returned
+  return size;
+}
+
+//---------------------------------------------------------------------------//
 template <typename T>
 DLL_PUBLIC_c4 int receive_udt(T * /*buffer*/, int /*size*/, int /*destination*/,
                               C4_Datatype & /*data_type*/, int /*tag*/) {
   return C4_SUCCESS;
 }
 
-template <typename T> DLL_PUBLIC_c4 T prefix_sum(T &node_value) {
+//----------------------------------------------------------------------------//
+template <typename T> DLL_PUBLIC_c4 T prefix_sum(T const node_value) {
   return node_value;
 }
 
@@ -136,6 +162,22 @@ template <class T>
 void receive_async(C4_Req &Remember(request), T * /* buffer  */,
                    int /* size    */, int /* source  */, int /* tag     */) {
   Require(!request.inuse());
+}
+
+//---------------------------------------------------------------------------//
+template <class T>
+DLL_PUBLIC_c4 void receive_async_custom(C4_Req &Remember(request),
+                                        T * /* buffer */, int /* size */,
+                                        int /* destination */, int /* tag*/) {
+  Require(!request.inuse());
+}
+
+//---------------------------------------------------------------------------//
+template <typename T>
+DLL_PUBLIC_c4 int message_size_custom(C4_Status /* status */,
+                                      const T & /* mpi_type */) {
+  int receive_count = 0;
+  return receive_count;
 }
 
 //---------------------------------------------------------------------------//
@@ -225,6 +267,14 @@ template <class T> DLL_PUBLIC_c4 void global_max(T & /*x*/) { /* empty */
 
 template <class T>
 DLL_PUBLIC_c4 void global_sum(T * /*x*/, int /*n*/) { /* empty */
+}
+
+//---------------------------------------------------------------------------//
+
+template <class T>
+DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &receive_buffer,
+                               C4_Req & /* request */) {
+  receive_buffer = send_buffer;
 }
 
 //---------------------------------------------------------------------------//

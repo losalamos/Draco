@@ -103,6 +103,8 @@ run "module load subversion git"
 run "module load random123"
 run "module load eospac/6.2.4"
 run "module load grace"
+run "module use --append ${VENDOR_DIR}-ec/modulefiles"
+run "module load csk"
 comp=`basename $CXX`
 export OMP_NUM_THREADS=8
 
@@ -174,7 +176,7 @@ if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   MYHOSTNAME="`uname -n`"
   keychain=keychain-2.7.1
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/regress_rsa
   if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
   else

@@ -25,14 +25,19 @@
 #pragma warning disable 11
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
 #define GNUC_VERSION                                                           \
   (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+
+/*
 #if (GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
 // assertion in compilerfeatures.h.
-#if (GNUC_VERSION >= 40600)
+*/
 #pragma GCC diagnostic push
+#if (GNUC_VERSION >= 70000)
+#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
@@ -46,18 +51,20 @@
 #endif
 
 #include "Random123/threefry.h"
+#include "uniform.hpp"
 
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
 #endif
 
-#if (GNUC_VERSION >= 40600)
+/* #if (GNUC_VERSION >= 40600) */
+#if defined(__GNUC__) && !defined(__clang__)
+/* && (GNUC_VERSION >= 70000) */
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
 
-#include "uniform.hpp"
 #include "ds++/Data_Table.hh"
 #include <algorithm>
 

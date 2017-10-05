@@ -102,6 +102,8 @@ void broadcast(ForwardIterator first, ForwardIterator last,
 
 } // end namespace rtt_c4
 
+#include "C4_MPI.i.hh"
+
 #endif // C4_MPI
 
 #endif // c4_C4_MPI_hh

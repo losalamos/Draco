@@ -5,10 +5,7 @@
  * \date   Thursday, Nov 12, 2015, 10:35 am
  * \brief  Test C++ main linking a Fortran library that uses MPI
  * \note   Copyright (c) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"

@@ -88,26 +88,7 @@ run "ulimit -a"
 if [[ `fn_exists module` == 1 ]]; then
   echo " "
   if [[ `declare -f module | grep -c LMOD` == 0 ]]; then
-    # we have tcl modules
-    echo "Found Tcl modules:"
-    run "module list"
-    echo "unloading"
-    run "module purge"
-    run "module list"
-    unset dracomodules
-    unset NoModules
-    unset _LMFILES_
-    unset MODULEPATH
-    unset LOADEDMODULES
-    unset MODULESHOME
-
-    # If TCL modulefiles, switch to Lmod
-    echo " "
-    echo "Switching to Lmod modulefiles..."
-    export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
-    source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
-    run "module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core" || die "Can't find Lmod Core modulefiles."
-
+    die "Found Tcl modules:"
   else
     # we have Lmod modules
     echo "Found Lmod modules:"
@@ -115,26 +96,24 @@ if [[ `fn_exists module` == 1 ]]; then
     run "module list"
     run "module purge"
     run "module load user_contrib"
+    # eospac, ndi, csk
+    run "module use --append /scratch/vendors/Modules.lmod"
     run "module list"
   fi
 else
+  # The nightly crontabs follow this branch!
   echo " "
   echo "No modules available"
   echo "Loading Lmod modulefiles..."
-  export MODULE_HOME=/scratch/vendors/spack.20170502/opt/spack/linux-rhel7-x86_64/gcc-4.8.5/lmod-7.4.8-oytncsoih2sa4jdogz2ojvwly6mwle4n
-  source $MODULE_HOME/lmod/lmod/init/bash || die "Can't find /mod/init/bash"
-  run "module use /scratch/vendors/spack.20170502/share/spack/lmod/linux-rhel7-x86_64/Core" || die "Can't find Lmod Core modulefiles."
+  export MODULEHOME=/usr/share/lmod/lmod
+  source $MODULE_HOME/init/bash || die "Can't find $MODULE_HOME/init/bash."
+  run "module use user_contrib"
 fi
 
-# Establish environment via Lmod...
-
-# eospac, ndi, csk
-run "module use --append /scratch/vendors/Modules.lmod"
-
 # Load default set of modules
-dm_core="cmake/3.9.1 eospac git ndi python graphviz doxygen ccache numdiff"
-dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
-dm_openmpi="openmpi parmetis superlu-dist/4.3-netlib trilinos"
+dm_core="eospac git ndi python graphviz doxygen ccache numdiff"
+dm_gcc="gcc/7.2.0 cmake netlib-lapack gsl metis random123 csk qt"
+dm_openmpi="openmpi parmetis superlu-dist trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"
 
 # use bash_functions.sh::add_to_path?
@@ -164,7 +143,7 @@ case $extra_params in
     ;;
   clang)
     run "module load $dm_core"
-    run "module load llvm netlib-lapack gsl metis random123 csk"
+    run "module load llvm cmake netlib-lapack gsl metis random123 csk"
     run "module load $dm_openmpi"
     comp=clang
     ;;
@@ -172,10 +151,10 @@ case $extra_params in
     run "module load $dracomodules"
     comp="gcc-fulldiagnostics"
     ;;
-  gcc630)
-    run "module load $dracomodules"
-    comp=gcc-6.3.0
-    ;;
+#  gcc630)
+#    run "module load $dracomodules"
+#    comp=gcc-6.3.0
+#    ;;
   valgrind)
     run "module load $dracomodules valgrind"
     comp=gcc

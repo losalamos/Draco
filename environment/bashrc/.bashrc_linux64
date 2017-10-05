@@ -46,9 +46,9 @@ case $target in
     if [[ -d $HOME/privatemodules ]]; then
       module use --append $HOME/privatemodules
     fi
-    dm_core="cmake eospac git tk ndi python doxygen ccache numdiff totalview \
+    dm_core="eospac git tk ndi python doxygen ccache numdiff totalview \
 dia graphviz ack"
-    dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
+    dm_gcc="gcc/7.2.0 cmake netlib-lapack gsl metis random123 csk qt"
     dm_openmpi="openmpi parmetis superlu-dist trilinos valgrind"
     export dracomodules="$dm_core $dm_gcc $dm_openmpi"
     ;;

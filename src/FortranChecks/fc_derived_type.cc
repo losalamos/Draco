@@ -5,8 +5,7 @@
  * \date   Tue Jul 10 12:48:13 MDT 2012
  * \brief  Test Fortran main calling C with a derived type
  * \note   Copyright (c) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/config.h"

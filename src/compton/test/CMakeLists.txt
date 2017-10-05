@@ -30,8 +30,9 @@ include_directories(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-add_scalar_tests(
+add_parallel_tests(
   SOURCES "${test_sources}"
+  PE_LIST "1"
   DEPS    "Lib_compton"
   LABEL   "nomemcheck"
   MPI_PLUS_OMP )

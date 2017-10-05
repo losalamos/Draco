@@ -180,15 +180,17 @@ fi
 # to the local file system.
 
 # Store some output into a local file to simplify parsing.
-TMPFILE_DRACO=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
+TMPFILE_DRACO_HEAD=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
+TMPFILE_DRACO_PULL=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
 
 echo " "
 echo "Copy Draco git repository to the local file system..."
 if [[ -d $gitroot/Draco.git ]]; then
   run "cd $gitroot/Draco.git"
-  run "git fetch origin +refs/heads/*:refs/heads/*"
-  run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE_DRACO
-  run "cat $TMPFILE_DRACO"
+  run "git fetch origin +refs/heads/*:refs/heads/*" &> $TMPFILE_DRACO_HEAD
+  run "cat $TMPFILE_DRACO_HEAD"
+  run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE_DRACO_PULL
+  run "cat $TMPFILE_DRACO_PULL"
   run "git reset --soft"
   run "chgrp -R draco $gitroot/Draco.git"
   run "chmod -R g+rwX $gitroot/Draco.git"
@@ -290,6 +292,10 @@ fi
 #   03392b8..fd3eabc refs/pull/86/head -> refs/pull/86/head <-- updated PR
 #   881a1f4...86c80c8 refs/pull/157/merge -> refs/pull/157/merge  (forced update)
 #
+# From gitlab:
+#
+# * [new ref]        refs/merge-requests/141/head -> refs/merge-requests/141/head
+#
 # Extract a list of PRs that are new and optionally start regression run
 # ------------------------------------------------------------------------------#
 
@@ -304,11 +310,11 @@ echo " "
 # Did we find 'merge' in the repo sync?  If so, then we should reset the
 # last-draco tagfile.
 unset rmlastdracotag
-draco_merge=`cat $TMPFILE_DRACO | grep merge | wc -l`
+draco_merge=`cat $TMPFILE_DRACO_HEAD | grep -c "develop    -> develop"`
 if [[ $draco_merge -gt 0 ]]; then
   rmlastdracotag="-t"
 fi
-draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+draco_prs=`cat $TMPFILE_DRACO_PULL | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
 # remove any duplicates
 draco_prs=`echo $draco_prs | xargs -n1 | sort -u | xargs`
 for pr in $draco_prs; do
@@ -347,7 +353,7 @@ fi
 # Cleanup
 echo " "
 echo "Cleaning up..."
-run "rm $TMPFILE_DRACO $TMPFILE_JAYENNE $TMPFILE_CAPSAICIN"
+run "rm $TMPFILE_DRACO_PULL $TMPFILE_DRACO_HEAD $TMPFILE_JAYENNE $TMPFILE_CAPSAICIN"
 run "rm $lockfile"
 
 echo " "

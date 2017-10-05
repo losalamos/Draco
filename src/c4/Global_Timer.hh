@@ -58,7 +58,7 @@ private:
     bool is_active; // permits activation of timers not yet constructed.
     Global_Timer *timer;
 
-    timer_entry() : is_active(false), timer(NULL) {}
+    timer_entry() : is_active(false), timer(nullptr) {}
   };
 
   typedef std::map<std::string, timer_entry> active_list_type;

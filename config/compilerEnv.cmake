@@ -107,6 +107,13 @@ macro(dbsSetupCompilers)
   include(CheckIPOSupported)
   check_ipo_supported(RESULT USE_IPO)
 
+  # 2017-09-15 KT - eliminate configure warning in Win32 nightly regressions:
+  # "CMake doesn't support IPO for current compiler"
+  if( ${CMAKE_GENERATOR} MATCHES "NMake Makefiles")
+    set( USE_IPO OFF CACHE BOOL
+      "Enable Interprocedureal Optimization for Release builds." FORCE )
+  endif()
+
 endmacro()
 
 #------------------------------------------------------------------------------#

@@ -10,6 +10,7 @@
 
 // headers provided in draco:
 #include "compton/Compton.hh"
+#include "c4/global.hh"
 #include "ds++/Assert.hh"
 // headers provided in Compton include directory:
 #include "compton_file.hh"
@@ -59,7 +60,7 @@ Compton::Compton(const std::string &filehandle) {
  * \param[in] filehandle The name of the pointwise lib to build MG data from
  * \param[in] grp_bds    A vector containing the multigroup bounds (in keV)
  * \param[in] opac_type  The type of opacity to build. Valid options for CSK
- *                       v0.2 are "jayenne" (for IMC-style opacities) or
+ *                       v0.3 are "jayenne" (for IMC-style opacities) or
  *                       "capsaicin" (for Sn-style opacities). Any other string
  *                       will cause CSK to throw an exception
  * \param[in] wt_func    The frequency weighting function used to numerically
@@ -67,34 +68,38 @@ Compton::Compton(const std::string &filehandle) {
  *                       "flat", "wien" or "planck." Any other string will cause
  *                       CSK to throw an exception.
  * \param[in] induced    Bool to toggle consideration of induced effects off/on
+ * \param[in] det_bal   Bool to toggle detailed balance enforcement off/on
  * \param[in] n_xi       The number of angular points/Legendre moments desired
  */
 Compton::Compton(const std::string &filehandle,
                  const std::vector<double> &grp_bds,
                  const std::string &opac_type, const std::string &wt_func,
-                 const bool induced, const size_t nxi) {
+                 const bool induced, const bool det_bal, const size_t nxi) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
   Require(grp_bds.size() > 0);
 
-  std::cout << "*********************************************************\n"
-            << "WARNING! Building a multigroup library from scratch might\n"
-            << " take a LOOOOOOONG time! (Don't say I didn't warn you.)  \n"
-            << "*********************************************************\n"
-            << std::endl;
+  if (rtt_c4::node() == 0) {
+    std::cout << "*********************************************************\n"
+              << "WARNING! Building a multigroup library from scratch might\n"
+              << " take a LOOOOOOONG time! (Don't say I didn't warn you.)  \n"
+              << "*********************************************************\n"
+              << std::endl;
+  }
 
   // make a group_data struct to pass to the lib builder:
   multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
                                      multigroup::string_to_opac_type(opac_type),
                                      multigroup::string_to_wt_func(wt_func),
                                      induced,
+                                     det_bal,
                                      filehandle,
                                      nxi,
                                      grp_bds};
 
   // Construct a multigroup library builder:
-  multigroup_lib_builder MG_builder(grp_data);
+  multigroup_lib_builder MG_builder(grp_data, rtt_c4::node());
 
   // build the library:
   MG_builder.build_library();
@@ -123,14 +128,14 @@ Compton::Compton(const std::string &filehandle,
  * \return   n_opac x n_grp x n_grp x n_xi interpolated opacity values
  */
 std::vector<std::vector<std::vector<std::vector<double>>>>
-Compton::interpolate_csk(const double etemp) const {
+Compton::interpolate_csk(const double etemp, const bool limit_grps) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_csk(etemp);
+  return ei->interpolate_csk(etemp, limit_grps);
 }
 
 //---------------------------------------------------------------------------//
@@ -146,13 +151,13 @@ Compton::interpolate_csk(const double etemp) const {
  * \return    n_grp x n_grp interpolated nu_ratio values
  */
 std::vector<std::vector<double>>
-Compton::interpolate_nu_ratio(const double etemp) const {
+Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_nu_ratio(etemp);
+  return ei->interpolate_nu_ratio(etemp, limit_grps);
 }
 }

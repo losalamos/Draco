@@ -1238,6 +1238,63 @@
    fun:orterun
    fun:main
 }
+{
+   openmpi/211/e0001
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:orte_dt_copy_sig
+   ...
+   fun:opal_libevent2022_event_base_loop
+}
+{
+   openmpi/211/e0002
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:pmix_bfrop_buffer_extend
+...
+   fun:opal_libevent2022_event_base_loop
+}
+{
+   openmpi211/e0003
+   Memcheck:Cond
+   fun:opal_value_unload
+   fun:ompi_proc_complete_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   ...
+}
+{
+   openmpi211/e0004
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:opal_hash_table_init2
+   ...
+   fun:PMPI_Init
+   ...
+}
+{
+   openmpi211/e0005
+   Memcheck:Cond
+   fun:opal_value_unload
+   fun:ompi_proc_complete_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi211/e0006
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:opal_proc_table_set_value
+   ...
+   fun:PMPI_Init
+   ...
+}
+
 
 #------------------------------------------------------------------------------#
 # Python 2.7

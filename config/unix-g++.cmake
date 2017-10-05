@@ -75,18 +75,25 @@ endif()
 # Consider using these optimization flags:
 # -ffast-math -ftree-vectorize
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
+#
+# Added, but shouldn't be needed:
+# -Wno-expansion-to-defined - unable to use GCC diagnostic pragma to suppress
+#           warnings.
 
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
+    string( APPEND CMAKE_C_FLAGS    " -Wno-expansion-to-defined" )
+  endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -Wunreachable-code -DDEBUG")
   # -Wfloat-equal
   # -Werror
   # -Wconversion
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -D_FORTIFY_SOURCE=2 -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -funroll-loops" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
 
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
@@ -116,6 +123,22 @@ if( NOT CXX_FLAGS_INITIALIZED )
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=bounds")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=address")
     # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
+  endif()
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0 )
+    # See https://gcc.gnu.org/gcc-6/changes.html
+    # -fsanitize=bounds-strict, which enables strict checking of array
+    #            bounds. In particular, it enables -fsanitize=bounds as well as
+    #            instrumentation of flexible array member-like arrays.
+  endif()
+  if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 )
+    # See https://gcc.gnu.org/gcc-7/changes.html
+    # -fsanitize-address-use-after-scope: sanitation of variables whose address
+    #            is taken and used after a scope where the variable is
+    #            defined. On by default when -fsanitize=address.
+    # -fsanitize=signed-integer-overflow
+    # -Wduplicated-branches warns when an if-else has identical branches.
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=signed-integer-overflow")
+
   endif()
 
   # [2017-04-15 KT] -march=native doesn't seem to work correctly on toolbox

@@ -154,6 +154,7 @@ int main(int argc, char *argv[]) {
         // density = std::stod(program_options.get_option_value()); // C++11
         density = atof(program_options.get_option_value().c_str());
         cerr << "Using density of " << density << endl;
+        break;
 
       case 't':
         temperature = atof(program_options.get_option_value().c_str());

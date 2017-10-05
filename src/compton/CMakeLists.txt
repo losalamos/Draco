@@ -41,6 +41,7 @@ set( sources ${PROJECT_SOURCE_DIR}/Compton.cc )
     ${Draco_SOURCE_DIR}/src    # compton/Compton.hh ds++/Assert.hh
     ${Draco_BINARY_DIR}/src    # compton/config.h
     ${dsxx_BINARY_DIR}         # ds++/config.h
+    ${c4_BINARY_DIR}           # c4/config.h
     )
 
   # -------------------------------------------------------------------------- #
@@ -49,12 +50,9 @@ set( sources ${PROJECT_SOURCE_DIR}/Compton.cc )
 
   add_component_library(
     TARGET       Lib_compton
-    TARGET_DEPS  "Lib_dsxx;COMPTON::compton"
+    TARGET_DEPS  "Lib_c4;Lib_dsxx;COMPTON::compton"
     LIBRARY_NAME compton
     SOURCES      "${sources}"
-#    VENDOR_LIST "COMPTON"
-#    VENDOR_LIBS "${COMPTON_LIBRARY}"
-#    VENDOR_INCLUDE_DIRS "${COMPTON_INCLUDE_DIR}"
 )
 
   install( TARGETS Lib_compton  EXPORT draco-targets DESTINATION

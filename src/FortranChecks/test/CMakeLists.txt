@@ -5,8 +5,6 @@
 #        F90 library and uses ISO_C_BINDING.
 # note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved
-# ---------------------------------------------------------------------------- #
-# $Id$
 #------------------------------------------------------------------------------#
 project( FortranChecks_test CXX )
 
@@ -51,7 +49,7 @@ if( MSVC )
 endif()
 
 # Create the test.
-set( test_deps "Lib_dsxx;Lib_FC_f90sub;Lib_FC_Derived_Type" )
+set( test_deps "Lib_FC_f90sub;Lib_FC_Derived_Type;Lib_dsxx" )
 
 # When cross-compiling with '-mmic', rpaths for libraries built from
 # Fortran code don't appear to be reported to the icpc linker.  As a

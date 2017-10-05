@@ -249,21 +249,29 @@ macro( setupCrayMPI )
 
   query_topology()
 
-  # srun options:
+  # salloc/sbatch options:
   # --------------------
   # -N        limit job to a single node.
+  # --gres=craynetwork:0 This option allows more than one srun to be running at
+  #           the same time on the Cray. There are 4 gres “tokens” available. If
+  #           unspecified, each srun invocation will consume all of
+  #           them. Setting the value to 0 means consume none and allow the user
+  #           to run as many concurrent jobs as there are cores available on the
+  #           node. This should only be specified on the salloc/sbatch command.
+  #           Gabe doesn't recommend this option for regression testing.
+  # --vm-overcommit=disable|enable Do not allow overcommit of heap resources.
+  # -p knl    Limit allocation to KNL nodes.
+  # srun options:
+  # --------------------
   # --cpu_bind=verbose,cores
   #           bind MPI ranks to cores
   #           print a summary of binding when run
-  # --gres=craynetwork:0 register the craynetwork as a required resource.  This
-  #           is needed for packing many parallel jobs onto one node.
-  # --exclusive This is needed for packing many parallel jobs onto one node.
-  #           The salloc or sbatch command must also use '--exclusive'
-  # --vm-overcommit=disabled Do not allow overcommit of heap resources. As of
-  #           2017-08-14 this option did not work on trinitite.
+  # --exclusive This option will keep concurrent jobs from running on the same
+  #           cores. If you want to background tasks to have them run
+  #           simultaneously, this option is required to be set or they will
+  #           stomp on the same cores.
 
-  set(postflags "-N 1 --cpu_bind=verbose,cores --gres=craynetwork:0 ")
-  # string(APPEND postflags " --vm-overcommit=disabled")
+  set(postflags "-N 1 --cpu_bind=verbose,cores ")
   string(APPEND postflags " --exclusive")
   set( MPIEXEC_POSTFLAGS ${postflags} CACHE STRING
     "extra mpirun flags (list)." FORCE)

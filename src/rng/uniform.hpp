@@ -70,6 +70,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // encourage developers to copy it and modify it for their own
 // use.  We invite comments and improvements.
 
+#if defined(__GNUC__) && !defined(__clang__)
+#define GNUC_VERSION                                                           \
+  (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 70000)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#endif
+#endif
+
 #include <Random123/features/compilerfeatures.h>
 #include <limits>
 #if R123_USE_CXX11_TYPE_TRAITS
@@ -211,14 +220,14 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
 // assignment may contain values that are not known at comile time (not constexpr).  We don't want to spend to much time debugging
 // this issue because the code is essentially vendor owned (Random123).
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
 
     R123_CONSTEXPR int ex_nowarn = (excess >= 0) ? excess : 0;
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
@@ -231,5 +240,10 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
 }
 
 } // namespace r123
+
+#if defined(__GNUC__) && !defined(__clang__)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
 
 #endif

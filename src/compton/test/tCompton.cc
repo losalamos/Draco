@@ -8,10 +8,11 @@
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
+#include "c4/ParallelUnitTest.hh"
 #include "compton/Compton.hh"
 #include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -53,9 +54,9 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   Ensure(grp_bds.size() == 2);
   Ensure(etemp_evals.size() == 7);
 
-  if (!soft_equiv(grp_bds[0], 3.91389000e-02))
+  if (!soft_equiv(grp_bds[0], 19.9998996222))
     FAILMSG("Lower group bound read incorrectly!");
-  if (!soft_equiv(grp_bds[1], 5.87084000e-02))
+  if (!soft_equiv(grp_bds[1], 29.9998749832))
     FAILMSG("Upper group bound read incorrectly!");
 
   if (!soft_equiv(etemp_evals[0], 1.76377944e-05))
@@ -157,9 +158,9 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   Ensure(grp_bds.size() == 2);
   Ensure(etemp_evals.size() == 7);
 
-  if (!soft_equiv(grp_bds[0], 3.91389000e-02))
+  if (!soft_equiv(grp_bds[0], 19.9998996222))
     FAILMSG("Lower group bound read incorrectly!");
-  if (!soft_equiv(grp_bds[1], 5.87084000e-02))
+  if (!soft_equiv(grp_bds[1], 29.9998749832))
     FAILMSG("Upper group bound read incorrectly!");
 
   if (!soft_equiv(etemp_evals[0], 1.76377944e-05))
@@ -290,6 +291,56 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
               << std::endl;
   }
 
+  // check that the files were constructed with the correct name, and
+  // that they're open-able:
+  std::string libfile =
+      ut.getTestSourcePath() + "lagrange_csk_ascii.compton_4group";
+  std::string nufile =
+      ut.getTestSourcePath() + "lagrange_csk_ascii.compton_4group_nu_ratios";
+
+  // "interpolate" the built MG data to check values:
+  std::vector<std::vector<std::vector<std::vector<double>>>> csk_gen =
+      compton_test->interpolate_csk(0.01);
+  std::vector<std::vector<double>> nu_gen =
+      compton_test->interpolate_nu_ratio(0.01);
+
+  // open generated output files and perform same operation for comparison:
+  compton_test.reset(new rtt_compton::Compton(libfile));
+  std::vector<std::vector<std::vector<std::vector<double>>>> csk_exist =
+      compton_test->interpolate_csk(0.01);
+  std::vector<std::vector<double>> nu_exist =
+      compton_test->interpolate_nu_ratio(0.01);
+
+  for (size_t a = 0; a < csk_gen.size(); a++) {
+    for (size_t b = 0; b < csk_gen[a].size(); b++) {
+      for (size_t c = 0; c < csk_gen[a][b].size(); c++) {
+        if (!soft_equiv(csk_exist[a][b][c].begin(), csk_exist[a][b][c].end(),
+                        csk_gen[a][b][c].begin(), csk_gen[a][b][c].end()))
+          ITFAILS;
+      }
+    }
+  }
+
+  for (size_t a = 0; a < nu_gen.size(); a++) {
+    if (!soft_equiv(nu_exist[a].begin(), nu_exist[a].end(), nu_gen[a].begin(),
+                    nu_gen[a].end()))
+      ITFAILS;
+  }
+
+  if (!std::ifstream(libfile).good()) {
+    ITFAILS;
+  } else { // remove the file-- we don't actually want it sitting around...
+    std::remove(libfile.c_str());
+    std::cout << "Successfully wrote MG file -- deleting! " << std::endl;
+  }
+  if (!std::ifstream(nufile).good()) {
+    ITFAILS;
+  } else { // remove the file-- we don't actually want it sitting around...
+    std::remove(nufile.c_str());
+    std::cout << "Successfully wrote MG nu_ratio file -- deleting! "
+              << std::endl;
+  }
+
   if (ut.numFails == 0) {
     PASSMSG("Successfully built a CSK_generator mg library.");
   } else {
@@ -334,7 +385,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
 
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     // >>> UNIT TESTS
     rtt_compton_test::compton_file_test(ut);

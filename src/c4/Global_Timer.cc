@@ -21,11 +21,11 @@ map<string, Global_Timer::timer_entry> Global_Timer::active_list_;
 
 //---------------------------------------------------------------------------------------//
 Global_Timer::Global_Timer(char const *name) : name_(name), active_(false) {
-  Require(name != NULL);
+  Require(name != nullptr);
 
   timer_entry &entry = active_list_[name];
   active_ = entry.is_active;
-  //    Check(entry.timer == NULL);
+  Check(entry.timer == nullptr); // Global_Timers must have unique names.
   entry.timer = this;
 
   Ensure(name == this->name());

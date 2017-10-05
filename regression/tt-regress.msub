@@ -127,6 +127,8 @@ run "module load craype-hugepages4M"
 run "module load cmake/3.9.0 numdiff git"
 run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
+run "module use --append ${VENDOR_DIR}-ec/modulefiles"
+run "module load csk"
 
 export CC=`which cc`
 export CXX=`which CC`
@@ -161,7 +163,7 @@ comp=$comp-$featurebranch
 if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   keychain=keychain-2.7.1
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/regress_rsa
   if test -f $HOME/.keychain/$HOSTNAME-sh; then
     run "source $HOME/.keychain/$HOSTNAME-sh"
   else

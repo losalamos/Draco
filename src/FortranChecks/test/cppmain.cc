@@ -5,10 +5,7 @@
  * \date   Tuesday, Jun 12, 2012, 16:03 pm
  * \brief  Test C++ main linking a Fortran library.
  * \note   Copyright (c) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"

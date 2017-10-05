@@ -452,18 +452,21 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return A;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'C':
       if (u.size() == 1)
         return C;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'F':
       if (u.size() == 1)
         return F;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'H':
       if (u.size() == 1)
@@ -472,48 +475,56 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return Hz;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'J':
       if (u.size() == 1)
         return J;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'K':
       if (u.size() == 1)
         return K;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'N':
       if (u.size() == 1)
         return N;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'P':
       if (u.size() == 2)
         return Pa;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'S':
       if (u.size() == 1)
         return S;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'T':
       if (u.size() == 1)
         return T;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'V':
       if (u.size() == 1)
         return V;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'W':
       if (u.size() == 1)
@@ -522,6 +533,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return Wb;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'c':
       if (token.text() == "cd")
@@ -530,12 +542,14 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return cm;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'd':
       if (token.text() == "dyne")
         return dyne;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'e':
       if (token.text() == "erg")
@@ -544,24 +558,28 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return eV;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'f':
       if (token.text() == "foot")
         return foot;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'g':
       if (u.size() == 1)
         return g;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'i':
       if (token.text() == "inch")
         return inch;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'k':
       if (token.text() == "kg")
@@ -570,6 +588,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return keV;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'l':
       if (token.text() == "lm")
@@ -578,6 +597,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return lx;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'm':
       if (u.size() == 1)
@@ -586,24 +606,28 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return mol;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'o':
       if (token.text() == "ohm")
         return ohm;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'p':
       if (token.text() == "pound")
         return pound;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'r':
       if (token.text() == "rad")
         return rad;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 's':
       if (u.size() == 1)
@@ -612,6 +636,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return sr;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     default:
       tokens.report_syntax_error("expected a unit");

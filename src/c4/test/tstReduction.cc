@@ -5,18 +5,18 @@
  * \date   Mon Mar 25 15:41:00 2002
  * \brief  C4 Reduction test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "c4/C4_Req.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 
+using rtt_c4::C4_Req;
+using rtt_c4::global_isum;
 using rtt_c4::global_sum;
 using rtt_c4::global_prod;
 using rtt_c4::global_min;
@@ -29,9 +29,15 @@ using rtt_dsxx::soft_equiv;
 //---------------------------------------------------------------------------//
 
 void elemental_reduction(rtt_dsxx::UnitTest &ut) {
-  // test ints
+  // test ints with blocking and non-blocking sums
   int xint = rtt_c4::node() + 1;
   global_sum(xint);
+
+  int xint_send = rtt_c4::node() + 1;
+  int xint_recv = 0;
+  C4_Req int_request;
+  global_isum(xint_send, xint_recv, int_request);
+  int_request.wait();
 
   int int_answer = 0;
   for (int i = 0; i < rtt_c4::nodes(); i++)
@@ -40,32 +46,56 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
   if (xint != int_answer)
     ITFAILS;
 
+  if (xint_recv != int_answer)
+    ITFAILS;
+  if (!rtt_c4::node())
+    cout << "int: Global non-blocking sum: " << xint_recv
+         << " answer: " << int_answer << endl;
+
   // Test with deprecated form of global_sum
   xint = rtt_c4::node() + 1;
   global_sum(xint);
   if (xint != int_answer)
     ITFAILS;
 
-  // test longs
-  long xlong = rtt_c4::node() + 1000;
+  // test longs for blocking and non-blocking sums
+  long xlong = rtt_c4::node() + 10000000000;
   global_sum(xlong);
+
+  long xlong_send = rtt_c4::node() + 10000000000;
+  long xlong_recv = 0;
+  C4_Req long_request;
+  global_isum(xlong_send, xlong_recv, long_request);
+  long_request.wait();
 
   long long_answer = 0;
   for (int i = 0; i < rtt_c4::nodes(); i++)
-    long_answer += i + 1000;
+    long_answer += i + 10000000000;
 
   if (xlong != long_answer)
     ITFAILS;
 
-  // test doubles
+  if (xlong_recv != long_answer)
+    ITFAILS;
+
+  // test doubles for blocking and non-blocking sums
   double xdbl = static_cast<double>(rtt_c4::node()) + 0.1;
   global_sum(xdbl);
+
+  double xdouble_send = static_cast<double>(rtt_c4::node()) + 0.1;
+  double xdouble_recv = 0;
+  C4_Req double_request;
+  global_isum(xdouble_send, xdouble_recv, double_request);
+  double_request.wait();
 
   double dbl_answer = 0.0;
   for (int i = 0; i < rtt_c4::nodes(); i++)
     dbl_answer += static_cast<double>(i) + 0.1;
 
   if (!soft_equiv(xdbl, dbl_answer))
+    ITFAILS;
+
+  if (!soft_equiv(xdouble_recv, dbl_answer))
     ITFAILS;
 
   // test product
@@ -193,9 +223,9 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
-  // Calculate prefix sums on rank ID with MPI call and by hand and compare
-  // the output. The prefix sum on a node includes all previous node's value
-  // and the value of the current node
+  // Calculate prefix sums on rank ID with MPI call and by hand and compare the
+  // output. The prefix sum on a node includes all previous node's value and the
+  // value of the current node
 
   // test ints
   int xint = rtt_c4::node();

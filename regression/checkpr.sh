@@ -76,7 +76,7 @@ print_use()
 ## Command options
 ##---------------------------------------------------------------------------##
 
-while getopts ":f:hp:r" opt; do
+while getopts ":f:hp:rt" opt; do
 case $opt in
 f)  pr=$OPTARG ;;
 h)  print_use; exit 0 ;;
