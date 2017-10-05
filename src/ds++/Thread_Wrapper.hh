@@ -10,14 +10,12 @@
 //---------------------------------------------------------------------------//
 //---------------------------------------------------------------------------//
 
-
 #ifndef THREAD_WRAPPER_HH
 #define THREAD_WRAPPER_HH
 
 #include <thread>
 
-namespace rtt_dsxx
-{
+namespace rtt_dsxx {
 
 //===========================================================================//
 /**\class Thread_Wrapper
@@ -26,7 +24,7 @@ namespace rtt_dsxx
  * cf Scott Meyers, Effective Modern C++, Item #37
  */
 //===========================================================================//
-class Thread_Wrapper{
+class Thread_Wrapper {
 public:
   /**\brief enum class to indicate action to take on termination. */
   enum class action {
@@ -35,22 +33,19 @@ public:
   };
 
   /**\brief accessor */
-  std::thread & get(){return t_;}
+  std::thread &get() { return t_; }
 
   /**\brief Default ctor*/
-  Thread_Wrapper():action_(action::join),t_(std::thread()){}
+  Thread_Wrapper() : action_(action::join), t_(std::thread()) {}
 
   /**\brief Move ctor (note: no copy ctor on std::threads. */
-  Thread_Wrapper(std::thread &&t, action a)
-  : action_(a),t_(std::move(t))
-  {}
+  Thread_Wrapper(std::thread &&t, action a) : action_(a), t_(std::move(t)) {}
 
-  ~Thread_Wrapper(){
-    if(t_.joinable()){
-      if(action::join == action_){
+  ~Thread_Wrapper() {
+    if (t_.joinable()) {
+      if (action::join == action_) {
         t_.join();
-      }
-      else{
+      } else {
         t_.detach();
       }
     }
@@ -64,8 +59,6 @@ private:
 
 #endif // include guard
 
-
 //---------------------------------------------------------------------------//
 // end of ds++/Thread_Wrapper.hh
 //---------------------------------------------------------------------------//
-
