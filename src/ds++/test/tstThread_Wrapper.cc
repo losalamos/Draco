@@ -66,14 +66,14 @@ void testInstantiation2(UnitTest &ut) {
 
 /**\brief Exercise two arg ctor with the detach action.
  *
- * This test is a bit contrived: the calling thread will detach from
+ * This test is a bit bogus: the calling thread will detach from
  * the worker thread. The worker thread will continue to run, i.e. sleep then
  * write a message to the stream. Meanwhile, the caller will print a message,
  * then sleep. So barring some sort of 2000 msec catastrophe, the writes shd
  * be ordered. If that fails, it's not clear it says anything about
  * Thread_Wrapper; it may just be that something odd happened in the
  * execution. So if this test starts failing, it might need to be retired
- * or modified.
+ * or modified. It's a weak concept for a test...
  */
 void testDetach(UnitTest &ut){
   std::stringstream s;
@@ -85,10 +85,9 @@ void testDetach(UnitTest &ut){
     FAIL_IF_NOT(tid == tid2);
   }
   s << "host thread: done\n";
+  // wait long enough for the worker to finish and write to the stream
   std::chrono::seconds so_long(2);
   std::this_thread::sleep_for(so_long);
-  // It would be odd if the detached OS thread finished faster than its
-  // std::thread / Thread_Wrapper handle went out of scope.
   bool ok = s.str() == "host thread: done\nslow_action: done\n";
   if(!ok){
     printf("%s:%i s.str = '%s', expected '%s'\n",__FUNCTION__,__LINE__,
@@ -113,7 +112,7 @@ int main(int argc, char *argv[]) {
   try {
     run_a_test(ut,testInstantiation0,"Thread_Wrapper::ctor() ok.");
     run_a_test(ut,testInstantiation2,
-      "Thread_Wrapper::ctor(std::thread && t, action a) ok.");
+      "Thread_Wrapper::ctor(std::thread && t, join) ok.");
     run_a_test(ut,testDetach,
       "Thread_Wrapper::ctor(std::thread && t, detach) ok.");
   } // try--catches in the epilog:
