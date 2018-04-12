@@ -59,29 +59,31 @@ public:
   // ACCESSORS
 
   //! Return the ordinates.
-  vector<Ordinate> const &ordinates() const { return ordinates_; }
+  vector<Ordinate> const &ordinates() const noexcept { return ordinates_; }
 
   //! Return the ordinates.
-  vector<Ordinate> &ordinates() { return ordinates_; }
+  vector<Ordinate> &ordinates() noexcept { return ordinates_; }
 
   //! Return the geometry.
-  Geometry geometry() const { return geometry_; }
+  Geometry geometry() const noexcept { return geometry_; }
 
   //! Return the dimension.
-  unsigned dimension() const { return dimension_; }
+  unsigned dimension() const noexcept { return dimension_; }
 
   //! Return the norm.
-  double norm() const { return norm_; }
+  double norm() const noexcept { return norm_; }
 
   //! Does this set include starting directions?
-  bool has_starting_directions() const { return has_starting_directions_; }
+  bool has_starting_directions() const noexcept {
+    return has_starting_directions_;
+  }
 
   //! Does this set include extra starting directions?
-  bool has_extra_starting_directions() const {
+  bool has_extra_starting_directions() const noexcept {
     return has_extra_starting_directions_;
   }
 
-  Ordering ordering() const { return ordering_; }
+  Ordering ordering() const noexcept { return ordering_; }
 
   // SERVICES
 
