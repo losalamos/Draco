@@ -22,6 +22,8 @@ env:
     - VENDOR_DIR=${HOME}
     - topdir=/home/travis/build/losalamos/Draco
     - COVERAGE=ON
+    - SPACK_ROOT=$HOME/.cache/spack
+    - PATH=$PATH:$HOME/.cache/spack/bin
   matrix:
     - STYLE=ON
     - WERROR=ON
@@ -32,7 +34,7 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - ccache
-      - libgsl0-dev
+      - environment-modules
       - gcc-6
       - g++-6
       - gfortran-6
@@ -40,17 +42,31 @@ addons:
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
+# https://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package
+#  - pip install --upgrade --user pyOpenSSL ndg-httpsclient pyasn1 pip
   - pip install --upgrade --user pip
-#  - pip install --upgrade setuptools
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
+  - if ! which spack >/dev/null; then
+      mkdir -p $SPACK_ROOT &&
+      git clone --depth 50 https://github.com/spack/spack.git $SPACK_ROOT &&
+      spack compilers &&
+      echo -e "config:""\n  build_jobs:"" 2" > $SPACK_ROOT/etc/spack/config.yaml &&
+      spack config get compilers;
+    fi
+  - travis_wait 30 spack install gsl random123 numdiff
+  - spack clean -a
+  - source /etc/profile &&
+    source $SPACK_ROOT/share/spack/setup-env.sh
+  - spack load gsl random123 numdiff
+  - nm -a `spack location -i gsl`/lib/libgsl.so | grep cblas_ctrmv
   - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
-  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
-  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
-#  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
+  - if [[ ${WERROR} ]]; then for i in CC CXX Fortran; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
+  - if [[ ${COVERAGE} ]]; then for i in CC CXX Fortran; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
+#  - if [[ ${WERROR} ]]; then for i in CC CXX Fortran; do eval export ${i}=\"${!i} -Werror\"; done; fi
 
 script:
   - ./.travis-run-tests.sh
@@ -59,7 +75,10 @@ after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
 
 cache:
-  - ccache
+  apt: true
+  directories:
+    - $HOME/.cache
+    - $HOME/.cacher
 
 compiler:
   - gcc-6

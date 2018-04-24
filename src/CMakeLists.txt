@@ -122,6 +122,7 @@ endif()
 if( CAFS_Fortran_COMPILER )
   message("CAFS Fortran: ${CAFS_Fortran_COMPILER}")
 endif()
+message("Linker FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
 message(
   "mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
 message("Library Type: ${DRACO_LIBRARY_TYPE}
