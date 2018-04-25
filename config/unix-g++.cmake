@@ -86,6 +86,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
 
+  if( NOT DEFINED ENV{TRAVIS} )
+
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
     # string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
@@ -129,6 +131,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
     # -fsanitize=signed-integer-overflow
     # -Wduplicated-branches warns when an if-else has identical branches.
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=signed-integer-overflow")
+
+  endif()
 
   endif()
 

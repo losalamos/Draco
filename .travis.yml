@@ -31,7 +31,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - ccache
+#      - ccache
       - libgsl0-dev
       - gcc-6
       - g++-6
@@ -44,16 +44,17 @@ addons:
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
 # https://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package
-  - pip install --upgrade --user pyOpenSSL ndg-httpsclient pyasn1 pip
+#  - pip install --upgrade --user pyOpenSSL ndg-httpsclient pyasn1 pip
+  - pip install --upgrade --user pip
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
   - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
-  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
-  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
-#  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
+  - if [[ ${WERROR} ]]; then for i in CC CXX Fortran; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
+  - if [[ ${COVERAGE} ]]; then for i in CC CXX Fortran; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
+#  - if [[ ${WERROR} ]]; then for i in CC CXX Fortran; do eval export ${i}=\"${!i} -Werror\"; done; fi
 
 script:
   - ./.travis-run-tests.sh
@@ -61,8 +62,8 @@ script:
 after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
 
-cache:
-  - ccache
+#cache:
+#  - ccache
 
 compiler:
   - gcc-6

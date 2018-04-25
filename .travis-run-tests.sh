@@ -32,6 +32,7 @@ if [[ ${STYLE} ]]; then
 else
   mkdir -p build
   cd build
+  /usr/bin/x86_64-linux-gnu-ld --version
   # configure
   # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
   echo " "
