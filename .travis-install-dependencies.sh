@@ -65,11 +65,11 @@ if [[ ${STYLE} ]]; then
 
 else
 
-  run "sudo apt-get update"
-  run "sudo apt-get -y upgrade libc-bin libc-dev-bin libc6 libc6-dev linux-libc-dev"
-  run "ls -aFl /usr/lib/libgslcblas.so"
-  run "ls -aFl /usr/lib/libgslcblas.so.0.0.0"
-  run "nm -a /usr/lib/libgslcblas.so | grep cblas_ctrmv"
+  # run "sudo apt-get update"
+  # run "sudo apt-get -y upgrade libc-bin libc-dev-bin libc6 libc6-dev linux-libc-dev"
+  # run "ls -aFl /usr/lib/libgslcblas.so"
+  # run "ls -aFl /usr/lib/libgslcblas.so.0.0.0"
+  # run "nm -a /usr/lib/libgslcblas.so | grep cblas_ctrmv"
 
   # Random123
   echo " "
