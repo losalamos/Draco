@@ -48,9 +48,6 @@ before_install:
 #  - pip install --upgrade --user pyOpenSSL ndg-httpsclient pyasn1 pip
   - pip install --upgrade --user pip
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
-  - ls -aFl /usr/lib/libgslcblas.so
-  - ls -aFl /usr/lib/libgslcblas.so.0.0.0
-  - nm -a /usr/lib/libgslcblas.so | grep cblas_ctrmv
 
 install:
   - travis_wait 30 ./.travis-install-dependencies.sh

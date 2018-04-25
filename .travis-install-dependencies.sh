@@ -65,8 +65,11 @@ if [[ ${STYLE} ]]; then
 
 else
 
-  run "apt-get update"
-  run "apt-get -y upgrade"
+  run "sudo apt-get update"
+  run "sudo apt-get -y upgrade"
+  run "ls -aFl /usr/lib/libgslcblas.so"
+  run "ls -aFl /usr/lib/libgslcblas.so.0.0.0"
+  run "nm -a /usr/lib/libgslcblas.so | grep cblas_ctrmv"
 
   # Random123
   echo " "
