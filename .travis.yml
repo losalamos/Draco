@@ -37,11 +37,14 @@ addons:
       - g++-6
       - gfortran-6
       - liblapack-dev
+      - python-dev
+      - libffi-dev
+      - libssl-dev
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
-  - pip install --upgrade --user pip
-#  - pip install --upgrade setuptools
+# https://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package
+  - pip install --upgrade --user pyOpenSSL ndg-httpsclient pyasn1 pip
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
