@@ -65,6 +65,9 @@ if [[ ${STYLE} ]]; then
 
 else
 
+  run "apt-get update"
+  run "apt-get -y upgrade"
+
   # Random123
   echo " "
   echo "Random123"

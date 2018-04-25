@@ -32,6 +32,8 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - ccache
+      - libgsl0dbl
+      - gsl-bin
       - libgsl0-dev
       - gcc-6
       - g++-6
