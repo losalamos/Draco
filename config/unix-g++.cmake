@@ -183,7 +183,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE ST
 toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
 toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG
   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 
 # Issues with tstFMA[12].cc:
 # toggle_compiler_flag( HAS_WUNUSED_MACROS "-Wunused-macros" "C;CXX" "" )
