@@ -34,8 +34,8 @@ else
   cd build
   /usr/bin/x86_64-linux-gnu-ld --version
   # configure
-  # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
   echo " "
+  # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
   #echo "${CMAKE} -DCMAKE_EXE_LINKER_FLAGS=\" -Wl,--no-as-needed \" .."
   #${CMAKE} -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--no-as-needed " ..
   echo "${CMAKE} .."
