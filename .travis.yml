@@ -31,7 +31,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-#      - ccache
+      - ccache
       - libgsl0-dev
       - gcc-6
       - g++-6
@@ -47,6 +47,7 @@ before_install:
 #  - pip install --upgrade --user pyOpenSSL ndg-httpsclient pyasn1 pip
   - pip install --upgrade --user pip
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
+  - nm -a /usr/lib/libgslcblas.so | grep cblas_ctrmv
 
 install:
   - travis_wait 30 ./.travis-install-dependencies.sh
@@ -62,8 +63,8 @@ script:
 after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
 
-#cache:
-#  - ccache
+cache:
+  - ccache
 
 compiler:
   - gcc-6
