@@ -22,6 +22,8 @@ env:
     - VENDOR_DIR=${HOME}
     - topdir=/home/travis/build/losalamos/Draco
     - COVERAGE=ON
+    - SPACK_ROOT=$HOME/.cache/spack
+    - PATH=$PATH:$HOME/.cache/spack/bin
   matrix:
     - STYLE=ON
     - WERROR=ON
@@ -32,15 +34,11 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - ccache
-      - gsl-bin
-      - libgsl0-dev
+      - environment-modules
       - gcc-6
       - g++-6
       - gfortran-6
       - liblapack-dev
-      - python-dev
-      - libffi-dev
-      - libssl-dev
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
@@ -50,6 +48,24 @@ before_install:
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
+  - if ! which spack >/dev/null; then
+      mkdir -p $SPACK_ROOT &&
+      git clone --depth 50 https://github.com/spack/spack.git $SPACK_ROOT &&
+      spack compilers &&
+      echo -e "config:""\n  build_jobs:"" 2" > $SPACK_ROOT/etc/spack/config.yaml &&
+      spack config get compilers;
+    fi
+  - travis_wait 30 spack install gsl random123 numdiff openmpi
+  - spack clean -a
+  - source /etc/profile &&
+    source $SPACK_ROOT/share/spack/setup-env.sh
+  - spack load gsl random123 numdiff openmpi
+  - spack location -i gsl
+  - nm -a `spack location -i gsl`/lib/libgsl.so | grep cblas_ctrmv
+  - nm -a `spack location -i gsl`/lib/libgslcblas.so | grep cblas_ctrmv
+  - ldd `spack location -i gsl`/lib/libgslcblas.so
+  - nm -a /home/travis/.cache/spack/opt/spack/linux-ubuntu14.04-x86_64/gcc-6.4.0/gsl-2.4-tiedwgv464my5iyqawvpivgj7ef7cdan/lib/libgsl.so | grep cblas_ctrmv
+  - nm -a /home/travis/.cache/spack/opt/spack/linux-ubuntu14.04-x86_64/gcc-6.4.0/gsl-2.4-tiedwgv464my5iyqawvpivgj7ef7cdan/lib/libgslcblas.so | grep cblas_ctrmv
   - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
@@ -64,7 +80,10 @@ after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
 
 cache:
-  - ccache
+  apt: true
+  directories:
+    - $HOME/.cache
+    - $HOME/.cacher
 
 compiler:
   - gcc-6
