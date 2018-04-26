@@ -33,12 +33,14 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - ccache
       - environment-modules
       - gcc-6
       - g++-6
       - gfortran-6
       - liblapack-dev
+      - graphviz
+      - doxygen
+#      - ccache
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
@@ -55,7 +57,7 @@ install:
       echo -e "config:""\n  build_jobs:"" 2" > $SPACK_ROOT/etc/spack/config.yaml &&
       spack config get compilers;
     fi
-  - travis_wait 60 spack install gsl random123 numdiff openmpi
+  - if [[ ${WERROR} ]]; then travis_wait 60 spack install gsl random123 numdiff openmpi; fi
   - spack clean -a
   - source /etc/profile &&
     source $SPACK_ROOT/share/spack/setup-env.sh
@@ -67,6 +69,7 @@ install:
   - nm -a /home/travis/.cache/spack/opt/spack/linux-ubuntu14.04-x86_64/gcc-6.4.0/gsl-2.4-tiedwgv464my5iyqawvpivgj7ef7cdan/lib/libgsl.so | grep cblas_ctrmv
   - nm -a /home/travis/.cache/spack/opt/spack/linux-ubuntu14.04-x86_64/gcc-6.4.0/gsl-2.4-tiedwgv464my5iyqawvpivgj7ef7cdan/lib/libgslcblas.so | grep cblas_ctrmv
   - travis_wait 30 ./.travis-install-dependencies.sh
+  - printenv
 
 before_script:
   - if [[ ${WERROR} ]]; then for i in CC CXX Fortran; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
@@ -83,7 +86,7 @@ cache:
   apt: true
   directories:
     - $HOME/.cache
-    - $HOME/.cacher
+#    - $HOME/.cacher
 
 compiler:
   - gcc-6
