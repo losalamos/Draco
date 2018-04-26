@@ -71,19 +71,19 @@ else
   run "tar -xzf cmake-${CMAKE_VERSION}.tar.gz &> build-cmake.log"
   run "cd $topdir"
 
-  # OpenMPI
-  echo " "
-  echo "OpenMPI"
-  run "wget --no-check-certificate https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-${OPENMPI_VER}.tar.gz"
-  run "tar -zxf openmpi-${OPENMPI_VER}.tar.gz > build-openmpi.log"
-  run "cd openmpi-${OPENMPI_VER}"
-  run "./configure --enable-mpi-thread-multiple --quiet >> build-openmpi.log 2>&1"
-  # run "travis_wait 20 make"
-  run "make >> build-openmpi.log 2>&1"
-  run "sudo make install"
-  run "sudo sh -c 'echo \"/usr/local/lib\n/usr/local/lib/openmpi\" > /etc/ld.so.conf.d/openmpi.conf'"
-  run "sudo ldconfig"
-  run "cd $topdir"
+  # # OpenMPI
+  # echo " "
+  # echo "OpenMPI"
+  # run "wget --no-check-certificate https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-${OPENMPI_VER}.tar.gz"
+  # run "tar -zxf openmpi-${OPENMPI_VER}.tar.gz > build-openmpi.log"
+  # run "cd openmpi-${OPENMPI_VER}"
+  # run "./configure --enable-mpi-thread-multiple --quiet >> build-openmpi.log 2>&1"
+  # # run "travis_wait 20 make"
+  # run "make >> build-openmpi.log 2>&1"
+  # run "sudo make install"
+  # run "sudo sh -c 'echo \"/usr/local/lib\n/usr/local/lib/openmpi\" > /etc/ld.so.conf.d/openmpi.conf'"
+  # run "sudo ldconfig"
+  # run "cd $topdir"
 
 fi
 

@@ -55,13 +55,17 @@ install:
       echo -e "config:""\n  build_jobs:"" 2" > $SPACK_ROOT/etc/spack/config.yaml &&
       spack config get compilers;
     fi
-  - travis_wait 30 spack install gsl random123 numdiff
+  - travis_wait 30 spack install gsl random123 numdiff openmpi
   - spack clean -a
   - source /etc/profile &&
     source $SPACK_ROOT/share/spack/setup-env.sh
-  - spack load gsl random123 numdiff
+  - spack load gsl random123 numdiff openmpi
+  - spack location -i gsl
   - nm -a `spack location -i gsl`/lib/libgsl.so | grep cblas_ctrmv
   - nm -a `spack location -i gsl`/lib/libgslcblas.so | grep cblas_ctrmv
+  - ldd `spack location -i gsl`/lib/libgslcblas.so
+  - nm -a /home/travis/.cache/spack/opt/spack/linux-ubuntu14.04-x86_64/gcc-6.4.0/gsl-2.4-tiedwgv464my5iyqawvpivgj7ef7cdan/lib/libgsl.so | grep cblas_ctrmv
+  - nm -a /home/travis/.cache/spack/opt/spack/linux-ubuntu14.04-x86_64/gcc-6.4.0/gsl-2.4-tiedwgv464my5iyqawvpivgj7ef7cdan/lib/libgslcblas.so | grep cblas_ctrmv
   - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
