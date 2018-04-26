@@ -55,7 +55,7 @@ install:
       echo -e "config:""\n  build_jobs:"" 2" > $SPACK_ROOT/etc/spack/config.yaml &&
       spack config get compilers;
     fi
-  - travis_wait 30 spack install gsl random123 numdiff openmpi
+  - travis_wait 60 spack install gsl random123 numdiff openmpi
   - spack clean -a
   - source /etc/profile &&
     source $SPACK_ROOT/share/spack/setup-env.sh
