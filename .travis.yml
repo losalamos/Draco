@@ -61,6 +61,7 @@ install:
     source $SPACK_ROOT/share/spack/setup-env.sh
   - spack load gsl random123 numdiff
   - nm -a `spack location -i gsl`/lib/libgsl.so | grep cblas_ctrmv
+  - nm -a `spack location -i gsl`/lib/libgslcblas.so | grep cblas_ctrmv
   - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:

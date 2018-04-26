@@ -18,9 +18,7 @@ topdir=`pwd` # /home/travis/build/lanl/Draco
 # HOME = /home/travis
 # USER = travis
 # GROUP = travis
-#RANDOM123_VER=1.09
 CMAKE_VERSION=3.9.0-Linux-x86_64
-NUMDIFF_VER=5.8.1
 CLANG_FORMAT_VER=3.9
 OPENMPI_VER=1.10.5
 
@@ -65,21 +63,6 @@ if [[ ${STYLE} ]]; then
 
 else
 
-  # run "sudo apt-get update"
-  # run "sudo apt-get -y upgrade libc-bin libc-dev-bin libc6 libc6-dev linux-libc-dev"
-  # run "ls -aFl /usr/lib/libgslcblas.so"
-  # run "ls -aFl /usr/lib/libgslcblas.so.0.0.0"
-  # run "nm -a /usr/lib/libgslcblas.so | grep cblas_ctrmv"
-
-  # Random123
-  # echo " "
-  # echo "Random123"
-  # cd $HOME
-  # run "wget http://www.deshawresearch.com/downloads/download_random123.cgi/Random123-${RANDOM123_VER}.tar.gz"
-  # run "tar -xvf Random123-${RANDOM123_VER}.tar.gz &> build-r123.log"
-  # echo "Please set RANDOM123_INC_DIR=$HOME/Random123-${RANDOM123_VER}/include"
-  # run "ls $HOME/Random123-${RANDOM123_VER}/include"
-
   # CMake
   echo " "
   echo "CMake"
@@ -87,16 +70,6 @@ else
   run "wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_VERSION:0:3}/cmake-${CMAKE_VERSION}.tar.gz"
   run "tar -xzf cmake-${CMAKE_VERSION}.tar.gz &> build-cmake.log"
   run "cd $topdir"
-
-  # Numdiff
-  # echo " "
-  # echo "Numdiff"
-  # run "wget http://mirror.lihnidos.org/GNU/savannah/numdiff/numdiff-${NUMDIFF_VER}.tar.gz"
-  # run "tar -xvf numdiff-${NUMDIFF_VER}.tar.gz >& build-numdiff.log"
-  # run "cd numdiff-${NUMDIFF_VER}"
-  # run "./configure --prefix=/usr && make >> build-numdiff.log 2>&1"
-  # run "sudo make install"
-  # run "cd $topdir"
 
   # OpenMPI
   echo " "
