@@ -24,6 +24,8 @@ message(" ")
 message( STATUS "Configuring Level 1 packages --" )
 add_dir_if_exists( ds++ )
 
+if( NOT ENV{TRAVIS} )
+
 # Level 2
 message(" ")
 message( STATUS "Configuring Level 2 packages --" )
@@ -78,6 +80,8 @@ add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
+
+endif() # TRAVIS
 
 # Summary
 

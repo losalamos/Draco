@@ -1,72 +1,145 @@
+# Copied from https://github.com/laristra/flecsi/blob/master/.travis.yml
+
 language: cpp
+
 sudo: required
-dist: trusty
 
 # Notes:
 # $HOME -> /home/travis
 # code checked out to (this is $PWD for the script) -> /home/travis/build/lanl/Draco
 # travis will not install numdiff -> use ./.travis-install-dependencies.sh.
 
-env:
-  global:
-    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
-    - CC=gcc-6
-    - CCACHE_CPP2=yes
-    - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
-    - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
-    - CXX=g++-6
-    - FC=gfortran-6
-    - LAPACK_LIB_DIR=/usr/lib
-    - OMP_NUM_THREADS=4
-    - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
-    - VENDOR_DIR=${HOME}
-    - topdir=/home/travis/build/losalamos/Draco
-    - COVERAGE=ON
-  matrix:
-    - STYLE=ON
-    - WERROR=ON
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - ccache
-      - libgsl0-dev
-      - gcc-6
-      - g++-6
-      - gfortran-6
-      - liblapack-dev
-
-before_install:
-  - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
-  - pip install --upgrade --user pip
-#  - pip install --upgrade setuptools
-  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
-
-install:
-  - travis_wait 30 ./.travis-install-dependencies.sh
-
-before_script:
-  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
-  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
-#  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
-
-script:
-  - ./.travis-run-tests.sh
-
-after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
+services:
+  - docker
 
 cache:
-  - ccache
+  ccache: true
+  directories:
+    - $HOME/.sonar
 
-compiler:
-  - gcc-6
+env:
+  global:
+    - DISTRO=ubuntu
+    - OMP_NUM_THREADS=4
+    - VENDOR_DIR=${HOME}
+    - topdir=/home/travis/build/losalamos/Draco
 
-git:
-  depth: 3
+#    - CC=gcc-6
+#    - CCACHE_CPP2=yes
+#    - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
+#    - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
+#    - CXX=g++-6
+#    - FC=gfortran-6
+#    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
+#    - COVERAGE=ON
+#    - LAPACK_LIB_DIR=/usr/lib
+#    - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
 
+matrix:
+  allow_failures:
+    - compiler: gcc
+      env: DISTRO=ubuntu WERROR=ON
+
+#addons:
+#  apt:
+#    sources:
+#      - ubuntu-toolchain-r-test
+#    packages:
+#      - ccache
+#      - libgsl0-dev
+#      - gcc-6
+#      - g++-6
+#      - gfortran-6
+#      - liblapack-dev
+
+before_install:
+ - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+ - git fetch --unshallow && git fetch --tags #for versioning
+
+#  - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
+#  - pip install --upgrade --user pip
+#  - pip install --upgrade setuptools
+#  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
+
+#install:
+#  - travis_wait 30 ./.travis-install-dependencies.sh
+
+#before_script:
+#  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
+#  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
+
+script:
+  - cp -vr docker ${HOME}/docker
+  - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
+  - cd ../../
+  - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker
+  - cp -r $HOME/.ccache ${HOME}/docker/ccache
+  - cp -r $HOME/.sonar ${HOME}/docker/sonar
+  - travis_retry timeout 540 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
+  - docker build
+      --build-arg CXXFLAGS="${WERROR:+-Werror}
+      --build-arg COVERAGE=${COVERAGE}
+      --build-arg CC=${CC} --build-arg CXX=${CXX} FC=${FC}
+      --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_OS_NAME=${DISTRO}
+      --build-arg IGNORE_NOCI=${IGNORE_NOCI}
+      --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
+      --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
+      --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
+      --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
+      -t ${TRAVIS_REPO_SLUG}:${DISTRO}${TAG} ${HOME}/docker/ &&
+    rm -rf ${HOME}/.ccache &&
+    CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}${TAG} /bin/bash) &&
+    docker cp ${CON}:/home/draco/.ccache ${HOME}/ &&
+    docker cp ${CON}:/home/draco/.sonar ${HOME}/
+
+after_success:
+  # Set DEPLOY=true if TRAVIS_BRANCH==stable|master AND DOCKERHOB=true.
+  - shopt -s extglob && [[ ${TRAVIS_BRANCH} = @(master|stable) && ${DOCKERHUB} = true ]] && DEPLOY=yes
+  - if [[ ${DEPLOY} = yes && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+      docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
+    fi
+  # - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
+  #     cd $HOME/docker/flecsi;
+  #     rm -rf cinch;
+  #     git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
+  #     mkdir -p assets;
+  #     rm -rf assets/doxygen doc;
+  #     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
+  #     mv doc/doxygen/html assets/doxygen;
+  #     for i in doc/*.pdf; do mv ${i} ${i%-0.0*}.pdf; done;
+  #     mv doc/*.pdf assets;
+  #     rm -rf doc;
+  #     git add --all assets/doxygen assets/*.pdf;
+  #     if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+  #       git config --global user.name "Automatic Deployment (Travis CI)";
+  #       git config --global user.email "flecsi-commit@lanl.gov";
+  #       git commit -m "Documentation Update";
+  #       openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
+  #       chmod 600 ~/.ssh/id_rsa;
+  #       git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
+  #     else
+  #       git status;
+  #       git diff --cached --no-color | head -n 500;
+  #     fi;
+  #   fi
+
+#compiler:
+#  - gcc-6
+
+#git:
+#  depth: 3
+
+#notifications:
+#  branches:
+#    only:
+#      - stable
+#  email:
+#    recipients:
+#      secure: OzppTS3kOkp5+052T8DMtXiNmUO5OttAY01kC1l
+
+
+# Travis variables: https://docs.travis-ci.com/user/environment-variables
 
 # output from printenv (2018-04-26)
 

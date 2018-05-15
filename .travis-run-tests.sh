@@ -51,7 +51,7 @@ else
   # if the build was successful, then run the tests, otherwise abort.
   if [[ $error_code -eq 0 ]]; then
     echo " "
-    echo "${CTEST} -VV -E \(c4_tstOMP_2\)"
+    echo "${CTEST} -VV -E \(c4_tstOMP_2\) --output-on-failure"
     ${CTEST} -VV -E \(c4_tstOMP_2\)
     error_code=$?
   else
