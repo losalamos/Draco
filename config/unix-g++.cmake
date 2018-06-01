@@ -86,6 +86,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -gdwarf-3 -fno-eliminate-unused-debug-types -Wextra -Wno-expansion-to-defined -funroll-loops" )
 
+  if( NOT DEFINED ENV{TRAVIS} )
+
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
     # string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
@@ -138,6 +140,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #                  a hierarchical form:
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wold-style-cast")
     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -fdiagnostics-show-template-tree")
+  endif()
+
   endif()
 
   # [2017-04-15 KT] -march=native doesn't seem to work correctly on toolbox
@@ -201,7 +205,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
 toggle_compiler_flag( GCC_ENABLE_ALL_WARNINGS "-Weffc++" "CXX" "DEBUG")
 toggle_compiler_flag( GCC_ENABLE_GLIBCXX_DEBUG
   "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC" "CXX" "DEBUG" )
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 
 # Issues with tstFMA[12].cc:
 # toggle_compiler_flag( HAS_WUNUSED_MACROS "-Wunused-macros" "C;CXX" "" )

@@ -32,11 +32,14 @@ if [[ ${STYLE} ]]; then
 else
   mkdir -p build
   cd build
+  /usr/bin/x86_64-linux-gnu-ld --version
   # configure
-  # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
   echo " "
-  echo "${CMAKE} -DCMAKE_EXE_LINKER_FLAGS=\"-Wl,--no-as-needed\" .."
-  ${CMAKE} -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" ..
+  # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
+  #echo "${CMAKE} -DCMAKE_EXE_LINKER_FLAGS=\" -Wl,--no-as-needed \" .."
+  #${CMAKE} -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--no-as-needed " ..
+  echo "${CMAKE} .."
+  ${CMAKE} ..
   error_code=$?
   # if configure was successful, the start the build, otherwise abort.
   if [[ $error_code -eq 0 ]]; then

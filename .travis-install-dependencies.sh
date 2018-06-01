@@ -18,9 +18,7 @@ topdir=`pwd` # /home/travis/build/lanl/Draco
 # HOME = /home/travis
 # USER = travis
 # GROUP = travis
-RANDOM123_VER=1.09
 CMAKE_VERSION=3.9.0-Linux-x86_64
-NUMDIFF_VER=5.8.1
 CLANG_FORMAT_VER=3.9
 OPENMPI_VER=1.10.5
 
@@ -65,15 +63,6 @@ if [[ ${STYLE} ]]; then
 
 else
 
-  # Random123
-  echo " "
-  echo "Random123"
-  cd $HOME
-  run "wget http://www.deshawresearch.com/downloads/download_random123.cgi/Random123-${RANDOM123_VER}.tar.gz"
-  run "tar -xvf Random123-${RANDOM123_VER}.tar.gz &> build-r123.log"
-  echo "Please set RANDOM123_INC_DIR=$HOME/Random123-${RANDOM123_VER}/include"
-  run "ls $HOME/Random123-${RANDOM123_VER}/include"
-
   # CMake
   echo " "
   echo "CMake"
@@ -82,29 +71,19 @@ else
   run "tar -xzf cmake-${CMAKE_VERSION}.tar.gz &> build-cmake.log"
   run "cd $topdir"
 
-  # Numdiff
-  echo " "
-  echo "Numdiff"
-  run "wget http://mirror.lihnidos.org/GNU/savannah/numdiff/numdiff-${NUMDIFF_VER}.tar.gz"
-  run "tar -xvf numdiff-${NUMDIFF_VER}.tar.gz >& build-numdiff.log"
-  run "cd numdiff-${NUMDIFF_VER}"
-  run "./configure --prefix=/usr && make >> build-numdiff.log 2>&1"
-  run "sudo make install"
-  run "cd $topdir"
-
-  # OpenMPI
-  echo " "
-  echo "OpenMPI"
-  run "wget --no-check-certificate https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-${OPENMPI_VER}.tar.gz"
-  run "tar -zxf openmpi-${OPENMPI_VER}.tar.gz > build-openmpi.log"
-  run "cd openmpi-${OPENMPI_VER}"
-  run "./configure --enable-mpi-thread-multiple --quiet >> build-openmpi.log 2>&1"
-  # run "travis_wait 20 make"
-  run "make >> build-openmpi.log 2>&1"
-  run "sudo make install"
-  run "sudo sh -c 'echo \"/usr/local/lib\n/usr/local/lib/openmpi\" > /etc/ld.so.conf.d/openmpi.conf'"
-  run "sudo ldconfig"
-  run "cd $topdir"
+  # # OpenMPI
+  # echo " "
+  # echo "OpenMPI"
+  # run "wget --no-check-certificate https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-${OPENMPI_VER}.tar.gz"
+  # run "tar -zxf openmpi-${OPENMPI_VER}.tar.gz > build-openmpi.log"
+  # run "cd openmpi-${OPENMPI_VER}"
+  # run "./configure --enable-mpi-thread-multiple --quiet >> build-openmpi.log 2>&1"
+  # # run "travis_wait 20 make"
+  # run "make >> build-openmpi.log 2>&1"
+  # run "sudo make install"
+  # run "sudo sh -c 'echo \"/usr/local/lib\n/usr/local/lib/openmpi\" > /etc/ld.so.conf.d/openmpi.conf'"
+  # run "sudo ldconfig"
+  # run "cd $topdir"
 
 fi
 
