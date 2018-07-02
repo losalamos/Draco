@@ -60,7 +60,8 @@ endif()
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 install( TARGETS Lib_c4 EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/c4 )
+install( FILES ${headers} ${template_implementations} DESTINATION
+  ${DBSCFGDIR}include/c4 )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
