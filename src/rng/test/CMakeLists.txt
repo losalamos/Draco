@@ -17,6 +17,7 @@ set( test_sources
    ${PROJECT_SOURCE_DIR}/tstSubrandom_Sequence.cc
    ${PROJECT_SOURCE_DIR}/tstCounter_RNG.cc
    ${PROJECT_SOURCE_DIR}/tstCounter_RNG2.cc
+   ${PROJECT_SOURCE_DIR}/compare_RNG1_RNG2.cc
 )
 
 # Random123 unit tests (these tests have special PASS/FAIL REGEX conditions)
@@ -46,7 +47,7 @@ set( random123_known_answer_tests
 
 add_scalar_tests(
    SOURCES "${test_sources}"
-   DEPS    "Lib_rng" )
+   DEPS    "Lib_c4;Lib_rng" )
 
 add_scalar_tests(
    SOURCES    "${random123_unit_tests}"
