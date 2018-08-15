@@ -4,6 +4,8 @@
 // (c) Copyright 2018 LANSLLC, all rights reserved
 
 #include "c4/Timer.hh"
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "rng/Counter_RNG.hh"
 #include "rng/Counter_RNG2.hh"
 #include <vector>
@@ -50,7 +52,7 @@ void run_rng_2(){
   return;
 }
 
-void compare_rngs(){
+void compare_rngs(rtt_dsxx::UnitTest &ut){
   bool ok = true;
   size_t num_fails = 0;
   constexpr size_t max_fails = 10;
@@ -81,6 +83,10 @@ void compare_rngs(){
   else{
     std::cout << "Arrays agreed\n";
   }
+  if (ut.numFails == 0){
+    PASSMSG("compare old & new RNGs passed");
+  }
+
   return;
 }
 
@@ -92,11 +98,15 @@ void init_arrays(){
   return;
 }
 
-int main(){
-  init_arrays();
-  run_rng_1();
-  run_rng_2();
-  compare_rngs();
+int main(int argc, char **argv){
+  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  try{
+    init_arrays();
+    run_rng_1();
+    run_rng_2();
+    compare_rngs(ut);
+  }
+  UT_EPILOG(ut);
   return 0;
 }
 
