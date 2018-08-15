@@ -16,6 +16,7 @@ set( test_sources
    ${PROJECT_SOURCE_DIR}/tstRnd_Control_Inline.cc
    ${PROJECT_SOURCE_DIR}/tstSubrandom_Sequence.cc
    ${PROJECT_SOURCE_DIR}/tstCounter_RNG.cc
+   ${PROJECT_SOURCE_DIR}/tstCounter_RNG2.cc
 )
 
 # Random123 unit tests (these tests have special PASS/FAIL REGEX conditions)
