@@ -174,7 +174,7 @@ namespace // anonymous
  * version of the RNG seed, stream number, and spawn indicator and then returns
  * the lower 64 bits of the result.
  */
-static inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
+static inline uint64_t get_unique_num_impl(const ctr_type::value_type *const data) {
   CBRNG hash;
   uint64_t const sp64 = static_cast<uint64_t>(get_spawn_id_impl(data));
   const ctr_type ctr = {{data[1], sp64}};
@@ -199,7 +199,7 @@ inline uint64_t increment_CBRNG2_step_counter( uint64_t in){
  * Given a pointer to RNG state data, this function returns a random double in
  * the open interval (0, 1)---i.e., excluding the endpoints.
  */
-static inline double _ran(ctr_type::value_type *const data) {
+static inline double ran_impl(ctr_type::value_type *const data) {
   CBRNG rng;
 
   // Assemble a counter from the first two elements in data.
@@ -247,7 +247,7 @@ public:
   }
 
   //! Return a random double in the open interval (0, 1).
-  double ran() const { return _ran(data.access()); }
+  double ran() const { return ran_impl(data.access()); }
 
   //! Spawn a new, independent generator from this reference.
   inline void spawn(Counter_RNG2 &new_gen, uint32_t const child_idx) const;
@@ -258,7 +258,7 @@ public:
   }
 
   //! Return a unique identifier for this generator.
-  uint64_t get_unique_num() const { return _get_unique_num(data.access()); }
+  uint64_t get_unique_num() const { return get_unique_num_impl(data.access()); }
 
   //! Is this Counter_RNG2_Ref a reference to rng?
   inline bool is_alias_for(Counter_RNG2 const &rng) const;
@@ -363,7 +363,7 @@ public:
     if(get_step_counter() == max_steps){
       passed_max_ = true;
     }
-    return _ran(data);
+    return ran_impl(data);
   }
 
   //! Spawn a new, independent generator from this one.
@@ -372,7 +372,7 @@ public:
   }
 
   //! Return a unique identifier for this generator.
-  uint64_t get_unique_num() const { return _get_unique_num(data); }
+  uint64_t get_unique_num() const { return get_unique_num_impl(data); }
 
   //! Return an iterator to the beginning of the state block.
   const_iterator begin() const { return data; }
