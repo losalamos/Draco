@@ -8,10 +8,10 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "rng/Counter_RNG2.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "rng/Counter_RNG2.hh"
 #include <set>
 
 using namespace std;
@@ -23,7 +23,7 @@ using namespace rtt_rng;
 //---------------------------------------------------------------------------//
 
 /* I've included some test of getters and setters since they're not trivial. */
-void test_set_get_seed(UnitTest &ut){
+void test_set_get_seed(UnitTest &ut) {
   uint32_t seed = 1;
   uint64_t const streamnum = 2;
   uint64_t const time_step = 349;
@@ -44,7 +44,7 @@ void test_set_get_seed(UnitTest &ut){
     PASSMSG("test_set_get_seed passed");
 } // test_set_get_seed
 
-void test_set_get_step_counter(UnitTest &ut){
+void test_set_get_step_counter(UnitTest &ut) {
   uint32_t const seed = 1;
   uint64_t const streamnum = 2;
   uint64_t const time_step = 349;
@@ -65,7 +65,7 @@ void test_set_get_step_counter(UnitTest &ut){
     PASSMSG("test_set_get_step_counter passed");
 } // test_set_get_step_counter
 
-void test_set_get_time_step(UnitTest &ut){
+void test_set_get_time_step(UnitTest &ut) {
   uint32_t const seed = 1;
   uint64_t const streamnum = 2;
   uint64_t time_step = 349;
@@ -86,7 +86,7 @@ void test_set_get_time_step(UnitTest &ut){
     PASSMSG("test_set_get_time_step passed");
 } // test_set_get_time_step
 
-void test_set_get_stream_number(UnitTest &ut){
+void test_set_get_stream_number(UnitTest &ut) {
   uint32_t const seed = 1;
   uint64_t streamnum = 2;
   uint64_t const time_step = 349;
@@ -107,7 +107,7 @@ void test_set_get_stream_number(UnitTest &ut){
     PASSMSG("test_set_get_stream_number passed");
 } // test_set_get_stream_number
 
-void test_set_get_spawn_id(UnitTest &ut){
+void test_set_get_spawn_id(UnitTest &ut) {
   uint32_t const seed = 1;
   uint64_t const streamnum = 2;
   uint64_t const time_step = 349;
@@ -128,7 +128,7 @@ void test_set_get_spawn_id(UnitTest &ut){
     PASSMSG("test_set_get_spawn_id passed");
 } // test_set_get_spawn_id
 
-void test_increment_CBRNG2_step_counter(UnitTest &ut){
+void test_increment_CBRNG2_step_counter(UnitTest &ut) {
   uint64_t const ctr1 = 0xFFFFFFFF00000000;
   uint64_t const inc1 = increment_CBRNG2_step_counter(ctr1);
   FAIL_IF_NOT(inc1 == ctr1 + 1);
@@ -243,8 +243,8 @@ void test_equality(UnitTest &ut) {
   if (rng5 != rng5)
     ITFAILS;
 
-  // TK: I cut a test that was based on manually manipulating the RNG
-  // state. Pls don't manually manipulate the RNG state as an array of ints.
+    // TK: I cut a test that was based on manually manipulating the RNG
+    // state. Pls don't manually manipulate the RNG state as an array of ints.
 
 // Try to create a Counter_RNG2 from a data array that's too short.
 // 1. Only test exceptions if DbC is enabled.
@@ -372,7 +372,7 @@ void test_alias(UnitTest &ut) {
   Counter_RNG2 rng(0x1111, streamnum, time_step);
   Counter_RNG2 rng2(0x1111, streamnum, time_step);
   Counter_RNG2 rng3(0x2222, streamnum, time_step);
-  Counter_RNG2 rng4(0x3333, streamnum+1, time_step);
+  Counter_RNG2 rng4(0x3333, streamnum + 1, time_step);
 
   if (rng.get_stream_number() != rng2.get_stream_number())
     ITFAILS;
@@ -594,9 +594,8 @@ void test_rollover(UnitTest &ut) {
   rng.set_time_step(time_step);
   rng.set_stream_number(stream_number);
   // convenient lambda for testing
-  auto rest_unchanged = [=](Counter_RNG2 const &rng){
-    return seed == rng.get_seed() &&
-           time_step == rng.get_time_step() &&
+  auto rest_unchanged = [=](Counter_RNG2 const &rng) {
+    return seed == rng.get_seed() && time_step == rng.get_time_step() &&
            stream_number == rng.get_stream_number();
   };
 
@@ -699,7 +698,7 @@ void test_spawn(UnitTest &ut) {
 
   FAIL_IF_NOT(rng_ref.can_spawn());
   Counter_RNG2 rng_child2;
-  rng_ref.spawn(rng_child2,2ull);
+  rng_ref.spawn(rng_child2, 2ull);
 
   // rng_child2 should have the same stream number as rng and rng_child1 but
   // should not be identical to either previous generator.
@@ -709,36 +708,36 @@ void test_spawn(UnitTest &ut) {
   // Spawn a generator from rng_child1.
   FAIL_IF_NOT(rng_child1.can_spawn());
   Counter_RNG2 rng_grandchild1;
-  rng_child1.spawn(rng_grandchild1,3);
+  rng_child1.spawn(rng_grandchild1, 3);
   close_but_not_too_close(rng_grandchild1, rng_child1);
   close_but_not_too_close(rng_grandchild1, rng);
 
   // Spawn a generator from rng_child2.
   FAIL_IF_NOT(rng_child2.can_spawn());
   Counter_RNG2 rng_grandchild2;
-  rng_child2.spawn(rng_grandchild2,4);
+  rng_child2.spawn(rng_grandchild2, 4);
   close_but_not_too_close(rng_grandchild2, rng_child2);
 
   // ensure that RNG::can_spawn returns false after the right number of gens
   uint32_t const mx_gens = max_gens();
-  std::vector<Counter_RNG2> rngs(mx_gens+1);
-  for(size_t i = 0; i < mx_gens; ++i){
+  std::vector<Counter_RNG2> rngs(mx_gens + 1);
+  for (size_t i = 0; i < mx_gens; ++i) {
     Counter_RNG2 &g = rngs[i];
-    Counter_RNG2 &parent = i == 0 ? rng : rngs[i-1];
+    Counter_RNG2 &parent = i == 0 ? rng : rngs[i - 1];
 
-    parent.spawn(g,i+1);
-    if(i < mx_gens-1){
+    parent.spawn(g, i + 1);
+    if (i < mx_gens - 1) {
       FAIL_IF_NOT(g.can_spawn());
-    }
-    else{
+    } else {
       FAIL_IF(g.can_spawn());
       /* should never get here--if it does, interrogate a bit */
-      if(g.can_spawn()){
-        printf("%s:%i i = %lu, mx_gens = %u\n",__FUNCTION__,__LINE__,i,mx_gens);
+      if (g.can_spawn()) {
+        printf("%s:%i i = %lu, mx_gens = %u\n", __FUNCTION__, __LINE__, i,
+               mx_gens);
       }
     }
   }
-printf("%s:%i \n",__FUNCTION__,__LINE__);
+  printf("%s:%i \n", __FUNCTION__, __LINE__);
   if (ut.numFails == 0)
     PASSMSG("test_spawn passed");
 }

@@ -98,34 +98,34 @@ constexpr uint32_t max_gens() { return 4; }
  * NR system. It should go away when NR is retired.
  */
 uint32_t get_seed_impl(ctr_type::value_type const *const rng_data) {
-  static_assert(std::is_same<ctr_type::value_type,uint64_t>::value,
-    "Implementation relies on known integer size!");
+  static_assert(std::is_same<ctr_type::value_type, uint64_t>::value,
+                "Implementation relies on known integer size!");
   uint64_t const val64 = rng_data[2] & SEED_MASK;
   return static_cast<uint32_t>(val64);
 }
 
 uint32_t get_step_counter_impl(ctr_type::value_type const *const rng_data) {
-  static_assert(std::is_same<ctr_type::value_type,uint64_t>::value,
-    "Implementation relies on known integer size!");
+  static_assert(std::is_same<ctr_type::value_type, uint64_t>::value,
+                "Implementation relies on known integer size!");
   uint64_t const val64 = rng_data[0] & STEP_MASK;
   return static_cast<uint32_t>(val64);
 }
 
 uint64_t get_time_step_impl(ctr_type::value_type const *const rng_data) {
-  static_assert(std::is_same<ctr_type::value_type,uint64_t>::value,
-    "Implementation relies on known integer size!");
+  static_assert(std::is_same<ctr_type::value_type, uint64_t>::value,
+                "Implementation relies on known integer size!");
   return rng_data[3];
 }
 
 uint64_t get_stream_number_impl(ctr_type::value_type const *const rng_data) {
-  static_assert(std::is_same<ctr_type::value_type,uint64_t>::value,
-    "Implementation relies on known integer size!");
+  static_assert(std::is_same<ctr_type::value_type, uint64_t>::value,
+                "Implementation relies on known integer size!");
   return rng_data[1];
 }
 
 uint32_t get_spawn_id_impl(ctr_type::value_type const *const rng_data) {
-  static_assert(std::is_same<ctr_type::value_type,uint64_t>::value,
-    "Implementation relies on known integer size!");
+  static_assert(std::is_same<ctr_type::value_type, uint64_t>::value,
+                "Implementation relies on known integer size!");
   uint64_t const val64 = rng_data[0] & SPAWN_MASK;
   return static_cast<uint32_t>(val64 >> 32);
 }
@@ -135,23 +135,23 @@ uint32_t get_spawn_id_impl(ctr_type::value_type const *const rng_data) {
  */
 uint32_t get_spawn_gen_impl(ctr_type::value_type const *const rng_data) {
   uint32_t const sid = get_spawn_id_impl(rng_data);
-  if(0 == sid){
+  if (0 == sid) {
     return 0;
   }
-  if(0xFF >= sid){
+  if (0xFF >= sid) {
     return 1;
   }
-  if(0xFFFF >= sid){
+  if (0xFFFF >= sid) {
     return 2;
   }
-  if(0xFFFFFF >= sid){
+  if (0xFFFFFF >= sid) {
     return 3;
   }
   return 4;
 }
 
 /**\brier Can a generator spawn? */
-bool can_spawn_impl(ctr_type::value_type const *const rng_data){
+bool can_spawn_impl(ctr_type::value_type const *const rng_data) {
   uint32_t const spawn_gen = get_spawn_gen_impl(rng_data);
   uint32_t const max_gen = max_gens();
   return spawn_gen < max_gen;
@@ -174,7 +174,8 @@ namespace // anonymous
  * version of the RNG seed, stream number, and spawn indicator and then returns
  * the lower 64 bits of the result.
  */
-static inline uint64_t get_unique_num_impl(const ctr_type::value_type *const data) {
+static inline uint64_t
+get_unique_num_impl(const ctr_type::value_type *const data) {
   CBRNG hash;
   uint64_t const sp64 = static_cast<uint64_t>(get_spawn_id_impl(data));
   const ctr_type ctr = {{data[1], sp64}};
@@ -185,13 +186,12 @@ static inline uint64_t get_unique_num_impl(const ctr_type::value_type *const dat
 
 //---------------------------------------------------------------------------//
 /*! \brief Increment the counter, rolling over after 32b exhausted. */
-inline uint64_t increment_CBRNG2_step_counter( uint64_t in){
+inline uint64_t increment_CBRNG2_step_counter(uint64_t in) {
   uint64_t spawn64 = in & (~STEP_MASK);
   uint64_t const ctr = in & STEP_MASK;
   uint64_t const new_ctr = ctr + 1;
   return spawn64 | (new_ctr & STEP_MASK);
 }
-
 
 //---------------------------------------------------------------------------//
 /*! \brief Generate a random double.
@@ -240,7 +240,7 @@ class Counter_RNG2_Ref {
 public:
   //! Constructor.  db and de specify the extents of an RNG state block.
   Counter_RNG2_Ref(ctr_type::value_type *const db,
-                  ctr_type::value_type *const de)
+                   ctr_type::value_type *const de)
       : data(db, de) {
     Require(std::distance(db, de) * sizeof(ctr_type::value_type) ==
             sizeof(ctr_type) + sizeof(key_type));
@@ -267,9 +267,7 @@ public:
   uint64_t get_num() const { return get_stream_number_impl(data.access()); }
 
   //! Can the referred RNG spawn?
-  bool can_spawn() const {
-    return can_spawn_impl(data.access());
-  }
+  bool can_spawn() const { return can_spawn_impl(data.access()); }
 
 private:
   mutable rtt_dsxx::Data_Table<ctr_type::value_type> data;
@@ -335,7 +333,7 @@ public:
    */
   Counter_RNG2() {
     Require(sizeof(data) == sizeof(ctr_type) + sizeof(key_type));
-    for(size_t i = 0; i < CBRNG_DATA_SIZE; ++i){
+    for (size_t i = 0; i < CBRNG_DATA_SIZE; ++i) {
       data[i] = 0;
     }
   }
@@ -343,7 +341,7 @@ public:
   //! Construct a Counter_RNG2 using a seed and stream number.
   Counter_RNG2(const uint32_t seed, const uint64_t streamnum,
                uint64_t const timestep) {
-    for(size_t i = 0; i < CBRNG_DATA_SIZE; ++i){
+    for (size_t i = 0; i < CBRNG_DATA_SIZE; ++i) {
       data[i] = 0;
     }
     initialize(seed, streamnum, timestep);
@@ -360,7 +358,7 @@ public:
 
   //! Return a random double in the interval (0, 1).
   double ran() const {
-    if(get_step_counter() == max_steps){
+    if (get_step_counter() == max_steps) {
       passed_max_ = true;
     }
     return ran_impl(data);
@@ -368,7 +366,7 @@ public:
 
   //! Spawn a new, independent generator from this one.
   void spawn(Counter_RNG2 &new_gen, uint32_t const child_idx) const {
-    new_gen._spawn(data,child_idx);
+    new_gen._spawn(data, child_idx);
   }
 
   //! Return a unique identifier for this generator.
@@ -400,9 +398,7 @@ public:
   size_t size_bytes() const { return sizeof(data); }
 
   //! Has this counter passed the maximum number of steps?
-  bool passed_max() const {
-    return passed_max_;
-  }
+  bool passed_max() const { return passed_max_; }
 
   /* Field guide to layout of bits and elements in 'data' array
    *          | data[1]| data[0] |
@@ -419,7 +415,7 @@ public:
   */
 
   //! set the seed
-  void set_seed(uint32_t const s){
+  void set_seed(uint32_t const s) {
     uint64_t tmp = data[2];
     tmp = tmp & ~SEED_MASK;
     data[2] = tmp | static_cast<uint64_t>(s);
@@ -433,13 +429,13 @@ public:
   }
 
   //! set stream number
-  void set_stream_number(uint64_t const n){
+  void set_stream_number(uint64_t const n) {
     data[1] = n;
     return;
   }
 
   //! set spawn id
-  void set_spawn_id(uint32_t const i){
+  void set_spawn_id(uint32_t const i) {
     uint64_t tmp = data[0];
     // clear out any existing data, preserving the counter data
     tmp = tmp & ~SPAWN_MASK;
@@ -447,7 +443,7 @@ public:
   }
 
   //! set the step counter
-  void set_step_counter(uint32_t const c){
+  void set_step_counter(uint32_t const c) {
     uint64_t tmp = data[0];
     tmp = tmp & ~STEP_MASK;
     data[0] = tmp | static_cast<uint64_t>(c);
@@ -469,9 +465,7 @@ public:
   //! get the spawn id
   uint32_t get_spawn_id() const { return get_spawn_id_impl(data); }
 
-  bool can_spawn() const {
-    return can_spawn_impl(data);
-  }
+  bool can_spawn() const { return can_spawn_impl(data); }
 
   /**\brief Can this generator support spawning children? */
   // static bool can_spawn(ctr_type::value_type const *const rng_data) {
@@ -484,7 +478,6 @@ public:
   static constexpr uint32_t max_children_per_gen() { return 255; }
 
 private:
-
   mutable ctr_type::value_type data[CBRNG_DATA_SIZE];
 
   mutable bool passed_max_ = false;
@@ -514,7 +507,7 @@ private:
 //! Spawn a new, independent generator from this reference.
 inline void Counter_RNG2_Ref::spawn(Counter_RNG2 &new_gen,
                                     uint32_t child_idx) const {
-  new_gen._spawn(data.access(),child_idx);
+  new_gen._spawn(data.access(), child_idx);
 }
 
 //---------------------------------------------------------------------------//
@@ -530,8 +523,8 @@ inline void Counter_RNG2::initialize(const uint32_t seed,
                                      const uint64_t streamnum,
                                      const uint64_t timestep) {
   // If data[] is not an array of uint64_t, then this is likely broken!
-  static_assert(std::is_same<ctr_type::value_type,uint64_t>::value,
-    "Expected the ctr_type::value_type to be 64b unsigned int");
+  static_assert(std::is_same<ctr_type::value_type, uint64_t>::value,
+                "Expected the ctr_type::value_type to be 64b unsigned int");
 
   set_step_counter(0);
 
@@ -576,7 +569,7 @@ inline void Counter_RNG2::_spawn(ctr_type::value_type const *const parent_data,
   uint32_t const parent_gen = get_spawn_gen_impl(parent_data);
   /* parent gen will not be greater than 3. Therefore, idx will be shifted
    * left at most 24b. */
-  for(uint32_t i = 0; i < parent_gen; ++i){
+  for (uint32_t i = 0; i < parent_gen; ++i) {
     idx = idx << 8;
   }
   uint32_t const this_sid = parent_sid | idx;
