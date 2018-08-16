@@ -722,11 +722,12 @@ void test_spawn(UnitTest &ut) {
   // ensure that RNG::can_spawn returns false after the right number of gens
   uint32_t const mx_gens = max_gens();
   std::vector<Counter_RNG2> rngs(mx_gens+1);
-  for(size_t i = 0; i <= mx_gens; ++i){
+  for(size_t i = 0; i < mx_gens; ++i){
     Counter_RNG2 &g = rngs[i];
     Counter_RNG2 &parent = i == 0 ? rng : rngs[i-1];
-    parent.spawn(g,i);
-    if(i < mx_gens){
+
+    parent.spawn(g,i+1);
+    if(i < mx_gens-1){
       FAIL_IF_NOT(g.can_spawn());
     }
     else{
@@ -737,7 +738,7 @@ void test_spawn(UnitTest &ut) {
       }
     }
   }
-
+printf("%s:%i \n",__FUNCTION__,__LINE__);
   if (ut.numFails == 0)
     PASSMSG("test_spawn passed");
 }

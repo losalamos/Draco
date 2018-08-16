@@ -562,7 +562,7 @@ inline void Counter_RNG2::initialize(const uint32_t seed,
  */
 inline void Counter_RNG2::_spawn(ctr_type::value_type const *const parent_data,
                                  uint32_t idx) {
-  Require(Counter_RNG2::can_spawn(parent_data));
+  Require(can_spawn_impl(parent_data));
   Require(idx > 0);
   Require(idx <= Counter_RNG2::max_children_per_gen());
   // Initialize this generator with the seed and stream number from the parent.
